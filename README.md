@@ -21,6 +21,34 @@
 
 C++ implementation of [Apache Iceberg™](https://iceberg.apache.org/).
 
+## Requirements
+
+- CMake 3.25 or higher
+- C++20 compliant compiler
+
+## Build
+
+### Build and Install Core Libraries
+
+```bash
+cd iceberg-cpp
+mkdir build && cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=/tmp/iceberg -DICEBERG_BUILD_STATIC=ON -DICEBERG_BUILD_SHARED=ON
+cmake --build .
+cmake --install .
+```
+
+### Build Examples
+
+After installing the core libraries, you can build the examples:
+
+```bash
+cd iceberg-cpp/example
+mkdir build && cd build
+cmake .. -DCMAKE_PREFIX_PATH=/tmp/iceberg
+cmake --build .
+```
+
 ## Contribute
 
 Apache Iceberg is an active open-source project, governed under the Apache Software Foundation (ASF). Iceberg-cpp is open to people who want to contribute to it. Here are some ways to get involved:
