@@ -18,10 +18,10 @@
 set(ICEBERG_CORE_SOURCES demo_table.cc)
 set(ICEBERG_CORE_INCLUDES "${ICEBERG_API_DIR}")
 
-ADD_ICEBERG_LIB(
+add_iceberg_lib(
   iceberg_core
   CMAKE_PACKAGE_NAME
-  iceberg
+  IcebergCore
   SOURCES
   ${ICEBERG_CORE_SOURCES}
   PRIVATE_INCLUDES
