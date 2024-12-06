@@ -17,15 +17,15 @@
  * under the License.
  */
 
-#include <iostream>
+#pragma once
 
-#include "iceberg/arrow/demo_arrow.h"
-#include "iceberg/puffin.h"
-#include "iceberg/table.h"
+#include <string>
 
-int main() {
-  std::cout << iceberg::Table::create()->print() << std::endl;
-  std::cout << iceberg::Puffin::create()->print() << std::endl;
-  std::cout << iceberg::arrow::DemoArrow().print() << std::endl;
-  return 0;
-}
+namespace iceberg::arrow {
+
+class DemoArrow {
+ public:
+  std::string print() const;
+};
+
+}  // namespace iceberg::arrow

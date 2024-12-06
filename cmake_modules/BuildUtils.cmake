@@ -18,31 +18,11 @@
 # Borrowed the file from Apache Arrow:
 # https://github.com/apache/arrow/blob/main/cpp/cmake_modules/BuildUtils.cmake
 
-function(iceberg_install_cmake_package PACKAGE_NAME EXPORT_NAME)
-  set(CONFIG_CMAKE "${PACKAGE_NAME}Config.cmake")
-  set(BUILT_CONFIG_CMAKE "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_CMAKE}")
-  configure_package_config_file("${CONFIG_CMAKE}.in" "${BUILT_CONFIG_CMAKE}"
-                                INSTALL_DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/${PACKAGE_NAME}"
-  )
-  set(CONFIG_VERSION_CMAKE "${PACKAGE_NAME}ConfigVersion.cmake")
-  set(BUILT_CONFIG_VERSION_CMAKE "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_VERSION_CMAKE}")
-  write_basic_package_version_file("${BUILT_CONFIG_VERSION_CMAKE}"
-                                   COMPATIBILITY SameMajorVersion)
-  install(FILES "${BUILT_CONFIG_CMAKE}" "${BUILT_CONFIG_VERSION_CMAKE}"
-          DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/${PACKAGE_NAME}")
-  set(TARGETS_CMAKE "${PACKAGE_NAME}Targets.cmake")
-  install(EXPORT ${EXPORT_NAME}
-          DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/${PACKAGE_NAME}"
-          NAMESPACE "${PACKAGE_NAME}::"
-          FILE "${TARGETS_CMAKE}")
-endfunction()
-
 function(ADD_ICEBERG_LIB LIB_NAME)
   set(options)
   set(one_value_args
       BUILD_SHARED
       BUILD_STATIC
-      CMAKE_PACKAGE_NAME
       INSTALL_ARCHIVE_DIR
       INSTALL_LIBRARY_DIR
       INSTALL_RUNTIME_DIR
@@ -146,7 +126,7 @@ function(ADD_ICEBERG_LIB LIB_NAME)
                                  "$<INSTALL_INTERFACE:${ARG_SHARED_INSTALL_INTERFACE_LIBS}>"
                           PRIVATE ${ARG_SHARED_PRIVATE_LINK_LIBS})
 
-    install(TARGETS ${LIB_NAME}_shared ${INSTALL_IS_OPTIONAL}
+    install(TARGETS ${LIB_NAME}_shared
             EXPORT ${LIB_NAME}_targets
             ARCHIVE DESTINATION ${INSTALL_ARCHIVE_DIR}
             LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}
@@ -201,7 +181,7 @@ function(ADD_ICEBERG_LIB LIB_NAME)
                             PUBLIC "$<BUILD_INTERFACE:${ARG_STATIC_LINK_LIBS}>")
     endif()
 
-    install(TARGETS ${LIB_NAME}_static ${INSTALL_IS_OPTIONAL}
+    install(TARGETS ${LIB_NAME}_static
             EXPORT ${LIB_NAME}_targets
             ARCHIVE DESTINATION ${INSTALL_ARCHIVE_DIR}
             LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}
@@ -210,9 +190,12 @@ function(ADD_ICEBERG_LIB LIB_NAME)
             DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
   endif()
 
-  if(ARG_CMAKE_PACKAGE_NAME)
-    iceberg_install_cmake_package(${ARG_CMAKE_PACKAGE_NAME} ${LIB_NAME}_targets)
-  endif()
+  string(TOLOWER ${LIB_NAME} LIB_NAME_LOWER_CASE)
+  string(REPLACE "_" "-" LIB_NAME_DASH_SEPARATED_LOWER_CASE ${LIB_NAME_LOWER_CASE})
+  install(EXPORT ${LIB_NAME}_targets
+          DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/Iceberg"
+          NAMESPACE "Iceberg::"
+          FILE "${LIB_NAME_DASH_SEPARATED_LOWER_CASE}-targets.cmake")
 
   # Modify variable in calling scope
   if(ARG_OUTPUTS)

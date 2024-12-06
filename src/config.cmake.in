@@ -1,0 +1,122 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+#
+# This config sets the following variables in your project::
+#
+#   Iceberg_FOUND - true if Iceberg found on the system
+#   Iceberg_VERSION - version of the found Iceberg
+#
+# This config sets the following targets (if built) in your project::
+#
+#   Iceberg::iceberg_core_shared
+#   Iceberg::iceberg_core_static
+#   Iceberg::iceberg_puffin_shared
+#   Iceberg::iceberg_puffin_static
+#   Iceberg::iceberg_arrow_shared
+#   Iceberg::iceberg_arrow_static
+
+@PACKAGE_INIT@
+
+set(ICEBERG_BUILD_STATIC "@ICEBERG_BUILD_STATIC@")
+set(ICEBERG_VENDOR_DEPENDENCIES "@ICEBERG_VENDOR_DEPENDENCIES@")
+set(ICEBERG_SYSTEM_DEPENDENCIES "@ICEBERG_SYSTEM_DEPENDENCIES@")
+
+include(CMakeFindDependencyMacro)
+
+macro(iceberg_find_dependencies dependencies)
+  if(DEFINED CMAKE_MODULE_PATH)
+    set(ICEBERG_CMAKE_MODULE_PATH_OLD ${CMAKE_MODULE_PATH})
+  else()
+    unset(ICEBERG_CMAKE_MODULE_PATH_OLD)
+  endif()
+  set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+
+  foreach(dependency ${dependencies})
+    find_dependency(${dependency})
+  endforeach()
+
+  if(DEFINED ICEBERG_CMAKE_MODULE_PATH_OLD)
+    set(CMAKE_MODULE_PATH ${ICEBERG_CMAKE_MODULE_PATH_OLD})
+    unset(ICEBERG_CMAKE_MODULE_PATH_OLD)
+  else()
+    unset(CMAKE_MODULE_PATH)
+  endif()
+endmacro()
+
+macro(iceberg_find_components components)
+  file(GLOB_RECURSE target_cmake_files "${CMAKE_CURRENT_LIST_DIR}/*-targets.cmake")
+  foreach(target_cmake_file ${target_cmake_files})
+    include(${target_cmake_file})
+  endforeach()
+
+  foreach(comp ${components})
+    if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/iceberg-${comp}-targets.cmake")
+      set(Iceberg_${comp}_FOUND TRUE)
+    else()
+      set(Iceberg_${comp}_FOUND FALSE)
+      set(Iceberg_NOT_FOUND_MESSAGE "Component ${comp} was not installed")
+    endif()
+  endforeach()
+endmacro()
+
+macro(iceberg_find_vendor_dependencies dependencies)
+  get_target_property(iceberg_static_configurations
+                      Iceberg::iceberg_core_static IMPORTED_CONFIGURATIONS)
+
+  foreach(dependency ${dependencies})
+    string(REPLACE "|" ";" dependency_pair ${dependency})
+    list(LENGTH dependency_pair dependency_pair_length)
+    if(NOT dependency_pair_length EQUAL 2)
+      message(FATAL_ERROR "Invalid vendor dependency: ${dependency}")
+    endif()
+    list(GET dependency_pair 0 target_name)
+    list(GET dependency_pair 1 static_lib_name)
+
+    add_library("${target_name}" STATIC IMPORTED)
+
+    foreach(configuration ${iceberg_static_configurations})
+      string(TOUPPER "${configuration}" CONFIGURATION)
+      get_target_property(
+        iceberg_core_static_location
+        Iceberg::iceberg_core_static LOCATION_${CONFIGURATION})
+      get_filename_component(
+        iceberg_core_lib_dir
+        "${iceberg_core_static_location}" DIRECTORY)
+      set_property(
+        TARGET "${target_name}"
+        APPEND
+        PROPERTY IMPORTED_CONFIGURATIONS ${CONFIGURATION})
+      set_target_properties(
+        "${target_name}"
+        PROPERTIES IMPORTED_LOCATION_${CONFIGURATION}
+                   "${iceberg_core_lib_dir}/${static_lib_name}")
+    endforeach()
+  endforeach()
+endmacro()
+
+# Find components and include targets
+iceberg_find_components("${Iceberg_FIND_COMPONENTS}")
+
+# Find system dependencies
+iceberg_find_dependencies("${ICEBERG_SYSTEM_DEPENDENCIES}")
+
+# Find vendor dependencies
+if(ICEBERG_BUILD_STATIC)
+  iceberg_find_vendor_dependencies("${ICEBERG_VENDOR_DEPENDENCIES}")
+endif()
+
+check_required_components(Iceberg)
