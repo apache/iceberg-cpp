@@ -33,9 +33,20 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+if(WIN32 AND NOT MINGW)
+  # This is used to handle builds using e.g. clang in an MSVC setting.
+  set(MSVC_TOOLCHAIN TRUE)
+else()
+  set(MSVC_TOOLCHAIN FALSE)
+endif()
+
 option(ICEBERG_BUILD_STATIC "Build static library" ON)
 option(ICEBERG_BUILD_SHARED "Build shared library" OFF)
 option(ICEBERG_BUILD_TESTS "Build tests" ON)
+
+set(ICEBERG_DEPENDENCY_SOURCE "AUTO" CACHE STRING "Method to use for acquiring build dependencies")
+set_property(CACHE ICEBERG_DEPENDENCY_SOURCE PROPERTY STRINGS "AUTO" "VENDOR" "SYSTEM")
+option(ICEBERG_ARROW "Build Arrow" ON)
 
 include(CMakePackageConfigHelpers)
 include(CMakeParseArguments)
@@ -50,6 +61,8 @@ set(ICEBERG_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
 set(ICEBERG_INSTALL_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}")
 set(ICEBERG_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake")
 set(ICEBERG_INSTALL_DOCDIR "share/doc/${PROJECT_NAME}")
+
+include(ThirdpartyToolchain)
 
 add_subdirectory(api)
 add_subdirectory(src)

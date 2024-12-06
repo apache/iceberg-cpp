@@ -1,0 +1,37 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+# Toolchain library versions
+#
+# This file is used by `download_dependencies.sh` and cmake to figure out which
+# version of a dependency to fetch. In order to add a new dependency, add a
+# version variable, e.g. MY_DEP_VERSION and append an entry in the
+# `DEPENDENCIES` array (see the comment on top of the declaration for the
+# format).
+
+ICEBERG_ARROW_BUILD_VERSION=18.1.0
+ICEBERG_ARROW_BUILD_SHA256_CHECKSUM=2dc8da5f8796afe213ecc5e5aba85bb82d91520eff3cf315784a52d0fa61d7fc
+
+# The first field is the name of the environment variable expected by cmake.
+# This _must_ match what is defined. The second field is the name of the
+# generated archive file. The third field is the url of the project for the
+# given version.
+DEPENDENCIES=(
+  "ICEBERG_ARROW_URL apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz https://archive.apache.org/dist/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
+)
+
+# vim: set filetype=sh:

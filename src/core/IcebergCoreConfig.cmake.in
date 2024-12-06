@@ -18,5 +18,25 @@
 
 @PACKAGE_INIT@
 
-include("${CMAKE_CURRENT_LIST_DIR}/puffinTargets.cmake")
-check_required_components(puffin)
+macro(iceberg_find_dependencies dependencies)
+  if(DEFINED CMAKE_MODULE_PATH)
+    set(ICEBERG_ARROW_CMAKE_MODULE_PATH_OLD ${CMAKE_MODULE_PATH})
+  else()
+    unset(ICEBERG_ARROW_CMAKE_MODULE_PATH_OLD)
+  endif()
+  set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+
+  foreach(dependency ${dependencies})
+    find_dependency(${dependency})
+  endforeach()
+
+  if(DEFINED ICEBERG_ARROW_CMAKE_MODULE_PATH_OLD)
+    set(CMAKE_MODULE_PATH ${ICEBERG_ARROW_CMAKE_MODULE_PATH_OLD})
+    unset(ICEBERG_ARROW_CMAKE_MODULE_PATH_OLD)
+  else()
+    unset(CMAKE_MODULE_PATH)
+  endif()
+endmacro()
+
+include("${CMAKE_CURRENT_LIST_DIR}/IcebergCoreTargets.cmake")
+check_required_components(IcebergCore)
