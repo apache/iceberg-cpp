@@ -25,4 +25,5 @@ find_package(puffin CONFIG REQUIRED)
 
 add_executable(demo_example demo_example.cc)
 
-target_link_libraries(demo_example iceberg::iceberg_core_static puffin::iceberg_puffin_static)
+target_link_libraries(demo_example iceberg::iceberg_core_static
+                      puffin::iceberg_puffin_static)
