@@ -25,10 +25,10 @@
 namespace iceberg {
 
 class Puffin {
-public:
+ public:
   virtual ~Puffin() = default;
   virtual std::string_view print() const = 0;
   static std::unique_ptr<Puffin> create();
 };
 
-} // namespace iceberg
+}  // namespace iceberg

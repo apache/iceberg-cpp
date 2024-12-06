@@ -15,5 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
+add_subdirectory(arrow)
 add_subdirectory(core)
 add_subdirectory(puffin)
