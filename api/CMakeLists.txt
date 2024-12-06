@@ -15,8 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-install(
-  DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/iceberg"
-  DESTINATION "${ICEBERG_INSTALL_INCLUDEDIR}"
-  FILES_MATCHING
-  PATTERN "*.h")
+install(DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/iceberg"
+        DESTINATION "${ICEBERG_INSTALL_INCLUDEDIR}"
+        FILES_MATCHING
+        PATTERN "*.h")
