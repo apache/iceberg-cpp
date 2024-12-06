@@ -23,11 +23,10 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules")
 
-project(
-  iceberg
-  VERSION 0.1.0
-  DESCRIPTION "Iceberg C++ Project"
-  LANGUAGES CXX)
+project(iceberg
+        VERSION 0.1.0
+        DESCRIPTION "Iceberg C++ Project"
+        LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

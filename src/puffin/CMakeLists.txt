@@ -18,11 +18,10 @@
 set(ICEBERG_PUFFIN_SOURCES demo_puffin.cc)
 set(ICEBERG_PUFFIN_INCLUDES "${ICEBERG_API_DIR}")
 
-ADD_ICEBERG_LIB(
-  iceberg_puffin
-  CMAKE_PACKAGE_NAME
-  puffin
-  SOURCES
-  ${ICEBERG_PUFFIN_SOURCES}
-  PRIVATE_INCLUDES
-  ${ICEBERG_PUFFIN_INCLUDES})
+add_iceberg_lib(iceberg_puffin
+                CMAKE_PACKAGE_NAME
+                puffin
+                SOURCES
+                ${ICEBERG_PUFFIN_SOURCES}
+                PRIVATE_INCLUDES
+                ${ICEBERG_PUFFIN_INCLUDES})
