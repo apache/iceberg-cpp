@@ -77,5 +77,3 @@ if(ICEBERG_BUILD_STATIC)
 endif()
 
 check_required_components(IcebergArrow)
-
-iceberg_show_details(IcebergArrow ICEBERG_ARROW)
