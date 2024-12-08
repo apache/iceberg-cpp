@@ -26,7 +26,7 @@ macro(iceberg_find_dependencies dependencies)
   endif()
   set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
 
-  foreach(dependency ${ICEBERG_ARROW_SYSTEM_DEPENDENCIES})
+  foreach(dependency ${dependencies})
     find_dependency(${dependency})
   endforeach()
 

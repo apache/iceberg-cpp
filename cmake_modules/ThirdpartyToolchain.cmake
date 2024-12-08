@@ -18,8 +18,8 @@
 include(ProcessorCount)
 ProcessorCount(NPROC)
 
-# Accumulate all dependencies to provide suitable static link parameters
-# to the third party libraries.
+# Accumulate all dependencies to provide suitable static link parameters to the
+# third party libraries.
 set(ICEBERG_ARROW_SYSTEM_DEPENDENCIES)
 set(ICEBERG_ARROW_VENDOR_DEPENDENCIES)
 set(ICEBERG_ARROW_INSTALL_INTERFACE_LIBS)
@@ -290,16 +290,13 @@ function(build_arrow)
   set(ARROW_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/arrow_ep-install")
   set(ARROW_HOME "${ARROW_PREFIX}")
   set(ARROW_INCLUDE_DIR "${ARROW_PREFIX}/include")
-  set(ARROW_STATIC_LIB
-      "${ARROW_PREFIX}/lib/${CMAKE_STATIC_LIBRARY_PREFIX}arrow${CMAKE_STATIC_LIBRARY_SUFFIX}"
-  )
+  set(ARROW_STATIC_LIB_NAME
+      "${CMAKE_STATIC_LIBRARY_PREFIX}arrow${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  set(ARROW_STATIC_LIB "${ARROW_PREFIX}/lib/${ARROW_STATIC_LIB_NAME}")
 
   set(ARROW_CMAKE_ARGS
-      ${EP_COMMON_CMAKE_ARGS}
-      -DCMAKE_INSTALL_PREFIX=${ARROW_PREFIX}
-      -DARROW_BUILD_SHARED=OFF
-      -DARROW_FILESYSTEM=ON
-      -DARROW_SIMD_LEVEL=NONE
+      ${EP_COMMON_CMAKE_ARGS} -DCMAKE_INSTALL_PREFIX=${ARROW_PREFIX}
+      -DARROW_BUILD_SHARED=OFF -DARROW_FILESYSTEM=ON -DARROW_SIMD_LEVEL=NONE
       -DARROW_RUNTIME_SIMD_LEVEL=NONE)
 
   # Work around CMake bug
@@ -320,23 +317,30 @@ function(build_arrow)
   target_include_directories(Arrow::arrow_static BEFORE
                              INTERFACE "${ARROW_INCLUDE_DIR}")
   add_dependencies(Arrow::arrow_static arrow_ep)
-  install(FILES "${ARROW_STATIC_LIB}"
-          DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+  install(FILES "${ARROW_STATIC_LIB}" DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+  list(APPEND ICEBERG_ARROW_VENDOR_DEPENDENCIES
+       "iceberg::vendored_Arrow|${ARROW_STATIC_LIB_NAME}")
 
   set(ARROW_VENDORED
       TRUE
       PARENT_SCOPE)
+  set(ICEBERG_ARROW_VENDOR_DEPENDENCIES
+      ${ICEBERG_ARROW_VENDOR_DEPENDENCIES}
+      PARENT_SCOPE)
 endfunction()
 
 if(ICEBERG_ARROW)
-  resolve_dependency(Arrow HAVE_ALT TRUE)
+  resolve_dependency(Arrow ICEBERG_CMAKE_PACKAGE_NAME IcebergArrow HAVE_ALT
+                     TRUE)
   if(ARROW_VENDORED)
     set(ICEBERG_ARROW_VERSION ${ICEBERG_ARROW_BUILD_VERSION})
-    list(APPEND ICEBERG_ARROW_VENDOR_DEPENDENCIES "iceberg::vendored_Arrow|${ARROW_STATIC_LIB}")
+    message(
+      STATUS
+        "ICEBERG_ARROW_VENDOR_DEPENDENCIES: ${ICEBERG_ARROW_VENDOR_DEPENDENCIES}"
+    )
   else()
     set(ICEBERG_ARROW_VERSION ${ArrowAlt_VERSION})
     message(STATUS "Found Arrow static library: ${ARROW_STATIC_LIB}")
     message(STATUS "Found Arrow headers: ${ARROW_INCLUDE_DIR}")
-    list(APPEND ICEBERG_ARROW_SYSTEM_DEPENDENCIES Arrow)
   endif()
 endif()
