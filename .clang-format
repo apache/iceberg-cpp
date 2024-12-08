@@ -15,6 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 ---
+Language: Cpp
 BasedOnStyle: Google
 ColumnLimit: 90
 DerivePointerAlignment: false
