@@ -38,6 +38,29 @@ cmake --build .
 cmake --install .
 ```
 
+### Build and Install Iceberg Arrow Libraries
+
+#### Vendored Apache Arrow (default)
+```bash
+cd iceberg-cpp/src/arrow
+mkdir build && cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=/path/to/install -DICEBERG_ARROW=ON
+cmake --build .
+cmake --install .
+```
+
+#### Provided Apache Arrow
+
+```bash
+cd iceberg-cpp/src/arrow
+mkdir build && cd build
+cmake .. -DCMAKE_INSTALL_PREFIX=/path/to/install -DArrow_SOURCE=SYSTEM -DArrow_ROOT=/path/to/arrow
+cmake --build .
+cmake --install .
+```
+
+Please note that `-DArrow_ROOT=/path/to/arrow` is required when building examples below when using provided Apache Arrow.
+
 ### Build Examples
 
 After installing the core libraries, you can build the examples:

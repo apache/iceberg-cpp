@@ -17,15 +17,14 @@
  * under the License.
  */
 
-#include "iceberg/arrow/demo_arrow.h"
-#include "iceberg/puffin.h"
-#include "iceberg/table.h"
+#include "demo_arrow.h"
 
-#include <iostream>
+#include <arrow/config.h>
 
-int main() {
-  std::cout << iceberg::Table::create()->print() << std::endl;
-  std::cout << iceberg::Puffin::create()->print() << std::endl;
-  std::cout << iceberg::arrow::DemoArrow().print() << std::endl;
-  return 0;
+namespace iceberg::arrow {
+
+std::string DemoArrow::print() const {
+  return ::arrow::GetBuildInfo().version_string;
 }
+
+} // namespace iceberg::arrow
