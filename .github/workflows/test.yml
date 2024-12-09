@@ -38,7 +38,7 @@ env:
 
 jobs:
   ubuntu:
-    name: AMD64 Ubuntu 24.04
+    name: AMD64 Ubuntu latest
     runs-on: ubuntu-latest
     if: ${{ !contains(github.event.pull_request.title, 'WIP') }}
     timeout-minutes: 30
@@ -56,7 +56,7 @@ jobs:
         shell: bash
         run: ci/scripts/build_example.sh $(pwd)/example
   macos:
-    name: AArch64 macOS 14
+    name: AArch64 macOS latest
     runs-on: macos-latest
     if: ${{ !contains(github.event.pull_request.title, 'WIP') }}
     timeout-minutes: 30
