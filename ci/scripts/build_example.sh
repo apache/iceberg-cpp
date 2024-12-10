@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+#
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -15,16 +17,20 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# Please set CMAKE_PREFIX_PATH to the install prefix of iceberg.
-cmake_minimum_required(VERSION 3.25)
+set -eux
 
-project(example)
+source_dir=${1}
+build_dir=${1}/build
 
-set(CMAKE_CXX_STANDARD 20)
+mkdir ${build_dir}
+pushd ${build_dir}
 
-find_package(iceberg CONFIG REQUIRED)
-find_package(puffin CONFIG REQUIRED)
+cmake \
+    -DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX:-${ICEBERG_HOME}} \
+    ${source_dir}
+cmake --build .
 
-add_executable(demo_example demo_example.cc)
+popd
 
-target_link_libraries(demo_example PRIVATE iceberg::iceberg_core_static puffin::iceberg_puffin_static)
+# clean up between builds
+rm -rf ${build_dir}
