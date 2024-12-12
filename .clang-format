@@ -19,5 +19,14 @@ Language: Cpp
 BasedOnStyle: Google
 ColumnLimit: 90
 DerivePointerAlignment: false
-IncludeBlocks: Preserve
+IncludeBlocks: Regroup
+IncludeCategories:
+- Regex: '^<.*/' # Like <boost/lexical_cast.hpp>
+  Priority: 3
+- Regex: '^<.*\.' # Like <fcntl.h>
+  Priority: 1
+- Regex: '^<' # Like <vector>
+  Priority: 2
+- Regex: '^"' # Like "util/auth-util.h"
+  Priority: 4
 IndentPPDirectives: AfterHash
