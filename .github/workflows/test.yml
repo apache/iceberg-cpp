@@ -38,8 +38,8 @@ env:
 
 jobs:
   ubuntu:
-    name: AMD64 Ubuntu latest
-    runs-on: ubuntu-latest
+    name: AMD64 Ubuntu 24.04
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     strategy:
       fail-fast: false
@@ -55,8 +55,8 @@ jobs:
         shell: bash
         run: ci/scripts/build_example.sh $(pwd)/example
   macos:
-    name: AArch64 macOS latest
-    runs-on: macos-latest
+    name: AArch64 macOS 14
+    runs-on: macos-14
     timeout-minutes: 30
     strategy:
       fail-fast: false
