@@ -266,7 +266,11 @@ if("${MAKE}" STREQUAL "")
 endif()
 
 # Args for external projects using make.
-set(MAKE_BUILD_ARGS "-j${NPROC}")
+if(NOT MSVC)
+  set(MAKE_BUILD_ARGS "-j${NPROC}")
+else()
+  set(MAKE_BUILD_ARGS "")
+endif()
 
 include(FetchContent)
 set(FC_DECLARE_COMMON_OPTIONS)
@@ -290,8 +294,13 @@ function(build_arrow)
   set(ARROW_PREFIX "${CMAKE_CURRENT_BINARY_DIR}/arrow_ep-install")
   set(ARROW_HOME "${ARROW_PREFIX}")
   set(ARROW_INCLUDE_DIR "${ARROW_PREFIX}/include")
-  set(ARROW_STATIC_LIB_NAME
-      "${CMAKE_STATIC_LIBRARY_PREFIX}arrow${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  if(MSVC_TOOLCHAIN)
+    set(ARROW_STATIC_LIB_NAME
+        "${CMAKE_STATIC_LIBRARY_PREFIX}arrow_static${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  else()
+    set(ARROW_STATIC_LIB_NAME
+        "${CMAKE_STATIC_LIBRARY_PREFIX}arrow${CMAKE_STATIC_LIBRARY_SUFFIX}")
+  endif()
   set(ARROW_STATIC_LIB "${ARROW_PREFIX}/lib/${ARROW_STATIC_LIB_NAME}")
 
   set(ARROW_CMAKE_ARGS
