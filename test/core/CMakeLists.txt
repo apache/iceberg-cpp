@@ -15,20 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set(ICEBERG_SOURCES demo_table.cc)
-
-add_iceberg_lib(iceberg
-                SOURCES
-                ${ICEBERG_SOURCES}
-                PRIVATE_INCLUDES
-                ${ICEBERG_INCLUDES})
-
-iceberg_install_all_headers(iceberg)
-
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/iceberg_export.h
-        DESTINATION ${ICEBERG_INSTALL_INCLUDEDIR}/iceberg)
-
-add_subdirectory(arrow)
-add_subdirectory(puffin)
-
-iceberg_install_cmake_package(Iceberg iceberg_targets)
+add_executable(core_unittest)
+target_sources(core_unittest PRIVATE core_unittest.cc)
+target_link_libraries(core_unittest PRIVATE iceberg_static GTest::gtest_main)
+target_include_directories(core_unittest PRIVATE "${ICEBERG_INCLUDES}")
+add_test(NAME core_unittest COMMAND core_unittest)

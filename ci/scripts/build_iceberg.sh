@@ -31,6 +31,7 @@ cmake \
     -DICEBERG_BUILD_SHARED=ON \
     ${source_dir}
 cmake --build . --target install
+ctest --output-on-failure -C Debug
 
 popd
 
