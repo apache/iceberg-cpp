@@ -15,6 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-include(FindGTestAlt)
-
-add_subdirectory(core)
+add_executable(core_unittest)
+target_sources(core_unittest PRIVATE core_unittest.cc)
+target_link_libraries(core_unittest PRIVATE iceberg_core_static GTest::gtest_main)
+target_include_directories(core_unittest PRIVATE "${ICEBERG_API_DIR}")
+add_test(NAME core_unittest COMMAND core_unittest)
