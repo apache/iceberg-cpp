@@ -43,6 +43,7 @@ include(BuildUtils)
 include(ExternalProject)
 include(FindPackageHandleStandardArgs)
 include(GNUInstallDirs)
+include(FetchContent)
 
 set(ICEBERG_API_DIR "${CMAKE_SOURCE_DIR}/api")
 set(ICEBERG_INSTALL_LIBDIR "${CMAKE_INSTALL_LIBDIR}")

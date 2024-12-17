@@ -15,7 +15,14 @@
 # specific language governing permissions and limitations
 # under the License.
 
-include(FindGTestAlt)
-include(FindCatch2Alt)
+find_package(GTest)
 
-add_subdirectory(core)
+if(GTest_FOUND)
+  return()
+endif()
+
+fetchcontent_declare(googletest
+                     GIT_REPOSITORY https://github.com/google/googletest.git
+                     GIT_TAG b514bdc898e2951020cbdca1304b75f5950d1f59 # release-1.15.2
+)
+fetchcontent_makeavailable(googletest)

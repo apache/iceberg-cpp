@@ -15,7 +15,14 @@
 # specific language governing permissions and limitations
 # under the License.
 
-include(FindGTestAlt)
-include(FindCatch2Alt)
+find_package(Catch2 3 QUIET)
 
-add_subdirectory(core)
+if(Catch2_FOUND)
+  return()
+endif()
+
+fetchcontent_declare(Catch2
+                     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+                     GIT_TAG fa43b77429ba76c462b1898d6cd2f2d7a9416b14 # release-3.7.1
+)
+fetchcontent_makeavailable(Catch2)
