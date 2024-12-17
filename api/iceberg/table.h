@@ -25,10 +25,10 @@
 namespace iceberg {
 
 class Table {
-public:
+ public:
   virtual ~Table() = default;
   virtual std::string_view print() const = 0;
   static std::unique_ptr<Table> create();
 };
 
-} // namespace iceberg
+}  // namespace iceberg

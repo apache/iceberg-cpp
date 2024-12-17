@@ -24,11 +24,11 @@
 namespace iceberg {
 
 class DemoTable : public Table {
-public:
+ public:
   DemoTable() = default;
   ~DemoTable() override = default;
 
   std::string_view print() const override;
 };
 
-} // namespace iceberg
+}  // namespace iceberg

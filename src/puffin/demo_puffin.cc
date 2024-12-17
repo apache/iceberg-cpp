@@ -23,8 +23,6 @@ namespace iceberg {
 
 std::string_view DemoPuffin::print() const { return "DemoPuffin"; }
 
-std::unique_ptr<Puffin> Puffin::create() {
-  return std::make_unique<DemoPuffin>();
-}
+std::unique_ptr<Puffin> Puffin::create() { return std::make_unique<DemoPuffin>(); }
 
-} // namespace iceberg
+}  // namespace iceberg
