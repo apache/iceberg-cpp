@@ -30,9 +30,4 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - uses: actions/setup-python@v3
-    - name: Install pre-commit
-      run: |
-        python -m pip install pre-commit
-    - name: Run pre-commit
-      run: |
-        pre-commit run --all-files --color=always --show-diff-on-failure
+    - uses: pre-commit/action@v3.0.1
