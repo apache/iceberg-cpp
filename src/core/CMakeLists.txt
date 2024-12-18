@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set(ICEBERG_CORE_SOURCES demo_table.cc)
+set(ICEBERG_CORE_SOURCES demo_table.cc status.cc)
 set(ICEBERG_CORE_INCLUDES "${ICEBERG_API_DIR}")
 
 add_iceberg_lib(iceberg_core

@@ -15,4 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-add_subdirectory(core)
+add_executable(core_test)
+target_sources(core_test PRIVATE status_test.cc)
+target_link_libraries(core_test PRIVATE iceberg_core_static GTest::gtest_main)
+target_include_directories(core_test PRIVATE "${ICEBERG_API_DIR}")
+add_test(NAME core_test COMMAND core_test)
