@@ -59,6 +59,17 @@ Apache Iceberg is an active open-source project, governed under the Apache Softw
 
 The Apache Iceberg community is built on the principles described in the [Apache Way](https://www.apache.org/theapacheway/index.html) and all who engage with the community are expected to be respectful, open, come with the best interests of the community in mind, and abide by the Apache Foundation [Code of Conduct](https://www.apache.org/foundation/policies/conduct.html).
 
+### Linting
+
+Install the python package `pre-commit` and run once `pre-commit install`.
+
+```
+pip install pre-commit
+pre-commit install
+```
+
+This will setup a git pre-commit-hook that is executed on each commit and will report the linting problems. To run all hooks on all files use `pre-commit run -a`.
+
 ## License
 
 Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
