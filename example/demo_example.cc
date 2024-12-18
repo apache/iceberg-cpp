@@ -17,10 +17,10 @@
  * under the License.
  */
 
+#include <iostream>
+
 #include "iceberg/puffin.h"
 #include "iceberg/table.h"
-
-#include <iostream>
 
 int main() {
   std::cout << iceberg::Table::create()->print() << std::endl;

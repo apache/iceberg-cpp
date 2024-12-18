@@ -22,7 +22,8 @@ function(iceberg_install_cmake_package PACKAGE_NAME EXPORT_NAME)
   set(CONFIG_CMAKE "${PACKAGE_NAME}Config.cmake")
   set(BUILT_CONFIG_CMAKE "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_CMAKE}")
   configure_package_config_file("${CONFIG_CMAKE}.in" "${BUILT_CONFIG_CMAKE}"
-                                INSTALL_DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/${PACKAGE_NAME}")
+                                INSTALL_DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/${PACKAGE_NAME}"
+  )
   set(CONFIG_VERSION_CMAKE "${PACKAGE_NAME}ConfigVersion.cmake")
   set(BUILT_CONFIG_VERSION_CMAKE "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_VERSION_CMAKE}")
   write_basic_package_version_file("${BUILT_CONFIG_VERSION_CMAKE}"
@@ -137,8 +138,8 @@ function(ADD_ICEBERG_LIB LIB_NAME)
     endif()
 
     set_target_properties(${LIB_NAME}_shared
-                          PROPERTIES LINK_FLAGS "${ARG_SHARED_LINK_FLAGS}"
-                                     OUTPUT_NAME ${LIB_NAME})
+                          PROPERTIES LINK_FLAGS "${ARG_SHARED_LINK_FLAGS}" OUTPUT_NAME
+                                                                           ${LIB_NAME})
 
     target_link_libraries(${LIB_NAME}_shared
                           PUBLIC "$<BUILD_INTERFACE:${ARG_SHARED_LINK_LIBS}>"
@@ -187,12 +188,12 @@ function(ADD_ICEBERG_LIB LIB_NAME)
       set(LIB_NAME_STATIC ${LIB_NAME})
     endif()
 
-    set_target_properties(${LIB_NAME}_static
-                          PROPERTIES OUTPUT_NAME ${LIB_NAME_STATIC})
+    set_target_properties(${LIB_NAME}_static PROPERTIES OUTPUT_NAME ${LIB_NAME_STATIC})
 
     if(ARG_STATIC_INSTALL_INTERFACE_LIBS)
       target_link_libraries(${LIB_NAME}_static
-                            INTERFACE "$<INSTALL_INTERFACE:${ARG_STATIC_INSTALL_INTERFACE_LIBS}>")
+                            INTERFACE "$<INSTALL_INTERFACE:${ARG_STATIC_INSTALL_INTERFACE_LIBS}>"
+      )
     endif()
 
     if(ARG_STATIC_LINK_LIBS)

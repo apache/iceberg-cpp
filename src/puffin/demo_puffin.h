@@ -24,11 +24,11 @@
 namespace iceberg {
 
 class DemoPuffin : public Puffin {
-public:
+ public:
   DemoPuffin() = default;
   ~DemoPuffin() override = default;
 
   std::string_view print() const override;
 };
 
-} // namespace iceberg
+}  // namespace iceberg
