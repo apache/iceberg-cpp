@@ -15,7 +15,16 @@
 # specific language governing permissions and limitations
 # under the License.
 
-include(FindGTestAlt)
-include(FindCatch2Alt)
+# GTest
+add_executable(core_gtest)
+target_sources(core_gtest PRIVATE core_gtest.cc)
+target_link_libraries(core_gtest PRIVATE iceberg_core_static GTest::gtest_main)
+target_include_directories(core_gtest PRIVATE "${ICEBERG_API_DIR}")
+add_test(NAME core_gtest COMMAND core_gtest)
 
-add_subdirectory(core)
+# Catch2
+add_executable(core_catch2)
+target_sources(core_catch2 PRIVATE core_catch2.cc)
+target_link_libraries(core_catch2 PRIVATE iceberg_core_static Catch2::Catch2WithMain)
+target_include_directories(core_catch2 PRIVATE "${ICEBERG_API_DIR}")
+add_test(NAME core_catch2 COMMAND core_catch2)

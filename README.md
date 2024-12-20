@@ -28,13 +28,14 @@ C++ implementation of [Apache Iceberg™](https://iceberg.apache.org/).
 
 ## Build
 
-### Build and Install Core Libraries
+### Build, Run Test and Install Core Libraries
 
 ```bash
 cd iceberg-cpp
 mkdir build && cd build
 cmake .. -DCMAKE_INSTALL_PREFIX=/tmp/iceberg -DICEBERG_BUILD_STATIC=ON -DICEBERG_BUILD_SHARED=ON
 cmake --build .
+ctest --build .
 cmake --install .
 ```
 
