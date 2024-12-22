@@ -137,15 +137,15 @@ function(ADD_ICEBERG_LIB LIB_NAME)
     endif()
 
     set_target_properties(${LIB_NAME}_shared
-                          PROPERTIES LINK_FLAGS "${ARG_SHARED_LINK_FLAGS}"
-                                     OUTPUT_NAME ${LIB_NAME})
+                          PROPERTIES LINK_FLAGS "${ARG_SHARED_LINK_FLAGS}" OUTPUT_NAME
+                                                                           ${LIB_NAME})
 
     target_link_libraries(${LIB_NAME}_shared
                           PUBLIC "$<BUILD_INTERFACE:${ARG_SHARED_LINK_LIBS}>"
                                  "$<INSTALL_INTERFACE:${ARG_SHARED_INSTALL_INTERFACE_LIBS}>"
                           PRIVATE ${ARG_SHARED_PRIVATE_LINK_LIBS})
 
-    install(TARGETS ${LIB_NAME}_shared ${INSTALL_IS_OPTIONAL}
+    install(TARGETS ${LIB_NAME}_shared
             EXPORT ${LIB_NAME}_targets
             ARCHIVE DESTINATION ${INSTALL_ARCHIVE_DIR}
             LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}
@@ -187,12 +187,12 @@ function(ADD_ICEBERG_LIB LIB_NAME)
       set(LIB_NAME_STATIC ${LIB_NAME})
     endif()
 
-    set_target_properties(${LIB_NAME}_static
-                          PROPERTIES OUTPUT_NAME ${LIB_NAME_STATIC})
+    set_target_properties(${LIB_NAME}_static PROPERTIES OUTPUT_NAME ${LIB_NAME_STATIC})
 
     if(ARG_STATIC_INSTALL_INTERFACE_LIBS)
       target_link_libraries(${LIB_NAME}_static
-                            INTERFACE "$<INSTALL_INTERFACE:${ARG_STATIC_INSTALL_INTERFACE_LIBS}>")
+                            INTERFACE "$<INSTALL_INTERFACE:${ARG_STATIC_INSTALL_INTERFACE_LIBS}>"
+      )
     endif()
 
     if(ARG_STATIC_LINK_LIBS)
@@ -200,7 +200,7 @@ function(ADD_ICEBERG_LIB LIB_NAME)
                             PUBLIC "$<BUILD_INTERFACE:${ARG_STATIC_LINK_LIBS}>")
     endif()
 
-    install(TARGETS ${LIB_NAME}_static ${INSTALL_IS_OPTIONAL}
+    install(TARGETS ${LIB_NAME}_static
             EXPORT ${LIB_NAME}_targets
             ARCHIVE DESTINATION ${INSTALL_ARCHIVE_DIR}
             LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}
@@ -210,7 +210,12 @@ function(ADD_ICEBERG_LIB LIB_NAME)
   endif()
 
   if(ARG_CMAKE_PACKAGE_NAME)
-    iceberg_install_cmake_package(${ARG_CMAKE_PACKAGE_NAME} ${LIB_NAME}_targets)
+    string(REPLACE "_" "-" LIB_NAME_DASHED ${LIB_NAME})
+    set(TARGETS_CMAKE "${LIB_NAME_DASHED}-targets.cmake")
+    install(EXPORT ${LIB_NAME}_targets
+            DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/${ARG_CMAKE_PACKAGE_NAME}"
+            NAMESPACE Iceberg::
+            FILE "${TARGETS_CMAKE}")
   endif()
 
   # Modify variable in calling scope

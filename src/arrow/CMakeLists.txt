@@ -46,7 +46,7 @@ endif()
 add_iceberg_lib(
   iceberg_arrow
   CMAKE_PACKAGE_NAME
-  IcebergArrow
+  Iceberg
   SOURCES
   ${ICEBERG_ARROW_SOURCES}
   PRIVATE_INCLUDES

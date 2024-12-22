@@ -20,7 +20,7 @@ set(ICEBERG_CORE_INCLUDES "${ICEBERG_API_DIR}")
 
 add_iceberg_lib(iceberg_core
                 CMAKE_PACKAGE_NAME
-                IcebergCore
+                Iceberg
                 SOURCES
                 ${ICEBERG_CORE_SOURCES}
                 PRIVATE_INCLUDES

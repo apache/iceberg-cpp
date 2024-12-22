@@ -17,32 +17,63 @@
 #
 # This config sets the following variables in your project::
 #
-#   IcebergArrow_FOUND - true if IcebergArrow found on the system
-#   ICEBERG_ARROW_VERSION - version of the found IcebergArrow
+#   Iceberg_FOUND - true if Iceberg found on the system
+#   Iceberg_VERSION - version of the found Iceberg
 #
 # This config sets the following targets in your project::
 #
-#   IcebergArrow::iceberg_arrow_shared - for linked as shared library if shared library is built
-#   IcebergArrow::iceberg_arrow_static - for linked as static library if static library is built
+#   Iceberg::iceberg_core_shared - for linked as shared library if shared library is built
+#   Iceberg::iceberg_core_static - for linked as static library if static library is built
+#   Iceberg::iceberg_puffin_shared - for linked as shared library if shared library is built
+#   Iceberg::iceberg_puffin_static - for linked as static library if static library is built
+#   Iceberg::iceberg_arrow_shared - for linked as shared library if shared library is built
+#   Iceberg::iceberg_arrow_static - for linked as static library if static library is built
 
 @PACKAGE_INIT@
+
+include(CMakeFindDependencyMacro)
+
+macro(iceberg_find_dependencies dependencies)
+  if(DEFINED CMAKE_MODULE_PATH)
+    set(ICEBERG_CMAKE_MODULE_PATH_OLD ${CMAKE_MODULE_PATH})
+  else()
+    unset(ICEBERG_CMAKE_MODULE_PATH_OLD)
+  endif()
+  set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+
+  foreach(dependency ${dependencies})
+    find_dependency(${dependency})
+  endforeach()
+
+  if(DEFINED ICEBERG_CMAKE_MODULE_PATH_OLD)
+    set(CMAKE_MODULE_PATH ${ICEBERG_CMAKE_MODULE_PATH_OLD})
+    unset(ICEBERG_CMAKE_MODULE_PATH_OLD)
+  else()
+    unset(CMAKE_MODULE_PATH)
+  endif()
+endmacro()
 
 set(ICEBERG_BUILD_STATIC "@ICEBERG_BUILD_STATIC@")
 set(ICEBERG_ARROW_VENDOR_DEPENDENCIES "@ICEBERG_ARROW_VENDOR_DEPENDENCIES@")
 set(ICEBERG_ARROW_SYSTEM_DEPENDENCIES "@ICEBERG_ARROW_SYSTEM_DEPENDENCIES@")
 
-include(CMakeFindDependencyMacro)
-find_dependency(IcebergCore)
+set(_iceberg_supported_components core puffin arrow)
+
+foreach(_comp ${Iceberg_FIND_COMPONENTS})
+  if (NOT _comp IN_LIST _iceberg_supported_components)
+    set(Iceberg_FOUND False)
+    set(Iceberg_NOT_FOUND_MESSAGE "Unsupported component: ${_comp}")
+  endif()
+  include("${CMAKE_CURRENT_LIST_DIR}/iceberg-${_comp}-targets.cmake" REQUIRED)
+endforeach()
 
 if(ICEBERG_BUILD_STATIC)
   iceberg_find_dependencies("${ICEBERG_ARROW_SYSTEM_DEPENDENCIES}")
 endif()
 
-include("${CMAKE_CURRENT_LIST_DIR}/IcebergArrowTargets.cmake")
-
 if(ICEBERG_BUILD_STATIC)
   get_target_property(
-    iceberg_arrow_static_configurations IcebergArrow::iceberg_arrow_static
+    iceberg_arrow_static_configurations Iceberg::iceberg_arrow_static
     IMPORTED_CONFIGURATIONS)
 
   foreach(dependency ${ICEBERG_ARROW_VENDOR_DEPENDENCIES})
@@ -59,7 +90,7 @@ if(ICEBERG_BUILD_STATIC)
     foreach(CONFIGURATION ${iceberg_arrow_static_configurations})
       string(TOUPPER "${CONFIGURATION}" CONFIGURATION)
       get_target_property(
-        iceberg_arrow_static_location IcebergArrow::iceberg_arrow_static
+        iceberg_arrow_static_location Iceberg::iceberg_arrow_static
         LOCATION_${CONFIGURATION})
       get_filename_component(iceberg_arrow_lib_dir
                              "${iceberg_arrow_static_location}" DIRECTORY)
@@ -73,7 +104,4 @@ if(ICEBERG_BUILD_STATIC)
                    "${iceberg_arrow_lib_dir}/${static_lib_name}")
     endforeach()
   endforeach()
-
 endif()
-
-check_required_components(IcebergArrow)
