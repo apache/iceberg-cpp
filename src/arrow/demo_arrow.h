@@ -19,16 +19,13 @@
 
 #pragma once
 
-#include "iceberg/table.h"
+#include <string>
 
-namespace iceberg {
+namespace iceberg::arrow {
 
-class DemoTable : public Table {
+class DemoArrow {
  public:
-  DemoTable() = default;
-  ~DemoTable() override = default;
-
-  std::string_view print() const override;
+  std::string print() const;
 };
 
-}  // namespace iceberg
+}  // namespace iceberg::arrow

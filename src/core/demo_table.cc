@@ -25,4 +25,4 @@ std::string_view DemoTable::print() const { return "DemoTable"; }
 
 std::unique_ptr<Table> Table::create() { return std::make_unique<DemoTable>(); }
 
-} // namespace iceberg
+}  // namespace iceberg

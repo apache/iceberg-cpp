@@ -22,10 +22,12 @@ project(example)
 
 set(CMAKE_CXX_STANDARD 20)
 
-find_package(iceberg CONFIG REQUIRED)
-find_package(puffin CONFIG REQUIRED)
+find_package(Iceberg CONFIG REQUIRED COMPONENTS core puffin arrow)
+message(STATUS "Iceberg_FOUND: ${Iceberg_FOUND}")
+message(STATUS "Iceberg_VERSION: ${Iceberg_VERSION}")
 
 add_executable(demo_example demo_example.cc)
 
-target_link_libraries(demo_example PRIVATE iceberg::iceberg_core_static
-                                           puffin::iceberg_puffin_static)
+target_link_libraries(demo_example
+                      PRIVATE Iceberg::iceberg_core_static Iceberg::iceberg_puffin_static
+                              Iceberg::iceberg_arrow_static)
