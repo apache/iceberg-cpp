@@ -15,14 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
-find_package(GTest)
-
-if(GTest_FOUND)
-  return()
-endif()
-
 fetchcontent_declare(googletest
                      GIT_REPOSITORY https://github.com/google/googletest.git
                      GIT_TAG b514bdc898e2951020cbdca1304b75f5950d1f59 # release-1.15.2
+                     FIND_PACKAGE_ARGS GTest
 )
 fetchcontent_makeavailable(googletest)
