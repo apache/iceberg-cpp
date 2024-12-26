@@ -162,11 +162,11 @@ function(ADD_ICEBERG_LIB LIB_NAME)
       target_include_directories(${LIB_NAME}_static PRIVATE ${ARG_PRIVATE_INCLUDES})
     endif()
 
-    if(MSVC_TOOLCHAIN)
-      set(LIB_NAME_STATIC ${LIB_NAME}_static)
-    else()
-      set(LIB_NAME_STATIC ${LIB_NAME})
-    endif()
+    # if(MSVC_TOOLCHAIN)
+    #   set(LIB_NAME_STATIC ${LIB_NAME}_static)
+    # else()
+    set(LIB_NAME_STATIC ${LIB_NAME})
+    # endif()
 
     set_target_properties(${LIB_NAME}_static PROPERTIES OUTPUT_NAME ${LIB_NAME_STATIC})
 
