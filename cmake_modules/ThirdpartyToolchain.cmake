@@ -80,6 +80,9 @@ function(resolve_arrow_dependency)
   set(ARROW_POSITION_INDEPENDENT_CODE
       ON
       CACHE BOOL "" FORCE)
+  set(ARROW_DEPENDENCY_SOURCE
+      "AUTO"
+      CACHE STRING "" FORCE)
 
   fetchcontent_declare(Arrow
                        ${FC_DECLARE_COMMON_OPTIONS}
