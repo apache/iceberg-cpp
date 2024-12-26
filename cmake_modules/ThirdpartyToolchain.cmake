@@ -53,12 +53,15 @@ macro(prepare_fetchcontent)
   set(BUILD_STATIC_LIBS ON)
   set(CMAKE_COMPILE_WARNING_AS_ERROR FALSE)
   set(CMAKE_EXPORT_NO_PACKAGE_REGISTRY TRUE)
+  set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 endmacro()
 
 # ----------------------------------------------------------------------
 # Apache Arrow
 
 function(resolve_arrow_dependency)
+  prepare_fetchcontent()
+
   set(ARROW_BUILD_SHARED
       OFF
       CACHE BOOL "" FORCE)
@@ -74,6 +77,9 @@ function(resolve_arrow_dependency)
   set(ARROW_RUNTIME_SIMD_LEVEL
       "NONE"
       CACHE STRING "" FORCE)
+  set(ARROW_POSITION_INDEPENDENT_CODE
+      ON
+      CACHE BOOL "" FORCE)
 
   fetchcontent_declare(Arrow
                        ${FC_DECLARE_COMMON_OPTIONS}

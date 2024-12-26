@@ -33,14 +33,15 @@ C++ implementation of [Apache Iceberg™](https://iceberg.apache.org/).
 ```bash
 cd iceberg-cpp
 mkdir build && cd build
-cmake .. -DCMAKE_INSTALL_PREFIX=/tmp/iceberg -DICEBERG_BUILD_STATIC=ON -DICEBERG_BUILD_SHARED=ON
+cmake .. -DCMAKE_INSTALL_PREFIX=/path/to/install -DICEBERG_BUILD_STATIC=ON -DICEBERG_BUILD_SHARED=ON
 cmake --build .
 cmake --install .
 ```
 
-### Build and Install Iceberg Arrow Libraries
+### Build and Install Iceberg Arrow Library
 
 #### Vendored Apache Arrow (default)
+
 ```bash
 cd iceberg-cpp/src/arrow
 mkdir build && cd build
@@ -54,12 +55,10 @@ cmake --install .
 ```bash
 cd iceberg-cpp/src/arrow
 mkdir build && cd build
-cmake .. -DCMAKE_INSTALL_PREFIX=/path/to/install -DArrow_SOURCE=SYSTEM -DArrow_ROOT=/path/to/arrow
+cmake .. -DCMAKE_INSTALL_PREFIX=/path/to/install -DCMAKE_PREFIX_PATH=/path/to/arrow -DICEBERG_ARROW=ON
 cmake --build .
 cmake --install .
 ```
-
-Please note that `-DArrow_ROOT=/path/to/arrow` is required when building examples below when using provided Apache Arrow.
 
 ### Build Examples
 
@@ -68,8 +67,14 @@ After installing the core libraries, you can build the examples:
 ```bash
 cd iceberg-cpp/example
 mkdir build && cd build
-cmake .. -DCMAKE_PREFIX_PATH=/tmp/iceberg
+cmake .. -DCMAKE_PREFIX_PATH=/path/to/install
 cmake --build .
+```
+
+If you are using provided Apache Arrow, you need to include `/path/to/arrow` in `CMAKE_PREFIX_PATH` as below.
+
+```bash
+cmake .. -DCMAKE_PREFIX_PATH="/path/to/install;/path/to/arrow"
 ```
 
 ## Contribute
