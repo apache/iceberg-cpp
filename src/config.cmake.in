@@ -58,13 +58,14 @@ macro(iceberg_find_dependencies dependencies)
 endmacro()
 
 macro(iceberg_find_components components)
-  file(GLOB_RECURSE target_cmake_files "${CMAKE_CURRENT_LIST_DIR}/*-targets.cmake")
-  foreach(target_cmake_file ${target_cmake_files})
-    include(${target_cmake_file})
+  file(GLOB_RECURSE _target_cmake_files "${CMAKE_CURRENT_LIST_DIR}/*-targets.cmake")
+  foreach(_target_cmake_file ${_target_cmake_files})
+    include(${_target_cmake_file})
   endforeach()
 
   foreach(comp ${components})
-    if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/iceberg-${comp}-targets.cmake")
+    string(TOLOWER "${comp}" _comp_lower_case)
+    if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/iceberg-${_comp_lower_case}-targets.cmake")
       set(Iceberg_${comp}_FOUND TRUE)
     else()
       set(Iceberg_${comp}_FOUND FALSE)
@@ -74,36 +75,36 @@ macro(iceberg_find_components components)
 endmacro()
 
 macro(iceberg_find_vendor_dependencies dependencies)
-  get_target_property(iceberg_static_configurations
+  get_target_property(_iceberg_static_configurations
                       Iceberg::iceberg_core_static IMPORTED_CONFIGURATIONS)
 
   foreach(dependency ${dependencies})
-    string(REPLACE "|" ";" dependency_pair ${dependency})
-    list(LENGTH dependency_pair dependency_pair_length)
-    if(NOT dependency_pair_length EQUAL 2)
+    string(REPLACE "|" ";" _dependency_pair ${dependency})
+    list(LENGTH _dependency_pair _dependency_pair_length)
+    if(NOT _dependency_pair_length EQUAL 2)
       message(FATAL_ERROR "Invalid vendor dependency: ${dependency}")
     endif()
-    list(GET dependency_pair 0 target_name)
-    list(GET dependency_pair 1 static_lib_name)
+    list(GET _dependency_pair 0 _target_name)
+    list(GET _dependency_pair 1 _static_lib_name)
 
-    add_library("${target_name}" STATIC IMPORTED)
+    add_library("${_target_name}" STATIC IMPORTED)
 
-    foreach(configuration ${iceberg_static_configurations})
-      string(TOUPPER "${configuration}" CONFIGURATION)
+    foreach(configuration ${_iceberg_static_configurations})
+      string(TOUPPER "${configuration}" _configuration_upper_case)
       get_target_property(
-        iceberg_core_static_location
-        Iceberg::iceberg_core_static LOCATION_${CONFIGURATION})
+        _iceberg_core_static_location
+        Iceberg::iceberg_core_static LOCATION_${_configuration_upper_case})
       get_filename_component(
         iceberg_core_lib_dir
-        "${iceberg_core_static_location}" DIRECTORY)
+        "${_iceberg_core_static_location}" DIRECTORY)
       set_property(
-        TARGET "${target_name}"
+        TARGET "${_target_name}"
         APPEND
-        PROPERTY IMPORTED_CONFIGURATIONS ${CONFIGURATION})
+        PROPERTY IMPORTED_CONFIGURATIONS ${_configuration_upper_case})
       set_target_properties(
-        "${target_name}"
-        PROPERTIES IMPORTED_LOCATION_${CONFIGURATION}
-                   "${iceberg_core_lib_dir}/${static_lib_name}")
+        "${_target_name}"
+        PROPERTIES IMPORTED_LOCATION_${_configuration_upper_case}
+                   "${iceberg_core_lib_dir}/${_static_lib_name}")
     endforeach()
   endforeach()
 endmacro()
