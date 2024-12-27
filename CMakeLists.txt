@@ -33,13 +33,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-if(WIN32 AND NOT MINGW)
-  # This is used to handle builds using e.g. clang in an MSVC setting.
-  set(MSVC_TOOLCHAIN TRUE)
-else()
-  set(MSVC_TOOLCHAIN FALSE)
-endif()
-
 option(ICEBERG_BUILD_STATIC "Build static library" ON)
 option(ICEBERG_BUILD_SHARED "Build shared library" OFF)
 option(ICEBERG_BUILD_TESTS "Build tests" ON)
