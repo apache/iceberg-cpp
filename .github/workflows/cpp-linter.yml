@@ -15,20 +15,37 @@
 # specific language governing permissions and limitations
 # under the License.
 
-name: "Run License Check"
+name: C++ Linter
 
-on: pull_request
+on:
+  pull_request:
+    paths-ignore:
+      - '.github/**'
+      - 'ci/**'
+      - 'cmake_modules/**'
+    branches:
+      - main
 
 jobs:
-  license-check:
-    name: "License Check"
-    runs-on: ubuntu-latest
+  cpp-linter:
+    runs-on: ubuntu-24.04
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
-      - name: Check license header
-        uses: apache/skywalking-eyes@main
+      - uses: actions/checkout@v4
+      - uses: cpp-linter/cpp-linter-action@v2.13.3
+        id: linter
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          config: .github/.licenserc.yaml
+          style: file
+          tidy-checks: file
+          files-changed-only: true
+          lines-changed-only: true
+          thread-comments: true
+          ignore: 'build|cmake_modules|ci'
+          database: build/compile_commands.json
+      - name: Fail fast?!
+        if: steps.linter.outputs.checks-failed != 0
+        run: |
+          echo "some linter checks failed. ${{ steps.linter.outputs.checks-failed }}"
+          exit 1
