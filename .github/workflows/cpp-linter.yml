@@ -31,7 +31,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
-      - uses: cpp-linter/cpp-linter-action@v2.13.4
+      - uses: cpp-linter/cpp-linter-action@v2.13.3
         id: linter
         continue-on-error: true
         env:
