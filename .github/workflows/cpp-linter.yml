@@ -44,6 +44,7 @@ jobs:
           thread-comments: true
           ignore: 'build|cmake_modules|ci'
           database: build/compile_commands.json
+          extra-args: '-std=c++20 -Wall'
       - name: Fail fast?!
         if: steps.linter.outputs.checks-failed != 0
         run: |

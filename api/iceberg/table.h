@@ -20,15 +20,24 @@
 #pragma once
 
 #include <memory>
-#include <string_view>
+
+
+
+  #include <string_view>
 
 namespace iceberg {
 
-class Table {
- public:
-  virtual ~Table() = default;
-  virtual std::string_view print() const = 0;
-  static std::unique_ptr<Table> create();
+ class Table {
+public:
+  virtual ~Table( ) = default;
+
+    virtual std::string_view print() const = 0;
+
+
+       static std::unique_ptr<Table> create();
+
+private:
+  int SOME_ID = 1;
 };
 
 }  // namespace iceberg
