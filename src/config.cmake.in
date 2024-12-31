@@ -32,7 +32,6 @@
 @PACKAGE_INIT@
 
 set(ICEBERG_BUILD_STATIC "@ICEBERG_BUILD_STATIC@")
-set(ICEBERG_VENDOR_DEPENDENCIES "@ICEBERG_VENDOR_DEPENDENCIES@")
 set(ICEBERG_SYSTEM_DEPENDENCIES "@ICEBERG_SYSTEM_DEPENDENCIES@")
 
 include(CMakeFindDependencyMacro)
@@ -70,41 +69,6 @@ macro(iceberg_find_components components)
   endforeach()
 endmacro()
 
-macro(iceberg_find_vendor_dependencies dependencies)
-  get_target_property(_iceberg_static_configurations
-                      Iceberg::iceberg_core_static IMPORTED_CONFIGURATIONS)
-
-  foreach(dependency ${dependencies})
-    string(REPLACE "|" ";" _dependency_pair ${dependency})
-    list(LENGTH _dependency_pair _dependency_pair_length)
-    if(NOT _dependency_pair_length EQUAL 2)
-      message(FATAL_ERROR "Invalid vendor dependency: ${dependency}")
-    endif()
-    list(GET _dependency_pair 0 _target_name)
-    list(GET _dependency_pair 1 _static_lib_name)
-
-    add_library("${_target_name}" STATIC IMPORTED)
-
-    foreach(configuration ${_iceberg_static_configurations})
-      string(TOUPPER "${configuration}" _configuration_upper_case)
-      get_target_property(
-        _iceberg_core_static_location
-        Iceberg::iceberg_core_static LOCATION_${_configuration_upper_case})
-      get_filename_component(
-        iceberg_core_lib_dir
-        "${_iceberg_core_static_location}" DIRECTORY)
-      set_property(
-        TARGET "${_target_name}"
-        APPEND
-        PROPERTY IMPORTED_CONFIGURATIONS ${_configuration_upper_case})
-      set_target_properties(
-        "${_target_name}"
-        PROPERTIES IMPORTED_LOCATION_${_configuration_upper_case}
-                   "${iceberg_core_lib_dir}/${_static_lib_name}")
-    endforeach()
-  endforeach()
-endmacro()
-
 include("${CMAKE_CURRENT_LIST_DIR}/iceberg-targets.cmake")
 
 # Find required components
@@ -112,10 +76,5 @@ iceberg_find_components("${Iceberg_FIND_COMPONENTS}")
 
 # Find system dependencies
 iceberg_find_dependencies("${ICEBERG_SYSTEM_DEPENDENCIES}")
-
-# Find vendor dependencies
-if(ICEBERG_BUILD_STATIC)
-  iceberg_find_vendor_dependencies("${ICEBERG_VENDOR_DEPENDENCIES}")
-endif()
 
 check_required_components(Iceberg)

@@ -18,7 +18,6 @@
 # Accumulate all dependencies to provide suitable static link parameters to the
 # third party libraries.
 set(ICEBERG_SYSTEM_DEPENDENCIES)
-set(ICEBERG_VENDOR_DEPENDENCIES)
 set(ICEBERG_ARROW_INSTALL_INTERFACE_LIBS)
 
 # ----------------------------------------------------------------------
@@ -109,24 +108,17 @@ function(resolve_arrow_dependency)
     endif()
 
     set(ARROW_VENDORED TRUE)
+    set_target_properties(arrow_static PROPERTIES OUTPUT_NAME "iceberg_vendored_arrow")
     install(TARGETS arrow_static
+            EXPORT iceberg_targets
             RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
             ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
             LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
-
-    get_target_property(ARROW_STATIC_LIB arrow_static OUTPUT_NAME)
-    set(ARROW_STATIC_LIB_NAME
-        "${CMAKE_STATIC_LIBRARY_PREFIX}${ARROW_STATIC_LIB}${CMAKE_STATIC_LIBRARY_SUFFIX}")
-    list(APPEND ICEBERG_VENDOR_DEPENDENCIES
-         "Iceberg::arrow_vendored|${ARROW_STATIC_LIB_NAME}")
   else()
     set(ARROW_VENDORED FALSE)
     list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Arrow)
   endif()
 
-  set(ICEBERG_VENDOR_DEPENDENCIES
-      ${ICEBERG_VENDOR_DEPENDENCIES}
-      PARENT_SCOPE)
   set(ICEBERG_SYSTEM_DEPENDENCIES
       ${ICEBERG_SYSTEM_DEPENDENCIES}
       PARENT_SCOPE)
