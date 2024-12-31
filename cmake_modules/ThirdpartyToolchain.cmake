@@ -27,7 +27,6 @@ set(ICEBERG_ARROW_INSTALL_INTERFACE_LIBS)
 set(ICEBERG_ARROW_BUILD_VERSION "18.1.0")
 set(ICEBERG_ARROW_BUILD_SHA256_CHECKSUM
     "2dc8da5f8796afe213ecc5e5aba85bb82d91520eff3cf315784a52d0fa61d7fc")
-set(ARROW_VENDORED TRUE)
 
 if(DEFINED ENV{ICEBERG_ARROW_URL})
   set(ARROW_SOURCE_URL "$ENV{ICEBERG_ARROW_URL}")
@@ -35,7 +34,6 @@ else()
   set(ARROW_SOURCE_URL
       "https://www.apache.org/dyn/closer.cgi?action=download&filename=/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
       "https://downloads.apache.org/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
-      "https://github.com/apache/arrow/releases/download/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
   )
 endif()
 
@@ -101,18 +99,18 @@ function(resolve_arrow_dependency)
 
   fetchcontent_makeavailable(Arrow)
 
-  if(NOT TARGET Arrow::arrow_static)
-    add_library(Arrow::arrow_static INTERFACE IMPORTED)
-    target_link_libraries(Arrow::arrow_static INTERFACE arrow_static)
-    target_include_directories(Arrow::arrow_static INTERFACE ${arrow_SOURCE_DIR}/cpp/src
-                                                             ${arrow_BINARY_DIR}/src)
-  endif()
-
-  fetchcontent_getproperties(Arrow)
   if(arrow_SOURCE_DIR)
+    if(NOT TARGET Arrow::arrow_static)
+      add_library(Arrow::arrow_static INTERFACE IMPORTED)
+      target_link_libraries(Arrow::arrow_static INTERFACE arrow_static)
+      target_include_directories(Arrow::arrow_static
+                                 INTERFACE ${arrow_BINARY_DIR}/src
+                                           ${arrow_SOURCE_DIR}/cpp/src)
+    endif()
+
     set(ARROW_VENDORED TRUE)
     install(TARGETS arrow_static
-            RUNTIME DESTINATION "${CMAKE_INSTALL_BINDIR}"
+            RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
             ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
             LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
 

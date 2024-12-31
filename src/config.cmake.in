@@ -65,7 +65,8 @@ macro(iceberg_find_components components)
 
   foreach(comp ${components})
     string(TOLOWER "${comp}" _comp_lower_case)
-    if(EXISTS "${CMAKE_CURRENT_LIST_DIR}/iceberg-${_comp_lower_case}-targets.cmake")
+    if(TARGET "Iceberg::iceberg_${_comp_lower_case}_shared" OR
+       TARGET "Iceberg::iceberg_${_comp_lower_case}_static")
       set(Iceberg_${comp}_FOUND TRUE)
     else()
       set(Iceberg_${comp}_FOUND FALSE)
