@@ -29,6 +29,11 @@ write_basic_package_version_file(
   "${CMAKE_CURRENT_BINARY_DIR}/iceberg-config-version.cmake"
   COMPATIBILITY SameMajorVersion)
 
+install(EXPORT iceberg_targets
+        DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/Iceberg"
+        NAMESPACE "Iceberg::"
+        FILE "iceberg-targets.cmake")
+
 install(FILES "${CMAKE_CURRENT_BINARY_DIR}/iceberg-config.cmake"
               "${CMAKE_CURRENT_BINARY_DIR}/iceberg-config-version.cmake"
         DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/Iceberg")

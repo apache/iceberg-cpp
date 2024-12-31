@@ -127,7 +127,7 @@ function(ADD_ICEBERG_LIB LIB_NAME)
                           PRIVATE ${ARG_SHARED_PRIVATE_LINK_LIBS})
 
     install(TARGETS ${LIB_NAME}_shared
-            EXPORT ${LIB_NAME}_targets
+            EXPORT iceberg_targets
             ARCHIVE DESTINATION ${INSTALL_ARCHIVE_DIR}
             LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}
             RUNTIME DESTINATION ${INSTALL_RUNTIME_DIR}
@@ -176,20 +176,13 @@ function(ADD_ICEBERG_LIB LIB_NAME)
     endif()
 
     install(TARGETS ${LIB_NAME}_static
-            EXPORT ${LIB_NAME}_targets
+            EXPORT iceberg_targets
             ARCHIVE DESTINATION ${INSTALL_ARCHIVE_DIR}
             LIBRARY DESTINATION ${INSTALL_LIBRARY_DIR}
             RUNTIME DESTINATION ${INSTALL_RUNTIME_DIR}
             INCLUDES
             DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
   endif()
-
-  string(TOLOWER ${LIB_NAME} LIB_NAME_LOWER_CASE)
-  string(REPLACE "_" "-" LIB_NAME_DASH_SEPARATED_LOWER_CASE ${LIB_NAME_LOWER_CASE})
-  install(EXPORT ${LIB_NAME}_targets
-          DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/Iceberg"
-          NAMESPACE "Iceberg::"
-          FILE "${LIB_NAME_DASH_SEPARATED_LOWER_CASE}-targets.cmake")
 
   # Modify variable in calling scope
   if(ARG_OUTPUTS)
