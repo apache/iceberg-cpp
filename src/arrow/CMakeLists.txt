@@ -46,6 +46,14 @@ else()
        "$<IF:$<TARGET_EXISTS:Arrow::arrow_shared>,Arrow::arrow_shared,Arrow::arrow_static>"
   )
 endif()
+list(APPEND
+     ICEBERG_ARROW_STATIC_INSTALL_INTERFACE_LIBS
+     "$<IF:$<TARGET_EXISTS:iceberg_core_static>,Iceberg::iceberg_core_static,Iceberg::iceberg_core_shared>"
+)
+list(APPEND
+     ICEBERG_ARROW_SHARED_INSTALL_INTERFACE_LIBS
+     "$<IF:$<TARGET_EXISTS:iceberg_core_shared>,Iceberg::iceberg_core_shared,Iceberg::iceberg_core_static>"
+)
 
 add_iceberg_lib(iceberg_arrow
                 SOURCES
