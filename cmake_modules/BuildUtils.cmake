@@ -18,6 +18,27 @@
 # Borrowed the file from Apache Arrow:
 # https://github.com/apache/arrow/blob/main/cpp/cmake_modules/BuildUtils.cmake
 
+include(CMakePackageConfigHelpers)
+
+function(iceberg_install_cmake_package PACKAGE_NAME EXPORT_NAME)
+  set(CONFIG_CMAKE "${PACKAGE_NAME}Config.cmake")
+  set(BUILT_CONFIG_CMAKE "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_CMAKE}")
+  configure_package_config_file("${CONFIG_CMAKE}.in" "${BUILT_CONFIG_CMAKE}"
+                                INSTALL_DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/${PACKAGE_NAME}"
+  )
+  set(CONFIG_VERSION_CMAKE "${PACKAGE_NAME}ConfigVersion.cmake")
+  set(BUILT_CONFIG_VERSION_CMAKE "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_VERSION_CMAKE}")
+  write_basic_package_version_file("${BUILT_CONFIG_VERSION_CMAKE}"
+                                   COMPATIBILITY SameMajorVersion)
+  install(FILES "${BUILT_CONFIG_CMAKE}" "${BUILT_CONFIG_VERSION_CMAKE}"
+          DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/${PACKAGE_NAME}")
+  set(TARGETS_CMAKE "${PACKAGE_NAME}Targets.cmake")
+  install(EXPORT ${EXPORT_NAME}
+          DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/${PACKAGE_NAME}"
+          NAMESPACE "${PACKAGE_NAME}::"
+          FILE "${TARGETS_CMAKE}")
+endfunction()
+
 function(ADD_ICEBERG_LIB LIB_NAME)
   set(options)
   set(one_value_args

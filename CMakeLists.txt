@@ -23,7 +23,7 @@ endif()
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules")
 
-project(iceberg
+project(Iceberg
         VERSION 0.1.0
         DESCRIPTION "Iceberg C++ Project"
         LANGUAGES CXX)

@@ -19,21 +19,4 @@ add_subdirectory(arrow)
 add_subdirectory(core)
 add_subdirectory(puffin)
 
-include(CMakePackageConfigHelpers)
-
-configure_package_config_file("${CMAKE_CURRENT_SOURCE_DIR}/config.cmake.in"
-                              "${CMAKE_CURRENT_BINARY_DIR}/iceberg-config.cmake"
-                              INSTALL_DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/Iceberg")
-
-write_basic_package_version_file(
-  "${CMAKE_CURRENT_BINARY_DIR}/iceberg-config-version.cmake"
-  COMPATIBILITY SameMajorVersion)
-
-install(EXPORT iceberg_targets
-        DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/Iceberg"
-        NAMESPACE "Iceberg::"
-        FILE "iceberg-targets.cmake")
-
-install(FILES "${CMAKE_CURRENT_BINARY_DIR}/iceberg-config.cmake"
-              "${CMAKE_CURRENT_BINARY_DIR}/iceberg-config-version.cmake"
-        DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/Iceberg")
+iceberg_install_cmake_package(Iceberg iceberg_targets)
