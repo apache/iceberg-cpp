@@ -31,7 +31,7 @@ if(DEFINED ENV{ICEBERG_ARROW_URL})
   set(ARROW_SOURCE_URL "$ENV{ICEBERG_ARROW_URL}")
 else()
   set(ARROW_SOURCE_URL
-      "https://www.apache.org/dyn/closer.cgi?action=download&filename=/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
+      "https://www.apache.org/dyn/closer.lua?action=download&filename=/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
       "https://downloads.apache.org/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
   )
 endif()
