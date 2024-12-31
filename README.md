@@ -68,7 +68,7 @@ cmake --build build
 If you are using provided Apache Arrow, you need to include `/path/to/arrow` in `CMAKE_PREFIX_PATH` as below.
 
 ```bash
-cmake .. -DCMAKE_PREFIX_PATH="/path/to/install;/path/to/arrow"
+cmake -S . -B build -DCMAKE_PREFIX_PATH="/path/to/install;/path/to/arrow"
 ```
 
 ## Contribute
