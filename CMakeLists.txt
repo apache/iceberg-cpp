@@ -46,6 +46,12 @@ set(ICEBERG_INSTALL_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}")
 set(ICEBERG_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake")
 set(ICEBERG_INSTALL_DOCDIR "share/doc/${PROJECT_NAME}")
 
+if(WIN32 AND NOT MINGW)
+  set(MSVC_TOOLCHAIN TRUE)
+else()
+  set(MSVC_TOOLCHAIN FALSE)
+endif()
+
 include(CMakeParseArguments)
 include(BuildUtils)
 include(ThirdpartyToolchain)
