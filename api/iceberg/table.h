@@ -22,9 +22,11 @@
 #include <memory>
 #include <string_view>
 
+#include "iceberg/visibility.h"
+
 namespace iceberg {
 
-class Table {
+class ICEBERG_EXPORT Table {
  public:
   virtual ~Table() = default;
   virtual std::string_view print() const = 0;

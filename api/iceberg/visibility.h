@@ -19,16 +19,16 @@
 
 #pragma once
 
-#include "iceberg/table.h"
-
-namespace iceberg {
-
-class ICEBERG_EXPORT DemoTable : public Table {
- public:
-  DemoTable() = default;
-  ~DemoTable() override = default;
-
-  std::string_view print() const override;
-};
-
-}  // namespace iceberg
+#if defined(_WIN32) || defined(__CYGWIN__)
+#  ifdef ICEBERG_STATIC
+#    define ICEBERG_EXPORT
+#  else
+#    ifdef ICEBERG_EXPORTING
+#      define ICEBERG_EXPORT __declspec(dllexport)
+#    else
+#      define ICEBERG_EXPORT __declspec(dllimport)
+#    endif
+#  endif
+#else
+#  define ICEBERG_EXPORT
+#endif

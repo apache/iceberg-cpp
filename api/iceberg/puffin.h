@@ -22,9 +22,11 @@
 #include <memory>
 #include <string_view>
 
+#include "iceberg/visibility.h"
+
 namespace iceberg {
 
-class Puffin {
+class ICEBERG_EXPORT Puffin {
  public:
   virtual ~Puffin() = default;
   virtual std::string_view print() const = 0;

@@ -73,11 +73,11 @@ add_iceberg_lib(iceberg_arrow
                 ${ICEBERG_ARROW_SHARED_INSTALL_INTERFACE_LIBS})
 
 if(ICEBERG_BUILD_STATIC AND WIN32)
-  target_compile_definitions(iceberg_arrow_static PUBLIC ICEBERG_ARROW_STATIC)
+  target_compile_definitions(iceberg_arrow_static PUBLIC ICEBERG_STATIC)
 endif()
 
 foreach(LIB_TARGET ${ICEBERG_ARROW_LIBRARIES})
-  target_compile_definitions(${LIB_TARGET} PRIVATE ICEBERG_ARROW_EXPORTING)
+  target_compile_definitions(${LIB_TARGET} PRIVATE ICEBERG_EXPORTING)
 endforeach()
 
 install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/demo_arrow.h"

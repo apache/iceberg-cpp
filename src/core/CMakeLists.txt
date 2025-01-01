@@ -21,5 +21,15 @@ set(ICEBERG_CORE_INCLUDES "${ICEBERG_API_DIR}")
 add_iceberg_lib(iceberg_core
                 SOURCES
                 ${ICEBERG_CORE_SOURCES}
+                OUTPUTS
+                ICEBERG_CORE_LIBRARIES
                 PRIVATE_INCLUDES
                 ${ICEBERG_CORE_INCLUDES})
+
+if(ICEBERG_BUILD_STATIC AND WIN32)
+  target_compile_definitions(iceberg_core_static PUBLIC ICEBERG_STATIC)
+endif()
+
+foreach(LIB_TARGET ${ICEBERG_CORE_LIBRARIES})
+  target_compile_definitions(${LIB_TARGET} PRIVATE ICEBERG_EXPORTING)
+endforeach()

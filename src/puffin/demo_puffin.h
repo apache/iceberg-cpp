@@ -23,7 +23,7 @@
 
 namespace iceberg {
 
-class DemoPuffin : public Puffin {
+class ICEBERG_EXPORT DemoPuffin : public Puffin {
  public:
   DemoPuffin() = default;
   ~DemoPuffin() override = default;
