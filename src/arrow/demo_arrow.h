@@ -21,9 +21,23 @@
 
 #include <string>
 
+#ifdef _WIN32
+#  ifdef ICEBERG_ARROW_STATIC
+#    define ICEBERG_ARROW_EXPORT
+#  else
+#    ifdef ICEBERG_ARROW_EXPORTING
+#      define ICEBERG_ARROW_EXPORT __declspec(dllexport)
+#    else
+#      define ICEBERG_ARROW_EXPORT __declspec(dllimport)
+#    endif
+#  endif
+#else
+#  define ICEBERG_ARROW_EXPORT
+#endif
+
 namespace iceberg::arrow {
 
-class DemoArrow {
+class ICEBERG_ARROW_EXPORT DemoArrow {
  public:
   std::string print() const;
 };
