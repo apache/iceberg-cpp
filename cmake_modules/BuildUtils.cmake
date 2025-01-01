@@ -39,7 +39,7 @@ function(iceberg_install_cmake_package PACKAGE_NAME EXPORT_NAME)
           FILE "${TARGETS_CMAKE}")
 endfunction()
 
-function(ADD_ICEBERG_LIB LIB_NAME)
+function(add_iceberg_lib LIB_NAME)
   set(options)
   set(one_value_args
       BUILD_SHARED
@@ -217,4 +217,14 @@ function(ADD_ICEBERG_LIB LIB_NAME)
         ${${ARG_OUTPUTS}}
         PARENT_SCOPE)
   endif()
+endfunction()
+
+function(iceberg_set_export_definitions STATIC_TARGET LIB_TARGETS)
+  if(ICEBERG_BUILD_STATIC AND WIN32)
+    target_compile_definitions(${STATIC_TARGET} PUBLIC ICEBERG_STATIC)
+  endif()
+
+  foreach(LIB_TARGET ${LIB_TARGETS})
+    target_compile_definitions(${LIB_TARGET} PRIVATE ICEBERG_EXPORTING)
+  endforeach()
 endfunction()

@@ -15,8 +15,20 @@
 # specific language governing permissions and limitations
 # under the License.
 
-add_subdirectory(core)
-add_subdirectory(puffin)
+set(ICEBERG_CORE_SOURCES core/demo_table.cc)
+set(ICEBERG_CORE_INCLUDES "${ICEBERG_API_DIR}")
+
+add_iceberg_lib(iceberg_core
+                SOURCES
+                ${ICEBERG_CORE_SOURCES}
+                OUTPUTS
+                ICEBERG_CORE_LIBRARIES
+                PRIVATE_INCLUDES
+                ${ICEBERG_CORE_INCLUDES})
+
+iceberg_set_export_definitions(iceberg_core_static "${ICEBERG_CORE_LIBRARIES}")
+
 add_subdirectory(arrow)
+add_subdirectory(puffin)
 
 iceberg_install_cmake_package(Iceberg iceberg_targets)

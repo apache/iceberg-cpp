@@ -26,10 +26,4 @@ add_iceberg_lib(iceberg_puffin
                 PRIVATE_INCLUDES
                 ${ICEBERG_PUFFIN_INCLUDES})
 
-if(ICEBERG_BUILD_STATIC AND WIN32)
-  target_compile_definitions(iceberg_puffin_static PUBLIC ICEBERG_STATIC)
-endif()
-
-foreach(LIB_TARGET ${ICEBERG_PUFFIN_LIBRARIES})
-  target_compile_definitions(${LIB_TARGET} PRIVATE ICEBERG_EXPORTING)
-endforeach()
+iceberg_set_export_definitions(iceberg_puffin_static "${ICEBERG_PUFFIN_LIBRARIES}")
