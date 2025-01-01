@@ -21,7 +21,9 @@
 
 namespace iceberg {
 
-std::string_view DemoTable::print() const { return "DemoTable"; }
+std::string_view DemoTable::print() const { return name(); }
+
+std::string_view DemoTable::name() const { return "DemoTable"; }
 
 std::unique_ptr<Table> Table::create() { return std::make_unique<DemoTable>(); }
 

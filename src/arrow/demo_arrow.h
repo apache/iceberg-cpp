@@ -28,6 +28,7 @@ namespace iceberg::arrow {
 class ICEBERG_EXPORT DemoArrow {
  public:
   std::string print() const;
+  std::string_view name() const;
 };
 
 }  // namespace iceberg::arrow

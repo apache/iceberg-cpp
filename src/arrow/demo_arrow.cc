@@ -21,8 +21,12 @@
 
 #include <arrow/config.h>
 
+#include "core/demo_table.h"
+
 namespace iceberg::arrow {
 
 std::string DemoArrow::print() const { return ::arrow::GetBuildInfo().version_string; }
+
+std::string_view DemoArrow::name() const { return DemoTable().name(); }
 
 }  // namespace iceberg::arrow

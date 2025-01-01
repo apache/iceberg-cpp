@@ -27,5 +27,6 @@ int main() {
   std::cout << iceberg::Table::create()->print() << std::endl;
   std::cout << iceberg::Puffin::create()->print() << std::endl;
   std::cout << iceberg::arrow::DemoArrow().print() << std::endl;
+  std::cout << iceberg::arrow::DemoArrow().name() << std::endl;
   return 0;
 }

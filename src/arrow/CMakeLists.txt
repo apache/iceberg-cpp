@@ -20,7 +20,7 @@ if(NOT ICEBERG_ARROW)
 endif()
 
 set(ICEBERG_ARROW_SOURCES demo_arrow.cc)
-set(ICEBERG_ARROW_INCLUDES "${ICEBERG_API_DIR}")
+set(ICEBERG_ARROW_INCLUDES "${ICEBERG_API_DIR}" "${CMAKE_SOURCE_DIR}/src")
 
 # Libraries to link with exported libiceberg_arrow.{so,a}.
 set(ICEBERG_ARROW_STATIC_BUILD_INTERFACE_LIBS)
