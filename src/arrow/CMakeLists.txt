@@ -29,8 +29,10 @@ set(ICEBERG_ARROW_STATIC_INSTALL_INTERFACE_LIBS)
 set(ICEBERG_ARROW_SHARED_INSTALL_INTERFACE_LIBS)
 
 list(APPEND ICEBERG_ARROW_STATIC_BUILD_INTERFACE_LIBS
+     "$<IF:$<TARGET_EXISTS:iceberg_core_static>,iceberg_core_static,iceberg_core_shared>"
      "$<IF:$<TARGET_EXISTS:Arrow::arrow_static>,Arrow::arrow_static,Arrow::arrow_shared>")
 list(APPEND ICEBERG_ARROW_SHARED_BUILD_INTERFACE_LIBS
+     "$<IF:$<TARGET_EXISTS:iceberg_core_shared>,iceberg_core_shared,iceberg_core_static>"
      "$<IF:$<TARGET_EXISTS:Arrow::arrow_shared>,Arrow::arrow_shared,Arrow::arrow_static>")
 
 if(ARROW_VENDORED)

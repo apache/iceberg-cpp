@@ -18,12 +18,38 @@
 set(ICEBERG_PUFFIN_SOURCES demo_puffin.cc)
 set(ICEBERG_PUFFIN_INCLUDES "${ICEBERG_API_DIR}")
 
+set(ICEBERG_PUFFIN_STATIC_BUILD_INTERFACE_LIBS)
+set(ICEBERG_PUFFIN_SHARED_BUILD_INTERFACE_LIBS)
+set(ICEBERG_PUFFIN_STATIC_INSTALL_INTERFACE_LIBS)
+set(ICEBERG_PUFFIN_SHARED_INSTALL_INTERFACE_LIBS)
+
+list(APPEND ICEBERG_PUFFIN_STATIC_BUILD_INTERFACE_LIBS
+     "$<IF:$<TARGET_EXISTS:iceberg_core_static>,iceberg_core_static,iceberg_core_shared>")
+list(APPEND ICEBERG_PUFFIN_SHARED_BUILD_INTERFACE_LIBS
+     "$<IF:$<TARGET_EXISTS:iceberg_core_shared>,iceberg_core_shared,iceberg_core_static>")
+list(APPEND
+     ICEBERG_PUFFIN_STATIC_INSTALL_INTERFACE_LIBS
+     "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_core_static>,Iceberg::iceberg_core_static,Iceberg::iceberg_core_shared>"
+)
+list(APPEND
+     ICEBERG_PUFFIN_SHARED_INSTALL_INTERFACE_LIBS
+     "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_core_shared>,Iceberg::iceberg_core_shared,Iceberg::iceberg_core_static>"
+)
+
 add_iceberg_lib(iceberg_puffin
                 SOURCES
                 ${ICEBERG_PUFFIN_SOURCES}
                 OUTPUTS
                 ICEBERG_PUFFIN_LIBRARIES
                 PRIVATE_INCLUDES
-                ${ICEBERG_PUFFIN_INCLUDES})
+                ${ICEBERG_PUFFIN_INCLUDES}
+                SHARED_LINK_LIBS
+                ${ICEBERG_PUFFIN_SHARED_BUILD_INTERFACE_LIBS}
+                STATIC_LINK_LIBS
+                ${ICEBERG_PUFFIN_STATIC_BUILD_INTERFACE_LIBS}
+                STATIC_INSTALL_INTERFACE_LIBS
+                ${ICEBERG_PUFFIN_STATIC_INSTALL_INTERFACE_LIBS}
+                SHARED_INSTALL_INTERFACE_LIBS
+                ${ICEBERG_PUFFIN_SHARED_INSTALL_INTERFACE_LIBS})
 
 iceberg_set_export_definitions(iceberg_puffin_static "${ICEBERG_PUFFIN_LIBRARIES}")
