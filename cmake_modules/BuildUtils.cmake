@@ -215,9 +215,10 @@ function(add_iceberg_lib LIB_NAME)
   string(TOUPPER ${LIB_NAME} LIB_NAME_UPPER)
   if(BUILD_SHARED)
     generate_export_header(${LIB_NAME}_shared BASE_NAME ${LIB_NAME_UPPER})
+    target_compile_definitions(${LIB_NAME}_shared PRIVATE ${LIB_NAME}_EXPORTS)
     if(BUILD_STATIC)
-      set_target_properties(${LIB_NAME}_static
-                            PROPERTIES COMPILE_FLAGS -D${LIB_NAME_UPPER}_STATIC_DEFINE)
+      target_compile_definitions(${LIB_NAME}_static
+                                 PRIVATE ${LIB_NAME_UPPER}_STATIC_DEFINE)
     endif()
   elseif(BUILD_STATIC)
     generate_export_header(${LIB_NAME}_static BASE_NAME ${LIB_NAME_UPPER})
