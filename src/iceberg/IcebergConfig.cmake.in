@@ -22,8 +22,8 @@
 #
 # This config sets the following targets (if built) in your project::
 #
-#   Iceberg::iceberg_core_shared
-#   Iceberg::iceberg_core_static
+#   Iceberg::iceberg_shared
+#   Iceberg::iceberg_static
 #   Iceberg::iceberg_puffin_shared
 #   Iceberg::iceberg_puffin_static
 #   Iceberg::iceberg_arrow_shared

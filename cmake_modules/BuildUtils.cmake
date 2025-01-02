@@ -219,6 +219,31 @@ function(add_iceberg_lib LIB_NAME)
   endif()
 endfunction()
 
+function(iceberg_install_all_headers PATH)
+  set(options)
+  set(one_value_args)
+  set(multi_value_args PATTERN)
+  cmake_parse_arguments(ARG
+                        "${options}"
+                        "${one_value_args}"
+                        "${multi_value_args}"
+                        ${ARGN})
+  if(NOT ARG_PATTERN)
+    set(ARG_PATTERN "*.h" "*.hpp")
+  endif()
+  file(GLOB CURRENT_DIRECTORY_HEADERS ${ARG_PATTERN})
+
+  set(PUBLIC_HEADERS)
+  foreach(HEADER ${CURRENT_DIRECTORY_HEADERS})
+    get_filename_component(HEADER_BASENAME ${HEADER} NAME)
+    if(HEADER_BASENAME MATCHES "internal")
+      continue()
+    endif()
+    list(APPEND PUBLIC_HEADERS ${HEADER})
+  endforeach()
+  install(FILES ${PUBLIC_HEADERS} DESTINATION "${ICEBERG_INSTALL_INCLUDEDIR}/${PATH}")
+endfunction()
+
 function(iceberg_set_export_definitions STATIC_TARGET LIB_TARGETS)
   if(ICEBERG_BUILD_STATIC AND WIN32)
     target_compile_definitions(${STATIC_TARGET} PUBLIC ICEBERG_STATIC)

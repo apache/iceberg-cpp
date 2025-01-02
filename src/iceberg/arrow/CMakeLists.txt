@@ -20,7 +20,7 @@ if(NOT ICEBERG_ARROW)
 endif()
 
 set(ICEBERG_ARROW_SOURCES demo_arrow.cc)
-set(ICEBERG_ARROW_INCLUDES "${ICEBERG_API_DIR}" "${CMAKE_SOURCE_DIR}/src")
+set(ICEBERG_ARROW_INCLUDES "${ICEBERG_INCLUDES}")
 
 # Libraries to link with exported libiceberg_arrow.{so,a}.
 set(ICEBERG_ARROW_STATIC_BUILD_INTERFACE_LIBS)
@@ -29,10 +29,10 @@ set(ICEBERG_ARROW_STATIC_INSTALL_INTERFACE_LIBS)
 set(ICEBERG_ARROW_SHARED_INSTALL_INTERFACE_LIBS)
 
 list(APPEND ICEBERG_ARROW_STATIC_BUILD_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:iceberg_core_static>,iceberg_core_static,iceberg_core_shared>"
+     "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>"
      "$<IF:$<TARGET_EXISTS:Arrow::arrow_static>,Arrow::arrow_static,Arrow::arrow_shared>")
 list(APPEND ICEBERG_ARROW_SHARED_BUILD_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:iceberg_core_shared>,iceberg_core_shared,iceberg_core_static>"
+     "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>"
      "$<IF:$<TARGET_EXISTS:Arrow::arrow_shared>,Arrow::arrow_shared,Arrow::arrow_static>")
 
 if(ARROW_VENDORED)
@@ -51,11 +51,11 @@ endif()
 
 list(APPEND
      ICEBERG_ARROW_STATIC_INSTALL_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_core_static>,Iceberg::iceberg_core_static,Iceberg::iceberg_core_shared>"
+     "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_static>,Iceberg::iceberg_static,Iceberg::iceberg_shared>"
 )
 list(APPEND
      ICEBERG_ARROW_SHARED_INSTALL_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_core_shared>,Iceberg::iceberg_core_shared,Iceberg::iceberg_core_static>"
+     "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_shared>,Iceberg::iceberg_shared,Iceberg::iceberg_static>"
 )
 
 add_iceberg_lib(iceberg_arrow
@@ -75,6 +75,4 @@ add_iceberg_lib(iceberg_arrow
                 ${ICEBERG_ARROW_SHARED_INSTALL_INTERFACE_LIBS})
 
 iceberg_set_export_definitions(iceberg_arrow_static "${ICEBERG_ARROW_LIBRARIES}")
-
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/demo_arrow.h"
-        DESTINATION "${ICEBERG_INSTALL_INCLUDEDIR}/iceberg/arrow")
+iceberg_install_all_headers(iceberg/arrow)

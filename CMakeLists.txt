@@ -39,7 +39,6 @@ option(ICEBERG_BUILD_TESTS "Build tests" ON)
 option(ICEBERG_ARROW "Build Arrow" ON)
 
 include(GNUInstallDirs)
-set(ICEBERG_API_DIR "${CMAKE_SOURCE_DIR}/api")
 set(ICEBERG_INSTALL_LIBDIR "${CMAKE_INSTALL_LIBDIR}")
 set(ICEBERG_INSTALL_BINDIR "${CMAKE_INSTALL_BINDIR}")
 set(ICEBERG_INSTALL_INCLUDEDIR "${CMAKE_INSTALL_INCLUDEDIR}")
@@ -56,7 +55,6 @@ include(CMakeParseArguments)
 include(BuildUtils)
 include(ThirdpartyToolchain)
 
-add_subdirectory(api)
 add_subdirectory(src)
 
 if(ICEBERG_BUILD_TESTS)

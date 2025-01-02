@@ -20,13 +20,12 @@
 #include <iostream>
 
 #include "iceberg/arrow/demo_arrow.h"
-#include "iceberg/puffin.h"
-#include "iceberg/table.h"
+#include "iceberg/demo_table.h"
+#include "iceberg/puffin/demo_puffin.h"
 
 int main() {
-  std::cout << iceberg::Table::create()->print() << std::endl;
-  std::cout << iceberg::Puffin::create()->print() << std::endl;
+  std::cout << iceberg::DemoTable().print() << std::endl;
+  std::cout << iceberg::puffin::DemoPuffin().print() << std::endl;
   std::cout << iceberg::arrow::DemoArrow().print() << std::endl;
-  std::cout << iceberg::arrow::DemoArrow().name() << std::endl;
   return 0;
 }

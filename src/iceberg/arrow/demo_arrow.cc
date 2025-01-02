@@ -17,14 +17,17 @@
  * under the License.
  */
 
-#include "demo_table.h"
+#include "iceberg/arrow/demo_arrow.h"
 
-namespace iceberg {
+#include <arrow/config.h>
 
-std::string_view DemoTable::print() const { return name(); }
+#include "iceberg/demo_table.h"
 
-std::string_view DemoTable::name() const { return "DemoTable"; }
+namespace iceberg::arrow {
 
-std::unique_ptr<Table> Table::create() { return std::make_unique<DemoTable>(); }
+std::string DemoArrow::print() const {
+  return DemoTable().print() +
+         ", Arrow version: " + ::arrow::GetBuildInfo().version_string;
+}
 
-}  // namespace iceberg
+}  // namespace iceberg::arrow

@@ -19,18 +19,18 @@
 
 #pragma once
 
-#include <memory>
-#include <string_view>
+#include <string>
 
+#include "iceberg/table.h"
 #include "iceberg/visibility.h"
 
-namespace iceberg {
+namespace iceberg::arrow {
 
-class ICEBERG_EXPORT Puffin {
+class ICEBERG_EXPORT DemoArrow : public Table {
  public:
-  virtual ~Puffin() = default;
-  virtual std::string_view print() const = 0;
-  static std::unique_ptr<Puffin> create();
+  DemoArrow() = default;
+  ~DemoArrow() override = default;
+  std::string print() const override;
 };
 
-}  // namespace iceberg
+}  // namespace iceberg::arrow

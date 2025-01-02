@@ -16,7 +16,7 @@
 # under the License.
 
 set(ICEBERG_PUFFIN_SOURCES demo_puffin.cc)
-set(ICEBERG_PUFFIN_INCLUDES "${ICEBERG_API_DIR}")
+set(ICEBERG_PUFFIN_INCLUDES "${ICEBERG_INCLUDES}")
 
 set(ICEBERG_PUFFIN_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_PUFFIN_SHARED_BUILD_INTERFACE_LIBS)
@@ -24,16 +24,16 @@ set(ICEBERG_PUFFIN_STATIC_INSTALL_INTERFACE_LIBS)
 set(ICEBERG_PUFFIN_SHARED_INSTALL_INTERFACE_LIBS)
 
 list(APPEND ICEBERG_PUFFIN_STATIC_BUILD_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:iceberg_core_static>,iceberg_core_static,iceberg_core_shared>")
+     "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>")
 list(APPEND ICEBERG_PUFFIN_SHARED_BUILD_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:iceberg_core_shared>,iceberg_core_shared,iceberg_core_static>")
+     "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>")
 list(APPEND
      ICEBERG_PUFFIN_STATIC_INSTALL_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_core_static>,Iceberg::iceberg_core_static,Iceberg::iceberg_core_shared>"
+     "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_static>,Iceberg::iceberg_static,Iceberg::iceberg_shared>"
 )
 list(APPEND
      ICEBERG_PUFFIN_SHARED_INSTALL_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_core_shared>,Iceberg::iceberg_core_shared,Iceberg::iceberg_core_static>"
+     "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_shared>,Iceberg::iceberg_shared,Iceberg::iceberg_static>"
 )
 
 add_iceberg_lib(iceberg_puffin
@@ -53,3 +53,4 @@ add_iceberg_lib(iceberg_puffin
                 ${ICEBERG_PUFFIN_SHARED_INSTALL_INTERFACE_LIBS})
 
 iceberg_set_export_definitions(iceberg_puffin_static "${ICEBERG_PUFFIN_LIBRARIES}")
+iceberg_install_all_headers(iceberg/puffin)

@@ -17,20 +17,10 @@
  * under the License.
  */
 
-#pragma once
+#include "iceberg/puffin/demo_puffin.h"
 
-#include <memory>
-#include <string_view>
+namespace iceberg::puffin {
 
-#include "iceberg/visibility.h"
+std::string DemoPuffin::print() const { return "DemoPuffin"; }
 
-namespace iceberg {
-
-class ICEBERG_EXPORT Table {
- public:
-  virtual ~Table() = default;
-  virtual std::string_view print() const = 0;
-  static std::unique_ptr<Table> create();
-};
-
-}  // namespace iceberg
+}  // namespace iceberg::puffin

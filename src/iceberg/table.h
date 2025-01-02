@@ -23,12 +23,12 @@
 
 #include "iceberg/visibility.h"
 
-namespace iceberg::arrow {
+namespace iceberg {
 
-class ICEBERG_EXPORT DemoArrow {
+class ICEBERG_EXPORT Table {
  public:
-  std::string print() const;
-  std::string_view name() const;
+  virtual ~Table() = default;
+  virtual std::string print() const = 0;
 };
 
-}  // namespace iceberg::arrow
+}  // namespace iceberg

@@ -19,17 +19,16 @@
 
 #pragma once
 
-#include "iceberg/table.h"
+#include <string>
+
+#include "iceberg/visibility.h"
 
 namespace iceberg {
 
-class ICEBERG_EXPORT DemoTable : public Table {
+class ICEBERG_EXPORT Puffin {
  public:
-  DemoTable() = default;
-  ~DemoTable() override = default;
-
-  std::string_view print() const override;
-  std::string_view name() const;
+  virtual ~Puffin() = default;
+  virtual std::string print() const = 0;
 };
 
 }  // namespace iceberg
