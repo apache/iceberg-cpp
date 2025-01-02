@@ -72,7 +72,6 @@ add_iceberg_lib(iceberg_arrow
                 SHARED_INSTALL_INTERFACE_LIBS
                 ${ICEBERG_ARROW_SHARED_INSTALL_INTERFACE_LIBS})
 
-
 iceberg_install_all_headers(iceberg/arrow)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/iceberg_arrow_export.h
