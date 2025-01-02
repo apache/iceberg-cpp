@@ -61,8 +61,6 @@ list(APPEND
 add_iceberg_lib(iceberg_arrow
                 SOURCES
                 ${ICEBERG_ARROW_SOURCES}
-                OUTPUTS
-                ICEBERG_ARROW_LIBRARIES
                 PRIVATE_INCLUDES
                 ${ICEBERG_ARROW_INCLUDES}
                 SHARED_LINK_LIBS
@@ -74,5 +72,8 @@ add_iceberg_lib(iceberg_arrow
                 SHARED_INSTALL_INTERFACE_LIBS
                 ${ICEBERG_ARROW_SHARED_INSTALL_INTERFACE_LIBS})
 
-iceberg_set_export_definitions(iceberg_arrow_static "${ICEBERG_ARROW_LIBRARIES}")
+
 iceberg_install_all_headers(iceberg/arrow)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/iceberg_arrow_export.h
+        DESTINATION ${ICEBERG_INSTALL_INCLUDEDIR}/iceberg/arrow)

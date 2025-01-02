@@ -16,18 +16,18 @@
 # under the License.
 
 set(ICEBERG_SOURCES demo_table.cc)
-set(ICEBERG_INCLUDES "${CMAKE_SOURCE_DIR}/src")
+set(ICEBERG_INCLUDES "${CMAKE_SOURCE_DIR}/src" "${CMAKE_BINARY_DIR}/src")
 
 add_iceberg_lib(iceberg
                 SOURCES
                 ${ICEBERG_SOURCES}
-                OUTPUTS
-                ICEBERG_LIBRARIES
                 PRIVATE_INCLUDES
                 ${ICEBERG_INCLUDES})
 
-iceberg_set_export_definitions(iceberg_static "${ICEBERG_LIBRARIES}")
 iceberg_install_all_headers(iceberg)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/iceberg_export.h
+        DESTINATION ${ICEBERG_INSTALL_INCLUDEDIR}/iceberg)
 
 add_subdirectory(arrow)
 add_subdirectory(puffin)

@@ -39,8 +39,6 @@ list(APPEND
 add_iceberg_lib(iceberg_puffin
                 SOURCES
                 ${ICEBERG_PUFFIN_SOURCES}
-                OUTPUTS
-                ICEBERG_PUFFIN_LIBRARIES
                 PRIVATE_INCLUDES
                 ${ICEBERG_PUFFIN_INCLUDES}
                 SHARED_LINK_LIBS
@@ -52,5 +50,7 @@ add_iceberg_lib(iceberg_puffin
                 SHARED_INSTALL_INTERFACE_LIBS
                 ${ICEBERG_PUFFIN_SHARED_INSTALL_INTERFACE_LIBS})
 
-iceberg_set_export_definitions(iceberg_puffin_static "${ICEBERG_PUFFIN_LIBRARIES}")
 iceberg_install_all_headers(iceberg/puffin)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/iceberg_puffin_export.h
+        DESTINATION ${ICEBERG_INSTALL_INCLUDEDIR}/iceberg/puffin)

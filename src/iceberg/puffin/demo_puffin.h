@@ -20,10 +20,11 @@
 #pragma once
 
 #include "iceberg/puffin.h"
+#include "iceberg/puffin/iceberg_puffin_export.h"
 
 namespace iceberg::puffin {
 
-class ICEBERG_EXPORT DemoPuffin : public Puffin {
+class ICEBERG_PUFFIN_EXPORT DemoPuffin : public Puffin {
  public:
   DemoPuffin() = default;
   ~DemoPuffin() override = default;

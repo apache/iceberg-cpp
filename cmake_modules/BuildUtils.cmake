@@ -211,6 +211,18 @@ function(add_iceberg_lib LIB_NAME)
             DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
   endif()
 
+  # generate export header file
+  string(TOUPPER ${LIB_NAME} LIB_NAME_UPPER)
+  if(BUILD_SHARED)
+    generate_export_header(${LIB_NAME}_shared BASE_NAME ${LIB_NAME_UPPER})
+    if(BUILD_STATIC)
+      set_target_properties(${LIB_NAME}_static
+                            PROPERTIES COMPILE_FLAGS "-D${LIB_NAME_UPPER}_STATIC_DEFINE")
+    endif()
+  elseif(BUILD_STATIC)
+    generate_export_header(${LIB_NAME}_static BASE_NAME ${LIB_NAME_UPPER})
+  endif()
+
   # Modify variable in calling scope
   if(ARG_OUTPUTS)
     set(${ARG_OUTPUTS}
@@ -242,14 +254,4 @@ function(iceberg_install_all_headers PATH)
     list(APPEND PUBLIC_HEADERS ${HEADER})
   endforeach()
   install(FILES ${PUBLIC_HEADERS} DESTINATION "${ICEBERG_INSTALL_INCLUDEDIR}/${PATH}")
-endfunction()
-
-function(iceberg_set_export_definitions STATIC_TARGET LIB_TARGETS)
-  if(ICEBERG_BUILD_STATIC AND WIN32)
-    target_compile_definitions(${STATIC_TARGET} PUBLIC ICEBERG_STATIC)
-  endif()
-
-  foreach(LIB_TARGET ${LIB_TARGETS})
-    target_compile_definitions(${LIB_TARGET} PRIVATE ICEBERG_EXPORTING)
-  endforeach()
 endfunction()

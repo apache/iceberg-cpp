@@ -21,7 +21,7 @@
 
 #include <string>
 
-#include "iceberg/visibility.h"
+#include "iceberg/iceberg_export.h"
 
 namespace iceberg {
 

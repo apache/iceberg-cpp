@@ -54,6 +54,7 @@ endif()
 include(CMakeParseArguments)
 include(BuildUtils)
 include(ThirdpartyToolchain)
+include(GenerateExportHeader)
 
 add_subdirectory(src)
 
