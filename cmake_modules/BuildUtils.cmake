@@ -217,7 +217,7 @@ function(add_iceberg_lib LIB_NAME)
     generate_export_header(${LIB_NAME}_shared BASE_NAME ${LIB_NAME_UPPER})
     if(BUILD_STATIC)
       set_target_properties(${LIB_NAME}_static
-                            PROPERTIES COMPILE_FLAGS "-D${LIB_NAME_UPPER}_STATIC_DEFINE")
+                            PROPERTIES COMPILE_FLAGS -D${LIB_NAME_UPPER}_STATIC_DEFINE)
     endif()
   elseif(BUILD_STATIC)
     generate_export_header(${LIB_NAME}_static BASE_NAME ${LIB_NAME_UPPER})
