@@ -212,16 +212,16 @@ function(add_iceberg_lib LIB_NAME)
   endif()
 
   # generate export header file
-  string(TOUPPER ${LIB_NAME} LIB_NAME_UPPER)
   if(BUILD_SHARED)
-    generate_export_header(${LIB_NAME}_shared BASE_NAME ${LIB_NAME_UPPER})
+    generate_export_header(${LIB_NAME}_shared BASE_NAME ${LIB_NAME})
     target_compile_definitions(${LIB_NAME}_shared PUBLIC ${LIB_NAME}_shared_EXPORTS)
     if(BUILD_STATIC)
+      string(TOUPPER ${LIB_NAME} LIB_NAME_UPPER)
       target_compile_definitions(${LIB_NAME}_static
                                  PUBLIC ${LIB_NAME_UPPER}_STATIC_DEFINE)
     endif()
   elseif(BUILD_STATIC)
-    generate_export_header(${LIB_NAME}_static BASE_NAME ${LIB_NAME_UPPER})
+    generate_export_header(${LIB_NAME}_static BASE_NAME ${LIB_NAME})
   endif()
 
   # Modify variable in calling scope
