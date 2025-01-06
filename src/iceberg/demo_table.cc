@@ -18,6 +18,7 @@
  */
 
 #include "iceberg/demo_table.h"
+
 #include "iceberg/puffin.h"
 
 namespace iceberg {
