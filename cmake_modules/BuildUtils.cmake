@@ -214,7 +214,6 @@ function(add_iceberg_lib LIB_NAME)
   # generate export header file
   if(BUILD_SHARED)
     generate_export_header(${LIB_NAME}_shared BASE_NAME ${LIB_NAME})
-    # target_compile_definitions(${LIB_NAME}_shared PRIVATE ${LIB_NAME}_shared_EXPORTS)
     if(BUILD_STATIC)
       string(TOUPPER ${LIB_NAME} LIB_NAME_UPPER)
       target_compile_definitions(${LIB_NAME}_static
