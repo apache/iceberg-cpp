@@ -32,7 +32,7 @@ C++ implementation of [Apache Iceberg™](https://iceberg.apache.org/).
 
 ```bash
 cd iceberg-cpp
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/path/to/install -DICEBERG_BUILD_STATIC=ON -DICEBERG_BUILD_SHARED=ON
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/path/to/install -DICEBERG_BUILD_STATIC=ON -DICEBERG_BUILD_SHARED=ON -DICEBERG_BUILD_TESTS=OFF -DICEBERG_ARROW=OFF
 cmake --build build
 cmake --install build
 ```
