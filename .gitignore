@@ -16,3 +16,9 @@
 # under the License.
 
 build/
+cmake-build-debug/
+.DS_Store
+
+
+# intellij files
+.idea
