@@ -128,14 +128,14 @@ class [[nodiscard]] Status : public util::EqualityComparable<Status>,
     return Status::FromArgs(StatusCode::UnknownError, std::forward<Args>(args)...);
   }
 
-  /// Return true iff the status indicates success.
+  /// Return true if the status indicates success.
   constexpr bool ok() const { return (state_ == nullptr); }
 
-  /// Return true iff the status indicates an IO-related failure.
+  /// Return true if the status indicates an IO-related failure.
   constexpr bool IsIOError() const { return code() == StatusCode::IOError; }
-  /// Return true iff the status indicates an unimplemented operation.
+  /// Return true if the status indicates an unimplemented operation.
   constexpr bool IsNotImplemented() const { return code() == StatusCode::NotImplemented; }
-  /// Return true iff the status indicates an unknown error.
+  /// Return true if the status indicates an unknown error.
   constexpr bool IsUnknownError() const { return code() == StatusCode::UnknownError; }
 
   /// \brief Return a string representation of this status suitable for printing.
