@@ -25,3 +25,5 @@ To build the documentation:
 #. From this directory, run `doxygen`.
 
 The output will be in `./build/html`.
+
+[doxygen]: https://www.doxygen.nl/
