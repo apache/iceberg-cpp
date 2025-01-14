@@ -25,6 +25,7 @@
 
 namespace iceberg {
 
+/// \brief The metadata of an Iceberg table.
 class ICEBERG_EXPORT Table {
  public:
   virtual ~Table() = default;
