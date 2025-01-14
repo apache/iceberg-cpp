@@ -92,10 +92,6 @@ function(resolve_arrow_dependency)
                        Arrow
                        CONFIG)
 
-  # Add Arrow cmake modules to the search path
-  list(PREPEND CMAKE_MODULE_PATH
-       ${CMAKE_CURRENT_BINARY_DIR}/_deps/arrow-src/cpp/cmake_modules)
-
   fetchcontent_makeavailable(Arrow)
 
   if(arrow_SOURCE_DIR)
