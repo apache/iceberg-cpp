@@ -15,22 +15,20 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set(ICEBERG_SOURCES demo_table.cc schema.cc schema_field.cc type.cc)
+if(NOT ICEBERG_IO)
+  return()
+endif()
 
-add_iceberg_lib(iceberg
+set(ICEBERG_IO_SOURCES fs_file_io.cc fs_file_reader.cc fs_file_writer.cc)
+set(ICEBERG_IO_INCLUDES "${ICEBERG_INCLUDES}")
+
+add_iceberg_lib(iceberg_io
                 SOURCES
-                ${ICEBERG_SOURCES}
+                ${ICEBERG_IO_SOURCES}
                 PRIVATE_INCLUDES
-                ${ICEBERG_INCLUDES})
+                ${ICEBERG_IO_INCLUDES})
 
-iceberg_install_all_headers(iceberg)
+iceberg_install_all_headers(iceberg/io)
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/iceberg_export.h
-        DESTINATION ${ICEBERG_INSTALL_INCLUDEDIR}/iceberg)
-
-add_subdirectory(arrow)
-add_subdirectory(avro)
-add_subdirectory(puffin)
-add_subdirectory(io)
-
-iceberg_install_cmake_package(Iceberg iceberg_targets)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/iceberg_io_export.h
+        DESTINATION ${ICEBERG_INSTALL_INCLUDEDIR}/iceberg/io)
