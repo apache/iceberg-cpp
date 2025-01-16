@@ -21,8 +21,8 @@
 
 To build the documentation:
 
-#. Install [Doxygen][doxygen].
-#. From this directory, run `doxygen`.
+1. Install [Doxygen][doxygen].
+1. From this directory, run `doxygen`.
 
 The output will be in `./build/html`.
 
