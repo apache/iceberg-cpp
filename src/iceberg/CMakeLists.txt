@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set(ICEBERG_SOURCES demo_table.cc)
+set(ICEBERG_SOURCES demo_table.cc schema.cc schema_field.cc type.cc)
 
 add_iceberg_lib(iceberg
                 SOURCES
