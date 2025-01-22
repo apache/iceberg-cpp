@@ -151,7 +151,14 @@ ListType::ListType(int32_t field_id, std::shared_ptr<Type> type, bool optional)
     : element_(field_id, std::string(kElementName), std::move(type), optional) {}
 
 TypeId ListType::type_id() const { return TypeId::kList; }
-std::string ListType::ToString() const { return std::format("list<{}>", element_); }
+std::string ListType::ToString() const {
+  // XXX: work around Clang/libc++: "<{}>" in a format string appears to get
+  // parsed as {<>} or something; split up the format string to avoid that
+  std::string repr = "list<";
+  std::format_to(std::back_inserter(repr), "{}", element_);
+  repr += ">";
+  return repr;
+}
 std::span<const SchemaField> ListType::fields() const { return {&element_, 1}; }
 std::optional<std::reference_wrapper<const SchemaField>> ListType::GetFieldById(
     int32_t field_id) const {
@@ -200,7 +207,13 @@ const SchemaField& MapType::key() const { return fields_[0]; }
 const SchemaField& MapType::value() const { return fields_[1]; }
 TypeId MapType::type_id() const { return TypeId::kMap; }
 std::string MapType::ToString() const {
-  return std::format("map<{}: {}>", key(), value());
+  // XXX: work around Clang/libc++: "<{}>" in a format string appears to get
+  // parsed as {<>} or something; split up the format string to avoid that
+  std::string repr = "map<";
+
+  std::format_to(std::back_inserter(repr), "{}: {}", key(), value());
+  repr += "}";
+  return repr;
 }
 std::span<const SchemaField> MapType::fields() const { return fields_; }
 std::optional<std::reference_wrapper<const SchemaField>> MapType::GetFieldById(

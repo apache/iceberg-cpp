@@ -33,10 +33,11 @@
 #include "iceberg/util/formattable.h"
 
 /// \brief Make all classes deriving from iceberg::util::Formattable
-/// formattable with std::format.
+///   formattable with std::format.
 template <std::derived_from<iceberg::util::Formattable> Derived>
 struct std::formatter<Derived> : std::formatter<std::string_view> {
-  auto format(const iceberg::util::Formattable& obj, std::format_context& ctx) const {
+  template <class FormatContext>
+  auto format(const iceberg::util::Formattable& obj, FormatContext& ctx) const {
     return std::formatter<string_view>::format(obj.ToString(), ctx);
   }
 };
