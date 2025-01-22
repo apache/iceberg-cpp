@@ -52,6 +52,11 @@ enum class TypeId {
   kMap,
 };
 
+/// \brief The time unit.  In Iceberg V3 nanoseconds are also supported.
+enum class TimeUnit {
+  kMicrosecond,
+};
+
 class BooleanType;
 class SchemaField;
 class NestedType;

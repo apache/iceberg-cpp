@@ -83,7 +83,7 @@ class ICEBERG_EXPORT NestedType : public Type {
   GetFieldById(int32_t field_id) const = 0;
   /// \brief Get a field by index.
   [[nodiscard]] virtual std::optional<std::reference_wrapper<const SchemaField>>
-  GetFieldByIndex(int i) const = 0;
+  GetFieldByIndex(int32_t index) const = 0;
   /// \brief Get a field by name.
   [[nodiscard]] virtual std::optional<std::reference_wrapper<const SchemaField>>
   GetFieldByName(std::string_view name) const = 0;
@@ -212,12 +212,25 @@ class ICEBERG_EXPORT TimeType : public PrimitiveType {
   bool Equals(const Type& other) const override;
 };
 
+/// \brief A base class for any timestamp time (irrespective of unit or
+///   timezone).
+class ICEBERG_EXPORT TimestampBase : public PrimitiveType {
+ public:
+  /// \brief Is this type zoned or naive?
+  [[nodiscard]] virtual bool is_zoned() const = 0;
+  /// \brief The time resolution.
+  [[nodiscard]] virtual TimeUnit time_unit() const = 0;
+};
+
 /// \brief A data type representing a timestamp in microseconds without
 ///   reference to a timezone.
-class ICEBERG_EXPORT TimestampType : public PrimitiveType {
+class ICEBERG_EXPORT TimestampType : public TimestampBase {
  public:
   TimestampType() = default;
   ~TimestampType() = default;
+
+  bool is_zoned() const override;
+  TimeUnit time_unit() const override;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -226,12 +239,15 @@ class ICEBERG_EXPORT TimestampType : public PrimitiveType {
   bool Equals(const Type& other) const override;
 };
 
-/// \brief A data type representing a timestamp in microseconds in a
-///   particular timezone.
-class ICEBERG_EXPORT TimestampTzType : public PrimitiveType {
+/// \brief A data type representing a timestamp as microseconds since the
+///   epoch in UTC.
+class ICEBERG_EXPORT TimestampTzType : public TimestampBase {
  public:
   TimestampTzType() = default;
   ~TimestampTzType() = default;
+
+  bool is_zoned() const override;
+  TimeUnit time_unit() const override;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -325,7 +341,7 @@ class ICEBERG_EXPORT ListType : public NestedType {
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldById(
       int32_t field_id) const override;
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldByIndex(
-      int i) const override;
+      int32_t index) const override;
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
       std::string_view name) const override;
 
@@ -356,7 +372,7 @@ class ICEBERG_EXPORT MapType : public NestedType {
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldById(
       int32_t field_id) const override;
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldByIndex(
-      int i) const override;
+      int32_t index) const override;
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
       std::string_view name) const override;
 
@@ -379,7 +395,7 @@ class ICEBERG_EXPORT StructType : public NestedType {
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldById(
       int32_t field_id) const override;
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldByIndex(
-      int i) const override;
+      int32_t index) const override;
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
       std::string_view name) const override;
 

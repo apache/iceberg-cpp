@@ -91,12 +91,16 @@ bool DateType::Equals(const Type& other) const {
   return other.type_id() == TypeId::kDate;
 }
 
+bool TimestampType::is_zoned() const { return false; }
+TimeUnit TimestampType::time_unit() const { return TimeUnit::kMicrosecond; }
 TypeId TimestampType::type_id() const { return TypeId::kTimestamp; }
 std::string TimestampType::ToString() const { return "timestamp"; }
 bool TimestampType::Equals(const Type& other) const {
   return other.type_id() == TypeId::kTimestamp;
 }
 
+bool TimestampTzType::is_zoned() const { return true; }
+TimeUnit TimestampTzType::time_unit() const { return TimeUnit::kMicrosecond; }
 TypeId TimestampTzType::type_id() const { return TypeId::kTimestampTz; }
 std::string TimestampTzType::ToString() const { return "timestamptz"; }
 bool TimestampTzType::Equals(const Type& other) const {
@@ -226,7 +230,7 @@ std::optional<std::reference_wrapper<const SchemaField>> MapType::GetFieldById(
   return std::nullopt;
 }
 std::optional<std::reference_wrapper<const SchemaField>> MapType::GetFieldByIndex(
-    int index) const {
+    int32_t index) const {
   if (index == 0) {
     return key();
   } else if (index == 0) {
@@ -282,7 +286,7 @@ std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByI
   return fields_[it->second];
 }
 std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByIndex(
-    int index) const {
+    int32_t index) const {
   if (index < 0 || index >= static_cast<int>(fields_.size())) {
     return std::nullopt;
   }
