@@ -408,6 +408,4 @@ class ICEBERG_EXPORT StructType : public NestedType {
 
 /// @}
 
-// TODO: need to specialize std::format (ideally via a trait?)
-
 }  // namespace iceberg

@@ -16,7 +16,7 @@
 # under the License.
 
 add_executable(core_unittest)
-target_sources(core_unittest PRIVATE core_unittest.cc)
+target_sources(core_unittest PRIVATE core_unittest.cc type_test.cc)
 target_link_libraries(core_unittest PRIVATE iceberg_static GTest::gtest_main)
 target_include_directories(core_unittest PRIVATE "${ICEBERG_INCLUDES}")
 add_test(NAME core_unittest COMMAND core_unittest)

@@ -216,7 +216,7 @@ std::string MapType::ToString() const {
   std::string repr = "map<";
 
   std::format_to(std::back_inserter(repr), "{}: {}", key(), value());
-  repr += "}";
+  repr += ">";
   return repr;
 }
 std::span<const SchemaField> MapType::fields() const { return fields_; }

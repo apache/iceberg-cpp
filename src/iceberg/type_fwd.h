@@ -57,12 +57,29 @@ enum class TimeUnit {
   kMicrosecond,
 };
 
+class BinaryType;
 class BooleanType;
-class SchemaField;
+class DateType;
+class DecimalType;
+class FixedType;
+class Float32Type;
+class Float64Type;
+class Int32Type;
+class Int64Type;
+class ListType;
+class MapType;
 class NestedType;
 class PrimitiveType;
 class Schema;
+class SchemaField;
+class StringType;
 class StructType;
+class StructType;
+class TimeType;
+class TimestampBase;
+class TimestampType;
+class TimestampTzType;
 class Type;
+class UuidType;
 
 }  // namespace iceberg
