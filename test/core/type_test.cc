@@ -21,11 +21,12 @@
 
 #include <format>
 #include <memory>
+#include <stdexcept>
 #include <string>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "gtest/gtest.h"
 #include "iceberg/util/formatter.h"
 
 struct TypeTestCase {
@@ -254,3 +255,93 @@ INSTANTIATE_TEST_SUITE_P(Primitive, TypeTest, ::testing::ValuesIn(kPrimitiveType
 
 INSTANTIATE_TEST_SUITE_P(Nested, TypeTest, ::testing::ValuesIn(kNestedTypes),
                          TypeTestCaseToString);
+
+TEST(TypeTest, Equality) {
+  std::vector<std::shared_ptr<iceberg::Type>> alltypes;
+  for (const auto& test_case : kPrimitiveTypes) {
+    alltypes.push_back(test_case.type);
+  }
+  for (const auto& test_case : kNestedTypes) {
+    alltypes.push_back(test_case.type);
+  }
+
+  for (size_t i = 0; i < alltypes.size(); i++) {
+    for (size_t j = 0; j < alltypes.size(); j++) {
+      SCOPED_TRACE(std::format("{} == {}", *alltypes[i], *alltypes[j]));
+
+      if (i == j) {
+        ASSERT_EQ(*alltypes[i], *alltypes[j]);
+      } else {
+        ASSERT_NE(*alltypes[i], *alltypes[j]);
+      }
+    }
+  }
+}
+
+TEST(TypeTest, Decimal) {
+  {
+    iceberg::DecimalType decimal(38, 2);
+    ASSERT_EQ(38, decimal.precision());
+    ASSERT_EQ(2, decimal.scale());
+  }
+  {
+    iceberg::DecimalType decimal(10, -10);
+    ASSERT_EQ(10, decimal.precision());
+    ASSERT_EQ(-10, decimal.scale());
+  }
+  ASSERT_THAT([]() { iceberg::DecimalType decimal(-1, 10); },
+              ::testing::ThrowsMessage<std::runtime_error>(
+                  ::testing::HasSubstr("precision must be in [0, 38], was -1")));
+
+  ASSERT_THAT([]() { iceberg::DecimalType decimal(39, 10); },
+              ::testing::ThrowsMessage<std::runtime_error>(
+                  ::testing::HasSubstr("precision must be in [0, 38], was 39")));
+}
+
+TEST(TypeTest, Fixed) {
+  {
+    iceberg::FixedType fixed(0);
+    ASSERT_EQ(0, fixed.length());
+  }
+  {
+    iceberg::FixedType fixed(1);
+    ASSERT_EQ(1, fixed.length());
+  }
+  {
+    iceberg::FixedType fixed(127);
+    ASSERT_EQ(127, fixed.length());
+  }
+  ASSERT_THAT([]() { iceberg::FixedType decimal(-1); },
+              ::testing::ThrowsMessage<std::runtime_error>(
+                  ::testing::HasSubstr("length must be >= 0, was -1")));
+}
+
+TEST(TypeTest, List) {
+  {
+    iceberg::SchemaField field(5, "element", std::make_shared<iceberg::Int32Type>(),
+                               true);
+    iceberg::ListType list(field);
+    std::span<const iceberg::SchemaField> fields = list.fields();
+    ASSERT_EQ(1, fields.size());
+    ASSERT_EQ(field, fields[0]);
+    ASSERT_THAT(list.GetFieldById(5), ::testing::Optional(field));
+    ASSERT_THAT(list.GetFieldByIndex(0), ::testing::Optional(field));
+    ASSERT_THAT(list.GetFieldByName("element"), ::testing::Optional(field));
+
+    ASSERT_EQ(std::nullopt, list.GetFieldById(0));
+    ASSERT_EQ(std::nullopt, list.GetFieldByIndex(1));
+    ASSERT_EQ(std::nullopt, list.GetFieldByIndex(-1));
+    ASSERT_EQ(std::nullopt, list.GetFieldByName("foo"));
+  }
+  ASSERT_THAT(
+      []() {
+        iceberg::ListType list(iceberg::SchemaField(
+            1, "wrongname", std::make_shared<iceberg::BooleanType>(), true));
+      },
+      ::testing::ThrowsMessage<std::runtime_error>(
+          ::testing::HasSubstr("child field name should be 'element', was 'wrongname'")));
+}
+
+TEST(TypeTest, Map) {}
+
+TEST(TypeTest, Struct) {}
