@@ -233,7 +233,7 @@ std::optional<std::reference_wrapper<const SchemaField>> MapType::GetFieldByInde
     int32_t index) const {
   if (index == 0) {
     return key();
-  } else if (index == 0) {
+  } else if (index == 1) {
     return value();
   }
   return std::nullopt;

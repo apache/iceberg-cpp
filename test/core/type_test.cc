@@ -342,6 +342,77 @@ TEST(TypeTest, List) {
           ::testing::HasSubstr("child field name should be 'element', was 'wrongname'")));
 }
 
-TEST(TypeTest, Map) {}
+TEST(TypeTest, Map) {
+  {
+    iceberg::SchemaField key(5, "key", std::make_shared<iceberg::Int32Type>(), true);
+    iceberg::SchemaField value(7, "value", std::make_shared<iceberg::StringType>(), true);
+    iceberg::MapType map(key, value);
+    std::span<const iceberg::SchemaField> fields = map.fields();
+    ASSERT_EQ(2, fields.size());
+    ASSERT_EQ(key, fields[0]);
+    ASSERT_EQ(value, fields[1]);
+    ASSERT_THAT(map.GetFieldById(5), ::testing::Optional(key));
+    ASSERT_THAT(map.GetFieldById(7), ::testing::Optional(value));
+    ASSERT_THAT(map.GetFieldByIndex(0), ::testing::Optional(key));
+    ASSERT_THAT(map.GetFieldByIndex(1), ::testing::Optional(value));
+    ASSERT_THAT(map.GetFieldByName("key"), ::testing::Optional(key));
+    ASSERT_THAT(map.GetFieldByName("value"), ::testing::Optional(value));
 
-TEST(TypeTest, Struct) {}
+    ASSERT_EQ(std::nullopt, map.GetFieldById(0));
+    ASSERT_EQ(std::nullopt, map.GetFieldByIndex(2));
+    ASSERT_EQ(std::nullopt, map.GetFieldByIndex(-1));
+    ASSERT_EQ(std::nullopt, map.GetFieldByName("element"));
+  }
+  ASSERT_THAT(
+      []() {
+        iceberg::SchemaField key(5, "notkey", std::make_shared<iceberg::Int32Type>(),
+                                 true);
+        iceberg::SchemaField value(7, "value", std::make_shared<iceberg::StringType>(),
+                                   true);
+        iceberg::MapType map(key, value);
+      },
+      ::testing::ThrowsMessage<std::runtime_error>(
+          ::testing::HasSubstr("key field name should be 'key', was 'notkey'")));
+  ASSERT_THAT(
+      []() {
+        iceberg::SchemaField key(5, "key", std::make_shared<iceberg::Int32Type>(), true);
+        iceberg::SchemaField value(7, "notvalue", std::make_shared<iceberg::StringType>(),
+                                   true);
+        iceberg::MapType map(key, value);
+      },
+      ::testing::ThrowsMessage<std::runtime_error>(
+          ::testing::HasSubstr("value field name should be 'value', was 'notvalue'")));
+}
+
+TEST(TypeTest, Struct) {
+  {
+    iceberg::SchemaField field1(5, "foo", std::make_shared<iceberg::Int32Type>(), true);
+    iceberg::SchemaField field2(7, "bar", std::make_shared<iceberg::StringType>(), true);
+    iceberg::StructType struct_({field1, field2});
+    std::span<const iceberg::SchemaField> fields = struct_.fields();
+    ASSERT_EQ(2, fields.size());
+    ASSERT_EQ(field1, fields[0]);
+    ASSERT_EQ(field2, fields[1]);
+    ASSERT_THAT(struct_.GetFieldById(5), ::testing::Optional(field1));
+    ASSERT_THAT(struct_.GetFieldById(7), ::testing::Optional(field2));
+    ASSERT_THAT(struct_.GetFieldByIndex(0), ::testing::Optional(field1));
+    ASSERT_THAT(struct_.GetFieldByIndex(1), ::testing::Optional(field2));
+    ASSERT_THAT(struct_.GetFieldByName("foo"), ::testing::Optional(field1));
+    ASSERT_THAT(struct_.GetFieldByName("bar"), ::testing::Optional(field2));
+
+    ASSERT_EQ(std::nullopt, struct_.GetFieldById(0));
+    ASSERT_EQ(std::nullopt, struct_.GetFieldByIndex(2));
+    ASSERT_EQ(std::nullopt, struct_.GetFieldByIndex(-1));
+    ASSERT_EQ(std::nullopt, struct_.GetFieldByName("element"));
+  }
+  ASSERT_THAT(
+      []() {
+        iceberg::SchemaField field1(5, "foo", std::make_shared<iceberg::Int32Type>(),
+                                    true);
+        iceberg::SchemaField field2(5, "bar", std::make_shared<iceberg::StringType>(),
+                                    true);
+        iceberg::StructType struct_({field1, field2});
+      },
+      ::testing::ThrowsMessage<std::runtime_error>(
+          ::testing::HasSubstr("duplicate field ID 5")));
+}
