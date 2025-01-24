@@ -28,7 +28,7 @@ class ICEBERG_PUFFIN_EXPORT DemoPuffin : public Puffin {
  public:
   DemoPuffin() = default;
   ~DemoPuffin() override = default;
-  [[nodiscard]] std::string print() const override;
+  std::string print() const override;
 };
 
 }  // namespace iceberg::puffin

@@ -28,7 +28,7 @@ namespace iceberg {
 class ICEBERG_EXPORT Puffin {
  public:
   virtual ~Puffin() = default;
-  [[nodiscard]] virtual std::string print() const = 0;
+  virtual std::string print() const = 0;
 };
 
 }  // namespace iceberg

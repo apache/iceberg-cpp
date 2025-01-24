@@ -21,6 +21,7 @@ Checks: |
   clang-analyzer-*,
   google-*,
   modernize-*,
+  -modernize-use-nodiscard,
   -modernize-use-trailing-return-type,
 
 CheckOptions:
