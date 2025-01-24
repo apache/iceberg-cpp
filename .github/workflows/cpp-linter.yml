@@ -43,7 +43,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           style: file
-          tidy-checks: file
+          tidy-checks: ''
           files-changed-only: true
           lines-changed-only: true
           thread-comments: true
