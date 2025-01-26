@@ -44,7 +44,7 @@ class ICEBERG_EXPORT Schema : public StructType {
 
   /// \brief Get the schema ID.
   ///
-  /// Schemas are identified by a unique ID for the purposes of schema
+  /// A schema is identified by a unique ID for the purposes of schema
   /// evolution.
   [[nodiscard]] int32_t schema_id() const;
 

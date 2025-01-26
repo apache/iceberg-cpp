@@ -30,7 +30,7 @@
 
 TEST(SchemaTest, Basics) {
   {
-    iceberg::SchemaField field1(5, "foo", std::make_shared<iceberg::Int32Type>(), true);
+    iceberg::SchemaField field1(5, "foo", std::make_shared<iceberg::IntType>(), true);
     iceberg::SchemaField field2(7, "bar", std::make_shared<iceberg::StringType>(), true);
     iceberg::Schema schema(100, {field1, field2});
     ASSERT_EQ(schema, schema);
@@ -53,8 +53,7 @@ TEST(SchemaTest, Basics) {
   }
   ASSERT_THAT(
       []() {
-        iceberg::SchemaField field1(5, "foo", std::make_shared<iceberg::Int32Type>(),
-                                    true);
+        iceberg::SchemaField field1(5, "foo", std::make_shared<iceberg::IntType>(), true);
         iceberg::SchemaField field2(5, "bar", std::make_shared<iceberg::StringType>(),
                                     true);
         iceberg::Schema schema(100, {field1, field2});
@@ -64,9 +63,9 @@ TEST(SchemaTest, Basics) {
 }
 
 TEST(SchemaTest, Equality) {
-  iceberg::SchemaField field1(5, "foo", std::make_shared<iceberg::Int32Type>(), true);
+  iceberg::SchemaField field1(5, "foo", std::make_shared<iceberg::IntType>(), true);
   iceberg::SchemaField field2(7, "bar", std::make_shared<iceberg::StringType>(), true);
-  iceberg::SchemaField field3(5, "foobar", std::make_shared<iceberg::Int32Type>(), true);
+  iceberg::SchemaField field3(5, "foobar", std::make_shared<iceberg::IntType>(), true);
   iceberg::Schema schema1(100, {field1, field2});
   iceberg::Schema schema2(101, {field1, field2});
   iceberg::Schema schema3(101, {field1});

@@ -33,28 +33,26 @@ bool BooleanType::Equals(const Type& other) const {
   return other.type_id() == TypeId::kBoolean;
 }
 
-TypeId Int32Type::type_id() const { return TypeId::kInt32; }
-std::string Int32Type::ToString() const { return "int32"; }
-bool Int32Type::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kInt32;
+TypeId IntType::type_id() const { return TypeId::kInt; }
+std::string IntType::ToString() const { return "int"; }
+bool IntType::Equals(const Type& other) const { return other.type_id() == TypeId::kInt; }
+
+TypeId LongType::type_id() const { return TypeId::kLong; }
+std::string LongType::ToString() const { return "long"; }
+bool LongType::Equals(const Type& other) const {
+  return other.type_id() == TypeId::kLong;
 }
 
-TypeId Int64Type::type_id() const { return TypeId::kInt64; }
-std::string Int64Type::ToString() const { return "int64"; }
-bool Int64Type::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kInt64;
+TypeId FloatType::type_id() const { return TypeId::kFloat; }
+std::string FloatType::ToString() const { return "float"; }
+bool FloatType::Equals(const Type& other) const {
+  return other.type_id() == TypeId::kFloat;
 }
 
-TypeId Float32Type::type_id() const { return TypeId::kFloat32; }
-std::string Float32Type::ToString() const { return "float32"; }
-bool Float32Type::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kFloat32;
-}
-
-TypeId Float64Type::type_id() const { return TypeId::kFloat64; }
-std::string Float64Type::ToString() const { return "float64"; }
-bool Float64Type::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kFloat64;
+TypeId DoubleType::type_id() const { return TypeId::kDouble; }
+std::string DoubleType::ToString() const { return "double"; }
+bool DoubleType::Equals(const Type& other) const {
+  return other.type_id() == TypeId::kDouble;
 }
 
 DecimalType::DecimalType(int32_t precision, int32_t scale)
@@ -265,7 +263,7 @@ StructType::StructType(std::vector<SchemaField> fields) : fields_(std::move(fiel
                       field.field_id(), it->second, index));
     }
 
-    index++;
+    ++index;
   }
 }
 

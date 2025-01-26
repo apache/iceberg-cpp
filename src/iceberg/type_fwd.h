@@ -33,23 +33,23 @@ namespace iceberg {
 ///
 /// Iceberg V3 types are not currently supported.
 enum class TypeId {
+  kStruct,
+  kList,
+  kMap,
   kBoolean,
-  kInt32,
-  kInt64,
-  kFloat32,
-  kFloat64,
+  kInt,
+  kLong,
+  kFloat,
+  kDouble,
   kDecimal,
   kDate,
   kTime,
   kTimestamp,
   kTimestampTz,
-  kBinary,
   kString,
-  kFixed,
   kUuid,
-  kStruct,
-  kList,
-  kMap,
+  kFixed,
+  kBinary,
 };
 
 /// \brief The time unit.  In Iceberg V3 nanoseconds are also supported.
@@ -62,10 +62,10 @@ class BooleanType;
 class DateType;
 class DecimalType;
 class FixedType;
-class Float32Type;
-class Float64Type;
-class Int32Type;
-class Int64Type;
+class FloatType;
+class DoubleType;
+class IntType;
+class LongType;
 class ListType;
 class MapType;
 class NestedType;
@@ -73,7 +73,6 @@ class PrimitiveType;
 class Schema;
 class SchemaField;
 class StringType;
-class StructType;
 class StructType;
 class TimeType;
 class TimestampBase;

@@ -63,14 +63,14 @@ class ICEBERG_EXPORT Type : public iceberg::util::Formattable {
   [[nodiscard]] virtual bool Equals(const Type& other) const = 0;
 };
 
-/// \brief A data type that may not have child fields.
+/// \brief A data type that does not have child fields.
 class ICEBERG_EXPORT PrimitiveType : public Type {
  public:
   bool is_primitive() const override { return true; }
   bool is_nested() const override { return false; }
 };
 
-/// \brief A data type that may have child fields.
+/// \brief A data type that has child fields.
 class ICEBERG_EXPORT NestedType : public Type {
  public:
   bool is_primitive() const override { return false; }
@@ -93,7 +93,7 @@ class ICEBERG_EXPORT NestedType : public Type {
 /// Primitive types do not have nested fields.
 /// @{
 
-/// \brief A data type representing a boolean.
+/// \brief A data type representing a boolean (true or false).
 class ICEBERG_EXPORT BooleanType : public PrimitiveType {
  public:
   BooleanType() = default;
@@ -107,10 +107,10 @@ class ICEBERG_EXPORT BooleanType : public PrimitiveType {
 };
 
 /// \brief A data type representing a 32-bit signed integer.
-class ICEBERG_EXPORT Int32Type : public PrimitiveType {
+class ICEBERG_EXPORT IntType : public PrimitiveType {
  public:
-  Int32Type() = default;
-  ~Int32Type() = default;
+  IntType() = default;
+  ~IntType() = default;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -120,10 +120,10 @@ class ICEBERG_EXPORT Int32Type : public PrimitiveType {
 };
 
 /// \brief A data type representing a 64-bit signed integer.
-class ICEBERG_EXPORT Int64Type : public PrimitiveType {
+class ICEBERG_EXPORT LongType : public PrimitiveType {
  public:
-  Int64Type() = default;
-  ~Int64Type() = default;
+  LongType() = default;
+  ~LongType() = default;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -132,11 +132,12 @@ class ICEBERG_EXPORT Int64Type : public PrimitiveType {
   bool Equals(const Type& other) const override;
 };
 
-/// \brief A data type representing a 32-bit (single precision) float.
-class ICEBERG_EXPORT Float32Type : public PrimitiveType {
+/// \brief A data type representing a 32-bit (single precision) IEEE-754
+///   float.
+class ICEBERG_EXPORT FloatType : public PrimitiveType {
  public:
-  Float32Type() = default;
-  ~Float32Type() = default;
+  FloatType() = default;
+  ~FloatType() = default;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -145,11 +146,12 @@ class ICEBERG_EXPORT Float32Type : public PrimitiveType {
   bool Equals(const Type& other) const override;
 };
 
-/// \brief A data type representing a 64-bit (double precision) float.
-class ICEBERG_EXPORT Float64Type : public PrimitiveType {
+/// \brief A data type representing a 64-bit (double precision) IEEE-754
+///   float.
+class ICEBERG_EXPORT DoubleType : public PrimitiveType {
  public:
-  Float64Type() = default;
-  ~Float64Type() = default;
+  DoubleType() = default;
+  ~DoubleType() = default;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -240,7 +242,7 @@ class ICEBERG_EXPORT TimestampType : public TimestampBase {
 };
 
 /// \brief A data type representing a timestamp as microseconds since the
-///   epoch in UTC.
+///   epoch in UTC.  A time zone or offset is not stored.
 class ICEBERG_EXPORT TimestampTzType : public TimestampBase {
  public:
   TimestampTzType() = default;
@@ -256,7 +258,7 @@ class ICEBERG_EXPORT TimestampTzType : public TimestampBase {
   bool Equals(const Type& other) const override;
 };
 
-/// \brief A data type representing a bytestring.
+/// \brief A data type representing an arbitrary-length byte sequence.
 class ICEBERG_EXPORT BinaryType : public PrimitiveType {
  public:
   BinaryType() = default;
@@ -269,7 +271,8 @@ class ICEBERG_EXPORT BinaryType : public PrimitiveType {
   bool Equals(const Type& other) const override;
 };
 
-/// \brief A data type representing a string.
+/// \brief A data type representing an arbitrary-length character sequence
+///   (encoded in UTF-8).
 class ICEBERG_EXPORT StringType : public PrimitiveType {
  public:
   StringType() = default;
