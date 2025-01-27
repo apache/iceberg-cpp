@@ -84,7 +84,9 @@ class ICEBERG_EXPORT NestedType : public Type {
   /// \brief Get a field by index.
   [[nodiscard]] virtual std::optional<std::reference_wrapper<const SchemaField>>
   GetFieldByIndex(int32_t index) const = 0;
-  /// \brief Get a field by name.
+  /// \brief Get a field by name (case-sensitive).  Behavior is undefined if
+  ///   the field name is not unique; prefer GetFieldById or GetFieldByIndex
+  ///   when possible.
   [[nodiscard]] virtual std::optional<std::reference_wrapper<const SchemaField>>
   GetFieldByName(std::string_view name) const = 0;
 };
