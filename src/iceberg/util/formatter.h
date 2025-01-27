@@ -23,11 +23,10 @@
 /// A specialization of std::formatter for Formattable objects.  This header
 /// is separate from iceberg/util/formattable.h so that the latter (which is
 /// meant to be included widely) does not leak <format> unnecessarily into
-/// other headers.
+/// other headers.  You must include this header to format a Formattable.
 
 #include <concepts>
 #include <format>
-#include <string>
 #include <string_view>
 
 #include "iceberg/util/formattable.h"
