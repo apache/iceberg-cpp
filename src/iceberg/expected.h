@@ -115,7 +115,7 @@ inline constexpr bool is_error_type_valid_v = is_error_type_valid<T>::value;
 }  // namespace expected_detail
 
 template <class E>
-class ICEBERG_EXPORT unexpected {
+class ICEBERG_EXPORT [[nodiscard]] unexpected {
  public:
   static_assert(expected_detail::is_error_type_valid_v<E>);
 
@@ -999,8 +999,9 @@ struct default_ctor_base<T, E, false> {
 /// tracked by the expected object.
 
 template <class T, class E>
-class ICEBERG_EXPORT expected : private expected_detail::move_assign_base<T, E>,
-                                private expected_detail::default_ctor_base<T, E> {
+class ICEBERG_EXPORT [[nodiscard]] expected
+    : private expected_detail::move_assign_base<T, E>,
+      private expected_detail::default_ctor_base<T, E> {
   static_assert(expected_detail::is_value_type_valid_v<T>);
   static_assert(expected_detail::is_error_type_valid_v<E>);
 
@@ -1781,7 +1782,7 @@ constexpr void swap(expected<T, E>& lhs,
 }
 
 template <class E>
-class ICEBERG_EXPORT expected<void, E>
+class ICEBERG_EXPORT [[nodiscard]] expected<void, E>
     : private expected_detail::move_assign_base<void, E>,
       private expected_detail::default_ctor_base<void, E> {
   static_assert(expected_detail::is_error_type_valid_v<E>);
