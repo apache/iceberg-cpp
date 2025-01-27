@@ -3,3 +3,7 @@ Copyright 2024-2025 The Apache Software Foundation
 
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
+
+This product includes code from zeus-cpp
+ * Copyright (c) 2024 zeus-cpp
+ * https://github.com/zeus-cpp/expected
