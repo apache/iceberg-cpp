@@ -27,118 +27,60 @@
 
 namespace iceberg {
 
-TypeId BooleanType::type_id() const { return TypeId::kBoolean; }
-std::string BooleanType::ToString() const { return "boolean"; }
-bool BooleanType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kBoolean;
-}
+StructType::StructType(std::vector<SchemaField> fields) : fields_(std::move(fields)) {
+  size_t index = 0;
+  for (const auto& field : fields_) {
+    auto [it, inserted] = field_id_to_index_.try_emplace(field.field_id(), index);
+    if (!inserted) {
+      throw std::runtime_error(
+          std::format("StructType: duplicate field ID {} (field indices {} and {})",
+                      field.field_id(), it->second, index));
+    }
 
-TypeId IntType::type_id() const { return TypeId::kInt; }
-std::string IntType::ToString() const { return "int"; }
-bool IntType::Equals(const Type& other) const { return other.type_id() == TypeId::kInt; }
-
-TypeId LongType::type_id() const { return TypeId::kLong; }
-std::string LongType::ToString() const { return "long"; }
-bool LongType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kLong;
-}
-
-TypeId FloatType::type_id() const { return TypeId::kFloat; }
-std::string FloatType::ToString() const { return "float"; }
-bool FloatType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kFloat;
-}
-
-TypeId DoubleType::type_id() const { return TypeId::kDouble; }
-std::string DoubleType::ToString() const { return "double"; }
-bool DoubleType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kDouble;
-}
-
-DecimalType::DecimalType(int32_t precision, int32_t scale)
-    : precision_(precision), scale_(scale) {
-  if (precision < 0 || precision > kMaxPrecision) {
-    throw std::runtime_error(
-        std::format("DecimalType: precision must be in [0, 38], was {}", precision));
+    ++index;
   }
 }
 
-int32_t DecimalType::precision() const { return precision_; }
-int32_t DecimalType::scale() const { return scale_; }
-TypeId DecimalType::type_id() const { return TypeId::kDecimal; }
-std::string DecimalType::ToString() const {
-  return std::format("decimal({}, {})", precision_, scale_);
+TypeId StructType::type_id() const { return TypeId::kStruct; }
+std::string StructType::ToString() const {
+  std::string repr = "struct<\n";
+  for (const auto& field : fields_) {
+    std::format_to(std::back_inserter(repr), "  {}\n", field);
+  }
+  repr += ">";
+  return repr;
 }
-bool DecimalType::Equals(const Type& other) const {
-  if (other.type_id() != TypeId::kDecimal) {
+std::span<const SchemaField> StructType::fields() const { return fields_; }
+std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldById(
+    int32_t field_id) const {
+  auto it = field_id_to_index_.find(field_id);
+  if (it == field_id_to_index_.end()) return std::nullopt;
+  return fields_[it->second];
+}
+std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByIndex(
+    int32_t index) const {
+  if (index < 0 || index >= static_cast<int>(fields_.size())) {
+    return std::nullopt;
+  }
+  return fields_[index];
+}
+std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByName(
+    std::string_view name) const {
+  // TODO: what is the right behavior if there are duplicate names? (Are
+  // duplicate names permitted?)
+  for (const auto& field : fields_) {
+    if (field.name() == name) {
+      return field;
+    }
+  }
+  return std::nullopt;
+}
+bool StructType::Equals(const Type& other) const {
+  if (other.type_id() != TypeId::kStruct) {
     return false;
   }
-  const auto& decimal = static_cast<const DecimalType&>(other);
-  return precision_ == decimal.precision_ && scale_ == decimal.scale_;
-}
-
-TypeId TimeType::type_id() const { return TypeId::kTime; }
-std::string TimeType::ToString() const { return "time"; }
-bool TimeType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kTime;
-}
-
-TypeId DateType::type_id() const { return TypeId::kDate; }
-std::string DateType::ToString() const { return "date"; }
-bool DateType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kDate;
-}
-
-bool TimestampType::is_zoned() const { return false; }
-TimeUnit TimestampType::time_unit() const { return TimeUnit::kMicrosecond; }
-TypeId TimestampType::type_id() const { return TypeId::kTimestamp; }
-std::string TimestampType::ToString() const { return "timestamp"; }
-bool TimestampType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kTimestamp;
-}
-
-bool TimestampTzType::is_zoned() const { return true; }
-TimeUnit TimestampTzType::time_unit() const { return TimeUnit::kMicrosecond; }
-TypeId TimestampTzType::type_id() const { return TypeId::kTimestampTz; }
-std::string TimestampTzType::ToString() const { return "timestamptz"; }
-bool TimestampTzType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kTimestampTz;
-}
-
-TypeId BinaryType::type_id() const { return TypeId::kBinary; }
-std::string BinaryType::ToString() const { return "binary"; }
-bool BinaryType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kBinary;
-}
-
-TypeId StringType::type_id() const { return TypeId::kString; }
-std::string StringType::ToString() const { return "string"; }
-bool StringType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kString;
-}
-
-FixedType::FixedType(int32_t length) : length_(length) {
-  if (length < 0) {
-    throw std::runtime_error(
-        std::format("FixedType: length must be >= 0, was {}", length));
-  }
-}
-
-int32_t FixedType::length() const { return length_; }
-TypeId FixedType::type_id() const { return TypeId::kFixed; }
-std::string FixedType::ToString() const { return std::format("fixed({})", length_); }
-bool FixedType::Equals(const Type& other) const {
-  if (other.type_id() != TypeId::kFixed) {
-    return false;
-  }
-  const auto& fixed = static_cast<const FixedType&>(other);
-  return length_ == fixed.length_;
-}
-
-TypeId UuidType::type_id() const { return TypeId::kUuid; }
-std::string UuidType::ToString() const { return "uuid"; }
-bool UuidType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kUuid;
+  const auto& struct_ = static_cast<const StructType&>(other);
+  return fields_ == struct_.fields_;
 }
 
 ListType::ListType(SchemaField element) : element_(std::move(element)) {
@@ -253,60 +195,118 @@ bool MapType::Equals(const Type& other) const {
   return fields_ == map.fields_;
 }
 
-StructType::StructType(std::vector<SchemaField> fields) : fields_(std::move(fields)) {
-  size_t index = 0;
-  for (const auto& field : fields_) {
-    auto [it, inserted] = field_id_to_index_.try_emplace(field.field_id(), index);
-    if (!inserted) {
-      throw std::runtime_error(
-          std::format("StructType: duplicate field ID {} (field indices {} and {})",
-                      field.field_id(), it->second, index));
-    }
-
-    ++index;
-  }
+TypeId BooleanType::type_id() const { return TypeId::kBoolean; }
+std::string BooleanType::ToString() const { return "boolean"; }
+bool BooleanType::Equals(const Type& other) const {
+  return other.type_id() == TypeId::kBoolean;
 }
 
-TypeId StructType::type_id() const { return TypeId::kStruct; }
-std::string StructType::ToString() const {
-  std::string repr = "struct<\n";
-  for (const auto& field : fields_) {
-    std::format_to(std::back_inserter(repr), "  {}\n", field);
+TypeId IntType::type_id() const { return TypeId::kInt; }
+std::string IntType::ToString() const { return "int"; }
+bool IntType::Equals(const Type& other) const { return other.type_id() == TypeId::kInt; }
+
+TypeId LongType::type_id() const { return TypeId::kLong; }
+std::string LongType::ToString() const { return "long"; }
+bool LongType::Equals(const Type& other) const {
+  return other.type_id() == TypeId::kLong;
+}
+
+TypeId FloatType::type_id() const { return TypeId::kFloat; }
+std::string FloatType::ToString() const { return "float"; }
+bool FloatType::Equals(const Type& other) const {
+  return other.type_id() == TypeId::kFloat;
+}
+
+TypeId DoubleType::type_id() const { return TypeId::kDouble; }
+std::string DoubleType::ToString() const { return "double"; }
+bool DoubleType::Equals(const Type& other) const {
+  return other.type_id() == TypeId::kDouble;
+}
+
+DecimalType::DecimalType(int32_t precision, int32_t scale)
+    : precision_(precision), scale_(scale) {
+  if (precision < 0 || precision > kMaxPrecision) {
+    throw std::runtime_error(
+        std::format("DecimalType: precision must be in [0, 38], was {}", precision));
   }
-  repr += ">";
-  return repr;
 }
-std::span<const SchemaField> StructType::fields() const { return fields_; }
-std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldById(
-    int32_t field_id) const {
-  auto it = field_id_to_index_.find(field_id);
-  if (it == field_id_to_index_.end()) return std::nullopt;
-  return fields_[it->second];
+
+int32_t DecimalType::precision() const { return precision_; }
+int32_t DecimalType::scale() const { return scale_; }
+TypeId DecimalType::type_id() const { return TypeId::kDecimal; }
+std::string DecimalType::ToString() const {
+  return std::format("decimal({}, {})", precision_, scale_);
 }
-std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByIndex(
-    int32_t index) const {
-  if (index < 0 || index >= static_cast<int>(fields_.size())) {
-    return std::nullopt;
-  }
-  return fields_[index];
-}
-std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByName(
-    std::string_view name) const {
-  // TODO: what is the right behavior if there are duplicate names? (Are
-  // duplicate names permitted?)
-  for (const auto& field : fields_) {
-    if (field.name() == name) {
-      return field;
-    }
-  }
-  return std::nullopt;
-}
-bool StructType::Equals(const Type& other) const {
-  if (other.type_id() != TypeId::kStruct) {
+bool DecimalType::Equals(const Type& other) const {
+  if (other.type_id() != TypeId::kDecimal) {
     return false;
   }
-  const auto& struct_ = static_cast<const StructType&>(other);
-  return fields_ == struct_.fields_;
+  const auto& decimal = static_cast<const DecimalType&>(other);
+  return precision_ == decimal.precision_ && scale_ == decimal.scale_;
+}
+
+TypeId DateType::type_id() const { return TypeId::kDate; }
+std::string DateType::ToString() const { return "date"; }
+bool DateType::Equals(const Type& other) const {
+  return other.type_id() == TypeId::kDate;
+}
+
+TypeId TimeType::type_id() const { return TypeId::kTime; }
+std::string TimeType::ToString() const { return "time"; }
+bool TimeType::Equals(const Type& other) const {
+  return other.type_id() == TypeId::kTime;
+}
+
+bool TimestampType::is_zoned() const { return false; }
+TimeUnit TimestampType::time_unit() const { return TimeUnit::kMicrosecond; }
+TypeId TimestampType::type_id() const { return TypeId::kTimestamp; }
+std::string TimestampType::ToString() const { return "timestamp"; }
+bool TimestampType::Equals(const Type& other) const {
+  return other.type_id() == TypeId::kTimestamp;
+}
+
+bool TimestampTzType::is_zoned() const { return true; }
+TimeUnit TimestampTzType::time_unit() const { return TimeUnit::kMicrosecond; }
+TypeId TimestampTzType::type_id() const { return TypeId::kTimestampTz; }
+std::string TimestampTzType::ToString() const { return "timestamptz"; }
+bool TimestampTzType::Equals(const Type& other) const {
+  return other.type_id() == TypeId::kTimestampTz;
+}
+
+TypeId StringType::type_id() const { return TypeId::kString; }
+std::string StringType::ToString() const { return "string"; }
+bool StringType::Equals(const Type& other) const {
+  return other.type_id() == TypeId::kString;
+}
+
+TypeId UuidType::type_id() const { return TypeId::kUuid; }
+std::string UuidType::ToString() const { return "uuid"; }
+bool UuidType::Equals(const Type& other) const {
+  return other.type_id() == TypeId::kUuid;
+}
+
+FixedType::FixedType(int32_t length) : length_(length) {
+  if (length < 0) {
+    throw std::runtime_error(
+        std::format("FixedType: length must be >= 0, was {}", length));
+  }
+}
+
+int32_t FixedType::length() const { return length_; }
+TypeId FixedType::type_id() const { return TypeId::kFixed; }
+std::string FixedType::ToString() const { return std::format("fixed({})", length_); }
+bool FixedType::Equals(const Type& other) const {
+  if (other.type_id() != TypeId::kFixed) {
+    return false;
+  }
+  const auto& fixed = static_cast<const FixedType&>(other);
+  return length_ == fixed.length_;
+}
+
+TypeId BinaryType::type_id() const { return TypeId::kBinary; }
+std::string BinaryType::ToString() const { return "binary"; }
+bool BinaryType::Equals(const Type& other) const {
+  return other.type_id() == TypeId::kBinary;
 }
 
 }  // namespace iceberg

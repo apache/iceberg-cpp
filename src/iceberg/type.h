@@ -89,6 +89,96 @@ class ICEBERG_EXPORT NestedType : public Type {
   GetFieldByName(std::string_view name) const = 0;
 };
 
+/// \defgroup type-nested Nested Types
+/// Nested types have child fields.
+/// @{
+
+/// \brief A data type representing a struct with nested fields.
+class ICEBERG_EXPORT StructType : public NestedType {
+ public:
+  explicit StructType(std::vector<SchemaField> fields);
+  ~StructType() = default;
+
+  TypeId type_id() const override;
+  std::string ToString() const override;
+
+  std::span<const SchemaField> fields() const override;
+  std::optional<std::reference_wrapper<const SchemaField>> GetFieldById(
+      int32_t field_id) const override;
+  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByIndex(
+      int32_t index) const override;
+  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
+      std::string_view name) const override;
+
+ protected:
+  bool Equals(const Type& other) const override;
+
+  std::vector<SchemaField> fields_;
+  std::unordered_map<int32_t, size_t> field_id_to_index_;
+};
+
+/// \brief A data type representing a list of values.
+class ICEBERG_EXPORT ListType : public NestedType {
+ public:
+  constexpr static const std::string_view kElementName = "element";
+
+  /// \brief Construct a list of the given element.  The name of the child
+  ///   field should be "element".
+  explicit ListType(SchemaField element);
+  /// \brief Construct a list of the given element type.
+  ListType(int32_t field_id, std::shared_ptr<Type> type, bool optional);
+  ~ListType() = default;
+
+  TypeId type_id() const override;
+  std::string ToString() const override;
+
+  std::span<const SchemaField> fields() const override;
+  std::optional<std::reference_wrapper<const SchemaField>> GetFieldById(
+      int32_t field_id) const override;
+  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByIndex(
+      int32_t index) const override;
+  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
+      std::string_view name) const override;
+
+ protected:
+  bool Equals(const Type& other) const override;
+
+  SchemaField element_;
+};
+
+/// \brief A data type representing a dictionary of values.
+class ICEBERG_EXPORT MapType : public NestedType {
+ public:
+  constexpr static const std::string_view kKeyName = "key";
+  constexpr static const std::string_view kValueName = "value";
+
+  /// \brief Construct a map of the given key/value fields.  The field names
+  ///   should be "key" and "value", respectively.
+  explicit MapType(SchemaField key, SchemaField value);
+  ~MapType() = default;
+
+  const SchemaField& key() const;
+  const SchemaField& value() const;
+
+  TypeId type_id() const override;
+  std::string ToString() const override;
+
+  std::span<const SchemaField> fields() const override;
+  std::optional<std::reference_wrapper<const SchemaField>> GetFieldById(
+      int32_t field_id) const override;
+  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByIndex(
+      int32_t index) const override;
+  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
+      std::string_view name) const override;
+
+ protected:
+  bool Equals(const Type& other) const override;
+
+  std::array<SchemaField, 2> fields_;
+};
+
+/// @}
+
 /// \defgroup type-primitive Primitive Types
 /// Primitive types do not have nested fields.
 /// @{
@@ -317,96 +407,6 @@ class ICEBERG_EXPORT UuidType : public PrimitiveType {
 
  protected:
   bool Equals(const Type& other) const override;
-};
-
-/// @}
-
-/// \defgroup type-nested Nested Types
-/// Nested types have nested fields.
-/// @{
-
-/// \brief A data type representing a list of values.
-class ICEBERG_EXPORT ListType : public NestedType {
- public:
-  constexpr static const std::string_view kElementName = "element";
-
-  /// \brief Construct a list of the given element.  The name of the child
-  ///   field should be "element".
-  explicit ListType(SchemaField element);
-  /// \brief Construct a list of the given element type.
-  ListType(int32_t field_id, std::shared_ptr<Type> type, bool optional);
-  ~ListType() = default;
-
-  TypeId type_id() const override;
-  std::string ToString() const override;
-
-  std::span<const SchemaField> fields() const override;
-  std::optional<std::reference_wrapper<const SchemaField>> GetFieldById(
-      int32_t field_id) const override;
-  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByIndex(
-      int32_t index) const override;
-  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
-      std::string_view name) const override;
-
- protected:
-  bool Equals(const Type& other) const override;
-
-  SchemaField element_;
-};
-
-/// \brief A data type representing a dictionary of values.
-class ICEBERG_EXPORT MapType : public NestedType {
- public:
-  constexpr static const std::string_view kKeyName = "key";
-  constexpr static const std::string_view kValueName = "value";
-
-  /// \brief Construct a map of the given key/value fields.  The field names
-  ///   should be "key" and "value", respectively.
-  explicit MapType(SchemaField key, SchemaField value);
-  ~MapType() = default;
-
-  const SchemaField& key() const;
-  const SchemaField& value() const;
-
-  TypeId type_id() const override;
-  std::string ToString() const override;
-
-  std::span<const SchemaField> fields() const override;
-  std::optional<std::reference_wrapper<const SchemaField>> GetFieldById(
-      int32_t field_id) const override;
-  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByIndex(
-      int32_t index) const override;
-  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
-      std::string_view name) const override;
-
- protected:
-  bool Equals(const Type& other) const override;
-
-  std::array<SchemaField, 2> fields_;
-};
-
-/// \brief A data type representing a struct with nested fields.
-class ICEBERG_EXPORT StructType : public NestedType {
- public:
-  explicit StructType(std::vector<SchemaField> fields);
-  ~StructType() = default;
-
-  TypeId type_id() const override;
-  std::string ToString() const override;
-
-  std::span<const SchemaField> fields() const override;
-  std::optional<std::reference_wrapper<const SchemaField>> GetFieldById(
-      int32_t field_id) const override;
-  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByIndex(
-      int32_t index) const override;
-  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
-      std::string_view name) const override;
-
- protected:
-  bool Equals(const Type& other) const override;
-
-  std::vector<SchemaField> fields_;
-  std::unordered_map<int32_t, size_t> field_id_to_index_;
 };
 
 /// @}
