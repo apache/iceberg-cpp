@@ -247,8 +247,8 @@ constexpr bool EqualityTester(T const& lhs, U const& rhs) {
 struct Type1 {
   std::string value;
 
-  Type1(std::string const& v) : value(v) {}
-  Type1(const char* v) : value(v) {}
+  explicit Type1(std::string v) : value(std::move(v)) {}
+  explicit Type1(const char* v) : value(v) {}
   Type1(Type1 const&) = delete;
   Type1& operator=(Type1 const&) = delete;
   Type1(Type1&& other) = default;
@@ -261,8 +261,8 @@ struct Type1 {
 struct Type2 {
   std::string value;
 
-  Type2(std::string const& v) : value(v) {}
-  Type2(const char* v) : value(v) {}
+  explicit Type2(std::string v) : value(std::move(v)) {}
+  explicit Type2(const char* v) : value(v) {}
   Type2(Type2 const&) = delete;
   Type2& operator=(Type2 const&) = delete;
   Type2(Type2&& other) = default;
@@ -289,9 +289,9 @@ TEST(ExpectedTest, EqualityTest) {
 
     // compare with same type expected<T, E>
     {
-      Expected const value1 = "value1";
-      Expected const value2 = "value2";
-      Expected const value1Copy = "value1";
+      Expected const value1("value1");
+      Expected const value2("value2");
+      Expected const value1Copy("value1");
       Expected const error1 = iceberg::unexpected<E>("error1");
       Expected const error2 = iceberg::unexpected<E>("error2");
       Expected const error1Copy = iceberg::unexpected<E>("error1");
@@ -311,9 +311,9 @@ TEST(ExpectedTest, EqualityTest) {
       ASSERT_FALSE((std::is_same_v<E, E2>));
       using Expected2 = iceberg::expected<T2, E2>;
 
-      Expected const value1 = "value1";
-      Expected2 const value2 = "value2";
-      Expected2 const value1Same = "value1";
+      Expected const value1("value1");
+      Expected2 const value2("value2");
+      Expected2 const value1Same("value1");
       Expected const error1 = iceberg::unexpected<E>("error1");
       Expected2 const error2 = iceberg::unexpected<E2>("error2");
       Expected2 const error1Same = iceberg::unexpected<E2>("error1");
@@ -327,10 +327,10 @@ TEST(ExpectedTest, EqualityTest) {
 
     // compare with same value type T
     {
-      Expected const value1 = "value1";
+      Expected const value1("value1");
       Expected const error1 = iceberg::unexpected<E>("error1");
-      T const value2 = "value2";
-      T const value1Same = "value1";
+      T const value2("value2");
+      T const value1Same("value1");
 
       EXPECT_TRUE(EqualityTester<true>(value1, value1Same));
       EXPECT_TRUE(EqualityTester<false>(value1, value2));
@@ -342,10 +342,10 @@ TEST(ExpectedTest, EqualityTest) {
       using T2 = Type2;
       ASSERT_FALSE((std::is_same_v<T, T2>));
 
-      Expected const value1 = "value1";
+      Expected const value1("value1");
       Expected const error1 = iceberg::unexpected<E>("error1");
-      T2 const value2 = "value2";
-      T2 const value1Same = "value1";
+      T2 const value2("value2");
+      T2 const value1Same("value1");
 
       EXPECT_TRUE(EqualityTester<true>(value1, value1Same));
       EXPECT_TRUE(EqualityTester<false>(value1, value2));
@@ -354,7 +354,7 @@ TEST(ExpectedTest, EqualityTest) {
 
     // compare with same error type unexpected<E>
     {
-      Expected const value1 = "value1";
+      Expected const value1("value1");
       Expected const error1 = iceberg::unexpected<E>("error1");
       auto const error2 = iceberg::unexpected<E>("error2");
       auto const error1Same = iceberg::unexpected<E>("error1");
@@ -369,7 +369,7 @@ TEST(ExpectedTest, EqualityTest) {
       using E2 = Type1;
       ASSERT_FALSE((std::is_same_v<E, E2>));
 
-      Expected const value1 = "value1";
+      Expected const value1("value1");
       Expected const error1 = iceberg::unexpected<E>("error1");
       auto const error2 = iceberg::unexpected<E2>("error2");
       auto const error1Same = iceberg::unexpected<E2>("error1");
@@ -561,7 +561,7 @@ struct ToType<NoThrowConvertible::Yes> {
   ToType(ToType const&) = default;
   ToType(ToType&&) = default;
 
-  ToType(FromType const&) noexcept {}
+  explicit ToType(FromType const&) noexcept {}
 };
 
 template <>
@@ -570,7 +570,7 @@ struct ToType<NoThrowConvertible::No> {
   ToType(ToType const&) = default;
   ToType(ToType&&) = default;
 
-  ToType(FromType const&) noexcept(false) {}
+  explicit ToType(FromType const&) noexcept(false) {}
 };
 
 }  // namespace

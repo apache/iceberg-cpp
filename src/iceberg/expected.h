@@ -26,6 +26,8 @@
 
 #include "iceberg/iceberg_export.h"
 
+// NOLINTBEGIN
+
 namespace iceberg {
 
 namespace expected_detail {
@@ -196,7 +198,7 @@ class bad_expected_access;
 template <>
 class ICEBERG_EXPORT bad_expected_access<void> : public std::exception {
  public:
-  virtual const char* what() const noexcept override { return "Bad expected access"; }
+  const char* what() const noexcept override { return "Bad expected access"; }
 
  protected:
   bad_expected_access() = default;
@@ -1020,9 +1022,9 @@ class ICEBERG_EXPORT [[nodiscard]] expected
   using ctor_base = expected_detail::default_ctor_base<T, E>;
 
  public:
-  typedef T value_type;
-  typedef E error_type;
-  typedef unexpected<E> unexpected_type;
+  using value_type = T;
+  using error_type = E;
+  using unexpected_type = unexpected<E>;
 
   // default constructors
 
@@ -1488,10 +1490,12 @@ class ICEBERG_EXPORT [[nodiscard]] expected
     static_assert(std::is_same_v<typename U::error_type, E>,
                   "The error type must be the same after calling the F");
 
-    if (has_value())
+    if (has_value()) {
       return std::invoke(std::forward<F>(f), this->m_val);
-    else
+
+    } else {
       return U(unexpect, error());
+    }
   }
   template <class F, class GE = E,
             std::enable_if_t<std::is_constructible_v<GE, const GE&>>* = nullptr>
@@ -1502,10 +1506,11 @@ class ICEBERG_EXPORT [[nodiscard]] expected
     static_assert(std::is_same_v<typename U::error_type, E>,
                   "The error type must be the same after calling the F");
 
-    if (has_value())
+    if (has_value()) {
       return std::invoke(std::forward<F>(f), this->m_val);
-    else
+    } else {
       return U(unexpect, error());
+    }
   }
 
   template <class F, class GE = E,
@@ -1518,10 +1523,11 @@ class ICEBERG_EXPORT [[nodiscard]] expected
     static_assert(std::is_same_v<typename U::error_type, E>,
                   "The error type must be the same after calling the F");
 
-    if (has_value())
+    if (has_value()) {
       return std::invoke(std::forward<F>(f), std::move(this->m_val));
-    else
+    } else {
       return U(unexpect, std::move(error()));
+    }
   }
   template <class F, class GE = E,
             std::enable_if_t<std::is_constructible_v<GE, const GE>>* = nullptr>
@@ -1533,10 +1539,11 @@ class ICEBERG_EXPORT [[nodiscard]] expected
     static_assert(std::is_same_v<typename U::error_type, E>,
                   "The error type must be the same after calling the F");
 
-    if (has_value())
+    if (has_value()) {
       return std::invoke(std::forward<F>(f), std::move(this->m_val));
-    else
+    } else {
       return U(unexpect, std::move(error()));
+    }
   }
 
   template <class F, class UT = T,
@@ -1548,10 +1555,11 @@ class ICEBERG_EXPORT [[nodiscard]] expected
     static_assert(std::is_same_v<typename G::value_type, T>,
                   "The value type must be the same after calling the F");
 
-    if (has_value())
+    if (has_value()) {
       return G(std::in_place, this->m_val);
-    else
+    } else {
       return std::invoke(std::forward<F>(f), error());
+    }
   }
   template <class F, class UT = T,
             std::enable_if_t<std::is_constructible_v<UT, const UT&>>* = nullptr>
@@ -1562,10 +1570,11 @@ class ICEBERG_EXPORT [[nodiscard]] expected
     static_assert(std::is_same_v<typename G::value_type, T>,
                   "The value type must be the same after calling the F");
 
-    if (has_value())
+    if (has_value()) {
       return G(std::in_place, this->m_val);
-    else
+    } else {
       return std::invoke(std::forward<F>(f), error());
+    }
   }
   template <class F, class UT = T,
             std::enable_if_t<std::is_constructible_v<UT, UT&&>>* = nullptr>
@@ -1576,10 +1585,11 @@ class ICEBERG_EXPORT [[nodiscard]] expected
     static_assert(std::is_same_v<typename G::value_type, T>,
                   "The value type must be the same after calling the F");
 
-    if (has_value())
+    if (has_value()) {
       return G(std::in_place, std::move(this->m_val));
-    else
+    } else {
       return std::invoke(std::forward<F>(f), std::move(error()));
+    }
   }
   template <class F, class UT = T,
             std::enable_if_t<std::is_constructible_v<UT, const UT>>* = nullptr>
@@ -1590,10 +1600,11 @@ class ICEBERG_EXPORT [[nodiscard]] expected
     static_assert(std::is_same_v<typename G::value_type, T>,
                   "The value type must be the same after calling the F");
 
-    if (has_value())
+    if (has_value()) {
       return G(std::in_place, std::move(this->m_val));
-    else
+    } else {
       return std::invoke(std::forward<F>(f), std::move(error()));
+    }
   }
 
   template <class F, class GE = E,
@@ -1801,9 +1812,9 @@ class ICEBERG_EXPORT [[nodiscard]] expected<void, E>
   using ctor_base = expected_detail::default_ctor_base<T, E>;
 
  public:
-  typedef T value_type;
-  typedef E error_type;
-  typedef unexpected<E> unexpected_type;
+  using value_type = T;
+  using error_type = E;
+  using unexpected_type = unexpected<E>;
 
   constexpr expected() = default;
   constexpr expected(const expected& rhs) = default;
@@ -2068,10 +2079,11 @@ class ICEBERG_EXPORT [[nodiscard]] expected<void, E>
     static_assert(std::is_same_v<typename U::error_type, E>,
                   "The error type must be the same after calling the F");
 
-    if (has_value())
+    if (has_value()) {
       return std::invoke(std::forward<F>(f));
-    else
+    } else {
       return U(unexpect, error());
+    }
   }
   template <class F, class GE = E,
             std::enable_if_t<std::is_constructible_v<GE, const GE&>>* = nullptr>
@@ -2082,10 +2094,11 @@ class ICEBERG_EXPORT [[nodiscard]] expected<void, E>
     static_assert(std::is_same_v<typename U::error_type, E>,
                   "The error type must be the same after calling the F");
 
-    if (has_value())
+    if (has_value()) {
       return std::invoke(std::forward<F>(f));
-    else
+    } else {
       return U(unexpect, error());
+    }
   }
   template <class F, class GE = E,
             std::enable_if_t<std::is_constructible_v<GE, GE&&>>* = nullptr>
@@ -2096,10 +2109,11 @@ class ICEBERG_EXPORT [[nodiscard]] expected<void, E>
     static_assert(std::is_same_v<typename U::error_type, E>,
                   "The error type must be the same after calling the F");
 
-    if (has_value())
+    if (has_value()) {
       return std::invoke(std::forward<F>(f));
-    else
+    } else {
       return U(unexpect, std::move(error()));
+    }
   }
   template <class F, class GE = E,
             std::enable_if_t<std::is_constructible_v<GE, const GE>>* = nullptr>
@@ -2110,10 +2124,11 @@ class ICEBERG_EXPORT [[nodiscard]] expected<void, E>
     static_assert(std::is_same_v<typename U::error_type, E>,
                   "The error type must be the same after calling the F");
 
-    if (has_value())
+    if (has_value()) {
       return std::invoke(std::forward<F>(f));
-    else
+    } else {
       return U(unexpect, std::move(error()));
+    }
   }
 
   template <class F>
@@ -2124,10 +2139,11 @@ class ICEBERG_EXPORT [[nodiscard]] expected<void, E>
     static_assert(std::is_same_v<typename G::value_type, T>,
                   "The value type must be the same after calling the F");
 
-    if (has_value())
+    if (has_value()) {
       return G();
-    else
+    } else {
       return std::invoke(std::forward<F>(f), error());
+    }
   }
   template <class F>
   constexpr auto or_else(F&& f) const& {
@@ -2137,10 +2153,11 @@ class ICEBERG_EXPORT [[nodiscard]] expected<void, E>
     static_assert(std::is_same_v<typename G::value_type, T>,
                   "The value type must be the same after calling the F");
 
-    if (has_value())
+    if (has_value()) {
       return G();
-    else
+    } else {
       return std::invoke(std::forward<F>(f), error());
+    }
   }
   template <class F>
   constexpr auto or_else(F&& f) && {
@@ -2150,10 +2167,11 @@ class ICEBERG_EXPORT [[nodiscard]] expected<void, E>
     static_assert(std::is_same_v<typename G::value_type, T>,
                   "The value type must be the same after calling the F");
 
-    if (has_value())
+    if (has_value()) {
       return G();
-    else
+    } else {
       return std::invoke(std::forward<F>(f), std::move(error()));
+    }
   }
   template <class F>
   constexpr auto or_else(F&& f) const&& {
@@ -2163,10 +2181,11 @@ class ICEBERG_EXPORT [[nodiscard]] expected<void, E>
     static_assert(std::is_same_v<typename G::value_type, T>,
                   "The value type must be the same after calling the F");
 
-    if (has_value())
+    if (has_value()) {
       return G();
-    else
+    } else {
       return std::invoke(std::forward<F>(f), std::move(error()));
+    }
   }
 
   template <class F, class GE = E,
@@ -2331,3 +2350,5 @@ ICEBERG_EXPORT constexpr void swap(
 }
 
 }  // namespace iceberg
+
+// NOLINTEND
