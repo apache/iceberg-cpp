@@ -41,7 +41,7 @@ namespace iceberg {
 /// \brief Interface for a data type for a field.
 class ICEBERG_EXPORT Type : public iceberg::util::Formattable {
  public:
-  virtual ~Type() = default;
+  ~Type() override = default;
 
   /// \brief Get the type ID.
   [[nodiscard]] virtual TypeId type_id() const = 0;
@@ -79,14 +79,20 @@ class ICEBERG_EXPORT NestedType : public Type {
   /// \brief Get a view of the child fields.
   [[nodiscard]] virtual std::span<const SchemaField> fields() const = 0;
   /// \brief Get a field by field ID.
+  ///
+  /// \note This is O(1) complexity.
   [[nodiscard]] virtual std::optional<std::reference_wrapper<const SchemaField>>
   GetFieldById(int32_t field_id) const = 0;
   /// \brief Get a field by index.
+  ///
+  /// \note This is O(1) complexity.
   [[nodiscard]] virtual std::optional<std::reference_wrapper<const SchemaField>>
   GetFieldByIndex(int32_t index) const = 0;
   /// \brief Get a field by name (case-sensitive).  Behavior is undefined if
   ///   the field name is not unique; prefer GetFieldById or GetFieldByIndex
   ///   when possible.
+  ///
+  /// \note This is currently O(n) complexity.
   [[nodiscard]] virtual std::optional<std::reference_wrapper<const SchemaField>>
   GetFieldByName(std::string_view name) const = 0;
 };
@@ -99,7 +105,7 @@ class ICEBERG_EXPORT NestedType : public Type {
 class ICEBERG_EXPORT StructType : public NestedType {
  public:
   explicit StructType(std::vector<SchemaField> fields);
-  ~StructType() = default;
+  ~StructType() override = default;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -129,7 +135,7 @@ class ICEBERG_EXPORT ListType : public NestedType {
   explicit ListType(SchemaField element);
   /// \brief Construct a list of the given element type.
   ListType(int32_t field_id, std::shared_ptr<Type> type, bool optional);
-  ~ListType() = default;
+  ~ListType() override = default;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -157,7 +163,7 @@ class ICEBERG_EXPORT MapType : public NestedType {
   /// \brief Construct a map of the given key/value fields.  The field names
   ///   should be "key" and "value", respectively.
   explicit MapType(SchemaField key, SchemaField value);
-  ~MapType() = default;
+  ~MapType() override = default;
 
   const SchemaField& key() const;
   const SchemaField& value() const;
@@ -189,7 +195,7 @@ class ICEBERG_EXPORT MapType : public NestedType {
 class ICEBERG_EXPORT BooleanType : public PrimitiveType {
  public:
   BooleanType() = default;
-  ~BooleanType() = default;
+  ~BooleanType() override = default;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -202,7 +208,7 @@ class ICEBERG_EXPORT BooleanType : public PrimitiveType {
 class ICEBERG_EXPORT IntType : public PrimitiveType {
  public:
   IntType() = default;
-  ~IntType() = default;
+  ~IntType() override = default;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -215,7 +221,7 @@ class ICEBERG_EXPORT IntType : public PrimitiveType {
 class ICEBERG_EXPORT LongType : public PrimitiveType {
  public:
   LongType() = default;
-  ~LongType() = default;
+  ~LongType() override = default;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -229,7 +235,7 @@ class ICEBERG_EXPORT LongType : public PrimitiveType {
 class ICEBERG_EXPORT FloatType : public PrimitiveType {
  public:
   FloatType() = default;
-  ~FloatType() = default;
+  ~FloatType() override = default;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -243,7 +249,7 @@ class ICEBERG_EXPORT FloatType : public PrimitiveType {
 class ICEBERG_EXPORT DoubleType : public PrimitiveType {
  public:
   DoubleType() = default;
-  ~DoubleType() = default;
+  ~DoubleType() override = default;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -259,7 +265,7 @@ class ICEBERG_EXPORT DecimalType : public PrimitiveType {
 
   /// \brief Construct a decimal type with the given precision and scale.
   DecimalType(int32_t precision, int32_t scale);
-  ~DecimalType() = default;
+  ~DecimalType() override = default;
 
   /// \brief Get the precision (the number of decimal digits).
   [[nodiscard]] int32_t precision() const;
@@ -283,7 +289,7 @@ class ICEBERG_EXPORT DecimalType : public PrimitiveType {
 class ICEBERG_EXPORT DateType : public PrimitiveType {
  public:
   DateType() = default;
-  ~DateType() = default;
+  ~DateType() override = default;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -297,7 +303,7 @@ class ICEBERG_EXPORT DateType : public PrimitiveType {
 class ICEBERG_EXPORT TimeType : public PrimitiveType {
  public:
   TimeType() = default;
-  ~TimeType() = default;
+  ~TimeType() override = default;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -321,7 +327,7 @@ class ICEBERG_EXPORT TimestampBase : public PrimitiveType {
 class ICEBERG_EXPORT TimestampType : public TimestampBase {
  public:
   TimestampType() = default;
-  ~TimestampType() = default;
+  ~TimestampType() override = default;
 
   bool is_zoned() const override;
   TimeUnit time_unit() const override;
@@ -338,7 +344,7 @@ class ICEBERG_EXPORT TimestampType : public TimestampBase {
 class ICEBERG_EXPORT TimestampTzType : public TimestampBase {
  public:
   TimestampTzType() = default;
-  ~TimestampTzType() = default;
+  ~TimestampTzType() override = default;
 
   bool is_zoned() const override;
   TimeUnit time_unit() const override;
@@ -354,7 +360,7 @@ class ICEBERG_EXPORT TimestampTzType : public TimestampBase {
 class ICEBERG_EXPORT BinaryType : public PrimitiveType {
  public:
   BinaryType() = default;
-  ~BinaryType() = default;
+  ~BinaryType() override = default;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -368,7 +374,7 @@ class ICEBERG_EXPORT BinaryType : public PrimitiveType {
 class ICEBERG_EXPORT StringType : public PrimitiveType {
  public:
   StringType() = default;
-  ~StringType() = default;
+  ~StringType() override = default;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -381,8 +387,8 @@ class ICEBERG_EXPORT StringType : public PrimitiveType {
 class ICEBERG_EXPORT FixedType : public PrimitiveType {
  public:
   /// \brief Construct a fixed type with the given length.
-  FixedType(int32_t length);
-  ~FixedType() = default;
+  explicit FixedType(int32_t length);
+  ~FixedType() override = default;
 
   /// \brief The length (the number of bytes to store).
   [[nodiscard]] int32_t length() const;
@@ -402,7 +408,7 @@ class ICEBERG_EXPORT FixedType : public PrimitiveType {
 class ICEBERG_EXPORT UuidType : public PrimitiveType {
  public:
   UuidType() = default;
-  ~UuidType() = default;
+  ~UuidType() override = default;
 
   TypeId type_id() const override;
   std::string ToString() const override;

@@ -23,6 +23,7 @@
 #include <iterator>
 #include <stdexcept>
 
+#include "iceberg/exception.h"
 #include "iceberg/util/formatter.h"
 
 namespace iceberg {
@@ -32,7 +33,7 @@ StructType::StructType(std::vector<SchemaField> fields) : fields_(std::move(fiel
   for (const auto& field : fields_) {
     auto [it, inserted] = field_id_to_index_.try_emplace(field.field_id(), index);
     if (!inserted) {
-      throw std::runtime_error(
+      throw IcebergError(
           std::format("StructType: duplicate field ID {} (field indices {} and {})",
                       field.field_id(), it->second, index));
     }
@@ -66,8 +67,8 @@ std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByI
 }
 std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByName(
     std::string_view name) const {
-  // TODO: what is the right behavior if there are duplicate names? (Are
-  // duplicate names permitted?)
+  // N.B. duplicate names are not permitted (looking at the Java
+  // implementation) so there is nothing in particular we need to do here
   for (const auto& field : fields_) {
     if (field.name() == name) {
       return field;
@@ -85,9 +86,8 @@ bool StructType::Equals(const Type& other) const {
 
 ListType::ListType(SchemaField element) : element_(std::move(element)) {
   if (element_.name() != kElementName) {
-    throw std::runtime_error(
-        std::format("ListType: child field name should be '{}', was '{}'", kElementName,
-                    element_.name()));
+    throw IcebergError(std::format("ListType: child field name should be '{}', was '{}'",
+                                   kElementName, element_.name()));
   }
 }
 
@@ -136,14 +136,12 @@ bool ListType::Equals(const Type& other) const {
 MapType::MapType(SchemaField key, SchemaField value)
     : fields_{std::move(key), std::move(value)} {
   if (this->key().name() != kKeyName) {
-    throw std::runtime_error(
-        std::format("MapType: key field name should be '{}', was '{}'", kKeyName,
-                    this->key().name()));
+    throw IcebergError(std::format("MapType: key field name should be '{}', was '{}'",
+                                   kKeyName, this->key().name()));
   }
   if (this->value().name() != kValueName) {
-    throw std::runtime_error(
-        std::format("MapType: value field name should be '{}', was '{}'", kValueName,
-                    this->value().name()));
+    throw IcebergError(std::format("MapType: value field name should be '{}', was '{}'",
+                                   kValueName, this->value().name()));
   }
 }
 
@@ -226,7 +224,7 @@ bool DoubleType::Equals(const Type& other) const {
 DecimalType::DecimalType(int32_t precision, int32_t scale)
     : precision_(precision), scale_(scale) {
   if (precision < 0 || precision > kMaxPrecision) {
-    throw std::runtime_error(
+    throw IcebergError(
         std::format("DecimalType: precision must be in [0, 38], was {}", precision));
   }
 }
@@ -287,8 +285,7 @@ bool UuidType::Equals(const Type& other) const {
 
 FixedType::FixedType(int32_t length) : length_(length) {
   if (length < 0) {
-    throw std::runtime_error(
-        std::format("FixedType: length must be >= 0, was {}", length));
+    throw IcebergError(std::format("FixedType: length must be >= 0, was {}", length));
   }
 }
 

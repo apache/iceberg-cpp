@@ -27,6 +27,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/exception.h"
 #include "iceberg/util/formatter.h"
 
 struct TypeTestCase {
@@ -209,7 +210,7 @@ const static TypeTestCase kNestedTypes[] = {
             1, std::make_shared<iceberg::IntType>(), true),
         .type_id = iceberg::TypeId::kList,
         .primitive = false,
-        .repr = "list<element (1): int>",
+        .repr = "list<element (1): int (optional)>",
     },
     {
         .name = "list_list_int",
@@ -220,7 +221,7 @@ const static TypeTestCase kNestedTypes[] = {
             false),
         .type_id = iceberg::TypeId::kList,
         .primitive = false,
-        .repr = "list<element (1): list<element (2): int> (required)>",
+        .repr = "list<element (1): list<element (2): int (optional)> (required)>",
     },
     {
         .name = "map_int_string",
@@ -245,7 +246,7 @@ const static TypeTestCase kNestedTypes[] = {
         .primitive = false,
         .repr = R"(struct<
   foo (1): long (required)
-  bar (2): string
+  bar (2): string (optional)
 >)",
     },
 };
@@ -290,11 +291,11 @@ TEST(TypeTest, Decimal) {
     ASSERT_EQ(-10, decimal.scale());
   }
   ASSERT_THAT([]() { iceberg::DecimalType decimal(-1, 10); },
-              ::testing::ThrowsMessage<std::runtime_error>(
+              ::testing::ThrowsMessage<iceberg::IcebergError>(
                   ::testing::HasSubstr("precision must be in [0, 38], was -1")));
 
   ASSERT_THAT([]() { iceberg::DecimalType decimal(39, 10); },
-              ::testing::ThrowsMessage<std::runtime_error>(
+              ::testing::ThrowsMessage<iceberg::IcebergError>(
                   ::testing::HasSubstr("precision must be in [0, 38], was 39")));
 }
 
@@ -312,7 +313,7 @@ TEST(TypeTest, Fixed) {
     ASSERT_EQ(127, fixed.length());
   }
   ASSERT_THAT([]() { iceberg::FixedType decimal(-1); },
-              ::testing::ThrowsMessage<std::runtime_error>(
+              ::testing::ThrowsMessage<iceberg::IcebergError>(
                   ::testing::HasSubstr("length must be >= 0, was -1")));
 }
 
@@ -337,7 +338,7 @@ TEST(TypeTest, List) {
         iceberg::ListType list(iceberg::SchemaField(
             1, "wrongname", std::make_shared<iceberg::BooleanType>(), true));
       },
-      ::testing::ThrowsMessage<std::runtime_error>(
+      ::testing::ThrowsMessage<iceberg::IcebergError>(
           ::testing::HasSubstr("child field name should be 'element', was 'wrongname'")));
 }
 
@@ -369,7 +370,7 @@ TEST(TypeTest, Map) {
                                    true);
         iceberg::MapType map(key, value);
       },
-      ::testing::ThrowsMessage<std::runtime_error>(
+      ::testing::ThrowsMessage<iceberg::IcebergError>(
           ::testing::HasSubstr("key field name should be 'key', was 'notkey'")));
   ASSERT_THAT(
       []() {
@@ -378,7 +379,7 @@ TEST(TypeTest, Map) {
                                    true);
         iceberg::MapType map(key, value);
       },
-      ::testing::ThrowsMessage<std::runtime_error>(
+      ::testing::ThrowsMessage<iceberg::IcebergError>(
           ::testing::HasSubstr("value field name should be 'value', was 'notvalue'")));
 }
 
@@ -410,6 +411,6 @@ TEST(TypeTest, Struct) {
                                     true);
         iceberg::StructType struct_({field1, field2});
       },
-      ::testing::ThrowsMessage<std::runtime_error>(
+      ::testing::ThrowsMessage<iceberg::IcebergError>(
           ::testing::HasSubstr("duplicate field ID 5")));
 }

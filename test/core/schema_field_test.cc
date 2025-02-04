@@ -44,8 +44,8 @@ TEST(SchemaFieldTest, Basics) {
     EXPECT_EQ("foo bar", field.name());
     EXPECT_EQ(iceberg::FixedType(10), *field.type());
     EXPECT_TRUE(field.optional());
-    EXPECT_EQ("foo bar (2): fixed(10)", field.ToString());
-    EXPECT_EQ("foo bar (2): fixed(10)", std::format("{}", field));
+    EXPECT_EQ("foo bar (2): fixed(10) (optional)", field.ToString());
+    EXPECT_EQ("foo bar (2): fixed(10) (optional)", std::format("{}", field));
   }
   {
     iceberg::SchemaField field = iceberg::SchemaField::MakeRequired(
