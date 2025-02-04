@@ -52,8 +52,8 @@ const std::shared_ptr<Type>& SchemaField::type() const { return type_; }
 bool SchemaField::optional() const { return optional_; }
 
 std::string SchemaField::ToString() const {
-  return std::format("{} ({}): {} {}", name_, field_id_, *type_,
-                     optional_ ? "(optional)" : "(required)");
+  return std::format("{} ({}): {} ({})", name_, field_id_, *type_,
+                     optional_ ? "optional" : "required");
 }
 
 bool SchemaField::Equals(const SchemaField& other) const {
