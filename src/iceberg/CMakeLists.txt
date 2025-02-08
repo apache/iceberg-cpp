@@ -17,11 +17,29 @@
 
 set(ICEBERG_SOURCES demo_table.cc schema.cc schema_field.cc type.cc)
 
+set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
+set(ICEBERG_SHARED_BUILD_INTERFACE_LIBS)
+set(ICEBERG_STATIC_INSTALL_INTERFACE_LIBS)
+set(ICEBERG_SHARED_INSTALL_INTERFACE_LIBS)
+
+list(APPEND ICEBERG_STATIC_BUILD_INTERFACE_LIBS nanoarrow::nanoarrow sparrow)
+list(APPEND ICEBERG_SHARED_BUILD_INTERFACE_LIBS nanoarrow::nanoarrow sparrow)
+list(APPEND ICEBERG_STATIC_INSTALL_INTERFACE_LIBS "Iceberg::nanoarrow" "Iceberg::sparrow")
+list(APPEND ICEBERG_SHARED_INSTALL_INTERFACE_LIBS "Iceberg::nanoarrow" "Iceberg::sparrow")
+
 add_iceberg_lib(iceberg
                 SOURCES
                 ${ICEBERG_SOURCES}
                 PRIVATE_INCLUDES
-                ${ICEBERG_INCLUDES})
+                ${ICEBERG_INCLUDES}
+                SHARED_LINK_LIBS
+                ${ICEBERG_SHARED_BUILD_INTERFACE_LIBS}
+                STATIC_LINK_LIBS
+                ${ICEBERG_STATIC_BUILD_INTERFACE_LIBS}
+                STATIC_INSTALL_INTERFACE_LIBS
+                ${ICEBERG_STATIC_INSTALL_INTERFACE_LIBS}
+                SHARED_INSTALL_INTERFACE_LIBS
+                ${ICEBERG_SHARED_INSTALL_INTERFACE_LIBS})
 
 iceberg_install_all_headers(iceberg)
 
