@@ -205,6 +205,11 @@ endif()
 # It is also possible to vendor nanoarrow using the bundled source code.
 function(resolve_nanoarrow_dependency)
   prepare_fetchcontent()
+
+  set(NANOARROW_NAMESPACE
+      "iceberg"
+      CACHE STRING "" FORCE)
+
   fetchcontent_declare(nanoarrow
                        ${FC_DECLARE_COMMON_OPTIONS}
                        URL "https://dlcdn.apache.org/arrow/apache-arrow-nanoarrow-0.6.0/apache-arrow-nanoarrow-0.6.0.tar.gz"
@@ -232,6 +237,11 @@ function(resolve_sparrow_dependency)
   # include could not find requested file: sanitizers
   list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR}/_deps/sparrow-src/cmake)
 
+  if(MSVC_TOOLCHAIN)
+    # MSVC does not support int128_t
+    set(USE_LARGE_INT_PLACEHOLDERS ON)
+  endif()
+
   fetchcontent_declare(sparrow
                        ${FC_DECLARE_COMMON_OPTIONS}
                        GIT_REPOSITORY https://github.com/man-group/sparrow.git
@@ -240,6 +250,10 @@ function(resolve_sparrow_dependency)
   fetchcontent_makeavailable(sparrow)
 
   set_target_properties(sparrow PROPERTIES OUTPUT_NAME "iceberg_vendored_sparrow")
+  target_compile_definitions(sparrow INTERFACE SPARROW_USE_DATE_POLYFILL)
+  if(MSVC_TOOLCHAIN)
+    target_compile_definitions(sparrow INTERFACE SPARROW_USE_LARGE_INT_PLACEHOLDERS)
+  endif()
   install(TARGETS sparrow
           EXPORT iceberg_targets
           RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
