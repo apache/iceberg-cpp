@@ -246,7 +246,8 @@ function(resolve_sparrow_dependency)
           ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
           LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
 
-  # sparrow depends on date::date and date::date-tz
+  # sparrow depends on date::date and date::date-tz. It is tricky to use FetchContent
+  # to vendor date library since sparrow links date::date and date::date-tz directly.
   list(APPEND ICEBERG_SYSTEM_DEPENDENCIES date)
   set(ICEBERG_SYSTEM_DEPENDENCIES
       ${ICEBERG_SYSTEM_DEPENDENCIES}

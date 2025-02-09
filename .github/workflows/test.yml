@@ -52,7 +52,7 @@ jobs:
         shell: bash
         run: |
           sudo apt-get update
-          sudo apt-get install -y libdate-dev
+          sudo apt-get install -y libdate-tz3 libhowardhinnant-date-dev
       - name: Build Iceberg
         shell: bash
         run: ci/scripts/build_iceberg.sh $(pwd)
