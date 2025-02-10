@@ -60,8 +60,8 @@ jobs:
         shell: bash
         run: ci/scripts/build_example.sh $(pwd)/example
   macos:
-    name: AArch64 macOS 14
-    runs-on: macos-14
+    name: AArch64 macOS 15
+    runs-on: macos-15
     timeout-minutes: 30
     strategy:
       fail-fast: false
