@@ -30,7 +30,15 @@ jobs:
   cpp-linter:
     runs-on: ubuntu-24.04
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout iceberg-cpp
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          fetch-depth: 0
+      - name: Install Date Library
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libdate-tz3 libhowardhinnant-date-dev
       - name: Run build
         run: |
           mkdir build && cd build
