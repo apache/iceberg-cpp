@@ -11,5 +11,6 @@ header:
     - '.github/**'
     - 'LICENSE'
     - 'NOTICE'
+    - 'src/iceberg/expected.h'
 
   comment: on-failure

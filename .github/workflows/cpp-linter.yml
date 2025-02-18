@@ -44,6 +44,7 @@ jobs:
         with:
           style: file
           tidy-checks: ''
+          version: 19
           files-changed-only: true
           lines-changed-only: true
           thread-comments: true
