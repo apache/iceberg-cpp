@@ -198,3 +198,38 @@ endfunction()
 if(ICEBERG_AVRO)
   resolve_avro_dependency()
 endif()
+
+# ----------------------------------------------------------------------
+# Apache Iceberg (Rust)
+
+function(resolve_iceberg_c_dependency)
+  prepare_fetchcontent()
+
+  fetchcontent_declare(IcebergC
+                       ${FC_DECLARE_COMMON_OPTIONS}
+                       GIT_REPOSITORY https://github.com/lidavidm/iceberg-rust.git
+                       GIT_TAG add-c-binding
+                       SOURCE_SUBDIR
+                       bindings/c
+                       FIND_PACKAGE_ARGS)
+
+  fetchcontent_makeavailable(IcebergC)
+
+  if(icebergc_SOURCE_DIR)
+    message(STATUS "Using vendored Iceberg C library")
+    set(ICEBERG_C_VENDORED TRUE)
+  else()
+    message(STATUS "Using system Iceberg C library")
+    set(ICEBERG_C_VENDORED FALSE)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES IcebergC)
+  endif()
+
+  set(ICEBERG_SYSTEM_DEPENDENCIES
+      ${ICEBERG_SYSTEM_DEPENDENCIES}
+      PARENT_SCOPE)
+  set(ICEBERG_C_VENDORED
+      ${ICEBERG_C_VENDORED}
+      PARENT_SCOPE)
+endfunction()
+
+resolve_iceberg_c_dependency()
