@@ -21,7 +21,11 @@ add_iceberg_lib(iceberg
                 SOURCES
                 ${ICEBERG_SOURCES}
                 PRIVATE_INCLUDES
-                ${ICEBERG_INCLUDES})
+                ${ICEBERG_INCLUDES}
+                SHARED_LINK_LIBS
+                IcebergC::iceberg_c_shared
+                STATIC_LINK_LIBS
+                IcebergC::iceberg_c_static)
 
 iceberg_install_all_headers(iceberg)
 
