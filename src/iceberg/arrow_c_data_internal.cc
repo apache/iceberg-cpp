@@ -19,6 +19,11 @@
 
 #include "iceberg/arrow_c_data_internal.h"
 
+#include <array>
+#include <string>
+#include <tuple>
+#include <vector>
+
 #include <sparrow/builder/builder.hpp>
 
 namespace iceberg::internal {
