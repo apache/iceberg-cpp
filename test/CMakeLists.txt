@@ -23,4 +23,6 @@ fetchcontent_declare(googletest
                      GTest)
 fetchcontent_makeavailable(googletest)
 
+add_subdirectory(arrow)
+add_subdirectory(avro)
 add_subdirectory(core)

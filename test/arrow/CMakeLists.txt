@@ -15,15 +15,11 @@
 # specific language governing permissions and limitations
 # under the License.
 
-add_executable(core_unittest)
-target_sources(core_unittest PRIVATE core_unittest.cc schema_test.cc schema_field_test.cc
-                                     type_test.cc)
-target_link_libraries(core_unittest PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
-target_include_directories(core_unittest PRIVATE "${ICEBERG_INCLUDES}")
-add_test(NAME core_unittest COMMAND core_unittest)
-
-add_executable(expected_test)
-target_sources(expected_test PRIVATE expected_test.cc)
-target_link_libraries(expected_test PRIVATE iceberg_static GTest::gtest_main)
-target_include_directories(expected_test PRIVATE "${ICEBERG_INCLUDES}")
-add_test(NAME expected_test COMMAND expected_test)
+if(ICEBERG_ARROW)
+  add_executable(arrow_unittest)
+  target_sources(arrow_unittest PRIVATE arrow_test.cc)
+  target_link_libraries(arrow_unittest PRIVATE iceberg_arrow_static Arrow::arrow_static
+                                               GTest::gtest_main)
+  target_include_directories(arrow_unittest PRIVATE "${ICEBERG_INCLUDES}")
+  add_test(NAME arrow_unittest COMMAND arrow_unittest)
+endif()

@@ -15,7 +15,12 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set(ICEBERG_SOURCES demo_table.cc schema.cc schema_field.cc type.cc)
+set(ICEBERG_SOURCES
+    arrow_c_data_internal.cc
+    demo_table.cc
+    schema.cc
+    schema_field.cc
+    type.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_SHARED_BUILD_INTERFACE_LIBS)

@@ -65,6 +65,10 @@ function(resolve_arrow_dependency)
   set(ARROW_BUILD_STATIC
       ON
       CACHE BOOL "" FORCE)
+  # To workaround https://github.com/apache/arrow/pull/45513
+  set(ARROW_IPC
+      ON
+      CACHE BOOL "" FORCE)
   set(ARROW_FILESYSTEM
       OFF
       CACHE BOOL "" FORCE)
@@ -207,7 +211,7 @@ function(resolve_nanoarrow_dependency)
   prepare_fetchcontent()
 
   set(NANOARROW_NAMESPACE
-      "iceberg"
+      "Iceberg"
       CACHE STRING "" FORCE)
 
   fetchcontent_declare(nanoarrow
@@ -245,7 +249,7 @@ function(resolve_sparrow_dependency)
   fetchcontent_declare(sparrow
                        ${FC_DECLARE_COMMON_OPTIONS}
                        GIT_REPOSITORY https://github.com/man-group/sparrow.git
-                       GIT_TAG b0794cace22a55c32e90c0236034e040b822b957 # 0.3.0
+                       GIT_TAG f2fdcadc07538d558f128e887257e2ac19610adf # 0.5.0
   )
   fetchcontent_makeavailable(sparrow)
 
