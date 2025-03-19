@@ -66,9 +66,9 @@ TEST(ArrowCDataTest, CheckArrowSchemaAndArrayByNanoarrow) {
   CheckArrowSchemaAndArray(&schema, &array);
 }
 
-TEST(ArrowCDataTest, CheckArrowSchemaAndArrayBySparrow) {
-  auto [schema, array] = internal::CreateExampleArrowSchemaAndArrayBySparrow();
-  CheckArrowSchemaAndArray(&schema, &array);
-}
+// TEST(ArrowCDataTest, CheckArrowSchemaAndArrayBySparrow) {
+//   auto [schema, array] = internal::CreateExampleArrowSchemaAndArrayBySparrow();
+//   CheckArrowSchemaAndArray(&schema, &array);
+// }
 
 }  // namespace iceberg

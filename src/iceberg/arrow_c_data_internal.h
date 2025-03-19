@@ -20,7 +20,7 @@
 #pragma once
 
 #include <nanoarrow/nanoarrow.hpp>
-#include <sparrow/sparrow.hpp>
+// #include <sparrow/sparrow.hpp>
 
 namespace iceberg::internal {
 
@@ -31,11 +31,11 @@ namespace iceberg::internal {
  */
 std::pair<ArrowSchema, ArrowArray> CreateExampleArrowSchemaAndArrayByNanoarrow();
 
-/**
- * @brief Create a simple ArrowArray with non-nullable int64 and nullable string fields
- *
- * This is the example code to demonstrate the usage of sparrow API.
- */
-std::pair<ArrowSchema, ArrowArray> CreateExampleArrowSchemaAndArrayBySparrow();
+// /**
+//  * @brief Create a simple ArrowArray with non-nullable int64 and nullable string fields
+//  *
+//  * This is the example code to demonstrate the usage of sparrow API.
+//  */
+// std::pair<ArrowSchema, ArrowArray> CreateExampleArrowSchemaAndArrayBySparrow();
 
 }  // namespace iceberg::internal

@@ -273,4 +273,4 @@ function(resolve_sparrow_dependency)
       PARENT_SCOPE)
 endfunction()
 
-resolve_sparrow_dependency()
+# resolve_sparrow_dependency()
