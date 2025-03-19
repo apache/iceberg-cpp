@@ -221,6 +221,7 @@ function(resolve_nanoarrow_dependency)
   fetchcontent_makeavailable(nanoarrow)
 
   set_target_properties(nanoarrow PROPERTIES OUTPUT_NAME "iceberg_vendored_nanoarrow")
+  set_target_properties(nanoarrow PROPERTIES POSITION_INDEPENDENT_CODE ON)
   install(TARGETS nanoarrow
           EXPORT iceberg_targets
           RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
