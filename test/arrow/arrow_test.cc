@@ -26,10 +26,10 @@
 
 namespace iceberg {
 
-namespace {
+TEST(ArrowCDataTest, CheckArrowSchemaAndArrayByNanoarrow) {
+  auto [schema, array] = internal::CreateExampleArrowSchemaAndArrayByNanoarrow();
 
-void CheckArrowSchemaAndArray(ArrowSchema* schema, ArrowArray* array) {
-  auto arrow_schema = ::arrow::ImportSchema(schema).ValueOrDie();
+  auto arrow_schema = ::arrow::ImportSchema(&schema).ValueOrDie();
   EXPECT_EQ(arrow_schema->num_fields(), 2);
 
   auto id_field = arrow_schema->field(0);
@@ -42,7 +42,7 @@ void CheckArrowSchemaAndArray(ArrowSchema* schema, ArrowArray* array) {
   EXPECT_EQ(name_field->type()->id(), ::arrow::Type::STRING);
   EXPECT_TRUE(name_field->nullable());
 
-  auto arrow_record_batch = ::arrow::ImportRecordBatch(array, arrow_schema).ValueOrDie();
+  auto arrow_record_batch = ::arrow::ImportRecordBatch(&array, arrow_schema).ValueOrDie();
   EXPECT_EQ(arrow_record_batch->num_rows(), 3);
   EXPECT_EQ(arrow_record_batch->num_columns(), 2);
 
@@ -58,17 +58,5 @@ void CheckArrowSchemaAndArray(ArrowSchema* schema, ArrowArray* array) {
   EXPECT_EQ(name_column->GetScalar(1).ValueOrDie()->ToString(), "b");
   EXPECT_EQ(name_column->GetScalar(2).ValueOrDie()->ToString(), "c");
 }
-
-}  // namespace
-
-TEST(ArrowCDataTest, CheckArrowSchemaAndArrayByNanoarrow) {
-  auto [schema, array] = internal::CreateExampleArrowSchemaAndArrayByNanoarrow();
-  CheckArrowSchemaAndArray(&schema, &array);
-}
-
-// TEST(ArrowCDataTest, CheckArrowSchemaAndArrayBySparrow) {
-//   auto [schema, array] = internal::CreateExampleArrowSchemaAndArrayBySparrow();
-//   CheckArrowSchemaAndArray(&schema, &array);
-// }
 
 }  // namespace iceberg

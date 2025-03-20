@@ -210,18 +210,14 @@ endif()
 function(resolve_nanoarrow_dependency)
   prepare_fetchcontent()
 
-  set(NANOARROW_NAMESPACE
-      "Iceberg"
-      CACHE STRING "" FORCE)
-
   fetchcontent_declare(nanoarrow
                        ${FC_DECLARE_COMMON_OPTIONS}
                        URL "https://dlcdn.apache.org/arrow/apache-arrow-nanoarrow-0.6.0/apache-arrow-nanoarrow-0.6.0.tar.gz"
   )
   fetchcontent_makeavailable(nanoarrow)
 
-  set_target_properties(nanoarrow PROPERTIES OUTPUT_NAME "iceberg_vendored_nanoarrow")
-  set_target_properties(nanoarrow PROPERTIES POSITION_INDEPENDENT_CODE ON)
+  set_target_properties(nanoarrow PROPERTIES OUTPUT_NAME "iceberg_vendored_nanoarrow"
+                                             POSITION_INDEPENDENT_CODE ON)
   install(TARGETS nanoarrow
           EXPORT iceberg_targets
           RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
@@ -230,47 +226,3 @@ function(resolve_nanoarrow_dependency)
 endfunction()
 
 resolve_nanoarrow_dependency()
-
-# ----------------------------------------------------------------------
-# Sparrow
-
-function(resolve_sparrow_dependency)
-  prepare_fetchcontent()
-
-  # Add the sparrow cmake module path to the CMAKE_MODULE_PATH
-  # Otherwise we will see error below:
-  # include could not find requested file: sanitizers
-  list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_BINARY_DIR}/_deps/sparrow-src/cmake)
-
-  if(MSVC_TOOLCHAIN)
-    # MSVC does not support int128_t
-    set(USE_LARGE_INT_PLACEHOLDERS ON)
-  endif()
-
-  fetchcontent_declare(sparrow
-                       ${FC_DECLARE_COMMON_OPTIONS}
-                       GIT_REPOSITORY https://github.com/man-group/sparrow.git
-                       GIT_TAG f2fdcadc07538d558f128e887257e2ac19610adf # 0.5.0
-  )
-  fetchcontent_makeavailable(sparrow)
-
-  set_target_properties(sparrow PROPERTIES OUTPUT_NAME "iceberg_vendored_sparrow")
-  target_compile_definitions(sparrow INTERFACE SPARROW_USE_DATE_POLYFILL)
-  if(MSVC_TOOLCHAIN)
-    target_compile_definitions(sparrow INTERFACE SPARROW_USE_LARGE_INT_PLACEHOLDERS)
-  endif()
-  install(TARGETS sparrow
-          EXPORT iceberg_targets
-          RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
-          ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
-          LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
-
-  # sparrow depends on date::date and date::date-tz. It is tricky to use FetchContent
-  # to vendor date library since sparrow links date::date and date::date-tz directly.
-  list(APPEND ICEBERG_SYSTEM_DEPENDENCIES date)
-  set(ICEBERG_SYSTEM_DEPENDENCIES
-      ${ICEBERG_SYSTEM_DEPENDENCIES}
-      PARENT_SCOPE)
-endfunction()
-
-# resolve_sparrow_dependency()

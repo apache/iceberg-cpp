@@ -19,12 +19,7 @@
 
 #include "iceberg/arrow_c_data_internal.h"
 
-#include <array>
 #include <string>
-#include <tuple>
-#include <vector>
-
-// #include <sparrow/builder/builder.hpp>
 
 namespace iceberg::internal {
 
@@ -75,25 +70,5 @@ std::pair<ArrowSchema, ArrowArray> CreateExampleArrowSchemaAndArrayByNanoarrow()
 
   return {out_schema, out_array};
 }
-
-// std::pair<ArrowSchema, ArrowArray> CreateExampleArrowSchemaAndArrayBySparrow() {
-//   using struct_type = std::tuple<int64_t, sparrow::nullable<std::string>>;
-//   std::vector<struct_type> values = {
-//       {1, "a"},
-//       {2, "b"},
-//       {3, "c"},
-//   };
-//   auto sparrow_array = sparrow::build(values);
-
-//   // Demonstrate the use of arrow_proxy to modify the schema
-//   auto [_, non_owning_schema] = sparrow::get_arrow_structures(sparrow_array);
-//   non_owning_schema->children[0]->name = "id";
-//   non_owning_schema->children[0]->flags &= ~ARROW_FLAG_NULLABLE;
-//   non_owning_schema->children[1]->name = "name";
-//   non_owning_schema->children[1]->flags |= ARROW_FLAG_NULLABLE;
-
-//   auto [array, schema] = sparrow::extract_arrow_structures(std::move(sparrow_array));
-//   return {schema, array};
-// }
 
 }  // namespace iceberg::internal
