@@ -19,7 +19,9 @@
 
 #include "iceberg/arrow_c_data_internal.h"
 
+#include <array>
 #include <string>
+#include <utility>
 
 namespace iceberg::internal {
 
