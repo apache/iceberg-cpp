@@ -17,36 +17,27 @@
  * under the License.
  */
 
-#include "iceberg/avro/demo_avro.h"
+#pragma once
 
-#include <sstream>
+/// \file iceberg/table_identifier.h
+/// A TableIdentifier is a unique identifier for a table
 
-#include "avro/Compiler.hh"
-#include "avro/ValidSchema.hh"
-#include "iceberg/demo.h"
+#include <string>
+#include <vector>
 
-namespace iceberg::avro {
+#include "iceberg/iceberg_export.h"
 
-std::string DemoAvro::print() const {
-  std::string input =
-      "{\n\
-    \"type\": \"record\",\n\
-    \"name\": \"testrecord\",\n\
-    \"fields\": [\n\
-        {\n\
-            \"name\": \"testbytes\",\n\
-            \"type\": \"bytes\",\n\
-            \"default\": \"\"\n\
-        }\n\
-    ]\n\
-}\n\
-";
+namespace iceberg {
 
-  ::avro::ValidSchema schema = ::avro::compileJsonSchemaFromString(input);
-  std::ostringstream actual;
-  schema.toJson(actual);
+/// \brief A namespace in a catalog.
+struct ICEBERG_EXPORT Namespace {
+  std::vector<std::string> levels;
+};
 
-  return actual.str();
-}
+/// \brief Identifies a table in iceberg catalog.
+struct ICEBERG_EXPORT TableIdentifier {
+  Namespace ns;
+  std::string name;
+};
 
-}  // namespace iceberg::avro
+}  // namespace iceberg

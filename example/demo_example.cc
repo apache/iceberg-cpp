@@ -21,11 +21,11 @@
 
 #include "iceberg/arrow/demo_arrow.h"
 #include "iceberg/avro/demo_avro.h"
-#include "iceberg/demo_table.h"
+#include "iceberg/demo.h"
 #include "iceberg/puffin/demo_puffin.h"
 
 int main() {
-  std::cout << iceberg::DemoTable().print() << std::endl;
+  std::cout << iceberg::Demo().print() << std::endl;
   std::cout << iceberg::puffin::DemoPuffin().print() << std::endl;
   std::cout << iceberg::arrow::DemoArrow().print() << std::endl;
   std::cout << iceberg::avro::DemoAvro().print() << std::endl;

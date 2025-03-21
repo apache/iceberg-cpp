@@ -17,7 +17,7 @@
 
 set(ICEBERG_SOURCES
     arrow_c_data_internal.cc
-    demo_table.cc
+    demo.cc
     schema.cc
     schema_field.cc
     type.cc)

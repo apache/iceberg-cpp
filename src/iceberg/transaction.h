@@ -1,3 +1,4 @@
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -19,16 +20,34 @@
 
 #pragma once
 
-#include "iceberg/table.h"
+#include <memory>
+
+#include "iceberg/iceberg_export.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
-class ICEBERG_EXPORT DemoTable : public Table {
+/// \brief A transaction for performing multiple updates to a table
+class ICEBERG_EXPORT Transaction {
  public:
-  DemoTable() = default;
-  ~DemoTable() override = default;
+  virtual ~Transaction() = default;
 
-  std::string print() const override;
+  /// \brief Return the Table that this transaction will update
+  ///
+  /// \return this transaction's table
+  virtual const std::shared_ptr<Table>& table() const = 0;
+
+  /// \brief Create a new append API to add files to this table
+  ///
+  /// \return a new AppendFiles
+  virtual std::shared_ptr<AppendFiles> NewAppend() = 0;
+
+  /// \brief Apply the pending changes from all actions and commit
+  ///
+  /// May throw ValidationException if any update cannot be applied to the current table
+  /// metadata. May throw CommitFailedException if the updates cannot be committed due to
+  /// conflicts.
+  virtual void CommitTransaction() = 0;
 };
 
 }  // namespace iceberg
