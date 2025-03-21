@@ -17,13 +17,18 @@
  * under the License.
  */
 
-#include "iceberg/demo_table.h"
+#include "iceberg/demo.h"
 
 #include "iceberg/avro.h"  // include to export symbols
+#include "iceberg/catalog.h"
+#include "iceberg/location_provider.h"
 #include "iceberg/puffin.h"
+#include "iceberg/table.h"
+#include "iceberg/table_operations.h"
+#include "iceberg/transaction.h"
 
 namespace iceberg {
 
-std::string DemoTable::print() const { return "DemoTable"; }
+std::string Demo::print() const { return "Demo"; }
 
 }  // namespace iceberg

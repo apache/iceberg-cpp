@@ -81,4 +81,36 @@ class TimestampTzType;
 class Type;
 class UuidType;
 
+/// \brief Error types for iceberg.
+/// TODO: add more and sort them based on some rules.
+enum class Error {
+  kNoSuchNamespace,
+  kAlreadyExists,
+  kNoSuchTable,
+  kCommitStateUnknown,
+};
+
+struct Namespace;
+struct TableIdentifier;
+
+class Catalog;
+class LocationProvider;
+class Table;
+class TableOperations;
+class Transaction;
+
+/// ----------------------------------------------------------------------------
+/// TODO: Forward declarations below are not added yet.
+/// ----------------------------------------------------------------------------
+
+class HistoryEntry;
+class PartitionSpec;
+class Snapshot;
+class SortOrder;
+class StructLike;
+class TableMetadata;
+
+class AppendFiles;
+class TableScan;
+
 }  // namespace iceberg
