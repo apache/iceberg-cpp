@@ -36,7 +36,7 @@ struct ICEBERG_EXPORT Namespace {
 
 /// \brief Identifies a table in iceberg catalog.
 struct ICEBERG_EXPORT TableIdentifier {
-  Namespace name_space;
+  Namespace ns;
   std::string name;
 };
 
