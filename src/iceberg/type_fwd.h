@@ -83,7 +83,7 @@ class UuidType;
 
 /// \brief Error types for iceberg.
 /// TODO: add more and sort them based on some rules.
-enum class Error {
+enum class ErrorKind {
   kNoSuchNamespace,
   kAlreadyExists,
   kNoSuchTable,

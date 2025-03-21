@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include "iceberg/expected.h"
@@ -33,10 +34,10 @@ class ICEBERG_EXPORT TableOperations {
   virtual ~TableOperations() = default;
 
   /// \brief Return the currently loaded table metadata, without checking for updates.
-  virtual std::shared_ptr<TableMetadata> Current() = 0;
+  virtual const std::shared_ptr<TableMetadata>& Current() = 0;
 
   /// \brief Return the current table metadata after checking for updates.
-  virtual std::shared_ptr<TableMetadata> Refresh() = 0;
+  virtual const std::shared_ptr<TableMetadata>& Refresh() = 0;
 
   /// \brief Replace the base table metadata with a new version.
   ///
@@ -57,8 +58,8 @@ class ICEBERG_EXPORT TableOperations {
   ///
   /// \param base table metadata on which changes were based
   /// \param metadata new table metadata with updates
-  virtual expected<void, Error> Commit(const TableMetadata& base,
-                                       const TableMetadata& metadata) = 0;
+  virtual expected<void, ErrorKind> Commit(const TableMetadata& base,
+                                           const TableMetadata& metadata) = 0;
 
   /// \brief Returns an FileIO to read and write table data and metadata files.
   // virtual std::shared_ptr<FileIO> io() const = 0;
@@ -70,7 +71,7 @@ class ICEBERG_EXPORT TableOperations {
   /// \brief Returns a LocationProvider that supplies locations for new new data files.
   ///
   /// \return a location provider configured for the current table state
-  virtual std::shared_ptr<LocationProvider> location_provider() const = 0;
+  virtual std::unique_ptr<LocationProvider> location_provider() const = 0;
 
   /// \brief Return a temporary TableOperations instance that uses configuration from
   /// uncommitted metadata.

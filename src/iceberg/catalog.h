@@ -22,6 +22,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "iceberg/expected.h"
@@ -36,14 +37,14 @@ class ICEBERG_EXPORT Catalog {
   virtual ~Catalog() = default;
 
   /// \brief Return the name for this catalog
-  virtual std::string name() const = 0;
+  virtual std::string_view name() const = 0;
 
   /// \brief Return all the identifiers under this namespace
   ///
   /// \param ns a namespace
   /// \return a list of identifiers for tables or Error::kNoSuchNamespace
   /// if the namespace does not exist
-  virtual expected<std::vector<TableIdentifier>, Error> ListTables(
+  virtual expected<std::vector<TableIdentifier>, ErrorKind> ListTables(
       const Namespace& ns) const = 0;
 
   /// \brief Create a table
@@ -54,7 +55,7 @@ class ICEBERG_EXPORT Catalog {
   /// \param location a location for the table; leave empty if unspecified
   /// \param properties a string map of table properties
   /// \return a Table instance or Error::kAlreadyExists if the table already exists
-  virtual expected<std::unique_ptr<Table>, Error> CreateTable(
+  virtual expected<std::unique_ptr<Table>, ErrorKind> CreateTable(
       const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
       const std::string& location,
       const std::map<std::string, std::string>& properties) = 0;
@@ -68,7 +69,7 @@ class ICEBERG_EXPORT Catalog {
   /// \param properties a string map of table properties
   /// \return a Transaction to create the table or Error::kAlreadyExists if the table
   /// already exists
-  virtual expected<std::shared_ptr<Transaction>, Error> NewCreateTableTransaction(
+  virtual expected<std::shared_ptr<Transaction>, ErrorKind> NewCreateTableTransaction(
       const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
       const std::string& location,
       const std::map<std::string, std::string>& properties) = 0;
@@ -94,7 +95,7 @@ class ICEBERG_EXPORT Catalog {
   /// \param identifier a table identifier
   /// \return instance of Table implementation referred to by identifier or
   /// Error::kNoSuchTable if the table does not exist
-  virtual expected<std::shared_ptr<Table>, Error> LoadTable(
+  virtual expected<std::shared_ptr<Table>, ErrorKind> LoadTable(
       const TableIdentifier& identifier) const = 0;
 
   /// \brief Register a table with the catalog if it does not exist
@@ -102,7 +103,7 @@ class ICEBERG_EXPORT Catalog {
   /// \param identifier a table identifier
   /// \param metadata_file_location the location of a metadata file
   /// \return a Table instance or Error::kAlreadyExists if the table already exists
-  virtual expected<std::shared_ptr<Table>, Error> RegisterTable(
+  virtual expected<std::shared_ptr<Table>, ErrorKind> RegisterTable(
       const TableIdentifier& identifier, const std::string& metadata_file_location) = 0;
 
   /// \brief Initialize a catalog given a custom name and a map of catalog properties
