@@ -22,11 +22,11 @@
 #include <string>
 
 #include "iceberg/arrow/iceberg_arrow_export.h"
-#include "iceberg/table.h"
+#include "iceberg/demo.h"
 
 namespace iceberg::arrow {
 
-class ICEBERG_ARROW_EXPORT DemoArrow : public Table {
+class ICEBERG_ARROW_EXPORT DemoArrow : public Demo {
  public:
   DemoArrow() = default;
   ~DemoArrow() override = default;

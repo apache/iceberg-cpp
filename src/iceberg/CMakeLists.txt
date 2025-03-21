@@ -19,7 +19,7 @@ set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
                      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>")
 set(ICEBERG_SOURCES
     arrow_c_data_internal.cc
-    demo_table.cc
+    demo.cc
     schema.cc
     schema_field.cc
     type.cc)

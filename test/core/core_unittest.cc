@@ -19,9 +19,9 @@
 
 #include <gtest/gtest.h>
 
-#include "iceberg/demo_table.h"
+#include "iceberg/demo.h"
 
 TEST(TableTest, TestTableCons) {
-  auto table = iceberg::DemoTable();
-  EXPECT_EQ(table.print(), "DemoTable");
+  auto table = iceberg::Demo();
+  EXPECT_EQ(table.print(), "Demo");
 }
