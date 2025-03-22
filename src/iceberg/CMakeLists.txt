@@ -54,5 +54,6 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/iceberg_export.h
 add_subdirectory(arrow)
 add_subdirectory(avro)
 add_subdirectory(puffin)
+add_subdirectory(io)
 
 iceberg_install_cmake_package(Iceberg iceberg_targets)
