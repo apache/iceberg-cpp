@@ -16,7 +16,6 @@
 # under the License.
 
 set(ICEBERG_PUFFIN_SOURCES demo_puffin.cc)
-set(ICEBERG_PUFFIN_INCLUDES "${ICEBERG_INCLUDES}")
 
 set(ICEBERG_PUFFIN_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_PUFFIN_SHARED_BUILD_INTERFACE_LIBS)
@@ -39,8 +38,6 @@ list(APPEND
 add_iceberg_lib(iceberg_puffin
                 SOURCES
                 ${ICEBERG_PUFFIN_SOURCES}
-                PRIVATE_INCLUDES
-                ${ICEBERG_PUFFIN_INCLUDES}
                 SHARED_LINK_LIBS
                 ${ICEBERG_PUFFIN_SHARED_BUILD_INTERFACE_LIBS}
                 STATIC_LINK_LIBS

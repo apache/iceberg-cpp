@@ -15,6 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
+set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
+                     "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>")
 set(ICEBERG_SOURCES
     arrow_c_data_internal.cc
     demo_table.cc
@@ -35,7 +37,7 @@ list(APPEND ICEBERG_SHARED_INSTALL_INTERFACE_LIBS "Iceberg::nanoarrow")
 add_iceberg_lib(iceberg
                 SOURCES
                 ${ICEBERG_SOURCES}
-                PRIVATE_INCLUDES
+                EXTRA_INCLUDES
                 ${ICEBERG_INCLUDES}
                 SHARED_LINK_LIBS
                 ${ICEBERG_SHARED_BUILD_INTERFACE_LIBS}

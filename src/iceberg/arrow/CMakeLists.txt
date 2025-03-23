@@ -20,7 +20,6 @@ if(NOT ICEBERG_ARROW)
 endif()
 
 set(ICEBERG_ARROW_SOURCES demo_arrow.cc)
-set(ICEBERG_ARROW_INCLUDES "${ICEBERG_INCLUDES}")
 
 # Libraries to link with exported libiceberg_arrow.{so,a}.
 set(ICEBERG_ARROW_STATIC_BUILD_INTERFACE_LIBS)
@@ -61,8 +60,6 @@ list(APPEND
 add_iceberg_lib(iceberg_arrow
                 SOURCES
                 ${ICEBERG_ARROW_SOURCES}
-                PRIVATE_INCLUDES
-                ${ICEBERG_ARROW_INCLUDES}
                 SHARED_LINK_LIBS
                 ${ICEBERG_ARROW_SHARED_BUILD_INTERFACE_LIBS}
                 STATIC_LINK_LIBS

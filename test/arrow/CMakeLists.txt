@@ -20,6 +20,5 @@ if(ICEBERG_ARROW)
   target_sources(arrow_unittest PRIVATE arrow_test.cc)
   target_link_libraries(arrow_unittest PRIVATE iceberg_arrow_static Arrow::arrow_static
                                                GTest::gtest_main)
-  target_include_directories(arrow_unittest PRIVATE "${ICEBERG_INCLUDES}")
   add_test(NAME arrow_unittest COMMAND arrow_unittest)
 endif()

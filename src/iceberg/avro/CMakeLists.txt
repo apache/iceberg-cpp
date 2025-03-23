@@ -20,7 +20,6 @@ if(NOT ICEBERG_AVRO)
 endif()
 
 set(ICEBERG_AVRO_SOURCES demo_avro.cc)
-set(ICEBERG_AVRO_INCLUDES "${ICEBERG_INCLUDES}")
 
 # Libraries to link with exported libiceberg_avro.{so,a}.
 set(ICEBERG_AVRO_STATIC_BUILD_INTERFACE_LIBS)
@@ -65,8 +64,6 @@ list(APPEND
 add_iceberg_lib(iceberg_avro
                 SOURCES
                 ${ICEBERG_AVRO_SOURCES}
-                PRIVATE_INCLUDES
-                ${ICEBERG_AVRO_INCLUDES}
                 SHARED_LINK_LIBS
                 ${ICEBERG_AVRO_SHARED_BUILD_INTERFACE_LIBS}
                 STATIC_LINK_LIBS
