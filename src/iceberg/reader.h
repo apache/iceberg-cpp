@@ -29,7 +29,6 @@ namespace iceberg {
 /// \brief Interface for reading bytes from a file.
 class ICEBERG_EXPORT Reader {
  public:
-  Reader() = default;
   virtual ~Reader() = default;
 
   /// \brief Get the size of the file.
