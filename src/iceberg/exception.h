@@ -28,6 +28,8 @@
 
 #include <stdexcept>
 
+#include "iceberg/iceberg_export.h"
+
 namespace iceberg {
 
 /// \brief Base exception class for exceptions thrown by the Iceberg library.
