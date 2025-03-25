@@ -81,22 +81,12 @@ class TimestampTzType;
 class Type;
 class UuidType;
 
-/// \brief Error types for iceberg.
-/// TODO: add more and sort them based on some rules.
-enum class ErrorKind {
-  kNoSuchNamespace,
-  kAlreadyExists,
-  kNoSuchTable,
-  kCommitStateUnknown,
-};
-
 struct Namespace;
 struct TableIdentifier;
 
 class Catalog;
 class LocationProvider;
 class Table;
-class TableOperations;
 class Transaction;
 
 /// ----------------------------------------------------------------------------
@@ -109,6 +99,9 @@ class Snapshot;
 class SortOrder;
 class StructLike;
 class TableMetadata;
+
+class MetadataUpdate;
+class UpdateRequirement;
 
 class AppendFiles;
 class TableScan;

@@ -24,6 +24,7 @@
 #include <string>
 #include <vector>
 
+#include "iceberg/error.h"
 #include "iceberg/expected.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/type_fwd.h"
@@ -42,7 +43,7 @@ class ICEBERG_EXPORT Table {
   virtual const std::string& uuid() const = 0;
 
   /// \brief Refresh the current table metadata
-  virtual void Refresh() = 0;
+  virtual expected<void, Error> Refresh() = 0;
 
   /// \brief Return the schema for this table
   virtual const std::shared_ptr<Schema>& schema() const = 0;
@@ -76,7 +77,7 @@ class ICEBERG_EXPORT Table {
   ///
   /// \param snapshot_id the ID of the snapshot to get
   /// \return the Snapshot with the given id
-  virtual expected<std::shared_ptr<Snapshot>, ErrorKind> snapshot(
+  virtual expected<std::shared_ptr<Snapshot>, Error> snapshot(
       int64_t snapshot_id) const = 0;
 
   /// \brief Get the snapshots of this table

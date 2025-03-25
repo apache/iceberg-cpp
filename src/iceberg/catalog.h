@@ -25,6 +25,7 @@
 #include <string_view>
 #include <vector>
 
+#include "iceberg/error.h"
 #include "iceberg/expected.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/type_fwd.h"
@@ -32,6 +33,9 @@
 namespace iceberg {
 
 /// \brief A Catalog API for table create, drop, and load operations.
+///
+/// Note that these functions are named after the corresponding operationId
+/// specified by the Iceberg Rest Catalog API.
 class ICEBERG_EXPORT Catalog {
  public:
   virtual ~Catalog() = default;
@@ -42,9 +46,9 @@ class ICEBERG_EXPORT Catalog {
   /// \brief Return all the identifiers under this namespace
   ///
   /// \param ns a namespace
-  /// \return a list of identifiers for tables or Error::kNoSuchNamespace
+  /// \return a list of identifiers for tables or ErrorKind::kNoSuchNamespace
   /// if the namespace does not exist
-  virtual expected<std::vector<TableIdentifier>, ErrorKind> ListTables(
+  virtual expected<std::vector<TableIdentifier>, Error> ListTables(
       const Namespace& ns) const = 0;
 
   /// \brief Create a table
@@ -54,11 +58,22 @@ class ICEBERG_EXPORT Catalog {
   /// \param spec a partition spec
   /// \param location a location for the table; leave empty if unspecified
   /// \param properties a string map of table properties
-  /// \return a Table instance or Error::kAlreadyExists if the table already exists
-  virtual expected<std::unique_ptr<Table>, ErrorKind> CreateTable(
+  /// \return a Table instance or ErrorKind::kAlreadyExists if the table already exists
+  virtual expected<std::unique_ptr<Table>, Error> CreateTable(
       const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
       const std::string& location,
       const std::map<std::string, std::string>& properties) = 0;
+
+  /// \brief Update a table
+  ///
+  /// \param identifier a table identifier
+  /// \param requirements a list of table requirements
+  /// \param updates a list of table updates
+  /// \return a Table instance or ErrorKind::kAlreadyExists if the table already exists
+  virtual expected<std::unique_ptr<Table>, Error> UpdateTable(
+      const TableIdentifier& identifier,
+      const std::vector<std::unique_ptr<UpdateRequirement>>& requirements,
+      const std::vector<std::unique_ptr<MetadataUpdate>>& updates) = 0;
 
   /// \brief Start a transaction to create a table
   ///
@@ -67,9 +82,9 @@ class ICEBERG_EXPORT Catalog {
   /// \param spec a partition spec
   /// \param location a location for the table; leave empty if unspecified
   /// \param properties a string map of table properties
-  /// \return a Transaction to create the table or Error::kAlreadyExists if the table
+  /// \return a Transaction to create the table or ErrorKind::kAlreadyExists if the table
   /// already exists
-  virtual expected<std::shared_ptr<Transaction>, ErrorKind> NewCreateTableTransaction(
+  virtual expected<std::shared_ptr<Transaction>, Error> StageCreateTable(
       const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
       const std::string& location,
       const std::map<std::string, std::string>& properties) = 0;
@@ -94,16 +109,16 @@ class ICEBERG_EXPORT Catalog {
   ///
   /// \param identifier a table identifier
   /// \return instance of Table implementation referred to by identifier or
-  /// Error::kNoSuchTable if the table does not exist
-  virtual expected<std::shared_ptr<Table>, ErrorKind> LoadTable(
+  /// ErrorKind::kNoSuchTable if the table does not exist
+  virtual expected<std::shared_ptr<Table>, Error> LoadTable(
       const TableIdentifier& identifier) const = 0;
 
   /// \brief Register a table with the catalog if it does not exist
   ///
   /// \param identifier a table identifier
   /// \param metadata_file_location the location of a metadata file
-  /// \return a Table instance or Error::kAlreadyExists if the table already exists
-  virtual expected<std::shared_ptr<Table>, ErrorKind> RegisterTable(
+  /// \return a Table instance or ErrorKind::kAlreadyExists if the table already exists
+  virtual expected<std::shared_ptr<Table>, Error> RegisterTable(
       const TableIdentifier& identifier, const std::string& metadata_file_location) = 0;
 
   /// \brief Initialize a catalog given a custom name and a map of catalog properties
@@ -172,7 +187,7 @@ class ICEBERG_EXPORT Catalog {
     /// \brief Starts a transaction to create the table
     ///
     /// \return the Transaction to create the table
-    virtual std::unique_ptr<Transaction> CreateTransaction() = 0;
+    virtual std::unique_ptr<Transaction> StageCreate() = 0;
   };
 };
 
