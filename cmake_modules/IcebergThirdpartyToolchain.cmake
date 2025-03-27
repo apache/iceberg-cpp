@@ -127,7 +127,7 @@ function(resolve_arrow_dependency)
       PARENT_SCOPE)
 endfunction()
 
-if(ICEBERG_ARROW)
+if(ICEBERG_BUILD_BUNDLE)
   resolve_arrow_dependency()
 endif()
 
@@ -199,7 +199,7 @@ function(resolve_avro_dependency)
       PARENT_SCOPE)
 endfunction()
 
-if(ICEBERG_AVRO)
+if(ICEBERG_BUILD_BUNDLE)
   resolve_avro_dependency()
 endif()
 

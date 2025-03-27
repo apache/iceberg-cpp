@@ -23,6 +23,25 @@ fetchcontent_declare(googletest
                      GTest)
 fetchcontent_makeavailable(googletest)
 
-add_subdirectory(arrow)
-add_subdirectory(avro)
-add_subdirectory(core)
+add_executable(schema_test)
+target_sources(schema_test PRIVATE schema_test.cc schema_field_test.cc type_test.cc)
+target_link_libraries(schema_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
+add_test(NAME schema_test COMMAND schema_test)
+
+add_executable(expected_test)
+target_sources(expected_test PRIVATE expected_test.cc)
+target_link_libraries(expected_test PRIVATE iceberg_static GTest::gtest_main)
+add_test(NAME expected_test COMMAND expected_test)
+
+if(ICEBERG_BUILD_BUNDLE)
+  add_executable(avro_test)
+  target_sources(avro_test PRIVATE avro_test.cc)
+  target_link_libraries(avro_test PRIVATE iceberg_bundle_static GTest::gtest_main)
+  add_test(NAME avro_test COMMAND avro_test)
+
+  add_executable(arrow_test)
+  target_sources(arrow_test PRIVATE arrow_test.cc)
+  target_link_libraries(arrow_test PRIVATE iceberg_bundle_static Arrow::arrow_static
+                                           GTest::gtest_main)
+  add_test(NAME arrow_test COMMAND arrow_test)
+endif()

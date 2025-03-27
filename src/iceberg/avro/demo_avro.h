@@ -22,11 +22,11 @@
 #include <string>
 
 #include "iceberg/avro.h"
-#include "iceberg/avro/iceberg_avro_export.h"
+#include "iceberg/iceberg_bundle_export.h"
 
 namespace iceberg::avro {
 
-class ICEBERG_AVRO_EXPORT DemoAvro : public Avro {
+class ICEBERG_BUNDLE_EXPORT DemoAvro : public Avro {
  public:
   DemoAvro() = default;
   ~DemoAvro() override = default;

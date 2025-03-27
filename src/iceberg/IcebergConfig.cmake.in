@@ -24,10 +24,8 @@
 #
 #   Iceberg::iceberg_shared
 #   Iceberg::iceberg_static
-#   Iceberg::iceberg_puffin_shared
-#   Iceberg::iceberg_puffin_static
-#   Iceberg::iceberg_arrow_shared
-#   Iceberg::iceberg_arrow_static
+#   Iceberg::iceberg_bundle_shared
+#   Iceberg::iceberg_bundle_static
 
 @PACKAGE_INIT@
 

@@ -38,12 +38,12 @@ ctest --test-dir build --output-on-failure
 cmake --install build
 ```
 
-### Build and Install Iceberg Arrow Library
+### Build and Install Iceberg Bundle Library
 
 #### Vendored Apache Arrow (default)
 
 ```bash
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/path/to/install -DICEBERG_ARROW=ON
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/path/to/install -DICEBERG_BUILD_BUNDLE=ON
 cmake --build build
 ctest --test-dir build --output-on-failure
 cmake --install build
@@ -52,7 +52,7 @@ cmake --install build
 #### Provided Apache Arrow
 
 ```bash
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/path/to/install -DCMAKE_PREFIX_PATH=/path/to/arrow -DICEBERG_ARROW=ON
+cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/path/to/install -DCMAKE_PREFIX_PATH=/path/to/arrow -DICEBERG_BUILD_BUNDLE=ON
 cmake --build build
 ctest --test-dir build --output-on-failure
 cmake --install build

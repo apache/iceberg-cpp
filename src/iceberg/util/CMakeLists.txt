@@ -15,10 +15,4 @@
 # specific language governing permissions and limitations
 # under the License.
 
-if(ICEBERG_ARROW)
-  add_executable(arrow_unittest)
-  target_sources(arrow_unittest PRIVATE arrow_test.cc)
-  target_link_libraries(arrow_unittest PRIVATE iceberg_arrow_static Arrow::arrow_static
-                                               GTest::gtest_main)
-  add_test(NAME arrow_unittest COMMAND arrow_unittest)
-endif()
+iceberg_install_all_headers(iceberg/util)

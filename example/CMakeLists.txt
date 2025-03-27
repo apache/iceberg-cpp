@@ -26,6 +26,4 @@ find_package(Iceberg CONFIG REQUIRED)
 
 add_executable(demo_example demo_example.cc)
 
-target_link_libraries(demo_example
-                      PRIVATE Iceberg::iceberg_puffin_static
-                              Iceberg::iceberg_arrow_static Iceberg::iceberg_avro_static)
+target_link_libraries(demo_example PRIVATE Iceberg::iceberg_bundle_static)

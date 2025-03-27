@@ -21,12 +21,12 @@
 
 #include <string>
 
-#include "iceberg/arrow/iceberg_arrow_export.h"
 #include "iceberg/demo.h"
+#include "iceberg/iceberg_bundle_export.h"
 
 namespace iceberg::arrow {
 
-class ICEBERG_ARROW_EXPORT DemoArrow : public Demo {
+class ICEBERG_BUNDLE_EXPORT DemoArrow : public Demo {
  public:
   DemoArrow() = default;
   ~DemoArrow() override = default;

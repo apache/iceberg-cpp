@@ -22,7 +22,6 @@
 #include "iceberg/avro.h"  // include to export symbols
 #include "iceberg/catalog.h"
 #include "iceberg/location_provider.h"
-#include "iceberg/puffin.h"
 #include "iceberg/table.h"
 #include "iceberg/transaction.h"
 
