@@ -30,16 +30,22 @@ namespace iceberg {
 enum class ErrorKind {
   kNoSuchNamespace,
   kAlreadyExists,
+  kNoSuchFile,
   kNoSuchTable,
   kCommitStateUnknown,
   kInvalidSchema,
   kInvalidArgument,
+  kIOError,
+  kUnknownError,
 };
 
 /// \brief Error with a kind and a message.
 struct ICEBERG_EXPORT [[nodiscard]] Error {
   ErrorKind kind;
   std::string message;
+
+  explicit Error(ErrorKind kind, std::string message)
+      : kind(kind), message(std::move(message)) {};
 };
 
 }  // namespace iceberg

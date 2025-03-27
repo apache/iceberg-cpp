@@ -19,92 +19,51 @@
 
 #pragma once
 
-#include <memory>
+#include <optional>
 #include <string>
+#include <string_view>
 
+#include "iceberg/error.h"
+#include "iceberg/expected.h"
 #include "iceberg/iceberg_export.h"
-#include "iceberg/reader.h"
-#include "iceberg/writer.h"
 
 namespace iceberg {
 
-/// \brief An interface used to read input files using Reader and AsyncReader
-class ICEBERG_EXPORT InputFile {
- public:
-  explicit InputFile(std::string location) : location_(std::move(location)) {}
-
-  virtual ~InputFile() = default;
-
-  /// \brief Checks whether the file exists.
-  virtual bool exists() const = 0;
-  /// \brief Returns the total length of the file, in bytes.
-  virtual int64_t getLength() const = 0;
-
-  /// \brief Get a Reader instance to read bytes from the file.
-  virtual std::unique_ptr<Reader> newReader() = 0;
-
-  /// \brief Get the file location
-  const std::string& location() const { return location_; }
-
- protected:
-  std::string location_;
-};
-
-/// \brief An interface used to write output files using Writer and AsyncWriter
-class ICEBERG_EXPORT OutputFile {
- public:
-  explicit OutputFile(std::string location) : location_(std::move(location)) {}
-
-  virtual ~OutputFile() = default;
-
-  /// \brief Create the file.
-  ///
-  /// If the file exists, or an error will be thrown.
-  virtual void create() = 0;
-
-  /// \brief Get a Writer instance to write bytes to the file.
-  virtual std::unique_ptr<Writer> newWriter() = 0;
-
-  /// \brief Get the file location
-  const std::string& location() const { return location_; }
-
-  /// \brief Return an InputFile for the location of this OutputFile.
-  virtual std::shared_ptr<InputFile> toInputFile() const = 0;
-
- protected:
-  std::string location_;
-};
-
-/// \brief Pluggable module for reading, writing, and deleting files.
+/// \brief Pluggable module for reading, writing, and deleting metadata files.
 ///
-/// Both table metadata files and data files can be written and read by this module.
+/// This module only handle metadata files, not data files. The metadata files
+/// are typically small and are used to store schema, partition information,
+/// and other metadata about the table.
 class ICEBERG_EXPORT FileIO {
  public:
-  explicit FileIO(std::string name) : name_(std::move(name)) {}
-
+  FileIO() = default;
   virtual ~FileIO() = default;
 
-  /// \brief Get an InputFile
+  /// \brief Read the content of the file at the given location.
   ///
-  /// Get a InputFile instance to read bytes from the file at the given location.
-  virtual std::shared_ptr<InputFile> newInputFile(const std::string& location) = 0;
+  /// \param file_location The location of the file to read.
+  /// \param length The number of bytes to read. Some object storage need to specify
+  /// the length to read, e.g. S3 `GetObject` has a Range parameter.
+  /// \return The content of the file if the read succeeded, an error code if the read
+  /// failed.
+  virtual expected<std::string, Error> ReadFile(const std::string& file_location,
+                                                std::optional<size_t> length) = 0;
 
-  /// \brief Get an OutputFile
+  /// \brief Write the given content to the file at the given location.
   ///
-  /// Get a OutputFile instance to write bytes to the file at the given location.
-  virtual std::shared_ptr<OutputFile> newOutputFile(const std::string& location) = 0;
+  /// \param file_location The location of the file to write.
+  /// \param content The content to write to the file.
+  /// \param overwrite If true, overwrite the file if it exists. If false, fail if the
+  /// file exists.
+  /// \return void if the write succeeded, an error code if the write failed.
+  virtual expected<void, Error> WriteFile(const std::string& file_location,
+                                          std::string_view content, bool overwrite) = 0;
 
-  /// \brief Delete file
+  /// \brief Delete a file at the given location.
   ///
-  /// Delete the file at the given location.
-  virtual void DeleteFile(const std::string& location) = 0;
-  void DeleteFile(const InputFile& ifile) { return DeleteFile(ifile.location()); }
-  void DeleteFile(const OutputFile& ofile) { return DeleteFile(ofile.location()); }
-
-  const std::string& name() const { return name_; }
-
- protected:
-  std::string name_;
+  /// \param file_location The location of the file to delete.
+  /// \return void if the delete succeeded, an error code if the delete failed.
+  virtual expected<void, Error> DeleteFile(const std::string& file_location) = 0;
 };
 
 }  // namespace iceberg

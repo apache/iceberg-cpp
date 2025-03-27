@@ -15,10 +15,4 @@
 # specific language governing permissions and limitations
 # under the License.
 
-if(ICEBERG_IO)
-  add_executable(fs_file_io_test)
-  target_sources(fs_file_io_test PRIVATE fs_file_io_test.cc)
-  target_link_libraries(fs_file_io_test PRIVATE iceberg_io_static GTest::gtest_main)
-  target_include_directories(fs_file_io_test PRIVATE "${ICEBERG_INCLUDES}")
-  add_test(NAME fs_file_io_test COMMAND fs_file_io_test)
-endif()
+iceberg_install_all_headers(iceberg/arrow/io)

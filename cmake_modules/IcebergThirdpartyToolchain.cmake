@@ -70,7 +70,7 @@ function(resolve_arrow_dependency)
       ON
       CACHE BOOL "" FORCE)
   set(ARROW_FILESYSTEM
-      OFF
+      ON
       CACHE BOOL "" FORCE)
   set(ARROW_SIMD_LEVEL
       "NONE"
