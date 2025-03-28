@@ -22,6 +22,7 @@ set(ICEBERG_SOURCES
     demo.cc
     schema.cc
     schema_field.cc
+    schema_internal.cc
     type.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)

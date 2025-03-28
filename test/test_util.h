@@ -19,27 +19,8 @@
 
 #pragma once
 
-#include <string>
+#define EXPECT_OK(value) \
+  EXPECT_TRUE(value.has_value()) << "Expected ok but got error: " << value.error().message
 
-#include "iceberg/iceberg_export.h"
-
-namespace iceberg {
-
-/// \brief Error types for iceberg.
-/// TODO: add more and sort them based on some rules.
-enum class ErrorKind {
-  kNoSuchNamespace,
-  kAlreadyExists,
-  kNoSuchTable,
-  kCommitStateUnknown,
-  kInvalidSchema,
-  kInvalidArgument,
-};
-
-/// \brief Error with a kind and a message.
-struct ICEBERG_EXPORT [[nodiscard]] Error {
-  ErrorKind kind;
-  std::string message;
-};
-
-}  // namespace iceberg
+#define ASSERT_OK(value) \
+  ASSERT_TRUE(value.has_value()) << "Expected ok but got error: " << value.error().message
