@@ -64,7 +64,7 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
   /// \brief Get whether the field is optional.
   [[nodiscard]] bool optional() const;
 
-  [[nodiscard]] std::string ToString() const;
+  [[nodiscard]] std::string ToString() const override;
 
   friend bool operator==(const SchemaField& lhs, const SchemaField& rhs) {
     return lhs.Equals(rhs);
