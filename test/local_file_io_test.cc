@@ -35,7 +35,7 @@ class LocalFileIOTest : public testing::Test {
   std::filesystem::path tmpfile = std::filesystem::temp_directory_path() / "123.txt";
 };
 
-TEST_F(LocalFileIOTest, readWriteFile) {
+TEST_F(LocalFileIOTest, ReadWriteFile) {
   auto read_res = file_io_->ReadFile(tmpfile.string(), 1024);
   EXPECT_EQ(read_res.error().kind, iceberg::ErrorKind::kInvalidArgument);
 
@@ -49,7 +49,7 @@ TEST_F(LocalFileIOTest, readWriteFile) {
   EXPECT_EQ(read_res.value(), "hello world");
 }
 
-TEST_F(LocalFileIOTest, deleteFile) {
+TEST_F(LocalFileIOTest, DeleteFile) {
   auto del_res = file_io_->DeleteFile(tmpfile.string());
   EXPECT_TRUE(del_res.has_value());
 

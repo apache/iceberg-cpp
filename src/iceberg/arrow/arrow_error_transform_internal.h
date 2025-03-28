@@ -39,8 +39,8 @@ inline ErrorKind ToErrorKind(const ::arrow::Status& status) {
 #define ICEBERG_INTERNAL_ASSIGN_OR_RETURN_IMPL(result_name, lhs, rexpr, error_transform) \
   auto&& result_name = (rexpr);                                                          \
   if (!result_name.ok()) {                                                               \
-    return unexpected(                                                                   \
-        Error(error_transform(result_name.status()), result_name.status().ToString()));  \
+    return unexpected<Error>{{.kind = error_transform(result_name.status()),             \
+                              .message = result_name.status().ToString()}};              \
   }                                                                                      \
   lhs = std::move(result_name).ValueOrDie();
 
@@ -53,7 +53,8 @@ inline ErrorKind ToErrorKind(const ::arrow::Status& status) {
   do {                                                                              \
     auto&& _status = (expr);                                                        \
     if (!_status.ok()) {                                                            \
-      return unexpected(Error(internal::ToErrorKind(_status), _status.ToString())); \
+      return unexpected<Error>{                                                     \
+          {.kind = internal::ToErrorKind(_status), .message = _status.ToString()}}; \
     }                                                                               \
   } while (0)
 

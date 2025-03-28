@@ -50,7 +50,8 @@ expected<std::string, Error> LocalFileIO::ReadFile(const std::string& file_locat
 expected<void, Error> LocalFileIO::WriteFile(const std::string& file_location,
                                              std::string_view content, bool overwrite) {
   if (!overwrite && FileExists(file_location)) {
-    return unexpected(Error(ErrorKind::kAlreadyExists, ""));
+    return unexpected(
+        Error(ErrorKind::kAlreadyExists, std::format("File {} exists", file_location)));
   }
   ICEBERG_INTERNAL_ASSIGN_OR_RETURN(auto file,
                                     local_fs_->OpenOutputStream(file_location));

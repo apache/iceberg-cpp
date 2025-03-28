@@ -47,7 +47,13 @@ class ICEBERG_EXPORT FileIO {
   /// \return The content of the file if the read succeeded, an error code if the read
   /// failed.
   virtual expected<std::string, Error> ReadFile(const std::string& file_location,
-                                                std::optional<size_t> length) = 0;
+                                                std::optional<size_t> length) {
+    // The following line is to avoid Windows linker error LNK2019.
+    // If this function is defined as pure virtual function, the `unexpected<Error>` will
+    // not be instantiated and exported in libiceberg.
+    return unexpected<Error>{
+        {.kind = ErrorKind::kNotImplemented, .message = "ReadFile not implemented"}};
+  }
 
   /// \brief Write the given content to the file at the given location.
   ///
@@ -57,7 +63,13 @@ class ICEBERG_EXPORT FileIO {
   /// file exists.
   /// \return void if the write succeeded, an error code if the write failed.
   virtual expected<void, Error> WriteFile(const std::string& file_location,
-                                          std::string_view content, bool overwrite) = 0;
+                                          std::string_view content, bool overwrite) {
+    // The following line is to avoid Windows linker error LNK2019.
+    // If this function is defined as pure virtual function, the `unexpected<Error>` will
+    // not be instantiated and exported in libiceberg.
+    return unexpected<Error>{
+        {.kind = ErrorKind::kNotImplemented, .message = "WriteFile not implemented"}};
+  }
 
   /// \brief Delete a file at the given location.
   ///
