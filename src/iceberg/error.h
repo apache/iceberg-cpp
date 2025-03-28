@@ -30,8 +30,13 @@ namespace iceberg {
 enum class ErrorKind {
   kNoSuchNamespace,
   kAlreadyExists,
+  kNoSuchFile,
   kNoSuchTable,
   kCommitStateUnknown,
+  kInvalidArgument,
+  kIOError,
+  kNotImplemented,
+  kUnknownError,
 };
 
 /// \brief Error with a kind and a message.

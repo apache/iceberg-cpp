@@ -56,7 +56,8 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/iceberg_export.h
         DESTINATION ${ICEBERG_INSTALL_INCLUDEDIR}/iceberg)
 
 if(ICEBERG_BUILD_BUNDLE)
-  set(ICEBERG_BUNDLE_SOURCES arrow/demo_arrow.cc avro/demo_avro.cc)
+  set(ICEBERG_BUNDLE_SOURCES arrow/demo_arrow.cc arrow/io/local_file_io.cc
+                             avro/demo_avro.cc)
 
   # Libraries to link with exported libiceberg_bundle.{so,a}.
   set(ICEBERG_BUNDLE_STATIC_BUILD_INTERFACE_LIBS)
