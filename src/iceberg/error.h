@@ -34,6 +34,7 @@ enum class ErrorKind {
   kCommitStateUnknown,
   kInvalidSchema,
   kInvalidArgument,
+  kNotSupported,
 };
 
 /// \brief Error with a kind and a message.
