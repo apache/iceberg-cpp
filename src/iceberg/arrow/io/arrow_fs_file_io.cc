@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/arrow/io/local_file_io.h"
+#include "iceberg/arrow/io/arrow_fs_file_io.h"
 
 #include <filesystem>
 
@@ -28,14 +28,14 @@
 namespace iceberg::arrow::io {
 
 /// \brief Read the content of the file at the given location.
-expected<std::string, Error> LocalFileIO::ReadFile(const std::string& file_location,
-                                                   std::optional<size_t> length) {
+expected<std::string, Error> ArrowFileSystemFileIO::ReadFile(
+    const std::string& file_location, std::optional<size_t> length) {
   // We don't support reading a file with a specific length.
   if (length.has_value()) {
     return unexpected(Error(ErrorKind::kInvalidArgument, "Length is not supported"));
   }
   std::string content;
-  ICEBERG_INTERNAL_ASSIGN_OR_RETURN(auto file, local_fs_->OpenInputFile(file_location));
+  ICEBERG_INTERNAL_ASSIGN_OR_RETURN(auto file, arrow_fs_->OpenInputFile(file_location));
   ICEBERG_INTERNAL_ASSIGN_OR_RETURN(auto file_size, file->GetSize());
 
   content.resize(file_size);
@@ -47,31 +47,28 @@ expected<std::string, Error> LocalFileIO::ReadFile(const std::string& file_locat
 }
 
 /// \brief Write the given content to the file at the given location.
-expected<void, Error> LocalFileIO::WriteFile(const std::string& file_location,
-                                             std::string_view content, bool overwrite) {
-  if (!overwrite && FileExists(file_location)) {
-    return unexpected(
-        Error(ErrorKind::kAlreadyExists, std::format("File {} exists", file_location)));
-  }
+expected<void, Error> ArrowFileSystemFileIO::WriteFile(const std::string& file_location,
+                                                       std::string_view content,
+                                                       bool overwrite) {
+  // auto file_info = arrow_fs_->GetFileInfo(file_location);
+  // if (file_info.status().ok() && !overwrite) {
+  //   return unexpected(
+  //       Error(ErrorKind::kAlreadyExists, std::format("File {} exists",
+  //       file_location)));
+  // }
   ICEBERG_INTERNAL_ASSIGN_OR_RETURN(auto file,
-                                    local_fs_->OpenOutputStream(file_location));
+                                    arrow_fs_->OpenOutputStream(file_location));
   ICEBERG_INTERNAL_RETURN_NOT_OK(file->Write(content.data(), content.size()));
+  ICEBERG_INTERNAL_RETURN_NOT_OK(file->Flush());
+  ICEBERG_INTERNAL_RETURN_NOT_OK(file->Close());
   return {};
 }
 
 /// \brief Delete a file at the given location.
-expected<void, Error> LocalFileIO::DeleteFile(const std::string& file_location) {
-  if (!FileExists(file_location)) {
-    return unexpected(Error(ErrorKind::kNoSuchFile,
-                            std::format("File {} does not exist", file_location)));
-  }
-  ICEBERG_INTERNAL_RETURN_NOT_OK(local_fs_->DeleteFile(file_location));
+expected<void, Error> ArrowFileSystemFileIO::DeleteFile(
+    const std::string& file_location) {
+  ICEBERG_INTERNAL_RETURN_NOT_OK(arrow_fs_->DeleteFile(file_location));
   return {};
-}
-
-bool LocalFileIO::FileExists(const std::string& location) {
-  // ::arrow::fs::LocalFileSystem does not have a exists method.
-  return std::filesystem::exists(location);
 }
 
 }  // namespace iceberg::arrow::io

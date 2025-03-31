@@ -17,17 +17,18 @@
  * under the License.
  */
 
-#include "iceberg/arrow/io/local_file_io.h"
+#include "iceberg/arrow/io/arrow_fs_file_io.h"
 
 #include <filesystem>
 
+#include <arrow/filesystem/localfs.h>
 #include <gtest/gtest.h>
 
 class LocalFileIOTest : public testing::Test {
  protected:
   void SetUp() override {
     local_fs_ = std::make_shared<arrow::fs::LocalFileSystem>();
-    file_io_ = std::make_shared<iceberg::arrow::io::LocalFileIO>(local_fs_);
+    file_io_ = std::make_shared<iceberg::arrow::io::ArrowFileSystemFileIO>(local_fs_);
   }
 
   std::shared_ptr<arrow::fs::LocalFileSystem> local_fs_;
@@ -54,5 +55,5 @@ TEST_F(LocalFileIOTest, DeleteFile) {
   EXPECT_TRUE(del_res.has_value());
 
   del_res = file_io_->DeleteFile(tmpfile.string());
-  EXPECT_EQ(del_res.error().kind, iceberg::ErrorKind::kNoSuchFile);
+  EXPECT_EQ(del_res.error().kind, iceberg::ErrorKind::kIOError);
 }

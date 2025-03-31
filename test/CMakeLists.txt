@@ -45,9 +45,9 @@ if(ICEBERG_BUILD_BUNDLE)
   target_link_libraries(arrow_test PRIVATE iceberg_bundle_static GTest::gtest_main)
   add_test(NAME arrow_test COMMAND arrow_test)
 
-  add_executable(local_file_io_test)
-  target_sources(local_file_io_test PRIVATE local_file_io_test.cc)
-  target_link_libraries(local_file_io_test PRIVATE iceberg_bundle_static
-                                                   GTest::gtest_main)
-  add_test(NAME local_file_io_test COMMAND local_file_io_test)
+  add_executable(arrow_fs_file_io_test)
+  target_sources(arrow_fs_file_io_test PRIVATE arrow_fs_file_io_test.cc)
+  target_link_libraries(arrow_fs_file_io_test PRIVATE iceberg_bundle_static
+                                                      GTest::gtest_main)
+  add_test(NAME arrow_fs_file_io_test COMMAND arrow_fs_file_io_test)
 endif()

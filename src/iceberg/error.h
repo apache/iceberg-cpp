@@ -30,7 +30,6 @@ namespace iceberg {
 enum class ErrorKind {
   kNoSuchNamespace,
   kAlreadyExists,
-  kNoSuchFile,
   kNoSuchTable,
   kCommitStateUnknown,
   kInvalidSchema,

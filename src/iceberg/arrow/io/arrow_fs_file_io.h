@@ -21,20 +21,20 @@
 
 #include <memory>
 
-#include <arrow/filesystem/localfs.h>
+#include <arrow/filesystem/filesystem.h>
 
 #include "iceberg/file_io.h"
 #include "iceberg/iceberg_bundle_export.h"
 
 namespace iceberg::arrow::io {
 
-/// \brief A concrete implementation of FileIO for file system.
-class ICEBERG_BUNDLE_EXPORT LocalFileIO : public FileIO {
+/// \brief A concrete implementation of FileIO for Arrow file system.
+class ICEBERG_BUNDLE_EXPORT ArrowFileSystemFileIO : public FileIO {
  public:
-  explicit LocalFileIO(std::shared_ptr<::arrow::fs::LocalFileSystem>& local_fs)
-      : local_fs_(local_fs) {}
+  explicit ArrowFileSystemFileIO(std::shared_ptr<::arrow::fs::FileSystem> arrow_fs)
+      : arrow_fs_(std::move(arrow_fs)) {}
 
-  ~LocalFileIO() override = default;
+  ~ArrowFileSystemFileIO() override = default;
 
   /// \brief Read the content of the file at the given location.
   expected<std::string, Error> ReadFile(const std::string& file_location,
@@ -48,10 +48,7 @@ class ICEBERG_BUNDLE_EXPORT LocalFileIO : public FileIO {
   expected<void, Error> DeleteFile(const std::string& file_location) override;
 
  private:
-  /// \brief Check if a file exists
-  bool FileExists(const std::string& location);
-
-  std::shared_ptr<::arrow::fs::LocalFileSystem>& local_fs_;
+  std::shared_ptr<::arrow::fs::FileSystem> arrow_fs_;
 };
 
 }  // namespace iceberg::arrow::io

@@ -29,7 +29,7 @@
 
 namespace iceberg {
 
-/// \brief Pluggable module for reading, writing, and deleting metadata files.
+/// \brief Pluggable module for reading, writing, and deleting files.
 ///
 /// This module only handle metadata files, not data files. The metadata files
 /// are typically small and are used to store schema, partition information,
