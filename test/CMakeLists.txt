@@ -42,7 +42,8 @@ if(ICEBERG_BUILD_BUNDLE)
 
   add_executable(arrow_test)
   target_sources(arrow_test PRIVATE arrow_test.cc)
-  target_link_libraries(arrow_test PRIVATE iceberg_bundle_static GTest::gtest_main)
+  target_link_libraries(arrow_test PRIVATE iceberg_bundle_static GTest::gtest_main
+                                           GTest::gmock)
   add_test(NAME arrow_test COMMAND arrow_test)
 
   add_executable(arrow_fs_file_io_test)

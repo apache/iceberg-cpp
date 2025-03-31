@@ -27,8 +27,6 @@
 
 namespace iceberg::arrow::internal {
 
-namespace {
-
 inline ErrorKind ToErrorKind(const ::arrow::Status& status) {
   switch (status.code()) {
     case ::arrow::StatusCode::IOError:
@@ -45,8 +43,6 @@ inline ErrorKind ToErrorKind(const ::arrow::Status& status) {
                               .message = result_name.status().ToString()}};              \
   }                                                                                      \
   lhs = std::move(result_name).ValueOrDie();
-
-}  // namespace
 
 #define ICEBERG_INTERNAL_ASSIGN_OR_RETURN(lhs, rexpr)                       \
   ICEBERG_INTERNAL_ASSIGN_OR_RETURN_IMPL(                                   \
