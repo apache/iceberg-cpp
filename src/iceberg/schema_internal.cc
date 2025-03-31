@@ -20,9 +20,8 @@
 #include "iceberg/schema_internal.h"
 
 #include <format>
+#include <optional>
 #include <string>
-
-#include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/expected.h"
 #include "iceberg/schema.h"
@@ -36,13 +35,14 @@ constexpr const char* kArrowExtensionMetadata = "ARROW:extension:metadata";
 
 // Convert an Iceberg type to Arrow schema. Return value is Nanoarrow error code.
 ArrowErrorCode ConvertToArrowSchema(const Type& type, ArrowSchema* schema, bool optional,
-                                    std::string_view name = "", int32_t field_id = -1) {
+                                    std::string_view name = "",
+                                    std::optional<int32_t> field_id = std::nullopt) {
   ArrowBuffer metadata_buffer;
   NANOARROW_RETURN_NOT_OK(ArrowMetadataBuilderInit(&metadata_buffer, nullptr));
-  if (field_id > 0) {
+  if (field_id.has_value()) {
     NANOARROW_RETURN_NOT_OK(ArrowMetadataBuilderAppend(
         &metadata_buffer, ArrowCharView(std::string(kFieldIdKey).c_str()),
-        ArrowCharView(std::to_string(field_id).c_str())));
+        ArrowCharView(std::to_string(field_id.value()).c_str())));
   }
 
   switch (type.type_id()) {

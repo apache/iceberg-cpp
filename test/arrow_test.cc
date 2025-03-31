@@ -30,7 +30,7 @@
 #include "iceberg/arrow_c_data_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
-#include "test_util.h"
+#include "matchers.h"
 
 namespace iceberg {
 
@@ -86,7 +86,7 @@ TEST_P(ToArrowSchemaTest, PrimitiveType) {
                       : SchemaField::MakeRequired(kFieldId, std::string(kFieldName),
                                                   param.iceberg_type)});
   ArrowSchema arrow_schema;
-  ASSERT_OK(ToArrowSchema(schema, &arrow_schema));
+  ASSERT_THAT(ToArrowSchema(schema, &arrow_schema), IsOk());
 
   auto imported_schema = ::arrow::ImportSchema(&arrow_schema).ValueOrDie();
   ASSERT_EQ(imported_schema->num_fields(), 1);
@@ -170,22 +170,23 @@ TEST(ToArrowSchemaTest, StructType) {
                            kStructFieldId, std::string(kStructFieldName), struct_type)});
 
   ArrowSchema arrow_schema;
-  ASSERT_OK(ToArrowSchema(schema, &arrow_schema));
+  ASSERT_THAT(ToArrowSchema(schema, &arrow_schema), IsOk());
 
   auto imported_schema = ::arrow::ImportSchema(&arrow_schema).ValueOrDie();
   ASSERT_EQ(imported_schema->num_fields(), 1);
 
   auto field = imported_schema->field(0);
-  CheckArrowField(*field, ::arrow::Type::STRUCT, kStructFieldName, /*nullable=*/false,
-                  kStructFieldId);
+  ASSERT_NO_FATAL_FAILURE(CheckArrowField(*field, ::arrow::Type::STRUCT, kStructFieldName,
+                                          /*nullable=*/false, kStructFieldId));
 
   auto struct_field = std::static_pointer_cast<::arrow::StructType>(field->type());
   ASSERT_EQ(struct_field->num_fields(), 2);
 
-  CheckArrowField(*struct_field->field(0), ::arrow::Type::INT32, kIntFieldName,
-                  /*nullable=*/false, kIntFieldId);
-  CheckArrowField(*struct_field->field(1), ::arrow::Type::STRING, kStrFieldName,
-                  /*nullable=*/true, kStrFieldId);
+  ASSERT_NO_FATAL_FAILURE(CheckArrowField(*struct_field->field(0), ::arrow::Type::INT32,
+                                          kIntFieldName, /*nullable=*/false,
+                                          kIntFieldId));
+  ASSERT_NO_FATAL_FAILURE(CheckArrowField(*struct_field->field(1), ::arrow::Type::STRING,
+                                          kStrFieldName, /*nullable=*/true, kStrFieldId));
 }
 
 TEST(ToArrowSchemaTest, ListType) {
@@ -201,18 +202,19 @@ TEST(ToArrowSchemaTest, ListType) {
       {SchemaField::MakeRequired(kListFieldId, std::string(kListFieldName), list_type)});
 
   ArrowSchema arrow_schema;
-  ASSERT_OK(ToArrowSchema(schema, &arrow_schema));
+  ASSERT_THAT(ToArrowSchema(schema, &arrow_schema), IsOk());
 
   auto imported_schema = ::arrow::ImportSchema(&arrow_schema).ValueOrDie();
   ASSERT_EQ(imported_schema->num_fields(), 1);
 
   auto field = imported_schema->field(0);
-  CheckArrowField(*field, ::arrow::Type::LIST, kListFieldName, /*nullable=*/false,
-                  kListFieldId);
+  ASSERT_NO_FATAL_FAILURE(CheckArrowField(*field, ::arrow::Type::LIST, kListFieldName,
+                                          /*nullable=*/false, kListFieldId));
 
   auto list_field = std::static_pointer_cast<::arrow::ListType>(field->type());
-  CheckArrowField(*list_field->value_field(), ::arrow::Type::INT64, kElemFieldName,
-                  /*nullable=*/true, kElemFieldId);
+  ASSERT_NO_FATAL_FAILURE(CheckArrowField(*list_field->value_field(),
+                                          ::arrow::Type::INT64, kElemFieldName,
+                                          /*nullable=*/true, kElemFieldId));
 }
 
 TEST(ToArrowSchemaTest, MapType) {
@@ -235,24 +237,26 @@ TEST(ToArrowSchemaTest, MapType) {
       {SchemaField::MakeRequired(kFieldId, std::string(kMapFieldName), map_type)});
 
   ArrowSchema arrow_schema;
-  ASSERT_OK(ToArrowSchema(schema, &arrow_schema));
+  ASSERT_THAT(ToArrowSchema(schema, &arrow_schema), IsOk());
 
   auto imported_schema = ::arrow::ImportSchema(&arrow_schema).ValueOrDie();
   ASSERT_EQ(imported_schema->num_fields(), 1);
 
   auto field = imported_schema->field(0);
-  CheckArrowField(*field, ::arrow::Type::MAP, kMapFieldName, /*nullable=*/false,
-                  kFieldId);
+  ASSERT_NO_FATAL_FAILURE(CheckArrowField(*field, ::arrow::Type::MAP, kMapFieldName,
+                                          /*nullable=*/false, kFieldId));
 
   auto map_field = std::static_pointer_cast<::arrow::MapType>(field->type());
 
   auto key_field = map_field->key_field();
-  CheckArrowField(*key_field, ::arrow::Type::STRING, kKeyFieldName, /*nullable=*/false,
-                  kKeyFieldId);
+  ASSERT_NO_FATAL_FAILURE(CheckArrowField(*key_field, ::arrow::Type::STRING,
+                                          kKeyFieldName,
+                                          /*nullable=*/false, kKeyFieldId));
 
   auto value_field = map_field->item_field();
-  CheckArrowField(*value_field, ::arrow::Type::INT32, kValueFieldName, /*nullable=*/true,
-                  kValueFieldId);
+  ASSERT_NO_FATAL_FAILURE(CheckArrowField(*value_field, ::arrow::Type::INT32,
+                                          kValueFieldName,
+                                          /*nullable=*/true, kValueFieldId));
 }
 
 }  // namespace iceberg

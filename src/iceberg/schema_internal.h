@@ -21,7 +21,8 @@
 
 #include <memory>
 
-#include "iceberg/arrow_c_data.h"
+#include <nanoarrow/nanoarrow.h>
+
 #include "iceberg/error.h"
 #include "iceberg/expected.h"
 #include "iceberg/type_fwd.h"
