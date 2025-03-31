@@ -47,6 +47,7 @@ github:
     - raulcd
     - wgtmac
     - zhjwpku
+    - gty404
 
 notifications:
   commits:      commits@iceberg.apache.org
