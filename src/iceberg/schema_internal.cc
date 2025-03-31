@@ -34,9 +34,8 @@ constexpr const char* kArrowExtensionName = "ARROW:extension:name";
 constexpr const char* kArrowExtensionMetadata = "ARROW:extension:metadata";
 
 // Convert an Iceberg type to Arrow schema. Return value is Nanoarrow error code.
-ArrowErrorCode ConvertToArrowSchema(const Type& type, ArrowSchema* schema, bool optional,
-                                    std::string_view name = "",
-                                    std::optional<int32_t> field_id = std::nullopt) {
+ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view name,
+                             std::optional<int32_t> field_id, ArrowSchema* schema) {
   ArrowBuffer metadata_buffer;
   NANOARROW_RETURN_NOT_OK(ArrowMetadataBuilderInit(&metadata_buffer, nullptr));
   if (field_id.has_value()) {
@@ -55,9 +54,9 @@ ArrowErrorCode ConvertToArrowSchema(const Type& type, ArrowSchema* schema, bool 
 
       for (size_t i = 0; i < fields.size(); i++) {
         const auto& field = fields[i];
-        NANOARROW_RETURN_NOT_OK(ConvertToArrowSchema(*field.type(), schema->children[i],
-                                                     field.optional(), field.name(),
-                                                     field.field_id()));
+        NANOARROW_RETURN_NOT_OK(ToArrowSchema(*field.type(), field.optional(),
+                                              field.name(), field.field_id(),
+                                              schema->children[i]));
       }
     } break;
     case TypeId::kList: {
@@ -65,9 +64,9 @@ ArrowErrorCode ConvertToArrowSchema(const Type& type, ArrowSchema* schema, bool 
 
       const auto& list_type = static_cast<const ListType&>(type);
       const auto& elem_field = list_type.fields()[0];
-      NANOARROW_RETURN_NOT_OK(ConvertToArrowSchema(
-          *elem_field.type(), schema->children[0], elem_field.optional(),
-          elem_field.name(), elem_field.field_id()));
+      NANOARROW_RETURN_NOT_OK(ToArrowSchema(*elem_field.type(), elem_field.optional(),
+                                            elem_field.name(), elem_field.field_id(),
+                                            schema->children[0]));
     } break;
     case TypeId::kMap: {
       NANOARROW_RETURN_NOT_OK(ArrowSchemaInitFromType(schema, NANOARROW_TYPE_MAP));
@@ -75,12 +74,12 @@ ArrowErrorCode ConvertToArrowSchema(const Type& type, ArrowSchema* schema, bool 
       const auto& map_type = static_cast<const MapType&>(type);
       const auto& key_field = map_type.key();
       const auto& value_field = map_type.value();
-      NANOARROW_RETURN_NOT_OK(ConvertToArrowSchema(
-          *key_field.type(), schema->children[0]->children[0], key_field.optional(),
-          key_field.name(), key_field.field_id()));
-      NANOARROW_RETURN_NOT_OK(ConvertToArrowSchema(
-          *value_field.type(), schema->children[0]->children[1], value_field.optional(),
-          value_field.name(), value_field.field_id()));
+      NANOARROW_RETURN_NOT_OK(ToArrowSchema(*key_field.type(), key_field.optional(),
+                                            key_field.name(), key_field.field_id(),
+                                            schema->children[0]->children[0]));
+      NANOARROW_RETURN_NOT_OK(ToArrowSchema(*value_field.type(), value_field.optional(),
+                                            value_field.name(), value_field.field_id(),
+                                            schema->children[0]->children[1]));
     } break;
     case TypeId::kBoolean:
       NANOARROW_RETURN_NOT_OK(ArrowSchemaInitFromType(schema, NANOARROW_TYPE_BOOL));
@@ -171,7 +170,8 @@ expected<void, Error> ToArrowSchema(const Schema& schema, ArrowSchema* out) {
                               .message = "Output Arrow schema cannot be null"}};
   }
 
-  if (ArrowErrorCode errorCode = ConvertToArrowSchema(schema, out, "");
+  if (ArrowErrorCode errorCode = ToArrowSchema(schema, /*optional=*/false, /*name=*/"",
+                                               /*field_id=*/std::nullopt, out);
       errorCode != NANOARROW_OK) {
     return unexpected<Error>{
         {.kind = ErrorKind::kInvalidSchema,
