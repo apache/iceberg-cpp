@@ -48,7 +48,7 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// evolution.
   [[nodiscard]] int32_t schema_id() const;
 
-  [[nodiscard]] std::string ToString() const;
+  [[nodiscard]] std::string ToString() const override;
 
   friend bool operator==(const Schema& lhs, const Schema& rhs) { return lhs.Equals(rhs); }
 
