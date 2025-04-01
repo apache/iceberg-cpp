@@ -99,6 +99,8 @@ class Snapshot;
 class SortOrder;
 class StructLike;
 class TableMetadata;
+enum class TransformType;
+class TransformFunction;
 
 class MetadataUpdate;
 class UpdateRequirement;

@@ -38,4 +38,11 @@ class ICEBERG_EXPORT IcebergError : public std::runtime_error {
   explicit IcebergError(const std::string& what) : std::runtime_error(what) {}
 };
 
+#define ICEBERG_CHECK(condition, ...)                        \
+  do {                                                       \
+    if (!(condition)) [[unlikely]] {                         \
+      throw iceberg::IcebergError(std::format(__VA_ARGS__)); \
+    }                                                        \
+  } while (0)
+
 }  // namespace iceberg

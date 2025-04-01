@@ -37,6 +37,7 @@ enum class ErrorKind {
   kIOError,
   kNotImplemented,
   kUnknownError,
+  kNotSupported,
 };
 
 /// \brief Error with a kind and a message.

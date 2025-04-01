@@ -23,6 +23,9 @@ set(ICEBERG_SOURCES
     schema.cc
     schema_field.cc
     schema_internal.cc
+    partition_field.cc
+    partition_spec.cc
+    transform.cc
     type.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
