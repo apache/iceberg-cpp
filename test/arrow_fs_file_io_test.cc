@@ -43,7 +43,7 @@ class LocalFileIOTest : public testing::Test {
 TEST_F(LocalFileIOTest, ReadWriteFile) {
   auto read_res = file_io_->ReadFile(tmpfile.string(), std::nullopt);
   EXPECT_THAT(read_res, IsError(ErrorKind::kIOError));
-  EXPECT_THAT(read_res, HasErrorMessage("No such file or directory"));
+  EXPECT_THAT(read_res, HasErrorMessage("Failed to open local file"));
 
   auto write_res = file_io_->WriteFile(tmpfile.string(), "hello world");
   EXPECT_THAT(write_res, IsOk());
@@ -59,7 +59,7 @@ TEST_F(LocalFileIOTest, DeleteFile) {
 
   del_res = file_io_->DeleteFile(tmpfile.string());
   EXPECT_THAT(del_res, IsError(ErrorKind::kIOError));
-  EXPECT_THAT(del_res, HasErrorMessage("No such file or directory"));
+  EXPECT_THAT(del_res, HasErrorMessage("Cannot delete file"));
 }
 
 }  // namespace iceberg
