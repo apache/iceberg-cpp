@@ -25,7 +25,7 @@
 #include "iceberg/error.h"
 #include "iceberg/expected.h"
 
-namespace iceberg::arrow::internal {
+namespace iceberg::arrow {
 
 inline ErrorKind ToErrorKind(const ::arrow::Status& status) {
   switch (status.code()) {
@@ -44,18 +44,17 @@ inline ErrorKind ToErrorKind(const ::arrow::Status& status) {
   }                                                                                   \
   lhs = std::move(result_name).ValueOrDie();
 
-#define ICEBERG_ARROW_ASSIGN_OR_RETURN(lhs, rexpr)                          \
-  ICEBERG_ARROW_ASSIGN_OR_RETURN_IMPL(                                      \
-      ARROW_ASSIGN_OR_RAISE_NAME(_error_or_value, __COUNTER__), lhs, rexpr, \
-      internal::ToErrorKind)
+#define ICEBERG_ARROW_ASSIGN_OR_RETURN(lhs, rexpr) \
+  ICEBERG_ARROW_ASSIGN_OR_RETURN_IMPL(             \
+      ARROW_ASSIGN_OR_RAISE_NAME(_error_or_value, __COUNTER__), lhs, rexpr, ToErrorKind)
 
-#define ICEBERG_ARROW_RETURN_NOT_OK(expr)                                           \
-  do {                                                                              \
-    auto&& _status = (expr);                                                        \
-    if (!_status.ok()) {                                                            \
-      return unexpected<Error>{                                                     \
-          {.kind = internal::ToErrorKind(_status), .message = _status.ToString()}}; \
-    }                                                                               \
+#define ICEBERG_ARROW_RETURN_NOT_OK(expr)                                 \
+  do {                                                                    \
+    auto&& _status = (expr);                                              \
+    if (!_status.ok()) {                                                  \
+      return unexpected<Error>{                                           \
+          {.kind = ToErrorKind(_status), .message = _status.ToString()}}; \
+    }                                                                     \
   } while (0)
 
-}  // namespace iceberg::arrow::internal
+}  // namespace iceberg::arrow
