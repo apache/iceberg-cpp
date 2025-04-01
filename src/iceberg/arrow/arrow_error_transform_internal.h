@@ -36,20 +36,20 @@ inline ErrorKind ToErrorKind(const ::arrow::Status& status) {
   }
 }
 
-#define ICEBERG_INTERNAL_ASSIGN_OR_RETURN_IMPL(result_name, lhs, rexpr, error_transform) \
-  auto&& result_name = (rexpr);                                                          \
-  if (!result_name.ok()) {                                                               \
-    return unexpected<Error>{{.kind = error_transform(result_name.status()),             \
-                              .message = result_name.status().ToString()}};              \
-  }                                                                                      \
+#define ICEBERG_ARROW_ASSIGN_OR_RETURN_IMPL(result_name, lhs, rexpr, error_transform) \
+  auto&& result_name = (rexpr);                                                       \
+  if (!result_name.ok()) {                                                            \
+    return unexpected<Error>{{.kind = error_transform(result_name.status()),          \
+                              .message = result_name.status().ToString()}};           \
+  }                                                                                   \
   lhs = std::move(result_name).ValueOrDie();
 
-#define ICEBERG_INTERNAL_ASSIGN_OR_RETURN(lhs, rexpr)                       \
-  ICEBERG_INTERNAL_ASSIGN_OR_RETURN_IMPL(                                   \
+#define ICEBERG_ARROW_ASSIGN_OR_RETURN(lhs, rexpr)                          \
+  ICEBERG_ARROW_ASSIGN_OR_RETURN_IMPL(                                      \
       ARROW_ASSIGN_OR_RAISE_NAME(_error_or_value, __COUNTER__), lhs, rexpr, \
       internal::ToErrorKind)
 
-#define ICEBERG_INTERNAL_RETURN_NOT_OK(expr)                                        \
+#define ICEBERG_ARROW_RETURN_NOT_OK(expr)                                           \
   do {                                                                              \
     auto&& _status = (expr);                                                        \
     if (!_status.ok()) {                                                            \

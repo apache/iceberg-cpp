@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/arrow/io/arrow_fs_file_io.h"
+#include "iceberg/arrow/arrow_fs_file_io.h"
 
 #include <filesystem>
 
@@ -32,7 +32,7 @@ class LocalFileIOTest : public testing::Test {
  protected:
   void SetUp() override {
     local_fs_ = std::make_shared<::arrow::fs::LocalFileSystem>();
-    file_io_ = std::make_shared<iceberg::arrow::io::ArrowFileSystemFileIO>(local_fs_);
+    file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(local_fs_);
   }
 
   std::shared_ptr<::arrow::fs::LocalFileSystem> local_fs_;
@@ -41,20 +41,16 @@ class LocalFileIOTest : public testing::Test {
 };
 
 TEST_F(LocalFileIOTest, ReadWriteFile) {
-  auto read_res = file_io_->ReadFile(tmpfile.string(), 1024);
-  EXPECT_THAT(read_res, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(read_res, HasErrorMessage("Length is not supported"));
-
-  read_res = file_io_->ReadFile(tmpfile.string(), std::nullopt);
+  auto read_res = file_io_->ReadFile(tmpfile.string(), std::nullopt);
   EXPECT_THAT(read_res, IsError(ErrorKind::kIOError));
   EXPECT_THAT(read_res, HasErrorMessage("No such file or directory"));
 
-  auto write_res = file_io_->WriteFile(tmpfile.string(), "hello world", false);
+  auto write_res = file_io_->WriteFile(tmpfile.string(), "hello world");
   EXPECT_THAT(write_res, IsOk());
 
   read_res = file_io_->ReadFile(tmpfile.string(), std::nullopt);
   EXPECT_THAT(read_res, IsOk());
-  EXPECT_EQ(read_res.value(), "hello world");
+  EXPECT_THAT(read_res, HasValue(::testing::Eq("hello world")));
 }
 
 TEST_F(LocalFileIOTest, DeleteFile) {

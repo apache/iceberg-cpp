@@ -34,6 +34,10 @@ namespace iceberg {
 /// This module only handle metadata files, not data files. The metadata files
 /// are typically small and are used to store schema, partition information,
 /// and other metadata about the table.
+///
+/// Note that these functions are not atomic. For example, if a write fails,
+/// the file may be partially written. Implementations should be careful to
+/// avoid corrupting metadata files.
 class ICEBERG_EXPORT FileIO {
  public:
   FileIO() = default;
@@ -48,10 +52,7 @@ class ICEBERG_EXPORT FileIO {
   /// failed.
   virtual expected<std::string, Error> ReadFile(const std::string& file_location,
                                                 std::optional<size_t> length) {
-    // The following line is to avoid Windows linker error LNK2019.
-    // If this function is defined as pure virtual function, the `expected<std::string,
-    // Error>` and `unexpected<Error>` will not be instantiated and exported in
-    // libiceberg.
+    // We provide a default implementation to avoid Windows linker error LNK2019.
     return unexpected<Error>{
         {.kind = ErrorKind::kNotImplemented, .message = "ReadFile not implemented"}};
   }
@@ -64,10 +65,7 @@ class ICEBERG_EXPORT FileIO {
   /// file exists.
   /// \return void if the write succeeded, an error code if the write failed.
   virtual expected<void, Error> WriteFile(const std::string& file_location,
-                                          std::string_view content, bool overwrite) {
-    // The following line is to avoid Windows linker error LNK2019.
-    // If this function is defined as pure virtual function, the `expected<void, Error>`
-    // will not be instantiated and exported in libiceberg.
+                                          std::string_view content) {
     return unexpected<Error>{
         {.kind = ErrorKind::kNotImplemented, .message = "WriteFile not implemented"}};
   }
@@ -76,7 +74,10 @@ class ICEBERG_EXPORT FileIO {
   ///
   /// \param file_location The location of the file to delete.
   /// \return void if the delete succeeded, an error code if the delete failed.
-  virtual expected<void, Error> DeleteFile(const std::string& file_location) = 0;
+  virtual expected<void, Error> DeleteFile(const std::string& file_location) {
+    return unexpected<Error>{
+        {.kind = ErrorKind::kNotImplemented, .message = "DeleteFile not implemented"}};
+  }
 };
 
 }  // namespace iceberg

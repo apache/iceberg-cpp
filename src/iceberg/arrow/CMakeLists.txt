@@ -15,6 +15,4 @@
 # specific language governing permissions and limitations
 # under the License.
 
-add_subdirectory(io)
-
 iceberg_install_all_headers(iceberg/arrow)

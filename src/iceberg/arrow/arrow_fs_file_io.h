@@ -26,7 +26,7 @@
 #include "iceberg/file_io.h"
 #include "iceberg/iceberg_bundle_export.h"
 
-namespace iceberg::arrow::io {
+namespace iceberg::arrow {
 
 /// \brief A concrete implementation of FileIO for Arrow file system.
 class ICEBERG_BUNDLE_EXPORT ArrowFileSystemFileIO : public FileIO {
@@ -42,7 +42,7 @@ class ICEBERG_BUNDLE_EXPORT ArrowFileSystemFileIO : public FileIO {
 
   /// \brief Write the given content to the file at the given location.
   expected<void, Error> WriteFile(const std::string& file_location,
-                                  std::string_view content, bool overwrite) override;
+                                  std::string_view content) override;
 
   /// \brief Delete a file at the given location.
   expected<void, Error> DeleteFile(const std::string& file_location) override;
@@ -51,4 +51,4 @@ class ICEBERG_BUNDLE_EXPORT ArrowFileSystemFileIO : public FileIO {
   std::shared_ptr<::arrow::fs::FileSystem> arrow_fs_;
 };
 
-}  // namespace iceberg::arrow::io
+}  // namespace iceberg::arrow
