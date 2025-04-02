@@ -39,6 +39,11 @@ target_sources(expected_test PRIVATE expected_test.cc)
 target_link_libraries(expected_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
 add_test(NAME expected_test COMMAND expected_test)
 
+add_executable(expression_test)
+target_sources(expression_test PRIVATE expression_test.cc)
+target_link_libraries(expression_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
+add_test(NAME expression_test COMMAND expression_test)
+
 if(ICEBERG_BUILD_BUNDLE)
   add_executable(avro_test)
   target_sources(avro_test PRIVATE avro_test.cc)
