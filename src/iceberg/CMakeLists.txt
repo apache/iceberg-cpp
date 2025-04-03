@@ -25,6 +25,8 @@ set(ICEBERG_SOURCES
     schema_internal.cc
     partition_field.cc
     partition_spec.cc
+    sort_field.cc
+    sort_order.cc
     transform.cc
     type.cc)
 

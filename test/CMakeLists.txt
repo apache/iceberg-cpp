@@ -30,7 +30,9 @@ target_sources(schema_test
                        type_test.cc
                        transform_test.cc
                        partition_field_test.cc
-                       partition_spec_test.cc)
+                       partition_spec_test.cc
+                       sort_field_test.cc
+                       sort_order_test.cc)
 target_link_libraries(schema_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
 add_test(NAME schema_test COMMAND schema_test)
 
