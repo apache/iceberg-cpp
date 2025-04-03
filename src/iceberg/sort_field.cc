@@ -54,10 +54,10 @@ constexpr std::string_view ToString(NullOrder null_order) {
 }  // namespace
 
 SortField::SortField(int32_t source_id, std::shared_ptr<TransformFunction> transform,
-                     SortDirection sort_direction, NullOrder null_order)
+                     SortDirection direction, NullOrder null_order)
     : source_id_(source_id),
       transform_(std::move(transform)),
-      sort_direction_(sort_direction),
+      direction_(direction),
       null_order_(null_order) {}
 
 int32_t SortField::source_id() const { return source_id_; }
@@ -66,20 +66,19 @@ std::shared_ptr<TransformFunction> const& SortField::transform() const {
   return transform_;
 }
 
-SortDirection SortField::sort_direction() const { return sort_direction_; }
+SortDirection SortField::direction() const { return direction_; }
 
 NullOrder SortField::null_order() const { return null_order_; }
 
 std::string SortField::ToString() const {
   return std::format(
-      "SortField(source_id={}, transform={}, sort_direction={}, null_order={})",
-      source_id_, *transform_, iceberg::ToString(sort_direction_),
-      iceberg::ToString(null_order_));
+      "sort_field(source_id={}, transform={}, direction={}, null_order={})", source_id_,
+      *transform_, iceberg::ToString(direction_), iceberg::ToString(null_order_));
 }
 
 bool SortField::Equals(const SortField& other) const {
   return source_id_ == other.source_id_ && *transform_ == *other.transform_ &&
-         sort_direction_ == other.sort_direction_ && null_order_ == other.null_order_;
+         direction_ == other.direction_ && null_order_ == other.null_order_;
 }
 
 }  // namespace iceberg

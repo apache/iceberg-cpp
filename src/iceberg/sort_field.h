@@ -55,10 +55,10 @@ class ICEBERG_EXPORT SortField : public util::Formattable {
   /// \brief Construct a field.
   /// \param[in] source_id The source field ID.
   /// \param[in] transform The transform function.
-  /// \param[in] sort_direction The sort direction.
+  /// \param[in] direction The sort direction.
   /// \param[in] null_order The null order.
   SortField(int32_t source_id, std::shared_ptr<TransformFunction> transform,
-            SortDirection sort_direction, NullOrder null_order);
+            SortDirection direction, NullOrder null_order);
 
   /// \brief Get the source field ID.
   int32_t source_id() const;
@@ -67,7 +67,7 @@ class ICEBERG_EXPORT SortField : public util::Formattable {
   const std::shared_ptr<TransformFunction>& transform() const;
 
   /// \brief Get the sort direction.
-  SortDirection sort_direction() const;
+  SortDirection direction() const;
 
   /// \brief Get the null order.
   NullOrder null_order() const;
@@ -88,7 +88,7 @@ class ICEBERG_EXPORT SortField : public util::Formattable {
 
   int32_t source_id_;
   std::shared_ptr<TransformFunction> transform_;
-  SortDirection sort_direction_;
+  SortDirection direction_;
   NullOrder null_order_;
 };
 

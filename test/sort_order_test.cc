@@ -60,10 +60,11 @@ TEST(SortOrderTest, Basics) {
     ASSERT_EQ(st_field1, fields[0]);
     ASSERT_EQ(st_field2, fields[1]);
     auto sort_order_str =
-        "sort_order[order_id<100>,\n  SortField(source_id=5, transform=identity, "
-        "sort_direction=asc, null_order=nulls-first)\n  SortField(source_id=7, "
-        "transform=identity, "
-        "sort_direction=desc, null_order=nulls-first)\n]";
+        "sort_order[order_id<100>,\n"
+        "  sort_field(source_id=5, transform=identity, direction=asc, "
+        "null_order=nulls-first)\n"
+        "  sort_field(source_id=7, transform=identity, direction=desc, "
+        "null_order=nulls-first)\n]";
     EXPECT_EQ(sort_order_str, sort_order.ToString());
     EXPECT_EQ(sort_order_str, std::format("{}", sort_order));
   }

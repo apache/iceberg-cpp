@@ -46,14 +46,14 @@ TEST(SortFieldTest, Basics) {
     SortField field(1, transform, SortDirection::kAscending, NullOrder::kFirst);
     EXPECT_EQ(1, field.source_id());
     EXPECT_EQ(*transform, *field.transform());
-    EXPECT_EQ(SortDirection::kAscending, field.sort_direction());
+    EXPECT_EQ(SortDirection::kAscending, field.direction());
     EXPECT_EQ(NullOrder::kFirst, field.null_order());
     EXPECT_EQ(
-        "SortField(source_id=1, transform=identity, sort_direction=asc, "
+        "sort_field(source_id=1, transform=identity, direction=asc, "
         "null_order=nulls-first)",
         field.ToString());
     EXPECT_EQ(
-        "SortField(source_id=1, transform=identity, sort_direction=asc, "
+        "sort_field(source_id=1, transform=identity, direction=asc, "
         "null_order=nulls-first)",
         std::format("{}", field));
   }
