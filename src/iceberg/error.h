@@ -38,6 +38,8 @@ enum class ErrorKind {
   kNotImplemented,
   kUnknownError,
   kNotSupported,
+  kInvalidExpression,
+  kInvalidOperatorType,
 };
 
 /// \brief Error with a kind and a message.
