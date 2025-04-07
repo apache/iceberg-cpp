@@ -32,7 +32,8 @@ set(ICEBERG_SOURCES
     table_metadata.cc
     transform.cc
     transform_function.cc
-    type.cc)
+    type.cc
+    snapshot.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_SHARED_BUILD_INTERFACE_LIBS)
