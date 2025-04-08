@@ -246,6 +246,11 @@ function(resolve_nlohmann_json_dependency)
   set_target_properties(nlohmann_json
                         PROPERTIES OUTPUT_NAME "iceberg_vendored_nlohmann_json"
                                    POSITION_INDEPENDENT_CODE ON)
+  if(MSVC_TOOLCHAIN)
+    set(NLOHMANN_NATVIS_FILE ${nlohmann_json_SOURCE_DIR}/nlohmann_json.natvis)
+    install(FILES ${NLOHMANN_NATVIS_FILE} DESTINATION .)
+  endif()
+
   install(TARGETS nlohmann_json
           EXPORT iceberg_targets
           RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
