@@ -31,24 +31,12 @@
 
 namespace iceberg {
 
-namespace {
-class TestTransformFunction : public TransformFunction {
- public:
-  TestTransformFunction() : TransformFunction(TransformType::kUnknown) {}
-  expected<ArrowArray, Error> Transform(const ArrowArray& input) override {
-    return unexpected(
-        Error{.kind = ErrorKind::kNotSupported, .message = "test transform function"});
-  }
-};
-
-}  // namespace
-
 TEST(SortOrderTest, Basics) {
   {
     SchemaField field1(5, "ts", std::make_shared<TimestampType>(), true);
     SchemaField field2(7, "bar", std::make_shared<StringType>(), true);
 
-    auto identity_transform = std::make_shared<IdentityTransformFunction>();
+    auto identity_transform = Transform::Identity();
     SortField st_field1(5, identity_transform, SortDirection::kAscending,
                         NullOrder::kFirst);
     SortField st_field2(7, identity_transform, SortDirection::kDescending,
@@ -73,13 +61,13 @@ TEST(SortOrderTest, Basics) {
 TEST(SortOrderTest, Equality) {
   SchemaField field1(5, "ts", std::make_shared<TimestampType>(), true);
   SchemaField field2(7, "bar", std::make_shared<StringType>(), true);
-  auto test_transform = std::make_shared<TestTransformFunction>();
-  auto identity_transform = std::make_shared<IdentityTransformFunction>();
+  auto bucket_transform = Transform::Bucket(8);
+  auto identity_transform = Transform::Identity();
   SortField st_field1(5, identity_transform, SortDirection::kAscending,
                       NullOrder::kFirst);
   SortField st_field2(7, identity_transform, SortDirection::kDescending,
                       NullOrder::kFirst);
-  SortField st_field3(7, test_transform, SortDirection::kAscending, NullOrder::kFirst);
+  SortField st_field3(7, bucket_transform, SortDirection::kAscending, NullOrder::kFirst);
   SortOrder sort_order1(100, {st_field1, st_field2});
   SortOrder sort_order2(100, {st_field2, st_field3});
   SortOrder sort_order3(100, {st_field1, st_field3});

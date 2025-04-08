@@ -22,27 +22,16 @@
 #include <format>
 
 #include <gtest/gtest.h>
+#include <iceberg/type.h>
 
 #include "iceberg/transform.h"
 #include "iceberg/util/formatter.h"
 
 namespace iceberg {
 
-namespace {
-class TestTransformFunction : public TransformFunction {
- public:
-  TestTransformFunction() : TransformFunction(TransformType::kUnknown) {}
-  expected<ArrowArray, Error> Transform(const ArrowArray& input) override {
-    return unexpected(
-        Error{.kind = ErrorKind::kNotSupported, .message = "test transform function"});
-  }
-};
-
-}  // namespace
-
 TEST(PartitionFieldTest, Basics) {
   {
-    const auto transform = std::make_shared<IdentityTransformFunction>();
+    auto transform = Transform::Identity();
     PartitionField field(1, 1000, "pt", transform);
     EXPECT_EQ(1, field.source_id());
     EXPECT_EQ(1000, field.field_id());
@@ -54,13 +43,13 @@ TEST(PartitionFieldTest, Basics) {
 }
 
 TEST(PartitionFieldTest, Equality) {
-  auto test_transform = std::make_shared<TestTransformFunction>();
-  auto identity_transform = std::make_shared<IdentityTransformFunction>();
+  const auto bucket_transform = Transform::Bucket(8);
+  const auto identity_transform = Transform::Identity();
 
-  PartitionField field1(1, 10000, "pt", test_transform);
-  PartitionField field2(2, 10000, "pt", test_transform);
-  PartitionField field3(1, 10001, "pt", test_transform);
-  PartitionField field4(1, 10000, "pt2", test_transform);
+  PartitionField field1(1, 10000, "pt", bucket_transform);
+  PartitionField field2(2, 10000, "pt", bucket_transform);
+  PartitionField field3(1, 10001, "pt", bucket_transform);
+  PartitionField field4(1, 10000, "pt2", bucket_transform);
   PartitionField field5(1, 10000, "pt", identity_transform);
 
   ASSERT_EQ(field1, field1);

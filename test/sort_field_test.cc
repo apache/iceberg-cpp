@@ -24,25 +24,14 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/transform.h"
+#include "iceberg/type.h"
 #include "iceberg/util/formatter.h"
 
 namespace iceberg {
 
-namespace {
-class TestTransformFunction : public TransformFunction {
- public:
-  TestTransformFunction() : TransformFunction(TransformType::kUnknown) {}
-  expected<ArrowArray, Error> Transform(const ArrowArray& input) override {
-    return unexpected(
-        Error{.kind = ErrorKind::kNotSupported, .message = "test transform function"});
-  }
-};
-
-}  // namespace
-
 TEST(SortFieldTest, Basics) {
   {
-    const auto transform = std::make_shared<IdentityTransformFunction>();
+    const auto transform = Transform::Identity();
     SortField field(1, transform, SortDirection::kAscending, NullOrder::kFirst);
     EXPECT_EQ(1, field.source_id());
     EXPECT_EQ(*transform, *field.transform());
@@ -60,14 +49,14 @@ TEST(SortFieldTest, Basics) {
 }
 
 TEST(SortFieldTest, Equality) {
-  auto test_transform = std::make_shared<TestTransformFunction>();
-  auto identity_transform = std::make_shared<IdentityTransformFunction>();
+  const auto bucket_transform = Transform::Bucket(8);
+  const auto identity_transform = Transform::Identity();
 
-  SortField field1(1, test_transform, SortDirection::kAscending, NullOrder::kFirst);
-  SortField field2(2, test_transform, SortDirection::kAscending, NullOrder::kFirst);
+  SortField field1(1, bucket_transform, SortDirection::kAscending, NullOrder::kFirst);
+  SortField field2(2, bucket_transform, SortDirection::kAscending, NullOrder::kFirst);
   SortField field3(1, identity_transform, SortDirection::kAscending, NullOrder::kFirst);
-  SortField field4(1, test_transform, SortDirection::kDescending, NullOrder::kFirst);
-  SortField field5(1, test_transform, SortDirection::kAscending, NullOrder::kLast);
+  SortField field4(1, bucket_transform, SortDirection::kDescending, NullOrder::kFirst);
+  SortField field5(1, bucket_transform, SortDirection::kAscending, NullOrder::kLast);
 
   ASSERT_EQ(field1, field1);
   ASSERT_NE(field1, field2);

@@ -117,7 +117,7 @@ Result<std::unique_ptr<SortField>> SortFieldFromJson(const nlohmann::json& json)
   ICEBERG_ASSIGN_OR_RAISE(auto source_id, GetJsonValue<int32_t>(json, kSourceId));
   ICEBERG_ASSIGN_OR_RAISE(
       auto transform,
-      GetJsonValue<std::string>(json, kTransform).and_then(TransformFunctionFromString));
+      GetJsonValue<std::string>(json, kTransform).and_then(TransformFromString));
   ICEBERG_ASSIGN_OR_RAISE(
       auto direction,
       GetJsonValue<std::string>(json, kDirection).and_then(SortDirectionFromString));

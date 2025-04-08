@@ -70,7 +70,7 @@ void TestJsonConversion(const T& obj, const nlohmann::json& expected_json) {
 }  // namespace
 
 TEST(JsonInternalTest, SortField) {
-  auto identity_transform = std::make_shared<IdentityTransformFunction>();
+  auto identity_transform = Transform::Identity();
 
   // Test for SortField with ascending order
   SortField sort_field_asc(5, identity_transform, SortDirection::kAscending,
@@ -88,7 +88,7 @@ TEST(JsonInternalTest, SortField) {
 }
 
 TEST(JsonInternalTest, SortOrder) {
-  auto identity_transform = std::make_shared<IdentityTransformFunction>();
+  auto identity_transform = Transform::Identity();
   SortField st_ts(5, identity_transform, SortDirection::kAscending, NullOrder::kFirst);
   SortField st_bar(7, identity_transform, SortDirection::kDescending, NullOrder::kLast);
   SortOrder sort_order(100, {st_ts, st_bar});
