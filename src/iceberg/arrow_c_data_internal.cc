@@ -23,6 +23,8 @@
 #include <string>
 #include <utility>
 
+#include <nlohmann/json.hpp>
+
 namespace iceberg::internal {
 
 std::pair<ArrowSchema, ArrowArray> CreateExampleArrowSchemaAndArrayByNanoarrow() {
@@ -71,6 +73,13 @@ std::pair<ArrowSchema, ArrowArray> CreateExampleArrowSchemaAndArrayByNanoarrow()
   out_array.null_count = 0;
 
   return {out_schema, out_array};
+}
+
+void TestNlohmannJsonCompile() {
+  nlohmann::json j;
+  j["name"] = "foo";
+  j["age"] = 30;
+  j["city"] = "New York";
 }
 
 }  // namespace iceberg::internal
