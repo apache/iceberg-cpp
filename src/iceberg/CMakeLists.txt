@@ -25,6 +25,8 @@ set(ICEBERG_SOURCES
     schema_internal.cc
     partition_field.cc
     partition_spec.cc
+    sort_field.cc
+    sort_order.cc
     statistics_file.cc
     table_metadata.cc
     transform.cc
@@ -35,10 +37,14 @@ set(ICEBERG_SHARED_BUILD_INTERFACE_LIBS)
 set(ICEBERG_STATIC_INSTALL_INTERFACE_LIBS)
 set(ICEBERG_SHARED_INSTALL_INTERFACE_LIBS)
 
-list(APPEND ICEBERG_STATIC_BUILD_INTERFACE_LIBS nanoarrow::nanoarrow)
-list(APPEND ICEBERG_SHARED_BUILD_INTERFACE_LIBS nanoarrow::nanoarrow)
-list(APPEND ICEBERG_STATIC_INSTALL_INTERFACE_LIBS "Iceberg::nanoarrow")
-list(APPEND ICEBERG_SHARED_INSTALL_INTERFACE_LIBS "Iceberg::nanoarrow")
+list(APPEND ICEBERG_STATIC_BUILD_INTERFACE_LIBS nanoarrow::nanoarrow
+     nlohmann_json::nlohmann_json)
+list(APPEND ICEBERG_SHARED_BUILD_INTERFACE_LIBS nanoarrow::nanoarrow
+     nlohmann_json::nlohmann_json)
+list(APPEND ICEBERG_STATIC_INSTALL_INTERFACE_LIBS "Iceberg::nanoarrow"
+     "Iceberg::nlohmann_json")
+list(APPEND ICEBERG_SHARED_INSTALL_INTERFACE_LIBS "Iceberg::nanoarrow"
+     "Iceberg::nlohmann_json")
 
 add_iceberg_lib(iceberg
                 SOURCES

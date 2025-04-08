@@ -226,3 +226,36 @@ function(resolve_nanoarrow_dependency)
 endfunction()
 
 resolve_nanoarrow_dependency()
+
+# ----------------------------------------------------------------------
+# nlohmann-json
+
+function(resolve_nlohmann_json_dependency)
+  prepare_fetchcontent()
+
+  set(JSON_BuildTests
+      OFF
+      CACHE BOOL "" FORCE)
+
+  fetchcontent_declare(nlohmann_json
+                       ${FC_DECLARE_COMMON_OPTIONS}
+                       URL "https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz"
+  )
+  fetchcontent_makeavailable(nlohmann_json)
+
+  set_target_properties(nlohmann_json
+                        PROPERTIES OUTPUT_NAME "iceberg_vendored_nlohmann_json"
+                                   POSITION_INDEPENDENT_CODE ON)
+  if(MSVC_TOOLCHAIN)
+    set(NLOHMANN_NATVIS_FILE ${nlohmann_json_SOURCE_DIR}/nlohmann_json.natvis)
+    install(FILES ${NLOHMANN_NATVIS_FILE} DESTINATION .)
+  endif()
+
+  install(TARGETS nlohmann_json
+          EXPORT iceberg_targets
+          RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
+          ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
+          LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+endfunction()
+
+resolve_nlohmann_json_dependency()
