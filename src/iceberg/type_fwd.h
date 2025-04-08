@@ -100,6 +100,7 @@ class SortField;
 class SortOrder;
 class StructLike;
 class TableMetadata;
+class Transform;
 enum class TransformType;
 class TransformFunction;
 

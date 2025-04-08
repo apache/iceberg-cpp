@@ -43,7 +43,7 @@ class ICEBERG_EXPORT PartitionField : public util::Formattable {
   /// \param[in] name The partition field name.
   /// \param[in] transform The transform function.
   PartitionField(int32_t source_id, int32_t field_id, std::string name,
-                 std::shared_ptr<TransformFunction> transform);
+                 std::shared_ptr<Transform> transform);
 
   /// \brief Get the source field ID.
   int32_t source_id() const;
@@ -55,7 +55,7 @@ class ICEBERG_EXPORT PartitionField : public util::Formattable {
   std::string_view name() const;
 
   /// \brief Get the transform type.
-  std::shared_ptr<TransformFunction> const& transform() const;
+  std::shared_ptr<Transform> const& transform() const;
 
   std::string ToString() const override;
 
@@ -74,7 +74,7 @@ class ICEBERG_EXPORT PartitionField : public util::Formattable {
   int32_t source_id_;
   int32_t field_id_;
   std::string name_;
-  std::shared_ptr<TransformFunction> transform_;
+  std::shared_ptr<Transform> transform_;
 };
 
 }  // namespace iceberg

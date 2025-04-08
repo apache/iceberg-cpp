@@ -27,7 +27,7 @@
 
 namespace iceberg {
 
-SortField::SortField(int32_t source_id, std::shared_ptr<TransformFunction> transform,
+SortField::SortField(int32_t source_id, std::shared_ptr<Transform> transform,
                      SortDirection direction, NullOrder null_order)
     : source_id_(source_id),
       transform_(std::move(transform)),
@@ -36,9 +36,7 @@ SortField::SortField(int32_t source_id, std::shared_ptr<TransformFunction> trans
 
 int32_t SortField::source_id() const { return source_id_; }
 
-std::shared_ptr<TransformFunction> const& SortField::transform() const {
-  return transform_;
-}
+std::shared_ptr<Transform> const& SortField::transform() const { return transform_; }
 
 SortDirection SortField::direction() const { return direction_; }
 

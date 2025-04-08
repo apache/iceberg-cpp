@@ -38,7 +38,7 @@ TEST(PartitionSpecTest, Basics) {
     SchemaField field2(7, "bar", std::make_shared<StringType>(), true);
     auto const schema = std::make_shared<Schema>(100, std::vector{field1, field2});
 
-    auto identity_transform = std::make_shared<IdentityTransformFunction>();
+    auto identity_transform = Transform::Identity();
     PartitionField pt_field1(5, 1000, "day", identity_transform);
     PartitionField pt_field2(5, 1001, "hour", identity_transform);
     PartitionSpec spec(schema, 100, {pt_field1, pt_field2});
@@ -61,7 +61,7 @@ TEST(PartitionSpecTest, Equality) {
   SchemaField field1(5, "ts", std::make_shared<TimestampType>(), true);
   SchemaField field2(7, "bar", std::make_shared<StringType>(), true);
   auto const schema = std::make_shared<Schema>(100, std::vector{field1, field2});
-  auto identity_transform = std::make_shared<IdentityTransformFunction>();
+  auto identity_transform = Transform::Identity();
   PartitionField pt_field1(5, 1000, "day", identity_transform);
   PartitionField pt_field2(7, 1001, "hour", identity_transform);
   PartitionField pt_field3(7, 1001, "hour", identity_transform);
