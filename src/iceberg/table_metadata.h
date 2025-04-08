@@ -111,8 +111,6 @@ struct ICEBERG_EXPORT TableMetadata {
   std::vector<std::shared_ptr<struct StatisticsFile>> statistics;
   /// A list of partition statistics
   std::vector<std::shared_ptr<struct PartitionStatisticsFile>> partition_statistics;
-  /// whether or not to track the creation and updates to rows in the table
-  bool row_lineage_enabled = false;
   /// A `long` higher than all assigned row IDs
   int64_t next_row_id;
 };
