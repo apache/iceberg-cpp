@@ -19,21 +19,23 @@
 
 #include "iceberg/snapshot.h"
 
+#include <format>
+
 #include "iceberg/util/formatter.h"
 
 namespace iceberg {
 
 namespace {
 /// \brief Get the relative Operation name
-constexpr std::string_view ToString(Operation operation) {
+constexpr std::string_view ToString(Summary::Operation operation) {
   switch (operation) {
-    case Operation::kAppend:
+    case Summary::Operation::kAppend:
       return "append";
-    case Operation::kOverwrite:
+    case Summary::Operation::kOverwrite:
       return "overwrite";
-    case Operation::kReplace:
+    case Summary::Operation::kReplace:
       return "replace";
-    case Operation::kDelete:
+    case Summary::Operation::kDelete:
       return "delete";
     default:
       return "invalid";
@@ -44,30 +46,24 @@ constexpr std::string_view ToString(Operation operation) {
 Summary::Summary(Operation op, std::unordered_map<std::string, std::string> props)
     : operation_(op), additional_properties_(std::move(props)) {}
 
-Operation Summary::operation() const { return operation_; }
+Summary::Operation Summary::operation() const { return operation_; }
 
 const std::unordered_map<std::string, std::string>& Summary::properties() const {
   return additional_properties_;
 }
 
 std::string Summary::ToString() const {
-  std::string repr =
-      "summary: { operation: " + std::string(iceberg::ToString(operation_));
+  std::string repr = std::format("summary<operation: {}", iceberg::ToString(operation_));
   for (const auto& [key, value] : additional_properties_) {
-    repr += ", " + key + ": " + value;
+    std::format_to(std::back_inserter(repr), ", {}: {}", key, value);
   }
-  repr += "}";
+  repr += ">";
   return repr;
-}
-
-bool Summary::Equals(const Summary& other) const {
-  return operation_ == other.operation_ &&
-         additional_properties_ == other.additional_properties_;
 }
 
 Snapshot::Snapshot(int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
                    int64_t sequence_number, int64_t timestamp_ms,
-                   std::string manifest_list, std::shared_ptr<Summary> summary,
+                   std::string manifest_list, Summary summary,
                    std::optional<int64_t> schema_id)
     : snapshot_id_(snapshot_id),
       parent_snapshot_id_(parent_snapshot_id),
@@ -89,35 +85,38 @@ int64_t Snapshot::timestamp_ms() const { return timestamp_ms_; }
 
 const std::string& Snapshot::manifest_list() const { return manifest_list_; }
 
-const std::shared_ptr<Summary>& Snapshot::summary() const { return summary_; }
+const Summary& Snapshot::summary() const { return summary_; }
 
 std::optional<int32_t> Snapshot::schema_id() const { return schema_id_; }
 
 std::string Snapshot::ToString() const {
-  std::string repr = "snapshot: { id: " + std::to_string(snapshot_id_);
+  std::string repr;
+  std::format_to(std::back_inserter(repr), "snapshot<\n  id: {}\n", snapshot_id_);
   if (parent_snapshot_id_.has_value()) {
-    repr += ", parent_id: " + std::to_string(parent_snapshot_id_.value());
+    std::format_to(std::back_inserter(repr), "  parent_id: {}\n",
+                   parent_snapshot_id_.value());
   }
-  repr += ", sequence_number: " + std::to_string(sequence_number_);
-  repr += ", timestamp_ms: " + std::to_string(timestamp_ms_);
-  repr += ", manifest_list: " + manifest_list_;
-  repr += ", summary: " + summary_->ToString();
+  std::format_to(std::back_inserter(repr), "  sequence_number: {}\n", sequence_number_);
+  std::format_to(std::back_inserter(repr), "  timestamp_ms: {}\n", timestamp_ms_);
+  std::format_to(std::back_inserter(repr), "  manifest_list: {}\n", manifest_list_);
+  std::format_to(std::back_inserter(repr), "  summary: {}\n", summary_);
 
   if (schema_id_.has_value()) {
-    repr += ", schema_id: " + std::to_string(schema_id_.value());
+    std::format_to(std::back_inserter(repr), "  schema_id: {}\n", schema_id_.value());
   }
 
-  repr += " }";
-
+  repr += ">";
   return repr;
 }
 
 bool Snapshot::Equals(const Snapshot& other) const {
+  if (this == &other) {
+    return true;
+  }
   return snapshot_id_ == other.snapshot_id_ &&
          parent_snapshot_id_ == other.parent_snapshot_id_ &&
          sequence_number_ == other.sequence_number_ &&
-         timestamp_ms_ == other.timestamp_ms_ && manifest_list_ == other.manifest_list_ &&
-         *summary_ == *other.summary_ && schema_id_ == other.schema_id_;
+         timestamp_ms_ == other.timestamp_ms_ && schema_id_ == other.schema_id_;
 }
 
 }  // namespace iceberg

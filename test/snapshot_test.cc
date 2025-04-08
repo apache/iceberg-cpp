@@ -26,54 +26,39 @@ namespace iceberg {
 /// Test Summary
 TEST(SummaryTest, DefaultConstruction) {
   Summary default_summary;
-  EXPECT_EQ(default_summary.operation(), Operation::kAppend);
+  EXPECT_EQ(default_summary.operation(), Summary::Operation::kAppend);
   EXPECT_TRUE(default_summary.properties().empty());
 }
 
 TEST(SummaryTest, CustomConstruction) {
-  std::unordered_map<std::string, std::string> properties = {{"key1", "value1"},
-                                                             {"key2", "value2"}};
-  Summary custom_summary(Operation::kOverwrite, properties);
+  std::unordered_map<std::string, std::string> properties = {{"1", "value1"},
+                                                             {"2", "value2"}};
+  Summary custom_summary(Summary::Operation::kOverwrite, properties);
 
-  EXPECT_EQ(custom_summary.operation(), Operation::kOverwrite);
+  EXPECT_EQ(custom_summary.operation(), Summary::Operation::kOverwrite);
   EXPECT_EQ(custom_summary.properties().size(), 2);
-  EXPECT_EQ(custom_summary.properties().at("key1"), "value1");
-  EXPECT_EQ(custom_summary.properties().at("key2"), "value2");
+  EXPECT_EQ(custom_summary.properties().at("1"), "value1");
+  EXPECT_EQ(custom_summary.properties().at("2"), "value2");
 }
 
 TEST(SummaryTest, ToStringRepresentation) {
-  std::unordered_map<std::string, std::string> properties = {{"keyA", "valueA"},
-                                                             {"keyB", "valueB"}};
-  Summary summary(Operation::kReplace, properties);
+  std::unordered_map<std::string, std::string> properties = {{"A", "valueA"},
+                                                             {"B", "valueB"}};
+  Summary summary(Summary::Operation::kReplace, properties);
 
   std::string to_string_result = summary.ToString();
   EXPECT_NE(to_string_result.find("operation"), std::string::npos);
   EXPECT_NE(to_string_result.find("replace"), std::string::npos);
-  EXPECT_NE(to_string_result.find("keyA"), std::string::npos);
+  EXPECT_NE(to_string_result.find("A"), std::string::npos);
   EXPECT_NE(to_string_result.find("valueA"), std::string::npos);
-  EXPECT_NE(to_string_result.find("keyB"), std::string::npos);
+  EXPECT_NE(to_string_result.find("B"), std::string::npos);
   EXPECT_NE(to_string_result.find("valueB"), std::string::npos);
-}
-
-TEST(SummaryTest, EqualityComparison) {
-  std::unordered_map<std::string, std::string> properties1 = {{"key1", "value1"},
-                                                              {"key2", "value2"}};
-  std::unordered_map<std::string, std::string> properties2 = {{"key1", "value1"},
-                                                              {"key2", "value2"}};
-  std::unordered_map<std::string, std::string> properties3 = {{"key3", "value3"}};
-
-  Summary summary1(Operation::kAppend, properties1);
-  Summary summary2(Operation::kAppend, properties2);
-  Summary summary3(Operation::kDelete, properties3);
-
-  EXPECT_EQ(summary1, summary2);
-  EXPECT_NE(summary1, summary3);
 }
 
 /// Test Snapshot
 TEST(SnapshotTest, ConstructionAndFieldAccess) {
-  auto summary = std::make_shared<Summary>(
-      Operation::kAppend, std::unordered_map<std::string, std::string>{});
+  Summary summary(Summary::Operation::kAppend,
+                  std::unordered_map<std::string, std::string>{});
 
   Snapshot snapshot(12345, 54321, 1, 1615569200000, "s3://example/manifest_list.avro",
                     summary, 10);
@@ -83,14 +68,15 @@ TEST(SnapshotTest, ConstructionAndFieldAccess) {
   EXPECT_EQ(snapshot.sequence_number(), 1);
   EXPECT_EQ(snapshot.timestamp_ms(), 1615569200000);
   EXPECT_EQ(snapshot.manifest_list(), "s3://example/manifest_list.avro");
-  EXPECT_EQ(snapshot.summary()->operation(), Operation::kAppend);
+  EXPECT_EQ(snapshot.summary().operation(), Summary::Operation::kAppend);
   EXPECT_EQ(snapshot.schema_id().value(), 10);
 }
 
 TEST(SnapshotTest, ToStringRepresentation) {
-  auto summary = std::make_shared<Summary>(
-      Operation::kDelete, std::unordered_map<std::string, std::string>{
-                              {std::string(kDeletedDataFilesKey), "100"}});
+  auto summary =
+      Summary(Summary::Operation::kDelete,
+              std::unordered_map<std::string, std::string>{
+                  {std::string(SnapshotSummaryFields::kDeletedDataFiles), "100"}});
 
   Snapshot snapshot(67890, {}, 42, 1625569200000,
                     "s3://example/another_manifest_list.avro", summary, {});
@@ -102,19 +88,20 @@ TEST(SnapshotTest, ToStringRepresentation) {
   EXPECT_NE(
       to_string_result.find("manifest_list: s3://example/another_manifest_list.avro"),
       std::string::npos);
-  EXPECT_NE(to_string_result.find(kDeletedDataFilesKey), std::string::npos);
+  EXPECT_NE(to_string_result.find(SnapshotSummaryFields::kDeletedDataFiles),
+            std::string::npos);
 }
 
 TEST(SnapshotTest, EqualityComparison) {
-  auto summary1 = std::make_shared<Summary>(
-      Operation::kAppend, std::unordered_map<std::string, std::string>{
-                              {std::string(kAddedDataFilesKey), "101"}});
-  auto summary2 = std::make_shared<Summary>(
-      Operation::kAppend, std::unordered_map<std::string, std::string>{
-                              {std::string(kAddedDataFilesKey), "101"}});
-  auto summary3 = std::make_shared<Summary>(
-      Operation::kDelete, std::unordered_map<std::string, std::string>{
-                              {std::string(kDeletedDataFilesKey), "20"}});
+  Summary summary1(Summary::Operation::kAppend,
+                   std::unordered_map<std::string, std::string>{
+                       {std::string(SnapshotSummaryFields::kAddedDataFiles), "101"}});
+  Summary summary2(Summary::Operation::kAppend,
+                   std::unordered_map<std::string, std::string>{
+                       {std::string(SnapshotSummaryFields::kAddedDataFiles), "101"}});
+  Summary summary3(Summary::Operation::kDelete,
+                   std::unordered_map<std::string, std::string>{
+                       {std::string(SnapshotSummaryFields::kDeletedDataFiles), "20"}});
 
   Snapshot snapshot1(12345, {}, 1, 1615569200000, "s3://example/manifest_list.avro",
                      summary1, {});

@@ -26,32 +26,34 @@
 
 namespace iceberg {
 
+/// \brief The type of snapshot reference
 enum class SnapshotRefType {
   /// Branches are mutable named references that can be updated by committing a new
   /// snapshot as the branch’s referenced snapshot using the Commit Conflict Resolution
   /// and Retry procedures.
-  BRANCH,
+  kBranch,
   /// Tags are labels for individual snapshots
-  TAG,
+  kTag,
 };
 
+/// \brief A reference to a snapshot, either a branch or a tag.
 struct ICEBERG_EXPORT SnapshotRef {
   /// A reference's snapshot ID. The tagged snapshot or latest snapshot of a branch.
-  int64_t snapshot_id_;
+  int64_t snapshot_id;
   /// Type of the reference, tag or branch
-  SnapshotRefType type_;
+  SnapshotRefType type;
   /// For branch type only, a positive number for the minimum number of snapshots to keep
   /// in a branch while expiring snapshots. Defaults to table property
   /// history.expire.min-snapshots-to-keep.
-  std::optional<int32_t> min_snapshots_to_keep_;
+  std::optional<int32_t> min_snapshots_to_keep;
   /// For branch type only, a positive number for the max age of snapshots to keep when
   /// expiring, including the latest snapshot. Defaults to table property
   /// history.expire.max-snapshot-age-ms.
-  std::optional<int64_t> max_snapshot_age_ms_;
+  std::optional<int64_t> max_snapshot_age_ms;
   /// For snapshot references except the main branch, a positive number for the max age of
   /// the snapshot reference to keep while expiring snapshots. Defaults to table property
   /// history.expire.max-ref-age-ms. The main branch never expires.
-  std::optional<int64_t> max_ref_age_ms_;
+  std::optional<int64_t> max_ref_age_ms;
 };
 
 }  // namespace iceberg
