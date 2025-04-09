@@ -27,32 +27,6 @@
 
 namespace iceberg {
 
-namespace {
-/// \brief Get the relative sort direction name
-constexpr std::string_view ToString(SortDirection direction) {
-  switch (direction) {
-    case SortDirection::kAscending:
-      return "asc";
-    case SortDirection::kDescending:
-      return "desc";
-    default:
-      return "invalid";
-  }
-}
-
-/// \brief Get the relative null order name
-constexpr std::string_view ToString(NullOrder null_order) {
-  switch (null_order) {
-    case NullOrder::kFirst:
-      return "nulls-first";
-    case NullOrder::kLast:
-      return "nulls-last";
-    default:
-      return "invalid";
-  }
-}
-}  // namespace
-
 SortField::SortField(int32_t source_id, std::shared_ptr<TransformFunction> transform,
                      SortDirection direction, NullOrder null_order)
     : source_id_(source_id),
@@ -73,7 +47,7 @@ NullOrder SortField::null_order() const { return null_order_; }
 std::string SortField::ToString() const {
   return std::format(
       "sort_field(source_id={}, transform={}, direction={}, null_order={})", source_id_,
-      *transform_, iceberg::ToString(direction_), iceberg::ToString(null_order_));
+      *transform_, SortDirectionToString(direction_), NullOrderToString(null_order_));
 }
 
 bool SortField::Equals(const SortField& other) const {

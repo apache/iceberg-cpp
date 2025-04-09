@@ -25,7 +25,8 @@ fetchcontent_makeavailable(googletest)
 
 add_executable(schema_test)
 target_sources(schema_test
-               PRIVATE schema_test.cc
+               PRIVATE json_internal_test.cc
+                       schema_test.cc
                        schema_field_test.cc
                        type_test.cc
                        transform_test.cc

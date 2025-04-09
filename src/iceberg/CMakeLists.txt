@@ -20,6 +20,7 @@ set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
 set(ICEBERG_SOURCES
     arrow_c_data_internal.cc
     demo.cc
+    json_internal.cc
     schema.cc
     schema_field.cc
     schema_internal.cc
