@@ -23,90 +23,61 @@
 
 namespace iceberg {
 
-/// Test Summary
-TEST(SummaryTest, DefaultConstruction) {
-  Summary default_summary;
-  EXPECT_EQ(default_summary.operation(), Summary::Operation::kAppend);
-  EXPECT_TRUE(default_summary.properties().empty());
+class SnapshotTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    // Initialize some common test data
+    summary1 = {{std::string(SnapshotSummaryFields::kOperation),
+                 std::string(DataOperation::kAppend)},
+                {std::string(SnapshotSummaryFields::kAddedDataFiles), "101"}};
+
+    summary2 = {{std::string(SnapshotSummaryFields::kOperation),
+                 std::string(DataOperation::kAppend)},
+                {std::string(SnapshotSummaryFields::kAddedDataFiles), "101"}};
+
+    summary3 = {{std::string(SnapshotSummaryFields::kOperation),
+                 std::string(DataOperation::kDelete)},
+                {std::string(SnapshotSummaryFields::kDeletedDataFiles), "20"}};
+  }
+
+  std::unordered_map<std::string, std::string> summary1;
+  std::unordered_map<std::string, std::string> summary2;
+  std::unordered_map<std::string, std::string> summary3;
+};
+
+TEST_F(SnapshotTest, ConstructionAndFieldAccess) {
+  // Test the constructor and field access
+  Snapshot snapshot{.snapshot_id = 12345,
+                    .parent_snapshot_id = 54321,
+                    .sequence_number = 1,
+                    .timestamp_ms = 1615569200000,
+                    .manifest_list = "s3://example/manifest_list.avro",
+                    .summary = summary1,
+                    .schema_id = 10};
+
+  EXPECT_EQ(snapshot.snapshot_id, 12345);
+  EXPECT_TRUE(snapshot.parent_snapshot_id.has_value());
+  EXPECT_EQ(*snapshot.parent_snapshot_id, 54321);
+  EXPECT_EQ(snapshot.sequence_number, 1);
+  EXPECT_EQ(snapshot.timestamp_ms, 1615569200000);
+  EXPECT_EQ(snapshot.ManifestList()->get(), "s3://example/manifest_list.avro");
+  EXPECT_EQ(snapshot.operation().value(), DataOperation::kAppend);
+  EXPECT_EQ(snapshot.summary.at(std::string(SnapshotSummaryFields::kAddedDataFiles)),
+            "101");
+  EXPECT_EQ(snapshot.summary.at(std::string(SnapshotSummaryFields::kOperation)),
+            DataOperation::kAppend);
+  EXPECT_TRUE(snapshot.schema_id.has_value());
+  EXPECT_EQ(snapshot.schema_id.value(), 10);
 }
 
-TEST(SummaryTest, CustomConstruction) {
-  std::unordered_map<std::string, std::string> properties = {{"1", "value1"},
-                                                             {"2", "value2"}};
-  Summary custom_summary(Summary::Operation::kOverwrite, properties);
-
-  EXPECT_EQ(custom_summary.operation(), Summary::Operation::kOverwrite);
-  EXPECT_EQ(custom_summary.properties().size(), 2);
-  EXPECT_EQ(custom_summary.properties().at("1"), "value1");
-  EXPECT_EQ(custom_summary.properties().at("2"), "value2");
-}
-
-TEST(SummaryTest, ToStringRepresentation) {
-  std::unordered_map<std::string, std::string> properties = {{"A", "valueA"},
-                                                             {"B", "valueB"}};
-  Summary summary(Summary::Operation::kReplace, properties);
-
-  std::string to_string_result = summary.ToString();
-  EXPECT_NE(to_string_result.find("operation"), std::string::npos);
-  EXPECT_NE(to_string_result.find("replace"), std::string::npos);
-  EXPECT_NE(to_string_result.find("A"), std::string::npos);
-  EXPECT_NE(to_string_result.find("valueA"), std::string::npos);
-  EXPECT_NE(to_string_result.find("B"), std::string::npos);
-  EXPECT_NE(to_string_result.find("valueB"), std::string::npos);
-}
-
-/// Test Snapshot
-TEST(SnapshotTest, ConstructionAndFieldAccess) {
-  Summary summary(Summary::Operation::kAppend,
-                  std::unordered_map<std::string, std::string>{});
-
-  Snapshot snapshot(12345, 54321, 1, 1615569200000, "s3://example/manifest_list.avro",
-                    summary, 10);
-
-  EXPECT_EQ(snapshot.snapshot_id(), 12345);
-  EXPECT_EQ(snapshot.parent_snapshot_id().value(), 54321);
-  EXPECT_EQ(snapshot.sequence_number(), 1);
-  EXPECT_EQ(snapshot.timestamp_ms(), 1615569200000);
-  EXPECT_EQ(snapshot.manifest_list(), "s3://example/manifest_list.avro");
-  EXPECT_EQ(snapshot.summary().operation(), Summary::Operation::kAppend);
-  EXPECT_EQ(snapshot.schema_id().value(), 10);
-}
-
-TEST(SnapshotTest, ToStringRepresentation) {
-  auto summary =
-      Summary(Summary::Operation::kDelete,
-              std::unordered_map<std::string, std::string>{
-                  {std::string(SnapshotSummaryFields::kDeletedDataFiles), "100"}});
-
-  Snapshot snapshot(67890, {}, 42, 1625569200000,
-                    "s3://example/another_manifest_list.avro", summary, {});
-
-  std::string to_string_result = snapshot.ToString();
-
-  EXPECT_NE(to_string_result.find("67890"), std::string::npos);
-  EXPECT_NE(to_string_result.find("sequence_number: 42"), std::string::npos);
-  EXPECT_NE(
-      to_string_result.find("manifest_list: s3://example/another_manifest_list.avro"),
-      std::string::npos);
-  EXPECT_NE(to_string_result.find(SnapshotSummaryFields::kDeletedDataFiles),
-            std::string::npos);
-}
-
-TEST(SnapshotTest, EqualityComparison) {
-  Summary summary1(Summary::Operation::kAppend,
-                   std::unordered_map<std::string, std::string>{
-                       {std::string(SnapshotSummaryFields::kAddedDataFiles), "101"}});
-  Summary summary2(Summary::Operation::kAppend,
-                   std::unordered_map<std::string, std::string>{
-                       {std::string(SnapshotSummaryFields::kAddedDataFiles), "101"}});
-  Summary summary3(Summary::Operation::kDelete,
-                   std::unordered_map<std::string, std::string>{
-                       {std::string(SnapshotSummaryFields::kDeletedDataFiles), "20"}});
-
+TEST_F(SnapshotTest, EqualityComparison) {
+  // Test the == and != operators
   Snapshot snapshot1(12345, {}, 1, 1615569200000, "s3://example/manifest_list.avro",
                      summary1, {});
+
   Snapshot snapshot2(12345, {}, 1, 1615569200000, "s3://example/manifest_list.avro",
                      summary2, {});
+
   Snapshot snapshot3(67890, {}, 1, 1615569200000, "s3://example/manifest_list.avro",
                      summary3, {});
 

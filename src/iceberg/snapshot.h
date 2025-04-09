@@ -22,11 +22,43 @@
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include <variant>
+#include <vector>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/util/formattable.h"
 
 namespace iceberg {
+
+/// \brief The type of snapshot reference
+enum class SnapshotRefType {
+  /// Branches are mutable named references that can be updated by committing a new
+  /// snapshot as the branch’s referenced snapshot using the Commit Conflict Resolution
+  /// and Retry procedures.
+  kBranch,
+  /// Tags are labels for individual snapshots
+  kTag,
+};
+
+/// \brief A reference to a snapshot, either a branch or a tag.
+struct ICEBERG_EXPORT SnapshotRef {
+  /// A reference's snapshot ID. The tagged snapshot or latest snapshot of a branch.
+  int64_t snapshot_id;
+  /// Type of the reference, tag or branch
+  SnapshotRefType type;
+  /// For branch type only, a positive number for the minimum number of snapshots to keep
+  /// in a branch while expiring snapshots. Defaults to table property
+  /// history.expire.min-snapshots-to-keep.
+  std::optional<int32_t> min_snapshots_to_keep;
+  /// For branch type only, a positive number for the max age of snapshots to keep when
+  /// expiring, including the latest snapshot. Defaults to table property
+  /// history.expire.max-snapshot-age-ms.
+  std::optional<int64_t> max_snapshot_age_ms;
+  /// For snapshot references except the main branch, a positive number for the max age of
+  /// the snapshot reference to keep while expiring snapshots. Defaults to table property
+  /// history.expire.max-ref-age-ms. The main branch never expires.
+  std::optional<int64_t> max_ref_age_ms;
+};
 
 /// \brief Optional Snapshot Summary Fields
 struct SnapshotSummaryFields {
@@ -109,40 +141,23 @@ struct SnapshotSummaryFields {
   constexpr static std::string_view kEngineVersion = "engine-version";
 };
 
-/// \brief Summarises the changes in the snapshot.
-class ICEBERG_EXPORT Summary : public iceberg::util::Formattable {
- public:
-  /// \brief The operation field is used by some operations, like snapshot expiration, to
-  /// skip processing certain snapshots.
-  enum class Operation {
-    /// Only data files were added and no files were removed.
-    kAppend,
-    /// Data and delete files were added and removed without changing table data; i.e.
-    /// compaction, change the data file format, or relocating data files.
-    kReplace,
-    /// Data and delete files were added and removed in a logical overwrite operation.
-    kOverwrite,
-    /// Data files were removed and their contents logically deleted and/or delete files
-    /// were added to delete rows.
-    kDelete,
-  };
-  Summary() = default;
-  /// \brief Construct a summary with the given operation and properties.
-  Summary(Operation op, std::unordered_map<std::string, std::string> props);
-
-  /// \brief Get the operation type of the snapshot.
-  Operation operation() const;
-
-  /// \brief Get the additional properties of the snapshot.
-  const std::unordered_map<std::string, std::string>& properties() const;
-
-  std::string ToString() const override;
-
- private:
-  /// The type of operation in the snapshot
-  Operation operation_{Operation::kAppend};
-  /// Other summary data.
-  std::unordered_map<std::string, std::string> additional_properties_;
+/// \brief Data operation that produce snapshots.
+///
+/// A snapshot can return the operation that created the snapshot to help other components
+/// ignore snapshots that are not needed for some tasks. For example, snapshot expiration
+/// does not need to clean up deleted files for appends, which have no deleted files.
+struct ICEBERG_EXPORT DataOperation {
+  /// \brief Only data files were added and no files were removed.
+  static constexpr std::string_view kAppend = "append";
+  /// \brief Data and delete files were added and removed without changing table data;
+  /// i.e. compaction, change the data file format, or relocating data files.
+  static constexpr std::string_view kReplace = "replace";
+  /// \brief Data and delete files were added and removed in a logical overwrite
+  /// operation.
+  static constexpr std::string_view kOverwrite = "overwrite";
+  /// \brief Data files were removed and their contents logically deleted and/or delete
+  /// files were added to delete rows.
+  static constexpr std::string_view kDelete = "delete";
 };
 
 /// \brief A snapshot of the data in a table at a point in time.
@@ -151,39 +166,52 @@ class ICEBERG_EXPORT Summary : public iceberg::util::Formattable {
 /// the union of all the data files in those manifests.
 ///
 /// Snapshots are created by table operations.
-class ICEBERG_EXPORT Snapshot : public iceberg::util::Formattable {
- public:
-  Snapshot(int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
-           int64_t sequence_number, int64_t timestamp_ms, std::string manifest_list,
-           Summary summary, std::optional<int64_t> schema_id);
+struct ICEBERG_EXPORT Snapshot {
+  using manifest_list_t = std::string;
+  using manifests_t = std::vector<std::string>;
 
-  /// \brief Get the id of the snapshot.
-  int64_t snapshot_id() const;
+  /// A unqiue long ID.
+  int64_t snapshot_id;
+  /// The snapshot ID of the snapshot's parent. Omitted for any snapshot with no parent.
+  std::optional<int64_t> parent_snapshot_id;
+  /// A monotonically increasing long that tracks the order of changes to a table.
+  int64_t sequence_number;
+  /// A timestamp when the snapshot was created, used for garbage collection and table
+  /// inspection.
+  int64_t timestamp_ms;
+  /// The location of a manifest list for this snapshot that tracks manifest files with
+  /// additional metadata.
+  std::variant<manifest_list_t, manifests_t> manifest_list;
+  /// A string map that summaries the snapshot changes, including operation.
+  std::unordered_map<std::string, std::string> summary;
+  /// ID of the table's current schema when the snapshot was created.
+  std::optional<int32_t> schema_id;
 
-  /// \brief Get parent snapshot id.
-  std::optional<int64_t> parent_snapshot_id() const;
+  /// \brief Return the name of the DataOperations data operation that produced this
+  /// snapshot.
+  ///
+  /// \return the operation that produced this snapshot, or nullopt if the operation is
+  /// unknown.
+  std::optional<std::string> operation() const;
 
-  /// \brief Get the sequence number of the snapshot.
-  int64_t sequence_number() const;
+  /// \brief Get the manifest list for this snapshot.
+  ///
+  /// \return the manifest list for this snapshot, or nullopt if the snapshot has no
+  /// manifest list.
+  std::optional<std::reference_wrapper<const manifest_list_t>> ManifestList() const;
 
-  /// \brief Get the timestamp of the snapshot.
-  int64_t timestamp_ms() const;
+  /// \brief Get the manifests for this snapshot.
+  ///
+  /// \return the manifests for this snapshot, or nullopt if the snapshot has no
+  /// manifests.
+  std::optional<std::reference_wrapper<const manifests_t>> Manifests() const;
 
-  /// \brief Get the manifest list of the snapshot.
-  const std::string& manifest_list() const;
-
-  /// \brief Get the summary of the snapshot.
-  const Summary& summary() const;
-
-  /// \brief Get the schema ID of the snapshot.
-  std::optional<int32_t> schema_id() const;
-
-  std::string ToString() const override;
-
+  /// \brief Compare two snapshots for equality.
   friend bool operator==(const Snapshot& lhs, const Snapshot& rhs) {
     return lhs.Equals(rhs);
   }
 
+  /// \brief Compare two snapshots for inequality.
   friend bool operator!=(const Snapshot& lhs, const Snapshot& rhs) {
     return !(lhs == rhs);
   }
@@ -191,23 +219,6 @@ class ICEBERG_EXPORT Snapshot : public iceberg::util::Formattable {
  private:
   /// \brief Compare two snapshots for equality.
   bool Equals(const Snapshot& other) const;
-
-  /// A unqiue long ID.
-  int64_t snapshot_id_;
-  /// The snapshot ID of the snapshot's parent. Omitted for any snapshot with no parent.
-  std::optional<int64_t> parent_snapshot_id_;
-  /// A monotonically increasing long that tracks the order of changes to a table.
-  int64_t sequence_number_;
-  /// A timestamp when the snapshot was created, used for garbage collection and table
-  /// inspection.
-  int64_t timestamp_ms_;
-  /// The location of a manifest list for this snapshot that tracks manifest files with
-  /// additional metadata.
-  std::string manifest_list_;
-  /// A string map that summaries the snapshot changes, including operation.
-  Summary summary_;
-  /// ID of the table's current schema when the snapshot was created.
-  std::optional<int32_t> schema_id_;
 };
 
 }  // namespace iceberg
