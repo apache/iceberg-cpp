@@ -19,32 +19,20 @@
 
 #pragma once
 
-#include <string>
+#define ICEBERG_RETURN_UNEXPECTED(result)     \
+  if (!result) [[unlikely]] {                 \
+    return unexpected<Error>(result.error()); \
+  }
 
-#include "iceberg/iceberg_export.h"
+#define ICEBERG_ASSIGN_OR_RAISE_IMPL(result_name, lhs, rexpr) \
+  auto&& result_name = (rexpr);                               \
+  ICEBERG_RETURN_UNEXPECTED(result_name)                      \
+  lhs = std::move(result_name.value());
 
-namespace iceberg {
+#define ICEBERG_CONCAT(x, y) x##y
 
-/// \brief Error types for iceberg.
-/// TODO: add more and sort them based on some rules.
-enum class ErrorKind {
-  kNoSuchNamespace,
-  kAlreadyExists,
-  kNoSuchTable,
-  kCommitStateUnknown,
-  kInvalidSchema,
-  kInvalidArgument,
-  kIOError,
-  kNotImplemented,
-  kUnknownError,
-  kNotSupported,
-  kJsonParseError,
-};
+#define ICEBERG_ASSIGN_OR_RAISE_NAME(x, y) ICEBERG_CONCAT(x, y)
 
-/// \brief Error with a kind and a message.
-struct ICEBERG_EXPORT [[nodiscard]] Error {
-  ErrorKind kind;
-  std::string message;
-};
-
-}  // namespace iceberg
+#define ICEBERG_ASSIGN_OR_RAISE(lhs, rexpr)                                             \
+  ICEBERG_ASSIGN_OR_RAISE_IMPL(ICEBERG_ASSIGN_OR_RAISE_NAME(result_, __COUNTER__), lhs, \
+                               rexpr)

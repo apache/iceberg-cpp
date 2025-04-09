@@ -27,6 +27,7 @@ add_executable(schema_test)
 target_sources(schema_test
                PRIVATE schema_test.cc
                        schema_field_test.cc
+                       schema_json_test.cc
                        type_test.cc
                        transform_test.cc
                        partition_field_test.cc
