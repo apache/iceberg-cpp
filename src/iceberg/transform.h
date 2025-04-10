@@ -25,9 +25,9 @@
 #include <memory>
 
 #include "iceberg/arrow_c_data.h"
-#include "iceberg/error.h"
 #include "iceberg/expected.h"
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/formattable.h"
 

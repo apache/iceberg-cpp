@@ -24,8 +24,8 @@
 
 #include <nlohmann/json.hpp>
 
-#include "iceberg/error.h"
 #include "iceberg/expected.h"
+#include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/sort_order.h"
@@ -69,7 +69,7 @@ constexpr std::string_view kElementRequired = "element-required";
 constexpr std::string_view kValueRequired = "value-required";
 
 template <typename T>
-expected<T, Error> GetJsonValue(const nlohmann::json& json, std::string_view key) {
+Result<T> GetJsonValue(const nlohmann::json& json, std::string_view key) {
   if (!json.contains(key)) {
     return unexpected<Error>({
         .kind = ErrorKind::kJsonParseError,
@@ -109,8 +109,7 @@ nlohmann::json ToJson(const SortOrder& sort_order) {
   return json;
 }
 
-expected<std::unique_ptr<SortField>, Error> SortFieldFromJson(
-    const nlohmann::json& json) {
+Result<std::unique_ptr<SortField>> SortFieldFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto source_id, GetJsonValue<int32_t>(json, kSourceId));
   ICEBERG_ASSIGN_OR_RAISE(
       auto transform,
@@ -125,8 +124,7 @@ expected<std::unique_ptr<SortField>, Error> SortFieldFromJson(
                                      null_order);
 }
 
-expected<std::unique_ptr<SortOrder>, Error> SortOrderFromJson(
-    const nlohmann::json& json) {
+Result<std::unique_ptr<SortOrder>> SortOrderFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto order_id, GetJsonValue<int32_t>(json, kOrderId));
   ICEBERG_ASSIGN_OR_RAISE(auto fields, GetJsonValue<nlohmann::json>(json, kFields));
 
@@ -232,7 +230,7 @@ nlohmann::json SchemaToJson(const Schema& schema) {
 
 namespace {
 
-expected<std::unique_ptr<Type>, Error> StructTypeFromJson(const nlohmann::json& json) {
+Result<std::unique_ptr<Type>> StructTypeFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto json_fields, GetJsonValue<nlohmann::json>(json, kFields));
 
   std::vector<SchemaField> fields;
@@ -244,7 +242,7 @@ expected<std::unique_ptr<Type>, Error> StructTypeFromJson(const nlohmann::json& 
   return std::make_unique<StructType>(std::move(fields));
 }
 
-expected<std::unique_ptr<Type>, Error> ListTypeFromJson(const nlohmann::json& json) {
+Result<std::unique_ptr<Type>> ListTypeFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto element_type, TypeFromJson(json[kElement]));
   ICEBERG_ASSIGN_OR_RAISE(auto element_id, GetJsonValue<int32_t>(json, kElementId));
   ICEBERG_ASSIGN_OR_RAISE(auto element_required,
@@ -255,7 +253,7 @@ expected<std::unique_ptr<Type>, Error> ListTypeFromJson(const nlohmann::json& js
                   std::move(element_type), !element_required));
 }
 
-expected<std::unique_ptr<Type>, Error> MapTypeFromJson(const nlohmann::json& json) {
+Result<std::unique_ptr<Type>> MapTypeFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto key_type, GetJsonValue<nlohmann::json>(json, kKey).and_then(TypeFromJson));
   ICEBERG_ASSIGN_OR_RAISE(
@@ -274,7 +272,7 @@ expected<std::unique_ptr<Type>, Error> MapTypeFromJson(const nlohmann::json& jso
 
 }  // namespace
 
-expected<std::unique_ptr<Type>, Error> TypeFromJson(const nlohmann::json& json) {
+Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json) {
   if (json.is_string()) {
     std::string type_str = json.get<std::string>();
     if (type_str == "boolean") {
@@ -346,7 +344,7 @@ expected<std::unique_ptr<Type>, Error> TypeFromJson(const nlohmann::json& json) 
   }
 }
 
-expected<std::unique_ptr<SchemaField>, Error> FieldFromJson(const nlohmann::json& json) {
+Result<std::unique_ptr<SchemaField>> FieldFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto type, GetJsonValue<nlohmann::json>(json, kType).and_then(TypeFromJson));
   ICEBERG_ASSIGN_OR_RAISE(auto field_id, GetJsonValue<int32_t>(json, kId));
@@ -357,7 +355,7 @@ expected<std::unique_ptr<SchemaField>, Error> FieldFromJson(const nlohmann::json
                                        !required);
 }
 
-expected<std::unique_ptr<Schema>, Error> SchemaFromJson(const nlohmann::json& json) {
+Result<std::unique_ptr<Schema>> SchemaFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto schema_id, GetJsonValue<int32_t>(json, kSchemaId));
   ICEBERG_ASSIGN_OR_RAISE(auto type, TypeFromJson(json));
 

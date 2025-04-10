@@ -28,9 +28,9 @@
 #include <string_view>
 #include <vector>
 
-#include "iceberg/error.h"
 #include "iceberg/expected.h"
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/formattable.h"
 
@@ -55,7 +55,7 @@ ICEBERG_EXPORT constexpr std::string_view SortDirectionToString(SortDirection di
   }
 }
 /// \brief Get the relative sort direction from name
-ICEBERG_EXPORT constexpr expected<SortDirection, Error> SortDirectionFromString(
+ICEBERG_EXPORT constexpr Result<SortDirection> SortDirectionFromString(
     std::string_view str) {
   if (str == "asc") return SortDirection::kAscending;
   if (str == "desc") return SortDirection::kDescending;
@@ -82,8 +82,7 @@ ICEBERG_EXPORT constexpr std::string_view NullOrderToString(NullOrder null_order
   }
 }
 /// \brief Get the relative null order from name
-ICEBERG_EXPORT constexpr expected<NullOrder, Error> NullOrderFromString(
-    std::string_view str) {
+ICEBERG_EXPORT constexpr Result<NullOrder> NullOrderFromString(std::string_view str) {
   if (str == "nulls-first") return NullOrder::kFirst;
   if (str == "nulls-last") return NullOrder::kLast;
   return unexpected<Error>({.kind = ErrorKind::kInvalidArgument,

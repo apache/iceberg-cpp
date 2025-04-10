@@ -169,7 +169,7 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
 
 }  // namespace
 
-expected<void, Error> ToArrowSchema(const Schema& schema, ArrowSchema* out) {
+Status ToArrowSchema(const Schema& schema, ArrowSchema* out) {
   if (out == nullptr) [[unlikely]] {
     return unexpected<Error>{{.kind = ErrorKind::kInvalidArgument,
                               .message = "Output Arrow schema cannot be null"}};
@@ -206,9 +206,9 @@ int32_t GetFieldId(const ArrowSchema& schema) {
   return std::stoi(std::string(field_id_value.data, field_id_value.size_bytes));
 }
 
-expected<std::shared_ptr<Type>, Error> FromArrowSchema(const ArrowSchema& schema) {
+Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
   auto to_schema_field =
-      [](const ArrowSchema& schema) -> expected<std::unique_ptr<SchemaField>, Error> {
+      [](const ArrowSchema& schema) -> Result<std::unique_ptr<SchemaField>> {
     auto field_type_result = FromArrowSchema(schema);
     if (!field_type_result) {
       return unexpected<Error>(field_type_result.error());
@@ -341,8 +341,8 @@ std::unique_ptr<Schema> FromStructType(StructType&& struct_type, int32_t schema_
   return std::make_unique<Schema>(schema_id, std::move(fields));
 }
 
-expected<std::unique_ptr<Schema>, Error> FromArrowSchema(const ArrowSchema& schema,
-                                                         int32_t schema_id) {
+Result<std::unique_ptr<Schema>> FromArrowSchema(const ArrowSchema& schema,
+                                                int32_t schema_id) {
   auto type_result = FromArrowSchema(schema);
   if (!type_result) {
     return unexpected<Error>(type_result.error());

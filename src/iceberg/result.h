@@ -21,6 +21,7 @@
 
 #include <string>
 
+#include "iceberg/expected.h"
 #include "iceberg/iceberg_export.h"
 
 namespace iceberg {
@@ -46,5 +47,17 @@ struct ICEBERG_EXPORT [[nodiscard]] Error {
   ErrorKind kind;
   std::string message;
 };
+
+/// /brief Default error trait
+template <typename T>
+struct DefaultError {
+  using type = Error;
+};
+
+/// \brief Result alias
+template <typename T, typename E = typename DefaultError<T>::type>
+using Result = expected<T, E>;
+
+using Status = Result<void>;
 
 }  // namespace iceberg

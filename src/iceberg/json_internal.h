@@ -24,8 +24,8 @@
 
 #include <nlohmann/json_fwd.hpp>
 
-#include "iceberg/error.h"
 #include "iceberg/expected.h"
+#include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -59,7 +59,7 @@ nlohmann::json ToJson(const SortOrder& sort_order);
 /// \param json The JSON object representing a `SortField`.
 /// \return An `expected` value containing either a `SortField` object or an error. If the
 /// JSON is malformed or missing expected fields, an error will be returned.
-expected<std::unique_ptr<SortField>, Error> SortFieldFromJson(const nlohmann::json& json);
+Result<std::unique_ptr<SortField>> SortFieldFromJson(const nlohmann::json& json);
 
 /// \brief Deserializes a JSON object into a `SortOrder` object.
 ///
@@ -70,7 +70,7 @@ expected<std::unique_ptr<SortField>, Error> SortFieldFromJson(const nlohmann::js
 /// \param json The JSON object representing a `SortOrder`.
 /// \return An `expected` value containing either a `SortOrder` object or an error. If the
 /// JSON is malformed or missing expected fields, an error will be returned.
-expected<std::unique_ptr<SortOrder>, Error> SortOrderFromJson(const nlohmann::json& json);
+Result<std::unique_ptr<SortOrder>> SortOrderFromJson(const nlohmann::json& json);
 
 /// \brief Convert an Iceberg Schema to JSON.
 ///
@@ -94,18 +94,18 @@ nlohmann::json FieldToJson(const SchemaField& field);
 ///
 /// \param[in] json The JSON representation of the schema.
 /// \return The Iceberg schema or an error if the conversion fails.
-expected<std::unique_ptr<Schema>, Error> SchemaFromJson(const nlohmann::json& json);
+Result<std::unique_ptr<Schema>> SchemaFromJson(const nlohmann::json& json);
 
 /// \brief Convert JSON to an Iceberg Type.
 ///
 /// \param[in] json The JSON representation of the type.
 /// \return The Iceberg type or an error if the conversion fails.
-expected<std::unique_ptr<Type>, Error> TypeFromJson(const nlohmann::json& json);
+Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json);
 
 /// \brief Convert JSON to an Iceberg SchemaField.
 ///
 /// \param[in] json The JSON representation of the field.
 /// \return The Iceberg field or an error if the conversion fails.
-expected<std::unique_ptr<SchemaField>, Error> FieldFromJson(const nlohmann::json& json);
+Result<std::unique_ptr<SchemaField>> FieldFromJson(const nlohmann::json& json);
 
 }  // namespace iceberg

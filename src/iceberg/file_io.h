@@ -23,9 +23,8 @@
 #include <string>
 #include <string_view>
 
-#include "iceberg/error.h"
-#include "iceberg/expected.h"
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 
 namespace iceberg {
 
@@ -50,8 +49,8 @@ class ICEBERG_EXPORT FileIO {
   /// the length to read, e.g. S3 `GetObject` has a Range parameter.
   /// \return The content of the file if the read succeeded, an error code if the read
   /// failed.
-  virtual expected<std::string, Error> ReadFile(const std::string& file_location,
-                                                std::optional<size_t> length) {
+  virtual Result<std::string> ReadFile(const std::string& file_location,
+                                       std::optional<size_t> length) {
     // We provide a default implementation to avoid Windows linker error LNK2019.
     return unexpected<Error>{
         {.kind = ErrorKind::kNotImplemented, .message = "ReadFile not implemented"}};
@@ -64,8 +63,7 @@ class ICEBERG_EXPORT FileIO {
   /// \param overwrite If true, overwrite the file if it exists. If false, fail if the
   /// file exists.
   /// \return void if the write succeeded, an error code if the write failed.
-  virtual expected<void, Error> WriteFile(const std::string& file_location,
-                                          std::string_view content) {
+  virtual Status WriteFile(const std::string& file_location, std::string_view content) {
     return unexpected<Error>{
         {.kind = ErrorKind::kNotImplemented, .message = "WriteFile not implemented"}};
   }
@@ -74,7 +72,7 @@ class ICEBERG_EXPORT FileIO {
   ///
   /// \param file_location The location of the file to delete.
   /// \return void if the delete succeeded, an error code if the delete failed.
-  virtual expected<void, Error> DeleteFile(const std::string& file_location) {
+  virtual Status DeleteFile(const std::string& file_location) {
     return unexpected<Error>{
         {.kind = ErrorKind::kNotImplemented, .message = "DeleteFile not implemented"}};
   }

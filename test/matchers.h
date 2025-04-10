@@ -22,7 +22,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "iceberg/error.h"
+#include "iceberg/result.h"
 
 /*
  * \brief Define custom matchers for expected<T, Error> values

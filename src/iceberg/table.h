@@ -19,14 +19,13 @@
 
 #pragma once
 
-#include <map>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
-#include "iceberg/error.h"
-#include "iceberg/expected.h"
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -43,28 +42,30 @@ class ICEBERG_EXPORT Table {
   virtual const std::string& uuid() const = 0;
 
   /// \brief Refresh the current table metadata
-  virtual expected<void, Error> Refresh() = 0;
+  virtual Status Refresh() = 0;
 
   /// \brief Return the schema for this table
   virtual const std::shared_ptr<Schema>& schema() const = 0;
 
   /// \brief Return a map of schema for this table
-  virtual const std::map<int32_t, std::shared_ptr<Schema>>& schemas() const = 0;
+  virtual const std::unordered_map<int32_t, std::shared_ptr<Schema>>& schemas() const = 0;
 
   /// \brief Return the partition spec for this table
   virtual const std::shared_ptr<PartitionSpec>& spec() const = 0;
 
   /// \brief Return a map of partition specs for this table
-  virtual const std::map<int32_t, std::shared_ptr<PartitionSpec>>& specs() const = 0;
+  virtual const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs()
+      const = 0;
 
   /// \brief Return the sort order for this table
   virtual const std::shared_ptr<SortOrder>& sort_order() const = 0;
 
   /// \brief Return a map of sort order IDs to sort orders for this table
-  virtual const std::map<int32_t, std::shared_ptr<SortOrder>>& sort_orders() const = 0;
+  virtual const std::unordered_map<int32_t, std::shared_ptr<SortOrder>>& sort_orders()
+      const = 0;
 
   /// \brief Return a map of string properties for this table
-  virtual const std::map<std::string, std::string>& properties() const = 0;
+  virtual const std::unordered_map<std::string, std::string>& properties() const = 0;
 
   /// \brief Return the table's base location
   virtual const std::string& location() const = 0;
@@ -77,8 +78,7 @@ class ICEBERG_EXPORT Table {
   ///
   /// \param snapshot_id the ID of the snapshot to get
   /// \return the Snapshot with the given id
-  virtual expected<std::shared_ptr<Snapshot>, Error> snapshot(
-      int64_t snapshot_id) const = 0;
+  virtual Result<std::shared_ptr<Snapshot>> snapshot(int64_t snapshot_id) const = 0;
 
   /// \brief Get the snapshots of this table
   virtual const std::vector<std::shared_ptr<Snapshot>>& snapshots() const = 0;
