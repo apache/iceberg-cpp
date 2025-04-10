@@ -488,19 +488,19 @@ namespace {
     });                                                                        \
   }
 
-expected<std::shared_ptr<Type>, Error> StructTypeFromJson(const nlohmann::json& json) {
+expected<std::unique_ptr<Type>, Error> StructTypeFromJson(const nlohmann::json& json) {
   ICEBERG_CHECK_JSON_FIELD(kFields, json);
 
   std::vector<SchemaField> fields;
   for (const auto& field_json : json[kFields]) {
     ICEBERG_ASSIGN_OR_RAISE(auto field, FieldFromJson(field_json));
-    fields.push_back(std::move(field));
+    fields.emplace_back(std::move(*field));
   }
 
-  return std::make_shared<StructType>(std::move(fields));
+  return std::make_unique<StructType>(std::move(fields));
 }
 
-expected<std::shared_ptr<Type>, Error> ListTypeFromJson(const nlohmann::json& json) {
+expected<std::unique_ptr<Type>, Error> ListTypeFromJson(const nlohmann::json& json) {
   ICEBERG_CHECK_JSON_FIELD(kElement, json);
   ICEBERG_CHECK_JSON_FIELD(kElementId, json);
   ICEBERG_CHECK_JSON_FIELD(kElementRequired, json);
@@ -509,12 +509,12 @@ expected<std::shared_ptr<Type>, Error> ListTypeFromJson(const nlohmann::json& js
   int32_t element_id = json[kElementId].get<int32_t>();
   bool element_required = json[kElementRequired].get<bool>();
 
-  return std::make_shared<ListType>(
+  return std::make_unique<ListType>(
       SchemaField(element_id, std::string(ListType::kElementName),
                   std::move(element_type), !element_required));
 }
 
-expected<std::shared_ptr<Type>, Error> MapTypeFromJson(const nlohmann::json& json) {
+expected<std::unique_ptr<Type>, Error> MapTypeFromJson(const nlohmann::json& json) {
   ICEBERG_CHECK_JSON_FIELD(kKey, json);
   ICEBERG_CHECK_JSON_FIELD(kValue, json);
   ICEBERG_CHECK_JSON_FIELD(kKeyId, json);
@@ -531,51 +531,59 @@ expected<std::shared_ptr<Type>, Error> MapTypeFromJson(const nlohmann::json& jso
                         /*optional=*/false);
   SchemaField value_field(value_id, std::string(MapType::kValueName),
                           std::move(value_type), !value_required);
-  return std::make_shared<MapType>(std::move(key_field), std::move(value_field));
+  return std::make_unique<MapType>(std::move(key_field), std::move(value_field));
 }
 
 }  // namespace
 
-expected<std::shared_ptr<Type>, Error> TypeFromJson(const nlohmann::json& json) {
+expected<std::unique_ptr<Type>, Error> TypeFromJson(const nlohmann::json& json) {
   if (json.is_string()) {
     std::string type_str = json.get<std::string>();
     if (type_str == "boolean") {
-      return std::make_shared<BooleanType>();
+      return std::make_unique<BooleanType>();
     } else if (type_str == "int") {
-      return std::make_shared<IntType>();
+      return std::make_unique<IntType>();
     } else if (type_str == "long") {
-      return std::make_shared<LongType>();
+      return std::make_unique<LongType>();
     } else if (type_str == "float") {
-      return std::make_shared<FloatType>();
+      return std::make_unique<FloatType>();
     } else if (type_str == "double") {
-      return std::make_shared<DoubleType>();
+      return std::make_unique<DoubleType>();
     } else if (type_str == "date") {
-      return std::make_shared<DateType>();
+      return std::make_unique<DateType>();
     } else if (type_str == "time") {
-      return std::make_shared<TimeType>();
+      return std::make_unique<TimeType>();
     } else if (type_str == "timestamp") {
-      return std::make_shared<TimestampType>();
+      return std::make_unique<TimestampType>();
     } else if (type_str == "timestamptz") {
-      return std::make_shared<TimestampTzType>();
+      return std::make_unique<TimestampTzType>();
     } else if (type_str == "string") {
-      return std::make_shared<StringType>();
+      return std::make_unique<StringType>();
     } else if (type_str == "binary") {
-      return std::make_shared<BinaryType>();
+      return std::make_unique<BinaryType>();
     } else if (type_str == "uuid") {
-      return std::make_shared<UuidType>();
+      return std::make_unique<UuidType>();
     } else if (type_str.starts_with("fixed")) {
       std::regex fixed_regex(R"(fixed\[\s*(\d+)\s*\])");
       std::smatch match;
       if (std::regex_match(type_str, match, fixed_regex)) {
-        return std::make_shared<FixedType>(std::stoi(match[1].str()));
+        return std::make_unique<FixedType>(std::stoi(match[1].str()));
       }
+      return unexpected<Error>({
+          .kind = ErrorKind::kJsonParseError,
+          .message = std::format("Invalid fixed type: {}", type_str),
+      });
     } else if (type_str.starts_with("decimal")) {
       std::regex decimal_regex(R"(decimal\(\s*(\d+)\s*,\s*(\d+)\s*\))");
       std::smatch match;
       if (std::regex_match(type_str, match, decimal_regex)) {
-        return std::make_shared<DecimalType>(std::stoi(match[1].str()),
+        return std::make_unique<DecimalType>(std::stoi(match[1].str()),
                                              std::stoi(match[2].str()));
       }
+      return unexpected<Error>({
+          .kind = ErrorKind::kJsonParseError,
+          .message = std::format("Invalid decimal type: {}", type_str),
+      });
     } else {
       return unexpected<Error>({
           .kind = ErrorKind::kJsonParseError,
@@ -601,7 +609,7 @@ expected<std::shared_ptr<Type>, Error> TypeFromJson(const nlohmann::json& json) 
   }
 }
 
-expected<SchemaField, Error> FieldFromJson(const nlohmann::json& json) {
+expected<std::unique_ptr<SchemaField>, Error> FieldFromJson(const nlohmann::json& json) {
   ICEBERG_CHECK_JSON_FIELD(kId, json);
   ICEBERG_CHECK_JSON_FIELD(kName, json);
   ICEBERG_CHECK_JSON_FIELD(kType, json);
@@ -612,7 +620,8 @@ expected<SchemaField, Error> FieldFromJson(const nlohmann::json& json) {
   std::string name = json[kName].get<std::string>();
   bool required = json[kRequired].get<bool>();
 
-  return SchemaField(field_id, std::move(name), std::move(type), !required);
+  return std::make_unique<SchemaField>(field_id, std::move(name), std::move(type),
+                                       !required);
 }
 
 expected<std::unique_ptr<Schema>, Error> SchemaFromJson(const nlohmann::json& json) {
@@ -620,10 +629,10 @@ expected<std::unique_ptr<Schema>, Error> SchemaFromJson(const nlohmann::json& js
   ICEBERG_CHECK_JSON_FIELD(kSchemaId, json);
 
   ICEBERG_ASSIGN_OR_RAISE(auto type, TypeFromJson(json));
-  if (type->type_id() != TypeId::kStruct) {
+  if (type->type_id() != TypeId::kStruct) [[unlikely]] {
     return unexpected<Error>({
         .kind = ErrorKind::kJsonParseError,
-        .message = "Schema must be a struct type",
+        .message = std::format("Schema must be a struct type, but got {}", json.dump()),
     });
   }
 

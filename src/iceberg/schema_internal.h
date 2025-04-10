@@ -78,12 +78,12 @@ expected<std::unique_ptr<Schema>, Error> SchemaFromJson(const nlohmann::json& js
 ///
 /// \param[in] json The JSON representation of the type.
 /// \return The Iceberg type or an error if the conversion fails.
-expected<std::shared_ptr<Type>, Error> TypeFromJson(const nlohmann::json& json);
+expected<std::unique_ptr<Type>, Error> TypeFromJson(const nlohmann::json& json);
 
 /// \brief Convert JSON to an Iceberg SchemaField.
 ///
 /// \param[in] json The JSON representation of the field.
 /// \return The Iceberg field or an error if the conversion fails.
-expected<SchemaField, Error> FieldFromJson(const nlohmann::json& json);
+expected<std::unique_ptr<SchemaField>, Error> FieldFromJson(const nlohmann::json& json);
 
 }  // namespace iceberg

@@ -49,7 +49,7 @@ TEST_P(TypeJsonTest, SingleTypeRoundTrip) {
   auto type_result = TypeFromJson(nlohmann::json::parse(param.json));
   ASSERT_TRUE(type_result.has_value()) << "Failed to deserialize " << param.json
                                        << " with error " << type_result.error().message;
-  auto type = type_result.value();
+  auto type = std::move(type_result.value());
   ASSERT_EQ(*param.type, *type);
 }
 
@@ -96,14 +96,16 @@ TEST(TypeJsonTest, FromJsonWithSpaces) {
   auto fixed_result = TypeFromJson(nlohmann::json::parse(fixed_json));
   ASSERT_TRUE(fixed_result.has_value());
   ASSERT_EQ(fixed_result.value()->type_id(), TypeId::kFixed);
-  auto fixed = std::dynamic_pointer_cast<FixedType>(fixed_result.value());
+  auto fixed = dynamic_cast<FixedType*>(fixed_result.value().get());
+  ASSERT_NE(fixed, nullptr);
   ASSERT_EQ(fixed->length(), 8);
 
   auto decimal_json = "\"decimal( 10, 2 )\"";
   auto decimal_result = TypeFromJson(nlohmann::json::parse(decimal_json));
   ASSERT_TRUE(decimal_result.has_value());
   ASSERT_EQ(decimal_result.value()->type_id(), TypeId::kDecimal);
-  auto decimal = std::dynamic_pointer_cast<DecimalType>(decimal_result.value());
+  auto decimal = dynamic_cast<DecimalType*>(decimal_result.value().get());
+  ASSERT_NE(decimal, nullptr);
   ASSERT_EQ(decimal->precision(), 10);
   ASSERT_EQ(decimal->scale(), 2);
 }
