@@ -21,12 +21,12 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <variant>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/util/formattable.h"
 
 namespace iceberg {
 
@@ -63,82 +63,79 @@ struct ICEBERG_EXPORT SnapshotRef {
 /// \brief Optional Snapshot Summary Fields
 struct SnapshotSummaryFields {
   /// \brief The operation field key
-  constexpr static std::string_view kOperation = "operation";
+  static const std::string kOperation;
 
   /// Metrics, see https://iceberg.apache.org/spec/#metrics
 
   /// \brief Number of data files added in the snapshot
-  constexpr static std::string_view kAddedDataFiles = "added-data-files";
+  static const std::string kAddedDataFiles;
   /// \brief Number of data files deleted in the snapshot
-  constexpr static std::string_view kDeletedDataFiles = "deleted-data-files";
+  static const std::string kDeletedDataFiles;
   /// \brief Total number of live data files in the snapshot
-  constexpr static std::string_view kTotalDataFiles = "total-data-files";
+  static const std::string kTotalDataFiles;
   /// \brief Number of positional/equality delete files and deletion vectors added in the
   /// snapshot
-  constexpr static std::string_view kAddedDeleteFiles = "added-delete-files";
+  static const std::string kAddedDeleteFiles;
   /// \brief Number of equality delete files added in the snapshot
-  constexpr static std::string_view kAddedEqDeleteFiles = "added-equality-delete-files";
+  static const std::string kAddedEqDeleteFiles;
   /// \brief Number of equality delete files removed in the snapshot
-  constexpr static std::string_view kRemovedEqDeleteFiles =
-      "removed-equality-delete-files";
+  static const std::string kRemovedEqDeleteFiles;
   /// \brief Number of position delete files added in the snapshot
-  constexpr static std::string_view kAddedPosDeleteFiles = "added-position-delete-files";
+  static const std::string kAddedPosDeleteFiles;
   /// \brief Number of position delete files removed in the snapshot
-  constexpr static std::string_view kRemovedPosDeleteFiles =
-      "removed-position-delete-files";
+  static const std::string kRemovedPosDeleteFiles;
   /// \brief Number of deletion vectors added in the snapshot
-  constexpr static std::string_view kAddedDVS = "added-dvs";
+  static const std::string kAddedDVS;
   /// \brief Number of deletion vectors removed in the snapshot
-  constexpr static std::string_view kRemovedDVS = "removed-dvs";
+  static const std::string kRemovedDVS;
   /// \brief Number of positional/equality delete files and deletion vectors removed in
   /// the snapshot
-  constexpr static std::string_view kRemovedDeleteFiles = "removed-delete-files";
+  static const std::string kRemovedDeleteFiles;
   /// \brief Total number of live positional/equality delete files and deletion vectors in
   /// the snapshot
-  constexpr static std::string_view kTotalDeleteFiles = "total-delete-files";
+  static const std::string kTotalDeleteFiles;
   /// \brief Number of records added in the snapshot
-  constexpr static std::string_view kAddedRecords = "added-records";
+  static const std::string kAddedRecords;
   /// \brief Number of records deleted in the snapshot
-  constexpr static std::string_view kDeletedRecords = "deleted-records";
+  static const std::string kDeletedRecords;
   /// \brief Total number of records in the snapshot
-  constexpr static std::string_view kTotalRecords = "total-records";
+  static const std::string kTotalRecords;
   /// \brief The size of files added in the snapshot
-  constexpr static std::string_view kAddedFileSize = "added-files-size";
+  static const std::string kAddedFileSize;
   /// \brief The size of files removed in the snapshot
-  constexpr static std::string_view kRemovedFileSize = "removed-files-size";
+  static const std::string kRemovedFileSize;
   /// \brief Total size of live files in the snapshot
-  constexpr static std::string_view kTotalFileSize = "total-files-size";
+  static const std::string kTotalFileSize;
   /// \brief Number of position delete records added in the snapshot
-  constexpr static std::string_view kAddedPosDeletes = "added-position-deletes";
+  static const std::string kAddedPosDeletes;
   /// \brief Number of position delete records removed in the snapshot
-  constexpr static std::string_view kRemovedPosDeletes = "removed-position-deletes";
+  static const std::string kRemovedPosDeletes;
   /// \brief Total number of position delete records in the snapshot
-  constexpr static std::string_view kTotalPosDeletes = "total-position-deletes";
+  static const std::string kTotalPosDeletes;
   /// \brief Number of equality delete records added in the snapshot
-  constexpr static std::string_view kAddedEqDeletes = "added-equality-deletes";
+  static const std::string kAddedEqDeletes;
   /// \brief Number of equality delete records removed in the snapshot
-  constexpr static std::string_view kRemovedEqDeletes = "removed-equality-deletes";
+  static const std::string kRemovedEqDeletes;
   /// \brief Total number of equality delete records in the snapshot
-  constexpr static std::string_view kTotalEqDeletes = "total-equality-deletes";
+  static const std::string kTotalEqDeletes;
   /// \brief Number of duplicate files deleted (duplicates are files recorded more than
   /// once in the manifest)
-  constexpr static std::string_view kDeletedDuplicatedFiles = "deleted-duplicate-files";
+  static const std::string kDeletedDuplicatedFiles;
   /// \brief Number of partitions with files added or removed in the snapshot
-  constexpr static std::string_view kChangedPartitionCountProp =
-      "changed-partition-count";
+  static const std::string kChangedPartitionCountProp;
 
   /// Other Fields, see https://iceberg.apache.org/spec/#other-fields
 
   /// \brief The Write-Audit-Publish id of a staged snapshot
-  constexpr static std::string_view kWAPID = "wap.id";
+  static const std::string kWAPID;
   /// \brief The Write-Audit-Publish id of a snapshot already been published
-  constexpr static std::string_view kPublishedWAPID = "published-wap-id";
+  static const std::string kPublishedWAPID;
   /// \brief The original id of a cherry-picked snapshot
-  constexpr static std::string_view kSourceSnapshotID = "source-snapshot-id";
+  static const std::string kSourceSnapshotID;
   /// \brief Name of the engine that created the snapshot
-  constexpr static std::string_view kEngineName = "engine-name";
+  static const std::string kEngineName;
   /// \brief Version of the engine that created the snapshot
-  constexpr static std::string_view kEngineVersion = "engine-version";
+  static const std::string kEngineVersion;
 };
 
 /// \brief Data operation that produce snapshots.
@@ -148,16 +145,27 @@ struct SnapshotSummaryFields {
 /// does not need to clean up deleted files for appends, which have no deleted files.
 struct ICEBERG_EXPORT DataOperation {
   /// \brief Only data files were added and no files were removed.
-  static constexpr std::string_view kAppend = "append";
+  static constexpr std::string kAppend = "append";
   /// \brief Data and delete files were added and removed without changing table data;
   /// i.e. compaction, change the data file format, or relocating data files.
-  static constexpr std::string_view kReplace = "replace";
+  static constexpr std::string kReplace = "replace";
   /// \brief Data and delete files were added and removed in a logical overwrite
   /// operation.
-  static constexpr std::string_view kOverwrite = "overwrite";
+  static constexpr std::string kOverwrite = "overwrite";
   /// \brief Data files were removed and their contents logically deleted and/or delete
   /// files were added to delete rows.
-  static constexpr std::string_view kDelete = "delete";
+  static constexpr std::string kDelete = "delete";
+};
+
+/// \brief The location of a manifest list for this snapshot that tracks manifest files
+/// with additional metadata
+struct ICEBERG_EXPORT ManifestList {
+  std::string manifest_list_path;
+};
+
+/// \brief A list of manifest file locations.
+struct ICEBERG_EXPORT Manifests {
+  std::vector<std::string> manifest_paths;
 };
 
 /// \brief A snapshot of the data in a table at a point in time.
@@ -167,9 +175,6 @@ struct ICEBERG_EXPORT DataOperation {
 ///
 /// Snapshots are created by table operations.
 struct ICEBERG_EXPORT Snapshot {
-  using manifest_list_t = std::string;
-  using manifests_t = std::vector<std::string>;
-
   /// A unqiue long ID.
   int64_t snapshot_id;
   /// The snapshot ID of the snapshot's parent. Omitted for any snapshot with no parent.
@@ -180,8 +185,8 @@ struct ICEBERG_EXPORT Snapshot {
   /// inspection.
   int64_t timestamp_ms;
   /// The location of a manifest list for this snapshot that tracks manifest files with
-  /// additional metadata.
-  std::variant<manifest_list_t, manifests_t> manifest_list;
+  /// additional metadata(v2) or a list of manifest file locations(v1).
+  std::variant<std::monostate, ManifestList, Manifests> manifest_list;
   /// A string map that summaries the snapshot changes, including operation.
   std::unordered_map<std::string, std::string> summary;
   /// ID of the table's current schema when the snapshot was created.
@@ -192,19 +197,19 @@ struct ICEBERG_EXPORT Snapshot {
   ///
   /// \return the operation that produced this snapshot, or nullopt if the operation is
   /// unknown.
-  std::optional<std::string> operation() const;
+  std::optional<std::string_view> operation() const;
 
   /// \brief Get the manifest list for this snapshot.
   ///
   /// \return the manifest list for this snapshot, or nullopt if the snapshot has no
   /// manifest list.
-  std::optional<std::reference_wrapper<const manifest_list_t>> ManifestList() const;
+  std::optional<std::reference_wrapper<const ManifestList>> ManifestList() const;
 
   /// \brief Get the manifests for this snapshot.
   ///
   /// \return the manifests for this snapshot, or nullopt if the snapshot has no
   /// manifests.
-  std::optional<std::reference_wrapper<const manifests_t>> Manifests() const;
+  std::optional<std::reference_wrapper<const Manifests>> Manifests() const;
 
   /// \brief Compare two snapshots for equality.
   friend bool operator==(const Snapshot& lhs, const Snapshot& rhs) {
