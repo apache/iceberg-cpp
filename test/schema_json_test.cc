@@ -24,10 +24,9 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-#include "gtest/gtest.h"
+#include "iceberg/json_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
-#include "iceberg/schema_internal.h"
 #include "iceberg/type.h"
 
 namespace iceberg {

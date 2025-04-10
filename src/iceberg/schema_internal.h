@@ -22,7 +22,6 @@
 #include <memory>
 
 #include <nanoarrow/nanoarrow.h>
-#include <nlohmann/json_fwd.hpp>
 
 #include "iceberg/error.h"
 #include "iceberg/expected.h"
@@ -50,40 +49,11 @@ expected<void, Error> ToArrowSchema(const Schema& schema, ArrowSchema* out);
 expected<std::unique_ptr<Schema>, Error> FromArrowSchema(const ArrowSchema& schema,
                                                          int32_t schema_id);
 
-/// \brief Convert an Iceberg Schema to JSON.
+/// \brief Convert a struct type to an Iceberg schema.
 ///
-/// \param[in] schema The Iceberg schema to convert.
-/// \return The JSON representation of the schema.
-nlohmann::json SchemaToJson(const Schema& schema);
-
-/// \brief Convert an Iceberg Type to JSON.
-///
-/// \param[in] type The Iceberg type to convert.
-/// \return The JSON representation of the type.
-nlohmann::json TypeToJson(const Type& type);
-
-/// \brief Convert an Iceberg SchemaField to JSON.
-///
-/// \param[in] field The Iceberg field to convert.
-/// \return The JSON representation of the field.
-nlohmann::json FieldToJson(const SchemaField& field);
-
-/// \brief Convert JSON to an Iceberg Schema.
-///
-/// \param[in] json The JSON representation of the schema.
-/// \return The Iceberg schema or an error if the conversion fails.
-expected<std::unique_ptr<Schema>, Error> SchemaFromJson(const nlohmann::json& json);
-
-/// \brief Convert JSON to an Iceberg Type.
-///
-/// \param[in] json The JSON representation of the type.
-/// \return The Iceberg type or an error if the conversion fails.
-expected<std::unique_ptr<Type>, Error> TypeFromJson(const nlohmann::json& json);
-
-/// \brief Convert JSON to an Iceberg SchemaField.
-///
-/// \param[in] json The JSON representation of the field.
-/// \return The Iceberg field or an error if the conversion fails.
-expected<std::unique_ptr<SchemaField>, Error> FieldFromJson(const nlohmann::json& json);
+/// \param[in] struct_type The struct type to convert.
+/// \param[in] schema_id The schema ID of the Iceberg schema.
+/// \return The Iceberg schema.
+std::unique_ptr<Schema> FromStructType(StructType&& struct_type, int32_t schema_id);
 
 }  // namespace iceberg
