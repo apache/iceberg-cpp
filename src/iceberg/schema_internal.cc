@@ -30,7 +30,7 @@
 #include "iceberg/expected.h"
 #include "iceberg/schema.h"
 #include "iceberg/type.h"
-#include "iceberg/util/macro_internal.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
