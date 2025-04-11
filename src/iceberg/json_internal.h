@@ -108,4 +108,51 @@ Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json);
 /// \return The Iceberg field or an error if the conversion fails.
 Result<std::unique_ptr<SchemaField>> FieldFromJson(const nlohmann::json& json);
 
+/// \brief Serializes a `PartitionField` object to JSON.
+///
+/// This function converts a `PartitionField` object into a JSON representation.
+/// The resulting JSON object includes the transform type, source ID, field ID, and
+/// name.
+///
+/// \param partition_field The `PartitionField` object to be serialized.
+/// \return A JSON object representing the `PartitionField` in the form of key-value
+/// pairs.
+nlohmann::json ToJson(const PartitionField& partition_field);
+
+/// \brief Serializes a `PartitionSpec` object to JSON.
+///
+/// This function converts a `PartitionSpec` object into a JSON representation.
+/// The resulting JSON includes the spec ID and a list of `PartitionField` objects.
+/// Each `PartitionField` is serialized as described in the `ToJson(PartitionField)`
+/// function.
+///
+/// \param partition_spec The `PartitionSpec` object to be serialized.
+/// \return A JSON object representing the `PartitionSpec` with its order ID and fields
+/// array.
+nlohmann::json ToJson(const PartitionSpec& partition_spec);
+
+/// \brief Deserializes a JSON object into a `PartitionField` object.
+///
+/// This function parses the provided JSON and creates a `PartitionField` object.
+/// It expects the JSON object to contain keys for the transform, source ID, field ID,
+/// and name.
+///
+/// \param json The JSON object representing a `PartitionField`.
+/// \return An `expected` value containing either a `PartitionField` object or an error.
+/// If the JSON is malformed or missing expected fields, an error will be returned.
+Result<std::unique_ptr<PartitionField>> PartitionFieldFromJson(
+    const nlohmann::json& json);
+
+/// \brief Deserializes a JSON object into a `PartitionSpec` object.
+///
+/// This function parses the provided JSON and creates a `PartitionSpec` object.
+/// It expects the JSON object to contain the spec ID and a list of `PartitionField`
+/// objects. Each `PartitionField` will be parsed using the `PartitionFieldFromJson`
+/// function.
+///
+/// \param json The JSON object representing a `PartitionSpec`.
+/// \return An `expected` value containing either a `PartitionSpec` object or an error. If
+/// the JSON is malformed or missing expected fields, an error will be returned.
+Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
+    const std::shared_ptr<Schema>& schema, const nlohmann::json& json);
 }  // namespace iceberg

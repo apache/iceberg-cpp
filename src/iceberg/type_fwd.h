@@ -69,6 +69,8 @@ class LongType;
 class ListType;
 class MapType;
 class NestedType;
+class PartitionField;
+class PartitionSpec;
 class PrimitiveType;
 class Schema;
 class SchemaField;
@@ -94,7 +96,6 @@ class Transaction;
 /// ----------------------------------------------------------------------------
 
 class HistoryEntry;
-class PartitionSpec;
 class Snapshot;
 class SortField;
 class SortOrder;
