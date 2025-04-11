@@ -18,6 +18,7 @@
  */
 
 #include <memory>
+#include <unordered_map>
 
 #include <arrow/api.h>
 #include <arrow/c/bridge.h>
@@ -257,6 +258,231 @@ TEST(ToArrowSchemaTest, MapType) {
   ASSERT_NO_FATAL_FAILURE(CheckArrowField(*value_field, ::arrow::Type::INT32,
                                           kValueFieldName,
                                           /*nullable=*/true, kValueFieldId));
+}
+
+struct FromArrowSchemaParam {
+  std::shared_ptr<arrow::DataType> arrow_type;
+  bool optional = true;
+  std::shared_ptr<Type> iceberg_type;
+};
+
+class FromArrowSchemaTest : public ::testing::TestWithParam<FromArrowSchemaParam> {};
+
+TEST_P(FromArrowSchemaTest, PrimitiveType) {
+  constexpr std::string_view kFieldName = "foo";
+  constexpr int32_t kFieldId = 1024;
+  const auto& param = GetParam();
+
+  auto metadata =
+      ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
+          {std::string(kFieldIdKey), std::to_string(kFieldId)}});
+  auto arrow_schema = ::arrow::schema({::arrow::field(
+      std::string(kFieldName), param.arrow_type, param.optional, std::move(metadata))});
+  ArrowSchema exported_schema;
+  ASSERT_TRUE(::arrow::ExportSchema(*arrow_schema, &exported_schema).ok());
+
+  auto type_result = FromArrowSchema(exported_schema, /*schema_id=*/1);
+  ASSERT_THAT(type_result, IsOk());
+
+  const auto& schema = type_result.value();
+  ASSERT_EQ(schema->schema_id(), 1);
+  ASSERT_EQ(schema->fields().size(), 1);
+
+  const auto& field = schema->fields()[0];
+  ASSERT_EQ(field.name(), kFieldName);
+  ASSERT_EQ(field.field_id(), kFieldId);
+  ASSERT_EQ(field.optional(), param.optional);
+  ASSERT_EQ(*field.type(), *param.iceberg_type);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    SchemaConversion, FromArrowSchemaTest,
+    ::testing::Values(
+        FromArrowSchemaParam{.arrow_type = ::arrow::boolean(),
+                             .optional = false,
+                             .iceberg_type = std::make_shared<BooleanType>()},
+        FromArrowSchemaParam{.arrow_type = ::arrow::int32(),
+                             .optional = true,
+                             .iceberg_type = std::make_shared<IntType>()},
+        FromArrowSchemaParam{.arrow_type = ::arrow::int64(),
+                             .iceberg_type = std::make_shared<LongType>()},
+        FromArrowSchemaParam{.arrow_type = ::arrow::float32(),
+                             .iceberg_type = std::make_shared<FloatType>()},
+        FromArrowSchemaParam{.arrow_type = ::arrow::float64(),
+                             .iceberg_type = std::make_shared<DoubleType>()},
+        FromArrowSchemaParam{.arrow_type = ::arrow::decimal128(10, 2),
+                             .iceberg_type = std::make_shared<DecimalType>(10, 2)},
+        FromArrowSchemaParam{.arrow_type = ::arrow::date32(),
+                             .iceberg_type = std::make_shared<DateType>()},
+        FromArrowSchemaParam{.arrow_type = ::arrow::time64(arrow::TimeUnit::MICRO),
+                             .iceberg_type = std::make_shared<TimeType>()},
+        FromArrowSchemaParam{.arrow_type = ::arrow::timestamp(arrow::TimeUnit::MICRO),
+                             .iceberg_type = std::make_shared<TimestampType>()},
+        FromArrowSchemaParam{
+            .arrow_type = ::arrow::timestamp(arrow::TimeUnit::MICRO, "UTC"),
+            .iceberg_type = std::make_shared<TimestampTzType>()},
+        FromArrowSchemaParam{.arrow_type = ::arrow::utf8(),
+                             .iceberg_type = std::make_shared<StringType>()},
+        FromArrowSchemaParam{.arrow_type = ::arrow::binary(),
+                             .iceberg_type = std::make_shared<BinaryType>()},
+        FromArrowSchemaParam{.arrow_type = ::arrow::extension::uuid(),
+                             .iceberg_type = std::make_shared<UuidType>()},
+        FromArrowSchemaParam{.arrow_type = ::arrow::fixed_size_binary(20),
+                             .iceberg_type = std::make_shared<FixedType>(20)}));
+
+TEST(FromArrowSchemaTest, StructType) {
+  constexpr int32_t kStructFieldId = 1;
+  constexpr int32_t kIntFieldId = 2;
+  constexpr int32_t kStrFieldId = 3;
+
+  constexpr std::string_view kStructFieldName = "struct_field";
+  constexpr std::string_view kIntFieldName = "int_field";
+  constexpr std::string_view kStrFieldName = "str_field";
+
+  auto int_field = ::arrow::field(
+      std::string(kIntFieldName), ::arrow::int32(), /*nullable=*/false,
+      ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
+          {std::string(kFieldIdKey), std::to_string(kIntFieldId)}}));
+  auto str_field = ::arrow::field(
+      std::string(kStrFieldName), ::arrow::utf8(), /*nullable=*/true,
+      ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
+          {std::string(kFieldIdKey), std::to_string(kStrFieldId)}}));
+  auto struct_type = ::arrow::struct_({int_field, str_field});
+  auto struct_field = ::arrow::field(
+      std::string(kStructFieldName), struct_type, /*nullable=*/false,
+      ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
+          {std::string(kFieldIdKey), std::to_string(kStructFieldId)}}));
+  auto arrow_schema = ::arrow::schema({struct_field});
+  ArrowSchema exported_schema;
+  ASSERT_TRUE(::arrow::ExportSchema(*arrow_schema, &exported_schema).ok());
+
+  auto schema_result = FromArrowSchema(exported_schema, /*schema_id=*/0);
+  ASSERT_THAT(schema_result, IsOk());
+
+  const auto& iceberg_schema = schema_result.value();
+  ASSERT_EQ(iceberg_schema->schema_id(), 0);
+  ASSERT_EQ(iceberg_schema->fields().size(), 1);
+
+  const auto& field = iceberg_schema->fields()[0];
+  ASSERT_EQ(field.name(), kStructFieldName);
+  ASSERT_EQ(field.field_id(), kStructFieldId);
+  ASSERT_FALSE(field.optional());
+  ASSERT_EQ(field.type()->type_id(), TypeId::kStruct);
+
+  auto* struct_field_type = dynamic_cast<const StructType*>(field.type().get());
+  ASSERT_NE(struct_field_type, nullptr);
+  ASSERT_EQ(struct_field_type->fields().size(), 2);
+
+  const auto& int_iceberg_field = struct_field_type->fields()[0];
+  ASSERT_EQ(int_iceberg_field.name(), kIntFieldName);
+  ASSERT_EQ(int_iceberg_field.field_id(), kIntFieldId);
+  ASSERT_FALSE(int_iceberg_field.optional());
+  ASSERT_EQ(int_iceberg_field.type()->type_id(), TypeId::kInt);
+
+  const auto& str_iceberg_field = struct_field_type->fields()[1];
+  ASSERT_EQ(str_iceberg_field.name(), kStrFieldName);
+  ASSERT_EQ(str_iceberg_field.field_id(), kStrFieldId);
+  ASSERT_TRUE(str_iceberg_field.optional());
+  ASSERT_EQ(str_iceberg_field.type()->type_id(), TypeId::kString);
+}
+
+TEST(FromArrowSchemaTest, ListType) {
+  constexpr std::string_view kListFieldName = "list_field";
+  constexpr std::string_view kElemFieldName = "element";
+  constexpr int32_t kListFieldId = 1;
+  constexpr int32_t kElemFieldId = 2;
+
+  auto element_field = ::arrow::field(
+      std::string(kElemFieldName), ::arrow::int64(), /*nullable=*/true,
+      ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
+          {std::string(kFieldIdKey), std::to_string(kElemFieldId)}}));
+  auto list_type = ::arrow::list(element_field);
+  auto list_field = ::arrow::field(
+      std::string(kListFieldName), list_type, /*nullable=*/false,
+      ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
+          {std::string(kFieldIdKey), std::to_string(kListFieldId)}}));
+  auto arrow_schema = ::arrow::schema({list_field});
+
+  ArrowSchema exported_schema;
+  ASSERT_TRUE(::arrow::ExportSchema(*arrow_schema, &exported_schema).ok());
+
+  auto schema_result = FromArrowSchema(exported_schema, /*schema_id=*/0);
+  ASSERT_THAT(schema_result, IsOk());
+
+  const auto& iceberg_schema = schema_result.value();
+  ASSERT_EQ(iceberg_schema->schema_id(), 0);
+  ASSERT_EQ(iceberg_schema->fields().size(), 1);
+
+  const auto& field = iceberg_schema->fields()[0];
+  ASSERT_EQ(field.name(), kListFieldName);
+  ASSERT_EQ(field.field_id(), kListFieldId);
+  ASSERT_FALSE(field.optional());
+  ASSERT_EQ(field.type()->type_id(), TypeId::kList);
+
+  auto* list_field_type = dynamic_cast<const ListType*>(field.type().get());
+  ASSERT_NE(list_field_type, nullptr);
+
+  const auto& element = list_field_type->fields()[0];
+  ASSERT_EQ(element.name(), kElemFieldName);
+  ASSERT_EQ(element.field_id(), kElemFieldId);
+  ASSERT_TRUE(element.optional());
+  ASSERT_EQ(element.type()->type_id(), TypeId::kLong);
+}
+
+TEST(FromArrowSchemaTest, MapType) {
+  constexpr std::string_view kMapFieldName = "map_field";
+  constexpr std::string_view kKeyFieldName = "key";
+  constexpr std::string_view kValueFieldName = "value";
+
+  constexpr int32_t kFieldId = 1;
+  constexpr int32_t kKeyFieldId = 2;
+  constexpr int32_t kValueFieldId = 3;
+
+  auto key_field = ::arrow::field(
+      std::string(kKeyFieldName), ::arrow::utf8(), /*nullable=*/false,
+      ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
+          {std::string(kFieldIdKey), std::to_string(kKeyFieldId)}}));
+  auto value_field = ::arrow::field(
+      std::string(kValueFieldName), ::arrow::int32(), /*nullable=*/true,
+      ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
+          {std::string(kFieldIdKey), std::to_string(kValueFieldId)}}));
+  auto map_type = std::make_shared<::arrow::MapType>(key_field, value_field);
+  auto map_field = ::arrow::field(
+      std::string(kMapFieldName), map_type, /*nullable=*/true,
+      ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
+          {std::string(kFieldIdKey), std::to_string(kFieldId)}}));
+  auto arrow_schema = ::arrow::schema({map_field});
+
+  ArrowSchema exported_schema;
+  ASSERT_TRUE(::arrow::ExportSchema(*arrow_schema, &exported_schema).ok());
+
+  auto schema_result = FromArrowSchema(exported_schema, /*schema_id=*/0);
+  ASSERT_THAT(schema_result, IsOk());
+
+  const auto& iceberg_schema = schema_result.value();
+  ASSERT_EQ(iceberg_schema->schema_id(), 0);
+  ASSERT_EQ(iceberg_schema->fields().size(), 1);
+
+  const auto& field = iceberg_schema->fields()[0];
+  ASSERT_EQ(field.name(), kMapFieldName);
+  ASSERT_EQ(field.field_id(), kFieldId);
+  ASSERT_TRUE(field.optional());
+  ASSERT_EQ(field.type()->type_id(), TypeId::kMap);
+
+  auto* map_field_type = dynamic_cast<const MapType*>(field.type().get());
+  ASSERT_NE(map_field_type, nullptr);
+
+  const auto& key = map_field_type->key();
+  ASSERT_EQ(key.name(), kKeyFieldName);
+  ASSERT_EQ(key.field_id(), kKeyFieldId);
+  ASSERT_FALSE(key.optional());
+  ASSERT_EQ(key.type()->type_id(), TypeId::kString);
+
+  const auto& value = map_field_type->value();
+  ASSERT_EQ(value.name(), kValueFieldName);
+  ASSERT_EQ(value.field_id(), kValueFieldId);
+  ASSERT_TRUE(value.optional());
+  ASSERT_EQ(value.type()->type_id(), TypeId::kInt);
 }
 
 }  // namespace iceberg

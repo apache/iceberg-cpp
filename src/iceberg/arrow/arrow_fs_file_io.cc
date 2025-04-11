@@ -26,8 +26,8 @@
 namespace iceberg::arrow {
 
 /// \brief Read the content of the file at the given location.
-expected<std::string, Error> ArrowFileSystemFileIO::ReadFile(
-    const std::string& file_location, std::optional<size_t> length) {
+Result<std::string> ArrowFileSystemFileIO::ReadFile(const std::string& file_location,
+                                                    std::optional<size_t> length) {
   ::arrow::fs::FileInfo file_info(file_location);
   if (length.has_value()) {
     file_info.set_size(length.value());
@@ -52,8 +52,8 @@ expected<std::string, Error> ArrowFileSystemFileIO::ReadFile(
 }
 
 /// \brief Write the given content to the file at the given location.
-expected<void, Error> ArrowFileSystemFileIO::WriteFile(const std::string& file_location,
-                                                       std::string_view content) {
+Status ArrowFileSystemFileIO::WriteFile(const std::string& file_location,
+                                        std::string_view content) {
   ICEBERG_ARROW_ASSIGN_OR_RETURN(auto file, arrow_fs_->OpenOutputStream(file_location));
   ICEBERG_ARROW_RETURN_NOT_OK(file->Write(content.data(), content.size()));
   ICEBERG_ARROW_RETURN_NOT_OK(file->Flush());
@@ -62,8 +62,7 @@ expected<void, Error> ArrowFileSystemFileIO::WriteFile(const std::string& file_l
 }
 
 /// \brief Delete a file at the given location.
-expected<void, Error> ArrowFileSystemFileIO::DeleteFile(
-    const std::string& file_location) {
+Status ArrowFileSystemFileIO::DeleteFile(const std::string& file_location) {
   ICEBERG_ARROW_RETURN_NOT_OK(arrow_fs_->DeleteFile(file_location));
   return {};
 }

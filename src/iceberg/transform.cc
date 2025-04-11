@@ -72,4 +72,14 @@ expected<ArrowArray, Error> IdentityTransformFunction::Transform(
                             .message = "IdentityTransformFunction::Transform"});
 }
 
+expected<std::unique_ptr<TransformFunction>, Error> TransformFunctionFromString(
+    std::string_view str) {
+  if (str == "identity") {
+    return std::make_unique<IdentityTransformFunction>();
+  }
+  return unexpected<Error>(
+      {.kind = ErrorKind::kInvalidArgument,
+       .message = "Invalid TransformFunction string: " + std::string(str)});
+}
+
 }  // namespace iceberg

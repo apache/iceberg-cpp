@@ -23,8 +23,8 @@
 
 #include <nanoarrow/nanoarrow.h>
 
-#include "iceberg/error.h"
 #include "iceberg/expected.h"
+#include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -39,14 +39,21 @@ constexpr std::string_view kFieldIdKey = "ICEBERG:field_id";
 /// \param[in] schema The Iceberg schema to convert.
 /// \param[out] out The Arrow schema to convert to.
 /// \return An error if the conversion fails.
-expected<void, Error> ToArrowSchema(const Schema& schema, ArrowSchema* out);
+Status ToArrowSchema(const Schema& schema, ArrowSchema* out);
 
 /// \brief Convert an Arrow schema to an Iceberg schema.
 ///
 /// \param[in] schema The Arrow schema to convert.
 /// \param[in] schema_id The schema ID of the Iceberg schema.
 /// \return The Iceberg schema or an error if the conversion fails.
-expected<std::unique_ptr<Schema>, Error> FromArrowSchema(const ArrowSchema& schema,
-                                                         int32_t schema_id);
+Result<std::unique_ptr<Schema>> FromArrowSchema(const ArrowSchema& schema,
+                                                int32_t schema_id);
+
+/// \brief Convert a struct type to an Iceberg schema.
+///
+/// \param[in] struct_type The struct type to convert.
+/// \param[in] schema_id The schema ID of the Iceberg schema.
+/// \return The Iceberg schema.
+std::unique_ptr<Schema> FromStructType(StructType&& struct_type, int32_t schema_id);
 
 }  // namespace iceberg

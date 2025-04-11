@@ -25,9 +25,9 @@
 #include <memory>
 
 #include "iceberg/arrow_c_data.h"
-#include "iceberg/error.h"
 #include "iceberg/expected.h"
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/formattable.h"
 
@@ -82,7 +82,10 @@ class ICEBERG_EXPORT TransformFunction : public util::Formattable {
   TransformType transform_type_;
 };
 
-class IdentityTransformFunction : public TransformFunction {
+ICEBERG_EXPORT expected<std::unique_ptr<TransformFunction>, Error>
+TransformFunctionFromString(std::string_view str);
+
+class ICEBERG_EXPORT IdentityTransformFunction : public TransformFunction {
  public:
   IdentityTransformFunction();
   /// \brief Transform will take an input array and transform it into a new array.

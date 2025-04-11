@@ -96,6 +96,7 @@ class Transaction;
 class HistoryEntry;
 class PartitionSpec;
 class Snapshot;
+class SortField;
 class SortOrder;
 class StructLike;
 class TableMetadata;

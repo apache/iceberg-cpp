@@ -17,35 +17,32 @@
  * under the License.
  */
 
-#pragma once
+#include "iceberg/sort_order.h"
 
-#include <string>
+#include <format>
 
-#include "iceberg/iceberg_export.h"
+#include "iceberg/util/formatter.h"
 
 namespace iceberg {
 
-/// \brief Error types for iceberg.
-/// TODO: add more and sort them based on some rules.
-enum class ErrorKind {
-  kNoSuchNamespace,
-  kAlreadyExists,
-  kNoSuchTable,
-  kCommitStateUnknown,
-  kInvalidSchema,
-  kInvalidArgument,
-  kIOError,
-  kNotImplemented,
-  kUnknownError,
-  kNotSupported,
-  kInvalidExpression,
-  kInvalidOperatorType,
-};
+SortOrder::SortOrder(int64_t order_id, std::vector<SortField> fields)
+    : order_id_(order_id), fields_(std::move(fields)) {}
 
-/// \brief Error with a kind and a message.
-struct ICEBERG_EXPORT [[nodiscard]] Error {
-  ErrorKind kind;
-  std::string message;
-};
+int64_t SortOrder::order_id() const { return order_id_; }
+
+std::span<const SortField> SortOrder::fields() const { return fields_; }
+
+std::string SortOrder::ToString() const {
+  std::string repr = std::format("sort_order[order_id<{}>,\n", order_id_);
+  for (const auto& field : fields_) {
+    std::format_to(std::back_inserter(repr), "  {}\n", field);
+  }
+  repr += "]";
+  return repr;
+}
+
+bool SortOrder::Equals(const SortOrder& other) const {
+  return order_id_ == other.order_id_ && fields_ == other.fields_;
+}
 
 }  // namespace iceberg

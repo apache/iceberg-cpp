@@ -37,15 +37,14 @@ class ICEBERG_BUNDLE_EXPORT ArrowFileSystemFileIO : public FileIO {
   ~ArrowFileSystemFileIO() override = default;
 
   /// \brief Read the content of the file at the given location.
-  expected<std::string, Error> ReadFile(const std::string& file_location,
-                                        std::optional<size_t> length) override;
+  Result<std::string> ReadFile(const std::string& file_location,
+                               std::optional<size_t> length) override;
 
   /// \brief Write the given content to the file at the given location.
-  expected<void, Error> WriteFile(const std::string& file_location,
-                                  std::string_view content) override;
+  Status WriteFile(const std::string& file_location, std::string_view content) override;
 
   /// \brief Delete a file at the given location.
-  expected<void, Error> DeleteFile(const std::string& file_location) override;
+  Status DeleteFile(const std::string& file_location) override;
 
  private:
   std::shared_ptr<::arrow::fs::FileSystem> arrow_fs_;
