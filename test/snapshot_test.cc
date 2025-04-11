@@ -16,12 +16,48 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 #include "iceberg/snapshot.h"
 
 #include <gtest/gtest.h>
 
 namespace iceberg {
+
+TEST(SnapshotRefTest, SnapshotRefBranchInitialization) {
+  SnapshotRef snapshot_ref;
+
+  snapshot_ref.snapshot_id = 12345;
+  snapshot_ref.retention = SnapshotRef::Branch{
+      .min_snapshots_to_keep = 10, .max_snapshot_age_ms = 5000, .max_ref_age_ms = 10000};
+
+  EXPECT_EQ(snapshot_ref.snapshot_id, 12345);
+  EXPECT_TRUE(std::holds_alternative<SnapshotRef::Branch>(snapshot_ref.retention));
+  EXPECT_EQ(snapshot_ref.type(), SnapshotRefType::kBranch);
+
+  auto* branch = std::get_if<SnapshotRef::Branch>(&snapshot_ref.retention);
+  ASSERT_NE(branch, nullptr);
+  EXPECT_TRUE(branch->min_snapshots_to_keep.has_value());
+  EXPECT_EQ(branch->min_snapshots_to_keep.value(), 10);
+  EXPECT_TRUE(branch->max_snapshot_age_ms.has_value());
+  EXPECT_EQ(branch->max_snapshot_age_ms.value(), 5000);
+  EXPECT_TRUE(branch->max_ref_age_ms.has_value());
+  EXPECT_EQ(branch->max_ref_age_ms.value(), 10000);
+}
+
+TEST(SnapshotRefTest, SnapshotRefTagInitialization) {
+  SnapshotRef snapshot_ref;
+
+  snapshot_ref.snapshot_id = 67890;
+  snapshot_ref.retention = SnapshotRef::Tag{.max_ref_age_ms = 20000};
+
+  EXPECT_EQ(snapshot_ref.snapshot_id, 67890);
+  EXPECT_TRUE(std::holds_alternative<SnapshotRef::Tag>(snapshot_ref.retention));
+  EXPECT_EQ(snapshot_ref.type(), SnapshotRefType::kTag);
+
+  auto* tag = std::get_if<SnapshotRef::Tag>(&snapshot_ref.retention);
+  ASSERT_NE(tag, nullptr);
+  EXPECT_TRUE(tag->max_ref_age_ms.has_value());
+  EXPECT_EQ(tag->max_ref_age_ms.value(), 20000);
+}
 
 class SnapshotTest : public ::testing::Test {
  protected:

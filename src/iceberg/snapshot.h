@@ -24,7 +24,6 @@
 #include <string_view>
 #include <unordered_map>
 #include <variant>
-#include <vector>
 
 #include "iceberg/iceberg_export.h"
 
@@ -42,100 +41,113 @@ enum class SnapshotRefType {
 
 /// \brief A reference to a snapshot, either a branch or a tag.
 struct ICEBERG_EXPORT SnapshotRef {
+  struct ICEBERG_EXPORT Branch {
+    /// A positive number for the minimum number of snapshots to keep in a branch while
+    /// expiring snapshots. Defaults to table property
+    /// history.expire.min-snapshots-to-keep.
+    std::optional<int32_t> min_snapshots_to_keep;
+    /// A positive number for the max age of snapshots to keep when
+    /// expiring, including the latest snapshot. Defaults to table property
+    /// history.expire.max-snapshot-age-ms.
+    std::optional<int64_t> max_snapshot_age_ms;
+    /// For snapshot references except the main branch, a positive number for the max age
+    /// of the snapshot reference to keep while expiring snapshots. Defaults to table
+    /// property history.expire.max-ref-age-ms. The main branch never expires.
+    std::optional<int64_t> max_ref_age_ms;
+  };
+
+  struct ICEBERG_EXPORT Tag {
+    /// For snapshot references except the main branch, a positive number for the max age
+    /// of the snapshot reference to keep while expiring snapshots. Defaults to table
+    /// property history.expire.max-ref-age-ms. The main branch never expires.
+    std::optional<int64_t> max_ref_age_ms;
+  };
+
   /// A reference's snapshot ID. The tagged snapshot or latest snapshot of a branch.
   int64_t snapshot_id;
-  /// Type of the reference, tag or branch
-  SnapshotRefType type;
-  /// For branch type only, a positive number for the minimum number of snapshots to keep
-  /// in a branch while expiring snapshots. Defaults to table property
-  /// history.expire.min-snapshots-to-keep.
-  std::optional<int32_t> min_snapshots_to_keep;
-  /// For branch type only, a positive number for the max age of snapshots to keep when
-  /// expiring, including the latest snapshot. Defaults to table property
-  /// history.expire.max-snapshot-age-ms.
-  std::optional<int64_t> max_snapshot_age_ms;
-  /// For snapshot references except the main branch, a positive number for the max age of
-  /// the snapshot reference to keep while expiring snapshots. Defaults to table property
-  /// history.expire.max-ref-age-ms. The main branch never expires.
-  std::optional<int64_t> max_ref_age_ms;
+  /// Snapshot retention policy
+  std::variant<Branch, Tag> retention;
+
+  SnapshotRefType type() const noexcept;
 };
 
 /// \brief Optional Snapshot Summary Fields
 struct SnapshotSummaryFields {
   /// \brief The operation field key
-  static const std::string kOperation;
+  inline static const std::string kOperation = "operation";
 
   /// Metrics, see https://iceberg.apache.org/spec/#metrics
 
   /// \brief Number of data files added in the snapshot
-  static const std::string kAddedDataFiles;
+  inline static const std::string kAddedDataFiles = "added-data-files";
   /// \brief Number of data files deleted in the snapshot
-  static const std::string kDeletedDataFiles;
+  inline static const std::string kDeletedDataFiles = "deleted-data-files";
   /// \brief Total number of live data files in the snapshot
-  static const std::string kTotalDataFiles;
+  inline static const std::string kTotalDataFiles = "total-data-files";
   /// \brief Number of positional/equality delete files and deletion vectors added in the
   /// snapshot
-  static const std::string kAddedDeleteFiles;
+  inline static const std::string kAddedDeleteFiles = "added-delete-files";
   /// \brief Number of equality delete files added in the snapshot
-  static const std::string kAddedEqDeleteFiles;
+  inline static const std::string kAddedEqDeleteFiles = "added-equality-delete-files";
   /// \brief Number of equality delete files removed in the snapshot
-  static const std::string kRemovedEqDeleteFiles;
+  inline static const std::string kRemovedEqDeleteFiles = "removed-equality-delete-files";
   /// \brief Number of position delete files added in the snapshot
-  static const std::string kAddedPosDeleteFiles;
+  inline static const std::string kAddedPosDeleteFiles = "added-position-delete-files";
   /// \brief Number of position delete files removed in the snapshot
-  static const std::string kRemovedPosDeleteFiles;
+  inline static const std::string kRemovedPosDeleteFiles =
+      "removed-position-delete-files";
   /// \brief Number of deletion vectors added in the snapshot
-  static const std::string kAddedDVs;
+  inline static const std::string kAddedDVs = "added-dvs";
   /// \brief Number of deletion vectors removed in the snapshot
-  static const std::string kRemovedDVs;
+  inline static const std::string kRemovedDVs = "removed-dvs";
   /// \brief Number of positional/equality delete files and deletion vectors removed in
   /// the snapshot
-  static const std::string kRemovedDeleteFiles;
+  inline static const std::string kRemovedDeleteFiles = "removed-delete-files";
   /// \brief Total number of live positional/equality delete files and deletion vectors in
   /// the snapshot
-  static const std::string kTotalDeleteFiles;
+  inline static const std::string kTotalDeleteFiles = "total-delete-files";
   /// \brief Number of records added in the snapshot
-  static const std::string kAddedRecords;
+  inline static const std::string kAddedRecords = "added-records";
   /// \brief Number of records deleted in the snapshot
-  static const std::string kDeletedRecords;
+  inline static const std::string kDeletedRecords = "deleted-records";
   /// \brief Total number of records in the snapshot
-  static const std::string kTotalRecords;
+  inline static const std::string kTotalRecords = "total-records";
   /// \brief The size of files added in the snapshot
-  static const std::string kAddedFileSize;
+  inline static const std::string kAddedFileSize = "added-files-size";
   /// \brief The size of files removed in the snapshot
-  static const std::string kRemovedFileSize;
+  inline static const std::string kRemovedFileSize = "removed-files-size";
   /// \brief Total size of live files in the snapshot
-  static const std::string kTotalFileSize;
+  inline static const std::string kTotalFileSize = "total-files-size";
   /// \brief Number of position delete records added in the snapshot
-  static const std::string kAddedPosDeletes;
+  inline static const std::string kAddedPosDeletes = "added-position-deletes";
   /// \brief Number of position delete records removed in the snapshot
-  static const std::string kRemovedPosDeletes;
+  inline static const std::string kRemovedPosDeletes = "removed-position-deletes";
   /// \brief Total number of position delete records in the snapshot
-  static const std::string kTotalPosDeletes;
+  inline static const std::string kTotalPosDeletes = "total-position-deletes";
   /// \brief Number of equality delete records added in the snapshot
-  static const std::string kAddedEqDeletes;
+  inline static const std::string kAddedEqDeletes = "added-equality-deletes";
   /// \brief Number of equality delete records removed in the snapshot
-  static const std::string kRemovedEqDeletes;
+  inline static const std::string kRemovedEqDeletes = "removed-equality-deletes";
   /// \brief Total number of equality delete records in the snapshot
-  static const std::string kTotalEqDeletes;
+  inline static const std::string kTotalEqDeletes = "total-equality-deletes";
   /// \brief Number of duplicate files deleted (duplicates are files recorded more than
   /// once in the manifest)
-  static const std::string kDeletedDuplicatedFiles;
+  inline static const std::string kDeletedDuplicatedFiles = "deleted-duplicate-files";
   /// \brief Number of partitions with files added or removed in the snapshot
-  static const std::string kChangedPartitionCountProp;
+  inline static const std::string kChangedPartitionCountProp = "changed-partition-count";
 
   /// Other Fields, see https://iceberg.apache.org/spec/#other-fields
 
   /// \brief The Write-Audit-Publish id of a staged snapshot
-  static const std::string kWAPID;
+  inline static const std::string kWAPID = "wap.id";
   /// \brief The Write-Audit-Publish id of a snapshot already been published
-  static const std::string kPublishedWAPID;
+  inline static const std::string kPublishedWAPID = "published-wap-id";
   /// \brief The original id of a cherry-picked snapshot
-  static const std::string kSourceSnapshotID;
+  inline static const std::string kSourceSnapshotID = "source-snapshot-id";
   /// \brief Name of the engine that created the snapshot
-  static const std::string kEngineName;
+  inline static const std::string kEngineName = "engine-name";
   /// \brief Version of the engine that created the snapshot
-  static const std::string kEngineVersion;
+  inline static const std::string kEngineVersion = "engine-version";
 };
 
 /// \brief Data operation that produce snapshots.
@@ -145,16 +157,16 @@ struct SnapshotSummaryFields {
 /// does not need to clean up deleted files for appends, which have no deleted files.
 struct ICEBERG_EXPORT DataOperation {
   /// \brief Only data files were added and no files were removed.
-  static constexpr std::string kAppend = "append";
+  inline static const std::string kAppend = "append";
   /// \brief Data and delete files were added and removed without changing table data;
   /// i.e. compaction, change the data file format, or relocating data files.
-  static constexpr std::string kReplace = "replace";
+  inline static const std::string kReplace = "replace";
   /// \brief Data and delete files were added and removed in a logical overwrite
   /// operation.
-  static constexpr std::string kOverwrite = "overwrite";
+  inline static const std::string kOverwrite = "overwrite";
   /// \brief Data files were removed and their contents logically deleted and/or delete
   /// files were added to delete rows.
-  static constexpr std::string kDelete = "delete";
+  inline static const std::string kDelete = "delete";
 };
 
 /// \brief A snapshot of the data in a table at a point in time.
