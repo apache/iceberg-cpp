@@ -21,65 +21,113 @@
 
 #include <format>
 
+#include "iceberg/transform_function.h"
+#include "iceberg/type.h"
+
 namespace iceberg {
 
-namespace {
-/// \brief Get the relative transform name
-constexpr std::string_view ToString(TransformType type) {
-  switch (type) {
-    case TransformType::kUnknown:
-      return "unknown";
-    case TransformType::kIdentity:
-      return "identity";
-    case TransformType::kBucket:
-      return "bucket";
-    case TransformType::kTruncate:
-      return "truncate";
-    case TransformType::kYear:
-      return "year";
-    case TransformType::kMonth:
-      return "month";
-    case TransformType::kDay:
-      return "day";
-    case TransformType::kHour:
-      return "hour";
-    case TransformType::kVoid:
-      return "void";
-    default:
-      return "invalid";
-  }
+std::shared_ptr<Transform> Transform::Identity() {
+  static auto instance = std::make_shared<Transform>(TransformType::kIdentity);
+  return instance;
 }
-}  // namespace
 
-TransformFunction::TransformFunction(TransformType type) : transform_type_(type) {}
+Transform::Transform(TransformType transform_type) : transform_type_(transform_type) {}
 
-TransformType TransformFunction::transform_type() const { return transform_type_; }
+Transform::Transform(TransformType transform_type, int32_t param)
+    : transform_type_(transform_type), param_(param) {}
 
-std::string TransformFunction::ToString() const {
-  return std::format("{}", iceberg::ToString(transform_type_));
+TransformType Transform::transform_type() const { return transform_type_; }
+
+expected<std::unique_ptr<TransformFunction>, Error> Transform::Bind(
+    const std::shared_ptr<Type>& source_type) const {
+  auto type_str = TransformTypeToString(transform_type_);
+
+  switch (transform_type_) {
+    case TransformType::kIdentity:
+      return std::make_unique<IdentityTransform>(source_type);
+
+    case TransformType::kBucket: {
+      if (auto param = std::get_if<int32_t>(&param_)) {
+        return std::make_unique<BucketTransform>(source_type, *param);
+      }
+      return unexpected<Error>({
+          .kind = ErrorKind::kInvalidArgument,
+          .message = std::format(
+              "Bucket requires int32 param, none found in transform '{}'", type_str),
+      });
+    }
+
+    case TransformType::kTruncate: {
+      if (auto param = std::get_if<int32_t>(&param_)) {
+        return std::make_unique<TruncateTransform>(source_type, *param);
+      }
+      return unexpected<Error>({
+          .kind = ErrorKind::kInvalidArgument,
+          .message = std::format(
+              "Truncate requires int32 param, none found in transform '{}'", type_str),
+      });
+    }
+
+    case TransformType::kYear:
+      return std::make_unique<YearTransform>(source_type);
+    case TransformType::kMonth:
+      return std::make_unique<MonthTransform>(source_type);
+    case TransformType::kDay:
+      return std::make_unique<DayTransform>(source_type);
+    case TransformType::kHour:
+      return std::make_unique<HourTransform>(source_type);
+    case TransformType::kVoid:
+      return std::make_unique<VoidTransform>(source_type);
+
+    default:
+      return unexpected<Error>({
+          .kind = ErrorKind::kNotSupported,
+          .message = std::format("Unsupported transform type: '{}'", type_str),
+      });
+  }
 }
 
 bool TransformFunction::Equals(const TransformFunction& other) const {
-  return transform_type_ == other.transform_type_;
+  return transform_type_ == other.transform_type_ && *source_type_ == *other.source_type_;
 }
 
-IdentityTransformFunction::IdentityTransformFunction()
-    : TransformFunction(TransformType::kIdentity) {}
-
-expected<ArrowArray, Error> IdentityTransformFunction::Transform(
-    const ArrowArray& input) {
-  return unexpected<Error>({.kind = ErrorKind::kNotSupported,
-                            .message = "IdentityTransformFunction::Transform"});
-}
-
-expected<std::unique_ptr<TransformFunction>, Error> TransformFunctionFromString(
-    std::string_view str) {
-  if (str == "identity") {
-    return std::make_unique<IdentityTransformFunction>();
+std::string Transform::ToString() const {
+  switch (transform_type_) {
+    case TransformType::kIdentity:
+    case TransformType::kYear:
+    case TransformType::kMonth:
+    case TransformType::kDay:
+    case TransformType::kHour:
+    case TransformType::kVoid:
+    case TransformType::kUnknown:
+      return std::format("{}", TransformTypeToString(transform_type_));
+    case TransformType::kBucket:
+    case TransformType::kTruncate:
+      return std::format("{}[{}]", TransformTypeToString(transform_type_),
+                         std::get<int32_t>(param_));
   }
-  return unexpected<Error>(
-      {.kind = ErrorKind::kInvalidArgument,
-       .message = "Invalid TransformFunction string: " + std::string(str)});
+}
+
+TransformFunction::TransformFunction(TransformType transform_type,
+                                     std::shared_ptr<Type> source_type)
+    : transform_type_(transform_type), source_type_(std::move(source_type)) {}
+
+TransformType TransformFunction::transform_type() const { return transform_type_; }
+
+std::shared_ptr<Type> const& TransformFunction::source_type() const {
+  return source_type_;
+}
+
+bool Transform::Equals(const Transform& other) const {
+  return transform_type_ == other.transform_type_ && param_ == other.param_;
+}
+
+expected<std::unique_ptr<Transform>, Error> TransformFromString(std::string_view str) {
+  if (str == "identity") {
+    return std::make_unique<Transform>(TransformType::kIdentity);
+  }
+  return unexpected<Error>({.kind = ErrorKind::kInvalidArgument,
+                            .message = std::format("Invalid Transform string: {}", str)});
 }
 
 }  // namespace iceberg

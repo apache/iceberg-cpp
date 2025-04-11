@@ -28,7 +28,7 @@
 namespace iceberg {
 
 PartitionField::PartitionField(int32_t source_id, int32_t field_id, std::string name,
-                               std::shared_ptr<TransformFunction> transform)
+                               std::shared_ptr<Transform> transform)
     : source_id_(source_id),
       field_id_(field_id),
       name_(std::move(name)),
@@ -40,9 +40,7 @@ int32_t PartitionField::field_id() const { return field_id_; }
 
 std::string_view PartitionField::name() const { return name_; }
 
-std::shared_ptr<TransformFunction> const& PartitionField::transform() const {
-  return transform_;
-}
+std::shared_ptr<Transform> const& PartitionField::transform() const { return transform_; }
 
 std::string PartitionField::ToString() const {
   return std::format("{} ({} {}({}))", name_, field_id_, *transform_, source_id_);
