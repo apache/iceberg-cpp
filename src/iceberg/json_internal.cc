@@ -25,6 +25,7 @@
 #include <nlohmann/json.hpp>
 
 #include "iceberg/expected.h"
+#include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
@@ -67,6 +68,9 @@ constexpr std::string_view kValueId = "value-id";
 constexpr std::string_view kRequired = "required";
 constexpr std::string_view kElementRequired = "element-required";
 constexpr std::string_view kValueRequired = "value-required";
+
+constexpr std::string_view kFieldId = "field-id";
+constexpr std::string_view kSpecId = "spec-id";
 
 template <typename T>
 Result<T> GetJsonValue(const nlohmann::json& json, std::string_view key) {
@@ -368,6 +372,52 @@ Result<std::unique_ptr<Schema>> SchemaFromJson(const nlohmann::json& json) {
 
   auto& struct_type = static_cast<StructType&>(*type);
   return FromStructType(std::move(struct_type), schema_id);
+}
+
+nlohmann::json ToJson(const PartitionField& partition_field) {
+  nlohmann::json json;
+  json[kSourceId] = partition_field.source_id();
+  json[kFieldId] = partition_field.field_id();
+  json[kTransform] = std::format("{}", *partition_field.transform());
+  json[kName] = partition_field.name();
+  return json;
+}
+
+nlohmann::json ToJson(const PartitionSpec& partition_spec) {
+  nlohmann::json json;
+  json[kSpecId] = partition_spec.spec_id();
+
+  nlohmann::json fields_json = nlohmann::json::array();
+  for (const auto& field : partition_spec.fields()) {
+    fields_json.push_back(ToJson(field));
+  }
+  json[kFields] = fields_json;
+  return json;
+}
+
+Result<std::unique_ptr<PartitionField>> PartitionFieldFromJson(
+    const nlohmann::json& json) {
+  ICEBERG_ASSIGN_OR_RAISE(auto source_id, GetJsonValue<int32_t>(json, kSourceId));
+  ICEBERG_ASSIGN_OR_RAISE(auto field_id, GetJsonValue<int32_t>(json, kFieldId));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto transform,
+      GetJsonValue<std::string>(json, kTransform).and_then(TransformFunctionFromString));
+  ICEBERG_ASSIGN_OR_RAISE(auto name, GetJsonValue<std::string>(json, kName));
+  return std::make_unique<PartitionField>(source_id, field_id, name,
+                                          std::move(transform));
+}
+
+Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
+    const std::shared_ptr<Schema>& schema, const nlohmann::json& json) {
+  ICEBERG_ASSIGN_OR_RAISE(auto spec_id, GetJsonValue<int32_t>(json, kSpecId));
+  ICEBERG_ASSIGN_OR_RAISE(auto fields, GetJsonValue<nlohmann::json>(json, kFields));
+
+  std::vector<PartitionField> partition_fields;
+  for (const auto& field_json : fields) {
+    ICEBERG_ASSIGN_OR_RAISE(auto partition_field, PartitionFieldFromJson(field_json));
+    partition_fields.push_back(std::move(*partition_field));
+  }
+  return std::make_unique<PartitionSpec>(schema, spec_id, std::move(partition_fields));
 }
 
 }  // namespace iceberg
