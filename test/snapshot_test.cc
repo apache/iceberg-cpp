@@ -48,7 +48,7 @@ TEST_F(SnapshotTest, ConstructionAndFieldAccess) {
                     .parent_snapshot_id = 54321,
                     .sequence_number = 1,
                     .timestamp_ms = 1615569200000,
-                    .manifest_list = ManifestList("s3://example/manifest_list.avro"),
+                    .manifest_list = "s3://example/manifest_list.avro",
                     .summary = summary1,
                     .schema_id = 10};
 
@@ -57,8 +57,7 @@ TEST_F(SnapshotTest, ConstructionAndFieldAccess) {
   EXPECT_EQ(*snapshot.parent_snapshot_id, 54321);
   EXPECT_EQ(snapshot.sequence_number, 1);
   EXPECT_EQ(snapshot.timestamp_ms, 1615569200000);
-  EXPECT_EQ(snapshot.ManifestList()->get().manifest_list_path,
-            "s3://example/manifest_list.avro");
+  EXPECT_EQ(snapshot.manifest_list, "s3://example/manifest_list.avro");
   EXPECT_EQ(snapshot.operation().value(), DataOperation::kAppend);
   EXPECT_EQ(snapshot.summary.at(std::string(SnapshotSummaryFields::kAddedDataFiles)),
             "101");
@@ -70,14 +69,14 @@ TEST_F(SnapshotTest, ConstructionAndFieldAccess) {
 
 TEST_F(SnapshotTest, EqualityComparison) {
   // Test the == and != operators
-  Snapshot snapshot1(12345, {}, 1, 1615569200000,
-                     ManifestList("s3://example/manifest_list.avro"), summary1, {});
+  Snapshot snapshot1(12345, {}, 1, 1615569200000, "s3://example/manifest_list.avro",
+                     summary1, {});
 
-  Snapshot snapshot2(12345, {}, 1, 1615569200000,
-                     ManifestList("s3://example/manifest_list.avro"), summary2, {});
+  Snapshot snapshot2(12345, {}, 1, 1615569200000, "s3://example/manifest_list.avro",
+                     summary2, {});
 
-  Snapshot snapshot3(67890, {}, 1, 1615569200000,
-                     ManifestList("s3://example/manifest_list.avro"), summary3, {});
+  Snapshot snapshot3(67890, {}, 1, 1615569200000, "s3://example/manifest_list.avro",
+                     summary3, {});
 
   EXPECT_EQ(snapshot1, snapshot2);
   EXPECT_NE(snapshot1, snapshot3);

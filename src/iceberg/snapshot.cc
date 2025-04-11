@@ -34,8 +34,8 @@ const std::string SnapshotSummaryFields::kAddedPosDeleteFiles =
     "added-position-delete-files";
 const std::string SnapshotSummaryFields::kRemovedPosDeleteFiles =
     "removed-position-delete-files";
-const std::string SnapshotSummaryFields::kAddedDVS = "added-dvs";
-const std::string SnapshotSummaryFields::kRemovedDVS = "removed-dvs";
+const std::string SnapshotSummaryFields::kAddedDVs = "added-dvs";
+const std::string SnapshotSummaryFields::kRemovedDVs = "removed-dvs";
 const std::string SnapshotSummaryFields::kRemovedDeleteFiles = "removed-delete-files";
 const std::string SnapshotSummaryFields::kTotalDeleteFiles = "total-delete-files";
 const std::string SnapshotSummaryFields::kAddedRecords = "added-records";
@@ -67,34 +67,6 @@ std::optional<std::string_view> Snapshot::operation() const {
     return it->second;
   }
   return std::nullopt;
-}
-
-std::optional<std::reference_wrapper<const ManifestList>> Snapshot::ManifestList() const {
-  return std::visit(
-      [&](const auto& manifest_list)
-          -> std::optional<std::reference_wrapper<const struct ManifestList>> {
-        using T = std::decay_t<decltype(manifest_list)>;
-        if constexpr (std::is_same_v<T, struct ManifestList>) {
-          return std::cref(manifest_list);
-        } else {
-          return std::nullopt;
-        }
-      },
-      manifest_list);
-}
-
-std::optional<std::reference_wrapper<const Manifests>> Snapshot::Manifests() const {
-  return std::visit(
-      [&](const auto& manifest_list)
-          -> std::optional<std::reference_wrapper<const struct Manifests>> {
-        using T = std::decay_t<decltype(manifest_list)>;
-        if constexpr (std::is_same_v<T, struct Manifests>) {
-          return std::cref(manifest_list);
-        } else {
-          return std::nullopt;
-        }
-      },
-      manifest_list);
 }
 
 bool Snapshot::Equals(const Snapshot& other) const {

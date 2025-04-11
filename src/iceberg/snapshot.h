@@ -85,9 +85,9 @@ struct SnapshotSummaryFields {
   /// \brief Number of position delete files removed in the snapshot
   static const std::string kRemovedPosDeleteFiles;
   /// \brief Number of deletion vectors added in the snapshot
-  static const std::string kAddedDVS;
+  static const std::string kAddedDVs;
   /// \brief Number of deletion vectors removed in the snapshot
-  static const std::string kRemovedDVS;
+  static const std::string kRemovedDVs;
   /// \brief Number of positional/equality delete files and deletion vectors removed in
   /// the snapshot
   static const std::string kRemovedDeleteFiles;
@@ -157,17 +157,6 @@ struct ICEBERG_EXPORT DataOperation {
   static constexpr std::string kDelete = "delete";
 };
 
-/// \brief The location of a manifest list for this snapshot that tracks manifest files
-/// with additional metadata
-struct ICEBERG_EXPORT ManifestList {
-  std::string manifest_list_path;
-};
-
-/// \brief A list of manifest file locations.
-struct ICEBERG_EXPORT Manifests {
-  std::vector<std::string> manifest_paths;
-};
-
 /// \brief A snapshot of the data in a table at a point in time.
 ///
 /// A snapshot consist of one or more file manifests, and the complete table contents is
@@ -185,8 +174,8 @@ struct ICEBERG_EXPORT Snapshot {
   /// inspection.
   int64_t timestamp_ms;
   /// The location of a manifest list for this snapshot that tracks manifest files with
-  /// additional metadata(v2) or a list of manifest file locations(v1).
-  std::variant<std::monostate, ManifestList, Manifests> manifest_list;
+  /// additional metadata.
+  std::string manifest_list;
   /// A string map that summaries the snapshot changes, including operation.
   std::unordered_map<std::string, std::string> summary;
   /// ID of the table's current schema when the snapshot was created.
@@ -198,18 +187,6 @@ struct ICEBERG_EXPORT Snapshot {
   /// \return the operation that produced this snapshot, or nullopt if the operation is
   /// unknown.
   std::optional<std::string_view> operation() const;
-
-  /// \brief Get the manifest list for this snapshot.
-  ///
-  /// \return the manifest list for this snapshot, or nullopt if the snapshot has no
-  /// manifest list.
-  std::optional<std::reference_wrapper<const ManifestList>> ManifestList() const;
-
-  /// \brief Get the manifests for this snapshot.
-  ///
-  /// \return the manifests for this snapshot, or nullopt if the snapshot has no
-  /// manifests.
-  std::optional<std::reference_wrapper<const Manifests>> Manifests() const;
 
   /// \brief Compare two snapshots for equality.
   friend bool operator==(const Snapshot& lhs, const Snapshot& rhs) {
