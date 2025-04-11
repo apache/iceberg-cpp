@@ -31,7 +31,10 @@ set(ICEBERG_SOURCES
     statistics_file.cc
     table_metadata.cc
     transform.cc
-    type.cc)
+    type.cc
+    expressions/true.cc
+    expressions/false.cc
+    expressions/and.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_SHARED_BUILD_INTERFACE_LIBS)

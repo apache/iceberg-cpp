@@ -17,49 +17,22 @@
  * under the License.
  */
 
-#pragma once
-
-#include <string>
-
-#include "iceberg/expected.h"
-#include "iceberg/iceberg_export.h"
+#include "and.h"
 
 namespace iceberg {
 
-/// \brief Error types for iceberg.
-/// TODO: add more and sort them based on some rules.
-enum class ErrorKind {
-  kNoSuchNamespace,
-  kAlreadyExists,
-  kNoSuchTable,
-  kCommitStateUnknown,
-  kInvalidSchema,
-  kInvalidArgument,
-  kIOError,
-  kNotImplemented,
-  kUnknownError,
-  kNotSupported,
-  kInvalidExpression,
-  kInvalidOperatorType,
-  kJsonParseError,
-};
+And::And(std::shared_ptr<Expression> left, std::shared_ptr<Expression> right)
+    : left_(std::move(left)), right_(std::move(right)) {}
 
-/// \brief Error with a kind and a message.
-struct ICEBERG_EXPORT [[nodiscard]] Error {
-  ErrorKind kind;
-  std::string message;
-};
-
-/// /brief Default error trait
-template <typename T>
-struct DefaultError {
-  using type = Error;
-};
-
-/// \brief Result alias
-template <typename T, typename E = typename DefaultError<T>::type>
-using Result = expected<T, E>;
-
-using Status = Result<void>;
+bool And::IsEquivalentTo(const Expression& expr) const {
+  if (expr.Op() == Operation::kAnd) {
+    const auto& other = static_cast<const And&>(expr);
+    return (left_->IsEquivalentTo(*other.left()) &&
+            right_->IsEquivalentTo(*other.right())) ||
+           (left_->IsEquivalentTo(*other.right()) &&
+            right_->IsEquivalentTo(*other.left()));
+  }
+  return false;
+}
 
 }  // namespace iceberg

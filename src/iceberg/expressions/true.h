@@ -19,47 +19,41 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 
-#include "iceberg/expected.h"
-#include "iceberg/iceberg_export.h"
+#include "iceberg/expression.h"
 
 namespace iceberg {
 
-/// \brief Error types for iceberg.
-/// TODO: add more and sort them based on some rules.
-enum class ErrorKind {
-  kNoSuchNamespace,
-  kAlreadyExists,
-  kNoSuchTable,
-  kCommitStateUnknown,
-  kInvalidSchema,
-  kInvalidArgument,
-  kIOError,
-  kNotImplemented,
-  kUnknownError,
-  kNotSupported,
-  kInvalidExpression,
-  kInvalidOperatorType,
-  kJsonParseError,
+/// \brief An Expression that is always true.
+///
+/// Represents a boolean predicate that always evaluates to true.
+class ICEBERG_EXPORT True : public Expression {
+ public:
+  static const True& instance() {
+    static True instance;
+    return instance;
+  }
+
+  static const std::shared_ptr<Expression>& shared_instance() {
+    static std::shared_ptr<Expression> instance = std::shared_ptr<Expression>(
+        const_cast<True*>(&True::instance()), [](Expression*) {});
+    return instance;
+  }
+
+  Operation Op() const override { return Operation::kTrue; }
+
+  std::string ToString() const override { return "true"; }
+
+  Result<std::shared_ptr<Expression>> Negate() const override;
+
+  bool IsEquivalentTo(const Expression& other) const override {
+    return other.Op() == Operation::kTrue;
+  }
+
+ private:
+  constexpr True() = default;
 };
-
-/// \brief Error with a kind and a message.
-struct ICEBERG_EXPORT [[nodiscard]] Error {
-  ErrorKind kind;
-  std::string message;
-};
-
-/// /brief Default error trait
-template <typename T>
-struct DefaultError {
-  using type = Error;
-};
-
-/// \brief Result alias
-template <typename T, typename E = typename DefaultError<T>::type>
-using Result = expected<T, E>;
-
-using Status = Result<void>;
 
 }  // namespace iceberg

@@ -17,49 +17,14 @@
  * under the License.
  */
 
-#pragma once
+#include "false.h"
 
-#include <string>
-
-#include "iceberg/expected.h"
-#include "iceberg/iceberg_export.h"
+#include "true.h"
 
 namespace iceberg {
 
-/// \brief Error types for iceberg.
-/// TODO: add more and sort them based on some rules.
-enum class ErrorKind {
-  kNoSuchNamespace,
-  kAlreadyExists,
-  kNoSuchTable,
-  kCommitStateUnknown,
-  kInvalidSchema,
-  kInvalidArgument,
-  kIOError,
-  kNotImplemented,
-  kUnknownError,
-  kNotSupported,
-  kInvalidExpression,
-  kInvalidOperatorType,
-  kJsonParseError,
-};
-
-/// \brief Error with a kind and a message.
-struct ICEBERG_EXPORT [[nodiscard]] Error {
-  ErrorKind kind;
-  std::string message;
-};
-
-/// /brief Default error trait
-template <typename T>
-struct DefaultError {
-  using type = Error;
-};
-
-/// \brief Result alias
-template <typename T, typename E = typename DefaultError<T>::type>
-using Result = expected<T, E>;
-
-using Status = Result<void>;
+expected<std::shared_ptr<Expression>, Error> False::Negate() const {
+  return True::shared_instance();
+}
 
 }  // namespace iceberg
