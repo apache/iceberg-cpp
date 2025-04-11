@@ -17,141 +17,53 @@
  * under the License.
  */
 
-#include "iceberg/expression.h"
-
 #include <memory>
 
 #include <gtest/gtest.h>
 
-using iceberg::Error;
-using iceberg::ErrorKind;
-using iceberg::Expression;
+#include "iceberg/expressions/and.h"
+#include "iceberg/expressions/false.h"
+#include "iceberg/expressions/true.h"
 
-// A concrete implementation of Expression for testing
-class TestExpression : public Expression {
- public:
-  explicit TestExpression(Operation op) : operation_(op) {}
+namespace iceberg {
 
-  Operation Op() const override { return operation_; }
+TEST(TrueFalseTest, Basi) {
+  // Test negation of False returns True
+  const False& false_instance = False::instance();
+  auto negated = false_instance.Negate();
 
-  iceberg::expected<std::shared_ptr<Expression>, Error> Negate() const override {
-    auto negated_op = Expression::Negate(operation_);
-    if (!negated_op) {
-      return iceberg::unexpected<Error>(negated_op.error());
-    }
-    return std::make_shared<TestExpression>(negated_op.value());
-  }
+  EXPECT_TRUE(negated.has_value());
 
-  bool IsEquivalentTo(const Expression& other) const override {
-    if (auto* test_expr = dynamic_cast<const TestExpression*>(&other)) {
-      return operation_ == test_expr->operation_;
-    }
-    return false;
-  }
+  // Check that negated expression is True
+  std::shared_ptr<Expression> true_expr = negated.value();
+  EXPECT_EQ(true_expr->Op(), Expression::Operation::kTrue);
 
- private:
-  Operation operation_;
-};
+  EXPECT_EQ(true_expr->ToString(), "true");
 
-TEST(ExpressionTest, FromString) {
-  // Test valid operations
-  auto true_op = Expression::FromString("true");
-  ASSERT_TRUE(true_op);
-  EXPECT_EQ(true_op.value(), Expression::Operation::kTrue);
+  // Test negation of True returns false
+  const True& true_instance = True::instance();
+  negated = true_instance.Negate();
 
-  auto false_op = Expression::FromString("false");
-  ASSERT_TRUE(false_op);
-  EXPECT_EQ(false_op.value(), Expression::Operation::kFalse);
+  EXPECT_TRUE(negated.has_value());
 
-  auto lt_op = Expression::FromString("lt");
-  ASSERT_TRUE(lt_op);
-  EXPECT_EQ(lt_op.value(), Expression::Operation::kLt);
+  // Check that negated expression is True
+  std::shared_ptr<Expression> false_expr = negated.value();
+  EXPECT_EQ(false_expr->Op(), Expression::Operation::kFalse);
 
-  // Test case insensitivity
-  auto and_op = Expression::FromString("AND");
-  ASSERT_TRUE(and_op);
-  EXPECT_EQ(and_op.value(), Expression::Operation::kAnd);
-
-  // Test invalid operation
-  auto invalid_op = Expression::FromString("invalid_operation");
-  ASSERT_FALSE(invalid_op);
-  EXPECT_EQ(invalid_op.error().kind, ErrorKind::kInvalidOperatorType);
-  EXPECT_EQ(invalid_op.error().message, "Unknown operation type: invalid_operation");
+  EXPECT_EQ(false_expr->ToString(), "false");
 }
 
-TEST(ExpressionTest, NegateOperation) {
-  // Test valid negations
-  auto true_negated = Expression::Negate(Expression::Operation::kTrue);
-  ASSERT_TRUE(true_negated);
-  EXPECT_EQ(true_negated.value(), Expression::Operation::kFalse);
+TEST(ANDTest, Basic) {
+  // Create two True expressions
+  auto true_expr1 = True::shared_instance();
+  auto true_expr2 = True::shared_instance();
 
-  auto lt_negated = Expression::Negate(Expression::Operation::kLt);
-  ASSERT_TRUE(lt_negated);
-  EXPECT_EQ(lt_negated.value(), Expression::Operation::kGtEq);
+  // Create an AND expression
+  auto and_expr = std::make_shared<And>(true_expr1, true_expr2);
 
-  auto is_null_negated = Expression::Negate(Expression::Operation::kIsNull);
-  ASSERT_TRUE(is_null_negated);
-  EXPECT_EQ(is_null_negated.value(), Expression::Operation::kNotNull);
-
-  // Test invalid negation
-  auto not_negated = Expression::Negate(Expression::Operation::kNot);
-  ASSERT_FALSE(not_negated);
-  EXPECT_EQ(not_negated.error().kind, ErrorKind::kInvalidOperatorType);
-  EXPECT_EQ(not_negated.error().message, "No negation defined for operation");
+  EXPECT_EQ(and_expr->Op(), Expression::Operation::kAnd);
+  EXPECT_EQ(and_expr->ToString(), "(true and true)");
+  EXPECT_EQ(and_expr->left()->Op(), Expression::Operation::kTrue);
+  EXPECT_EQ(and_expr->right()->Op(), Expression::Operation::kTrue);
 }
-
-TEST(ExpressionTest, FlipLR) {
-  // Test valid flips
-  auto lt_flipped = Expression::FlipLR(Expression::Operation::kLt);
-  ASSERT_TRUE(lt_flipped);
-  EXPECT_EQ(lt_flipped.value(), Expression::Operation::kGt);
-
-  auto eq_flipped = Expression::FlipLR(Expression::Operation::kEq);
-  ASSERT_TRUE(eq_flipped);
-  EXPECT_EQ(eq_flipped.value(), Expression::Operation::kEq);
-
-  // Test invalid flip
-  auto in_flipped = Expression::FlipLR(Expression::Operation::kIn);
-  ASSERT_FALSE(in_flipped);
-  EXPECT_EQ(in_flipped.error().kind, ErrorKind::kInvalidOperatorType);
-  EXPECT_EQ(in_flipped.error().message, "No left-right flip for operation");
-}
-
-TEST(ExpressionTest, TestExpressionNegate) {
-  // Test negatable expression
-  auto expr = std::make_shared<TestExpression>(Expression::Operation::kLt);
-  auto negated = expr->Negate();
-  ASSERT_TRUE(negated);
-  EXPECT_EQ(negated.value()->Op(), Expression::Operation::kGtEq);
-
-  // Test equality between original and double-negated
-  auto double_negated = negated.value()->Negate();
-  ASSERT_TRUE(double_negated);
-  EXPECT_TRUE(expr->IsEquivalentTo(*double_negated.value()));
-
-  // Test non-negatable expression
-  auto non_negatable = std::make_shared<TestExpression>(Expression::Operation::kNot);
-  auto negated_result = non_negatable->Negate();
-  ASSERT_FALSE(negated_result);
-  EXPECT_EQ(negated_result.error().kind, ErrorKind::kInvalidOperatorType);
-  EXPECT_EQ(negated_result.error().message, "No negation defined for operation");
-}
-
-TEST(ExpressionTest, IsEquivalentTo) {
-  auto expr1 = std::make_shared<TestExpression>(Expression::Operation::kEq);
-  auto expr2 = std::make_shared<TestExpression>(Expression::Operation::kEq);
-  auto expr3 = std::make_shared<TestExpression>(Expression::Operation::kNotEq);
-
-  // Same operation should be equivalent
-  EXPECT_TRUE(expr1->IsEquivalentTo(*expr2));
-
-  // Different operations should not be equivalent
-  EXPECT_FALSE(expr1->IsEquivalentTo(*expr3));
-
-  // Test double negation equivalence
-  auto negated = expr1->Negate();
-  ASSERT_TRUE(negated);
-  auto double_negated = negated.value()->Negate();
-  ASSERT_TRUE(double_negated);
-  EXPECT_TRUE(expr1->IsEquivalentTo(*double_negated.value()));
-}
+}  // namespace iceberg

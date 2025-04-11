@@ -20,13 +20,11 @@
 #pragma once
 
 /// \file iceberg/expression.h
-/// Boolean expression tree for Iceberg table operations.
+/// Expression interface for Iceberg table operations.
 
-#include <string>
-
-#include "iceberg/error.h"
 #include "iceberg/expected.h"
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 
 namespace iceberg {
 
@@ -63,39 +61,23 @@ class ICEBERG_EXPORT Expression {
   virtual ~Expression() = default;
 
   /// \brief Returns the operation for an expression node.
-  [[nodiscard]] virtual Operation Op() const = 0;
+  virtual Operation Op() const = 0;
 
   /// \brief Returns the negation of this expression, equivalent to not(this).
-  [[nodiscard]] virtual expected<std::shared_ptr<Expression>, Error> Negate() const {
-    return unexpected<Error>(
-        {ErrorKind::kInvalidExpression, "This expression cannot be negated"});
+  virtual Result<std::shared_ptr<Expression>> Negate() const {
+    return unexpected(
+        Error(ErrorKind::kInvalidExpression, "Expression cannot be negated"));
   }
 
   /// \brief Returns whether this expression will accept the same values as another.
-  ///
-  /// If this returns true, the expressions are guaranteed to return the same evaluation
-  /// for the same input. However, if this returns false the expressions may return the
-  /// same evaluation for the same input. That is, expressions may be equivalent even if
-  /// this returns false.
-  ///
-  /// For best results, rewrite not and bind expressions before calling this method.
-  ///
   /// \param other another expression
   /// \return true if the expressions are equivalent
-  [[nodiscard]] virtual bool IsEquivalentTo(const Expression& other) const {
+  virtual bool IsEquivalentTo(const Expression& other) const {
     // only bound predicates can be equivalent
     return false;
   }
 
-  /// \brief Convert operation string to enum
-  static expected<Operation, Error> FromString(const std::string& operation_type);
-
-  /// \brief Returns the operation used when this is negated.
-  static expected<Operation, Error> Negate(Operation op);
-
-  /// \brief Returns the equivalent operation when the left and right operands are
-  /// exchanged.
-  static expected<Operation, Error> FlipLR(Operation op);
+  virtual std::string ToString() const { return "Expression"; }
 };
 
 }  // namespace iceberg
