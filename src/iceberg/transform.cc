@@ -202,10 +202,11 @@ Result<std::shared_ptr<Transform>> TransformFromString(std::string_view transfor
   // Match bucket[16] or truncate[4]
   static const std::regex param_regex(
       std::format(R"(({}|{})\[(\d+)\])", kBucketName, kTruncateName));
-  std::cmatch match;
-  if (std::regex_match(transform_str.begin(), transform_str.end(), match, param_regex)) {
-    std::string type_str = match[1];
-    int32_t param = std::stoi(match[2]);
+  std::string str(transform_str);
+  std::smatch match;
+  if (std::regex_match(str, match, param_regex)) {
+    const std::string type_str = match[1];
+    const int32_t param = std::stoi(match[2]);
 
     if (type_str == kBucketName) {
       return Transform::Bucket(param);
