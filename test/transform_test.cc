@@ -74,16 +74,16 @@ TEST(TransformFromStringTest, PositiveCases) {
     std::optional<int32_t> param;
   };
 
-  constexpr std::array<Case, 8> cases{
-      {{.str = "identity", .type = TransformType::kIdentity, .param = std::nullopt},
-       {.str = "year", .type = TransformType::kYear, .param = std::nullopt},
-       {.str = "month", .type = TransformType::kMonth, .param = std::nullopt},
-       {.str = "day", .type = TransformType::kDay, .param = std::nullopt},
-       {.str = "hour", .type = TransformType::kHour, .param = std::nullopt},
-       {.str = "void", .type = TransformType::kVoid, .param = std::nullopt},
-       {.str = "bucket[16]", .type = TransformType::kBucket, .param = 16},
-       {.str = "truncate[32]", .type = TransformType::kTruncate, .param = 32}}};
-
+  const std::vector<Case> cases = {
+      {"identity", TransformType::kIdentity, std::nullopt},
+      {"year", TransformType::kYear, std::nullopt},
+      {"month", TransformType::kMonth, std::nullopt},
+      {"day", TransformType::kDay, std::nullopt},
+      {"hour", TransformType::kHour, std::nullopt},
+      {"void", TransformType::kVoid, std::nullopt},
+      {"bucket[16]", TransformType::kBucket, 16},
+      {"truncate[32]", TransformType::kTruncate, 32},
+  };
   for (const auto& c : cases) {
     auto result = TransformFromString(c.str);
     ASSERT_TRUE(result.has_value()) << "Failed to parse: " << c.str;
