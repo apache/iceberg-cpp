@@ -32,9 +32,7 @@ set(ICEBERG_SOURCES
     table_metadata.cc
     transform.cc
     type.cc
-    expressions/true.cc
-    expressions/false.cc
-    expressions/and.cc)
+    expression.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_SHARED_BUILD_INTERFACE_LIBS)
