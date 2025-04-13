@@ -31,10 +31,10 @@ class IdentityTransform : public TransformFunction {
   explicit IdentityTransform(std::shared_ptr<Type> const& source_type);
 
   /// \brief Returns the input array without modification.
-  expected<ArrowArray, Error> Transform(const ArrowArray& input) override;
+  Result<ArrowArray> Transform(const ArrowArray& input) override;
 
   /// \brief Returns the same type as the source type if it is valid.
-  expected<std::shared_ptr<Type>, Error> ResultType() const override;
+  Result<std::shared_ptr<Type>> ResultType() const override;
 };
 
 /// \brief Bucket transform that hashes input values into N buckets.
@@ -45,10 +45,10 @@ class BucketTransform : public TransformFunction {
   BucketTransform(std::shared_ptr<Type> const& source_type, int32_t num_buckets);
 
   /// \brief Applies the bucket hash function to the input array.
-  expected<ArrowArray, Error> Transform(const ArrowArray& input) override;
+  Result<ArrowArray> Transform(const ArrowArray& input) override;
 
   /// \brief Returns INT32 as the output type.
-  expected<std::shared_ptr<Type>, Error> ResultType() const override;
+  Result<std::shared_ptr<Type>> ResultType() const override;
 
  private:
   int32_t num_buckets_;
@@ -62,10 +62,10 @@ class TruncateTransform : public TransformFunction {
   TruncateTransform(std::shared_ptr<Type> const& source_type, int32_t width);
 
   /// \brief Truncates values in the input array to the specified width.
-  expected<ArrowArray, Error> Transform(const ArrowArray& input) override;
+  Result<ArrowArray> Transform(const ArrowArray& input) override;
 
   /// \brief Returns the same type as source_type.
-  expected<std::shared_ptr<Type>, Error> ResultType() const override;
+  Result<std::shared_ptr<Type>> ResultType() const override;
 
  private:
   int32_t width_;
@@ -78,10 +78,10 @@ class YearTransform : public TransformFunction {
   explicit YearTransform(std::shared_ptr<Type> const& source_type);
 
   /// \brief Extracts the year from each timestamp in the input array.
-  expected<ArrowArray, Error> Transform(const ArrowArray& input) override;
+  Result<ArrowArray> Transform(const ArrowArray& input) override;
 
   /// \brief Returns INT32 as the output type.
-  expected<std::shared_ptr<Type>, Error> ResultType() const override;
+  Result<std::shared_ptr<Type>> ResultType() const override;
 };
 
 /// \brief Month transform that extracts the month component from timestamp inputs.
@@ -91,10 +91,10 @@ class MonthTransform : public TransformFunction {
   explicit MonthTransform(std::shared_ptr<Type> const& source_type);
 
   /// \brief Extracts the month (1-12) from each timestamp in the input array.
-  expected<ArrowArray, Error> Transform(const ArrowArray& input) override;
+  Result<ArrowArray> Transform(const ArrowArray& input) override;
 
   /// \brief Returns INT32 as the output type.
-  expected<std::shared_ptr<Type>, Error> ResultType() const override;
+  Result<std::shared_ptr<Type>> ResultType() const override;
 };
 
 /// \brief Day transform that extracts the day of the month from timestamp inputs.
@@ -104,10 +104,10 @@ class DayTransform : public TransformFunction {
   explicit DayTransform(std::shared_ptr<Type> const& source_type);
 
   /// \brief Extracts the day (1-31) from each timestamp in the input array.
-  expected<ArrowArray, Error> Transform(const ArrowArray& input) override;
+  Result<ArrowArray> Transform(const ArrowArray& input) override;
 
   /// \brief Returns INT32 as the output type.
-  expected<std::shared_ptr<Type>, Error> ResultType() const override;
+  Result<std::shared_ptr<Type>> ResultType() const override;
 };
 
 /// \brief Hour transform that extracts the hour component from timestamp inputs.
@@ -117,10 +117,10 @@ class HourTransform : public TransformFunction {
   explicit HourTransform(std::shared_ptr<Type> const& source_type);
 
   /// \brief Extracts the hour (0-23) from each timestamp in the input array.
-  expected<ArrowArray, Error> Transform(const ArrowArray& input) override;
+  Result<ArrowArray> Transform(const ArrowArray& input) override;
 
   /// \brief Returns INT32 as the output type.
-  expected<std::shared_ptr<Type>, Error> ResultType() const override;
+  Result<std::shared_ptr<Type>> ResultType() const override;
 };
 
 /// \brief Void transform that discards the input and always returns null.
@@ -130,10 +130,10 @@ class VoidTransform : public TransformFunction {
   explicit VoidTransform(std::shared_ptr<Type> const& source_type);
 
   /// \brief Returns an all-null array of the same length as the input.
-  expected<ArrowArray, Error> Transform(const ArrowArray& input) override;
+  Result<ArrowArray> Transform(const ArrowArray& input) override;
 
   /// \brief Returns null type or a sentinel type indicating void.
-  expected<std::shared_ptr<Type>, Error> ResultType() const override;
+  Result<std::shared_ptr<Type>> ResultType() const override;
 };
 
 }  // namespace iceberg

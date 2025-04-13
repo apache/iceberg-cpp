@@ -28,12 +28,12 @@ namespace iceberg {
 IdentityTransform::IdentityTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kIdentity, source_type) {}
 
-expected<ArrowArray, Error> IdentityTransform::Transform(const ArrowArray& input) {
+Result<ArrowArray> IdentityTransform::Transform(const ArrowArray& input) {
   return unexpected<Error>(
       {.kind = ErrorKind::kNotImplemented, .message = "IdentityTransform::Transform"});
 }
 
-expected<std::shared_ptr<Type>, Error> IdentityTransform::ResultType() const {
+Result<std::shared_ptr<Type>> IdentityTransform::ResultType() const {
   auto src_type = source_type();
   if (!src_type || !src_type->is_primitive()) {
     return unexpected(Error{
@@ -48,12 +48,12 @@ BucketTransform::BucketTransform(std::shared_ptr<Type> const& source_type,
                                  int32_t num_buckets)
     : TransformFunction(TransformType::kBucket, source_type), num_buckets_(num_buckets) {}
 
-expected<ArrowArray, Error> BucketTransform::Transform(const ArrowArray& input) {
+Result<ArrowArray> BucketTransform::Transform(const ArrowArray& input) {
   return unexpected<Error>(
       {.kind = ErrorKind::kNotImplemented, .message = "BucketTransform::Transform"});
 }
 
-expected<std::shared_ptr<Type>, Error> BucketTransform::ResultType() const {
+Result<std::shared_ptr<Type>> BucketTransform::ResultType() const {
   return unexpected<Error>(
       {.kind = ErrorKind::kNotImplemented, .message = "BucketTransform::result_type"});
 }
@@ -62,12 +62,12 @@ TruncateTransform::TruncateTransform(std::shared_ptr<Type> const& source_type,
                                      int32_t width)
     : TransformFunction(TransformType::kTruncate, source_type), width_(width) {}
 
-expected<ArrowArray, Error> TruncateTransform::Transform(const ArrowArray& input) {
+Result<ArrowArray> TruncateTransform::Transform(const ArrowArray& input) {
   return unexpected<Error>(
       {.kind = ErrorKind::kNotImplemented, .message = "TruncateTransform::Transform"});
 }
 
-expected<std::shared_ptr<Type>, Error> TruncateTransform::ResultType() const {
+Result<std::shared_ptr<Type>> TruncateTransform::ResultType() const {
   return unexpected<Error>(
       {.kind = ErrorKind::kNotImplemented, .message = "TruncateTransform::result_type"});
 }
@@ -75,12 +75,12 @@ expected<std::shared_ptr<Type>, Error> TruncateTransform::ResultType() const {
 YearTransform::YearTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kTruncate, source_type) {}
 
-expected<ArrowArray, Error> YearTransform::Transform(const ArrowArray& input) {
+Result<ArrowArray> YearTransform::Transform(const ArrowArray& input) {
   return unexpected<Error>(
       {.kind = ErrorKind::kNotImplemented, .message = "YearTransform::Transform"});
 }
 
-expected<std::shared_ptr<Type>, Error> YearTransform::ResultType() const {
+Result<std::shared_ptr<Type>> YearTransform::ResultType() const {
   return unexpected<Error>(
       {.kind = ErrorKind::kNotImplemented, .message = "YearTransform::result_type"});
 }
@@ -88,12 +88,12 @@ expected<std::shared_ptr<Type>, Error> YearTransform::ResultType() const {
 MonthTransform::MonthTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kMonth, source_type) {}
 
-expected<ArrowArray, Error> MonthTransform::Transform(const ArrowArray& input) {
+Result<ArrowArray> MonthTransform::Transform(const ArrowArray& input) {
   return unexpected<Error>(
       {.kind = ErrorKind::kNotImplemented, .message = "MonthTransform::Transform"});
 }
 
-expected<std::shared_ptr<Type>, Error> MonthTransform::ResultType() const {
+Result<std::shared_ptr<Type>> MonthTransform::ResultType() const {
   return unexpected<Error>(
       {.kind = ErrorKind::kNotImplemented, .message = "MonthTransform::result_type"});
 }
@@ -101,12 +101,12 @@ expected<std::shared_ptr<Type>, Error> MonthTransform::ResultType() const {
 DayTransform::DayTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kDay, source_type) {}
 
-expected<ArrowArray, Error> DayTransform::Transform(const ArrowArray& input) {
+Result<ArrowArray> DayTransform::Transform(const ArrowArray& input) {
   return unexpected<Error>(
       {.kind = ErrorKind::kNotImplemented, .message = "DayTransform::Transform"});
 }
 
-expected<std::shared_ptr<Type>, Error> DayTransform::ResultType() const {
+Result<std::shared_ptr<Type>> DayTransform::ResultType() const {
   return unexpected<Error>(
       {.kind = ErrorKind::kNotImplemented, .message = "DayTransform::result_type"});
 }
@@ -114,12 +114,12 @@ expected<std::shared_ptr<Type>, Error> DayTransform::ResultType() const {
 HourTransform::HourTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kHour, source_type) {}
 
-expected<ArrowArray, Error> HourTransform::Transform(const ArrowArray& input) {
+Result<ArrowArray> HourTransform::Transform(const ArrowArray& input) {
   return unexpected<Error>(
       {.kind = ErrorKind::kNotImplemented, .message = "HourTransform::Transform"});
 }
 
-expected<std::shared_ptr<Type>, Error> HourTransform::ResultType() const {
+Result<std::shared_ptr<Type>> HourTransform::ResultType() const {
   return unexpected<Error>(
       {.kind = ErrorKind::kNotImplemented, .message = "HourTransform::result_type"});
 }
@@ -127,12 +127,12 @@ expected<std::shared_ptr<Type>, Error> HourTransform::ResultType() const {
 VoidTransform::VoidTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kVoid, source_type) {}
 
-expected<ArrowArray, Error> VoidTransform::Transform(const ArrowArray& input) {
+Result<ArrowArray> VoidTransform::Transform(const ArrowArray& input) {
   return unexpected<Error>(
       {.kind = ErrorKind::kNotImplemented, .message = "VoidTransform::Transform"});
 }
 
-expected<std::shared_ptr<Type>, Error> VoidTransform::ResultType() const {
+Result<std::shared_ptr<Type>> VoidTransform::ResultType() const {
   return unexpected<Error>(
       {.kind = ErrorKind::kNotImplemented, .message = "VoidTransform::result_type"});
 }

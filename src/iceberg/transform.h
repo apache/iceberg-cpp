@@ -125,7 +125,7 @@ class ICEBERG_EXPORT Transform : public util::Formattable {
   /// parameter.
   /// \param source_type The source column type to bind to.
   /// \return A TransformFunction instance wrapped in `expected`, or an error on failure.
-  expected<std::unique_ptr<TransformFunction>, Error> Bind(
+  Result<std::unique_ptr<TransformFunction>> Bind(
       const std::shared_ptr<Type>& source_type) const;
 
   /// \brief Returns a string representation of this transform (e.g., "bucket[16]").
@@ -177,13 +177,13 @@ class ICEBERG_EXPORT TransformFunction {
   virtual ~TransformFunction() = default;
   TransformFunction(TransformType transform_type, std::shared_ptr<Type> source_type);
   /// \brief Transform an input array to a new array
-  virtual expected<ArrowArray, Error> Transform(const ArrowArray& data) = 0;
+  virtual Result<ArrowArray> Transform(const ArrowArray& data) = 0;
   /// \brief Get the transform type
   TransformType transform_type() const;
   /// \brief Get the source type of transform function
   const std::shared_ptr<Type>& source_type() const;
   /// \brief Get the result type of transform function
-  virtual expected<std::shared_ptr<Type>, Error> ResultType() const = 0;
+  virtual Result<std::shared_ptr<Type>> ResultType() const = 0;
 
   friend bool operator==(const TransformFunction& lhs, const TransformFunction& rhs) {
     return lhs.Equals(rhs);
