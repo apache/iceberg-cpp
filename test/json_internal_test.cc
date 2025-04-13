@@ -102,7 +102,7 @@ TEST(JsonInternalTest, SortOrder) {
 }
 
 TEST(JsonInternalTest, PartitionField) {
-  auto identity_transform = std::make_shared<IdentityTransformFunction>();
+  auto identity_transform = Transform::Identity();
   PartitionField field(3, 101, "region", identity_transform);
   nlohmann::json expected_json =
       R"({"source-id":3,"field-id":101,"transform":"identity","name":"region"})"_json;
@@ -125,7 +125,7 @@ TEST(JsonPartitionTest, PartitionSpec) {
                SchemaField(3, "region", std::make_shared<StringType>(), false),
                SchemaField(5, "ts", std::make_shared<LongType>(), false)});
 
-  auto identity_transform = std::make_shared<IdentityTransformFunction>();
+  auto identity_transform = Transform::Identity();
   PartitionSpec spec(schema, 1,
                      {PartitionField(3, 101, "region", identity_transform),
                       PartitionField(5, 102, "ts", identity_transform)});

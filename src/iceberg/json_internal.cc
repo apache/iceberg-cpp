@@ -401,7 +401,7 @@ Result<std::unique_ptr<PartitionField>> PartitionFieldFromJson(
   ICEBERG_ASSIGN_OR_RAISE(auto field_id, GetJsonValue<int32_t>(json, kFieldId));
   ICEBERG_ASSIGN_OR_RAISE(
       auto transform,
-      GetJsonValue<std::string>(json, kTransform).and_then(TransformFunctionFromString));
+      GetJsonValue<std::string>(json, kTransform).and_then(TransformFromString));
   ICEBERG_ASSIGN_OR_RAISE(auto name, GetJsonValue<std::string>(json, kName));
   return std::make_unique<PartitionField>(source_id, field_id, name,
                                           std::move(transform));
