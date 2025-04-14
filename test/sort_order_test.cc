@@ -27,7 +27,7 @@
 #include "iceberg/schema.h"
 #include "iceberg/sort_field.h"
 #include "iceberg/transform.h"
-#include "iceberg/util/formatter.h"
+#include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
 namespace iceberg {
 

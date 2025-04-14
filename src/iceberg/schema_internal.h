@@ -23,7 +23,6 @@
 
 #include <nanoarrow/nanoarrow.h>
 
-#include "iceberg/expected.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 

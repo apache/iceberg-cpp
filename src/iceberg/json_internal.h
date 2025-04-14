@@ -20,11 +20,9 @@
 #pragma once
 
 #include <memory>
-#include <string_view>
 
 #include <nlohmann/json_fwd.hpp>
 
-#include "iceberg/expected.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 

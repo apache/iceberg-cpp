@@ -21,10 +21,9 @@
 
 #include <format>
 #include <iterator>
-#include <stdexcept>
 
 #include "iceberg/exception.h"
-#include "iceberg/util/formatter.h"
+#include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
 namespace iceberg {
 

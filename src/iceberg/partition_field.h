@@ -26,7 +26,6 @@
 #include <memory>
 #include <string>
 #include <string_view>
-#include <vector>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/type_fwd.h"

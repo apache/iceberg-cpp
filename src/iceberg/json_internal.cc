@@ -24,7 +24,6 @@
 
 #include <nlohmann/json.hpp>
 
-#include "iceberg/expected.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
@@ -32,7 +31,7 @@
 #include "iceberg/sort_order.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
-#include "iceberg/util/formatter.h"
+#include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
