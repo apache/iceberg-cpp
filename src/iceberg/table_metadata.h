@@ -29,32 +29,51 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
-#include "iceberg/util/formattable.h"
 
 namespace iceberg {
 
+/// \brief A time point in milliseconds
 using TimePointMs =
     std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>;
 
+/// \brief Returns a TimePointMs from a Unix timestamp in milliseconds
+ICEBERG_EXPORT Result<TimePointMs> TimePointMsFromUnixMs(int64_t unix_ms);
+
+/// \brief Returns a Unix timestamp in milliseconds from a TimePointMs
+ICEBERG_EXPORT int64_t UnixMsFromTimePointMs(const TimePointMs& time_point_ms);
+
 /// \brief Represents a snapshot log entry
-struct ICEBERG_EXPORT SnapshotLogEntry : public util::Formattable {
+struct ICEBERG_EXPORT SnapshotLogEntry {
   /// The timestamp in milliseconds of the change
   TimePointMs timestamp_ms;
   /// ID of the snapshot
   int64_t snapshot_id;
 
-  std::string ToString() const override;
+  friend bool operator==(const SnapshotLogEntry& lhs, const SnapshotLogEntry& rhs) {
+    return lhs.timestamp_ms == rhs.timestamp_ms && lhs.snapshot_id == rhs.snapshot_id;
+  }
+
+  friend bool operator!=(const SnapshotLogEntry& lhs, const SnapshotLogEntry& rhs) {
+    return !(lhs == rhs);
+  }
 };
 
 /// \brief Represents a metadata log entry
-struct ICEBERG_EXPORT MetadataLogEntry : public util::Formattable {
+struct ICEBERG_EXPORT MetadataLogEntry {
   /// The timestamp in milliseconds of the change
   TimePointMs timestamp_ms;
   /// Metadata file location
-  std::string file;
+  std::string metadata_file;
 
-  std::string ToString() const override;
+  friend bool operator==(const MetadataLogEntry& lhs, const MetadataLogEntry& rhs) {
+    return lhs.timestamp_ms == rhs.timestamp_ms && lhs.metadata_file == rhs.metadata_file;
+  }
+
+  friend bool operator!=(const MetadataLogEntry& lhs, const MetadataLogEntry& rhs) {
+    return !(lhs == rhs);
+  }
 };
 
 /// \brief Represents the metadata for an Iceberg table
@@ -63,10 +82,18 @@ struct ICEBERG_EXPORT MetadataLogEntry : public util::Formattable {
 /// implementation, missing pieces including: 1) Map<Integer,
 /// Schema|PartitionSpec|SortOrder> 2) List<MetadataUpdate> 3) Map<Long, Snapshot> 4)
 /// Map<String, SnapshotRef>
-///
-/// TODO(wgtmac): Implement Equals and ToString once SortOrder and Snapshot are
-/// implemented.
 struct ICEBERG_EXPORT TableMetadata {
+  static constexpr int8_t kDefaultTableFormatVersion = 2;
+  static constexpr int8_t kSupportedTableFormatVersion = 3;
+  static constexpr int8_t kMinFormatVersionRowLineage = 3;
+  static constexpr int32_t kInitialSpecId = 0;
+  static constexpr int32_t kInitialSortOrderId = 1;
+  static constexpr int32_t kInitialSchemaId = 0;
+  static constexpr int64_t kInitialRowId = 0;
+  static constexpr int64_t kInitialSequenceNumber = 0;
+  static constexpr int64_t kInvalidSequenceNumber = -1;
+  static constexpr int64_t kInvalidSnapshotId = -1;
+
   /// An integer version number for the format
   int8_t format_version;
   /// A UUID that identifies the table
@@ -76,7 +103,7 @@ struct ICEBERG_EXPORT TableMetadata {
   /// The table's highest assigned sequence number
   int64_t last_sequence_number;
   /// Timestamp in milliseconds from the unix epoch when the table was last updated.
-  int64_t last_updated_ms;
+  TimePointMs last_updated_ms;
   /// The highest assigned column ID for the table
   int32_t last_column_id;
   /// A list of schemas
@@ -106,7 +133,7 @@ struct ICEBERG_EXPORT TableMetadata {
   /// Default sort order id of the table
   int32_t default_sort_order_id;
   /// A map of snapshot references
-  std::unordered_map<std::string, std::string> refs;
+  std::unordered_map<std::string, std::shared_ptr<SnapshotRef>> refs;
   /// A list of table statistics
   std::vector<std::shared_ptr<struct StatisticsFile>> statistics;
   /// A list of partition statistics
@@ -114,5 +141,11 @@ struct ICEBERG_EXPORT TableMetadata {
   /// A `long` higher than all assigned row IDs
   int64_t next_row_id;
 };
+
+/// \brief Returns a string representation of a SnapshotLogEntry
+ICEBERG_EXPORT std::string ToString(const SnapshotLogEntry& entry);
+
+/// \brief Returns a string representation of a MetadataLogEntry
+ICEBERG_EXPORT std::string ToString(const MetadataLogEntry& entry);
 
 }  // namespace iceberg

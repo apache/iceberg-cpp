@@ -22,17 +22,26 @@
 #include <format>
 #include <string>
 
-#include "iceberg/statistics_file.h"
-
 namespace iceberg {
 
-std::string SnapshotLogEntry::ToString() const {
-  return std::format("SnapshotLogEntry[timestampMillis={},snapshotId={}]", timestamp_ms,
-                     snapshot_id);
+std::string ToString(const SnapshotLogEntry& entry) {
+  return std::format("SnapshotLogEntry[timestampMillis={},snapshotId={}]",
+                     entry.timestamp_ms, entry.snapshot_id);
 }
 
-std::string MetadataLogEntry::ToString() const {
-  return std::format("MetadataLogEntry[timestampMillis={},file={}]", timestamp_ms, file);
+std::string ToString(const MetadataLogEntry& entry) {
+  return std::format("MetadataLogEntry[timestampMillis={},file={}]", entry.timestamp_ms,
+                     entry.metadata_file);
+}
+
+Result<TimePointMs> TimePointMsFromUnixMs(int64_t unix_ms) {
+  return TimePointMs{std::chrono::milliseconds(unix_ms)};
+}
+
+int64_t UnixMsFromTimePointMs(const TimePointMs& time_point_ms) {
+  return std::chrono::duration_cast<std::chrono::milliseconds>(
+             time_point_ms.time_since_epoch())
+      .count();
 }
 
 }  // namespace iceberg

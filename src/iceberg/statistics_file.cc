@@ -23,29 +23,26 @@
 
 namespace iceberg {
 
-bool BlobMetadata::Equals(const BlobMetadata& other) const {
-  return type == other.type && source_snapshot_id == other.source_snapshot_id &&
-         source_snapshot_sequence_number == other.source_snapshot_sequence_number &&
-         fields == other.fields && properties == other.properties;
-}
-
-std::string BlobMetadata::ToString() const {
+std::string ToString(const BlobMetadata& blob_metadata) {
   std::string repr = "BlobMetadata[";
   std::format_to(std::back_inserter(repr),
-                 "type='{}',sourceSnapshotId={},sourceSnapshotSequenceNumber={},", type,
-                 source_snapshot_id, source_snapshot_sequence_number);
+                 "type='{}',sourceSnapshotId={},sourceSnapshotSequenceNumber={},",
+                 blob_metadata.type, blob_metadata.source_snapshot_id,
+                 blob_metadata.source_snapshot_sequence_number);
   std::format_to(std::back_inserter(repr), "fields=[");
-  for (auto iter = fields.cbegin(); iter != fields.cend(); ++iter) {
-    if (iter != fields.cbegin()) {
+  for (auto iter = blob_metadata.fields.cbegin(); iter != blob_metadata.fields.cend();
+       ++iter) {
+    if (iter != blob_metadata.fields.cbegin()) {
       std::format_to(std::back_inserter(repr), ",{}", *iter);
     } else {
       std::format_to(std::back_inserter(repr), "{}", *iter);
     }
   }
   std::format_to(std::back_inserter(repr), "],properties=[");
-  for (auto iter = properties.cbegin(); iter != properties.cend(); ++iter) {
+  for (auto iter = blob_metadata.properties.cbegin();
+       iter != blob_metadata.properties.cend(); ++iter) {
     const auto& [key, value] = *iter;
-    if (iter != properties.cbegin()) {
+    if (iter != blob_metadata.properties.cbegin()) {
       std::format_to(std::back_inserter(repr), ",{}:{}", key, value);
     } else {
       std::format_to(std::back_inserter(repr), "{}:{}", key, value);
@@ -55,27 +52,31 @@ std::string BlobMetadata::ToString() const {
   return repr;
 }
 
-bool StatisticsFile::Equals(const StatisticsFile& other) const {
-  return snapshot_id == other.snapshot_id && path == other.path &&
-         file_size_in_bytes == other.file_size_in_bytes &&
-         file_footer_size_in_bytes == other.file_footer_size_in_bytes &&
-         blob_metadata == other.blob_metadata;
-}
-
-std::string StatisticsFile::ToString() const {
+std::string ToString(const StatisticsFile& statistics_file) {
   std::string repr = "StatisticsFile[";
   std::format_to(std::back_inserter(repr),
                  "snapshotId={},path={},fileSizeInBytes={},fileFooterSizeInBytes={},",
-                 snapshot_id, path, file_size_in_bytes, file_footer_size_in_bytes);
+                 statistics_file.snapshot_id, statistics_file.path,
+                 statistics_file.file_size_in_bytes,
+                 statistics_file.file_footer_size_in_bytes);
   std::format_to(std::back_inserter(repr), "blobMetadata=[");
-  for (auto iter = blob_metadata.cbegin(); iter != blob_metadata.cend(); ++iter) {
-    if (iter != blob_metadata.cbegin()) {
-      std::format_to(std::back_inserter(repr), ",{}", iter->ToString());
+  for (auto iter = statistics_file.blob_metadata.cbegin();
+       iter != statistics_file.blob_metadata.cend(); ++iter) {
+    if (iter != statistics_file.blob_metadata.cbegin()) {
+      std::format_to(std::back_inserter(repr), ",{}", ToString(*iter));
     } else {
-      std::format_to(std::back_inserter(repr), "{}", iter->ToString());
+      std::format_to(std::back_inserter(repr), "{}", ToString(*iter));
     }
   }
   repr += "]]";
+  return repr;
+}
+
+std::string ToString(const PartitionStatisticsFile& partition_statistics_file) {
+  std::string repr = "PartitionStatisticsFile[";
+  std::format_to(std::back_inserter(repr), "snapshotId={},path={},fileSizeInBytes={},",
+                 partition_statistics_file.snapshot_id, partition_statistics_file.path,
+                 partition_statistics_file.file_size_in_bytes);
   return repr;
 }
 

@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <format>
 #include <string>
 
 #include "iceberg/expected.h"
@@ -59,5 +60,21 @@ template <typename T, typename E = typename DefaultError<T>::type>
 using Result = expected<T, E>;
 
 using Status = Result<void>;
+
+/// \brief Create an unexpected error with kNotImplemented
+template <typename... Args>
+auto NotImplementedError(const std::format_string<Args...> fmt, Args&&... args)
+    -> unexpected<Error> {
+  return unexpected<Error>({.kind = ErrorKind::kNotImplemented,
+                            .message = std::format(fmt, std::forward<Args>(args)...)});
+}
+
+/// \brief Create an unexpected error with kJsonParseError
+template <typename... Args>
+auto JsonParseError(const std::format_string<Args...> fmt, Args&&... args)
+    -> unexpected<Error> {
+  return unexpected<Error>({.kind = ErrorKind::kJsonParseError,
+                            .message = std::format(fmt, std::forward<Args>(args)...)});
+}
 
 }  // namespace iceberg

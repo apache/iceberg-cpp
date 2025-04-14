@@ -28,12 +28,11 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/util/formattable.h"
 
 namespace iceberg {
 
 /// \brief A metadata about a statistics or indices blob
-struct ICEBERG_EXPORT BlobMetadata : public util::Formattable {
+struct ICEBERG_EXPORT BlobMetadata {
   /// Type of the blob
   std::string type;
   /// ID of the Iceberg table's snapshot the blob was computed from
@@ -47,22 +46,19 @@ struct ICEBERG_EXPORT BlobMetadata : public util::Formattable {
 
   /// \brief Compare two BlobMetadatas for equality.
   friend bool operator==(const BlobMetadata& lhs, const BlobMetadata& rhs) {
-    return lhs.Equals(rhs);
+    return lhs.type == rhs.type && lhs.source_snapshot_id == rhs.source_snapshot_id &&
+           lhs.source_snapshot_sequence_number == rhs.source_snapshot_sequence_number &&
+           lhs.fields == rhs.fields && lhs.properties == rhs.properties;
   }
 
   /// \brief Compare two BlobMetadatas for inequality.
   friend bool operator!=(const BlobMetadata& lhs, const BlobMetadata& rhs) {
     return !(lhs == rhs);
   }
-
-  std::string ToString() const override;
-
- private:
-  bool Equals(const BlobMetadata& other) const;
 };
 
 /// \brief Represents a statistics file in the Puffin format
-struct ICEBERG_EXPORT StatisticsFile : public util::Formattable {
+struct ICEBERG_EXPORT StatisticsFile {
   /// ID of the Iceberg table's snapshot the statistics file is associated with
   int64_t snapshot_id;
   /// Fully qualified path to the file
@@ -76,18 +72,16 @@ struct ICEBERG_EXPORT StatisticsFile : public util::Formattable {
 
   /// \brief Compare two StatisticsFiles for equality.
   friend bool operator==(const StatisticsFile& lhs, const StatisticsFile& rhs) {
-    return lhs.Equals(rhs);
+    return lhs.snapshot_id == rhs.snapshot_id && lhs.path == rhs.path &&
+           lhs.file_size_in_bytes == rhs.file_size_in_bytes &&
+           lhs.file_footer_size_in_bytes == rhs.file_footer_size_in_bytes &&
+           lhs.blob_metadata == rhs.blob_metadata;
   }
 
   /// \brief Compare two StatisticsFiles for inequality.
   friend bool operator!=(const StatisticsFile& lhs, const StatisticsFile& rhs) {
     return !(lhs == rhs);
   }
-
-  std::string ToString() const override;
-
- private:
-  bool Equals(const StatisticsFile& other) const;
 };
 
 /// \brief Represents a partition statistics file
@@ -99,6 +93,29 @@ struct ICEBERG_EXPORT PartitionStatisticsFile {
   std::string path;
   /// The size of the partition statistics file in bytes
   int64_t file_size_in_bytes;
+
+  /// \brief Compare two PartitionStatisticsFiles for equality.
+  friend bool operator==(const PartitionStatisticsFile& lhs,
+                         const PartitionStatisticsFile& rhs) {
+    return lhs.snapshot_id == rhs.snapshot_id && lhs.path == rhs.path &&
+           lhs.file_size_in_bytes == rhs.file_size_in_bytes;
+  }
+
+  /// \brief Compare two PartitionStatisticsFiles for inequality.
+  friend bool operator!=(const PartitionStatisticsFile& lhs,
+                         const PartitionStatisticsFile& rhs) {
+    return !(lhs == rhs);
+  }
 };
+
+/// \brief Returns a string representation of a BlobMetadata
+ICEBERG_EXPORT std::string ToString(const BlobMetadata& blob_metadata);
+
+/// \brief Returns a string representation of a StatisticsFile
+ICEBERG_EXPORT std::string ToString(const StatisticsFile& statistics_file);
+
+/// \brief Returns a string representation of a PartitionStatisticsFile
+ICEBERG_EXPORT std::string ToString(
+    const PartitionStatisticsFile& partition_statistics_file);
 
 }  // namespace iceberg

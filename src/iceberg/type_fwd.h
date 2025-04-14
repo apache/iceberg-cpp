@@ -88,24 +88,28 @@ struct TableIdentifier;
 
 class Catalog;
 class LocationProvider;
+class SortField;
+class SortOrder;
 class Table;
 class Transaction;
+class Transform;
+class TransformFunction;
+
+struct PartitionStatisticsFile;
+struct Snapshot;
+struct SnapshotRef;
+struct StatisticsFile;
+struct TableMetadata;
+
+enum class SnapshotRefType;
+enum class TransformType;
 
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.
 /// ----------------------------------------------------------------------------
 
 class HistoryEntry;
-class Snapshot;
-struct SnapshotRef;
-enum class SnapshotRefType;
-class SortField;
-class SortOrder;
 class StructLike;
-struct TableMetadata;
-class Transform;
-enum class TransformType;
-class TransformFunction;
 
 class MetadataUpdate;
 class UpdateRequirement;

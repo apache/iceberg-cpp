@@ -41,7 +41,7 @@ class TypeJsonTest : public ::testing::TestWithParam<SchemaJsonParam> {};
 TEST_P(TypeJsonTest, SingleTypeRoundTrip) {
   // To Json
   const auto& param = GetParam();
-  auto json = TypeToJson(*param.type).dump();
+  auto json = ToJson(*param.type).dump();
   ASSERT_EQ(param.json, json);
 
   // From Json
@@ -131,7 +131,7 @@ TEST(SchemaJsonTest, RoundTrip) {
   ASSERT_EQ(field2.type()->type_id(), TypeId::kString);
   ASSERT_TRUE(field2.optional());
 
-  auto dumped_json = SchemaToJson(*schema).dump();
+  auto dumped_json = ToJson(*schema).dump();
   ASSERT_EQ(dumped_json, json);
 }
 
