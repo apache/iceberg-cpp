@@ -592,6 +592,10 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
       }
       summary[key] = value.get<std::string>();
     }
+    // If summary is available but operation is missing, set operation to overwrite.
+    if (!summary.contains(SnapshotSummaryFields::kOperation)) {
+      summary[SnapshotSummaryFields::kOperation] = DataOperation::kOverwrite;
+    }
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto schema_id, GetJsonValueOptional<int32_t>(json, kSchemaId));

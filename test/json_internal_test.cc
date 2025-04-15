@@ -219,7 +219,7 @@ TEST(JsonInternalTest, Snapshot) {
 }
 
 TEST(JsonInternalTest, SnapshotFromJsonWithInvalidSummary) {
-  nlohmann::json invalid_json_snapshot =
+  nlohmann::json invalid_json =
       R"({"snapshot-id":1234567890,
           "parent-snapshot-id":9876543210,
           "sequence-number":99,
@@ -229,12 +229,31 @@ TEST(JsonInternalTest, SnapshotFromJsonWithInvalidSummary) {
             "invalid-field":"value"
           },
           "schema-id":42})"_json;
+  // malformed summary field
 
-  auto result = SnapshotFromJson(invalid_json_snapshot);
+  auto result = SnapshotFromJson(invalid_json);
   ASSERT_FALSE(result.has_value());
 
   EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
   EXPECT_THAT(result, HasErrorMessage("Invalid snapshot summary field"));
+}
+
+TEST(JsonInternalTest, SnapshotFromJsonSummaryWithNoOperation) {
+  nlohmann::json snapshot_json =
+      R"({"snapshot-id":1234567890,
+          "parent-snapshot-id":9876543210,
+          "sequence-number":99,
+          "timestamp-ms":1234567890123,
+          "manifest-list":"/path/to/manifest_list",
+          "summary":{
+            "added-data-files":"50"
+          },
+          "schema-id":42})"_json;
+
+  auto result = SnapshotFromJson(snapshot_json);
+  ASSERT_TRUE(result.has_value());
+
+  ASSERT_EQ(result.value()->operation(), DataOperation::kOverwrite);
 }
 
 }  // namespace iceberg
