@@ -19,6 +19,7 @@
 
 #include "iceberg/json_internal.h"
 
+#include <cstdint>
 #include <format>
 #include <regex>
 #include <unordered_set>
@@ -81,6 +82,8 @@ constexpr std::string_view kSummary = "summary";
 constexpr std::string_view kMinSnapshotsToKeep = "min-snapshots-to-keep";
 constexpr std::string_view kMaxSnapshotAgeMs = "max-snapshot-age-ms";
 constexpr std::string_view kMaxRefAgeMs = "max-ref-age-ms";
+
+constexpr int64_t kInitialSequenceNumber = 0;
 
 const std::unordered_set<std::string_view> kValidSnapshotSummaryFields = {
     SnapshotSummaryFields::kOperation,
@@ -324,7 +327,9 @@ nlohmann::json ToJson(const Snapshot& snapshot) {
   nlohmann::json json;
   json[kSnapshotId] = snapshot.snapshot_id;
   SetOptionalField(json, kParentSnapshotId, snapshot.parent_snapshot_id);
-  json[kSequenceNumber] = snapshot.sequence_number;
+  if (snapshot.sequence_number > kInitialSequenceNumber) {
+    json[kSequenceNumber] = snapshot.sequence_number;
+  }
   json[kTimestampMs] = snapshot.timestamp_ms;
   json[kManifestList] = snapshot.manifest_list;
   // If there is an operation, write the summary map
@@ -552,7 +557,7 @@ Result<std::unique_ptr<SnapshotRef>> SnapshotRefFromJson(const nlohmann::json& j
 Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot_id, GetJsonValue<int64_t>(json, kSnapshotId));
   ICEBERG_ASSIGN_OR_RAISE(auto sequence_number,
-                          GetJsonValue<int64_t>(json, kSequenceNumber));
+                          GetJsonValueOptional<int64_t>(json, kSequenceNumber));
   ICEBERG_ASSIGN_OR_RAISE(auto timestamp_ms, GetJsonValue<int64_t>(json, kTimestampMs));
   ICEBERG_ASSIGN_OR_RAISE(auto manifest_list,
                           GetJsonValue<std::string>(json, kManifestList));
@@ -591,9 +596,10 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
 
   ICEBERG_ASSIGN_OR_RAISE(auto schema_id, GetJsonValueOptional<int32_t>(json, kSchemaId));
 
-  return std::make_unique<Snapshot>(snapshot_id, parent_snapshot_id, sequence_number,
-                                    timestamp_ms, manifest_list, std::move(summary),
-                                    schema_id);
+  return std::make_unique<Snapshot>(
+      snapshot_id, parent_snapshot_id,
+      sequence_number.has_value() ? *sequence_number : kInitialSequenceNumber,
+      timestamp_ms, manifest_list, std::move(summary), schema_id);
 }
 
 }  // namespace iceberg
