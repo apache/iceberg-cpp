@@ -32,6 +32,7 @@
 #include "iceberg/sort_order.h"
 #include "iceberg/transform.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
+#include "matchers.h"
 
 namespace iceberg {
 
@@ -235,9 +236,8 @@ TEST(JsonInternalTest, SnapshotFromJsonWithInvalidSummary) {
   auto result = SnapshotFromJson(invalid_json_snapshot);
   ASSERT_FALSE(result.has_value());
 
-  EXPECT_EQ(result.error().kind, ErrorKind::kJsonParseError);
-  EXPECT_TRUE(result.error().message.find("Invalid snapshot summary field") !=
-              std::string::npos);
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("Invalid snapshot summary field"));
 }
 
 }  // namespace iceberg

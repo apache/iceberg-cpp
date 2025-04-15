@@ -110,9 +110,9 @@ const std::unordered_set<std::string_view> kValidSnapshotSummaryFields = {
     SnapshotSummaryFields::kTotalEqDeletes,
     SnapshotSummaryFields::kDeletedDuplicatedFiles,
     SnapshotSummaryFields::kChangedPartitionCountProp,
-    SnapshotSummaryFields::kWAPID,
-    SnapshotSummaryFields::kPublishedWAPID,
-    SnapshotSummaryFields::kSourceSnapshotID,
+    SnapshotSummaryFields::kWAPId,
+    SnapshotSummaryFields::kPublishedWAPId,
+    SnapshotSummaryFields::kSourceSnapshotId,
     SnapshotSummaryFields::kEngineName,
     SnapshotSummaryFields::kEngineVersion};
 
@@ -151,6 +151,14 @@ Result<std::optional<T>> GetJsonValueOptional(const nlohmann::json& json,
         .kind = ErrorKind::kJsonParseError,
         .message = std::format("Failed to parse key '{}' in {}", key, json.dump()),
     });
+  }
+}
+
+template <typename T>
+void SetOptionalField(nlohmann::json& json, std::string_view key,
+                      const std::optional<T>& value) {
+  if (value.has_value()) {
+    json[key] = *value;
   }
 }
 
@@ -302,20 +310,12 @@ nlohmann::json SnapshotRefToJson(const SnapshotRef& ref) {
   json[kType] = SnapshotRefTypeToString(ref.type());
   if (ref.type() == SnapshotRefType::kBranch) {
     const auto& branch = std::get<SnapshotRef::Branch>(ref.retention);
-    if (branch.min_snapshots_to_keep.has_value()) {
-      json[kMinSnapshotsToKeep] = *branch.min_snapshots_to_keep;
-    }
-    if (branch.max_snapshot_age_ms.has_value()) {
-      json[kMaxSnapshotAgeMs] = *branch.max_snapshot_age_ms;
-    }
-    if (branch.max_ref_age_ms.has_value()) {
-      json[kMaxRefAgeMs] = *branch.max_ref_age_ms;
-    }
+    SetOptionalField(json, kMinSnapshotsToKeep, branch.min_snapshots_to_keep);
+    SetOptionalField(json, kMaxSnapshotAgeMs, branch.max_snapshot_age_ms);
+    SetOptionalField(json, kMaxRefAgeMs, branch.max_ref_age_ms);
   } else if (ref.type() == SnapshotRefType::kTag) {
     const auto& tag = std::get<SnapshotRef::Tag>(ref.retention);
-    if (tag.max_ref_age_ms.has_value()) {
-      json[kMaxRefAgeMs] = *tag.max_ref_age_ms;
-    }
+    SetOptionalField(json, kMaxRefAgeMs, tag.max_ref_age_ms);
   }
   return json;
 }
@@ -323,23 +323,12 @@ nlohmann::json SnapshotRefToJson(const SnapshotRef& ref) {
 nlohmann::json SnapshotToJson(const Snapshot& snapshot) {
   nlohmann::json json;
   json[kSnapshotId] = snapshot.snapshot_id;
-  if (snapshot.parent_snapshot_id.has_value()) {
-    json[kParentSnapshotId] = *snapshot.parent_snapshot_id;
-  }
+  SetOptionalField(json, kParentSnapshotId, snapshot.parent_snapshot_id);
   json[kSequenceNumber] = snapshot.sequence_number;
   json[kTimestampMs] = snapshot.timestamp_ms;
   json[kManifestList] = snapshot.manifest_list;
-
-  nlohmann::json summary_json;
-  for (const auto& [key, value] : snapshot.summary) {
-    summary_json[key] = value;
-  }
-  json[kSummary] = summary_json;
-
-  if (snapshot.schema_id.has_value()) {
-    json[kSchemaId] = *snapshot.schema_id;
-  }
-
+  json[kSummary] = snapshot.summary;
+  SetOptionalField(json, kSchemaId, snapshot.schema_id);
   return json;
 }
 

@@ -48,8 +48,6 @@ ICEBERG_EXPORT constexpr std::string_view SnapshotRefTypeToString(
       return "branch";
     case SnapshotRefType::kTag:
       return "tag";
-    default:
-      return "invalid";
   }
 }
 /// \brief Get the relative snapshot reference type from name
@@ -198,11 +196,11 @@ struct SnapshotSummaryFields {
   /// Other Fields, see https://iceberg.apache.org/spec/#other-fields
 
   /// \brief The Write-Audit-Publish id of a staged snapshot
-  inline static const std::string kWAPID = "wap.id";
+  inline static const std::string kWAPId = "wap.id";
   /// \brief The Write-Audit-Publish id of a snapshot already been published
-  inline static const std::string kPublishedWAPID = "published-wap-id";
+  inline static const std::string kPublishedWAPId = "published-wap-id";
   /// \brief The original id of a cherry-picked snapshot
-  inline static const std::string kSourceSnapshotID = "source-snapshot-id";
+  inline static const std::string kSourceSnapshotId = "source-snapshot-id";
   /// \brief Name of the engine that created the snapshot
   inline static const std::string kEngineName = "engine-name";
   /// \brief Version of the engine that created the snapshot
