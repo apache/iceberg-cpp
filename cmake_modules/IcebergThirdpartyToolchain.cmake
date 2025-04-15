@@ -153,7 +153,7 @@ function(resolve_avro_dependency)
                        ${FC_DECLARE_COMMON_OPTIONS}
                        # TODO: switch to Apache Avro 1.13.0 once released.
                        GIT_REPOSITORY https://github.com/apache/avro.git
-                       GIT_TAG c75e6d59fbacd05df666665d9c8b7e3274cf0399
+                       GIT_TAG 1305509ace25931b3373d35daf47bc48238455b6
                        SOURCE_SUBDIR
                        lang/c++
                        FIND_PACKAGE_ARGS
