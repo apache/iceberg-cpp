@@ -22,7 +22,6 @@
 #include <arrow/result.h>
 #include <arrow/status.h>
 
-#include "iceberg/expected.h"
 #include "iceberg/result.h"
 
 namespace iceberg::arrow {

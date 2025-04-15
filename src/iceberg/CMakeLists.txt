@@ -31,7 +31,9 @@ set(ICEBERG_SOURCES
     statistics_file.cc
     table_metadata.cc
     transform.cc
+    transform_function.cc
     type.cc
+    snapshot.cc
     expression.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)

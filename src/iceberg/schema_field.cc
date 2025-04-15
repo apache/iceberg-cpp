@@ -22,7 +22,7 @@
 #include <format>
 
 #include "iceberg/type.h"
-#include "iceberg/util/formatter.h"
+#include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
 namespace iceberg {
 

@@ -24,7 +24,6 @@
 #include <optional>
 #include <string>
 
-#include "iceberg/expected.h"
 #include "iceberg/schema.h"
 #include "iceberg/type.h"
 

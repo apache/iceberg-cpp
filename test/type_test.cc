@@ -28,7 +28,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/exception.h"
-#include "iceberg/util/formatter.h"
+#include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
 struct TypeTestCase {
   /// Test case name, must be safe for Googletest (alphanumeric + underscore)

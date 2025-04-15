@@ -26,7 +26,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/schema_field.h"
-#include "iceberg/util/formatter.h"
+#include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
 TEST(SchemaTest, Basics) {
   {
