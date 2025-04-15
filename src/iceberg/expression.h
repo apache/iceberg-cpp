@@ -31,10 +31,6 @@
 
 namespace iceberg {
 
-/// \brief Type alias for shared pointer to Expression
-class Expression;
-using ExpressionPtr = std::shared_ptr<Expression>;
-
 /// \brief Represents a boolean expression tree.
 class ICEBERG_EXPORT Expression {
  public:
@@ -71,7 +67,7 @@ class ICEBERG_EXPORT Expression {
   virtual Operation op() const = 0;
 
   /// \brief Returns the negation of this expression, equivalent to not(this).
-  virtual Result<ExpressionPtr> Negate() const {
+  virtual Result<std::shared_ptr<Expression>> Negate() const {
     return unexpected(
         Error(ErrorKind::kInvalidExpression, "Expression cannot be negated"));
   }
@@ -99,7 +95,7 @@ class ICEBERG_EXPORT True : public Expression {
 
   std::string ToString() const override { return "true"; }
 
-  Result<ExpressionPtr> Negate() const override;
+  Result<std::shared_ptr<Expression>> Negate() const override;
 
   bool Equals(const Expression& other) const override {
     return other.op() == Operation::kTrue;
@@ -119,7 +115,7 @@ class ICEBERG_EXPORT False : public Expression {
 
   std::string ToString() const override { return "false"; }
 
-  Result<ExpressionPtr> Negate() const override;
+  Result<std::shared_ptr<Expression>> Negate() const override;
 
   bool Equals(const Expression& other) const override {
     return other.op() == Operation::kFalse;
@@ -137,31 +133,31 @@ class ICEBERG_EXPORT And : public Expression {
  public:
   /// \brief Constructs an And expression from two sub-expressions.
   ///
-  /// @param left The left operand of the AND expression
-  /// @param right The right operand of the AND expression
-  And(ExpressionPtr left, ExpressionPtr right);
+  /// \param left The left operand of the AND expression
+  /// \param right The right operand of the AND expression
+  And(std::shared_ptr<Expression> left, std::shared_ptr<Expression> right);
 
   /// \brief Returns the left operand of the AND expression.
   ///
-  /// @return The left operand of the AND expression
-  const ExpressionPtr& left() const { return left_; }
+  /// \return The left operand of the AND expression
+  const std::shared_ptr<Expression>& left() const { return left_; }
 
   /// \brief Returns the right operand of the AND expression.
   ///
-  /// @return The right operand of the AND expression
-  const ExpressionPtr& right() const { return right_; }
+  /// \return The right operand of the AND expression
+  const std::shared_ptr<Expression>& right() const { return right_; }
 
   Operation op() const override { return Operation::kAnd; }
 
   std::string ToString() const override;
 
-  Result<ExpressionPtr> Negate() const override;
+  Result<std::shared_ptr<Expression>> Negate() const override;
 
   bool Equals(const Expression& other) const override;
 
  private:
-  ExpressionPtr left_;
-  ExpressionPtr right_;
+  std::shared_ptr<Expression> left_;
+  std::shared_ptr<Expression> right_;
 };
 
 }  // namespace iceberg

@@ -25,27 +25,27 @@
 
 namespace iceberg {
 
-TEST(TrueFalseTest, Basi) {
+TEST(TrueFalseTest, Basic) {
   // Test negation of False returns True
-  const std::shared_ptr<False> false_instance = False::Instance();
+  auto false_instance = False::Instance();
   auto negated = false_instance->Negate();
 
   EXPECT_TRUE(negated.has_value());
 
   // Check that negated expression is True
-  std::shared_ptr<Expression> true_expr = negated.value();
+  auto true_expr = negated.value();
   EXPECT_EQ(true_expr->op(), Expression::Operation::kTrue);
 
   EXPECT_EQ(true_expr->ToString(), "true");
 
   // Test negation of True returns false
-  const std::shared_ptr<True> true_instance = True::Instance();
+  auto true_instance = True::Instance();
   negated = true_instance->Negate();
 
   EXPECT_TRUE(negated.has_value());
 
-  // Check that negated expression is True
-  std::shared_ptr<Expression> false_expr = negated.value();
+  // Check that negated expression is False
+  auto false_expr = negated.value();
   EXPECT_EQ(false_expr->op(), Expression::Operation::kFalse);
 
   EXPECT_EQ(false_expr->ToString(), "false");

@@ -25,11 +25,11 @@ namespace iceberg {
 
 // True implementation
 const std::shared_ptr<True>& True::Instance() {
-  static const std::shared_ptr<True> instance = std::shared_ptr<True>(new True());
+  static const std::shared_ptr<True> instance{new True()};
   return instance;
 }
 
-Result<ExpressionPtr> True::Negate() const { return False::Instance(); }
+Result<std::shared_ptr<Expression>> True::Negate() const { return False::Instance(); }
 
 // False implementation
 const std::shared_ptr<False>& False::Instance() {
@@ -37,17 +37,17 @@ const std::shared_ptr<False>& False::Instance() {
   return instance;
 }
 
-Result<ExpressionPtr> False::Negate() const { return True::Instance(); }
+Result<std::shared_ptr<Expression>> False::Negate() const { return True::Instance(); }
 
 // And implementation
-And::And(ExpressionPtr left, ExpressionPtr right)
+And::And(std::shared_ptr<Expression> left, std::shared_ptr<Expression> right)
     : left_(std::move(left)), right_(std::move(right)) {}
 
 std::string And::ToString() const {
   return std::format("({} and {})", left_->ToString(), right_->ToString());
 }
 
-Result<ExpressionPtr> And::Negate() const {
+Result<std::shared_ptr<Expression>> And::Negate() const {
   // TODO(yingcai-cy): Implement Or expression
   return unexpected(
       Error(ErrorKind::kInvalidExpression, "And negation not yet implemented"));
