@@ -304,7 +304,7 @@ nlohmann::json SchemaToJson(const Schema& schema) {
   return json;
 }
 
-nlohmann::json SnapshotRefToJson(const SnapshotRef& ref) {
+nlohmann::json ToJson(const SnapshotRef& ref) {
   nlohmann::json json;
   json[kSnapshotId] = ref.snapshot_id;
   json[kType] = SnapshotRefTypeToString(ref.type());
@@ -320,14 +320,17 @@ nlohmann::json SnapshotRefToJson(const SnapshotRef& ref) {
   return json;
 }
 
-nlohmann::json SnapshotToJson(const Snapshot& snapshot) {
+nlohmann::json ToJson(const Snapshot& snapshot) {
   nlohmann::json json;
   json[kSnapshotId] = snapshot.snapshot_id;
   SetOptionalField(json, kParentSnapshotId, snapshot.parent_snapshot_id);
   json[kSequenceNumber] = snapshot.sequence_number;
   json[kTimestampMs] = snapshot.timestamp_ms;
   json[kManifestList] = snapshot.manifest_list;
-  json[kSummary] = snapshot.summary;
+  // If there is an operation, write the summary map
+  if (snapshot.operation().has_value()) {
+    json[kSummary] = snapshot.summary;
+  }
   SetOptionalField(json, kSchemaId, snapshot.schema_id);
   return json;
 }
@@ -558,30 +561,32 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
                           GetJsonValueOptional<int64_t>(json, kParentSnapshotId));
 
   ICEBERG_ASSIGN_OR_RAISE(auto summary_json,
-                          GetJsonValue<nlohmann::json>(json, kSummary));
+                          GetJsonValueOptional<nlohmann::json>(json, kSummary));
   std::unordered_map<std::string, std::string> summary;
-  for (const auto& [key, value] : summary_json.items()) {
-    if (!kValidSnapshotSummaryFields.contains(key)) {
-      return unexpected<Error>({
-          .kind = ErrorKind::kJsonParseError,
-          .message = std::format("Invalid snapshot summary field: {}", key),
-      });
+  if (summary_json.has_value()) {
+    for (const auto& [key, value] : summary_json->items()) {
+      if (!kValidSnapshotSummaryFields.contains(key)) {
+        return unexpected<Error>({
+            .kind = ErrorKind::kJsonParseError,
+            .message = std::format("Invalid snapshot summary field: {}", key),
+        });
+      }
+      if (!value.is_string()) {
+        return unexpected<Error>({
+            .kind = ErrorKind::kJsonParseError,
+            .message =
+                std::format("Invalid snapshot summary field value: {}", value.dump()),
+        });
+      }
+      if (key == SnapshotSummaryFields::kOperation &&
+          !kValidDataOperation.contains(value.get<std::string>())) {
+        return unexpected<Error>({
+            .kind = ErrorKind::kJsonParseError,
+            .message = std::format("Invalid snapshot operation: {}", value.dump()),
+        });
+      }
+      summary[key] = value.get<std::string>();
     }
-    if (!value.is_string()) {
-      return unexpected<Error>({
-          .kind = ErrorKind::kJsonParseError,
-          .message =
-              std::format("Invalid snapshot summary field value: {}", value.dump()),
-      });
-    }
-    if (key == SnapshotSummaryFields::kOperation &&
-        !kValidDataOperation.contains(value.get<std::string>())) {
-      return unexpected<Error>({
-          .kind = ErrorKind::kJsonParseError,
-          .message = std::format("Invalid snapshot operation: {}", value.dump()),
-      });
-    }
-    summary[key] = value.get<std::string>();
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto schema_id, GetJsonValueOptional<int32_t>(json, kSchemaId));

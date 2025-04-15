@@ -25,6 +25,7 @@
 #include <iceberg/result.h>
 #include <nlohmann/json.hpp>
 
+#include "gmock/gmock.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
@@ -54,6 +55,16 @@ Result<std::unique_ptr<SortOrder>> FromJsonHelper(const nlohmann::json& json) {
 template <>
 Result<std::unique_ptr<PartitionField>> FromJsonHelper(const nlohmann::json& json) {
   return PartitionFieldFromJson(json);
+}
+
+template <>
+Result<std::unique_ptr<SnapshotRef>> FromJsonHelper(const nlohmann::json& json) {
+  return SnapshotRefFromJson(json);
+}
+
+template <>
+Result<std::unique_ptr<Snapshot>> FromJsonHelper(const nlohmann::json& json) {
+  return SnapshotFromJson(json);
 }
 
 // Helper function to reduce duplication in testing
@@ -117,7 +128,8 @@ TEST(JsonPartitionTest, PartitionFieldFromJsonMissingField) {
 
   auto result = PartitionFieldFromJson(invalid_json);
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().kind, ErrorKind::kJsonParseError);
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("Missing 'source-id'"));
 }
 
 TEST(JsonPartitionTest, PartitionSpec) {
@@ -162,12 +174,7 @@ TEST(JsonInternalTest, SnapshotRefBranch) {
           "max-snapshot-age-ms":123456789,
           "max-ref-age-ms":987654321})"_json;
 
-  auto json = SnapshotRefToJson(ref);
-  EXPECT_EQ(expected_json, json) << "JSON conversion mismatch.";
-
-  auto obj_ex = SnapshotRefFromJson(expected_json);
-  EXPECT_TRUE(obj_ex.has_value()) << "Failed to deserialize JSON.";
-  EXPECT_EQ(ref, *obj_ex.value()) << "Deserialized object mismatch.";
+  TestJsonConversion(ref, expected_json);
 }
 
 TEST(JsonInternalTest, SnapshotRefTag) {
@@ -179,12 +186,7 @@ TEST(JsonInternalTest, SnapshotRefTag) {
           "type":"tag",
           "max-ref-age-ms":54321})"_json;
 
-  auto json = SnapshotRefToJson(ref);
-  EXPECT_EQ(expected_json, json) << "JSON conversion mismatch.";
-
-  auto obj_ex = SnapshotRefFromJson(expected_json);
-  EXPECT_TRUE(obj_ex.has_value()) << "Failed to deserialize JSON.";
-  EXPECT_EQ(ref, *obj_ex.value()) << "Deserialized object mismatch.";
+  TestJsonConversion(ref, expected_json);
 }
 
 TEST(JsonInternalTest, Snapshot) {
@@ -213,12 +215,7 @@ TEST(JsonInternalTest, Snapshot) {
           },
           "schema-id":42})"_json;
 
-  auto json = SnapshotToJson(snapshot);
-  EXPECT_EQ(expected_json, json) << "JSON conversion mismatch.";
-
-  auto obj_ex = SnapshotFromJson(expected_json);
-  EXPECT_TRUE(obj_ex.has_value()) << "Failed to deserialize JSON.";
-  EXPECT_EQ(snapshot, *obj_ex.value()) << "Deserialized object mismatch.";
+  TestJsonConversion(snapshot, expected_json);
 }
 
 TEST(JsonInternalTest, SnapshotFromJsonWithInvalidSummary) {
