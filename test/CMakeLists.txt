@@ -46,7 +46,8 @@ add_test(NAME expected_test COMMAND expected_test)
 
 add_executable(expression_test)
 target_sources(expression_test PRIVATE expression_test.cc)
-target_link_libraries(expression_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
+target_link_libraries(expression_test PRIVATE iceberg_static GTest::gtest_main
+                                              GTest::gmock)
 add_test(NAME expression_test COMMAND expression_test)
 
 if(ICEBERG_BUILD_BUNDLE)
