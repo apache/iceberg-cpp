@@ -7,3 +7,8 @@ The Apache Software Foundation (http://www.apache.org/).
 This product includes code from zeus-cpp
  * Copyright (c) 2024 zeus-cpp
  * https://github.com/zeus-cpp/expected
+
+This product includes code from smhasher
+ * MurmurHash3 was written by Austin Appleby, and is placed in the public
+ * domain. The author hereby disclaims copyright to this source code.
+ * https://github.com/aappleby/smhasher
