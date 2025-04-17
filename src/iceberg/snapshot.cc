@@ -21,6 +21,16 @@
 
 namespace iceberg {
 
+bool SnapshotRef::Branch::Equals(const SnapshotRef::Branch& other) const {
+  return min_snapshots_to_keep == other.min_snapshots_to_keep &&
+         max_snapshot_age_ms == other.max_snapshot_age_ms &&
+         max_ref_age_ms == other.max_ref_age_ms;
+}
+
+bool SnapshotRef::Tag::Equals(const SnapshotRef::Tag& other) const {
+  return max_ref_age_ms == other.max_ref_age_ms;
+}
+
 SnapshotRefType SnapshotRef::type() const noexcept {
   return std::visit(
       [&](const auto& retention) -> SnapshotRefType {
@@ -32,6 +42,24 @@ SnapshotRefType SnapshotRef::type() const noexcept {
         }
       },
       retention);
+}
+
+bool SnapshotRef::Equals(const SnapshotRef& other) const {
+  if (this == &other) {
+    return true;
+  }
+  if (type() != other.type()) {
+    return false;
+  }
+
+  if (type() == SnapshotRefType::kBranch) {
+    return snapshot_id == other.snapshot_id &&
+           std::get<Branch>(retention) == std::get<Branch>(other.retention);
+
+  } else {
+    return snapshot_id == other.snapshot_id &&
+           std::get<Tag>(retention) == std::get<Tag>(other.retention);
+  }
 }
 
 std::optional<std::string_view> Snapshot::operation() const {

@@ -21,11 +21,12 @@ set(ICEBERG_SOURCES
     arrow_c_data_internal.cc
     demo.cc
     json_internal.cc
+    partition_field.cc
+    partition_spec.cc
     schema.cc
     schema_field.cc
     schema_internal.cc
-    partition_field.cc
-    partition_spec.cc
+    snapshot.cc
     sort_field.cc
     sort_order.cc
     statistics_file.cc
@@ -34,7 +35,8 @@ set(ICEBERG_SOURCES
     transform_function.cc
     type.cc
     snapshot.cc
-    expression.cc)
+    expression.cc
+    util/murmurhash3_internal.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_SHARED_BUILD_INTERFACE_LIBS)

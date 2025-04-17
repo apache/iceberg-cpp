@@ -97,10 +97,12 @@ class Transaction;
 
 class HistoryEntry;
 class Snapshot;
+struct SnapshotRef;
+enum class SnapshotRefType;
 class SortField;
 class SortOrder;
 class StructLike;
-class TableMetadata;
+struct TableMetadata;
 class Transform;
 enum class TransformType;
 class TransformFunction;

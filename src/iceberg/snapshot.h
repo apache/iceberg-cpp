@@ -26,6 +26,7 @@
 #include <variant>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 
 namespace iceberg {
 
@@ -38,6 +39,26 @@ enum class SnapshotRefType {
   /// Tags are labels for individual snapshots
   kTag,
 };
+
+/// \brief Get the relative snapshot reference type name
+ICEBERG_EXPORT constexpr std::string_view SnapshotRefTypeToString(
+    SnapshotRefType type) noexcept {
+  switch (type) {
+    case SnapshotRefType::kBranch:
+      return "branch";
+    case SnapshotRefType::kTag:
+      return "tag";
+  }
+}
+/// \brief Get the relative snapshot reference type from name
+ICEBERG_EXPORT constexpr Result<SnapshotRefType> SnapshotRefTypeFromString(
+    std::string_view str) noexcept {
+  if (str == "branch") return SnapshotRefType::kBranch;
+  if (str == "tag") return SnapshotRefType::kTag;
+  return unexpected<Error>(
+      {.kind = ErrorKind::kInvalidArgument,
+       .message = "Invalid snapshot reference type: {}" + std::string(str)});
+}
 
 /// \brief A reference to a snapshot, either a branch or a tag.
 struct ICEBERG_EXPORT SnapshotRef {
@@ -54,6 +75,18 @@ struct ICEBERG_EXPORT SnapshotRef {
     /// of the snapshot reference to keep while expiring snapshots. Defaults to table
     /// property history.expire.max-ref-age-ms. The main branch never expires.
     std::optional<int64_t> max_ref_age_ms;
+
+    /// \brief Compare two branches for equality.
+    friend bool operator==(const Branch& lhs, const Branch& rhs) {
+      return lhs.Equals(rhs);
+    }
+
+    /// \brief Compare two branches for inequality.
+    friend bool operator!=(const Branch& lhs, const Branch& rhs) { return !(lhs == rhs); }
+
+   private:
+    /// \brief Compare two branches for equality.
+    bool Equals(const Branch& other) const;
   };
 
   struct ICEBERG_EXPORT Tag {
@@ -61,6 +94,16 @@ struct ICEBERG_EXPORT SnapshotRef {
     /// of the snapshot reference to keep while expiring snapshots. Defaults to table
     /// property history.expire.max-ref-age-ms. The main branch never expires.
     std::optional<int64_t> max_ref_age_ms;
+
+    /// \brief Compare two tags for equality.
+    friend bool operator==(const Tag& lhs, const Tag& rhs) { return lhs.Equals(rhs); }
+
+    /// \brief Compare two tags for inequality.
+    friend bool operator!=(const Tag& lhs, const Tag& rhs) { return !(lhs == rhs); }
+
+   private:
+    /// \brief Compare two tags for equality.
+    bool Equals(const Tag& other) const;
   };
 
   /// A reference's snapshot ID. The tagged snapshot or latest snapshot of a branch.
@@ -69,6 +112,20 @@ struct ICEBERG_EXPORT SnapshotRef {
   std::variant<Branch, Tag> retention;
 
   SnapshotRefType type() const noexcept;
+
+  /// \brief Compare two snapshot refs for equality
+  friend bool operator==(const SnapshotRef& lhs, const SnapshotRef& rhs) {
+    return lhs.Equals(rhs);
+  }
+
+  /// \brief Compare two snapshot refs for inequality.
+  friend bool operator!=(const SnapshotRef& lhs, const SnapshotRef& rhs) {
+    return !(lhs == rhs);
+  }
+
+ private:
+  /// \brief Compare two snapshot refs for equality.
+  bool Equals(const SnapshotRef& other) const;
 };
 
 /// \brief Optional Snapshot Summary Fields
@@ -139,11 +196,11 @@ struct SnapshotSummaryFields {
   /// Other Fields, see https://iceberg.apache.org/spec/#other-fields
 
   /// \brief The Write-Audit-Publish id of a staged snapshot
-  inline static const std::string kWAPID = "wap.id";
+  inline static const std::string kWAPId = "wap.id";
   /// \brief The Write-Audit-Publish id of a snapshot already been published
-  inline static const std::string kPublishedWAPID = "published-wap-id";
+  inline static const std::string kPublishedWAPId = "published-wap-id";
   /// \brief The original id of a cherry-picked snapshot
-  inline static const std::string kSourceSnapshotID = "source-snapshot-id";
+  inline static const std::string kSourceSnapshotId = "source-snapshot-id";
   /// \brief Name of the engine that created the snapshot
   inline static const std::string kEngineName = "engine-name";
   /// \brief Version of the engine that created the snapshot

@@ -19,40 +19,52 @@
 
 #include "iceberg/json_internal.h"
 
-#include <format>
 #include <memory>
 
 #include <gtest/gtest.h>
+#include <iceberg/result.h>
 #include <nlohmann/json.hpp>
 
+#include "gmock/gmock.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
+#include "iceberg/snapshot.h"
 #include "iceberg/sort_field.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/transform.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
+#include "matchers.h"
 
 namespace iceberg {
 
 namespace {
 // Specialized FromJson helper based on type
 template <typename T>
-expected<std::unique_ptr<T>, Error> FromJsonHelper(const nlohmann::json& json);
+Result<std::unique_ptr<T>> FromJsonHelper(const nlohmann::json& json);
 
 template <>
-expected<std::unique_ptr<SortField>, Error> FromJsonHelper(const nlohmann::json& json) {
+Result<std::unique_ptr<SortField>> FromJsonHelper(const nlohmann::json& json) {
   return SortFieldFromJson(json);
 }
 
 template <>
-expected<std::unique_ptr<SortOrder>, Error> FromJsonHelper(const nlohmann::json& json) {
+Result<std::unique_ptr<SortOrder>> FromJsonHelper(const nlohmann::json& json) {
   return SortOrderFromJson(json);
 }
 
 template <>
-expected<std::unique_ptr<PartitionField>, Error> FromJsonHelper(
-    const nlohmann::json& json) {
+Result<std::unique_ptr<PartitionField>> FromJsonHelper(const nlohmann::json& json) {
   return PartitionFieldFromJson(json);
+}
+
+template <>
+Result<std::unique_ptr<SnapshotRef>> FromJsonHelper(const nlohmann::json& json) {
+  return SnapshotRefFromJson(json);
+}
+
+template <>
+Result<std::unique_ptr<Snapshot>> FromJsonHelper(const nlohmann::json& json) {
+  return SnapshotFromJson(json);
 }
 
 // Helper function to reduce duplication in testing
@@ -116,7 +128,8 @@ TEST(JsonPartitionTest, PartitionFieldFromJsonMissingField) {
 
   auto result = PartitionFieldFromJson(invalid_json);
   EXPECT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().kind, ErrorKind::kJsonParseError);
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("Missing 'source-id'"));
 }
 
 TEST(JsonPartitionTest, PartitionSpec) {
@@ -146,6 +159,101 @@ TEST(JsonPartitionTest, PartitionSpec) {
   auto parsed_spec_result = PartitionSpecFromJson(schema, json);
   ASSERT_TRUE(parsed_spec_result.has_value()) << parsed_spec_result.error().message;
   EXPECT_EQ(spec, *parsed_spec_result.value());
+}
+
+TEST(JsonInternalTest, SnapshotRefBranch) {
+  SnapshotRef ref(1234567890, SnapshotRef::Branch{.min_snapshots_to_keep = 10,
+                                                  .max_snapshot_age_ms = 123456789,
+                                                  .max_ref_age_ms = 987654321});
+
+  // Create a JSON object with the expected values
+  nlohmann::json expected_json =
+      R"({"snapshot-id":1234567890,
+          "type":"branch",
+          "min-snapshots-to-keep":10,
+          "max-snapshot-age-ms":123456789,
+          "max-ref-age-ms":987654321})"_json;
+
+  TestJsonConversion(ref, expected_json);
+}
+
+TEST(JsonInternalTest, SnapshotRefTag) {
+  SnapshotRef ref(9876543210, SnapshotRef::Tag{.max_ref_age_ms = 54321});
+
+  // Create a JSON object with the expected values
+  nlohmann::json expected_json =
+      R"({"snapshot-id":9876543210,
+          "type":"tag",
+          "max-ref-age-ms":54321})"_json;
+
+  TestJsonConversion(ref, expected_json);
+}
+
+TEST(JsonInternalTest, Snapshot) {
+  std::unordered_map<std::string, std::string> summary = {
+      {SnapshotSummaryFields::kOperation, DataOperation::kAppend},
+      {SnapshotSummaryFields::kAddedDataFiles, "50"}};
+
+  Snapshot snapshot{.snapshot_id = 1234567890,
+                    .parent_snapshot_id = 9876543210,
+                    .sequence_number = 99,
+                    .timestamp_ms = 1234567890123,
+                    .manifest_list = "/path/to/manifest_list",
+                    .summary = summary,
+                    .schema_id = 42};
+
+  // Create a JSON object with the expected values
+  nlohmann::json expected_json =
+      R"({"snapshot-id":1234567890,
+          "parent-snapshot-id":9876543210,
+          "sequence-number":99,
+          "timestamp-ms":1234567890123,
+          "manifest-list":"/path/to/manifest_list",
+          "summary":{
+            "operation":"append",
+            "added-data-files":"50"
+          },
+          "schema-id":42})"_json;
+
+  TestJsonConversion(snapshot, expected_json);
+}
+
+TEST(JsonInternalTest, SnapshotFromJsonWithInvalidSummary) {
+  nlohmann::json invalid_json =
+      R"({"snapshot-id":1234567890,
+          "parent-snapshot-id":9876543210,
+          "sequence-number":99,
+          "timestamp-ms":1234567890123,
+          "manifest-list":"/path/to/manifest_list",
+          "summary":{
+            "invalid-field":"value"
+          },
+          "schema-id":42})"_json;
+  // malformed summary field
+
+  auto result = SnapshotFromJson(invalid_json);
+  ASSERT_FALSE(result.has_value());
+
+  EXPECT_THAT(result, IsError(ErrorKind::kJsonParseError));
+  EXPECT_THAT(result, HasErrorMessage("Invalid snapshot summary field"));
+}
+
+TEST(JsonInternalTest, SnapshotFromJsonSummaryWithNoOperation) {
+  nlohmann::json snapshot_json =
+      R"({"snapshot-id":1234567890,
+          "parent-snapshot-id":9876543210,
+          "sequence-number":99,
+          "timestamp-ms":1234567890123,
+          "manifest-list":"/path/to/manifest_list",
+          "summary":{
+            "added-data-files":"50"
+          },
+          "schema-id":42})"_json;
+
+  auto result = SnapshotFromJson(snapshot_json);
+  ASSERT_TRUE(result.has_value());
+
+  ASSERT_EQ(result.value()->operation(), DataOperation::kOverwrite);
 }
 
 }  // namespace iceberg

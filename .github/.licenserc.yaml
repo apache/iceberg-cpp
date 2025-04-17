@@ -12,5 +12,6 @@ header:
     - 'LICENSE'
     - 'NOTICE'
     - 'src/iceberg/expected.h'
+    - 'src/iceberg/util/murmurhash3_internal.*'
 
   comment: on-failure

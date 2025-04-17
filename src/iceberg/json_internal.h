@@ -88,6 +88,18 @@ nlohmann::json TypeToJson(const Type& type);
 /// \return The JSON representation of the field.
 nlohmann::json FieldToJson(const SchemaField& field);
 
+/// \brief Serializes a `SnapshotRef` object to JSON.
+///
+/// \param[in] snapshot_ref The `SnapshotRef` object to be serialized.
+/// \return A JSON object representing the `SnapshotRef`.
+nlohmann::json ToJson(const SnapshotRef& snapshot_ref);
+
+/// \brief Serializes a `Snapshot` object to JSON.
+///
+/// \param[in] snapshot The `Snapshot` object to be serialized.
+/// \return A JSON object representing the `snapshot`.
+nlohmann::json ToJson(const Snapshot& snapshot);
+
 /// \brief Convert JSON to an Iceberg Schema.
 ///
 /// \param[in] json The JSON representation of the schema.
@@ -153,4 +165,17 @@ Result<std::unique_ptr<PartitionField>> PartitionFieldFromJson(
 /// the JSON is malformed or missing expected fields, an error will be returned.
 Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
     const std::shared_ptr<Schema>& schema, const nlohmann::json& json);
+
+/// \brief Deserializes a JSON object into a `SnapshotRef` object.
+///
+/// \param[in] json The JSON object representing a `SnapshotRef`.
+/// \return A `SnapshotRef` object or an error if the conversion fails.
+Result<std::unique_ptr<SnapshotRef>> SnapshotRefFromJson(const nlohmann::json& json);
+
+/// \brief Deserializes a JSON object into a `Snapshot` object.
+///
+/// \param[in] json The JSON representation of the snapshot.
+/// \return A `Snapshot` object or an error if the conversion fails.
+Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json);
+
 }  // namespace iceberg
