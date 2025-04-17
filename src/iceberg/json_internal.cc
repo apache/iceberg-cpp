@@ -160,7 +160,6 @@ constexpr std::string_view kStatisticsPath = "statistics-path";
 constexpr std::string_view kFileSizeInBytes = "file-size-in-bytes";
 constexpr std::string_view kFileFooterSizeInBytes = "file-footer-size-in-bytes";
 constexpr std::string_view kBlobMetadata = "blob-metadata";
-constexpr int8_t kMinNullCurrentSnapshotVersion = 3;
 
 template <typename T>
 void SetOptionalField(nlohmann::json& json, std::string_view key,
@@ -935,10 +934,8 @@ nlohmann::json ToJson(const TableMetadata& table_metadata) {
         return snapshot->snapshot_id == table_metadata.current_snapshot_id;
       }) != table_metadata.snapshots.cend()) {
     json[kCurrentSnapshotId] = table_metadata.current_snapshot_id;
-  } else if (table_metadata.format_version >= kMinNullCurrentSnapshotVersion) {
-    json[kCurrentSnapshotId] = nullptr;
   } else {
-    json[kCurrentSnapshotId] = TableMetadata::kInvalidSnapshotId;
+    json[kCurrentSnapshotId] = nlohmann::json::value_t::null;
   }
 
   if (table_metadata.format_version >= 3) {
