@@ -39,6 +39,11 @@ target_sources(schema_test
 target_link_libraries(schema_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
 add_test(NAME schema_test COMMAND schema_test)
 
+add_executable(catalog_test)
+target_sources(catalog_test PRIVATE memory_catalog_test.cc)
+target_link_libraries(catalog_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
+add_test(NAME catalog_test COMMAND catalog_test)
+
 add_executable(expected_test)
 target_sources(expected_test PRIVATE expected_test.cc)
 target_link_libraries(expected_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
