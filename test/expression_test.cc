@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/expression.h"
+#include "iceberg/expression/expression.h"
 
 #include <memory>
 

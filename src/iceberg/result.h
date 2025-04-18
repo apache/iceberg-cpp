@@ -78,4 +78,12 @@ auto JsonParseError(const std::format_string<Args...> fmt, Args&&... args)
                             .message = std::format(fmt, std::forward<Args>(args)...)});
 }
 
+/// \brief Create an unexpected error with kInvalidExpression
+template <typename... Args>
+auto InvalidExpressionError(const std::format_string<Args...> fmt, Args&&... args)
+    -> unexpected<Error> {
+  return unexpected<Error>({.kind = ErrorKind::kInvalidExpression,
+                            .message = std::format(fmt, std::forward<Args>(args)...)});
+}
+
 }  // namespace iceberg
