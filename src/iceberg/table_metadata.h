@@ -83,17 +83,6 @@ struct ICEBERG_EXPORT MetadataLogEntry {
 /// Schema|PartitionSpec|SortOrder> 2) List<MetadataUpdate> 3) Map<Long, Snapshot> 4)
 /// Map<String, SnapshotRef>
 struct ICEBERG_EXPORT TableMetadata {
-  static constexpr int8_t kDefaultTableFormatVersion = 2;
-  static constexpr int8_t kSupportedTableFormatVersion = 3;
-  static constexpr int8_t kMinFormatVersionRowLineage = 3;
-  static constexpr int32_t kInitialSpecId = 0;
-  static constexpr int32_t kInitialSortOrderId = 1;
-  static constexpr int32_t kInitialSchemaId = 0;
-  static constexpr int64_t kInitialRowId = 0;
-  static constexpr int64_t kInitialSequenceNumber = 0;
-  static constexpr int64_t kInvalidSequenceNumber = -1;
-  static constexpr int64_t kInvalidSnapshotId = -1;
-
   /// An integer version number for the format
   int8_t format_version;
   /// A UUID that identifies the table
@@ -109,7 +98,7 @@ struct ICEBERG_EXPORT TableMetadata {
   /// A list of schemas
   std::vector<std::shared_ptr<Schema>> schemas;
   /// ID of the table's current schema
-  int32_t current_schema_id;
+  std::optional<int32_t> current_schema_id;
   /// A list of partition specs
   std::vector<std::shared_ptr<PartitionSpec>> partition_specs;
   /// ID of the current partition spec that writers should use by default
@@ -140,6 +129,13 @@ struct ICEBERG_EXPORT TableMetadata {
   std::vector<std::shared_ptr<struct PartitionStatisticsFile>> partition_statistics;
   /// A `long` higher than all assigned row IDs
   int64_t next_row_id;
+
+  /// \brief Get the current schema
+  const std::shared_ptr<Schema>& Schema() const;
+  /// \brief Get the current partition spec
+  const std::shared_ptr<PartitionSpec>& PartitionSpec() const;
+  /// \brief Get the current sort order
+  const std::shared_ptr<SortOrder>& SortOrder() const;
 };
 
 /// \brief Returns a string representation of a SnapshotLogEntry

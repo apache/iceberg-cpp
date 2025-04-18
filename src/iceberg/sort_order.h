@@ -36,10 +36,13 @@ namespace iceberg {
 /// applied to the data.
 class ICEBERG_EXPORT SortOrder : public util::Formattable {
  public:
-  SortOrder(int64_t order_id, std::vector<SortField> fields);
+  SortOrder(int32_t order_id, std::vector<SortField> fields);
+
+  /// \brief Get an unsorted sort order singleton.
+  static const std::shared_ptr<SortOrder>& Unsorted();
 
   /// \brief Get the sort order id.
-  int64_t order_id() const;
+  int32_t order_id() const;
 
   /// \brief Get the list of sort fields.
   std::span<const SortField> fields() const;
@@ -58,7 +61,7 @@ class ICEBERG_EXPORT SortOrder : public util::Formattable {
   /// \brief Compare two sort orders for equality.
   bool Equals(const SortOrder& other) const;
 
-  int64_t order_id_;
+  int32_t order_id_;
   std::vector<SortField> fields_;
 };
 

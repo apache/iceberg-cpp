@@ -21,14 +21,21 @@
 
 #include <format>
 
+#include "iceberg/constants.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
 namespace iceberg {
 
-SortOrder::SortOrder(int64_t order_id, std::vector<SortField> fields)
+SortOrder::SortOrder(int32_t order_id, std::vector<SortField> fields)
     : order_id_(order_id), fields_(std::move(fields)) {}
 
-int64_t SortOrder::order_id() const { return order_id_; }
+const std::shared_ptr<SortOrder>& SortOrder::Unsorted() {
+  static const std::shared_ptr<SortOrder> unsorted =
+      std::make_shared<SortOrder>(kInitialSortOrderId, std::vector<SortField>{});
+  return unsorted;
+}
+
+int32_t SortOrder::order_id() const { return order_id_; }
 
 std::span<const SortField> SortOrder::fields() const { return fields_; }
 

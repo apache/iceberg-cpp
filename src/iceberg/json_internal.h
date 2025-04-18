@@ -126,10 +126,12 @@ nlohmann::json ToJson(const PartitionField& partition_field);
 /// and name.
 ///
 /// \param json The JSON object representing a `PartitionField`.
+/// \param allow_field_id_missing Whether the field ID is allowed to be missing. This can
+/// happen when deserializing partition fields from V1 metadata files.
 /// \return An `expected` value containing either a `PartitionField` object or an error.
 /// If the JSON is malformed or missing expected fields, an error will be returned.
 Result<std::unique_ptr<PartitionField>> PartitionFieldFromJson(
-    const nlohmann::json& json);
+    const nlohmann::json& json, bool allow_field_id_missing = false);
 
 /// \brief Serializes a `PartitionSpec` object to JSON.
 ///

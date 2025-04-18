@@ -23,6 +23,7 @@
 /// Partition specs for Iceberg tables.
 
 #include <cstdint>
+#include <optional>
 #include <span>
 #include <string>
 #include <vector>
@@ -40,8 +41,24 @@ namespace iceberg {
 /// evolution.
 class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
  public:
+  /// \brief The start ID for partition field.  It is only used to generate
+  /// partition field id for v1 metadata where it is tracked.
+  constexpr static int32_t kLegacyPartitionDataIdStart = 1000;
+
+  /// \brief Create a new partition spec.
+  ///
+  /// \param schema The table schema.
+  /// \param spec_id The spec ID.
+  /// \param fields The partition fields.
+  /// \param last_assigned_field_id The last assigned field ID. If not provided, it will
+  /// be calculated from the fields.
   PartitionSpec(std::shared_ptr<Schema> schema, int32_t spec_id,
-                std::vector<PartitionField> fields);
+                std::vector<PartitionField> fields,
+                std::optional<int32_t> last_assigned_field_id = std::nullopt);
+
+  /// \brief Get an unsorted partition spec singleton.
+  static const std::shared_ptr<PartitionSpec>& Unpartitioned();
+
   /// \brief Get the table schema
   const std::shared_ptr<Schema>& schema() const;
   /// \brief Get the spec ID.
@@ -50,6 +67,8 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   std::span<const PartitionField> fields() const;
 
   std::string ToString() const override;
+
+  int32_t last_assigned_field_id() const { return last_assigned_field_id_; }
 
   friend bool operator==(const PartitionSpec& lhs, const PartitionSpec& rhs) {
     return lhs.Equals(rhs);
@@ -66,6 +85,7 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   std::shared_ptr<Schema> schema_;
   const int32_t spec_id_;
   std::vector<PartitionField> fields_;
+  int32_t last_assigned_field_id_;
 };
 
 }  // namespace iceberg

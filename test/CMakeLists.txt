@@ -23,12 +23,15 @@ fetchcontent_declare(googletest
                      GTest)
 fetchcontent_makeavailable(googletest)
 
+set(ICEBERG_TEST_RESOURCES "${CMAKE_SOURCE_DIR}/test/resources")
+
+configure_file("${CMAKE_SOURCE_DIR}/test/test_config.h.in"
+               "${CMAKE_BINARY_DIR}/iceberg/test/test_config.h")
+
 add_executable(schema_test)
 target_sources(schema_test
-               PRIVATE json_internal_test.cc
-                       schema_test.cc
+               PRIVATE schema_test.cc
                        schema_field_test.cc
-                       schema_json_test.cc
                        type_test.cc
                        transform_test.cc
                        partition_field_test.cc
@@ -49,6 +52,14 @@ target_sources(expression_test PRIVATE expression_test.cc)
 target_link_libraries(expression_test PRIVATE iceberg_static GTest::gtest_main
                                               GTest::gmock)
 add_test(NAME expression_test COMMAND expression_test)
+
+add_executable(json_serde_test)
+target_include_directories(json_serde_test PRIVATE "${CMAKE_BINARY_DIR}")
+target_sources(json_serde_test PRIVATE json_internal_test.cc metadata_serde_test.cc
+                                       schema_json_test.cc)
+target_link_libraries(json_serde_test PRIVATE iceberg_static GTest::gtest_main
+                                              GTest::gmock)
+add_test(NAME json_serde_test COMMAND json_serde_test)
 
 if(ICEBERG_BUILD_BUNDLE)
   add_executable(avro_test)

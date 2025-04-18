@@ -17,31 +17,22 @@
  * under the License.
  */
 
-#include "iceberg/schema.h"
+#pragma once
 
-#include <format>
-
-#include "iceberg/type.h"
-#include "iceberg/util/formatter.h"  // IWYU pragma: keep
+#include <cstdint>
 
 namespace iceberg {
 
-Schema::Schema(std::vector<SchemaField> fields, std::optional<int32_t> schema_id)
-    : StructType(std::move(fields)), schema_id_(schema_id) {}
-
-std::optional<int32_t> Schema::schema_id() const { return schema_id_; }
-
-std::string Schema::ToString() const {
-  std::string repr = "schema<";
-  for (const auto& field : fields_) {
-    std::format_to(std::back_inserter(repr), "  {}\n", field);
-  }
-  repr += ">";
-  return repr;
-}
-
-bool Schema::Equals(const Schema& other) const {
-  return schema_id_ == other.schema_id_ && fields_ == other.fields_;
-}
+constexpr int8_t kDefaultTableFormatVersion = 2;
+constexpr int8_t kSupportedTableFormatVersion = 3;
+constexpr int8_t kMinFormatVersionRowLineage = 3;
+constexpr int32_t kInitialSpecId = 0;
+constexpr int32_t kInitialSortOrderId = 1;
+constexpr int32_t kInitialSchemaId = 0;
+constexpr int64_t kInitialRowId = 0;
+constexpr int64_t kInitialSequenceNumber = 0;
+constexpr int64_t kInvalidSequenceNumber = -1;
+constexpr int64_t kInvalidSnapshotId = -1;
+constexpr int32_t kInvalidFieldId = -1;
 
 }  // namespace iceberg

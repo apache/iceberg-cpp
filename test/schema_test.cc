@@ -32,7 +32,7 @@ TEST(SchemaTest, Basics) {
   {
     iceberg::SchemaField field1(5, "foo", std::make_shared<iceberg::IntType>(), true);
     iceberg::SchemaField field2(7, "bar", std::make_shared<iceberg::StringType>(), true);
-    iceberg::Schema schema(100, {field1, field2});
+    iceberg::Schema schema({field1, field2}, 100);
     ASSERT_EQ(schema, schema);
     ASSERT_EQ(100, schema.schema_id());
     std::span<const iceberg::SchemaField> fields = schema.fields();
@@ -56,7 +56,7 @@ TEST(SchemaTest, Basics) {
         iceberg::SchemaField field1(5, "foo", std::make_shared<iceberg::IntType>(), true);
         iceberg::SchemaField field2(5, "bar", std::make_shared<iceberg::StringType>(),
                                     true);
-        iceberg::Schema schema(100, {field1, field2});
+        iceberg::Schema schema({field1, field2}, 100);
       },
       ::testing::ThrowsMessage<std::runtime_error>(
           ::testing::HasSubstr("duplicate field ID 5")));
@@ -66,11 +66,11 @@ TEST(SchemaTest, Equality) {
   iceberg::SchemaField field1(5, "foo", std::make_shared<iceberg::IntType>(), true);
   iceberg::SchemaField field2(7, "bar", std::make_shared<iceberg::StringType>(), true);
   iceberg::SchemaField field3(5, "foobar", std::make_shared<iceberg::IntType>(), true);
-  iceberg::Schema schema1(100, {field1, field2});
-  iceberg::Schema schema2(101, {field1, field2});
-  iceberg::Schema schema3(101, {field1});
-  iceberg::Schema schema4(101, {field3, field2});
-  iceberg::Schema schema5(100, {field1, field2});
+  iceberg::Schema schema1({field1, field2}, 100);
+  iceberg::Schema schema2({field1, field2}, 101);
+  iceberg::Schema schema3({field1}, 101);
+  iceberg::Schema schema4({field3, field2}, 101);
+  iceberg::Schema schema5({field1, field2}, 100);
 
   ASSERT_EQ(schema1, schema1);
   ASSERT_NE(schema1, schema2);
