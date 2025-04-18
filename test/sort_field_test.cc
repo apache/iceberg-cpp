@@ -24,7 +24,6 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/transform.h"
-#include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
 namespace iceberg {

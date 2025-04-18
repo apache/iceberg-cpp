@@ -78,14 +78,4 @@ Result<std::shared_ptr<SortOrder>> TableMetadata::SortOrder() const {
   return *iter;
 }
 
-Result<TimePointMs> TimePointMsFromUnixMs(int64_t unix_ms) {
-  return TimePointMs{std::chrono::milliseconds(unix_ms)};
-}
-
-int64_t UnixMsFromTimePointMs(const TimePointMs& time_point_ms) {
-  return std::chrono::duration_cast<std::chrono::milliseconds>(
-             time_point_ms.time_since_epoch())
-      .count();
-}
-
 }  // namespace iceberg

@@ -28,6 +28,7 @@
 #include <unordered_set>
 
 #include <iceberg/table.h>
+#include <iceberg/util/timepoint.h>
 #include <nlohmann/json.hpp>
 
 #include "iceberg/partition_field.h"
@@ -502,7 +503,7 @@ nlohmann::json ToJson(const Snapshot& snapshot) {
   if (snapshot.sequence_number > TableMetadata::kInitialSequenceNumber) {
     json[kSequenceNumber] = snapshot.sequence_number;
   }
-  json[kTimestampMs] = snapshot.timestamp_ms;
+  json[kTimestampMs] = UnixMsFromTimePointMs(snapshot.timestamp_ms);
   json[kManifestList] = snapshot.manifest_list;
   // If there is an operation, write the summary map
   if (snapshot.operation().has_value()) {
@@ -722,7 +723,9 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot_id, GetJsonValue<int64_t>(json, kSnapshotId));
   ICEBERG_ASSIGN_OR_RAISE(auto sequence_number,
                           GetJsonValueOptional<int64_t>(json, kSequenceNumber));
-  ICEBERG_ASSIGN_OR_RAISE(auto timestamp_ms, GetJsonValue<int64_t>(json, kTimestampMs));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto timestamp_ms,
+      GetJsonValue<int64_t>(json, kTimestampMs).and_then(TimePointMsFromUnixMs));
   ICEBERG_ASSIGN_OR_RAISE(auto manifest_list,
                           GetJsonValue<std::string>(json, kManifestList));
 
@@ -735,24 +738,14 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
   if (summary_json.has_value()) {
     for (const auto& [key, value] : summary_json->items()) {
       if (!kValidSnapshotSummaryFields.contains(key)) {
-        return unexpected<Error>({
-            .kind = ErrorKind::kJsonParseError,
-            .message = std::format("Invalid snapshot summary field: {}", key),
-        });
+        return JsonParseError("Invalid snapshot summary field: {}", key);
       }
       if (!value.is_string()) {
-        return unexpected<Error>({
-            .kind = ErrorKind::kJsonParseError,
-            .message =
-                std::format("Invalid snapshot summary field value: {}", value.dump()),
-        });
+        return JsonParseError("Invalid snapshot summary field value: {}", value.dump());
       }
       if (key == SnapshotSummaryFields::kOperation &&
           !kValidDataOperation.contains(value.get<std::string>())) {
-        return unexpected<Error>({
-            .kind = ErrorKind::kJsonParseError,
-            .message = std::format("Invalid snapshot operation: {}", value.dump()),
-        });
+        return JsonParseError("Invalid snapshot operation: {}", value.dump());
       }
       summary[key] = value.get<std::string>();
     }

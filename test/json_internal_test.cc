@@ -23,6 +23,7 @@
 
 #include <gtest/gtest.h>
 #include <iceberg/result.h>
+#include <iceberg/util/timepoint.h>
 #include <nlohmann/json.hpp>
 
 #include "gmock/gmock.h"
@@ -198,7 +199,7 @@ TEST(JsonInternalTest, Snapshot) {
   Snapshot snapshot{.snapshot_id = 1234567890,
                     .parent_snapshot_id = 9876543210,
                     .sequence_number = 99,
-                    .timestamp_ms = 1234567890123,
+                    .timestamp_ms = TimePointMsFromUnixMs(1234567890123).value(),
                     .manifest_list = "/path/to/manifest_list",
                     .summary = summary,
                     .schema_id = 42};

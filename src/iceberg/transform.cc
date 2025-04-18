@@ -22,6 +22,8 @@
 #include <format>
 #include <regex>
 
+#include <iceberg/result.h>
+
 #include "iceberg/transform_function.h"
 #include "iceberg/type.h"
 
@@ -119,22 +121,16 @@ Result<std::unique_ptr<TransformFunction>> Transform::Bind(
       if (auto param = std::get_if<int32_t>(&param_)) {
         return std::make_unique<BucketTransform>(source_type, *param);
       }
-      return unexpected<Error>({
-          .kind = ErrorKind::kInvalidArgument,
-          .message = std::format(
-              "Bucket requires int32 param, none found in transform '{}'", type_str),
-      });
+      return InvalidArgumentError(
+          "Bucket requires int32 param, none found in transform '{}'", type_str);
     }
 
     case TransformType::kTruncate: {
       if (auto param = std::get_if<int32_t>(&param_)) {
         return std::make_unique<TruncateTransform>(source_type, *param);
       }
-      return unexpected<Error>({
-          .kind = ErrorKind::kInvalidArgument,
-          .message = std::format(
-              "Truncate requires int32 param, none found in transform '{}'", type_str),
-      });
+      return InvalidArgumentError(
+          "Truncate requires int32 param, none found in transform '{}'", type_str);
     }
 
     case TransformType::kYear:
@@ -149,10 +145,7 @@ Result<std::unique_ptr<TransformFunction>> Transform::Bind(
       return std::make_unique<VoidTransform>(source_type);
 
     default:
-      return unexpected<Error>({
-          .kind = ErrorKind::kNotSupported,
-          .message = std::format("Unsupported transform type: '{}'", type_str),
-      });
+      return NotSupportedError("Unsupported transform type: '{}'", type_str);
   }
 }
 
@@ -216,10 +209,7 @@ Result<std::shared_ptr<Transform>> TransformFromString(std::string_view transfor
     }
   }
 
-  return unexpected<Error>({
-      .kind = ErrorKind::kInvalidArgument,
-      .message = std::format("Invalid Transform string: {}", transform_str),
-  });
+  return InvalidArgumentError("Invalid Transform string: {}", transform_str);
 }
 
 }  // namespace iceberg

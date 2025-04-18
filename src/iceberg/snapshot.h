@@ -27,6 +27,7 @@
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
+#include "iceberg/util/timepoint.h"
 
 namespace iceberg {
 
@@ -55,9 +56,7 @@ ICEBERG_EXPORT constexpr Result<SnapshotRefType> SnapshotRefTypeFromString(
     std::string_view str) noexcept {
   if (str == "branch") return SnapshotRefType::kBranch;
   if (str == "tag") return SnapshotRefType::kTag;
-  return unexpected<Error>(
-      {.kind = ErrorKind::kInvalidArgument,
-       .message = "Invalid snapshot reference type: {}" + std::string(str)});
+  return InvalidArgumentError("Invalid snapshot reference type: {}", str);
 }
 
 /// \brief A reference to a snapshot, either a branch or a tag.
@@ -243,7 +242,7 @@ struct ICEBERG_EXPORT Snapshot {
   int64_t sequence_number;
   /// A timestamp when the snapshot was created, used for garbage collection and table
   /// inspection.
-  int64_t timestamp_ms;
+  TimePointMs timestamp_ms;
   /// The location of a manifest list for this snapshot that tracks manifest files with
   /// additional metadata.
   std::string manifest_list;
