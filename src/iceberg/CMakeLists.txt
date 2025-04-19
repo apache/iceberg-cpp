@@ -73,6 +73,7 @@ add_iceberg_lib(iceberg
 
 iceberg_install_all_headers(iceberg)
 
+add_subdirectory(catalog)
 add_subdirectory(expression)
 add_subdirectory(util)
 

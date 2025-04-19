@@ -131,7 +131,7 @@ class MemoryCatalogTest : public ::testing::Test {
  protected:
   void SetUp() override {
     file_io_ = nullptr;  // TODO(Guotao): A real FileIO instance needs to be constructed.
-    catalog_ = std::make_unique<MemoryCatalog>(file_io_, std::nullopt);
+    catalog_ = std::make_unique<MemoryCatalog>(file_io_, "/tmp/warehouse/");
     catalog_->Initialize("test_catalog", {{"prop1", "val1"}});
   }
 
