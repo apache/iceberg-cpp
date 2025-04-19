@@ -31,7 +31,7 @@ SortOrder::SortOrder(int32_t order_id, std::vector<SortField> fields)
 
 const std::shared_ptr<SortOrder>& SortOrder::Unsorted() {
   static const std::shared_ptr<SortOrder> unsorted =
-      std::make_shared<SortOrder>(kInitialSortOrderId, std::vector<SortField>{});
+      std::make_shared<SortOrder>(/*order_id=*/0, std::vector<SortField>{});
   return unsorted;
 }
 
