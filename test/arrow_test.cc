@@ -81,11 +81,11 @@ TEST_P(ToArrowSchemaTest, PrimitiveType) {
   constexpr int32_t kFieldId = 1024;
   const auto& param = GetParam();
   Schema schema(
-      /*schema_id=*/0,
       {param.optional ? SchemaField::MakeOptional(kFieldId, std::string(kFieldName),
                                                   param.iceberg_type)
                       : SchemaField::MakeRequired(kFieldId, std::string(kFieldName),
-                                                  param.iceberg_type)});
+                                                  param.iceberg_type)},
+      /*schema_id=*/0);
   ArrowSchema arrow_schema;
   ASSERT_THAT(ToArrowSchema(schema, &arrow_schema), IsOk());
 
@@ -166,9 +166,9 @@ TEST(ToArrowSchemaTest, StructType) {
                                 std::make_shared<IntType>()),
       SchemaField::MakeOptional(kStrFieldId, std::string(kStrFieldName),
                                 std::make_shared<StringType>())});
-  Schema schema(
-      /*schema_id=*/0, {SchemaField::MakeRequired(
-                           kStructFieldId, std::string(kStructFieldName), struct_type)});
+  Schema schema({SchemaField::MakeRequired(kStructFieldId, std::string(kStructFieldName),
+                                           struct_type)},
+                /*schema_id=*/0);
 
   ArrowSchema arrow_schema;
   ASSERT_THAT(ToArrowSchema(schema, &arrow_schema), IsOk());
@@ -199,8 +199,8 @@ TEST(ToArrowSchemaTest, ListType) {
   auto list_type = std::make_shared<ListType>(SchemaField::MakeOptional(
       kElemFieldId, std::string(kElemFieldName), std::make_shared<LongType>()));
   Schema schema(
-      /*schema_id=*/0,
-      {SchemaField::MakeRequired(kListFieldId, std::string(kListFieldName), list_type)});
+      {SchemaField::MakeRequired(kListFieldId, std::string(kListFieldName), list_type)},
+      /*schema_id=*/0);
 
   ArrowSchema arrow_schema;
   ASSERT_THAT(ToArrowSchema(schema, &arrow_schema), IsOk());
@@ -234,8 +234,8 @@ TEST(ToArrowSchemaTest, MapType) {
                                 std::make_shared<IntType>()));
 
   Schema schema(
-      /*schema_id=*/0,
-      {SchemaField::MakeRequired(kFieldId, std::string(kMapFieldName), map_type)});
+      {SchemaField::MakeRequired(kFieldId, std::string(kMapFieldName), map_type)},
+      /*schema_id=*/0);
 
   ArrowSchema arrow_schema;
   ASSERT_THAT(ToArrowSchema(schema, &arrow_schema), IsOk());

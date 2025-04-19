@@ -20,6 +20,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 
 #include <nanoarrow/nanoarrow.h>
 
@@ -46,13 +47,14 @@ Status ToArrowSchema(const Schema& schema, ArrowSchema* out);
 /// \param[in] schema_id The schema ID of the Iceberg schema.
 /// \return The Iceberg schema or an error if the conversion fails.
 Result<std::unique_ptr<Schema>> FromArrowSchema(const ArrowSchema& schema,
-                                                int32_t schema_id);
+                                                std::optional<int32_t> schema_id);
 
 /// \brief Convert a struct type to an Iceberg schema.
 ///
 /// \param[in] struct_type The struct type to convert.
 /// \param[in] schema_id The schema ID of the Iceberg schema.
 /// \return The Iceberg schema.
-std::unique_ptr<Schema> FromStructType(StructType&& struct_type, int32_t schema_id);
+std::unique_ptr<Schema> FromStructType(StructType&& struct_type,
+                                       std::optional<int32_t> schema_id);
 
 }  // namespace iceberg

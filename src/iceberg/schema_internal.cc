@@ -331,17 +331,18 @@ Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
 
 }  // namespace
 
-std::unique_ptr<Schema> FromStructType(StructType&& struct_type, int32_t schema_id) {
+std::unique_ptr<Schema> FromStructType(StructType&& struct_type,
+                                       std::optional<int32_t> schema_id) {
   std::vector<SchemaField> fields;
   fields.reserve(struct_type.fields().size());
   for (auto& field : struct_type.fields()) {
     fields.emplace_back(std::move(field));
   }
-  return std::make_unique<Schema>(schema_id, std::move(fields));
+  return std::make_unique<Schema>(std::move(fields), schema_id);
 }
 
 Result<std::unique_ptr<Schema>> FromArrowSchema(const ArrowSchema& schema,
-                                                int32_t schema_id) {
+                                                std::optional<int32_t> schema_id) {
   auto type_result = FromArrowSchema(schema);
   if (!type_result) {
     return unexpected<Error>(type_result.error());

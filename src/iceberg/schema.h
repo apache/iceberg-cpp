@@ -24,6 +24,7 @@
 /// and any utility functions.  See iceberg/type.h and iceberg/field.h as well.
 
 #include <cstdint>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -40,13 +41,13 @@ namespace iceberg {
 /// evolution.
 class ICEBERG_EXPORT Schema : public StructType {
  public:
-  Schema(int32_t schema_id, std::vector<SchemaField> fields);
+  Schema(std::vector<SchemaField> fields, std::optional<int32_t> schema_id);
 
   /// \brief Get the schema ID.
   ///
   /// A schema is identified by a unique ID for the purposes of schema
   /// evolution.
-  [[nodiscard]] int32_t schema_id() const;
+  [[nodiscard]] std::optional<int32_t> schema_id() const;
 
   [[nodiscard]] std::string ToString() const override;
 
@@ -58,7 +59,7 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// \brief Compare two schemas for equality.
   [[nodiscard]] bool Equals(const Schema& other) const;
 
-  const int32_t schema_id_;
+  const std::optional<int32_t> schema_id_;
 };
 
 }  // namespace iceberg
