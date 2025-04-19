@@ -27,8 +27,22 @@
 
 namespace iceberg {
 
+namespace {
+
+NamespaceContainer* GetNamespaceContainer(NamespaceContainer* root,
+                                          const Namespace& namespace_ident) {
+  return NamespaceContainer::GetNamespaceContainerImpl(root, namespace_ident);
+}
+
+const NamespaceContainer* GetNamespaceContainer(const NamespaceContainer* root,
+                                                const Namespace& namespace_ident) {
+  return NamespaceContainer::GetNamespaceContainerImpl(root, namespace_ident);
+}
+
+}  // namespace
+
 MemoryCatalog::MemoryCatalog(std::shared_ptr<FileIO> file_io,
-                             std::optional<std::string> warehouse_location)
+                             std::string warehouse_location)
     : file_io_(std::move(file_io)),
       warehouse_location_(std::move(warehouse_location)),
       root_container_(std::make_unique<NamespaceContainer>()) {}
@@ -58,21 +72,24 @@ Result<std::unique_ptr<Table>> MemoryCatalog::CreateTable(
     const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
     const std::string& location,
     const std::unordered_map<std::string, std::string>& properties) {
-  throw IcebergError("not implemented");
+  return unexpected<Error>(
+      {.kind = ErrorKind::kNotImplemented, .message = "CreateTable"});
 }
 
 Result<std::unique_ptr<Table>> MemoryCatalog::UpdateTable(
     const TableIdentifier& identifier,
     const std::vector<std::unique_ptr<UpdateRequirement>>& requirements,
     const std::vector<std::unique_ptr<MetadataUpdate>>& updates) {
-  throw IcebergError("not implemented");
+  return unexpected<Error>(
+      {.kind = ErrorKind::kNotImplemented, .message = "UpdateTable"});
 }
 
 Result<std::shared_ptr<Transaction>> MemoryCatalog::StageCreateTable(
     const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
     const std::string& location,
     const std::unordered_map<std::string, std::string>& properties) {
-  throw IcebergError("not implemented");
+  return unexpected<Error>(
+      {.kind = ErrorKind::kNotImplemented, .message = "StageCreateTable"});
 }
 
 bool MemoryCatalog::TableExists(const TableIdentifier& identifier) const {
@@ -88,7 +105,7 @@ bool MemoryCatalog::DropTable(const TableIdentifier& identifier, bool purge) {
 
 Result<std::shared_ptr<Table>> MemoryCatalog::LoadTable(
     const TableIdentifier& identifier) const {
-  throw IcebergError("not implemented");
+  return unexpected<Error>({.kind = ErrorKind::kNotImplemented, .message = "LoadTable"});
 }
 
 Result<std::shared_ptr<Table>> MemoryCatalog::RegisterTable(
@@ -108,17 +125,6 @@ Result<std::shared_ptr<Table>> MemoryCatalog::RegisterTable(
 std::unique_ptr<TableBuilder> MemoryCatalog::BuildTable(const TableIdentifier& identifier,
                                                         const Schema& schema) const {
   throw IcebergError("not implemented");
-}
-
-/// Implementation of NamespaceContainer
-NamespaceContainer* NamespaceContainer::GetNamespaceContainer(
-    NamespaceContainer* root, const Namespace& namespace_ident) {
-  return GetNamespaceContainerImpl(root, namespace_ident);
-}
-
-const NamespaceContainer* NamespaceContainer::GetNamespaceContainer(
-    const NamespaceContainer* root, const Namespace& namespace_ident) {
-  return GetNamespaceContainerImpl(root, namespace_ident);
 }
 
 bool NamespaceContainer::NamespaceExists(const Namespace& namespace_ident) const {
@@ -157,7 +163,9 @@ bool NamespaceContainer::CreateNamespace(
     }
   }
 
-  if (!newly_created) return false;
+  if (!newly_created) {
+    return false;
+  }
 
   container->properties_ = properties;
   return true;
