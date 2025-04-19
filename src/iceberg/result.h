@@ -28,20 +28,19 @@
 namespace iceberg {
 
 /// \brief Error types for iceberg.
-/// TODO: add more and sort them based on some rules.
 enum class ErrorKind {
-  kNoSuchNamespace,
   kAlreadyExists,
-  kNoSuchTable,
   kCommitStateUnknown,
-  kInvalidSchema,
   kInvalidArgument,
-  kIOError,
-  kNotImplemented,
-  kUnknownError,
-  kNotSupported,
   kInvalidExpression,
+  kInvalidSchema,
+  kIOError,
   kJsonParseError,
+  kNoSuchNamespace,
+  kNoSuchTable,
+  kNotImplemented,
+  kNotSupported,
+  kUnknownError,
 };
 
 /// \brief Error with a kind and a message.
@@ -62,28 +61,28 @@ using Result = expected<T, E>;
 
 using Status = Result<void>;
 
-/// \brief Create an unexpected error with kNotImplemented
-template <typename... Args>
-auto NotImplementedError(const std::format_string<Args...> fmt, Args&&... args)
-    -> unexpected<Error> {
-  return unexpected<Error>({.kind = ErrorKind::kNotImplemented,
-                            .message = std::format(fmt, std::forward<Args>(args)...)});
-}
+/// \brief Macro to define error creation functions
+#define DEFINE_ERROR_FUNCTION(name)                                           \
+  template <typename... Args>                                                 \
+  inline auto name(const std::format_string<Args...> fmt, Args&&... args)     \
+      -> unexpected<Error> {                                                  \
+    return unexpected<Error>(                                                 \
+        {ErrorKind::k##name, std::format(fmt, std::forward<Args>(args)...)}); \
+  }
 
-/// \brief Create an unexpected error with kJsonParseError
-template <typename... Args>
-auto JsonParseError(const std::format_string<Args...> fmt, Args&&... args)
-    -> unexpected<Error> {
-  return unexpected<Error>({.kind = ErrorKind::kJsonParseError,
-                            .message = std::format(fmt, std::forward<Args>(args)...)});
-}
+DEFINE_ERROR_FUNCTION(AlreadyExists)
+DEFINE_ERROR_FUNCTION(CommitStateUnknown)
+DEFINE_ERROR_FUNCTION(InvalidArgument)
+DEFINE_ERROR_FUNCTION(InvalidExpression)
+DEFINE_ERROR_FUNCTION(InvalidSchema)
+DEFINE_ERROR_FUNCTION(IOError)
+DEFINE_ERROR_FUNCTION(JsonParseError)
+DEFINE_ERROR_FUNCTION(NoSuchNamespace)
+DEFINE_ERROR_FUNCTION(NoSuchTable)
+DEFINE_ERROR_FUNCTION(NotImplemented)
+DEFINE_ERROR_FUNCTION(NotSupported)
+DEFINE_ERROR_FUNCTION(UnknownError)
 
-/// \brief Create an unexpected error with kInvalidExpression
-template <typename... Args>
-auto InvalidExpressionError(const std::format_string<Args...> fmt, Args&&... args)
-    -> unexpected<Error> {
-  return unexpected<Error>({.kind = ErrorKind::kInvalidExpression,
-                            .message = std::format(fmt, std::forward<Args>(args)...)});
-}
+#undef DEFINE_ERROR_FUNCTION
 
 }  // namespace iceberg

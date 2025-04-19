@@ -22,27 +22,16 @@
 /// \file iceberg/table_metadata.h
 /// Table metadata for Iceberg tables.
 
-#include <chrono>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/timepoint.h"
 
 namespace iceberg {
-
-/// \brief A time point in milliseconds
-using TimePointMs =
-    std::chrono::time_point<std::chrono::system_clock, std::chrono::milliseconds>;
-
-/// \brief Returns a TimePointMs from a Unix timestamp in milliseconds
-ICEBERG_EXPORT Result<TimePointMs> TimePointMsFromUnixMs(int64_t unix_ms);
-
-/// \brief Returns a Unix timestamp in milliseconds from a TimePointMs
-ICEBERG_EXPORT int64_t UnixMsFromTimePointMs(const TimePointMs& time_point_ms);
 
 /// \brief Represents a snapshot log entry
 struct ICEBERG_EXPORT SnapshotLogEntry {

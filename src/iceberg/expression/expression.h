@@ -68,8 +68,7 @@ class ICEBERG_EXPORT Expression {
 
   /// \brief Returns the negation of this expression, equivalent to not(this).
   virtual Result<std::shared_ptr<Expression>> Negate() const {
-    return unexpected(
-        Error(ErrorKind::kInvalidExpression, "Expression cannot be negated"));
+    return InvalidExpression("Expression cannot be negated");
   }
 
   /// \brief Returns whether this expression will accept the same values as another.

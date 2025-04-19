@@ -27,6 +27,7 @@
 
 #include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
+#include "matchers.h"
 
 namespace iceberg {
 
@@ -112,7 +113,7 @@ TEST(TransformFromStringTest, NegativeCases) {
   for (const auto& str : invalid_cases) {
     auto result = TransformFromString(str);
     EXPECT_FALSE(result.has_value()) << "Unexpected success for: " << str;
-    EXPECT_EQ(result.error().kind, ErrorKind::kInvalidArgument);
+    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   }
 }
 

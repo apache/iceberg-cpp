@@ -57,9 +57,7 @@ ICEBERG_EXPORT constexpr Result<SortDirection> SortDirectionFromString(
     std::string_view str) {
   if (str == "asc") return SortDirection::kAscending;
   if (str == "desc") return SortDirection::kDescending;
-  return unexpected<Error>(
-      {.kind = ErrorKind::kInvalidArgument,
-       .message = "Invalid SortDirection string: " + std::string(str)});
+  return InvalidArgument("Invalid SortDirection string: {}", str);
 }
 
 enum class NullOrder {
@@ -83,8 +81,7 @@ ICEBERG_EXPORT constexpr std::string_view NullOrderToString(NullOrder null_order
 ICEBERG_EXPORT constexpr Result<NullOrder> NullOrderFromString(std::string_view str) {
   if (str == "nulls-first") return NullOrder::kFirst;
   if (str == "nulls-last") return NullOrder::kLast;
-  return unexpected<Error>({.kind = ErrorKind::kInvalidArgument,
-                            .message = "Invalid NullOrder string: " + std::string(str)});
+  return InvalidArgument("Invalid NullOrder string: {}", str);
 }
 
 /// \brief a field with its transform.
