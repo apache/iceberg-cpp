@@ -27,8 +27,6 @@
 #include <type_traits>
 #include <unordered_set>
 
-#include <iceberg/table.h>
-#include <iceberg/util/timepoint.h>
 #include <nlohmann/json.hpp>
 
 #include "iceberg/partition_field.h"
@@ -39,11 +37,13 @@
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/statistics_file.h"
+#include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
+#include "iceberg/util/timepoint.h"
 
 namespace iceberg {
 

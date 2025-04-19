@@ -65,7 +65,7 @@ using Status = Result<void>;
 /// \brief Macro to define error creation functions
 #define DEFINE_ERROR_FUNCTION(name)                                           \
   template <typename... Args>                                                 \
-  auto name(const std::format_string<Args...> fmt, Args&&... args)            \
+  inline auto name(const std::format_string<Args...> fmt, Args&&... args)     \
       -> unexpected<Error> {                                                  \
     return unexpected<Error>(                                                 \
         {ErrorKind::k##name, std::format(fmt, std::forward<Args>(args)...)}); \
@@ -80,6 +80,7 @@ DEFINE_ERROR_FUNCTION(IOError)
 DEFINE_ERROR_FUNCTION(JsonParseError)
 DEFINE_ERROR_FUNCTION(NoSuchNamespace)
 DEFINE_ERROR_FUNCTION(NoSuchTable)
+DEFINE_ERROR_FUNCTION(NotFound)
 DEFINE_ERROR_FUNCTION(NotImplemented)
 DEFINE_ERROR_FUNCTION(NotSupported)
 DEFINE_ERROR_FUNCTION(UnknownError)

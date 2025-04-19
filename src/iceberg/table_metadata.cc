@@ -23,8 +23,8 @@
 #include <ranges>
 #include <string>
 
-#include "iceberg/expected.h"
 #include "iceberg/partition_spec.h"
+#include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/sort_order.h"
 namespace iceberg {
@@ -44,10 +44,7 @@ Result<std::shared_ptr<Schema>> TableMetadata::Schema() const {
     return schema->schema_id() == current_schema_id;
   });
   if (iter == schemas.end()) {
-    return unexpected<Error>({
-        .kind = ErrorKind::kNotFound,
-        .message = std::format("Current schema is not found"),
-    });
+    return NotFound("Current schema is not found");
   }
   return *iter;
 }
@@ -57,10 +54,7 @@ Result<std::shared_ptr<PartitionSpec>> TableMetadata::PartitionSpec() const {
     return spec->spec_id() == default_spec_id;
   });
   if (iter == partition_specs.end()) {
-    return unexpected<Error>({
-        .kind = ErrorKind::kNotFound,
-        .message = std::format("Default partition spec is not found"),
-    });
+    return NotFound("Default partition spec is not found");
   }
   return *iter;
 }
@@ -70,10 +64,7 @@ Result<std::shared_ptr<SortOrder>> TableMetadata::SortOrder() const {
     return order->order_id() == default_sort_order_id;
   });
   if (iter == sort_orders.end()) {
-    return unexpected<Error>({
-        .kind = ErrorKind::kNotFound,
-        .message = std::format("Default sort order is not found"),
-    });
+    return NotFound("Default sort order is not found");
   }
   return *iter;
 }

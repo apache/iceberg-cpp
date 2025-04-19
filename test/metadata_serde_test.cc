@@ -166,22 +166,23 @@ TEST_F(MetadataSerdeTest, DeserializeV2Valid) {
   EXPECT_EQ(metadata->current_snapshot_id, 3055729675574597004);
 
   // Compare snapshots
-  std::vector<Snapshot> expected_snapshots{{
-                                               .snapshot_id = 3051729675574597004,
-                                               .sequence_number = 0,
-                                               .timestamp_ms = 1515100955770,
-                                               .manifest_list = "s3://a/b/1.avro",
-                                               .summary = {{"operation", "append"}},
-                                           },
-                                           {
-                                               .snapshot_id = 3055729675574597004,
-                                               .parent_snapshot_id = 3051729675574597004,
-                                               .sequence_number = 1,
-                                               .timestamp_ms = 1555100955770,
-                                               .manifest_list = "s3://a/b/2.avro",
-                                               .summary = {{"operation", "append"}},
-                                               .schema_id = 1,
-                                           }};
+  std::vector<Snapshot> expected_snapshots{
+      {
+          .snapshot_id = 3051729675574597004,
+          .sequence_number = 0,
+          .timestamp_ms = TimePointMsFromUnixMs(1515100955770).value(),
+          .manifest_list = "s3://a/b/1.avro",
+          .summary = {{"operation", "append"}},
+      },
+      {
+          .snapshot_id = 3055729675574597004,
+          .parent_snapshot_id = 3051729675574597004,
+          .sequence_number = 1,
+          .timestamp_ms = TimePointMsFromUnixMs(1555100955770).value(),
+          .manifest_list = "s3://a/b/2.avro",
+          .summary = {{"operation", "append"}},
+          .schema_id = 1,
+      }};
   EXPECT_EQ(metadata->snapshots.size(), expected_snapshots.size());
   for (size_t i = 0; i < expected_snapshots.size(); ++i) {
     EXPECT_EQ(*metadata->snapshots[i], expected_snapshots[i]);
