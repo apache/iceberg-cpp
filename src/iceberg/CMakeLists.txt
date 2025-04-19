@@ -19,6 +19,7 @@ set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
                      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>")
 set(ICEBERG_SOURCES
     arrow_c_data_internal.cc
+    catalog/memory_catalog.cc
     demo.cc
     expression/expression.cc
     json_internal.cc
@@ -68,6 +69,7 @@ add_iceberg_lib(iceberg
 
 iceberg_install_all_headers(iceberg)
 
+add_subdirectory(catalog)
 add_subdirectory(expression)
 add_subdirectory(util)
 
