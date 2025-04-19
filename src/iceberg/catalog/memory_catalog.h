@@ -31,8 +31,7 @@ class NamespaceContainer;
 
 class ICEBERG_EXPORT MemoryCatalog : public Catalog {
  public:
-  MemoryCatalog(std::shared_ptr<FileIO> file_io,
-                std::optional<std::string> warehouse_location);
+  MemoryCatalog(std::shared_ptr<FileIO> file_io, std::string warehouse_location);
 
   void Initialize(
       const std::string& name,
@@ -75,13 +74,13 @@ class ICEBERG_EXPORT MemoryCatalog : public Catalog {
   std::string catalog_name_;
   std::unordered_map<std::string, std::string> properties_;
   std::shared_ptr<FileIO> file_io_;
-  std::optional<std::string> warehouse_location_;
+  std::string warehouse_location_;
   std::unique_ptr<NamespaceContainer> root_container_;
   mutable std::recursive_mutex mutex_;
 };
 
 /**
- * @brief A hierarchical container that manages namespaces and table metadata in-memory.
+ * \brief A hierarchical container that manages namespaces and table metadata in-memory.
  *
  * Each NamespaceContainer represents a namespace level and can contain properties,
  * tables, and child namespaces. This structure enables a tree-like representation
@@ -90,118 +89,94 @@ class ICEBERG_EXPORT MemoryCatalog : public Catalog {
 class ICEBERG_EXPORT NamespaceContainer {
  public:
   /**
-   * @brief Checks whether the given namespace exists.
-   * @param namespace_ident The namespace to check.
-   * @return True if the namespace exists; false otherwise.
+   * \brief Checks whether the given namespace exists.
+   * \param[in] namespace_ident The namespace to check.
+   * \return True if the namespace exists; false otherwise.
    */
   bool NamespaceExists(const Namespace& namespace_ident) const;
 
   /**
-   * @brief Lists immediate child namespaces under the given parent namespace.
-   * @param parent_namespace_ident The optional parent namespace. If not provided,
+   * \brief Lists immediate child namespaces under the given parent namespace.
+   * \param[in] parent_namespace_ident The optional parent namespace. If not provided,
    *                                the children of the root are returned.
-   * @return A vector of child namespace names.
+   * \return A vector of child namespace names.
    */
   std::vector<std::string> ListChildrenNamespaces(
       const std::optional<Namespace>& parent_namespace_ident = std::nullopt) const;
 
   /**
-   * @brief Creates a new namespace with the specified properties.
-   * @param namespace_ident The namespace to create.
-   * @param properties A map of key-value pairs to associate with the namespace.
-   * @return True if the namespace was successfully created; false if it already exists.
+   * \brief Creates a new namespace with the specified properties.
+   * \param[in] namespace_ident The namespace to create.
+   * \param[in] properties A map of key-value pairs to associate with the namespace.
+   * \return True if the namespace was successfully created; false if it already exists.
    */
   bool CreateNamespace(const Namespace& namespace_ident,
                        const std::unordered_map<std::string, std::string>& properties);
 
   /**
-   * @brief Deletes an existing namespace.
-   * @param namespace_ident The namespace to delete.
-   * @return True if the namespace was successfully deleted; false if it does not exist.
+   * \brief Deletes an existing namespace.
+   * \param[in] namespace_ident The namespace to delete.
+   * \return True if the namespace was successfully deleted; false if it does not exist.
    */
   bool DeleteNamespace(const Namespace& namespace_ident);
 
   /**
-   * @brief Retrieves the properties of the specified namespace.
-   * @param namespace_ident The namespace whose properties to retrieve.
-   * @return An optional containing the properties map if the namespace exists;
+   * \brief Retrieves the properties of the specified namespace.
+   * \param[in] namespace_ident The namespace whose properties to retrieve.
+   * \return An optional containing the properties map if the namespace exists;
    *         std::nullopt otherwise.
    */
   std::optional<std::unordered_map<std::string, std::string>> GetProperties(
       const Namespace& namespace_ident) const;
 
   /**
-   * @brief Replaces all properties of the given namespace.
-   * @param namespace_ident The namespace whose properties will be replaced.
-   * @param properties The new properties map.
-   * @return True if the namespace exists and properties were replaced; false otherwise.
+   * \brief Replaces all properties of the given namespace.
+   * \param[in] namespace_ident The namespace whose properties will be replaced.
+   * \param[in] properties The new properties map.
+   * \return True if the namespace exists and properties were replaced; false otherwise.
    */
   bool ReplaceProperties(const Namespace& namespace_ident,
                          const std::unordered_map<std::string, std::string>& properties);
 
   /**
-   * @brief Lists all table names under the specified namespace.
-   * @param namespace_ident The namespace from which to list tables.
-   * @return A vector of table names.
+   * \brief Lists all table names under the specified namespace.
+   * \param[in] namespace_ident The namespace from which to list tables.
+   * \return A vector of table names.
    */
   std::vector<std::string> ListTables(const Namespace& namespace_ident) const;
 
   /**
-   * @brief Registers a table in the given namespace with a metadata location.
-   * @param table_ident The fully qualified identifier of the table.
-   * @param metadata_location The path to the table's metadata.
-   * @return True if the table was registered successfully; false otherwise.
+   * \brief Registers a table in the given namespace with a metadata location.
+   * \param[in] table_ident The fully qualified identifier of the table.
+   * \param[in] metadata_location The path to the table's metadata.
+   * \return True if the table was registered successfully; false otherwise.
    */
   bool RegisterTable(TableIdentifier const& table_ident,
                      const std::string& metadata_location);
 
   /**
-   * @brief Unregisters a table from the specified namespace.
-   * @param table_ident The identifier of the table to unregister.
-   * @return True if the table existed and was removed; false otherwise.
+   * \brief Unregisters a table from the specified namespace.
+   * \param[in] table_ident The identifier of the table to unregister.
+   * \return True if the table existed and was removed; false otherwise.
    */
   bool UnregisterTable(TableIdentifier const& table_ident);
 
   /**
-   * @brief Checks if a table exists in the specified namespace.
-   * @param table_ident The identifier of the table to check.
-   * @return True if the table exists; false otherwise.
+   * \brief Checks if a table exists in the specified namespace.
+   * \param[in] table_ident The identifier of the table to check.
+   * \return True if the table exists; false otherwise.
    */
   bool TableExists(TableIdentifier const& table_ident) const;
 
   /**
-   * @brief Gets the metadata location for the specified table.
-   * @param table_ident The identifier of the table.
-   * @return An optional string containing the metadata location if the table exists;
+   * \brief Gets the metadata location for the specified table.
+   * \param[in] table_ident The identifier of the table.
+   * \return An optional string containing the metadata location if the table exists;
    *         std::nullopt otherwise.
    */
   std::optional<std::string> GetTableMetadataLocation(
       TableIdentifier const& table_ident) const;
 
- private:
-  /**
-   * @brief Helper function to retrieve the container node for a given namespace.
-   * @param root The root of the tree to search.
-   * @param namespace_ident The namespace path to traverse.
-   * @return A pointer to the corresponding NamespaceContainer if it exists; nullptr
-   * otherwise.
-   */
-  static NamespaceContainer* GetNamespaceContainer(NamespaceContainer* root,
-                                                   const Namespace& namespace_ident);
-
-  /**
-   * @brief Const version of GetNamespaceContainer.
-   */
-  static const NamespaceContainer* GetNamespaceContainer(
-      const NamespaceContainer* root, const Namespace& namespace_ident);
-
-  /**
-   * @brief Templated implementation for retrieving a NamespaceContainer node.
-   * @tparam ContainerPtr Pointer type to NamespaceContainer (const or non-const).
-   * @param root The root node.
-   * @param namespace_ident The namespace path.
-   * @return A pointer to the container node if found; nullptr otherwise.
-   */
   template <typename ContainerPtr>
   static ContainerPtr GetNamespaceContainerImpl(ContainerPtr root,
                                                 const Namespace& namespace_ident) {
@@ -216,6 +191,7 @@ class ICEBERG_EXPORT NamespaceContainer {
     return node;
   }
 
+ private:
   /// Map of child namespace names to their corresponding container instances.
   std::unordered_map<std::string, NamespaceContainer> children_;
 
