@@ -19,7 +19,8 @@
 #include "iceberg/snapshot.h"
 
 #include <gtest/gtest.h>
-#include <iceberg/util/timepoint.h>
+
+#include "iceberg/util/timepoint.h"
 
 namespace iceberg {
 

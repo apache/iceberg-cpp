@@ -20,11 +20,8 @@
 #include "iceberg/schema_internal.h"
 
 #include <cstring>
-#include <format>
 #include <optional>
 #include <string>
-
-#include <iceberg/result.h>
 
 #include "iceberg/schema.h"
 #include "iceberg/type.h"
@@ -173,13 +170,13 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
 
 Status ToArrowSchema(const Schema& schema, ArrowSchema* out) {
   if (out == nullptr) [[unlikely]] {
-    return InvalidArgumentError("Output Arrow schema cannot be null");
+    return InvalidArgument("Output Arrow schema cannot be null");
   }
 
   if (ArrowErrorCode errorCode = ToArrowSchema(schema, /*optional=*/false, /*name=*/"",
                                                /*field_id=*/std::nullopt, out);
       errorCode != NANOARROW_OK) {
-    return InvalidSchemaError(
+    return InvalidSchema(
         "Failed to convert Iceberg schema to Arrow schema, error code: {}", errorCode);
   }
 
@@ -221,8 +218,8 @@ Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
   ArrowSchemaView schema_view;
   if (auto error_code = ArrowSchemaViewInit(&schema_view, &schema, &arrow_error);
       error_code != NANOARROW_OK) {
-    return InvalidSchemaError("Failed to read Arrow schema, code: {}, message: {}",
-                              error_code, arrow_error.message);
+    return InvalidSchema("Failed to read Arrow schema, code: {}, message: {}", error_code,
+                         arrow_error.message);
   }
 
   switch (schema_view.type) {
@@ -267,16 +264,16 @@ Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
       return std::make_shared<DateType>();
     case NANOARROW_TYPE_TIME64:
       if (schema_view.time_unit != NANOARROW_TIME_UNIT_MICRO) {
-        return InvalidSchemaError("Unsupported time unit for Arrow time type: {}",
-                                  static_cast<int>(schema_view.time_unit));
+        return InvalidSchema("Unsupported time unit for Arrow time type: {}",
+                             static_cast<int>(schema_view.time_unit));
       }
       return std::make_shared<TimeType>();
     case NANOARROW_TYPE_TIMESTAMP: {
       bool with_timezone =
           schema_view.timezone != nullptr && std::strlen(schema_view.timezone) > 0;
       if (schema_view.time_unit != NANOARROW_TIME_UNIT_MICRO) {
-        return InvalidSchemaError("Unsupported time unit for Arrow timestamp type: {}",
-                                  static_cast<int>(schema_view.time_unit));
+        return InvalidSchema("Unsupported time unit for Arrow timestamp type: {}",
+                             static_cast<int>(schema_view.time_unit));
       }
       if (with_timezone) {
         return std::make_shared<TimestampTzType>();
@@ -293,15 +290,15 @@ Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
                                                  schema_view.extension_name.size_bytes);
           extension_name == kArrowUuidExtensionName) {
         if (schema_view.fixed_size != 16) {
-          return InvalidSchemaError("UUID type must have a fixed size of 16");
+          return InvalidSchema("UUID type must have a fixed size of 16");
         }
         return std::make_shared<UuidType>();
       }
       return std::make_shared<FixedType>(schema_view.fixed_size);
     }
     default:
-      return InvalidSchemaError("Unsupported Arrow type: {}",
-                                ArrowTypeString(schema_view.type));
+      return InvalidSchema("Unsupported Arrow type: {}",
+                           ArrowTypeString(schema_view.type));
   }
 }
 
@@ -322,7 +319,7 @@ Result<std::unique_ptr<Schema>> FromArrowSchema(const ArrowSchema& schema,
   ICEBERG_ASSIGN_OR_RAISE(auto type, FromArrowSchema(schema));
 
   if (type->type_id() != TypeId::kStruct) {
-    return InvalidSchemaError("Arrow schema must be a struct type for Iceberg schema");
+    return InvalidSchema("Arrow schema must be a struct type for Iceberg schema");
   }
 
   auto& struct_type = static_cast<StructType&>(*type);

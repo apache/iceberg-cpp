@@ -22,8 +22,6 @@
 #include <memory>
 
 #include <gtest/gtest.h>
-#include <iceberg/result.h>
-#include <iceberg/util/timepoint.h>
 #include <nlohmann/json.hpp>
 
 #include "gmock/gmock.h"
@@ -34,6 +32,7 @@
 #include "iceberg/sort_order.h"
 #include "iceberg/transform.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
+#include "iceberg/util/timepoint.h"
 #include "matchers.h"
 
 namespace iceberg {

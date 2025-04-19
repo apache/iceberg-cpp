@@ -51,7 +51,7 @@ std::string And::ToString() const {
 
 Result<std::shared_ptr<Expression>> And::Negate() const {
   // TODO(yingcai-cy): Implement Or expression
-  return InvalidExpressionError("And negation not yet implemented");
+  return InvalidExpression("And negation not yet implemented");
 }
 
 bool And::Equals(const Expression& expr) const {

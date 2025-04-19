@@ -56,7 +56,7 @@ ICEBERG_EXPORT constexpr Result<SnapshotRefType> SnapshotRefTypeFromString(
     std::string_view str) noexcept {
   if (str == "branch") return SnapshotRefType::kBranch;
   if (str == "tag") return SnapshotRefType::kTag;
-  return InvalidArgumentError("Invalid snapshot reference type: {}", str);
+  return InvalidArgument("Invalid snapshot reference type: {}", str);
 }
 
 /// \brief A reference to a snapshot, either a branch or a tag.

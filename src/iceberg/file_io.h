@@ -52,7 +52,7 @@ class ICEBERG_EXPORT FileIO {
   virtual Result<std::string> ReadFile(const std::string& file_location,
                                        std::optional<size_t> length) {
     // We provide a default implementation to avoid Windows linker error LNK2019.
-    return NotImplementedError("ReadFile not implemented");
+    return NotImplemented("ReadFile not implemented");
   }
 
   /// \brief Write the given content to the file at the given location.
@@ -63,7 +63,7 @@ class ICEBERG_EXPORT FileIO {
   /// file exists.
   /// \return void if the write succeeded, an error code if the write failed.
   virtual Status WriteFile(const std::string& file_location, std::string_view content) {
-    return NotImplementedError("WriteFile not implemented");
+    return NotImplemented("WriteFile not implemented");
   }
 
   /// \brief Delete a file at the given location.
@@ -71,7 +71,7 @@ class ICEBERG_EXPORT FileIO {
   /// \param file_location The location of the file to delete.
   /// \return void if the delete succeeded, an error code if the delete failed.
   virtual Status DeleteFile(const std::string& file_location) {
-    return NotImplementedError("DeleteFile not implemented");
+    return NotImplemented("DeleteFile not implemented");
   }
 };
 

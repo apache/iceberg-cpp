@@ -27,14 +27,14 @@ IdentityTransform::IdentityTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kIdentity, source_type) {}
 
 Result<ArrowArray> IdentityTransform::Transform(const ArrowArray& input) {
-  return NotImplementedError("IdentityTransform::Transform");
+  return NotImplemented("IdentityTransform::Transform");
 }
 
 Result<std::shared_ptr<Type>> IdentityTransform::ResultType() const {
   auto src_type = source_type();
   if (!src_type || !src_type->is_primitive()) {
-    return NotSupportedError("{} is not a valid input type for identity transform",
-                             src_type ? src_type->ToString() : "null");
+    return NotSupported("{} is not a valid input type for identity transform",
+                        src_type ? src_type->ToString() : "null");
   }
   return src_type;
 }
@@ -44,11 +44,11 @@ BucketTransform::BucketTransform(std::shared_ptr<Type> const& source_type,
     : TransformFunction(TransformType::kBucket, source_type), num_buckets_(num_buckets) {}
 
 Result<ArrowArray> BucketTransform::Transform(const ArrowArray& input) {
-  return NotImplementedError("BucketTransform::Transform");
+  return NotImplemented("BucketTransform::Transform");
 }
 
 Result<std::shared_ptr<Type>> BucketTransform::ResultType() const {
-  return NotImplementedError("BucketTransform::result_type");
+  return NotImplemented("BucketTransform::result_type");
 }
 
 TruncateTransform::TruncateTransform(std::shared_ptr<Type> const& source_type,
@@ -56,66 +56,66 @@ TruncateTransform::TruncateTransform(std::shared_ptr<Type> const& source_type,
     : TransformFunction(TransformType::kTruncate, source_type), width_(width) {}
 
 Result<ArrowArray> TruncateTransform::Transform(const ArrowArray& input) {
-  return NotImplementedError("TruncateTransform::Transform");
+  return NotImplemented("TruncateTransform::Transform");
 }
 
 Result<std::shared_ptr<Type>> TruncateTransform::ResultType() const {
-  return NotImplementedError("TruncateTransform::result_type");
+  return NotImplemented("TruncateTransform::result_type");
 }
 
 YearTransform::YearTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kTruncate, source_type) {}
 
 Result<ArrowArray> YearTransform::Transform(const ArrowArray& input) {
-  return NotImplementedError("YearTransform::Transform");
+  return NotImplemented("YearTransform::Transform");
 }
 
 Result<std::shared_ptr<Type>> YearTransform::ResultType() const {
-  return NotImplementedError("YearTransform::result_type");
+  return NotImplemented("YearTransform::result_type");
 }
 
 MonthTransform::MonthTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kMonth, source_type) {}
 
 Result<ArrowArray> MonthTransform::Transform(const ArrowArray& input) {
-  return NotImplementedError("MonthTransform::Transform");
+  return NotImplemented("MonthTransform::Transform");
 }
 
 Result<std::shared_ptr<Type>> MonthTransform::ResultType() const {
-  return NotImplementedError("MonthTransform::result_type");
+  return NotImplemented("MonthTransform::result_type");
 }
 
 DayTransform::DayTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kDay, source_type) {}
 
 Result<ArrowArray> DayTransform::Transform(const ArrowArray& input) {
-  return NotImplementedError("DayTransform::Transform");
+  return NotImplemented("DayTransform::Transform");
 }
 
 Result<std::shared_ptr<Type>> DayTransform::ResultType() const {
-  return NotImplementedError("DayTransform::result_type");
+  return NotImplemented("DayTransform::result_type");
 }
 
 HourTransform::HourTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kHour, source_type) {}
 
 Result<ArrowArray> HourTransform::Transform(const ArrowArray& input) {
-  return NotImplementedError("HourTransform::Transform");
+  return NotImplemented("HourTransform::Transform");
 }
 
 Result<std::shared_ptr<Type>> HourTransform::ResultType() const {
-  return NotImplementedError("HourTransform::result_type");
+  return NotImplemented("HourTransform::result_type");
 }
 
 VoidTransform::VoidTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kVoid, source_type) {}
 
 Result<ArrowArray> VoidTransform::Transform(const ArrowArray& input) {
-  return NotImplementedError("VoidTransform::Transform");
+  return NotImplemented("VoidTransform::Transform");
 }
 
 Result<std::shared_ptr<Type>> VoidTransform::ResultType() const {
-  return NotImplementedError("VoidTransform::result_type");
+  return NotImplemented("VoidTransform::result_type");
 }
 
 }  // namespace iceberg
