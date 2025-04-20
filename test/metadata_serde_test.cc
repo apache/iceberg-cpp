@@ -100,8 +100,8 @@ TEST_F(MetadataSerdeTest, DeserializeV1Valid) {
   auto expected_schema =
       std::make_shared<Schema>(schema_fields, /*schema_id=*/std::nullopt);
   auto schema = metadata->Schema();
-  ASSERT_NE(schema, nullptr);
-  EXPECT_EQ(*schema, *expected_schema);
+  ASSERT_TRUE(schema.has_value());
+  EXPECT_EQ(*(schema.value().get()), *expected_schema);
 
   // Compare partition spec
   std::vector<PartitionField> partition_fields;
@@ -110,8 +110,8 @@ TEST_F(MetadataSerdeTest, DeserializeV1Valid) {
   auto expected_spec =
       std::make_shared<PartitionSpec>(expected_schema, /*spec_id=*/0, partition_fields);
   auto partition_spec = metadata->PartitionSpec();
-  ASSERT_NE(partition_spec, nullptr);
-  EXPECT_EQ(*partition_spec, *expected_spec);
+  ASSERT_TRUE(partition_spec.has_value());
+  EXPECT_EQ(*(partition_spec.value().get()), *expected_spec);
 }
 
 TEST_F(MetadataSerdeTest, DeserializeV2Valid) {
@@ -136,8 +136,8 @@ TEST_F(MetadataSerdeTest, DeserializeV2Valid) {
   auto expected_schema =
       std::make_shared<Schema>(std::move(schema_fields), /*schema_id=*/1);
   auto schema = metadata->Schema();
-  ASSERT_NE(schema, nullptr);
-  EXPECT_EQ(*schema, *expected_schema);
+  ASSERT_TRUE(schema.has_value());
+  EXPECT_EQ(*(schema.value().get()), *expected_schema);
 
   // Compare partition spec
   EXPECT_EQ(metadata->default_spec_id, 0);
@@ -147,8 +147,8 @@ TEST_F(MetadataSerdeTest, DeserializeV2Valid) {
   auto expected_spec = std::make_shared<PartitionSpec>(expected_schema, /*spec_id=*/0,
                                                        std::move(partition_fields));
   auto partition_spec = metadata->PartitionSpec();
-  ASSERT_NE(partition_spec, nullptr);
-  EXPECT_EQ(*partition_spec, *expected_spec);
+  ASSERT_TRUE(partition_spec.has_value());
+  EXPECT_EQ(*(partition_spec.value().get()), *expected_spec);
 
   // Compare sort order
   EXPECT_EQ(metadata->default_sort_order_id, 3);
@@ -160,8 +160,8 @@ TEST_F(MetadataSerdeTest, DeserializeV2Valid) {
   auto expected_sort_order =
       std::make_shared<SortOrder>(/*order_id=*/3, std::move(sort_fields));
   auto sort_order = metadata->SortOrder();
-  ASSERT_NE(sort_order, nullptr);
-  EXPECT_EQ(*sort_order, *expected_sort_order);
+  ASSERT_TRUE(sort_order.has_value());
+  EXPECT_EQ(*(sort_order.value().get()), *expected_sort_order);
 
   EXPECT_EQ(metadata->current_snapshot_id, 3055729675574597004);
 

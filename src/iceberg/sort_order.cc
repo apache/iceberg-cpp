@@ -21,7 +21,6 @@
 
 #include <format>
 
-#include "iceberg/constants.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
 namespace iceberg {

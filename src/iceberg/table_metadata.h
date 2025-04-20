@@ -83,6 +83,13 @@ struct ICEBERG_EXPORT MetadataLogEntry {
 /// Schema|PartitionSpec|SortOrder> 2) List<MetadataUpdate> 3) Map<Long, Snapshot> 4)
 /// Map<String, SnapshotRef>
 struct ICEBERG_EXPORT TableMetadata {
+  static constexpr int8_t kDefaultTableFormatVersion = 2;
+  static constexpr int8_t kSupportedTableFormatVersion = 3;
+  static constexpr int8_t kMinFormatVersionRowLineage = 3;
+  static constexpr int64_t kInitialSequenceNumber = 0;
+  static constexpr int64_t kInvalidSequenceNumber = -1;
+  static constexpr int64_t kInitialRowId = 0;
+
   /// An integer version number for the format
   int8_t format_version;
   /// A UUID that identifies the table
@@ -130,12 +137,13 @@ struct ICEBERG_EXPORT TableMetadata {
   /// A `long` higher than all assigned row IDs
   int64_t next_row_id;
 
-  /// \brief Get the current schema
-  const std::shared_ptr<Schema>& Schema() const;
-  /// \brief Get the current partition spec
-  const std::shared_ptr<PartitionSpec>& PartitionSpec() const;
-  /// \brief Get the current sort order
-  const std::shared_ptr<SortOrder>& SortOrder() const;
+  /// \brief Get the current schema, return NotFoundError if not found
+  Result<std::reference_wrapper<const std::shared_ptr<Schema>>> Schema() const;
+  /// \brief Get the current partition spec, return NotFoundError if not found
+  Result<std::reference_wrapper<const std::shared_ptr<PartitionSpec>>> PartitionSpec()
+      const;
+  /// \brief Get the current sort order, return NotFoundError if not found
+  Result<std::reference_wrapper<const std::shared_ptr<SortOrder>>> SortOrder() const;
 };
 
 /// \brief Returns a string representation of a SnapshotLogEntry

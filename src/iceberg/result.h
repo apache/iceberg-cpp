@@ -42,6 +42,7 @@ enum class ErrorKind {
   kNotSupported,
   kInvalidExpression,
   kJsonParseError,
+  kNotFound,
 };
 
 /// \brief Error with a kind and a message.

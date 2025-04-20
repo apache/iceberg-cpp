@@ -27,9 +27,9 @@
 #include <type_traits>
 #include <unordered_set>
 
+#include <iceberg/table.h>
 #include <nlohmann/json.hpp>
 
-#include "iceberg/constants.h"
 #include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -499,7 +499,7 @@ nlohmann::json ToJson(const Snapshot& snapshot) {
   nlohmann::json json;
   json[kSnapshotId] = snapshot.snapshot_id;
   SetOptionalField(json, kParentSnapshotId, snapshot.parent_snapshot_id);
-  if (snapshot.sequence_number > kInitialSequenceNumber) {
+  if (snapshot.sequence_number > TableMetadata::kInitialSequenceNumber) {
     json[kSequenceNumber] = snapshot.sequence_number;
   }
   json[kTimestampMs] = snapshot.timestamp_ms;
@@ -666,8 +666,8 @@ Result<std::unique_ptr<PartitionField>> PartitionFieldFromJson(
   int32_t field_id;
   if (allow_field_id_missing) {
     // Partition field id in v1 is not tracked, so we use -1 to indicate that.
-    ICEBERG_ASSIGN_OR_RAISE(
-        field_id, GetJsonValueOrDefault<int32_t>(json, kFieldId, kInvalidFieldId));
+    ICEBERG_ASSIGN_OR_RAISE(field_id, GetJsonValueOrDefault<int32_t>(
+                                          json, kFieldId, SchemaField::kInvalidFieldId));
   } else {
     ICEBERG_ASSIGN_OR_RAISE(field_id, GetJsonValue<int32_t>(json, kFieldId));
   }
@@ -765,8 +765,9 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto schema_id, GetJsonValueOptional<int32_t>(json, kSchemaId));
 
   return std::make_unique<Snapshot>(
-      snapshot_id, parent_snapshot_id, sequence_number.value_or(kInitialSequenceNumber),
-      timestamp_ms, manifest_list, std::move(summary), schema_id);
+      snapshot_id, parent_snapshot_id,
+      sequence_number.value_or(TableMetadata::kInitialSequenceNumber), timestamp_ms,
+      manifest_list, std::move(summary), schema_id);
 }
 
 nlohmann::json ToJson(const BlobMetadata& blob_metadata) {
@@ -1054,7 +1055,7 @@ Status ParsePartitionSpecs(const nlohmann::json& json, int8_t format_version,
     for (const auto& entry_json : partition_spec_json) {
       ICEBERG_ASSIGN_OR_RAISE(auto field, PartitionFieldFromJson(entry_json));
       int32_t field_id = field->field_id();
-      if (field_id == kInvalidFieldId) {
+      if (field_id == SchemaField::kInvalidFieldId) {
         // If the field ID is not set, we need to assign a new one
         field_id = next_partition_field_id++;
       }
@@ -1062,8 +1063,8 @@ Status ParsePartitionSpecs(const nlohmann::json& json, int8_t format_version,
                           std::move(field->transform()));
     }
 
-    auto spec = std::make_unique<PartitionSpec>(current_schema, kInitialSpecId,
-                                                std::move(fields));
+    auto spec = std::make_unique<PartitionSpec>(
+        current_schema, PartitionSpec::kInitialSpecId, std::move(fields));
     default_spec_id = spec->spec_id();
     partition_specs.push_back(std::move(spec));
   }
@@ -1112,7 +1113,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
   ICEBERG_ASSIGN_OR_RAISE(table_metadata->format_version,
                           GetJsonValue<int8_t>(json, kFormatVersion));
   if (table_metadata->format_version < 1 ||
-      table_metadata->format_version > kSupportedTableFormatVersion) {
+      table_metadata->format_version > TableMetadata::kSupportedTableFormatVersion) {
     return JsonParseError("Cannot read unsupported version: {}",
                           table_metadata->format_version);
   }
@@ -1126,7 +1127,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
     ICEBERG_ASSIGN_OR_RAISE(table_metadata->last_sequence_number,
                             GetJsonValue<int64_t>(json, kLastSequenceNumber));
   } else {
-    table_metadata->last_sequence_number = kInitialSequenceNumber;
+    table_metadata->last_sequence_number = TableMetadata::kInitialSequenceNumber;
   }
   ICEBERG_ASSIGN_OR_RAISE(table_metadata->last_column_id,
                           GetJsonValue<int32_t>(json, kLastColumnId));
@@ -1169,15 +1170,15 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
   }
 
   // This field is optional, but internally we set this to -1 when not set
-  ICEBERG_ASSIGN_OR_RAISE(
-      table_metadata->current_snapshot_id,
-      GetJsonValueOrDefault<int64_t>(json, kCurrentSnapshotId, kInvalidSnapshotId));
+  ICEBERG_ASSIGN_OR_RAISE(table_metadata->current_snapshot_id,
+                          GetJsonValueOrDefault<int64_t>(json, kCurrentSnapshotId,
+                                                         Snapshot::kInvalidSnapshotId));
 
   if (table_metadata->format_version >= 3) {
     ICEBERG_ASSIGN_OR_RAISE(table_metadata->next_row_id,
                             GetJsonValue<int64_t>(json, kNextRowId));
   } else {
-    table_metadata->next_row_id = kInitialRowId;
+    table_metadata->next_row_id = TableMetadata::kInitialRowId;
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto last_updated_ms,
@@ -1189,7 +1190,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
     ICEBERG_ASSIGN_OR_RAISE(
         table_metadata->refs,
         FromJsonMap<std::shared_ptr<SnapshotRef>>(json, kRefs, SnapshotRefFromJson));
-  } else if (table_metadata->current_snapshot_id != kInvalidSnapshotId) {
+  } else if (table_metadata->current_snapshot_id != Snapshot::kInvalidSnapshotId) {
     table_metadata->refs["main"] = std::make_unique<SnapshotRef>(SnapshotRef{
         .snapshot_id = table_metadata->current_snapshot_id,
         .retention = SnapshotRef::Branch{},

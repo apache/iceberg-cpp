@@ -23,7 +23,6 @@
 #include <format>
 #include <ranges>
 
-#include "iceberg/constants.h"
 #include "iceberg/schema.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 

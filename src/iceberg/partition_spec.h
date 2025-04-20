@@ -41,9 +41,10 @@ namespace iceberg {
 /// evolution.
 class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
  public:
+  static constexpr int32_t kInitialSpecId = 0;
   /// \brief The start ID for partition field.  It is only used to generate
   /// partition field id for v1 metadata where it is tracked.
-  constexpr static int32_t kLegacyPartitionDataIdStart = 1000;
+  static constexpr int32_t kLegacyPartitionDataIdStart = 1000;
 
   /// \brief Create a new partition spec.
   ///

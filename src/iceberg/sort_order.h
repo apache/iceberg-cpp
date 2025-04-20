@@ -36,6 +36,8 @@ namespace iceberg {
 /// applied to the data.
 class ICEBERG_EXPORT SortOrder : public util::Formattable {
  public:
+  static constexpr int32_t kInitialSortOrderId = 1;
+
   SortOrder(int32_t order_id, std::vector<SortField> fields);
 
   /// \brief Get an unsorted sort order singleton.
