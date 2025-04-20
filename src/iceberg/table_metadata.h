@@ -138,12 +138,11 @@ struct ICEBERG_EXPORT TableMetadata {
   int64_t next_row_id;
 
   /// \brief Get the current schema, return NotFoundError if not found
-  Result<std::reference_wrapper<const std::shared_ptr<Schema>>> Schema() const;
+  Result<std::shared_ptr<Schema>> Schema() const;
   /// \brief Get the current partition spec, return NotFoundError if not found
-  Result<std::reference_wrapper<const std::shared_ptr<PartitionSpec>>> PartitionSpec()
-      const;
+  Result<std::shared_ptr<PartitionSpec>> PartitionSpec() const;
   /// \brief Get the current sort order, return NotFoundError if not found
-  Result<std::reference_wrapper<const std::shared_ptr<SortOrder>>> SortOrder() const;
+  Result<std::shared_ptr<SortOrder>> SortOrder() const;
 };
 
 /// \brief Returns a string representation of a SnapshotLogEntry

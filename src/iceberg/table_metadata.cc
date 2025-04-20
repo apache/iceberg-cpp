@@ -39,8 +39,7 @@ std::string ToString(const MetadataLogEntry& entry) {
                      entry.metadata_file);
 }
 
-Result<std::reference_wrapper<const std::shared_ptr<Schema>>> TableMetadata::Schema()
-    const {
+Result<std::shared_ptr<Schema>> TableMetadata::Schema() const {
   auto iter = std::ranges::find_if(schemas, [this](const auto& schema) {
     return schema->schema_id() == current_schema_id;
   });
@@ -50,11 +49,10 @@ Result<std::reference_wrapper<const std::shared_ptr<Schema>>> TableMetadata::Sch
         .message = std::format("Current schema is not found"),
     });
   }
-  return std::cref(*iter);
+  return *iter;
 }
 
-Result<std::reference_wrapper<const std::shared_ptr<PartitionSpec>>>
-TableMetadata::PartitionSpec() const {
+Result<std::shared_ptr<PartitionSpec>> TableMetadata::PartitionSpec() const {
   auto iter = std::ranges::find_if(partition_specs, [this](const auto& spec) {
     return spec->spec_id() == default_spec_id;
   });
@@ -64,11 +62,10 @@ TableMetadata::PartitionSpec() const {
         .message = std::format("Default partition spec is not found"),
     });
   }
-  return std::cref(*iter);
+  return *iter;
 }
 
-Result<std::reference_wrapper<const std::shared_ptr<SortOrder>>>
-TableMetadata::SortOrder() const {
+Result<std::shared_ptr<SortOrder>> TableMetadata::SortOrder() const {
   auto iter = std::ranges::find_if(sort_orders, [this](const auto& order) {
     return order->order_id() == default_sort_order_id;
   });
@@ -78,7 +75,7 @@ TableMetadata::SortOrder() const {
         .message = std::format("Default sort order is not found"),
     });
   }
-  return std::cref(*iter);
+  return *iter;
 }
 
 Result<TimePointMs> TimePointMsFromUnixMs(int64_t unix_ms) {
