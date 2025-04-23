@@ -21,6 +21,8 @@
 
 #include <format>
 
+#include "iceberg/util/formatter.h"
+
 namespace iceberg {
 
 std::string ToString(const BlobMetadata& blob_metadata) {
@@ -29,26 +31,9 @@ std::string ToString(const BlobMetadata& blob_metadata) {
                  "type='{}',sourceSnapshotId={},sourceSnapshotSequenceNumber={},",
                  blob_metadata.type, blob_metadata.source_snapshot_id,
                  blob_metadata.source_snapshot_sequence_number);
-  std::format_to(std::back_inserter(repr), "fields=[");
-  for (auto iter = blob_metadata.fields.cbegin(); iter != blob_metadata.fields.cend();
-       ++iter) {
-    if (iter != blob_metadata.fields.cbegin()) {
-      std::format_to(std::back_inserter(repr), ",{}", *iter);
-    } else {
-      std::format_to(std::back_inserter(repr), "{}", *iter);
-    }
-  }
-  std::format_to(std::back_inserter(repr), "],properties=[");
-  for (auto iter = blob_metadata.properties.cbegin();
-       iter != blob_metadata.properties.cend(); ++iter) {
-    const auto& [key, value] = *iter;
-    if (iter != blob_metadata.properties.cbegin()) {
-      std::format_to(std::back_inserter(repr), ",{}:{}", key, value);
-    } else {
-      std::format_to(std::back_inserter(repr), "{}:{}", key, value);
-    }
-  }
-  repr += "]]";
+  std::format_to(std::back_inserter(repr), "fields={},", blob_metadata.fields);
+  std::format_to(std::back_inserter(repr), "properties={}", blob_metadata.properties);
+  std::format_to(std::back_inserter(repr), "]");
   return repr;
 }
 
@@ -59,16 +44,9 @@ std::string ToString(const StatisticsFile& statistics_file) {
                  statistics_file.snapshot_id, statistics_file.path,
                  statistics_file.file_size_in_bytes,
                  statistics_file.file_footer_size_in_bytes);
-  std::format_to(std::back_inserter(repr), "blobMetadata=[");
-  for (auto iter = statistics_file.blob_metadata.cbegin();
-       iter != statistics_file.blob_metadata.cend(); ++iter) {
-    if (iter != statistics_file.blob_metadata.cbegin()) {
-      std::format_to(std::back_inserter(repr), ",{}", ToString(*iter));
-    } else {
-      std::format_to(std::back_inserter(repr), "{}", ToString(*iter));
-    }
-  }
-  repr += "]]";
+  std::format_to(std::back_inserter(repr), "blobMetadata={}",
+                 statistics_file.blob_metadata);
+  std::format_to(std::back_inserter(repr), "]");
   return repr;
 }
 

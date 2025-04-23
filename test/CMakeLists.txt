@@ -42,11 +42,6 @@ target_sources(schema_test
 target_link_libraries(schema_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
 add_test(NAME schema_test COMMAND schema_test)
 
-add_executable(expected_test)
-target_sources(expected_test PRIVATE expected_test.cc)
-target_link_libraries(expected_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
-add_test(NAME expected_test COMMAND expected_test)
-
 add_executable(expression_test)
 target_sources(expression_test PRIVATE expression_test.cc)
 target_link_libraries(expression_test PRIVATE iceberg_static GTest::gtest_main
@@ -60,6 +55,11 @@ target_sources(json_serde_test PRIVATE json_internal_test.cc metadata_serde_test
 target_link_libraries(json_serde_test PRIVATE iceberg_static GTest::gtest_main
                                               GTest::gmock)
 add_test(NAME json_serde_test COMMAND json_serde_test)
+
+add_executable(util_test)
+target_sources(util_test PRIVATE expected_test.cc formatter_test.cc)
+target_link_libraries(util_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
+add_test(NAME util_test COMMAND util_test)
 
 if(ICEBERG_BUILD_BUNDLE)
   add_executable(avro_test)
