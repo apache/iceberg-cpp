@@ -244,4 +244,16 @@ nlohmann::json ToJson(const TableMetadata& table_metadata);
 /// \return A `TableMetadata` object or an error if the conversion fails.
 Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::json& json);
 
+/// \brief Deserialize a JSON string into a `nlohmann::json` object.
+///
+/// \param json_string The JSON string to deserialize.
+/// \return A `nlohmann::json` object or an error if the deserialization fails.
+Result<nlohmann::json> FromJsonString(const std::string& json_string);
+
+/// \brief Serialize a `nlohmann::json` object into a JSON string.
+///
+/// \param json The `nlohmann::json` object to serialize.
+/// \return A JSON string or an error if the serialization fails.
+Result<std::string> ToJsonString(const nlohmann::json& json);
+
 }  // namespace iceberg

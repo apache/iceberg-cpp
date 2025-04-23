@@ -1209,4 +1209,20 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
   return table_metadata;
 }
 
+Result<nlohmann::json> FromJsonString(const std::string& json_string) {
+  try {
+    return nlohmann::json::parse(json_string);
+  } catch (const std::exception& e) {
+    return JsonParseError("Failed to parse JSON string: {}", e.what());
+  }
+}
+
+Result<std::string> ToJsonString(const nlohmann::json& json) {
+  try {
+    return json.dump();
+  } catch (const std::exception& e) {
+    return JsonParseError("Failed to serialize to JSON string: {}", e.what());
+  }
+}
+
 }  // namespace iceberg

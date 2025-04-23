@@ -19,45 +19,48 @@
 
 #include "iceberg/arrow/arrow_fs_file_io.h"
 
-#include <filesystem>
-
 #include <arrow/filesystem/localfs.h>
 #include <gtest/gtest.h>
 
 #include "matchers.h"
+#include "temp_file_test_base.h"
 
 namespace iceberg {
 
-class LocalFileIOTest : public testing::Test {
+class LocalFileIOTest : public TempFileTestBase {
  protected:
   void SetUp() override {
-    local_fs_ = std::make_shared<::arrow::fs::LocalFileSystem>();
-    file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(local_fs_);
+    TempFileTestBase::SetUp();
+    file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(
+        std::make_shared<::arrow::fs::LocalFileSystem>());
+    temp_filepath_ = CreateNewTempFilePath();
   }
 
-  std::shared_ptr<::arrow::fs::LocalFileSystem> local_fs_;
   std::shared_ptr<iceberg::FileIO> file_io_;
-  std::filesystem::path tmpfile = std::filesystem::temp_directory_path() / "123.txt";
+  std::string temp_filepath_;
 };
 
 TEST_F(LocalFileIOTest, ReadWriteFile) {
-  auto read_res = file_io_->ReadFile(tmpfile.string(), std::nullopt);
+  auto read_res = file_io_->ReadFile(temp_filepath_, std::nullopt);
   EXPECT_THAT(read_res, IsError(ErrorKind::kIOError));
   EXPECT_THAT(read_res, HasErrorMessage("Failed to open local file"));
 
-  auto write_res = file_io_->WriteFile(tmpfile.string(), "hello world");
+  auto write_res = file_io_->WriteFile(temp_filepath_, "hello world");
   EXPECT_THAT(write_res, IsOk());
 
-  read_res = file_io_->ReadFile(tmpfile.string(), std::nullopt);
+  read_res = file_io_->ReadFile(temp_filepath_, std::nullopt);
   EXPECT_THAT(read_res, IsOk());
   EXPECT_THAT(read_res, HasValue(::testing::Eq("hello world")));
 }
 
 TEST_F(LocalFileIOTest, DeleteFile) {
-  auto del_res = file_io_->DeleteFile(tmpfile.string());
+  auto write_res = file_io_->WriteFile(temp_filepath_, "hello world");
+  EXPECT_THAT(write_res, IsOk());
+
+  auto del_res = file_io_->DeleteFile(temp_filepath_);
   EXPECT_THAT(del_res, IsOk());
 
-  del_res = file_io_->DeleteFile(tmpfile.string());
+  del_res = file_io_->DeleteFile(temp_filepath_);
   EXPECT_THAT(del_res, IsError(ErrorKind::kIOError));
   EXPECT_THAT(del_res, HasErrorMessage("Cannot delete file"));
 }

@@ -24,6 +24,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <vector>
 
@@ -132,6 +133,12 @@ struct ICEBERG_EXPORT TableMetadata {
   Result<std::shared_ptr<PartitionSpec>> PartitionSpec() const;
   /// \brief Get the current sort order, return NotFoundError if not found
   Result<std::shared_ptr<SortOrder>> SortOrder() const;
+
+  friend bool operator==(const TableMetadata& lhs, const TableMetadata& rhs);
+
+  friend bool operator!=(const TableMetadata& lhs, const TableMetadata& rhs) {
+    return !(lhs == rhs);
+  }
 };
 
 /// \brief Returns a string representation of a SnapshotLogEntry
@@ -139,5 +146,38 @@ ICEBERG_EXPORT std::string ToString(const SnapshotLogEntry& entry);
 
 /// \brief Returns a string representation of a MetadataLogEntry
 ICEBERG_EXPORT std::string ToString(const MetadataLogEntry& entry);
+
+/// \brief The codec type of the table metadata file.
+ICEBERG_EXPORT enum class MetadataFileCodecType {
+  kNone,
+  kGzip,
+};
+
+/// \brief Utility class for table metadata
+struct ICEBERG_EXPORT TableMetadataUtil {
+  /// \brief Get the codec type from the table metadata file name.
+  ///
+  /// \param file_name The name of the table metadata file.
+  /// \return The codec type of the table metadata file.
+  static Result<MetadataFileCodecType> FromFileName(std::string_view file_name);
+
+  /// \brief Read the table metadata file.
+  ///
+  /// \param io The file IO to use to read the table metadata.
+  /// \param location The location of the table metadata file.
+  /// \param length The optional length of the table metadata file.
+  /// \return The table metadata.
+  static Result<std::unique_ptr<TableMetadata>> Read(
+      class FileIO& io, const std::string& location,
+      std::optional<size_t> length = std::nullopt);
+
+  /// \brief Write the table metadata to a file.
+  ///
+  /// \param io The file IO to use to write the table metadata.
+  /// \param location The location of the table metadata file.
+  /// \param metadata The table metadata to write.
+  static Status Write(FileIO& io, const std::string& location,
+                      const TableMetadata& metadata);
+};
 
 }  // namespace iceberg
