@@ -159,7 +159,7 @@ struct ICEBERG_EXPORT TableMetadataUtil {
   ///
   /// \param file_name The name of the table metadata file.
   /// \return The codec type of the table metadata file.
-  static Result<MetadataFileCodecType> FromFileName(std::string_view file_name);
+  static Result<MetadataFileCodecType> CodecFromFileName(std::string_view file_name);
 
   /// \brief Read the table metadata file.
   ///

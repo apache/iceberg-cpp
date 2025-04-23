@@ -130,7 +130,7 @@ bool operator==(const TableMetadata& lhs, const TableMetadata& rhs) {
          lhs.next_row_id == rhs.next_row_id;
 }
 
-Result<MetadataFileCodecType> TableMetadataUtil::FromFileName(
+Result<MetadataFileCodecType> TableMetadataUtil::CodecFromFileName(
     std::string_view file_name) {
   if (file_name.find(".metadata.json") == std::string::npos) {
     return InvalidArgument("{} is not a valid metadata file", file_name);
@@ -151,7 +151,7 @@ Result<MetadataFileCodecType> TableMetadataUtil::FromFileName(
 
 Result<std::unique_ptr<TableMetadata>> TableMetadataUtil::Read(
     FileIO& io, const std::string& location, std::optional<size_t> length) {
-  ICEBERG_ASSIGN_OR_RAISE(auto codec_type, FromFileName(location));
+  ICEBERG_ASSIGN_OR_RAISE(auto codec_type, CodecFromFileName(location));
   if (codec_type == MetadataFileCodecType::kGzip) {
     return NotImplemented("Reading gzip-compressed metadata files is not supported yet");
   }
