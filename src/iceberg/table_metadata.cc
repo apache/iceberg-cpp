@@ -76,6 +76,8 @@ Result<std::shared_ptr<SortOrder>> TableMetadata::SortOrder() const {
   return *iter;
 }
 
+namespace {
+
 template <typename T>
 bool SharedPtrVectorEquals(const std::vector<std::shared_ptr<T>>& lhs,
                            const std::vector<std::shared_ptr<T>>& rhs) {
@@ -107,6 +109,8 @@ bool SnapshotRefEquals(
   }
   return true;
 }
+
+}  // namespace
 
 bool operator==(const TableMetadata& lhs, const TableMetadata& rhs) {
   return lhs.format_version == rhs.format_version && lhs.table_uuid == rhs.table_uuid &&
