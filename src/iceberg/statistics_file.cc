@@ -21,7 +21,7 @@
 
 #include <format>
 
-#include "iceberg/util/formatter.h"
+#include "iceberg/util/formatter_internal.h"
 
 namespace iceberg {
 

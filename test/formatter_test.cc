@@ -17,8 +17,6 @@
  * under the License.
  */
 
-#include "iceberg/util/formatter.h"
-
 #include <format>
 #include <map>
 #include <memory>
@@ -26,9 +24,12 @@
 #include <unordered_map>
 #include <vector>
 
+#include <gmock/gmock-matchers.h>
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "iceberg/statistics_file.h"
+#include "iceberg/util/formatter_internal.h"
 
 namespace iceberg {
 
@@ -59,9 +60,9 @@ TEST(FormatterTest, UnorderedMapFormat) {
   std::unordered_map<std::string, double> scores = {
       {"Alice", 95.5}, {"Bob", 87.0}, {"Charlie", 92.3}};
   std::string str = std::format("{}", scores);
-  EXPECT_TRUE(str.find("Alice: 95.5") != std::string::npos);
-  EXPECT_TRUE(str.find("Bob: 87") != std::string::npos);
-  EXPECT_TRUE(str.find("Charlie: 92.3") != std::string::npos);
+  EXPECT_THAT(str, ::testing::HasSubstr("Alice: 95.5"));
+  EXPECT_THAT(str, ::testing::HasSubstr("Bob: 87"));
+  EXPECT_THAT(str, ::testing::HasSubstr("Charlie: 92.3"));
 }
 
 TEST(FormatterTest, NestedContainersFormat) {
@@ -73,10 +74,10 @@ TEST(FormatterTest, NestedContainersFormat) {
   std::map<std::string, std::vector<int>> nested_map = {
       {"primes", {2, 3, 5, 7, 11}}, {"fibonacci", {1, 1, 2, 3, 5, 8, 13}}};
   std::string result = std::format("{}", nested_map);
-  EXPECT_TRUE(result.find("primes") != std::string::npos);
-  EXPECT_TRUE(result.find("fibonacci") != std::string::npos);
-  EXPECT_TRUE(result.find("[2, 3, 5, 7, 11]") != std::string::npos);
-  EXPECT_TRUE(result.find("[1, 1, 2, 3, 5, 8, 13]") != std::string::npos);
+  EXPECT_THAT(result, ::testing::HasSubstr("primes"));
+  EXPECT_THAT(result, ::testing::HasSubstr("fibonacci"));
+  EXPECT_THAT(result, ::testing::HasSubstr("[2, 3, 5, 7, 11]"));
+  EXPECT_THAT(result, ::testing::HasSubstr("[1, 1, 2, 3, 5, 8, 13]"));
 }
 
 TEST(FormatterTest, EdgeCasesFormat) {
@@ -91,42 +92,41 @@ TEST(FormatterTest, EdgeCasesFormat) {
 }
 
 TEST(FormatterTest, SmartPointerFormat) {
-  std::vector<std::shared_ptr<int>> int_ptrs;
-  int_ptrs.push_back(std::make_shared<int>(42));
-  int_ptrs.push_back(std::make_shared<int>(123));
-  int_ptrs.push_back(nullptr);
+  std::vector<std::shared_ptr<int>> int_ptrs = {
+      std::make_shared<int>(42),
+      std::make_shared<int>(123),
+      nullptr,
+  };
   EXPECT_EQ("[42, 123, null]", std::format("{}", int_ptrs));
 
-  std::vector<std::shared_ptr<std::string>> str_ptrs;
-  str_ptrs.push_back(std::make_shared<std::string>("hello"));
-  str_ptrs.push_back(std::make_shared<std::string>("world"));
-  str_ptrs.push_back(nullptr);
+  std::vector<std::shared_ptr<std::string>> str_ptrs = {
+      std::make_shared<std::string>("hello"),
+      std::make_shared<std::string>("world"),
+      nullptr,
+  };
   EXPECT_EQ("[hello, world, null]", std::format("{}", str_ptrs));
 
-  std::map<std::string, std::shared_ptr<int>> map_with_ptr_values;
-  map_with_ptr_values["one"] = std::make_shared<int>(1);
-  map_with_ptr_values["two"] = std::make_shared<int>(2);
-  map_with_ptr_values["null"] = nullptr;
+  std::map<std::string, std::shared_ptr<int>> map_with_ptr_values = {
+      {"one", std::make_shared<int>(1)},
+      {"two", std::make_shared<int>(2)},
+      {"null", nullptr},
+  };
   EXPECT_EQ("{null: null, one: 1, two: 2}", std::format("{}", map_with_ptr_values));
 
-  std::unordered_map<std::string, std::shared_ptr<double>> scores;
-  scores["Alice"] = std::make_shared<double>(95.5);
-  scores["Bob"] = std::make_shared<double>(87.0);
-  scores["Charlie"] = nullptr;
+  std::unordered_map<std::string, std::shared_ptr<double>> scores = {
+      {"Alice", std::make_shared<double>(95.5)},
+      {"Bob", std::make_shared<double>(87.0)},
+      {"Charlie", nullptr},
+  };
   std::string str = std::format("{}", scores);
-  EXPECT_TRUE(str.find("Alice: 95.5") != std::string::npos);
-  EXPECT_TRUE(str.find("Bob: 87") != std::string::npos);
-  EXPECT_TRUE(str.find("Charlie: null") != std::string::npos);
+  EXPECT_THAT(str, ::testing::HasSubstr("Alice: 95.5"));
+  EXPECT_THAT(str, ::testing::HasSubstr("Bob: 87"));
+  EXPECT_THAT(str, ::testing::HasSubstr("Charlie: null"));
 
-  std::vector<std::map<std::string, std::shared_ptr<int>>> nested;
-  std::map<std::string, std::shared_ptr<int>> map1;
-  map1["a"] = std::make_shared<int>(1);
-  map1["b"] = std::make_shared<int>(2);
-  std::map<std::string, std::shared_ptr<int>> map2;
-  map2["c"] = std::make_shared<int>(3);
-  map2["d"] = nullptr;
-  nested.push_back(std::move(map1));
-  nested.push_back(std::move(map2));
+  std::vector<std::map<std::string, std::shared_ptr<int>>> nested = {
+      {{"a", std::make_shared<int>(1)}, {"b", std::make_shared<int>(2)}},
+      {{"c", std::make_shared<int>(3)}, {"d", nullptr}},
+  };
   EXPECT_EQ("[{a: 1, b: 2}, {c: 3, d: null}]", std::format("{}", nested));
 }
 
