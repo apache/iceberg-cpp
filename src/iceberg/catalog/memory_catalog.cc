@@ -24,18 +24,19 @@
 
 #include "iceberg/exception.h"
 #include "iceberg/table.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
 namespace {
 
-InMemoryNamespace* GetNamespace(InMemoryNamespace* root,
-                                const Namespace& namespace_ident) {
+Result<InMemoryNamespace*> GetNamespace(InMemoryNamespace* root,
+                                        const Namespace& namespace_ident) {
   return InMemoryNamespace::GetNamespaceImpl(root, namespace_ident);
 }
 
-const InMemoryNamespace* GetNamespace(const InMemoryNamespace* root,
-                                      const Namespace& namespace_ident) {
+Result<const InMemoryNamespace*> GetNamespace(const InMemoryNamespace* root,
+                                              const Namespace& namespace_ident) {
   return InMemoryNamespace::GetNamespaceImpl(root, namespace_ident);
 }
 
@@ -60,10 +61,11 @@ Result<std::vector<TableIdentifier>> InMemoryCatalog::ListTables(
     const Namespace& ns) const {
   std::unique_lock lock(mutex_);
   const auto& table_names = root_namespace_->ListTables(ns);
+  ICEBERG_RETURN_UNEXPECTED(table_names);
   std::vector<TableIdentifier> table_idents;
-  table_idents.reserve(table_names.size());
+  table_idents.reserve(table_names.value().size());
   std::ranges::transform(
-      table_names, std::back_inserter(table_idents),
+      table_names.value(), std::back_inserter(table_idents),
       [&ns](auto const& table_name) { return TableIdentifier(ns, table_name); });
   return table_idents;
 }
@@ -92,12 +94,12 @@ Result<std::shared_ptr<Transaction>> InMemoryCatalog::StageCreateTable(
       {.kind = ErrorKind::kNotImplemented, .message = "StageCreateTable"});
 }
 
-bool InMemoryCatalog::TableExists(const TableIdentifier& identifier) const {
+Status InMemoryCatalog::TableExists(const TableIdentifier& identifier) const {
   std::unique_lock lock(mutex_);
   return root_namespace_->TableExists(identifier);
 }
 
-bool InMemoryCatalog::DropTable(const TableIdentifier& identifier, bool purge) {
+Status InMemoryCatalog::DropTable(const TableIdentifier& identifier, bool purge) {
   std::unique_lock lock(mutex_);
   // TODO(Guotao): Delete all metadata files if purge is true.
   return root_namespace_->UnregisterTable(identifier);
@@ -127,16 +129,19 @@ std::unique_ptr<TableBuilder> InMemoryCatalog::BuildTable(
   throw IcebergError("not implemented");
 }
 
-bool InMemoryNamespace::NamespaceExists(const Namespace& namespace_ident) const {
-  return GetNamespace(this, namespace_ident) != nullptr;
+Status InMemoryNamespace::NamespaceExists(const Namespace& namespace_ident) const {
+  const auto ns = GetNamespace(this, namespace_ident);
+  ICEBERG_RETURN_UNEXPECTED(ns);
+  return {};
 }
 
-std::vector<std::string> InMemoryNamespace::ListChildrenNamespaces(
+Result<std::vector<std::string>> InMemoryNamespace::ListChildrenNamespaces(
     const std::optional<Namespace>& parent_namespace_ident) const {
   auto ns = this;
   if (parent_namespace_ident.has_value()) {
-    ns = GetNamespace(this, *parent_namespace_ident);
-    if (!ns) return {};
+    const auto nsRs = GetNamespace(this, *parent_namespace_ident);
+    ICEBERG_RETURN_UNEXPECTED(nsRs);
+    ns = *nsRs;
   }
 
   std::vector<std::string> names;
@@ -147,12 +152,15 @@ std::vector<std::string> InMemoryNamespace::ListChildrenNamespaces(
   return names;
 }
 
-bool InMemoryNamespace::CreateNamespace(
+Status InMemoryNamespace::CreateNamespace(
     const Namespace& namespace_ident,
     const std::unordered_map<std::string, std::string>& properties) {
+  if (namespace_ident.levels.empty()) {
+    return InvalidArgument("namespace identifier is empty");
+  }
+
   auto ns = this;
   bool newly_created = false;
-
   for (const auto& part_level : namespace_ident.levels) {
     if (auto it = ns->children_.find(part_level); it == ns->children_.end()) {
       ns = &ns->children_[part_level];
@@ -161,58 +169,62 @@ bool InMemoryNamespace::CreateNamespace(
       ns = &it->second;
     }
   }
-
   if (!newly_created) {
-    return false;
+    return AlreadyExists("{}", namespace_ident.levels.back());
   }
 
   ns->properties_ = properties;
-  return true;
+  return {};
 }
 
-bool InMemoryNamespace::DeleteNamespace(const Namespace& namespace_ident) {
-  if (namespace_ident.levels.empty()) return false;
+Status InMemoryNamespace::DeleteNamespace(const Namespace& namespace_ident) {
+  if (namespace_ident.levels.empty()) {
+    return InvalidArgument("namespace identifier is empty");
+  }
 
   auto parent_namespace_ident = namespace_ident;
   const auto to_delete = parent_namespace_ident.levels.back();
   parent_namespace_ident.levels.pop_back();
 
-  auto* parent = GetNamespace(this, parent_namespace_ident);
-  if (!parent) return false;
+  const auto parentRs = GetNamespace(this, parent_namespace_ident);
+  ICEBERG_RETURN_UNEXPECTED(parentRs);
 
-  auto it = parent->children_.find(to_delete);
-  if (it == parent->children_.end()) return false;
+  const auto it = parentRs.value()->children_.find(to_delete);
+  if (it == parentRs.value()->children_.end()) {
+    return NotFound("namespace {} is not found", to_delete);
+  }
 
   const auto& target = it->second;
   if (!target.children_.empty() || !target.table_metadata_locations_.empty()) {
-    return false;
+    return NotAllowed("{} has other sub-namespaces and cannot be deleted", to_delete);
   }
 
-  return parent->children_.erase(to_delete) > 0;
+  parentRs.value()->children_.erase(to_delete);
+  return {};
 }
 
-std::optional<std::unordered_map<std::string, std::string>>
-InMemoryNamespace::GetProperties(const Namespace& namespace_ident) const {
+Result<std::unordered_map<std::string, std::string>> InMemoryNamespace::GetProperties(
+    const Namespace& namespace_ident) const {
   const auto ns = GetNamespace(this, namespace_ident);
-  if (!ns) return std::nullopt;
-  return ns->properties_;
+  ICEBERG_RETURN_UNEXPECTED(ns);
+  return ns.value()->properties_;
 }
 
-bool InMemoryNamespace::ReplaceProperties(
+Status InMemoryNamespace::ReplaceProperties(
     const Namespace& namespace_ident,
     const std::unordered_map<std::string, std::string>& properties) {
   const auto ns = GetNamespace(this, namespace_ident);
-  if (!ns) return false;
-  ns->properties_ = properties;
-  return true;
+  ICEBERG_RETURN_UNEXPECTED(ns);
+  ns.value()->properties_ = properties;
+  return {};
 }
 
-std::vector<std::string> InMemoryNamespace::ListTables(
+Result<std::vector<std::string>> InMemoryNamespace::ListTables(
     const Namespace& namespace_ident) const {
   const auto ns = GetNamespace(this, namespace_ident);
-  if (!ns) return {};
+  ICEBERG_RETURN_UNEXPECTED(ns);
 
-  const auto& locations = ns->table_metadata_locations_;
+  const auto& locations = ns.value()->table_metadata_locations_;
   std::vector<std::string> table_names;
   table_names.reserve(locations.size());
 
@@ -223,33 +235,41 @@ std::vector<std::string> InMemoryNamespace::ListTables(
   return table_names;
 }
 
-bool InMemoryNamespace::RegisterTable(TableIdentifier const& table_ident,
-                                      const std::string& metadata_location) {
+Status InMemoryNamespace::RegisterTable(TableIdentifier const& table_ident,
+                                        const std::string& metadata_location) {
   const auto ns = GetNamespace(this, table_ident.ns);
-  if (!ns) return false;
-  if (ns->table_metadata_locations_.contains(table_ident.name)) return false;
-  ns->table_metadata_locations_[table_ident.name] = metadata_location;
-  return true;
+  ICEBERG_RETURN_UNEXPECTED(ns);
+  if (ns.value()->table_metadata_locations_.contains(table_ident.name)) {
+    return AlreadyExists("{} already exists", table_ident.name);
+  }
+  ns.value()->table_metadata_locations_[table_ident.name] = metadata_location;
+  return {};
 }
 
-bool InMemoryNamespace::UnregisterTable(TableIdentifier const& table_ident) {
+Status InMemoryNamespace::UnregisterTable(TableIdentifier const& table_ident) {
   const auto ns = GetNamespace(this, table_ident.ns);
-  if (!ns) return false;
-  return ns->table_metadata_locations_.erase(table_ident.name) > 0;
+  ICEBERG_RETURN_UNEXPECTED(ns);
+  ns.value()->table_metadata_locations_.erase(table_ident.name);
+  return {};
 }
 
-bool InMemoryNamespace::TableExists(TableIdentifier const& table_ident) const {
+Status InMemoryNamespace::TableExists(TableIdentifier const& table_ident) const {
   const auto ns = GetNamespace(this, table_ident.ns);
-  if (!ns) return false;
-  return ns->table_metadata_locations_.contains(table_ident.name);
+  ICEBERG_RETURN_UNEXPECTED(ns);
+  if (!ns.value()->table_metadata_locations_.contains(table_ident.name)) {
+    return NotFound("{} does not exist", table_ident.name);
+  }
+  return {};
 }
 
-std::optional<std::string> InMemoryNamespace::GetTableMetadataLocation(
+Result<std::string> InMemoryNamespace::GetTableMetadataLocation(
     TableIdentifier const& table_ident) const {
   const auto ns = GetNamespace(this, table_ident.ns);
-  if (!ns) return std::nullopt;
-  const auto it = ns->table_metadata_locations_.find(table_ident.name);
-  if (it == ns->table_metadata_locations_.end()) return std::nullopt;
+  ICEBERG_RETURN_UNEXPECTED(ns);
+  const auto it = ns.value()->table_metadata_locations_.find(table_ident.name);
+  if (it == ns.value()->table_metadata_locations_.end()) {
+    return NotFound("{} does not exist", table_ident.name);
+  }
   return it->second;
 }
 }  // namespace iceberg
