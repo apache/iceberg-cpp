@@ -24,9 +24,9 @@
 
 namespace iceberg {
 
-class NamespaceContainerTest : public ::testing::Test {
+class InMemoryNamespaceTest : public ::testing::Test {
  protected:
-  NamespaceContainer container;
+  InMemoryNamespace root_namespace_;
 
   static Namespace MakeNs(std::vector<std::string> levels) {
     return Namespace{std::move(levels)};
@@ -38,92 +38,92 @@ class NamespaceContainerTest : public ::testing::Test {
   }
 };
 
-TEST_F(NamespaceContainerTest, CreateAndExistsNamespace) {
-  Namespace ns = MakeNs({"a", "b"});
-  EXPECT_FALSE(container.NamespaceExists(ns));
-  EXPECT_TRUE(container.CreateNamespace(ns, {{"k", "v"}}));
-  EXPECT_TRUE(container.NamespaceExists(ns));
+TEST_F(InMemoryNamespaceTest, CreateAndExistsNamespace) {
+  const auto ns = MakeNs({"a", "b"});
+  EXPECT_FALSE(root_namespace_.NamespaceExists(ns));
+  EXPECT_TRUE(root_namespace_.CreateNamespace(ns, {{"k", "v"}}));
+  EXPECT_TRUE(root_namespace_.NamespaceExists(ns));
 }
 
-TEST_F(NamespaceContainerTest, CreateNamespaceTwiceFails) {
-  Namespace ns = MakeNs({"x", "y"});
-  EXPECT_TRUE(container.CreateNamespace(ns, {{"a", "b"}}));
-  EXPECT_FALSE(container.CreateNamespace(ns, {{"a", "b"}}));
+TEST_F(InMemoryNamespaceTest, CreateNamespaceTwiceFails) {
+  const auto ns = MakeNs({"x", "y"});
+  EXPECT_TRUE(root_namespace_.CreateNamespace(ns, {{"a", "b"}}));
+  EXPECT_FALSE(root_namespace_.CreateNamespace(ns, {{"a", "b"}}));
 }
 
-TEST_F(NamespaceContainerTest, DeleteEmptyNamespaceSucceeds) {
-  Namespace ns = MakeNs({"del", "me"});
-  EXPECT_TRUE(container.CreateNamespace(ns, {}));
-  EXPECT_TRUE(container.DeleteNamespace(ns));
-  EXPECT_FALSE(container.NamespaceExists(ns));
+TEST_F(InMemoryNamespaceTest, DeleteEmptyNamespaceSucceeds) {
+  const auto ns = MakeNs({"del", "me"});
+  EXPECT_TRUE(root_namespace_.CreateNamespace(ns, {}));
+  EXPECT_TRUE(root_namespace_.DeleteNamespace(ns));
+  EXPECT_FALSE(root_namespace_.NamespaceExists(ns));
 }
 
-TEST_F(NamespaceContainerTest, DeleteNonEmptyNamespaceFails) {
-  Namespace ns = MakeNs({"del", "fail"});
-  EXPECT_TRUE(container.CreateNamespace(ns, {}));
-  auto table = MakeTable({"del", "fail"}, "t1");
-  EXPECT_TRUE(container.RegisterTable(table, "loc1"));
-  EXPECT_FALSE(container.DeleteNamespace(ns));
+TEST_F(InMemoryNamespaceTest, DeleteNonEmptyNamespaceFails) {
+  const auto ns = MakeNs({"del", "fail"});
+  EXPECT_TRUE(root_namespace_.CreateNamespace(ns, {}));
+  const auto table = MakeTable({"del", "fail"}, "t1");
+  EXPECT_TRUE(root_namespace_.RegisterTable(table, "loc1"));
+  EXPECT_FALSE(root_namespace_.DeleteNamespace(ns));
 }
 
-TEST_F(NamespaceContainerTest, ReplaceAndGetProperties) {
-  Namespace ns = MakeNs({"props"});
-  EXPECT_TRUE(container.CreateNamespace(ns, {{"x", "1"}}));
-  EXPECT_TRUE(container.ReplaceProperties(ns, {{"x", "2"}, {"y", "3"}}));
+TEST_F(InMemoryNamespaceTest, ReplaceAndGetProperties) {
+  const auto ns = MakeNs({"props"});
+  EXPECT_TRUE(root_namespace_.CreateNamespace(ns, {{"x", "1"}}));
+  EXPECT_TRUE(root_namespace_.ReplaceProperties(ns, {{"x", "2"}, {"y", "3"}}));
 
-  auto props = container.GetProperties(ns);
+  const auto props = root_namespace_.GetProperties(ns);
   ASSERT_TRUE(props.has_value());
   EXPECT_EQ(props->at("x"), "2");
   EXPECT_EQ(props->at("y"), "3");
 }
 
-TEST_F(NamespaceContainerTest, GetPropertiesNonExistReturnsNullopt) {
-  Namespace ns = MakeNs({"unknown"});
-  EXPECT_FALSE(container.GetProperties(ns).has_value());
+TEST_F(InMemoryNamespaceTest, GetPropertiesNonExistReturnsNullopt) {
+  const auto ns = MakeNs({"unknown"});
+  EXPECT_FALSE(root_namespace_.GetProperties(ns).has_value());
 }
 
-TEST_F(NamespaceContainerTest, RegisterAndLookupTable) {
-  Namespace ns = MakeNs({"tbl", "ns"});
-  EXPECT_TRUE(container.CreateNamespace(ns, {}));
-  auto t1 = MakeTable(ns.levels, "table1");
-  EXPECT_TRUE(container.RegisterTable(t1, "metadata/path/1"));
+TEST_F(InMemoryNamespaceTest, RegisterAndLookupTable) {
+  const auto ns = MakeNs({"tbl", "ns"});
+  EXPECT_TRUE(root_namespace_.CreateNamespace(ns, {}));
+  const auto t1 = MakeTable(ns.levels, "table1");
+  EXPECT_TRUE(root_namespace_.RegisterTable(t1, "metadata/path/1"));
 
-  EXPECT_TRUE(container.TableExists(t1));
-  auto location = container.GetTableMetadataLocation(t1);
+  EXPECT_TRUE(root_namespace_.TableExists(t1));
+  const auto location = root_namespace_.GetTableMetadataLocation(t1);
   ASSERT_TRUE(location.has_value());
   EXPECT_EQ(location.value(), "metadata/path/1");
 }
 
-TEST_F(NamespaceContainerTest, UnregisterTable) {
-  Namespace ns = MakeNs({"tbl", "unreg"});
-  EXPECT_TRUE(container.CreateNamespace(ns, {}));
-  auto t = MakeTable(ns.levels, "t2");
-  EXPECT_TRUE(container.RegisterTable(t, "meta2"));
-  EXPECT_TRUE(container.UnregisterTable(t));
-  EXPECT_FALSE(container.TableExists(t));
+TEST_F(InMemoryNamespaceTest, UnregisterTable) {
+  const auto ns = MakeNs({"tbl", "unreg"});
+  EXPECT_TRUE(root_namespace_.CreateNamespace(ns, {}));
+  const auto t = MakeTable(ns.levels, "t2");
+  EXPECT_TRUE(root_namespace_.RegisterTable(t, "meta2"));
+  EXPECT_TRUE(root_namespace_.UnregisterTable(t));
+  EXPECT_FALSE(root_namespace_.TableExists(t));
 }
 
-TEST_F(NamespaceContainerTest, RegisterTableOnNonExistingNamespaceFails) {
-  auto t = MakeTable({"nonexist", "ns"}, "oops");
-  EXPECT_FALSE(container.RegisterTable(t, "x"));
+TEST_F(InMemoryNamespaceTest, RegisterTableOnNonExistingNamespaceFails) {
+  const auto t = MakeTable({"nonexist", "ns"}, "oops");
+  EXPECT_FALSE(root_namespace_.RegisterTable(t, "x"));
 }
 
-TEST_F(NamespaceContainerTest, ListChildrenNamespaces) {
-  EXPECT_TRUE(container.CreateNamespace(MakeNs({"a"}), {}));
-  EXPECT_TRUE(container.CreateNamespace(MakeNs({"a", "b"}), {}));
-  EXPECT_TRUE(container.CreateNamespace(MakeNs({"a", "c"}), {}));
-  auto children = container.ListChildrenNamespaces(MakeNs({"a"}));
+TEST_F(InMemoryNamespaceTest, ListChildrenNamespaces) {
+  EXPECT_TRUE(root_namespace_.CreateNamespace(MakeNs({"a"}), {}));
+  EXPECT_TRUE(root_namespace_.CreateNamespace(MakeNs({"a", "b"}), {}));
+  EXPECT_TRUE(root_namespace_.CreateNamespace(MakeNs({"a", "c"}), {}));
+  const auto children = root_namespace_.ListChildrenNamespaces(MakeNs({"a"}));
   EXPECT_THAT(children, ::testing::UnorderedElementsAre("b", "c"));
 }
 
-TEST_F(NamespaceContainerTest, ListTablesReturnsCorrectNames) {
-  Namespace ns = MakeNs({"list", "tables"});
-  EXPECT_TRUE(container.CreateNamespace(ns, {}));
-  EXPECT_TRUE(container.RegisterTable(MakeTable(ns.levels, "a"), "loc_a"));
-  EXPECT_TRUE(container.RegisterTable(MakeTable(ns.levels, "b"), "loc_b"));
-  EXPECT_TRUE(container.RegisterTable(MakeTable(ns.levels, "c"), "loc_c"));
+TEST_F(InMemoryNamespaceTest, ListTablesReturnsCorrectNames) {
+  const auto ns = MakeNs({"list", "tables"});
+  EXPECT_TRUE(root_namespace_.CreateNamespace(ns, {}));
+  EXPECT_TRUE(root_namespace_.RegisterTable(MakeTable(ns.levels, "a"), "loc_a"));
+  EXPECT_TRUE(root_namespace_.RegisterTable(MakeTable(ns.levels, "b"), "loc_b"));
+  EXPECT_TRUE(root_namespace_.RegisterTable(MakeTable(ns.levels, "c"), "loc_c"));
 
-  auto tables = container.ListTables(ns);
+  auto tables = root_namespace_.ListTables(ns);
   EXPECT_THAT(tables, ::testing::UnorderedElementsAre("a", "b", "c"));
 }
 
@@ -131,12 +131,12 @@ class MemoryCatalogTest : public ::testing::Test {
  protected:
   void SetUp() override {
     file_io_ = nullptr;  // TODO(Guotao): A real FileIO instance needs to be constructed.
-    catalog_ = std::make_unique<MemoryCatalog>(file_io_, "/tmp/warehouse/");
+    catalog_ = std::make_unique<InMemoryCatalog>(file_io_, "/tmp/warehouse/");
     catalog_->Initialize("test_catalog", {{"prop1", "val1"}});
   }
 
   std::shared_ptr<FileIO> file_io_;
-  std::unique_ptr<MemoryCatalog> catalog_;
+  std::unique_ptr<InMemoryCatalog> catalog_;
 };
 
 TEST_F(MemoryCatalogTest, NameAndInitialization) {
