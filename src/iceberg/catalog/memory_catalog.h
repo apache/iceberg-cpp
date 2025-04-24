@@ -27,11 +27,11 @@
 
 namespace iceberg {
 
-class NamespaceContainer;
+class InMemoryNamespace;
 
-class ICEBERG_EXPORT MemoryCatalog : public Catalog {
+class ICEBERG_EXPORT InMemoryCatalog : public Catalog {
  public:
-  MemoryCatalog(std::shared_ptr<FileIO> file_io, std::string warehouse_location);
+  InMemoryCatalog(std::shared_ptr<FileIO> file_io, std::string warehouse_location);
 
   void Initialize(
       const std::string& name,
@@ -75,18 +75,18 @@ class ICEBERG_EXPORT MemoryCatalog : public Catalog {
   std::unordered_map<std::string, std::string> properties_;
   std::shared_ptr<FileIO> file_io_;
   std::string warehouse_location_;
-  std::unique_ptr<NamespaceContainer> root_container_;
+  std::unique_ptr<InMemoryNamespace> root_namespace_;
   mutable std::recursive_mutex mutex_;
 };
 
 /**
- * \brief A hierarchical container that manages namespaces and table metadata in-memory.
+ * \brief A hierarchical namespace that manages namespaces and table metadata in-memory.
  *
- * Each NamespaceContainer represents a namespace level and can contain properties,
+ * Each InMemoryNamespace represents a namespace level and can contain properties,
  * tables, and child namespaces. This structure enables a tree-like representation
  * of nested namespaces.
  */
-class ICEBERG_EXPORT NamespaceContainer {
+class ICEBERG_EXPORT InMemoryNamespace {
  public:
   /**
    * \brief Checks whether the given namespace exists.
@@ -177,9 +177,9 @@ class ICEBERG_EXPORT NamespaceContainer {
   std::optional<std::string> GetTableMetadataLocation(
       TableIdentifier const& table_ident) const;
 
-  template <typename ContainerPtr>
-  static ContainerPtr GetNamespaceContainerImpl(ContainerPtr root,
-                                                const Namespace& namespace_ident) {
+  template <typename NamespacePtr>
+  static NamespacePtr GetNamespaceImpl(NamespacePtr root,
+                                       const Namespace& namespace_ident) {
     auto node = root;
     for (const auto& part_level : namespace_ident.levels) {
       auto it = node->children_.find(part_level);
@@ -192,8 +192,8 @@ class ICEBERG_EXPORT NamespaceContainer {
   }
 
  private:
-  /// Map of child namespace names to their corresponding container instances.
-  std::unordered_map<std::string, NamespaceContainer> children_;
+  /// Map of child namespace names to their corresponding namespace instances.
+  std::unordered_map<std::string, InMemoryNamespace> children_;
 
   /// Key-value property map for this namespace.
   std::unordered_map<std::string, std::string> properties_;
