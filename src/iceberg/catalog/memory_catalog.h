@@ -56,9 +56,9 @@ class ICEBERG_EXPORT InMemoryCatalog : public Catalog {
       const std::string& location,
       const std::unordered_map<std::string, std::string>& properties) override;
 
-  bool TableExists(const TableIdentifier& identifier) const override;
+  Status TableExists(const TableIdentifier& identifier) const override;
 
-  bool DropTable(const TableIdentifier& identifier, bool purge) override;
+  Status DropTable(const TableIdentifier& identifier, bool purge) override;
 
   Result<std::shared_ptr<Table>> LoadTable(
       const TableIdentifier& identifier) const override;
@@ -91,9 +91,9 @@ class ICEBERG_EXPORT InMemoryNamespace {
   /**
    * \brief Checks whether the given namespace exists.
    * \param[in] namespace_ident The namespace to check.
-   * \return True if the namespace exists; false otherwise.
+   * \return Status indicating success or failure.
    */
-  bool NamespaceExists(const Namespace& namespace_ident) const;
+  Status NamespaceExists(const Namespace& namespace_ident) const;
 
   /**
    * \brief Lists immediate child namespaces under the given parent namespace.
@@ -101,90 +101,90 @@ class ICEBERG_EXPORT InMemoryNamespace {
    *                                the children of the root are returned.
    * \return A vector of child namespace names.
    */
-  std::vector<std::string> ListChildrenNamespaces(
+  Result<std::vector<std::string>> ListChildrenNamespaces(
       const std::optional<Namespace>& parent_namespace_ident = std::nullopt) const;
 
   /**
    * \brief Creates a new namespace with the specified properties.
    * \param[in] namespace_ident The namespace to create.
    * \param[in] properties A map of key-value pairs to associate with the namespace.
-   * \return True if the namespace was successfully created; false if it already exists.
+   * \return Status indicating success or failure.
    */
-  bool CreateNamespace(const Namespace& namespace_ident,
-                       const std::unordered_map<std::string, std::string>& properties);
+  Status CreateNamespace(const Namespace& namespace_ident,
+                         const std::unordered_map<std::string, std::string>& properties);
 
   /**
    * \brief Deletes an existing namespace.
    * \param[in] namespace_ident The namespace to delete.
-   * \return True if the namespace was successfully deleted; false if it does not exist.
+   * \return Status indicating success or failure.
    */
-  bool DeleteNamespace(const Namespace& namespace_ident);
+  Status DeleteNamespace(const Namespace& namespace_ident);
 
   /**
    * \brief Retrieves the properties of the specified namespace.
    * \param[in] namespace_ident The namespace whose properties to retrieve.
-   * \return An optional containing the properties map if the namespace exists;
-   *         std::nullopt otherwise.
+   * \return An  containing the properties map if the namespace exists;
+   *         Errpr otherwise.
    */
-  std::optional<std::unordered_map<std::string, std::string>> GetProperties(
+  Result<std::unordered_map<std::string, std::string>> GetProperties(
       const Namespace& namespace_ident) const;
 
   /**
    * \brief Replaces all properties of the given namespace.
    * \param[in] namespace_ident The namespace whose properties will be replaced.
    * \param[in] properties The new properties map.
-   * \return True if the namespace exists and properties were replaced; false otherwise.
+   * \return Status indicating success or failure.
    */
-  bool ReplaceProperties(const Namespace& namespace_ident,
-                         const std::unordered_map<std::string, std::string>& properties);
+  Status ReplaceProperties(
+      const Namespace& namespace_ident,
+      const std::unordered_map<std::string, std::string>& properties);
 
   /**
    * \brief Lists all table names under the specified namespace.
    * \param[in] namespace_ident The namespace from which to list tables.
-   * \return A vector of table names.
+   * \return A vector of table names or error.
    */
-  std::vector<std::string> ListTables(const Namespace& namespace_ident) const;
+  Result<std::vector<std::string>> ListTables(const Namespace& namespace_ident) const;
 
   /**
    * \brief Registers a table in the given namespace with a metadata location.
    * \param[in] table_ident The fully qualified identifier of the table.
    * \param[in] metadata_location The path to the table's metadata.
-   * \return True if the table was registered successfully; false otherwise.
+   * \return Status indicating success or failure.
    */
-  bool RegisterTable(TableIdentifier const& table_ident,
-                     const std::string& metadata_location);
+  Status RegisterTable(TableIdentifier const& table_ident,
+                       const std::string& metadata_location);
 
   /**
    * \brief Unregisters a table from the specified namespace.
    * \param[in] table_ident The identifier of the table to unregister.
-   * \return True if the table existed and was removed; false otherwise.
+   * \return Status indicating success or failure.
    */
-  bool UnregisterTable(TableIdentifier const& table_ident);
+  Status UnregisterTable(TableIdentifier const& table_ident);
 
   /**
    * \brief Checks if a table exists in the specified namespace.
    * \param[in] table_ident The identifier of the table to check.
-   * \return True if the table exists; false otherwise.
+   * \return Status indicating success or failure.
    */
-  bool TableExists(TableIdentifier const& table_ident) const;
+  Status TableExists(TableIdentifier const& table_ident) const;
 
   /**
    * \brief Gets the metadata location for the specified table.
    * \param[in] table_ident The identifier of the table.
-   * \return An optional string containing the metadata location if the table exists;
-   *         std::nullopt otherwise.
+   * \return An string containing the metadata location if the table exists;
+   *         Error otherwise.
    */
-  std::optional<std::string> GetTableMetadataLocation(
-      TableIdentifier const& table_ident) const;
+  Result<std::string> GetTableMetadataLocation(TableIdentifier const& table_ident) const;
 
   template <typename NamespacePtr>
-  static NamespacePtr GetNamespaceImpl(NamespacePtr root,
-                                       const Namespace& namespace_ident) {
+  static Result<NamespacePtr> GetNamespaceImpl(NamespacePtr root,
+                                               const Namespace& namespace_ident) {
     auto node = root;
     for (const auto& part_level : namespace_ident.levels) {
       auto it = node->children_.find(part_level);
       if (it == node->children_.end()) {
-        return nullptr;
+        return NoSuchNamespace("{}", part_level);
       }
       node = &it->second;
     }

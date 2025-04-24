@@ -113,7 +113,8 @@ TEST_F(InMemoryNamespaceTest, ListChildrenNamespaces) {
   EXPECT_TRUE(root_namespace_.CreateNamespace(MakeNs({"a", "b"}), {}));
   EXPECT_TRUE(root_namespace_.CreateNamespace(MakeNs({"a", "c"}), {}));
   const auto children = root_namespace_.ListChildrenNamespaces(MakeNs({"a"}));
-  EXPECT_THAT(children, ::testing::UnorderedElementsAre("b", "c"));
+  EXPECT_TRUE(children);
+  EXPECT_THAT(*children, ::testing::UnorderedElementsAre("b", "c"));
 }
 
 TEST_F(InMemoryNamespaceTest, ListTablesReturnsCorrectNames) {
@@ -124,7 +125,8 @@ TEST_F(InMemoryNamespaceTest, ListTablesReturnsCorrectNames) {
   EXPECT_TRUE(root_namespace_.RegisterTable(MakeTable(ns.levels, "c"), "loc_c"));
 
   auto tables = root_namespace_.ListTables(ns);
-  EXPECT_THAT(tables, ::testing::UnorderedElementsAre("a", "b", "c"));
+  EXPECT_TRUE(tables);
+  EXPECT_THAT(*tables, ::testing::UnorderedElementsAre("a", "b", "c"));
 }
 
 class MemoryCatalogTest : public ::testing::Test {
