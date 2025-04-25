@@ -89,12 +89,14 @@ if(ICEBERG_BUILD_BUNDLE)
        ICEBERG_BUNDLE_STATIC_BUILD_INTERFACE_LIBS
        "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>"
        "$<IF:$<TARGET_EXISTS:Arrow::arrow_static>,Arrow::arrow_static,Arrow::arrow_shared>"
+       "$<IF:$<TARGET_EXISTS:Parquet::parquet_static>,Parquet::parquet_static,Parquet::parquet_shared>"
        "$<IF:$<TARGET_EXISTS:Avro::avrocpp_static>,Avro::avrocpp_static,Avro::avrocpp_shared>"
   )
   list(APPEND
        ICEBERG_BUNDLE_SHARED_BUILD_INTERFACE_LIBS
        "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>"
        "$<IF:$<TARGET_EXISTS:Arrow::arrow_shared>,Arrow::arrow_shared,Arrow::arrow_static>"
+       "$<IF:$<TARGET_EXISTS:Parquet::parquet_shared>,Parquet::parquet_shared,Parquet::parquet_static>"
        "$<IF:$<TARGET_EXISTS:Avro::avrocpp_shared>,Avro::avrocpp_shared,Avro::avrocpp_static>"
   )
 
@@ -102,12 +104,14 @@ if(ICEBERG_BUILD_BUNDLE)
        ICEBERG_BUNDLE_STATIC_INSTALL_INTERFACE_LIBS
        "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_static>,Iceberg::iceberg_static,Iceberg::iceberg_shared>"
        "$<IF:$<BOOL:${ARROW_VENDORED}>,Iceberg::arrow_static,$<IF:$<TARGET_EXISTS:Arrow::arrow_static>,Arrow::arrow_static,Arrow::arrow_shared>>"
+       "$<IF:$<BOOL:${ARROW_VENDORED}>,Iceberg::parquet_static,$<IF:$<TARGET_EXISTS:Parquet::parquet_static>,Parquet::parquet_static,Parquet::parquet_shared>>"
        "$<IF:$<BOOL:${AVRO_VENDORED}>,Iceberg::avrocpp_s,$<IF:$<TARGET_EXISTS:Avro::avrocpp_static>,Avro::avrocpp_static,Avro::avrocpp_shared>>"
   )
   list(APPEND
        ICEBERG_BUNDLE_SHARED_INSTALL_INTERFACE_LIBS
        "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_shared>,Iceberg::iceberg_shared,Iceberg::iceberg_static>"
        "$<IF:$<BOOL:${ARROW_VENDORED}>,Iceberg::arrow_static,$<IF:$<TARGET_EXISTS:Arrow::arrow_shared>,Arrow::arrow_shared,Arrow::arrow_static>>"
+       "$<IF:$<BOOL:${ARROW_VENDORED}>,Iceberg::parquet_static,$<IF:$<TARGET_EXISTS:Parquet::parquet_shared>,Parquet::parquet_shared,Parquet::parquet_static>>"
        "$<IF:$<BOOL:${AVRO_VENDORED}>,Iceberg::avrocpp_s,$<IF:$<TARGET_EXISTS:Avro::avrocpp_shared>,Avro::avrocpp_shared,Avro::avrocpp_static>>"
   )
 

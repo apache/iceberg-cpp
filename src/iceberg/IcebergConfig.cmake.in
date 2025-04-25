@@ -72,6 +72,31 @@ iceberg_find_dependencies("${ICEBERG_SYSTEM_DEPENDENCIES}")
 
 include("${CMAKE_CURRENT_LIST_DIR}/IcebergTargets.cmake")
 
+if(TARGET Iceberg::arrow_static)
+  add_library(Arrow::arrow_static ALIAS Iceberg::arrow_static)
+
+  add_library(Arrow::arrow_bundled_dependencies STATIC IMPORTED)
+  get_target_property(arrow_static_configurations Iceberg::arrow_static
+                      IMPORTED_CONFIGURATIONS)
+  foreach(CONFIGURATION ${arrow_static_configurations})
+    string(TOUPPER "${CONFIGURATION}" CONFIGURATION)
+    get_target_property(arrow_static_location Iceberg::arrow_static
+                        LOCATION_${CONFIGURATION})
+    get_filename_component(arrow_lib_dir "${arrow_static_location}" DIRECTORY)
+    set_property(TARGET Arrow::arrow_bundled_dependencies
+                 APPEND
+                 PROPERTY IMPORTED_CONFIGURATIONS ${CONFIGURATION})
+    set_target_properties(Arrow::arrow_bundled_dependencies
+                          PROPERTIES IMPORTED_LOCATION_${CONFIGURATION}
+                                     "${arrow_lib_dir}/${CMAKE_STATIC_LIBRARY_PREFIX}arrow_bundled_dependencies${CMAKE_STATIC_LIBRARY_SUFFIX}"
+    )
+  endforeach()
+endif()
+
+if(TARGET Iceberg::parquet_static)
+  add_library(Parquet::parquet_static ALIAS Iceberg::parquet_static)
+endif()
+
 # Find required components
 iceberg_find_components("${Iceberg_FIND_COMPONENTS}")
 

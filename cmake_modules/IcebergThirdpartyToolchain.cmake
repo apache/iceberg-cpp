@@ -65,11 +65,13 @@ function(resolve_arrow_dependency)
   set(ARROW_BUILD_STATIC
       ON
       CACHE BOOL "" FORCE)
-  # To workaround https://github.com/apache/arrow/pull/45513
   set(ARROW_IPC
-      ON
+      OFF
       CACHE BOOL "" FORCE)
   set(ARROW_FILESYSTEM
+      ON
+      CACHE BOOL "" FORCE)
+  set(ARROW_PARQUET
       ON
       CACHE BOOL "" FORCE)
   set(ARROW_SIMD_LEVEL
@@ -82,13 +84,15 @@ function(resolve_arrow_dependency)
       ON
       CACHE BOOL "" FORCE)
   set(ARROW_DEPENDENCY_SOURCE
-      "AUTO"
+      "BUNDLED"
       CACHE STRING "" FORCE)
 
   fetchcontent_declare(Arrow
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       URL ${ARROW_SOURCE_URL}
-                       URL_HASH "SHA256=${ICEBERG_ARROW_BUILD_SHA256_CHECKSUM}"
+                       GIT_REPOSITORY https://github.com/wgtmac/arrow.git
+                       GIT_TAG 7d50c4ac803ad983734de5f418b7cd18f25b0dc9
+                       #URL ${ARROW_SOURCE_URL}
+                       #URL_HASH "SHA256=${ICEBERG_ARROW_BUILD_SHA256_CHECKSUM}"
                        SOURCE_SUBDIR
                        cpp
                        FIND_PACKAGE_ARGS
@@ -107,13 +111,35 @@ function(resolve_arrow_dependency)
                                            ${arrow_SOURCE_DIR}/cpp/src)
     endif()
 
+    if(NOT TARGET Parquet::parquet_static)
+      add_library(Parquet::parquet_static INTERFACE IMPORTED)
+      target_link_libraries(Parquet::parquet_static INTERFACE parquet_static)
+      target_include_directories(Parquet::parquet_static
+                                 INTERFACE ${arrow_BINARY_DIR}/src
+                                           ${arrow_SOURCE_DIR}/cpp/src)
+    endif()
+
     set(ARROW_VENDORED TRUE)
     set_target_properties(arrow_static PROPERTIES OUTPUT_NAME "iceberg_vendored_arrow")
-    install(TARGETS arrow_static
+    set_target_properties(parquet_static PROPERTIES OUTPUT_NAME
+                                                    "iceberg_vendored_parquet")
+    install(TARGETS arrow_static parquet_static
             EXPORT iceberg_targets
             RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
             ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
             LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+
+    if(TARGET arrow_bundled_dependencies)
+      message(STATUS "arrow_bundled_dependencies found")
+      # arrow_bundled_dependencies is only INSTALL_INTERFACE and will not be built by default.
+      # We need to add it as a dependency to arrow_static so that it will be built.
+      add_dependencies(arrow_static arrow_bundled_dependencies)
+      # We cannot install an IMPORTED target, so we need to install the library manually.
+      get_target_property(arrow_bundled_dependencies_location arrow_bundled_dependencies
+                          IMPORTED_LOCATION)
+      install(FILES ${arrow_bundled_dependencies_location}
+              DESTINATION ${ICEBERG_INSTALL_LIBDIR})
+    endif()
   else()
     set(ARROW_VENDORED FALSE)
     list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Arrow)

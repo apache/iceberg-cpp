@@ -20,13 +20,15 @@
 #include "iceberg/arrow/demo_arrow.h"
 
 #include <arrow/config.h>
+#include <parquet/parquet_version.h>
 
 #include "iceberg/demo.h"
 
 namespace iceberg::arrow {
 
 std::string DemoArrow::print() const {
-  return Demo().print() + ", Arrow version: " + ::arrow::GetBuildInfo().version_string;
+  return Demo().print() + ", Arrow version: " + ::arrow::GetBuildInfo().version_string +
+         ", Parquet version: " + CREATED_BY_VERSION;
 }
 
 }  // namespace iceberg::arrow
