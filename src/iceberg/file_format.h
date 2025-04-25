@@ -19,27 +19,38 @@
 
 #pragma once
 
-#include <string>
+/// \file iceberg/file_format.h
+/// File format used by Iceberg.
 
-#include "iceberg/avro.h"
-#include "iceberg/file_reader.h"
-#include "iceberg/iceberg_bundle_export.h"
+#include <string_view>
 
-namespace iceberg::avro {
+#include "iceberg/iceberg_export.h"
 
-class ICEBERG_BUNDLE_EXPORT DemoAvro : public Avro {
- public:
-  DemoAvro() = default;
-  ~DemoAvro() override = default;
-  std::string print() const override;
+namespace iceberg {
+
+/// \brief File format type
+enum class ICEBERG_EXPORT FileFormatType {
+  kParquet,
+  kAvro,
+  kOrc,
+  kPuffin,
+  kMetadata,
 };
 
-class ICEBERG_BUNDLE_EXPORT DemoAvroReader : public Reader {
- public:
-  DemoAvroReader() = default;
-  ~DemoAvroReader() override = default;
-  Result<Data> Next() override;
-  DataLayout data_layout() const override;
-};
+/// \brief Convert a FileFormatType to a string
+ICEBERG_EXPORT inline std::string_view ToString(FileFormatType format_type) {
+  switch (format_type) {
+    case FileFormatType::kParquet:
+      return "parquet";
+    case FileFormatType::kAvro:
+      return "avro";
+    case FileFormatType::kOrc:
+      return "orc";
+    case FileFormatType::kPuffin:
+      return "puffin";
+    case FileFormatType::kMetadata:
+      return "metadata";
+  }
+}
 
-}  // namespace iceberg::avro
+}  // namespace iceberg

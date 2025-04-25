@@ -19,6 +19,11 @@
 
 #include <gtest/gtest.h>
 #include <iceberg/avro/demo_avro.h>
+#include <iceberg/file_reader.h>
+
+#include "matchers.h"
+
+namespace iceberg::avro {
 
 TEST(AVROTest, TestDemoAvro) {
   std::string expected =
@@ -38,3 +43,17 @@ TEST(AVROTest, TestDemoAvro) {
   auto avro = iceberg::avro::DemoAvro();
   EXPECT_EQ(avro.print(), expected);
 }
+
+TEST(AVROTest, TestDemoAvroReader) {
+  auto result = ReaderFactoryRegistry::Create(FileFormatType::kAvro, {});
+  ASSERT_THAT(result, IsOk());
+
+  auto reader = std::move(result.value());
+  ASSERT_EQ(reader->data_layout(), Reader::DataLayout::kStructLike);
+
+  auto data = reader->Next();
+  ASSERT_THAT(data, IsOk());
+  ASSERT_TRUE(std::holds_alternative<std::monostate>(data.value()));
+}
+
+}  // namespace iceberg::avro

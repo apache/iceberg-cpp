@@ -44,7 +44,7 @@ struct std::formatter<Derived> : std::formatter<std::string_view> {
 /// \brief std::formatter specialization for any type that has a ToString function
 template <typename T>
   requires requires(const T& t) {
-    { ToString(t) } -> std::convertible_to<std::string>;
+    { ToString(t) } -> std::convertible_to<std::string_view>;
   }
 struct std::formatter<T> : std::formatter<std::string_view> {
   template <class FormatContext>

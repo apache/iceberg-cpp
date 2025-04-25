@@ -19,27 +19,32 @@
 
 #pragma once
 
-#include <string>
+/// \file iceberg/manifest_reader.h
+/// Data reader interface for manifest files.
 
-#include "iceberg/avro.h"
+#include <memory>
+#include <span>
+
 #include "iceberg/file_reader.h"
-#include "iceberg/iceberg_bundle_export.h"
 
-namespace iceberg::avro {
+namespace iceberg {
 
-class ICEBERG_BUNDLE_EXPORT DemoAvro : public Avro {
+/// \brief Read manifest entries from a manifest file.
+class ICEBERG_EXPORT ManifestReader {
  public:
-  DemoAvro() = default;
-  ~DemoAvro() override = default;
-  std::string print() const override;
+  virtual Result<std::span<std::unique_ptr<class ManifestEntry>>> Entries() const = 0;
+
+ private:
+  std::unique_ptr<StructLikeReader> reader_;
 };
 
-class ICEBERG_BUNDLE_EXPORT DemoAvroReader : public Reader {
+/// \brief Read manifest files from a manifest list file.
+class ICEBERG_EXPORT ManifestListReader {
  public:
-  DemoAvroReader() = default;
-  ~DemoAvroReader() override = default;
-  Result<Data> Next() override;
-  DataLayout data_layout() const override;
+  virtual Result<std::span<std::unique_ptr<class ManifestFile>>> Files() const = 0;
+
+ private:
+  std::unique_ptr<StructLikeReader> reader_;
 };
 
-}  // namespace iceberg::avro
+}  // namespace iceberg

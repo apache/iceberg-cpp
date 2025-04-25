@@ -21,6 +21,7 @@ set(ICEBERG_SOURCES
     arrow_c_data_internal.cc
     demo.cc
     expression/expression.cc
+    file_reader.cc
     json_internal.cc
     partition_field.cc
     partition_spec.cc
