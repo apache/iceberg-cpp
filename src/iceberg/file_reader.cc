@@ -42,7 +42,6 @@ ReaderFactory& ReaderFactoryRegistry::GetFactory(FileFormatType format_type) {
       {FileFormatType::kParquet, GetNotImplementedFactory(FileFormatType::kParquet)},
       {FileFormatType::kOrc, GetNotImplementedFactory(FileFormatType::kOrc)},
       {FileFormatType::kPuffin, GetNotImplementedFactory(FileFormatType::kPuffin)},
-      {FileFormatType::kMetadata, GetNotImplementedFactory(FileFormatType::kMetadata)},
   };
   return factories.at(format_type);
 }

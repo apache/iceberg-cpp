@@ -34,7 +34,6 @@ enum class ICEBERG_EXPORT FileFormatType {
   kAvro,
   kOrc,
   kPuffin,
-  kMetadata,
 };
 
 /// \brief Convert a FileFormatType to a string
@@ -48,8 +47,6 @@ ICEBERG_EXPORT inline std::string_view ToString(FileFormatType format_type) {
       return "orc";
     case FileFormatType::kPuffin:
       return "puffin";
-    case FileFormatType::kMetadata:
-      return "metadata";
   }
 }
 
