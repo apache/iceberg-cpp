@@ -87,7 +87,7 @@ function(resolve_arrow_dependency)
       "BUNDLED"
       CACHE STRING "" FORCE)
 
-  fetchcontent_declare(Arrow
+  fetchcontent_declare(VendoredArrow
                        ${FC_DECLARE_COMMON_OPTIONS}
                        GIT_REPOSITORY https://github.com/wgtmac/arrow.git
                        GIT_TAG 7d50c4ac803ad983734de5f418b7cd18f25b0dc9
@@ -100,23 +100,23 @@ function(resolve_arrow_dependency)
                        Arrow
                        CONFIG)
 
-  fetchcontent_makeavailable(Arrow)
+  fetchcontent_makeavailable(VendoredArrow)
 
-  if(arrow_SOURCE_DIR)
+  if(vendoredarrow_SOURCE_DIR)
     if(NOT TARGET Arrow::arrow_static)
       add_library(Arrow::arrow_static INTERFACE IMPORTED)
       target_link_libraries(Arrow::arrow_static INTERFACE arrow_static)
       target_include_directories(Arrow::arrow_static
-                                 INTERFACE ${arrow_BINARY_DIR}/src
-                                           ${arrow_SOURCE_DIR}/cpp/src)
+                                 INTERFACE ${vendoredarrow_BINARY_DIR}/src
+                                           ${vendoredarrow_SOURCE_DIR}/cpp/src)
     endif()
 
     if(NOT TARGET Parquet::parquet_static)
       add_library(Parquet::parquet_static INTERFACE IMPORTED)
       target_link_libraries(Parquet::parquet_static INTERFACE parquet_static)
       target_include_directories(Parquet::parquet_static
-                                 INTERFACE ${arrow_BINARY_DIR}/src
-                                           ${arrow_SOURCE_DIR}/cpp/src)
+                                 INTERFACE ${vendoredarrow_BINARY_DIR}/src
+                                           ${vendoredarrow_SOURCE_DIR}/cpp/src)
     endif()
 
     set(ARROW_VENDORED TRUE)
