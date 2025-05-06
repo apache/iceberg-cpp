@@ -80,13 +80,13 @@ TEST(ConfigTest, BasicOperations) {
   config.set(TestConfig::INT_CONFIG, 100);
   config.set(TestConfig::BOOL_CONFIG, true);
   config.set(TestConfig::ENUM_CONFIG, TestEnum::VALUE2);
-  config.set(TestConfig::DOUBLE_CONFIG, 2.71828);
+  config.set(TestConfig::DOUBLE_CONFIG, 2.99);
 
   ASSERT_EQ(config.get(TestConfig::STRING_CONFIG), "new_value");
   ASSERT_EQ(config.get(TestConfig::INT_CONFIG), 100);
   ASSERT_EQ(config.get(TestConfig::BOOL_CONFIG), true);
   ASSERT_EQ(config.get(TestConfig::ENUM_CONFIG), TestEnum::VALUE2);
-  ASSERT_EQ(config.get(TestConfig::DOUBLE_CONFIG), 2.71828);
+  ASSERT_EQ(config.get(TestConfig::DOUBLE_CONFIG), 2.99);
 
   // Test unsetting a value
   config.unset(TestConfig::INT_CONFIG);
