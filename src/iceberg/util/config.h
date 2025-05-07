@@ -20,53 +20,60 @@
 
 #include <format>
 #include <functional>
-#include <map>
 #include <string>
+#include <unordered_map>
 
 namespace iceberg {
+
+// Default conversion functions
+template <typename U>
+std::string defaultToString(const U& val) {
+  if constexpr ((std::is_signed_v<U> && std::is_integral_v<U>) ||
+                std::is_floating_point_v<U>) {
+    return std::to_string(val);
+  } else if constexpr (std::is_same_v<U, bool>) {
+    return val ? "true" : "false";
+  } else if constexpr (std::is_same_v<U, std::string> ||
+                       std::is_same_v<U, std::string_view>) {
+    return val;
+  } else {
+    throw std::runtime_error(
+        std::format("Explicit toStr() is required for {}", typeid(U).name()));
+  }
+}
+
+template <typename U>
+U defaultFromString(const std::string& val) {
+  if constexpr (std::is_same_v<U, std::string>) {
+    return val;
+  } else if constexpr (std::is_same_v<U, bool>) {
+    return val == "true";
+  } else if constexpr (std::is_signed_v<U> && std::is_integral_v<U>) {
+    return static_cast<U>(std::stoll(val));
+  } else if constexpr (std::is_floating_point_v<U>) {
+    return static_cast<U>(std::stod(val));
+  } else {
+    throw std::runtime_error(
+        std::format("Explicit toT() is required for {}", typeid(U).name()));
+  }
+}
 
 template <class ConcreteConfig>
 class ConfigBase {
  public:
   template <typename T>
   class Entry {
-    Entry(
-        std::string key, const T& val,
-        std::function<std::string(const T&)> toStr =
-            [](const T& val) {
-              if constexpr ((std::is_signed_v<T> && std::is_integral_v<T>) ||
-                            std::is_floating_point_v<T>) {
-                return std::to_string(val);
-              } else if constexpr (std::is_same_v<T, bool>) {
-                return val ? "true" : "false";
-              } else if constexpr (std::is_same_v<T, std::string> ||
-                                   std::is_same_v<T, std::string_view>) {
-                return val;
-              } else {
-                throw std::runtime_error(
-                    std::format("Explicit toStr() is required for {}", typeid(T).name()));
-              }
-            },
-        std::function<T(const std::string&)> toT = [](const std::string& val) -> T {
-          if constexpr (std::is_same_v<T, std::string>) {
-            return val;
-          } else if constexpr (std::is_same_v<T, bool>) {
-            return val == "true";
-          } else if constexpr (std::is_signed_v<T> && std::is_integral_v<T>) {
-            return static_cast<T>(std::stoll(val));
-          } else if constexpr (std::is_floating_point_v<T>) {
-            return static_cast<T>(std::stod(val));
-          } else {
-            throw std::runtime_error(
-                std::format("Explicit toT() is required for {}", typeid(T).name()));
-          }
-        })
-        : key_{std::move(key)}, default_{val}, toStr_{toStr}, toT_{toT} {}
+   public:
+    Entry(std::string key, const T& val,
+          std::function<std::string(const T&)> to_str = defaultToString<T>,
+          std::function<T(const std::string&)> from_str = defaultFromString<T>)
+        : key_{std::move(key)}, default_{val}, to_str_{to_str}, from_str_{from_str} {}
 
+   private:
     const std::string key_;
     const T default_;
-    const std::function<std::string(const T&)> toStr_;
-    const std::function<T(const std::string&)> toT_;
+    const std::function<std::string(const T&)> to_str_;
+    const std::function<T(const std::string&)> from_str_;
 
     friend ConfigBase;
     friend ConcreteConfig;
@@ -74,12 +81,12 @@ class ConfigBase {
    public:
     const std::string& key() const { return key_; }
 
-    T value() const { return default_; }
+    const T& value() const { return default_; }
   };
 
   template <typename T>
   ConfigBase& set(const Entry<T>& entry, const T& val) {
-    configs_[entry.key_] = entry.toStr_(val);
+    configs_[entry.key_] = entry.to_str_(val);
     return *this;
   }
 
@@ -96,19 +103,14 @@ class ConfigBase {
 
   template <typename T>
   T get(const Entry<T>& entry) const {
-    try {
-      auto iter = configs_.find(entry.key_);
-      return iter != configs_.cend() ? entry.toT_(iter->second) : entry.default_;
-    } catch (std::exception& e) {
-      throw std::runtime_error(
-          std::format("Failed to get config {} with error: {}", entry.key_, e.what()));
-    }
+    auto iter = configs_.find(entry.key_);
+    return iter != configs_.cend() ? entry.from_str_(iter->second) : entry.default_;
   }
 
-  std::map<std::string, std::string> const& configs() const { return configs_; }
+  std::unordered_map<std::string, std::string> const& configs() const { return configs_; }
 
  protected:
-  std::map<std::string, std::string> configs_;
+  std::unordered_map<std::string, std::string> configs_;
 };
 
 }  // namespace iceberg
