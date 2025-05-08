@@ -23,6 +23,7 @@ set(ICEBERG_SOURCES
     expression/expression.cc
     file_reader.cc
     json_internal.cc
+    name_mapping.cc
     partition_field.cc
     partition_spec.cc
     schema.cc
@@ -36,7 +37,6 @@ set(ICEBERG_SOURCES
     transform.cc
     transform_function.cc
     type.cc
-    snapshot.cc
     util/murmurhash3_internal.cc
     util/timepoint.cc)
 
