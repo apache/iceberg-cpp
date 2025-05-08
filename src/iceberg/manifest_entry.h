@@ -166,6 +166,9 @@ struct ICEBERG_EXPORT DataFile {
   /// order, and should set sort order id to null. Readers must ignore sort order id for
   /// position delete files.
   std::optional<int32_t> sort_order_id;
+  /// This field is not included in spec, so it is not serialized into the manifest file.
+  /// It is just store in memory representation used in process.
+  int32_t partition_spec_id;
   /// Field id: 142
   /// The _row_id for the first row in the data file.
   ///
