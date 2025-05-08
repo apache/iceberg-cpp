@@ -20,10 +20,8 @@
 #include "iceberg/manifest_entry.h"
 
 #include <memory>
-#include <optional>
 #include <vector>
 
-#include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/type.h"
 
@@ -138,11 +136,11 @@ const SchemaField ManifestEntry::SEQUENCE_NUMBER =
 const SchemaField ManifestEntry::FILE_SEQUENCE_NUMBER =
     SchemaField::MakeOptional(4, "file_sequence_number", std::make_shared<LongType>());
 
-Schema ManifestEntry::GetSchema(StructType partition_type) {
+StructType ManifestEntry::GetSchema(StructType partition_type) {
   return GetSchemaFromDataFileType(DataFile::GetType(partition_type));
 }
 
-Schema ManifestEntry::GetSchemaFromDataFileType(StructType datafile_type) {
+StructType ManifestEntry::GetSchemaFromDataFileType(StructType datafile_type) {
   std::vector<SchemaField> fields;
 
   fields.push_back(STATUS);
@@ -155,7 +153,7 @@ Schema ManifestEntry::GetSchemaFromDataFileType(StructType datafile_type) {
       2, "data_file", std::make_shared<StructType>(DataFile::GetType(datafile_type)));
   fields.push_back(data_file_type_field);
 
-  return {std::move(fields), /*schema_id=*/std::nullopt};
+  return StructType(std::move(fields));
 }
 
 }  // namespace iceberg

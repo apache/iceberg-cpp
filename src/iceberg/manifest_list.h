@@ -28,7 +28,6 @@
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
-#include "iceberg/schema_field.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -180,7 +179,7 @@ struct ICEBERG_EXPORT ManifestFile {
   static const SchemaField KEY_METADATA;
   static const SchemaField FIRST_ROW_ID;
 
-  static Schema schema();
+  static StructType Schema();
 };
 
 /// Snapshots are embedded in table metadata, but the list of manifests for a snapshot are

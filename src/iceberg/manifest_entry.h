@@ -246,8 +246,8 @@ struct ICEBERG_EXPORT ManifestEntry {
   static const SchemaField SEQUENCE_NUMBER;
   static const SchemaField FILE_SEQUENCE_NUMBER;
 
-  static Schema GetSchema(StructType partition_type);
-  static Schema GetSchemaFromDataFileType(StructType datafile_type);
+  static StructType GetSchema(StructType partition_type);
+  static StructType GetSchemaFromDataFileType(StructType datafile_type);
 };
 
 }  // namespace iceberg

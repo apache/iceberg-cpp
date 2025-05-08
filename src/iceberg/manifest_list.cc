@@ -19,7 +19,9 @@
 
 #include "iceberg/manifest_list.h"
 
-#include "iceberg/schema.h"
+#include <vector>
+
+#include "iceberg/schema_field.h"
 #include "iceberg/type.h"
 
 namespace iceberg {
@@ -78,7 +80,7 @@ const SchemaField ManifestFile::KEY_METADATA =
 const SchemaField ManifestFile::FIRST_ROW_ID =
     SchemaField::MakeOptional(520, "first_row_id", std::make_shared<LongType>());
 
-Schema ManifestFile::schema() {
+StructType ManifestFile::Schema() {
   std::vector<SchemaField> fields;
   fields.push_back(MANIFEST_PATH);
   fields.push_back(MANIFEST_LENGTH);
@@ -97,7 +99,7 @@ Schema ManifestFile::schema() {
   fields.push_back(KEY_METADATA);
   fields.push_back(FIRST_ROW_ID);
 
-  return {std::move(fields), /*schema_id=*/std::nullopt};
+  return StructType(std::move(fields));
 }
 
 }  // namespace iceberg
