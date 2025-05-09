@@ -41,7 +41,7 @@ StructType::StructType(std::vector<SchemaField> fields) : fields_(std::move(fiel
   }
 }
 
-TypeId StructType::type_id() const { return TypeId::kStruct; }
+TypeId StructType::type_id() const { return kTypeId; }
 std::string StructType::ToString() const {
   std::string repr = "struct<\n";
   for (const auto& field : fields_) {
@@ -93,7 +93,7 @@ ListType::ListType(SchemaField element) : element_(std::move(element)) {
 ListType::ListType(int32_t field_id, std::shared_ptr<Type> type, bool optional)
     : element_(field_id, std::string(kElementName), std::move(type), optional) {}
 
-TypeId ListType::type_id() const { return TypeId::kList; }
+TypeId ListType::type_id() const { return kTypeId; }
 std::string ListType::ToString() const {
   // XXX: work around Clang/libc++: "<{}>" in a format string appears to get
   // parsed as {<>} or something; split up the format string to avoid that
@@ -146,7 +146,7 @@ MapType::MapType(SchemaField key, SchemaField value)
 
 const SchemaField& MapType::key() const { return fields_[0]; }
 const SchemaField& MapType::value() const { return fields_[1]; }
-TypeId MapType::type_id() const { return TypeId::kMap; }
+TypeId MapType::type_id() const { return kTypeId; }
 std::string MapType::ToString() const {
   // XXX: work around Clang/libc++: "<{}>" in a format string appears to get
   // parsed as {<>} or something; split up the format string to avoid that
@@ -192,33 +192,25 @@ bool MapType::Equals(const Type& other) const {
   return fields_ == map.fields_;
 }
 
-TypeId BooleanType::type_id() const { return TypeId::kBoolean; }
+TypeId BooleanType::type_id() const { return kTypeId; }
 std::string BooleanType::ToString() const { return "boolean"; }
-bool BooleanType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kBoolean;
-}
+bool BooleanType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
-TypeId IntType::type_id() const { return TypeId::kInt; }
+TypeId IntType::type_id() const { return kTypeId; }
 std::string IntType::ToString() const { return "int"; }
-bool IntType::Equals(const Type& other) const { return other.type_id() == TypeId::kInt; }
+bool IntType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
-TypeId LongType::type_id() const { return TypeId::kLong; }
+TypeId LongType::type_id() const { return kTypeId; }
 std::string LongType::ToString() const { return "long"; }
-bool LongType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kLong;
-}
+bool LongType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
-TypeId FloatType::type_id() const { return TypeId::kFloat; }
+TypeId FloatType::type_id() const { return kTypeId; }
 std::string FloatType::ToString() const { return "float"; }
-bool FloatType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kFloat;
-}
+bool FloatType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
-TypeId DoubleType::type_id() const { return TypeId::kDouble; }
+TypeId DoubleType::type_id() const { return kTypeId; }
 std::string DoubleType::ToString() const { return "double"; }
-bool DoubleType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kDouble;
-}
+bool DoubleType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
 DecimalType::DecimalType(int32_t precision, int32_t scale)
     : precision_(precision), scale_(scale) {
@@ -230,57 +222,47 @@ DecimalType::DecimalType(int32_t precision, int32_t scale)
 
 int32_t DecimalType::precision() const { return precision_; }
 int32_t DecimalType::scale() const { return scale_; }
-TypeId DecimalType::type_id() const { return TypeId::kDecimal; }
+TypeId DecimalType::type_id() const { return kTypeId; }
 std::string DecimalType::ToString() const {
   return std::format("decimal({}, {})", precision_, scale_);
 }
 bool DecimalType::Equals(const Type& other) const {
-  if (other.type_id() != TypeId::kDecimal) {
+  if (other.type_id() != kTypeId) {
     return false;
   }
   const auto& decimal = static_cast<const DecimalType&>(other);
   return precision_ == decimal.precision_ && scale_ == decimal.scale_;
 }
 
-TypeId DateType::type_id() const { return TypeId::kDate; }
+TypeId DateType::type_id() const { return kTypeId; }
 std::string DateType::ToString() const { return "date"; }
-bool DateType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kDate;
-}
+bool DateType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
-TypeId TimeType::type_id() const { return TypeId::kTime; }
+TypeId TimeType::type_id() const { return kTypeId; }
 std::string TimeType::ToString() const { return "time"; }
-bool TimeType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kTime;
-}
+bool TimeType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
 bool TimestampType::is_zoned() const { return false; }
 TimeUnit TimestampType::time_unit() const { return TimeUnit::kMicrosecond; }
-TypeId TimestampType::type_id() const { return TypeId::kTimestamp; }
+TypeId TimestampType::type_id() const { return kTypeId; }
 std::string TimestampType::ToString() const { return "timestamp"; }
-bool TimestampType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kTimestamp;
-}
+bool TimestampType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
 bool TimestampTzType::is_zoned() const { return true; }
 TimeUnit TimestampTzType::time_unit() const { return TimeUnit::kMicrosecond; }
-TypeId TimestampTzType::type_id() const { return TypeId::kTimestampTz; }
+TypeId TimestampTzType::type_id() const { return kTypeId; }
 std::string TimestampTzType::ToString() const { return "timestamptz"; }
 bool TimestampTzType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kTimestampTz;
+  return other.type_id() == kTypeId;
 }
 
-TypeId StringType::type_id() const { return TypeId::kString; }
+TypeId StringType::type_id() const { return kTypeId; }
 std::string StringType::ToString() const { return "string"; }
-bool StringType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kString;
-}
+bool StringType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
-TypeId UuidType::type_id() const { return TypeId::kUuid; }
+TypeId UuidType::type_id() const { return kTypeId; }
 std::string UuidType::ToString() const { return "uuid"; }
-bool UuidType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kUuid;
-}
+bool UuidType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
 FixedType::FixedType(int32_t length) : length_(length) {
   if (length < 0) {
@@ -289,20 +271,18 @@ FixedType::FixedType(int32_t length) : length_(length) {
 }
 
 int32_t FixedType::length() const { return length_; }
-TypeId FixedType::type_id() const { return TypeId::kFixed; }
+TypeId FixedType::type_id() const { return kTypeId; }
 std::string FixedType::ToString() const { return std::format("fixed({})", length_); }
 bool FixedType::Equals(const Type& other) const {
-  if (other.type_id() != TypeId::kFixed) {
+  if (other.type_id() != kTypeId) {
     return false;
   }
   const auto& fixed = static_cast<const FixedType&>(other);
   return length_ == fixed.length_;
 }
 
-TypeId BinaryType::type_id() const { return TypeId::kBinary; }
+TypeId BinaryType::type_id() const { return kTypeId; }
 std::string BinaryType::ToString() const { return "binary"; }
-bool BinaryType::Equals(const Type& other) const {
-  return other.type_id() == TypeId::kBinary;
-}
+bool BinaryType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
 }  // namespace iceberg
