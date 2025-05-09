@@ -23,11 +23,13 @@
 #include <string>
 #include <unordered_map>
 
-namespace iceberg {
+#include <iceberg/exception.h>
 
+namespace iceberg {
+namespace internal {
 // Default conversion functions
 template <typename U>
-std::string defaultToString(const U& val) {
+std::string DefaultToString(const U& val) {
   if constexpr ((std::is_signed_v<U> && std::is_integral_v<U>) ||
                 std::is_floating_point_v<U>) {
     return std::to_string(val);
@@ -37,13 +39,13 @@ std::string defaultToString(const U& val) {
                        std::is_same_v<U, std::string_view>) {
     return val;
   } else {
-    throw std::runtime_error(
-        std::format("Explicit toStr() is required for {}", typeid(U).name()));
+    throw IcebergError(
+        std::format("Explicit to_str() is required for {}", typeid(U).name()));
   }
 }
 
 template <typename U>
-U defaultFromString(const std::string& val) {
+U DefaultFromString(const std::string& val) {
   if constexpr (std::is_same_v<U, std::string>) {
     return val;
   } else if constexpr (std::is_same_v<U, bool>) {
@@ -53,10 +55,11 @@ U defaultFromString(const std::string& val) {
   } else if constexpr (std::is_floating_point_v<U>) {
     return static_cast<U>(std::stod(val));
   } else {
-    throw std::runtime_error(
-        std::format("Explicit toT() is required for {}", typeid(U).name()));
+    throw IcebergError(
+        std::format("Explicit from_str() is required for {}", typeid(U).name()));
   }
 }
+}  // namespace internal
 
 template <class ConcreteConfig>
 class ConfigBase {
@@ -65,8 +68,8 @@ class ConfigBase {
   class Entry {
    public:
     Entry(std::string key, const T& val,
-          std::function<std::string(const T&)> to_str = defaultToString<T>,
-          std::function<T(const std::string&)> from_str = defaultFromString<T>)
+          std::function<std::string(const T&)> to_str = internal::DefaultToString<T>,
+          std::function<T(const std::string&)> from_str = internal::DefaultFromString<T>)
         : key_{std::move(key)}, default_{val}, to_str_{to_str}, from_str_{from_str} {}
 
    private:
@@ -85,29 +88,29 @@ class ConfigBase {
   };
 
   template <typename T>
-  ConfigBase& set(const Entry<T>& entry, const T& val) {
-    configs_[entry.key_] = entry.to_str_(val);
+  ConfigBase& Set(const Entry<T>& entry, const T& val) {
+    configs_.emplace(entry.key_, entry.to_str_(val));
     return *this;
   }
 
   template <typename T>
-  ConfigBase& unset(const Entry<T>& entry) {
+  ConfigBase& Unset(const Entry<T>& entry) {
     configs_.erase(entry.key_);
     return *this;
   }
 
-  ConfigBase& reset() {
+  ConfigBase& Reset() {
     configs_.clear();
     return *this;
   }
 
   template <typename T>
-  T get(const Entry<T>& entry) const {
+  T Get(const Entry<T>& entry) const {
     auto iter = configs_.find(entry.key_);
     return iter != configs_.cend() ? entry.from_str_(iter->second) : entry.default_;
   }
 
-  std::unordered_map<std::string, std::string> const& configs() const { return configs_; }
+  const std::unordered_map<std::string, std::string>& configs() const { return configs_; }
 
  protected:
   std::unordered_map<std::string, std::string> configs_;
