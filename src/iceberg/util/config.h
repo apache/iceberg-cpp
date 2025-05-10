@@ -23,7 +23,7 @@
 #include <string>
 #include <unordered_map>
 
-#include <iceberg/exception.h>
+#include "iceberg/exception.h"
 
 namespace iceberg {
 namespace internal {
