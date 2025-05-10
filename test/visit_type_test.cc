@@ -32,6 +32,7 @@
 namespace iceberg {
 
 namespace {
+
 class TypeNameVisitor {
  public:
   Status Visit(const Type& type, std::ostringstream& oss) {
@@ -53,7 +54,7 @@ std::string TypeTestCaseToString(const ::testing::TestParamInfo<TypeTestCase>& i
   return info.param.name;
 }
 
-const static TypeTestCase kPrimitiveTypes[] = {
+const static std::array<TypeTestCase, 16> kPrimitiveTypes = {{
     {
         .name = "boolean",
         .type = std::make_shared<iceberg::BooleanType>(),
@@ -166,9 +167,9 @@ const static TypeTestCase kPrimitiveTypes[] = {
         .primitive = true,
         .repr = "uuid",
     },
-};
+}};
 
-const static TypeTestCase kNestedTypes[] = {
+const static std::array<TypeTestCase, 4> kNestedTypes = {{
     {
         .name = "list_int",
         .type = std::make_shared<iceberg::ListType>(
@@ -214,7 +215,7 @@ const static TypeTestCase kNestedTypes[] = {
   bar (2): string (optional)
 >)",
     },
-};
+}};
 
 }  // namespace
 
