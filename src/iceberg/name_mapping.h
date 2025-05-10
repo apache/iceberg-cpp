@@ -76,6 +76,12 @@ class ICEBERG_EXPORT MappedFields {
 
   friend bool operator==(const MappedFields& lhs, const MappedFields& rhs);
 
+  MappedFields(const MappedFields& other) = delete;
+  MappedFields& operator=(const MappedFields& other) = delete;
+
+  MappedFields(MappedFields&& other) noexcept = default;
+  MappedFields& operator=(MappedFields&& other) noexcept = default;
+
  private:
   explicit MappedFields(std::vector<MappedField> fields);
 
