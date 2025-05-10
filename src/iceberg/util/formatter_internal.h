@@ -26,6 +26,7 @@
 #include <sstream>
 #include <string_view>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "iceberg/util/formatter.h"
@@ -70,7 +71,7 @@ std::string FormatRange(const Range& range, std::string_view separator,
     if (!first) {
       ss << separator;
     }
-    ss << element;
+    ss << std::format("{}", element);
     first = false;
   }
 
@@ -115,6 +116,32 @@ struct std::formatter<std::vector<T>> : std::formatter<std::string_view> {
   auto format(const std::vector<T>& vec, FormatContext& ctx) const {
     auto formatted_range =
         vec | std::views::transform([](const auto& item) { return FormatItem(item); });
+    return std::formatter<std::string_view>::format(
+        FormatRange(formatted_range, ", ", "[", "]"), ctx);
+  }
+};
+
+/// \brief std::formatter specialization for std::span
+template <typename T, size_t Extent>
+struct std::formatter<std::span<T, Extent>> : std::formatter<std::string_view> {
+  template <class FormatContext>
+  auto format(const std::span<T, Extent>& span, FormatContext& ctx) const {
+    auto formatted_range =
+        span | std::views::transform([](const auto& item) { return FormatItem(item); });
+    return std::formatter<std::string_view>::format(
+        FormatRange(formatted_range, ", ", "[", "]"), ctx);
+  }
+};
+
+/// \brief std::formatter specialization for std::unordered_set
+template <typename T, typename Hash, typename KeyEqual, typename Allocator>
+struct std::formatter<std::unordered_set<T, Hash, KeyEqual, Allocator>>
+    : std::formatter<std::string_view> {
+  template <class FormatContext>
+  auto format(const std::unordered_set<T, Hash, KeyEqual, Allocator>& set,
+              FormatContext& ctx) const {
+    auto formatted_range =
+        set | std::views::transform([](const auto& item) { return FormatItem(item); });
     return std::formatter<std::string_view>::format(
         FormatRange(formatted_range, ", ", "[", "]"), ctx);
   }

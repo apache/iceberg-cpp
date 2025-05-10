@@ -30,7 +30,8 @@ configure_file("${CMAKE_SOURCE_DIR}/test/test_config.h.in"
 
 add_executable(schema_test)
 target_sources(schema_test
-               PRIVATE schema_test.cc
+               PRIVATE name_mapping_test.cc
+                       schema_test.cc
                        schema_field_test.cc
                        type_test.cc
                        transform_test.cc
