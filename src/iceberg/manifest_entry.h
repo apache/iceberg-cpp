@@ -22,15 +22,18 @@
 #include <any>
 #include <cstdint>
 #include <map>
+#include <memory>
 #include <optional>
 #include <string>
-#include <unordered_map>
 #include <vector>
+
+#include <iceberg/type_fwd.h>
 
 #include "iceberg/file_format.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
-#include "iceberg/type_fwd.h"
+#include "iceberg/schema_field.h"
+#include "iceberg/type.h"
 
 namespace iceberg {
 
@@ -92,7 +95,7 @@ struct ICEBERG_EXPORT DataFile {
   /// Partition data tuple, schema based on the partition spec output using partition
   /// field ids for the struct field ids
   /// TODO(zhjwpku): use StructLike to represent partition data tuple
-  std::map<std::string, std::any> partition;
+  std::any partition;
   /// Field id: 103
   /// Number of records in this file, or the cardinality of a deletion vector
   int64_t record_count = 0;
@@ -105,44 +108,36 @@ struct ICEBERG_EXPORT DataFile {
   /// Map from column id to the total size on disk of all regions that store the column.
   /// Does not include bytes necessary to read other columns, like footers. Leave null for
   /// row-oriented formats (Avro)
-  std::unordered_map<int32_t, int64_t> column_sizes;
+  std::map<int32_t, int64_t> column_sizes;
   /// Field id: 109
   /// Key field id: 119
   /// Value field id: 120
   /// Map from column id to number of values in the column (including null and NaN values)
-  std::unordered_map<int32_t, int64_t> value_counts;
+  std::map<int32_t, int64_t> value_counts;
   /// Field id: 110
   /// Key field id: 121
   /// Value field id: 122
   /// Map from column id to number of null values in the column
-  std::unordered_map<int32_t, int64_t> null_value_counts;
+  std::map<int32_t, int64_t> null_value_counts;
   /// Field id: 137
   /// Key field id: 138
   /// Value field id: 139
   /// Map from column id to number of NaN values in the column
-  std::unordered_map<int32_t, int64_t> nan_value_counts;
+  std::map<int32_t, int64_t> nan_value_counts;
   /// Field id: 125
   /// Key field id: 126
   /// Value field id: 127
   /// Map from column id to lower bound in the column serialized as binary.
   /// Each value must be less than or equal to all non-null, non-NaN values in the column
   /// for the file.
-  ///
-  /// Reference:
-  /// - [Binary single-value
-  /// serialization](https://iceberg.apache.org/spec/#binary-single-value-serialization)
-  std::unordered_map<int32_t, std::vector<uint8_t>> lower_bounds;
+  std::map<int32_t, std::vector<uint8_t>> lower_bounds;
   /// Field id: 128
   /// Key field id: 129
   /// Value field id: 130
   /// Map from column id to upper bound in the column serialized as binary.
-  /// Each value must be greater than or equal to all non-null, non-Nan values in the
+  /// Each value must be greater than or equal to all non-null, non-NaN values in the
   /// column for the file.
-  ///
-  /// Reference:
-  /// - [Binary single-value
-  /// serialization](https://iceberg.apache.org/spec/#binary-single-value-serialization)
-  std::unordered_map<int32_t, std::vector<uint8_t>> upper_bounds;
+  std::map<int32_t, std::vector<uint8_t>> upper_bounds;
   /// Field id: 131
   /// Implementation-specific key metadata for encryption
   std::optional<std::vector<uint8_t>> key_metadata;
@@ -197,27 +192,80 @@ struct ICEBERG_EXPORT DataFile {
   /// present
   std::optional<int64_t> content_size_in_bytes;
 
-  static const SchemaField CONTENT;
-  static const SchemaField FILE_PATH;
-  static const SchemaField FILE_FORMAT;
-  static const SchemaField RECORD_COUNT;
-  static const SchemaField FILE_SIZE;
-  static const SchemaField COLUMN_SIZES;
-  static const SchemaField VALUE_COUNTS;
-  static const SchemaField NULL_VALUE_COUNTS;
-  static const SchemaField NAN_VALUE_COUNTS;
-  static const SchemaField LOWER_BOUNDS;
-  static const SchemaField UPPER_BOUNDS;
-  static const SchemaField KEY_METADATA;
-  static const SchemaField SPLIT_OFFSETS;
-  static const SchemaField EQUALITY_IDS;
-  static const SchemaField SORT_ORDER_ID;
-  static const SchemaField FIRST_ROW_ID;
-  static const SchemaField REFERENCED_DATA_FILE;
-  static const SchemaField CONTENT_OFFSET;
-  static const SchemaField CONTENT_SIZE;
+  inline static const SchemaField kContent =
+      SchemaField::MakeRequired(134, "content", std::make_shared<IntType>());
+  inline static const SchemaField kFilePath =
+      SchemaField::MakeRequired(100, "file_path", std::make_shared<StringType>());
+  inline static const SchemaField kFileFormat =
+      SchemaField::MakeRequired(101, "file_format", std::make_shared<IntType>());
+  inline static const SchemaField kRecordCount =
+      SchemaField::MakeRequired(103, "record_count", std::make_shared<LongType>());
+  inline static const SchemaField kFileSize =
+      SchemaField::MakeRequired(104, "file_size_in_bytes", std::make_shared<LongType>());
+  inline static const SchemaField kColumnSizes = SchemaField::MakeOptional(
+      108, "column_sizes",
+      std::make_shared<MapType>(
+          SchemaField::MakeRequired(117, std::string(MapType::kKeyName),
+                                    std::make_shared<IntType>()),
+          SchemaField::MakeRequired(118, std::string(MapType::kValueName),
+                                    std::make_shared<LongType>())));
+  inline static const SchemaField kValueCounts = SchemaField::MakeOptional(
+      109, "value_counts",
+      std::make_shared<MapType>(
+          SchemaField::MakeRequired(119, std::string(MapType::kKeyName),
+                                    std::make_shared<IntType>()),
+          SchemaField::MakeRequired(120, std::string(MapType::kValueName),
+                                    std::make_shared<LongType>())));
+  inline static const SchemaField kNullValueCounts = SchemaField::MakeOptional(
+      110, "null_value_counts",
+      std::make_shared<MapType>(
+          SchemaField::MakeRequired(121, std::string(MapType::kKeyName),
+                                    std::make_shared<IntType>()),
+          SchemaField::MakeRequired(122, std::string(MapType::kValueName),
+                                    std::make_shared<LongType>())));
+  inline static const SchemaField kNanValueCounts = SchemaField::MakeOptional(
+      137, "nan_value_counts",
+      std::make_shared<MapType>(
+          SchemaField::MakeRequired(138, std::string(MapType::kKeyName),
+                                    std::make_shared<IntType>()),
+          SchemaField::MakeRequired(139, std::string(MapType::kValueName),
+                                    std::make_shared<LongType>())));
+  inline static const SchemaField kLowerBounds = SchemaField::MakeOptional(
+      125, "lower_bounds",
+      std::make_shared<MapType>(
+          SchemaField::MakeRequired(126, std::string(MapType::kKeyName),
+                                    std::make_shared<IntType>()),
+          SchemaField::MakeRequired(127, std::string(MapType::kValueName),
+                                    std::make_shared<BinaryType>())));
+  inline static const SchemaField kUpperBounds = SchemaField::MakeOptional(
+      128, "upper_bounds",
+      std::make_shared<MapType>(
+          SchemaField::MakeRequired(129, std::string(MapType::kKeyName),
+                                    std::make_shared<IntType>()),
+          SchemaField::MakeRequired(130, std::string(MapType::kValueName),
+                                    std::make_shared<BinaryType>())));
+  inline static const SchemaField kKeyMetadata =
+      SchemaField::MakeOptional(131, "key_metadata", std::make_shared<BinaryType>());
+  inline static const SchemaField kSplitOffsets = SchemaField::MakeOptional(
+      132, "split_offsets",
+      std::make_shared<ListType>(SchemaField::MakeRequired(
+          133, std::string(ListType::kElementName), std::make_shared<LongType>())));
+  inline static const SchemaField kEqualityIds = SchemaField::MakeOptional(
+      135, "equality_ids",
+      std::make_shared<ListType>(SchemaField::MakeRequired(
+          136, std::string(ListType::kElementName), std::make_shared<IntType>())));
+  inline static const SchemaField kSortOrderId =
+      SchemaField::MakeOptional(140, "sort_order_id", std::make_shared<IntType>());
+  inline static const SchemaField kFirstRowId =
+      SchemaField::MakeOptional(142, "first_row_id", std::make_shared<LongType>());
+  inline static const SchemaField kReferencedDataFile = SchemaField::MakeOptional(
+      143, "referenced_data_file", std::make_shared<StringType>());
+  inline static const SchemaField kContentOffset =
+      SchemaField::MakeOptional(144, "content_offset", std::make_shared<LongType>());
+  inline static const SchemaField kContentSize = SchemaField::MakeOptional(
+      145, "content_size_in_bytes", std::make_shared<LongType>());
 
-  static StructType GetType(StructType partition_type);
+  static std::shared_ptr<StructType> Type(std::shared_ptr<StructType> partition_type);
 };
 
 /// \brief A manifest is an immutable Avro file that lists data files or delete files,
@@ -244,13 +292,19 @@ struct ICEBERG_EXPORT ManifestEntry {
   /// File path, partition tuple, metrics, ...
   DataFile data_file;
 
-  static const SchemaField STATUS;
-  static const SchemaField SNAPSHOT_ID;
-  static const SchemaField SEQUENCE_NUMBER;
-  static const SchemaField FILE_SEQUENCE_NUMBER;
+  inline static const SchemaField kStatus =
+      SchemaField::MakeRequired(0, "status", std::make_shared<IntType>());
+  inline static const SchemaField kSnapshotId =
+      SchemaField::MakeOptional(1, "snapshot_id", std::make_shared<LongType>());
+  inline static const SchemaField kSequenceNumber =
+      SchemaField::MakeOptional(3, "sequence_number", std::make_shared<LongType>());
+  inline static const SchemaField kFileSequenceNumber =
+      SchemaField::MakeOptional(4, "file_sequence_number", std::make_shared<LongType>());
 
-  static StructType GetSchema(StructType partition_type);
-  static StructType GetSchemaFromDataFileType(StructType datafile_type);
+  static std::shared_ptr<StructType> TypeFromPartitionType(
+      std::shared_ptr<StructType> partition_type);
+  static std::shared_ptr<StructType> TypeFromDataFileType(
+      std::shared_ptr<StructType> datafile_type);
 };
 
 }  // namespace iceberg

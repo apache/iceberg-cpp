@@ -21,85 +21,27 @@
 
 #include <vector>
 
-#include "iceberg/schema_field.h"
 #include "iceberg/type.h"
 
 namespace iceberg {
 
-const SchemaField FieldSummary::CONTAINS_NULL =
-    SchemaField::MakeRequired(509, "contains_null", std::make_shared<BooleanType>());
-const SchemaField FieldSummary::CONTAINS_NAN =
-    SchemaField::MakeOptional(518, "contains_nan", std::make_shared<BooleanType>());
-const SchemaField FieldSummary::LOWER_BOUND =
-    SchemaField::MakeOptional(510, "lower_bound", std::make_shared<BinaryType>());
-const SchemaField FieldSummary::UPPER_BOUND =
-    SchemaField::MakeOptional(511, "upper_bound", std::make_shared<BinaryType>());
-
-StructType FieldSummary::GetType() {
-  return StructType({
-      CONTAINS_NULL,
-      CONTAINS_NAN,
-      LOWER_BOUND,
-      UPPER_BOUND,
-  });
+const StructType& PartitionFieldSummary::Type() {
+  static const std::shared_ptr<StructType> instance{new StructType({
+      PartitionFieldSummary::kConsTainsNull,
+      PartitionFieldSummary::kContainsNaN,
+      PartitionFieldSummary::kLowerBound,
+      PartitionFieldSummary::kUpperBound,
+  })};
+  return *instance;
 }
 
-const SchemaField ManifestFile::MANIFEST_PATH =
-    SchemaField::MakeRequired(500, "manifest_path", std::make_shared<StringType>());
-const SchemaField ManifestFile::MANIFEST_LENGTH =
-    SchemaField::MakeRequired(501, "manifest_length", std::make_shared<LongType>());
-const SchemaField ManifestFile::PARTITION_SPEC_ID =
-    SchemaField::MakeRequired(502, "partition_spec_id", std::make_shared<IntType>());
-const SchemaField ManifestFile::CONTENT =
-    SchemaField::MakeOptional(517, "content", std::make_shared<IntType>());
-const SchemaField ManifestFile::SEQUENCE_NUMBER =
-    SchemaField::MakeOptional(515, "sequence_number", std::make_shared<LongType>());
-const SchemaField ManifestFile::MIN_SEQUENCE_NUMBER =
-    SchemaField::MakeOptional(516, "min_sequence_number", std::make_shared<LongType>());
-const SchemaField ManifestFile::ADDED_SNAPSHOT_ID =
-    SchemaField::MakeRequired(503, "added_snapshot_id", std::make_shared<LongType>());
-const SchemaField ManifestFile::ADDED_FILES_COUNT =
-    SchemaField::MakeOptional(504, "added_files_count", std::make_shared<IntType>());
-const SchemaField ManifestFile::EXISTING_FILES_COUNT =
-    SchemaField::MakeOptional(505, "existing_files_count", std::make_shared<IntType>());
-const SchemaField ManifestFile::DELETED_FILES_COUNT =
-    SchemaField::MakeOptional(506, "deleted_files_count", std::make_shared<IntType>());
-const SchemaField ManifestFile::ADDED_ROWS_COUNT =
-    SchemaField::MakeOptional(512, "added_rows_count", std::make_shared<LongType>());
-const SchemaField ManifestFile::EXISTING_ROWS_COUNT =
-    SchemaField::MakeOptional(513, "existing_rows_count", std::make_shared<LongType>());
-const SchemaField ManifestFile::DELETED_ROWS_COUNT =
-    SchemaField::MakeOptional(514, "deleted_rows_count", std::make_shared<LongType>());
-const SchemaField ManifestFile::PARTITIONS = SchemaField::MakeOptional(
-    507, "partitions",
-    std::make_shared<ListType>(SchemaField::MakeRequired(
-        508, std::string(ListType::kElementName),
-        std::make_shared<StructType>(FieldSummary::GetType()))));
-const SchemaField ManifestFile::KEY_METADATA =
-    SchemaField::MakeOptional(519, "key_metadata", std::make_shared<BinaryType>());
-const SchemaField ManifestFile::FIRST_ROW_ID =
-    SchemaField::MakeOptional(520, "first_row_id", std::make_shared<LongType>());
-
-StructType ManifestFile::Schema() {
-  std::vector<SchemaField> fields;
-  fields.push_back(MANIFEST_PATH);
-  fields.push_back(MANIFEST_LENGTH);
-  fields.push_back(PARTITION_SPEC_ID);
-  fields.push_back(CONTENT);
-  fields.push_back(SEQUENCE_NUMBER);
-  fields.push_back(MIN_SEQUENCE_NUMBER);
-  fields.push_back(ADDED_SNAPSHOT_ID);
-  fields.push_back(ADDED_FILES_COUNT);
-  fields.push_back(EXISTING_FILES_COUNT);
-  fields.push_back(DELETED_FILES_COUNT);
-  fields.push_back(ADDED_ROWS_COUNT);
-  fields.push_back(EXISTING_ROWS_COUNT);
-  fields.push_back(DELETED_ROWS_COUNT);
-  fields.push_back(PARTITIONS);
-  fields.push_back(KEY_METADATA);
-  fields.push_back(FIRST_ROW_ID);
-
-  return StructType(std::move(fields));
+const StructType& ManifestFile::Type() {
+  static const std::shared_ptr<StructType> instance{new StructType(
+      {kManifestPath, kManifestLength, kPartitionSpecId, kContent, kSequenceNumber,
+       kMinSequenceNumber, kAddedSnapshotId, kAddedFilesCount, kExistingFilesCount,
+       kDeletedFilesCount, kAddedRowsCount, kExistingRowsCount, kDeletedRowsCount,
+       kPartitions, kKeyMetadata, kFirstRowId})};
+  return *instance;
 }
 
 }  // namespace iceberg

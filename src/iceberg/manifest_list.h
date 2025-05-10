@@ -28,7 +28,8 @@
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
-#include "iceberg/type_fwd.h"
+#include "iceberg/schema_field.h"
+#include "iceberg/type.h"
 
 namespace iceberg {
 
@@ -60,7 +61,10 @@ ICEBERG_EXPORT constexpr Result<ManifestContent> ManifestContentFromString(
   return InvalidArgument("Invalid manifest content type: {}", str);
 }
 
-struct ICEBERG_EXPORT FieldSummary {
+/// \brief Field summary for partition field in the spec.
+///
+/// Each field of this corresponds to a field in the manifest file's partition spec.
+struct ICEBERG_EXPORT PartitionFieldSummary {
   /// Field id: 509
   /// Whether the manifest contains at least one partition with a null value for the field
   bool contains_null;
@@ -76,12 +80,16 @@ struct ICEBERG_EXPORT FieldSummary {
   /// values are null or NaN
   std::optional<std::vector<uint8_t>> upper_bound;
 
-  static const SchemaField CONTAINS_NULL;
-  static const SchemaField CONTAINS_NAN;
-  static const SchemaField LOWER_BOUND;
-  static const SchemaField UPPER_BOUND;
+  inline static const SchemaField kConsTainsNull =
+      SchemaField::MakeRequired(509, "contains_null", std::make_shared<BooleanType>());
+  inline static const SchemaField kContainsNaN =
+      SchemaField::MakeOptional(518, "contains_nan", std::make_shared<BooleanType>());
+  inline static const SchemaField kLowerBound =
+      SchemaField::MakeOptional(510, "lower_bound", std::make_shared<BinaryType>());
+  inline static const SchemaField kUpperBound =
+      SchemaField::MakeOptional(511, "upper_bound", std::make_shared<BinaryType>());
 
-  static StructType GetType();
+  static const StructType& Type();
 };
 
 /// \brief Entry in a manifest list.
@@ -139,7 +147,7 @@ struct ICEBERG_EXPORT ManifestFile {
   /// Element field id: 508
   /// A list of field summaries for each partition field in the spec. Each field in the
   /// list corresponds to a field in the manifest file's partition spec.
-  std::vector<FieldSummary> partitions;
+  std::vector<PartitionFieldSummary> partitions;
   /// Field id: 519
   /// Implementation-specific key metadata for encryption
   std::vector<uint8_t> key_metadata;
@@ -148,38 +156,51 @@ struct ICEBERG_EXPORT ManifestFile {
   int64_t first_row_id;
 
   /// \brief Checks if this manifest file contains entries with ADDED status.
-  [[nodiscard]] bool has_added_files() const {
-    return added_files_count.has_value() && *added_files_count > 0;
-  }
+  bool has_added_files() const { return added_files_count.value_or(-1) > 0; }
 
   /// \brief Checks if this manifest file contains entries with EXISTING status.
-  [[nodiscard]] bool has_existing_files() const {
-    return existing_files_count.has_value() && *existing_files_count > 0;
-  }
+  bool has_existing_files() const { return existing_files_count.value_or(-1) > 0; }
 
   /// \brief Checks if this manifest file contains entries with DELETED status
-  [[nodiscard]] bool has_deleted_files() const {
-    return deleted_files_count.has_value() && *deleted_files_count > 0;
-  }
+  bool has_deleted_files() const { return deleted_files_count.value_or(-1) > 0; }
 
-  static const SchemaField MANIFEST_PATH;
-  static const SchemaField MANIFEST_LENGTH;
-  static const SchemaField PARTITION_SPEC_ID;
-  static const SchemaField CONTENT;
-  static const SchemaField SEQUENCE_NUMBER;
-  static const SchemaField MIN_SEQUENCE_NUMBER;
-  static const SchemaField ADDED_SNAPSHOT_ID;
-  static const SchemaField ADDED_FILES_COUNT;
-  static const SchemaField EXISTING_FILES_COUNT;
-  static const SchemaField DELETED_FILES_COUNT;
-  static const SchemaField ADDED_ROWS_COUNT;
-  static const SchemaField EXISTING_ROWS_COUNT;
-  static const SchemaField DELETED_ROWS_COUNT;
-  static const SchemaField PARTITIONS;
-  static const SchemaField KEY_METADATA;
-  static const SchemaField FIRST_ROW_ID;
+  inline static const SchemaField kManifestPath =
+      SchemaField::MakeRequired(500, "manifest_path", std::make_shared<StringType>());
+  inline static const SchemaField kManifestLength =
+      SchemaField::MakeRequired(501, "manifest_length", std::make_shared<LongType>());
+  inline static const SchemaField kPartitionSpecId =
+      SchemaField::MakeRequired(502, "partition_spec_id", std::make_shared<IntType>());
+  inline static const SchemaField kContent =
+      SchemaField::MakeOptional(517, "content", std::make_shared<IntType>());
+  inline static const SchemaField kSequenceNumber =
+      SchemaField::MakeOptional(515, "sequence_number", std::make_shared<LongType>());
+  inline static const SchemaField kMinSequenceNumber =
+      SchemaField::MakeOptional(516, "min_sequence_number", std::make_shared<LongType>());
+  inline static const SchemaField kAddedSnapshotId =
+      SchemaField::MakeRequired(503, "added_snapshot_id", std::make_shared<LongType>());
+  inline static const SchemaField kAddedFilesCount =
+      SchemaField::MakeOptional(504, "added_files_count", std::make_shared<IntType>());
+  inline static const SchemaField kExistingFilesCount =
+      SchemaField::MakeOptional(505, "existing_files_count", std::make_shared<IntType>());
+  inline static const SchemaField kDeletedFilesCount =
+      SchemaField::MakeOptional(506, "deleted_files_count", std::make_shared<IntType>());
+  inline static const SchemaField kAddedRowsCount =
+      SchemaField::MakeOptional(512, "added_rows_count", std::make_shared<LongType>());
+  inline static const SchemaField kExistingRowsCount =
+      SchemaField::MakeOptional(513, "existing_rows_count", std::make_shared<LongType>());
+  inline static const SchemaField kDeletedRowsCount =
+      SchemaField::MakeOptional(514, "deleted_rows_count", std::make_shared<LongType>());
+  inline static const SchemaField kPartitions = SchemaField::MakeOptional(
+      507, "partitions",
+      std::make_shared<ListType>(SchemaField::MakeRequired(
+          508, std::string(ListType::kElementName),
+          std::make_shared<StructType>(PartitionFieldSummary::Type()))));
+  inline static const SchemaField kKeyMetadata =
+      SchemaField::MakeOptional(519, "key_metadata", std::make_shared<BinaryType>());
+  inline static const SchemaField kFirstRowId =
+      SchemaField::MakeOptional(520, "first_row_id", std::make_shared<LongType>());
 
-  static StructType Schema();
+  static const StructType& Type();
 };
 
 /// Snapshots are embedded in table metadata, but the list of manifests for a snapshot are
@@ -194,7 +215,7 @@ struct ICEBERG_EXPORT ManifestFile {
 /// the manifests in a snapshot when planning a table scan. This includes the number of
 /// added, existing, and deleted files, and a summary of values for each field of the
 /// partition spec used to write the manifest.
-struct ManifestList {
+struct ICEBERG_EXPORT ManifestList {
   /// Entries in a manifest list.
   std::vector<ManifestFile> entries;
 };
