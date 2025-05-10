@@ -17,17 +17,15 @@
  * under the License.
  */
 
-#pragma once
+#include "iceberg/util/unreachable.h"
 
-#include <string_view>
+#include <cstdlib>
 
-#include "iceberg/iceberg_export.h"
+namespace iceberg::internal {
 
-namespace iceberg {
+// TODO(anyone): log the message before aborting
+[[noreturn]] void Unreachable([[maybe_unused]] const char* message) { std::abort(); }
 
-[[noreturn]] ICEBERG_EXPORT void Unreachable(
-    [[maybe_unused]] const char* message = "Unreachable");
+[[noreturn]] void Unreachable([[maybe_unused]] std::string_view message) { std::abort(); }
 
-[[noreturn]] ICEBERG_EXPORT void Unreachable([[maybe_unused]] std::string_view message);
-
-}  // namespace iceberg
+}  // namespace iceberg::internal

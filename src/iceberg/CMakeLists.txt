@@ -39,7 +39,7 @@ set(ICEBERG_SOURCES
     type.cc
     util/murmurhash3_internal.cc
     util/timepoint.cc
-    util/unreachable_internal.cc)
+    util/unreachable.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_SHARED_BUILD_INTERFACE_LIBS)

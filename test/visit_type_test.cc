@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/util/visit_type_internal.h"
+#include "iceberg/util/visit_type.h"
 
 #include <sstream>
 
