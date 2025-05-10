@@ -104,6 +104,7 @@ class ICEBERG_EXPORT NestedType : public Type {
 /// \brief A data type representing a struct with nested fields.
 class ICEBERG_EXPORT StructType : public NestedType {
  public:
+  constexpr static TypeId kTypeId = TypeId::kStruct;
   explicit StructType(std::vector<SchemaField> fields);
   ~StructType() override = default;
 
@@ -128,6 +129,7 @@ class ICEBERG_EXPORT StructType : public NestedType {
 /// \brief A data type representing a list of values.
 class ICEBERG_EXPORT ListType : public NestedType {
  public:
+  constexpr static const TypeId kTypeId = TypeId::kList;
   constexpr static const std::string_view kElementName = "element";
 
   /// \brief Construct a list of the given element.  The name of the child
@@ -157,6 +159,7 @@ class ICEBERG_EXPORT ListType : public NestedType {
 /// \brief A data type representing a dictionary of values.
 class ICEBERG_EXPORT MapType : public NestedType {
  public:
+  constexpr static const TypeId kTypeId = TypeId::kMap;
   constexpr static const std::string_view kKeyName = "key";
   constexpr static const std::string_view kValueName = "value";
 
@@ -194,6 +197,8 @@ class ICEBERG_EXPORT MapType : public NestedType {
 /// \brief A data type representing a boolean (true or false).
 class ICEBERG_EXPORT BooleanType : public PrimitiveType {
  public:
+  constexpr static const TypeId kTypeId = TypeId::kBoolean;
+
   BooleanType() = default;
   ~BooleanType() override = default;
 
@@ -207,6 +212,8 @@ class ICEBERG_EXPORT BooleanType : public PrimitiveType {
 /// \brief A data type representing a 32-bit signed integer.
 class ICEBERG_EXPORT IntType : public PrimitiveType {
  public:
+  constexpr static const TypeId kTypeId = TypeId::kInt;
+
   IntType() = default;
   ~IntType() override = default;
 
@@ -220,6 +227,8 @@ class ICEBERG_EXPORT IntType : public PrimitiveType {
 /// \brief A data type representing a 64-bit signed integer.
 class ICEBERG_EXPORT LongType : public PrimitiveType {
  public:
+  constexpr static const TypeId kTypeId = TypeId::kLong;
+
   LongType() = default;
   ~LongType() override = default;
 
@@ -234,6 +243,8 @@ class ICEBERG_EXPORT LongType : public PrimitiveType {
 ///   float.
 class ICEBERG_EXPORT FloatType : public PrimitiveType {
  public:
+  constexpr static const TypeId kTypeId = TypeId::kFloat;
+
   FloatType() = default;
   ~FloatType() override = default;
 
@@ -248,6 +259,8 @@ class ICEBERG_EXPORT FloatType : public PrimitiveType {
 ///   float.
 class ICEBERG_EXPORT DoubleType : public PrimitiveType {
  public:
+  constexpr static const TypeId kTypeId = TypeId::kDouble;
+
   DoubleType() = default;
   ~DoubleType() override = default;
 
@@ -261,6 +274,7 @@ class ICEBERG_EXPORT DoubleType : public PrimitiveType {
 /// \brief A data type representing a fixed-precision decimal.
 class ICEBERG_EXPORT DecimalType : public PrimitiveType {
  public:
+  constexpr static const TypeId kTypeId = TypeId::kDecimal;
   constexpr static const int32_t kMaxPrecision = 38;
 
   /// \brief Construct a decimal type with the given precision and scale.
@@ -288,6 +302,8 @@ class ICEBERG_EXPORT DecimalType : public PrimitiveType {
 ///   timezone or time.
 class ICEBERG_EXPORT DateType : public PrimitiveType {
  public:
+  constexpr static const TypeId kTypeId = TypeId::kDate;
+
   DateType() = default;
   ~DateType() override = default;
 
@@ -302,6 +318,8 @@ class ICEBERG_EXPORT DateType : public PrimitiveType {
 ///   reference to a timezone or date.
 class ICEBERG_EXPORT TimeType : public PrimitiveType {
  public:
+  constexpr static const TypeId kTypeId = TypeId::kTime;
+
   TimeType() = default;
   ~TimeType() override = default;
 
@@ -326,6 +344,8 @@ class ICEBERG_EXPORT TimestampBase : public PrimitiveType {
 ///   reference to a timezone.
 class ICEBERG_EXPORT TimestampType : public TimestampBase {
  public:
+  constexpr static const TypeId kTypeId = TypeId::kTimestamp;
+
   TimestampType() = default;
   ~TimestampType() override = default;
 
@@ -343,6 +363,8 @@ class ICEBERG_EXPORT TimestampType : public TimestampBase {
 ///   epoch in UTC.  A time zone or offset is not stored.
 class ICEBERG_EXPORT TimestampTzType : public TimestampBase {
  public:
+  constexpr static const TypeId kTypeId = TypeId::kTimestampTz;
+
   TimestampTzType() = default;
   ~TimestampTzType() override = default;
 
@@ -359,6 +381,8 @@ class ICEBERG_EXPORT TimestampTzType : public TimestampBase {
 /// \brief A data type representing an arbitrary-length byte sequence.
 class ICEBERG_EXPORT BinaryType : public PrimitiveType {
  public:
+  constexpr static const TypeId kTypeId = TypeId::kBinary;
+
   BinaryType() = default;
   ~BinaryType() override = default;
 
@@ -373,6 +397,8 @@ class ICEBERG_EXPORT BinaryType : public PrimitiveType {
 ///   (encoded in UTF-8).
 class ICEBERG_EXPORT StringType : public PrimitiveType {
  public:
+  constexpr static const TypeId kTypeId = TypeId::kString;
+
   StringType() = default;
   ~StringType() override = default;
 
@@ -386,6 +412,8 @@ class ICEBERG_EXPORT StringType : public PrimitiveType {
 /// \brief A data type representing a fixed-length bytestring.
 class ICEBERG_EXPORT FixedType : public PrimitiveType {
  public:
+  constexpr static const TypeId kTypeId = TypeId::kFixed;
+
   /// \brief Construct a fixed type with the given length.
   explicit FixedType(int32_t length);
   ~FixedType() override = default;
@@ -407,6 +435,8 @@ class ICEBERG_EXPORT FixedType : public PrimitiveType {
 ///   it is effectively a fixed(16).
 class ICEBERG_EXPORT UuidType : public PrimitiveType {
  public:
+  constexpr static const TypeId kTypeId = TypeId::kUuid;
+
   UuidType() = default;
   ~UuidType() override = default;
 
