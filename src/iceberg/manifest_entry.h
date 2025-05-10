@@ -192,78 +192,57 @@ struct ICEBERG_EXPORT DataFile {
   /// present
   std::optional<int64_t> content_size_in_bytes;
 
-  inline static const SchemaField kContent =
-      SchemaField::MakeRequired(134, "content", std::make_shared<IntType>());
+  inline static const SchemaField kContent = MakeRequiredField<IntType>(134, "content");
   inline static const SchemaField kFilePath =
-      SchemaField::MakeRequired(100, "file_path", std::make_shared<StringType>());
+      MakeRequiredField<StringType>(100, "file_path");
   inline static const SchemaField kFileFormat =
-      SchemaField::MakeRequired(101, "file_format", std::make_shared<IntType>());
+      MakeRequiredField<IntType>(101, "file_format");
   inline static const SchemaField kRecordCount =
-      SchemaField::MakeRequired(103, "record_count", std::make_shared<LongType>());
+      MakeRequiredField<LongType>(103, "record_count");
   inline static const SchemaField kFileSize =
-      SchemaField::MakeRequired(104, "file_size_in_bytes", std::make_shared<LongType>());
-  inline static const SchemaField kColumnSizes = SchemaField::MakeOptional(
+      MakeRequiredField<LongType>(104, "file_size_in_bytes");
+  inline static const SchemaField kColumnSizes = MakeOptionalField<MapType>(
       108, "column_sizes",
-      std::make_shared<MapType>(
-          SchemaField::MakeRequired(117, std::string(MapType::kKeyName),
-                                    std::make_shared<IntType>()),
-          SchemaField::MakeRequired(118, std::string(MapType::kValueName),
-                                    std::make_shared<LongType>())));
-  inline static const SchemaField kValueCounts = SchemaField::MakeOptional(
+      MakeRequiredField<IntType>(117, std::string(MapType::kKeyName)),
+      MakeRequiredField<LongType>(118, std::string(MapType::kValueName)));
+  inline static const SchemaField kValueCounts = MakeOptionalField<MapType>(
       109, "value_counts",
-      std::make_shared<MapType>(
-          SchemaField::MakeRequired(119, std::string(MapType::kKeyName),
-                                    std::make_shared<IntType>()),
-          SchemaField::MakeRequired(120, std::string(MapType::kValueName),
-                                    std::make_shared<LongType>())));
-  inline static const SchemaField kNullValueCounts = SchemaField::MakeOptional(
+      MakeRequiredField<IntType>(119, std::string(MapType::kKeyName)),
+      MakeRequiredField<LongType>(120, std::string(MapType::kValueName)));
+  inline static const SchemaField kNullValueCounts = MakeOptionalField<MapType>(
       110, "null_value_counts",
-      std::make_shared<MapType>(
-          SchemaField::MakeRequired(121, std::string(MapType::kKeyName),
-                                    std::make_shared<IntType>()),
-          SchemaField::MakeRequired(122, std::string(MapType::kValueName),
-                                    std::make_shared<LongType>())));
-  inline static const SchemaField kNanValueCounts = SchemaField::MakeOptional(
+      MakeRequiredField<IntType>(121, std::string(MapType::kKeyName)),
+      MakeRequiredField<LongType>(122, std::string(MapType::kValueName)));
+  inline static const SchemaField kNanValueCounts = MakeOptionalField<MapType>(
       137, "nan_value_counts",
-      std::make_shared<MapType>(
-          SchemaField::MakeRequired(138, std::string(MapType::kKeyName),
-                                    std::make_shared<IntType>()),
-          SchemaField::MakeRequired(139, std::string(MapType::kValueName),
-                                    std::make_shared<LongType>())));
-  inline static const SchemaField kLowerBounds = SchemaField::MakeOptional(
+      MakeRequiredField<IntType>(138, std::string(MapType::kKeyName)),
+      MakeRequiredField<LongType>(139, std::string(MapType::kValueName)));
+  inline static const SchemaField kLowerBounds = MakeOptionalField<MapType>(
       125, "lower_bounds",
-      std::make_shared<MapType>(
-          SchemaField::MakeRequired(126, std::string(MapType::kKeyName),
-                                    std::make_shared<IntType>()),
-          SchemaField::MakeRequired(127, std::string(MapType::kValueName),
-                                    std::make_shared<BinaryType>())));
-  inline static const SchemaField kUpperBounds = SchemaField::MakeOptional(
+      MakeRequiredField<IntType>(126, std::string(MapType::kKeyName)),
+      MakeRequiredField<BinaryType>(127, std::string(MapType::kValueName)));
+  inline static const SchemaField kUpperBounds = MakeOptionalField<MapType>(
       128, "upper_bounds",
-      std::make_shared<MapType>(
-          SchemaField::MakeRequired(129, std::string(MapType::kKeyName),
-                                    std::make_shared<IntType>()),
-          SchemaField::MakeRequired(130, std::string(MapType::kValueName),
-                                    std::make_shared<BinaryType>())));
+      MakeRequiredField<IntType>(129, std::string(MapType::kKeyName)),
+      MakeRequiredField<BinaryType>(130, std::string(MapType::kValueName)));
   inline static const SchemaField kKeyMetadata =
-      SchemaField::MakeOptional(131, "key_metadata", std::make_shared<BinaryType>());
-  inline static const SchemaField kSplitOffsets = SchemaField::MakeOptional(
+      MakeOptionalField<BinaryType>(131, "key_metadata");
+  inline static const SchemaField kSplitOffsets = MakeOptionalField<ListType>(
       132, "split_offsets",
-      std::make_shared<ListType>(SchemaField::MakeRequired(
-          133, std::string(ListType::kElementName), std::make_shared<LongType>())));
-  inline static const SchemaField kEqualityIds = SchemaField::MakeOptional(
+      MakeRequiredField<LongType>(133, std::string(ListType::kElementName)));
+  inline static const SchemaField kEqualityIds = MakeOptionalField<ListType>(
       135, "equality_ids",
-      std::make_shared<ListType>(SchemaField::MakeRequired(
-          136, std::string(ListType::kElementName), std::make_shared<IntType>())));
+      MakeRequiredField<IntType>(136, std::string(ListType::kElementName)));
   inline static const SchemaField kSortOrderId =
-      SchemaField::MakeOptional(140, "sort_order_id", std::make_shared<IntType>());
+      MakeOptionalField<IntType>(140, "sort_order_id");
   inline static const SchemaField kFirstRowId =
-      SchemaField::MakeOptional(142, "first_row_id", std::make_shared<LongType>());
-  inline static const SchemaField kReferencedDataFile = SchemaField::MakeOptional(
-      143, "referenced_data_file", std::make_shared<StringType>());
+      MakeOptionalField<LongType>(142, "first_row_id");
+  inline static const SchemaField kReferencedDataFile =
+      MakeOptionalField<StringType>(143, "referenced_data_file");
   inline static const SchemaField kContentOffset =
-      SchemaField::MakeOptional(144, "content_offset", std::make_shared<LongType>());
-  inline static const SchemaField kContentSize = SchemaField::MakeOptional(
-      145, "content_size_in_bytes", std::make_shared<LongType>());
+      MakeOptionalField<LongType>(144, "content_offset");
+  inline static const SchemaField kContentSize =
+      MakeOptionalField<LongType>(145, "content_size_in_bytes");
 
   static std::shared_ptr<StructType> Type(std::shared_ptr<StructType> partition_type);
 };
@@ -292,14 +271,13 @@ struct ICEBERG_EXPORT ManifestEntry {
   /// File path, partition tuple, metrics, ...
   DataFile data_file;
 
-  inline static const SchemaField kStatus =
-      SchemaField::MakeRequired(0, "status", std::make_shared<IntType>());
+  inline static const SchemaField kStatus = MakeRequiredField<IntType>(0, "status");
   inline static const SchemaField kSnapshotId =
-      SchemaField::MakeOptional(1, "snapshot_id", std::make_shared<LongType>());
+      MakeOptionalField<LongType>(1, "snapshot_id");
   inline static const SchemaField kSequenceNumber =
-      SchemaField::MakeOptional(3, "sequence_number", std::make_shared<LongType>());
+      MakeOptionalField<LongType>(3, "sequence_number");
   inline static const SchemaField kFileSequenceNumber =
-      SchemaField::MakeOptional(4, "file_sequence_number", std::make_shared<LongType>());
+      MakeOptionalField<LongType>(4, "file_sequence_number");
 
   static std::shared_ptr<StructType> TypeFromPartitionType(
       std::shared_ptr<StructType> partition_type);
