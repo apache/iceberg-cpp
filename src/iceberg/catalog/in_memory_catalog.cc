@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/catalog/memory_catalog.h"
+#include "iceberg/catalog/in_memory_catalog.h"
 
 #include <algorithm>
 #include <iterator>  // IWYU pragma: keep
@@ -42,18 +42,14 @@ Result<const InMemoryNamespace*> GetNamespace(const InMemoryNamespace* root,
 
 }  // namespace
 
-InMemoryCatalog::InMemoryCatalog(std::shared_ptr<FileIO> file_io,
-                                 std::string warehouse_location)
-    : file_io_(std::move(file_io)),
+InMemoryCatalog::InMemoryCatalog(std::string name, std::shared_ptr<FileIO> file_io,
+                                 std::string warehouse_location,
+                                 std::unordered_map<std::string, std::string> properties)
+    : catalog_name_(std::move(name)),
+      properties_(std::move(properties)),
+      file_io_(std::move(file_io)),
       warehouse_location_(std::move(warehouse_location)),
       root_namespace_(std::make_unique<InMemoryNamespace>()) {}
-
-void InMemoryCatalog::Initialize(
-    const std::string& name,
-    const std::unordered_map<std::string, std::string>& properties) {
-  catalog_name_ = name;
-  properties_ = properties;
-}
 
 std::string_view InMemoryCatalog::name() const { return catalog_name_; }
 
@@ -74,27 +70,24 @@ Result<std::unique_ptr<Table>> InMemoryCatalog::CreateTable(
     const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
     const std::string& location,
     const std::unordered_map<std::string, std::string>& properties) {
-  return unexpected<Error>(
-      {.kind = ErrorKind::kNotImplemented, .message = "CreateTable"});
+  return NotImplemented("create table");
 }
 
 Result<std::unique_ptr<Table>> InMemoryCatalog::UpdateTable(
     const TableIdentifier& identifier,
     const std::vector<std::unique_ptr<UpdateRequirement>>& requirements,
     const std::vector<std::unique_ptr<MetadataUpdate>>& updates) {
-  return unexpected<Error>(
-      {.kind = ErrorKind::kNotImplemented, .message = "UpdateTable"});
+  return NotImplemented("update table");
 }
 
 Result<std::shared_ptr<Transaction>> InMemoryCatalog::StageCreateTable(
     const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
     const std::string& location,
     const std::unordered_map<std::string, std::string>& properties) {
-  return unexpected<Error>(
-      {.kind = ErrorKind::kNotImplemented, .message = "StageCreateTable"});
+  return NotImplemented("stage create table");
 }
 
-Status InMemoryCatalog::TableExists(const TableIdentifier& identifier) const {
+Result<bool> InMemoryCatalog::TableExists(const TableIdentifier& identifier) const {
   std::unique_lock lock(mutex_);
   return root_namespace_->TableExists(identifier);
 }
@@ -107,19 +100,17 @@ Status InMemoryCatalog::DropTable(const TableIdentifier& identifier, bool purge)
 
 Result<std::shared_ptr<Table>> InMemoryCatalog::LoadTable(
     const TableIdentifier& identifier) const {
-  return unexpected<Error>({.kind = ErrorKind::kNotImplemented, .message = "LoadTable"});
+  return NotImplemented("load table");
 }
 
 Result<std::shared_ptr<Table>> InMemoryCatalog::RegisterTable(
     const TableIdentifier& identifier, const std::string& metadata_file_location) {
   std::unique_lock lock(mutex_);
   if (!root_namespace_->NamespaceExists(identifier.ns)) {
-    return unexpected<Error>({.kind = ErrorKind::kNoSuchNamespace,
-                              .message = "table namespace does not exist"});
+    return NoSuchNamespace("table namespace does not exist.");
   }
   if (!root_namespace_->RegisterTable(identifier, metadata_file_location)) {
-    return unexpected<Error>(
-        {.kind = ErrorKind::kUnknownError, .message = "The registry failed."});
+    return UnknownError("The registry failed.");
   }
   return LoadTable(identifier);
 }
@@ -253,13 +244,10 @@ Status InMemoryNamespace::UnregisterTable(TableIdentifier const& table_ident) {
   return {};
 }
 
-Status InMemoryNamespace::TableExists(TableIdentifier const& table_ident) const {
+Result<bool> InMemoryNamespace::TableExists(TableIdentifier const& table_ident) const {
   const auto ns = GetNamespace(this, table_ident.ns);
   ICEBERG_RETURN_UNEXPECTED(ns);
-  if (!ns.value()->table_metadata_locations_.contains(table_ident.name)) {
-    return NotFound("{} does not exist", table_ident.name);
-  }
-  return {};
+  return ns.value()->table_metadata_locations_.contains(table_ident.name);
 }
 
 Result<std::string> InMemoryNamespace::GetTableMetadataLocation(

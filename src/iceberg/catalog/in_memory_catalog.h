@@ -27,15 +27,11 @@
 
 namespace iceberg {
 
-class InMemoryNamespace;
-
 class ICEBERG_EXPORT InMemoryCatalog : public Catalog {
  public:
-  InMemoryCatalog(std::shared_ptr<FileIO> file_io, std::string warehouse_location);
-
-  void Initialize(
-      const std::string& name,
-      const std::unordered_map<std::string, std::string>& properties) override;
+  InMemoryCatalog(std::string name, std::shared_ptr<FileIO> file_io,
+                  std::string warehouse_location,
+                  std::unordered_map<std::string, std::string> properties);
 
   std::string_view name() const override;
 
@@ -56,7 +52,7 @@ class ICEBERG_EXPORT InMemoryCatalog : public Catalog {
       const std::string& location,
       const std::unordered_map<std::string, std::string>& properties) override;
 
-  Status TableExists(const TableIdentifier& identifier) const override;
+  Result<bool> TableExists(const TableIdentifier& identifier) const override;
 
   Status DropTable(const TableIdentifier& identifier, bool purge) override;
 
@@ -75,7 +71,7 @@ class ICEBERG_EXPORT InMemoryCatalog : public Catalog {
   std::unordered_map<std::string, std::string> properties_;
   std::shared_ptr<FileIO> file_io_;
   std::string warehouse_location_;
-  std::unique_ptr<InMemoryNamespace> root_namespace_;
+  std::unique_ptr<class InMemoryNamespace> root_namespace_;
   mutable std::recursive_mutex mutex_;
 };
 
@@ -165,9 +161,9 @@ class ICEBERG_EXPORT InMemoryNamespace {
   /**
    * \brief Checks if a table exists in the specified namespace.
    * \param[in] table_ident The identifier of the table to check.
-   * \return Status indicating success or failure.
+   * \return Result<bool> indicating table exists or not.
    */
-  Status TableExists(TableIdentifier const& table_ident) const;
+  Result<bool> TableExists(TableIdentifier const& table_ident) const;
 
   /**
    * \brief Gets the metadata location for the specified table.
