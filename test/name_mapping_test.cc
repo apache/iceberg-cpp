@@ -176,16 +176,30 @@ TEST_F(NameMappingTest, MappedFieldsAccess) {
 }
 
 TEST_F(NameMappingTest, ToString) {
-  auto mapping = MakeNameMapping();
-  auto expected = R"([
-  ([bar, foo] -> 1)
-  ([baz] -> 2)
-  ([qux] -> 3, [([hello] -> 4), ([world] -> 5)])
-])";
-  EXPECT_EQ(ToString(*mapping), expected);
+  {
+    std::vector<MappedField> fields;
+    fields.emplace_back(MappedField{.names = {"foo"}, .field_id = 1});
 
-  auto empty_mapping = NameMapping::MakeEmpty();
-  EXPECT_EQ(ToString(*empty_mapping), "[]");
+    std::vector<MappedField> nested_fields;
+    nested_fields.emplace_back(MappedField{.names = {"hello"}, .field_id = 3});
+    nested_fields.emplace_back(MappedField{.names = {"world"}, .field_id = 4});
+    auto nested_mapping = MappedFields::Make(std::move(nested_fields));
+    fields.emplace_back(MappedField{
+        .names = {"bar"}, .field_id = 2, .nested_mapping = std::move(nested_mapping)});
+
+    auto mapping = NameMapping::Make(std::move(fields));
+
+    auto expected = R"([
+  ([foo] -> 1)
+  ([bar] -> 2, [([hello] -> 3), ([world] -> 4)])
+])";
+    EXPECT_EQ(ToString(*mapping), expected);
+  }
+
+  {
+    auto empty_mapping = NameMapping::MakeEmpty();
+    EXPECT_EQ(ToString(*empty_mapping), "[]");
+  }
 }
 
 }  // namespace iceberg
