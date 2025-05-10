@@ -90,11 +90,11 @@ class ICEBERG_EXPORT Catalog {
   /// \brief Check whether table exists
   ///
   /// \param identifier a table identifier
-  /// \return Status indicating success or failure.
+  /// \return Result<bool> indicating table exists or not.
   ///         - On success, the table existence was successfully checked (actual existence
   ///         may be inferred elsewhere).
   ///         - On failure, contains error information.
-  virtual Status TableExists(const TableIdentifier& identifier) const = 0;
+  virtual Result<bool> TableExists(const TableIdentifier& identifier) const = 0;
 
   /// \brief Drop a table; optionally delete data and metadata files
   ///
@@ -123,18 +123,6 @@ class ICEBERG_EXPORT Catalog {
   /// \return a Table instance or ErrorKind::kAlreadyExists if the table already exists
   virtual Result<std::shared_ptr<Table>> RegisterTable(
       const TableIdentifier& identifier, const std::string& metadata_file_location) = 0;
-
-  /// \brief Initialize a catalog given a custom name and a map of catalog properties
-  ///
-  /// A custom Catalog implementation must have a default constructor. A compute engine
-  /// will first initialize the catalog without any arguments, and then call this method
-  /// to complete catalog initialization with properties passed into the engine.
-  ///
-  /// \param name a custom name for the catalog
-  /// \param properties catalog properties
-  virtual void Initialize(
-      const std::string& name,
-      const std::unordered_map<std::string, std::string>& properties) = 0;
 
   /// \brief Instantiate a builder to either create a table or start a create/replace
   /// transaction
