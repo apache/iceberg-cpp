@@ -27,8 +27,6 @@
 #include <string>
 #include <vector>
 
-#include <iceberg/type_fwd.h>
-
 #include "iceberg/file_format.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
