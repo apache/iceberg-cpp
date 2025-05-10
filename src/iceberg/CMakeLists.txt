@@ -23,6 +23,8 @@ set(ICEBERG_SOURCES
     expression/expression.cc
     file_reader.cc
     json_internal.cc
+    manifest_entry.cc
+    manifest_list.cc
     partition_field.cc
     partition_spec.cc
     schema.cc
