@@ -25,6 +25,9 @@
 #include "iceberg/util/unreachable.h"
 #include "iceberg/util/visitor_generate.h"
 
+// Adapted from Apache Arrow
+// https://github.com/apache/arrow/blob/main/cpp/src/arrow/visit_type_inline.h
+
 namespace iceberg {
 
 #define TYPE_VISIT_INLINE(TYPE_CLASS)                                   \
