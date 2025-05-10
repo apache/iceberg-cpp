@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/catalog/memory_catalog.h"
+#include "iceberg/catalog/in_memory_catalog.h"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -100,7 +100,7 @@ TEST_F(InMemoryNamespaceTest, UnregisterTable) {
   const auto t = MakeTable(ns.levels, "t2");
   EXPECT_TRUE(root_namespace_.RegisterTable(t, "meta2"));
   EXPECT_TRUE(root_namespace_.UnregisterTable(t));
-  EXPECT_FALSE(root_namespace_.TableExists(t));
+  EXPECT_FALSE(root_namespace_.TableExists(t).value());
 }
 
 TEST_F(InMemoryNamespaceTest, RegisterTableOnNonExistingNamespaceFails) {
@@ -133,8 +133,9 @@ class MemoryCatalogTest : public ::testing::Test {
  protected:
   void SetUp() override {
     file_io_ = nullptr;  // TODO(Guotao): A real FileIO instance needs to be constructed.
-    catalog_ = std::make_unique<InMemoryCatalog>(file_io_, "/tmp/warehouse/");
-    catalog_->Initialize("test_catalog", {{"prop1", "val1"}});
+    std::unordered_map<std::string, std::string> properties = {{"prop1", "val1"}};
+    catalog_ = std::make_unique<InMemoryCatalog>("test_catalog", file_io_,
+                                                 "/tmp/warehouse/", properties);
   }
 
   std::shared_ptr<FileIO> file_io_;
