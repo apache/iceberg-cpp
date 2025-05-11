@@ -22,7 +22,6 @@
 #include <algorithm>
 #include <cstdint>
 #include <format>
-#include <ranges>
 #include <regex>
 #include <type_traits>
 #include <unordered_set>
@@ -37,7 +36,6 @@
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/statistics_file.h"
-#include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
@@ -173,12 +171,17 @@ void SetOptionalField(nlohmann::json& json, std::string_view key,
   }
 }
 
+std::string DumpJsonNoExcept(const nlohmann::json& json) {
+  return json.dump(-1, ' ', false, nlohmann::detail::error_handler_t::ignore);
+}
+
 template <typename T>
 Result<T> GetJsonValueImpl(const nlohmann::json& json, std::string_view key) {
   try {
     return json.at(key).get<T>();
   } catch (const std::exception& ex) {
-    return JsonParseError("Failed to parse key '{}' in {}", key, json.dump());
+    return JsonParseError("Failed to parse '{}' from {}: {}", key, DumpJsonNoExcept(json),
+                          ex.what());
   }
 }
 
@@ -194,7 +197,7 @@ Result<std::optional<T>> GetJsonValueOptional(const nlohmann::json& json,
 template <typename T>
 Result<T> GetJsonValue(const nlohmann::json& json, std::string_view key) {
   if (!json.contains(key)) {
-    return JsonParseError("Missing '{}' in {}", key, json.dump());
+    return JsonParseError("Missing '{}' in {}", key, DumpJsonNoExcept(json));
   }
   return GetJsonValueImpl<T>(json, key);
 }
@@ -245,7 +248,7 @@ Result<std::vector<T>> FromJsonList(
     ICEBERG_ASSIGN_OR_RAISE(auto list_json, GetJsonValue<nlohmann::json>(json, key));
     if (!list_json.is_array()) {
       return JsonParseError("Cannot parse '{}' from non-array: {}", key,
-                            list_json.dump());
+                            DumpJsonNoExcept(list_json));
     }
     for (const auto& entry_json : list_json) {
       ICEBERG_ASSIGN_OR_RAISE(auto entry, from_json(entry_json));
@@ -270,7 +273,7 @@ Result<std::vector<std::shared_ptr<T>>> FromJsonList(
     ICEBERG_ASSIGN_OR_RAISE(auto list_json, GetJsonValue<nlohmann::json>(json, key));
     if (!list_json.is_array()) {
       return JsonParseError("Cannot parse '{}' from non-array: {}", key,
-                            list_json.dump());
+                            DumpJsonNoExcept(list_json));
     }
     for (const auto& entry_json : list_json) {
       ICEBERG_ASSIGN_OR_RAISE(auto entry, from_json(entry_json));
@@ -319,8 +322,8 @@ Result<std::unordered_map<std::string, T>> FromJsonMap(
       try {
         return json.get<std::string>();
       } catch (const std::exception& ex) {
-        return JsonParseError("Cannot parse {} to a string value: {}", json.dump(),
-                              ex.what());
+        return JsonParseError("Cannot parse {} to a string value: {}",
+                              DumpJsonNoExcept(json), ex.what());
       }
     }) {
   std::unordered_map<std::string, T> map{};
@@ -328,7 +331,7 @@ Result<std::unordered_map<std::string, T>> FromJsonMap(
     ICEBERG_ASSIGN_OR_RAISE(auto map_json, GetJsonValue<nlohmann::json>(json, key));
     if (!map_json.is_object()) {
       return JsonParseError("Cannot parse '{}' from non-object: {}", key,
-                            map_json.dump());
+                            DumpJsonNoExcept(map_json));
     }
     for (const auto& [key, value] : map_json.items()) {
       ICEBERG_ASSIGN_OR_RAISE(auto entry, from_json(value));
@@ -633,7 +636,8 @@ Result<std::unique_ptr<Schema>> SchemaFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto type, TypeFromJson(json));
 
   if (type->type_id() != TypeId::kStruct) [[unlikely]] {
-    return JsonParseError("Schema must be a struct type, but got {}", json.dump());
+    return JsonParseError("Schema must be a struct type, but got {}",
+                          DumpJsonNoExcept(json));
   }
 
   auto& struct_type = static_cast<StructType&>(*type);
@@ -741,11 +745,12 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
         return JsonParseError("Invalid snapshot summary field: {}", key);
       }
       if (!value.is_string()) {
-        return JsonParseError("Invalid snapshot summary field value: {}", value.dump());
+        return JsonParseError("Invalid snapshot summary field value: {}",
+                              DumpJsonNoExcept(value));
       }
       if (key == SnapshotSummaryFields::kOperation &&
           !kValidDataOperation.contains(value.get<std::string>())) {
-        return JsonParseError("Invalid snapshot operation: {}", value.dump());
+        return JsonParseError("Invalid snapshot operation: {}", DumpJsonNoExcept(value));
       }
       summary[key] = value.get<std::string>();
     }
@@ -975,7 +980,7 @@ Result<std::shared_ptr<Schema>> ParseSchemas(
                             GetJsonValue<nlohmann::json>(json, kSchemas));
     if (!schema_array.is_array()) {
       return JsonParseError("Cannot parse schemas from non-array: {}",
-                            schema_array.dump());
+                            DumpJsonNoExcept(schema_array));
     }
 
     ICEBERG_ASSIGN_OR_RAISE(current_schema_id,
@@ -990,7 +995,7 @@ Result<std::shared_ptr<Schema>> ParseSchemas(
     }
     if (!current_schema) {
       return JsonParseError("Cannot find schema with {}={} from {}", kCurrentSchemaId,
-                            current_schema_id.value(), schema_array.dump());
+                            current_schema_id.value(), DumpJsonNoExcept(schema_array));
     }
   } else {
     if (format_version != 1) {
@@ -1021,7 +1026,7 @@ Status ParsePartitionSpecs(const nlohmann::json& json, int8_t format_version,
                             GetJsonValue<nlohmann::json>(json, kPartitionSpecs));
     if (!spec_array.is_array()) {
       return JsonParseError("Cannot parse partition specs from non-array: {}",
-                            spec_array.dump());
+                            DumpJsonNoExcept(spec_array));
     }
     ICEBERG_ASSIGN_OR_RAISE(default_spec_id, GetJsonValue<int32_t>(json, kDefaultSpecId));
 
@@ -1040,7 +1045,7 @@ Status ParsePartitionSpecs(const nlohmann::json& json, int8_t format_version,
                             GetJsonValue<nlohmann::json>(json, kPartitionSpec));
     if (!partition_spec_json.is_array()) {
       return JsonParseError("Cannot parse v1 partition spec from non-array: {}",
-                            partition_spec_json.dump());
+                            DumpJsonNoExcept(partition_spec_json));
     }
 
     int32_t next_partition_field_id = PartitionSpec::kLegacyPartitionDataIdStart;
@@ -1098,7 +1103,8 @@ Status ParseSortOrders(const nlohmann::json& json, int8_t format_version,
 
 Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::json& json) {
   if (!json.is_object()) {
-    return JsonParseError("Cannot parse metadata from a non-object: {}", json.dump());
+    return JsonParseError("Cannot parse metadata from a non-object: {}",
+                          DumpJsonNoExcept(json));
   }
 
   auto table_metadata = std::make_unique<TableMetadata>();
@@ -1210,11 +1216,11 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
 }
 
 Result<nlohmann::json> FromJsonString(const std::string& json_string) {
-  try {
-    return nlohmann::json::parse(json_string);
-  } catch (const std::exception& e) {
-    return JsonParseError("Failed to parse JSON string: {}", e.what());
+  auto json = nlohmann::json::parse(json_string, nullptr, false);
+  if (json.is_discarded()) {
+    return JsonParseError("Failed to parse JSON string: {}", json_string);
   }
+  return json;
 }
 
 Result<std::string> ToJsonString(const nlohmann::json& json) {
