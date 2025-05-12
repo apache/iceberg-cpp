@@ -19,6 +19,11 @@
 
 #pragma once
 
+/// \file iceberg/util/checked_cast.h
+/// \brief Checked cast functions for dynamic_cast and static_cast.
+/// Adapted from Apache Arrow
+/// https://github.com/apache/arrow/blob/main/cpp/src/arrow/util/checked_cast.h
+
 #include <memory>
 #include <type_traits>
 #include <utility>

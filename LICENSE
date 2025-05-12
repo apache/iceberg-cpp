@@ -267,3 +267,17 @@ https://github.com/aappleby/smhasher/blob/master/src/MurmurHash3.cpp
 
 MurmurHash3 was written by Austin Appleby, and is placed in the public
 domain. The author disclaims copyright to this source code.
+
+--------------------------------------------------------------------------------
+
+The file src/iceberg/util/checked_cast.h contains code adapted from
+
+https://github.com/apache/arrow/blob/main/cpp/src/arrow/util/checked_cast.h
+
+The file src/iceberg/util/visit_type.h contains code adapted from
+
+https://github.com/apache/arrow/blob/main/cpp/src/arrow/visit_type_inline.h
+
+Copyright: 2016-2025 The Apache Software Foundation.
+Home page: https://arrow.apache.org/
+License: https://www.apache.org/licenses/LICENSE-2.0
