@@ -26,7 +26,7 @@ namespace iceberg {
 
 enum class TestEnum { VALUE1, VALUE2, VALUE3 };
 
-std::string enumToString(const TestEnum& val) {
+std::string EnumToString(const TestEnum& val) {
   switch (val) {
     case TestEnum::VALUE1:
       return "VALUE1";
@@ -39,7 +39,7 @@ std::string enumToString(const TestEnum& val) {
   }
 }
 
-TestEnum stringToEnum(const std::string& val) {
+TestEnum StringToEnum(const std::string& val) {
   if (val == "VALUE1") {
     return TestEnum::VALUE1;
   } else if (val == "VALUE2") {
@@ -57,54 +57,54 @@ class TestConfig : public ConfigBase<TestConfig> {
   template <typename T>
   using Entry = const ConfigBase<TestConfig>::Entry<T>;
 
-  inline static const Entry<std::string> STRING_CONFIG{"string_config", "default_value"};
-  inline static const Entry<int> INT_CONFIG{"int_config", 25};
-  inline static const Entry<bool> BOOL_CONFIG{"bool_config", false};
-  inline static const Entry<TestEnum> ENUM_CONFIG{"enum_config", TestEnum::VALUE1,
-                                                  enumToString, stringToEnum};
-  inline static const Entry<double> DOUBLE_CONFIG{"double_config", 3.14};
+  inline static const Entry<std::string> kStringConfig{"string_config", "default_value"};
+  inline static const Entry<int> kIntConfig{"int_config", 25};
+  inline static const Entry<bool> kBoolConfig{"bool_config", false};
+  inline static const Entry<TestEnum> kEnumConfig{"enum_config", TestEnum::VALUE1,
+                                                  EnumToString, StringToEnum};
+  inline static const Entry<double> kDoubleConfig{"double_config", 3.14};
 };
 
 TEST(ConfigTest, BasicOperations) {
   TestConfig config;
 
   // Test default values
-  ASSERT_EQ(config.Get(TestConfig::STRING_CONFIG), std::string("default_value"));
-  ASSERT_EQ(config.Get(TestConfig::INT_CONFIG), 25);
-  ASSERT_EQ(config.Get(TestConfig::BOOL_CONFIG), false);
-  ASSERT_EQ(config.Get(TestConfig::ENUM_CONFIG), TestEnum::VALUE1);
-  ASSERT_EQ(config.Get(TestConfig::DOUBLE_CONFIG), 3.14);
+  ASSERT_EQ(config.Get(TestConfig::kStringConfig), std::string("default_value"));
+  ASSERT_EQ(config.Get(TestConfig::kIntConfig), 25);
+  ASSERT_EQ(config.Get(TestConfig::kBoolConfig), false);
+  ASSERT_EQ(config.Get(TestConfig::kEnumConfig), TestEnum::VALUE1);
+  ASSERT_EQ(config.Get(TestConfig::kDoubleConfig), 3.14);
 
   // Test setting values
-  config.Set(TestConfig::STRING_CONFIG, std::string("new_value"));
-  config.Set(TestConfig::INT_CONFIG, 100);
-  config.Set(TestConfig::BOOL_CONFIG, true);
-  config.Set(TestConfig::ENUM_CONFIG, TestEnum::VALUE2);
-  config.Set(TestConfig::DOUBLE_CONFIG, 2.99);
+  config.Set(TestConfig::kStringConfig, std::string("new_value"));
+  config.Set(TestConfig::kIntConfig, 100);
+  config.Set(TestConfig::kBoolConfig, true);
+  config.Set(TestConfig::kEnumConfig, TestEnum::VALUE2);
+  config.Set(TestConfig::kDoubleConfig, 2.99);
 
-  ASSERT_EQ(config.Get(TestConfig::STRING_CONFIG), "new_value");
-  ASSERT_EQ(config.Get(TestConfig::INT_CONFIG), 100);
-  ASSERT_EQ(config.Get(TestConfig::BOOL_CONFIG), true);
-  ASSERT_EQ(config.Get(TestConfig::ENUM_CONFIG), TestEnum::VALUE2);
-  ASSERT_EQ(config.Get(TestConfig::DOUBLE_CONFIG), 2.99);
+  ASSERT_EQ(config.Get(TestConfig::kStringConfig), "new_value");
+  ASSERT_EQ(config.Get(TestConfig::kIntConfig), 100);
+  ASSERT_EQ(config.Get(TestConfig::kBoolConfig), true);
+  ASSERT_EQ(config.Get(TestConfig::kEnumConfig), TestEnum::VALUE2);
+  ASSERT_EQ(config.Get(TestConfig::kDoubleConfig), 2.99);
 
   // Test unsetting a value
-  config.Unset(TestConfig::INT_CONFIG);
-  config.Unset(TestConfig::ENUM_CONFIG);
-  config.Unset(TestConfig::DOUBLE_CONFIG);
-  ASSERT_EQ(config.Get(TestConfig::INT_CONFIG), 25);
-  ASSERT_EQ(config.Get(TestConfig::STRING_CONFIG), "new_value");
-  ASSERT_EQ(config.Get(TestConfig::BOOL_CONFIG), true);
-  ASSERT_EQ(config.Get(TestConfig::ENUM_CONFIG), TestEnum::VALUE1);
-  ASSERT_EQ(config.Get(TestConfig::DOUBLE_CONFIG), 3.14);
+  config.Unset(TestConfig::kIntConfig);
+  config.Unset(TestConfig::kEnumConfig);
+  config.Unset(TestConfig::kDoubleConfig);
+  ASSERT_EQ(config.Get(TestConfig::kIntConfig), 25);
+  ASSERT_EQ(config.Get(TestConfig::kStringConfig), "new_value");
+  ASSERT_EQ(config.Get(TestConfig::kBoolConfig), true);
+  ASSERT_EQ(config.Get(TestConfig::kEnumConfig), TestEnum::VALUE1);
+  ASSERT_EQ(config.Get(TestConfig::kDoubleConfig), 3.14);
 
   // Test resetting all values
   config.Reset();
-  ASSERT_EQ(config.Get(TestConfig::STRING_CONFIG), "default_value");
-  ASSERT_EQ(config.Get(TestConfig::INT_CONFIG), 25);
-  ASSERT_EQ(config.Get(TestConfig::BOOL_CONFIG), false);
-  ASSERT_EQ(config.Get(TestConfig::ENUM_CONFIG), TestEnum::VALUE1);
-  ASSERT_EQ(config.Get(TestConfig::DOUBLE_CONFIG), 3.14);
+  ASSERT_EQ(config.Get(TestConfig::kStringConfig), "default_value");
+  ASSERT_EQ(config.Get(TestConfig::kIntConfig), 25);
+  ASSERT_EQ(config.Get(TestConfig::kBoolConfig), false);
+  ASSERT_EQ(config.Get(TestConfig::kEnumConfig), TestEnum::VALUE1);
+  ASSERT_EQ(config.Get(TestConfig::kDoubleConfig), 3.14);
 }
 
 }  // namespace iceberg
