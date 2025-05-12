@@ -27,20 +27,21 @@
 namespace iceberg {
 
 SchemaField::SchemaField(int32_t field_id, std::string name, std::shared_ptr<Type> type,
-                         bool optional)
+                         bool optional, std::string doc)
     : field_id_(field_id),
       name_(std::move(name)),
       type_(std::move(type)),
-      optional_(optional) {}
+      optional_(optional),
+      doc_(std::move(doc)) {}
 
 SchemaField SchemaField::MakeOptional(int32_t field_id, std::string name,
-                                      std::shared_ptr<Type> type) {
-  return SchemaField(field_id, std::move(name), std::move(type), true);
+                                      std::shared_ptr<Type> type, std::string doc) {
+  return {field_id, std::move(name), std::move(type), true, std::move(doc)};
 }
 
 SchemaField SchemaField::MakeRequired(int32_t field_id, std::string name,
-                                      std::shared_ptr<Type> type) {
-  return SchemaField(field_id, std::move(name), std::move(type), false);
+                                      std::shared_ptr<Type> type, std::string doc) {
+  return {field_id, std::move(name), std::move(type), false, std::move(doc)};
 }
 
 int32_t SchemaField::field_id() const { return field_id_; }
@@ -51,9 +52,13 @@ const std::shared_ptr<Type>& SchemaField::type() const { return type_; }
 
 bool SchemaField::optional() const { return optional_; }
 
+std::string_view SchemaField::doc() const { return doc_; }
+
 std::string SchemaField::ToString() const {
-  return std::format("{} ({}): {} ({})", name_, field_id_, *type_,
-                     optional_ ? "optional" : "required");
+  std::string result = std::format("{} ({}): {} ({}){}", name_, field_id_, *type_,
+                                   optional_ ? "optional" : "required",
+                                   !doc_.empty() ? std::format(" - {}", doc_) : "");
+  return result;
 }
 
 bool SchemaField::Equals(const SchemaField& other) const {

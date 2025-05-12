@@ -44,15 +44,16 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
   /// \param[in] name The field name.
   /// \param[in] type The field type.
   /// \param[in] optional Whether values of this field are required or nullable.
+  /// \param[in] doc Optional documentation string for the field.
   SchemaField(int32_t field_id, std::string name, std::shared_ptr<Type> type,
-              bool optional);
+              bool optional, std::string doc = {});
 
   /// \brief Construct an optional (nullable) field.
   static SchemaField MakeOptional(int32_t field_id, std::string name,
-                                  std::shared_ptr<Type> type);
+                                  std::shared_ptr<Type> type, std::string doc = {});
   /// \brief Construct a required (non-null) field.
   static SchemaField MakeRequired(int32_t field_id, std::string name,
-                                  std::shared_ptr<Type> type);
+                                  std::shared_ptr<Type> type, std::string doc = {});
 
   /// \brief Get the field ID.
   [[nodiscard]] int32_t field_id() const;
@@ -65,6 +66,9 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
 
   /// \brief Get whether the field is optional.
   [[nodiscard]] bool optional() const;
+
+  /// \brief Get the field documentation.
+  std::string_view doc() const;
 
   [[nodiscard]] std::string ToString() const override;
 
@@ -84,6 +88,7 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
   std::string name_;
   std::shared_ptr<Type> type_;
   bool optional_;
+  std::string doc_;
 };
 
 }  // namespace iceberg

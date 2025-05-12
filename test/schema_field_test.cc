@@ -79,3 +79,29 @@ TEST(SchemaFieldTest, Equality) {
   ASSERT_EQ(field1, field6);
   ASSERT_EQ(field6, field1);
 }
+
+TEST(SchemaFieldTest, WithDoc) {
+  {
+    iceberg::SchemaField field(/*field_id=*/1, /*name=*/"foo",
+                               std::make_shared<iceberg::IntType>(),
+                               /*optional=*/false, /*doc=*/"Field documentation");
+    EXPECT_EQ(1, field.field_id());
+    EXPECT_EQ("foo", field.name());
+    EXPECT_EQ(iceberg::TypeId::kInt, field.type()->type_id());
+    EXPECT_FALSE(field.optional());
+    EXPECT_EQ("Field documentation", field.doc());
+    EXPECT_EQ("foo (1): int (required) - Field documentation", field.ToString());
+  }
+  {
+    iceberg::SchemaField field = iceberg::SchemaField::MakeOptional(
+        /*field_id=*/2, /*name=*/"bar",
+        /*type=*/std::make_shared<iceberg::FixedType>(10),
+        /*doc=*/"Field with 10 bytes");
+    EXPECT_EQ(2, field.field_id());
+    EXPECT_EQ("bar", field.name());
+    EXPECT_EQ(iceberg::FixedType(10), *field.type());
+    EXPECT_TRUE(field.optional());
+    EXPECT_EQ("Field with 10 bytes", field.doc());
+    EXPECT_EQ("bar (2): fixed(10) (optional) - Field with 10 bytes", field.ToString());
+  }
+}
