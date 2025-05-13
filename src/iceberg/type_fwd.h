@@ -121,4 +121,9 @@ class UpdateRequirement;
 class AppendFiles;
 class TableScan;
 
+struct DataFile;
+struct ManifestEntry;
+struct ManifestFile;
+struct ManifestList;
+
 }  // namespace iceberg

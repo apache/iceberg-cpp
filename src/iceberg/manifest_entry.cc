@@ -1,0 +1,66 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+#include "iceberg/manifest_entry.h"
+
+#include <memory>
+#include <vector>
+
+#include "iceberg/schema_field.h"
+#include "iceberg/type.h"
+
+namespace iceberg {
+
+std::shared_ptr<StructType> DataFile::Type(std::shared_ptr<StructType> partition_type) {
+  return std::make_shared<StructType>(std::vector<SchemaField>{
+      kContent,
+      kFilePath,
+      kFileFormat,
+      SchemaField::MakeRequired(102, "partition", std::move(partition_type)),
+      kRecordCount,
+      kFileSize,
+      kColumnSizes,
+      kValueCounts,
+      kNullValueCounts,
+      kNanValueCounts,
+      kLowerBounds,
+      kUpperBounds,
+      kKeyMetadata,
+      kSplitOffsets,
+      kEqualityIds,
+      kSortOrderId,
+      kFirstRowId,
+      kReferencedDataFile,
+      kContentOffset,
+      kContentSize});
+}
+
+std::shared_ptr<StructType> ManifestEntry::TypeFromPartitionType(
+    std::shared_ptr<StructType> partition_type) {
+  return TypeFromDataFileType(DataFile::Type(std::move(partition_type)));
+}
+
+std::shared_ptr<StructType> ManifestEntry::TypeFromDataFileType(
+    std::shared_ptr<StructType> datafile_type) {
+  return std::make_shared<StructType>(std::vector<SchemaField>{
+      kStatus, kSnapshotId, kSequenceNumber, kFileSequenceNumber,
+      SchemaField::MakeRequired(2, "data_file", std::move(datafile_type))});
+}
+
+}  // namespace iceberg

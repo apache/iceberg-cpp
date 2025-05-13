@@ -17,36 +17,31 @@
  * under the License.
  */
 
-#pragma once
+#include "iceberg/manifest_list.h"
 
-/// \file iceberg/manifest_reader.h
-/// Data reader interface for manifest files.
+#include <vector>
 
-#include <memory>
-#include <span>
-
-#include "iceberg/file_reader.h"
-#include "iceberg/iceberg_export.h"
-#include "iceberg/type_fwd.h"
+#include "iceberg/type.h"
 
 namespace iceberg {
 
-/// \brief Read manifest entries from a manifest file.
-class ICEBERG_EXPORT ManifestReader {
- public:
-  virtual Result<std::span<std::unique_ptr<ManifestEntry>>> Entries() const = 0;
+const StructType& PartitionFieldSummary::Type() {
+  static const StructType kInstance{{
+      PartitionFieldSummary::kConsTainsNull,
+      PartitionFieldSummary::kContainsNaN,
+      PartitionFieldSummary::kLowerBound,
+      PartitionFieldSummary::kUpperBound,
+  }};
+  return kInstance;
+}
 
- private:
-  std::unique_ptr<StructLikeReader> reader_;
-};
-
-/// \brief Read manifest files from a manifest list file.
-class ICEBERG_EXPORT ManifestListReader {
- public:
-  virtual Result<std::span<std::unique_ptr<ManifestFile>>> Files() const = 0;
-
- private:
-  std::unique_ptr<StructLikeReader> reader_;
-};
+const StructType& ManifestFile::Type() {
+  static const StructType kInstance(
+      {kManifestPath, kManifestLength, kPartitionSpecId, kContent, kSequenceNumber,
+       kMinSequenceNumber, kAddedSnapshotId, kAddedFilesCount, kExistingFilesCount,
+       kDeletedFilesCount, kAddedRowsCount, kExistingRowsCount, kDeletedRowsCount,
+       kPartitions, kKeyMetadata, kFirstRowId});
+  return kInstance;
+}
 
 }  // namespace iceberg
