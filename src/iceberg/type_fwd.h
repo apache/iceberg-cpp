@@ -101,6 +101,10 @@ struct SnapshotRef;
 struct StatisticsFile;
 struct TableMetadata;
 
+struct MappedField;
+class MappedFields;
+class NameMapping;
+
 enum class SnapshotRefType;
 enum class TransformType;
 

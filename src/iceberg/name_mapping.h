@@ -40,10 +40,10 @@ struct ICEBERG_EXPORT MappedField {
   std::unordered_set<std::string> names;
   /// \brief An optional Iceberg field ID used when a field's name is present in `names`.
   /// TODO(gangwu): check if we need to make it optional
-  int32_t field_id;
+  std::optional<int32_t> field_id;
   /// \brief An optional list of field mappings for child field of structs, maps, and
   /// lists.
-  std::unique_ptr<class MappedFields> nested_mapping;
+  std::shared_ptr<class MappedFields> nested_mapping;
 
   friend bool operator==(const MappedField& lhs, const MappedField& rhs);
 };
@@ -75,12 +75,6 @@ class ICEBERG_EXPORT MappedFields {
   std::span<const MappedField> fields() const;
 
   friend bool operator==(const MappedFields& lhs, const MappedFields& rhs);
-
-  MappedFields(const MappedFields& other) = delete;
-  MappedFields& operator=(const MappedFields& other) = delete;
-
-  MappedFields(MappedFields&& other) noexcept = default;
-  MappedFields& operator=(MappedFields&& other) noexcept = default;
 
  private:
   explicit MappedFields(std::vector<MappedField> fields);

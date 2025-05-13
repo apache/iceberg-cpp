@@ -21,10 +21,11 @@
 
 #include <memory>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-#include "gmock/gmock.h"
+#include "iceberg/name_mapping.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
@@ -32,6 +33,7 @@
 #include "iceberg/sort_order.h"
 #include "iceberg/transform.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
+#include "iceberg/util/macros.h"     // IWYU pragma: keep
 #include "iceberg/util/timepoint.h"
 #include "matchers.h"
 
@@ -65,6 +67,11 @@ Result<std::unique_ptr<SnapshotRef>> FromJsonHelper(const nlohmann::json& json) 
 template <>
 Result<std::unique_ptr<Snapshot>> FromJsonHelper(const nlohmann::json& json) {
   return SnapshotFromJson(json);
+}
+
+template <>
+Result<std::unique_ptr<NameMapping>> FromJsonHelper(const nlohmann::json& json) {
+  return NameMappingFromJson(json);
 }
 
 // Helper function to reduce duplication in testing
@@ -255,6 +262,29 @@ TEST(JsonInternalTest, SnapshotFromJsonSummaryWithNoOperation) {
   ASSERT_TRUE(result.has_value());
 
   ASSERT_EQ(result.value()->operation(), DataOperation::kOverwrite);
+}
+
+TEST(JsonInternalTest, NameMapping) {
+  auto mapping = NameMapping::Make(
+      {MappedField{.names = {"id"}, .field_id = 1},
+       MappedField{.names = {"data"}, .field_id = 2},
+       MappedField{.names = {"location"},
+                   .field_id = 3,
+                   .nested_mapping = MappedFields::Make(
+                       {MappedField{.names = {"latitude"}, .field_id = 4},
+                        MappedField{.names = {"longitude"}, .field_id = 5}})}});
+
+  nlohmann::json expected_json =
+      R"([
+        {"field-id": 1, "names": ["id"]},
+        {"field-id": 2, "names": ["data"]},
+        {"field-id": 3, "names": ["location"], "fields": [
+          {"field-id": 4, "names": ["latitude"]},
+          {"field-id": 5, "names": ["longitude"]}
+        ]}
+      ])"_json;
+
+  TestJsonConversion(*mapping, expected_json);
 }
 
 }  // namespace iceberg

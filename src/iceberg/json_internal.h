@@ -256,4 +256,40 @@ Result<nlohmann::json> FromJsonString(const std::string& json_string);
 /// \return A JSON string or an error if the serialization fails.
 Result<std::string> ToJsonString(const nlohmann::json& json);
 
+/// \brief Serializes a `MappedField` object to JSON.
+///
+/// \param[in] field The `MappedField` object to be serialized.
+/// \return A JSON object representing the `MappedField`.
+nlohmann::json ToJson(const MappedField& field);
+
+/// \brief Deserializes a JSON object into a `MappedField` object.
+///
+/// \param[in] json The JSON object representing a `MappedField`.
+/// \return A `MappedField` object or an error if the conversion fails.
+Result<MappedField> MappedFieldFromJson(const nlohmann::json& json);
+
+/// \brief Serializes a `MappedFields` object to JSON.
+///
+/// \param[in] mapped_fields The `MappedFields` object to be serialized.
+/// \return A JSON object representing the `MappedFields`.
+nlohmann::json ToJson(const MappedFields& mapped_fields);
+
+/// \brief Deserializes a JSON object into a `MappedFields` object.
+///
+/// \param[in] json The JSON object representing a `MappedFields`.
+/// \return A `MappedFields` object or an error if the conversion fails.
+Result<std::unique_ptr<MappedFields>> MappedFieldsFromJson(const nlohmann::json& json);
+
+/// \brief Serializes a `NameMapping` object to JSON.
+///
+/// \param[in] name_mapping The `NameMapping` object to be serialized.
+/// \return A JSON object representing the `NameMapping`.
+nlohmann::json ToJson(const NameMapping& name_mapping);
+
+/// \brief Deserializes a JSON object into a `NameMapping` object.
+///
+/// \param[in] json The JSON object representing a `NameMapping`.
+/// \return A `NameMapping` object or an error if the conversion fails.
+Result<std::unique_ptr<NameMapping>> NameMappingFromJson(const nlohmann::json& json);
+
 }  // namespace iceberg

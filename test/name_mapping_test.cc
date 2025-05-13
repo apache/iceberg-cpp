@@ -26,6 +26,7 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
 namespace iceberg {
 
 class NameMappingTest : public ::testing::Test {

@@ -28,6 +28,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "iceberg/name_mapping.h"
 #include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -71,9 +72,11 @@ constexpr std::string_view kKey = "key";
 constexpr std::string_view kValue = "value";
 constexpr std::string_view kDoc = "doc";
 constexpr std::string_view kName = "name";
+constexpr std::string_view kNames = "names";
 constexpr std::string_view kId = "id";
 constexpr std::string_view kInitialDefault = "initial-default";
 constexpr std::string_view kWriteDefault = "write-default";
+constexpr std::string_view kFieldId = "field-id";
 constexpr std::string_view kElementId = "element-id";
 constexpr std::string_view kKeyId = "key-id";
 constexpr std::string_view kValueId = "value-id";
@@ -82,7 +85,6 @@ constexpr std::string_view kElementRequired = "element-required";
 constexpr std::string_view kValueRequired = "value-required";
 
 // Snapshot constants
-constexpr std::string_view kFieldId = "field-id";
 constexpr std::string_view kSpecId = "spec-id";
 constexpr std::string_view kSnapshotId = "snapshot-id";
 constexpr std::string_view kParentSnapshotId = "parent-snapshot-id";
@@ -1230,6 +1232,82 @@ Result<std::string> ToJsonString(const nlohmann::json& json) {
   } catch (const std::exception& e) {
     return JsonParseError("Failed to serialize to JSON string: {}", e.what());
   }
+}
+
+nlohmann::json ToJson(const MappedField& field) {
+  nlohmann::json json;
+  if (field.field_id.has_value()) {
+    json[kFieldId] = field.field_id.value();
+  }
+
+  nlohmann::json names = nlohmann::json::array();
+  for (const auto& name : field.names) {
+    names.push_back(name);
+  }
+  json[kNames] = names;
+
+  if (field.nested_mapping != nullptr) {
+    json[kFields] = ToJson(*field.nested_mapping);
+  }
+  return json;
+}
+
+Result<MappedField> MappedFieldFromJson(const nlohmann::json& json) {
+  if (!json.is_object()) [[unlikely]] {
+    return JsonParseError("Cannot parse non-object mapping field: {}",
+                          SafeDumpJson(json));
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(std::optional<int32_t> field_id,
+                          GetJsonValueOptional<int32_t>(json, kFieldId));
+
+  std::vector<std::string> names;
+  if (json.contains(kNames)) {
+    ICEBERG_ASSIGN_OR_RAISE(names, GetJsonValue<std::vector<std::string>>(json, kNames));
+  }
+
+  std::unique_ptr<MappedFields> nested_mapping;
+  if (json.contains(kFields)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto fields_json,
+                            GetJsonValue<nlohmann::json>(json, kFields));
+    ICEBERG_ASSIGN_OR_RAISE(nested_mapping, MappedFieldsFromJson(fields_json));
+  }
+
+  return MappedField{.names = {names.cbegin(), names.cend()},
+                     .field_id = field_id,
+                     .nested_mapping = std::move(nested_mapping)};
+}
+
+nlohmann::json ToJson(const MappedFields& mapped_fields) {
+  nlohmann::json array = nlohmann::json::array();
+  for (const auto& field : mapped_fields.fields()) {
+    array.push_back(ToJson(field));
+  }
+  return array;
+}
+
+Result<std::unique_ptr<MappedFields>> MappedFieldsFromJson(const nlohmann::json& json) {
+  if (!json.is_array()) [[unlikely]] {
+    return JsonParseError("Cannot parse non-array mapping fields: {}",
+                          SafeDumpJson(json));
+  }
+
+  std::vector<MappedField> fields;
+  for (const auto& field_json : json) {
+    ICEBERG_ASSIGN_OR_RAISE(auto field, MappedFieldFromJson(field_json));
+    fields.push_back(std::move(field));
+  }
+
+  return MappedFields::Make(std::move(fields));
+}
+
+nlohmann::json ToJson(const NameMapping& name_mapping) {
+  return ToJson(name_mapping.AsMappedFields());
+}
+
+Result<std::unique_ptr<NameMapping>> NameMappingFromJson(const nlohmann::json& json) {
+  ICEBERG_ASSIGN_OR_RAISE(auto mapped_fields, MappedFieldsFromJson(json));
+  return NameMapping::Make(std::move(mapped_fields));
 }
 
 }  // namespace iceberg

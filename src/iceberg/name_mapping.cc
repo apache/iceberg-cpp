@@ -45,7 +45,9 @@ struct IndexByIdVisitor {
   std::unordered_map<int32_t, MappedFieldConstRef> field_by_id;
 
   void Visit(const MappedField& field) {
-    field_by_id.emplace(field.field_id, std::cref(field));
+    if (field.field_id.has_value()) {
+      field_by_id.emplace(field.field_id.value(), std::cref(field));
+    }
     if (field.nested_mapping != nullptr) {
       Visit(*field.nested_mapping);
     }
@@ -124,7 +126,9 @@ const std::unordered_map<std::string_view, int32_t>& MappedFields::LazyNameToId(
   if (name_to_id_.empty() && !fields_.empty()) {
     for (const auto& field : fields_) {
       for (const auto& name : field.names) {
-        name_to_id_.emplace(name, field.field_id);
+        if (field.field_id.has_value()) {
+          name_to_id_.emplace(name, field.field_id.value());
+        }
       }
     }
   }
@@ -135,7 +139,9 @@ const std::unordered_map<int32_t, MappedFieldConstRef>& MappedFields::LazyIdToFi
     const {
   if (id_to_field_.empty() && !fields_.empty()) {
     for (const auto& field : fields_) {
-      id_to_field_.emplace(field.field_id, std::cref(field));
+      if (field.field_id.has_value()) {
+        id_to_field_.emplace(field.field_id.value(), std::cref(field));
+      }
     }
   }
   return id_to_field_;
@@ -243,7 +249,8 @@ bool operator==(const NameMapping& lhs, const NameMapping& rhs) {
 
 std::string ToString(const MappedField& field) {
   return std::format(
-      "({} -> {}{})", field.names, field.field_id,
+      "({} -> {}{})", field.names,
+      field.field_id.has_value() ? std::to_string(field.field_id.value()) : "null",
       field.nested_mapping ? std::format(", {}", ToString(*field.nested_mapping)) : "");
 }
 
