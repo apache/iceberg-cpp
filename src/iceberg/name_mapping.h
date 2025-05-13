@@ -39,7 +39,6 @@ struct ICEBERG_EXPORT MappedField {
   /// \brief A required list of 0 or more names for a field.
   std::unordered_set<std::string> names;
   /// \brief An optional Iceberg field ID used when a field's name is present in `names`.
-  /// TODO(gangwu): check if we need to make it optional
   std::optional<int32_t> field_id;
   /// \brief An optional list of field mappings for child field of structs, maps, and
   /// lists.
