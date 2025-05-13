@@ -26,22 +26,22 @@
 namespace iceberg {
 
 const StructType& PartitionFieldSummary::Type() {
-  static const std::shared_ptr<StructType> instance{new StructType({
+  static const StructType kInstance{{
       PartitionFieldSummary::kConsTainsNull,
       PartitionFieldSummary::kContainsNaN,
       PartitionFieldSummary::kLowerBound,
       PartitionFieldSummary::kUpperBound,
-  })};
-  return *instance;
+  }};
+  return kInstance;
 }
 
 const StructType& ManifestFile::Type() {
-  static const std::shared_ptr<StructType> instance{new StructType(
+  static const StructType kInstance(
       {kManifestPath, kManifestLength, kPartitionSpecId, kContent, kSequenceNumber,
        kMinSequenceNumber, kAddedSnapshotId, kAddedFilesCount, kExistingFilesCount,
        kDeletedFilesCount, kAddedRowsCount, kExistingRowsCount, kDeletedRowsCount,
-       kPartitions, kKeyMetadata, kFirstRowId})};
-  return *instance;
+       kPartitions, kKeyMetadata, kFirstRowId});
+  return kInstance;
 }
 
 }  // namespace iceberg
