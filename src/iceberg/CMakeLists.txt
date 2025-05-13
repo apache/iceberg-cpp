@@ -23,6 +23,7 @@ set(ICEBERG_SOURCES
     expression/expression.cc
     file_reader.cc
     json_internal.cc
+    metadata_columns.cc
     name_mapping.cc
     partition_field.cc
     partition_spec.cc
