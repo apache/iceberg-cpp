@@ -91,16 +91,4 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
   std::string doc_;
 };
 
-template <typename T, typename... Args>
-inline SchemaField MakeRequiredField(int id, std::string name, Args&&... args) {
-  return SchemaField::MakeRequired(id, std::move(name),
-                                   std::make_shared<T>(std::forward<Args>(args)...));
-}
-
-template <typename T, typename... Args>
-inline SchemaField MakeOptionalField(int id, std::string name, Args&&... args) {
-  return SchemaField::MakeOptional(id, std::move(name),
-                                   std::make_shared<T>(std::forward<Args>(args)...));
-}
-
 }  // namespace iceberg

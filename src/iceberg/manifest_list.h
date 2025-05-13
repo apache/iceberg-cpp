@@ -81,13 +81,13 @@ struct ICEBERG_EXPORT PartitionFieldSummary {
   std::optional<std::vector<uint8_t>> upper_bound;
 
   inline static const SchemaField kConsTainsNull =
-      MakeRequiredField<BooleanType>(509, "contains_null");
+      SchemaField::MakeRequired(509, "contains_null", std::make_shared<BooleanType>());
   inline static const SchemaField kContainsNaN =
-      MakeOptionalField<BooleanType>(518, "contains_nan");
+      SchemaField::MakeOptional(518, "contains_nan", std::make_shared<BooleanType>());
   inline static const SchemaField kLowerBound =
-      MakeOptionalField<BinaryType>(510, "lower_bound");
+      SchemaField::MakeOptional(510, "lower_bound", std::make_shared<BinaryType>());
   inline static const SchemaField kUpperBound =
-      MakeOptionalField<BinaryType>(511, "upper_bound");
+      SchemaField::MakeOptional(511, "upper_bound", std::make_shared<BinaryType>());
 
   static const StructType& Type();
 };
@@ -165,38 +165,40 @@ struct ICEBERG_EXPORT ManifestFile {
   bool has_deleted_files() const { return deleted_files_count.value_or(-1) > 0; }
 
   inline static const SchemaField kManifestPath =
-      MakeRequiredField<StringType>(500, "manifest_path");
+      SchemaField::MakeRequired(500, "manifest_path", std::make_shared<StringType>());
   inline static const SchemaField kManifestLength =
-      MakeRequiredField<LongType>(501, "manifest_length");
+      SchemaField::MakeRequired(501, "manifest_length", std::make_shared<LongType>());
   inline static const SchemaField kPartitionSpecId =
-      MakeRequiredField<IntType>(502, "partition_spec_id");
-  inline static const SchemaField kContent = MakeOptionalField<IntType>(517, "content");
+      SchemaField::MakeRequired(502, "partition_spec_id", std::make_shared<IntType>());
+  inline static const SchemaField kContent =
+      SchemaField::MakeOptional(517, "content", std::make_shared<IntType>());
   inline static const SchemaField kSequenceNumber =
-      MakeOptionalField<LongType>(515, "sequence_number");
+      SchemaField::MakeOptional(515, "sequence_number", std::make_shared<LongType>());
   inline static const SchemaField kMinSequenceNumber =
-      MakeOptionalField<LongType>(516, "min_sequence_number");
+      SchemaField::MakeOptional(516, "min_sequence_number", std::make_shared<LongType>());
   inline static const SchemaField kAddedSnapshotId =
-      MakeRequiredField<LongType>(503, "added_snapshot_id");
+      SchemaField::MakeRequired(503, "added_snapshot_id", std::make_shared<LongType>());
   inline static const SchemaField kAddedFilesCount =
-      MakeOptionalField<IntType>(504, "added_files_count");
+      SchemaField::MakeOptional(504, "added_files_count", std::make_shared<IntType>());
   inline static const SchemaField kExistingFilesCount =
-      MakeOptionalField<IntType>(505, "existing_files_count");
+      SchemaField::MakeOptional(505, "existing_files_count", std::make_shared<IntType>());
   inline static const SchemaField kDeletedFilesCount =
-      MakeOptionalField<IntType>(506, "deleted_files_count");
+      SchemaField::MakeOptional(506, "deleted_files_count", std::make_shared<IntType>());
   inline static const SchemaField kAddedRowsCount =
-      MakeOptionalField<LongType>(512, "added_rows_count");
+      SchemaField::MakeOptional(512, "added_rows_count", std::make_shared<LongType>());
   inline static const SchemaField kExistingRowsCount =
-      MakeOptionalField<LongType>(513, "existing_rows_count");
+      SchemaField::MakeOptional(513, "existing_rows_count", std::make_shared<LongType>());
   inline static const SchemaField kDeletedRowsCount =
-      MakeOptionalField<LongType>(514, "deleted_rows_count");
-  inline static const SchemaField kPartitions = MakeOptionalField<ListType>(
+      SchemaField::MakeOptional(514, "deleted_rows_count", std::make_shared<LongType>());
+  inline static const SchemaField kPartitions = SchemaField::MakeOptional(
       507, "partitions",
-      MakeRequiredField<StructType>(508, std::string(ListType::kElementName),
-                                    PartitionFieldSummary::Type()));
+      std::make_shared<ListType>(SchemaField::MakeRequired(
+          508, std::string(ListType::kElementName),
+          std::make_shared<StructType>(PartitionFieldSummary::Type()))));
   inline static const SchemaField kKeyMetadata =
-      MakeOptionalField<BinaryType>(519, "key_metadata");
+      SchemaField::MakeOptional(519, "key_metadata", std::make_shared<BinaryType>());
   inline static const SchemaField kFirstRowId =
-      MakeOptionalField<LongType>(520, "first_row_id");
+      SchemaField::MakeOptional(520, "first_row_id", std::make_shared<LongType>());
 
   static const StructType& Type();
 };
