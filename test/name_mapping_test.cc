@@ -202,4 +202,99 @@ TEST_F(NameMappingTest, ToString) {
   }
 }
 
+TEST(CreateMappingTest, FlatSchemaToMapping) {
+  Schema schema(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeRequired(2, "data", std::make_shared<StringType>()),
+  });
+
+  auto expected = MappedFields::Make({
+      MappedField{.names = {"id"}, .field_id = 1},
+      MappedField{.names = {"data"}, .field_id = 2},
+  });
+
+  auto result = CreateMapping(schema);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value()->AsMappedFields(), *expected);
+}
+
+TEST(CreateMappingTest, NestedStructSchemaToMapping) {
+  Schema schema(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeRequired(2, "data", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(
+          3, "location",
+          std::make_shared<StructType>(std::vector<SchemaField>{
+              SchemaField::MakeRequired(4, "latitude", std::make_shared<FloatType>()),
+              SchemaField::MakeRequired(5, "longitude", std::make_shared<FloatType>()),
+          })),
+  });
+
+  auto expected = MappedFields::Make({
+      MappedField{.names = {"id"}, .field_id = 1},
+      MappedField{.names = {"data"}, .field_id = 2},
+      MappedField{.names = {"location"},
+                  .field_id = 3,
+                  .nested_mapping = MappedFields::Make({
+                      MappedField{.names = {"latitude"}, .field_id = 4},
+                      MappedField{.names = {"longitude"}, .field_id = 5},
+                  })},
+  });
+
+  auto result = CreateMapping(schema);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value()->AsMappedFields(), *expected);
+}
+
+TEST(CreateMappingTest, MapSchemaToMapping) {
+  Schema schema(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeRequired(2, "data", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(
+          3, "map",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(4, "key", std::make_shared<StringType>()),
+              SchemaField::MakeRequired(5, "value", std::make_shared<DoubleType>()))),
+  });
+
+  auto expected = MappedFields::Make({
+      MappedField{.names = {"id"}, .field_id = 1},
+      MappedField{.names = {"data"}, .field_id = 2},
+      MappedField{.names = {"map"},
+                  .field_id = 3,
+                  .nested_mapping = MappedFields::Make({
+                      MappedField{.names = {"key"}, .field_id = 4},
+                      MappedField{.names = {"value"}, .field_id = 5},
+                  })},
+  });
+
+  auto result = CreateMapping(schema);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value()->AsMappedFields(), *expected);
+}
+
+TEST(CreateMappingTest, ListSchemaToMapping) {
+  Schema schema(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeRequired(2, "data", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(3, "list",
+                                std::make_shared<ListType>(SchemaField::MakeRequired(
+                                    4, "element", std::make_shared<StringType>()))),
+  });
+
+  auto expected = MappedFields::Make({
+      MappedField{.names = {"id"}, .field_id = 1},
+      MappedField{.names = {"data"}, .field_id = 2},
+      MappedField{.names = {"list"},
+                  .field_id = 3,
+                  .nested_mapping = MappedFields::Make({
+                      MappedField{.names = {"element"}, .field_id = 4},
+                  })},
+  });
+
+  auto result = CreateMapping(schema);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value()->AsMappedFields(), *expected);
+}
+
 }  // namespace iceberg

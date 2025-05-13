@@ -29,6 +29,8 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
+#include "iceberg/schema.h"
 
 namespace iceberg {
 
@@ -43,7 +45,7 @@ struct ICEBERG_EXPORT MappedField {
   int32_t field_id;
   /// \brief An optional list of field mappings for child field of structs, maps, and
   /// lists.
-  std::unique_ptr<class MappedFields> nested_mapping;
+  std::shared_ptr<class MappedFields> nested_mapping;
 
   friend bool operator==(const MappedField& lhs, const MappedField& rhs);
 };
@@ -139,5 +141,25 @@ class ICEBERG_EXPORT NameMapping {
 ICEBERG_EXPORT std::string ToString(const MappedField& field);
 ICEBERG_EXPORT std::string ToString(const MappedFields& fields);
 ICEBERG_EXPORT std::string ToString(const NameMapping& mapping);
+
+/// \brief Create a name-based mapping for a schema.
+///
+/// The mapping returned by this method will use the schema's name for each field.
+///
+/// \param schema The schema to create the mapping for.
+/// \return A new NameMapping instance initialized with the schema's fields and names.
+ICEBERG_EXPORT Result<std::unique_ptr<NameMapping>> CreateMapping(const Schema& schema);
+
+/// TODO(gangwu): implement this function once SchemaUpdate is supported
+///
+/// \brief Update a name-based mapping using changes to a schema.
+/// \param mapping a name-based mapping
+/// \param updates a map from field ID to updated field definitions
+/// \param adds a map from parent field ID to nested fields to be added
+/// \return an updated mapping with names added to renamed fields and the mapping extended
+/// for new fields
+// ICEBERG_EXPORT Result<std::unique_ptr<NameMapping>> UpdateMapping(
+//     const NameMapping& mapping, const std::map<int32_t, SchemaField>& updates,
+//     const std::multimap<int32_t, int32_t>& adds);
 
 }  // namespace iceberg

@@ -23,6 +23,8 @@
 #include <sstream>
 
 #include "iceberg/util/formatter_internal.h"
+#include "iceberg/util/macros.h"
+#include "iceberg/util/visit_type.h"
 
 namespace iceberg {
 
@@ -262,6 +264,67 @@ std::string ToString(const NameMapping& name_mapping) {
   }
   repr += "]";
   return repr;
+}
+
+namespace {
+
+// Visitor class for creating name mappings from schema types
+class CreateMappingVisitor {
+ public:
+  Result<std::unique_ptr<MappedFields>> Visit(const StructType& type) const {
+    std::vector<MappedField> fields;
+    fields.reserve(type.fields().size());
+    for (const auto& field : type.fields()) {
+      ICEBERG_RETURN_UNEXPECTED(AddMappedField(fields, std::string(field.name()), field));
+    }
+    return MappedFields::Make(std::move(fields));
+  }
+
+  Result<std::unique_ptr<MappedFields>> Visit(const ListType& type) const {
+    std::vector<MappedField> fields;
+    ICEBERG_RETURN_UNEXPECTED(AddMappedField(fields, "element", type.fields().back()));
+    return MappedFields::Make(std::move(fields));
+  }
+
+  Result<std::unique_ptr<MappedFields>> Visit(const MapType& type) const {
+    std::vector<MappedField> fields;
+    fields.reserve(2);
+    ICEBERG_RETURN_UNEXPECTED(AddMappedField(fields, "key", type.key()));
+    ICEBERG_RETURN_UNEXPECTED(AddMappedField(fields, "value", type.value()));
+    return MappedFields::Make(std::move(fields));
+  }
+
+  template <typename T>
+  Result<std::unique_ptr<MappedFields>> Visit(const T& type) const {
+    return nullptr;
+  }
+
+ private:
+  Status AddMappedField(std::vector<MappedField>& fields, const std::string& name,
+                        const SchemaField& field) const {
+    auto visit_result =
+        VisitType(*field.type(), [this](const auto& type) { return this->Visit(type); });
+    ICEBERG_RETURN_UNEXPECTED(visit_result);
+
+    fields.emplace_back(MappedField{
+        .names = {name},
+        .field_id = field.field_id(),
+        .nested_mapping = std::move(visit_result.value()),
+    });
+    return {};
+  }
+};
+
+}  // namespace
+
+Result<std::unique_ptr<NameMapping>> CreateMapping(const Schema& schema) {
+  CreateMappingVisitor visitor;
+  auto result = VisitType(
+      schema, [&visitor](const auto& type) -> Result<std::unique_ptr<MappedFields>> {
+        return visitor.Visit(type);
+      });
+  ICEBERG_RETURN_UNEXPECTED(result);
+  return NameMapping::Make(std::move(*result));
 }
 
 }  // namespace iceberg

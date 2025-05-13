@@ -43,7 +43,8 @@ class ICEBERG_EXPORT Schema : public StructType {
  public:
   static constexpr int32_t kInitialSchemaId = 0;
 
-  Schema(std::vector<SchemaField> fields, std::optional<int32_t> schema_id);
+  explicit Schema(std::vector<SchemaField> fields,
+                  std::optional<int32_t> schema_id = std::nullopt);
 
   /// \brief Get the schema ID.
   ///

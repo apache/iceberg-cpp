@@ -23,10 +23,9 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <iceberg/type.h>
 
-#include "gmock/gmock.h"
 #include "iceberg/result.h"
+#include "iceberg/type.h"
 #include "matchers.h"
 
 namespace iceberg {
