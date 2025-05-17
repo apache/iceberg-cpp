@@ -19,19 +19,16 @@
 
 #pragma once
 
-#include <mutex>
-#include <optional>
-#include <unordered_map>
-
 #include "iceberg/catalog.h"
 
 namespace iceberg {
 
 class ICEBERG_EXPORT InMemoryCatalog : public Catalog {
  public:
-  InMemoryCatalog(std::string name, std::shared_ptr<FileIO> file_io,
-                  std::string warehouse_location,
-                  std::unordered_map<std::string, std::string> properties);
+  InMemoryCatalog(std::string const& name, std::shared_ptr<FileIO> const& file_io,
+                  std::string const& warehouse_location,
+                  std::unordered_map<std::string, std::string> const& properties);
+  ~InMemoryCatalog() override;
 
   std::string_view name() const override;
 
@@ -67,134 +64,7 @@ class ICEBERG_EXPORT InMemoryCatalog : public Catalog {
                                                     const Schema& schema) const override;
 
  private:
-  std::string catalog_name_;
-  std::unordered_map<std::string, std::string> properties_;
-  std::shared_ptr<FileIO> file_io_;
-  std::string warehouse_location_;
-  std::unique_ptr<class InMemoryNamespace> root_namespace_;
-  mutable std::recursive_mutex mutex_;
+  std::unique_ptr<class InMemoryCatalogImpl> impl_;
 };
 
-/**
- * \brief A hierarchical namespace that manages namespaces and table metadata in-memory.
- *
- * Each InMemoryNamespace represents a namespace level and can contain properties,
- * tables, and child namespaces. This structure enables a tree-like representation
- * of nested namespaces.
- */
-class ICEBERG_EXPORT InMemoryNamespace {
- public:
-  /**
-   * \brief Checks whether the given namespace exists.
-   * \param[in] namespace_ident The namespace to check.
-   * \return Status indicating success or failure.
-   */
-  Status NamespaceExists(const Namespace& namespace_ident) const;
-
-  /**
-   * \brief Lists immediate child namespaces under the given parent namespace.
-   * \param[in] parent_namespace_ident The optional parent namespace. If not provided,
-   *                                the children of the root are returned.
-   * \return A vector of child namespace names.
-   */
-  Result<std::vector<std::string>> ListChildrenNamespaces(
-      const std::optional<Namespace>& parent_namespace_ident = std::nullopt) const;
-
-  /**
-   * \brief Creates a new namespace with the specified properties.
-   * \param[in] namespace_ident The namespace to create.
-   * \param[in] properties A map of key-value pairs to associate with the namespace.
-   * \return Status indicating success or failure.
-   */
-  Status CreateNamespace(const Namespace& namespace_ident,
-                         const std::unordered_map<std::string, std::string>& properties);
-
-  /**
-   * \brief Deletes an existing namespace.
-   * \param[in] namespace_ident The namespace to delete.
-   * \return Status indicating success or failure.
-   */
-  Status DeleteNamespace(const Namespace& namespace_ident);
-
-  /**
-   * \brief Retrieves the properties of the specified namespace.
-   * \param[in] namespace_ident The namespace whose properties to retrieve.
-   * \return An  containing the properties map if the namespace exists;
-   *         Errpr otherwise.
-   */
-  Result<std::unordered_map<std::string, std::string>> GetProperties(
-      const Namespace& namespace_ident) const;
-
-  /**
-   * \brief Replaces all properties of the given namespace.
-   * \param[in] namespace_ident The namespace whose properties will be replaced.
-   * \param[in] properties The new properties map.
-   * \return Status indicating success or failure.
-   */
-  Status ReplaceProperties(
-      const Namespace& namespace_ident,
-      const std::unordered_map<std::string, std::string>& properties);
-
-  /**
-   * \brief Lists all table names under the specified namespace.
-   * \param[in] namespace_ident The namespace from which to list tables.
-   * \return A vector of table names or error.
-   */
-  Result<std::vector<std::string>> ListTables(const Namespace& namespace_ident) const;
-
-  /**
-   * \brief Registers a table in the given namespace with a metadata location.
-   * \param[in] table_ident The fully qualified identifier of the table.
-   * \param[in] metadata_location The path to the table's metadata.
-   * \return Status indicating success or failure.
-   */
-  Status RegisterTable(TableIdentifier const& table_ident,
-                       const std::string& metadata_location);
-
-  /**
-   * \brief Unregisters a table from the specified namespace.
-   * \param[in] table_ident The identifier of the table to unregister.
-   * \return Status indicating success or failure.
-   */
-  Status UnregisterTable(TableIdentifier const& table_ident);
-
-  /**
-   * \brief Checks if a table exists in the specified namespace.
-   * \param[in] table_ident The identifier of the table to check.
-   * \return Result<bool> indicating table exists or not.
-   */
-  Result<bool> TableExists(TableIdentifier const& table_ident) const;
-
-  /**
-   * \brief Gets the metadata location for the specified table.
-   * \param[in] table_ident The identifier of the table.
-   * \return An string containing the metadata location if the table exists;
-   *         Error otherwise.
-   */
-  Result<std::string> GetTableMetadataLocation(TableIdentifier const& table_ident) const;
-
-  template <typename NamespacePtr>
-  static Result<NamespacePtr> GetNamespaceImpl(NamespacePtr root,
-                                               const Namespace& namespace_ident) {
-    auto node = root;
-    for (const auto& part_level : namespace_ident.levels) {
-      auto it = node->children_.find(part_level);
-      if (it == node->children_.end()) {
-        return NoSuchNamespace("{}", part_level);
-      }
-      node = &it->second;
-    }
-    return node;
-  }
-
- private:
-  /// Map of child namespace names to their corresponding namespace instances.
-  std::unordered_map<std::string, InMemoryNamespace> children_;
-
-  /// Key-value property map for this namespace.
-  std::unordered_map<std::string, std::string> properties_;
-
-  /// Mapping of table names to metadata file locations.
-  std::unordered_map<std::string, std::string> table_metadata_locations_;
-};
 }  // namespace iceberg
