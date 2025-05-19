@@ -287,7 +287,8 @@ function(resolve_zlib_dependency)
   find_package(ZLIB REQUIRED)
   if(ZLIB_FOUND)
     list(APPEND ICEBERG_SYSTEM_DEPENDENCIES ZLIB)
-    message(STATUS "ZLIB_FOUND ZLIB_LIBRARIES: ${ZLIB_LIBRARIES} ZLIB_INCLUDE_DIR: ${ZLIB_INCLUDE_DIR}")
+    message(STATUS "ZLIB_FOUND ZLIB_LIBRARIES:${ZLIB_LIBRARIES} ZLIB_INCLUDE_DIR:${ZLIB_INCLUDE_DIR}"
+    )
     set(ICEBERG_SYSTEM_DEPENDENCIES
         ${ICEBERG_SYSTEM_DEPENDENCIES}
         PARENT_SCOPE)
@@ -303,4 +304,3 @@ if(ICEBERG_BUILD_BUNDLE)
   resolve_arrow_dependency()
   resolve_avro_dependency()
 endif()
-
