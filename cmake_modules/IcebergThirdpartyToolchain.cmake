@@ -86,6 +86,12 @@ function(resolve_arrow_dependency)
   set(ARROW_DEPENDENCY_SOURCE
       "BUNDLED"
       CACHE STRING "" FORCE)
+  set(ARROW_WITH_ZLIB
+      ON
+      CACHE BOOL "" FORCE)
+  set(ZLIB_SOURCE
+      "SYSTEM"
+      CACHE STRING "" FORCE)
 
   fetchcontent_declare(VendoredArrow
                        ${FC_DECLARE_COMMON_OPTIONS}
@@ -153,10 +159,6 @@ function(resolve_arrow_dependency)
       PARENT_SCOPE)
 endfunction()
 
-if(ICEBERG_BUILD_BUNDLE)
-  resolve_arrow_dependency()
-endif()
-
 # ----------------------------------------------------------------------
 # Apache Avro
 
@@ -211,7 +213,6 @@ function(resolve_avro_dependency)
     if(Snappy_FOUND)
       list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Snappy)
     endif()
-    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES ZLIB)
   else()
     set(AVRO_VENDORED FALSE)
     list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Avro)
@@ -224,10 +225,6 @@ function(resolve_avro_dependency)
       ${AVRO_VENDORED}
       PARENT_SCOPE)
 endfunction()
-
-if(ICEBERG_BUILD_BUNDLE)
-  resolve_avro_dependency()
-endif()
 
 # ----------------------------------------------------------------------
 # Nanoarrow
@@ -250,8 +247,6 @@ function(resolve_nanoarrow_dependency)
           ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
           LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
 endfunction()
-
-resolve_nanoarrow_dependency()
 
 # ----------------------------------------------------------------------
 # nlohmann-json
@@ -284,4 +279,25 @@ function(resolve_nlohmann_json_dependency)
           LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
 endfunction()
 
+# ----------------------------------------------------------------------
+# zlib
+
+function(resolve_zlib_dependency)
+  # use system zlib, zlib is required by arrow and avro
+  find_package(ZLIB REQUIRED)
+  if(ZLIB_FOUND)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES ZLIB)
+    message(STATUS "ZLIB_FOUND ZLIB_LIBRARIES: ${ZLIB_LIBRARIES} ZLIB_INCLUDE_DIR: ${ZLIB_INCLUDE_DIR}")
+  endif()
+
+endfunction()
+
+resolve_zlib_dependency()
+resolve_nanoarrow_dependency()
 resolve_nlohmann_json_dependency()
+
+if(ICEBERG_BUILD_BUNDLE)
+  resolve_arrow_dependency()
+  resolve_avro_dependency()
+endif()
+
