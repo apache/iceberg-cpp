@@ -19,6 +19,8 @@
 
 #include "avro_stream.h"
 
+#include <format>
+
 #include <arrow/result.h>
 #include <iceberg/exception.h>
 
