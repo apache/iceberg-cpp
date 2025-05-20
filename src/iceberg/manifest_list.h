@@ -160,7 +160,7 @@ struct ICEBERG_EXPORT ManifestFile {
   int64_t first_row_id;
 
   /// \brief Checks if this manifest file contains entries with ADDED status.
-  bool has_added_files() const { return added_files_count.value_or(-1) > 0; }
+  bool has_added_files() const { return added_files_count.value_or(1) > 0; }
 
   /// \brief Checks if this manifest file contains entries with EXISTING status.
   bool has_existing_files() const { return existing_files_count.value_or(-1) > 0; }
