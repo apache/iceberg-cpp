@@ -65,7 +65,7 @@ add_test(NAME util_test COMMAND util_test)
 
 if(ICEBERG_BUILD_BUNDLE)
   add_executable(avro_test)
-  target_sources(avro_test PRIVATE avro_test.cc avro_schema_test.cc)
+  target_sources(avro_test PRIVATE avro_test.cc avro_schema_test.cc avro_stream_test.cc)
   target_link_libraries(avro_test PRIVATE iceberg_bundle_static GTest::gtest_main
                                           GTest::gmock)
   add_test(NAME avro_test COMMAND avro_test)

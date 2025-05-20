@@ -31,38 +31,26 @@ class AvroInputStream : public ::avro::SeekableInputStream {
 
   ~AvroInputStream() override;
 
-  /**
-   * Returns some of available data.
-   *
-   * Returns true if some data is available, false if no more data is
-   * available or an error has occurred.
-   */
+  /// \brief Returns some of available data.
+  /// \return true if some data is available, false if no more data is available or an
+  /// error has occurred.
   bool next(const uint8_t** data, size_t* len) override;
 
-  /**
-   * "Returns" back some of the data to the stream. The returned
-   * data must be less than what was obtained in the last call to
-   * next().
-   */
+  /// \brief "Returns" back some of the data to the stream. The returned data must be less
+  /// than what was obtained in the last call to next().
   void backup(size_t len) override;
 
-  /**
-   * Skips number of bytes specified by len.
-   */
+  /// \brief Skips number of bytes specified by len.
   void skip(size_t len) override;
 
-  /**
-   * Returns the number of bytes read from this stream so far.
-   * All the bytes made available through next are considered
-   * to be used unless, returned back using backup.
-   */
+  /// \brief Returns the number of bytes read from this stream so far.
+  /// All the bytes made available through next are considered to be used unless,
+  /// returned back using backup.
   size_t byteCount() const override;
 
-  /**
-   * Seek to a specific position in the stream. This may invalidate pointers
-   * returned from next(). This will also reset byteCount() to the given
-   * position.
-   */
+  /// \brief Seek to a specific position in the stream. This may invalidate pointers
+  /// returned from next(). This will also reset byteCount() to the given
+  /// position.
   void seek(int64_t position) override;
 
  private:
@@ -81,30 +69,22 @@ class AvroOutputStream : public ::avro::OutputStream {
 
   ~AvroOutputStream() override;
 
-  /**
-   * Returns a buffer that can be written into.
-   * On successful return, data has the pointer to the buffer
-   * and len has the number of bytes available at data.
-   */
+  /// \brief Returns a buffer that can be written into.
+  /// On successful return, data has the pointer to the buffer
+  /// and len has the number of bytes available at data.
   bool next(uint8_t** data, size_t* len) override;
 
-  /**
-   * "Returns" back to the stream some of the buffer obtained
-   * from in the last call to next().
-   */
+  /// \brief "Returns" back to the stream some of the buffer obtained
+  /// from in the last call to next().
   void backup(size_t len) override;
 
-  /**
-   * Number of bytes written so far into this stream. The whole buffer
-   * returned by next() is assumed to be written unless some of
-   * it was returned using backup().
-   */
+  /// \brief Number of bytes written so far into this stream. The whole buffer
+  /// returned by next() is assumed to be written unless some of
+  /// it was returned using backup().
   uint64_t byteCount() const override;
 
-  /**
-   * Flushes any data remaining in the buffer to the stream's underlying
-   * store, if any.
-   */
+  /// \brief Flushes any data remaining in the buffer to the stream's underlying
+  /// store, if any.
   void flush() override;
 
  private:
