@@ -1,0 +1,127 @@
+#include "avro_stream.h"
+
+#include <arrow/result.h>
+#include <iceberg/exception.h>
+
+namespace iceberg::avro {
+
+AvroInputStream::AvroInputStream(
+    std::shared_ptr<arrow::io::RandomAccessFile> input_stream, int64_t buffer_size)
+    : input_stream_(std::move(input_stream)),
+      buffer_size_(buffer_size),
+      buffer_(buffer_size) {}
+
+AvroInputStream::~AvroInputStream() = default;
+
+bool AvroInputStream::next(const uint8_t** data, size_t* len) {
+  // Return all unconsumed data in the buffer
+  if (buffer_pos_ < available_bytes_) {
+    *data = buffer_.data() + buffer_pos_;
+    *len = available_bytes_ - buffer_pos_;
+    byte_count_ += available_bytes_ - buffer_pos_;
+    buffer_pos_ = available_bytes_;
+    return true;
+  }
+
+  // Read from the input stream when the buffer is empty
+  auto result = input_stream_->Read(buffer_.size(), buffer_.data());
+  if (!result.ok()) {
+    throw IcebergError(
+        std::format("Read failed:{} at pos:{}", result.status().ToString(), buffer_pos_));
+  }
+  if (result.ValueUnsafe() <= 0) {
+    return false;
+  }
+  available_bytes_ = result.ValueUnsafe();
+  buffer_pos_ = 0;
+
+  // Return the whole buffer
+  *data = buffer_.data();
+  *len = available_bytes_;
+  byte_count_ += available_bytes_;
+  buffer_pos_ = available_bytes_;
+
+  return true;
+}
+
+void AvroInputStream::backup(size_t len) {
+  if (len > buffer_pos_) {
+    throw IcebergError(
+        std::format("Cannot backup {} bytes, only {} bytes available", len, buffer_pos_));
+  }
+
+  buffer_pos_ -= len;
+  byte_count_ -= len;
+}
+
+void AvroInputStream::skip(size_t len) {
+  // The range to skip is within the buffer
+  if (buffer_pos_ + len <= available_bytes_) {
+    buffer_pos_ += len;
+    byte_count_ += len;
+    return;
+  }
+
+  seek(byte_count_ + len);
+}
+
+size_t AvroInputStream::byteCount() const { return byte_count_; }
+
+void AvroInputStream::seek(int64_t position) {
+  auto status = input_stream_->Seek(position);
+  if (!status.ok()) {
+    throw IcebergError(
+        std::format("Failed to seek to {}, got {}", position, status.ToString()));
+  }
+
+  buffer_pos_ = 0;
+  available_bytes_ = 0;
+  byte_count_ = position;
+}
+
+AvroOutputStream::AvroOutputStream(std::shared_ptr<arrow::io::OutputStream> output_stream,
+                                   int64_t buffer_size)
+    : output_stream_(std::move(output_stream)),
+      buffer_size_(buffer_size),
+      buffer_(buffer_size) {}
+
+AvroOutputStream::~AvroOutputStream() = default;
+
+bool AvroOutputStream::next(uint8_t** data, size_t* len) {
+  if (buffer_pos_ > 0) {
+    flush();
+  }
+
+  *data = buffer_.data();
+  *len = buffer_.size();
+  buffer_pos_ = buffer_.size();  // Assume all will be used until backup is called
+
+  return true;
+}
+
+void AvroOutputStream::backup(size_t len) {
+  if (len > buffer_pos_) {
+    throw IcebergError(
+        std::format("Cannot backup {} bytes, only {} bytes available", len, buffer_pos_));
+  }
+  buffer_pos_ -= len;
+}
+
+uint64_t AvroOutputStream::byteCount() const { return flushed_bytes_ + buffer_pos_; }
+
+void AvroOutputStream::flush() {
+  if (buffer_pos_ > 0) {
+    auto status = output_stream_->Write(buffer_.data(), buffer_pos_);
+    if (!status.ok()) {
+      throw IcebergError(std::format("Write failed {}", status.ToString()));
+    }
+    flushed_bytes_ += buffer_pos_;
+    buffer_pos_ = 0;
+  }
+  auto status = output_stream_->Flush();
+  if (!status.ok()) {
+    throw IcebergError(std::format("Flush failed {}", status.ToString()));
+  }
+}
+
+}  // namespace iceberg::avro
