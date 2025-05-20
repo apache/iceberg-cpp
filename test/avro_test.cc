@@ -17,15 +17,35 @@
  * under the License.
  */
 
+#include <arrow/filesystem/filesystem.h>
+#include <arrow/filesystem/localfs.h>
+#include <arrow/io/interfaces.h>
+#include <arrow/result.h>
 #include <gtest/gtest.h>
+#include <iceberg/arrow/arrow_fs_file_io.h>
+#include <iceberg/avro/avro_stream.h>
 #include <iceberg/avro/demo_avro.h>
 #include <iceberg/file_reader.h>
 
 #include "matchers.h"
+#include "temp_file_test_base.h"
 
 namespace iceberg::avro {
 
-TEST(AVROTest, TestDemoAvro) {
+class AVROTest : public TempFileTestBase {
+ public:
+  void SetUp() override {
+    TempFileTestBase::SetUp();
+    file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(
+        std::make_shared<::arrow::fs::LocalFileSystem>());
+    temp_filepath_ = CreateNewTempFilePath();
+  }
+
+  std::shared_ptr<iceberg::FileIO> file_io_;
+  std::string temp_filepath_;
+};
+
+TEST_F(AVROTest, TestDemoAvro) {
   std::string expected =
       "{\n\
     \"type\": \"record\",\n\
@@ -44,7 +64,40 @@ TEST(AVROTest, TestDemoAvro) {
   EXPECT_EQ(avro.print(), expected);
 }
 
-TEST(AVROTest, TestDemoAvroReader) {
+TEST_F(AVROTest, TestAvroBasicStream) {
+  auto fs = std::make_shared<::arrow::fs::LocalFileSystem>();
+  std::cout << temp_filepath_ << std::endl;
+  auto arrow_out_ret = fs->OpenOutputStream(temp_filepath_);
+  ASSERT_TRUE(arrow_out_ret.ok());
+  auto avro_output_stream =
+      std::make_shared<AvroOutputStream>(std::move(arrow_out_ret.ValueUnsafe()), 1024);
+  std::string test_data = "test data";
+  {
+    uint8_t* buf;
+    size_t buf_size;
+    ASSERT_TRUE(avro_output_stream->next(&buf, &buf_size));
+    std::memcpy(buf, test_data.data(), test_data.size());
+    avro_output_stream->backup(1024 - test_data.size());
+    avro_output_stream->flush();
+  }
+
+  auto arrow_in_ret = fs->OpenInputFile(temp_filepath_);
+  ASSERT_TRUE(arrow_in_ret.ok());
+  auto avro_input_stream =
+      std::make_shared<AvroInputStream>(std::move(arrow_in_ret.ValueUnsafe()), 1024);
+  {
+    const uint8_t* data{};
+    size_t len{};
+    ASSERT_TRUE(avro_input_stream->next(&data, &len));
+    EXPECT_EQ(len, test_data.size());
+
+    EXPECT_EQ(avro_input_stream->byteCount(), test_data.size());
+    EXPECT_EQ(std::string(reinterpret_cast<const char*>(data), len), test_data);
+    std::cout << std::string(reinterpret_cast<const char*>(data), len) << std::endl;
+    ASSERT_FALSE(avro_input_stream->next(&data, &len));
+  }
+}
+TEST_F(AVROTest, TestDemoAvroReader) {
   auto result = ReaderFactoryRegistry::Create(FileFormatType::kAvro, {});
   ASSERT_THAT(result, IsOk());
 
