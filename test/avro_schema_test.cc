@@ -125,8 +125,7 @@ TEST(ToAvroNodeVisitorTest, StringType) {
   EXPECT_EQ(node->type(), ::avro::AVRO_STRING);
 }
 
-// FIXME: https://issues.apache.org/jira/browse/AVRO-4140
-TEST(ToAvroNodeVisitorTest, DISABLED_UuidType) {
+TEST(ToAvroNodeVisitorTest, UuidType) {
   ::avro::NodePtr node;
   EXPECT_THAT(ToAvroNodeVisitor{}.Visit(UuidType{}, &node), IsOk());
   EXPECT_EQ(node->type(), ::avro::AVRO_FIXED);

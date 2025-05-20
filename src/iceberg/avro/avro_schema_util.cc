@@ -142,10 +142,10 @@ Status ToAvroNodeVisitor::Visit(const StringType& type, ::avro::NodePtr* node) {
 }
 
 Status ToAvroNodeVisitor::Visit(const UuidType& type, ::avro::NodePtr* node) {
-  *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_FIXED);
-  (*node)->setLogicalType(::avro::LogicalType{::avro::LogicalType::UUID});
-  (*node)->setFixedSize(16);
+  *node = std::make_shared<::avro::NodeFixed>();
   (*node)->setName(::avro::Name("uuid_fixed"));
+  (*node)->setFixedSize(16);
+  (*node)->setLogicalType(::avro::LogicalType{::avro::LogicalType::UUID});
   return {};
 }
 
