@@ -84,7 +84,7 @@ if(ICEBERG_BUILD_BUNDLE)
       arrow/arrow_fs_file_io.cc
       avro/demo_avro.cc
       avro/avro_schema_util.cc
-      avro/avro_stream.cc)
+      avro/avro_stream_internal.cc)
 
   # Libraries to link with exported libiceberg_bundle.{so,a}.
   set(ICEBERG_BUNDLE_STATIC_BUILD_INTERFACE_LIBS)

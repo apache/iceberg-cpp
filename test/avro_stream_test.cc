@@ -20,9 +20,8 @@
 #include <arrow/filesystem/localfs.h>
 #include <arrow/result.h>
 #include <gtest/gtest.h>
-#include <iceberg/arrow/arrow_fs_file_io.h>
-#include <iceberg/avro/avro_stream.h>
 
+#include "iceberg/avro/avro_stream_internal.h"
 #include "temp_file_test_base.h"
 
 namespace iceberg::avro {
@@ -31,15 +30,12 @@ class AVROStreamTest : public TempFileTestBase {
  public:
   void SetUp() override {
     TempFileTestBase::SetUp();
-    file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(
-        std::make_shared<::arrow::fs::LocalFileSystem>());
     temp_filepath_ = CreateNewTempFilePath();
     local_fs_ = std::make_shared<::arrow::fs::LocalFileSystem>();
   }
 
   std::shared_ptr<AvroOutputStream> CreateOutputStream(const std::string& path,
                                                        int64_t buffer_size) {
-    std::cout << "CreateOutputStream" << path << std::endl;
     auto arrow_out_ret = local_fs_->OpenOutputStream(path);
     if (!arrow_out_ret.ok()) {
       throw std::runtime_error("Failed to open output stream: " +
@@ -51,7 +47,6 @@ class AVROStreamTest : public TempFileTestBase {
 
   std::shared_ptr<AvroInputStream> CreateInputStream(const std::string& path,
                                                      int64_t buffer_size) {
-    std::cout << "CreateInputStream" << path << std::endl;
     auto arrow_in_ret = local_fs_->OpenInputFile(path);
     if (!arrow_in_ret.ok()) {
       throw std::runtime_error("Failed to open input stream: " +
@@ -87,7 +82,6 @@ class AVROStreamTest : public TempFileTestBase {
 
   int64_t buffer_size_ = 1024;
   std::shared_ptr<::arrow::fs::LocalFileSystem> local_fs_;
-  std::shared_ptr<iceberg::FileIO> file_io_;
   std::string temp_filepath_;
 };
 
@@ -98,17 +92,15 @@ TEST_F(AVROStreamTest, TestAvroBasicStream) {
   WriteDataToStream(avro_output_stream, test_data);
 
   auto avro_input_stream = CreateInputStream(temp_filepath_, buffer_size_);
-  {
-    const uint8_t* data{};
-    size_t len{};
-    ASSERT_TRUE(avro_input_stream->next(&data, &len));
-    EXPECT_EQ(len, test_data.size());
 
-    EXPECT_EQ(avro_input_stream->byteCount(), test_data.size());
-    EXPECT_EQ(std::string(reinterpret_cast<const char*>(data), len), test_data);
-    std::cout << std::string(reinterpret_cast<const char*>(data), len) << std::endl;
-    ASSERT_FALSE(avro_input_stream->next(&data, &len));
-  }
+  const uint8_t* data{};
+  size_t len{};
+  ASSERT_TRUE(avro_input_stream->next(&data, &len));
+  EXPECT_EQ(len, test_data.size());
+
+  EXPECT_EQ(avro_input_stream->byteCount(), test_data.size());
+  EXPECT_EQ(std::string(reinterpret_cast<const char*>(data), len), test_data);
+  ASSERT_FALSE(avro_input_stream->next(&data, &len));
 }
 
 TEST_F(AVROStreamTest, InputStreamBackup) {
@@ -137,7 +129,7 @@ TEST_F(AVROStreamTest, InputStreamBackup) {
   ASSERT_TRUE(avro_input_stream->next(&data, &len));
   EXPECT_EQ(len, backupSize);
   EXPECT_EQ(std::string(reinterpret_cast<const char*>(data), len),
-            test_data.substr(test_data.size() - backupSize));  // NOLINT
+            test_data.substr(test_data.size() - backupSize));
 
   // Check that we've reached the end of the stream
   ASSERT_FALSE(avro_input_stream->next(&data, &len));
@@ -165,7 +157,7 @@ TEST_F(AVROStreamTest, InputStreamSkip) {
   ASSERT_TRUE(avro_input_stream->next(&data, &len));
   EXPECT_EQ(len, test_data.size() - skipSize);
   EXPECT_EQ(std::string(reinterpret_cast<const char*>(data), len),
-            test_data.substr(skipSize));  // NOLINT
+            test_data.substr(skipSize));
 
   // Check that we've reached the end of the stream
   ASSERT_FALSE(avro_input_stream->next(&data, &len));
@@ -193,7 +185,7 @@ TEST_F(AVROStreamTest, InputStreamSeek) {
   ASSERT_TRUE(avro_input_stream->next(&data, &len));
   EXPECT_EQ(len, test_data.size() - seekPos);
   EXPECT_EQ(std::string(reinterpret_cast<const char*>(data), len),
-            test_data.substr(seekPos));  // NOLINT
+            test_data.substr(seekPos));
 
   // Check that we've reached the end of the stream
   ASSERT_FALSE(avro_input_stream->next(&data, &len));

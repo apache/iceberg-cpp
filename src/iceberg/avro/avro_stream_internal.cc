@@ -17,12 +17,13 @@
  * under the License.
  */
 
-#include "avro_stream.h"
+#include "avro_stream_internal.h"
 
 #include <format>
 
 #include <arrow/result.h>
-#include <iceberg/exception.h>
+
+#include "iceberg/exception.h"
 
 namespace iceberg::avro {
 
