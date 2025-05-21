@@ -19,6 +19,8 @@
 
 #include <string>
 
+#include <avro/Compiler.hh>
+#include <avro/NodeImpl.hh>
 #include <avro/Types.hh>
 #include <gtest/gtest.h>
 
@@ -320,6 +322,198 @@ TEST(ToAvroNodeVisitorTest, NestedTypes) {
 
   ASSERT_EQ(list_node->leaves(), 1);
   EXPECT_EQ(list_node->leafAt(0)->type(), ::avro::AVRO_DOUBLE);
+}
+
+TEST(HasIdVisitorTest, HasNoIds) {
+  HasIdVisitor visitor;
+  EXPECT_THAT(visitor.Visit(::avro::compileJsonSchemaFromString("\"string\"")), IsOk());
+  EXPECT_TRUE(visitor.HasNoIds());
+  EXPECT_FALSE(visitor.AllHaveIds());
+}
+
+TEST(HasIdVisitorTest, RecordWithFieldIds) {
+  const std::string schema_json = R"({
+    "type": "record",
+    "name": "test_record",
+    "fields": [
+      {"name": "int_field", "type": "int", "field-id": 1},
+      {"name": "string_field", "type": "string", "field-id": 2}
+    ]
+  })";
+
+  HasIdVisitor visitor;
+  EXPECT_THAT(visitor.Visit(::avro::compileJsonSchemaFromString(schema_json)), IsOk());
+  EXPECT_FALSE(visitor.HasNoIds());
+  EXPECT_TRUE(visitor.AllHaveIds());
+}
+
+TEST(HasIdVisitorTest, RecordWithMissingFieldIds) {
+  const std::string schema_json = R"({
+    "type": "record",
+    "name": "test_record",
+    "fields": [
+      {"name": "int_field", "type": "int", "field-id": 1},
+      {"name": "string_field", "type": "string"}
+    ]
+  })";
+
+  HasIdVisitor visitor;
+  EXPECT_THAT(visitor.Visit(::avro::compileJsonSchemaFromString(schema_json)), IsOk());
+  EXPECT_FALSE(visitor.HasNoIds());
+  EXPECT_FALSE(visitor.AllHaveIds());
+}
+
+TEST(HasIdVisitorTest, ArrayWithElementId) {
+  const std::string schema_json = R"({
+    "type": "array",
+    "items": "int",
+    "element-id": 5
+  })";
+
+  HasIdVisitor visitor;
+  EXPECT_THAT(visitor.Visit(::avro::compileJsonSchemaFromString(schema_json)), IsOk());
+  EXPECT_FALSE(visitor.HasNoIds());
+  EXPECT_TRUE(visitor.AllHaveIds());
+}
+
+TEST(HasIdVisitorTest, ArrayWithoutElementId) {
+  const std::string schema_json = R"({
+    "type": "array",
+    "items": "int"
+  })";
+
+  HasIdVisitor visitor;
+  EXPECT_THAT(visitor.Visit(::avro::compileJsonSchemaFromString(schema_json)), IsOk());
+  EXPECT_FALSE(visitor.HasNoIds());
+  EXPECT_FALSE(visitor.AllHaveIds());
+}
+
+TEST(HasIdVisitorTest, MapWithIds) {
+  const std::string schema_json = R"({
+    "type": "map",
+    "values": "int",
+    "key-id": 10,
+    "value-id": 11
+  })";
+
+  HasIdVisitor visitor;
+  EXPECT_THAT(visitor.Visit(::avro::compileJsonSchemaFromString(schema_json)), IsOk());
+  EXPECT_FALSE(visitor.HasNoIds());
+  EXPECT_TRUE(visitor.AllHaveIds());
+}
+
+TEST(HasIdVisitorTest, MapWithPartialIds) {
+  const std::string schema_json = R"({
+    "type": "map",
+    "values": "int",
+    "key-id": 10
+  })";
+
+  HasIdVisitor visitor;
+  EXPECT_THAT(visitor.Visit(::avro::compileJsonSchemaFromString(schema_json)), IsOk());
+  EXPECT_FALSE(visitor.HasNoIds());
+  EXPECT_FALSE(visitor.AllHaveIds());
+}
+
+TEST(HasIdVisitorTest, UnionType) {
+  const std::string schema_json = R"([
+    "null",
+    {
+      "type": "record",
+      "name": "record_in_union",
+      "fields": [
+        {"name": "int_field", "type": "int", "field-id": 1}
+      ]
+    }
+  ])";
+
+  HasIdVisitor visitor;
+  EXPECT_THAT(visitor.Visit(::avro::compileJsonSchemaFromString(schema_json)), IsOk());
+  EXPECT_FALSE(visitor.HasNoIds());
+  EXPECT_TRUE(visitor.AllHaveIds());
+}
+
+TEST(HasIdVisitorTest, ComplexNestedSchema) {
+  const std::string schema_json = R"({
+    "type": "record",
+    "name": "root",
+    "fields": [
+      {
+        "name": "string_field",
+        "type": "string",
+        "field-id": 1
+      },
+      {
+        "name": "record_field",
+        "type": {
+          "type": "record",
+          "name": "nested",
+          "fields": [
+            {
+              "name": "int_field",
+              "type": "int",
+              "field-id": 3
+            }
+          ]
+        },
+        "field-id": 2
+      },
+      {
+        "name": "array_field",
+        "type": {
+          "type": "array",
+          "items": "double",
+          "element-id": 5
+        },
+        "field-id": 4
+      }
+    ]
+  })";
+
+  HasIdVisitor visitor;
+  EXPECT_THAT(visitor.Visit(::avro::compileJsonSchemaFromString(schema_json)), IsOk());
+  EXPECT_FALSE(visitor.HasNoIds());
+  EXPECT_TRUE(visitor.AllHaveIds());
+}
+
+TEST(HasIdVisitorTest, ArrayBackedMapWithIds) {
+  const std::string schema_json = R"({
+    "type": "array",
+    "items": {
+      "type": "record",
+      "name": "key_value",
+      "fields": [
+        {"name": "key", "type": "int", "field-id": 10},
+        {"name": "value", "type": "string", "field-id": 11}
+      ]
+    },
+    "logicalType": "map"
+  })";
+
+  HasIdVisitor visitor;
+  EXPECT_THAT(visitor.Visit(::avro::compileJsonSchemaFromString(schema_json)), IsOk());
+  EXPECT_FALSE(visitor.HasNoIds());
+  EXPECT_TRUE(visitor.AllHaveIds());
+}
+
+TEST(HasIdVisitorTest, ArrayBackedMapWithPartialIds) {
+  const std::string schema_json = R"({
+    "type": "array",
+    "items": {
+      "type": "record",
+      "name": "key_value",
+      "fields": [
+        {"name": "key", "type": "int", "field-id": 10},
+        {"name": "value", "type": "string"}
+      ]
+    },
+    "logicalType": "map"
+  })";
+
+  HasIdVisitor visitor;
+  EXPECT_THAT(visitor.Visit(::avro::compileJsonSchemaFromString(schema_json)), IsOk());
+  EXPECT_FALSE(visitor.HasNoIds());
+  EXPECT_FALSE(visitor.AllHaveIds());
 }
 
 }  // namespace iceberg::avro

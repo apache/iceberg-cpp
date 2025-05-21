@@ -26,7 +26,9 @@
 #include <avro/CustomAttributes.hh>
 #include <avro/LogicalType.hh>
 #include <avro/NodeImpl.hh>
+#include <avro/Schema.hh>
 #include <avro/Types.hh>
+#include <avro/ValidSchema.hh>
 
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/util/macros.h"
@@ -262,5 +264,117 @@ Status ToAvroNodeVisitor::Visit(const SchemaField& field, ::avro::NodePtr* node)
   field_ids_.pop();
   return {};
 }
+
+namespace {
+
+bool HasId(const ::avro::NodePtr& parent_node, size_t field_idx,
+           const std::string& attr_name) {
+  if (field_idx >= parent_node->customAttributes()) {
+    return false;
+  }
+  return parent_node->customAttributesAt(field_idx).getAttribute(attr_name).has_value();
+}
+
+}  // namespace
+
+Status HasIdVisitor::Visit(const ::avro::NodePtr& node) {
+  if (!node) [[unlikely]] {
+    return InvalidSchema("Avro node is null");
+  }
+
+  switch (node->type()) {
+    case ::avro::AVRO_RECORD:
+      return VisitRecord(node);
+    case ::avro::AVRO_ARRAY:
+      return VisitArray(node);
+    case ::avro::AVRO_MAP:
+      return VisitMap(node);
+    case ::avro::AVRO_UNION:
+      return VisitUnion(node);
+    case ::avro::AVRO_BOOL:
+    case ::avro::AVRO_INT:
+    case ::avro::AVRO_LONG:
+    case ::avro::AVRO_FLOAT:
+    case ::avro::AVRO_DOUBLE:
+    case ::avro::AVRO_STRING:
+    case ::avro::AVRO_BYTES:
+    case ::avro::AVRO_FIXED:
+      return {};
+    case ::avro::AVRO_NULL:
+    case ::avro::AVRO_ENUM:
+    default:
+      return InvalidSchema("Unsupported Avro type: {}", static_cast<int>(node->type()));
+  }
+}
+
+Status HasIdVisitor::VisitRecord(const ::avro::NodePtr& node) {
+  static const std::string kFieldIdKey{kFieldIdProp};
+  total_fields_ += node->leaves();
+  for (size_t i = 0; i < node->leaves(); ++i) {
+    if (HasId(node, i, kFieldIdKey)) {
+      fields_with_id_++;
+    }
+    ICEBERG_RETURN_UNEXPECTED(Visit(node->leafAt(i)));
+  }
+  return {};
+}
+
+Status HasIdVisitor::VisitArray(const ::avro::NodePtr& node) {
+  if (node->leaves() != 1) [[unlikely]] {
+    return InvalidSchema("Array type must have exactly one leaf");
+  }
+
+  if (node->logicalType().type() == ::avro::LogicalType::CUSTOM &&
+      node->logicalType().customLogicalType() != nullptr &&
+      node->logicalType().customLogicalType()->name() == "map") {
+    return Visit(node->leafAt(0));
+  }
+
+  total_fields_++;
+  if (HasId(node, /*field_idx=*/0, std::string(kElementIdProp))) {
+    fields_with_id_++;
+  }
+
+  return Visit(node->leafAt(0));
+}
+
+Status HasIdVisitor::VisitMap(const ::avro::NodePtr& node) {
+  if (node->leaves() != 2) [[unlikely]] {
+    return InvalidSchema("Map type must have exactly two leaves");
+  }
+
+  total_fields_ += 2;
+  if (HasId(node, /*field_idx=*/0, std::string(kKeyIdProp))) {
+    fields_with_id_++;
+  }
+  if (HasId(node, /*field_idx=*/0, std::string(kValueIdProp))) {
+    fields_with_id_++;
+  }
+
+  return Visit(node->leafAt(1));
+}
+
+Status HasIdVisitor::VisitUnion(const ::avro::NodePtr& node) {
+  if (node->leaves() != 2) [[unlikely]] {
+    return InvalidSchema("Union type must have exactly two branches");
+  }
+
+  const auto& branch_0 = node->leafAt(0);
+  const auto& branch_1 = node->leafAt(1);
+  if (branch_0->type() == ::avro::AVRO_NULL) {
+    return Visit(branch_1);
+  }
+  if (branch_1->type() == ::avro::AVRO_NULL) {
+    return Visit(branch_0);
+  }
+
+  return InvalidSchema("Union type must have exactly one null branch");
+}
+
+Status HasIdVisitor::Visit(const ::avro::ValidSchema& schema) {
+  return Visit(schema.root());
+}
+
+Status HasIdVisitor::Visit(const ::avro::Schema& schema) { return Visit(schema.root()); }
 
 }  // namespace iceberg::avro

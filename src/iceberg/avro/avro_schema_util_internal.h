@@ -26,6 +26,11 @@
 #include "iceberg/result.h"
 #include "iceberg/type.h"
 
+namespace avro {
+class Schema;
+class ValidSchema;
+}  // namespace avro
+
 namespace iceberg::avro {
 
 /// \brief A visitor that converts an Iceberg type to an Avro node.
@@ -53,6 +58,67 @@ class ToAvroNodeVisitor {
  private:
   // Store recently accessed field ids on the current visitor path.
   std::stack<int32_t> field_ids_;
+};
+
+/// \brief A visitor that checks the presence of field IDs in an Avro schema.
+class HasIdVisitor {
+ public:
+  HasIdVisitor() = default;
+
+  /// \brief Visit an Avro node to check for field IDs.
+  /// \param node The Avro node to visit.
+  /// \return Status indicating success or an error if unsupported Avro types are
+  /// encountered.
+  Status Visit(const ::avro::NodePtr& node);
+
+  /// \brief Visit an Avro schema to check for field IDs.
+  /// \param schema The Avro schema to visit.
+  /// \return Status indicating success or an error if unsupported Avro types are
+  /// encountered.
+  Status Visit(const ::avro::ValidSchema& schema);
+
+  /// \brief Visit an Avro schema to check for field IDs.
+  /// \param schema The Avro schema to visit.
+  /// \return Status indicating success or an error if unsupported Avro types are
+  /// encountered.
+  Status Visit(const ::avro::Schema& node);
+
+  /// \brief Check if all fields in the visited schema have field IDs.
+  /// \return True if all fields have IDs, false otherwise.
+  bool AllHaveIds() const {
+    return total_fields_ == fields_with_id_ && fields_with_id_ != 0;
+  }
+
+  /// \brief Check if all fields in the visited schema have field IDs.
+  /// \return True if all fields have IDs, false otherwise.
+  bool HasNoIds() const { return total_fields_ == 0; }
+
+ private:
+  /// \brief Visit a record node to check for field IDs.
+  /// \param node The record node to visit.
+  /// \return Status indicating success or error.
+  Status VisitRecord(const ::avro::NodePtr& node);
+
+  /// \brief Visit an array node to check for element IDs.
+  /// \param node The array node to visit.
+  /// \return Status indicating success or error.
+  Status VisitArray(const ::avro::NodePtr& node);
+
+  /// \brief Visit a map node to check for key and value IDs.
+  /// \param node The map node to visit.
+  /// \return Status indicating success or error.
+  Status VisitMap(const ::avro::NodePtr& node);
+
+  /// \brief Visit a union node to check for field IDs in each branch.
+  /// \param node The union node to visit.
+  /// \return Status indicating success or error.
+  Status VisitUnion(const ::avro::NodePtr& node);
+
+ private:
+  // Total number of fields visited.
+  size_t total_fields_ = 0;
+  // Number of fields with IDs.
+  size_t fields_with_id_ = 0;
 };
 
 }  // namespace iceberg::avro
