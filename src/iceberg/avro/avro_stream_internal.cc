@@ -47,11 +47,10 @@ bool AvroInputStream::next(const uint8_t** data, size_t* len) {
 
   // Read from the input stream when the buffer is empty
   auto result = input_stream_->Read(buffer_.size(), buffer_.data());
-  if (!result.ok()) {
-    throw IcebergError(
-        std::format("Read failed:{} at pos:{}", result.status().ToString(), buffer_pos_));
-  }
-  if (result.ValueUnsafe() <= 0) {
+  // TODO(xiao.dong) Avro interface requires to return false if an error has occurred or
+  // reach EOF, so error message can not be raised to the caller, add some log after we
+  // have a logging system
+  if (!result.ok() || result.ValueUnsafe() <= 0) {
     return false;
   }
   available_bytes_ = result.ValueUnsafe();
