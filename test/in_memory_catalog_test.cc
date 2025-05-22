@@ -64,4 +64,29 @@ TEST_F(InMemoryCatalogTest, DropTable) {
   EXPECT_THAT(result, IsOk());
 }
 
+TEST_F(InMemoryCatalogTest, Namespace) {
+  Namespace ns{.levels = {"n1", "n2"}};
+  std::unordered_map<std::string, std::string> properties = {{"prop1", "val1"}};
+  EXPECT_THAT(catalog_->CreateNamespace(ns, properties), IsOk());
+  EXPECT_THAT(catalog_->CreateNamespace(ns, properties),
+              IsError(ErrorKind::kAlreadyExists));
+
+  EXPECT_THAT(catalog_->NamespaceExists(ns), HasValue(::testing::Eq(true)));
+  EXPECT_THAT(catalog_->NamespaceExists(Namespace{.levels = {"n1", "n3"}}),
+              HasValue(::testing::Eq(false)));
+  auto childNs = catalog_->ListNamespaces(Namespace{.levels = {"n1"}});
+  EXPECT_THAT(childNs, IsOk());
+  ASSERT_EQ(childNs->size(), 1U);
+  ASSERT_EQ(childNs->at(0).levels.size(), 2U);
+  ASSERT_EQ(childNs->at(0).levels.at(1), "n2");
+
+  auto propsRs = catalog_->GetNamespaceProperties(ns);
+  EXPECT_THAT(propsRs, IsOk());
+  ASSERT_EQ(propsRs->size(), 1U);
+  ASSERT_EQ(propsRs.value().at("prop1"), "val1");
+
+  EXPECT_THAT(catalog_->SetNamespaceProperties(ns, {{"prop2", "val2"}}), IsOk());
+  EXPECT_THAT(catalog_->RemoveNamespaceProperties(ns, {"prop2"}), IsOk());
+}
+
 }  // namespace iceberg

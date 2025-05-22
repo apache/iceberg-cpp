@@ -47,16 +47,15 @@ class ICEBERG_EXPORT InMemoryNamespace {
    * \param[in] namespace_ident The namespace to check.
    * \return Status indicating success or failure.
    */
-  Status NamespaceExists(const Namespace& namespace_ident) const;
+  Result<bool> NamespaceExists(const Namespace& namespace_ident) const;
 
   /**
    * \brief Lists immediate child namespaces under the given parent namespace.
-   * \param[in] parent_namespace_ident The optional parent namespace. If not provided,
-   *                                the children of the root are returned.
-   * \return A vector of child namespace names.
+   * \param[in] parent_namespace_ident The optional parent namespace.
+   * \return A vector of child namespaces.
    */
-  Result<std::vector<std::string>> ListChildrenNamespaces(
-      const std::optional<Namespace>& parent_namespace_ident = std::nullopt) const;
+  Result<std::vector<Namespace>> ListNamespaces(
+      const Namespace& parent_namespace_ident) const;
 
   /**
    * \brief Creates a new namespace with the specified properties.
@@ -72,7 +71,7 @@ class ICEBERG_EXPORT InMemoryNamespace {
    * \param[in] namespace_ident The namespace to delete.
    * \return Status indicating success or failure.
    */
-  Status DeleteNamespace(const Namespace& namespace_ident);
+  Status DropNamespace(const Namespace& namespace_ident);
 
   /**
    * \brief Retrieves the properties of the specified namespace.
@@ -89,9 +88,19 @@ class ICEBERG_EXPORT InMemoryNamespace {
    * \param[in] properties The new properties map.
    * \return Status indicating success or failure.
    */
-  Status ReplaceProperties(
+  Status SetNamespaceProperties(
       const Namespace& namespace_ident,
       const std::unordered_map<std::string, std::string>& properties);
+
+  /// \brief Remove a set of metadata properties from a namespace.
+  ///
+  /// \param namespace_ident the namespace to modify
+  /// \param properties the set of property keys to remove
+  /// \return Status::OK if removed successfully;
+  ///         ErrorKind::kNoSuchNamespace if the namespace does not exist;
+  ///         ErrorKind::kNotSupported if the operation is not supported
+  Status RemoveNamespaceProperties(const Namespace& namespace_ident,
+                                   const std::unordered_set<std::string>& properties);
 
   /**
    * \brief Lists all table names under the specified namespace.
@@ -166,26 +175,31 @@ Result<const InMemoryNamespace*> GetNamespace(const InMemoryNamespace* root,
   return InMemoryNamespace::GetNamespaceImpl(root, namespace_ident);
 }
 
-Status InMemoryNamespace::NamespaceExists(const Namespace& namespace_ident) const {
-  const auto ns = GetNamespace(this, namespace_ident);
-  ICEBERG_RETURN_UNEXPECTED(ns);
-  return {};
+Result<bool> InMemoryNamespace::NamespaceExists(const Namespace& namespace_ident) const {
+  const auto& ns = GetNamespace(this, namespace_ident);
+  if (ns.has_value()) {
+    return true;
+  }
+  if (ns.error().kind == ErrorKind::kNoSuchNamespace) {
+    return false;
+  }
+  return unexpected<Error>(ns.error());
 }
 
-Result<std::vector<std::string>> InMemoryNamespace::ListChildrenNamespaces(
-    const std::optional<Namespace>& parent_namespace_ident) const {
-  auto ns = this;
-  if (parent_namespace_ident.has_value()) {
-    const auto nsRs = GetNamespace(this, *parent_namespace_ident);
-    ICEBERG_RETURN_UNEXPECTED(nsRs);
-    ns = *nsRs;
-  }
+Result<std::vector<Namespace>> InMemoryNamespace::ListNamespaces(
+    const Namespace& parent_namespace_ident) const {
+  const auto nsRs = GetNamespace(this, parent_namespace_ident);
+  ICEBERG_RETURN_UNEXPECTED(nsRs);
+  auto ns = *nsRs;
 
-  std::vector<std::string> names;
+  std::vector<Namespace> names;
   auto const& children = ns->children_;
   names.reserve(children.size());
-  std::ranges::transform(children, std::back_inserter(names),
-                         [](const auto& pair) { return pair.first; });
+  std::ranges::transform(children, std::back_inserter(names), [&](const auto& pair) {
+    auto childNs = parent_namespace_ident;
+    childNs.levels.emplace_back(pair.first);
+    return childNs;
+  });
   return names;
 }
 
@@ -214,7 +228,7 @@ Status InMemoryNamespace::CreateNamespace(
   return {};
 }
 
-Status InMemoryNamespace::DeleteNamespace(const Namespace& namespace_ident) {
+Status InMemoryNamespace::DropNamespace(const Namespace& namespace_ident) {
   if (namespace_ident.levels.empty()) {
     return InvalidArgument("namespace identifier is empty");
   }
@@ -247,12 +261,21 @@ Result<std::unordered_map<std::string, std::string>> InMemoryNamespace::GetPrope
   return ns.value()->properties_;
 }
 
-Status InMemoryNamespace::ReplaceProperties(
+Status InMemoryNamespace::SetNamespaceProperties(
     const Namespace& namespace_ident,
     const std::unordered_map<std::string, std::string>& properties) {
   const auto ns = GetNamespace(this, namespace_ident);
   ICEBERG_RETURN_UNEXPECTED(ns);
   ns.value()->properties_ = properties;
+  return {};
+}
+
+Status InMemoryNamespace::RemoveNamespaceProperties(
+    const Namespace& namespace_ident, const std::unordered_set<std::string>& properties) {
+  const auto ns = GetNamespace(this, namespace_ident);
+  ICEBERG_RETURN_UNEXPECTED(ns);
+  std::ranges::for_each(properties,
+                        [&](const auto& prop) { ns.value()->properties_.erase(prop); });
   return {};
 }
 
@@ -317,6 +340,25 @@ class ICEBERG_EXPORT InMemoryCatalogImpl {
 
   std::string_view name() const;
 
+  Status CreateNamespace(const Namespace& ns,
+                         const std::unordered_map<std::string, std::string>& properties);
+
+  Result<std::vector<Namespace>> ListNamespaces(const Namespace& ns) const;
+
+  Status DropNamespace(const Namespace& ns);
+
+  Result<bool> NamespaceExists(const Namespace& ns) const;
+
+  Result<std::unordered_map<std::string, std::string>> GetNamespaceProperties(
+      const Namespace& ns) const;
+
+  Status SetNamespaceProperties(
+      const Namespace& ns,
+      const std::unordered_map<std::string, std::string>& properties);
+
+  Status RemoveNamespaceProperties(const Namespace& ns,
+                                   const std::unordered_set<std::string>& properties);
+
   Result<std::vector<TableIdentifier>> ListTables(const Namespace& ns) const;
 
   Result<std::unique_ptr<Table>> CreateTable(
@@ -365,6 +407,46 @@ InMemoryCatalogImpl::InMemoryCatalogImpl(
       root_namespace_(std::make_unique<InMemoryNamespace>()) {}
 
 std::string_view InMemoryCatalogImpl::name() const { return catalog_name_; }
+
+Status InMemoryCatalogImpl::CreateNamespace(
+    const Namespace& ns, const std::unordered_map<std::string, std::string>& properties) {
+  std::unique_lock lock(mutex_);
+  return root_namespace_->CreateNamespace(ns, properties);
+}
+
+Result<std::vector<Namespace>> InMemoryCatalogImpl::ListNamespaces(
+    const Namespace& ns) const {
+  std::unique_lock lock(mutex_);
+  return root_namespace_->ListNamespaces(ns);
+}
+
+Status InMemoryCatalogImpl::DropNamespace(const Namespace& ns) {
+  std::unique_lock lock(mutex_);
+  return root_namespace_->DropNamespace(ns);
+}
+
+Result<bool> InMemoryCatalogImpl::NamespaceExists(const Namespace& ns) const {
+  std::unique_lock lock(mutex_);
+  return root_namespace_->NamespaceExists(ns);
+}
+
+Result<std::unordered_map<std::string, std::string>>
+InMemoryCatalogImpl::GetNamespaceProperties(const Namespace& ns) const {
+  std::unique_lock lock(mutex_);
+  return root_namespace_->GetProperties(ns);
+}
+
+Status InMemoryCatalogImpl::SetNamespaceProperties(
+    const Namespace& ns, const std::unordered_map<std::string, std::string>& properties) {
+  std::unique_lock lock(mutex_);
+  return root_namespace_->SetNamespaceProperties(ns, properties);
+}
+
+Status InMemoryCatalogImpl::RemoveNamespaceProperties(
+    const Namespace& ns, const std::unordered_set<std::string>& properties) {
+  std::unique_lock lock(mutex_);
+  return root_namespace_->RemoveNamespaceProperties(ns, properties);
+}
 
 Result<std::vector<TableIdentifier>> InMemoryCatalogImpl::ListTables(
     const Namespace& ns) const {
@@ -443,6 +525,39 @@ InMemoryCatalog::InMemoryCatalog(
 InMemoryCatalog::~InMemoryCatalog() = default;
 
 std::string_view InMemoryCatalog::name() const { return impl_->name(); }
+
+Status InMemoryCatalog::CreateNamespace(
+    const Namespace& ns, const std::unordered_map<std::string, std::string>& properties) {
+  return impl_->CreateNamespace(ns, properties);
+}
+
+Result<std::unordered_map<std::string, std::string>>
+InMemoryCatalog::GetNamespaceProperties(const Namespace& ns) const {
+  return impl_->GetNamespaceProperties(ns);
+}
+
+Result<std::vector<Namespace>> InMemoryCatalog::ListNamespaces(
+    const Namespace& ns) const {
+  return impl_->ListNamespaces(ns);
+}
+
+Status InMemoryCatalog::DropNamespace(const Namespace& ns) {
+  return impl_->DropNamespace(ns);
+}
+
+Result<bool> InMemoryCatalog::NamespaceExists(const Namespace& ns) const {
+  return impl_->NamespaceExists(ns);
+}
+
+Status InMemoryCatalog::RemoveNamespaceProperties(
+    const Namespace& ns, const std::unordered_set<std::string>& properties) {
+  return impl_->RemoveNamespaceProperties(ns, properties);
+}
+
+Status InMemoryCatalog::SetNamespaceProperties(
+    const Namespace& ns, const std::unordered_map<std::string, std::string>& properties) {
+  return impl_->SetNamespaceProperties(ns, properties);
+}
 
 Result<std::vector<TableIdentifier>> InMemoryCatalog::ListTables(
     const Namespace& ns) const {

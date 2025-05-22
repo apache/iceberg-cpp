@@ -22,7 +22,16 @@
 #include "iceberg/catalog.h"
 
 namespace iceberg {
-
+/**
+ * @brief An in-memory implementation of the Iceberg Catalog interface.
+ *
+ * This catalog stores all metadata purely in memory, with no persistence to disk
+ * or external systems. It is primarily intended for unit tests, prototyping, or
+ * demonstration purposes.
+ *
+ * @note This class is **not** suitable for production use.
+ *       All data will be lost when the process exits.
+ */
 class ICEBERG_EXPORT InMemoryCatalog : public Catalog {
  public:
   InMemoryCatalog(std::string const& name, std::shared_ptr<FileIO> const& file_io,
@@ -31,6 +40,26 @@ class ICEBERG_EXPORT InMemoryCatalog : public Catalog {
   ~InMemoryCatalog() override;
 
   std::string_view name() const override;
+
+  Status CreateNamespace(
+      const Namespace& ns,
+      const std::unordered_map<std::string, std::string>& properties) override;
+
+  Result<std::vector<Namespace>> ListNamespaces(const Namespace& ns) const override;
+
+  Status DropNamespace(const Namespace& ns) override;
+
+  Result<bool> NamespaceExists(const Namespace& ns) const override;
+
+  Result<std::unordered_map<std::string, std::string>> GetNamespaceProperties(
+      const Namespace& ns) const override;
+
+  Status SetNamespaceProperties(
+      const Namespace& ns,
+      const std::unordered_map<std::string, std::string>& properties) override;
+
+  Status RemoveNamespaceProperties(
+      const Namespace& ns, const std::unordered_set<std::string>& properties) override;
 
   Result<std::vector<TableIdentifier>> ListTables(const Namespace& ns) const override;
 

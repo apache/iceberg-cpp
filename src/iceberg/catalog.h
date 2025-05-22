@@ -23,6 +23,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "iceberg/result.h"
@@ -41,6 +42,67 @@ class ICEBERG_EXPORT Catalog {
 
   /// \brief Return the name for this catalog
   virtual std::string_view name() const = 0;
+
+  /// \brief Create a namespace with associated properties.
+  ///
+  /// \param ns the namespace to create
+  /// \param properties a key-value map of metadata for the namespace
+  /// \return Status::OK if created successfully;
+  ///         ErrorKind::kAlreadyExists if the namespace already exists;
+  ///         ErrorKind::kNotSupported if the operation is not supported
+  virtual Status CreateNamespace(
+      const Namespace& ns,
+      const std::unordered_map<std::string, std::string>& properties) = 0;
+
+  /// \brief List child namespaces from the given namespace.
+  ///
+  /// \param ns the parent namespace
+  /// \return a list of child namespaces;
+  ///         ErrorKind::kNoSuchNamespace if the given namespace does not exist
+  virtual Result<std::vector<Namespace>> ListNamespaces(const Namespace& ns) const = 0;
+
+  /// \brief Get metadata properties for a namespace.
+  ///
+  /// \param ns the namespace to look up
+  /// \return a key-value map of metadata properties;
+  ///         ErrorKind::kNoSuchNamespace if the namespace does not exist
+  virtual Result<std::unordered_map<std::string, std::string>> GetNamespaceProperties(
+      const Namespace& ns) const = 0;
+
+  /// \brief Drop a namespace.
+  ///
+  /// \param ns the namespace to drop
+  /// \return Status::OK if dropped successfully;
+  ///         ErrorKind::kNoSuchNamespace if the namespace does not exist;
+  ///         ErrorKind::kNotAllowed if the namespace is not empty
+  virtual Status DropNamespace(const Namespace& ns) = 0;
+
+  /// \brief Check whether the namespace exists.
+  ///
+  /// \param ns the namespace to check
+  /// \return true if the namespace exists, false otherwise
+  virtual Result<bool> NamespaceExists(const Namespace& ns) const = 0;
+
+  /// \brief Set metadata properties on a namespace.
+  ///
+  /// \param ns the namespace to modify
+  /// \param properties the properties to set or update
+  /// \return Status::OK if updated successfully;
+  ///         ErrorKind::kNoSuchNamespace if the namespace does not exist;
+  ///         ErrorKind::kNotSupported if the operation is not supported
+  virtual Status SetNamespaceProperties(
+      const Namespace& ns,
+      const std::unordered_map<std::string, std::string>& properties) = 0;
+
+  /// \brief Remove a set of metadata properties from a namespace.
+  ///
+  /// \param ns the namespace to modify
+  /// \param properties the set of property keys to remove
+  /// \return Status::OK if removed successfully;
+  ///         ErrorKind::kNoSuchNamespace if the namespace does not exist;
+  ///         ErrorKind::kNotSupported if the operation is not supported
+  virtual Status RemoveNamespaceProperties(
+      const Namespace& ns, const std::unordered_set<std::string>& properties) = 0;
 
   /// \brief Return all the identifiers under this namespace
   ///
@@ -80,8 +142,8 @@ class ICEBERG_EXPORT Catalog {
   /// \param spec a partition spec
   /// \param location a location for the table; leave empty if unspecified
   /// \param properties a string map of table properties
-  /// \return a Transaction to create the table or ErrorKind::kAlreadyExists if the table
-  /// already exists
+  /// \return a Transaction to create the table or ErrorKind::kAlreadyExists if the
+  /// table already exists
   virtual Result<std::shared_ptr<Transaction>> StageCreateTable(
       const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
       const std::string& location,
@@ -91,8 +153,8 @@ class ICEBERG_EXPORT Catalog {
   ///
   /// \param identifier a table identifier
   /// \return Result<bool> indicating table exists or not.
-  ///         - On success, the table existence was successfully checked (actual existence
-  ///         may be inferred elsewhere).
+  ///         - On success, the table existence was successfully checked (actual
+  ///         existence may be inferred elsewhere).
   ///         - On failure, contains error information.
   virtual Result<bool> TableExists(const TableIdentifier& identifier) const = 0;
 
