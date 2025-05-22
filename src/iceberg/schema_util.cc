@@ -36,7 +36,8 @@ namespace {
 
 Status ValidateSchemaEvolution(const Type& expected_type, const Type& source_type) {
   if (expected_type.is_nested()) {
-    // Nested type requires identical type ids.
+    // Nested type requires identical type ids but their sub-fields are checked
+    // recursively and individually.
     if (source_type.type_id() != expected_type.type_id()) {
       return NotSupported("Cannot read {} from {}", expected_type, source_type);
     }
