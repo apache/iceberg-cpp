@@ -138,10 +138,9 @@ Result<FieldProjection> ProjectNested(const Type& expected_type, const Type& sou
 
     if (auto iter = source_field_map.find(field_id); iter != source_field_map.cend()) {
       if (expected_field.type()->is_nested()) {
-        ICEBERG_ASSIGN_OR_RAISE(auto nested_projection,
+        ICEBERG_ASSIGN_OR_RAISE(child_projection,
                                 ProjectNested(*expected_field.type(),
                                               *iter->second.field->type(), prune_source));
-        child_projection.children.emplace_back(std::move(nested_projection));
       } else {
         ICEBERG_RETURN_UNEXPECTED(
             ValidateSchemaEvolution(*expected_field.type(), *iter->second.field->type()));

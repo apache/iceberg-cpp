@@ -36,8 +36,7 @@ struct ICEBERG_EXPORT FieldProjection {
   /// \brief How the field is projected.
   enum class Kind {
     /// \brief The field is projected from the source with possible conversion for
-    /// supported
-    /// schema evolution.
+    /// supported schema evolution.
     kProjected,
     /// \brief Metadata column whose value is generated on demand.
     kMetadata,
@@ -84,8 +83,11 @@ struct ICEBERG_EXPORT SchemaProjection {
 ///
 /// \param expected_schema The expected schema.
 /// \param source_schema The source schema.
-/// \param prune_source Whether to prune the source schema. If true, the source
-/// schema will be pruned to match the expected schema.
+/// \param prune_source Whether the source schema can be pruned to project the expected
+/// schema on it. For example, literally a Parquet reader implementation is capable of
+/// column pruning, so `prune_source` is set to true in this case such that the `from`
+/// field in `FieldProjection` exactly reflects the position (relative to its nesting
+/// level) to get the column value from the reader.
 /// \return The projection result.
 ICEBERG_EXPORT Result<SchemaProjection> Project(const Schema& expected_schema,
                                                 const Schema& source_schema,
