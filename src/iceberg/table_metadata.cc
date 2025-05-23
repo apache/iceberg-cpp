@@ -21,7 +21,6 @@
 
 #include <zlib.h>
 
-#include <array>
 #include <format>
 #include <string>
 
@@ -155,40 +154,68 @@ Result<MetadataFileCodecType> TableMetadataUtil::CodecFromFileName(
   return MetadataFileCodecType::kNone;
 }
 
-Result<std::string> DecompressGZIPFile(const std::string& filepath) {
-  gzFile file = gzopen(filepath.c_str(), "rb");
-  if (!file) {
-    return IOError("Failed to open gzip file:{} ", filepath);
+class GZipDecompressor {
+ public:
+  GZipDecompressor() { memset(&stream_, 0, sizeof(stream_)); }
+
+  ~GZipDecompressor() {
+    if (initialized_) {
+      inflateEnd(&stream_);
+    }
   }
 
-  static const int CHUNK_SIZE = 32768;  // 32KB chunks
-  std::array<char, CHUNK_SIZE> buffer;
-  std::string result;
-  int bytes_read;
-
-  while ((bytes_read = gzread(file, buffer.data(), CHUNK_SIZE)) > 0) {
-    result.append(buffer.data(), bytes_read);
+  Status Init() {
+    int ret = inflateInit2(&stream_, 15 + 32);
+    if (ret != Z_OK) {
+      return IOError("inflateInit2 failed, result:{}", ret);
+    }
+    initialized_ = true;
+    return {};
   }
 
-  int err;
-  const char* error_msg = gzerror(file, &err);
-  if (err != Z_OK) {
-    gzclose(file);
-    return IOError("Error during gzip decompression:{} ", std::string(error_msg));
+  Result<std::string> Decompress(const std::string& compressed_data) {
+    if (compressed_data.empty()) {
+      return {};
+    }
+    if (!initialized_) {
+      ICEBERG_RETURN_UNEXPECTED(Init());
+    }
+    stream_.avail_in = static_cast<uInt>(compressed_data.size());
+    stream_.next_in = reinterpret_cast<Bytef*>(const_cast<char*>(compressed_data.data()));
+
+    // TODO(xiao.dong) magic buffer, can we get a estimated size from compressed data?
+    std::vector<char> outBuffer(32 * 1024);
+    std::string result;
+    int ret = 0;
+    do {
+      outBuffer.resize(outBuffer.size());
+      stream_.avail_out = static_cast<uInt>(outBuffer.size());
+      stream_.next_out = reinterpret_cast<Bytef*>(outBuffer.data());
+      ret = inflate(&stream_, Z_NO_FLUSH);
+      if (ret != Z_OK && ret != Z_STREAM_END) {
+        return IOError("inflate failed, result:{}", ret);
+      }
+      result.append(outBuffer.data(), outBuffer.size() - stream_.avail_out);
+    } while (ret != Z_STREAM_END);
+    return result;
   }
 
-  gzclose(file);
-  return result;
-}
+ private:
+  bool initialized_ = false;
+  z_stream stream_;
+};
 
 Result<std::unique_ptr<TableMetadata>> TableMetadataUtil::Read(
     FileIO& io, const std::string& location, std::optional<size_t> length) {
   ICEBERG_ASSIGN_OR_RAISE(auto codec_type, CodecFromFileName(location));
-  std::string content;
+
+  ICEBERG_ASSIGN_OR_RAISE(auto content, io.ReadFile(location, length));
   if (codec_type == MetadataFileCodecType::kGzip) {
-    ICEBERG_ASSIGN_OR_RAISE(content, DecompressGZIPFile(location));
-  } else {
-    ICEBERG_ASSIGN_OR_RAISE(content, io.ReadFile(location, length));
+    auto gzip_decompressor = std::make_unique<GZipDecompressor>();
+    ICEBERG_RETURN_UNEXPECTED(gzip_decompressor->Init());
+    auto result = gzip_decompressor->Decompress(content);
+    ICEBERG_RETURN_UNEXPECTED(result);
+    content = result.value();
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(content));
