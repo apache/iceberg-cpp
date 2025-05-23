@@ -25,6 +25,8 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/avro/avro_schema_util_internal.h"
+#include "iceberg/metadata_columns.h"
+#include "iceberg/schema.h"
 #include "matchers.h"
 
 namespace iceberg::avro {
@@ -513,6 +515,558 @@ TEST(HasIdVisitorTest, ArrayBackedMapWithPartialIds) {
   EXPECT_THAT(visitor.Visit(::avro::compileJsonSchemaFromString(schema_json)), IsOk());
   EXPECT_FALSE(visitor.HasNoIds());
   EXPECT_FALSE(visitor.AllHaveIds());
+}
+
+TEST(AvroSchemaProjectionTest, ProjectIdenticalSchemas) {
+  // Create an iceberg schema
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeOptional(/*field_id=*/2, "name", std::make_shared<StringType>()),
+      SchemaField::MakeOptional(/*field_id=*/3, "age", std::make_shared<IntType>()),
+      SchemaField::MakeRequired(/*field_id=*/4, "data", std::make_shared<DoubleType>()),
+  });
+
+  // Create equivalent avro schema
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "id", "type": "long", "field-id": 1},
+      {"name": "name", "type": ["null", "string"], "field-id": 2},
+      {"name": "age", "type": ["null", "int"], "field-id": 3},
+      {"name": "data", "type": "double", "field-id": 4}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 4);
+  for (size_t i = 0; i < projection.fields.size(); ++i) {
+    ASSERT_EQ(projection.fields[i].kind, FieldProjection::Kind::kProjected);
+    ASSERT_EQ(std::get<1>(projection.fields[i].from), i);
+  }
+}
+
+TEST(AvroSchemaProjectionTest, ProjectSubsetSchema) {
+  // Create a subset iceberg schema
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeOptional(/*field_id=*/3, "age", std::make_shared<IntType>()),
+  });
+
+  // Create full avro schema
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "id", "type": "long", "field-id": 1},
+      {"name": "name", "type": ["null", "string"], "field-id": 2},
+      {"name": "age", "type": ["null", "int"], "field-id": 3},
+      {"name": "data", "type": "double", "field-id": 4}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 2);
+  ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
+  ASSERT_EQ(projection.fields[1].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[1].from), 2);
+}
+
+TEST(AvroSchemaProjectionTest, ProjectWithPruning) {
+  // Create a subset iceberg schema
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeOptional(/*field_id=*/3, "age", std::make_shared<IntType>()),
+  });
+
+  // Create full avro schema
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "id", "type": "long", "field-id": 1},
+      {"name": "name", "type": ["null", "string"], "field-id": 2},
+      {"name": "age", "type": ["null", "int"], "field-id": 3},
+      {"name": "data", "type": "double", "field-id": 4}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/true);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 2);
+  ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
+  ASSERT_EQ(projection.fields[1].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[1].from), 1);
+}
+
+TEST(AvroSchemaProjectionTest, ProjectMissingOptionalField) {
+  // Create iceberg schema with an extra optional field
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeOptional(/*field_id=*/2, "name", std::make_shared<StringType>()),
+      SchemaField::MakeOptional(/*field_id=*/10, "extra", std::make_shared<StringType>()),
+  });
+
+  // Create avro schema without the extra field
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "id", "type": "long", "field-id": 1},
+      {"name": "name", "type": ["null", "string"], "field-id": 2}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 3);
+  ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
+  ASSERT_EQ(projection.fields[1].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[1].from), 1);
+  ASSERT_EQ(projection.fields[2].kind, FieldProjection::Kind::kNull);
+}
+
+TEST(AvroSchemaProjectionTest, ProjectMissingRequiredField) {
+  // Create iceberg schema with a required field that's missing from the avro schema
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeOptional(/*field_id=*/2, "name", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(/*field_id=*/10, "extra", std::make_shared<StringType>()),
+  });
+
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "id", "type": "long", "field-id": 1},
+      {"name": "name", "type": ["null", "string"], "field-id": 2}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsError(ErrorKind::kInvalidSchema));
+  ASSERT_THAT(projection_result, HasErrorMessage("Missing required field"));
+}
+
+TEST(AvroSchemaProjectionTest, ProjectMetadataColumn) {
+  // Create iceberg schema with a metadata column
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+      MetadataColumns::kFilePath,
+  });
+
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "id", "type": "long", "field-id": 1}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 2);
+  ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
+  ASSERT_EQ(projection.fields[1].kind, FieldProjection::Kind::kMetadata);
+}
+
+TEST(AvroSchemaProjectionTest, ProjectSchemaEvolutionIntToLong) {
+  // Create iceberg schema expecting a long
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+  });
+
+  // Create avro schema with an int
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "id", "type": "int", "field-id": 1}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 1);
+  ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
+}
+
+TEST(AvroSchemaProjectionTest, ProjectSchemaEvolutionFloatToDouble) {
+  // Create iceberg schema expecting a double
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "value", std::make_shared<DoubleType>()),
+  });
+
+  // Create avro schema with a float
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "value", "type": "float", "field-id": 1}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 1);
+  ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
+}
+
+TEST(AvroSchemaProjectionTest, ProjectSchemaEvolutionIncompatibleTypes) {
+  // Create iceberg schema expecting an int
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "value", std::make_shared<IntType>()),
+  });
+
+  // Create avro schema with a string
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "value", "type": "string", "field-id": 1}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsError(ErrorKind::kInvalidSchema));
+  ASSERT_THAT(projection_result, HasErrorMessage("Cannot read"));
+}
+
+TEST(AvroSchemaProjectionTest, ProjectNestedStructures) {
+  // Create iceberg schema with nested struct
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeOptional(
+          /*field_id=*/3, "address",
+          std::make_shared<StructType>(std::vector<SchemaField>{
+              SchemaField::MakeOptional(/*field_id=*/101, "street",
+                                        std::make_shared<StringType>()),
+              SchemaField::MakeOptional(/*field_id=*/102, "city",
+                                        std::make_shared<StringType>()),
+          })),
+  });
+
+  // Create equivalent avro schema
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "id", "type": "long", "field-id": 1},
+      {"name": "address", "type": ["null", {
+        "type": "record",
+        "name": "address_record",
+        "fields": [
+          {"name": "street", "type": ["null", "string"], "field-id": 101},
+          {"name": "city", "type": ["null", "string"], "field-id": 102}
+        ]
+      }], "field-id": 3}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/true);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 2);
+  ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
+  ASSERT_EQ(projection.fields[1].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[1].from), 1);
+
+  // Verify struct field has children correctly mapped
+  ASSERT_EQ(projection.fields[1].children.size(), 2);
+  ASSERT_EQ(projection.fields[1].children[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[1].children[0].from), 0);
+  ASSERT_EQ(projection.fields[1].children[1].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[1].children[1].from), 1);
+}
+
+TEST(AvroSchemaProjectionTest, ProjectListType) {
+  // Create iceberg schema with a list
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeOptional(
+          /*field_id=*/2, "numbers",
+          std::make_shared<ListType>(SchemaField::MakeOptional(
+              /*field_id=*/101, "element", std::make_shared<IntType>()))),
+  });
+
+  // Create equivalent avro schema
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "id", "type": "long", "field-id": 1},
+      {"name": "numbers", "type": ["null", {
+        "type": "array",
+        "items": ["null", "int"],
+        "element-id": 101
+      }], "field-id": 2}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 2);
+  ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
+  ASSERT_EQ(projection.fields[1].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[1].from), 1);
+}
+
+TEST(AvroSchemaProjectionTest, ProjectMapType) {
+  // Create iceberg schema with a string->int map
+  Schema expected_schema({
+      SchemaField::MakeOptional(
+          /*field_id=*/1, "counts",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(/*field_id=*/101, "key",
+                                        std::make_shared<StringType>()),
+              SchemaField::MakeOptional(/*field_id=*/102, "value",
+                                        std::make_shared<IntType>()))),
+  });
+
+  // Create equivalent avro schema
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "counts", "type": ["null", {
+        "type": "map",
+        "values": ["null", "int"],
+        "key-id": 101,
+        "value-id": 102
+      }], "field-id": 1}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 1);
+  ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
+  ASSERT_EQ(projection.fields[0].children.size(), 2);
+}
+
+TEST(AvroSchemaProjectionTest, ProjectMapTypeWithNonStringKey) {
+  // Create iceberg schema with an int->string map
+  Schema expected_schema({
+      SchemaField::MakeOptional(
+          /*field_id=*/1, "counts",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(/*field_id=*/101, "key",
+                                        std::make_shared<IntType>()),
+              SchemaField::MakeOptional(/*field_id=*/102, "value",
+                                        std::make_shared<StringType>()))),
+  });
+
+  // Create equivalent avro schema (using array-backed map for non-string keys)
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "counts", "type": ["null", {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "key_value",
+          "fields": [
+            {"name": "key", "type": "int", "field-id": 101},
+            {"name": "value", "type": ["null", "string"], "field-id": 102}
+          ]
+        },
+        "logicalType": "map"
+      }], "field-id": 1}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 1);
+  ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
+  ASSERT_EQ(projection.fields[0].children.size(), 2);
+}
+
+TEST(AvroSchemaProjectionTest, ProjectListOfStruct) {
+  // Create iceberg schema with list of struct
+  Schema expected_schema({
+      SchemaField::MakeOptional(
+          /*field_id=*/1, "items",
+          std::make_shared<ListType>(SchemaField::MakeOptional(
+              /*field_id=*/101, "element",
+              std::make_shared<StructType>(std::vector<SchemaField>{
+                  SchemaField::MakeOptional(/*field_id=*/102, "x",
+                                            std::make_shared<IntType>()),
+                  SchemaField::MakeRequired(/*field_id=*/103, "y",
+                                            std::make_shared<StringType>()),
+              })))),
+  });
+
+  // Create equivalent avro schema
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {"name": "items", "type": ["null", {
+        "type": "array",
+        "items": ["null", {
+          "type": "record",
+          "name": "element_record",
+          "fields": [
+            {"name": "x", "type": ["null", "int"], "field-id": 102},
+            {"name": "y", "type": "string", "field-id": 103}
+          ]
+        }],
+        "element-id": 101
+      }], "field-id": 1}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 1);
+  ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
+
+  // Verify list element struct is properly projected
+  ASSERT_EQ(projection.fields[0].children.size(), 1);
+  const auto& element_proj = projection.fields[0].children[0];
+  ASSERT_EQ(element_proj.children.size(), 2);
+  ASSERT_EQ(element_proj.children[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(element_proj.children[0].from), 0);
+  ASSERT_EQ(element_proj.children[1].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(element_proj.children[1].from), 1);
+}
+
+TEST(AvroSchemaProjectionTest, ProjectDecimalType) {
+  // Create iceberg schema with decimal
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "value",
+                                std::make_shared<DecimalType>(18, 2)),
+  });
+
+  // Create avro schema with decimal
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {
+        "name": "value",
+        "type": {
+          "type": "fixed",
+          "name": "decimal_9_2",
+          "size": 4,
+          "logicalType": "decimal",
+          "precision": 9,
+          "scale": 2
+        },
+        "field-id": 1
+      }
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsOk());
+
+  const auto& projection = *projection_result;
+  ASSERT_EQ(projection.fields.size(), 1);
+  ASSERT_EQ(projection.fields[0].kind, FieldProjection::Kind::kProjected);
+  ASSERT_EQ(std::get<1>(projection.fields[0].from), 0);
+}
+
+TEST(AvroSchemaProjectionTest, ProjectDecimalIncompatible) {
+  // Create iceberg schema with decimal having different scale
+  Schema expected_schema({
+      SchemaField::MakeRequired(/*field_id=*/1, "value",
+                                std::make_shared<DecimalType>(18, 3)),
+  });
+
+  // Create avro schema with decimal
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "iceberg_schema",
+    "fields": [
+      {
+        "name": "value",
+        "type": {
+          "type": "fixed",
+          "name": "decimal_9_2",
+          "size": 4,
+          "logicalType": "decimal",
+          "precision": 9,
+          "scale": 2
+        },
+        "field-id": 1
+      }
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto projection_result =
+      Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
+  ASSERT_THAT(projection_result, IsError(ErrorKind::kInvalidSchema));
+  ASSERT_THAT(projection_result, HasErrorMessage("Cannot read"));
 }
 
 }  // namespace iceberg::avro
