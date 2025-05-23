@@ -21,6 +21,7 @@
 
 #include <zlib.h>
 
+#include <array>
 #include <format>
 #include <string>
 
@@ -160,13 +161,13 @@ Result<std::string> DecompressGZIPFile(const std::string& filepath) {
     return IOError("Failed to open gzip file:{} ", filepath);
   }
 
-  const int CHUNK_SIZE = 32768;  // 32KB chunks
-  char buffer[CHUNK_SIZE];
+  static const int CHUNK_SIZE = 32768;  // 32KB chunks
+  std::array<char, CHUNK_SIZE> buffer;
   std::string result;
   int bytes_read;
 
-  while ((bytes_read = gzread(file, buffer, CHUNK_SIZE)) > 0) {
-    result.append(buffer, bytes_read);
+  while ((bytes_read = gzread(file, buffer.data(), CHUNK_SIZE)) > 0) {
+    result.append(buffer.data(), bytes_read);
   }
 
   int err;
