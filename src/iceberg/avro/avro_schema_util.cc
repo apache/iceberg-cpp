@@ -31,6 +31,10 @@
 #include <avro/ValidSchema.hh>
 
 #include "iceberg/avro/avro_schema_util_internal.h"
+#include "iceberg/metadata_columns.h"
+#include "iceberg/schema.h"
+#include "iceberg/schema_util_internal.h"
+#include "iceberg/util/formatter.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/visit_type.h"
 
@@ -376,5 +380,398 @@ Status HasIdVisitor::Visit(const ::avro::ValidSchema& schema) {
 }
 
 Status HasIdVisitor::Visit(const ::avro::Schema& schema) { return Visit(schema.root()); }
+
+namespace {
+
+std::string ToString(const ::avro::NodePtr& node) {
+  std::stringstream ss;
+  ss << *node;
+  return ss.str();
+}
+
+std::string ToString(const ::avro::LogicalType& logical_type) {
+  std::stringstream ss;
+  logical_type.printJson(ss);
+  return ss.str();
+}
+
+std::string ToString(const ::avro::LogicalType::Type& logical_type) {
+  return ToString(::avro::LogicalType(logical_type));
+}
+
+bool HasLogicalType(const ::avro::NodePtr& node,
+                    ::avro::LogicalType::Type expected_type) {
+  return node->logicalType().type() == expected_type;
+}
+
+bool HasMapLogicalType(const ::avro::NodePtr& node) {
+  return node->logicalType().type() == ::avro::LogicalType::CUSTOM &&
+         node->logicalType().customLogicalType() != nullptr &&
+         node->logicalType().customLogicalType()->name() == "map";
+}
+
+std::optional<std::string> GetAdjustToUtc(const ::avro::NodePtr& node) {
+  if (node->customAttributes() == 0) {
+    return std::nullopt;
+  }
+  return node->customAttributesAt(0).getAttribute(std::string(kAdjustToUtcProp));
+}
+
+Result<int32_t> GetId(const ::avro::NodePtr& node, const std::string& attr_name,
+                      size_t field_idx) {
+  if (field_idx >= node->customAttributes()) {
+    return InvalidSchema("Field index {} exceeds available custom attributes {}",
+                         field_idx, node->customAttributes());
+  }
+
+  auto id_str = node->customAttributesAt(field_idx).getAttribute(attr_name);
+  if (!id_str.has_value()) {
+    return InvalidSchema("Missing avro attribute: {}", attr_name);
+  }
+
+  try {
+    return std::stoi(id_str.value());
+  } catch (const std::exception& e) {
+    return InvalidSchema("Invalid {}: {}", attr_name, id_str.value());
+  }
+}
+
+Result<int32_t> GetElementId(const ::avro::NodePtr& node) {
+  static const std::string kElementIdKey{kElementIdProp};
+  return GetId(node, kElementIdKey, /*field_idx=*/0);
+}
+
+Result<int32_t> GetKeyId(const ::avro::NodePtr& node) {
+  static const std::string kKeyIdKey{kKeyIdProp};
+  return GetId(node, kKeyIdKey, /*field_idx=*/0);
+}
+
+Result<int32_t> GetValueId(const ::avro::NodePtr& node) {
+  static const std::string kValueIdKey{kValueIdProp};
+  return GetId(node, kValueIdKey, /*field_idx=*/0);
+}
+
+Result<int32_t> GetFieldId(const ::avro::NodePtr& node, size_t field_idx) {
+  static const std::string kFieldIdKey{kFieldIdProp};
+  return GetId(node, kFieldIdKey, field_idx);
+}
+
+Status ValidateAvroSchemaEvolution(const Type& expected_type,
+                                   const ::avro::NodePtr& avro_node) {
+  switch (expected_type.type_id()) {
+    case TypeId::kBoolean:
+      if (avro_node->type() == ::avro::AVRO_BOOL) {
+        return {};
+      }
+      break;
+    case TypeId::kInt:
+      if (avro_node->type() == ::avro::AVRO_INT) {
+        return {};
+      }
+      break;
+    case TypeId::kLong:
+      if (avro_node->type() == ::avro::AVRO_LONG ||
+          avro_node->type() == ::avro::AVRO_INT) {
+        return {};
+      }
+      break;
+    case TypeId::kFloat:
+      if (avro_node->type() == ::avro::AVRO_FLOAT) {
+        return {};
+      }
+      break;
+    case TypeId::kDouble:
+      if (avro_node->type() == ::avro::AVRO_DOUBLE ||
+          avro_node->type() == ::avro::AVRO_FLOAT) {
+        return {};
+      }
+      break;
+    case TypeId::kDate:
+      if (avro_node->type() == ::avro::AVRO_INT &&
+          HasLogicalType(avro_node, ::avro::LogicalType::DATE)) {
+        return {};
+      }
+      break;
+    case TypeId::kTime:
+      if (avro_node->type() == ::avro::AVRO_LONG &&
+          HasLogicalType(avro_node, ::avro::LogicalType::TIME_MICROS)) {
+        return {};
+      }
+      break;
+    case TypeId::kTimestamp:
+      if (avro_node->type() == ::avro::AVRO_LONG &&
+          HasLogicalType(avro_node, ::avro::LogicalType::TIMESTAMP_MICROS) &&
+          GetAdjustToUtc(avro_node).value_or("false") == "true") {
+        return {};
+      }
+      break;
+    case TypeId::kTimestampTz:
+      if (avro_node->type() == ::avro::AVRO_LONG &&
+          HasLogicalType(avro_node, ::avro::LogicalType::TIMESTAMP_MICROS) &&
+          GetAdjustToUtc(avro_node).value_or("false") == "true") {
+        return {};
+      }
+      break;
+    case TypeId::kString:
+      if (avro_node->type() == ::avro::AVRO_STRING) {
+        return {};
+      }
+      break;
+    case TypeId::kDecimal:
+      if (avro_node->type() == ::avro::AVRO_FIXED &&
+          HasLogicalType(avro_node, ::avro::LogicalType::DECIMAL)) {
+        const auto& decimal_type =
+            internal::checked_cast<const DecimalType&>(expected_type);
+        const auto logical_type = avro_node->logicalType();
+        if (decimal_type.scale() == logical_type.scale() &&
+            decimal_type.precision() >= logical_type.precision()) {
+          return {};
+        }
+      }
+      break;
+    case TypeId::kUuid:
+      if (avro_node->type() == ::avro::AVRO_FIXED && avro_node->fixedSize() == 16 &&
+          HasLogicalType(avro_node, ::avro::LogicalType::UUID)) {
+        return {};
+      }
+      break;
+    case TypeId::kFixed:
+      if (avro_node->type() == ::avro::AVRO_FIXED &&
+          avro_node->fixedSize() ==
+              internal::checked_cast<const FixedType&>(expected_type).length()) {
+        return {};
+      }
+      break;
+    case TypeId::kBinary:
+      if (avro_node->type() == ::avro::AVRO_BYTES) {
+        return {};
+      }
+      break;
+    default:
+      break;
+  }
+
+  return InvalidSchema("Cannot read Iceberg type: {} from Avro type: {}", expected_type,
+                       ToString(avro_node));
+}
+
+// XXX: Result<::avro::NodePtr> leads to unresolved external symbol error on Windows.
+Result<std::shared_ptr<::avro::Node>> UnwrapUnion(const ::avro::NodePtr& node) {
+  if (node->type() != ::avro::AVRO_UNION) {
+    return node;
+  }
+  if (node->leaves() != 2) {
+    return InvalidSchema("Union type must have exactly two branches");
+  }
+  auto branch_0 = node->leafAt(0);
+  auto branch_1 = node->leafAt(1);
+  if (branch_0->type() == ::avro::AVRO_NULL) {
+    return branch_1;
+  }
+  if (branch_1->type() == ::avro::AVRO_NULL) {
+    return branch_0;
+  }
+  return InvalidSchema("Union type must have exactly one null branch, got {}",
+                       ToString(node));
+}
+
+// Forward declaration
+Result<FieldProjection> ProjectNested(const Type& expected_type,
+                                      const ::avro::NodePtr& avro_node,
+                                      bool prune_source);
+
+Result<FieldProjection> ProjectStruct(const StructType& struct_type,
+                                      const ::avro::NodePtr& avro_node,
+                                      bool prune_source) {
+  if (avro_node->type() != ::avro::AVRO_RECORD) {
+    return InvalidSchema("Expected AVRO_RECORD type, but got {}", ToString(avro_node));
+  }
+
+  const auto& expected_fields = struct_type.fields();
+
+  struct NodeInfo {
+    size_t local_index;
+    ::avro::NodePtr field_node;
+  };
+  std::unordered_map<int32_t, NodeInfo> node_info_map;
+  node_info_map.reserve(avro_node->leaves());
+
+  for (size_t i = 0; i < avro_node->leaves(); ++i) {
+    ICEBERG_ASSIGN_OR_RAISE(int32_t field_id, GetFieldId(avro_node, i));
+    ::avro::NodePtr field_node = avro_node->leafAt(i);
+    if (const auto [iter, inserted] = node_info_map.emplace(
+            std::piecewise_construct, std::forward_as_tuple(field_id),
+            std::forward_as_tuple(i, field_node));
+        !inserted) [[unlikely]] {
+      return InvalidSchema("Duplicate field id found in Avro schema: {}", field_id);
+    }
+  }
+
+  FieldProjection result;
+  result.children.reserve(expected_fields.size());
+
+  for (const auto& expected_field : expected_fields) {
+    int32_t field_id = expected_field.field_id();
+    FieldProjection child_projection;
+
+    if (auto iter = node_info_map.find(field_id); iter != node_info_map.cend()) {
+      ICEBERG_ASSIGN_OR_RAISE(auto field_node, UnwrapUnion(iter->second.field_node));
+      if (expected_field.type()->is_nested()) {
+        ICEBERG_ASSIGN_OR_RAISE(
+            child_projection,
+            ProjectNested(*expected_field.type(), field_node, prune_source));
+      } else {
+        ICEBERG_RETURN_UNEXPECTED(
+            ValidateAvroSchemaEvolution(*expected_field.type(), field_node));
+      }
+      child_projection.from = iter->second.local_index;
+      child_projection.kind = FieldProjection::Kind::kProjected;
+    } else if (MetadataColumns::IsMetadataColumn(field_id)) {
+      child_projection.kind = FieldProjection::Kind::kMetadata;
+    } else if (expected_field.optional()) {
+      child_projection.kind = FieldProjection::Kind::kNull;
+    } else {
+      return InvalidSchema("Missing required field with ID: {}", field_id);
+    }
+
+    result.children.emplace_back(std::move(child_projection));
+  }
+
+  if (prune_source) {
+    PruneFieldProjection(result);
+  }
+
+  return result;
+}
+
+Result<FieldProjection> ProjectList(const ListType& list_type,
+                                    const ::avro::NodePtr& avro_node, bool prune_source) {
+  if (avro_node->type() != ::avro::AVRO_ARRAY) {
+    return InvalidSchema("Expected AVRO_ARRAY type, but got {}", ToString(avro_node));
+  }
+  if (avro_node->leaves() != 1) {
+    return InvalidSchema("Array type must have exactly one node, got {}",
+                         avro_node->leaves());
+  }
+
+  const auto& expected_element_field = list_type.fields().back();
+  ICEBERG_ASSIGN_OR_RAISE(int32_t avro_element_id, GetElementId(avro_node));
+  if (expected_element_field.field_id() != avro_element_id) [[unlikely]] {
+    return InvalidSchema("element-id mismatch, expected {}, got {}",
+                         expected_element_field.field_id(), avro_element_id);
+  }
+
+  FieldProjection element_projection;
+  ICEBERG_ASSIGN_OR_RAISE(auto element_node, UnwrapUnion(avro_node->leafAt(0)));
+  if (expected_element_field.type()->is_nested()) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        element_projection,
+        ProjectNested(*expected_element_field.type(), element_node, prune_source));
+  } else {
+    ICEBERG_RETURN_UNEXPECTED(
+        ValidateAvroSchemaEvolution(*expected_element_field.type(), element_node));
+  }
+
+  FieldProjection result;
+  result.children.emplace_back(std::move(element_projection));
+  return result;
+}
+
+Result<FieldProjection> ProjectMap(const MapType& map_type,
+                                   const ::avro::NodePtr& avro_node, bool prune_source) {
+  const auto& expected_key_field = map_type.key();
+  const auto& expected_value_field = map_type.value();
+
+  FieldProjection result, key_projection, value_projection;
+  int32_t avro_key_id, avro_value_id;
+  ::avro::NodePtr map_node;
+
+  if (avro_node->type() == ::avro::AVRO_MAP) {
+    if (avro_node->leaves() != 2) {
+      return InvalidSchema("Map type must have exactly two nodes, got {}",
+                           avro_node->leaves());
+    }
+    map_node = avro_node;
+
+    ICEBERG_ASSIGN_OR_RAISE(avro_key_id, GetKeyId(avro_node));
+    ICEBERG_ASSIGN_OR_RAISE(avro_value_id, GetValueId(avro_node));
+  } else if (avro_node->type() == ::avro::AVRO_ARRAY && HasMapLogicalType(avro_node)) {
+    if (avro_node->leaves() != 1) {
+      return InvalidSchema("Array-backed map type must have exactly one node, got {}",
+                           avro_node->leaves());
+    }
+
+    map_node = avro_node->leafAt(0);
+    if (map_node->type() != ::avro::AVRO_RECORD || map_node->leaves() != 2) {
+      return InvalidSchema(
+          "Array-backed map type must have a record node with two fields");
+    }
+
+    ICEBERG_ASSIGN_OR_RAISE(avro_key_id, GetFieldId(map_node, 0));
+    ICEBERG_ASSIGN_OR_RAISE(avro_value_id, GetFieldId(map_node, 1));
+  } else {
+    return InvalidSchema("Expected a map type, but got Avro type {}",
+                         ToString(avro_node));
+  }
+
+  if (expected_key_field.field_id() != avro_key_id) {
+    return InvalidSchema("key-id mismatch, expected {}, got {}",
+                         expected_key_field.field_id(), avro_key_id);
+  }
+  if (expected_value_field.field_id() != avro_value_id) {
+    return InvalidSchema("value-id mismatch, expected {}, got {}",
+                         expected_value_field.field_id(), avro_value_id);
+  }
+
+  for (size_t i = 0; i < map_node->leaves(); ++i) {
+    FieldProjection sub_projection;
+    ICEBERG_ASSIGN_OR_RAISE(auto sub_node, UnwrapUnion(map_node->leafAt(i)));
+    const auto& expected_sub_field = map_type.fields()[i];
+    if (expected_sub_field.type()->is_nested()) {
+      ICEBERG_ASSIGN_OR_RAISE(sub_projection, ProjectNested(*expected_sub_field.type(),
+                                                            sub_node, prune_source));
+    } else {
+      ICEBERG_RETURN_UNEXPECTED(
+          ValidateAvroSchemaEvolution(*expected_sub_field.type(), sub_node));
+    }
+    sub_projection.kind = FieldProjection::Kind::kProjected;
+    sub_projection.from = i;
+    result.children.emplace_back(std::move(sub_projection));
+  }
+
+  return result;
+}
+
+Result<FieldProjection> ProjectNested(const Type& expected_type,
+                                      const ::avro::NodePtr& avro_node,
+                                      bool prune_source) {
+  if (!expected_type.is_nested()) {
+    return InvalidSchema("Expected a nested type, but got {}", expected_type);
+  }
+
+  switch (expected_type.type_id()) {
+    case TypeId::kStruct:
+      return ProjectStruct(internal::checked_cast<const StructType&>(expected_type),
+                           avro_node, prune_source);
+    case TypeId::kList:
+      return ProjectList(internal::checked_cast<const ListType&>(expected_type),
+                         avro_node, prune_source);
+    case TypeId::kMap:
+      return ProjectMap(internal::checked_cast<const MapType&>(expected_type), avro_node,
+                        prune_source);
+    default:
+      return InvalidSchema("Unsupported nested type: {}", expected_type);
+  }
+}
+
+}  // namespace
+
+Result<SchemaProjection> Project(const Schema& expected_schema,
+                                 const ::avro::NodePtr& avro_node, bool prune_source) {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto field_projection,
+      ProjectNested(static_cast<const Type&>(expected_schema), avro_node, prune_source));
+  return SchemaProjection{std::move(field_projection.children)};
+}
 
 }  // namespace iceberg::avro

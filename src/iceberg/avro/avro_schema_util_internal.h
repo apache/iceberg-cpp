@@ -24,6 +24,7 @@
 #include <avro/Node.hh>
 
 #include "iceberg/result.h"
+#include "iceberg/schema_util.h"
 #include "iceberg/type.h"
 
 namespace avro {
@@ -120,5 +121,18 @@ class HasIdVisitor {
   // Number of fields with IDs.
   size_t fields_with_id_ = 0;
 };
+
+/// \brief Project an Iceberg Schema onto an Avro NodePtr.
+///
+/// This function creates a projection from an Iceberg Schema to an Avro schema node.
+/// The projection determines how to read data from the Avro schema into the expected
+/// Iceberg Schema.
+///
+/// \param expected_schema The Iceberg Schema that defines the expected structure.
+/// \param avro_node The Avro node to read data from.
+/// \param prune_source Whether the source schema can be pruned.
+/// \return The schema projection result.
+Result<SchemaProjection> Project(const Schema& expected_schema,
+                                 const ::avro::NodePtr& avro_node, bool prune_source);
 
 }  // namespace iceberg::avro
