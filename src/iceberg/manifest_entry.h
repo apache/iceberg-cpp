@@ -56,33 +56,19 @@ ICEBERG_EXPORT constexpr Result<ManifestStatus> ManifestStatusFromInt(
   }
 }
 
-enum class DataFileContent {
-  kData = 0,
-  kPositionDeletes = 1,
-  kEqualityDeletes = 2,
-};
-
-/// \brief Get the relative data file content type from int
-ICEBERG_EXPORT constexpr Result<DataFileContent> DataFileContentFromInt(
-    int content) noexcept {
-  switch (content) {
-    case 0:
-      return DataFileContent::kData;
-    case 1:
-      return DataFileContent::kPositionDeletes;
-    case 2:
-      return DataFileContent::kEqualityDeletes;
-    default:
-      return InvalidArgument("Invalid data file content: {}", content);
-  }
-}
-
 /// \brief DataFile carries data file path, partition tuple, metrics, ...
 struct ICEBERG_EXPORT DataFile {
+  /// \brief Content of a data file
+  enum class Content {
+    kData = 0,
+    kPositionDeletes = 1,
+    kEqualityDeletes = 2,
+  };
+
   /// Field id: 134
   /// Type of content stored by the data file: data, equality deletes, or position
   /// deletes (all v1 files are data files)
-  DataFileContent content;
+  Content content;
   /// Field id: 100
   /// Full URI for the file with FS scheme
   std::string file_path;
@@ -321,5 +307,20 @@ struct ICEBERG_EXPORT ManifestEntry {
   static std::shared_ptr<StructType> TypeFromDataFileType(
       std::shared_ptr<StructType> datafile_type);
 };
+
+/// \brief Get the relative data file content type from int
+ICEBERG_EXPORT constexpr Result<DataFile::Content> DataFileContentFromInt(
+    int content) noexcept {
+  switch (content) {
+    case 0:
+      return DataFile::Content::kData;
+    case 1:
+      return DataFile::Content::kPositionDeletes;
+    case 2:
+      return DataFile::Content::kEqualityDeletes;
+    default:
+      return InvalidArgument("Invalid data file content: {}", content);
+  }
+}
 
 }  // namespace iceberg
