@@ -33,34 +33,6 @@
 
 namespace iceberg {
 
-/// \brief The type of files tracked by the manifest, either data or delete files; 0 for
-/// all v1 manifests
-enum class ManifestContent {
-  /// The manifest content is data.
-  kData = 0,
-  /// The manifest content is deletes.
-  kDeletes = 1,
-};
-
-/// \brief Get the relative manifest content type name
-ICEBERG_EXPORT constexpr std::string_view ManifestContentToString(
-    ManifestContent type) noexcept {
-  switch (type) {
-    case ManifestContent::kData:
-      return "data";
-    case ManifestContent::kDeletes:
-      return "deletes";
-  }
-}
-
-/// \brief Get the relative manifest content type from name
-ICEBERG_EXPORT constexpr Result<ManifestContent> ManifestContentFromString(
-    std::string_view str) noexcept {
-  if (str == "data") return ManifestContent::kData;
-  if (str == "deletes") return ManifestContent::kDeletes;
-  return InvalidArgument("Invalid manifest content type: {}", str);
-}
-
 /// \brief Field summary for partition field in the spec.
 ///
 /// Each field of this corresponds to a field in the manifest file's partition spec.
@@ -98,6 +70,15 @@ struct ICEBERG_EXPORT PartitionFieldSummary {
 
 /// \brief Entry in a manifest list.
 struct ICEBERG_EXPORT ManifestFile {
+  /// \brief The type of files tracked by the manifest, either data or delete files; 0 for
+  /// all v1 manifests
+  enum class Content {
+    /// The manifest content is data.
+    kData = 0,
+    /// The manifest content is deletes.
+    kDeletes = 1,
+  };
+
   /// Field id: 500
   /// Location of the manifest file
   std::string manifest_path;
@@ -111,7 +92,7 @@ struct ICEBERG_EXPORT ManifestFile {
   /// Field id: 517
   /// The type of files tracked by the manifest, either data or delete files; 0 for all v1
   /// manifests
-  ManifestContent content;
+  Content content;
   /// Field id: 515
   /// The sequence number when the manifest was added to the table; use 0 when reading v1
   /// manifest lists
@@ -231,5 +212,23 @@ struct ICEBERG_EXPORT ManifestList {
   /// Entries in a manifest list.
   std::vector<ManifestFile> entries;
 };
+
+/// \brief Get the relative manifest content type name
+ICEBERG_EXPORT constexpr std::string_view ToString(ManifestFile::Content type) noexcept {
+  switch (type) {
+    case ManifestFile::Content::kData:
+      return "data";
+    case ManifestFile::Content::kDeletes:
+      return "deletes";
+  }
+}
+
+/// \brief Get the relative manifest content type from name
+ICEBERG_EXPORT constexpr Result<ManifestFile::Content> ManifestFileContentFromString(
+    std::string_view str) noexcept {
+  if (str == "data") return ManifestFile::Content::kData;
+  if (str == "deletes") return ManifestFile::Content::kDeletes;
+  return InvalidArgument("Invalid manifest content type: {}", str);
+}
 
 }  // namespace iceberg
