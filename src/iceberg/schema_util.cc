@@ -20,12 +20,12 @@
 #include "iceberg/schema_util.h"
 
 #include <format>
-#include <map>
 #include <string_view>
 #include <unordered_map>
 
 #include "iceberg/metadata_columns.h"
 #include "iceberg/schema.h"
+#include "iceberg/schema_util_internal.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter_internal.h"
 #include "iceberg/util/macros.h"
@@ -76,25 +76,6 @@ Status ValidateSchemaEvolution(const Type& expected_type, const Type& source_typ
       break;
   }
   return NotSupported("Cannot read {} from {}", expected_type, source_type);
-}
-
-// Fix `from` field of `FieldProjection` to use pruned field index.
-void PruneFieldProjection(FieldProjection& field_projection) {
-  std::map<size_t, size_t> local_index_to_pruned_index;
-  for (const auto& child_projection : field_projection.children) {
-    if (child_projection.kind == FieldProjection::Kind::kProjected) {
-      local_index_to_pruned_index.emplace(std::get<1>(child_projection.from), 0);
-    }
-  }
-  for (size_t pruned_index = 0; auto& [_, value] : local_index_to_pruned_index) {
-    value = pruned_index++;
-  }
-  for (auto& child_projection : field_projection.children) {
-    if (child_projection.kind == FieldProjection::Kind::kProjected) {
-      child_projection.from =
-          local_index_to_pruned_index.at(std::get<1>(child_projection.from));
-    }
-  }
 }
 
 Result<FieldProjection> ProjectNested(const Type& expected_type, const Type& source_type,
