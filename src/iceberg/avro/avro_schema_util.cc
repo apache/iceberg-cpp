@@ -556,9 +556,10 @@ Status ValidateAvroSchemaEvolution(const Type& expected_type,
 }
 
 // XXX: Result<::avro::NodePtr> leads to unresolved external symbol error on Windows.
-Result<std::shared_ptr<::avro::Node>> UnwrapUnion(const ::avro::NodePtr& node) {
+Status UnwrapUnion(const ::avro::NodePtr& node, ::avro::NodePtr* result) {
   if (node->type() != ::avro::AVRO_UNION) {
-    return node;
+    *result = node;
+    return {};
   }
   if (node->leaves() != 2) {
     return InvalidSchema("Union type must have exactly two branches");
@@ -566,13 +567,14 @@ Result<std::shared_ptr<::avro::Node>> UnwrapUnion(const ::avro::NodePtr& node) {
   auto branch_0 = node->leafAt(0);
   auto branch_1 = node->leafAt(1);
   if (branch_0->type() == ::avro::AVRO_NULL) {
-    return branch_1;
+    *result = branch_1;
+  } else if (branch_1->type() == ::avro::AVRO_NULL) {
+    *result = branch_0;
+  } else {
+    return InvalidSchema("Union type must have exactly one null branch, got {}",
+                         ToString(node));
   }
-  if (branch_1->type() == ::avro::AVRO_NULL) {
-    return branch_0;
-  }
-  return InvalidSchema("Union type must have exactly one null branch, got {}",
-                       ToString(node));
+  return {};
 }
 
 // Forward declaration
@@ -615,7 +617,8 @@ Result<FieldProjection> ProjectStruct(const StructType& struct_type,
     FieldProjection child_projection;
 
     if (auto iter = node_info_map.find(field_id); iter != node_info_map.cend()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto field_node, UnwrapUnion(iter->second.field_node));
+      ::avro::NodePtr field_node;
+      ICEBERG_RETURN_UNEXPECTED(UnwrapUnion(iter->second.field_node, &field_node));
       if (expected_field.type()->is_nested()) {
         ICEBERG_ASSIGN_OR_RAISE(
             child_projection,
@@ -662,7 +665,8 @@ Result<FieldProjection> ProjectList(const ListType& list_type,
   }
 
   FieldProjection element_projection;
-  ICEBERG_ASSIGN_OR_RAISE(auto element_node, UnwrapUnion(avro_node->leafAt(0)));
+  ::avro::NodePtr element_node;
+  ICEBERG_RETURN_UNEXPECTED(UnwrapUnion(avro_node->leafAt(0), &element_node));
   if (expected_element_field.type()->is_nested()) {
     ICEBERG_ASSIGN_OR_RAISE(
         element_projection,
@@ -725,7 +729,8 @@ Result<FieldProjection> ProjectMap(const MapType& map_type,
 
   for (size_t i = 0; i < map_node->leaves(); ++i) {
     FieldProjection sub_projection;
-    ICEBERG_ASSIGN_OR_RAISE(auto sub_node, UnwrapUnion(map_node->leafAt(i)));
+    ::avro::NodePtr sub_node;
+    ICEBERG_RETURN_UNEXPECTED(UnwrapUnion(map_node->leafAt(i), &sub_node));
     const auto& expected_sub_field = map_type.fields()[i];
     if (expected_sub_field.type()->is_nested()) {
       ICEBERG_ASSIGN_OR_RAISE(sub_projection, ProjectNested(*expected_sub_field.type(),
