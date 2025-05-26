@@ -54,12 +54,9 @@ class ICEBERG_EXPORT InMemoryCatalog : public Catalog {
   Result<std::unordered_map<std::string, std::string>> GetNamespaceProperties(
       const Namespace& ns) const override;
 
-  Status SetNamespaceProperties(
-      const Namespace& ns,
-      const std::unordered_map<std::string, std::string>& properties) override;
-
-  Status RemoveNamespaceProperties(
-      const Namespace& ns, const std::unordered_set<std::string>& properties) override;
+  Status UpdateNamespaceProperties(
+      const Namespace& ns, const std::unordered_map<std::string, std::string>& updates,
+      const std::unordered_set<std::string>& removals) override;
 
   Result<std::vector<TableIdentifier>> ListTables(const Namespace& ns) const override;
 

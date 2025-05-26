@@ -83,26 +83,17 @@ class ICEBERG_EXPORT Catalog {
   /// \return true if the namespace exists, false otherwise
   virtual Result<bool> NamespaceExists(const Namespace& ns) const = 0;
 
-  /// \brief Set metadata properties on a namespace.
+  /// \brief Update a namespace's properties by applying additions and removals.
   ///
-  /// \param ns the namespace to modify
-  /// \param properties the properties to set or update
-  /// \return Status::OK if updated successfully;
+  /// \param ns the namespace to update
+  /// \param updates a set of properties to add or overwrite
+  /// \param removals a set of property keys to remove
+  /// \return Status::OK if the update is successful;
   ///         ErrorKind::kNoSuchNamespace if the namespace does not exist;
-  ///         ErrorKind::kNotSupported if the operation is not supported
-  virtual Status SetNamespaceProperties(
-      const Namespace& ns,
-      const std::unordered_map<std::string, std::string>& properties) = 0;
-
-  /// \brief Remove a set of metadata properties from a namespace.
-  ///
-  /// \param ns the namespace to modify
-  /// \param properties the set of property keys to remove
-  /// \return Status::OK if removed successfully;
-  ///         ErrorKind::kNoSuchNamespace if the namespace does not exist;
-  ///         ErrorKind::kNotSupported if the operation is not supported
-  virtual Status RemoveNamespaceProperties(
-      const Namespace& ns, const std::unordered_set<std::string>& properties) = 0;
+  ///         ErrorKind::kUnsupported if the operation is not supported
+  virtual Status UpdateNamespaceProperties(
+      const Namespace& ns, const std::unordered_map<std::string, std::string>& updates,
+      const std::unordered_set<std::string>& removals) = 0;
 
   /// \brief Return all the identifiers under this namespace
   ///

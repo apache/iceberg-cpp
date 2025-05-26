@@ -66,7 +66,8 @@ TEST_F(InMemoryCatalogTest, DropTable) {
 
 TEST_F(InMemoryCatalogTest, Namespace) {
   Namespace ns{.levels = {"n1", "n2"}};
-  std::unordered_map<std::string, std::string> properties = {{"prop1", "val1"}};
+  std::unordered_map<std::string, std::string> properties = {{"prop1", "val1"},
+                                                             {"prop2", "val2"}};
   EXPECT_THAT(catalog_->CreateNamespace(ns, properties), IsOk());
   EXPECT_THAT(catalog_->CreateNamespace(ns, properties),
               IsError(ErrorKind::kAlreadyExists));
@@ -82,11 +83,18 @@ TEST_F(InMemoryCatalogTest, Namespace) {
 
   auto propsRs = catalog_->GetNamespaceProperties(ns);
   EXPECT_THAT(propsRs, IsOk());
-  ASSERT_EQ(propsRs->size(), 1U);
+  ASSERT_EQ(propsRs->size(), 2U);
   ASSERT_EQ(propsRs.value().at("prop1"), "val1");
+  ASSERT_EQ(propsRs.value().at("prop2"), "val2");
 
-  EXPECT_THAT(catalog_->SetNamespaceProperties(ns, {{"prop2", "val2"}}), IsOk());
-  EXPECT_THAT(catalog_->RemoveNamespaceProperties(ns, {"prop2"}), IsOk());
+  EXPECT_THAT(catalog_->UpdateNamespaceProperties(
+                  ns, {{"prop2", "val2-updated"}, {"prop3", "val3"}}, {"prop1"}),
+              IsOk());
+  propsRs = catalog_->GetNamespaceProperties(ns);
+  EXPECT_THAT(propsRs, IsOk());
+  ASSERT_EQ(propsRs->size(), 2U);
+  ASSERT_EQ(propsRs.value().at("prop2"), "val2-updated");
+  ASSERT_EQ(propsRs.value().at("prop3"), "val3");
 }
 
 }  // namespace iceberg
