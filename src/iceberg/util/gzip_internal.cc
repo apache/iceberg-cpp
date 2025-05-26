@@ -39,11 +39,10 @@ class ZlibImpl {
 
   Status Init() {
     // Maximum window size
-    static int WINDOW_BITS = 15;
+    static int kWindowBits = 15;
     // Determine if this is libz or gzip from header.
-    static int DETECT_CODEC = 32;
-
-    int ret = inflateInit2(&stream_, WINDOW_BITS | DETECT_CODEC);
+    static int kDetectCodec = 32;
+    int ret = inflateInit2(&stream_, kWindowBits | kDetectCodec);
     if (ret != Z_OK) {
       return DecompressError("inflateInit2 failed, result:{}", ret);
     }
@@ -82,7 +81,7 @@ class ZlibImpl {
   z_stream stream_;
 };
 
-GZipDecompressor::GZipDecompressor() : zlib_impl_(std::make_shared<ZlibImpl>()) {}
+GZipDecompressor::GZipDecompressor() : zlib_impl_(std::make_unique<ZlibImpl>()) {}
 
 GZipDecompressor::~GZipDecompressor() = default;
 

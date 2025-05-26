@@ -39,7 +39,7 @@ class GZipDecompressor {
   Result<std::string> Decompress(const std::string& compressed_data);
 
  private:
-  std::shared_ptr<ZlibImpl> zlib_impl_;
+  std::unique_ptr<ZlibImpl> zlib_impl_;
 };
 
 }  // namespace iceberg
