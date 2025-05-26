@@ -21,6 +21,8 @@
 
 #include <zlib.h>
 
+#include <cstring>
+
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
