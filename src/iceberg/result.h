@@ -31,6 +31,7 @@ namespace iceberg {
 enum class ErrorKind {
   kAlreadyExists,
   kCommitStateUnknown,
+  kDataInvalid,
   kInvalidArgument,
   kInvalidExpression,
   kInvalidSchema,
@@ -65,14 +66,15 @@ using Status = Result<void>;
 /// \brief Macro to define error creation functions
 #define DEFINE_ERROR_FUNCTION(name)                                           \
   template <typename... Args>                                                 \
-  inline auto name(const std::format_string<Args...> fmt, Args&&... args)     \
-      -> unexpected<Error> {                                                  \
+  inline auto name(const std::format_string<Args...> fmt,                     \
+                   Args&&... args) -> unexpected<Error> {                     \
     return unexpected<Error>(                                                 \
         {ErrorKind::k##name, std::format(fmt, std::forward<Args>(args)...)}); \
   }
 
 DEFINE_ERROR_FUNCTION(AlreadyExists)
 DEFINE_ERROR_FUNCTION(CommitStateUnknown)
+DEFINE_ERROR_FUNCTION(DataInvalid)
 DEFINE_ERROR_FUNCTION(InvalidArgument)
 DEFINE_ERROR_FUNCTION(InvalidExpression)
 DEFINE_ERROR_FUNCTION(InvalidSchema)

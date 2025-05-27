@@ -38,6 +38,7 @@ set(ICEBERG_SOURCES
     sort_order.cc
     statistics_file.cc
     table_metadata.cc
+    table_scan.cc
     transform.cc
     transform_function.cc
     type.cc

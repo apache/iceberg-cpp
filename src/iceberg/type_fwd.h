@@ -91,6 +91,9 @@ class LocationProvider;
 class SortField;
 class SortOrder;
 class Table;
+class TableScan;
+struct FileScanTask;
+class TableScanBuilder;
 class Transaction;
 class Transform;
 class TransformFunction;
@@ -119,11 +122,12 @@ class MetadataUpdate;
 class UpdateRequirement;
 
 class AppendFiles;
-class TableScan;
 
 struct DataFile;
 struct ManifestEntry;
 struct ManifestFile;
+class ManifestReader;
 struct ManifestList;
+class ManifestListReader;
 
 }  // namespace iceberg
