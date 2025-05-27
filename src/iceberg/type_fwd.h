@@ -93,6 +93,7 @@ class SortOrder;
 class Table;
 class TableScan;
 struct FileScanTask;
+class FileIO;
 class TableScanBuilder;
 class Transaction;
 class Transform;
