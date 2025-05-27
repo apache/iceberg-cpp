@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include <string>
+
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
