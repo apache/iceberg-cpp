@@ -49,6 +49,14 @@ target_sources(catalog_test PRIVATE in_memory_catalog_test.cc)
 target_link_libraries(catalog_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
 add_test(NAME catalog_test COMMAND catalog_test)
 
+add_executable(table_test)
+target_include_directories(table_test PRIVATE "${CMAKE_BINARY_DIR}")
+target_sources(table_test PRIVATE table_test_helper.cc json_internal_test.cc table_test.cc
+                                  schema_json_test.cc)
+target_link_libraries(table_test PRIVATE iceberg_static GTest::gtest_main
+                                         GTest::gmock)
+add_test(NAME table_test COMMAND table_test)
+
 add_executable(expression_test)
 target_sources(expression_test PRIVATE expression_test.cc)
 target_link_libraries(expression_test PRIVATE iceberg_static GTest::gtest_main
@@ -57,7 +65,7 @@ add_test(NAME expression_test COMMAND expression_test)
 
 add_executable(json_serde_test)
 target_include_directories(json_serde_test PRIVATE "${CMAKE_BINARY_DIR}")
-target_sources(json_serde_test PRIVATE json_internal_test.cc metadata_serde_test.cc
+target_sources(json_serde_test PRIVATE table_test_helper.cc json_internal_test.cc metadata_serde_test.cc
                                        schema_json_test.cc)
 target_link_libraries(json_serde_test PRIVATE iceberg_static GTest::gtest_main
                                               GTest::gmock)

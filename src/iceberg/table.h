@@ -108,4 +108,85 @@ class ICEBERG_EXPORT Table {
   virtual std::unique_ptr<LocationProvider> location_provider() const = 0;
 };
 
+class ICEBERG_EXPORT BaseTable : public Table {
+ public:
+  virtual ~BaseTable() override = default;
+  BaseTable(std::string name, std::shared_ptr<TableMetadata> metadata);
+
+  const std::string& name() const override { return name_; }
+
+  const std::string& uuid() const override;
+
+  const std::shared_ptr<Schema>& schema() const override;
+
+  const std::unordered_map<int32_t, std::shared_ptr<Schema>>& schemas() const override;
+
+  const std::shared_ptr<PartitionSpec>& spec() const override;
+
+  const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs()
+      const override;
+
+  const std::shared_ptr<SortOrder>& sort_order() const override;
+
+  const std::unordered_map<int32_t, std::shared_ptr<SortOrder>>& sort_orders()
+      const override;
+
+  const std::unordered_map<std::string, std::string>& properties() const override;
+
+  const std::string& location() const override;
+
+  const std::shared_ptr<Snapshot>& current_snapshot() const override;
+
+  Result<std::shared_ptr<Snapshot>> snapshot(int64_t snapshot_id) const override;
+
+  const std::vector<std::shared_ptr<Snapshot>>& snapshots() const override;
+
+  const std::vector<std::shared_ptr<HistoryEntry>>& history() const override;
+
+ private:
+  void InitSchema() const;
+  void InitPartitionSpec() const;
+  void InitSortOrder() const;
+  void InitSnapshot() const;
+
+  const std::string name_;
+
+  mutable std::shared_ptr<Schema> schema_;
+  mutable std::unordered_map<int32_t, std::shared_ptr<Schema>> schemas_map_;
+
+  mutable std::shared_ptr<PartitionSpec> partition_spec_;
+  mutable std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> partition_spec_map_;
+
+  mutable std::shared_ptr<SortOrder> sort_order_;
+  mutable std::unordered_map<int32_t, std::shared_ptr<SortOrder>> sort_orders_map_;
+
+  mutable std::shared_ptr<Snapshot> current_snapshot_;
+  mutable std::unordered_map<int64_t, std::shared_ptr<Snapshot>> snapshots_map_;
+
+  std::shared_ptr<TableMetadata> metadata_;
+
+  // once_flags
+  mutable std::once_flag init_schema_once_;
+  mutable std::once_flag init_partition_spec_once_;
+  mutable std::once_flag init_sort_order_once_;
+  mutable std::once_flag init_snapshot_once_;
+};
+
+class ICEBERG_EXPORT StaticTable : public BaseTable {
+ public:
+  virtual ~StaticTable() override = default;
+  StaticTable(std::string name, std::shared_ptr<TableMetadata> metadata)
+      : BaseTable(std::move(name), std::move(metadata)) {}
+
+  Status Refresh() override;
+
+  std::unique_ptr<TableScan> NewScan() const override;
+
+  std::shared_ptr<AppendFiles> NewAppend() override;
+
+  std::unique_ptr<Transaction> NewTransaction() override;
+
+  std::unique_ptr<LocationProvider> location_provider() const override;
+};
+
 }  // namespace iceberg
