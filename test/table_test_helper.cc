@@ -23,6 +23,7 @@
 
 #include <filesystem>
 #include <fstream>
+#include <memory>
 #include <optional>
 #include <sstream>
 #include <string>
