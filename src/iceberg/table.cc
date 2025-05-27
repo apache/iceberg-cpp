@@ -146,7 +146,7 @@ const std::vector<std::shared_ptr<Snapshot>>& BaseTable::snapshots() const {
 }
 
 const std::vector<std::shared_ptr<HistoryEntry>>& BaseTable::history() const {
-  // TODO: Implement history retrieval
+  // TODO(lishuxu): Implement history retrieval
   throw IcebergError("history is not supported for BaseTable now");
 }
 
