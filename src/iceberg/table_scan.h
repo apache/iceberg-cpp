@@ -103,15 +103,15 @@ class ICEBERG_EXPORT TableScan {
 
 /// \brief Represents a task to scan a portion of a data file.
 struct ICEBERG_EXPORT FileScanTask {
-  std::string file_path_;                 ///< Path to the data file.
-  uint64_t start_;                        ///< Start byte offset.
-  uint64_t length_;                       ///< Length in bytes to scan.
-  std::optional<uint64_t> record_count_;  ///< Optional number of records.
-  DataFile::Content file_content_;        ///< Type of file content.
-  FileFormatType file_format_;            ///< Format of the data file.
-  std::shared_ptr<Schema> schema_;        ///< Projected schema.
-  std::vector<int32_t> field_ids_;        ///< Field IDs to project.
-  std::shared_ptr<Expression> filter_;    ///< Filter expression to apply.
+  std::string file_path;                 ///< Path to the data file.
+  uint64_t start;                        ///< Start byte offset.
+  uint64_t length;                       ///< Length in bytes to scan.
+  std::optional<uint64_t> record_count;  ///< Optional number of records.
+  DataFile::Content file_content;        ///< Type of file content.
+  FileFormatType file_format;            ///< Format of the data file.
+  std::shared_ptr<Schema> schema;        ///< Projected schema.
+  std::vector<int32_t> field_ids;        ///< Field IDs to project.
+  std::shared_ptr<Expression> filter;    ///< Filter expression to apply.
 };
 
 }  // namespace iceberg
