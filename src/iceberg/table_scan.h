@@ -82,7 +82,7 @@ class ICEBERG_EXPORT TableScan {
   ///
   /// Returns a list of file scan tasks if successful.
   /// \return A Result containing scan tasks or an error.
-  Result<std::vector<std::unique_ptr<FileScanTask>>> PlanFiles() const;
+  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const;
 
  private:
   /// \brief Creates a reader for the manifest list.

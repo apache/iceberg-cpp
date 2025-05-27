@@ -87,12 +87,12 @@ TableScan::TableScan(std::unique_ptr<ScanContext> context,
                      std::shared_ptr<FileIO> file_io)
     : context_(std::move(context)), file_io_(std::move(file_io)) {}
 
-Result<std::vector<std::unique_ptr<FileScanTask>>> TableScan::PlanFiles() const {
+Result<std::vector<std::shared_ptr<FileScanTask>>> TableScan::PlanFiles() const {
   ICEBERG_ASSIGN_OR_RAISE(auto manifest_list_reader,
                           CreateManifestListReader(context_->snapshot_->manifest_list));
   ICEBERG_ASSIGN_OR_RAISE(auto manifest_files, manifest_list_reader->Files());
 
-  std::vector<std::unique_ptr<FileScanTask>> tasks;
+  std::vector<std::shared_ptr<FileScanTask>> tasks;
   for (const auto& manifest_file : manifest_files) {
     ICEBERG_ASSIGN_OR_RAISE(auto manifest_reader,
                             CreateManifestReader(manifest_file->manifest_path));
@@ -100,7 +100,7 @@ Result<std::vector<std::unique_ptr<FileScanTask>>> TableScan::PlanFiles() const 
 
     for (const auto& manifest : manifests) {
       const auto& data_file = manifest->data_file;
-      tasks.emplace_back(std::make_unique<FileScanTask>(
+      tasks.emplace_back(std::make_shared<FileScanTask>(
           data_file.file_path, 0, data_file.file_size_in_bytes, data_file.record_count,
           data_file.content, data_file.file_format, context_->schema_,
           context_->field_ids_, context_->filter_));
