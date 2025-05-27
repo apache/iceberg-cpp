@@ -17,16 +17,12 @@
  * under the License.
  */
 
-#pragma once
-
 #include "table_test_helper.h"
 
 #include <filesystem>
 #include <fstream>
-#include <memory>
 #include <optional>
 #include <sstream>
-#include <string>
 
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
