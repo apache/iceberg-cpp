@@ -111,7 +111,7 @@ class ICEBERG_EXPORT Table {
 
 class ICEBERG_EXPORT BaseTable : public Table {
  public:
-  virtual ~BaseTable() override = default;
+  ~BaseTable() override = default;
   BaseTable(std::string name, std::shared_ptr<TableMetadata> metadata);
 
   const std::string& name() const override { return name_; }
@@ -175,7 +175,7 @@ class ICEBERG_EXPORT BaseTable : public Table {
 
 class ICEBERG_EXPORT StaticTable : public BaseTable {
  public:
-  virtual ~StaticTable() override = default;
+  ~StaticTable() override = default;
   StaticTable(std::string name, std::shared_ptr<TableMetadata> metadata)
       : BaseTable(std::move(name), std::move(metadata)) {}
 
