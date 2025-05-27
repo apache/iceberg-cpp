@@ -60,7 +60,7 @@ Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
       if (auto it = schemas.find(*snapshot->schema_id); it != schemas.end()) {
         return it->second;
       }
-      return DataInvalid("Schema {} in snapshot {} is not found", *snapshot->schema_id,
+      return InvalidData("Schema {} in snapshot {} is not found", *snapshot->schema_id,
                          snapshot->snapshot_id);
     }
     return table_.schema();
