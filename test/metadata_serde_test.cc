@@ -20,13 +20,11 @@
 #include <filesystem>
 #include <fstream>
 #include <optional>
-#include <sstream>
 #include <string>
 
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-#include "iceberg/json_internal.h"
 #include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
@@ -35,9 +33,9 @@
 #include "iceberg/sort_field.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_metadata.h"
-#include "iceberg/test/test_config.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
+#include "table_test_helper.h"
 
 namespace iceberg {
 
@@ -46,40 +44,14 @@ namespace {
 class MetadataSerdeTest : public ::testing::Test {
  protected:
   void SetUp() override {}
-
-  static std::string GetResourcePath(const std::string& file_name) {
-    return std::string(ICEBERG_TEST_RESOURCES) + "/" + file_name;
-  }
-
-  static void ReadJsonFile(const std::string& file_name, std::string* content) {
-    std::filesystem::path path{GetResourcePath(file_name)};
-    ASSERT_TRUE(std::filesystem::exists(path))
-        << "File does not exist: " << path.string();
-
-    std::ifstream file(path);
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    *content = buffer.str();
-  }
-
-  static void ReadTableMetadata(const std::string& file_name,
-                                std::unique_ptr<TableMetadata>* metadata) {
-    std::string json_content;
-    ReadJsonFile(file_name, &json_content);
-
-    nlohmann::json json = nlohmann::json::parse(json_content);
-    auto result = TableMetadataFromJson(json);
-    ASSERT_TRUE(result.has_value()) << "Failed to parse table metadata from " << file_name
-                                    << ": " << result.error().message;
-    *metadata = std::move(result.value());
-  }
 };
 
 }  // namespace
 
 TEST_F(MetadataSerdeTest, DeserializeV1Valid) {
   std::unique_ptr<TableMetadata> metadata;
-  ASSERT_NO_FATAL_FAILURE(ReadTableMetadata("TableMetadataV1Valid.json", &metadata));
+  ASSERT_NO_FATAL_FAILURE(
+      TableTestHelper::ReadTableMetadata("TableMetadataV1Valid.json", &metadata));
 
   EXPECT_EQ(metadata->format_version, 1);
   EXPECT_EQ(metadata->table_uuid, "d20125c8-7284-442c-9aea-15fee620737c");
@@ -116,7 +88,8 @@ TEST_F(MetadataSerdeTest, DeserializeV1Valid) {
 
 TEST_F(MetadataSerdeTest, DeserializeV2Valid) {
   std::unique_ptr<TableMetadata> metadata;
-  ASSERT_NO_FATAL_FAILURE(ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
+  ASSERT_NO_FATAL_FAILURE(
+      TableTestHelper::ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
 
   EXPECT_EQ(metadata->format_version, 2);
   EXPECT_EQ(metadata->table_uuid, "9c12d441-03fe-4693-9a96-a0705ddf69c1");
