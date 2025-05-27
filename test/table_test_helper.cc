@@ -1,5 +1,5 @@
 /*
-* Licensed to the Apache Software Foundation (ASF) under one
+ * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include "table_test_helper.h"
+
 #include <filesystem>
 #include <fstream>
 #include <optional>
@@ -30,35 +32,33 @@
 
 #include "iceberg/json_internal.h"
 #include "iceberg/test/test_config.h"
-#include "table_test_helper.h"
 
 namespace iceberg {
 
-  std::string TableTestHelper::GetResourcePath(const std::string& file_name) {
-    return std::string(ICEBERG_TEST_RESOURCES) + "/" + file_name;
-  }
+std::string TableTestHelper::GetResourcePath(const std::string& file_name) {
+  return std::string(ICEBERG_TEST_RESOURCES) + "/" + file_name;
+}
 
-  void TableTestHelper::ReadJsonFile(const std::string& file_name, std::string* content) {
-    std::filesystem::path path{GetResourcePath(file_name)};
-    ASSERT_TRUE(std::filesystem::exists(path))
-        << "File does not exist: " << path.string();
+void TableTestHelper::ReadJsonFile(const std::string& file_name, std::string* content) {
+  std::filesystem::path path{GetResourcePath(file_name)};
+  ASSERT_TRUE(std::filesystem::exists(path)) << "File does not exist: " << path.string();
 
-    std::ifstream file(path);
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    *content = buffer.str();
-  }
+  std::ifstream file(path);
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+  *content = buffer.str();
+}
 
-  void TableTestHelper::ReadTableMetadata(const std::string& file_name,
-                                std::unique_ptr<TableMetadata>* metadata) {
-    std::string json_content;
-    ReadJsonFile(file_name, &json_content);
+void TableTestHelper::ReadTableMetadata(const std::string& file_name,
+                                        std::unique_ptr<TableMetadata>* metadata) {
+  std::string json_content;
+  ReadJsonFile(file_name, &json_content);
 
-    nlohmann::json json = nlohmann::json::parse(json_content);
-    auto result = TableMetadataFromJson(json);
-    ASSERT_TRUE(result.has_value()) << "Failed to parse table metadata from " << file_name
-                                    << ": " << result.error().message;
-    *metadata = std::move(result.value());
-  }
+  nlohmann::json json = nlohmann::json::parse(json_content);
+  auto result = TableMetadataFromJson(json);
+  ASSERT_TRUE(result.has_value()) << "Failed to parse table metadata from " << file_name
+                                  << ": " << result.error().message;
+  *metadata = std::move(result.value());
+}
 
-}  // namespace
+}  // namespace iceberg

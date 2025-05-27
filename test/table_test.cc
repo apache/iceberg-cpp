@@ -17,6 +17,8 @@
  * under the License.
  */
 
+#include "iceberg/table.h"
+
 #include <filesystem>
 #include <fstream>
 #include <optional>
@@ -30,7 +32,6 @@
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
-#include "iceberg/table.h"
 #include "table_test_helper.h"
 
 namespace iceberg {
@@ -46,7 +47,8 @@ class TableTest : public ::testing::Test {
 
 TEST_F(TableTest, TableSchemaV1Test) {
   std::unique_ptr<TableMetadata> metadata;
-  ASSERT_NO_FATAL_FAILURE(TableTestHelper::ReadTableMetadata("TableMetadataV1Valid.json", &metadata));
+  ASSERT_NO_FATAL_FAILURE(
+      TableTestHelper::ReadTableMetadata("TableMetadataV1Valid.json", &metadata));
 
   StaticTable table("test_table_v1", std::move(metadata));
   ASSERT_EQ(table.name(), "test_table_v1");
@@ -75,7 +77,8 @@ TEST_F(TableTest, TableSchemaV1Test) {
 
 TEST_F(TableTest, TableSchemaV2Test) {
   std::unique_ptr<TableMetadata> metadata;
-  ASSERT_NO_FATAL_FAILURE(TableTestHelper::ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
+  ASSERT_NO_FATAL_FAILURE(
+      TableTestHelper::ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
 
   StaticTable table("test_table_v2", std::move(metadata));
   ASSERT_EQ(table.name(), "test_table_v2");
