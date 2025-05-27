@@ -39,9 +39,9 @@ class ZlibImpl {
 
   Status Init() {
     // Maximum window size
-    static int kWindowBits = 15;
+    constexpr int kWindowBits = 15;
     // Determine if this is libz or gzip from header.
-    static int kDetectCodec = 32;
+    constexpr int kDetectCodec = 32;
     int ret = inflateInit2(&stream_, kWindowBits | kDetectCodec);
     if (ret != Z_OK) {
       return DecompressError("inflateInit2 failed, result:{}", ret);

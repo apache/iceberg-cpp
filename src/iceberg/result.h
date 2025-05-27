@@ -31,6 +31,7 @@ namespace iceberg {
 enum class ErrorKind {
   kAlreadyExists,
   kCommitStateUnknown,
+  kDecompressError,
   kInvalidArgument,
   kInvalidExpression,
   kInvalidSchema,
@@ -38,7 +39,6 @@ enum class ErrorKind {
   kJsonParseError,
   kNoSuchNamespace,
   kNoSuchTable,
-  kDecompressError,
   kNotFound,
   kNotImplemented,
   kNotSupported,
@@ -74,6 +74,7 @@ using Status = Result<void>;
 
 DEFINE_ERROR_FUNCTION(AlreadyExists)
 DEFINE_ERROR_FUNCTION(CommitStateUnknown)
+DEFINE_ERROR_FUNCTION(DecompressError)
 DEFINE_ERROR_FUNCTION(InvalidArgument)
 DEFINE_ERROR_FUNCTION(InvalidExpression)
 DEFINE_ERROR_FUNCTION(InvalidSchema)
@@ -81,7 +82,6 @@ DEFINE_ERROR_FUNCTION(IOError)
 DEFINE_ERROR_FUNCTION(JsonParseError)
 DEFINE_ERROR_FUNCTION(NoSuchNamespace)
 DEFINE_ERROR_FUNCTION(NoSuchTable)
-DEFINE_ERROR_FUNCTION(DecompressError)
 DEFINE_ERROR_FUNCTION(NotFound)
 DEFINE_ERROR_FUNCTION(NotImplemented)
 DEFINE_ERROR_FUNCTION(NotSupported)
