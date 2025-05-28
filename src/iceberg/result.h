@@ -38,6 +38,7 @@ enum class ErrorKind {
   kJsonParseError,
   kNoSuchNamespace,
   kNoSuchTable,
+  kNotAllowed,
   kNotFound,
   kNotImplemented,
   kNotSupported,
@@ -80,6 +81,7 @@ DEFINE_ERROR_FUNCTION(IOError)
 DEFINE_ERROR_FUNCTION(JsonParseError)
 DEFINE_ERROR_FUNCTION(NoSuchNamespace)
 DEFINE_ERROR_FUNCTION(NoSuchTable)
+DEFINE_ERROR_FUNCTION(NotAllowed)
 DEFINE_ERROR_FUNCTION(NotFound)
 DEFINE_ERROR_FUNCTION(NotImplemented)
 DEFINE_ERROR_FUNCTION(NotSupported)
