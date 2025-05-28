@@ -32,39 +32,30 @@
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
-#include "table_test_helper.h"
+#include "test_common.h"
 
 namespace iceberg {
 
-namespace {
-
-class TableTest : public ::testing::Test {
- protected:
-  void SetUp() override {}
-};
-
-}  // namespace
-
-TEST_F(TableTest, TableSchemaV1Test) {
+TEST(TableTest, TableSchemaV1Test) {
   std::unique_ptr<TableMetadata> metadata;
   ASSERT_NO_FATAL_FAILURE(
-      TableTestHelper::ReadTableMetadata("TableMetadataV1Valid.json", &metadata));
+      test::ReadTableMetadata("TableMetadataV1Valid.json", &metadata));
 
   StaticTable table("test_table_v1", std::move(metadata));
   ASSERT_EQ(table.name(), "test_table_v1");
   auto schema = table.schema();
-  ASSERT_TRUE(schema != nullptr);
-  ASSERT_EQ(schema->fields().size(), 3);
+  ASSERT_TRUE(schema.has_value());
+  ASSERT_EQ(schema.value()->fields().size(), 3);
   auto schemas = table.schemas();
   ASSERT_TRUE(schemas.empty());
 
   auto spec = table.spec();
-  ASSERT_TRUE(spec != nullptr);
+  ASSERT_TRUE(spec.has_value());
   auto specs = table.specs();
   ASSERT_EQ(1UL, specs.size());
 
   auto sort_order = table.sort_order();
-  ASSERT_TRUE(sort_order != nullptr);
+  ASSERT_TRUE(sort_order.has_value());
   auto sort_orders = table.sort_orders();
   ASSERT_EQ(1UL, sort_orders.size());
 
@@ -75,26 +66,26 @@ TEST_F(TableTest, TableSchemaV1Test) {
   ASSERT_TRUE(snapshots.empty());
 }
 
-TEST_F(TableTest, TableSchemaV2Test) {
+TEST(TableTest, TableSchemaV2Test) {
   std::unique_ptr<TableMetadata> metadata;
   ASSERT_NO_FATAL_FAILURE(
-      TableTestHelper::ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
+      test::ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
 
   StaticTable table("test_table_v2", std::move(metadata));
   ASSERT_EQ(table.name(), "test_table_v2");
   auto schema = table.schema();
-  ASSERT_TRUE(schema != nullptr);
-  ASSERT_EQ(schema->fields().size(), 3);
+  ASSERT_TRUE(schema.has_value());
+  ASSERT_EQ(schema.value()->fields().size(), 3);
   auto schemas = table.schemas();
   ASSERT_FALSE(schemas.empty());
 
   auto spec = table.spec();
-  ASSERT_TRUE(spec != nullptr);
+  ASSERT_TRUE(spec.has_value());
   auto specs = table.specs();
   ASSERT_EQ(1UL, specs.size());
 
   auto sort_order = table.sort_order();
-  ASSERT_TRUE(sort_order != nullptr);
+  ASSERT_TRUE(sort_order.has_value());
   auto sort_orders = table.sort_orders();
   ASSERT_EQ(1UL, sort_orders.size());
 

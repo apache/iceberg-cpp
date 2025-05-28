@@ -35,7 +35,7 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
-#include "table_test_helper.h"
+#include "test_common.h"
 
 namespace iceberg {
 
@@ -51,7 +51,7 @@ class MetadataSerdeTest : public ::testing::Test {
 TEST_F(MetadataSerdeTest, DeserializeV1Valid) {
   std::unique_ptr<TableMetadata> metadata;
   ASSERT_NO_FATAL_FAILURE(
-      TableTestHelper::ReadTableMetadata("TableMetadataV1Valid.json", &metadata));
+      test::ReadTableMetadata("TableMetadataV1Valid.json", &metadata));
 
   EXPECT_EQ(metadata->format_version, 1);
   EXPECT_EQ(metadata->table_uuid, "d20125c8-7284-442c-9aea-15fee620737c");
@@ -89,7 +89,7 @@ TEST_F(MetadataSerdeTest, DeserializeV1Valid) {
 TEST_F(MetadataSerdeTest, DeserializeV2Valid) {
   std::unique_ptr<TableMetadata> metadata;
   ASSERT_NO_FATAL_FAILURE(
-      TableTestHelper::ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
+      test::ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
 
   EXPECT_EQ(metadata->format_version, 2);
   EXPECT_EQ(metadata->table_uuid, "9c12d441-03fe-4693-9a96-a0705ddf69c1");

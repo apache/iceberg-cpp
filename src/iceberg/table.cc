@@ -40,7 +40,7 @@ BaseTable::BaseTable(std::string name, std::shared_ptr<TableMetadata> metadata)
 
 void BaseTable::InitSchema() const {
   for (const auto& schema : metadata_->schemas) {
-    if (schema->schema_id() != std::nullopt) {
+    if (schema->schema_id()) {
       schemas_map_.emplace(schema->schema_id().value(), schema);
       if (schema->schema_id().value() == metadata_->current_schema_id) {
         schema_ = schema;
@@ -83,10 +83,10 @@ void BaseTable::InitSnapshot() const {
 
 const std::string& BaseTable::uuid() const { return metadata_->table_uuid; }
 
-const std::shared_ptr<Schema>& BaseTable::schema() const {
+Result<std::shared_ptr<Schema>> BaseTable::schema() const {
   std::call_once(init_schema_once_, [this]() { InitSchema(); });
   if (!schema_) {
-    throw IcebergError("Current schema is not defined for this table");
+    return NotFound("Current schema is not defined for this table");
   }
   return schema_;
 }
@@ -96,8 +96,11 @@ const std::unordered_map<int32_t, std::shared_ptr<Schema>>& BaseTable::schemas()
   return schemas_map_;
 }
 
-const std::shared_ptr<PartitionSpec>& BaseTable::spec() const {
+Result<std::shared_ptr<PartitionSpec>> BaseTable::spec() const {
   std::call_once(init_partition_spec_once_, [this]() { InitPartitionSpec(); });
+  if (!partition_spec_) {
+    return NotFound("Default partition spec is not defined for this table");
+  }
   return partition_spec_;
 }
 
@@ -107,8 +110,11 @@ const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& BaseTable::sp
   return partition_spec_map_;
 }
 
-const std::shared_ptr<SortOrder>& BaseTable::sort_order() const {
+Result<std::shared_ptr<SortOrder>> BaseTable::sort_order() const {
   std::call_once(init_sort_order_once_, [this]() { InitSortOrder(); });
+  if (!sort_order_) {
+    return NotFound("Default sort order is not defined for this table");
+  }
   return sort_order_;
 }
 
@@ -124,10 +130,10 @@ const std::unordered_map<std::string, std::string>& BaseTable::properties() cons
 
 const std::string& BaseTable::location() const { return metadata_->location; }
 
-const std::shared_ptr<Snapshot>& BaseTable::current_snapshot() const {
+Result<std::shared_ptr<Snapshot>> BaseTable::current_snapshot() const {
   std::call_once(init_snapshot_once_, [this]() { InitSnapshot(); });
   if (!current_snapshot_) {
-    throw IcebergError("Current snapshot is not defined for this table");
+    return NotFound("Current snapshot is not defined for this table");
   }
   return current_snapshot_;
 }
@@ -147,27 +153,27 @@ const std::vector<std::shared_ptr<Snapshot>>& BaseTable::snapshots() const {
 
 const std::vector<std::shared_ptr<HistoryEntry>>& BaseTable::history() const {
   // TODO(lishuxu): Implement history retrieval
-  throw IcebergError("history is not supported for BaseTable now");
+  return history_;
 }
 
 Status StaticTable::Refresh() {
-  throw IcebergError("Refresh is not supported for StaticTable");
+  return NotSupported("Refresh is not supported for StaticTable");
 }
 
-std::unique_ptr<TableScan> StaticTable::NewScan() const {
-  throw IcebergError("NewScan is not supported for StaticTable");
+Result<std::unique_ptr<TableScan>> StaticTable::NewScan() const {
+  return NotSupported("NewScan is not supported for StaticTable");
 }
 
-std::shared_ptr<AppendFiles> StaticTable::NewAppend() {
-  throw IcebergError("NewAppend is not supported for StaticTable");
+Result<std::shared_ptr<AppendFiles>> StaticTable::NewAppend() {
+  return NotSupported("NewAppend is not supported for StaticTable");
 }
 
-std::unique_ptr<Transaction> StaticTable::NewTransaction() {
-  throw IcebergError("NewTransaction is not supported for StaticTable");
+Result<std::unique_ptr<Transaction>> StaticTable::NewTransaction() {
+  return NotSupported("NewTransaction is not supported for StaticTable");
 }
 
-std::unique_ptr<LocationProvider> StaticTable::location_provider() const {
-  throw IcebergError("location_provider is not supported for StaticTable");
+Result<std::unique_ptr<LocationProvider>> StaticTable::location_provider() const {
+  return NotSupported("location_provider is not supported for StaticTable");
 }
 
 }  // namespace iceberg

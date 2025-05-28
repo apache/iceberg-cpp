@@ -19,24 +19,9 @@
 
 #pragma once
 
-#include <memory>
-#include <string>
-
-#include "iceberg/type_fwd.h"
-
 namespace iceberg {
 
-class TableTestHelper {
- public:
-  /// \brief Get the full path to a resource file in the test resources directory
-  static std::string GetResourcePath(const std::string& file_name);
-
-  /// \brief Read a JSON file from the test resources directory
-  static void ReadJsonFile(const std::string& file_name, std::string* content);
-
-  /// \brief Read table metadata from a JSON file in the test resources directory
-  static void ReadTableMetadata(const std::string& file_name,
-                                std::unique_ptr<TableMetadata>* metadata);
-};
+/// \brief Represents a table scan operation
+class ICEBERG_EXPORT TableScan{};
 
 }  // namespace iceberg
