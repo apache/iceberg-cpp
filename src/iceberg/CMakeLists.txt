@@ -95,6 +95,8 @@ if(ICEBERG_BUILD_BUNDLE)
       arrow/demo_arrow.cc
       arrow/arrow_fs_file_io.cc
       avro/demo_avro.cc
+      avro/avro_data_util.cc
+      avro/avro_reader.cc
       avro/avro_schema_util.cc
       avro/avro_stream_internal.cc)
 
