@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "table_test_helper.h"
+#include "test_common.h"
 
 #include <filesystem>
 #include <fstream>
@@ -30,13 +30,13 @@
 #include "iceberg/json_internal.h"
 #include "iceberg/test/test_config.h"
 
-namespace iceberg {
+namespace iceberg::test {
 
-std::string TableTestHelper::GetResourcePath(const std::string& file_name) {
+std::string GetResourcePath(const std::string& file_name) {
   return std::string(ICEBERG_TEST_RESOURCES) + "/" + file_name;
 }
 
-void TableTestHelper::ReadJsonFile(const std::string& file_name, std::string* content) {
+void ReadJsonFile(const std::string& file_name, std::string* content) {
   std::filesystem::path path{GetResourcePath(file_name)};
   ASSERT_TRUE(std::filesystem::exists(path)) << "File does not exist: " << path.string();
 
@@ -46,8 +46,8 @@ void TableTestHelper::ReadJsonFile(const std::string& file_name, std::string* co
   *content = buffer.str();
 }
 
-void TableTestHelper::ReadTableMetadata(const std::string& file_name,
-                                        std::unique_ptr<TableMetadata>* metadata) {
+void ReadTableMetadata(const std::string& file_name,
+                       std::unique_ptr<TableMetadata>* metadata) {
   std::string json_content;
   ReadJsonFile(file_name, &json_content);
 
@@ -58,4 +58,4 @@ void TableTestHelper::ReadTableMetadata(const std::string& file_name,
   *metadata = std::move(result.value());
 }
 
-}  // namespace iceberg
+}  // namespace iceberg::test

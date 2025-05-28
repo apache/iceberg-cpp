@@ -26,7 +26,10 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/location_provider.h"
 #include "iceberg/result.h"
+#include "iceberg/table_scan.h"
+#include "iceberg/transaction.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -45,21 +48,21 @@ class ICEBERG_EXPORT Table {
   /// \brief Refresh the current table metadata
   virtual Status Refresh() = 0;
 
-  /// \brief Return the schema for this table
-  virtual const std::shared_ptr<Schema>& schema() const = 0;
+  /// \brief Return the schema for this table, return NotFoundError if not found
+  virtual Result<std::shared_ptr<Schema>> schema() const = 0;
 
   /// \brief Return a map of schema for this table
   virtual const std::unordered_map<int32_t, std::shared_ptr<Schema>>& schemas() const = 0;
 
-  /// \brief Return the partition spec for this table
-  virtual const std::shared_ptr<PartitionSpec>& spec() const = 0;
+  /// \brief Return the partition spec for this table, return NotFoundError if not found
+  virtual Result<std::shared_ptr<PartitionSpec>> spec() const = 0;
 
   /// \brief Return a map of partition specs for this table
   virtual const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs()
       const = 0;
 
-  /// \brief Return the sort order for this table
-  virtual const std::shared_ptr<SortOrder>& sort_order() const = 0;
+  /// \brief Return the sort order for this table, return NotFoundError if not found
+  virtual Result<std::shared_ptr<SortOrder>> sort_order() const = 0;
 
   /// \brief Return a map of sort order IDs to sort orders for this table
   virtual const std::unordered_map<int32_t, std::shared_ptr<SortOrder>>& sort_orders()
@@ -71,8 +74,8 @@ class ICEBERG_EXPORT Table {
   /// \brief Return the table's base location
   virtual const std::string& location() const = 0;
 
-  /// \brief Return the table's current snapshot
-  virtual const std::shared_ptr<Snapshot>& current_snapshot() const = 0;
+  /// \brief Return the table's current snapshot, or NotFoundError if not found
+  virtual Result<std::shared_ptr<Snapshot>> current_snapshot() const = 0;
 
   /// \brief Get the snapshot of this table with the given id, or null if there is no
   /// matching snapshot
@@ -92,13 +95,13 @@ class ICEBERG_EXPORT Table {
   /// \brief Create a new table scan for this table
   ///
   /// Once a table scan is created, it can be refined to project columns and filter data.
-  virtual std::unique_ptr<TableScan> NewScan() const = 0;
+  virtual Result<std::unique_ptr<TableScan>> NewScan() const = 0;
 
   /// \brief Create a new append API to add files to this table and commit
-  virtual std::shared_ptr<AppendFiles> NewAppend() = 0;
+  virtual Result<std::shared_ptr<AppendFiles>> NewAppend() = 0;
 
   /// \brief Create a new transaction API to commit multiple table operations at once
-  virtual std::unique_ptr<Transaction> NewTransaction() = 0;
+  virtual Result<std::unique_ptr<Transaction>> NewTransaction() = 0;
 
   /// TODO(wgtmac): design of FileIO is not finalized yet. We intend to use an
   /// IO-less design in the core library.
@@ -106,28 +109,37 @@ class ICEBERG_EXPORT Table {
   // virtual std::shared_ptr<FileIO> io() const = 0;
 
   /// \brief Returns a LocationProvider to provide locations for new data files
-  virtual std::unique_ptr<LocationProvider> location_provider() const = 0;
+  virtual Result<std::unique_ptr<LocationProvider>> location_provider() const = 0;
 };
 
+/// \brief An abstract base implementation of the Iceberg Table interface.
+///
+/// BaseTable provides common functionality for Iceberg table implementations,
+/// including lazy initialization of schema, partition specs, sort orders,
+/// and snapshot metadata.
+///
+/// This class is not intended to be used directly by users, but serves as a foundation
+/// for concrete implementations such as StaticTable or CatalogTable.
 class ICEBERG_EXPORT BaseTable : public Table {
  public:
   ~BaseTable() override = default;
+
   BaseTable(std::string name, std::shared_ptr<TableMetadata> metadata);
 
   const std::string& name() const override { return name_; }
 
   const std::string& uuid() const override;
 
-  const std::shared_ptr<Schema>& schema() const override;
+  Result<std::shared_ptr<Schema>> schema() const override;
 
   const std::unordered_map<int32_t, std::shared_ptr<Schema>>& schemas() const override;
 
-  const std::shared_ptr<PartitionSpec>& spec() const override;
+  Result<std::shared_ptr<PartitionSpec>> spec() const override;
 
   const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs()
       const override;
 
-  const std::shared_ptr<SortOrder>& sort_order() const override;
+  Result<std::shared_ptr<SortOrder>> sort_order() const override;
 
   const std::unordered_map<int32_t, std::shared_ptr<SortOrder>>& sort_orders()
       const override;
@@ -136,7 +148,7 @@ class ICEBERG_EXPORT BaseTable : public Table {
 
   const std::string& location() const override;
 
-  const std::shared_ptr<Snapshot>& current_snapshot() const override;
+  Result<std::shared_ptr<Snapshot>> current_snapshot() const override;
 
   Result<std::shared_ptr<Snapshot>> snapshot(int64_t snapshot_id) const override;
 
@@ -164,6 +176,8 @@ class ICEBERG_EXPORT BaseTable : public Table {
   mutable std::shared_ptr<Snapshot> current_snapshot_;
   mutable std::unordered_map<int64_t, std::shared_ptr<Snapshot>> snapshots_map_;
 
+  mutable std::vector<std::shared_ptr<HistoryEntry>> history_;
+
   std::shared_ptr<TableMetadata> metadata_;
 
   // once_flags
@@ -173,21 +187,25 @@ class ICEBERG_EXPORT BaseTable : public Table {
   mutable std::once_flag init_snapshot_once_;
 };
 
+/// \brief A read-only implementation of an Iceberg table.
+///
+/// StaticTable represents a snapshot of a table that does not support mutation.
 class ICEBERG_EXPORT StaticTable : public BaseTable {
  public:
   ~StaticTable() override = default;
+
   StaticTable(std::string name, std::shared_ptr<TableMetadata> metadata)
       : BaseTable(std::move(name), std::move(metadata)) {}
 
   Status Refresh() override;
 
-  std::unique_ptr<TableScan> NewScan() const override;
+  Result<std::unique_ptr<TableScan>> NewScan() const override;
 
-  std::shared_ptr<AppendFiles> NewAppend() override;
+  Result<std::shared_ptr<AppendFiles>> NewAppend() override;
 
-  std::unique_ptr<Transaction> NewTransaction() override;
+  Result<std::unique_ptr<Transaction>> NewTransaction() override;
 
-  std::unique_ptr<LocationProvider> location_provider() const override;
+  Result<std::unique_ptr<LocationProvider>> location_provider() const override;
 };
 
 }  // namespace iceberg
