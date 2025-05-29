@@ -50,23 +50,25 @@ TableScanBuilder& TableScanBuilder::WithFilter(
 }
 
 Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
-  ICEBERG_ASSIGN_OR_RAISE(auto snapshot, snapshot_id_ ? table_.snapshot(*snapshot_id_)
-                                                      : Result<std::shared_ptr<Snapshot>>(
-                                                            table_.current_snapshot()));
+  std::shared_ptr<Snapshot> snapshot;
+  if (snapshot_id_) {
+    ICEBERG_ASSIGN_OR_RAISE(snapshot, table_.snapshot(*snapshot_id_));
+  } else {
+    snapshot = table_.current_snapshot();
+  }
 
-  auto ResolveSchema = [&]() -> Result<std::shared_ptr<Schema>> {
-    if (snapshot->schema_id) {
-      const auto& schemas = table_.schemas();
-      if (auto it = schemas.find(*snapshot->schema_id); it != schemas.end()) {
-        return it->second;
-      }
+  std::shared_ptr<Schema> schema;
+  if (snapshot->schema_id) {
+    const auto& schemas = table_.schemas();
+    if (auto it = schemas.find(*snapshot->schema_id); it != schemas.end()) {
+      schema = it->second;
+    } else {
       return InvalidData("Schema {} in snapshot {} is not found", *snapshot->schema_id,
                          snapshot->snapshot_id);
     }
-    return table_.schema();
-  };
-
-  ICEBERG_ASSIGN_OR_RAISE(auto schema, ResolveSchema());
+  } else {
+    schema = table_.schema();
+  }
 
   std::vector<int32_t> field_ids;
   field_ids.reserve(column_names_.size());
@@ -78,18 +80,19 @@ Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
     field_ids.emplace_back(field_opt.value().get().field_id());
   }
 
-  auto context = std::make_unique<TableScan::ScanContext>(
-      std::move(snapshot), std::move(schema), std::move(field_ids), std::move(filter_));
+  TableScan::ScanContext context{.snapshot = std::move(snapshot),
+                                 .schema = std::move(schema),
+                                 .field_ids = std::move(field_ids),
+                                 .filter = std::move(filter_)};
   return std::make_unique<TableScan>(std::move(context), table_.io());
 }
 
-TableScan::TableScan(std::unique_ptr<ScanContext> context,
-                     std::shared_ptr<FileIO> file_io)
+TableScan::TableScan(ScanContext context, std::shared_ptr<FileIO> file_io)
     : context_(std::move(context)), file_io_(std::move(file_io)) {}
 
 Result<std::vector<std::shared_ptr<FileScanTask>>> TableScan::PlanFiles() const {
   ICEBERG_ASSIGN_OR_RAISE(auto manifest_list_reader,
-                          CreateManifestListReader(context_->snapshot_->manifest_list));
+                          CreateManifestListReader(context_.snapshot->manifest_list));
   ICEBERG_ASSIGN_OR_RAISE(auto manifest_files, manifest_list_reader->Files());
 
   std::vector<std::shared_ptr<FileScanTask>> tasks;
@@ -102,8 +105,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> TableScan::PlanFiles() const 
       const auto& data_file = manifest->data_file;
       tasks.emplace_back(std::make_shared<FileScanTask>(
           data_file.file_path, 0, data_file.file_size_in_bytes, data_file.record_count,
-          data_file.content, data_file.file_format, context_->schema_,
-          context_->field_ids_, context_->filter_));
+          data_file.content, data_file.file_format, context_.schema, context_.field_ids,
+          context_.filter));
     }
   }
   return tasks;

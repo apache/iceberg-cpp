@@ -22,8 +22,6 @@
 #include <string>
 #include <vector>
 
-#include "iceberg/expression/expression.h"
-#include "iceberg/file_io.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/type_fwd.h"
 
@@ -42,6 +40,7 @@ class ICEBERG_EXPORT TableScanBuilder {
   TableScanBuilder& WithSnapshotId(int64_t snapshot_id);
 
   /// \brief Selects columns to include in the scan.
+  /// Defaults to none which means select all columns
   /// \param column_names A list of column names.
   /// \return Reference to the builder.
   TableScanBuilder& WithColumnNames(const std::vector<std::string>& column_names);
@@ -67,16 +66,16 @@ class ICEBERG_EXPORT TableScan {
  public:
   /// \brief Scan context holding snapshot and scan-specific metadata.
   struct ScanContext {
-    std::shared_ptr<Snapshot> snapshot_;  ///< Snapshot to scan.
-    std::shared_ptr<Schema> schema_;      ///< Projected schema.
-    std::vector<int32_t> field_ids_;      ///< Field IDs of selected columns.
-    std::shared_ptr<Expression> filter_;  ///< Filter expression to apply.
+    std::shared_ptr<Snapshot> snapshot;  ///< Snapshot to scan.
+    std::shared_ptr<Schema> schema;      ///< Table schema.
+    std::vector<int32_t> field_ids;      ///< Field IDs of selected columns.
+    std::shared_ptr<Expression> filter;  ///< Filter expression to apply.
   };
 
   /// \brief Constructs a TableScan with the given context and file I/O.
   /// \param context Scan context including snapshot, schema, and filter.
   /// \param file_io File I/O instance for reading manifests and data files.
-  TableScan(std::unique_ptr<ScanContext> context, std::shared_ptr<FileIO> file_io);
+  TableScan(ScanContext context, std::shared_ptr<FileIO> file_io);
 
   /// \brief Plans the scan tasks by resolving manifests and data files.
   ///
@@ -97,7 +96,7 @@ class ICEBERG_EXPORT TableScan {
   Result<std::unique_ptr<ManifestReader>> CreateManifestReader(
       const std::string& file_path) const;
 
-  std::unique_ptr<ScanContext> context_;
+  ScanContext context_;
   std::shared_ptr<FileIO> file_io_;
 };
 
@@ -109,7 +108,7 @@ struct ICEBERG_EXPORT FileScanTask {
   std::optional<uint64_t> record_count;  ///< Optional number of records.
   DataFile::Content file_content;        ///< Type of file content.
   FileFormatType file_format;            ///< Format of the data file.
-  std::shared_ptr<Schema> schema;        ///< Projected schema.
+  std::shared_ptr<Schema> schema;        ///< Table schema.
   std::vector<int32_t> field_ids;        ///< Field IDs to project.
   std::shared_ptr<Expression> filter;    ///< Filter expression to apply.
 };

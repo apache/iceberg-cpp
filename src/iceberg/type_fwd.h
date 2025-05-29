@@ -91,10 +91,7 @@ class LocationProvider;
 class SortField;
 class SortOrder;
 class Table;
-class TableScan;
-struct FileScanTask;
 class FileIO;
-class TableScanBuilder;
 class Transaction;
 class Transform;
 class TransformFunction;
@@ -111,6 +108,12 @@ class NameMapping;
 
 enum class SnapshotRefType;
 enum class TransformType;
+
+class Expression;
+
+struct FileScanTask;
+class TableScan;
+class TableScanBuilder;
 
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.
