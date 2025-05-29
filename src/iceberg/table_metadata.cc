@@ -20,7 +20,6 @@
 #include "iceberg/table_metadata.h"
 
 #include <format>
-#include <ranges>
 #include <string>
 
 #include <nlohmann/json.hpp>
@@ -32,6 +31,7 @@
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_order.h"
+#include "iceberg/util/gzip_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -156,11 +156,16 @@ Result<MetadataFileCodecType> TableMetadataUtil::CodecFromFileName(
 Result<std::unique_ptr<TableMetadata>> TableMetadataUtil::Read(
     FileIO& io, const std::string& location, std::optional<size_t> length) {
   ICEBERG_ASSIGN_OR_RAISE(auto codec_type, CodecFromFileName(location));
-  if (codec_type == MetadataFileCodecType::kGzip) {
-    return NotImplemented("Reading gzip-compressed metadata files is not supported yet");
-  }
 
   ICEBERG_ASSIGN_OR_RAISE(auto content, io.ReadFile(location, length));
+  if (codec_type == MetadataFileCodecType::kGzip) {
+    auto gzip_decompressor = std::make_unique<GZipDecompressor>();
+    ICEBERG_RETURN_UNEXPECTED(gzip_decompressor->Init());
+    auto result = gzip_decompressor->Decompress(content);
+    ICEBERG_RETURN_UNEXPECTED(result);
+    content = result.value();
+  }
+
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(content));
   return TableMetadataFromJson(json);
 }

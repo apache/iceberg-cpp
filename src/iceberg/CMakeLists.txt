@@ -19,6 +19,7 @@ set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
                      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>")
 set(ICEBERG_SOURCES
     arrow_c_data_internal.cc
+    catalog/in_memory_catalog.cc
     demo.cc
     expression/expression.cc
     file_reader.cc
@@ -44,17 +45,24 @@ set(ICEBERG_SOURCES
     type.cc
     util/murmurhash3_internal.cc
     util/timepoint.cc
-    util/unreachable.cc)
+    util/unreachable.cc
+    util/gzip_internal.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_SHARED_BUILD_INTERFACE_LIBS)
 set(ICEBERG_STATIC_INSTALL_INTERFACE_LIBS)
 set(ICEBERG_SHARED_INSTALL_INTERFACE_LIBS)
 
-list(APPEND ICEBERG_STATIC_BUILD_INTERFACE_LIBS nanoarrow::nanoarrow
-     nlohmann_json::nlohmann_json)
-list(APPEND ICEBERG_SHARED_BUILD_INTERFACE_LIBS nanoarrow::nanoarrow
-     nlohmann_json::nlohmann_json)
+list(APPEND
+     ICEBERG_STATIC_BUILD_INTERFACE_LIBS
+     nanoarrow::nanoarrow
+     nlohmann_json::nlohmann_json
+     ZLIB::ZLIB)
+list(APPEND
+     ICEBERG_SHARED_BUILD_INTERFACE_LIBS
+     nanoarrow::nanoarrow
+     nlohmann_json::nlohmann_json
+     ZLIB::ZLIB)
 list(APPEND ICEBERG_STATIC_INSTALL_INTERFACE_LIBS "Iceberg::nanoarrow"
      "Iceberg::nlohmann_json")
 list(APPEND ICEBERG_SHARED_INSTALL_INTERFACE_LIBS "Iceberg::nanoarrow"
@@ -76,6 +84,7 @@ add_iceberg_lib(iceberg
 
 iceberg_install_all_headers(iceberg)
 
+add_subdirectory(catalog)
 add_subdirectory(expression)
 add_subdirectory(util)
 

@@ -23,6 +23,7 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "iceberg/result.h"
@@ -41,6 +42,58 @@ class ICEBERG_EXPORT Catalog {
 
   /// \brief Return the name for this catalog
   virtual std::string_view name() const = 0;
+
+  /// \brief Create a namespace with associated properties.
+  ///
+  /// \param ns the namespace to create
+  /// \param properties a key-value map of metadata for the namespace
+  /// \return Status::OK if created successfully;
+  ///         ErrorKind::kAlreadyExists if the namespace already exists;
+  ///         ErrorKind::kNotSupported if the operation is not supported
+  virtual Status CreateNamespace(
+      const Namespace& ns,
+      const std::unordered_map<std::string, std::string>& properties) = 0;
+
+  /// \brief List child namespaces from the given namespace.
+  ///
+  /// \param ns the parent namespace
+  /// \return a list of child namespaces;
+  ///         ErrorKind::kNoSuchNamespace if the given namespace does not exist
+  virtual Result<std::vector<Namespace>> ListNamespaces(const Namespace& ns) const = 0;
+
+  /// \brief Get metadata properties for a namespace.
+  ///
+  /// \param ns the namespace to look up
+  /// \return a key-value map of metadata properties;
+  ///         ErrorKind::kNoSuchNamespace if the namespace does not exist
+  virtual Result<std::unordered_map<std::string, std::string>> GetNamespaceProperties(
+      const Namespace& ns) const = 0;
+
+  /// \brief Drop a namespace.
+  ///
+  /// \param ns the namespace to drop
+  /// \return Status::OK if dropped successfully;
+  ///         ErrorKind::kNoSuchNamespace if the namespace does not exist;
+  ///         ErrorKind::kNotAllowed if the namespace is not empty
+  virtual Status DropNamespace(const Namespace& ns) = 0;
+
+  /// \brief Check whether the namespace exists.
+  ///
+  /// \param ns the namespace to check
+  /// \return true if the namespace exists, false otherwise
+  virtual Result<bool> NamespaceExists(const Namespace& ns) const = 0;
+
+  /// \brief Update a namespace's properties by applying additions and removals.
+  ///
+  /// \param ns the namespace to update
+  /// \param updates a set of properties to add or overwrite
+  /// \param removals a set of property keys to remove
+  /// \return Status::OK if the update is successful;
+  ///         ErrorKind::kNoSuchNamespace if the namespace does not exist;
+  ///         ErrorKind::kUnsupported if the operation is not supported
+  virtual Status UpdateNamespaceProperties(
+      const Namespace& ns, const std::unordered_map<std::string, std::string>& updates,
+      const std::unordered_set<std::string>& removals) = 0;
 
   /// \brief Return all the identifiers under this namespace
   ///
@@ -80,8 +133,8 @@ class ICEBERG_EXPORT Catalog {
   /// \param spec a partition spec
   /// \param location a location for the table; leave empty if unspecified
   /// \param properties a string map of table properties
-  /// \return a Transaction to create the table or ErrorKind::kAlreadyExists if the table
-  /// already exists
+  /// \return a Transaction to create the table or ErrorKind::kAlreadyExists if the
+  /// table already exists
   virtual Result<std::shared_ptr<Transaction>> StageCreateTable(
       const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
       const std::string& location,
@@ -90,8 +143,11 @@ class ICEBERG_EXPORT Catalog {
   /// \brief Check whether table exists
   ///
   /// \param identifier a table identifier
-  /// \return true if the table exists, false otherwise
-  virtual bool TableExists(const TableIdentifier& identifier) const = 0;
+  /// \return Result<bool> indicating table exists or not.
+  ///         - On success, the table existence was successfully checked (actual
+  ///         existence may be inferred elsewhere).
+  ///         - On failure, contains error information.
+  virtual Result<bool> TableExists(const TableIdentifier& identifier) const = 0;
 
   /// \brief Drop a table; optionally delete data and metadata files
   ///
@@ -100,8 +156,10 @@ class ICEBERG_EXPORT Catalog {
   ///
   /// \param identifier a table identifier
   /// \param purge if true, delete all data and metadata files in the table
-  /// \return true if the table was dropped, false if the table did not exist
-  virtual bool DropTable(const TableIdentifier& identifier, bool purge) = 0;
+  /// \return Status indicating the outcome of the operation.
+  ///         - On success, the table was dropped (or did not exist).
+  ///         - On failure, contains error information.
+  virtual Status DropTable(const TableIdentifier& identifier, bool purge) = 0;
 
   /// \brief Load a table
   ///
@@ -118,18 +176,6 @@ class ICEBERG_EXPORT Catalog {
   /// \return a Table instance or ErrorKind::kAlreadyExists if the table already exists
   virtual Result<std::shared_ptr<Table>> RegisterTable(
       const TableIdentifier& identifier, const std::string& metadata_file_location) = 0;
-
-  /// \brief Initialize a catalog given a custom name and a map of catalog properties
-  ///
-  /// A custom Catalog implementation must have a default constructor. A compute engine
-  /// will first initialize the catalog without any arguments, and then call this method
-  /// to complete catalog initialization with properties passed into the engine.
-  ///
-  /// \param name a custom name for the catalog
-  /// \param properties catalog properties
-  virtual void Initialize(
-      const std::string& name,
-      const std::unordered_map<std::string, std::string>& properties) = 0;
 
   /// \brief Instantiate a builder to either create a table or start a create/replace
   /// transaction

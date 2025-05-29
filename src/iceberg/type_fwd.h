@@ -87,6 +87,7 @@ struct Namespace;
 struct TableIdentifier;
 
 class Catalog;
+class FileIO;
 class LocationProvider;
 class SortField;
 class SortOrder;
