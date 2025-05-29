@@ -17,8 +17,6 @@
  * under the License.
  */
 
-#include "iceberg/table.h"
-
 #include <filesystem>
 #include <fstream>
 #include <optional>
@@ -31,71 +29,85 @@
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
+#include "iceberg/table_impl.h"
 #include "iceberg/table_metadata.h"
 #include "test_common.h"
 
 namespace iceberg {
 
-TEST(TableTest, TableSchemaV1Test) {
+TEST(StaticTable, TableV1) {
   std::unique_ptr<TableMetadata> metadata;
-  ASSERT_NO_FATAL_FAILURE(
-      test::ReadTableMetadata("TableMetadataV1Valid.json", &metadata));
+  ASSERT_NO_FATAL_FAILURE(ReadTableMetadata("TableMetadataV1Valid.json", &metadata));
 
   StaticTable table("test_table_v1", std::move(metadata));
   ASSERT_EQ(table.name(), "test_table_v1");
+
+  // Check table schema
   auto schema = table.schema();
   ASSERT_TRUE(schema.has_value());
   ASSERT_EQ(schema.value()->fields().size(), 3);
   auto schemas = table.schemas();
   ASSERT_TRUE(schemas.empty());
 
+  // Check table spec
   auto spec = table.spec();
   ASSERT_TRUE(spec.has_value());
   auto specs = table.specs();
   ASSERT_EQ(1UL, specs.size());
 
+  // Check table sort_order
   auto sort_order = table.sort_order();
   ASSERT_TRUE(sort_order.has_value());
   auto sort_orders = table.sort_orders();
   ASSERT_EQ(1UL, sort_orders.size());
 
+  // Check table location
   auto location = table.location();
   ASSERT_EQ(location, "s3://bucket/test/location");
 
+  // Check table snapshots
   auto snapshots = table.snapshots();
   ASSERT_TRUE(snapshots.empty());
 }
 
-TEST(TableTest, TableSchemaV2Test) {
+TEST(StaticTable, TableV2) {
   std::unique_ptr<TableMetadata> metadata;
-  ASSERT_NO_FATAL_FAILURE(
-      test::ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
+  ASSERT_NO_FATAL_FAILURE(ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
 
   StaticTable table("test_table_v2", std::move(metadata));
   ASSERT_EQ(table.name(), "test_table_v2");
+
+  // Check table schema
   auto schema = table.schema();
   ASSERT_TRUE(schema.has_value());
   ASSERT_EQ(schema.value()->fields().size(), 3);
   auto schemas = table.schemas();
   ASSERT_FALSE(schemas.empty());
 
+  // Check partition spec
   auto spec = table.spec();
   ASSERT_TRUE(spec.has_value());
   auto specs = table.specs();
   ASSERT_EQ(1UL, specs.size());
 
+  // Check sort order
   auto sort_order = table.sort_order();
   ASSERT_TRUE(sort_order.has_value());
   auto sort_orders = table.sort_orders();
   ASSERT_EQ(1UL, sort_orders.size());
 
+  // Check table location
   auto location = table.location();
   ASSERT_EQ(location, "s3://bucket/test/location");
 
+  // Check snapshot
   auto snapshots = table.snapshots();
   ASSERT_EQ(2UL, snapshots.size());
   auto snapshot = table.current_snapshot();
   ASSERT_TRUE(snapshot != nullptr);
+  auto invalid_snapshot_id = 9999;
+  snapshot = table.snapshot(invalid_snapshot_id);
+  ASSERT_FALSE(snapshot.has_value());
 }
 
 }  // namespace iceberg

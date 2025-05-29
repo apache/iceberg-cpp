@@ -17,13 +17,9 @@
  * under the License.
  */
 
-#include "iceberg/table.h"
+#include "iceberg/table_impl.h"
 
-#include <iostream>
-
-#include "iceberg/exception.h"
 #include "iceberg/partition_spec.h"
-#include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_order.h"
@@ -158,10 +154,6 @@ const std::vector<std::shared_ptr<HistoryEntry>>& BaseTable::history() const {
 
 Status StaticTable::Refresh() {
   return NotSupported("Refresh is not supported for StaticTable");
-}
-
-Result<std::unique_ptr<TableScan>> StaticTable::NewScan() const {
-  return NotSupported("NewScan is not supported for StaticTable");
 }
 
 Result<std::shared_ptr<AppendFiles>> StaticTable::NewAppend() {
