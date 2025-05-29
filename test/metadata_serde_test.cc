@@ -50,8 +50,7 @@ class MetadataSerdeTest : public ::testing::Test {
 
 TEST_F(MetadataSerdeTest, DeserializeV1Valid) {
   std::unique_ptr<TableMetadata> metadata;
-  ASSERT_NO_FATAL_FAILURE(
-      test::ReadTableMetadata("TableMetadataV1Valid.json", &metadata));
+  ASSERT_NO_FATAL_FAILURE(ReadTableMetadata("TableMetadataV1Valid.json", &metadata));
 
   EXPECT_EQ(metadata->format_version, 1);
   EXPECT_EQ(metadata->table_uuid, "d20125c8-7284-442c-9aea-15fee620737c");
@@ -84,12 +83,13 @@ TEST_F(MetadataSerdeTest, DeserializeV1Valid) {
   auto partition_spec = metadata->PartitionSpec();
   ASSERT_TRUE(partition_spec.has_value());
   EXPECT_EQ(*(partition_spec.value().get()), *expected_spec);
+  auto snapshot = metadata->Snapshot();
+  ASSERT_FALSE(snapshot.has_value());
 }
 
 TEST_F(MetadataSerdeTest, DeserializeV2Valid) {
   std::unique_ptr<TableMetadata> metadata;
-  ASSERT_NO_FATAL_FAILURE(
-      test::ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
+  ASSERT_NO_FATAL_FAILURE(ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
 
   EXPECT_EQ(metadata->format_version, 2);
   EXPECT_EQ(metadata->table_uuid, "9c12d441-03fe-4693-9a96-a0705ddf69c1");
@@ -136,7 +136,11 @@ TEST_F(MetadataSerdeTest, DeserializeV2Valid) {
   ASSERT_TRUE(sort_order.has_value());
   EXPECT_EQ(*(sort_order.value().get()), *expected_sort_order);
 
+  // Compare snapshot
   EXPECT_EQ(metadata->current_snapshot_id, 3055729675574597004);
+  auto snapshot = metadata->Snapshot();
+  ASSERT_TRUE(snapshot.has_value());
+  EXPECT_EQ(snapshot.value()->snapshot_id, 3055729675574597004);
 
   // Compare snapshots
   std::vector<Snapshot> expected_snapshots{

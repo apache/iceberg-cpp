@@ -30,7 +30,7 @@
 #include "iceberg/json_internal.h"
 #include "iceberg/test/test_config.h"
 
-namespace iceberg::test {
+namespace iceberg {
 
 std::string GetResourcePath(const std::string& file_name) {
   return std::string(ICEBERG_TEST_RESOURCES) + "/" + file_name;
@@ -58,4 +58,4 @@ void ReadTableMetadata(const std::string& file_name,
   *metadata = std::move(result.value());
 }
 
-}  // namespace iceberg::test
+}  // namespace iceberg

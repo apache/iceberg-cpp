@@ -24,7 +24,7 @@
 
 #include "iceberg/type_fwd.h"
 
-namespace iceberg::test {
+namespace iceberg {
 
 /// \brief Get the full path to a resource file in the test resources directory
 std::string GetResourcePath(const std::string& file_name);
@@ -36,4 +36,4 @@ void ReadJsonFile(const std::string& file_name, std::string* content);
 void ReadTableMetadata(const std::string& file_name,
                        std::unique_ptr<TableMetadata>* metadata);
 
-}  // namespace iceberg::test
+}  // namespace iceberg
