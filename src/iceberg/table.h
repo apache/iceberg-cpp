@@ -88,10 +88,11 @@ class ICEBERG_EXPORT Table {
   /// \return a vector of history entries
   virtual const std::vector<std::shared_ptr<HistoryEntry>>& history() const = 0;
 
-  /// \brief Create a new table scan for this table
+  /// \brief Create a new table scan builder for this table
   ///
-  /// Once a table scan is created, it can be refined to project columns and filter data.
-  virtual std::unique_ptr<TableScan> NewScan() const = 0;
+  /// Once a table scan builder is created, it can be refined to project columns and
+  /// filter data.
+  virtual std::unique_ptr<TableScanBuilder> NewScan() const = 0;
 
   /// \brief Create a new append API to add files to this table and commit
   virtual std::shared_ptr<AppendFiles> NewAppend() = 0;
@@ -99,10 +100,8 @@ class ICEBERG_EXPORT Table {
   /// \brief Create a new transaction API to commit multiple table operations at once
   virtual std::unique_ptr<Transaction> NewTransaction() = 0;
 
-  /// TODO(wgtmac): design of FileIO is not finalized yet. We intend to use an
-  /// IO-less design in the core library.
   // /// \brief Returns a FileIO to read and write table data and metadata files
-  // virtual std::shared_ptr<FileIO> io() const = 0;
+  virtual std::shared_ptr<FileIO> io() const = 0;
 
   /// \brief Returns a LocationProvider to provide locations for new data files
   virtual std::unique_ptr<LocationProvider> location_provider() const = 0;
