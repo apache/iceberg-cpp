@@ -22,6 +22,9 @@
 namespace iceberg {
 
 /// \brief Represents a table scan operation
-class ICEBERG_EXPORT TableScan{};
+class ICEBERG_EXPORT TableScan {
+ public:
+  virtual ~TableScan() = default;
+};
 
 }  // namespace iceberg
