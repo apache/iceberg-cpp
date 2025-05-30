@@ -24,6 +24,7 @@
 
 #include <nanoarrow/nanoarrow.h>
 
+#include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
@@ -39,22 +40,22 @@ constexpr std::string_view kFieldIdKey = "ICEBERG:field_id";
 /// \param[in] schema The Iceberg schema to convert.
 /// \param[out] out The Arrow schema to convert to.
 /// \return An error if the conversion fails.
-Status ToArrowSchema(const Schema& schema, ArrowSchema* out);
+ICEBERG_EXPORT Status ToArrowSchema(const Schema& schema, ArrowSchema* out);
 
 /// \brief Convert an Arrow schema to an Iceberg schema.
 ///
 /// \param[in] schema The Arrow schema to convert.
 /// \param[in] schema_id The schema ID of the Iceberg schema.
 /// \return The Iceberg schema or an error if the conversion fails.
-Result<std::unique_ptr<Schema>> FromArrowSchema(const ArrowSchema& schema,
-                                                std::optional<int32_t> schema_id);
+ICEBERG_EXPORT Result<std::unique_ptr<Schema>> FromArrowSchema(
+    const ArrowSchema& schema, std::optional<int32_t> schema_id);
 
 /// \brief Convert a struct type to an Iceberg schema.
 ///
 /// \param[in] struct_type The struct type to convert.
 /// \param[in] schema_id The schema ID of the Iceberg schema.
 /// \return The Iceberg schema.
-std::unique_ptr<Schema> FromStructType(StructType&& struct_type,
-                                       std::optional<int32_t> schema_id);
+ICEBERG_EXPORT std::unique_ptr<Schema> FromStructType(StructType&& struct_type,
+                                                      std::optional<int32_t> schema_id);
 
 }  // namespace iceberg
