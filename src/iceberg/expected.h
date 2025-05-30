@@ -122,7 +122,7 @@ inline constexpr bool is_error_type_valid_v = is_error_type_valid<T>::value;
 }  // namespace expected_detail
 
 template <class E>
-class ICEBERG_EXPORT [[nodiscard]] unexpected {
+class [[nodiscard]] unexpected {
  public:
   static_assert(expected_detail::is_error_type_valid_v<E>);
 
@@ -192,7 +192,7 @@ class ICEBERG_EXPORT [[nodiscard]] unexpected {
 template <class E>
 unexpected(E) -> unexpected<E>;
 
-struct ICEBERG_EXPORT unexpect_t {
+struct unexpect_t {
   explicit unexpect_t() = default;
 };
 inline constexpr unexpect_t unexpect{};
@@ -201,7 +201,7 @@ template <class E>
 class bad_expected_access;
 
 template <>
-class ICEBERG_EXPORT bad_expected_access<void> : public std::exception {
+class bad_expected_access<void> : public std::exception {
  public:
   const char* what() const noexcept override { return "Bad expected access"; }
 
@@ -214,7 +214,7 @@ class ICEBERG_EXPORT bad_expected_access<void> : public std::exception {
 };
 
 template <class E>
-class ICEBERG_EXPORT bad_expected_access : public bad_expected_access<void> {
+class bad_expected_access : public bad_expected_access<void> {
  public:
   explicit bad_expected_access(E e) noexcept(std::is_nothrow_move_constructible_v<E>)
       : m_val(std::move(e)) {}
@@ -1006,9 +1006,8 @@ struct default_ctor_base<T, E, false> {
 /// tracked by the expected object.
 
 template <class T, class E>
-class ICEBERG_EXPORT [[nodiscard]] expected
-    : private expected_detail::move_assign_base<T, E>,
-      private expected_detail::default_ctor_base<T, E> {
+class [[nodiscard]] expected : private expected_detail::move_assign_base<T, E>,
+                               private expected_detail::default_ctor_base<T, E> {
   static_assert(expected_detail::is_value_type_valid_v<T>);
   static_assert(expected_detail::is_error_type_valid_v<E>);
 
@@ -1798,7 +1797,7 @@ constexpr void swap(expected<T, E>& lhs,
 }
 
 template <class E>
-class ICEBERG_EXPORT [[nodiscard]] expected<void, E>
+class [[nodiscard]] expected<void, E>
     : private expected_detail::move_assign_base<void, E>,
       private expected_detail::default_ctor_base<void, E> {
   static_assert(expected_detail::is_error_type_valid_v<E>);
@@ -2349,8 +2348,8 @@ class ICEBERG_EXPORT [[nodiscard]] expected<void, E>
 // standalone swap for void value type
 template <class E, std::enable_if_t<std::is_move_constructible_v<E> &&
                                     std::is_swappable_v<E>>* = nullptr>
-ICEBERG_EXPORT constexpr void swap(
-    expected<void, E>& lhs, expected<void, E>& rhs) noexcept(noexcept(lhs.swap(rhs))) {
+constexpr void swap(expected<void, E>& lhs,
+                    expected<void, E>& rhs) noexcept(noexcept(lhs.swap(rhs))) {
   lhs.swap(rhs);
 }
 

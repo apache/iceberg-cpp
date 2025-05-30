@@ -19,29 +19,17 @@
 
 #pragma once
 
-#include <string>
+#include <arrow/array/builder_base.h>
+#include <avro/GenericDatum.hh>
 
-#include "iceberg/avro.h"
-#include "iceberg/file_reader.h"
-#include "iceberg/iceberg_bundle_export.h"
+#include "iceberg/schema_util.h"
 
 namespace iceberg::avro {
 
-class ICEBERG_BUNDLE_EXPORT DemoAvro : public Avro {
- public:
-  DemoAvro() = default;
-  ~DemoAvro() override = default;
-  std::string print() const override;
-};
-
-class ICEBERG_BUNDLE_EXPORT DemoAvroReader : public Reader {
- public:
-  DemoAvroReader() = default;
-  ~DemoAvroReader() override = default;
-  Status Open(const ReaderOptions& options) override;
-  Status Close() override;
-  Result<Data> Next() override;
-  DataLayout data_layout() const override;
-};
+Status AppendDatumToBuilder(const ::avro::NodePtr& avro_node,
+                            const ::avro::GenericDatum& avro_datum,
+                            const SchemaProjection& projection,
+                            const Schema& arrow_schema,
+                            ::arrow::ArrayBuilder* array_builder);
 
 }  // namespace iceberg::avro

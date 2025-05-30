@@ -45,7 +45,7 @@ TEST(AVROTest, TestDemoAvro) {
 }
 
 TEST(AVROTest, TestDemoAvroReader) {
-  auto result = ReaderFactoryRegistry::Create(FileFormatType::kAvro, {});
+  auto result = ReaderFactoryRegistry::Open(FileFormatType::kAvro, {});
   ASSERT_THAT(result, IsOk());
 
   auto reader = std::move(result.value());

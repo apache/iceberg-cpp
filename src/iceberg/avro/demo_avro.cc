@@ -55,9 +55,12 @@ Reader::DataLayout DemoAvroReader::data_layout() const {
   return Reader::DataLayout::kStructLike;
 }
 
-ICEBERG_REGISTER_READER_FACTORY(
-    Avro, [](const ReaderOptions& options) -> Result<std::unique_ptr<Reader>> {
-      return std::make_unique<DemoAvroReader>();
-    });
+Status DemoAvroReader::Open(const ReaderOptions& options) { return {}; }
+
+Status DemoAvroReader::Close() { return {}; }
+
+ICEBERG_REGISTER_READER_FACTORY(Avro, []() -> Result<std::unique_ptr<Reader>> {
+  return std::make_unique<DemoAvroReader>();
+});
 
 }  // namespace iceberg::avro

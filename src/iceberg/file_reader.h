@@ -38,6 +38,15 @@ namespace iceberg {
 class ICEBERG_EXPORT Reader {
  public:
   virtual ~Reader() = default;
+  Reader() = default;
+  Reader(const Reader&) = delete;
+  Reader& operator=(const Reader&) = delete;
+
+  /// \brief Open the reader.
+  virtual Status Open(const struct ReaderOptions& options) = 0;
+
+  /// \brief Close the reader.
+  virtual Status Close() = 0;
 
   /// \brief Read next data from file.
   ///
@@ -61,10 +70,18 @@ class ICEBERG_EXPORT StructLikeReader : public Reader {
  public:
   explicit StructLikeReader(std::unique_ptr<Reader> reader);
 
+  ~StructLikeReader() override = default;
+
   /// \brief Always read data into `StructLike` or monostate if no more data.
   Result<Data> Next() final;
 
   DataLayout data_layout() const final { return DataLayout::kStructLike; }
+
+  Status Open(const struct ReaderOptions& options) final {
+    return reader_->Open(options);
+  }
+
+  Status Close() final { return reader_->Close(); }
 
  private:
   std::unique_ptr<Reader> reader_;
@@ -78,10 +95,18 @@ class ICEBERG_EXPORT BatchReader : public Reader {
  public:
   explicit BatchReader(std::unique_ptr<Reader> reader);
 
+  ~BatchReader() override = default;
+
   /// \brief Always read data into `ArrowArray` or monostate if no more data.
   Result<Data> Next() final;
 
   DataLayout data_layout() const final { return DataLayout::kArrowArray; }
+
+  Status Open(const struct ReaderOptions& options) final {
+    return reader_->Open(options);
+  }
+
+  Status Close() final { return reader_->Close(); }
 
  private:
   std::unique_ptr<Reader> reader_;
@@ -115,11 +140,12 @@ struct ICEBERG_EXPORT ReaderOptions {
   /// \brief The filter to apply to the data. Reader implementations may ignore this if
   /// the file format does not support filtering.
   std::shared_ptr<class Expression> filter;
+  /// \brief Format-specific or implementation-specific properties.
+  std::unordered_map<std::string, std::string> properties;
 };
 
 /// \brief Factory function to create a reader of a specific file format.
-using ReaderFactory =
-    std::function<Result<std::unique_ptr<Reader>>(const ReaderOptions&)>;
+using ReaderFactory = std::function<Result<std::unique_ptr<Reader>>()>;
 
 /// \brief Registry of reader factories for different file formats.
 struct ICEBERG_EXPORT ReaderFactoryRegistry {
@@ -129,9 +155,9 @@ struct ICEBERG_EXPORT ReaderFactoryRegistry {
   /// \brief Get the factory function for a specific file format.
   static ReaderFactory& GetFactory(FileFormatType format_type);
 
-  /// \brief Create a reader for a specific file format.
-  static Result<std::unique_ptr<Reader>> Create(FileFormatType format_type,
-                                                const ReaderOptions& options);
+  /// \brief Open a reader for a specific file format.
+  static Result<std::unique_ptr<Reader>> Open(FileFormatType format_type,
+                                              const ReaderOptions& options);
 };
 
 /// \brief Macro to register a reader factory for a specific file format.

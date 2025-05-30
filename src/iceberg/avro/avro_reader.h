@@ -19,29 +19,29 @@
 
 #pragma once
 
-#include <string>
-
-#include "iceberg/avro.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/iceberg_bundle_export.h"
 
 namespace iceberg::avro {
 
-class ICEBERG_BUNDLE_EXPORT DemoAvro : public Avro {
+/// \brief A reader that reads ArrowArray from Avro files.
+class ICEBERG_BUNDLE_EXPORT AvroBatchReader : public Reader {
  public:
-  DemoAvro() = default;
-  ~DemoAvro() override = default;
-  std::string print() const override;
-};
+  AvroBatchReader() = default;
 
-class ICEBERG_BUNDLE_EXPORT DemoAvroReader : public Reader {
- public:
-  DemoAvroReader() = default;
-  ~DemoAvroReader() override = default;
-  Status Open(const ReaderOptions& options) override;
-  Status Close() override;
-  Result<Data> Next() override;
-  DataLayout data_layout() const override;
+  ~AvroBatchReader() override = default;
+
+  Status Open(const ReaderOptions& options) final;
+
+  Status Close() final;
+
+  Result<Data> Next() final;
+
+  DataLayout data_layout() const final { return DataLayout::kArrowArray; }
+
+ private:
+  class Impl;
+  std::unique_ptr<Impl> impl_;
 };
 
 }  // namespace iceberg::avro
