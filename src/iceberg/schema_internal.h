@@ -24,6 +24,7 @@
 
 #include <nanoarrow/nanoarrow.h>
 
+#include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
@@ -39,7 +40,7 @@ constexpr std::string_view kFieldIdKey = "ICEBERG:field_id";
 /// \param[in] schema The Iceberg schema to convert.
 /// \param[out] out The Arrow schema to convert to.
 /// \return An error if the conversion fails.
-Status ToArrowSchema(const Schema& schema, ArrowSchema* out);
+ICEBERG_EXPORT Status ToArrowSchema(const Schema& schema, ArrowSchema* out);
 
 /// \brief Convert an Arrow schema to an Iceberg schema.
 ///
