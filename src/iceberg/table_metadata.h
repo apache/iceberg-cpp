@@ -23,6 +23,7 @@
 /// Table metadata for Iceberg tables.
 
 #include <memory>
+#include <mutex>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -129,6 +130,7 @@ struct ICEBERG_EXPORT TableMetadata {
   /// A `long` higher than all assigned row IDs
   int64_t next_row_id;
 
+  /// \brief Used for lazy initialization of schema
   mutable std::once_flag init_schema_once;
 
   /// \brief Get the current schema, return NotFoundError if not found
