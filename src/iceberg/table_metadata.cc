@@ -47,13 +47,24 @@ std::string ToString(const MetadataLogEntry& entry) {
 }
 
 Result<std::shared_ptr<Schema>> TableMetadata::Schema() const {
-  auto iter = std::ranges::find_if(schemas, [this](const auto& schema) {
-    return schema->schema_id() == current_schema_id;
+  std::call_once(init_schema_once, [this]() {
+    auto iter = std::ranges::find_if(schemas, [this](const auto& schema) {
+      return schema->schema_id() == current_schema_id;
+    });
+    if (iter != schemas.end()) {
+      schema = *iter;
+    }
+
+    // compatible with V1 table schema
+    if (!schema && schemas.size() == 1UL) {
+      schema = schemas.front();
+    }
   });
-  if (iter == schemas.end()) {
-    return NotFound("Current schema is not found");
+
+  if (!schema) {
+    return NotFound("Current schema is not defined for this table");
   }
-  return *iter;
+  return schema;
 }
 
 Result<std::shared_ptr<PartitionSpec>> TableMetadata::PartitionSpec() const {

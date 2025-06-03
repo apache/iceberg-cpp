@@ -92,6 +92,8 @@ struct ICEBERG_EXPORT TableMetadata {
   TimePointMs last_updated_ms;
   /// The highest assigned column ID for the table
   int32_t last_column_id;
+  /// The current schema for the table, or null if not set
+  mutable std::shared_ptr<Schema> schema;
   /// A list of schemas
   std::vector<std::shared_ptr<Schema>> schemas;
   /// ID of the table's current schema
@@ -126,6 +128,8 @@ struct ICEBERG_EXPORT TableMetadata {
   std::vector<std::shared_ptr<struct PartitionStatisticsFile>> partition_statistics;
   /// A `long` higher than all assigned row IDs
   int64_t next_row_id;
+
+  mutable std::once_flag init_schema_once;
 
   /// \brief Get the current schema, return NotFoundError if not found
   Result<std::shared_ptr<Schema>> Schema() const;

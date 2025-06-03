@@ -19,6 +19,7 @@
 
 #include "iceberg/table_impl.h"
 
+#include "iceberg/exception.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
@@ -30,7 +31,7 @@ namespace iceberg {
 BaseTable::BaseTable(std::string name, std::shared_ptr<TableMetadata> metadata)
     : name_(std::move(name)), metadata_(std::move(metadata)) {
   if (!metadata_) {
-    throw std::invalid_argument("Table metadata cannot be null");
+    throw IcebergError("Table metadata cannot be null");
   }
 }
 
@@ -38,14 +39,7 @@ void BaseTable::InitSchema() const {
   for (const auto& schema : metadata_->schemas) {
     if (schema->schema_id()) {
       schemas_map_.emplace(schema->schema_id().value(), schema);
-      if (schema->schema_id().value() == metadata_->current_schema_id) {
-        schema_ = schema;
-      }
     }
-  }
-  // compatible with V1 table schema
-  if (!schema_ && metadata_->schemas.size() == 1UL) {
-    schema_ = metadata_->schemas.front();
   }
 }
 
@@ -79,13 +73,7 @@ void BaseTable::InitSnapshot() const {
 
 const std::string& BaseTable::uuid() const { return metadata_->table_uuid; }
 
-Result<std::shared_ptr<Schema>> BaseTable::schema() const {
-  std::call_once(init_schema_once_, [this]() { InitSchema(); });
-  if (!schema_) {
-    return NotFound("Current schema is not defined for this table");
-  }
-  return schema_;
-}
+Result<std::shared_ptr<Schema>> BaseTable::schema() const { return metadata_->Schema(); }
 
 const std::unordered_map<int32_t, std::shared_ptr<Schema>>& BaseTable::schemas() const {
   std::call_once(init_schema_once_, [this]() { InitSchema(); });

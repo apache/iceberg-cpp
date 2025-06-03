@@ -84,7 +84,6 @@ class ICEBERG_EXPORT BaseTable : public Table {
 
   const std::string name_;
 
-  mutable std::shared_ptr<Schema> schema_;
   mutable std::unordered_map<int32_t, std::shared_ptr<Schema>> schemas_map_;
 
   mutable std::shared_ptr<PartitionSpec> partition_spec_;
