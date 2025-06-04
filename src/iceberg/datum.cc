@@ -98,4 +98,8 @@ std::partial_ordering PrimitiveLiteral::operator<=>(const PrimitiveLiteral& othe
   throw IcebergError("Not implemented: comparison between different primitive types");
 }
 
+std::string PrimitiveLiteral::ToString() const {
+  throw NotImplemented("ToString for PrimitiveLiteral is not implemented yet");
+}
+
 }  // namespace iceberg

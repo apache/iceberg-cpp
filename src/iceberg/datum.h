@@ -48,9 +48,15 @@ struct AboveMax {
   std::strong_ordering operator<=>(const AboveMax&) const = default;
 };
 
-// TODO(mwish): Supports More types
 using PrimitiveLiteralValue =
-    std::variant<bool, int32_t, int64_t, float, double, std::string, std::vector<uint8_t>, BelowMin, AboveMax>;
+    std::variant<bool,                  // for boolean
+                 int32_t,               // for int, date
+                 int64_t,               // for long, timestamp, timestamp_tz, time
+                 float,                 // for float
+                 double,                // for double
+                 std::string,           // for string
+                 std::vector<uint8_t>,  // for binary, fixed, decimal and uuid
+                 BelowMin, AboveMax>;
 
 /// \brief PrimitiveLiteral is owned literal of a primitive type.
 class PrimitiveLiteral {
@@ -75,16 +81,18 @@ class PrimitiveLiteral {
   /// See [this spec](https://iceberg.apache.org/spec/#binary-single-value-serialization) for reference.
   Result<std::vector<uint8_t>> Serialize() const;
 
-  // Get the value as a variant
+  /// Get the value as a variant
   const PrimitiveLiteralValue& value() const;
 
-  // Get the Iceberg Type of the literal
+  /// Get the Iceberg Type of the literal
   const std::shared_ptr<PrimitiveType>& type() const;
 
-  // Cast the literal to a specific type
+  /// Cast the literal to a specific type
   Result<PrimitiveLiteral> CastTo(const std::shared_ptr<PrimitiveType>& target_type) const;
 
   std::partial_ordering operator<=>(const PrimitiveLiteral& other) const;
+
+  std::string ToString() const;
 
  private:
   PrimitiveLiteralValue value_;
