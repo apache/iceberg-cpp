@@ -21,6 +21,7 @@ set(ICEBERG_SOURCES
     arrow_c_data_internal.cc
     catalog/in_memory_catalog.cc
     demo.cc
+    datum.cc
     expression/expression.cc
     file_reader.cc
     json_internal.cc
