@@ -52,7 +52,7 @@ struct ICEBERG_EXPORT PartitionFieldSummary {
   /// values are null or NaN
   std::optional<std::vector<uint8_t>> upper_bound;
 
-  inline static const SchemaField kConsTainsNull =
+  inline static const SchemaField kContainsNull =
       SchemaField::MakeRequired(509, "contains_null", std::make_shared<BooleanType>(),
                                 "True if any file has a null partition value");
   inline static const SchemaField kContainsNaN =

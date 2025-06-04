@@ -69,9 +69,11 @@ struct ICEBERG_EXPORT MetadataLogEntry {
 /// \brief Represents the metadata for an Iceberg table
 ///
 /// Note that it only contains table metadata from the spec.  Compared to the Java
-/// implementation, missing pieces including: 1) Map<Integer,
-/// Schema|PartitionSpec|SortOrder> 2) List<MetadataUpdate> 3) Map<Long, Snapshot> 4)
-/// Map<String, SnapshotRef>
+/// implementation, missing pieces including:
+/// (1) Map<Integer, Schema|PartitionSpec|SortOrder>
+/// (2) List<MetadataUpdate>
+/// (3) Map<Long, Snapshot>
+/// (4) Map<String, SnapshotRef>
 struct ICEBERG_EXPORT TableMetadata {
   static constexpr int8_t kDefaultTableFormatVersion = 2;
   static constexpr int8_t kSupportedTableFormatVersion = 3;
