@@ -1,5 +1,5 @@
 /*
-* Licensed to the Apache Software Foundation (ASF) under one
+ * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
  * distributed with this work for additional information
  * regarding copyright ownership.  The ASF licenses this file
@@ -25,24 +25,26 @@
 #include <variant>
 #include <vector>
 
-#include "iceberg/type.h"
 #include "iceberg/result.h"
+#include "iceberg/type.h"
 
 namespace iceberg {
 
-/// \brief Exception type for values that are below the minimum allowed value for a primitive type.
+/// \brief Exception type for values that are below the minimum allowed value for a
+/// primitive type.
 ///
-/// When casting a value to a narrow primitive type, if the value exceeds the maximum of dest type,
-/// it might be above the maximum allowed value for that type.
+/// When casting a value to a narrow primitive type, if the value exceeds the maximum of
+/// dest type, it might be above the maximum allowed value for that type.
 struct BelowMin {
   bool operator==(const BelowMin&) const = default;
   std::strong_ordering operator<=>(const BelowMin&) const = default;
 };
 
-/// \brief Exception type for values that are above the maximum allowed value for a primitive type.
+/// \brief Exception type for values that are above the maximum allowed value for a
+/// primitive type.
 ///
-/// When casting a value to a narrow primitive type, if the value exceeds the maximum of dest type,
-/// it might be above the maximum allowed value for that type.
+/// When casting a value to a narrow primitive type, if the value exceeds the maximum of
+/// dest type, it might be above the maximum allowed value for that type.
 struct AboveMax {
   bool operator==(const AboveMax&) const = default;
   std::strong_ordering operator<=>(const AboveMax&) const = default;
@@ -61,7 +63,8 @@ using PrimitiveLiteralValue =
 /// \brief PrimitiveLiteral is owned literal of a primitive type.
 class PrimitiveLiteral {
  public:
-  explicit PrimitiveLiteral(PrimitiveLiteralValue value, std::shared_ptr<PrimitiveType> type);
+  explicit PrimitiveLiteral(PrimitiveLiteralValue value,
+                            std::shared_ptr<PrimitiveType> type);
 
   // Factory methods for primitive types
   static PrimitiveLiteral Boolean(bool value);
@@ -74,11 +77,13 @@ class PrimitiveLiteral {
 
   /// Create iceberg value from bytes.
   ///
-  /// See [this spec](https://iceberg.apache.org/spec/#binary-single-value-serialization) for reference.
+  /// See [this spec](https://iceberg.apache.org/spec/#binary-single-value-serialization)
+  /// for reference.
   static Result<PrimitiveLiteral> Deserialize(std::span<const uint8_t> data);
   /// Serialize iceberg value to bytes.
   ///
-  /// See [this spec](https://iceberg.apache.org/spec/#binary-single-value-serialization) for reference.
+  /// See [this spec](https://iceberg.apache.org/spec/#binary-single-value-serialization)
+  /// for reference.
   Result<std::vector<uint8_t>> Serialize() const;
 
   /// Get the value as a variant
@@ -88,7 +93,8 @@ class PrimitiveLiteral {
   const std::shared_ptr<PrimitiveType>& type() const;
 
   /// Cast the literal to a specific type
-  Result<PrimitiveLiteral> CastTo(const std::shared_ptr<PrimitiveType>& target_type) const;
+  Result<PrimitiveLiteral> CastTo(
+      const std::shared_ptr<PrimitiveType>& target_type) const;
 
   std::partial_ordering operator<=>(const PrimitiveLiteral& other) const;
 
@@ -100,4 +106,3 @@ class PrimitiveLiteral {
 };
 
 }  // namespace iceberg
-

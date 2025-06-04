@@ -18,14 +18,16 @@
  */
 
 #include "iceberg/datum.h"
-#include "iceberg/exception.h"
 
 #include <sstream>
+
+#include "iceberg/exception.h"
 
 namespace iceberg {
 
 // Constructor
-PrimitiveLiteral::PrimitiveLiteral(PrimitiveLiteralValue value, std::shared_ptr<PrimitiveType> type)
+PrimitiveLiteral::PrimitiveLiteral(PrimitiveLiteralValue value,
+                                   std::shared_ptr<PrimitiveType> type)
     : value_(std::move(value)), type_(std::move(type)) {}
 
 // Factory methods
@@ -66,24 +68,20 @@ Result<std::vector<uint8_t>> PrimitiveLiteral::Serialize() const {
 }
 
 // Getters
-const PrimitiveLiteralValue& PrimitiveLiteral::value() const {
-  return value_;
-}
+const PrimitiveLiteralValue& PrimitiveLiteral::value() const { return value_; }
 
-const std::shared_ptr<PrimitiveType>& PrimitiveLiteral::type() const {
-  return type_;
-}
+const std::shared_ptr<PrimitiveType>& PrimitiveLiteral::type() const { return type_; }
 
 // Cast method
-Result<PrimitiveLiteral> PrimitiveLiteral::CastTo(const std::shared_ptr<PrimitiveType>& target_type) const {
+Result<PrimitiveLiteral> PrimitiveLiteral::CastTo(
+    const std::shared_ptr<PrimitiveType>& target_type) const {
   if (*type_ == *target_type) {
     // If types are the same, return a copy of the current literal
     return PrimitiveLiteral(value_, target_type);
   }
 
-  return NotImplemented("Cast from {} to {} is not implemented",
-                          type_->ToString(), target_type->ToString());
-
+  return NotImplemented("Cast from {} to {} is not implemented", type_->ToString(),
+                        target_type->ToString());
 }
 
 // Three-way comparison operator
