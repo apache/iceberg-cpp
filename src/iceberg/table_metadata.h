@@ -23,6 +23,7 @@
 /// Table metadata for Iceberg tables.
 
 #include <memory>
+#include <mutex>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -94,6 +95,8 @@ struct ICEBERG_EXPORT TableMetadata {
   TimePointMs last_updated_ms;
   /// The highest assigned column ID for the table
   int32_t last_column_id;
+  /// The current schema for the table, or null if not set
+  mutable std::shared_ptr<Schema> schema;
   /// A list of schemas
   std::vector<std::shared_ptr<Schema>> schemas;
   /// ID of the table's current schema
@@ -129,12 +132,17 @@ struct ICEBERG_EXPORT TableMetadata {
   /// A `long` higher than all assigned row IDs
   int64_t next_row_id;
 
+  /// \brief Used for lazy initialization of schema
+  mutable std::once_flag init_schema_once;
+
   /// \brief Get the current schema, return NotFoundError if not found
   Result<std::shared_ptr<Schema>> Schema() const;
   /// \brief Get the current partition spec, return NotFoundError if not found
   Result<std::shared_ptr<PartitionSpec>> PartitionSpec() const;
   /// \brief Get the current sort order, return NotFoundError if not found
   Result<std::shared_ptr<SortOrder>> SortOrder() const;
+  /// \brief Get the current snapshot, return NotFoundError if not found
+  Result<std::shared_ptr<Snapshot>> Snapshot() const;
 
   friend bool operator==(const TableMetadata& lhs, const TableMetadata& rhs);
 

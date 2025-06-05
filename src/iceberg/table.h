@@ -44,21 +44,21 @@ class ICEBERG_EXPORT Table {
   /// \brief Refresh the current table metadata
   virtual Status Refresh() = 0;
 
-  /// \brief Return the schema for this table
-  virtual const std::shared_ptr<Schema>& schema() const = 0;
+  /// \brief Return the schema for this table, return NotFoundError if not found
+  virtual Result<std::shared_ptr<Schema>> schema() const = 0;
 
   /// \brief Return a map of schema for this table
   virtual const std::unordered_map<int32_t, std::shared_ptr<Schema>>& schemas() const = 0;
 
-  /// \brief Return the partition spec for this table
-  virtual const std::shared_ptr<PartitionSpec>& spec() const = 0;
+  /// \brief Return the partition spec for this table, return NotFoundError if not found
+  virtual Result<std::shared_ptr<PartitionSpec>> spec() const = 0;
 
   /// \brief Return a map of partition specs for this table
   virtual const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs()
       const = 0;
 
-  /// \brief Return the sort order for this table
-  virtual const std::shared_ptr<SortOrder>& sort_order() const = 0;
+  /// \brief Return the sort order for this table, return NotFoundError if not found
+  virtual Result<std::shared_ptr<SortOrder>> sort_order() const = 0;
 
   /// \brief Return a map of sort order IDs to sort orders for this table
   virtual const std::unordered_map<int32_t, std::shared_ptr<SortOrder>>& sort_orders()
@@ -70,8 +70,8 @@ class ICEBERG_EXPORT Table {
   /// \brief Return the table's base location
   virtual const std::string& location() const = 0;
 
-  /// \brief Return the table's current snapshot
-  virtual const std::shared_ptr<Snapshot>& current_snapshot() const = 0;
+  /// \brief Return the table's current snapshot, or NotFoundError if not found
+  virtual Result<std::shared_ptr<Snapshot>> current_snapshot() const = 0;
 
   /// \brief Get the snapshot of this table with the given id, or null if there is no
   /// matching snapshot
@@ -88,16 +88,17 @@ class ICEBERG_EXPORT Table {
   /// \return a vector of history entries
   virtual const std::vector<std::shared_ptr<HistoryEntry>>& history() const = 0;
 
-  /// \brief Create a new table scan for this table
-  ///
-  /// Once a table scan is created, it can be refined to project columns and filter data.
-  virtual std::unique_ptr<TableScan> NewScan() const = 0;
+  // TODO(lishuxu): TableScan is not implemented yet, disable it for now.
+  // /// \brief Create a new table scan for this table
+  // ///
+  // /// Once a table scan is created, it can be refined to project columns and filter
+  // data. virtual Result<std::unique_ptr<TableScan>> NewScan() const = 0;
 
   /// \brief Create a new append API to add files to this table and commit
-  virtual std::shared_ptr<AppendFiles> NewAppend() = 0;
+  virtual Result<std::shared_ptr<AppendFiles>> NewAppend() = 0;
 
   /// \brief Create a new transaction API to commit multiple table operations at once
-  virtual std::unique_ptr<Transaction> NewTransaction() = 0;
+  virtual Result<std::unique_ptr<Transaction>> NewTransaction() = 0;
 
   /// TODO(wgtmac): design of FileIO is not finalized yet. We intend to use an
   /// IO-less design in the core library.
@@ -105,7 +106,7 @@ class ICEBERG_EXPORT Table {
   // virtual std::shared_ptr<FileIO> io() const = 0;
 
   /// \brief Returns a LocationProvider to provide locations for new data files
-  virtual std::unique_ptr<LocationProvider> location_provider() const = 0;
+  virtual Result<std::unique_ptr<LocationProvider>> location_provider() const = 0;
 };
 
 }  // namespace iceberg

@@ -50,27 +50,25 @@ class MetadataIOTest : public TempFileTestBase {
                                /*optional=*/false);
     auto schema = std::make_shared<Schema>(std::move(schema_fields), /*schema_id=*/1);
 
-    TableMetadata metadata{
-        .format_version = 1,
-        .table_uuid = "1234567890",
-        .location = "s3://bucket/path",
-        .last_sequence_number = 0,
-        .schemas = {schema},
-        .current_schema_id = 1,
-        .default_spec_id = 0,
-        .last_partition_id = 0,
-        .properties = {{"key", "value"}},
-        .current_snapshot_id = 3051729675574597004,
-        .snapshots = {std::make_shared<Snapshot>(Snapshot{
-            .snapshot_id = 3051729675574597004,
-            .sequence_number = 0,
-            .timestamp_ms = TimePointMsFromUnixMs(1515100955770).value(),
-            .manifest_list = "s3://a/b/1.avro",
-            .summary = {{"operation", "append"}},
-        })},
-        .default_sort_order_id = 0,
-        .next_row_id = 0};
-    return metadata;
+    return TableMetadata{.format_version = 1,
+                         .table_uuid = "1234567890",
+                         .location = "s3://bucket/path",
+                         .last_sequence_number = 0,
+                         .schemas = {schema},
+                         .current_schema_id = 1,
+                         .default_spec_id = 0,
+                         .last_partition_id = 0,
+                         .properties = {{"key", "value"}},
+                         .current_snapshot_id = 3051729675574597004,
+                         .snapshots = {std::make_shared<Snapshot>(Snapshot{
+                             .snapshot_id = 3051729675574597004,
+                             .sequence_number = 0,
+                             .timestamp_ms = TimePointMsFromUnixMs(1515100955770).value(),
+                             .manifest_list = "s3://a/b/1.avro",
+                             .summary = {{"operation", "append"}},
+                         })},
+                         .default_sort_order_id = 0,
+                         .next_row_id = 0};
   }
 
   std::shared_ptr<iceberg::FileIO> io_;
