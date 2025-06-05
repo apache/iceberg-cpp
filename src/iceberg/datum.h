@@ -30,45 +30,44 @@
 
 namespace iceberg {
 
-/// \brief Exception type for values that are below the minimum allowed value for a
-/// primitive type.
-///
-/// When casting a value to a narrow primitive type, if the value exceeds the maximum of
-/// dest type, it might be above the maximum allowed value for that type.
-struct BelowMin {
-  bool operator==(const BelowMin&) const = default;
-  std::strong_ordering operator<=>(const BelowMin&) const = default;
-};
-
-/// \brief Exception type for values that are above the maximum allowed value for a
-/// primitive type.
-///
-/// When casting a value to a narrow primitive type, if the value exceeds the maximum of
-/// dest type, it might be above the maximum allowed value for that type.
-struct AboveMax {
-  bool operator==(const AboveMax&) const = default;
-  std::strong_ordering operator<=>(const AboveMax&) const = default;
-};
-
-using PrimitiveLiteralValue =
-    std::variant<bool,                  // for boolean
-                 int32_t,               // for int, date
-                 int64_t,               // for long, timestamp, timestamp_tz, time
-                 float,                 // for float
-                 double,                // for double
-                 std::string,           // for string
-                 std::vector<uint8_t>,  // for binary, fixed, decimal and uuid
-                 BelowMin, AboveMax>;
-
 /// \brief PrimitiveLiteral is owned literal of a primitive type.
-class PrimitiveLiteral {
- public:
-  explicit PrimitiveLiteral(PrimitiveLiteralValue value,
-                            std::shared_ptr<PrimitiveType> type);
+class ICEBERG_EXPORT PrimitiveLiteral {
+ private:
+  /// \brief Exception type for values that are below the minimum allowed value for a
+  /// primitive type.
+  ///
+  /// When casting a value to a narrow primitive type, if the value exceeds the maximum of
+  /// dest type, it might be above the maximum allowed value for that type.
+  struct BelowMin {
+    bool operator==(const BelowMin&) const = default;
+    std::strong_ordering operator<=>(const BelowMin&) const = default;
+  };
 
-  // Factory methods for primitive types
+  /// \brief Exception type for values that are above the maximum allowed value for a
+  /// primitive type.
+  ///
+  /// When casting a value to a narrow primitive type, if the value exceeds the maximum of
+  /// dest type, it might be above the maximum allowed value for that type.
+  struct AboveMax {
+    bool operator==(const AboveMax&) const = default;
+    std::strong_ordering operator<=>(const AboveMax&) const = default;
+  };
+
+  using PrimitiveLiteralValue =
+      std::variant<bool,                     // for boolean
+                   int32_t,                  // for int, date
+                   int64_t,                  // for long, timestamp, timestamp_tz, time
+                   float,                    // for float
+                   double,                   // for double
+                   std::string,              // for string
+                   std::vector<uint8_t>,     // for binary, fixed
+                   std::array<uint8_t, 16>,  // for uuid and decimal
+                   BelowMin, AboveMax>;
+
+ public:
+  /// Factory methods for primitive types
   static PrimitiveLiteral Boolean(bool value);
-  static PrimitiveLiteral Integer(int32_t value);
+  static PrimitiveLiteral Int(int32_t value);
   static PrimitiveLiteral Long(int64_t value);
   static PrimitiveLiteral Float(float value);
   static PrimitiveLiteral Double(double value);
@@ -86,9 +85,6 @@ class PrimitiveLiteral {
   /// for reference.
   Result<std::vector<uint8_t>> Serialize() const;
 
-  /// Get the value as a variant
-  const PrimitiveLiteralValue& value() const;
-
   /// Get the Iceberg Type of the literal
   const std::shared_ptr<PrimitiveType>& type() const;
 
@@ -99,6 +95,18 @@ class PrimitiveLiteral {
   std::partial_ordering operator<=>(const PrimitiveLiteral& other) const;
 
   std::string ToString() const;
+
+ private:
+  PrimitiveLiteral(PrimitiveLiteralValue value, std::shared_ptr<PrimitiveType> type);
+
+  static PrimitiveLiteral BelowMinLiteral(std::shared_ptr<PrimitiveType> type);
+  static PrimitiveLiteral AboveMaxLiteral(std::shared_ptr<PrimitiveType> type);
+
+  // Helper methods for type casting
+  Result<PrimitiveLiteral> CastFromInt(TypeId target_type_id) const;
+  Result<PrimitiveLiteral> CastFromLong(TypeId target_type_id) const;
+  Result<PrimitiveLiteral> CastFromFloat(TypeId target_type_id) const;
+  Result<PrimitiveLiteral> CastFromDouble(TypeId target_type_id) const;
 
  private:
   PrimitiveLiteralValue value_;
