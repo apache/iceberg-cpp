@@ -26,7 +26,7 @@
 namespace iceberg {
 
 // Fix `from` field of `FieldProjection` to use pruned field index.
-void PruneFieldProjection(FieldProjection& field_projection) {
+inline void PruneFieldProjection(FieldProjection& field_projection) {
   std::map<size_t, size_t> local_index_to_pruned_index;
   for (const auto& child_projection : field_projection.children) {
     if (child_projection.kind == FieldProjection::Kind::kProjected) {

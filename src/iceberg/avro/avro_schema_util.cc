@@ -73,6 +73,22 @@ struct MapLogicalType : public ::avro::CustomLogicalType {
 
 }  // namespace
 
+std::string ToString(const ::avro::NodePtr& node) {
+  std::stringstream ss;
+  ss << *node;
+  return ss.str();
+}
+
+std::string ToString(const ::avro::LogicalType& logical_type) {
+  std::stringstream ss;
+  logical_type.printJson(ss);
+  return ss.str();
+}
+
+std::string ToString(const ::avro::LogicalType::Type& logical_type) {
+  return ToString(::avro::LogicalType(logical_type));
+}
+
 Status ToAvroNodeVisitor::Visit(const BooleanType& type, ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_BOOL);
   return {};
@@ -382,22 +398,6 @@ Status HasIdVisitor::Visit(const ::avro::ValidSchema& schema) {
 Status HasIdVisitor::Visit(const ::avro::Schema& schema) { return Visit(schema.root()); }
 
 namespace {
-
-std::string ToString(const ::avro::NodePtr& node) {
-  std::stringstream ss;
-  ss << *node;
-  return ss.str();
-}
-
-std::string ToString(const ::avro::LogicalType& logical_type) {
-  std::stringstream ss;
-  logical_type.printJson(ss);
-  return ss.str();
-}
-
-std::string ToString(const ::avro::LogicalType::Type& logical_type) {
-  return ToString(::avro::LogicalType(logical_type));
-}
 
 bool HasLogicalType(const ::avro::NodePtr& node,
                     ::avro::LogicalType::Type expected_type) {
