@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/datum.h"
+#include "iceberg/literal.h"
 
 #include <sstream>
 
@@ -187,8 +187,8 @@ Result<PrimitiveLiteral> PrimitiveLiteral::CastFromDouble(TypeId target_type_id)
       return PrimitiveLiteral::Float(static_cast<float>(double_val));
     }
     default:
-      return NotImplemented("Cast from Double to {} is not implemented",
-                            static_cast<int>(target_type_id));
+      return NotSupported("Cast from Double to {} is not implemented",
+                          static_cast<int>(target_type_id));
   }
 }
 
