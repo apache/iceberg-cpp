@@ -199,7 +199,12 @@ std::partial_ordering PrimitiveLiteral::operator<=>(const PrimitiveLiteral& othe
     return std::partial_ordering::unordered;
   }
 
-  // Same type comparison
+  // If either value is AboveMax or BelowMin, comparison is unordered
+  if (isAboveMax() || isBelowMin() || other.isAboveMax() || other.isBelowMin()) {
+    return std::partial_ordering::unordered;
+  }
+
+  // Same type comparison for normal values
   switch (type_->type_id()) {
     case TypeId::kBoolean: {
       auto this_val = std::get<bool>(value_);
@@ -303,4 +308,11 @@ std::string PrimitiveLiteral::ToString() const {
   }
 }
 
+bool PrimitiveLiteral::isBelowMin() const {
+  return std::holds_alternative<BelowMin>(value_);
+}
+
+bool PrimitiveLiteral::isAboveMax() const {
+  return std::holds_alternative<AboveMax>(value_);
+}
 }  // namespace iceberg

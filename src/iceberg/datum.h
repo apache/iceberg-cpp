@@ -88,11 +88,32 @@ class ICEBERG_EXPORT PrimitiveLiteral {
   /// Get the Iceberg Type of the literal
   const std::shared_ptr<PrimitiveType>& type() const;
 
-  /// Cast the literal to a specific type
+  /// Converts this literal to a literal of the given type.
+  ///
+  /// When a predicate is bound to a concrete data column, literals are converted to match
+  /// the bound column's type. This conversion process is more narrow than a cast and is
+  /// only intended for cases where substituting one type is a common mistake (e.g. 34
+  /// instead of 34L) or where this API avoids requiring a concrete class (e.g., dates).
+  ///
+  /// If conversion to a target type is not supported, this method returns an error.
+  ///
+  /// This method may return BelowMin or AboveMax when the target type is not as wide as
+  /// the original type. These values indicate that the containing predicate can be
+  /// simplified. For example, Integer.MAX_VALUE+1 converted to an int will result in
+  /// AboveMax and can simplify a < Integer.MAX_VALUE+1 to always true.
+  ///
+  /// @param target_type A primitive PrimitiveType
+  /// @return A Result containing a literal of the given type or an error if conversion
+  /// was not valid
   Result<PrimitiveLiteral> CastTo(
       const std::shared_ptr<PrimitiveType>& target_type) const;
 
+  /// Compare two PrimitiveLiterals. Both literals must have the same type
+  /// and should not be AboveMax or BelowMin.
   std::partial_ordering operator<=>(const PrimitiveLiteral& other) const;
+
+  bool isAboveMax() const;
+  bool isBelowMin() const;
 
   std::string ToString() const;
 
