@@ -61,7 +61,7 @@ constexpr std::string_view TransformTypeToString(TransformType type) {
       return kVoidName;
   }
   internal::Unreachable(
-          std::format("Unknown transform type: {}", static_cast<int>(type)));
+      std::format("Unknown transform type: {}", static_cast<int>(type)));
 }
 
 std::shared_ptr<Transform> Transform::Identity() {
