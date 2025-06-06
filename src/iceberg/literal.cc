@@ -19,6 +19,8 @@
 
 #include "iceberg/literal.h"
 
+#include <cmath>
+#include <concepts>
 #include <sstream>
 
 #include "iceberg/exception.h"
@@ -60,11 +62,11 @@ PrimitiveLiteral PrimitiveLiteral::Binary(std::vector<uint8_t> value) {
 }
 
 PrimitiveLiteral PrimitiveLiteral::BelowMinLiteral(std::shared_ptr<PrimitiveType> type) {
-  return PrimitiveLiteral(PrimitiveLiteralValue{BelowMin{}}, std::move(type));
+  return {PrimitiveLiteralValue{BelowMin{}}, std::move(type)};
 }
 
 PrimitiveLiteral PrimitiveLiteral::AboveMaxLiteral(std::shared_ptr<PrimitiveType> type) {
-  return PrimitiveLiteral(PrimitiveLiteralValue{AboveMax{}}, std::move(type));
+  return {PrimitiveLiteralValue{AboveMax{}}, std::move(type)};
 }
 
 Result<PrimitiveLiteral> PrimitiveLiteral::Deserialize(std::span<const uint8_t> data) {
@@ -171,6 +173,30 @@ Result<PrimitiveLiteral> PrimitiveLiteral::CastFromFloat(TypeId target_type_id) 
   }
 }
 
+// Template function for floating point comparison following Iceberg rules:
+// -NaN < NaN, but all NaN values (qNaN, sNaN) are treated as equivalent within their sign
+template <std::floating_point T>
+std::partial_ordering iceberg_float_compare(T lhs, T rhs) {
+  bool lhs_is_nan = std::isnan(lhs);
+  bool rhs_is_nan = std::isnan(rhs);
+
+  // If both are NaN, check their signs
+  if (lhs_is_nan && rhs_is_nan) {
+    bool lhs_is_negative = std::signbit(lhs);
+    bool rhs_is_negative = std::signbit(rhs);
+
+    if (lhs_is_negative == rhs_is_negative) {
+      // Same sign NaN values are equivalent (no qNaN vs sNaN distinction)
+      return std::partial_ordering::equivalent;
+    }
+    // -NaN < NaN
+    return lhs_is_negative ? std::partial_ordering::less : std::partial_ordering::greater;
+  }
+
+  // For non-NaN values, use standard strong ordering
+  return std::strong_order(lhs, rhs);
+}
+
 // Three-way comparison operator
 std::partial_ordering PrimitiveLiteral::operator<=>(const PrimitiveLiteral& other) const {
   // If types are different, comparison is unordered
@@ -208,14 +234,14 @@ std::partial_ordering PrimitiveLiteral::operator<=>(const PrimitiveLiteral& othe
       auto this_val = std::get<float>(value_);
       auto other_val = std::get<float>(other.value_);
       // Use strong_ordering for floating point as spec requests
-      return std::strong_order(this_val, other_val);
+      return iceberg_float_compare(this_val, other_val);
     }
 
     case TypeId::kDouble: {
       auto this_val = std::get<double>(value_);
       auto other_val = std::get<double>(other.value_);
       // Use strong_ordering for floating point as spec requests
-      return std::strong_order(this_val, other_val);
+      return iceberg_float_compare(this_val, other_val);
     }
 
     case TypeId::kString: {
