@@ -30,14 +30,14 @@
 
 namespace iceberg {
 
-/// \brief PrimitiveLiteral is owned literal of a primitive type.
+/// \brief PrimitiveLiteral is a literal value that is associated with a primitive type.
 class ICEBERG_EXPORT PrimitiveLiteral {
  private:
   /// \brief Exception type for values that are below the minimum allowed value for a
   /// primitive type.
   ///
   /// When casting a value to a narrow primitive type, if the value exceeds the maximum of
-  /// dest type, it might be above the maximum allowed value for that type.
+  /// target type, it might be above the maximum allowed value for that type.
   struct BelowMin {
     bool operator==(const BelowMin&) const = default;
     std::strong_ordering operator<=>(const BelowMin&) const = default;
@@ -47,7 +47,7 @@ class ICEBERG_EXPORT PrimitiveLiteral {
   /// primitive type.
   ///
   /// When casting a value to a narrow primitive type, if the value exceeds the maximum of
-  /// dest type, it might be above the maximum allowed value for that type.
+  /// target type, it might be above the maximum allowed value for that type.
   struct AboveMax {
     bool operator==(const AboveMax&) const = default;
     std::strong_ordering operator<=>(const AboveMax&) const = default;
@@ -74,18 +74,19 @@ class ICEBERG_EXPORT PrimitiveLiteral {
   static PrimitiveLiteral String(std::string value);
   static PrimitiveLiteral Binary(std::vector<uint8_t> value);
 
-  /// Create iceberg value from bytes.
+  /// Create iceberg literal from bytes.
   ///
   /// See [this spec](https://iceberg.apache.org/spec/#binary-single-value-serialization)
   /// for reference.
   static Result<PrimitiveLiteral> Deserialize(std::span<const uint8_t> data);
-  /// Serialize iceberg value to bytes.
+
+  /// Serialize iceberg literal to bytes.
   ///
   /// See [this spec](https://iceberg.apache.org/spec/#binary-single-value-serialization)
   /// for reference.
   Result<std::vector<uint8_t>> Serialize() const;
 
-  /// Get the Iceberg Type of the literal
+  /// Get the Iceberg Type of the literal.
   const std::shared_ptr<PrimitiveType>& type() const;
 
   /// Converts this literal to a literal of the given type.
@@ -99,11 +100,12 @@ class ICEBERG_EXPORT PrimitiveLiteral {
   ///
   /// This method may return BelowMin or AboveMax when the target type is not as wide as
   /// the original type. These values indicate that the containing predicate can be
-  /// simplified. For example, Integer.MAX_VALUE+1 converted to an int will result in
-  /// AboveMax and can simplify a < Integer.MAX_VALUE+1 to always true.
+  /// simplified. For example, std::numeric_limits<int>::max()+1 converted to an int will
+  /// result in AboveMax and can simplify a < std::numeric_limits<int>::max()+1 to always
+  /// true.
   ///
-  /// @param target_type A primitive PrimitiveType
-  /// @return A Result containing a literal of the given type or an error if conversion
+  /// \param target_type A primitive PrimitiveType
+  /// \return A Result containing a literal of the given type or an error if conversion
   /// was not valid
   Result<PrimitiveLiteral> CastTo(
       const std::shared_ptr<PrimitiveType>& target_type) const;
@@ -127,7 +129,6 @@ class ICEBERG_EXPORT PrimitiveLiteral {
   Result<PrimitiveLiteral> CastFromInt(TypeId target_type_id) const;
   Result<PrimitiveLiteral> CastFromLong(TypeId target_type_id) const;
   Result<PrimitiveLiteral> CastFromFloat(TypeId target_type_id) const;
-  Result<PrimitiveLiteral> CastFromDouble(TypeId target_type_id) const;
 
  private:
   PrimitiveLiteralValue value_;

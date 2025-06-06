@@ -106,11 +106,9 @@ Result<PrimitiveLiteral> PrimitiveLiteral::CastTo(
     case TypeId::kFloat:
       return CastFromFloat(target_type_id);
     case TypeId::kDouble:
-      return CastFromDouble(target_type_id);
     case TypeId::kBoolean:
     case TypeId::kString:
     case TypeId::kBinary:
-      // These types only support conversion to string (handled above)
       break;
     default:
       break;
@@ -170,25 +168,6 @@ Result<PrimitiveLiteral> PrimitiveLiteral::CastFromFloat(TypeId target_type_id) 
     default:
       return NotImplemented("Cast from Float to {} is not implemented",
                             static_cast<int>(target_type_id));
-  }
-}
-
-Result<PrimitiveLiteral> PrimitiveLiteral::CastFromDouble(TypeId target_type_id) const {
-  auto double_val = std::get<double>(value_);
-
-  switch (target_type_id) {
-    case TypeId::kFloat: {
-      if (double_val > std::numeric_limits<float>::max()) {
-        return PrimitiveLiteral::AboveMaxLiteral(type_);
-      }
-      if (double_val < std::numeric_limits<float>::lowest()) {
-        return PrimitiveLiteral::BelowMinLiteral(type_);
-      }
-      return PrimitiveLiteral::Float(static_cast<float>(double_val));
-    }
-    default:
-      return NotSupported("Cast from Double to {} is not implemented",
-                          static_cast<int>(target_type_id));
   }
 }
 
