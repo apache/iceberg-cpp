@@ -477,10 +477,9 @@ nlohmann::json ToJson(const Type& type) {
     }
     case TypeId::kUuid:
       return "uuid";
-    default:
-      internal::Unreachable(std::format("Unknown type id: {}",
-                            static_cast<int>(type.type_id())));
   }
+  internal::Unreachable(
+      std::format("Unknown type id: {}", static_cast<int>(type.type_id())));
 }
 
 nlohmann::json ToJson(const Schema& schema) {

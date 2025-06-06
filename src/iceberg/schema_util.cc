@@ -172,10 +172,9 @@ std::string_view ToString(FieldProjection::Kind kind) {
       return "default";
     case FieldProjection::Kind::kNull:
       return "null";
-    default:
-      internal::Unreachable(std::format("Unknown field projection kind: {}",
-                            static_cast<int>(kind)));
   }
+  internal::Unreachable(
+      std::format("Unknown field projection kind: {}", static_cast<int>(kind)));
 }
 
 std::string ToString(const FieldProjection& projection) {

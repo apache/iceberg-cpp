@@ -59,10 +59,9 @@ constexpr std::string_view TransformTypeToString(TransformType type) {
       return kHourName;
     case TransformType::kVoid:
       return kVoidName;
-    default:
-      internal::Unreachable(std::format("Unknown transform type: {}",
-                            static_cast<int>(type)));
   }
+  internal::Unreachable(
+          std::format("Unknown transform type: {}", static_cast<int>(type)));
 }
 
 std::shared_ptr<Transform> Transform::Identity() {
@@ -169,10 +168,9 @@ std::string Transform::ToString() const {
     case TransformType::kTruncate:
       return std::format("{}[{}]", TransformTypeToString(transform_type_),
                          std::get<int32_t>(param_));
-    default:
-      internal::Unreachable(std::format("Unknown transform type: {}",
-                            static_cast<int>(transform_type_)));
   }
+  internal::Unreachable(
+      std::format("Unknown transform type: {}", static_cast<int>(transform_type_)));
 }
 
 TransformFunction::TransformFunction(TransformType transform_type,
