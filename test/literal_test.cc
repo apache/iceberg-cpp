@@ -20,6 +20,7 @@
 #include "iceberg/literal.h"
 
 #include <limits>
+#include <numbers>
 #include <vector>
 
 #include <gtest/gtest.h>
@@ -184,8 +185,8 @@ TEST(PrimitiveLiteralTest, FloatCastTo) {
 
 // Double type tests
 TEST(PrimitiveLiteralTest, DoubleBasics) {
-  auto double_literal = PrimitiveLiteral::Double(3.141592653589793);
-  auto negative_double = PrimitiveLiteral::Double(-2.718281828459045);
+  auto double_literal = PrimitiveLiteral::Double(std::numbers::pi);
+  auto negative_double = PrimitiveLiteral::Double(-std::numbers::e);
 
   EXPECT_EQ(double_literal.type()->type_id(), TypeId::kDouble);
   EXPECT_EQ(negative_double.type()->type_id(), TypeId::kDouble);
