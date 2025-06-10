@@ -25,9 +25,8 @@
 #include <memory>
 #include <string>
 
-#include "iceberg/expected.h"
+#include "iceberg/exception.h"
 #include "iceberg/iceberg_export.h"
-#include "iceberg/result.h"
 
 namespace iceberg {
 
@@ -67,8 +66,8 @@ class ICEBERG_EXPORT Expression {
   virtual Operation op() const = 0;
 
   /// \brief Returns the negation of this expression, equivalent to not(this).
-  virtual Result<std::shared_ptr<Expression>> Negate() const {
-    return InvalidExpression("Expression cannot be negated");
+  virtual std::shared_ptr<Expression> Negate() const {
+    throw IcebergError("Expression cannot be negated");
   }
 
   /// \brief Returns whether this expression will accept the same values as another.
@@ -94,7 +93,7 @@ class ICEBERG_EXPORT True : public Expression {
 
   std::string ToString() const override { return "true"; }
 
-  Result<std::shared_ptr<Expression>> Negate() const override;
+  std::shared_ptr<Expression> Negate() const override;
 
   bool Equals(const Expression& other) const override {
     return other.op() == Operation::kTrue;
@@ -114,7 +113,7 @@ class ICEBERG_EXPORT False : public Expression {
 
   std::string ToString() const override { return "false"; }
 
-  Result<std::shared_ptr<Expression>> Negate() const override;
+  std::shared_ptr<Expression> Negate() const override;
 
   bool Equals(const Expression& other) const override {
     return other.op() == Operation::kFalse;
@@ -150,7 +149,42 @@ class ICEBERG_EXPORT And : public Expression {
 
   std::string ToString() const override;
 
-  Result<std::shared_ptr<Expression>> Negate() const override;
+  std::shared_ptr<Expression> Negate() const override;
+
+  bool Equals(const Expression& other) const override;
+
+ private:
+  std::shared_ptr<Expression> left_;
+  std::shared_ptr<Expression> right_;
+};
+
+/// \brief An Expression that represents a logical OR operation between two expressions.
+///
+/// This expression evaluates to true if at least one of its child expressions
+/// evaluates to true.
+class ICEBERG_EXPORT Or : public Expression {
+ public:
+  /// \brief Constructs an Or expression from two sub-expressions.
+  ///
+  /// \param left The left operand of the OR expression
+  /// \param right The right operand of the OR expression
+  Or(std::shared_ptr<Expression> left, std::shared_ptr<Expression> right);
+
+  /// \brief Returns the left operand of the OR expression.
+  ///
+  /// \return The left operand of the OR expression
+  const std::shared_ptr<Expression>& left() const { return left_; }
+
+  /// \brief Returns the right operand of the OR expression.
+  ///
+  /// \return The right operand of the OR expression
+  const std::shared_ptr<Expression>& right() const { return right_; }
+
+  Operation op() const override { return Operation::kOr; }
+
+  std::string ToString() const override;
+
+  std::shared_ptr<Expression> Negate() const override;
 
   bool Equals(const Expression& other) const override;
 
