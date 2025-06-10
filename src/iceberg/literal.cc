@@ -130,7 +130,6 @@ Result<PrimitiveLiteral> PrimitiveLiteral::CastFromInt(TypeId target_type_id) co
       return PrimitiveLiteral::Float(static_cast<float>(int_val));
     case TypeId::kDouble:
       return PrimitiveLiteral::Double(static_cast<double>(int_val));
-    // TODO(mwish): Supports casts to date and literal
     default:
       return NotSupported("Cast from Int to {} is not implemented",
                           static_cast<int>(target_type_id));
@@ -156,8 +155,8 @@ Result<PrimitiveLiteral> PrimitiveLiteral::CastFromLong(TypeId target_type_id) c
     case TypeId::kDouble:
       return PrimitiveLiteral::Double(static_cast<double>(long_val));
     default:
-      return NotImplemented("Cast from Long to {} is not implemented",
-                            static_cast<int>(target_type_id));
+      return NotSupported("Cast from Long to {} is not supported",
+                          static_cast<int>(target_type_id));
   }
 }
 
@@ -168,8 +167,8 @@ Result<PrimitiveLiteral> PrimitiveLiteral::CastFromFloat(TypeId target_type_id) 
     case TypeId::kDouble:
       return PrimitiveLiteral::Double(static_cast<double>(float_val));
     default:
-      return NotImplemented("Cast from Float to {} is not implemented",
-                            static_cast<int>(target_type_id));
+      return NotSupported("Cast from Float to {} is not supported",
+                          static_cast<int>(target_type_id));
   }
 }
 
