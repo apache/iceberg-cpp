@@ -40,8 +40,7 @@ class ICEBERG_EXPORT TableScanBuilder {
   TableScanBuilder& WithSnapshotId(int64_t snapshot_id);
 
   /// \brief Selects columns to include in the scan.
-  /// Defaults to none which means select all columns
-  /// \param column_names A list of column names.
+  /// \param column_names A list of column names. If empty, all columns will be selected.
   /// \return Reference to the builder.
   TableScanBuilder& WithColumnNames(const std::vector<std::string>& column_names);
 
