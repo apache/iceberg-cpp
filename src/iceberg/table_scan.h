@@ -42,7 +42,7 @@ class ICEBERG_EXPORT TableScanBuilder {
   /// \brief Selects columns to include in the scan.
   /// \param column_names A list of column names. If empty, all columns will be selected.
   /// \return Reference to the builder.
-  TableScanBuilder& WithColumnNames(const std::vector<std::string>& column_names);
+  TableScanBuilder& WithColumnNames(std::vector<std::string> column_names);
 
   /// \brief Applies a filter expression to the scan.
   /// \param filter Filter expression to use.
@@ -65,10 +65,9 @@ class ICEBERG_EXPORT TableScan {
  public:
   /// \brief Scan context holding snapshot and scan-specific metadata.
   struct ScanContext {
-    std::shared_ptr<Snapshot> snapshot;  ///< Snapshot to scan.
-    std::shared_ptr<Schema> schema;      ///< Table schema.
-    std::vector<int32_t> field_ids;      ///< Field IDs of selected columns.
-    std::shared_ptr<Expression> filter;  ///< Filter expression to apply.
+    std::shared_ptr<Snapshot> snapshot;        ///< Snapshot to scan.
+    std::shared_ptr<Schema> projected_schema;  ///< Projected schema.
+    std::shared_ptr<Expression> filter;        ///< Filter expression to apply.
   };
 
   /// \brief Constructs a TableScan with the given context and file I/O.
@@ -83,33 +82,15 @@ class ICEBERG_EXPORT TableScan {
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const;
 
  private:
-  /// \brief Creates a reader for the manifest list.
-  /// \param file_path Path to the manifest list file.
-  /// \return A Result containing the reader or an error.
-  Result<std::unique_ptr<ManifestListReader>> CreateManifestListReader(
-      const std::string& file_path) const;
-
-  /// \brief Creates a reader for a manifest file.
-  /// \param file_path Path to the manifest file.
-  /// \return A Result containing the reader or an error.
-  Result<std::unique_ptr<ManifestReader>> CreateManifestReader(
-      const std::string& file_path) const;
-
   ScanContext context_;
   std::shared_ptr<FileIO> file_io_;
 };
 
 /// \brief Represents a task to scan a portion of a data file.
 struct ICEBERG_EXPORT FileScanTask {
-  std::string file_path;                 ///< Path to the data file.
-  uint64_t start;                        ///< Start byte offset.
-  uint64_t length;                       ///< Length in bytes to scan.
-  std::optional<uint64_t> record_count;  ///< Optional number of records.
-  DataFile::Content file_content;        ///< Type of file content.
-  FileFormatType file_format;            ///< Format of the data file.
-  std::shared_ptr<Schema> schema;        ///< Table schema.
-  std::vector<int32_t> field_ids;        ///< Field IDs to project.
-  std::shared_ptr<Expression> filter;    ///< Filter expression to apply.
+  std::shared_ptr<DataFile> data_file;  ///< Data file metadata.
+  uint64_t start;                       ///< Start byte offset.
+  uint64_t length;                      ///< Length in bytes to scan.
 };
 
 }  // namespace iceberg

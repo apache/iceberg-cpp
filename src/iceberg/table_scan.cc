@@ -33,8 +33,8 @@ namespace iceberg {
 TableScanBuilder::TableScanBuilder(const Table& table) : table_(table) {}
 
 TableScanBuilder& TableScanBuilder::WithColumnNames(
-    const std::vector<std::string>& column_names) {
-  column_names_ = column_names;
+    std::vector<std::string> column_names) {
+  column_names_ = std::move(column_names);
   return *this;
 }
 
@@ -43,9 +43,8 @@ TableScanBuilder& TableScanBuilder::WithSnapshotId(int64_t snapshot_id) {
   return *this;
 }
 
-TableScanBuilder& TableScanBuilder::WithFilter(
-    const std::shared_ptr<Expression>& filter) {
-  filter_ = filter;
+TableScanBuilder& TableScanBuilder::WithFilter(std::shared_ptr<Expression> filter) {
+  filter_ = std::move(filter);
   return *this;
 }
 
@@ -56,6 +55,9 @@ Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
   } else {
     snapshot = table_.current_snapshot();
   }
+  if (snapshot == nullptr) {
+    return InvalidArgument("No snapshot found for table {}", table_.name());
+  }
 
   std::shared_ptr<Schema> schema;
   if (snapshot->schema_id) {
@@ -63,26 +65,27 @@ Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
     if (auto it = schemas.find(*snapshot->schema_id); it != schemas.end()) {
       schema = it->second;
     } else {
-      return InvalidData("Schema {} in snapshot {} is not found", *snapshot->schema_id,
-                         snapshot->snapshot_id);
+      return InvalidArgument("Schema {} in snapshot {} is not found",
+                             *snapshot->schema_id, snapshot->snapshot_id);
     }
   } else {
     schema = table_.schema();
   }
 
-  std::vector<int32_t> field_ids;
-  field_ids.reserve(column_names_.size());
+  std::vector<SchemaField> projected_fields;
+  projected_fields.reserve(column_names_.size());
   for (const auto& column_name : column_names_) {
     auto field_opt = schema->GetFieldByName(column_name);
     if (!field_opt) {
       return InvalidArgument("Column {} not found in schema", column_name);
     }
-    field_ids.emplace_back(field_opt.value().get().field_id());
+    projected_fields.emplace_back(field_opt.value().get());
   }
 
+  auto projected_schema =
+      std::make_shared<Schema>(std::move(projected_fields), schema->schema_id());
   TableScan::ScanContext context{.snapshot = std::move(snapshot),
-                                 .schema = std::move(schema),
-                                 .field_ids = std::move(field_ids),
+                                 .projected_schema = std::move(projected_schema),
                                  .filter = std::move(filter_)};
   return std::make_unique<TableScan>(std::move(context), table_.io());
 }
@@ -103,23 +106,11 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> TableScan::PlanFiles() const 
 
     for (const auto& manifest : manifests) {
       const auto& data_file = manifest->data_file;
-      tasks.emplace_back(std::make_shared<FileScanTask>(
-          data_file.file_path, 0, data_file.file_size_in_bytes, data_file.record_count,
-          data_file.content, data_file.file_format, context_.schema, context_.field_ids,
-          context_.filter));
+      tasks.emplace_back(
+          std::make_shared<FileScanTask>(data_file, 0, data_file->file_size_in_bytes));
     }
   }
   return tasks;
-}
-
-Result<std::unique_ptr<ManifestListReader>> TableScan::CreateManifestListReader(
-    const std::string& file_path) const {
-  return NotImplemented("manifest list reader");
-}
-
-Result<std::unique_ptr<ManifestReader>> TableScan::CreateManifestReader(
-    const std::string& file_path) const {
-  return NotImplemented("manifest reader");
 }
 
 }  // namespace iceberg

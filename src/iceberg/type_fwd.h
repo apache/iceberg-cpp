@@ -131,8 +131,9 @@ class AppendFiles;
 struct DataFile;
 struct ManifestEntry;
 struct ManifestFile;
-class ManifestReader;
 struct ManifestList;
+
+class ManifestReader;
 class ManifestListReader;
 
 }  // namespace iceberg
