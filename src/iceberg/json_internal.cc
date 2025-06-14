@@ -1053,7 +1053,9 @@ Status ParsePartitionSpecs(const nlohmann::json& json, int8_t format_version,
     int32_t next_partition_field_id = PartitionSpec::kLegacyPartitionDataIdStart;
     std::vector<PartitionField> fields;
     for (const auto& entry_json : partition_spec_json) {
-      ICEBERG_ASSIGN_OR_RAISE(auto field, PartitionFieldFromJson(entry_json, true));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto field, PartitionFieldFromJson(
+                          entry_json, /*allow_field_id_missing=*/format_version == 1));
       int32_t field_id = field->field_id();
       if (field_id == SchemaField::kInvalidFieldId) {
         // If the field ID is not set, we need to assign a new one
