@@ -27,7 +27,7 @@ namespace iceberg {
 
 const StructType& PartitionFieldSummary::Type() {
   static const StructType kInstance{{
-      PartitionFieldSummary::kConsTainsNull,
+      PartitionFieldSummary::kContainsNull,
       PartitionFieldSummary::kContainsNaN,
       PartitionFieldSummary::kLowerBound,
       PartitionFieldSummary::kUpperBound,
