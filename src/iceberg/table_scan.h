@@ -47,7 +47,7 @@ class ICEBERG_EXPORT TableScanBuilder {
   /// \brief Applies a filter expression to the scan.
   /// \param filter Filter expression to use.
   /// \return Reference to the builder.
-  TableScanBuilder& WithFilter(const std::shared_ptr<Expression>& filter);
+  TableScanBuilder& WithFilter(std::shared_ptr<Expression> filter);
 
   /// \brief Builds and returns a TableScan instance.
   /// \return A Result containing the TableScan or an error.
