@@ -23,13 +23,14 @@
 
 #include "iceberg/expected.h"
 #include "iceberg/util/formatter.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
 namespace {
 
 ReaderFactory GetNotImplementedFactory(FileFormatType format_type) {
-  return [format_type](const ReaderOptions& options) -> Result<std::unique_ptr<Reader>> {
+  return [format_type]() -> Result<std::unique_ptr<Reader>> {
     return NotImplemented("Missing reader factory for file format: {}", format_type);
   };
 }
@@ -51,9 +52,11 @@ ReaderFactoryRegistry::ReaderFactoryRegistry(FileFormatType format_type,
   GetFactory(format_type) = std::move(factory);
 }
 
-Result<std::unique_ptr<Reader>> ReaderFactoryRegistry::Create(
+Result<std::unique_ptr<Reader>> ReaderFactoryRegistry::Open(
     FileFormatType format_type, const ReaderOptions& options) {
-  return GetFactory(format_type)(options);
+  ICEBERG_ASSIGN_OR_RAISE(auto reader, GetFactory(format_type)());
+  ICEBERG_RETURN_UNEXPECTED(reader->Open(options));
+  return reader;
 }
 
 StructLikeReader::StructLikeReader(std::unique_ptr<Reader> reader)

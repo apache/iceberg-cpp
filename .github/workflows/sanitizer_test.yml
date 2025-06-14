@@ -1,0 +1,63 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+name: ASAN and UBSAN Tests
+
+on:
+  push:
+    branches:
+      - '**'
+      - '!dependabot/**'
+    tags:
+      - '**'
+  pull_request:
+
+concurrency:
+  group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  sanitizer-test:
+    name: "ASAN and UBSAN Tests"
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+    steps:
+      - name: Checkout iceberg-cpp
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Configure and Build with ASAN & UBSAN
+        run: |
+          mkdir build && cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Debug -DICEBERG_ENABLE_ASAN=ON -DICEBERG_ENABLE_UBSAN=ON
+          cmake --build . --verbose
+      - name: Run Tests
+        working-directory: build
+        env:
+          ASAN_OPTIONS: log_path=out.log:detect_leaks=1:symbolize=1:strict_string_checks=1:halt_on_error=0:detect_container_overflow=0
+          LSAN_OPTIONS: suppressions=${{ github.workspace }}/.github/lsan-suppressions.txt
+          UBSAN_OPTIONS: log_path=out.log:halt_on_error=0:print_stacktrace=1:suppressions=${{ github.workspace }}/.github/ubsan-suppressions.txt
+        run: |
+          ctest --output-on-failure
+      - name: Save the test output
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: test-output
+          path: build/test/out.log*

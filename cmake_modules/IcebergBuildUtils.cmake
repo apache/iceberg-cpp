@@ -147,6 +147,9 @@ function(add_iceberg_lib LIB_NAME)
                                  "$<INSTALL_INTERFACE:${ARG_SHARED_INSTALL_INTERFACE_LIBS}>"
                           PRIVATE ${ARG_SHARED_PRIVATE_LINK_LIBS})
 
+    target_link_libraries(${LIB_NAME}_shared
+                          PUBLIC "$<BUILD_INTERFACE:iceberg_sanitizer_flags>")
+
     install(TARGETS ${LIB_NAME}_shared
             EXPORT iceberg_targets
             ARCHIVE DESTINATION ${INSTALL_ARCHIVE_DIR}
@@ -201,6 +204,9 @@ function(add_iceberg_lib LIB_NAME)
       target_link_libraries(${LIB_NAME}_static
                             PUBLIC "$<BUILD_INTERFACE:${ARG_STATIC_LINK_LIBS}>")
     endif()
+
+    target_link_libraries(${LIB_NAME}_static
+                          PUBLIC "$<BUILD_INTERFACE:iceberg_sanitizer_flags>")
 
     install(TARGETS ${LIB_NAME}_static
             EXPORT iceberg_targets

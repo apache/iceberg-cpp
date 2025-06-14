@@ -46,6 +46,9 @@ class ICEBERG_BUNDLE_EXPORT ArrowFileSystemFileIO : public FileIO {
   /// \brief Delete a file at the given location.
   Status DeleteFile(const std::string& file_location) override;
 
+  /// \brief Get the Arrow file system.
+  const std::shared_ptr<::arrow::fs::FileSystem>& fs() const { return arrow_fs_; }
+
  private:
   std::shared_ptr<::arrow::fs::FileSystem> arrow_fs_;
 };

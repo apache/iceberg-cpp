@@ -234,7 +234,7 @@ struct ICEBERG_EXPORT DataOperation {
 struct ICEBERG_EXPORT Snapshot {
   static constexpr int64_t kInvalidSnapshotId = -1;
 
-  /// A unqiue long ID.
+  /// A unique long ID.
   int64_t snapshot_id;
   /// The snapshot ID of the snapshot's parent. Omitted for any snapshot with no parent.
   std::optional<int64_t> parent_snapshot_id;
