@@ -19,16 +19,14 @@
 
 #pragma once
 
+#include <mutex>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/location_provider.h"
-#include "iceberg/result.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_identifier.h"
-#include "iceberg/transaction.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
