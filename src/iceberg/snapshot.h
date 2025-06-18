@@ -273,4 +273,20 @@ struct ICEBERG_EXPORT Snapshot {
   bool Equals(const Snapshot& other) const;
 };
 
+/// \brief Represents a snapshot log entry
+struct ICEBERG_EXPORT SnapshotLogEntry {
+  /// The timestamp in milliseconds of the change
+  TimePointMs timestamp_ms;
+  /// ID of the snapshot
+  int64_t snapshot_id;
+
+  friend bool operator==(const SnapshotLogEntry& lhs, const SnapshotLogEntry& rhs) {
+    return lhs.timestamp_ms == rhs.timestamp_ms && lhs.snapshot_id == rhs.snapshot_id;
+  }
+
+  friend bool operator!=(const SnapshotLogEntry& lhs, const SnapshotLogEntry& rhs) {
+    return !(lhs == rhs);
+  }
+};
+
 }  // namespace iceberg

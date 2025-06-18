@@ -19,13 +19,16 @@
 
 #pragma once
 
-#include <memory>
 #include <string>
 #include <unordered_map>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/location_provider.h"
 #include "iceberg/result.h"
+#include "iceberg/snapshot.h"
+#include "iceberg/table_identifier.h"
+#include "iceberg/transaction.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -35,78 +38,96 @@ class ICEBERG_EXPORT Table {
  public:
   virtual ~Table() = default;
 
-  /// \brief Return the full name for this table
-  virtual const std::string& name() const = 0;
+  /// \brief Construct a table.
+  /// \param[in] identifier The identifier of the table.
+  /// \param[in] metadata The metadata for the table.
+  /// \param[in] metadata_location The location of the table metadata file.
+  /// \param[in] io The FileIO to read and write table data and metadata files.
+  /// \param[in] catalog The catalog that this table belongs to.
+  Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
+        std::string metadata_location, std::shared_ptr<FileIO> io,
+        std::shared_ptr<Catalog> catalog)
+      : identifier_(std::move(identifier)),
+        metadata_(std::move(metadata)),
+        metadata_location_(std::move(metadata_location)),
+        io_(std::move(io)),
+        catalog_(std::move(catalog)) {};
+
+  /// \brief Return the identifier of this table
+  const TableIdentifier& name() const { return identifier_; }
 
   /// \brief Returns the UUID of the table
-  virtual const std::string& uuid() const = 0;
+  const std::string& uuid() const;
 
-  /// \brief Refresh the current table metadata
-  virtual Status Refresh() = 0;
-
-  /// \brief Return the schema for this table, return NotFoundError if not found
-  virtual Result<std::shared_ptr<Schema>> schema() const = 0;
+  /// \brief Return the schema for this table, return empty schema if not found
+  const std::shared_ptr<Schema>& schema() const;
 
   /// \brief Return a map of schema for this table
-  virtual const std::unordered_map<int32_t, std::shared_ptr<Schema>>& schemas() const = 0;
+  const std::unordered_map<int32_t, std::shared_ptr<Schema>>& schemas() const;
 
-  /// \brief Return the partition spec for this table, return NotFoundError if not found
-  virtual Result<std::shared_ptr<PartitionSpec>> spec() const = 0;
+  /// \brief Return the partition spec for this table, return null if default spec is not
+  /// found
+  const std::shared_ptr<PartitionSpec>& spec() const;
 
   /// \brief Return a map of partition specs for this table
-  virtual const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs()
-      const = 0;
+  const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs() const;
 
-  /// \brief Return the sort order for this table, return NotFoundError if not found
-  virtual Result<std::shared_ptr<SortOrder>> sort_order() const = 0;
+  /// \brief Return the sort order for this table, return null if default sort order is
+  /// not found
+  const std::shared_ptr<SortOrder>& sort_order() const;
 
   /// \brief Return a map of sort order IDs to sort orders for this table
-  virtual const std::unordered_map<int32_t, std::shared_ptr<SortOrder>>& sort_orders()
-      const = 0;
+  const std::unordered_map<int32_t, std::shared_ptr<SortOrder>>& sort_orders() const;
 
   /// \brief Return a map of string properties for this table
-  virtual const std::unordered_map<std::string, std::string>& properties() const = 0;
+  const std::unordered_map<std::string, std::string>& properties() const;
 
   /// \brief Return the table's base location
-  virtual const std::string& location() const = 0;
+  const std::string& location() const;
 
-  /// \brief Return the table's current snapshot, or NotFoundError if not found
-  virtual Result<std::shared_ptr<Snapshot>> current_snapshot() const = 0;
+  /// \brief Return the table's current snapshot, return null if not found
+  std::shared_ptr<Snapshot> CurrentSnapshot() const;
 
   /// \brief Get the snapshot of this table with the given id, or null if there is no
   /// matching snapshot
   ///
   /// \param snapshot_id the ID of the snapshot to get
   /// \return the Snapshot with the given id
-  virtual Result<std::shared_ptr<Snapshot>> snapshot(int64_t snapshot_id) const = 0;
+  std::shared_ptr<Snapshot> SnapshotById(int64_t snapshot_id) const;
 
   /// \brief Get the snapshots of this table
-  virtual const std::vector<std::shared_ptr<Snapshot>>& snapshots() const = 0;
+  const std::vector<std::shared_ptr<Snapshot>>& snapshots() const;
 
   /// \brief Get the snapshot history of this table
   ///
   /// \return a vector of history entries
-  virtual const std::vector<std::shared_ptr<HistoryEntry>>& history() const = 0;
+  const std::vector<SnapshotLogEntry>& history() const;
 
-  // TODO(lishuxu): TableScan is not implemented yet, disable it for now.
-  // /// \brief Create a new table scan for this table
-  // ///
-  // /// Once a table scan is created, it can be refined to project columns and filter
-  // data. virtual Result<std::unique_ptr<TableScan>> NewScan() const = 0;
+ private:
+  const TableIdentifier identifier_;
+  const std::shared_ptr<TableMetadata> metadata_;
+  const std::string metadata_location_;
+  std::shared_ptr<FileIO> io_;
+  std::shared_ptr<Catalog> catalog_;
 
-  /// \brief Create a new append API to add files to this table and commit
-  virtual Result<std::shared_ptr<AppendFiles>> NewAppend() = 0;
+  mutable std::shared_ptr<Schema> schema_;
+  mutable std::unordered_map<int32_t, std::shared_ptr<Schema>> schemas_map_;
 
-  /// \brief Create a new transaction API to commit multiple table operations at once
-  virtual Result<std::unique_ptr<Transaction>> NewTransaction() = 0;
+  mutable std::shared_ptr<PartitionSpec> partition_spec_;
+  mutable std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> partition_spec_map_;
 
-  /// TODO(wgtmac): design of FileIO is not finalized yet. We intend to use an
-  /// IO-less design in the core library.
-  // /// \brief Returns a FileIO to read and write table data and metadata files
-  // virtual std::shared_ptr<FileIO> io() const = 0;
+  mutable std::shared_ptr<SortOrder> sort_order_;
+  mutable std::unordered_map<int32_t, std::shared_ptr<SortOrder>> sort_orders_map_;
 
-  /// \brief Returns a LocationProvider to provide locations for new data files
-  virtual Result<std::unique_ptr<LocationProvider>> location_provider() const = 0;
+  mutable std::shared_ptr<Snapshot> current_snapshot_;
+
+  // once_flags
+  mutable std::once_flag init_schemas_once_;
+  mutable std::once_flag init_partition_spec_once_;
+  mutable std::once_flag init_partition_specs_once_;
+  mutable std::once_flag init_sort_order_once_;
+  mutable std::once_flag init_sort_orders_once_;
+  mutable std::once_flag init_snapshot_once_;
 };
 
 }  // namespace iceberg

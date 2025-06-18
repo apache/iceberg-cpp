@@ -38,7 +38,7 @@ set(ICEBERG_SOURCES
     sort_field.cc
     sort_order.cc
     statistics_file.cc
-    table_impl.cc
+    table.cc
     table_metadata.cc
     transform.cc
     transform_function.cc
