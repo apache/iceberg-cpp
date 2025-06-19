@@ -113,10 +113,6 @@ class ICEBERG_EXPORT SortField : public util::Formattable {
     return lhs.Equals(rhs);
   }
 
-  friend bool operator!=(const SortField& lhs, const SortField& rhs) {
-    return !(lhs == rhs);
-  }
-
  private:
   /// \brief Compare two fields for equality.
   [[nodiscard]] bool Equals(const SortField& other) const;

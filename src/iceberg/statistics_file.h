@@ -50,11 +50,6 @@ struct ICEBERG_EXPORT BlobMetadata {
            lhs.source_snapshot_sequence_number == rhs.source_snapshot_sequence_number &&
            lhs.fields == rhs.fields && lhs.properties == rhs.properties;
   }
-
-  /// \brief Compare two BlobMetadatas for inequality.
-  friend bool operator!=(const BlobMetadata& lhs, const BlobMetadata& rhs) {
-    return !(lhs == rhs);
-  }
 };
 
 /// \brief Represents a statistics file in the Puffin format
@@ -77,11 +72,6 @@ struct ICEBERG_EXPORT StatisticsFile {
            lhs.file_footer_size_in_bytes == rhs.file_footer_size_in_bytes &&
            lhs.blob_metadata == rhs.blob_metadata;
   }
-
-  /// \brief Compare two StatisticsFiles for inequality.
-  friend bool operator!=(const StatisticsFile& lhs, const StatisticsFile& rhs) {
-    return !(lhs == rhs);
-  }
 };
 
 /// \brief Represents a partition statistics file
@@ -99,12 +89,6 @@ struct ICEBERG_EXPORT PartitionStatisticsFile {
                          const PartitionStatisticsFile& rhs) {
     return lhs.snapshot_id == rhs.snapshot_id && lhs.path == rhs.path &&
            lhs.file_size_in_bytes == rhs.file_size_in_bytes;
-  }
-
-  /// \brief Compare two PartitionStatisticsFiles for inequality.
-  friend bool operator!=(const PartitionStatisticsFile& lhs,
-                         const PartitionStatisticsFile& rhs) {
-    return !(lhs == rhs);
   }
 };
 

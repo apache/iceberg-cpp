@@ -55,10 +55,6 @@ class ICEBERG_EXPORT SortOrder : public util::Formattable {
     return lhs.Equals(rhs);
   }
 
-  friend bool operator!=(const SortOrder& lhs, const SortOrder& rhs) {
-    return !(lhs == rhs);
-  }
-
  private:
   /// \brief Compare two sort orders for equality.
   bool Equals(const SortOrder& other) const;

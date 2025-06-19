@@ -135,11 +135,6 @@ class ICEBERG_EXPORT Transform : public util::Formattable {
     return lhs.Equals(rhs);
   }
 
-  /// \brief Inequality comparison.
-  friend bool operator!=(const Transform& lhs, const Transform& rhs) {
-    return !(lhs == rhs);
-  }
-
  private:
   /// \brief Constructs a Transform of the specified type (for non-parametric types).
   /// \param transform_type The transform type (e.g., identity, year, day).
@@ -186,10 +181,6 @@ class ICEBERG_EXPORT TransformFunction {
 
   friend bool operator==(const TransformFunction& lhs, const TransformFunction& rhs) {
     return lhs.Equals(rhs);
-  }
-
-  friend bool operator!=(const TransformFunction& lhs, const TransformFunction& rhs) {
-    return !(lhs == rhs);
   }
 
  private:

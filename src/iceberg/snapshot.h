@@ -80,9 +80,6 @@ struct ICEBERG_EXPORT SnapshotRef {
       return lhs.Equals(rhs);
     }
 
-    /// \brief Compare two branches for inequality.
-    friend bool operator!=(const Branch& lhs, const Branch& rhs) { return !(lhs == rhs); }
-
    private:
     /// \brief Compare two branches for equality.
     bool Equals(const Branch& other) const;
@@ -96,9 +93,6 @@ struct ICEBERG_EXPORT SnapshotRef {
 
     /// \brief Compare two tags for equality.
     friend bool operator==(const Tag& lhs, const Tag& rhs) { return lhs.Equals(rhs); }
-
-    /// \brief Compare two tags for inequality.
-    friend bool operator!=(const Tag& lhs, const Tag& rhs) { return !(lhs == rhs); }
 
    private:
     /// \brief Compare two tags for equality.
@@ -115,11 +109,6 @@ struct ICEBERG_EXPORT SnapshotRef {
   /// \brief Compare two snapshot refs for equality
   friend bool operator==(const SnapshotRef& lhs, const SnapshotRef& rhs) {
     return lhs.Equals(rhs);
-  }
-
-  /// \brief Compare two snapshot refs for inequality.
-  friend bool operator!=(const SnapshotRef& lhs, const SnapshotRef& rhs) {
-    return !(lhs == rhs);
   }
 
  private:
@@ -261,11 +250,6 @@ struct ICEBERG_EXPORT Snapshot {
   /// \brief Compare two snapshots for equality.
   friend bool operator==(const Snapshot& lhs, const Snapshot& rhs) {
     return lhs.Equals(rhs);
-  }
-
-  /// \brief Compare two snapshots for inequality.
-  friend bool operator!=(const Snapshot& lhs, const Snapshot& rhs) {
-    return !(lhs == rhs);
   }
 
  private:
