@@ -98,7 +98,7 @@ const std::unordered_map<std::string, std::string>& Table::properties() const {
 
 const std::string& Table::location() const { return metadata_->location; }
 
-std::shared_ptr<Snapshot> Table::CurrentSnapshot() const {
+std::shared_ptr<Snapshot> Table::current_snapshot() const {
   std::call_once(init_snapshot_once_, [this]() {
     auto snapshot = metadata_->Snapshot();
     if (snapshot.has_value()) {

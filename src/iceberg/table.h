@@ -84,7 +84,7 @@ class ICEBERG_EXPORT Table {
   const std::string& location() const;
 
   /// \brief Return the table's current snapshot, return null if not found
-  std::shared_ptr<Snapshot> CurrentSnapshot() const;
+  std::shared_ptr<Snapshot> current_snapshot() const;
 
   /// \brief Get the snapshot of this table with the given id, or null if there is no
   /// matching snapshot

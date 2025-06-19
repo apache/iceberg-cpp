@@ -105,7 +105,7 @@ TEST(Table, TableV2) {
   // Check snapshot
   auto snapshots = table.snapshots();
   ASSERT_EQ(2UL, snapshots.size());
-  auto snapshot = table.CurrentSnapshot();
+  auto snapshot = table.current_snapshot();
   ASSERT_TRUE(snapshot != nullptr);
   auto invalid_snapshot_id = 9999;
   snapshot = table.SnapshotById(invalid_snapshot_id);
