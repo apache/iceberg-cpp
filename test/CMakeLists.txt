@@ -50,7 +50,7 @@ target_link_libraries(catalog_test PRIVATE iceberg_static GTest::gtest_main GTes
 add_test(NAME catalog_test COMMAND catalog_test)
 
 add_executable(expression_test)
-target_sources(expression_test PRIVATE expression_test.cc)
+target_sources(expression_test PRIVATE expression_test.cc literal_test.cc)
 target_link_libraries(expression_test PRIVATE iceberg_static GTest::gtest_main
                                               GTest::gmock)
 add_test(NAME expression_test COMMAND expression_test)
@@ -68,11 +68,6 @@ target_sources(util_test PRIVATE expected_test.cc formatter_test.cc config_test.
                                  visit_type_test.cc)
 target_link_libraries(util_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
 add_test(NAME util_test COMMAND util_test)
-
-add_executable(literal_test)
-target_sources(literal_test PRIVATE literal_test.cc)
-target_link_libraries(literal_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
-add_test(NAME literal_test COMMAND literal_test)
 
 if(ICEBERG_BUILD_BUNDLE)
   add_executable(avro_test)

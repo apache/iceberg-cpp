@@ -77,7 +77,7 @@ Result<Literal> LiteralCaster::CastFromInt(
       return Literal::Double(static_cast<double>(int_val));
     default:
       return NotSupported("Cast from Int to {} is not implemented",
-                          static_cast<int>(target_type_id));
+                          target_type->ToString());
   }
 }
 
@@ -103,7 +103,7 @@ Result<Literal> LiteralCaster::CastFromLong(
       return Literal::Double(static_cast<double>(long_val));
     default:
       return NotSupported("Cast from Long to {} is not supported",
-                          static_cast<int>(target_type_id));
+                          target_type->ToString());
   }
 }
 
@@ -117,7 +117,7 @@ Result<Literal> LiteralCaster::CastFromFloat(
       return Literal::Double(static_cast<double>(float_val));
     default:
       return NotSupported("Cast from Float to {} is not supported",
-                          static_cast<int>(target_type_id));
+                          target_type->ToString());
   }
 }
 
@@ -175,21 +175,21 @@ Result<Literal> Literal::CastTo(const std::shared_ptr<PrimitiveType>& target_typ
 // Template function for floating point comparison following Iceberg rules:
 // -NaN < NaN, but all NaN values (qNaN, sNaN) are treated as equivalent within their sign
 template <std::floating_point T>
-std::partial_ordering iceberg_float_compare(T lhs, T rhs) {
+std::strong_ordering CompareFloat(T lhs, T rhs) {
+  // If both are NaN, check their signs
   bool lhs_is_nan = std::isnan(lhs);
   bool rhs_is_nan = std::isnan(rhs);
-
-  // If both are NaN, check their signs
   if (lhs_is_nan && rhs_is_nan) {
     bool lhs_is_negative = std::signbit(lhs);
     bool rhs_is_negative = std::signbit(rhs);
 
     if (lhs_is_negative == rhs_is_negative) {
       // Same sign NaN values are equivalent (no qNaN vs sNaN distinction)
-      return std::partial_ordering::equivalent;
+      return std::strong_ordering::equivalent;
     }
     // -NaN < NaN
-    return lhs_is_negative ? std::partial_ordering::less : std::partial_ordering::greater;
+    return lhs_is_negative ? std::strong_ordering::less
+                           : std::strong_ordering::greater;
   }
 
   // For non-NaN values, use standard strong ordering
@@ -233,14 +233,14 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
       auto this_val = std::get<float>(value_);
       auto other_val = std::get<float>(other.value_);
       // Use strong_ordering for floating point as spec requests
-      return iceberg_float_compare(this_val, other_val);
+      return CompareFloat(this_val, other_val);
     }
 
     case TypeId::kDouble: {
       auto this_val = std::get<double>(value_);
       auto other_val = std::get<double>(other.value_);
       // Use strong_ordering for floating point as spec requests
-      return iceberg_float_compare(this_val, other_val);
+      return CompareFloat(this_val, other_val);
     }
 
     case TypeId::kString: {
@@ -263,10 +263,10 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
 
 std::string Literal::ToString() const {
   if (std::holds_alternative<BelowMin>(value_)) {
-    return "BelowMin";
+    return "belowMin";
   }
   if (std::holds_alternative<AboveMax>(value_)) {
-    return "AboveMax";
+    return "aboveMax";
   }
 
   switch (type_->type_id()) {
@@ -293,7 +293,7 @@ std::string Literal::ToString() const {
       std::string result;
       result.reserve(binary_data.size() * 2);  // 2 chars per byte
       for (const auto& byte : binary_data) {
-        result += std::format("{:02X}", byte);
+        std::format_to(std::back_inserter(result), "{:02X}", byte);
       }
       return result;
     }
