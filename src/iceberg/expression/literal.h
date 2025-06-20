@@ -33,21 +33,17 @@ namespace iceberg {
 /// \brief Literal is a literal value that is associated with a primitive type.
 class ICEBERG_EXPORT Literal {
  private:
-  /// \brief Exception type for values that are below the minimum allowed value for a
+  /// \brief Sentinel value to indicate that the literal value is below the valid range
+  /// of a specific primitive type. It can happen when casting a literal to a narrower
   /// primitive type.
-  ///
-  /// When casting a value to a narrow primitive type, if the value exceeds the maximum of
-  /// target type, it might be above the maximum allowed value for that type.
   struct BelowMin {
     bool operator==(const BelowMin&) const = default;
     std::strong_ordering operator<=>(const BelowMin&) const = default;
   };
 
-  /// \brief Exception type for values that are above the maximum allowed value for a
+  /// \brief Sentinel value to indicate that the literal value is above the valid range
+  /// of a specific primitive type. It can happen when casting a literal to a narrower
   /// primitive type.
-  ///
-  /// When casting a value to a narrow primitive type, if the value exceeds the maximum of
-  /// target type, it might be above the maximum allowed value for that type.
   struct AboveMax {
     bool operator==(const AboveMax&) const = default;
     std::strong_ordering operator<=>(const AboveMax&) const = default;
@@ -64,7 +60,7 @@ class ICEBERG_EXPORT Literal {
                              BelowMin, AboveMax>;
 
  public:
-  /// Factory methods for primitive types
+  /// \brief Factory methods for primitive types
   static Literal Boolean(bool value);
   static Literal Int(int32_t value);
   static Literal Long(int64_t value);
@@ -73,23 +69,23 @@ class ICEBERG_EXPORT Literal {
   static Literal String(std::string value);
   static Literal Binary(std::vector<uint8_t> value);
 
-  /// Create iceberg literal from bytes.
+  /// \brief Restore a literal from single-value serialization.
   ///
   /// See [this spec](https://iceberg.apache.org/spec/#binary-single-value-serialization)
   /// for reference.
   static Result<Literal> Deserialize(std::span<const uint8_t> data,
                                      std::shared_ptr<PrimitiveType> type);
 
-  /// Serialize iceberg literal to bytes.
+  /// \brief Perform single-value serialization.
   ///
   /// See [this spec](https://iceberg.apache.org/spec/#binary-single-value-serialization)
   /// for reference.
   Result<std::vector<uint8_t>> Serialize() const;
 
-  /// Get the Iceberg Type of the literal.
+  /// \brief Get the literal type.
   const std::shared_ptr<PrimitiveType>& type() const;
 
-  /// Converts this literal to a literal of the given type.
+  /// \brief Converts this literal to a literal of the given type.
   ///
   /// When a predicate is bound to a concrete data column, literals are converted to match
   /// the bound column's type. This conversion process is more narrow than a cast and is
@@ -109,7 +105,7 @@ class ICEBERG_EXPORT Literal {
   /// was not valid
   Result<Literal> CastTo(const std::shared_ptr<PrimitiveType>& target_type) const;
 
-  /// Compare two PrimitiveLiterals. Both literals must have the same type
+  /// \brief Compare two PrimitiveLiterals. Both literals must have the same type
   /// and should not be AboveMax or BelowMin.
   std::partial_ordering operator<=>(const Literal& other) const;
 
