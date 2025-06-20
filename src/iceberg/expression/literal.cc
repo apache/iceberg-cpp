@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/literal.h"
+#include "iceberg/expression/literal.h"
 
 #include <cmath>
 #include <concepts>
@@ -320,4 +320,5 @@ bool PrimitiveLiteral::isBelowMin() const {
 bool PrimitiveLiteral::isAboveMax() const {
   return std::holds_alternative<AboveMax>(value_);
 }
+
 }  // namespace iceberg

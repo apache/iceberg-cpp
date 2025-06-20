@@ -22,9 +22,9 @@ set(ICEBERG_SOURCES
     catalog/in_memory_catalog.cc
     demo.cc
     expression/expression.cc
+    expression/literal.cc
     file_reader.cc
     json_internal.cc
-    literal.cc
     manifest_entry.cc
     manifest_list.cc
     metadata_columns.cc

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/literal.h"
+#include "iceberg/expression/literal.h"
 
 #include <limits>
 #include <numbers>
