@@ -26,10 +26,21 @@
 
 namespace iceberg::avro {
 
+/// \brief Append an Avro datum to an Arrow array builder.
+///
+/// This function handles schema evolution by using the provided projection to map
+/// fields from the Avro data to the expected Arrow schema.
+///
+/// \param avro_node The Avro schema node (must be a record at root level)
+/// \param avro_datum The Avro data to append
+/// \param projection Schema projection from `projected_schema` to `avro_node`
+/// \param projected_schema The projected schema
+/// \param array_builder The Arrow array builder to append to (must be a struct builder)
+/// \return Status indicating success or failure
 Status AppendDatumToBuilder(const ::avro::NodePtr& avro_node,
                             const ::avro::GenericDatum& avro_datum,
                             const SchemaProjection& projection,
-                            const Schema& arrow_schema,
+                            const Schema& projected_schema,
                             ::arrow::ArrayBuilder* array_builder);
 
 }  // namespace iceberg::avro
