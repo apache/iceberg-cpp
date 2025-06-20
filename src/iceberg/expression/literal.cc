@@ -27,101 +27,48 @@
 
 namespace iceberg {
 
-// Constructor
-PrimitiveLiteral::PrimitiveLiteral(PrimitiveLiteralValue value,
-                                   std::shared_ptr<PrimitiveType> type)
-    : value_(std::move(value)), type_(std::move(type)) {}
+/// \brief PrimitiveLiteralCaster handles type casting operations for PrimitiveLiteral.
+/// This is an internal implementation class.
+class PrimitiveLiteralCaster {
+ public:
+  /// Cast a PrimitiveLiteral to the target type.
+  static Result<PrimitiveLiteral> CastTo(
+      const PrimitiveLiteral& literal, const std::shared_ptr<PrimitiveType>& target_type);
 
-// Factory methods
-PrimitiveLiteral PrimitiveLiteral::Boolean(bool value) {
-  return {PrimitiveLiteralValue{value}, std::make_shared<BooleanType>()};
+  /// Create a literal representing a value below the minimum for the given type.
+  static PrimitiveLiteral BelowMinLiteral(std::shared_ptr<PrimitiveType> type);
+
+  /// Create a literal representing a value above the maximum for the given type.
+  static PrimitiveLiteral AboveMaxLiteral(std::shared_ptr<PrimitiveType> type);
+
+ private:
+  /// Cast from Int type to target type.
+  static Result<PrimitiveLiteral> CastFromInt(
+      const PrimitiveLiteral& literal, const std::shared_ptr<PrimitiveType>& target_type);
+
+  /// Cast from Long type to target type.
+  static Result<PrimitiveLiteral> CastFromLong(
+      const PrimitiveLiteral& literal, const std::shared_ptr<PrimitiveType>& target_type);
+
+  /// Cast from Float type to target type.
+  static Result<PrimitiveLiteral> CastFromFloat(
+      const PrimitiveLiteral& literal, const std::shared_ptr<PrimitiveType>& target_type);
+};
+
+PrimitiveLiteral PrimitiveLiteralCaster::BelowMinLiteral(
+    std::shared_ptr<PrimitiveType> type) {
+  return PrimitiveLiteral(PrimitiveLiteral::BelowMin{}, std::move(type));
 }
 
-PrimitiveLiteral PrimitiveLiteral::Int(int32_t value) {
-  return {PrimitiveLiteralValue{value}, std::make_shared<IntType>()};
+PrimitiveLiteral PrimitiveLiteralCaster::AboveMaxLiteral(
+    std::shared_ptr<PrimitiveType> type) {
+  return PrimitiveLiteral(PrimitiveLiteral::AboveMax{}, std::move(type));
 }
 
-PrimitiveLiteral PrimitiveLiteral::Long(int64_t value) {
-  return {PrimitiveLiteralValue{value}, std::make_shared<LongType>()};
-}
-
-PrimitiveLiteral PrimitiveLiteral::Float(float value) {
-  return {PrimitiveLiteralValue{value}, std::make_shared<FloatType>()};
-}
-
-PrimitiveLiteral PrimitiveLiteral::Double(double value) {
-  return {PrimitiveLiteralValue{value}, std::make_shared<DoubleType>()};
-}
-
-PrimitiveLiteral PrimitiveLiteral::String(std::string value) {
-  return {PrimitiveLiteralValue{std::move(value)}, std::make_shared<StringType>()};
-}
-
-PrimitiveLiteral PrimitiveLiteral::Binary(std::vector<uint8_t> value) {
-  return {PrimitiveLiteralValue{std::move(value)}, std::make_shared<BinaryType>()};
-}
-
-PrimitiveLiteral PrimitiveLiteral::BelowMinLiteral(std::shared_ptr<PrimitiveType> type) {
-  return {PrimitiveLiteralValue{BelowMin{}}, std::move(type)};
-}
-
-PrimitiveLiteral PrimitiveLiteral::AboveMaxLiteral(std::shared_ptr<PrimitiveType> type) {
-  return {PrimitiveLiteralValue{AboveMax{}}, std::move(type)};
-}
-
-Result<PrimitiveLiteral> PrimitiveLiteral::Deserialize(std::span<const uint8_t> data) {
-  return NotImplemented("Deserialization of PrimitiveLiteral is not implemented yet");
-}
-
-Result<std::vector<uint8_t>> PrimitiveLiteral::Serialize() const {
-  return NotImplemented("Serialization of PrimitiveLiteral is not implemented yet");
-}
-
-// Getters
-
-const std::shared_ptr<PrimitiveType>& PrimitiveLiteral::type() const { return type_; }
-
-// Cast method
-Result<PrimitiveLiteral> PrimitiveLiteral::CastTo(
-    const std::shared_ptr<PrimitiveType>& target_type) const {
-  if (*type_ == *target_type) {
-    // If types are the same, return a copy of the current literal
-    return PrimitiveLiteral(value_, target_type);
-  }
-
-  // Handle special values
-  if (std::holds_alternative<BelowMin>(value_) ||
-      std::holds_alternative<AboveMax>(value_)) {
-    // Cannot cast type for special values
-    return NotSupported("Cannot cast type for {}", ToString());
-  }
-
-  auto source_type_id = type_->type_id();
+Result<PrimitiveLiteral> PrimitiveLiteralCaster::CastFromInt(
+    const PrimitiveLiteral& literal, const std::shared_ptr<PrimitiveType>& target_type) {
+  auto int_val = std::get<int32_t>(literal.value_);
   auto target_type_id = target_type->type_id();
-
-  // Delegate to specific cast functions based on source type
-  switch (source_type_id) {
-    case TypeId::kInt:
-      return CastFromInt(target_type_id);
-    case TypeId::kLong:
-      return CastFromLong(target_type_id);
-    case TypeId::kFloat:
-      return CastFromFloat(target_type_id);
-    case TypeId::kDouble:
-    case TypeId::kBoolean:
-    case TypeId::kString:
-    case TypeId::kBinary:
-      break;
-    default:
-      break;
-  }
-
-  return NotSupported("Cast from {} to {} is not implemented", type_->ToString(),
-                      target_type->ToString());
-}
-
-Result<PrimitiveLiteral> PrimitiveLiteral::CastFromInt(TypeId target_type_id) const {
-  auto int_val = std::get<int32_t>(value_);
 
   switch (target_type_id) {
     case TypeId::kLong:
@@ -137,17 +84,19 @@ Result<PrimitiveLiteral> PrimitiveLiteral::CastFromInt(TypeId target_type_id) co
   }
 }
 
-Result<PrimitiveLiteral> PrimitiveLiteral::CastFromLong(TypeId target_type_id) const {
-  auto long_val = std::get<int64_t>(value_);
+Result<PrimitiveLiteral> PrimitiveLiteralCaster::CastFromLong(
+    const PrimitiveLiteral& literal, const std::shared_ptr<PrimitiveType>& target_type) {
+  auto long_val = std::get<int64_t>(literal.value_);
+  auto target_type_id = target_type->type_id();
 
   switch (target_type_id) {
     case TypeId::kInt: {
       // Check for overflow
       if (long_val >= std::numeric_limits<int32_t>::max()) {
-        return PrimitiveLiteral::AboveMaxLiteral(type_);
+        return AboveMaxLiteral(target_type);
       }
       if (long_val <= std::numeric_limits<int32_t>::min()) {
-        return PrimitiveLiteral::BelowMinLiteral(type_);
+        return BelowMinLiteral(target_type);
       }
       return PrimitiveLiteral::Int(static_cast<int32_t>(long_val));
     }
@@ -161,8 +110,10 @@ Result<PrimitiveLiteral> PrimitiveLiteral::CastFromLong(TypeId target_type_id) c
   }
 }
 
-Result<PrimitiveLiteral> PrimitiveLiteral::CastFromFloat(TypeId target_type_id) const {
-  auto float_val = std::get<float>(value_);
+Result<PrimitiveLiteral> PrimitiveLiteralCaster::CastFromFloat(
+    const PrimitiveLiteral& literal, const std::shared_ptr<PrimitiveType>& target_type) {
+  auto float_val = std::get<float>(literal.value_);
+  auto target_type_id = target_type->type_id();
 
   switch (target_type_id) {
     case TypeId::kDouble:
@@ -171,6 +122,58 @@ Result<PrimitiveLiteral> PrimitiveLiteral::CastFromFloat(TypeId target_type_id) 
       return NotImplemented("Cast from Float to {} is not implemented",
                             static_cast<int>(target_type_id));
   }
+}
+
+// Constructor
+PrimitiveLiteral::PrimitiveLiteral(Value value, std::shared_ptr<PrimitiveType> type)
+    : value_(std::move(value)), type_(std::move(type)) {}
+
+// Factory methods
+PrimitiveLiteral PrimitiveLiteral::Boolean(bool value) {
+  return {Value{value}, std::make_shared<BooleanType>()};
+}
+
+PrimitiveLiteral PrimitiveLiteral::Int(int32_t value) {
+  return {Value{value}, std::make_shared<IntType>()};
+}
+
+PrimitiveLiteral PrimitiveLiteral::Long(int64_t value) {
+  return {Value{value}, std::make_shared<LongType>()};
+}
+
+PrimitiveLiteral PrimitiveLiteral::Float(float value) {
+  return {Value{value}, std::make_shared<FloatType>()};
+}
+
+PrimitiveLiteral PrimitiveLiteral::Double(double value) {
+  return {Value{value}, std::make_shared<DoubleType>()};
+}
+
+PrimitiveLiteral PrimitiveLiteral::String(std::string value) {
+  return {Value{std::move(value)}, std::make_shared<StringType>()};
+}
+
+PrimitiveLiteral PrimitiveLiteral::Binary(std::vector<uint8_t> value) {
+  return {Value{std::move(value)}, std::make_shared<BinaryType>()};
+}
+
+Result<PrimitiveLiteral> PrimitiveLiteral::Deserialize(
+    std::span<const uint8_t> data, std::shared_ptr<PrimitiveType> type) {
+  return NotImplemented("Deserialization of PrimitiveLiteral is not implemented yet");
+}
+
+Result<std::vector<uint8_t>> PrimitiveLiteral::Serialize() const {
+  return NotImplemented("Serialization of PrimitiveLiteral is not implemented yet");
+}
+
+// Getters
+
+const std::shared_ptr<PrimitiveType>& PrimitiveLiteral::type() const { return type_; }
+
+// Cast method
+Result<PrimitiveLiteral> PrimitiveLiteral::CastTo(
+    const std::shared_ptr<PrimitiveType>& target_type) const {
+  return PrimitiveLiteralCaster::CastTo(*this, target_type);
 }
 
 // Template function for floating point comparison following Iceberg rules:
@@ -205,7 +208,7 @@ std::partial_ordering PrimitiveLiteral::operator<=>(const PrimitiveLiteral& othe
   }
 
   // If either value is AboveMax or BelowMin, comparison is unordered
-  if (isAboveMax() || isBelowMin() || other.isAboveMax() || other.isBelowMin()) {
+  if (IsAboveMax() || IsBelowMin() || other.IsAboveMax() || other.IsBelowMin()) {
     return std::partial_ordering::unordered;
   }
 
@@ -313,12 +316,51 @@ std::string PrimitiveLiteral::ToString() const {
   }
 }
 
-bool PrimitiveLiteral::isBelowMin() const {
+bool PrimitiveLiteral::IsBelowMin() const {
   return std::holds_alternative<BelowMin>(value_);
 }
 
-bool PrimitiveLiteral::isAboveMax() const {
+bool PrimitiveLiteral::IsAboveMax() const {
   return std::holds_alternative<AboveMax>(value_);
+}
+
+// PrimitiveLiteralCaster implementation
+
+Result<PrimitiveLiteral> PrimitiveLiteralCaster::CastTo(
+    const PrimitiveLiteral& literal, const std::shared_ptr<PrimitiveType>& target_type) {
+  if (*literal.type_ == *target_type) {
+    // If types are the same, return a copy of the current literal
+    return PrimitiveLiteral(literal.value_, target_type);
+  }
+
+  // Handle special values
+  if (std::holds_alternative<PrimitiveLiteral::BelowMin>(literal.value_) ||
+      std::holds_alternative<PrimitiveLiteral::AboveMax>(literal.value_)) {
+    // Cannot cast type for special values
+    return NotSupported("Cannot cast type for {}", literal.ToString());
+  }
+
+  auto source_type_id = literal.type_->type_id();
+
+  // Delegate to specific cast functions based on source type
+  switch (source_type_id) {
+    case TypeId::kInt:
+      return CastFromInt(literal, target_type);
+    case TypeId::kLong:
+      return CastFromLong(literal, target_type);
+    case TypeId::kFloat:
+      return CastFromFloat(literal, target_type);
+    case TypeId::kDouble:
+    case TypeId::kBoolean:
+    case TypeId::kString:
+    case TypeId::kBinary:
+      break;
+    default:
+      break;
+  }
+
+  return NotSupported("Cast from {} to {} is not implemented", literal.type_->ToString(),
+                      target_type->ToString());
 }
 
 }  // namespace iceberg

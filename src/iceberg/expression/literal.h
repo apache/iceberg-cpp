@@ -53,16 +53,15 @@ class ICEBERG_EXPORT PrimitiveLiteral {
     std::strong_ordering operator<=>(const AboveMax&) const = default;
   };
 
-  using PrimitiveLiteralValue =
-      std::variant<bool,                     // for boolean
-                   int32_t,                  // for int, date
-                   int64_t,                  // for long, timestamp, timestamp_tz, time
-                   float,                    // for float
-                   double,                   // for double
-                   std::string,              // for string
-                   std::vector<uint8_t>,     // for binary, fixed
-                   std::array<uint8_t, 16>,  // for uuid and decimal
-                   BelowMin, AboveMax>;
+  using Value = std::variant<bool,         // for boolean
+                             int32_t,      // for int, date
+                             int64_t,      // for long, timestamp, timestamp_tz, time
+                             float,        // for float
+                             double,       // for double
+                             std::string,  // for string
+                             std::vector<uint8_t>,     // for binary, fixed
+                             std::array<uint8_t, 16>,  // for uuid and decimal
+                             BelowMin, AboveMax>;
 
  public:
   /// Factory methods for primitive types
@@ -78,7 +77,8 @@ class ICEBERG_EXPORT PrimitiveLiteral {
   ///
   /// See [this spec](https://iceberg.apache.org/spec/#binary-single-value-serialization)
   /// for reference.
-  static Result<PrimitiveLiteral> Deserialize(std::span<const uint8_t> data);
+  static Result<PrimitiveLiteral> Deserialize(std::span<const uint8_t> data,
+                                              std::shared_ptr<PrimitiveType> type);
 
   /// Serialize iceberg literal to bytes.
   ///
@@ -114,24 +114,18 @@ class ICEBERG_EXPORT PrimitiveLiteral {
   /// and should not be AboveMax or BelowMin.
   std::partial_ordering operator<=>(const PrimitiveLiteral& other) const;
 
-  bool isAboveMax() const;
-  bool isBelowMin() const;
+  bool IsAboveMax() const;
+  bool IsBelowMin() const;
 
   std::string ToString() const;
 
  private:
-  PrimitiveLiteral(PrimitiveLiteralValue value, std::shared_ptr<PrimitiveType> type);
+  PrimitiveLiteral(Value value, std::shared_ptr<PrimitiveType> type);
 
-  static PrimitiveLiteral BelowMinLiteral(std::shared_ptr<PrimitiveType> type);
-  static PrimitiveLiteral AboveMaxLiteral(std::shared_ptr<PrimitiveType> type);
-
-  // Helper methods for type casting
-  Result<PrimitiveLiteral> CastFromInt(TypeId target_type_id) const;
-  Result<PrimitiveLiteral> CastFromLong(TypeId target_type_id) const;
-  Result<PrimitiveLiteral> CastFromFloat(TypeId target_type_id) const;
+  friend class PrimitiveLiteralCaster;
 
  private:
-  PrimitiveLiteralValue value_;
+  Value value_;
   std::shared_ptr<PrimitiveType> type_;
 };
 

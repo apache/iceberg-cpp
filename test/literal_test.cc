@@ -145,11 +145,11 @@ TEST(PrimitiveLiteralTest, LongCastToIntOverflow) {
 
   auto max_result = max_long.CastTo(std::make_shared<IntType>());
   ASSERT_THAT(max_result, IsOk());
-  EXPECT_TRUE(max_result->isAboveMax());
+  EXPECT_TRUE(max_result->IsAboveMax());
 
   auto min_result = min_long.CastTo(std::make_shared<IntType>());
   ASSERT_THAT(min_result, IsOk());
-  EXPECT_TRUE(min_result->isBelowMin());
+  EXPECT_TRUE(min_result->IsBelowMin());
 }
 
 // Float type tests
@@ -267,8 +267,8 @@ TEST(PrimitiveLiteralTest, CrossTypeComparison) {
 TEST(PrimitiveLiteralTest, SpecialValues) {
   auto int_literal = PrimitiveLiteral::Int(42);
 
-  EXPECT_FALSE(int_literal.isAboveMax());
-  EXPECT_FALSE(int_literal.isBelowMin());
+  EXPECT_FALSE(int_literal.IsAboveMax());
+  EXPECT_FALSE(int_literal.IsBelowMin());
 }
 
 // Same type cast test
