@@ -188,8 +188,7 @@ std::strong_ordering CompareFloat(T lhs, T rhs) {
       return std::strong_ordering::equivalent;
     }
     // -NaN < NaN
-    return lhs_is_negative ? std::strong_ordering::less
-                           : std::strong_ordering::greater;
+    return lhs_is_negative ? std::strong_ordering::less : std::strong_ordering::greater;
   }
 
   // For non-NaN values, use standard strong ordering
