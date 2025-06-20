@@ -17,6 +17,8 @@
  * under the License.
  */
 
+#include <ranges>
+
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
 #include <avro/Compiler.hh>
@@ -179,6 +181,123 @@ const std::vector<AppendDatumParam> kPrimitiveTestCases = {
             R"([{"a": "test_string_0"}, {"a": "test_string_1"}, {"a": "test_string_2"}])",
     },
     {
+        .name = "Binary",
+        .projected_type = std::make_shared<BinaryType>(),
+        .source_type = std::make_shared<BinaryType>(),
+        .value_setter =
+            [](::avro::GenericDatum& datum, int i) {
+              datum.value<::avro::GenericRecord>()
+                  .fieldAt(0)
+                  .value<std::vector<uint8_t>>() = {static_cast<uint8_t>('a' + i),
+                                                    static_cast<uint8_t>('b' + i),
+                                                    static_cast<uint8_t>('c' + i)};
+            },
+        .expected_json = R"([{"a": "abc"}, {"a": "bcd"}, {"a": "cde"}])",
+    },
+    {
+        .name = "Fixed",
+        .projected_type = std::make_shared<FixedType>(4),
+        .source_type = std::make_shared<FixedType>(4),
+        .value_setter =
+            [](::avro::GenericDatum& datum, int i) {
+              datum.value<::avro::GenericRecord>()
+                  .fieldAt(0)
+                  .value<::avro::GenericFixed>()
+                  .value() = {
+                  static_cast<uint8_t>('a' + i), static_cast<uint8_t>('b' + i),
+                  static_cast<uint8_t>('c' + i), static_cast<uint8_t>('d' + i)};
+            },
+        .expected_json = R"([{"a": "abcd"}, {"a": "bcde"}, {"a": "cdef"}])",
+    },
+    /// FIXME: NotImplemented: MakeBuilder: cannot construct builder for type
+    /// extension<arrow.uuid>
+    // {
+    //     .name = "UUID",
+    //     .projected_type = std::make_shared<UuidType>(),
+    //     .source_type = std::make_shared<UuidType>(),
+    //     .value_setter =
+    //         [](::avro::GenericDatum& datum, int i) {
+    //           datum.value<::avro::GenericRecord>()
+    //               .fieldAt(0)
+    //               .value<::avro::GenericFixed>()
+    //               .value() = {'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h',
+    //                           'i', 'j', 'k', 'l', 'm', 'n', 'o',
+    //                           static_cast<uint8_t>(i)};
+    //         },
+    //     .expected_json = R"([{"a": "abcdefghijklmnop"}, {"a": "bcdefghijklmnopq"},
+    //     {"a": "cdefghijklmnopqr"}])",
+    // },
+    {
+        .name = "Decimal",
+        .projected_type = std::make_shared<DecimalType>(10, 2),
+        .source_type = std::make_shared<DecimalType>(10, 2),
+        .value_setter =
+            [](::avro::GenericDatum& datum, int i) {
+              int32_t decimal_value = i * 1000 + i;
+              std::vector<uint8_t>& fixed = datum.value<::avro::GenericRecord>()
+                                                .fieldAt(0)
+                                                .value<::avro::GenericFixed>()
+                                                .value();
+              // The byte array must contain the two's-complement representation of
+              // the unscaled integer value in big-endian byte order.
+              for (uint8_t& rvalue : std::ranges::reverse_view(fixed)) {
+                rvalue = static_cast<uint8_t>(decimal_value & 0xFF);
+                decimal_value >>= 8;
+              }
+            },
+        .expected_json = R"([{"a": "0.00"}, {"a": "10.01"}, {"a": "20.02"}])",
+    },
+    {
+        .name = "Date",
+        .projected_type = std::make_shared<DateType>(),
+        .source_type = std::make_shared<DateType>(),
+        .value_setter =
+            [](::avro::GenericDatum& datum, int i) {
+              // Date as days since epoch (1970-01-01)
+              // 0 = 1970-01-01, 1 = 1970-01-02, etc.
+              datum.value<::avro::GenericRecord>().fieldAt(0).value<int32_t>() =
+                  18000 + i;  // ~2019-04-11 + i days
+            },
+        .expected_json = R"([{"a": 18000}, {"a": 18001}, {"a": 18002}])",
+    },
+    {
+        .name = "Time",
+        .projected_type = std::make_shared<TimeType>(),
+        .source_type = std::make_shared<TimeType>(),
+        .value_setter =
+            [](::avro::GenericDatum& datum, int i) {
+              // Time as microseconds since midnight
+              // 12:30:45.123456 + i seconds = 45045123456 + i*1000000 microseconds
+              datum.value<::avro::GenericRecord>().fieldAt(0).value<int64_t>() =
+                  45045123456LL + i * 1000000LL;
+            },
+        .expected_json =
+            R"([{"a": 45045123456}, {"a": 45046123456}, {"a": 45047123456}])",
+    },
+    {
+        .name = "Timestamp",
+        .projected_type = std::make_shared<TimestampType>(),
+        .source_type = std::make_shared<TimestampType>(),
+        .value_setter =
+            [](::avro::GenericDatum& datum, int i) {
+              datum.value<::avro::GenericRecord>().fieldAt(0).value<int64_t>() =
+                  i * 1000000LL;
+            },
+        .expected_json = R"([{"a": 0}, {"a": 1000000}, {"a": 2000000}])",
+    },
+    {
+        .name = "TimestampTz",
+        .projected_type = std::make_shared<TimestampTzType>(),
+        .source_type = std::make_shared<TimestampTzType>(),
+        .value_setter =
+            [](::avro::GenericDatum& datum, int i) {
+              datum.value<::avro::GenericRecord>().fieldAt(0).value<int64_t>() =
+                  1672531200000000LL + i * 1000000LL;
+            },
+        .expected_json =
+            R"([{"a": 1672531200000000}, {"a": 1672531201000000}, {"a": 1672531202000000}])",
+    },
+    {
         .name = "IntToLongPromotion",
         .projected_type = std::make_shared<LongType>(),
         .source_type = std::make_shared<IntType>(),
@@ -188,7 +307,34 @@ const std::vector<AppendDatumParam> kPrimitiveTestCases = {
             },
         .expected_json = R"([{"a": 0}, {"a": 100}, {"a": 200}])",
     },
-    // TODO(gangwu): add test cases for other types
+    {
+        .name = "FloatToDoublePromotion",
+        .projected_type = std::make_shared<DoubleType>(),
+        .source_type = std::make_shared<FloatType>(),
+        .value_setter =
+            [](::avro::GenericDatum& datum, int i) {
+              datum.value<::avro::GenericRecord>().fieldAt(0).value<float>() = i * 1.0f;
+            },
+        .expected_json = R"([{"a": 0.0}, {"a": 1.0}, {"a": 2.0}])",
+    },
+    {
+        .name = "DecimalPrecisionPromotion",
+        .projected_type = std::make_shared<DecimalType>(10, 2),
+        .source_type = std::make_shared<DecimalType>(6, 2),
+        .value_setter =
+            [](::avro::GenericDatum& datum, int i) {
+              int32_t decimal_value = i * 1000 + i;
+              std::vector<uint8_t>& fixed = datum.value<::avro::GenericRecord>()
+                                                .fieldAt(0)
+                                                .value<::avro::GenericFixed>()
+                                                .value();
+              for (uint8_t& rvalue : std::ranges::reverse_view(fixed)) {
+                rvalue = static_cast<uint8_t>(decimal_value & 0xFF);
+                decimal_value >>= 8;
+              }
+            },
+        .expected_json = R"([{"a": "0.00"}, {"a": "10.01"}, {"a": "20.02"}])",
+    },
 };
 
 INSTANTIATE_TEST_SUITE_P(AllPrimitiveTypes, AppendDatumToBuilderTest,

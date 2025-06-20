@@ -501,7 +501,7 @@ Status ValidateAvroSchemaEvolution(const Type& expected_type,
     case TypeId::kTimestamp:
       if (avro_node->type() == ::avro::AVRO_LONG &&
           HasLogicalType(avro_node, ::avro::LogicalType::TIMESTAMP_MICROS) &&
-          GetAdjustToUtc(avro_node).value_or("false") == "true") {
+          GetAdjustToUtc(avro_node).value_or("false") == "false") {
         return {};
       }
       break;

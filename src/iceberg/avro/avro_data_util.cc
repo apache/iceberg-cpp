@@ -203,7 +203,7 @@ Status AppendPrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
         ICEBERG_ARROW_RETURN_NOT_OK(
             builder->Append(static_cast<int64_t>(avro_datum.value<int32_t>())));
       } else {
-        return InvalidArgument("Expected Avro long for long field, got: {}",
+        return InvalidArgument("Expected Avro int/long for long field, got: {}",
                                ToString(avro_node));
       }
       return {};
@@ -227,7 +227,7 @@ Status AppendPrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
         ICEBERG_ARROW_RETURN_NOT_OK(
             builder->Append(static_cast<double>(avro_datum.value<float>())));
       } else {
-        return InvalidArgument("Expected Avro double for double field, got: {}",
+        return InvalidArgument("Expected Avro float/double for double field, got: {}",
                                ToString(avro_node));
       }
       return {};
@@ -351,8 +351,8 @@ Status AppendPrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
     }
 
     default:
-      return InvalidArgument("Unsupported primitive type: {}",
-                             projected_field.type()->ToString());
+      return InvalidArgument("Unsupported primitive type {} to append avro node {}",
+                             projected_field.type()->ToString(), ToString(avro_node));
   }
 }
 
