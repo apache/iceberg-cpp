@@ -28,6 +28,7 @@
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/util/timepoint.h"
+#include "iceberg/util/unreachable.h"
 
 namespace iceberg {
 
@@ -50,6 +51,8 @@ ICEBERG_EXPORT constexpr std::string_view SnapshotRefTypeToString(
     case SnapshotRefType::kTag:
       return "tag";
   }
+  internal::Unreachable(
+      std::format("Invalid snapshot reference type: {}", static_cast<int>(type)));
 }
 /// \brief Get the relative snapshot reference type from name
 ICEBERG_EXPORT constexpr Result<SnapshotRefType> SnapshotRefTypeFromString(
