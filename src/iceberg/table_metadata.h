@@ -23,12 +23,14 @@
 /// Table metadata for Iceberg tables.
 
 #include <memory>
+#include <mutex>
 #include <string>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/snapshot.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/timepoint.h"
 
@@ -127,6 +129,8 @@ struct ICEBERG_EXPORT TableMetadata {
   Result<std::shared_ptr<PartitionSpec>> PartitionSpec() const;
   /// \brief Get the current sort order, return NotFoundError if not found
   Result<std::shared_ptr<SortOrder>> SortOrder() const;
+  /// \brief Get the current snapshot, return NotFoundError if not found
+  Result<std::shared_ptr<Snapshot>> Snapshot() const;
 
   friend bool operator==(const TableMetadata& lhs, const TableMetadata& rhs);
 };
