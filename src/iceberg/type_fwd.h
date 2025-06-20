@@ -99,8 +99,9 @@ class TransformFunction;
 struct PartitionStatisticsFile;
 struct Snapshot;
 struct SnapshotRef;
-struct SnapshotLogEntry;
+
 struct MetadataLogEntry;
+struct SnapshotLogEntry;
 
 struct StatisticsFile;
 struct TableMetadata;

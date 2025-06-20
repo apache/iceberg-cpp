@@ -41,7 +41,8 @@ class ICEBERG_EXPORT Table {
   /// \param[in] metadata The metadata for the table.
   /// \param[in] metadata_location The location of the table metadata file.
   /// \param[in] io The FileIO to read and write table data and metadata files.
-  /// \param[in] catalog The catalog that this table belongs to.
+  /// \param[in] catalog The catalog that this table belongs to. If null, the table will
+  /// be read-only.
   Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
         std::string metadata_location, std::shared_ptr<FileIO> io,
         std::shared_ptr<Catalog> catalog)
@@ -57,25 +58,26 @@ class ICEBERG_EXPORT Table {
   /// \brief Returns the UUID of the table
   const std::string& uuid() const;
 
-  /// \brief Return the schema for this table, return empty schema if not found
-  const std::shared_ptr<Schema>& schema() const;
+  /// \brief Return the schema for this table, return NotFoundError if not found
+  Result<std::shared_ptr<Schema>> schema() const;
 
   /// \brief Return a map of schema for this table
-  const std::unordered_map<int32_t, std::shared_ptr<Schema>>& schemas() const;
+  const std::shared_ptr<std::unordered_map<int32_t, std::shared_ptr<Schema>>>& schemas()
+      const;
 
-  /// \brief Return the partition spec for this table, return null if default spec is not
-  /// found
-  const std::shared_ptr<PartitionSpec>& spec() const;
+  /// \brief Return the partition spec for this table, return NotFoundError if not found
+  Result<std::shared_ptr<PartitionSpec>> spec() const;
 
   /// \brief Return a map of partition specs for this table
-  const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>& specs() const;
+  const std::shared_ptr<std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>>&
+  specs() const;
 
-  /// \brief Return the sort order for this table, return null if default sort order is
-  /// not found
-  const std::shared_ptr<SortOrder>& sort_order() const;
+  /// \brief Return the sort order for this table, return NotFoundError if not found
+  Result<std::shared_ptr<SortOrder>> sort_order() const;
 
   /// \brief Return a map of sort order IDs to sort orders for this table
-  const std::unordered_map<int32_t, std::shared_ptr<SortOrder>>& sort_orders() const;
+  const std::shared_ptr<std::unordered_map<int32_t, std::shared_ptr<SortOrder>>>&
+  sort_orders() const;
 
   /// \brief Return a map of string properties for this table
   const std::unordered_map<std::string, std::string>& properties() const;
@@ -83,15 +85,14 @@ class ICEBERG_EXPORT Table {
   /// \brief Return the table's base location
   const std::string& location() const;
 
-  /// \brief Return the table's current snapshot, return null if not found
-  std::shared_ptr<Snapshot> current_snapshot() const;
+  /// \brief Return the table's current snapshot, return NotFoundError if not found
+  Result<std::shared_ptr<Snapshot>> current_snapshot() const;
 
-  /// \brief Get the snapshot of this table with the given id, or null if there is no
-  /// matching snapshot
+  /// \brief Get the snapshot of this table with the given id
   ///
   /// \param snapshot_id the ID of the snapshot to get
-  /// \return the Snapshot with the given id
-  std::shared_ptr<Snapshot> SnapshotById(int64_t snapshot_id) const;
+  /// \return the Snapshot with the given id, return NotFoundError if not found
+  Result<std::shared_ptr<Snapshot>> SnapshotById(int64_t snapshot_id) const;
 
   /// \brief Get the snapshots of this table
   const std::vector<std::shared_ptr<Snapshot>>& snapshots() const;
@@ -101,6 +102,9 @@ class ICEBERG_EXPORT Table {
   /// \return a vector of history entries
   const std::vector<SnapshotLogEntry>& history() const;
 
+  /// \brief Returns a FileIO to read and write table data and metadata files
+  const std::shared_ptr<FileIO>& io() const;
+
  private:
   const TableIdentifier identifier_;
   const std::shared_ptr<TableMetadata> metadata_;
@@ -108,24 +112,12 @@ class ICEBERG_EXPORT Table {
   std::shared_ptr<FileIO> io_;
   std::shared_ptr<Catalog> catalog_;
 
-  mutable std::shared_ptr<Schema> schema_;
-  mutable std::unordered_map<int32_t, std::shared_ptr<Schema>> schemas_map_;
-
-  mutable std::shared_ptr<PartitionSpec> partition_spec_;
-  mutable std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> partition_spec_map_;
-
-  mutable std::shared_ptr<SortOrder> sort_order_;
-  mutable std::unordered_map<int32_t, std::shared_ptr<SortOrder>> sort_orders_map_;
-
-  mutable std::shared_ptr<Snapshot> current_snapshot_;
-
-  // once_flags
-  mutable std::once_flag init_schemas_once_;
-  mutable std::once_flag init_partition_spec_once_;
-  mutable std::once_flag init_partition_specs_once_;
-  mutable std::once_flag init_sort_order_once_;
-  mutable std::once_flag init_sort_orders_once_;
-  mutable std::once_flag init_snapshot_once_;
+  mutable std::shared_ptr<std::unordered_map<int32_t, std::shared_ptr<Schema>>>
+      schemas_map_;
+  mutable std::shared_ptr<std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>>
+      partition_spec_map_;
+  mutable std::shared_ptr<std::unordered_map<int32_t, std::shared_ptr<SortOrder>>>
+      sort_orders_map_;
 };
 
 }  // namespace iceberg

@@ -46,21 +46,22 @@ TEST(Table, TableV1) {
 
   // Check table schema
   auto schema = table.schema();
-  ASSERT_EQ(schema->fields().size(), 3);
+  ASSERT_TRUE(schema.has_value());
+  ASSERT_EQ(schema.value()->fields().size(), 3);
   auto schemas = table.schemas();
-  ASSERT_TRUE(schemas.empty());
+  ASSERT_TRUE(schemas->empty());
 
   // Check table spec
   auto spec = table.spec();
-  ASSERT_TRUE(spec != nullptr);
+  ASSERT_TRUE(spec.has_value());
   auto specs = table.specs();
-  ASSERT_EQ(1UL, specs.size());
+  ASSERT_EQ(1UL, specs->size());
 
   // Check table sort_order
   auto sort_order = table.sort_order();
-  ASSERT_TRUE(sort_order != nullptr);
+  ASSERT_TRUE(sort_order.has_value());
   auto sort_orders = table.sort_orders();
-  ASSERT_EQ(1UL, sort_orders.size());
+  ASSERT_EQ(1UL, sort_orders->size());
 
   // Check table location
   auto location = table.location();
@@ -69,6 +70,9 @@ TEST(Table, TableV1) {
   // Check table snapshots
   auto snapshots = table.snapshots();
   ASSERT_TRUE(snapshots.empty());
+
+  auto io = table.io();
+  ASSERT_TRUE(io == nullptr);
 }
 
 TEST(Table, TableV2) {
@@ -82,21 +86,22 @@ TEST(Table, TableV2) {
 
   // Check table schema
   auto schema = table.schema();
-  ASSERT_EQ(schema->fields().size(), 3);
+  ASSERT_TRUE(schema.has_value());
+  ASSERT_EQ(schema.value()->fields().size(), 3);
   auto schemas = table.schemas();
-  ASSERT_FALSE(schemas.empty());
+  ASSERT_FALSE(schemas->empty());
 
   // Check partition spec
   auto spec = table.spec();
-  ASSERT_TRUE(spec != nullptr);
+  ASSERT_TRUE(spec.has_value());
   auto specs = table.specs();
-  ASSERT_EQ(1UL, specs.size());
+  ASSERT_EQ(1UL, specs->size());
 
   // Check sort order
   auto sort_order = table.sort_order();
-  ASSERT_TRUE(sort_order != nullptr);
+  ASSERT_TRUE(sort_order.has_value());
   auto sort_orders = table.sort_orders();
-  ASSERT_EQ(1UL, sort_orders.size());
+  ASSERT_EQ(1UL, sort_orders->size());
 
   // Check table location
   auto location = table.location();
@@ -106,10 +111,12 @@ TEST(Table, TableV2) {
   auto snapshots = table.snapshots();
   ASSERT_EQ(2UL, snapshots.size());
   auto snapshot = table.current_snapshot();
-  ASSERT_TRUE(snapshot != nullptr);
+  ASSERT_TRUE(snapshot.has_value());
+  snapshot = table.SnapshotById(snapshot.value()->snapshot_id);
+  ASSERT_TRUE(snapshot.has_value());
   auto invalid_snapshot_id = 9999;
   snapshot = table.SnapshotById(invalid_snapshot_id);
-  ASSERT_TRUE(snapshot == nullptr);
+  ASSERT_FALSE(snapshot.has_value());
 }
 
 }  // namespace iceberg

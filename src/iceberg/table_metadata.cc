@@ -47,24 +47,13 @@ std::string ToString(const MetadataLogEntry& entry) {
 }
 
 Result<std::shared_ptr<Schema>> TableMetadata::Schema() const {
-  std::call_once(init_schema_once, [this]() {
-    auto iter = std::ranges::find_if(schemas, [this](const auto& schema) {
-      return schema->schema_id() == current_schema_id;
-    });
-    if (iter != schemas.end()) {
-      schema = *iter;
-    }
-
-    // compatible with V1 table schema
-    if (!schema && schemas.size() == 1UL) {
-      schema = schemas.front();
-    }
+  auto iter = std::ranges::find_if(schemas, [this](const auto& schema) {
+    return schema->schema_id() == current_schema_id;
   });
-
-  if (!schema) {
-    return NotFound("Current schema is not defined for this table");
+  if (iter == schemas.end()) {
+    return NotFound("Current schema is not found");
   }
-  return schema;
+  return *iter;
 }
 
 Result<std::shared_ptr<PartitionSpec>> TableMetadata::PartitionSpec() const {
@@ -88,9 +77,6 @@ Result<std::shared_ptr<SortOrder>> TableMetadata::SortOrder() const {
 }
 
 Result<std::shared_ptr<Snapshot>> TableMetadata::Snapshot() const {
-  if (current_snapshot_id == Snapshot::kInvalidSnapshotId) {
-    return NotFound("Current snapshot is not defined for this table");
-  }
   auto iter = std::ranges::find_if(snapshots, [this](const auto& snapshot) {
     return snapshot->snapshot_id == current_snapshot_id;
   });

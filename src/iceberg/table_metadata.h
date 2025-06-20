@@ -36,6 +36,22 @@
 
 namespace iceberg {
 
+/// \brief Represents a snapshot log entry
+struct ICEBERG_EXPORT SnapshotLogEntry {
+  /// The timestamp in milliseconds of the change
+  TimePointMs timestamp_ms;
+  /// ID of the snapshot
+  int64_t snapshot_id;
+
+  friend bool operator==(const SnapshotLogEntry& lhs, const SnapshotLogEntry& rhs) {
+    return lhs.timestamp_ms == rhs.timestamp_ms && lhs.snapshot_id == rhs.snapshot_id;
+  }
+
+  friend bool operator!=(const SnapshotLogEntry& lhs, const SnapshotLogEntry& rhs) {
+    return !(lhs == rhs);
+  }
+};
+
 /// \brief Represents a metadata log entry
 struct ICEBERG_EXPORT MetadataLogEntry {
   /// The timestamp in milliseconds of the change
@@ -80,8 +96,6 @@ struct ICEBERG_EXPORT TableMetadata {
   TimePointMs last_updated_ms;
   /// The highest assigned column ID for the table
   int32_t last_column_id;
-  /// The current schema for the table, or null if not set
-  mutable std::shared_ptr<Schema> schema;
   /// A list of schemas
   std::vector<std::shared_ptr<Schema>> schemas;
   /// ID of the table's current schema
@@ -116,9 +130,6 @@ struct ICEBERG_EXPORT TableMetadata {
   std::vector<std::shared_ptr<struct PartitionStatisticsFile>> partition_statistics;
   /// A `long` higher than all assigned row IDs
   int64_t next_row_id;
-
-  /// \brief Used for lazy initialization of schema
-  mutable std::once_flag init_schema_once;
 
   /// \brief Get the current schema, return NotFoundError if not found
   Result<std::shared_ptr<Schema>> Schema() const;
