@@ -50,7 +50,7 @@ target_link_libraries(catalog_test PRIVATE iceberg_static GTest::gtest_main GTes
 add_test(NAME catalog_test COMMAND catalog_test)
 
 add_executable(expression_test)
-target_sources(expression_test PRIVATE expression_test.cc)
+target_sources(expression_test PRIVATE expression_test.cc literal_test.cc)
 target_link_libraries(expression_test PRIVATE iceberg_static GTest::gtest_main
                                               GTest::gmock)
 add_test(NAME expression_test COMMAND expression_test)

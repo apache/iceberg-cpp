@@ -19,7 +19,7 @@
 
 #pragma once
 
-/// \file iceberg/expression.h
+/// \file iceberg/expression/expression.h
 /// Expression interface for Iceberg table operations.
 
 #include <memory>
