@@ -32,8 +32,8 @@ namespace iceberg {
 
 // Boolean type tests
 TEST(PrimitiveLiteralTest, BooleanBasics) {
-  auto true_literal = PrimitiveLiteral::Boolean(true);
-  auto false_literal = PrimitiveLiteral::Boolean(false);
+  auto true_literal = Literal::Boolean(true);
+  auto false_literal = Literal::Boolean(false);
 
   EXPECT_EQ(true_literal.type()->type_id(), TypeId::kBoolean);
   EXPECT_EQ(false_literal.type()->type_id(), TypeId::kBoolean);
@@ -43,9 +43,9 @@ TEST(PrimitiveLiteralTest, BooleanBasics) {
 }
 
 TEST(PrimitiveLiteralTest, BooleanComparison) {
-  auto true_literal = PrimitiveLiteral::Boolean(true);
-  auto false_literal = PrimitiveLiteral::Boolean(false);
-  auto another_true = PrimitiveLiteral::Boolean(true);
+  auto true_literal = Literal::Boolean(true);
+  auto false_literal = Literal::Boolean(false);
+  auto another_true = Literal::Boolean(true);
 
   EXPECT_EQ(true_literal <=> another_true, std::partial_ordering::equivalent);
   EXPECT_EQ(true_literal <=> false_literal, std::partial_ordering::greater);
@@ -54,8 +54,8 @@ TEST(PrimitiveLiteralTest, BooleanComparison) {
 
 // Int type tests
 TEST(PrimitiveLiteralTest, IntBasics) {
-  auto int_literal = PrimitiveLiteral::Int(42);
-  auto negative_int = PrimitiveLiteral::Int(-123);
+  auto int_literal = Literal::Int(42);
+  auto negative_int = Literal::Int(-123);
 
   EXPECT_EQ(int_literal.type()->type_id(), TypeId::kInt);
   EXPECT_EQ(negative_int.type()->type_id(), TypeId::kInt);
@@ -65,9 +65,9 @@ TEST(PrimitiveLiteralTest, IntBasics) {
 }
 
 TEST(PrimitiveLiteralTest, IntComparison) {
-  auto int1 = PrimitiveLiteral::Int(10);
-  auto int2 = PrimitiveLiteral::Int(20);
-  auto int3 = PrimitiveLiteral::Int(10);
+  auto int1 = Literal::Int(10);
+  auto int2 = Literal::Int(20);
+  auto int3 = Literal::Int(10);
 
   EXPECT_EQ(int1 <=> int3, std::partial_ordering::equivalent);
   EXPECT_EQ(int1 <=> int2, std::partial_ordering::less);
@@ -75,7 +75,7 @@ TEST(PrimitiveLiteralTest, IntComparison) {
 }
 
 TEST(PrimitiveLiteralTest, IntCastTo) {
-  auto int_literal = PrimitiveLiteral::Int(42);
+  auto int_literal = Literal::Int(42);
 
   // Cast to Long
   auto long_result = int_literal.CastTo(std::make_shared<LongType>());
@@ -96,8 +96,8 @@ TEST(PrimitiveLiteralTest, IntCastTo) {
 
 // Long type tests
 TEST(PrimitiveLiteralTest, LongBasics) {
-  auto long_literal = PrimitiveLiteral::Long(1234567890L);
-  auto negative_long = PrimitiveLiteral::Long(-9876543210L);
+  auto long_literal = Literal::Long(1234567890L);
+  auto negative_long = Literal::Long(-9876543210L);
 
   EXPECT_EQ(long_literal.type()->type_id(), TypeId::kLong);
   EXPECT_EQ(negative_long.type()->type_id(), TypeId::kLong);
@@ -107,9 +107,9 @@ TEST(PrimitiveLiteralTest, LongBasics) {
 }
 
 TEST(PrimitiveLiteralTest, LongComparison) {
-  auto long1 = PrimitiveLiteral::Long(100L);
-  auto long2 = PrimitiveLiteral::Long(200L);
-  auto long3 = PrimitiveLiteral::Long(100L);
+  auto long1 = Literal::Long(100L);
+  auto long2 = Literal::Long(200L);
+  auto long3 = Literal::Long(100L);
 
   EXPECT_EQ(long1 <=> long3, std::partial_ordering::equivalent);
   EXPECT_EQ(long1 <=> long2, std::partial_ordering::less);
@@ -117,7 +117,7 @@ TEST(PrimitiveLiteralTest, LongComparison) {
 }
 
 TEST(PrimitiveLiteralTest, LongCastTo) {
-  auto long_literal = PrimitiveLiteral::Long(42L);
+  auto long_literal = Literal::Long(42L);
 
   // Cast to Int (within range)
   auto int_result = long_literal.CastTo(std::make_shared<IntType>());
@@ -138,10 +138,10 @@ TEST(PrimitiveLiteralTest, LongCastTo) {
 
 TEST(PrimitiveLiteralTest, LongCastToIntOverflow) {
   // Test overflow cases
-  auto max_long = PrimitiveLiteral::Long(
-      static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1);
-  auto min_long = PrimitiveLiteral::Long(
-      static_cast<int64_t>(std::numeric_limits<int32_t>::min()) - 1);
+  auto max_long =
+      Literal::Long(static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1);
+  auto min_long =
+      Literal::Long(static_cast<int64_t>(std::numeric_limits<int32_t>::min()) - 1);
 
   auto max_result = max_long.CastTo(std::make_shared<IntType>());
   ASSERT_THAT(max_result, IsOk());
@@ -154,8 +154,8 @@ TEST(PrimitiveLiteralTest, LongCastToIntOverflow) {
 
 // Float type tests
 TEST(PrimitiveLiteralTest, FloatBasics) {
-  auto float_literal = PrimitiveLiteral::Float(3.14f);
-  auto negative_float = PrimitiveLiteral::Float(-2.71f);
+  auto float_literal = Literal::Float(3.14f);
+  auto negative_float = Literal::Float(-2.71f);
 
   EXPECT_EQ(float_literal.type()->type_id(), TypeId::kFloat);
   EXPECT_EQ(negative_float.type()->type_id(), TypeId::kFloat);
@@ -165,9 +165,9 @@ TEST(PrimitiveLiteralTest, FloatBasics) {
 }
 
 TEST(PrimitiveLiteralTest, FloatComparison) {
-  auto float1 = PrimitiveLiteral::Float(1.5f);
-  auto float2 = PrimitiveLiteral::Float(2.5f);
-  auto float3 = PrimitiveLiteral::Float(1.5f);
+  auto float1 = Literal::Float(1.5f);
+  auto float2 = Literal::Float(2.5f);
+  auto float3 = Literal::Float(1.5f);
 
   EXPECT_EQ(float1 <=> float3, std::partial_ordering::equivalent);
   EXPECT_EQ(float1 <=> float2, std::partial_ordering::less);
@@ -175,7 +175,7 @@ TEST(PrimitiveLiteralTest, FloatComparison) {
 }
 
 TEST(PrimitiveLiteralTest, FloatCastTo) {
-  auto float_literal = PrimitiveLiteral::Float(3.14f);
+  auto float_literal = Literal::Float(3.14f);
 
   // Cast to Double
   auto double_result = float_literal.CastTo(std::make_shared<DoubleType>());
@@ -185,8 +185,8 @@ TEST(PrimitiveLiteralTest, FloatCastTo) {
 
 // Double type tests
 TEST(PrimitiveLiteralTest, DoubleBasics) {
-  auto double_literal = PrimitiveLiteral::Double(std::numbers::pi);
-  auto negative_double = PrimitiveLiteral::Double(-std::numbers::e);
+  auto double_literal = Literal::Double(std::numbers::pi);
+  auto negative_double = Literal::Double(-std::numbers::e);
 
   EXPECT_EQ(double_literal.type()->type_id(), TypeId::kDouble);
   EXPECT_EQ(negative_double.type()->type_id(), TypeId::kDouble);
@@ -196,9 +196,9 @@ TEST(PrimitiveLiteralTest, DoubleBasics) {
 }
 
 TEST(PrimitiveLiteralTest, DoubleComparison) {
-  auto double1 = PrimitiveLiteral::Double(1.5);
-  auto double2 = PrimitiveLiteral::Double(2.5);
-  auto double3 = PrimitiveLiteral::Double(1.5);
+  auto double1 = Literal::Double(1.5);
+  auto double2 = Literal::Double(2.5);
+  auto double3 = Literal::Double(1.5);
 
   EXPECT_EQ(double1 <=> double3, std::partial_ordering::equivalent);
   EXPECT_EQ(double1 <=> double2, std::partial_ordering::less);
@@ -207,8 +207,8 @@ TEST(PrimitiveLiteralTest, DoubleComparison) {
 
 // String type tests
 TEST(PrimitiveLiteralTest, StringBasics) {
-  auto string_literal = PrimitiveLiteral::String("hello world");
-  auto empty_string = PrimitiveLiteral::String("");
+  auto string_literal = Literal::String("hello world");
+  auto empty_string = Literal::String("");
 
   EXPECT_EQ(string_literal.type()->type_id(), TypeId::kString);
   EXPECT_EQ(empty_string.type()->type_id(), TypeId::kString);
@@ -218,9 +218,9 @@ TEST(PrimitiveLiteralTest, StringBasics) {
 }
 
 TEST(PrimitiveLiteralTest, StringComparison) {
-  auto string1 = PrimitiveLiteral::String("apple");
-  auto string2 = PrimitiveLiteral::String("banana");
-  auto string3 = PrimitiveLiteral::String("apple");
+  auto string1 = Literal::String("apple");
+  auto string2 = Literal::String("banana");
+  auto string3 = Literal::String("apple");
 
   EXPECT_EQ(string1 <=> string3, std::partial_ordering::equivalent);
   EXPECT_EQ(string1 <=> string2, std::partial_ordering::less);
@@ -230,8 +230,8 @@ TEST(PrimitiveLiteralTest, StringComparison) {
 // Binary type tests
 TEST(PrimitiveLiteralTest, BinaryBasics) {
   std::vector<uint8_t> data = {0x01, 0x02, 0x03, 0xFF};
-  auto binary_literal = PrimitiveLiteral::Binary(data);
-  auto empty_binary = PrimitiveLiteral::Binary({});
+  auto binary_literal = Literal::Binary(data);
+  auto empty_binary = Literal::Binary({});
 
   EXPECT_EQ(binary_literal.type()->type_id(), TypeId::kBinary);
   EXPECT_EQ(empty_binary.type()->type_id(), TypeId::kBinary);
@@ -245,9 +245,9 @@ TEST(PrimitiveLiteralTest, BinaryComparison) {
   std::vector<uint8_t> data2 = {0x01, 0x03};
   std::vector<uint8_t> data3 = {0x01, 0x02};
 
-  auto binary1 = PrimitiveLiteral::Binary(data1);
-  auto binary2 = PrimitiveLiteral::Binary(data2);
-  auto binary3 = PrimitiveLiteral::Binary(data3);
+  auto binary1 = Literal::Binary(data1);
+  auto binary2 = Literal::Binary(data2);
+  auto binary3 = Literal::Binary(data3);
 
   EXPECT_EQ(binary1 <=> binary3, std::partial_ordering::equivalent);
   EXPECT_EQ(binary1 <=> binary2, std::partial_ordering::less);
@@ -256,8 +256,8 @@ TEST(PrimitiveLiteralTest, BinaryComparison) {
 
 // Cross-type comparison tests
 TEST(PrimitiveLiteralTest, CrossTypeComparison) {
-  auto int_literal = PrimitiveLiteral::Int(42);
-  auto string_literal = PrimitiveLiteral::String("42");
+  auto int_literal = Literal::Int(42);
+  auto string_literal = Literal::String("42");
 
   // Different types should return unordered
   EXPECT_EQ(int_literal <=> string_literal, std::partial_ordering::unordered);
@@ -265,7 +265,7 @@ TEST(PrimitiveLiteralTest, CrossTypeComparison) {
 
 // Special value tests
 TEST(PrimitiveLiteralTest, SpecialValues) {
-  auto int_literal = PrimitiveLiteral::Int(42);
+  auto int_literal = Literal::Int(42);
 
   EXPECT_FALSE(int_literal.IsAboveMax());
   EXPECT_FALSE(int_literal.IsBelowMin());
@@ -273,7 +273,7 @@ TEST(PrimitiveLiteralTest, SpecialValues) {
 
 // Same type cast test
 TEST(PrimitiveLiteralTest, SameTypeCast) {
-  auto int_literal = PrimitiveLiteral::Int(42);
+  auto int_literal = Literal::Int(42);
 
   auto same_type_result = int_literal.CastTo(std::make_shared<IntType>());
   ASSERT_THAT(same_type_result, IsOk());
@@ -284,14 +284,14 @@ TEST(PrimitiveLiteralTest, SameTypeCast) {
 // Float special values tests
 TEST(PrimitiveLiteralTest, FloatSpecialValuesComparison) {
   // Create special float values
-  auto neg_nan = PrimitiveLiteral::Float(-std::numeric_limits<float>::quiet_NaN());
-  auto neg_inf = PrimitiveLiteral::Float(-std::numeric_limits<float>::infinity());
-  auto neg_value = PrimitiveLiteral::Float(-1.5f);
-  auto neg_zero = PrimitiveLiteral::Float(-0.0f);
-  auto pos_zero = PrimitiveLiteral::Float(0.0f);
-  auto pos_value = PrimitiveLiteral::Float(1.5f);
-  auto pos_inf = PrimitiveLiteral::Float(std::numeric_limits<float>::infinity());
-  auto pos_nan = PrimitiveLiteral::Float(std::numeric_limits<float>::quiet_NaN());
+  auto neg_nan = Literal::Float(-std::numeric_limits<float>::quiet_NaN());
+  auto neg_inf = Literal::Float(-std::numeric_limits<float>::infinity());
+  auto neg_value = Literal::Float(-1.5f);
+  auto neg_zero = Literal::Float(-0.0f);
+  auto pos_zero = Literal::Float(0.0f);
+  auto pos_value = Literal::Float(1.5f);
+  auto pos_inf = Literal::Float(std::numeric_limits<float>::infinity());
+  auto pos_nan = Literal::Float(std::numeric_limits<float>::quiet_NaN());
 
   // Test the ordering: -NaN < -Infinity < -value < -0 < 0 < value < Infinity < NaN
   EXPECT_EQ(neg_nan <=> neg_inf, std::partial_ordering::less);
@@ -304,10 +304,9 @@ TEST(PrimitiveLiteralTest, FloatSpecialValuesComparison) {
 }
 
 TEST(PrimitiveLiteralTest, FloatNaNComparison) {
-  auto nan1 = PrimitiveLiteral::Float(std::numeric_limits<float>::quiet_NaN());
-  auto nan2 = PrimitiveLiteral::Float(std::numeric_limits<float>::quiet_NaN());
-  auto signaling_nan =
-      PrimitiveLiteral::Float(std::numeric_limits<float>::signaling_NaN());
+  auto nan1 = Literal::Float(std::numeric_limits<float>::quiet_NaN());
+  auto nan2 = Literal::Float(std::numeric_limits<float>::quiet_NaN());
+  auto signaling_nan = Literal::Float(std::numeric_limits<float>::signaling_NaN());
 
   // NaN should be equal to itself in strong ordering
   EXPECT_EQ(nan1 <=> nan2, std::partial_ordering::equivalent);
@@ -315,10 +314,10 @@ TEST(PrimitiveLiteralTest, FloatNaNComparison) {
 }
 
 TEST(PrimitiveLiteralTest, FloatInfinityComparison) {
-  auto neg_inf = PrimitiveLiteral::Float(-std::numeric_limits<float>::infinity());
-  auto pos_inf = PrimitiveLiteral::Float(std::numeric_limits<float>::infinity());
-  auto max_value = PrimitiveLiteral::Float(std::numeric_limits<float>::max());
-  auto min_value = PrimitiveLiteral::Float(std::numeric_limits<float>::lowest());
+  auto neg_inf = Literal::Float(-std::numeric_limits<float>::infinity());
+  auto pos_inf = Literal::Float(std::numeric_limits<float>::infinity());
+  auto max_value = Literal::Float(std::numeric_limits<float>::max());
+  auto min_value = Literal::Float(std::numeric_limits<float>::lowest());
 
   EXPECT_EQ(neg_inf <=> min_value, std::partial_ordering::less);
   EXPECT_EQ(max_value <=> pos_inf, std::partial_ordering::less);
@@ -326,8 +325,8 @@ TEST(PrimitiveLiteralTest, FloatInfinityComparison) {
 }
 
 TEST(PrimitiveLiteralTest, FloatZeroComparison) {
-  auto neg_zero = PrimitiveLiteral::Float(-0.0f);
-  auto pos_zero = PrimitiveLiteral::Float(0.0f);
+  auto neg_zero = Literal::Float(-0.0f);
+  auto pos_zero = Literal::Float(0.0f);
 
   // -0 should be less than +0
   EXPECT_EQ(neg_zero <=> pos_zero, std::partial_ordering::less);
@@ -336,14 +335,14 @@ TEST(PrimitiveLiteralTest, FloatZeroComparison) {
 // Double special values tests
 TEST(PrimitiveLiteralTest, DoubleSpecialValuesComparison) {
   // Create special double values
-  auto neg_nan = PrimitiveLiteral::Double(-std::numeric_limits<double>::quiet_NaN());
-  auto neg_inf = PrimitiveLiteral::Double(-std::numeric_limits<double>::infinity());
-  auto neg_value = PrimitiveLiteral::Double(-1.5);
-  auto neg_zero = PrimitiveLiteral::Double(-0.0);
-  auto pos_zero = PrimitiveLiteral::Double(0.0);
-  auto pos_value = PrimitiveLiteral::Double(1.5);
-  auto pos_inf = PrimitiveLiteral::Double(std::numeric_limits<double>::infinity());
-  auto pos_nan = PrimitiveLiteral::Double(std::numeric_limits<double>::quiet_NaN());
+  auto neg_nan = Literal::Double(-std::numeric_limits<double>::quiet_NaN());
+  auto neg_inf = Literal::Double(-std::numeric_limits<double>::infinity());
+  auto neg_value = Literal::Double(-1.5);
+  auto neg_zero = Literal::Double(-0.0);
+  auto pos_zero = Literal::Double(0.0);
+  auto pos_value = Literal::Double(1.5);
+  auto pos_inf = Literal::Double(std::numeric_limits<double>::infinity());
+  auto pos_nan = Literal::Double(std::numeric_limits<double>::quiet_NaN());
 
   // Test the ordering: -NaN < -Infinity < -value < -0 < 0 < value < Infinity < NaN
   EXPECT_EQ(neg_nan <=> neg_inf, std::partial_ordering::less);
@@ -356,10 +355,9 @@ TEST(PrimitiveLiteralTest, DoubleSpecialValuesComparison) {
 }
 
 TEST(PrimitiveLiteralTest, DoubleNaNComparison) {
-  auto nan1 = PrimitiveLiteral::Double(std::numeric_limits<double>::quiet_NaN());
-  auto nan2 = PrimitiveLiteral::Double(std::numeric_limits<double>::quiet_NaN());
-  auto signaling_nan =
-      PrimitiveLiteral::Double(std::numeric_limits<double>::signaling_NaN());
+  auto nan1 = Literal::Double(std::numeric_limits<double>::quiet_NaN());
+  auto nan2 = Literal::Double(std::numeric_limits<double>::quiet_NaN());
+  auto signaling_nan = Literal::Double(std::numeric_limits<double>::signaling_NaN());
 
   // NaN should be equal to itself in strong ordering
   EXPECT_EQ(nan1 <=> nan2, std::partial_ordering::equivalent);
@@ -367,10 +365,10 @@ TEST(PrimitiveLiteralTest, DoubleNaNComparison) {
 }
 
 TEST(PrimitiveLiteralTest, DoubleInfinityComparison) {
-  auto neg_inf = PrimitiveLiteral::Double(-std::numeric_limits<double>::infinity());
-  auto pos_inf = PrimitiveLiteral::Double(std::numeric_limits<double>::infinity());
-  auto max_value = PrimitiveLiteral::Double(std::numeric_limits<double>::max());
-  auto min_value = PrimitiveLiteral::Double(std::numeric_limits<double>::lowest());
+  auto neg_inf = Literal::Double(-std::numeric_limits<double>::infinity());
+  auto pos_inf = Literal::Double(std::numeric_limits<double>::infinity());
+  auto max_value = Literal::Double(std::numeric_limits<double>::max());
+  auto min_value = Literal::Double(std::numeric_limits<double>::lowest());
 
   EXPECT_EQ(neg_inf <=> min_value, std::partial_ordering::less);
   EXPECT_EQ(max_value <=> pos_inf, std::partial_ordering::less);
@@ -378,8 +376,8 @@ TEST(PrimitiveLiteralTest, DoubleInfinityComparison) {
 }
 
 TEST(PrimitiveLiteralTest, DoubleZeroComparison) {
-  auto neg_zero = PrimitiveLiteral::Double(-0.0);
-  auto pos_zero = PrimitiveLiteral::Double(0.0);
+  auto neg_zero = Literal::Double(-0.0);
+  auto pos_zero = Literal::Double(0.0);
 
   // -0 should be less than +0
   EXPECT_EQ(neg_zero <=> pos_zero, std::partial_ordering::less);

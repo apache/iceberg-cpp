@@ -30,8 +30,8 @@
 
 namespace iceberg {
 
-/// \brief PrimitiveLiteral is a literal value that is associated with a primitive type.
-class ICEBERG_EXPORT PrimitiveLiteral {
+/// \brief Literal is a literal value that is associated with a primitive type.
+class ICEBERG_EXPORT Literal {
  private:
   /// \brief Exception type for values that are below the minimum allowed value for a
   /// primitive type.
@@ -65,20 +65,20 @@ class ICEBERG_EXPORT PrimitiveLiteral {
 
  public:
   /// Factory methods for primitive types
-  static PrimitiveLiteral Boolean(bool value);
-  static PrimitiveLiteral Int(int32_t value);
-  static PrimitiveLiteral Long(int64_t value);
-  static PrimitiveLiteral Float(float value);
-  static PrimitiveLiteral Double(double value);
-  static PrimitiveLiteral String(std::string value);
-  static PrimitiveLiteral Binary(std::vector<uint8_t> value);
+  static Literal Boolean(bool value);
+  static Literal Int(int32_t value);
+  static Literal Long(int64_t value);
+  static Literal Float(float value);
+  static Literal Double(double value);
+  static Literal String(std::string value);
+  static Literal Binary(std::vector<uint8_t> value);
 
   /// Create iceberg literal from bytes.
   ///
   /// See [this spec](https://iceberg.apache.org/spec/#binary-single-value-serialization)
   /// for reference.
-  static Result<PrimitiveLiteral> Deserialize(std::span<const uint8_t> data,
-                                              std::shared_ptr<PrimitiveType> type);
+  static Result<Literal> Deserialize(std::span<const uint8_t> data,
+                                     std::shared_ptr<PrimitiveType> type);
 
   /// Serialize iceberg literal to bytes.
   ///
@@ -107,12 +107,11 @@ class ICEBERG_EXPORT PrimitiveLiteral {
   /// \param target_type A primitive PrimitiveType
   /// \return A Result containing a literal of the given type or an error if conversion
   /// was not valid
-  Result<PrimitiveLiteral> CastTo(
-      const std::shared_ptr<PrimitiveType>& target_type) const;
+  Result<Literal> CastTo(const std::shared_ptr<PrimitiveType>& target_type) const;
 
   /// Compare two PrimitiveLiterals. Both literals must have the same type
   /// and should not be AboveMax or BelowMin.
-  std::partial_ordering operator<=>(const PrimitiveLiteral& other) const;
+  std::partial_ordering operator<=>(const Literal& other) const;
 
   bool IsAboveMax() const;
   bool IsBelowMin() const;
@@ -120,9 +119,9 @@ class ICEBERG_EXPORT PrimitiveLiteral {
   std::string ToString() const;
 
  private:
-  PrimitiveLiteral(Value value, std::shared_ptr<PrimitiveType> type);
+  Literal(Value value, std::shared_ptr<PrimitiveType> type);
 
-  friend class PrimitiveLiteralCaster;
+  friend class LiteralCaster;
 
  private:
   Value value_;
