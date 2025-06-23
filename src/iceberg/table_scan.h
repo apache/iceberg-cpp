@@ -197,8 +197,8 @@ class ICEBERG_EXPORT DataScan : public TableScan {
     std::vector<ManifestEntry*> FindRelevantEntries(
         const ManifestEntry& data_entry) const;
   };
-  std::vector<std::shared_ptr<DataFile>> GetMatchedDeletes(
-      const ManifestEntry& data_entry, const DeleteFileIndex& delete_file_index) const;
+  static std::vector<std::shared_ptr<DataFile>> GetMatchedDeletes(
+      const ManifestEntry& data_entry, const DeleteFileIndex& delete_file_index);
 };
 
 }  // namespace iceberg

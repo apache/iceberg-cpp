@@ -121,19 +121,18 @@ TableScanBuilder& TableScanBuilder::WithLimit(std::optional<int64_t> limit) {
 }
 
 Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
-  std::shared_ptr<Snapshot> snapshot;
   if (snapshot_id_) {
-    ICEBERG_ASSIGN_OR_RAISE(snapshot, table_.snapshot(*snapshot_id_));
+    ICEBERG_ASSIGN_OR_RAISE(context_.snapshot, table_.snapshot(*snapshot_id_));
   } else {
-    snapshot = table_.current_snapshot();
+    context_.snapshot = table_.current_snapshot();
   }
-  if (snapshot == nullptr) {
+  if (context_.snapshot == nullptr) {
     return InvalidArgument("No snapshot found for table {}", table_.name());
   }
-  context_.snapshot = std::move(snapshot);
 
   if (!context_.projected_schema) {
     std::shared_ptr<Schema> schema;
+    const auto& snapshot = context_.snapshot;
     if (snapshot->schema_id) {
       const auto& schemas = table_.schemas();
       if (const auto it = schemas.find(*snapshot->schema_id); it != schemas.end()) {
@@ -256,7 +255,7 @@ std::vector<ManifestEntry*> DataScan::DeleteFileIndex::FindRelevantEntries(
 }
 
 std::vector<std::shared_ptr<DataFile>> DataScan::GetMatchedDeletes(
-    const ManifestEntry& data_entry, const DeleteFileIndex& delete_file_index) const {
+    const ManifestEntry& data_entry, const DeleteFileIndex& delete_file_index) {
   const auto relevant_entries = delete_file_index.FindRelevantEntries(data_entry);
   std::vector<std::shared_ptr<DataFile>> matched_deletes;
   if (relevant_entries.empty()) {
