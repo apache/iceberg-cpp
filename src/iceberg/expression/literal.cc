@@ -177,22 +177,16 @@ Result<Literal> Literal::CastTo(const std::shared_ptr<PrimitiveType>& target_typ
 template <std::floating_point T>
 std::strong_ordering CompareFloat(T lhs, T rhs) {
   // If both are NaN, check their signs
-  bool lhs_is_nan = std::isnan(lhs);
-  bool rhs_is_nan = std::isnan(rhs);
-  if (lhs_is_nan && rhs_is_nan) {
-    bool lhs_is_negative = std::signbit(lhs);
-    bool rhs_is_negative = std::signbit(rhs);
-
-    if (lhs_is_negative == rhs_is_negative) {
-      // Same sign NaN values are equivalent (no qNaN vs sNaN distinction)
-      return std::strong_ordering::equivalent;
-    }
-    // -NaN < NaN
-    return lhs_is_negative ? std::strong_ordering::less : std::strong_ordering::greater;
+  bool all_nan = std::isnan(lhs) && std::isnan(rhs);
+  if (!all_nan) {
+    // If not both NaN, use strong ordering
+    return std::strong_order(lhs, rhs);
   }
-
-  // For non-NaN values, use standard strong ordering
-  return std::strong_order(lhs, rhs);
+  // Same sign NaN values are equivalent (no qNaN vs sNaN distinction),
+  // and -NAN < NAN.
+  bool lhs_is_negative = std::signbit(lhs);
+  bool rhs_is_negative = std::signbit(rhs);
+  return lhs_is_negative <=> rhs_is_negative;
 }
 
 // Three-way comparison operator
