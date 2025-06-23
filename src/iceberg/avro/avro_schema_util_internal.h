@@ -139,4 +139,9 @@ std::string ToString(const ::avro::NodePtr& node);
 std::string ToString(const ::avro::LogicalType& logical_type);
 std::string ToString(const ::avro::LogicalType::Type& logical_type);
 
+/// \brief Check if an Avro node has a map logical type.
+/// \param node The Avro node to check.
+/// \return True if the node has a map logical type, false otherwise.
+bool HasMapLogicalType(const ::avro::NodePtr& node);
+
 }  // namespace iceberg::avro

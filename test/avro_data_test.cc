@@ -27,15 +27,15 @@
 #include <avro/Types.hh>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <iceberg/arrow/arrow_error_transform_internal.h>
-#include <iceberg/avro/avro_data_util_internal.h>
-#include <iceberg/avro/avro_schema_util_internal.h>
-#include <iceberg/schema.h>
-#include <iceberg/schema_internal.h>
-#include <iceberg/schema_util.h>
-#include <iceberg/type.h>
-#include <iceberg/util/macros.h>
 
+#include "iceberg/arrow/arrow_error_transform_internal.h"
+#include "iceberg/avro/avro_data_util_internal.h"
+#include "iceberg/avro/avro_schema_util_internal.h"
+#include "iceberg/schema.h"
+#include "iceberg/schema_internal.h"
+#include "iceberg/schema_util.h"
+#include "iceberg/type.h"
+#include "iceberg/util/macros.h"
 #include "matchers.h"
 
 namespace iceberg::avro {

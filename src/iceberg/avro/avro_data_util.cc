@@ -26,6 +26,7 @@
 #include <arrow/util/decimal.h>
 #include <avro/Generic.hh>
 #include <avro/Node.hh>
+#include <avro/NodeImpl.hh>
 #include <avro/Types.hh>
 
 #include "iceberg/arrow/arrow_error_transform_internal.h"
@@ -102,8 +103,7 @@ Status AppendListToBuilder(const ::avro::NodePtr& avro_node,
   const auto& avro_array = avro_datum.value<::avro::GenericArray>();
 
   auto* list_builder = internal::checked_cast<::arrow::ListBuilder*>(array_builder);
-  ICEBERG_ARROW_RETURN_NOT_OK(list_builder->Append(
-      /*is_valid=*/true, /*length=*/static_cast<int64_t>(avro_array.value().size())));
+  ICEBERG_ARROW_RETURN_NOT_OK(list_builder->Append());
 
   const auto& element_projection = projection.children[0];
   auto* value_builder = list_builder->value_builder();
@@ -123,8 +123,65 @@ Status AppendMapToBuilder(const ::avro::NodePtr& avro_node,
                           const FieldProjection& key_projection,
                           const FieldProjection& value_projection,
                           const MapType& map_type, ::arrow::ArrayBuilder* array_builder) {
-  // TODO(gangwu): support both regular map and array-based map.
-  return NotImplemented("AppendMapToBuilder is not implemented");
+  auto* map_builder = internal::checked_cast<::arrow::MapBuilder*>(array_builder);
+
+  if (avro_node->type() == ::avro::AVRO_MAP) {
+    // Handle regular Avro map: map<string, value>
+    const auto& avro_map = avro_datum.value<::avro::GenericMap>();
+    const auto& map_entries = avro_map.value();
+
+    const auto& key_node = avro_node->leafAt(0);
+    const auto& value_node = avro_node->leafAt(1);
+
+    const auto& key_field = map_type.key();
+    const auto& value_field = map_type.value();
+
+    ICEBERG_ARROW_RETURN_NOT_OK(map_builder->Append());
+    auto* key_builder = map_builder->key_builder();
+    auto* item_builder = map_builder->item_builder();
+
+    for (const auto& entry : map_entries) {
+      ICEBERG_RETURN_UNEXPECTED(AppendFieldToBuilder(
+          key_node, entry.first, key_projection, key_field, key_builder));
+      ICEBERG_RETURN_UNEXPECTED(AppendFieldToBuilder(
+          value_node, entry.second, value_projection, value_field, item_builder));
+    }
+
+    return {};
+  } else if (avro_node->type() == ::avro::AVRO_ARRAY && HasMapLogicalType(avro_node)) {
+    // Handle array-based map: list<struct<key, value>>
+    const auto& avro_array = avro_datum.value<::avro::GenericArray>();
+    const auto& array_entries = avro_array.value();
+
+    const auto& key_field = map_type.key();
+    const auto& value_field = map_type.value();
+
+    ICEBERG_ARROW_RETURN_NOT_OK(map_builder->Append());
+    auto* key_builder = map_builder->key_builder();
+    auto* item_builder = map_builder->item_builder();
+
+    const auto& record_node = avro_node->leafAt(0);
+    if (record_node->type() != ::avro::AVRO_RECORD || record_node->leaves() != 2) {
+      return InvalidArgument(
+          "Array-based map must contain records with exactly 2 fields, got: {}",
+          ToString(record_node));
+    }
+    const auto& key_node = record_node->leafAt(0);
+    const auto& value_node = record_node->leafAt(1);
+
+    for (const auto& entry : array_entries) {
+      const auto& record = entry.value<::avro::GenericRecord>();
+      ICEBERG_RETURN_UNEXPECTED(AppendFieldToBuilder(
+          key_node, record.fieldAt(0), key_projection, key_field, key_builder));
+      ICEBERG_RETURN_UNEXPECTED(AppendFieldToBuilder(
+          value_node, record.fieldAt(1), value_projection, value_field, item_builder));
+    }
+
+    return {};
+  } else {
+    return InvalidArgument("Expected Avro map or array with map logical type, got: {}",
+                           ToString(avro_node));
+  }
 }
 
 /// \brief Append nested Avro data to Arrow array builder based on type.

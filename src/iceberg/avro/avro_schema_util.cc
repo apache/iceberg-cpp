@@ -404,12 +404,6 @@ bool HasLogicalType(const ::avro::NodePtr& node,
   return node->logicalType().type() == expected_type;
 }
 
-bool HasMapLogicalType(const ::avro::NodePtr& node) {
-  return node->logicalType().type() == ::avro::LogicalType::CUSTOM &&
-         node->logicalType().customLogicalType() != nullptr &&
-         node->logicalType().customLogicalType()->name() == "map";
-}
-
 std::optional<std::string> GetAdjustToUtc(const ::avro::NodePtr& node) {
   if (node->customAttributes() == 0) {
     return std::nullopt;
@@ -770,6 +764,12 @@ Result<FieldProjection> ProjectNested(const Type& expected_type,
 }
 
 }  // namespace
+
+bool HasMapLogicalType(const ::avro::NodePtr& node) {
+  return node->logicalType().type() == ::avro::LogicalType::CUSTOM &&
+         node->logicalType().customLogicalType() != nullptr &&
+         node->logicalType().customLogicalType()->name() == "map";
+}
 
 Result<SchemaProjection> Project(const Schema& expected_schema,
                                  const ::avro::NodePtr& avro_node, bool prune_source) {
