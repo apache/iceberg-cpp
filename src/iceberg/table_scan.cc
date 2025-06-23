@@ -19,6 +19,8 @@
 
 #include "iceberg/table_scan.h"
 
+#include <ranges>
+
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/manifest_reader.h"
@@ -64,6 +66,9 @@ int32_t FileScanTask::files_count() const {
 }
 
 int64_t FileScanTask::estimated_row_count() const {
+  if (data_file_->file_size_in_bytes == 0) {
+    return 0;
+  }
   const double scannedFileFraction =
       static_cast<double>(length_) / data_file_->file_size_in_bytes;
   return static_cast<int64_t>(scannedFileFraction * data_file_->record_count);
@@ -79,6 +84,7 @@ TableScanBuilder::TableScanBuilder(const Table& table,
 
 TableScanBuilder& TableScanBuilder::WithColumnNames(
     std::vector<std::string> column_names) {
+  column_names_.reserve(column_names.size());
   column_names_ = std::move(column_names);
   return *this;
 }
@@ -205,34 +211,52 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataScan::PlanFiles() const {
     }
   }
 
+  DeleteFileIndex delete_file_index;
+  delete_file_index.BuildIndex(positional_delete_entries);
+
   // TODO(gty404): build residual expression from filter
   std::shared_ptr<Expression> residual;
-
   std::vector<std::shared_ptr<FileScanTask>> tasks;
   for (const auto& data_entry : data_entries) {
-    auto matched_deletes = GetMatchedDeletes(*data_entry, positional_delete_entries);
+    auto matched_deletes = GetMatchedDeletes(*data_entry, delete_file_index);
     const auto& data_file = data_entry->data_file;
     tasks.emplace_back(std::make_shared<FileScanTask>(
-        data_file, matched_deletes, 0, data_file->file_size_in_bytes, residual));
+        data_file, std::move(matched_deletes), 0, data_file->file_size_in_bytes,
+        std::move(residual)));
   }
   return tasks;
 }
 
-std::vector<std::shared_ptr<DataFile>> DataScan::GetMatchedDeletes(
-    const ManifestEntry& data_entry,
-    const std::vector<std::unique_ptr<ManifestEntry>>& positional_delete_entries) const {
+void DataScan::DeleteFileIndex::BuildIndex(
+    const std::vector<std::unique_ptr<ManifestEntry>>& entries) {
+  sequence_index.clear();
+
+  for (const auto& entry : entries) {
+    const int64_t seq_num =
+        entry->sequence_number.value_or(Snapshot::kInitialSequenceNumber);
+    sequence_index.emplace(seq_num, entry.get());
+  }
+}
+
+std::vector<ManifestEntry*> DataScan::DeleteFileIndex::FindRelevantEntries(
+    const ManifestEntry& data_entry) const {
+  std::vector<ManifestEntry*> relevant_deletes;
+
+  // Use lower_bound for efficient range search
   auto data_sequence_number =
       data_entry.sequence_number.value_or(Snapshot::kInitialSequenceNumber);
-  std::vector<const ManifestEntry*> relevant_entries;
-  // TODO(gty404): consider using a more efficient data structure
-  for (const auto& delete_entry : positional_delete_entries) {
-    const int64_t delete_sequence_number =
-        delete_entry->sequence_number.value_or(Snapshot::kInitialSequenceNumber);
-    if (delete_sequence_number >= data_sequence_number) {
-      relevant_entries.push_back(delete_entry.get());
-    }
+  for (auto it = sequence_index.lower_bound(data_sequence_number);
+       it != sequence_index.end(); ++it) {
+    // Additional filtering logic here
+    relevant_deletes.push_back(it->second);
   }
 
+  return relevant_deletes;
+}
+
+std::vector<std::shared_ptr<DataFile>> DataScan::GetMatchedDeletes(
+    const ManifestEntry& data_entry, const DeleteFileIndex& delete_file_index) const {
+  const auto relevant_entries = delete_file_index.FindRelevantEntries(data_entry);
   std::vector<std::shared_ptr<DataFile>> matched_deletes;
   if (relevant_entries.empty()) {
     return matched_deletes;

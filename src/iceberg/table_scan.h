@@ -49,7 +49,7 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
                int64_t length, std::shared_ptr<Expression> residual);
 
   /// \brief The data file that should be read by this scan task.
-  virtual const std::shared_ptr<DataFile>& data_file() const;
+  const std::shared_ptr<DataFile>& data_file() const;
 
   /// \brief The delete files that should be read by this scan task.
   const std::vector<std::shared_ptr<DataFile>>& delete_files() const;
@@ -155,12 +155,20 @@ class ICEBERG_EXPORT TableScan {
   /// \param file_io File I/O instance for reading manifests and data files.
   TableScan(TableScanContext context, std::shared_ptr<FileIO> file_io);
 
+  /// \brief Returns the snapshot being scanned.
+  /// \return A shared pointer to the snapshot.
   const std::shared_ptr<Snapshot>& snapshot() const;
 
+  /// \brief Returns the projected schema for the scan.
+  /// \return A shared pointer to the projected schema.
   const std::shared_ptr<Schema>& projection() const;
 
+  /// \brief Returns the scan context.
+  /// \return A reference to the TableScanContext.
   const TableScanContext& context() const;
 
+  /// \brief Returns the file I/O instance used for reading manifests and data files.
+  /// \return A shared pointer to the FileIO instance.
   const std::shared_ptr<FileIO>& io() const;
 
   /// \brief Plans the scan tasks by resolving manifests and data files.
@@ -181,9 +189,16 @@ class ICEBERG_EXPORT DataScan : public TableScan {
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const override;
 
  private:
+  // Use indexed data structures for efficient lookups
+  struct DeleteFileIndex {
+    // Index by sequence number for quick filtering
+    std::multimap<int64_t, ManifestEntry*> sequence_index;
+    void BuildIndex(const std::vector<std::unique_ptr<ManifestEntry>>& entries);
+    std::vector<ManifestEntry*> FindRelevantEntries(
+        const ManifestEntry& data_entry) const;
+  };
   std::vector<std::shared_ptr<DataFile>> GetMatchedDeletes(
-      const ManifestEntry& data_entry,
-      const std::vector<std::unique_ptr<ManifestEntry>>& positional_delete_entries) const;
+      const ManifestEntry& data_entry, const DeleteFileIndex& delete_file_index) const;
 };
 
 }  // namespace iceberg
