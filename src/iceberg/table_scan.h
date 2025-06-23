@@ -27,12 +27,76 @@
 
 namespace iceberg {
 
+class ICEBERG_EXPORT ScanTask {
+ public:
+  virtual ~ScanTask() = default;
+
+  /// \brief The number of bytes that should be read by this scan task.
+  virtual int64_t size_bytes() const = 0;
+
+  /// \brief The number of files that should be read by this scan task.
+  virtual int32_t files_count() const = 0;
+
+  /// \brief The number of rows that should be read by this scan task.
+  virtual int64_t estimated_row_count() const = 0;
+};
+
+/// \brief Represents a task to scan a portion of a data file.
+class ICEBERG_EXPORT FileScanTask : public ScanTask {
+ public:
+  FileScanTask(std::shared_ptr<DataFile> file,
+               std::vector<std::shared_ptr<DataFile>> delete_files, int64_t start,
+               int64_t length, std::shared_ptr<Expression> residual);
+
+  /// \brief The data file that should be read by this scan task.
+  virtual const std::shared_ptr<DataFile>& data_file() const;
+
+  /// \brief The delete files that should be read by this scan task.
+  const std::vector<std::shared_ptr<DataFile>>& delete_files() const;
+
+  /// \brief The byte offset in the data file where the scan should start.
+  int64_t start() const;
+
+  /// \brief The length in bytes to scan from the start offset.
+  int64_t length() const;
+
+  /// \brief The residual expression to apply after scanning the data file.
+  const std::shared_ptr<Expression>& residual() const;
+
+  int64_t size_bytes() const override;
+  int32_t files_count() const override;
+  int64_t estimated_row_count() const override;
+
+ private:
+  std::shared_ptr<DataFile> data_file_;                  ///< Data file metadata.
+  std::vector<std::shared_ptr<DataFile>> delete_files_;  ///< Delete files metadata.
+
+  int64_t start_;   ///< Start byte offset.
+  int64_t length_;  ///< Length in bytes to scan.
+
+  std::shared_ptr<Expression> residual_;  ///< Residual expression to apply.
+};
+
+/// \brief Scan context holding snapshot and scan-specific metadata.
+struct TableScanContext {
+  std::shared_ptr<TableMetadata> table_metadata;  ///< Table metadata.
+  std::shared_ptr<Snapshot> snapshot;             ///< Snapshot to scan.
+  std::shared_ptr<Schema> projected_schema;       ///< Projected schema.
+  std::shared_ptr<Expression> filter;             ///< Filter expression to apply.
+  bool case_sensitive = false;                    ///< Whether the scan is case-sensitive.
+  std::unordered_map<std::string, std::string>
+      options;                   ///< Additional options for the scan.
+  std::optional<int64_t> limit;  ///< Optional limit on the number of rows to scan.
+};
+
 /// \brief Builder class for creating TableScan instances.
 class ICEBERG_EXPORT TableScanBuilder {
  public:
   /// \brief Constructs a TableScanBuilder for the given table.
-  /// \param table Reference to the table to scan.
-  explicit TableScanBuilder(const Table& table);
+  /// \param table The table to scan.
+  /// \param table_metadata The metadata of the table to scan.
+  explicit TableScanBuilder(const Table& table,
+                            std::shared_ptr<TableMetadata> table_metadata);
 
   /// \brief Sets the snapshot ID to scan.
   /// \param snapshot_id The ID of the snapshot.
@@ -44,53 +108,82 @@ class ICEBERG_EXPORT TableScanBuilder {
   /// \return Reference to the builder.
   TableScanBuilder& WithColumnNames(std::vector<std::string> column_names);
 
+  /// \brief Sets the schema to use for the scan.
+  /// \param schema The schema to use.
+  /// \return Reference to the builder.
+  TableScanBuilder& WithSchema(std::shared_ptr<Schema> schema);
+
   /// \brief Applies a filter expression to the scan.
   /// \param filter Filter expression to use.
   /// \return Reference to the builder.
   TableScanBuilder& WithFilter(std::shared_ptr<Expression> filter);
+
+  /// \brief Sets whether the scan should be case-sensitive.
+  /// \param case_sensitive Whether the scan is case-sensitive.
+  /// /return Reference to the builder.
+  TableScanBuilder& WithCaseSensitive(bool case_sensitive);
+
+  /// \brief Sets an option for the scan.
+  /// \param property The name of the option.
+  /// \param value The value of the option.
+  /// \return Reference to the builder.
+  TableScanBuilder& WithOption(std::string property, std::string value);
+
+  /// \brief Sets an optional limit on the number of rows to scan.
+  /// \param limit Optional limit on the number of rows.
+  /// \return Reference to the builder.
+  TableScanBuilder& WithLimit(std::optional<int64_t> limit);
 
   /// \brief Builds and returns a TableScan instance.
   /// \return A Result containing the TableScan or an error.
   Result<std::unique_ptr<TableScan>> Build();
 
  private:
-  const Table& table_;
+  const Table& table_;  ///< Reference to the table to scan.
   std::vector<std::string> column_names_;
   std::optional<int64_t> snapshot_id_;
-  std::shared_ptr<Expression> filter_;
+  TableScanContext context_;  ///< Context for the scan.
 };
 
 /// \brief Represents a configured scan operation on a table.
 class ICEBERG_EXPORT TableScan {
  public:
-  /// \brief Scan context holding snapshot and scan-specific metadata.
-  struct ScanContext {
-    std::shared_ptr<Snapshot> snapshot;        ///< Snapshot to scan.
-    std::shared_ptr<Schema> projected_schema;  ///< Projected schema.
-    std::shared_ptr<Expression> filter;        ///< Filter expression to apply.
-  };
+  virtual ~TableScan() = default;
 
   /// \brief Constructs a TableScan with the given context and file I/O.
   /// \param context Scan context including snapshot, schema, and filter.
   /// \param file_io File I/O instance for reading manifests and data files.
-  TableScan(ScanContext context, std::shared_ptr<FileIO> file_io);
+  TableScan(TableScanContext context, std::shared_ptr<FileIO> file_io);
+
+  const std::shared_ptr<Snapshot>& snapshot() const;
+
+  const std::shared_ptr<Schema>& projection() const;
+
+  const TableScanContext& context() const;
+
+  const std::shared_ptr<FileIO>& io() const;
 
   /// \brief Plans the scan tasks by resolving manifests and data files.
-  ///
-  /// Returns a list of file scan tasks if successful.
   /// \return A Result containing scan tasks or an error.
-  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const;
+  virtual Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const = 0;
 
- private:
-  ScanContext context_;
+ protected:
+  const TableScanContext context_;
   std::shared_ptr<FileIO> file_io_;
 };
 
-/// \brief Represents a task to scan a portion of a data file.
-struct ICEBERG_EXPORT FileScanTask {
-  std::shared_ptr<DataFile> data_file;  ///< Data file metadata.
-  uint64_t start;                       ///< Start byte offset.
-  uint64_t length;                      ///< Length in bytes to scan.
+class ICEBERG_EXPORT DataScan : public TableScan {
+ public:
+  DataScan(TableScanContext context, std::shared_ptr<FileIO> file_io);
+
+  /// \brief Plans the scan tasks by resolving manifests and data files.
+  /// \return A Result containing scan tasks or an error.
+  Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const override;
+
+ private:
+  std::vector<std::shared_ptr<DataFile>> GetMatchedDeletes(
+      const ManifestEntry& data_entry,
+      const std::vector<std::unique_ptr<ManifestEntry>>& positional_delete_entries) const;
 };
 
 }  // namespace iceberg

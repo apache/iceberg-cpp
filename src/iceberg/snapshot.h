@@ -222,6 +222,7 @@ struct ICEBERG_EXPORT DataOperation {
 /// Snapshots are created by table operations.
 struct ICEBERG_EXPORT Snapshot {
   static constexpr int64_t kInvalidSnapshotId = -1;
+  static constexpr int64_t kInitialSequenceNumber = 0;
 
   /// A unique long ID.
   int64_t snapshot_id;

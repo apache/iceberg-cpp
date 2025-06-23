@@ -112,7 +112,7 @@ enum class TransformType;
 
 class Expression;
 
-struct FileScanTask;
+class FileScanTask;
 class TableScan;
 class TableScanBuilder;
 
