@@ -107,11 +107,12 @@ class ICEBERG_EXPORT Table {
 
  private:
   const TableIdentifier identifier_;
-  const std::shared_ptr<TableMetadata> metadata_;
+  std::shared_ptr<TableMetadata> metadata_;
   const std::string metadata_location_;
   std::shared_ptr<FileIO> io_;
   std::shared_ptr<Catalog> catalog_;
 
+  // Cache lazy-initialized maps.
   mutable std::shared_ptr<std::unordered_map<int32_t, std::shared_ptr<Schema>>>
       schemas_map_;
   mutable std::shared_ptr<std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>>
