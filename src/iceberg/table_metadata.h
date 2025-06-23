@@ -44,10 +44,6 @@ struct ICEBERG_EXPORT SnapshotLogEntry {
   friend bool operator==(const SnapshotLogEntry& lhs, const SnapshotLogEntry& rhs) {
     return lhs.timestamp_ms == rhs.timestamp_ms && lhs.snapshot_id == rhs.snapshot_id;
   }
-
-  friend bool operator!=(const SnapshotLogEntry& lhs, const SnapshotLogEntry& rhs) {
-    return !(lhs == rhs);
-  }
 };
 
 /// \brief Represents a metadata log entry
@@ -59,10 +55,6 @@ struct ICEBERG_EXPORT MetadataLogEntry {
 
   friend bool operator==(const MetadataLogEntry& lhs, const MetadataLogEntry& rhs) {
     return lhs.timestamp_ms == rhs.timestamp_ms && lhs.metadata_file == rhs.metadata_file;
-  }
-
-  friend bool operator!=(const MetadataLogEntry& lhs, const MetadataLogEntry& rhs) {
-    return !(lhs == rhs);
   }
 };
 
@@ -137,10 +129,6 @@ struct ICEBERG_EXPORT TableMetadata {
   Result<std::shared_ptr<SortOrder>> SortOrder() const;
 
   friend bool operator==(const TableMetadata& lhs, const TableMetadata& rhs);
-
-  friend bool operator!=(const TableMetadata& lhs, const TableMetadata& rhs) {
-    return !(lhs == rhs);
-  }
 };
 
 /// \brief Returns a string representation of a SnapshotLogEntry

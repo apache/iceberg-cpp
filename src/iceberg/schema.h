@@ -56,8 +56,6 @@ class ICEBERG_EXPORT Schema : public StructType {
 
   friend bool operator==(const Schema& lhs, const Schema& rhs) { return lhs.Equals(rhs); }
 
-  friend bool operator!=(const Schema& lhs, const Schema& rhs) { return !(lhs == rhs); }
-
  private:
   /// \brief Compare two schemas for equality.
   [[nodiscard]] bool Equals(const Schema& other) const;

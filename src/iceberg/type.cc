@@ -42,6 +42,7 @@ StructType::StructType(std::vector<SchemaField> fields) : fields_(std::move(fiel
 }
 
 TypeId StructType::type_id() const { return kTypeId; }
+
 std::string StructType::ToString() const {
   std::string repr = "struct<\n";
   for (const auto& field : fields_) {
@@ -59,7 +60,7 @@ std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByI
 }
 std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByIndex(
     int32_t index) const {
-  if (index < 0 || index >= static_cast<int>(fields_.size())) {
+  if (index < 0 || index >= static_cast<int32_t>(fields_.size())) {
     return std::nullopt;
   }
   return fields_[index];

@@ -76,10 +76,6 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
     return lhs.Equals(rhs);
   }
 
-  friend bool operator!=(const SchemaField& lhs, const SchemaField& rhs) {
-    return !(lhs == rhs);
-  }
-
  private:
   /// \brief Compare two fields for equality.
   [[nodiscard]] bool Equals(const SchemaField& other) const;

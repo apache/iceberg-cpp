@@ -24,6 +24,7 @@
 
 #include "iceberg/transform_function.h"
 #include "iceberg/type.h"
+#include "iceberg/util/unreachable.h"
 
 namespace iceberg {
 namespace {
@@ -59,6 +60,8 @@ constexpr std::string_view TransformTypeToString(TransformType type) {
     case TransformType::kVoid:
       return kVoidName;
   }
+  internal::Unreachable(
+      std::format("Unknown transform type: {}", static_cast<int>(type)));
 }
 
 std::shared_ptr<Transform> Transform::Identity() {
@@ -166,6 +169,8 @@ std::string Transform::ToString() const {
       return std::format("{}[{}]", TransformTypeToString(transform_type_),
                          std::get<int32_t>(param_));
   }
+  internal::Unreachable(
+      std::format("Unknown transform type: {}", static_cast<int>(transform_type_)));
 }
 
 TransformFunction::TransformFunction(TransformType transform_type,

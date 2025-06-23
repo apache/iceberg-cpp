@@ -75,10 +75,6 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
     return lhs.Equals(rhs);
   }
 
-  friend bool operator!=(const PartitionSpec& lhs, const PartitionSpec& rhs) {
-    return !(lhs == rhs);
-  }
-
  private:
   /// \brief Compare two partition specs for equality.
   [[nodiscard]] bool Equals(const PartitionSpec& other) const;

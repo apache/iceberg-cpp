@@ -43,6 +43,7 @@
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
 #include "iceberg/util/timepoint.h"
+#include "iceberg/util/unreachable.h"
 
 namespace iceberg {
 
@@ -477,6 +478,8 @@ nlohmann::json ToJson(const Type& type) {
     case TypeId::kUuid:
       return "uuid";
   }
+  internal::Unreachable(
+      std::format("Unknown type id: {}", static_cast<int>(type.type_id())));
 }
 
 nlohmann::json ToJson(const Schema& schema) {
@@ -1053,7 +1056,9 @@ Status ParsePartitionSpecs(const nlohmann::json& json, int8_t format_version,
     int32_t next_partition_field_id = PartitionSpec::kLegacyPartitionDataIdStart;
     std::vector<PartitionField> fields;
     for (const auto& entry_json : partition_spec_json) {
-      ICEBERG_ASSIGN_OR_RAISE(auto field, PartitionFieldFromJson(entry_json));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto field, PartitionFieldFromJson(
+                          entry_json, /*allow_field_id_missing=*/format_version == 1));
       int32_t field_id = field->field_id();
       if (field_id == SchemaField::kInvalidFieldId) {
         // If the field ID is not set, we need to assign a new one
