@@ -19,6 +19,7 @@
 
 #include "iceberg/table_scan.h"
 
+#include <algorithm>
 #include <ranges>
 
 #include "iceberg/manifest_entry.h"
