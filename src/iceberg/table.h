@@ -61,6 +61,7 @@ class ICEBERG_EXPORT Table {
   Result<std::shared_ptr<Schema>> schema() const;
 
   /// \brief Return a map of schema for this table
+  /// \note This method is **not** thread-safe in the current implementation.
   const std::shared_ptr<std::unordered_map<int32_t, std::shared_ptr<Schema>>>& schemas()
       const;
 
@@ -68,6 +69,7 @@ class ICEBERG_EXPORT Table {
   Result<std::shared_ptr<PartitionSpec>> spec() const;
 
   /// \brief Return a map of partition specs for this table
+  /// \note This method is **not** thread-safe in the current implementation.
   const std::shared_ptr<std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>>&
   specs() const;
 
@@ -75,6 +77,7 @@ class ICEBERG_EXPORT Table {
   Result<std::shared_ptr<SortOrder>> sort_order() const;
 
   /// \brief Return a map of sort order IDs to sort orders for this table
+  /// \note This method is **not** thread-safe in the current implementation.
   const std::shared_ptr<std::unordered_map<int32_t, std::shared_ptr<SortOrder>>>&
   sort_orders() const;
 
