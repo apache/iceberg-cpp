@@ -95,7 +95,8 @@ Status AppendStructToBuilder(const ::avro::NodePtr& avro_node,
 /// \brief Append Avro array data to Arrow list builder.
 Status AppendListToBuilder(const ::avro::NodePtr& avro_node,
                            const ::avro::GenericDatum& avro_datum,
-                           const FieldProjection& projection, const ListType& list_type,
+                           const FieldProjection& element_projection,
+                           const ListType& list_type,
                            ::arrow::ArrayBuilder* array_builder) {
   if (avro_node->type() != ::avro::AVRO_ARRAY) {
     return InvalidArgument("Expected Avro array, got type: {}", ToString(avro_node));
@@ -105,7 +106,6 @@ Status AppendListToBuilder(const ::avro::NodePtr& avro_node,
   auto* list_builder = internal::checked_cast<::arrow::ListBuilder*>(array_builder);
   ICEBERG_ARROW_RETURN_NOT_OK(list_builder->Append());
 
-  const auto& element_projection = projection.children[0];
   auto* value_builder = list_builder->value_builder();
   const auto& element_node = avro_node->leafAt(0);
   const auto& element_field = list_type.fields().back();
