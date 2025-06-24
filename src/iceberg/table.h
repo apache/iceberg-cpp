@@ -40,8 +40,8 @@ class ICEBERG_EXPORT Table {
   /// \param[in] metadata The metadata for the table.
   /// \param[in] metadata_location The location of the table metadata file.
   /// \param[in] io The FileIO to read and write table data and metadata files.
-  /// \param[in] catalog The catalog that this table belongs to. If the catalog is null,
-  /// the table will be read-only.
+  /// \param[in] catalog The catalog that this table belongs to. If null, the table will
+  /// be read-only.
   Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
         std::string metadata_location, std::shared_ptr<FileIO> io,
         std::shared_ptr<Catalog> catalog)
