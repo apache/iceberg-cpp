@@ -173,4 +173,25 @@ TEST_F(AvroReaderTest, NameMappingWithNestedFields) {
               testing::UnorderedElementsAre("description"));
 }
 
+TEST_F(AvroReaderTest, NameMappingFromReaderOptionsWorks) {
+  // Create a name mapping
+  auto name_mapping = CreateTestNameMapping();
+  ASSERT_TRUE(name_mapping != nullptr);
+  EXPECT_EQ(name_mapping->AsMappedFields().Size(), 3);
+
+  // Create reader options with name mapping
+  ReaderOptions options;
+  options.name_mapping = std::move(name_mapping);
+
+  // Verify that the name mapping is accessible
+  ASSERT_TRUE(options.name_mapping != nullptr);
+  EXPECT_EQ(options.name_mapping->AsMappedFields().Size(), 3);
+
+  // Test that the name mapping works correctly
+  auto field_by_id = options.name_mapping->Find(1);
+  ASSERT_TRUE(field_by_id.has_value());
+  EXPECT_EQ(field_by_id->get().field_id, 1);
+  EXPECT_THAT(field_by_id->get().names, testing::UnorderedElementsAre("id"));
+}
+
 }  // namespace iceberg::avro
