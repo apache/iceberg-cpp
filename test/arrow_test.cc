@@ -283,6 +283,7 @@ TEST_P(FromArrowSchemaTest, PrimitiveType) {
 
   auto type_result = FromArrowSchema(exported_schema, /*schema_id=*/1);
   ASSERT_THAT(type_result, IsOk());
+  ArrowSchemaRelease(&exported_schema);
 
   const auto& schema = type_result.value();
   ASSERT_EQ(schema->schema_id(), 1);
@@ -358,6 +359,7 @@ TEST(FromArrowSchemaTest, StructType) {
 
   auto schema_result = FromArrowSchema(exported_schema, /*schema_id=*/0);
   ASSERT_THAT(schema_result, IsOk());
+  ArrowSchemaRelease(&exported_schema);
 
   const auto& iceberg_schema = schema_result.value();
   ASSERT_EQ(iceberg_schema->schema_id(), 0);
@@ -408,6 +410,7 @@ TEST(FromArrowSchemaTest, ListType) {
 
   auto schema_result = FromArrowSchema(exported_schema, /*schema_id=*/0);
   ASSERT_THAT(schema_result, IsOk());
+  ArrowSchemaRelease(&exported_schema);
 
   const auto& iceberg_schema = schema_result.value();
   ASSERT_EQ(iceberg_schema->schema_id(), 0);
@@ -458,6 +461,7 @@ TEST(FromArrowSchemaTest, MapType) {
 
   auto schema_result = FromArrowSchema(exported_schema, /*schema_id=*/0);
   ASSERT_THAT(schema_result, IsOk());
+  ArrowSchemaRelease(&exported_schema);
 
   const auto& iceberg_schema = schema_result.value();
   ASSERT_EQ(iceberg_schema->schema_id(), 0);
