@@ -19,12 +19,12 @@
 
 #pragma once
 
-#include <any>
 #include <memory>
 #include <string>
 #include <variant>
 #include <vector>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -48,14 +48,13 @@ struct ICEBERG_EXPORT FieldProjection {
     kNull,
   };
 
-  /// \brief The field index in the source schema on the same nesting level when
-  /// `kind` is `kProjected`.
-  using SourceFieldIndex = size_t;
-  /// \brief A literal value used when `kind` is `kConstant` or `kDefault`.
-  /// TODO(gangwu): replace it with a specifically defined literal type
-  using Literal = std::any;
   /// \brief A variant to indicate how to set the value of the field.
-  using From = std::variant<std::monostate, SourceFieldIndex, Literal>;
+  /// \note `std::monostate` is used to indicate that the field is not projected.
+  /// \note `size_t` is used to indicate the field index in the source schema on the same
+  /// nesting level when `kind` is `kProjected`.
+  /// \note `Literal` is used to indicate the value of the field when `kind` is
+  /// `kConstant` or `kDefault`.
+  using From = std::variant<std::monostate, size_t, Literal>;
 
   /// \brief Format-specific attributes for the field.
   /// For example, for Parquet it might store column id and level info of the projected
