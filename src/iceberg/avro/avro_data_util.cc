@@ -70,8 +70,7 @@ Status AppendStructToBuilder(const ::avro::NodePtr& avro_node,
     auto* field_builder = struct_builder->field_builder(static_cast<int>(i));
 
     if (field_projection.kind == FieldProjection::Kind::kProjected) {
-      size_t avro_field_index =
-          std::get<FieldProjection::SourceFieldIndex>(field_projection.from);
+      size_t avro_field_index = std::get<size_t>(field_projection.from);
       if (avro_field_index >= avro_record.fieldCount()) {
         return InvalidArgument("Avro field index {} out of bound {}", avro_field_index,
                                avro_record.fieldCount());

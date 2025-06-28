@@ -672,7 +672,7 @@ Result<FieldProjection> ProjectList(const ListType& list_type,
 
   // Set the element projection metadata but preserve its children
   element_projection.kind = FieldProjection::Kind::kProjected;
-  element_projection.from = FieldProjection::SourceFieldIndex{0};
+  element_projection.from = size_t{0};
 
   FieldProjection result;
   result.children.emplace_back(std::move(element_projection));
