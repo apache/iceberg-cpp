@@ -37,7 +37,7 @@ class ICEBERG_EXPORT ManifestReader {
   virtual Result<std::span<std::unique_ptr<ManifestEntry>>> Entries() const = 0;
 
  private:
-  std::unique_ptr<StructLikeReader> reader_;
+  std::unique_ptr<Reader> reader_;
 };
 
 /// \brief Read manifest files from a manifest list file.
@@ -46,7 +46,7 @@ class ICEBERG_EXPORT ManifestListReader {
   virtual Result<std::span<std::unique_ptr<ManifestFile>>> Files() const = 0;
 
  private:
-  std::unique_ptr<StructLikeReader> reader_;
+  std::unique_ptr<Reader> reader_;
 };
 
 }  // namespace iceberg

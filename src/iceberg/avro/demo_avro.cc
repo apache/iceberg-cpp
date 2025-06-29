@@ -49,18 +49,4 @@ std::string DemoAvro::print() const {
   return actual.str();
 }
 
-Result<Reader::Data> DemoAvroReader::Next() { return std::monostate(); }
-
-Reader::DataLayout DemoAvroReader::data_layout() const {
-  return Reader::DataLayout::kStructLike;
-}
-
-Status DemoAvroReader::Open(const ReaderOptions& options) { return {}; }
-
-Status DemoAvroReader::Close() { return {}; }
-
-ICEBERG_REGISTER_READER_FACTORY(Avro, []() -> Result<std::unique_ptr<Reader>> {
-  return std::make_unique<DemoAvroReader>();
-});
-
 }  // namespace iceberg::avro

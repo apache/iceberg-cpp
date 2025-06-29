@@ -34,14 +34,4 @@ class ICEBERG_BUNDLE_EXPORT DemoAvro : public Avro {
   std::string print() const override;
 };
 
-class ICEBERG_BUNDLE_EXPORT DemoAvroReader : public Reader {
- public:
-  DemoAvroReader() = default;
-  ~DemoAvroReader() override = default;
-  Status Open(const ReaderOptions& options) override;
-  Status Close() override;
-  Result<Data> Next() override;
-  DataLayout data_layout() const override;
-};
-
 }  // namespace iceberg::avro
