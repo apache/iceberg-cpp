@@ -29,6 +29,7 @@
 #include "iceberg/schema_field.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table.h"
+#include "iceberg/table_metadata.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -45,7 +46,7 @@ struct DeleteFileIndex {
 
     for (const auto& entry : entries) {
       const int64_t seq_num =
-          entry->sequence_number.value_or(Snapshot::kInitialSequenceNumber);
+          entry->sequence_number.value_or(TableMetadata::kInitialSequenceNumber);
       sequence_index.emplace(seq_num, entry.get());
     }
   }
@@ -56,7 +57,7 @@ struct DeleteFileIndex {
 
     // Use lower_bound for efficient range search
     auto data_sequence_number =
-        data_entry.sequence_number.value_or(Snapshot::kInitialSequenceNumber);
+        data_entry.sequence_number.value_or(TableMetadata::kInitialSequenceNumber);
     for (auto it = sequence_index.lower_bound(data_sequence_number);
          it != sequence_index.end(); ++it) {
       // Additional filtering logic here
