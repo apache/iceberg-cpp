@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include <any>
 #include <cstdint>
 #include <map>
 #include <memory>
@@ -27,6 +26,7 @@
 #include <string>
 #include <vector>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/file_format.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
@@ -77,9 +77,8 @@ struct ICEBERG_EXPORT DataFile {
   FileFormatType file_format;
   /// Field id: 102
   /// Partition data tuple, schema based on the partition spec output using partition
-  /// field ids for the struct field ids
-  /// TODO(zhjwpku): use StructLike to represent partition data tuple
-  std::any partition;
+  /// field ids
+  std::vector<Literal> partition;
   /// Field id: 103
   /// Number of records in this file, or the cardinality of a deletion vector
   int64_t record_count = 0;

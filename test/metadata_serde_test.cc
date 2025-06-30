@@ -20,13 +20,11 @@
 #include <filesystem>
 #include <fstream>
 #include <optional>
-#include <sstream>
 #include <string>
 
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-#include "iceberg/json_internal.h"
 #include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
@@ -35,9 +33,9 @@
 #include "iceberg/sort_field.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_metadata.h"
-#include "iceberg/test/test_config.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
+#include "test_common.h"
 
 namespace iceberg {
 
@@ -46,33 +44,6 @@ namespace {
 class MetadataSerdeTest : public ::testing::Test {
  protected:
   void SetUp() override {}
-
-  static std::string GetResourcePath(const std::string& file_name) {
-    return std::string(ICEBERG_TEST_RESOURCES) + "/" + file_name;
-  }
-
-  static void ReadJsonFile(const std::string& file_name, std::string* content) {
-    std::filesystem::path path{GetResourcePath(file_name)};
-    ASSERT_TRUE(std::filesystem::exists(path))
-        << "File does not exist: " << path.string();
-
-    std::ifstream file(path);
-    std::stringstream buffer;
-    buffer << file.rdbuf();
-    *content = buffer.str();
-  }
-
-  static void ReadTableMetadata(const std::string& file_name,
-                                std::unique_ptr<TableMetadata>* metadata) {
-    std::string json_content;
-    ReadJsonFile(file_name, &json_content);
-
-    nlohmann::json json = nlohmann::json::parse(json_content);
-    auto result = TableMetadataFromJson(json);
-    ASSERT_TRUE(result.has_value()) << "Failed to parse table metadata from " << file_name
-                                    << ": " << result.error().message;
-    *metadata = std::move(result.value());
-  }
 };
 
 }  // namespace
@@ -112,6 +83,8 @@ TEST_F(MetadataSerdeTest, DeserializeV1Valid) {
   auto partition_spec = metadata->PartitionSpec();
   ASSERT_TRUE(partition_spec.has_value());
   EXPECT_EQ(*(partition_spec.value().get()), *expected_spec);
+  auto snapshot = metadata->Snapshot();
+  ASSERT_FALSE(snapshot.has_value());
 }
 
 TEST_F(MetadataSerdeTest, DeserializeV2Valid) {
@@ -163,7 +136,11 @@ TEST_F(MetadataSerdeTest, DeserializeV2Valid) {
   ASSERT_TRUE(sort_order.has_value());
   EXPECT_EQ(*(sort_order.value().get()), *expected_sort_order);
 
+  // Compare snapshot
   EXPECT_EQ(metadata->current_snapshot_id, 3055729675574597004);
+  auto snapshot = metadata->Snapshot();
+  ASSERT_TRUE(snapshot.has_value());
+  EXPECT_EQ(snapshot.value()->snapshot_id, 3055729675574597004);
 
   // Compare snapshots
   std::vector<Snapshot> expected_snapshots{

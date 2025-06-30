@@ -76,6 +76,16 @@ Result<std::shared_ptr<SortOrder>> TableMetadata::SortOrder() const {
   return *iter;
 }
 
+Result<std::shared_ptr<Snapshot>> TableMetadata::Snapshot() const {
+  auto iter = std::ranges::find_if(snapshots, [this](const auto& snapshot) {
+    return snapshot->snapshot_id == current_snapshot_id;
+  });
+  if (iter == snapshots.end()) {
+    return NotFound("Current snapshot with ID {} is not found", current_snapshot_id);
+  }
+  return *iter;
+}
+
 namespace {
 
 template <typename T>

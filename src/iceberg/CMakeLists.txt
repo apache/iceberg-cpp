@@ -22,6 +22,7 @@ set(ICEBERG_SOURCES
     catalog/in_memory_catalog.cc
     demo.cc
     expression/expression.cc
+    expression/literal.cc
     file_reader.cc
     json_internal.cc
     manifest_entry.cc
@@ -38,6 +39,7 @@ set(ICEBERG_SOURCES
     sort_field.cc
     sort_order.cc
     statistics_file.cc
+    table.cc
     table_metadata.cc
     table_scan.cc
     transform.cc

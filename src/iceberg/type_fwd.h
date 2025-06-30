@@ -100,6 +100,10 @@ class TransformFunction;
 struct PartitionStatisticsFile;
 struct Snapshot;
 struct SnapshotRef;
+
+struct MetadataLogEntry;
+struct SnapshotLogEntry;
+
 struct StatisticsFile;
 struct TableMetadata;
 
@@ -120,7 +124,6 @@ class TableScanBuilder;
 /// TODO: Forward declarations below are not added yet.
 /// ----------------------------------------------------------------------------
 
-class HistoryEntry;
 class StructLike;
 
 class MetadataUpdate;

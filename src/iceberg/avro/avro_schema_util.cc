@@ -73,6 +73,22 @@ struct MapLogicalType : public ::avro::CustomLogicalType {
 
 }  // namespace
 
+std::string ToString(const ::avro::NodePtr& node) {
+  std::stringstream ss;
+  ss << *node;
+  return ss.str();
+}
+
+std::string ToString(const ::avro::LogicalType& logical_type) {
+  std::stringstream ss;
+  logical_type.printJson(ss);
+  return ss.str();
+}
+
+std::string ToString(const ::avro::LogicalType::Type& logical_type) {
+  return ToString(::avro::LogicalType(logical_type));
+}
+
 Status ToAvroNodeVisitor::Visit(const BooleanType& type, ::avro::NodePtr* node) {
   *node = std::make_shared<::avro::NodePrimitive>(::avro::AVRO_BOOL);
   return {};
@@ -383,31 +399,9 @@ Status HasIdVisitor::Visit(const ::avro::Schema& schema) { return Visit(schema.r
 
 namespace {
 
-std::string ToString(const ::avro::NodePtr& node) {
-  std::stringstream ss;
-  ss << *node;
-  return ss.str();
-}
-
-std::string ToString(const ::avro::LogicalType& logical_type) {
-  std::stringstream ss;
-  logical_type.printJson(ss);
-  return ss.str();
-}
-
-std::string ToString(const ::avro::LogicalType::Type& logical_type) {
-  return ToString(::avro::LogicalType(logical_type));
-}
-
 bool HasLogicalType(const ::avro::NodePtr& node,
                     ::avro::LogicalType::Type expected_type) {
   return node->logicalType().type() == expected_type;
-}
-
-bool HasMapLogicalType(const ::avro::NodePtr& node) {
-  return node->logicalType().type() == ::avro::LogicalType::CUSTOM &&
-         node->logicalType().customLogicalType() != nullptr &&
-         node->logicalType().customLogicalType()->name() == "map";
 }
 
 std::optional<std::string> GetAdjustToUtc(const ::avro::NodePtr& node) {
@@ -501,7 +495,7 @@ Status ValidateAvroSchemaEvolution(const Type& expected_type,
     case TypeId::kTimestamp:
       if (avro_node->type() == ::avro::AVRO_LONG &&
           HasLogicalType(avro_node, ::avro::LogicalType::TIMESTAMP_MICROS) &&
-          GetAdjustToUtc(avro_node).value_or("false") == "true") {
+          GetAdjustToUtc(avro_node).value_or("false") == "false") {
         return {};
       }
       break;
@@ -676,6 +670,10 @@ Result<FieldProjection> ProjectList(const ListType& list_type,
         ValidateAvroSchemaEvolution(*expected_element_field.type(), element_node));
   }
 
+  // Set the element projection metadata but preserve its children
+  element_projection.kind = FieldProjection::Kind::kProjected;
+  element_projection.from = size_t{0};
+
   FieldProjection result;
   result.children.emplace_back(std::move(element_projection));
   return result;
@@ -770,6 +768,12 @@ Result<FieldProjection> ProjectNested(const Type& expected_type,
 }
 
 }  // namespace
+
+bool HasMapLogicalType(const ::avro::NodePtr& node) {
+  return node->logicalType().type() == ::avro::LogicalType::CUSTOM &&
+         node->logicalType().customLogicalType() != nullptr &&
+         node->logicalType().customLogicalType()->name() == "map";
+}
 
 Result<SchemaProjection> Project(const Schema& expected_schema,
                                  const ::avro::NodePtr& avro_node, bool prune_source) {

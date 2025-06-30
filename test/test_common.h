@@ -19,29 +19,21 @@
 
 #pragma once
 
-#include <map>
+#include <memory>
+#include <string>
 
-#include "iceberg/schema_util.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
-// Fix `from` field of `FieldProjection` to use pruned field index.
-inline void PruneFieldProjection(FieldProjection& field_projection) {
-  std::map<size_t, size_t> local_index_to_pruned_index;
-  for (const auto& child_projection : field_projection.children) {
-    if (child_projection.kind == FieldProjection::Kind::kProjected) {
-      local_index_to_pruned_index.emplace(std::get<1>(child_projection.from), 0);
-    }
-  }
-  for (size_t pruned_index = 0; auto& [_, value] : local_index_to_pruned_index) {
-    value = pruned_index++;
-  }
-  for (auto& child_projection : field_projection.children) {
-    if (child_projection.kind == FieldProjection::Kind::kProjected) {
-      child_projection.from =
-          local_index_to_pruned_index.at(std::get<1>(child_projection.from));
-    }
-  }
-}
+/// \brief Get the full path to a resource file in the test resources directory
+std::string GetResourcePath(const std::string& file_name);
+
+/// \brief Read a JSON file from the test resources directory
+void ReadJsonFile(const std::string& file_name, std::string* content);
+
+/// \brief Read table metadata from a JSON file in the test resources directory
+void ReadTableMetadata(const std::string& file_name,
+                       std::unique_ptr<TableMetadata>* metadata);
 
 }  // namespace iceberg

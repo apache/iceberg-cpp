@@ -50,11 +50,9 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
 
   switch (type.type_id()) {
     case TypeId::kStruct: {
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaInitFromType(schema, NANOARROW_TYPE_STRUCT));
-
       const auto& struct_type = static_cast<const StructType&>(type);
       const auto& fields = struct_type.fields();
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaAllocateChildren(schema, fields.size()));
+      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeStruct(schema, fields.size()));
 
       for (size_t i = 0; i < fields.size(); i++) {
         const auto& field = fields[i];
@@ -64,7 +62,7 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
       }
     } break;
     case TypeId::kList: {
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaInitFromType(schema, NANOARROW_TYPE_LIST));
+      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_LIST));
 
       const auto& list_type = static_cast<const ListType&>(type);
       const auto& elem_field = list_type.fields()[0];
@@ -73,7 +71,7 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
                                             schema->children[0]));
     } break;
     case TypeId::kMap: {
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaInitFromType(schema, NANOARROW_TYPE_MAP));
+      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_MAP));
 
       const auto& map_type = static_cast<const MapType&>(type);
       const auto& key_field = map_type.key();
@@ -86,61 +84,55 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
                                             schema->children[0]->children[1]));
     } break;
     case TypeId::kBoolean:
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaInitFromType(schema, NANOARROW_TYPE_BOOL));
+      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_BOOL));
       break;
     case TypeId::kInt:
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaInitFromType(schema, NANOARROW_TYPE_INT32));
+      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_INT32));
       break;
     case TypeId::kLong:
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaInitFromType(schema, NANOARROW_TYPE_INT64));
+      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_INT64));
       break;
     case TypeId::kFloat:
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaInitFromType(schema, NANOARROW_TYPE_FLOAT));
+      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_FLOAT));
       break;
     case TypeId::kDouble:
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaInitFromType(schema, NANOARROW_TYPE_DOUBLE));
+      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_DOUBLE));
       break;
     case TypeId::kDecimal: {
-      ArrowSchemaInit(schema);
       const auto& decimal_type = static_cast<const DecimalType&>(type);
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeDecimal(schema, NANOARROW_TYPE_DECIMAL128,
                                                         decimal_type.precision(),
                                                         decimal_type.scale()));
     } break;
     case TypeId::kDate:
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaInitFromType(schema, NANOARROW_TYPE_DATE32));
+      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_DATE32));
       break;
     case TypeId::kTime: {
-      ArrowSchemaInit(schema);
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeDateTime(schema, NANOARROW_TYPE_TIME64,
                                                          NANOARROW_TIME_UNIT_MICRO,
                                                          /*timezone=*/nullptr));
     } break;
     case TypeId::kTimestamp: {
-      ArrowSchemaInit(schema);
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeDateTime(schema, NANOARROW_TYPE_TIMESTAMP,
                                                          NANOARROW_TIME_UNIT_MICRO,
                                                          /*timezone=*/nullptr));
     } break;
     case TypeId::kTimestampTz: {
-      ArrowSchemaInit(schema);
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeDateTime(
           schema, NANOARROW_TYPE_TIMESTAMP, NANOARROW_TIME_UNIT_MICRO, "UTC"));
     } break;
     case TypeId::kString:
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaInitFromType(schema, NANOARROW_TYPE_STRING));
+      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_STRING));
       break;
     case TypeId::kBinary:
-      NANOARROW_RETURN_NOT_OK(ArrowSchemaInitFromType(schema, NANOARROW_TYPE_BINARY));
+      NANOARROW_RETURN_NOT_OK(ArrowSchemaSetType(schema, NANOARROW_TYPE_BINARY));
       break;
     case TypeId::kFixed: {
-      ArrowSchemaInit(schema);
       const auto& fixed_type = static_cast<const FixedType&>(type);
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeFixedSize(
           schema, NANOARROW_TYPE_FIXED_SIZE_BINARY, fixed_type.length()));
     } break;
     case TypeId::kUuid: {
-      ArrowSchemaInit(schema);
       NANOARROW_RETURN_NOT_OK(ArrowSchemaSetTypeFixedSize(
           schema, NANOARROW_TYPE_FIXED_SIZE_BINARY, /*fixed_size=*/16));
       NANOARROW_RETURN_NOT_OK(
@@ -172,6 +164,8 @@ Status ToArrowSchema(const Schema& schema, ArrowSchema* out) {
   if (out == nullptr) [[unlikely]] {
     return InvalidArgument("Output Arrow schema cannot be null");
   }
+
+  ArrowSchemaInit(out);
 
   if (ArrowErrorCode errorCode = ToArrowSchema(schema, /*optional=*/false, /*name=*/"",
                                                /*field_id=*/std::nullopt, out);
