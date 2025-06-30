@@ -137,6 +137,58 @@ TEST_F(NameMappingTest, FindByNameParts) {
   }
 }
 
+TEST_F(NameMappingTest, FindMethodsOnConstObject) {
+  auto mapping = MakeNameMapping();
+  const NameMapping& const_mapping = *mapping;
+
+  // Test Find by ID on const object
+  auto field_by_id = const_mapping.Find(1);
+  ASSERT_TRUE(field_by_id.has_value());
+  EXPECT_EQ(field_by_id->get().field_id, 1);
+  EXPECT_THAT(field_by_id->get().names, testing::UnorderedElementsAre("foo", "bar"));
+
+  // Test Find by name on const object
+  auto field_by_name = const_mapping.Find("baz");
+  ASSERT_TRUE(field_by_name.has_value());
+  EXPECT_EQ(field_by_name->get().field_id, 2);
+  EXPECT_THAT(field_by_name->get().names, testing::UnorderedElementsAre("baz"));
+
+  // Test Find by name parts on const object
+  auto field_by_parts = const_mapping.Find(std::vector<std::string>{"qux", "hello"});
+  ASSERT_TRUE(field_by_parts.has_value());
+  EXPECT_EQ(field_by_parts->get().field_id, 4);
+  EXPECT_THAT(field_by_parts->get().names, testing::UnorderedElementsAre("hello"));
+
+  // Test Find non-existent field on const object
+  auto non_existent = const_mapping.Find(999);
+  EXPECT_FALSE(non_existent.has_value());
+
+  auto non_existent_name = const_mapping.Find("non_existent");
+  EXPECT_FALSE(non_existent_name.has_value());
+
+  auto non_existent_parts =
+      const_mapping.Find(std::vector<std::string>{"non", "existent"});
+  EXPECT_FALSE(non_existent_parts.has_value());
+}
+
+TEST_F(NameMappingTest, FindMethodsOnConstEmptyMapping) {
+  auto empty_mapping = NameMapping::MakeEmpty();
+  const NameMapping& const_empty_mapping = *empty_mapping;
+
+  // Test Find by ID on const empty mapping
+  auto field_by_id = const_empty_mapping.Find(1);
+  EXPECT_FALSE(field_by_id.has_value());
+
+  // Test Find by name on const empty mapping
+  auto field_by_name = const_empty_mapping.Find("test");
+  EXPECT_FALSE(field_by_name.has_value());
+
+  // Test Find by name parts on const empty mapping
+  auto field_by_parts =
+      const_empty_mapping.Find(std::vector<std::string>{"test", "field"});
+  EXPECT_FALSE(field_by_parts.has_value());
+}
+
 TEST_F(NameMappingTest, Equality) {
   auto mapping1 = MakeNameMapping();
   auto mapping2 = MakeNameMapping();
