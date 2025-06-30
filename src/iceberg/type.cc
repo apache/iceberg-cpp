@@ -21,6 +21,7 @@
 
 #include <format>
 #include <iterator>
+#include <memory>
 
 #include "iceberg/exception.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
@@ -285,5 +286,37 @@ bool FixedType::Equals(const Type& other) const {
 TypeId BinaryType::type_id() const { return kTypeId; }
 std::string BinaryType::ToString() const { return "binary"; }
 bool BinaryType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
+
+// ----------------------------------------------------------------------
+// Factory functions for creating primitive data types
+
+#define TYPE_FACTORY(NAME, KLASS)                                     \
+  const std::shared_ptr<KLASS>& NAME() {                              \
+    static std::shared_ptr<KLASS> result = std::make_shared<KLASS>(); \
+    return result;                                                    \
+  }
+
+TYPE_FACTORY(boolean, BooleanType)
+TYPE_FACTORY(int32, IntType)
+TYPE_FACTORY(int64, LongType)
+TYPE_FACTORY(float32, FloatType)
+TYPE_FACTORY(float64, DoubleType)
+TYPE_FACTORY(date, DateType)
+TYPE_FACTORY(time, TimeType)
+TYPE_FACTORY(timestamp, TimestampType)
+TYPE_FACTORY(timestamp_tz, TimestampTzType)
+TYPE_FACTORY(binary, BinaryType)
+TYPE_FACTORY(string, StringType)
+TYPE_FACTORY(uuid, UuidType)
+
+#undef TYPE_FACTORY
+
+std::shared_ptr<DecimalType> decimal(int32_t precision, int32_t scale) {
+  return std::make_shared<DecimalType>(precision, scale);
+}
+
+std::shared_ptr<FixedType> fixed(int32_t length) {
+  return std::make_shared<FixedType>(length);
+}
 
 }  // namespace iceberg
