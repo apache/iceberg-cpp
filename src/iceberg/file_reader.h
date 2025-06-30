@@ -28,7 +28,6 @@
 
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/file_format.h"
-#include "iceberg/name_mapping.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
