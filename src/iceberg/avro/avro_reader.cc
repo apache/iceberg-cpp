@@ -30,7 +30,6 @@
 #include <avro/DataFile.hh>
 #include <avro/Generic.hh>
 #include <avro/GenericDatum.hh>
-#include <nlohmann/json.hpp>
 
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/avro/avro_data_util_internal.h"
