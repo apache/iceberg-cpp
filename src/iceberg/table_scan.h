@@ -27,6 +27,7 @@
 
 namespace iceberg {
 
+/// \brief Represents a task to scan a table or a portion of it.
 class ICEBERG_EXPORT ScanTask {
  public:
   virtual ~ScanTask() = default;
@@ -68,25 +69,34 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   int64_t estimated_row_count() const override;
 
  private:
-  std::shared_ptr<DataFile> data_file_;                  ///< Data file metadata.
-  std::vector<std::shared_ptr<DataFile>> delete_files_;  ///< Delete files metadata.
-
-  int64_t start_;   ///< Start byte offset.
-  int64_t length_;  ///< Length in bytes to scan.
-
-  std::shared_ptr<Expression> residual_;  ///< Residual expression to apply.
+  /// \brief Data file metadata.
+  std::shared_ptr<DataFile> data_file_;
+  /// \brief Delete files metadata.
+  std::vector<std::shared_ptr<DataFile>> delete_files_;
+  /// \brief Start byte offset.
+  int64_t start_;
+  /// \brief Length in bytes to scan.
+  int64_t length_;
+  /// \brief Residual expression to apply.
+  std::shared_ptr<Expression> residual_;
 };
 
 /// \brief Scan context holding snapshot and scan-specific metadata.
 struct TableScanContext {
-  std::shared_ptr<TableMetadata> table_metadata;  ///< Table metadata.
-  std::shared_ptr<Snapshot> snapshot;             ///< Snapshot to scan.
-  std::shared_ptr<Schema> projected_schema;       ///< Projected schema.
-  std::shared_ptr<Expression> filter;             ///< Filter expression to apply.
-  bool case_sensitive = false;                    ///< Whether the scan is case-sensitive.
-  std::unordered_map<std::string, std::string>
-      options;                   ///< Additional options for the scan.
-  std::optional<int64_t> limit;  ///< Optional limit on the number of rows to scan.
+  /// \brief Table metadata.
+  std::shared_ptr<TableMetadata> table_metadata;
+  /// \brief Snapshot to scan.
+  std::shared_ptr<Snapshot> snapshot;
+  /// \brief Projected schema.
+  std::shared_ptr<Schema> projected_schema;
+  /// \brief Filter expression to apply.
+  std::shared_ptr<Expression> filter;
+  /// \brief Whether the scan is case-sensitive.
+  bool case_sensitive = false;
+  /// \brief Additional options for the scan.
+  std::unordered_map<std::string, std::string> options;
+  /// \brief Optional limit on the number of rows to scan.
+  std::optional<int64_t> limit;
 };
 
 /// \brief Builder class for creating TableScan instances.
@@ -139,10 +149,14 @@ class ICEBERG_EXPORT TableScanBuilder {
   Result<std::unique_ptr<TableScan>> Build();
 
  private:
-  const Table& table_;  ///< Reference to the table to scan.
+  /// \brief Reference to the table to scan.
+  const Table& table_;
+  /// \brief column names to project in the scan.
   std::vector<std::string> column_names_;
+  /// \brief snapshot ID to scan, if specified.
   std::optional<int64_t> snapshot_id_;
-  TableScanContext context_;  ///< Context for the scan.
+  /// \brief Context for the scan, including snapshot, schema, and filter.
+  TableScanContext context_;
 };
 
 /// \brief Represents a configured scan operation on a table.
@@ -176,29 +190,21 @@ class ICEBERG_EXPORT TableScan {
   virtual Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const = 0;
 
  protected:
+  /// \brief context for the scan, including snapshot, schema, and filter.
   const TableScanContext context_;
+  /// \brief File I/O instance for reading manifests and data files.
   std::shared_ptr<FileIO> file_io_;
 };
 
+/// \brief A scan that reads data files and applies delete files to filter rows.
 class ICEBERG_EXPORT DataScan : public TableScan {
  public:
+  /// \brief Constructs a DataScan with the given context and file I/O.
   DataScan(TableScanContext context, std::shared_ptr<FileIO> file_io);
 
   /// \brief Plans the scan tasks by resolving manifests and data files.
   /// \return A Result containing scan tasks or an error.
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const override;
-
- private:
-  // Use indexed data structures for efficient lookups
-  struct DeleteFileIndex {
-    // Index by sequence number for quick filtering
-    std::multimap<int64_t, ManifestEntry*> sequence_index;
-    void BuildIndex(const std::vector<std::unique_ptr<ManifestEntry>>& entries);
-    std::vector<ManifestEntry*> FindRelevantEntries(
-        const ManifestEntry& data_entry) const;
-  };
-  static std::vector<std::shared_ptr<DataFile>> GetMatchedDeletes(
-      const ManifestEntry& data_entry, const DeleteFileIndex& delete_file_index);
 };
 
 }  // namespace iceberg

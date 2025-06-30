@@ -33,6 +33,58 @@
 
 namespace iceberg {
 
+namespace {
+/// \brief Use indexed data structures for efficient lookups
+struct DeleteFileIndex {
+  /// \brief Index by sequence number for quick filtering
+  std::multimap<int64_t, ManifestEntry*> sequence_index;
+
+  /// \brief Build the index from a list of manifest entries.
+  void BuildIndex(const std::vector<std::unique_ptr<ManifestEntry>>& entries) {
+    sequence_index.clear();
+
+    for (const auto& entry : entries) {
+      const int64_t seq_num =
+          entry->sequence_number.value_or(Snapshot::kInitialSequenceNumber);
+      sequence_index.emplace(seq_num, entry.get());
+    }
+  }
+
+  /// \brief Find delete files that match the sequence number of a data entry.
+  std::vector<ManifestEntry*> FindRelevantEntries(const ManifestEntry& data_entry) const {
+    std::vector<ManifestEntry*> relevant_deletes;
+
+    // Use lower_bound for efficient range search
+    auto data_sequence_number =
+        data_entry.sequence_number.value_or(Snapshot::kInitialSequenceNumber);
+    for (auto it = sequence_index.lower_bound(data_sequence_number);
+         it != sequence_index.end(); ++it) {
+      // Additional filtering logic here
+      relevant_deletes.push_back(it->second);
+    }
+
+    return relevant_deletes;
+  }
+};
+
+/// \brief Get matched delete files for a given data entry.
+std::vector<std::shared_ptr<DataFile>> GetMatchedDeletes(
+    const ManifestEntry& data_entry, const DeleteFileIndex& delete_file_index) {
+  const auto relevant_entries = delete_file_index.FindRelevantEntries(data_entry);
+  std::vector<std::shared_ptr<DataFile>> matched_deletes;
+  if (relevant_entries.empty()) {
+    return matched_deletes;
+  }
+
+  matched_deletes.reserve(relevant_entries.size());
+  for (const auto& delete_entry : relevant_entries) {
+    // TODO(gty404): check if the delete entry contains the data entry's file path
+    matched_deletes.emplace_back(delete_entry->data_file);
+  }
+  return matched_deletes;
+}
+}  // namespace
+
 // implement FileScanTask
 FileScanTask::FileScanTask(std::shared_ptr<DataFile> file,
                            std::vector<std::shared_ptr<DataFile>> delete_files,
@@ -122,19 +174,19 @@ TableScanBuilder& TableScanBuilder::WithLimit(std::optional<int64_t> limit) {
 
 Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
   if (snapshot_id_) {
-    ICEBERG_ASSIGN_OR_RAISE(context_.snapshot, table_.snapshot(*snapshot_id_));
+    ICEBERG_ASSIGN_OR_RAISE(context_.snapshot, table_.SnapshotById(*snapshot_id_));
   } else {
-    context_.snapshot = table_.current_snapshot();
+    ICEBERG_ASSIGN_OR_RAISE(context_.snapshot, table_.current_snapshot());
   }
   if (context_.snapshot == nullptr) {
-    return InvalidArgument("No snapshot found for table {}", table_.name());
+    return InvalidArgument("No snapshot found for table {}", table_.name().name);
   }
 
   if (!context_.projected_schema) {
     std::shared_ptr<Schema> schema;
     const auto& snapshot = context_.snapshot;
     if (snapshot->schema_id) {
-      const auto& schemas = table_.schemas();
+      const auto& schemas = *table_.schemas();
       if (const auto it = schemas.find(*snapshot->schema_id); it != schemas.end()) {
         schema = it->second;
       } else {
@@ -142,23 +194,26 @@ Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
                                *snapshot->schema_id, snapshot->snapshot_id);
       }
     } else {
-      schema = table_.schema();
+      ICEBERG_ASSIGN_OR_RAISE(schema, table_.schema());
     }
 
-    // TODO(gty404): collect touched columns from filter expression
-    std::vector<SchemaField> projected_fields;
-    projected_fields.reserve(column_names_.size());
-    for (const auto& column_name : column_names_) {
-      // TODO(gty404): support case-insensitive column names
-      auto field_opt = schema->GetFieldByName(column_name);
-      if (!field_opt) {
-        return InvalidArgument("Column {} not found in schema", column_name);
+    if (column_names_.empty()) {
+      context_.projected_schema = schema;
+    } else {
+      // TODO(gty404): collect touched columns from filter expression
+      std::vector<SchemaField> projected_fields;
+      projected_fields.reserve(column_names_.size());
+      for (const auto& column_name : column_names_) {
+        // TODO(gty404): support case-insensitive column names
+        auto field_opt = schema->GetFieldByName(column_name);
+        if (!field_opt) {
+          return InvalidArgument("Column {} not found in schema", column_name);
+        }
+        projected_fields.emplace_back(field_opt.value().get());
       }
-      projected_fields.emplace_back(field_opt.value().get());
+      context_.projected_schema =
+          std::make_shared<Schema>(std::move(projected_fields), schema->schema_id());
     }
-
-    context_.projected_schema =
-        std::make_shared<Schema>(std::move(projected_fields), schema->schema_id());
   }
 
   return std::make_unique<DataScan>(std::move(context_), table_.io());
@@ -225,49 +280,6 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataScan::PlanFiles() const {
         std::move(residual)));
   }
   return tasks;
-}
-
-void DataScan::DeleteFileIndex::BuildIndex(
-    const std::vector<std::unique_ptr<ManifestEntry>>& entries) {
-  sequence_index.clear();
-
-  for (const auto& entry : entries) {
-    const int64_t seq_num =
-        entry->sequence_number.value_or(Snapshot::kInitialSequenceNumber);
-    sequence_index.emplace(seq_num, entry.get());
-  }
-}
-
-std::vector<ManifestEntry*> DataScan::DeleteFileIndex::FindRelevantEntries(
-    const ManifestEntry& data_entry) const {
-  std::vector<ManifestEntry*> relevant_deletes;
-
-  // Use lower_bound for efficient range search
-  auto data_sequence_number =
-      data_entry.sequence_number.value_or(Snapshot::kInitialSequenceNumber);
-  for (auto it = sequence_index.lower_bound(data_sequence_number);
-       it != sequence_index.end(); ++it) {
-    // Additional filtering logic here
-    relevant_deletes.push_back(it->second);
-  }
-
-  return relevant_deletes;
-}
-
-std::vector<std::shared_ptr<DataFile>> DataScan::GetMatchedDeletes(
-    const ManifestEntry& data_entry, const DeleteFileIndex& delete_file_index) {
-  const auto relevant_entries = delete_file_index.FindRelevantEntries(data_entry);
-  std::vector<std::shared_ptr<DataFile>> matched_deletes;
-  if (relevant_entries.empty()) {
-    return matched_deletes;
-  }
-
-  matched_deletes.reserve(relevant_entries.size());
-  for (const auto& delete_entry : relevant_entries) {
-    // TODO(gty404): check if the delete entry contains the data entry's file path
-    matched_deletes.emplace_back(delete_entry->data_file);
-  }
-  return matched_deletes;
 }
 
 }  // namespace iceberg
