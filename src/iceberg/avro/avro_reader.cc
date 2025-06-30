@@ -109,7 +109,7 @@ class AvroReader::Impl {
         ICEBERG_RETURN_UNEXPECTED(ApplyFieldIdsFromNameMapping(*options.name_mapping,
                                                                file_schema.root().get()));
       } else {
-        return NotImplemented(
+        return InvalidSchema(
             "Avro file schema has no field IDs and no name mapping provided");
       }
     } else if (!has_id_visitor.AllHaveIds()) {
