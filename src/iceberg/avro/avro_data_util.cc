@@ -419,14 +419,13 @@ Status AppendFieldToBuilder(const ::avro::NodePtr& avro_node,
                             const SchemaField& projected_field,
                             ::arrow::ArrayBuilder* array_builder) {
   if (avro_node->type() == ::avro::AVRO_UNION) {
-    const auto& union_datum = avro_datum.value<::avro::GenericUnion>();
-    size_t branch = union_datum.currentBranch();
+    size_t branch = avro_datum.unionBranch();
     if (avro_node->leafAt(branch)->type() == ::avro::AVRO_NULL) {
       ICEBERG_ARROW_RETURN_NOT_OK(array_builder->AppendNull());
       return {};
     } else {
-      return AppendFieldToBuilder(avro_node->leafAt(branch), union_datum.datum(),
-                                  projection, projected_field, array_builder);
+      return AppendFieldToBuilder(avro_node->leafAt(branch), avro_datum, projection,
+                                  projected_field, array_builder);
     }
   }
 

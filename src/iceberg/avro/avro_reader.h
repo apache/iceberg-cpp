@@ -25,19 +25,22 @@
 namespace iceberg::avro {
 
 /// \brief A reader that reads ArrowArray from Avro files.
-class ICEBERG_BUNDLE_EXPORT AvroBatchReader : public Reader {
+class ICEBERG_BUNDLE_EXPORT AvroReader : public Reader {
  public:
-  AvroBatchReader() = default;
+  AvroReader() = default;
 
-  ~AvroBatchReader() override = default;
+  ~AvroReader() override = default;
 
   Status Open(const ReaderOptions& options) final;
 
   Status Close() final;
 
-  Result<Data> Next() final;
+  Result<std::optional<ArrowArray>> Next() final;
 
-  DataLayout data_layout() const final { return DataLayout::kArrowArray; }
+  Result<ArrowSchema> Schema() final;
+
+  /// \brief Register this Avro reader implementation.
+  static void Register();
 
  private:
   class Impl;

@@ -59,13 +59,4 @@ Result<std::unique_ptr<Reader>> ReaderFactoryRegistry::Open(
   return reader;
 }
 
-StructLikeReader::StructLikeReader(std::unique_ptr<Reader> reader)
-    : reader_(std::move(reader)) {}
-
-Result<Reader::Data> StructLikeReader::Next() { return NotImplemented(""); }
-
-BatchReader::BatchReader(std::unique_ptr<Reader> reader) : reader_(std::move(reader)) {}
-
-Result<Reader::Data> BatchReader::Next() { return NotImplemented(""); }
-
 }  // namespace iceberg

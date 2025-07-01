@@ -25,7 +25,6 @@
 #include <functional>
 #include <memory>
 #include <optional>
-#include <variant>
 
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/file_format.h"
@@ -50,66 +49,11 @@ class ICEBERG_EXPORT Reader {
 
   /// \brief Read next data from file.
   ///
-  /// \return std::monostate if the reader has no more data, otherwise `ArrowArray` or
-  /// `StructLike` depending on the data layout by the reader implementation.
-  using Data =
-      std::variant<std::monostate, ArrowArray, std::reference_wrapper<const StructLike>>;
-  virtual Result<Data> Next() = 0;
+  /// \return std::nullopt if the reader has no more data, otherwise `ArrowArray`.
+  virtual Result<std::optional<ArrowArray>> Next() = 0;
 
-  enum class DataLayout { kArrowArray, kStructLike };
-
-  /// \brief Get the data layout returned by `Next()` of the reader.
-  virtual DataLayout data_layout() const = 0;
-};
-
-/// \brief Wrapper of `Reader` to always return `StructLike`.
-///
-/// If the data layout of the wrapped reader is `ArrowArray`, the data will be converted
-/// to `StructLike`; otherwise, the data will be returned as is without any cost.
-class ICEBERG_EXPORT StructLikeReader : public Reader {
- public:
-  explicit StructLikeReader(std::unique_ptr<Reader> reader);
-
-  ~StructLikeReader() override = default;
-
-  /// \brief Always read data into `StructLike` or monostate if no more data.
-  Result<Data> Next() final;
-
-  DataLayout data_layout() const final { return DataLayout::kStructLike; }
-
-  Status Open(const struct ReaderOptions& options) final {
-    return reader_->Open(options);
-  }
-
-  Status Close() final { return reader_->Close(); }
-
- private:
-  std::unique_ptr<Reader> reader_;
-};
-
-/// \brief Wrapper of `Reader` to always return `ArrowArray`.
-///
-/// If the data layout of the wrapped reader is `StructLike`, the data will be converted
-/// to `ArrowArray`; otherwise, the data will be returned as is without any cost.
-class ICEBERG_EXPORT BatchReader : public Reader {
- public:
-  explicit BatchReader(std::unique_ptr<Reader> reader);
-
-  ~BatchReader() override = default;
-
-  /// \brief Always read data into `ArrowArray` or monostate if no more data.
-  Result<Data> Next() final;
-
-  DataLayout data_layout() const final { return DataLayout::kArrowArray; }
-
-  Status Open(const struct ReaderOptions& options) final {
-    return reader_->Open(options);
-  }
-
-  Status Close() final { return reader_->Close(); }
-
- private:
-  std::unique_ptr<Reader> reader_;
+  /// \brief Get the schema of the data.
+  virtual Result<ArrowSchema> Schema() = 0;
 };
 
 /// \brief A split of the file to read.
@@ -122,6 +66,8 @@ struct ICEBERG_EXPORT Split {
 
 /// \brief Options for creating a reader.
 struct ICEBERG_EXPORT ReaderOptions {
+  static constexpr int64_t kDefaultBatchSize = 4096;
+
   /// \brief The path to the file to read.
   std::string path;
   /// \brief The total length of the file.
@@ -130,12 +76,12 @@ struct ICEBERG_EXPORT ReaderOptions {
   std::optional<Split> split;
   /// \brief The batch size to read. Only applies to implementations that support
   /// batching.
-  int64_t batch_size;
+  int64_t batch_size = kDefaultBatchSize;
   /// \brief FileIO instance to open the file. Reader implementations should down cast it
   /// to the specific FileIO implementation. By default, the `iceberg-bundle` library uses
   /// `ArrowFileSystemFileIO` as the default implementation.
   std::shared_ptr<class FileIO> io;
-  /// \brief The projection schema to read from the file.
+  /// \brief The projection schema to read from the file. This field is required.
   std::shared_ptr<class Schema> projection;
   /// \brief The filter to apply to the data. Reader implementations may ignore this if
   /// the file format does not support filtering.
@@ -159,10 +105,5 @@ struct ICEBERG_EXPORT ReaderFactoryRegistry {
   static Result<std::unique_ptr<Reader>> Open(FileFormatType format_type,
                                               const ReaderOptions& options);
 };
-
-/// \brief Macro to register a reader factory for a specific file format.
-#define ICEBERG_REGISTER_READER_FACTORY(format_type, reader_factory)             \
-  static ::iceberg::ReaderFactoryRegistry register_reader_factory_##format_type( \
-      ::iceberg::FileFormatType::k##format_type, reader_factory);
 
 }  // namespace iceberg

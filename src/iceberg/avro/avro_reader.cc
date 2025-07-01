@@ -76,9 +76,14 @@ struct ReadContext {
 // 1. prune the reader schema based on the projection
 // 2. read key-value metadata from the avro file
 // 3. collect basic reader metrics
-class AvroBatchReader::Impl {
+class AvroReader::Impl {
  public:
   Status Open(const ReaderOptions& options) {
+    // TODO(gangwu): perhaps adding a ReaderOptions::Validate() method
+    if (options.projection == nullptr) {
+      return InvalidArgument("Projected schema is required by Avro reader");
+    }
+
     batch_size_ = options.batch_size;
     read_schema_ = options.projection;
 
@@ -106,11 +111,10 @@ class AvroBatchReader::Impl {
 
     // Project the read schema on top of the file schema.
     // TODO(gangwu): support pruning source fields
-    ICEBERG_ASSIGN_OR_RAISE(projection_, Project(*options.projection, file_schema.root(),
+    ICEBERG_ASSIGN_OR_RAISE(projection_, Project(*read_schema_, file_schema.root(),
                                                  /*prune_source=*/false));
-    base_reader->init(file_schema);
     reader_ = std::make_unique<::avro::DataFileReader<::avro::GenericDatum>>(
-        std::move(base_reader));
+        std::move(base_reader), file_schema);
 
     if (options.split) {
       reader_->sync(options.split->offset);
@@ -119,7 +123,7 @@ class AvroBatchReader::Impl {
     return {};
   }
 
-  Result<Data> Next() {
+  Result<std::optional<ArrowArray>> Next() {
     if (!context_) {
       ICEBERG_RETURN_UNEXPECTED(InitReadContext());
     }
@@ -148,6 +152,19 @@ class AvroBatchReader::Impl {
     return {};
   }
 
+  Result<ArrowSchema> Schema() {
+    if (!context_) {
+      ICEBERG_RETURN_UNEXPECTED(InitReadContext());
+    }
+    ArrowSchema arrow_schema;
+    auto export_result = ::arrow::ExportSchema(*context_->arrow_schema_, &arrow_schema);
+    if (!export_result.ok()) {
+      return InvalidSchema("Failed to export the arrow schema: {}",
+                           export_result.message());
+    }
+    return arrow_schema;
+  }
+
  private:
   Status InitReadContext() {
     context_ = std::make_unique<ReadContext>();
@@ -174,9 +191,9 @@ class AvroBatchReader::Impl {
     return {};
   }
 
-  Result<Data> ConvertBuilderToArrowArray() {
+  Result<std::optional<ArrowArray>> ConvertBuilderToArrowArray() {
     if (context_->builder_->length() == 0) {
-      return {};
+      return std::nullopt;
     }
 
     auto builder_result = context_->builder_->Finish();
@@ -201,7 +218,7 @@ class AvroBatchReader::Impl {
   // The end of the split to read and used to terminate the reading.
   std::optional<int64_t> split_end_;
   // The schema to read.
-  std::shared_ptr<Schema> read_schema_;
+  std::shared_ptr<::iceberg::Schema> read_schema_;
   // The projection result to apply to the read schema.
   SchemaProjection projection_;
   // The avro reader to read the data into a datum.
@@ -210,13 +227,21 @@ class AvroBatchReader::Impl {
   std::unique_ptr<ReadContext> context_;
 };
 
-Result<Reader::Data> AvroBatchReader::Next() { return impl_->Next(); }
+Result<std::optional<ArrowArray>> AvroReader::Next() { return impl_->Next(); }
 
-Status AvroBatchReader::Open(const ReaderOptions& options) {
+Result<ArrowSchema> AvroReader::Schema() { return impl_->Schema(); }
+
+Status AvroReader::Open(const ReaderOptions& options) {
   impl_ = std::make_unique<Impl>();
   return impl_->Open(options);
 }
 
-Status AvroBatchReader::Close() { return impl_->Close(); }
+Status AvroReader::Close() { return impl_->Close(); }
+
+void AvroReader::Register() {
+  static ReaderFactoryRegistry avro_reader_register(
+      FileFormatType::kAvro,
+      []() -> Result<std::unique_ptr<Reader>> { return std::make_unique<AvroReader>(); });
+}
 
 }  // namespace iceberg::avro

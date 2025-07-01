@@ -20,7 +20,6 @@ set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
 set(ICEBERG_SOURCES
     arrow_c_data_internal.cc
     catalog/in_memory_catalog.cc
-    demo.cc
     expression/expression.cc
     expression/literal.cc
     file_reader.cc
@@ -94,9 +93,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/iceberg_export.h
 
 if(ICEBERG_BUILD_BUNDLE)
   set(ICEBERG_BUNDLE_SOURCES
-      arrow/demo_arrow.cc
       arrow/arrow_fs_file_io.cc
-      avro/demo_avro.cc
       avro/avro_data_util.cc
       avro/avro_reader.cc
       avro/avro_schema_util.cc
