@@ -176,94 +176,90 @@ struct ICEBERG_EXPORT DataFile {
   std::optional<int64_t> content_size_in_bytes;
 
   inline static const SchemaField kContent = SchemaField::MakeRequired(
-      134, "content", std::make_shared<IntType>(),
+      134, "content", iceberg::int32(),
       "Contents of the file: 0=data, 1=position deletes, 2=equality deletes");
   inline static const SchemaField kFilePath = SchemaField::MakeRequired(
-      100, "file_path", std::make_shared<StringType>(), "Location URI with FS scheme");
-  inline static const SchemaField kFileFormat =
-      SchemaField::MakeRequired(101, "file_format", std::make_shared<IntType>(),
-                                "File format name: avro, orc, or parquet");
+      100, "file_path", iceberg::string(), "Location URI with FS scheme");
+  inline static const SchemaField kFileFormat = SchemaField::MakeRequired(
+      101, "file_format", iceberg::int32(), "File format name: avro, orc, or parquet");
   inline static const SchemaField kRecordCount = SchemaField::MakeRequired(
-      103, "record_count", std::make_shared<LongType>(), "Number of records in the file");
-  inline static const SchemaField kFileSize =
-      SchemaField::MakeRequired(104, "file_size_in_bytes", std::make_shared<LongType>(),
-                                "Total file size in bytes");
+      103, "record_count", iceberg::int64(), "Number of records in the file");
+  inline static const SchemaField kFileSize = SchemaField::MakeRequired(
+      104, "file_size_in_bytes", iceberg::int64(), "Total file size in bytes");
   inline static const SchemaField kColumnSizes = SchemaField::MakeOptional(
       108, "column_sizes",
       std::make_shared<MapType>(
           SchemaField::MakeRequired(117, std::string(MapType::kKeyName),
-                                    std::make_shared<IntType>()),
+                                    iceberg::int32()),
           SchemaField::MakeRequired(118, std::string(MapType::kValueName),
-                                    std::make_shared<LongType>())),
+                                    iceberg::int64())),
       "Map of column id to total size on disk");
   inline static const SchemaField kValueCounts = SchemaField::MakeOptional(
       109, "value_counts",
       std::make_shared<MapType>(
           SchemaField::MakeRequired(119, std::string(MapType::kKeyName),
-                                    std::make_shared<IntType>()),
+                                    iceberg::int32()),
           SchemaField::MakeRequired(120, std::string(MapType::kValueName),
-                                    std::make_shared<LongType>())),
+                                    iceberg::int64())),
       "Map of column id to total count, including null and NaN");
   inline static const SchemaField kNullValueCounts = SchemaField::MakeOptional(
       110, "null_value_counts",
       std::make_shared<MapType>(
           SchemaField::MakeRequired(121, std::string(MapType::kKeyName),
-                                    std::make_shared<IntType>()),
+                                    iceberg::int32()),
           SchemaField::MakeRequired(122, std::string(MapType::kValueName),
-                                    std::make_shared<LongType>())),
+                                    iceberg::int64())),
       "Map of column id to null value count");
   inline static const SchemaField kNanValueCounts = SchemaField::MakeOptional(
       137, "nan_value_counts",
       std::make_shared<MapType>(
           SchemaField::MakeRequired(138, std::string(MapType::kKeyName),
-                                    std::make_shared<IntType>()),
+                                    iceberg::int32()),
           SchemaField::MakeRequired(139, std::string(MapType::kValueName),
-                                    std::make_shared<LongType>())),
+                                    iceberg::int64())),
       "Map of column id to number of NaN values in the column");
   inline static const SchemaField kLowerBounds = SchemaField::MakeOptional(
       125, "lower_bounds",
       std::make_shared<MapType>(
           SchemaField::MakeRequired(126, std::string(MapType::kKeyName),
-                                    std::make_shared<IntType>()),
+                                    iceberg::int32()),
           SchemaField::MakeRequired(127, std::string(MapType::kValueName),
-                                    std::make_shared<BinaryType>())),
+                                    iceberg::binary())),
       "Map of column id to lower bound");
   inline static const SchemaField kUpperBounds = SchemaField::MakeOptional(
       128, "upper_bounds",
       std::make_shared<MapType>(
           SchemaField::MakeRequired(129, std::string(MapType::kKeyName),
-                                    std::make_shared<IntType>()),
+                                    iceberg::int32()),
           SchemaField::MakeRequired(130, std::string(MapType::kValueName),
-                                    std::make_shared<BinaryType>())),
+                                    iceberg::binary())),
       "Map of column id to upper bound");
-  inline static const SchemaField kKeyMetadata =
-      SchemaField::MakeOptional(131, "key_metadata", std::make_shared<BinaryType>(),
-                                "Encryption key metadata blob");
+  inline static const SchemaField kKeyMetadata = SchemaField::MakeOptional(
+      131, "key_metadata", iceberg::binary(), "Encryption key metadata blob");
   inline static const SchemaField kSplitOffsets = SchemaField::MakeOptional(
       132, "split_offsets",
       std::make_shared<ListType>(SchemaField::MakeRequired(
-          133, std::string(ListType::kElementName), std::make_shared<LongType>())),
+          133, std::string(ListType::kElementName), iceberg::int64())),
       "Splittable offsets");
   inline static const SchemaField kEqualityIds = SchemaField::MakeOptional(
       135, "equality_ids",
       std::make_shared<ListType>(SchemaField::MakeRequired(
-          136, std::string(ListType::kElementName), std::make_shared<IntType>())),
+          136, std::string(ListType::kElementName), iceberg::int32())),
       "Equality comparison field IDs");
-  inline static const SchemaField kSortOrderId = SchemaField::MakeOptional(
-      140, "sort_order_id", std::make_shared<IntType>(), "Sort order ID");
-  inline static const SchemaField kFirstRowId =
-      SchemaField::MakeOptional(142, "first_row_id", std::make_shared<LongType>(),
-                                "Starting row ID to assign to new rows");
+  inline static const SchemaField kSortOrderId =
+      SchemaField::MakeOptional(140, "sort_order_id", iceberg::int32(), "Sort order ID");
+  inline static const SchemaField kFirstRowId = SchemaField::MakeOptional(
+      142, "first_row_id", iceberg::int64(), "Starting row ID to assign to new rows");
   inline static const SchemaField kReferencedDataFile = SchemaField::MakeOptional(
-      143, "referenced_data_file", std::make_shared<StringType>(),
+      143, "referenced_data_file", iceberg::string(),
       "Fully qualified location (URI with FS scheme) of a data file that all deletes "
       "reference");
   inline static const SchemaField kContentOffset =
-      SchemaField::MakeOptional(144, "content_offset", std::make_shared<LongType>(),
+      SchemaField::MakeOptional(144, "content_offset", iceberg::int64(),
                                 "The offset in the file where the content starts");
-  inline static const SchemaField kContentSize = SchemaField::MakeOptional(
-      145, "content_size_in_bytes", std::make_shared<LongType>(),
-      "The length of referenced content stored in the file");
+  inline static const SchemaField kContentSize =
+      SchemaField::MakeOptional(145, "content_size_in_bytes", iceberg::int64(),
+                                "The length of referenced content stored in the file");
 
   static std::shared_ptr<StructType> Type(std::shared_ptr<StructType> partition_type);
 };
@@ -293,13 +289,13 @@ struct ICEBERG_EXPORT ManifestEntry {
   DataFile data_file;
 
   inline static const SchemaField kStatus =
-      SchemaField::MakeRequired(0, "status", std::make_shared<IntType>());
+      SchemaField::MakeRequired(0, "status", iceberg::int32());
   inline static const SchemaField kSnapshotId =
-      SchemaField::MakeOptional(1, "snapshot_id", std::make_shared<LongType>());
+      SchemaField::MakeOptional(1, "snapshot_id", iceberg::int64());
   inline static const SchemaField kSequenceNumber =
-      SchemaField::MakeOptional(3, "sequence_number", std::make_shared<LongType>());
+      SchemaField::MakeOptional(3, "sequence_number", iceberg::int64());
   inline static const SchemaField kFileSequenceNumber =
-      SchemaField::MakeOptional(4, "file_sequence_number", std::make_shared<LongType>());
+      SchemaField::MakeOptional(4, "file_sequence_number", iceberg::int64());
 
   static std::shared_ptr<StructType> TypeFromPartitionType(
       std::shared_ptr<StructType> partition_type);

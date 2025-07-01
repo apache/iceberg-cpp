@@ -117,8 +117,8 @@ TEST_P(AppendDatumToBuilderTest, PrimitiveType) {
 const std::vector<AppendDatumParam> kPrimitiveTestCases = {
     {
         .name = "Boolean",
-        .projected_type = std::make_shared<BooleanType>(),
-        .source_type = std::make_shared<BooleanType>(),
+        .projected_type = iceberg::boolean(),
+        .source_type = iceberg::boolean(),
         .value_setter =
             [](::avro::GenericDatum& datum, int i) {
               datum.value<::avro::GenericRecord>().fieldAt(0).value<bool>() =
@@ -128,8 +128,8 @@ const std::vector<AppendDatumParam> kPrimitiveTestCases = {
     },
     {
         .name = "Int",
-        .projected_type = std::make_shared<IntType>(),
-        .source_type = std::make_shared<IntType>(),
+        .projected_type = iceberg::int32(),
+        .source_type = iceberg::int32(),
         .value_setter =
             [](::avro::GenericDatum& datum, int i) {
               datum.value<::avro::GenericRecord>().fieldAt(0).value<int32_t>() = i * 100;
@@ -138,8 +138,8 @@ const std::vector<AppendDatumParam> kPrimitiveTestCases = {
     },
     {
         .name = "Long",
-        .projected_type = std::make_shared<LongType>(),
-        .source_type = std::make_shared<LongType>(),
+        .projected_type = iceberg::int64(),
+        .source_type = iceberg::int64(),
         .value_setter =
             [](::avro::GenericDatum& datum, int i) {
               datum.value<::avro::GenericRecord>().fieldAt(0).value<int64_t>() =
@@ -149,8 +149,8 @@ const std::vector<AppendDatumParam> kPrimitiveTestCases = {
     },
     {
         .name = "Float",
-        .projected_type = std::make_shared<FloatType>(),
-        .source_type = std::make_shared<FloatType>(),
+        .projected_type = iceberg::float32(),
+        .source_type = iceberg::float32(),
         .value_setter =
             [](::avro::GenericDatum& datum, int i) {
               datum.value<::avro::GenericRecord>().fieldAt(0).value<float>() = i * 3.14f;
@@ -159,8 +159,8 @@ const std::vector<AppendDatumParam> kPrimitiveTestCases = {
     },
     {
         .name = "Double",
-        .projected_type = std::make_shared<DoubleType>(),
-        .source_type = std::make_shared<DoubleType>(),
+        .projected_type = iceberg::float64(),
+        .source_type = iceberg::float64(),
         .value_setter =
             [](::avro::GenericDatum& datum, int i) {
               datum.value<::avro::GenericRecord>().fieldAt(0).value<double>() =
@@ -170,8 +170,8 @@ const std::vector<AppendDatumParam> kPrimitiveTestCases = {
     },
     {
         .name = "String",
-        .projected_type = std::make_shared<StringType>(),
-        .source_type = std::make_shared<StringType>(),
+        .projected_type = iceberg::string(),
+        .source_type = iceberg::string(),
         .value_setter =
             [](::avro::GenericDatum& datum, int i) {
               datum.value<::avro::GenericRecord>().fieldAt(0).value<std::string>() =
@@ -182,8 +182,8 @@ const std::vector<AppendDatumParam> kPrimitiveTestCases = {
     },
     {
         .name = "Binary",
-        .projected_type = std::make_shared<BinaryType>(),
-        .source_type = std::make_shared<BinaryType>(),
+        .projected_type = iceberg::binary(),
+        .source_type = iceberg::binary(),
         .value_setter =
             [](::avro::GenericDatum& datum, int i) {
               datum.value<::avro::GenericRecord>()
@@ -196,8 +196,8 @@ const std::vector<AppendDatumParam> kPrimitiveTestCases = {
     },
     {
         .name = "Fixed",
-        .projected_type = std::make_shared<FixedType>(4),
-        .source_type = std::make_shared<FixedType>(4),
+        .projected_type = iceberg::fixed(4),
+        .source_type = iceberg::fixed(4),
         .value_setter =
             [](::avro::GenericDatum& datum, int i) {
               datum.value<::avro::GenericRecord>()
@@ -213,8 +213,8 @@ const std::vector<AppendDatumParam> kPrimitiveTestCases = {
     /// extension<arrow.uuid>. Need to fix this in the upstream Arrow.
     // {
     //     .name = "UUID",
-    //     .projected_type = std::make_shared<UuidType>(),
-    //     .source_type = std::make_shared<UuidType>(),
+    //     .projected_type = iceberg::uuid(),
+    //     .source_type = iceberg::uuid(),
     //     .value_setter =
     //         [](::avro::GenericDatum& datum, int i) {
     //           datum.value<::avro::GenericRecord>()
@@ -229,8 +229,8 @@ const std::vector<AppendDatumParam> kPrimitiveTestCases = {
     // },
     {
         .name = "Decimal",
-        .projected_type = std::make_shared<DecimalType>(10, 2),
-        .source_type = std::make_shared<DecimalType>(10, 2),
+        .projected_type = iceberg::decimal(10, 2),
+        .source_type = iceberg::decimal(10, 2),
         .value_setter =
             [](::avro::GenericDatum& datum, int i) {
               int32_t decimal_value = i * 1000 + i;
@@ -249,8 +249,8 @@ const std::vector<AppendDatumParam> kPrimitiveTestCases = {
     },
     {
         .name = "Date",
-        .projected_type = std::make_shared<DateType>(),
-        .source_type = std::make_shared<DateType>(),
+        .projected_type = iceberg::date(),
+        .source_type = iceberg::date(),
         .value_setter =
             [](::avro::GenericDatum& datum, int i) {
               // Date as days since epoch (1970-01-01)
@@ -262,8 +262,8 @@ const std::vector<AppendDatumParam> kPrimitiveTestCases = {
     },
     {
         .name = "Time",
-        .projected_type = std::make_shared<TimeType>(),
-        .source_type = std::make_shared<TimeType>(),
+        .projected_type = iceberg::time(),
+        .source_type = iceberg::time(),
         .value_setter =
             [](::avro::GenericDatum& datum, int i) {
               // Time as microseconds since midnight
@@ -276,8 +276,8 @@ const std::vector<AppendDatumParam> kPrimitiveTestCases = {
     },
     {
         .name = "Timestamp",
-        .projected_type = std::make_shared<TimestampType>(),
-        .source_type = std::make_shared<TimestampType>(),
+        .projected_type = iceberg::timestamp(),
+        .source_type = iceberg::timestamp(),
         .value_setter =
             [](::avro::GenericDatum& datum, int i) {
               datum.value<::avro::GenericRecord>().fieldAt(0).value<int64_t>() =
@@ -299,8 +299,8 @@ const std::vector<AppendDatumParam> kPrimitiveTestCases = {
     },
     {
         .name = "IntToLongPromotion",
-        .projected_type = std::make_shared<LongType>(),
-        .source_type = std::make_shared<IntType>(),
+        .projected_type = iceberg::int64(),
+        .source_type = iceberg::int32(),
         .value_setter =
             [](::avro::GenericDatum& datum, int i) {
               datum.value<::avro::GenericRecord>().fieldAt(0).value<int32_t>() = i * 100;
@@ -309,8 +309,8 @@ const std::vector<AppendDatumParam> kPrimitiveTestCases = {
     },
     {
         .name = "FloatToDoublePromotion",
-        .projected_type = std::make_shared<DoubleType>(),
-        .source_type = std::make_shared<FloatType>(),
+        .projected_type = iceberg::float64(),
+        .source_type = iceberg::float32(),
         .value_setter =
             [](::avro::GenericDatum& datum, int i) {
               datum.value<::avro::GenericRecord>().fieldAt(0).value<float>() = i * 1.0f;
@@ -319,8 +319,8 @@ const std::vector<AppendDatumParam> kPrimitiveTestCases = {
     },
     {
         .name = "DecimalPrecisionPromotion",
-        .projected_type = std::make_shared<DecimalType>(10, 2),
-        .source_type = std::make_shared<DecimalType>(6, 2),
+        .projected_type = iceberg::decimal(10, 2),
+        .source_type = iceberg::decimal(6, 2),
         .value_setter =
             [](::avro::GenericDatum& datum, int i) {
               int32_t decimal_value = i * 1000 + i;
@@ -345,8 +345,8 @@ INSTANTIATE_TEST_SUITE_P(AllPrimitiveTypes, AppendDatumToBuilderTest,
 
 TEST(AppendDatumToBuilderTest, StructWithTwoFields) {
   Schema iceberg_schema({
-      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
-      SchemaField::MakeRequired(2, "name", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(1, "id", iceberg::int32()),
+      SchemaField::MakeRequired(2, "name", iceberg::string()),
   });
   ::avro::NodePtr avro_node;
   ASSERT_THAT(ToAvroNodeVisitor{}.Visit(iceberg_schema, &avro_node), IsOk());
@@ -364,12 +364,12 @@ TEST(AppendDatumToBuilderTest, StructWithTwoFields) {
 
 TEST(AppendDatumToBuilderTest, NestedStruct) {
   Schema iceberg_schema({
-      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
+      SchemaField::MakeRequired(1, "id", iceberg::int32()),
       SchemaField::MakeRequired(
           2, "person",
           std::make_shared<StructType>(std::vector<SchemaField>{
-              SchemaField::MakeRequired(3, "name", std::make_shared<StringType>()),
-              SchemaField::MakeRequired(4, "age", std::make_shared<IntType>()),
+              SchemaField::MakeRequired(3, "name", iceberg::string()),
+              SchemaField::MakeRequired(4, "age", iceberg::int32()),
           })),
   });
 
@@ -404,7 +404,7 @@ TEST(AppendDatumToBuilderTest, ListOfIntegers) {
   Schema iceberg_schema({
       SchemaField::MakeRequired(1, "numbers",
                                 std::make_shared<ListType>(SchemaField::MakeRequired(
-                                    2, "element", std::make_shared<IntType>()))),
+                                    2, "element", iceberg::int32()))),
   });
 
   ::avro::NodePtr avro_node;
@@ -441,8 +441,8 @@ TEST(AppendDatumToBuilderTest, ListOfStructs) {
           std::make_shared<ListType>(SchemaField::MakeRequired(
               2, "element",
               std::make_shared<StructType>(std::vector<SchemaField>{
-                  SchemaField::MakeRequired(3, "name", std::make_shared<StringType>()),
-                  SchemaField::MakeRequired(4, "age", std::make_shared<IntType>()),
+                  SchemaField::MakeRequired(3, "name", iceberg::string()),
+                  SchemaField::MakeRequired(4, "age", iceberg::int32()),
               })))),
   });
 
@@ -486,8 +486,8 @@ TEST(AppendDatumToBuilderTest, MapStringToInt) {
       SchemaField::MakeRequired(
           1, "scores",
           std::make_shared<MapType>(
-              SchemaField::MakeRequired(2, "key", std::make_shared<StringType>()),
-              SchemaField::MakeRequired(3, "value", std::make_shared<IntType>()))),
+              SchemaField::MakeRequired(2, "key", iceberg::string()),
+              SchemaField::MakeRequired(3, "value", iceberg::int32()))),
   });
 
   ::avro::NodePtr avro_node;
@@ -523,8 +523,8 @@ TEST(AppendDatumToBuilderTest, MapIntToStringAsArray) {
       SchemaField::MakeRequired(
           1, "names",
           std::make_shared<MapType>(
-              SchemaField::MakeRequired(2, "key", std::make_shared<IntType>()),
-              SchemaField::MakeRequired(3, "value", std::make_shared<StringType>()))),
+              SchemaField::MakeRequired(2, "key", iceberg::int32()),
+              SchemaField::MakeRequired(3, "value", iceberg::string()))),
   });
 
   ::avro::NodePtr avro_node;
@@ -560,13 +560,12 @@ TEST(AppendDatumToBuilderTest, MapStringToStruct) {
       SchemaField::MakeRequired(
           1, "users",
           std::make_shared<MapType>(
-              SchemaField::MakeRequired(2, "key", std::make_shared<StringType>()),
+              SchemaField::MakeRequired(2, "key", iceberg::string()),
               SchemaField::MakeRequired(
                   3, "value",
                   std::make_shared<StructType>(std::vector<SchemaField>{
-                      SchemaField::MakeRequired(4, "id", std::make_shared<IntType>()),
-                      SchemaField::MakeRequired(5, "email",
-                                                std::make_shared<StringType>()),
+                      SchemaField::MakeRequired(4, "id", iceberg::int32()),
+                      SchemaField::MakeRequired(5, "email", iceberg::string()),
                   })))),
   });
 
@@ -602,12 +601,12 @@ TEST(AppendDatumToBuilderTest, MapStringToStruct) {
 
 TEST(AppendDatumToBuilderTest, StructWithMissingOptionalField) {
   Schema iceberg_schema({
-      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
-      SchemaField::MakeRequired(2, "name", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(1, "id", iceberg::int32()),
+      SchemaField::MakeRequired(2, "name", iceberg::string()),
       SchemaField::MakeOptional(3, "age",
-                                std::make_shared<IntType>()),  // Missing in Avro
+                                iceberg::int32()),  // Missing in Avro
       SchemaField::MakeOptional(4, "email",
-                                std::make_shared<StringType>()),  // Missing in Avro
+                                iceberg::string()),  // Missing in Avro
   });
 
   // Create Avro schema that only has id and name fields (missing age and email)
@@ -640,18 +639,18 @@ TEST(AppendDatumToBuilderTest, StructWithMissingOptionalField) {
 
 TEST(AppendDatumToBuilderTest, NestedStructWithMissingOptionalFields) {
   Schema iceberg_schema({
-      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
+      SchemaField::MakeRequired(1, "id", iceberg::int32()),
       SchemaField::MakeRequired(
           2, "person",
           std::make_shared<StructType>(std::vector<SchemaField>{
-              SchemaField::MakeRequired(3, "name", std::make_shared<StringType>()),
+              SchemaField::MakeRequired(3, "name", iceberg::string()),
               SchemaField::MakeOptional(4, "age",
-                                        std::make_shared<IntType>()),  // Missing
+                                        iceberg::int32()),  // Missing
               SchemaField::MakeOptional(5, "phone",
-                                        std::make_shared<StringType>()),  // Missing
+                                        iceberg::string()),  // Missing
           })),
       SchemaField::MakeOptional(6, "department",
-                                std::make_shared<StringType>()),  // Missing
+                                iceberg::string()),  // Missing
   });
 
   // Create Avro schema with only id, person.name fields
@@ -699,13 +698,11 @@ TEST(AppendDatumToBuilderTest, ListWithMissingOptionalElementFields) {
           std::make_shared<ListType>(SchemaField::MakeRequired(
               2, "element",
               std::make_shared<StructType>(std::vector<SchemaField>{
-                  SchemaField::MakeRequired(3, "name", std::make_shared<StringType>()),
-                  SchemaField::MakeOptional(
-                      4, "age",
-                      std::make_shared<IntType>()),  // Missing in Avro
-                  SchemaField::MakeOptional(
-                      5, "email",
-                      std::make_shared<StringType>()),  // Missing in Avro
+                  SchemaField::MakeRequired(3, "name", iceberg::string()),
+                  SchemaField::MakeOptional(4, "age",
+                                            iceberg::int32()),  // Missing in Avro
+                  SchemaField::MakeOptional(5, "email",
+                                            iceberg::string()),  // Missing in Avro
               })))),
   });
 

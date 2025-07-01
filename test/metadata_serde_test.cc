@@ -62,11 +62,11 @@ TEST_F(MetadataSerdeTest, DeserializeV1Valid) {
   // Compare schema
   EXPECT_EQ(metadata->current_schema_id, std::nullopt);
   std::vector<SchemaField> schema_fields;
-  schema_fields.emplace_back(/*field_id=*/1, "x", std::make_shared<LongType>(),
+  schema_fields.emplace_back(/*field_id=*/1, "x", iceberg::int64(),
                              /*optional=*/false);
-  schema_fields.emplace_back(/*field_id=*/2, "y", std::make_shared<LongType>(),
+  schema_fields.emplace_back(/*field_id=*/2, "y", iceberg::int64(),
                              /*optional=*/false);
-  schema_fields.emplace_back(/*field_id=*/3, "z", std::make_shared<LongType>(),
+  schema_fields.emplace_back(/*field_id=*/3, "z", iceberg::int64(),
                              /*optional=*/false);
   auto expected_schema =
       std::make_shared<Schema>(schema_fields, /*schema_id=*/std::nullopt);
@@ -100,11 +100,11 @@ TEST_F(MetadataSerdeTest, DeserializeV2Valid) {
   // Compare schema
   EXPECT_EQ(metadata->current_schema_id, 1);
   std::vector<SchemaField> schema_fields;
-  schema_fields.emplace_back(/*field_id=*/1, "x", std::make_shared<LongType>(),
+  schema_fields.emplace_back(/*field_id=*/1, "x", iceberg::int64(),
                              /*optional=*/false);
-  schema_fields.emplace_back(/*field_id=*/2, "y", std::make_shared<LongType>(),
+  schema_fields.emplace_back(/*field_id=*/2, "y", iceberg::int64(),
                              /*optional=*/false);
-  schema_fields.emplace_back(/*field_id=*/3, "z", std::make_shared<LongType>(),
+  schema_fields.emplace_back(/*field_id=*/3, "z", iceberg::int64(),
                              /*optional=*/false);
   auto expected_schema =
       std::make_shared<Schema>(std::move(schema_fields), /*schema_id=*/1);

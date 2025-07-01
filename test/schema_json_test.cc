@@ -55,40 +55,38 @@ TEST_P(TypeJsonTest, SingleTypeRoundTrip) {
 INSTANTIATE_TEST_SUITE_P(
     JsonSerailization, TypeJsonTest,
     ::testing::Values(
-        SchemaJsonParam{.json = "\"boolean\"", .type = std::make_shared<BooleanType>()},
-        SchemaJsonParam{.json = "\"int\"", .type = std::make_shared<IntType>()},
-        SchemaJsonParam{.json = "\"long\"", .type = std::make_shared<LongType>()},
-        SchemaJsonParam{.json = "\"float\"", .type = std::make_shared<FloatType>()},
-        SchemaJsonParam{.json = "\"double\"", .type = std::make_shared<DoubleType>()},
-        SchemaJsonParam{.json = "\"string\"", .type = std::make_shared<StringType>()},
-        SchemaJsonParam{.json = "\"binary\"", .type = std::make_shared<BinaryType>()},
-        SchemaJsonParam{.json = "\"uuid\"", .type = std::make_shared<UuidType>()},
-        SchemaJsonParam{.json = "\"fixed[8]\"", .type = std::make_shared<FixedType>(8)},
-        SchemaJsonParam{.json = "\"decimal(10,2)\"",
-                        .type = std::make_shared<DecimalType>(10, 2)},
-        SchemaJsonParam{.json = "\"date\"", .type = std::make_shared<DateType>()},
-        SchemaJsonParam{.json = "\"time\"", .type = std::make_shared<TimeType>()},
-        SchemaJsonParam{.json = "\"timestamp\"",
-                        .type = std::make_shared<TimestampType>()},
+        SchemaJsonParam{.json = "\"boolean\"", .type = iceberg::boolean()},
+        SchemaJsonParam{.json = "\"int\"", .type = iceberg::int32()},
+        SchemaJsonParam{.json = "\"long\"", .type = iceberg::int64()},
+        SchemaJsonParam{.json = "\"float\"", .type = iceberg::float32()},
+        SchemaJsonParam{.json = "\"double\"", .type = iceberg::float64()},
+        SchemaJsonParam{.json = "\"string\"", .type = iceberg::string()},
+        SchemaJsonParam{.json = "\"binary\"", .type = iceberg::binary()},
+        SchemaJsonParam{.json = "\"uuid\"", .type = iceberg::uuid()},
+        SchemaJsonParam{.json = "\"fixed[8]\"", .type = iceberg::fixed(8)},
+        SchemaJsonParam{.json = "\"decimal(10,2)\"", .type = iceberg::decimal(10, 2)},
+        SchemaJsonParam{.json = "\"date\"", .type = iceberg::date()},
+        SchemaJsonParam{.json = "\"time\"", .type = iceberg::time()},
+        SchemaJsonParam{.json = "\"timestamp\"", .type = iceberg::timestamp()},
         SchemaJsonParam{.json = "\"timestamptz\"",
                         .type = std::make_shared<TimestampTzType>()},
         SchemaJsonParam{
             .json =
                 R"({"element":"string","element-id":3,"element-required":true,"type":"list"})",
             .type = std::make_shared<ListType>(
-                SchemaField::MakeRequired(3, "element", std::make_shared<StringType>()))},
+                SchemaField::MakeRequired(3, "element", iceberg::string()))},
         SchemaJsonParam{
             .json =
                 R"({"key":"string","key-id":4,"type":"map","value":"double","value-id":5,"value-required":false})",
             .type = std::make_shared<MapType>(
-                SchemaField::MakeRequired(4, "key", std::make_shared<StringType>()),
-                SchemaField::MakeOptional(5, "value", std::make_shared<DoubleType>()))},
+                SchemaField::MakeRequired(4, "key", iceberg::string()),
+                SchemaField::MakeOptional(5, "value", iceberg::float64()))},
         SchemaJsonParam{
             .json =
                 R"({"fields":[{"id":1,"name":"id","required":true,"type":"int"},{"id":2,"name":"name","required":false,"type":"string"}],"type":"struct"})",
             .type = std::make_shared<StructType>(std::vector<SchemaField>{
-                SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
-                SchemaField::MakeOptional(2, "name", std::make_shared<StringType>())})}));
+                SchemaField::MakeRequired(1, "id", iceberg::int32()),
+                SchemaField::MakeOptional(2, "name", iceberg::string())})}));
 
 TEST(TypeJsonTest, FromJsonWithSpaces) {
   auto fixed_json = R"("fixed[ 8 ]")";

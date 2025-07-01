@@ -29,7 +29,7 @@
 
 TEST(SchemaFieldTest, Basics) {
   {
-    iceberg::SchemaField field(1, "foo", std::make_shared<iceberg::IntType>(), false);
+    iceberg::SchemaField field(1, "foo", iceberg::int32(), false);
     EXPECT_EQ(1, field.field_id());
     EXPECT_EQ("foo", field.name());
     EXPECT_EQ(iceberg::TypeId::kInt, field.type()->type_id());
@@ -60,12 +60,12 @@ TEST(SchemaFieldTest, Basics) {
 }
 
 TEST(SchemaFieldTest, Equality) {
-  iceberg::SchemaField field1(1, "foo", std::make_shared<iceberg::IntType>(), false);
-  iceberg::SchemaField field2(2, "foo", std::make_shared<iceberg::IntType>(), false);
-  iceberg::SchemaField field3(1, "bar", std::make_shared<iceberg::IntType>(), false);
+  iceberg::SchemaField field1(1, "foo", iceberg::int32(), false);
+  iceberg::SchemaField field2(2, "foo", iceberg::int32(), false);
+  iceberg::SchemaField field3(1, "bar", iceberg::int32(), false);
   iceberg::SchemaField field4(1, "foo", std::make_shared<iceberg::LongType>(), false);
-  iceberg::SchemaField field5(1, "foo", std::make_shared<iceberg::IntType>(), true);
-  iceberg::SchemaField field6(1, "foo", std::make_shared<iceberg::IntType>(), false);
+  iceberg::SchemaField field5(1, "foo", iceberg::int32(), true);
+  iceberg::SchemaField field6(1, "foo", iceberg::int32(), false);
 
   ASSERT_EQ(field1, field1);
   ASSERT_NE(field1, field2);
@@ -82,8 +82,7 @@ TEST(SchemaFieldTest, Equality) {
 
 TEST(SchemaFieldTest, WithDoc) {
   {
-    iceberg::SchemaField field(/*field_id=*/1, /*name=*/"foo",
-                               std::make_shared<iceberg::IntType>(),
+    iceberg::SchemaField field(/*field_id=*/1, /*name=*/"foo", iceberg::int32(),
                                /*optional=*/false, /*doc=*/"Field documentation");
     EXPECT_EQ(1, field.field_id());
     EXPECT_EQ("foo", field.name());

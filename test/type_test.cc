@@ -310,7 +310,7 @@ TEST(TypeTest, Fixed) {
 
 TEST(TypeTest, List) {
   {
-    iceberg::SchemaField field(5, "element", std::make_shared<iceberg::IntType>(), true);
+    iceberg::SchemaField field(5, "element", iceberg::int32(), true);
     iceberg::ListType list(field);
     std::span<const iceberg::SchemaField> fields = list.fields();
     ASSERT_EQ(1, fields.size());
@@ -326,8 +326,8 @@ TEST(TypeTest, List) {
   }
   ASSERT_THAT(
       []() {
-        iceberg::ListType list(iceberg::SchemaField(
-            1, "wrongname", std::make_shared<iceberg::BooleanType>(), true));
+        iceberg::ListType list(
+            iceberg::SchemaField(1, "wrongname", iceberg::boolean(), true));
       },
       ::testing::ThrowsMessage<iceberg::IcebergError>(
           ::testing::HasSubstr("child field name should be 'element', was 'wrongname'")));

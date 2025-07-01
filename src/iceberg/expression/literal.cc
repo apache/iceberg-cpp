@@ -126,32 +126,22 @@ Literal::Literal(Value value, std::shared_ptr<PrimitiveType> type)
     : value_(std::move(value)), type_(std::move(type)) {}
 
 // Factory methods
-Literal Literal::Boolean(bool value) {
-  return {Value{value}, std::make_shared<BooleanType>()};
-}
+Literal Literal::Boolean(bool value) { return {Value{value}, iceberg::boolean()}; }
 
-Literal Literal::Int(int32_t value) {
-  return {Value{value}, std::make_shared<IntType>()};
-}
+Literal Literal::Int(int32_t value) { return {Value{value}, iceberg::int32()}; }
 
-Literal Literal::Long(int64_t value) {
-  return {Value{value}, std::make_shared<LongType>()};
-}
+Literal Literal::Long(int64_t value) { return {Value{value}, iceberg::int64()}; }
 
-Literal Literal::Float(float value) {
-  return {Value{value}, std::make_shared<FloatType>()};
-}
+Literal Literal::Float(float value) { return {Value{value}, iceberg::float32()}; }
 
-Literal Literal::Double(double value) {
-  return {Value{value}, std::make_shared<DoubleType>()};
-}
+Literal Literal::Double(double value) { return {Value{value}, iceberg::float64()}; }
 
 Literal Literal::String(std::string value) {
-  return {Value{std::move(value)}, std::make_shared<StringType>()};
+  return {Value{std::move(value)}, iceberg::string()};
 }
 
 Literal Literal::Binary(std::vector<uint8_t> value) {
-  return {Value{std::move(value)}, std::make_shared<BinaryType>()};
+  return {Value{std::move(value)}, iceberg::binary()};
 }
 
 Result<Literal> Literal::Deserialize(std::span<const uint8_t> data,

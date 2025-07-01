@@ -33,8 +33,8 @@ namespace iceberg {
 
 TEST(SortOrderTest, Basics) {
   {
-    SchemaField field1(5, "ts", std::make_shared<TimestampType>(), true);
-    SchemaField field2(7, "bar", std::make_shared<StringType>(), true);
+    SchemaField field1(5, "ts", iceberg::timestamp(), true);
+    SchemaField field2(7, "bar", iceberg::string(), true);
 
     auto identity_transform = Transform::Identity();
     SortField st_field1(5, identity_transform, SortDirection::kAscending,
@@ -59,8 +59,8 @@ TEST(SortOrderTest, Basics) {
 }
 
 TEST(SortOrderTest, Equality) {
-  SchemaField field1(5, "ts", std::make_shared<TimestampType>(), true);
-  SchemaField field2(7, "bar", std::make_shared<StringType>(), true);
+  SchemaField field1(5, "ts", iceberg::timestamp(), true);
+  SchemaField field2(7, "bar", iceberg::string(), true);
   auto bucket_transform = Transform::Bucket(8);
   auto identity_transform = Transform::Identity();
   SortField st_field1(5, identity_transform, SortDirection::kAscending,

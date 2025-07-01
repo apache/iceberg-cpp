@@ -46,7 +46,7 @@ class MetadataIOTest : public TempFileTestBase {
 
   TableMetadata PrepareMetadata() {
     std::vector<SchemaField> schema_fields;
-    schema_fields.emplace_back(/*field_id=*/1, "x", std::make_shared<LongType>(),
+    schema_fields.emplace_back(/*field_id=*/1, "x", iceberg::int64(),
                                /*optional=*/false);
     auto schema = std::make_shared<Schema>(std::move(schema_fields), /*schema_id=*/1);
 

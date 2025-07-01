@@ -37,7 +37,7 @@ TEST(TransformTest, Transform) {
   EXPECT_EQ("identity", transform->ToString());
   EXPECT_EQ("identity", std::format("{}", *transform));
 
-  auto source_type = std::make_shared<StringType>();
+  auto source_type = iceberg::string();
   auto identity_transform = transform->Bind(source_type);
   ASSERT_TRUE(identity_transform);
 
@@ -54,7 +54,7 @@ TEST(TransformFunctionTest, CreateBucketTransform) {
   EXPECT_EQ("bucket[8]", transform->ToString());
   EXPECT_EQ("bucket[8]", std::format("{}", *transform));
 
-  const auto transformPtr = transform->Bind(std::make_shared<StringType>());
+  const auto transformPtr = transform->Bind(iceberg::string());
   ASSERT_TRUE(transformPtr);
   EXPECT_EQ(transformPtr.value()->transform_type(), TransformType::kBucket);
 }
@@ -65,7 +65,7 @@ TEST(TransformFunctionTest, CreateTruncateTransform) {
   EXPECT_EQ("truncate[16]", transform->ToString());
   EXPECT_EQ("truncate[16]", std::format("{}", *transform));
 
-  auto transformPtr = transform->Bind(std::make_shared<StringType>());
+  auto transformPtr = transform->Bind(iceberg::string());
   EXPECT_EQ(transformPtr.value()->transform_type(), TransformType::kTruncate);
 }
 TEST(TransformFromStringTest, PositiveCases) {

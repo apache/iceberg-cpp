@@ -478,8 +478,7 @@ ICEBERG_EXPORT const std::shared_ptr<UuidType>& uuid();
 
 /// \brief Create a DecimalType with the given precision and scale.
 /// \param precision The number of decimal digits (max 38).
-/// \param scale The number of decimal digits after the decimal point (0 to
-///   precision).
+/// \param scale The number of decimal digits after the decimal point.
 /// \return A shared pointer to the DecimalType instance.
 ICEBERG_EXPORT std::shared_ptr<DecimalType> decimal(int32_t precision, int32_t scale);
 

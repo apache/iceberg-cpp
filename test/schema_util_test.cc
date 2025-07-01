@@ -42,10 +42,10 @@ void AssertProjectedField(const FieldProjection& projection, size_t expected_ind
 
 Schema CreateFlatSchema() {
   return Schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
-      SchemaField::MakeOptional(/*field_id=*/2, "name", std::make_shared<StringType>()),
-      SchemaField::MakeOptional(/*field_id=*/3, "age", std::make_shared<IntType>()),
-      SchemaField::MakeRequired(/*field_id=*/4, "data", std::make_shared<DoubleType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
+      SchemaField::MakeOptional(/*field_id=*/2, "name", iceberg::string()),
+      SchemaField::MakeOptional(/*field_id=*/3, "age", iceberg::int32()),
+      SchemaField::MakeRequired(/*field_id=*/4, "data", iceberg::float64()),
   });
 }
 
@@ -53,36 +53,31 @@ std::shared_ptr<Type> CreateListOfStruct() {
   return std::make_shared<ListType>(SchemaField::MakeOptional(
       /*field_id=*/101, "element",
       std::make_shared<StructType>(std::vector<SchemaField>{
-          SchemaField::MakeOptional(/*field_id=*/102, "x", std::make_shared<IntType>()),
-          SchemaField::MakeRequired(/*field_id=*/103, "y",
-                                    std::make_shared<StringType>()),
+          SchemaField::MakeOptional(/*field_id=*/102, "x", iceberg::int32()),
+          SchemaField::MakeRequired(/*field_id=*/103, "y", iceberg::string()),
       })));
 }
 
 std::shared_ptr<Type> CreateMapWithStructValue() {
   return std::make_shared<MapType>(
-      SchemaField::MakeRequired(/*field_id=*/201, "key", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(/*field_id=*/201, "key", iceberg::string()),
       SchemaField::MakeRequired(
           /*field_id=*/202, "value",
           std::make_shared<StructType>(std::vector<SchemaField>{
-              SchemaField::MakeRequired(/*field_id=*/203, "id",
-                                        std::make_shared<LongType>()),
-              SchemaField::MakeOptional(/*field_id=*/204, "name",
-                                        std::make_shared<StringType>()),
+              SchemaField::MakeRequired(/*field_id=*/203, "id", iceberg::int64()),
+              SchemaField::MakeOptional(/*field_id=*/204, "name", iceberg::string()),
           })));
 }
 
 std::shared_ptr<Type> CreateNestedStruct() {
   return std::make_shared<StructType>(std::vector<SchemaField>{
-      SchemaField::MakeRequired(/*field_id=*/301, "outer_id",
-                                std::make_shared<LongType>()),
+      SchemaField::MakeRequired(/*field_id=*/301, "outer_id", iceberg::int64()),
       SchemaField::MakeRequired(
           /*field_id=*/302, "nested",
           std::make_shared<StructType>(std::vector<SchemaField>{
-              SchemaField::MakeOptional(/*field_id=*/303, "inner_id",
-                                        std::make_shared<IntType>()),
+              SchemaField::MakeOptional(/*field_id=*/303, "inner_id", iceberg::int32()),
               SchemaField::MakeRequired(/*field_id=*/304, "inner_name",
-                                        std::make_shared<StringType>()),
+                                        iceberg::string()),
           })),
   });
 }
@@ -91,16 +86,16 @@ std::shared_ptr<Type> CreateListOfList() {
   return std::make_shared<ListType>(SchemaField::MakeRequired(
       /*field_id=*/401, "element",
       std::make_shared<ListType>(SchemaField::MakeOptional(
-          /*field_id=*/402, "element", std::make_shared<DoubleType>()))));
+          /*field_id=*/402, "element", iceberg::float64()))));
 }
 
 std::shared_ptr<Type> CreateMapOfList() {
   return std::make_shared<MapType>(
-      SchemaField::MakeRequired(/*field_id=*/501, "key", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(/*field_id=*/501, "key", iceberg::string()),
       SchemaField::MakeRequired(
           /*field_id=*/502, "value",
           std::make_shared<ListType>(SchemaField::MakeOptional(
-              /*field_id=*/503, "element", std::make_shared<IntType>()))));
+              /*field_id=*/503, "element", iceberg::int32()))));
 }
 
 }  // namespace
@@ -121,8 +116,8 @@ TEST(SchemaUtilTest, ProjectIdenticalSchemas) {
 TEST(SchemaUtilTest, ProjectSubsetSchema) {
   Schema source_schema = CreateFlatSchema();
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
-      SchemaField::MakeOptional(/*field_id=*/3, "age", std::make_shared<IntType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
+      SchemaField::MakeOptional(/*field_id=*/3, "age", iceberg::int32()),
   });
 
   auto projection_result =
@@ -138,8 +133,8 @@ TEST(SchemaUtilTest, ProjectSubsetSchema) {
 TEST(SchemaUtilTest, ProjectWithPruning) {
   Schema source_schema = CreateFlatSchema();
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
-      SchemaField::MakeOptional(/*field_id=*/3, "age", std::make_shared<IntType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
+      SchemaField::MakeOptional(/*field_id=*/3, "age", iceberg::int32()),
   });
 
   auto projection_result = Project(expected_schema, source_schema, /*prune_source=*/true);
@@ -154,9 +149,9 @@ TEST(SchemaUtilTest, ProjectWithPruning) {
 TEST(SchemaUtilTest, ProjectMissingOptionalField) {
   Schema source_schema = CreateFlatSchema();
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
-      SchemaField::MakeOptional(/*field_id=*/2, "name", std::make_shared<StringType>()),
-      SchemaField::MakeOptional(/*field_id=*/10, "extra", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
+      SchemaField::MakeOptional(/*field_id=*/2, "name", iceberg::string()),
+      SchemaField::MakeOptional(/*field_id=*/10, "extra", iceberg::string()),
   });
 
   auto projection_result = Project(expected_schema, source_schema, false);
@@ -173,9 +168,9 @@ TEST(SchemaUtilTest, ProjectMissingOptionalField) {
 TEST(SchemaUtilTest, ProjectMissingRequiredField) {
   Schema source_schema = CreateFlatSchema();
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
-      SchemaField::MakeOptional(/*field_id=*/2, "name", std::make_shared<StringType>()),
-      SchemaField::MakeRequired(/*field_id=*/10, "extra", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
+      SchemaField::MakeOptional(/*field_id=*/2, "name", iceberg::string()),
+      SchemaField::MakeRequired(/*field_id=*/10, "extra", iceberg::string()),
   });
 
   auto projection_result =
@@ -187,7 +182,7 @@ TEST(SchemaUtilTest, ProjectMissingRequiredField) {
 TEST(SchemaUtilTest, ProjectMetadataColumn) {
   Schema source_schema = CreateFlatSchema();
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
       MetadataColumns::kFilePath,
   });
 
@@ -203,9 +198,9 @@ TEST(SchemaUtilTest, ProjectMetadataColumn) {
 
 TEST(SchemaUtilTest, ProjectSchemaEvolutionIntToLong) {
   Schema source_schema(
-      {SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<IntType>())});
+      {SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int32())});
   Schema expected_schema(
-      {SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>())});
+      {SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64())});
 
   auto projection_result =
       Project(expected_schema, source_schema, /*prune_source=*/false);
@@ -217,10 +212,10 @@ TEST(SchemaUtilTest, ProjectSchemaEvolutionIntToLong) {
 }
 
 TEST(SchemaUtilTest, ProjectSchemaEvolutionFloatToDouble) {
-  Schema source_schema({SchemaField::MakeOptional(/*field_id=*/2, "value",
-                                                  std::make_shared<FloatType>())});
-  Schema expected_schema({SchemaField::MakeOptional(/*field_id=*/2, "value",
-                                                    std::make_shared<DoubleType>())});
+  Schema source_schema(
+      {SchemaField::MakeOptional(/*field_id=*/2, "value", iceberg::float32())});
+  Schema expected_schema(
+      {SchemaField::MakeOptional(/*field_id=*/2, "value", iceberg::float64())});
 
   auto projection_result =
       Project(expected_schema, source_schema, /*prune_source=*/false);
@@ -232,10 +227,10 @@ TEST(SchemaUtilTest, ProjectSchemaEvolutionFloatToDouble) {
 }
 
 TEST(SchemaUtilTest, ProjectSchemaEvolutionDecimalCompatible) {
-  Schema source_schema({SchemaField::MakeOptional(/*field_id=*/2, "value",
-                                                  std::make_shared<DecimalType>(9, 2))});
+  Schema source_schema(
+      {SchemaField::MakeOptional(/*field_id=*/2, "value", iceberg::decimal(9, 2))});
   Schema expected_schema({SchemaField::MakeOptional(
-      /*field_id=*/2, "value", std::make_shared<DecimalType>(18, 2))});
+      /*field_id=*/2, "value", iceberg::decimal(18, 2))});
 
   auto projection_result =
       Project(expected_schema, source_schema, /*prune_source=*/false);
@@ -247,10 +242,10 @@ TEST(SchemaUtilTest, ProjectSchemaEvolutionDecimalCompatible) {
 }
 
 TEST(SchemaUtilTest, ProjectSchemaEvolutionDecimalIncompatible) {
-  Schema source_schema({SchemaField::MakeOptional(/*field_id=*/2, "value",
-                                                  std::make_shared<DecimalType>(9, 2))});
+  Schema source_schema(
+      {SchemaField::MakeOptional(/*field_id=*/2, "value", iceberg::decimal(9, 2))});
   Schema expected_schema({SchemaField::MakeOptional(
-      /*field_id=*/2, "value", std::make_shared<DecimalType>(18, 3))});
+      /*field_id=*/2, "value", iceberg::decimal(18, 3))});
 
   auto projection_result =
       Project(expected_schema, source_schema, /*prune_source=*/false);
@@ -259,10 +254,10 @@ TEST(SchemaUtilTest, ProjectSchemaEvolutionDecimalIncompatible) {
 }
 
 TEST(SchemaUtilTest, ProjectSchemaEvolutionIncompatibleTypes) {
-  Schema source_schema({SchemaField::MakeOptional(/*field_id=*/1, "value",
-                                                  std::make_shared<StringType>())});
+  Schema source_schema(
+      {SchemaField::MakeOptional(/*field_id=*/1, "value", iceberg::string())});
   Schema expected_schema(
-      {SchemaField::MakeOptional(/*field_id=*/1, "value", std::make_shared<IntType>())});
+      {SchemaField::MakeOptional(/*field_id=*/1, "value", iceberg::int32())});
 
   auto projection_result =
       Project(expected_schema, source_schema, /*prune_source=*/false);
@@ -272,15 +267,13 @@ TEST(SchemaUtilTest, ProjectSchemaEvolutionIncompatibleTypes) {
 
 TEST(SchemaUtilTest, ProjectNestedStructures) {
   Schema schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
-      SchemaField::MakeOptional(/*field_id=*/2, "name", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
+      SchemaField::MakeOptional(/*field_id=*/2, "name", iceberg::string()),
       SchemaField::MakeOptional(
           /*field_id=*/3, "address",
           std::make_shared<StructType>(std::vector<SchemaField>{
-              SchemaField::MakeOptional(/*field_id=*/101, "street",
-                                        std::make_shared<StringType>()),
-              SchemaField::MakeOptional(/*field_id=*/102, "city",
-                                        std::make_shared<StringType>()),
+              SchemaField::MakeOptional(/*field_id=*/101, "street", iceberg::string()),
+              SchemaField::MakeOptional(/*field_id=*/102, "city", iceberg::string()),
           })),
   });
 
@@ -303,29 +296,24 @@ TEST(SchemaUtilTest, ProjectNestedStructures) {
 
 TEST(SchemaUtilTest, ProjectSubsetNestedFields) {
   Schema source_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
-      SchemaField::MakeOptional(/*field_id=*/2, "name", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
+      SchemaField::MakeOptional(/*field_id=*/2, "name", iceberg::string()),
       SchemaField::MakeOptional(
           /*field_id=*/3, "address",
           std::make_shared<StructType>(std::vector<SchemaField>{
-              SchemaField::MakeOptional(/*field_id=*/101, "street",
-                                        std::make_shared<StringType>()),
-              SchemaField::MakeOptional(/*field_id=*/102, "city",
-                                        std::make_shared<StringType>()),
-              SchemaField::MakeOptional(/*field_id=*/103, "zip",
-                                        std::make_shared<StringType>()),
+              SchemaField::MakeOptional(/*field_id=*/101, "street", iceberg::string()),
+              SchemaField::MakeOptional(/*field_id=*/102, "city", iceberg::string()),
+              SchemaField::MakeOptional(/*field_id=*/103, "zip", iceberg::string()),
           })),
   });
 
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
       SchemaField::MakeOptional(
           /*field_id=*/3, "address",
           std::make_shared<StructType>(std::vector<SchemaField>{
-              SchemaField::MakeOptional(/*field_id=*/102, "city",
-                                        std::make_shared<StringType>()),
-              SchemaField::MakeOptional(/*field_id=*/101, "street",
-                                        std::make_shared<StringType>()),
+              SchemaField::MakeOptional(/*field_id=*/102, "city", iceberg::string()),
+              SchemaField::MakeOptional(/*field_id=*/101, "street", iceberg::string()),
           })),
   });
 
@@ -347,7 +335,7 @@ TEST(SchemaUtilTest, ProjectSubsetNestedFields) {
 
 TEST(SchemaUtilTest, ProjectListOfStruct) {
   Schema source_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
       SchemaField::MakeOptional(/*field_id=*/2, "items", CreateListOfStruct()),
   });
 
@@ -378,7 +366,7 @@ TEST(SchemaUtilTest, ProjectListOfStruct) {
                 /*field_id=*/101, "element",
                 std::make_shared<StructType>(
                     std::vector<SchemaField>{SchemaField::MakeRequired(
-                        /*field_id=*/103, "y", std::make_shared<StringType>())})))),
+                        /*field_id=*/103, "y", iceberg::string())})))),
     });
 
     auto projection_result =
@@ -399,7 +387,7 @@ TEST(SchemaUtilTest, ProjectListOfStruct) {
 
 TEST(SchemaUtilTest, ProjectMapWithStructValue) {
   Schema source_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
       SchemaField::MakeOptional(/*field_id=*/2, "attributes", CreateMapWithStructValue()),
   });
   Schema expected_schema({
@@ -420,13 +408,13 @@ TEST(SchemaUtilTest, ProjectMapWithStructValue) {
 
 TEST(SchemaUtilTest, ProjectComplexMixedTypes) {
   Schema source_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
       SchemaField::MakeOptional(/*field_id=*/2, "lists", CreateListOfStruct()),
       SchemaField::MakeRequired(/*field_id=*/3, "mappings", CreateMapWithStructValue()),
       SchemaField::MakeOptional(/*field_id=*/4, "nested", CreateNestedStruct()),
   });
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
       SchemaField::MakeRequired(/*field_id=*/3, "mappings", CreateMapWithStructValue()),
   });
 

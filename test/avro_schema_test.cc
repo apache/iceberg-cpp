@@ -155,11 +155,10 @@ TEST(ToAvroNodeVisitorTest, BinaryType) {
 }
 
 TEST(ToAvroNodeVisitorTest, StructType) {
-  StructType struct_type{
-      {SchemaField{/*field_id=*/1, "bool_field", std::make_shared<BooleanType>(),
-                   /*optional=*/false},
-       SchemaField{/*field_id=*/2, "int_field", std::make_shared<IntType>(),
-                   /*optional=*/true}}};
+  StructType struct_type{{SchemaField{/*field_id=*/1, "bool_field", iceberg::boolean(),
+                                      /*optional=*/false},
+                          SchemaField{/*field_id=*/2, "int_field", iceberg::int32(),
+                                      /*optional=*/true}}};
 
   ::avro::NodePtr node;
   EXPECT_THAT(ToAvroNodeVisitor{}.Visit(struct_type, &node), IsOk());
@@ -182,8 +181,7 @@ TEST(ToAvroNodeVisitorTest, StructType) {
 }
 
 TEST(ToAvroNodeVisitorTest, ListType) {
-  ListType list_type{SchemaField{/*field_id=*/5, "element",
-                                 std::make_shared<StringType>(),
+  ListType list_type{SchemaField{/*field_id=*/5, "element", iceberg::string(),
                                  /*optional=*/true}};
 
   ::avro::NodePtr node;
@@ -202,9 +200,9 @@ TEST(ToAvroNodeVisitorTest, ListType) {
 }
 
 TEST(ToAvroNodeVisitorTest, MapTypeWithStringKey) {
-  MapType map_type{SchemaField{/*field_id=*/10, "key", std::make_shared<StringType>(),
+  MapType map_type{SchemaField{/*field_id=*/10, "key", iceberg::string(),
                                /*optional=*/false},
-                   SchemaField{/*field_id=*/11, "value", std::make_shared<IntType>(),
+                   SchemaField{/*field_id=*/11, "value", iceberg::int32(),
                                /*optional=*/false}};
 
   ::avro::NodePtr node;
@@ -223,9 +221,9 @@ TEST(ToAvroNodeVisitorTest, MapTypeWithStringKey) {
 }
 
 TEST(ToAvroNodeVisitorTest, MapTypeWithNonStringKey) {
-  MapType map_type{SchemaField{/*field_id=*/10, "key", std::make_shared<IntType>(),
+  MapType map_type{SchemaField{/*field_id=*/10, "key", iceberg::int32(),
                                /*optional=*/false},
-                   SchemaField{/*field_id=*/11, "value", std::make_shared<StringType>(),
+                   SchemaField{/*field_id=*/11, "value", iceberg::string(),
                                /*optional=*/false}};
 
   ::avro::NodePtr node;
@@ -252,9 +250,9 @@ TEST(ToAvroNodeVisitorTest, MapTypeWithNonStringKey) {
 }
 
 TEST(ToAvroNodeVisitorTest, InvalidMapKeyType) {
-  MapType map_type{SchemaField{/*field_id=*/1, "key", std::make_shared<StringType>(),
+  MapType map_type{SchemaField{/*field_id=*/1, "key", iceberg::string(),
                                /*optional=*/true},
-                   SchemaField{/*field_id=*/2, "value", std::make_shared<StringType>(),
+                   SchemaField{/*field_id=*/2, "value", iceberg::string(),
                                /*optional=*/false}};
 
   ::avro::NodePtr node;
@@ -265,12 +263,12 @@ TEST(ToAvroNodeVisitorTest, InvalidMapKeyType) {
 
 TEST(ToAvroNodeVisitorTest, NestedTypes) {
   auto inner_struct = std::make_shared<StructType>(std::vector<SchemaField>{
-      SchemaField{/*field_id=*/2, "string_field", std::make_shared<StringType>(),
+      SchemaField{/*field_id=*/2, "string_field", iceberg::string(),
                   /*optional=*/false},
-      SchemaField{/*field_id=*/3, "int_field", std::make_shared<IntType>(),
+      SchemaField{/*field_id=*/3, "int_field", iceberg::int32(),
                   /*optional=*/true}});
   auto inner_list = std::make_shared<ListType>(SchemaField{/*field_id=*/5, "element",
-                                                           std::make_shared<DoubleType>(),
+                                                           iceberg::float64(),
                                                            /*optional=*/false});
   StructType root_struct{{SchemaField{/*field_id=*/1, "struct_field", inner_struct,
                                       /*optional=*/false},
@@ -520,10 +518,10 @@ TEST(HasIdVisitorTest, ArrayBackedMapWithPartialIds) {
 TEST(AvroSchemaProjectionTest, ProjectIdenticalSchemas) {
   // Create an iceberg schema
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
-      SchemaField::MakeOptional(/*field_id=*/2, "name", std::make_shared<StringType>()),
-      SchemaField::MakeOptional(/*field_id=*/3, "age", std::make_shared<IntType>()),
-      SchemaField::MakeRequired(/*field_id=*/4, "data", std::make_shared<DoubleType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
+      SchemaField::MakeOptional(/*field_id=*/2, "name", iceberg::string()),
+      SchemaField::MakeOptional(/*field_id=*/3, "age", iceberg::int32()),
+      SchemaField::MakeRequired(/*field_id=*/4, "data", iceberg::float64()),
   });
 
   // Create equivalent avro schema
@@ -554,8 +552,8 @@ TEST(AvroSchemaProjectionTest, ProjectIdenticalSchemas) {
 TEST(AvroSchemaProjectionTest, ProjectSubsetSchema) {
   // Create a subset iceberg schema
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
-      SchemaField::MakeOptional(/*field_id=*/3, "age", std::make_shared<IntType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
+      SchemaField::MakeOptional(/*field_id=*/3, "age", iceberg::int32()),
   });
 
   // Create full avro schema
@@ -586,8 +584,8 @@ TEST(AvroSchemaProjectionTest, ProjectSubsetSchema) {
 TEST(AvroSchemaProjectionTest, ProjectWithPruning) {
   // Create a subset iceberg schema
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
-      SchemaField::MakeOptional(/*field_id=*/3, "age", std::make_shared<IntType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
+      SchemaField::MakeOptional(/*field_id=*/3, "age", iceberg::int32()),
   });
 
   // Create full avro schema
@@ -618,9 +616,9 @@ TEST(AvroSchemaProjectionTest, ProjectWithPruning) {
 TEST(AvroSchemaProjectionTest, ProjectMissingOptionalField) {
   // Create iceberg schema with an extra optional field
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
-      SchemaField::MakeOptional(/*field_id=*/2, "name", std::make_shared<StringType>()),
-      SchemaField::MakeOptional(/*field_id=*/10, "extra", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
+      SchemaField::MakeOptional(/*field_id=*/2, "name", iceberg::string()),
+      SchemaField::MakeOptional(/*field_id=*/10, "extra", iceberg::string()),
   });
 
   // Create avro schema without the extra field
@@ -650,9 +648,9 @@ TEST(AvroSchemaProjectionTest, ProjectMissingOptionalField) {
 TEST(AvroSchemaProjectionTest, ProjectMissingRequiredField) {
   // Create iceberg schema with a required field that's missing from the avro schema
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
-      SchemaField::MakeOptional(/*field_id=*/2, "name", std::make_shared<StringType>()),
-      SchemaField::MakeRequired(/*field_id=*/10, "extra", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
+      SchemaField::MakeOptional(/*field_id=*/2, "name", iceberg::string()),
+      SchemaField::MakeRequired(/*field_id=*/10, "extra", iceberg::string()),
   });
 
   std::string avro_schema_json = R"({
@@ -674,7 +672,7 @@ TEST(AvroSchemaProjectionTest, ProjectMissingRequiredField) {
 TEST(AvroSchemaProjectionTest, ProjectMetadataColumn) {
   // Create iceberg schema with a metadata column
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
       MetadataColumns::kFilePath,
   });
 
@@ -701,7 +699,7 @@ TEST(AvroSchemaProjectionTest, ProjectMetadataColumn) {
 TEST(AvroSchemaProjectionTest, ProjectSchemaEvolutionIntToLong) {
   // Create iceberg schema expecting a long
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
   });
 
   // Create avro schema with an int
@@ -727,7 +725,7 @@ TEST(AvroSchemaProjectionTest, ProjectSchemaEvolutionIntToLong) {
 TEST(AvroSchemaProjectionTest, ProjectSchemaEvolutionFloatToDouble) {
   // Create iceberg schema expecting a double
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "value", std::make_shared<DoubleType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "value", iceberg::float64()),
   });
 
   // Create avro schema with a float
@@ -753,7 +751,7 @@ TEST(AvroSchemaProjectionTest, ProjectSchemaEvolutionFloatToDouble) {
 TEST(AvroSchemaProjectionTest, ProjectSchemaEvolutionIncompatibleTypes) {
   // Create iceberg schema expecting an int
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "value", std::make_shared<IntType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "value", iceberg::int32()),
   });
 
   // Create avro schema with a string
@@ -775,14 +773,12 @@ TEST(AvroSchemaProjectionTest, ProjectSchemaEvolutionIncompatibleTypes) {
 TEST(AvroSchemaProjectionTest, ProjectNestedStructures) {
   // Create iceberg schema with nested struct
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
       SchemaField::MakeOptional(
           /*field_id=*/3, "address",
           std::make_shared<StructType>(std::vector<SchemaField>{
-              SchemaField::MakeOptional(/*field_id=*/101, "street",
-                                        std::make_shared<StringType>()),
-              SchemaField::MakeOptional(/*field_id=*/102, "city",
-                                        std::make_shared<StringType>()),
+              SchemaField::MakeOptional(/*field_id=*/101, "street", iceberg::string()),
+              SchemaField::MakeOptional(/*field_id=*/102, "city", iceberg::string()),
           })),
   });
 
@@ -826,11 +822,11 @@ TEST(AvroSchemaProjectionTest, ProjectNestedStructures) {
 TEST(AvroSchemaProjectionTest, ProjectListType) {
   // Create iceberg schema with a list
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeRequired(/*field_id=*/1, "id", iceberg::int64()),
       SchemaField::MakeOptional(
           /*field_id=*/2, "numbers",
           std::make_shared<ListType>(SchemaField::MakeOptional(
-              /*field_id=*/101, "element", std::make_shared<IntType>()))),
+              /*field_id=*/101, "element", iceberg::int32()))),
   });
 
   // Create equivalent avro schema
@@ -866,10 +862,8 @@ TEST(AvroSchemaProjectionTest, ProjectMapType) {
       SchemaField::MakeOptional(
           /*field_id=*/1, "counts",
           std::make_shared<MapType>(
-              SchemaField::MakeRequired(/*field_id=*/101, "key",
-                                        std::make_shared<StringType>()),
-              SchemaField::MakeOptional(/*field_id=*/102, "value",
-                                        std::make_shared<IntType>()))),
+              SchemaField::MakeRequired(/*field_id=*/101, "key", iceberg::string()),
+              SchemaField::MakeOptional(/*field_id=*/102, "value", iceberg::int32()))),
   });
 
   // Create equivalent avro schema
@@ -904,10 +898,8 @@ TEST(AvroSchemaProjectionTest, ProjectMapTypeWithNonStringKey) {
       SchemaField::MakeOptional(
           /*field_id=*/1, "counts",
           std::make_shared<MapType>(
-              SchemaField::MakeRequired(/*field_id=*/101, "key",
-                                        std::make_shared<IntType>()),
-              SchemaField::MakeOptional(/*field_id=*/102, "value",
-                                        std::make_shared<StringType>()))),
+              SchemaField::MakeRequired(/*field_id=*/101, "key", iceberg::int32()),
+              SchemaField::MakeOptional(/*field_id=*/102, "value", iceberg::string()))),
   });
 
   // Create equivalent avro schema (using array-backed map for non-string keys)
@@ -950,10 +942,8 @@ TEST(AvroSchemaProjectionTest, ProjectListOfStruct) {
           std::make_shared<ListType>(SchemaField::MakeOptional(
               /*field_id=*/101, "element",
               std::make_shared<StructType>(std::vector<SchemaField>{
-                  SchemaField::MakeOptional(/*field_id=*/102, "x",
-                                            std::make_shared<IntType>()),
-                  SchemaField::MakeRequired(/*field_id=*/103, "y",
-                                            std::make_shared<StringType>()),
+                  SchemaField::MakeOptional(/*field_id=*/102, "x", iceberg::int32()),
+                  SchemaField::MakeRequired(/*field_id=*/103, "y", iceberg::string()),
               })))),
   });
 
@@ -1000,8 +990,7 @@ TEST(AvroSchemaProjectionTest, ProjectListOfStruct) {
 TEST(AvroSchemaProjectionTest, ProjectDecimalType) {
   // Create iceberg schema with decimal
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "value",
-                                std::make_shared<DecimalType>(18, 2)),
+      SchemaField::MakeRequired(/*field_id=*/1, "value", iceberg::decimal(18, 2)),
   });
 
   // Create avro schema with decimal
@@ -1038,8 +1027,7 @@ TEST(AvroSchemaProjectionTest, ProjectDecimalType) {
 TEST(AvroSchemaProjectionTest, ProjectDecimalIncompatible) {
   // Create iceberg schema with decimal having different scale
   Schema expected_schema({
-      SchemaField::MakeRequired(/*field_id=*/1, "value",
-                                std::make_shared<DecimalType>(18, 3)),
+      SchemaField::MakeRequired(/*field_id=*/1, "value", iceberg::decimal(18, 3)),
   });
 
   // Create avro schema with decimal

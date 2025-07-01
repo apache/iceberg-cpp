@@ -54,17 +54,15 @@ struct ICEBERG_EXPORT PartitionFieldSummary {
   std::optional<std::vector<uint8_t>> upper_bound;
 
   inline static const SchemaField kContainsNull =
-      SchemaField::MakeRequired(509, "contains_null", std::make_shared<BooleanType>(),
+      SchemaField::MakeRequired(509, "contains_null", iceberg::boolean(),
                                 "True if any file has a null partition value");
   inline static const SchemaField kContainsNaN =
-      SchemaField::MakeOptional(518, "contains_nan", std::make_shared<BooleanType>(),
+      SchemaField::MakeOptional(518, "contains_nan", iceberg::boolean(),
                                 "True if any file has a nan partition value");
-  inline static const SchemaField kLowerBound =
-      SchemaField::MakeOptional(510, "lower_bound", std::make_shared<BinaryType>(),
-                                "Partition lower bound for all files");
-  inline static const SchemaField kUpperBound =
-      SchemaField::MakeOptional(511, "upper_bound", std::make_shared<BinaryType>(),
-                                "Partition upper bound for all files");
+  inline static const SchemaField kLowerBound = SchemaField::MakeOptional(
+      510, "lower_bound", iceberg::binary(), "Partition lower bound for all files");
+  inline static const SchemaField kUpperBound = SchemaField::MakeOptional(
+      511, "upper_bound", iceberg::binary(), "Partition upper bound for all files");
 
   static const StructType& Type();
 };
@@ -150,48 +148,44 @@ struct ICEBERG_EXPORT ManifestFile {
   /// \brief Checks if this manifest file contains entries with DELETED status
   bool has_deleted_files() const { return deleted_files_count.value_or(1) > 0; }
 
-  inline static const SchemaField kManifestPath =
-      SchemaField::MakeRequired(500, "manifest_path", std::make_shared<StringType>(),
-                                "Location URI with FS scheme");
+  inline static const SchemaField kManifestPath = SchemaField::MakeRequired(
+      500, "manifest_path", iceberg::string(), "Location URI with FS scheme");
   inline static const SchemaField kManifestLength = SchemaField::MakeRequired(
-      501, "manifest_length", std::make_shared<LongType>(), "Total file size in bytes");
+      501, "manifest_length", iceberg::int64(), "Total file size in bytes");
   inline static const SchemaField kPartitionSpecId = SchemaField::MakeRequired(
-      502, "partition_spec_id", std::make_shared<IntType>(), "Spec ID used to write");
-  inline static const SchemaField kContent =
-      SchemaField::MakeOptional(517, "content", std::make_shared<IntType>(),
-                                "Contents of the manifest: 0=data, 1=deletes");
+      502, "partition_spec_id", iceberg::int32(), "Spec ID used to write");
+  inline static const SchemaField kContent = SchemaField::MakeOptional(
+      517, "content", iceberg::int32(), "Contents of the manifest: 0=data, 1=deletes");
   inline static const SchemaField kSequenceNumber =
-      SchemaField::MakeOptional(515, "sequence_number", std::make_shared<LongType>(),
+      SchemaField::MakeOptional(515, "sequence_number", iceberg::int64(),
                                 "Sequence number when the manifest was added");
   inline static const SchemaField kMinSequenceNumber =
-      SchemaField::MakeOptional(516, "min_sequence_number", std::make_shared<LongType>(),
+      SchemaField::MakeOptional(516, "min_sequence_number", iceberg::int64(),
                                 "Lowest sequence number in the manifest");
-  inline static const SchemaField kAddedSnapshotId =
-      SchemaField::MakeRequired(503, "added_snapshot_id", std::make_shared<LongType>(),
-                                "Snapshot ID that added the manifest");
+  inline static const SchemaField kAddedSnapshotId = SchemaField::MakeRequired(
+      503, "added_snapshot_id", iceberg::int64(), "Snapshot ID that added the manifest");
   inline static const SchemaField kAddedFilesCount = SchemaField::MakeOptional(
-      504, "added_files_count", std::make_shared<IntType>(), "Added entry count");
+      504, "added_files_count", iceberg::int32(), "Added entry count");
   inline static const SchemaField kExistingFilesCount = SchemaField::MakeOptional(
-      505, "existing_files_count", std::make_shared<IntType>(), "Existing entry count");
+      505, "existing_files_count", iceberg::int32(), "Existing entry count");
   inline static const SchemaField kDeletedFilesCount = SchemaField::MakeOptional(
-      506, "deleted_files_count", std::make_shared<IntType>(), "Deleted entry count");
+      506, "deleted_files_count", iceberg::int32(), "Deleted entry count");
   inline static const SchemaField kAddedRowsCount = SchemaField::MakeOptional(
-      512, "added_rows_count", std::make_shared<LongType>(), "Added rows count");
+      512, "added_rows_count", iceberg::int64(), "Added rows count");
   inline static const SchemaField kExistingRowsCount = SchemaField::MakeOptional(
-      513, "existing_rows_count", std::make_shared<LongType>(), "Existing rows count");
+      513, "existing_rows_count", iceberg::int64(), "Existing rows count");
   inline static const SchemaField kDeletedRowsCount = SchemaField::MakeOptional(
-      514, "deleted_rows_count", std::make_shared<LongType>(), "Deleted rows count");
+      514, "deleted_rows_count", iceberg::int64(), "Deleted rows count");
   inline static const SchemaField kPartitions = SchemaField::MakeOptional(
       507, "partitions",
       std::make_shared<ListType>(SchemaField::MakeRequired(
           508, std::string(ListType::kElementName),
           std::make_shared<StructType>(PartitionFieldSummary::Type()))),
       "Summary for each partition");
-  inline static const SchemaField kKeyMetadata =
-      SchemaField::MakeOptional(519, "key_metadata", std::make_shared<BinaryType>(),
-                                "Encryption key metadata blob");
+  inline static const SchemaField kKeyMetadata = SchemaField::MakeOptional(
+      519, "key_metadata", iceberg::binary(), "Encryption key metadata blob");
   inline static const SchemaField kFirstRowId = SchemaField::MakeOptional(
-      520, "first_row_id", std::make_shared<LongType>(),
+      520, "first_row_id", iceberg::int64(),
       "Starting row ID to assign to new rows in ADDED data files");
 
   static const StructType& Type();
