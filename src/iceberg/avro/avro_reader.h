@@ -35,7 +35,7 @@ class ICEBERG_BUNDLE_EXPORT AvroReader : public Reader {
 
   Status Close() final;
 
-  Result<Data> Next() final;
+  Result<std::optional<ArrowArray>> Next() final;
 
   Result<ArrowSchema> Schema() final;
 

@@ -299,6 +299,20 @@ function(resolve_zlib_dependency)
 
 endfunction()
 
+# ----------------------------------------------------------------------
+# Zstd
+
+function(resolve_zstd_dependency)
+  find_package(zstd CONFIG)
+  if(zstd_FOUND)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES zstd)
+    message(STATUS "Found zstd, version: ${zstd_VERSION}")
+    set(ICEBERG_SYSTEM_DEPENDENCIES
+        ${ICEBERG_SYSTEM_DEPENDENCIES}
+        PARENT_SCOPE)
+  endif()
+endfunction()
+
 resolve_zlib_dependency()
 resolve_nanoarrow_dependency()
 resolve_nlohmann_json_dependency()
@@ -306,4 +320,5 @@ resolve_nlohmann_json_dependency()
 if(ICEBERG_BUILD_BUNDLE)
   resolve_arrow_dependency()
   resolve_avro_dependency()
+  resolve_zstd_dependency()
 endif()

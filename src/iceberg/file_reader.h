@@ -25,7 +25,6 @@
 #include <functional>
 #include <memory>
 #include <optional>
-#include <variant>
 
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/file_format.h"
@@ -50,9 +49,8 @@ class ICEBERG_EXPORT Reader {
 
   /// \brief Read next data from file.
   ///
-  /// \return std::monostate if the reader has no more data, otherwise `ArrowArray`.
-  using Data = std::variant<std::monostate, ArrowArray>;
-  virtual Result<Data> Next() = 0;
+  /// \return std::nullopt if the reader has no more data, otherwise `ArrowArray`.
+  virtual Result<std::optional<ArrowArray>> Next() = 0;
 
   /// \brief Get the schema of the data.
   virtual Result<ArrowSchema> Schema() = 0;
@@ -68,6 +66,8 @@ struct ICEBERG_EXPORT Split {
 
 /// \brief Options for creating a reader.
 struct ICEBERG_EXPORT ReaderOptions {
+  static constexpr int64_t kDefaultBatchSize = 4096;
+
   /// \brief The path to the file to read.
   std::string path;
   /// \brief The total length of the file.
@@ -76,7 +76,7 @@ struct ICEBERG_EXPORT ReaderOptions {
   std::optional<Split> split;
   /// \brief The batch size to read. Only applies to implementations that support
   /// batching.
-  int64_t batch_size = 4096;
+  int64_t batch_size = kDefaultBatchSize;
   /// \brief FileIO instance to open the file. Reader implementations should down cast it
   /// to the specific FileIO implementation. By default, the `iceberg-bundle` library uses
   /// `ArrowFileSystemFileIO` as the default implementation.

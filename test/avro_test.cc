@@ -31,32 +31,12 @@
 
 #include "iceberg/arrow/arrow_fs_file_io.h"
 #include "iceberg/avro/avro_reader.h"
-#include "iceberg/avro/demo_avro.h"
 #include "iceberg/schema.h"
 #include "iceberg/type.h"
 #include "matchers.h"
 #include "temp_file_test_base.h"
 
 namespace iceberg::avro {
-
-TEST(AVROTest, TestDemoAvro) {
-  std::string expected =
-      "{\n\
-    \"type\": \"record\",\n\
-    \"name\": \"testrecord\",\n\
-    \"fields\": [\n\
-        {\n\
-            \"name\": \"testbytes\",\n\
-            \"type\": \"bytes\",\n\
-            \"default\": \"\"\n\
-        }\n\
-    ]\n\
-}\n\
-";
-
-  auto avro = iceberg::avro::DemoAvro();
-  EXPECT_EQ(avro.print(), expected);
-}
 
 class AvroReaderTest : public TempFileTestBase {
  protected:
@@ -107,8 +87,8 @@ class AvroReaderTest : public TempFileTestBase {
     // Boilerplate to get Arrow array
     auto data = reader.Next();
     ASSERT_THAT(data, IsOk());
-    ASSERT_TRUE(std::holds_alternative<ArrowArray>(data.value()));
-    auto arrow_c_array = std::get<ArrowArray>(data.value());
+    ASSERT_TRUE(data.value().has_value());
+    auto arrow_c_array = data.value().value();
     auto data_result = ::arrow::ImportArray(&arrow_c_array, arrow_schema);
     auto arrow_array = data_result.ValueOrDie();
 
@@ -121,7 +101,7 @@ class AvroReaderTest : public TempFileTestBase {
   void VerifyExhausted(Reader& reader) {
     auto data = reader.Next();
     ASSERT_THAT(data, IsOk());
-    ASSERT_TRUE(std::holds_alternative<std::monostate>(data.value()));
+    ASSERT_FALSE(data.value().has_value());
   }
 
   std::shared_ptr<::arrow::fs::LocalFileSystem> local_fs_;

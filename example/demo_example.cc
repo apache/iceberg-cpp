@@ -19,13 +19,16 @@
 
 #include <iostream>
 
-#include "iceberg/arrow/demo_arrow.h"
-#include "iceberg/avro/demo_avro.h"
-#include "iceberg/demo.h"
+#include "iceberg/avro/avro_reader.h"
+#include "iceberg/file_reader.h"
 
 int main() {
-  std::cout << iceberg::Demo().print() << std::endl;
-  std::cout << iceberg::arrow::DemoArrow().print() << std::endl;
-  std::cout << iceberg::avro::DemoAvro().print() << std::endl;
+  iceberg::avro::AvroReader::Register();
+  auto open_result = iceberg::ReaderFactoryRegistry::Open(
+      iceberg::FileFormatType::kAvro, {.path = "non-existing-file.avro"});
+  if (!open_result.has_value()) {
+    std::cerr << "Failed to open avro file" << std::endl;
+    return 1;
+  }
   return 0;
 }

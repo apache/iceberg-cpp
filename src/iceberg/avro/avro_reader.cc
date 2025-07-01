@@ -123,7 +123,7 @@ class AvroReader::Impl {
     return {};
   }
 
-  Result<Data> Next() {
+  Result<std::optional<ArrowArray>> Next() {
     if (!context_) {
       ICEBERG_RETURN_UNEXPECTED(InitReadContext());
     }
@@ -191,9 +191,9 @@ class AvroReader::Impl {
     return {};
   }
 
-  Result<Data> ConvertBuilderToArrowArray() {
+  Result<std::optional<ArrowArray>> ConvertBuilderToArrowArray() {
     if (context_->builder_->length() == 0) {
-      return {};
+      return std::nullopt;
     }
 
     auto builder_result = context_->builder_->Finish();
@@ -227,7 +227,7 @@ class AvroReader::Impl {
   std::unique_ptr<ReadContext> context_;
 };
 
-Result<Reader::Data> AvroReader::Next() { return impl_->Next(); }
+Result<std::optional<ArrowArray>> AvroReader::Next() { return impl_->Next(); }
 
 Result<ArrowSchema> AvroReader::Schema() { return impl_->Schema(); }
 
