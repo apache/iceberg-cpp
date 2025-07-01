@@ -28,7 +28,6 @@
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/snapshot.h"
-#include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/util/macros.h"
 
@@ -36,14 +35,10 @@ namespace iceberg {
 
 namespace {
 /// \brief Use indexed data structures for efficient lookups
-struct DeleteFileIndex {
-  /// \brief Index by sequence number for quick filtering
-  std::multimap<int64_t, ManifestEntry*> sequence_index;
-
+class DeleteFileIndex {
+ public:
   /// \brief Build the index from a list of manifest entries.
-  void BuildIndex(const std::vector<std::unique_ptr<ManifestEntry>>& entries) {
-    sequence_index.clear();
-
+  explicit DeleteFileIndex(const std::vector<std::unique_ptr<ManifestEntry>>& entries) {
     for (const auto& entry : entries) {
       const int64_t seq_num =
           entry->sequence_number.value_or(TableMetadata::kInitialSequenceNumber);
@@ -66,6 +61,10 @@ struct DeleteFileIndex {
 
     return relevant_deletes;
   }
+
+ private:
+  /// \brief Index by sequence number for quick filtering
+  std::multimap<int64_t, ManifestEntry*> sequence_index;
 };
 
 /// \brief Get matched delete files for a given data entry.
@@ -107,7 +106,7 @@ int64_t FileScanTask::start() const { return start_; }
 
 int64_t FileScanTask::length() const { return length_; }
 
-int64_t FileScanTask::size_bytes() const {
+int64_t FileScanTask::SizeBytes() const {
   int64_t sizeInBytes = length_;
   std::ranges::for_each(delete_files_, [&sizeInBytes](const auto& delete_file) {
     sizeInBytes += delete_file->file_size_in_bytes;
@@ -115,11 +114,11 @@ int64_t FileScanTask::size_bytes() const {
   return sizeInBytes;
 }
 
-int32_t FileScanTask::files_count() const {
+int32_t FileScanTask::FilesCount() const {
   return static_cast<int32_t>(delete_files_.size() + 1);
 }
 
-int64_t FileScanTask::estimated_row_count() const {
+int64_t FileScanTask::EstimatedRowCount() const {
   if (data_file_->file_size_in_bytes == 0) {
     return 0;
   }
@@ -130,9 +129,9 @@ int64_t FileScanTask::estimated_row_count() const {
 
 const std::shared_ptr<Expression>& FileScanTask::residual() const { return residual_; }
 
-TableScanBuilder::TableScanBuilder(const Table& table,
-                                   std::shared_ptr<TableMetadata> table_metadata)
-    : table_(table) {
+TableScanBuilder::TableScanBuilder(std::shared_ptr<TableMetadata> table_metadata,
+                                   std::shared_ptr<FileIO> file_io)
+    : file_io_(std::move(file_io)) {
   context_.table_metadata = std::move(table_metadata);
 }
 
@@ -143,7 +142,7 @@ TableScanBuilder& TableScanBuilder::WithColumnNames(
   return *this;
 }
 
-TableScanBuilder& TableScanBuilder::WithSchema(std::shared_ptr<Schema> schema) {
+TableScanBuilder& TableScanBuilder::WithProjectedSchema(std::shared_ptr<Schema> schema) {
   context_.projected_schema = std::move(schema);
   return *this;
 }
@@ -174,29 +173,39 @@ TableScanBuilder& TableScanBuilder::WithLimit(std::optional<int64_t> limit) {
 }
 
 Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
-  if (snapshot_id_) {
-    ICEBERG_ASSIGN_OR_RAISE(context_.snapshot, table_.SnapshotById(*snapshot_id_));
-  } else {
-    ICEBERG_ASSIGN_OR_RAISE(context_.snapshot, table_.current_snapshot());
+  const auto& table_metadata = context_.table_metadata;
+  auto snapshot_id = snapshot_id_ ? snapshot_id_ : table_metadata->current_snapshot_id;
+  if (!snapshot_id) {
+    return InvalidArgument("No snapshot ID specified for table {}",
+                           table_metadata->table_uuid);
   }
-  if (context_.snapshot == nullptr) {
-    return InvalidArgument("No snapshot found for table {}", table_.name().name);
+  auto iter = std::ranges::find_if(table_metadata->snapshots,
+                                   [&snapshot_id](const auto& snapshot) {
+                                     return snapshot->snapshot_id == *snapshot_id;
+                                   });
+  if (iter == table_metadata->snapshots.end() || *iter == nullptr) {
+    return NotFound("Snapshot with ID {} is not found", *snapshot_id);
   }
+  context_.snapshot = *iter;
 
   if (!context_.projected_schema) {
-    std::shared_ptr<Schema> schema;
     const auto& snapshot = context_.snapshot;
-    if (snapshot->schema_id) {
-      const auto& schemas = *table_.schemas();
-      if (const auto it = schemas.find(*snapshot->schema_id); it != schemas.end()) {
-        schema = it->second;
-      } else {
-        return InvalidArgument("Schema {} in snapshot {} is not found",
-                               *snapshot->schema_id, snapshot->snapshot_id);
-      }
-    } else {
-      ICEBERG_ASSIGN_OR_RAISE(schema, table_.schema());
+    auto schema_id =
+        snapshot->schema_id ? snapshot->schema_id : table_metadata->current_schema_id;
+    if (!schema_id) {
+      return InvalidArgument("No schema ID found in snapshot {} for table {}",
+                             snapshot->snapshot_id, table_metadata->table_uuid);
     }
+
+    const auto& schemas = table_metadata->schemas;
+    const auto it = std::ranges::find_if(schemas, [&schema_id](const auto& schema) {
+      return schema->schema_id() == *schema_id;
+    });
+    if (it == schemas.end()) {
+      return InvalidArgument("Schema {} in snapshot {} is not found",
+                             *snapshot->schema_id, snapshot->snapshot_id);
+    }
+    auto schema = *it;
 
     if (column_names_.empty()) {
       context_.projected_schema = schema;
@@ -217,7 +226,7 @@ Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
     }
   }
 
-  return std::make_unique<DataScan>(std::move(context_), table_.io());
+  return std::make_unique<DataScan>(std::move(context_), file_io_);
 }
 
 TableScan::TableScan(TableScanContext context, std::shared_ptr<FileIO> file_io)
@@ -267,8 +276,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataScan::PlanFiles() const {
     }
   }
 
-  DeleteFileIndex delete_file_index;
-  delete_file_index.BuildIndex(positional_delete_entries);
+  DeleteFileIndex delete_file_index(positional_delete_entries);
 
   // TODO(gty404): build residual expression from filter
   std::shared_ptr<Expression> residual;

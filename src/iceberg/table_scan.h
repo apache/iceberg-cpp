@@ -27,22 +27,22 @@
 
 namespace iceberg {
 
-/// \brief Represents a task to scan a table or a portion of it.
+/// \brief An abstract scan task.
 class ICEBERG_EXPORT ScanTask {
  public:
   virtual ~ScanTask() = default;
 
   /// \brief The number of bytes that should be read by this scan task.
-  virtual int64_t size_bytes() const = 0;
+  virtual int64_t SizeBytes() const = 0;
 
   /// \brief The number of files that should be read by this scan task.
-  virtual int32_t files_count() const = 0;
+  virtual int32_t FilesCount() const = 0;
 
   /// \brief The number of rows that should be read by this scan task.
-  virtual int64_t estimated_row_count() const = 0;
+  virtual int64_t EstimatedRowCount() const = 0;
 };
 
-/// \brief Represents a task to scan a portion of a data file.
+/// \brief Task representing a data file and its corresponding delete files.
 class ICEBERG_EXPORT FileScanTask : public ScanTask {
  public:
   FileScanTask(std::shared_ptr<DataFile> file,
@@ -64,9 +64,9 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   /// \brief The residual expression to apply after scanning the data file.
   const std::shared_ptr<Expression>& residual() const;
 
-  int64_t size_bytes() const override;
-  int32_t files_count() const override;
-  int64_t estimated_row_count() const override;
+  int64_t SizeBytes() const override;
+  int32_t FilesCount() const override;
+  int64_t EstimatedRowCount() const override;
 
  private:
   /// \brief Data file metadata.
@@ -103,10 +103,10 @@ struct TableScanContext {
 class ICEBERG_EXPORT TableScanBuilder {
  public:
   /// \brief Constructs a TableScanBuilder for the given table.
-  /// \param table The table to scan.
   /// \param table_metadata The metadata of the table to scan.
-  explicit TableScanBuilder(const Table& table,
-                            std::shared_ptr<TableMetadata> table_metadata);
+  /// \param file_io The FileIO instance for reading manifests and data files.
+  explicit TableScanBuilder(std::shared_ptr<TableMetadata> table_metadata,
+                            std::shared_ptr<FileIO> file_io);
 
   /// \brief Sets the snapshot ID to scan.
   /// \param snapshot_id The ID of the snapshot.
@@ -121,7 +121,7 @@ class ICEBERG_EXPORT TableScanBuilder {
   /// \brief Sets the schema to use for the scan.
   /// \param schema The schema to use.
   /// \return Reference to the builder.
-  TableScanBuilder& WithSchema(std::shared_ptr<Schema> schema);
+  TableScanBuilder& WithProjectedSchema(std::shared_ptr<Schema> schema);
 
   /// \brief Applies a filter expression to the scan.
   /// \param filter Filter expression to use.
@@ -149,8 +149,8 @@ class ICEBERG_EXPORT TableScanBuilder {
   Result<std::unique_ptr<TableScan>> Build();
 
  private:
-  /// \brief Reference to the table to scan.
-  const Table& table_;
+  /// \brief the file I/O instance for reading manifests and data files.
+  std::shared_ptr<FileIO> file_io_;
   /// \brief column names to project in the scan.
   std::vector<std::string> column_names_;
   /// \brief snapshot ID to scan, if specified.
