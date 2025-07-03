@@ -88,12 +88,9 @@ std::vector<std::shared_ptr<DataFile>> GetMatchedDeletes(
 // implement FileScanTask
 FileScanTask::FileScanTask(std::shared_ptr<DataFile> file,
                            std::vector<std::shared_ptr<DataFile>> delete_files,
-                           int64_t start, int64_t length,
                            std::shared_ptr<Expression> residual)
     : data_file_(std::move(file)),
       delete_files_(std::move(delete_files)),
-      start_(start),
-      length_(length),
       residual_(std::move(residual)) {}
 
 const std::shared_ptr<DataFile>& FileScanTask::data_file() const { return data_file_; }
@@ -102,12 +99,8 @@ const std::vector<std::shared_ptr<DataFile>>& FileScanTask::delete_files() const
   return delete_files_;
 }
 
-int64_t FileScanTask::start() const { return start_; }
-
-int64_t FileScanTask::length() const { return length_; }
-
 int64_t FileScanTask::SizeBytes() const {
-  int64_t sizeInBytes = length_;
+  int64_t sizeInBytes = data_file_->file_size_in_bytes;
   std::ranges::for_each(delete_files_, [&sizeInBytes](const auto& delete_file) {
     sizeInBytes += delete_file->file_size_in_bytes;
   });
@@ -122,8 +115,9 @@ int64_t FileScanTask::EstimatedRowCount() const {
   if (data_file_->file_size_in_bytes == 0) {
     return 0;
   }
+  const auto sizeInBytes = data_file_->file_size_in_bytes;
   const double scannedFileFraction =
-      static_cast<double>(length_) / data_file_->file_size_in_bytes;
+      static_cast<double>(sizeInBytes) / data_file_->file_size_in_bytes;
   return static_cast<int64_t>(scannedFileFraction * data_file_->record_count);
 }
 
@@ -276,17 +270,15 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataScan::PlanFiles() const {
     }
   }
 
-  DeleteFileIndex delete_file_index(positional_delete_entries);
-
   // TODO(gty404): build residual expression from filter
   std::shared_ptr<Expression> residual;
   std::vector<std::shared_ptr<FileScanTask>> tasks;
+  DeleteFileIndex delete_file_index(positional_delete_entries);
   for (const auto& data_entry : data_entries) {
     auto matched_deletes = GetMatchedDeletes(*data_entry, delete_file_index);
     const auto& data_file = data_entry->data_file;
     tasks.emplace_back(std::make_shared<FileScanTask>(
-        data_file, std::move(matched_deletes), 0, data_file->file_size_in_bytes,
-        std::move(residual)));
+        data_file, std::move(matched_deletes), std::move(residual)));
   }
   return tasks;
 }

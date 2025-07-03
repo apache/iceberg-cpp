@@ -55,7 +55,7 @@ class ICEBERG_EXPORT ManifestListReader {
 /// \param file_path Path to the manifest list file.
 /// \return A Result containing the reader or an error.
 Result<std::unique_ptr<ManifestListReader>> CreateManifestListReader(
-    const std::string& file_path) {
+    const std::string_view& file_path) {
   return NotImplemented("CreateManifestListReader is not implemented yet.");
 }
 
@@ -63,7 +63,7 @@ Result<std::unique_ptr<ManifestListReader>> CreateManifestListReader(
 /// \param file_path Path to the manifest file.
 /// \return A Result containing the reader or an error.
 Result<std::unique_ptr<ManifestReader>> CreateManifestReader(
-    const std::string& file_path) {
+    const std::string_view& file_path) {
   return NotImplemented("CreateManifestReader is not implemented yet.");
 }
 

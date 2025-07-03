@@ -46,20 +46,14 @@ class ICEBERG_EXPORT ScanTask {
 class ICEBERG_EXPORT FileScanTask : public ScanTask {
  public:
   FileScanTask(std::shared_ptr<DataFile> file,
-               std::vector<std::shared_ptr<DataFile>> delete_files, int64_t start,
-               int64_t length, std::shared_ptr<Expression> residual);
+               std::vector<std::shared_ptr<DataFile>> delete_files,
+               std::shared_ptr<Expression> residual);
 
   /// \brief The data file that should be read by this scan task.
   const std::shared_ptr<DataFile>& data_file() const;
 
   /// \brief The delete files that should be read by this scan task.
   const std::vector<std::shared_ptr<DataFile>>& delete_files() const;
-
-  /// \brief The byte offset in the data file where the scan should start.
-  int64_t start() const;
-
-  /// \brief The length in bytes to scan from the start offset.
-  int64_t length() const;
 
   /// \brief The residual expression to apply after scanning the data file.
   const std::shared_ptr<Expression>& residual() const;
@@ -73,10 +67,6 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   std::shared_ptr<DataFile> data_file_;
   /// \brief Delete files metadata.
   std::vector<std::shared_ptr<DataFile>> delete_files_;
-  /// \brief Start byte offset.
-  int64_t start_;
-  /// \brief Length in bytes to scan.
-  int64_t length_;
   /// \brief Residual expression to apply.
   std::shared_ptr<Expression> residual_;
 };
