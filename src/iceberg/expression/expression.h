@@ -25,8 +25,11 @@
 #include <memory>
 #include <string>
 
+#include "expression.h"
 #include "iceberg/exception.h"
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
+#include "iceberg/schema.h"
 
 namespace iceberg {
 
@@ -89,6 +92,9 @@ constexpr bool IsPredicate(Operation op) {
   return false;
 }
 
+
+class BoundExpression;
+
 /// \brief Represents a boolean expression tree.
 class ICEBERG_EXPORT Expression {
  public:
@@ -106,6 +112,11 @@ class ICEBERG_EXPORT Expression {
   }
 
   virtual std::string ToString() const = 0;
+
+  virtual Result<std::unique_ptr<BoundExpression>> Bind(
+      const Schema& schema, bool case_sensitive) const {
+    return NotImplemented("Binding of Expression is not implemented");
+  }
 };
 
 class ICEBERG_EXPORT Predicate : public Expression {
@@ -225,5 +236,9 @@ class ICEBERG_EXPORT Or : public Predicate {
   std::shared_ptr<Predicate> left_;
   std::shared_ptr<Predicate> right_;
 };
+
+class ICEBERG_EXPORT BoundExpression {};
+
+class ICEBERG_EXPORT BoundPredicate : public BoundExpression {};
 
 }  // namespace iceberg

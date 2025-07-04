@@ -28,17 +28,17 @@
 
 namespace iceberg {
 
-struct BoundedReference {};
+struct BoundReference {};
 
 /// Unbounded reference type for expressions.
 struct Reference {
-  using BoundedType = BoundedReference;
+  using BoundType = BoundReference;
 
   std::string name;
 
   std::string ToString() const { return "Reference(name: " + name + ")"; }
 
-  Result<BoundedReference> Bind(const Schema& schema, bool case_sensitive) const;
+  Result<BoundReference> Bind(const Schema& schema, bool case_sensitive) const;
 };
 
 using Term = Reference;
