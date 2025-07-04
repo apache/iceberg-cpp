@@ -92,6 +92,7 @@ class LocationProvider;
 class SortField;
 class SortOrder;
 class Table;
+class FileIO;
 class Transaction;
 class Transform;
 class TransformFunction;
@@ -113,6 +114,12 @@ class NameMapping;
 enum class SnapshotRefType;
 enum class TransformType;
 
+class Expression;
+
+class FileScanTask;
+class TableScan;
+class TableScanBuilder;
+
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.
 /// ----------------------------------------------------------------------------
@@ -123,11 +130,13 @@ class MetadataUpdate;
 class UpdateRequirement;
 
 class AppendFiles;
-class TableScan;
 
 struct DataFile;
 struct ManifestEntry;
 struct ManifestFile;
 struct ManifestList;
+
+class ManifestReader;
+class ManifestListReader;
 
 }  // namespace iceberg
