@@ -219,7 +219,7 @@ Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
     }
   }
 
-  return std::make_unique<DataScan>(std::move(context_), file_io_);
+  return std::make_unique<DataTableScan>(std::move(context_), file_io_);
 }
 
 TableScan::TableScan(TableScanContext context, std::shared_ptr<FileIO> file_io)
@@ -235,10 +235,10 @@ const TableScanContext& TableScan::context() const { return context_; }
 
 const std::shared_ptr<FileIO>& TableScan::io() const { return file_io_; }
 
-DataScan::DataScan(TableScanContext context, std::shared_ptr<FileIO> file_io)
+DataTableScan::DataTableScan(TableScanContext context, std::shared_ptr<FileIO> file_io)
     : TableScan(std::move(context), std::move(file_io)) {}
 
-Result<std::vector<std::shared_ptr<FileScanTask>>> DataScan::PlanFiles() const {
+Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() const {
   ICEBERG_ASSIGN_OR_RAISE(auto manifest_list_reader,
                           CreateManifestListReader(context_.snapshot->manifest_list));
   ICEBERG_ASSIGN_OR_RAISE(auto manifest_files, manifest_list_reader->Files());

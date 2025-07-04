@@ -187,10 +187,10 @@ class ICEBERG_EXPORT TableScan {
 };
 
 /// \brief A scan that reads data files and applies delete files to filter rows.
-class ICEBERG_EXPORT DataScan : public TableScan {
+class ICEBERG_EXPORT DataTableScan : public TableScan {
  public:
   /// \brief Constructs a DataScan with the given context and file I/O.
-  DataScan(TableScanContext context, std::shared_ptr<FileIO> file_io);
+  DataTableScan(TableScanContext context, std::shared_ptr<FileIO> file_io);
 
   /// \brief Plans the scan tasks by resolving manifests and data files.
   /// \return A Result containing scan tasks or an error.
