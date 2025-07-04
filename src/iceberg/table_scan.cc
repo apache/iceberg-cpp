@@ -131,7 +131,6 @@ TableScanBuilder::TableScanBuilder(std::shared_ptr<TableMetadata> table_metadata
 
 TableScanBuilder& TableScanBuilder::WithColumnNames(
     std::vector<std::string> column_names) {
-  column_names_.reserve(column_names.size());
   column_names_ = std::move(column_names);
   return *this;
 }
@@ -199,7 +198,7 @@ Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
       return InvalidArgument("Schema {} in snapshot {} is not found",
                              *snapshot->schema_id, snapshot->snapshot_id);
     }
-    auto schema = *it;
+    const auto& schema = *it;
 
     if (column_names_.empty()) {
       context_.projected_schema = schema;
@@ -277,8 +276,8 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataScan::PlanFiles() const {
   for (const auto& data_entry : data_entries) {
     auto matched_deletes = GetMatchedDeletes(*data_entry, delete_file_index);
     const auto& data_file = data_entry->data_file;
-    tasks.emplace_back(std::make_shared<FileScanTask>(
-        data_file, std::move(matched_deletes), std::move(residual)));
+    tasks.emplace_back(
+        std::make_shared<FileScanTask>(data_file, std::move(matched_deletes), residual));
   }
   return tasks;
 }
