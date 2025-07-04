@@ -21,6 +21,8 @@
 
 #include <format>
 
+#include "iceberg/util/checked_cast.h"
+
 namespace iceberg {
 
 // True implementation
@@ -29,7 +31,7 @@ const std::shared_ptr<True>& True::Instance() {
   return instance;
 }
 
-std::shared_ptr<Expression> True::Negate() const { return False::Instance(); }
+std::shared_ptr<Predicate> True::Negate() const { return False::Instance(); }
 
 // False implementation
 const std::shared_ptr<False>& False::Instance() {
@@ -37,17 +39,17 @@ const std::shared_ptr<False>& False::Instance() {
   return instance;
 }
 
-std::shared_ptr<Expression> False::Negate() const { return True::Instance(); }
+std::shared_ptr<Predicate> False::Negate() const { return True::Instance(); }
 
 // And implementation
-And::And(std::shared_ptr<Expression> left, std::shared_ptr<Expression> right)
+And::And(std::shared_ptr<Predicate> left, std::shared_ptr<Predicate> right)
     : left_(std::move(left)), right_(std::move(right)) {}
 
 std::string And::ToString() const {
   return std::format("({} and {})", left_->ToString(), right_->ToString());
 }
 
-std::shared_ptr<Expression> And::Negate() const {
+std::shared_ptr<Predicate> And::Negate() const {
   // De Morgan's law: not(A and B) = (not A) or (not B)
   auto left_negated = left_->Negate();
   auto right_negated = right_->Negate();
@@ -56,7 +58,7 @@ std::shared_ptr<Expression> And::Negate() const {
 
 bool And::Equals(const Expression& expr) const {
   if (expr.op() == Operation::kAnd) {
-    const auto& other = static_cast<const And&>(expr);
+    const auto& other = iceberg::internal::checked_cast<const And&>(expr);
     return (left_->Equals(*other.left()) && right_->Equals(*other.right())) ||
            (left_->Equals(*other.right()) && right_->Equals(*other.left()));
   }
@@ -64,14 +66,14 @@ bool And::Equals(const Expression& expr) const {
 }
 
 // Or implementation
-Or::Or(std::shared_ptr<Expression> left, std::shared_ptr<Expression> right)
+Or::Or(std::shared_ptr<Predicate> left, std::shared_ptr<Predicate> right)
     : left_(std::move(left)), right_(std::move(right)) {}
 
 std::string Or::ToString() const {
   return std::format("({} or {})", left_->ToString(), right_->ToString());
 }
 
-std::shared_ptr<Expression> Or::Negate() const {
+std::shared_ptr<Predicate> Or::Negate() const {
   // De Morgan's law: not(A or B) = (not A) and (not B)
   auto left_negated = left_->Negate();
   auto right_negated = right_->Negate();
@@ -80,7 +82,7 @@ std::shared_ptr<Expression> Or::Negate() const {
 
 bool Or::Equals(const Expression& expr) const {
   if (expr.op() == Operation::kOr) {
-    const auto& other = static_cast<const Or&>(expr);
+    const auto& other = iceberg::internal::checked_cast<const Or&>(expr);
     return (left_->Equals(*other.left()) && right_->Equals(*other.right())) ||
            (left_->Equals(*other.right()) && right_->Equals(*other.left()));
   }

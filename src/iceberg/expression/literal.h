@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/expression/literal.h
+/// Literal class for Iceberg table operations.
+
 #include <compare>
 #include <memory>
 #include <string>

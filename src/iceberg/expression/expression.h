@@ -30,45 +30,72 @@
 
 namespace iceberg {
 
+/// Operation types for expressions
+enum class Operation {
+  kTrue,
+  kFalse,
+  kIsNull,
+  kNotNull,
+  kIsNan,
+  kNotNan,
+  kLt,
+  kLtEq,
+  kGt,
+  kGtEq,
+  kEq,
+  kNotEq,
+  kIn,
+  kNotIn,
+  kNot,
+  kAnd,
+  kOr,
+  kStartsWith,
+  kNotStartsWith,
+  kCount,
+  kCountStar,
+  kMax,
+  kMin
+};
+
+/// \brief Returns whether the operation is a predicate operation.
+constexpr bool IsPredicate(Operation op) {
+  switch (op) {
+    case Operation::kTrue:
+    case Operation::kFalse:
+    case Operation::kIsNull:
+    case Operation::kNotNull:
+    case Operation::kIsNan:
+    case Operation::kNotNan:
+    case Operation::kLt:
+    case Operation::kLtEq:
+    case Operation::kGt:
+    case Operation::kGtEq:
+    case Operation::kEq:
+    case Operation::kNotEq:
+    case Operation::kIn:
+    case Operation::kNotIn:
+    case Operation::kNot:
+    case Operation::kAnd:
+    case Operation::kOr:
+    case Operation::kStartsWith:
+    case Operation::kNotStartsWith:
+      return true;
+    case Operation::kCount:
+    case Operation::kCountStar:
+    case Operation::kMax:
+    case Operation::kMin:
+      return false;
+  }
+  return false;
+}
+
 /// \brief Represents a boolean expression tree.
 class ICEBERG_EXPORT Expression {
  public:
-  /// Operation types for expressions
-  enum class Operation {
-    kTrue,
-    kFalse,
-    kIsNull,
-    kNotNull,
-    kIsNan,
-    kNotNan,
-    kLt,
-    kLtEq,
-    kGt,
-    kGtEq,
-    kEq,
-    kNotEq,
-    kIn,
-    kNotIn,
-    kNot,
-    kAnd,
-    kOr,
-    kStartsWith,
-    kNotStartsWith,
-    kCount,
-    kCountStar,
-    kMax,
-    kMin
-  };
-
   virtual ~Expression() = default;
 
   /// \brief Returns the operation for an expression node.
   virtual Operation op() const = 0;
-
-  /// \brief Returns the negation of this expression, equivalent to not(this).
-  virtual std::shared_ptr<Expression> Negate() const {
-    throw IcebergError("Expression cannot be negated");
-  }
 
   /// \brief Returns whether this expression will accept the same values as another.
   /// \param other another expression
@@ -78,13 +105,19 @@ class ICEBERG_EXPORT Expression {
     return false;
   }
 
-  virtual std::string ToString() const { return "Expression"; }
+  virtual std::string ToString() const = 0;
+};
+
+class ICEBERG_EXPORT Predicate : public Expression {
+ public:
+  /// \brief Returns a negated version of this predicate.
+  virtual std::shared_ptr<Predicate> Negate() const = 0;
 };
 
 /// \brief An Expression that is always true.
 ///
 /// Represents a boolean predicate that always evaluates to true.
-class ICEBERG_EXPORT True : public Expression {
+class ICEBERG_EXPORT True : public Predicate {
  public:
   /// \brief Returns the singleton instance
   static const std::shared_ptr<True>& Instance();
@@ -93,7 +126,7 @@ class ICEBERG_EXPORT True : public Expression {
 
   std::string ToString() const override { return "true"; }
 
-  std::shared_ptr<Expression> Negate() const override;
+  std::shared_ptr<Predicate> Negate() const override;
 
   bool Equals(const Expression& other) const override {
     return other.op() == Operation::kTrue;
@@ -104,7 +137,7 @@ class ICEBERG_EXPORT True : public Expression {
 };
 
 /// \brief An expression that is always false.
-class ICEBERG_EXPORT False : public Expression {
+class ICEBERG_EXPORT False : public Predicate {
  public:
   /// \brief Returns the singleton instance
   static const std::shared_ptr<False>& Instance();
@@ -113,7 +146,7 @@ class ICEBERG_EXPORT False : public Expression {
 
   std::string ToString() const override { return "false"; }
 
-  std::shared_ptr<Expression> Negate() const override;
+  std::shared_ptr<Predicate> Negate() const override;
 
   bool Equals(const Expression& other) const override {
     return other.op() == Operation::kFalse;
@@ -127,70 +160,70 @@ class ICEBERG_EXPORT False : public Expression {
 ///
 /// This expression evaluates to true if and only if both of its child expressions
 /// evaluate to true.
-class ICEBERG_EXPORT And : public Expression {
+class ICEBERG_EXPORT And : public Predicate {
  public:
   /// \brief Constructs an And expression from two sub-expressions.
   ///
   /// \param left The left operand of the AND expression
   /// \param right The right operand of the AND expression
-  And(std::shared_ptr<Expression> left, std::shared_ptr<Expression> right);
+  And(std::shared_ptr<Predicate> left, std::shared_ptr<Predicate> right);
 
   /// \brief Returns the left operand of the AND expression.
   ///
   /// \return The left operand of the AND expression
-  const std::shared_ptr<Expression>& left() const { return left_; }
+  const std::shared_ptr<Predicate>& left() const { return left_; }
 
   /// \brief Returns the right operand of the AND expression.
   ///
   /// \return The right operand of the AND expression
-  const std::shared_ptr<Expression>& right() const { return right_; }
+  const std::shared_ptr<Predicate>& right() const { return right_; }
 
   Operation op() const override { return Operation::kAnd; }
 
   std::string ToString() const override;
 
-  std::shared_ptr<Expression> Negate() const override;
+  std::shared_ptr<Predicate> Negate() const override;
 
   bool Equals(const Expression& other) const override;
 
  private:
-  std::shared_ptr<Expression> left_;
-  std::shared_ptr<Expression> right_;
+  std::shared_ptr<Predicate> left_;
+  std::shared_ptr<Predicate> right_;
 };
 
 /// \brief An Expression that represents a logical OR operation between two expressions.
 ///
 /// This expression evaluates to true if at least one of its child expressions
 /// evaluates to true.
-class ICEBERG_EXPORT Or : public Expression {
+class ICEBERG_EXPORT Or : public Predicate {
  public:
   /// \brief Constructs an Or expression from two sub-expressions.
   ///
   /// \param left The left operand of the OR expression
   /// \param right The right operand of the OR expression
-  Or(std::shared_ptr<Expression> left, std::shared_ptr<Expression> right);
+  Or(std::shared_ptr<Predicate> left, std::shared_ptr<Predicate> right);
 
   /// \brief Returns the left operand of the OR expression.
   ///
   /// \return The left operand of the OR expression
-  const std::shared_ptr<Expression>& left() const { return left_; }
+  const std::shared_ptr<Predicate>& left() const { return left_; }
 
   /// \brief Returns the right operand of the OR expression.
   ///
   /// \return The right operand of the OR expression
-  const std::shared_ptr<Expression>& right() const { return right_; }
+  const std::shared_ptr<Predicate>& right() const { return right_; }
 
   Operation op() const override { return Operation::kOr; }
 
   std::string ToString() const override;
 
-  std::shared_ptr<Expression> Negate() const override;
+  std::shared_ptr<Predicate> Negate() const override;
 
   bool Equals(const Expression& other) const override;
 
  private:
-  std::shared_ptr<Expression> left_;
-  std::shared_ptr<Expression> right_;
+  std::shared_ptr<Predicate> left_;
+  std::shared_ptr<Predicate> right_;
 };
 
 }  // namespace iceberg
