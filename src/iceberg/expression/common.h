@@ -22,6 +22,9 @@
 #include <memory>
 #include <string>
 
+#include "iceberg/result.h"
+#include "iceberg/schema.h"
+
 namespace iceberg {
 
 /// Operation types for expressions
@@ -113,5 +116,26 @@ constexpr bool IsBinaryPredicate(Operation op) {
       return false;
   }
 }
+
+template <typename T>
+concept Bindable = requires(const T& expr, const Schema& schema, bool case_sensitive) {
+  // Must have a BoundType alias that defines what type it binds to
+  typename T::BoundType;
+  // Must have a Bind method with the correct signature
+  { expr.Bind(schema, case_sensitive) } -> std::same_as<Result<typename T::BoundType>>;
+};
+
+/// \brief Concept for types that behave like predicates (bound or unbound)
+template <typename T>
+concept PredicateLike = requires(const T& pred) {
+  // Must have an operation type
+  { pred.op() } -> std::same_as<Operation>;
+  // Must be convertible to string
+  { pred.ToString() } -> std::same_as<std::string>;
+  // // Must have a Negate method that returns a shared_ptr to the same concept
+  // { pred.Negate() } -> std::convertible_to<std::shared_ptr<T>>;
+  // Must support equality comparison
+  { pred.Equals(pred) } -> std::same_as<bool>;
+};
 
 }  // namespace iceberg

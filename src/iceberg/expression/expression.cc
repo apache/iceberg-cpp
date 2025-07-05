@@ -29,58 +29,18 @@
 
 namespace iceberg {
 
-template <typename T>
-concept Bindable = requires(const T& expr, const Schema& schema, bool case_sensitive) {
-  // Must have a BoundType alias that defines what type it binds to
-  typename T::BoundType;
-
-  // Must have a Bind method with the correct signature
-  { expr.Bind(schema, case_sensitive) } -> std::same_as<Result<typename T::BoundType>>;
-};
-
-/// \brief Concept for types that behave like predicates (bound or unbound)
-template <typename T>
-concept PredicateLike = requires(const T& pred) {
-  // Must have an operation type
-  { pred.op() } -> std::same_as<Operation>;
-
-  // Must be convertible to string
-  { pred.ToString() } -> std::same_as<std::string>;
-
-  // Must have a Negate method that returns a shared_ptr to the same concept
-  { pred.Negate() } -> std::convertible_to<std::shared_ptr<T>>;
-
-  // Must support equality comparison
-  { pred.Equals(pred) } -> std::same_as<bool>;
-};
-
-/// \brief Concept specifically for unbound predicates that can be bound
-template <typename T>
-concept UnboundPredicate = PredicateLike<T> && requires(const T& pred) {
-  // Must have a BoundType alias
-  typename T::BoundType;
-
-  // Must be bindable to a schema
-  requires Bindable<T>;
-};
-
-/// \brief Concept specifically for bound predicates
-template <typename T>
-concept BoundPredicateLike = PredicateLike<T> && requires(const T& pred) {
-  // Must have type information
-  { pred.type() } -> std::convertible_to<std::shared_ptr<Type>>;
-
-  // Must report that it's bound
-  { pred.IsBound() } -> std::convertible_to<bool>;
-};
-
 // Internal implementation classes
 
 /// \brief An Expression that is always true.
-class True final : public Predicate {
+template <PredicateLike PredicateType>
+class TrueImpl final : public PredicateType {
  public:
   /// \brief Returns the singleton instance
-  static const std::shared_ptr<True>& Instance();
+  static const std::shared_ptr<TrueImpl>& Instance() {
+    static const std::shared_ptr<TrueImpl> instance =
+        std::shared_ptr<TrueImpl>(new TrueImpl());
+    return instance;
+  }
 
   Operation op() const override { return Operation::kTrue; }
 
@@ -92,35 +52,49 @@ class True final : public Predicate {
     return other.op() == Operation::kTrue;
   }
 
- private:
-  constexpr True() = default;
+ protected:
+  constexpr TrueImpl() = default;
 };
 
 /// \brief An expression that is always false.
-class False final : public Predicate {
+template <PredicateLike PredicateType>
+class FalseImpl final : public PredicateType {
  public:
   /// \brief Returns the singleton instance
-  static const std::shared_ptr<False>& Instance();
+  static const std::shared_ptr<PredicateType>& Instance() {
+    static const std::shared_ptr<PredicateType> instance =
+        std::shared_ptr<FalseImpl>(new FalseImpl());
+    return instance;
+  }
 
   Operation op() const override { return Operation::kFalse; }
 
   std::string ToString() const override { return "false"; }
 
-  std::shared_ptr<Predicate> Negate() const override;
+  std::shared_ptr<Predicate> Negate() const override {
+    return TrueImpl<PredicateType>::Instance();
+  }
 
   bool Equals(const Expression& other) const override {
     return other.op() == Operation::kFalse;
   }
 
  private:
-  constexpr False() = default;
+  constexpr FalseImpl() = default;
 };
 
+template <PredicateLike PredicateType>
+std::shared_ptr<Predicate> TrueImpl<PredicateType>::Negate() const {
+  return FalseImpl<PredicateType>::Instance();
+}
+
 /// \brief An Expression that represents a logical AND operation between two expressions.
-class AndImpl final : public Predicate {
+template <PredicateLike PredicateType>
+class AndImpl final : public PredicateType {
  public:
   /// \brief Constructs an And expression from two sub-expressions.
-  AndImpl(std::shared_ptr<Predicate> left, std::shared_ptr<Predicate> right);
+  AndImpl(std::shared_ptr<Predicate> left, std::shared_ptr<Predicate> right)
+      : left_(std::move(left)), right_(std::move(right)) {}
 
   /// \brief Returns the left operand of the AND expression.
   const std::shared_ptr<Predicate>& left() const { return left_; }
@@ -130,11 +104,21 @@ class AndImpl final : public Predicate {
 
   Operation op() const override { return Operation::kAnd; }
 
-  std::string ToString() const override;
+  std::string ToString() const override {
+    return std::format("({} and {})", left_->ToString(), right_->ToString());
+  }
 
-  std::shared_ptr<Predicate> Negate() const override;
+  std::shared_ptr<PredicateType> Negate() const override;
 
-  bool Equals(const Expression& other) const override;
+  bool Equals(const Expression& expr) const override {
+    if (expr.op() == Operation::kAnd) {
+      const auto& other =
+          iceberg::internal::checked_cast<const AndImpl<PredicateType>&>(expr);
+      return (left_->Equals(*other.left()) && right_->Equals(*other.right())) ||
+             (left_->Equals(*other.right()) && right_->Equals(*other.left()));
+    }
+    return false;
+  }
 
  private:
   std::shared_ptr<Predicate> left_;
@@ -142,93 +126,67 @@ class AndImpl final : public Predicate {
 };
 
 /// \brief An Expression that represents a logical OR operation between two expressions.
-class OrImpl final : public Predicate {
+template <PredicateLike PredicateType>
+class OrImpl final : public PredicateType {
  public:
   /// \brief Constructs an Or expression from two sub-expressions.
-  OrImpl(std::shared_ptr<Predicate> left, std::shared_ptr<Predicate> right);
+  OrImpl(std::shared_ptr<PredicateType> left, std::shared_ptr<PredicateType> right)
+      : left_(std::move(left)), right_(std::move(right)) {}
 
   /// \brief Returns the left operand of the OR expression.
-  const std::shared_ptr<Predicate>& left() const { return left_; }
+  const std::shared_ptr<PredicateType>& left() const { return left_; }
 
   /// \brief Returns the right operand of the OR expression.
-  const std::shared_ptr<Predicate>& right() const { return right_; }
+  const std::shared_ptr<PredicateType>& right() const { return right_; }
 
   Operation op() const override { return Operation::kOr; }
 
-  std::string ToString() const override;
+  std::string ToString() const override {
+    return std::format("({} or {})", left_->ToString(), right_->ToString());
+  }
 
-  std::shared_ptr<Predicate> Negate() const override;
+  std::shared_ptr<PredicateType> Negate() const override;
 
-  bool Equals(const Expression& other) const override;
+  bool Equals(const Expression& expr) const override {
+    if (expr.op() == Operation::kOr) {
+      const auto& other =
+          iceberg::internal::checked_cast<const OrImpl<PredicateType>&>(expr);
+      return (left_->Equals(*other.left()) && right_->Equals(*other.right())) ||
+             (left_->Equals(*other.right()) && right_->Equals(*other.left()));
+    }
+    return false;
+  }
 
  private:
-  std::shared_ptr<Predicate> left_;
-  std::shared_ptr<Predicate> right_;
+  std::shared_ptr<PredicateType> left_;
+  std::shared_ptr<PredicateType> right_;
 };
 
-// Implementation of True
-const std::shared_ptr<True>& True::Instance() {
-  static const std::shared_ptr<True> instance{new True()};
-  return instance;
-}
-
-std::shared_ptr<Predicate> True::Negate() const { return False::Instance(); }
-
-// Implementation of False
-const std::shared_ptr<False>& False::Instance() {
-  static const std::shared_ptr<False> instance = std::shared_ptr<False>(new False());
-  return instance;
-}
-
-std::shared_ptr<Predicate> False::Negate() const { return True::Instance(); }
-
-// Implementation of AndImpl
-AndImpl::AndImpl(std::shared_ptr<Predicate> left, std::shared_ptr<Predicate> right)
-    : left_(std::move(left)), right_(std::move(right)) {}
-
-std::string AndImpl::ToString() const {
-  return std::format("({} and {})", left_->ToString(), right_->ToString());
-}
-
-std::shared_ptr<Predicate> AndImpl::Negate() const {
+template <PredicateLike PredicateType>
+std::shared_ptr<PredicateType> AndImpl<PredicateType>::Negate() const {
   // De Morgan's law: not(A and B) = (not A) or (not B)
   auto left_negated = left_->Negate();
   auto right_negated = right_->Negate();
-  return std::make_shared<OrImpl>(left_negated, right_negated);
+  return std::make_shared<OrImpl<PredicateType>>(std::move(left_negated),
+                                                 std::move(right_negated));
 }
 
-bool AndImpl::Equals(const Expression& expr) const {
-  if (expr.op() == Operation::kAnd) {
-    const auto& other = iceberg::internal::checked_cast<const AndImpl&>(expr);
-    return (left_->Equals(*other.left()) && right_->Equals(*other.right())) ||
-           (left_->Equals(*other.right()) && right_->Equals(*other.left()));
-  }
-  return false;
-}
-
-// Implementation of OrImpl
-OrImpl::OrImpl(std::shared_ptr<Predicate> left, std::shared_ptr<Predicate> right)
-    : left_(std::move(left)), right_(std::move(right)) {}
-
-std::string OrImpl::ToString() const {
-  return std::format("({} or {})", left_->ToString(), right_->ToString());
-}
-
-std::shared_ptr<Predicate> OrImpl::Negate() const {
+template <PredicateLike PredicateType>
+std::shared_ptr<PredicateType> OrImpl<PredicateType>::Negate() const {
   // De Morgan's law: not(A or B) = (not A) and (not B)
   auto left_negated = left_->Negate();
   auto right_negated = right_->Negate();
-  return std::make_shared<AndImpl>(left_negated, right_negated);
+  return std::make_shared<AndImpl<PredicateType>>(left_negated, right_negated);
 }
 
-bool OrImpl::Equals(const Expression& expr) const {
-  if (expr.op() == Operation::kOr) {
-    const auto& other = iceberg::internal::checked_cast<const OrImpl&>(expr);
-    return (left_->Equals(*other.left()) && right_->Equals(*other.right())) ||
-           (left_->Equals(*other.right()) && right_->Equals(*other.left()));
-  }
-  return false;
-}
+using True = TrueImpl<Predicate>;
+using BoundTrue = TrueImpl<BoundPredicate>;
+using False = FalseImpl<Predicate>;
+using BoundFalse = FalseImpl<BoundPredicate>;
+using AndPredicate = AndImpl<Predicate>;
+using BoundAndPredicate = AndImpl<BoundPredicate>;
+using OrPredicate = OrImpl<Predicate>;
+using BoundOrPredicate = OrImpl<BoundPredicate>;
 
 // Implementation of Predicate static factory methods
 const std::shared_ptr<Predicate>& Predicate::AlwaysTrue() {
@@ -253,7 +211,7 @@ std::shared_ptr<Predicate> Predicate::And(std::shared_ptr<Predicate> left,
     return left;
   }
   */
-  return std::make_shared<AndImpl>(std::move(left), std::move(right));
+  return std::make_shared<AndPredicate>(std::move(left), std::move(right));
 }
 
 std::shared_ptr<Predicate> Predicate::Or(std::shared_ptr<Predicate> left,
@@ -268,7 +226,7 @@ std::shared_ptr<Predicate> Predicate::Or(std::shared_ptr<Predicate> left,
     return left;
   }
   */
-  return std::make_shared<OrImpl>(std::move(left), std::move(right));
+  return std::make_shared<OrPredicate>(std::move(left), std::move(right));
 }
 
 /// Unary predicate, for example, `a IS NULL`, which `a` is a Term.
