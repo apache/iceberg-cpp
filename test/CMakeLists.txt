@@ -71,8 +71,7 @@ target_link_libraries(json_serde_test PRIVATE iceberg_static GTest::gtest_main
 add_test(NAME json_serde_test COMMAND json_serde_test)
 
 add_executable(util_test)
-target_sources(util_test PRIVATE expected_test.cc formatter_test.cc config_test.cc
-                                 visit_type_test.cc)
+target_sources(util_test PRIVATE formatter_test.cc config_test.cc visit_type_test.cc)
 target_link_libraries(util_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
 add_test(NAME util_test COMMAND util_test)
 

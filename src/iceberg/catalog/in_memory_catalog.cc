@@ -22,7 +22,6 @@
 #include <algorithm>
 #include <iterator>  // IWYU pragma: keep
 #include <mutex>
-#include <optional>
 #include <unordered_map>
 
 #include "iceberg/exception.h"
@@ -174,7 +173,7 @@ Result<bool> InMemoryNamespace::NamespaceExists(const Namespace& namespace_ident
   if (ns.error().kind == ErrorKind::kNoSuchNamespace) {
     return false;
   }
-  return unexpected<Error>(ns.error());
+  return std::unexpected<Error>(ns.error());
 }
 
 Result<std::vector<Namespace>> InMemoryNamespace::ListNamespaces(

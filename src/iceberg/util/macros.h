@@ -19,9 +19,9 @@
 
 #pragma once
 
-#define ICEBERG_RETURN_UNEXPECTED(result)     \
-  if (!result) [[unlikely]] {                 \
-    return unexpected<Error>(result.error()); \
+#define ICEBERG_RETURN_UNEXPECTED(result)          \
+  if (!result) [[unlikely]] {                      \
+    return std::unexpected<Error>(result.error()); \
   }
 
 #define ICEBERG_ASSIGN_OR_RAISE_IMPL(result_name, lhs, rexpr) \
