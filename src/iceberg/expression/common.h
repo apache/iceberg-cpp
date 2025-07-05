@@ -19,11 +19,12 @@
 
 #pragma once
 
-namespace iceberg {
+#include <memory>
+#include <string>
 
-template <typename T>
-concept Bindable = requires(T expr) {
-  { expr.Bind() };
-};
+#include "iceberg/result.h"
+
+namespace iceberg {
+class Schema;
 
 }  // namespace iceberg

@@ -25,8 +25,6 @@
 #include <memory>
 #include <string>
 
-#include "expression.h"
-#include "iceberg/exception.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
@@ -92,12 +90,13 @@ constexpr bool IsPredicate(Operation op) {
   return false;
 }
 
-
 class BoundExpression;
 
 /// \brief Represents a boolean expression tree.
 class ICEBERG_EXPORT Expression {
  public:
+  using BoundType = BoundExpression;
+
   virtual ~Expression() = default;
 
   /// \brief Returns the operation for an expression node.
@@ -123,122 +122,50 @@ class ICEBERG_EXPORT Predicate : public Expression {
  public:
   /// \brief Returns a negated version of this predicate.
   virtual std::shared_ptr<Predicate> Negate() const = 0;
+
+  // Factory functions for creating predicates
+
+  /// \brief Creates a True predicate that always evaluates to true.
+  /// \return A shared pointer to a True predicate
+  static std::shared_ptr<Predicate> AlwaysTrue();
+
+  /// \brief Creates a False predicate that always evaluates to false.
+  /// \return A shared pointer to a False predicate
+  static std::shared_ptr<Predicate> AlwaysFalse();
+
+  /// \brief Creates an And predicate that represents logical AND of two predicates.
+  /// \param left The left operand of the AND predicate
+  /// \param right The right operand of the AND predicate
+  /// \return A shared pointer to an And predicate
+  static std::shared_ptr<Predicate> And(std::shared_ptr<Predicate> left,
+                                        std::shared_ptr<Predicate> right);
+
+  /// \brief Creates an Or predicate that represents logical OR of two predicates.
+  /// \param left The left operand of the OR predicate
+  /// \param right The right operand of the OR predicate
+  /// \return A shared pointer to an Or predicate
+  static std::shared_ptr<Predicate> Or(std::shared_ptr<Predicate> left,
+                                       std::shared_ptr<Predicate> right);
 };
 
-/// \brief An Expression that is always true.
-///
-/// Represents a boolean predicate that always evaluates to true.
-class ICEBERG_EXPORT True : public Predicate {
+class ICEBERG_EXPORT BoundExpression {
  public:
-  /// \brief Returns the singleton instance
-  static const std::shared_ptr<True>& Instance();
+  virtual ~BoundExpression() = default;
 
-  Operation op() const override { return Operation::kTrue; }
+  /// \brief Returns the operation for a bound expression node.
+  virtual Operation op() const = 0;
 
-  std::string ToString() const override { return "true"; }
+  /// \brief Returns whether this expression will accept the same values as another.
+  virtual bool Equals(const BoundExpression& other) const = 0;
 
-  std::shared_ptr<Predicate> Negate() const override;
-
-  bool Equals(const Expression& other) const override {
-    return other.op() == Operation::kTrue;
-  }
-
- private:
-  constexpr True() = default;
+  /// \brief Returns a string representation of this bound expression.
+  virtual std::string ToString() const = 0;
 };
 
-/// \brief An expression that is always false.
-class ICEBERG_EXPORT False : public Predicate {
+class ICEBERG_EXPORT BoundPredicate : public BoundExpression {
  public:
-  /// \brief Returns the singleton instance
-  static const std::shared_ptr<False>& Instance();
-
-  Operation op() const override { return Operation::kFalse; }
-
-  std::string ToString() const override { return "false"; }
-
-  std::shared_ptr<Predicate> Negate() const override;
-
-  bool Equals(const Expression& other) const override {
-    return other.op() == Operation::kFalse;
-  }
-
- private:
-  constexpr False() = default;
+  /// \brief Returns a negated version of this bound predicate.
+  virtual std::shared_ptr<BoundPredicate> Negate() const = 0;
 };
-
-/// \brief An Expression that represents a logical AND operation between two expressions.
-///
-/// This expression evaluates to true if and only if both of its child expressions
-/// evaluate to true.
-class ICEBERG_EXPORT And : public Predicate {
- public:
-  /// \brief Constructs an And expression from two sub-expressions.
-  ///
-  /// \param left The left operand of the AND expression
-  /// \param right The right operand of the AND expression
-  And(std::shared_ptr<Predicate> left, std::shared_ptr<Predicate> right);
-
-  /// \brief Returns the left operand of the AND expression.
-  ///
-  /// \return The left operand of the AND expression
-  const std::shared_ptr<Predicate>& left() const { return left_; }
-
-  /// \brief Returns the right operand of the AND expression.
-  ///
-  /// \return The right operand of the AND expression
-  const std::shared_ptr<Predicate>& right() const { return right_; }
-
-  Operation op() const override { return Operation::kAnd; }
-
-  std::string ToString() const override;
-
-  std::shared_ptr<Predicate> Negate() const override;
-
-  bool Equals(const Expression& other) const override;
-
- private:
-  std::shared_ptr<Predicate> left_;
-  std::shared_ptr<Predicate> right_;
-};
-
-/// \brief An Expression that represents a logical OR operation between two expressions.
-///
-/// This expression evaluates to true if at least one of its child expressions
-/// evaluates to true.
-class ICEBERG_EXPORT Or : public Predicate {
- public:
-  /// \brief Constructs an Or expression from two sub-expressions.
-  ///
-  /// \param left The left operand of the OR expression
-  /// \param right The right operand of the OR expression
-  Or(std::shared_ptr<Predicate> left, std::shared_ptr<Predicate> right);
-
-  /// \brief Returns the left operand of the OR expression.
-  ///
-  /// \return The left operand of the OR expression
-  const std::shared_ptr<Predicate>& left() const { return left_; }
-
-  /// \brief Returns the right operand of the OR expression.
-  ///
-  /// \return The right operand of the OR expression
-  const std::shared_ptr<Predicate>& right() const { return right_; }
-
-  Operation op() const override { return Operation::kOr; }
-
-  std::string ToString() const override;
-
-  std::shared_ptr<Predicate> Negate() const override;
-
-  bool Equals(const Expression& other) const override;
-
- private:
-  std::shared_ptr<Predicate> left_;
-  std::shared_ptr<Predicate> right_;
-};
-
-class ICEBERG_EXPORT BoundExpression {};
-
-class ICEBERG_EXPORT BoundPredicate : public BoundExpression {};
 
 }  // namespace iceberg
