@@ -23,6 +23,7 @@ set(ICEBERG_SOURCES
     demo.cc
     expression/expression.cc
     expression/literal.cc
+    expression/term.cc
     file_reader.cc
     json_internal.cc
     manifest_entry.cc
