@@ -210,6 +210,8 @@ class AvroBatchReader::Impl {
   std::unique_ptr<ReadContext> context_;
 };
 
+AvroBatchReader::~AvroBatchReader() = default;
+
 Result<Reader::Data> AvroBatchReader::Next() { return impl_->Next(); }
 
 Status AvroBatchReader::Open(const ReaderOptions& options) {

@@ -22,6 +22,7 @@
 #include <zlib.h>
 
 #include <cstring>
+#include <vector>
 
 #include "iceberg/util/macros.h"
 

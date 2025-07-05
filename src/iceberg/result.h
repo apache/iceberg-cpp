@@ -19,10 +19,10 @@
 
 #pragma once
 
+#include <expected>
 #include <format>
 #include <string>
 
-#include "iceberg/expected.h"
 #include "iceberg/iceberg_export.h"
 
 namespace iceberg {
@@ -61,7 +61,7 @@ struct DefaultError {
 
 /// \brief Result alias
 template <typename T, typename E = typename DefaultError<T>::type>
-using Result = expected<T, E>;
+using Result = std::expected<T, E>;
 
 using Status = Result<void>;
 
@@ -69,8 +69,8 @@ using Status = Result<void>;
 #define DEFINE_ERROR_FUNCTION(name)                                           \
   template <typename... Args>                                                 \
   inline auto name(const std::format_string<Args...> fmt, Args&&... args)     \
-      -> unexpected<Error> {                                                  \
-    return unexpected<Error>(                                                 \
+      -> std::unexpected<Error> {                                             \
+    return std::unexpected<Error>(                                            \
         {ErrorKind::k##name, std::format(fmt, std::forward<Args>(args)...)}); \
   }
 

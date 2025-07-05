@@ -19,6 +19,8 @@
 
 #include "iceberg/table.h"
 
+#include <algorithm>
+
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/sort_order.h"
