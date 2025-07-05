@@ -21,7 +21,11 @@
 
 #include <format>
 
+#include "iceberg/exception.h"
+#include "iceberg/expression/term.h"
 #include "iceberg/util/checked_cast.h"
+#include "iceberg/util/macros.h"
+#include "literal.h"
 
 namespace iceberg {
 
@@ -265,6 +269,294 @@ std::shared_ptr<Predicate> Predicate::Or(std::shared_ptr<Predicate> left,
   }
   */
   return std::make_shared<OrImpl>(std::move(left), std::move(right));
+}
+
+/// Unary predicate, for example, `a IS NULL`, which `a` is a Term.
+///
+/// Note that this would not include UnaryPredicates like
+/// `COALESCE(a, b) is not null`.
+template <typename ReferenceType>
+struct UnaryPredicateBase {
+  UnaryPredicateBase(Operation in_op, ReferenceType in_reference)
+      : unary_op(in_op), reference(std::move(in_reference)) {
+    if (!IsUnaryPredicate(unary_op)) {
+      throw IcebergError(
+          std::format("UnaryPredicateBase: operation {} is not a unary predicate",
+                      static_cast<int>(unary_op)));
+    }
+  }
+
+  Operation unary_op;
+  ReferenceType reference;
+};
+
+class BoundUnaryPredicate;
+
+class UnaryPredicate final : public UnaryPredicateBase<Reference>, public Predicate {
+ public:
+  using BoundType = BoundUnaryPredicate;
+
+  UnaryPredicate(Operation op, Reference reference)
+      : UnaryPredicateBase<Reference>(op, std::move(reference)) {}
+
+  std::string ToString() const override {
+    switch (this->unary_op) {
+      case Operation::kIsNull:
+        return std::format("{} IS NULL", reference.ToString());
+      case Operation::kNotNull:
+        return std::format("{} IS NOT NULL", reference.ToString());
+      case Operation::kIsNan:
+        return std::format("{} IS NAN", reference.ToString());
+      case Operation::kNotNan:
+        return std::format("{} IS NOT NAN", reference.ToString());
+      default:
+        return std::format("UnaryPredicate({})", static_cast<int>(unary_op));
+    }
+  }
+
+  std::shared_ptr<Predicate> Negate() const override {
+    Operation negated_op;
+    switch (op()) {
+      case Operation::kIsNull:
+        negated_op = Operation::kNotNull;
+        break;
+      case Operation::kNotNull:
+        negated_op = Operation::kIsNull;
+        break;
+      case Operation::kIsNan:
+        negated_op = Operation::kNotNan;
+        break;
+      case Operation::kNotNan:
+        negated_op = Operation::kIsNan;
+        break;
+      default:
+        throw IcebergError(std::format("Cannot negate unary predicate with operation {}",
+                                       static_cast<int>(op())));
+    }
+    return std::make_shared<UnaryPredicate>(negated_op, reference);
+  }
+
+  bool Equals(const Expression& other) const override {
+    if (other.op() != op()) {
+      return false;
+    }
+    const auto& other_unary =
+        iceberg::internal::checked_cast<const UnaryPredicate&>(other);
+    return reference.Equals(other_unary.reference);
+  }
+
+  Result<std::unique_ptr<BoundExpression>> Bind(const Schema& schema,
+                                                bool case_sensitive) const override;
+  Operation op() const override { return unary_op; }
+};
+
+class BoundUnaryPredicate final : public UnaryPredicateBase<BoundReference>,
+                                  public BoundPredicate {
+ public:
+  BoundUnaryPredicate(Operation op, BoundReference reference)
+      : UnaryPredicateBase<BoundReference>(op, std::move(reference)) {}
+
+  std::string ToString() const override {
+    switch (op()) {
+      case Operation::kIsNull:
+        return std::format("{} IS NULL", reference.ToString());
+      case Operation::kNotNull:
+        return std::format("{} IS NOT NULL", reference.ToString());
+      case Operation::kIsNan:
+        return std::format("{} IS NAN", reference.ToString());
+      case Operation::kNotNan:
+        return std::format("{} IS NOT NAN", reference.ToString());
+      default:
+        return std::format("BoundUnaryPredicate({})", static_cast<int>(op()));
+    }
+  }
+
+  bool Equals(const BoundExpression& other) const override {
+    if (other.op() != op()) {
+      return false;
+    }
+    const auto& other_unary =
+        iceberg::internal::checked_cast<const BoundUnaryPredicate&>(other);
+    return reference.Equals(other_unary.reference);
+  }
+
+  Operation op() const override { return unary_op; }
+};
+
+Result<std::unique_ptr<BoundExpression>> UnaryPredicate::Bind(const Schema& schema,
+                                                              bool case_sensitive) const {
+  return nullptr;
+}
+
+/// Binary predicate, for example, `a = 10`, `b > 5`, etc.
+///
+/// Represents comparisons between a term (Reference) and a literal value.
+template <typename ReferenceType>
+struct BinaryPredicateBase {
+  BinaryPredicateBase(Operation in_op, ReferenceType in_reference, Literal in_literal)
+      : binary_op(in_op),
+        reference(std::move(in_reference)),
+        literal(std::move(in_literal)) {
+    if (!IsBinaryPredicate(binary_op)) {
+      throw IcebergError(
+          std::format("BinaryPredicateBase: operation {} is not a binary predicate",
+                      static_cast<int>(binary_op)));
+    }
+  }
+
+  Operation binary_op;
+  ReferenceType reference;
+  Literal literal;
+};
+
+class BoundBinaryPredicate;
+
+class BinaryPredicate final : public BinaryPredicateBase<Reference>, public Predicate {
+ public:
+  using BoundType = BoundBinaryPredicate;
+
+  BinaryPredicate(Operation op, Reference reference, Literal literal)
+      : BinaryPredicateBase<Reference>(op, std::move(reference), std::move(literal)) {}
+
+  std::string ToString() const override {
+    std::string op_str;
+    switch (binary_op) {
+      case Operation::kEq:
+        op_str = " = ";
+        break;
+      case Operation::kNotEq:
+        op_str = " != ";
+        break;
+      case Operation::kLt:
+        op_str = " < ";
+        break;
+      case Operation::kLtEq:
+        op_str = " <= ";
+        break;
+      case Operation::kGt:
+        op_str = " > ";
+        break;
+      case Operation::kGtEq:
+        op_str = " >= ";
+        break;
+      case Operation::kStartsWith:
+        return std::format("{} STARTS WITH {}", reference.ToString(), literal.ToString());
+      case Operation::kNotStartsWith:
+        return std::format("{} NOT STARTS WITH {}", reference.ToString(),
+                           literal.ToString());
+      default:
+        return std::format("BinaryPredicate({}, {}, {})", static_cast<int>(binary_op),
+                           reference.ToString(), literal.ToString());
+    }
+    return std::format("{}{}{}", reference.ToString(), op_str, literal.ToString());
+  }
+
+  std::shared_ptr<Predicate> Negate() const override {
+    Operation negated_op;
+    switch (binary_op) {
+      case Operation::kEq:
+        negated_op = Operation::kNotEq;
+        break;
+      case Operation::kNotEq:
+        negated_op = Operation::kEq;
+        break;
+      case Operation::kLt:
+        negated_op = Operation::kGtEq;
+        break;
+      case Operation::kLtEq:
+        negated_op = Operation::kGt;
+        break;
+      case Operation::kGt:
+        negated_op = Operation::kLtEq;
+        break;
+      case Operation::kGtEq:
+        negated_op = Operation::kLt;
+        break;
+      case Operation::kStartsWith:
+        negated_op = Operation::kNotStartsWith;
+        break;
+      case Operation::kNotStartsWith:
+        negated_op = Operation::kStartsWith;
+        break;
+      default:
+        throw IcebergError(std::format("Cannot negate binary predicate with operation {}",
+                                       static_cast<int>(binary_op)));
+    }
+    return std::make_shared<BinaryPredicate>(negated_op, reference, literal);
+  }
+
+  bool Equals(const Expression& other) const override {
+    if (other.op() != binary_op) {
+      return false;
+    }
+    const auto& other_binary =
+        iceberg::internal::checked_cast<const BinaryPredicate&>(other);
+    return reference.Equals(other_binary.reference) && literal == other_binary.literal;
+  }
+
+  Result<std::unique_ptr<BoundExpression>> Bind(const Schema& schema,
+                                                bool case_sensitive) const override;
+
+  Operation op() const override { return binary_op; }
+};
+
+class BoundBinaryPredicate final : public BinaryPredicateBase<BoundReference>,
+                                   public BoundPredicate {
+ public:
+  BoundBinaryPredicate(Operation op, BoundReference reference, Literal literal)
+      : BinaryPredicateBase<BoundReference>(op, std::move(reference),
+                                            std::move(literal)) {}
+
+  std::string ToString() const override {
+    std::string op_str;
+    switch (binary_op) {
+      case Operation::kEq:
+        op_str = " = ";
+        break;
+      case Operation::kNotEq:
+        op_str = " != ";
+        break;
+      case Operation::kLt:
+        op_str = " < ";
+        break;
+      case Operation::kLtEq:
+        op_str = " <= ";
+        break;
+      case Operation::kGt:
+        op_str = " > ";
+        break;
+      case Operation::kGtEq:
+        op_str = " >= ";
+        break;
+      case Operation::kStartsWith:
+        return std::format("{} STARTS WITH {}", reference.ToString(), literal.ToString());
+      case Operation::kNotStartsWith:
+        return std::format("{} NOT STARTS WITH {}", reference.ToString(),
+                           literal.ToString());
+      default:
+        return std::format("BoundBinaryPredicate({}, {}, {})",
+                           static_cast<int>(binary_op), reference.ToString(),
+                           literal.ToString());
+    }
+    return std::format("{}{}{}", reference.ToString(), op_str, literal.ToString());
+  }
+
+  bool Equals(const BoundExpression& other) const override {
+    if (other.op() != binary_op) {
+      return false;
+    }
+    const auto& other_binary =
+        iceberg::internal::checked_cast<const BoundBinaryPredicate&>(other);
+    return reference.Equals(other_binary.reference) && literal == other_binary.literal;
+  }
+
+  Operation op() const override { return binary_op; }
+};
+
+// Implementation of BinaryPredicate::Bind
+Result<std::unique_ptr<BoundExpression>> BinaryPredicate::Bind(
+    const Schema& schema, bool case_sensitive) const {
+  return nullptr;
 }
 
 }  // namespace iceberg

@@ -18,3 +18,14 @@
  */
 
 #include "term.h"
+
+#include "iceberg/exception.h"
+
+namespace iceberg {
+bool Reference::Equals(const Reference& other) const { return name == other.name; }
+
+bool BoundReference::Equals(const BoundReference& other) const {
+  throw IcebergError("BoundReference::Equals not implemented");
+}
+
+}  // namespace iceberg

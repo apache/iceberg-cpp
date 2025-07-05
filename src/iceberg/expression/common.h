@@ -22,9 +22,96 @@
 #include <memory>
 #include <string>
 
-#include "iceberg/result.h"
-
 namespace iceberg {
-class Schema;
+
+/// Operation types for expressions
+enum class Operation {
+  kTrue,
+  kFalse,
+  kIsNull,
+  kNotNull,
+  kIsNan,
+  kNotNan,
+  kLt,
+  kLtEq,
+  kGt,
+  kGtEq,
+  kEq,
+  kNotEq,
+  kIn,
+  kNotIn,
+  kNot,
+  kAnd,
+  kOr,
+  kStartsWith,
+  kNotStartsWith,
+  kCount,
+  kCountStar,
+  kMax,
+  kMin
+};
+
+/// \brief Returns whether the operation is a predicate operation.
+constexpr bool IsPredicate(Operation op) {
+  switch (op) {
+    case Operation::kTrue:
+    case Operation::kFalse:
+    case Operation::kIsNull:
+    case Operation::kNotNull:
+    case Operation::kIsNan:
+    case Operation::kNotNan:
+    case Operation::kLt:
+    case Operation::kLtEq:
+    case Operation::kGt:
+    case Operation::kGtEq:
+    case Operation::kEq:
+    case Operation::kNotEq:
+    case Operation::kIn:
+    case Operation::kNotIn:
+    case Operation::kNot:
+    case Operation::kAnd:
+    case Operation::kOr:
+    case Operation::kStartsWith:
+    case Operation::kNotStartsWith:
+      return true;
+    case Operation::kCount:
+    case Operation::kCountStar:
+    case Operation::kMax:
+    case Operation::kMin:
+      return false;
+  }
+  return false;
+}
+
+constexpr bool IsUnaryPredicate(Operation op) {
+  switch (op) {
+    case Operation::kIsNull:
+    case Operation::kNotNull:
+    case Operation::kIsNan:
+    case Operation::kNotNan:
+      return true;
+    default:
+      return false;
+  }
+}
+constexpr bool IsBinaryPredicate(Operation op) {
+  switch (op) {
+    case Operation::kLt:
+    case Operation::kLtEq:
+    case Operation::kGt:
+    case Operation::kGtEq:
+    case Operation::kEq:
+    case Operation::kNotEq:
+    case Operation::kIn:
+    case Operation::kNotIn:
+    case Operation::kAnd:
+    case Operation::kOr:
+    case Operation::kStartsWith:
+    case Operation::kNotStartsWith:
+      return true;
+    default:
+      return false;
+  }
+}
 
 }  // namespace iceberg

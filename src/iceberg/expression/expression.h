@@ -25,70 +25,14 @@
 #include <memory>
 #include <string>
 
+#include "iceberg/expression/common.h"
+#include "iceberg/expression/literal.h"
+#include "iceberg/expression/term.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 
 namespace iceberg {
-
-/// Operation types for expressions
-enum class Operation {
-  kTrue,
-  kFalse,
-  kIsNull,
-  kNotNull,
-  kIsNan,
-  kNotNan,
-  kLt,
-  kLtEq,
-  kGt,
-  kGtEq,
-  kEq,
-  kNotEq,
-  kIn,
-  kNotIn,
-  kNot,
-  kAnd,
-  kOr,
-  kStartsWith,
-  kNotStartsWith,
-  kCount,
-  kCountStar,
-  kMax,
-  kMin
-};
-
-/// \brief Returns whether the operation is a predicate operation.
-constexpr bool IsPredicate(Operation op) {
-  switch (op) {
-    case Operation::kTrue:
-    case Operation::kFalse:
-    case Operation::kIsNull:
-    case Operation::kNotNull:
-    case Operation::kIsNan:
-    case Operation::kNotNan:
-    case Operation::kLt:
-    case Operation::kLtEq:
-    case Operation::kGt:
-    case Operation::kGtEq:
-    case Operation::kEq:
-    case Operation::kNotEq:
-    case Operation::kIn:
-    case Operation::kNotIn:
-    case Operation::kNot:
-    case Operation::kAnd:
-    case Operation::kOr:
-    case Operation::kStartsWith:
-    case Operation::kNotStartsWith:
-      return true;
-    case Operation::kCount:
-    case Operation::kCountStar:
-    case Operation::kMax:
-    case Operation::kMin:
-      return false;
-  }
-  return false;
-}
 
 class BoundExpression;
 
@@ -146,6 +90,43 @@ class ICEBERG_EXPORT Predicate : public Expression {
   /// \return A shared pointer to an Or predicate
   static std::shared_ptr<Predicate> Or(std::shared_ptr<Predicate> left,
                                        std::shared_ptr<Predicate> right);
+
+  /// \brief Creates an IsNull predicate
+  static std::shared_ptr<Predicate> IsNull(Reference reference);
+
+  /// \brief Creates an IsNotNull predicate
+  static std::shared_ptr<Predicate> IsNotNull(Reference reference);
+
+  /// \brief Creates an IsNan predicate
+  static std::shared_ptr<Predicate> IsNan(Reference reference);
+
+  /// \brief Creates an IsNotNan predicate
+  static std::shared_ptr<Predicate> IsNotNan(Reference reference);
+
+  /// \brief Creates an equal-to predicate: reference = literal
+  static std::shared_ptr<Predicate> Equal(Reference reference, Literal literal);
+
+  /// \brief Creates a not-equal-to predicate: reference != literal
+  static std::shared_ptr<Predicate> NotEqual(Reference reference, Literal literal);
+
+  /// \brief Creates a less-than predicate: reference < literal
+  static std::shared_ptr<Predicate> LessThan(Reference reference, Literal literal);
+
+  /// \brief Creates a less-than-or-equal predicate: reference <= literal
+  static std::shared_ptr<Predicate> LessThanOrEqual(Reference reference, Literal literal);
+
+  /// \brief Creates a greater-than predicate: reference > literal
+  static std::shared_ptr<Predicate> GreaterThan(Reference reference, Literal literal);
+
+  /// \brief Creates a greater-than-or-equal predicate: reference >= literal
+  static std::shared_ptr<Predicate> GreaterThanOrEqual(Reference reference,
+                                                       Literal literal);
+
+  /// \brief Creates a starts-with predicate: reference STARTS WITH literal
+  static std::shared_ptr<Predicate> StartsWith(Reference reference, Literal literal);
+
+  /// \brief Creates a not-starts-with predicate: reference NOT STARTS WITH literal
+  static std::shared_ptr<Predicate> NotStartsWith(Reference reference, Literal literal);
 };
 
 class ICEBERG_EXPORT BoundExpression {

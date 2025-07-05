@@ -112,6 +112,8 @@ class ICEBERG_EXPORT Literal {
   /// and should not be AboveMax or BelowMin.
   std::partial_ordering operator<=>(const Literal& other) const;
 
+  bool operator==(const Literal& other) const = default;
+
   /// Check if this literal represents a value above the maximum allowed value
   /// for its type. This occurs when casting from a wider type to a narrower type
   /// and the value exceeds the target type's maximum.

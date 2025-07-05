@@ -28,7 +28,7 @@
 
 namespace iceberg {
 
-struct BoundReference {};
+struct BoundReference;
 
 /// Unbounded reference type for expressions.
 struct Reference {
@@ -39,8 +39,16 @@ struct Reference {
   std::string ToString() const { return "Reference(name: " + name + ")"; }
 
   Result<BoundReference> Bind(const Schema& schema, bool case_sensitive) const;
+
+  bool Equals(const Reference& other) const;
 };
 
-using Term = Reference;
+struct BoundReference {
+  std::string column_name;
+
+  std::string ToString() const { return "BoundReference(name: " + column_name + ")"; }
+
+  bool Equals(const BoundReference& other) const;
+};
 
 }  // namespace iceberg
