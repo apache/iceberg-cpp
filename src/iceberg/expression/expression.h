@@ -127,11 +127,11 @@ class ICEBERG_EXPORT Predicate : public Expression {
 
   /// \brief Creates a True predicate that always evaluates to true.
   /// \return A shared pointer to a True predicate
-  static std::shared_ptr<Predicate> AlwaysTrue();
+  static const std::shared_ptr<Predicate>& AlwaysTrue();
 
   /// \brief Creates a False predicate that always evaluates to false.
   /// \return A shared pointer to a False predicate
-  static std::shared_ptr<Predicate> AlwaysFalse();
+  static const std::shared_ptr<Predicate>& AlwaysFalse();
 
   /// \brief Creates an And predicate that represents logical AND of two predicates.
   /// \param left The left operand of the AND predicate
@@ -162,10 +162,6 @@ class ICEBERG_EXPORT BoundExpression {
   virtual std::string ToString() const = 0;
 };
 
-class ICEBERG_EXPORT BoundPredicate : public BoundExpression {
- public:
-  /// \brief Returns a negated version of this bound predicate.
-  virtual std::shared_ptr<BoundPredicate> Negate() const = 0;
-};
+class ICEBERG_EXPORT BoundPredicate : public BoundExpression {};
 
 }  // namespace iceberg

@@ -227,17 +227,43 @@ bool OrImpl::Equals(const Expression& expr) const {
 }
 
 // Implementation of Predicate static factory methods
-std::shared_ptr<Predicate> Predicate::AlwaysTrue() { return True::Instance(); }
+const std::shared_ptr<Predicate>& Predicate::AlwaysTrue() {
+  static const std::shared_ptr<Predicate> instance = True::Instance();
+  return instance;
+}
 
-std::shared_ptr<Predicate> Predicate::AlwaysFalse() { return False::Instance(); }
+const std::shared_ptr<Predicate>& Predicate::AlwaysFalse() {
+  static const std::shared_ptr<Predicate> instance = False::Instance();
+  return instance;
+}
 
 std::shared_ptr<Predicate> Predicate::And(std::shared_ptr<Predicate> left,
                                           std::shared_ptr<Predicate> right) {
+  /*
+  auto left_op = left->op();
+  auto right_op = right->op();
+  if (left_op == Operation::kFalse || right_op == Operation::kFalse) {
+    return False::Instance();
+  }
+  if (left_op == Operation::kTrue && right_op == Operation::kTrue) {
+    return left;
+  }
+  */
   return std::make_shared<AndImpl>(std::move(left), std::move(right));
 }
 
 std::shared_ptr<Predicate> Predicate::Or(std::shared_ptr<Predicate> left,
                                          std::shared_ptr<Predicate> right) {
+  /*
+  auto left_op = left->op();
+  auto right_op = right->op();
+  if (left_op == Operation::kTrue || right_op == Operation::kTrue) {
+    return False::Instance();
+  }
+  if (left_op == Operation::kFalse && right_op == Operation::kFalse) {
+    return left;
+  }
+  */
   return std::make_shared<OrImpl>(std::move(left), std::move(right));
 }
 
