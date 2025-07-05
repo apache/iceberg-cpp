@@ -40,19 +40,18 @@ struct ICEBERG_EXPORT MetadataColumns {
 
   // IDs kInt32Max - (1-100) are used for metadata columns
   inline static const SchemaField kFilePath =
-      SchemaField::MakeRequired(kInt32Max - 1, "_file", std::make_shared<StringType>(),
+      SchemaField::MakeRequired(kInt32Max - 1, "_file", iceberg::string(),
                                 "Path of the file in which a row is stored");
 
   inline static const SchemaField kRowPosition =
-      SchemaField::MakeRequired(kInt32Max - 2, "_pos", std::make_shared<LongType>(),
+      SchemaField::MakeRequired(kInt32Max - 2, "_pos", iceberg::int64(),
                                 "Ordinal position of a row in the source data file");
 
   inline static const SchemaField kIsDeleted = SchemaField::MakeRequired(
-      kInt32Max - 3, "_deleted", std::make_shared<BooleanType>(),
-      "Whether the row has been deleted");
+      kInt32Max - 3, "_deleted", iceberg::binary(), "Whether the row has been deleted");
 
   inline static const SchemaField kSpecId =
-      SchemaField::MakeRequired(kInt32Max - 4, "_spec_id", std::make_shared<IntType>(),
+      SchemaField::MakeRequired(kInt32Max - 4, "_spec_id", iceberg::int32(),
                                 "Spec ID used to track the file containing a row");
 
   // The partition column type depends on all specs in the table
@@ -65,12 +64,12 @@ struct ICEBERG_EXPORT MetadataColumns {
   constexpr static int32_t kContentSizeInBytesColumnId = kInt32Max - 7;
 
   // IDs kInt32Max - (101-200) are used for reserved columns
-  inline static const SchemaField kDeleteFilePath = SchemaField::MakeRequired(
-      kInt32Max - 101, "file_path", std::make_shared<StringType>(),
-      "Path of a file in which a deleted row is stored");
+  inline static const SchemaField kDeleteFilePath =
+      SchemaField::MakeRequired(kInt32Max - 101, "file_path", iceberg::string(),
+                                "Path of a file in which a deleted row is stored");
 
   inline static const SchemaField kDeleteFilePos =
-      SchemaField::MakeRequired(kInt32Max - 102, "pos", std::make_shared<LongType>(),
+      SchemaField::MakeRequired(kInt32Max - 102, "pos", iceberg::int64(),
                                 "Ordinal position of a deleted row in the data file");
 
   // The row column type depends on the table schema
@@ -79,23 +78,21 @@ struct ICEBERG_EXPORT MetadataColumns {
   constexpr static std::string_view kDeleteFileRowDoc = "Deleted row values";
 
   inline static const SchemaField kChangeType = SchemaField::MakeRequired(
-      kInt32Max - 104, "_change_type", std::make_shared<StringType>(),
-      "Record type in changelog");
+      kInt32Max - 104, "_change_type", iceberg::string(), "Record type in changelog");
 
-  inline static const SchemaField kChangeOrdinal = SchemaField::MakeOptional(
-      kInt32Max - 105, "_change_ordinal", std::make_shared<IntType>(),
-      "Change ordinal in changelog");
+  inline static const SchemaField kChangeOrdinal =
+      SchemaField::MakeOptional(kInt32Max - 105, "_change_ordinal", iceberg::int32(),
+                                "Change ordinal in changelog");
 
-  inline static const SchemaField kCommitSnapshotId =
-      SchemaField::MakeOptional(kInt32Max - 106, "_commit_snapshot_id",
-                                std::make_shared<LongType>(), "Commit snapshot ID");
+  inline static const SchemaField kCommitSnapshotId = SchemaField::MakeOptional(
+      kInt32Max - 106, "_commit_snapshot_id", iceberg::int64(), "Commit snapshot ID");
 
   inline static const SchemaField kRowId =
-      SchemaField::MakeOptional(kInt32Max - 107, "_row_id", std::make_shared<LongType>(),
+      SchemaField::MakeOptional(kInt32Max - 107, "_row_id", iceberg::int64(),
                                 "Implicit row ID that is automatically assigned");
 
   inline static const SchemaField kLastUpdatedSequenceNumber = SchemaField::MakeOptional(
-      kInt32Max - 108, "_last_updated_sequence_number", std::make_shared<LongType>(),
+      kInt32Max - 108, "_last_updated_sequence_number", iceberg::int64(),
       "Sequence number when the row was last updated");
 
   /// \brief Get the set of metadata field IDs.

@@ -446,4 +446,47 @@ class ICEBERG_EXPORT UuidType : public PrimitiveType {
 
 /// @}
 
+/// \defgroup type-factories Factory functions for creating primitive data types
+///
+/// Factory functions for creating primitive data types
+/// @{
+
+/// \brief Return a BooleanType instance.
+ICEBERG_EXPORT const std::shared_ptr<BooleanType>& boolean();
+/// \brief Return an IntType instance.
+ICEBERG_EXPORT const std::shared_ptr<IntType>& int32();
+/// \brief Return a LongType instance.
+ICEBERG_EXPORT const std::shared_ptr<LongType>& int64();
+/// \brief Return a FloatType instance.
+ICEBERG_EXPORT const std::shared_ptr<FloatType>& float32();
+/// \brief Return a DoubleType instance.
+ICEBERG_EXPORT const std::shared_ptr<DoubleType>& float64();
+/// \brief Return a DateType instance.
+ICEBERG_EXPORT const std::shared_ptr<DateType>& date();
+/// \brief Return a TimeType instance.
+ICEBERG_EXPORT const std::shared_ptr<TimeType>& time();
+/// \brief Return a TimestampType instance.
+ICEBERG_EXPORT const std::shared_ptr<TimestampType>& timestamp();
+/// \brief Return a TimestampTzType instance.
+ICEBERG_EXPORT const std::shared_ptr<TimestampTzType>& timestamp_tz();
+/// \brief Return a BinaryType instance.
+ICEBERG_EXPORT const std::shared_ptr<BinaryType>& binary();
+/// \brief Return a StringType instance.
+ICEBERG_EXPORT const std::shared_ptr<StringType>& string();
+/// \brief Return a UuidType instance.
+ICEBERG_EXPORT const std::shared_ptr<UuidType>& uuid();
+
+/// \brief Create a DecimalType with the given precision and scale.
+/// \param precision The number of decimal digits (max 38).
+/// \param scale The number of decimal digits after the decimal point.
+/// \return A shared pointer to the DecimalType instance.
+ICEBERG_EXPORT std::shared_ptr<DecimalType> decimal(int32_t precision, int32_t scale);
+
+/// \brief Create a FixedType with the given length.
+/// \param length The number of bytes to store (must be >= 0).
+/// \return A shared pointer to the FixedType instance.
+ICEBERG_EXPORT std::shared_ptr<FixedType> fixed(int32_t length);
+
+/// @}
+
 }  // namespace iceberg

@@ -35,8 +35,8 @@ namespace iceberg {
 
 TEST(PartitionSpecTest, Basics) {
   {
-    SchemaField field1(5, "ts", std::make_shared<TimestampType>(), true);
-    SchemaField field2(7, "bar", std::make_shared<StringType>(), true);
+    SchemaField field1(5, "ts", iceberg::timestamp(), true);
+    SchemaField field2(7, "bar", iceberg::string(), true);
     auto const schema =
         std::make_shared<Schema>(std::vector<SchemaField>{field1, field2}, 100);
 
@@ -60,8 +60,8 @@ TEST(PartitionSpecTest, Basics) {
 }
 
 TEST(PartitionSpecTest, Equality) {
-  SchemaField field1(5, "ts", std::make_shared<TimestampType>(), true);
-  SchemaField field2(7, "bar", std::make_shared<StringType>(), true);
+  SchemaField field1(5, "ts", iceberg::timestamp(), true);
+  SchemaField field2(7, "bar", iceberg::string(), true);
   auto const schema =
       std::make_shared<Schema>(std::vector<SchemaField>{field1, field2}, 100);
   auto identity_transform = Transform::Identity();

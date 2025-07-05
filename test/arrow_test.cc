@@ -105,35 +105,35 @@ TEST_P(ToArrowSchemaTest, PrimitiveType) {
 INSTANTIATE_TEST_SUITE_P(
     SchemaConversion, ToArrowSchemaTest,
     ::testing::Values(
-        ToArrowSchemaParam{.iceberg_type = std::make_shared<BooleanType>(),
+        ToArrowSchemaParam{.iceberg_type = iceberg::boolean(),
                            .optional = false,
                            .arrow_type = ::arrow::boolean()},
-        ToArrowSchemaParam{.iceberg_type = std::make_shared<IntType>(),
+        ToArrowSchemaParam{.iceberg_type = iceberg::int32(),
                            .optional = true,
                            .arrow_type = ::arrow::int32()},
-        ToArrowSchemaParam{.iceberg_type = std::make_shared<LongType>(),
+        ToArrowSchemaParam{.iceberg_type = iceberg::int64(),
                            .arrow_type = ::arrow::int64()},
-        ToArrowSchemaParam{.iceberg_type = std::make_shared<FloatType>(),
+        ToArrowSchemaParam{.iceberg_type = iceberg::float32(),
                            .arrow_type = ::arrow::float32()},
-        ToArrowSchemaParam{.iceberg_type = std::make_shared<DoubleType>(),
+        ToArrowSchemaParam{.iceberg_type = iceberg::float64(),
                            .arrow_type = ::arrow::float64()},
-        ToArrowSchemaParam{.iceberg_type = std::make_shared<DecimalType>(10, 2),
+        ToArrowSchemaParam{.iceberg_type = iceberg::decimal(10, 2),
                            .arrow_type = ::arrow::decimal128(10, 2)},
-        ToArrowSchemaParam{.iceberg_type = std::make_shared<DateType>(),
+        ToArrowSchemaParam{.iceberg_type = iceberg::date(),
                            .arrow_type = ::arrow::date32()},
-        ToArrowSchemaParam{.iceberg_type = std::make_shared<TimeType>(),
+        ToArrowSchemaParam{.iceberg_type = iceberg::time(),
                            .arrow_type = ::arrow::time64(arrow::TimeUnit::MICRO)},
-        ToArrowSchemaParam{.iceberg_type = std::make_shared<TimestampType>(),
+        ToArrowSchemaParam{.iceberg_type = iceberg::timestamp(),
                            .arrow_type = ::arrow::timestamp(arrow::TimeUnit::MICRO)},
-        ToArrowSchemaParam{.iceberg_type = std::make_shared<TimestampType>(),
+        ToArrowSchemaParam{.iceberg_type = iceberg::timestamp(),
                            .arrow_type = ::arrow::timestamp(arrow::TimeUnit::MICRO)},
-        ToArrowSchemaParam{.iceberg_type = std::make_shared<StringType>(),
+        ToArrowSchemaParam{.iceberg_type = iceberg::string(),
                            .arrow_type = ::arrow::utf8()},
-        ToArrowSchemaParam{.iceberg_type = std::make_shared<BinaryType>(),
+        ToArrowSchemaParam{.iceberg_type = iceberg::binary(),
                            .arrow_type = ::arrow::binary()},
-        ToArrowSchemaParam{.iceberg_type = std::make_shared<UuidType>(),
+        ToArrowSchemaParam{.iceberg_type = iceberg::uuid(),
                            .arrow_type = ::arrow::extension::uuid()},
-        ToArrowSchemaParam{.iceberg_type = std::make_shared<FixedType>(20),
+        ToArrowSchemaParam{.iceberg_type = iceberg::fixed(20),
                            .arrow_type = ::arrow::fixed_size_binary(20)}));
 
 namespace {
@@ -163,9 +163,9 @@ TEST(ToArrowSchemaTest, StructType) {
 
   auto struct_type = std::make_shared<StructType>(std::vector<SchemaField>{
       SchemaField::MakeRequired(kIntFieldId, std::string(kIntFieldName),
-                                std::make_shared<IntType>()),
+                                iceberg::int32()),
       SchemaField::MakeOptional(kStrFieldId, std::string(kStrFieldName),
-                                std::make_shared<StringType>())});
+                                iceberg::string())});
   Schema schema({SchemaField::MakeRequired(kStructFieldId, std::string(kStructFieldName),
                                            struct_type)},
                 /*schema_id=*/0);
@@ -197,7 +197,7 @@ TEST(ToArrowSchemaTest, ListType) {
   constexpr int32_t kElemFieldId = 2;
 
   auto list_type = std::make_shared<ListType>(SchemaField::MakeOptional(
-      kElemFieldId, std::string(kElemFieldName), std::make_shared<LongType>()));
+      kElemFieldId, std::string(kElemFieldName), iceberg::int64()));
   Schema schema(
       {SchemaField::MakeRequired(kListFieldId, std::string(kListFieldName), list_type)},
       /*schema_id=*/0);
@@ -229,9 +229,9 @@ TEST(ToArrowSchemaTest, MapType) {
 
   auto map_type = std::make_shared<MapType>(
       SchemaField::MakeRequired(kKeyFieldId, std::string(kKeyFieldName),
-                                std::make_shared<StringType>()),
+                                iceberg::string()),
       SchemaField::MakeOptional(kValueFieldId, std::string(kValueFieldName),
-                                std::make_shared<IntType>()));
+                                iceberg::int32()));
 
   Schema schema(
       {SchemaField::MakeRequired(kFieldId, std::string(kMapFieldName), map_type)},
@@ -301,35 +301,35 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(
         FromArrowSchemaParam{.arrow_type = ::arrow::boolean(),
                              .optional = false,
-                             .iceberg_type = std::make_shared<BooleanType>()},
+                             .iceberg_type = iceberg::boolean()},
         FromArrowSchemaParam{.arrow_type = ::arrow::int32(),
                              .optional = true,
-                             .iceberg_type = std::make_shared<IntType>()},
+                             .iceberg_type = iceberg::int32()},
         FromArrowSchemaParam{.arrow_type = ::arrow::int64(),
-                             .iceberg_type = std::make_shared<LongType>()},
+                             .iceberg_type = iceberg::int64()},
         FromArrowSchemaParam{.arrow_type = ::arrow::float32(),
-                             .iceberg_type = std::make_shared<FloatType>()},
+                             .iceberg_type = iceberg::float32()},
         FromArrowSchemaParam{.arrow_type = ::arrow::float64(),
-                             .iceberg_type = std::make_shared<DoubleType>()},
+                             .iceberg_type = iceberg::float64()},
         FromArrowSchemaParam{.arrow_type = ::arrow::decimal128(10, 2),
-                             .iceberg_type = std::make_shared<DecimalType>(10, 2)},
+                             .iceberg_type = iceberg::decimal(10, 2)},
         FromArrowSchemaParam{.arrow_type = ::arrow::date32(),
-                             .iceberg_type = std::make_shared<DateType>()},
+                             .iceberg_type = iceberg::date()},
         FromArrowSchemaParam{.arrow_type = ::arrow::time64(arrow::TimeUnit::MICRO),
-                             .iceberg_type = std::make_shared<TimeType>()},
+                             .iceberg_type = iceberg::time()},
         FromArrowSchemaParam{.arrow_type = ::arrow::timestamp(arrow::TimeUnit::MICRO),
-                             .iceberg_type = std::make_shared<TimestampType>()},
+                             .iceberg_type = iceberg::timestamp()},
         FromArrowSchemaParam{
             .arrow_type = ::arrow::timestamp(arrow::TimeUnit::MICRO, "UTC"),
             .iceberg_type = std::make_shared<TimestampTzType>()},
         FromArrowSchemaParam{.arrow_type = ::arrow::utf8(),
-                             .iceberg_type = std::make_shared<StringType>()},
+                             .iceberg_type = iceberg::string()},
         FromArrowSchemaParam{.arrow_type = ::arrow::binary(),
-                             .iceberg_type = std::make_shared<BinaryType>()},
+                             .iceberg_type = iceberg::binary()},
         FromArrowSchemaParam{.arrow_type = ::arrow::extension::uuid(),
-                             .iceberg_type = std::make_shared<UuidType>()},
+                             .iceberg_type = iceberg::uuid()},
         FromArrowSchemaParam{.arrow_type = ::arrow::fixed_size_binary(20),
-                             .iceberg_type = std::make_shared<FixedType>(20)}));
+                             .iceberg_type = iceberg::fixed(20)}));
 
 TEST(FromArrowSchemaTest, StructType) {
   constexpr int32_t kStructFieldId = 1;

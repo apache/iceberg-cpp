@@ -242,26 +242,25 @@ Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
       return std::make_shared<MapType>(std::move(*key_field), std::move(*value_field));
     }
     case NANOARROW_TYPE_BOOL:
-      return std::make_shared<BooleanType>();
+      return iceberg::boolean();
     case NANOARROW_TYPE_INT32:
-      return std::make_shared<IntType>();
+      return iceberg::int32();
     case NANOARROW_TYPE_INT64:
-      return std::make_shared<LongType>();
+      return iceberg::int64();
     case NANOARROW_TYPE_FLOAT:
-      return std::make_shared<FloatType>();
+      return iceberg::float32();
     case NANOARROW_TYPE_DOUBLE:
-      return std::make_shared<DoubleType>();
+      return iceberg::float64();
     case NANOARROW_TYPE_DECIMAL128:
-      return std::make_shared<DecimalType>(schema_view.decimal_precision,
-                                           schema_view.decimal_scale);
+      return iceberg::decimal(schema_view.decimal_precision, schema_view.decimal_scale);
     case NANOARROW_TYPE_DATE32:
-      return std::make_shared<DateType>();
+      return iceberg::date();
     case NANOARROW_TYPE_TIME64:
       if (schema_view.time_unit != NANOARROW_TIME_UNIT_MICRO) {
         return InvalidSchema("Unsupported time unit for Arrow time type: {}",
                              static_cast<int>(schema_view.time_unit));
       }
-      return std::make_shared<TimeType>();
+      return iceberg::time();
     case NANOARROW_TYPE_TIMESTAMP: {
       bool with_timezone =
           schema_view.timezone != nullptr && std::strlen(schema_view.timezone) > 0;
@@ -270,15 +269,15 @@ Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
                              static_cast<int>(schema_view.time_unit));
       }
       if (with_timezone) {
-        return std::make_shared<TimestampTzType>();
+        return iceberg::timestamp_tz();
       } else {
-        return std::make_shared<TimestampType>();
+        return iceberg::timestamp();
       }
     }
     case NANOARROW_TYPE_STRING:
-      return std::make_shared<StringType>();
+      return iceberg::string();
     case NANOARROW_TYPE_BINARY:
-      return std::make_shared<BinaryType>();
+      return iceberg::binary();
     case NANOARROW_TYPE_FIXED_SIZE_BINARY: {
       if (auto extension_name = std::string_view(schema_view.extension_name.data,
                                                  schema_view.extension_name.size_bytes);
@@ -286,9 +285,9 @@ Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
         if (schema_view.fixed_size != 16) {
           return InvalidSchema("UUID type must have a fixed size of 16");
         }
-        return std::make_shared<UuidType>();
+        return iceberg::uuid();
       }
-      return std::make_shared<FixedType>(schema_view.fixed_size);
+      return iceberg::fixed(schema_view.fixed_size);
     }
     default:
       return InvalidSchema("Unsupported Arrow type: {}",

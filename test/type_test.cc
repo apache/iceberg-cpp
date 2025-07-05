@@ -21,7 +21,6 @@
 
 #include <format>
 #include <memory>
-#include <stdexcept>
 #include <string>
 
 #include <gmock/gmock.h>
@@ -91,112 +90,112 @@ TEST_P(TypeTest, StdFormat) {
 const static std::array<TypeTestCase, 16> kPrimitiveTypes = {{
     {
         .name = "boolean",
-        .type = std::make_shared<iceberg::BooleanType>(),
+        .type = iceberg::boolean(),
         .type_id = iceberg::TypeId::kBoolean,
         .primitive = true,
         .repr = "boolean",
     },
     {
         .name = "int",
-        .type = std::make_shared<iceberg::IntType>(),
+        .type = iceberg::int32(),
         .type_id = iceberg::TypeId::kInt,
         .primitive = true,
         .repr = "int",
     },
     {
         .name = "long",
-        .type = std::make_shared<iceberg::LongType>(),
+        .type = iceberg::int64(),
         .type_id = iceberg::TypeId::kLong,
         .primitive = true,
         .repr = "long",
     },
     {
         .name = "float",
-        .type = std::make_shared<iceberg::FloatType>(),
+        .type = iceberg::float32(),
         .type_id = iceberg::TypeId::kFloat,
         .primitive = true,
         .repr = "float",
     },
     {
         .name = "double",
-        .type = std::make_shared<iceberg::DoubleType>(),
+        .type = iceberg::float64(),
         .type_id = iceberg::TypeId::kDouble,
         .primitive = true,
         .repr = "double",
     },
     {
         .name = "decimal9_2",
-        .type = std::make_shared<iceberg::DecimalType>(9, 2),
+        .type = iceberg::decimal(9, 2),
         .type_id = iceberg::TypeId::kDecimal,
         .primitive = true,
         .repr = "decimal(9, 2)",
     },
     {
         .name = "decimal38_10",
-        .type = std::make_shared<iceberg::DecimalType>(38, 10),
+        .type = iceberg::decimal(38, 10),
         .type_id = iceberg::TypeId::kDecimal,
         .primitive = true,
         .repr = "decimal(38, 10)",
     },
     {
         .name = "date",
-        .type = std::make_shared<iceberg::DateType>(),
+        .type = iceberg::date(),
         .type_id = iceberg::TypeId::kDate,
         .primitive = true,
         .repr = "date",
     },
     {
         .name = "time",
-        .type = std::make_shared<iceberg::TimeType>(),
+        .type = iceberg::time(),
         .type_id = iceberg::TypeId::kTime,
         .primitive = true,
         .repr = "time",
     },
     {
         .name = "timestamp",
-        .type = std::make_shared<iceberg::TimestampType>(),
+        .type = iceberg::timestamp(),
         .type_id = iceberg::TypeId::kTimestamp,
         .primitive = true,
         .repr = "timestamp",
     },
     {
         .name = "timestamptz",
-        .type = std::make_shared<iceberg::TimestampTzType>(),
+        .type = iceberg::timestamp_tz(),
         .type_id = iceberg::TypeId::kTimestampTz,
         .primitive = true,
         .repr = "timestamptz",
     },
     {
         .name = "binary",
-        .type = std::make_shared<iceberg::BinaryType>(),
+        .type = iceberg::binary(),
         .type_id = iceberg::TypeId::kBinary,
         .primitive = true,
         .repr = "binary",
     },
     {
         .name = "string",
-        .type = std::make_shared<iceberg::StringType>(),
+        .type = iceberg::string(),
         .type_id = iceberg::TypeId::kString,
         .primitive = true,
         .repr = "string",
     },
     {
         .name = "fixed10",
-        .type = std::make_shared<iceberg::FixedType>(10),
+        .type = iceberg::fixed(10),
         .type_id = iceberg::TypeId::kFixed,
         .primitive = true,
         .repr = "fixed(10)",
     },
     {
         .name = "fixed255",
-        .type = std::make_shared<iceberg::FixedType>(255),
+        .type = iceberg::fixed(255),
         .type_id = iceberg::TypeId::kFixed,
         .primitive = true,
         .repr = "fixed(255)",
     },
     {
         .name = "uuid",
-        .type = std::make_shared<iceberg::UuidType>(),
+        .type = iceberg::uuid(),
         .type_id = iceberg::TypeId::kUuid,
         .primitive = true,
         .repr = "uuid",
@@ -206,8 +205,7 @@ const static std::array<TypeTestCase, 16> kPrimitiveTypes = {{
 const static std::array<TypeTestCase, 4> kNestedTypes = {{
     {
         .name = "list_int",
-        .type = std::make_shared<iceberg::ListType>(
-            1, std::make_shared<iceberg::IntType>(), true),
+        .type = std::make_shared<iceberg::ListType>(1, iceberg::int32(), true),
         .type_id = iceberg::TypeId::kList,
         .primitive = false,
         .repr = "list<element (1): int (optional)>",
@@ -215,10 +213,7 @@ const static std::array<TypeTestCase, 4> kNestedTypes = {{
     {
         .name = "list_list_int",
         .type = std::make_shared<iceberg::ListType>(
-            1,
-            std::make_shared<iceberg::ListType>(2, std::make_shared<iceberg::IntType>(),
-                                                true),
-            false),
+            1, std::make_shared<iceberg::ListType>(2, iceberg::int32(), true), false),
         .type_id = iceberg::TypeId::kList,
         .primitive = false,
         .repr = "list<element (1): list<element (2): int (optional)> (required)>",
@@ -226,10 +221,8 @@ const static std::array<TypeTestCase, 4> kNestedTypes = {{
     {
         .name = "map_int_string",
         .type = std::make_shared<iceberg::MapType>(
-            iceberg::SchemaField::MakeRequired(1, "key",
-                                               std::make_shared<iceberg::LongType>()),
-            iceberg::SchemaField::MakeRequired(2, "value",
-                                               std::make_shared<iceberg::StringType>())),
+            iceberg::SchemaField::MakeRequired(1, "key", iceberg::int64()),
+            iceberg::SchemaField::MakeRequired(2, "value", iceberg::string())),
         .type_id = iceberg::TypeId::kMap,
         .primitive = false,
         .repr = "map<key (1): long (required): value (2): string (required)>",
@@ -237,10 +230,8 @@ const static std::array<TypeTestCase, 4> kNestedTypes = {{
     {
         .name = "struct",
         .type = std::make_shared<iceberg::StructType>(std::vector<iceberg::SchemaField>{
-            iceberg::SchemaField::MakeRequired(1, "foo",
-                                               std::make_shared<iceberg::LongType>()),
-            iceberg::SchemaField::MakeOptional(2, "bar",
-                                               std::make_shared<iceberg::StringType>()),
+            iceberg::SchemaField::MakeRequired(1, "foo", iceberg::int64()),
+            iceberg::SchemaField::MakeOptional(2, "bar", iceberg::string()),
         }),
         .type_id = iceberg::TypeId::kStruct,
         .primitive = false,
@@ -319,7 +310,7 @@ TEST(TypeTest, Fixed) {
 
 TEST(TypeTest, List) {
   {
-    iceberg::SchemaField field(5, "element", std::make_shared<iceberg::IntType>(), true);
+    iceberg::SchemaField field(5, "element", iceberg::int32(), true);
     iceberg::ListType list(field);
     std::span<const iceberg::SchemaField> fields = list.fields();
     ASSERT_EQ(1, fields.size());
@@ -335,8 +326,8 @@ TEST(TypeTest, List) {
   }
   ASSERT_THAT(
       []() {
-        iceberg::ListType list(iceberg::SchemaField(
-            1, "wrongname", std::make_shared<iceberg::BooleanType>(), true));
+        iceberg::ListType list(
+            iceberg::SchemaField(1, "wrongname", iceberg::boolean(), true));
       },
       ::testing::ThrowsMessage<iceberg::IcebergError>(
           ::testing::HasSubstr("child field name should be 'element', was 'wrongname'")));
@@ -344,8 +335,8 @@ TEST(TypeTest, List) {
 
 TEST(TypeTest, Map) {
   {
-    iceberg::SchemaField key(5, "key", std::make_shared<iceberg::IntType>(), true);
-    iceberg::SchemaField value(7, "value", std::make_shared<iceberg::StringType>(), true);
+    iceberg::SchemaField key(5, "key", iceberg::int32(), true);
+    iceberg::SchemaField value(7, "value", iceberg::string(), true);
     iceberg::MapType map(key, value);
     std::span<const iceberg::SchemaField> fields = map.fields();
     ASSERT_EQ(2, fields.size());
@@ -365,18 +356,16 @@ TEST(TypeTest, Map) {
   }
   ASSERT_THAT(
       []() {
-        iceberg::SchemaField key(5, "notkey", std::make_shared<iceberg::IntType>(), true);
-        iceberg::SchemaField value(7, "value", std::make_shared<iceberg::StringType>(),
-                                   true);
+        iceberg::SchemaField key(5, "notkey", iceberg::int32(), true);
+        iceberg::SchemaField value(7, "value", iceberg::string(), true);
         iceberg::MapType map(key, value);
       },
       ::testing::ThrowsMessage<iceberg::IcebergError>(
           ::testing::HasSubstr("key field name should be 'key', was 'notkey'")));
   ASSERT_THAT(
       []() {
-        iceberg::SchemaField key(5, "key", std::make_shared<iceberg::IntType>(), true);
-        iceberg::SchemaField value(7, "notvalue", std::make_shared<iceberg::StringType>(),
-                                   true);
+        iceberg::SchemaField key(5, "key", iceberg::int32(), true);
+        iceberg::SchemaField value(7, "notvalue", iceberg::string(), true);
         iceberg::MapType map(key, value);
       },
       ::testing::ThrowsMessage<iceberg::IcebergError>(
@@ -385,8 +374,8 @@ TEST(TypeTest, Map) {
 
 TEST(TypeTest, Struct) {
   {
-    iceberg::SchemaField field1(5, "foo", std::make_shared<iceberg::IntType>(), true);
-    iceberg::SchemaField field2(7, "bar", std::make_shared<iceberg::StringType>(), true);
+    iceberg::SchemaField field1(5, "foo", iceberg::int32(), true);
+    iceberg::SchemaField field2(7, "bar", iceberg::string(), true);
     iceberg::StructType struct_({field1, field2});
     std::span<const iceberg::SchemaField> fields = struct_.fields();
     ASSERT_EQ(2, fields.size());
@@ -406,9 +395,8 @@ TEST(TypeTest, Struct) {
   }
   ASSERT_THAT(
       []() {
-        iceberg::SchemaField field1(5, "foo", std::make_shared<iceberg::IntType>(), true);
-        iceberg::SchemaField field2(5, "bar", std::make_shared<iceberg::StringType>(),
-                                    true);
+        iceberg::SchemaField field1(5, "foo", iceberg::int32(), true);
+        iceberg::SchemaField field2(5, "bar", iceberg::string(), true);
         iceberg::StructType struct_({field1, field2});
       },
       ::testing::ThrowsMessage<iceberg::IcebergError>(

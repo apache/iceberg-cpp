@@ -141,9 +141,8 @@ TEST(JsonPartitionTest, PartitionFieldFromJsonMissingField) {
 
 TEST(JsonPartitionTest, PartitionSpec) {
   auto schema = std::make_shared<Schema>(
-      std::vector<SchemaField>{
-          SchemaField(3, "region", std::make_shared<StringType>(), false),
-          SchemaField(5, "ts", std::make_shared<LongType>(), false)},
+      std::vector<SchemaField>{SchemaField(3, "region", iceberg::string(), false),
+                               SchemaField(5, "ts", iceberg::int64(), false)},
       /*schema_id=*/100);
 
   auto identity_transform = Transform::Identity();

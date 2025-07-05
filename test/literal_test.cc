@@ -78,18 +78,18 @@ TEST(LiteralTest, IntCastTo) {
   auto int_literal = Literal::Int(42);
 
   // Cast to Long
-  auto long_result = int_literal.CastTo(std::make_shared<LongType>());
+  auto long_result = int_literal.CastTo(iceberg::int64());
   ASSERT_THAT(long_result, IsOk());
   EXPECT_EQ(long_result->type()->type_id(), TypeId::kLong);
   EXPECT_EQ(long_result->ToString(), "42");
 
   // Cast to Float
-  auto float_result = int_literal.CastTo(std::make_shared<FloatType>());
+  auto float_result = int_literal.CastTo(iceberg::float32());
   ASSERT_THAT(float_result, IsOk());
   EXPECT_EQ(float_result->type()->type_id(), TypeId::kFloat);
 
   // Cast to Double
-  auto double_result = int_literal.CastTo(std::make_shared<DoubleType>());
+  auto double_result = int_literal.CastTo(iceberg::float64());
   ASSERT_THAT(double_result, IsOk());
   EXPECT_EQ(double_result->type()->type_id(), TypeId::kDouble);
 }
@@ -120,18 +120,18 @@ TEST(LiteralTest, LongCastTo) {
   auto long_literal = Literal::Long(42L);
 
   // Cast to Int (within range)
-  auto int_result = long_literal.CastTo(std::make_shared<IntType>());
+  auto int_result = long_literal.CastTo(iceberg::int32());
   ASSERT_THAT(int_result, IsOk());
   EXPECT_EQ(int_result->type()->type_id(), TypeId::kInt);
   EXPECT_EQ(int_result->ToString(), "42");
 
   // Cast to Float
-  auto float_result = long_literal.CastTo(std::make_shared<FloatType>());
+  auto float_result = long_literal.CastTo(iceberg::float32());
   ASSERT_THAT(float_result, IsOk());
   EXPECT_EQ(float_result->type()->type_id(), TypeId::kFloat);
 
   // Cast to Double
-  auto double_result = long_literal.CastTo(std::make_shared<DoubleType>());
+  auto double_result = long_literal.CastTo(iceberg::float64());
   ASSERT_THAT(double_result, IsOk());
   EXPECT_EQ(double_result->type()->type_id(), TypeId::kDouble);
 }
@@ -143,11 +143,11 @@ TEST(LiteralTest, LongCastToIntOverflow) {
   auto min_long =
       Literal::Long(static_cast<int64_t>(std::numeric_limits<int32_t>::min()) - 1);
 
-  auto max_result = max_long.CastTo(std::make_shared<IntType>());
+  auto max_result = max_long.CastTo(iceberg::int32());
   ASSERT_THAT(max_result, IsOk());
   EXPECT_TRUE(max_result->IsAboveMax());
 
-  auto min_result = min_long.CastTo(std::make_shared<IntType>());
+  auto min_result = min_long.CastTo(iceberg::int32());
   ASSERT_THAT(min_result, IsOk());
   EXPECT_TRUE(min_result->IsBelowMin());
 }
@@ -178,7 +178,7 @@ TEST(LiteralTest, FloatCastTo) {
   auto float_literal = Literal::Float(3.14f);
 
   // Cast to Double
-  auto double_result = float_literal.CastTo(std::make_shared<DoubleType>());
+  auto double_result = float_literal.CastTo(iceberg::float64());
   ASSERT_THAT(double_result, IsOk());
   EXPECT_EQ(double_result->type()->type_id(), TypeId::kDouble);
 }
@@ -275,7 +275,7 @@ TEST(LiteralTest, SpecialValues) {
 TEST(LiteralTest, SameTypeCast) {
   auto int_literal = Literal::Int(42);
 
-  auto same_type_result = int_literal.CastTo(std::make_shared<IntType>());
+  auto same_type_result = int_literal.CastTo(iceberg::int32());
   ASSERT_THAT(same_type_result, IsOk());
   EXPECT_EQ(same_type_result->type()->type_id(), TypeId::kInt);
   EXPECT_EQ(same_type_result->ToString(), "42");
