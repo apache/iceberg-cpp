@@ -29,7 +29,7 @@ class ICEBERG_BUNDLE_EXPORT AvroBatchReader : public Reader {
  public:
   AvroBatchReader() = default;
 
-  ~AvroBatchReader() override = default;
+  ~AvroBatchReader() override;
 
   Status Open(const ReaderOptions& options) final;
 

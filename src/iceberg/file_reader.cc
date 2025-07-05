@@ -21,7 +21,7 @@
 
 #include <unordered_map>
 
-#include "iceberg/expected.h"
+#include "iceberg/result.h"
 #include "iceberg/util/formatter.h"
 #include "iceberg/util/macros.h"
 
