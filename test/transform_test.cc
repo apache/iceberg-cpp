@@ -126,29 +126,29 @@ TEST(TransformResultTypeTest, PositiveCases) {
 
   const std::vector<Case> cases = {
       {.str = "identity",
-       .source_type = std::make_shared<StringType>(),
-       .expected_result_type = std::make_shared<StringType>()},
+       .source_type = iceberg::string(),
+       .expected_result_type = iceberg::string()},
       {.str = "year",
-       .source_type = std::make_shared<TimestampType>(),
-       .expected_result_type = std::make_shared<IntType>()},
+       .source_type = iceberg::timestamp(),
+       .expected_result_type = iceberg::int32()},
       {.str = "month",
-       .source_type = std::make_shared<TimestampType>(),
-       .expected_result_type = std::make_shared<IntType>()},
+       .source_type = iceberg::timestamp(),
+       .expected_result_type = iceberg::int32()},
       {.str = "day",
-       .source_type = std::make_shared<TimestampType>(),
-       .expected_result_type = std::make_shared<DateType>()},
+       .source_type = iceberg::timestamp(),
+       .expected_result_type = iceberg::date()},
       {.str = "hour",
-       .source_type = std::make_shared<TimestampType>(),
-       .expected_result_type = std::make_shared<IntType>()},
+       .source_type = iceberg::timestamp(),
+       .expected_result_type = iceberg::int32()},
       {.str = "void",
-       .source_type = std::make_shared<StringType>(),
-       .expected_result_type = std::make_shared<StringType>()},
+       .source_type = iceberg::string(),
+       .expected_result_type = iceberg::string()},
       {.str = "bucket[16]",
-       .source_type = std::make_shared<StringType>(),
-       .expected_result_type = std::make_shared<IntType>()},
+       .source_type = iceberg::string(),
+       .expected_result_type = iceberg::int32()},
       {.str = "truncate[32]",
-       .source_type = std::make_shared<StringType>(),
-       .expected_result_type = std::make_shared<StringType>()},
+       .source_type = iceberg::string(),
+       .expected_result_type = iceberg::string()},
   };
 
   for (const auto& c : cases) {
@@ -174,13 +174,13 @@ TEST(TransformResultTypeTest, NegativeCases) {
 
   const std::vector<Case> cases = {
       {.str = "identity", .source_type = nullptr},
-      {.str = "year", .source_type = std::make_shared<StringType>()},
-      {.str = "month", .source_type = std::make_shared<StringType>()},
-      {.str = "day", .source_type = std::make_shared<StringType>()},
-      {.str = "hour", .source_type = std::make_shared<StringType>()},
+      {.str = "year", .source_type = iceberg::string()},
+      {.str = "month", .source_type = iceberg::string()},
+      {.str = "day", .source_type = iceberg::string()},
+      {.str = "hour", .source_type = iceberg::string()},
       {.str = "void", .source_type = nullptr},
-      {.str = "bucket[16]", .source_type = std::make_shared<FloatType>()},
-      {.str = "truncate[32]", .source_type = std::make_shared<DoubleType>()}};
+      {.str = "bucket[16]", .source_type = iceberg::float32()},
+      {.str = "truncate[32]", .source_type = iceberg::float64()}};
 
   for (const auto& c : cases) {
     auto result = TransformFromString(c.str);

@@ -64,7 +64,7 @@ Result<std::shared_ptr<Type>> BucketTransform::ResultType() const {
     case TypeId::kUuid:
     case TypeId::kFixed:
     case TypeId::kBinary:
-      return std::make_shared<IntType>();
+      return iceberg::int32();
     default:
       return NotSupported("{} is not a valid input type for bucket transform",
                           src_type->ToString());
@@ -113,7 +113,7 @@ Result<std::shared_ptr<Type>> YearTransform::ResultType() const {
     case TypeId::kDate:
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz:
-      return std::make_shared<IntType>();
+      return iceberg::int32();
     default:
       return NotSupported("{} is not a valid input type for year transform",
                           src_type->ToString());
@@ -136,7 +136,7 @@ Result<std::shared_ptr<Type>> MonthTransform::ResultType() const {
     case TypeId::kDate:
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz:
-      return std::make_shared<IntType>();
+      return iceberg::int32();
     default:
       return NotSupported("{} is not a valid input type for month transform",
                           src_type->ToString());
@@ -159,7 +159,7 @@ Result<std::shared_ptr<Type>> DayTransform::ResultType() const {
     case TypeId::kDate:
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz:
-      return std::make_shared<DateType>();
+      return iceberg::date();
     default:
       return NotSupported("{} is not a valid input type for day transform",
                           src_type->ToString());
@@ -181,7 +181,7 @@ Result<std::shared_ptr<Type>> HourTransform::ResultType() const {
   switch (src_type->type_id()) {
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz:
-      return std::make_shared<IntType>();
+      return iceberg::int32();
     default:
       return NotSupported("{} is not a valid input type for hour transform",
                           src_type->ToString());
