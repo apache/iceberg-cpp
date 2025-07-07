@@ -31,6 +31,46 @@
 
 namespace iceberg {
 
+/// \brief Get the test name for inclusion in the filename
+inline std::string TestInfo() {
+  if (const auto info = ::testing::UnitTest::GetInstance()->current_test_info(); info) {
+    return std::format("{}_{}", info->test_suite_name(), info->name());
+  }
+  return "unknown_test";
+}
+
+/// \brief Helper to generate a random alphanumeric string for unique filenames
+inline std::string GenerateRandomString(size_t length) {
+  const std::string_view chars =
+      "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+  std::random_device rd;
+  std::mt19937 gen(rd());
+  std::uniform_int_distribution<> dist(0, static_cast<int>(chars.size() - 1));
+
+  std::string result;
+  result.reserve(length);
+  for (size_t i = 0; i < length; ++i) {
+    result += chars[dist(gen)];
+  }
+  return result;
+}
+
+/// \brief Generates a unique temporary filepath that works across platforms
+inline std::string GenerateUniqueTempFilePath() {
+  std::filesystem::path temp_dir = std::filesystem::temp_directory_path();
+  std::string file_name =
+      std::format("iceberg_test_{}_{}.tmp", TestInfo(), GenerateRandomString(8));
+  return (temp_dir / file_name).string();
+}
+
+/// \brief Create a temporary filepath with the specified suffix/extension
+inline std::string GenerateUniqueTempFilePathWithSuffix(const std::string& suffix) {
+  std::filesystem::path temp_dir = std::filesystem::temp_directory_path();
+  std::string file_name =
+      std::format("iceberg_test_{}_{}{}", TestInfo(), GenerateRandomString(8), suffix);
+  return (temp_dir / file_name).string();
+}
+
 /// A base class for tests that need to create and manage temporary files.
 /// Provides utilities for creating platform-independent temporary files
 /// and ensures proper cleanup after tests run.
@@ -81,46 +121,6 @@ class TempFileTestBase : public ::testing::Test {
         std::filesystem::remove(path, ec);
       }
     }
-  }
-
-  /// \brief Generates a unique temporary filepath that works across platforms
-  std::string GenerateUniqueTempFilePath() const {
-    std::filesystem::path temp_dir = std::filesystem::temp_directory_path();
-    std::string file_name =
-        std::format("iceberg_test_{}_{}.tmp", TestInfo(), GenerateRandomString(8));
-    return (temp_dir / file_name).string();
-  }
-
-  /// \brief Create a temporary filepath with the specified suffix/extension
-  std::string GenerateUniqueTempFilePathWithSuffix(const std::string& suffix) {
-    std::filesystem::path temp_dir = std::filesystem::temp_directory_path();
-    std::string file_name =
-        std::format("iceberg_test_{}_{}{}", TestInfo(), GenerateRandomString(8), suffix);
-    return (temp_dir / file_name).string();
-  }
-
-  /// \brief Helper to generate a random alphanumeric string for unique filenames
-  std::string GenerateRandomString(size_t length) const {
-    const std::string_view chars =
-        "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(0, static_cast<int>(chars.size() - 1));
-
-    std::string result;
-    result.reserve(length);
-    for (size_t i = 0; i < length; ++i) {
-      result += chars[dist(gen)];
-    }
-    return result;
-  }
-
-  /// \brief Get the test name for inclusion in the filename
-  std::string TestInfo() const {
-    if (const auto info = ::testing::UnitTest::GetInstance()->current_test_info(); info) {
-      return std::format("{}_{}", info->test_suite_name(), info->name());
-    }
-    return "unknown_test";
   }
 
   /// \brief Creates a new temporary filepath and registers it for cleanup
