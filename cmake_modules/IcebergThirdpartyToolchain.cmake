@@ -283,6 +283,55 @@ function(resolve_nlohmann_json_dependency)
 endfunction()
 
 # ----------------------------------------------------------------------
+# spdlog
+
+function(resolve_spdlog_dependency)
+  prepare_fetchcontent()
+
+  find_package(Threads REQUIRED)
+
+  set(SPDLOG_USE_STD_FORMAT
+      ON
+      CACHE BOOL "" FORCE)
+  set(SPDLOG_BUILD_PIC
+      ON
+      CACHE BOOL "" FORCE)
+
+  fetchcontent_declare(spdlog
+                       ${FC_DECLARE_COMMON_OPTIONS}
+                       URL "https://github.com/gabime/spdlog/archive/refs/tags/v1.15.3.tar.gz"
+                           FIND_PACKAGE_ARGS
+                           NAMES
+                           spdlog
+                           CONFIG)
+  fetchcontent_makeavailable(spdlog)
+
+  if(spdlog_SOURCE_DIR)
+    set_target_properties(spdlog PROPERTIES OUTPUT_NAME "iceberg_vendored_spdlog"
+                                            POSITION_INDEPENDENT_CODE ON)
+    target_link_libraries(spdlog INTERFACE Threads::Threads)
+    install(TARGETS spdlog
+            EXPORT iceberg_targets
+            RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
+            ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
+            LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+    set(SPDLOG_VENDORED TRUE)
+  else()
+    set(SPDLOG_VENDORED FALSE)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES spdlog)
+  endif()
+
+  list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Threads)
+
+  set(ICEBERG_SYSTEM_DEPENDENCIES
+      ${ICEBERG_SYSTEM_DEPENDENCIES}
+      PARENT_SCOPE)
+  set(SPDLOG_VENDORED
+      ${SPDLOG_VENDORED}
+      PARENT_SCOPE)
+endfunction()
+
+# ----------------------------------------------------------------------
 # zlib
 
 function(resolve_zlib_dependency)
@@ -316,6 +365,7 @@ endfunction()
 resolve_zlib_dependency()
 resolve_nanoarrow_dependency()
 resolve_nlohmann_json_dependency()
+resolve_spdlog_dependency()
 
 if(ICEBERG_BUILD_BUNDLE)
   resolve_arrow_dependency()
