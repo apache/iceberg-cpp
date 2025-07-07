@@ -19,24 +19,41 @@
 
 #include "iceberg/catalog/in_memory_catalog.h"
 
+#include <arrow/filesystem/localfs.h>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/arrow/arrow_fs_file_io.h"
+#include "iceberg/table.h"
+#include "iceberg/table_metadata.h"
 #include "matchers.h"
+#include "temp_file_test_base.h"
+#include "test_common.h"
 
 namespace iceberg {
 
 class InMemoryCatalogTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    file_io_ = nullptr;  // TODO(Guotao): A real FileIO instance needs to be constructed.
+    // generate a unique temporary file path for the test
+    temp_filepath_ = GenerateUniqueTempFilePathWithSuffix(".metadata.json");
+
+    file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(
+        std::make_shared<::arrow::fs::LocalFileSystem>());
     std::unordered_map<std::string, std::string> properties = {{"prop1", "val1"}};
-    catalog_ = std::make_unique<InMemoryCatalog>("test_catalog", file_io_,
+    catalog_ = std::make_shared<InMemoryCatalog>("test_catalog", file_io_,
                                                  "/tmp/warehouse/", properties);
   }
 
+  void TearDown() override {
+    // Clean up the temporary files created for the table metadata
+    std::error_code ec;
+    std::filesystem::remove_all(temp_filepath_, ec);
+  }
+
+  std::string temp_filepath_;
   std::shared_ptr<FileIO> file_io_;
-  std::unique_ptr<InMemoryCatalog> catalog_;
+  std::shared_ptr<InMemoryCatalog> catalog_;
 };
 
 TEST_F(InMemoryCatalogTest, CatalogName) {
@@ -56,6 +73,21 @@ TEST_F(InMemoryCatalogTest, TableExists) {
   TableIdentifier tableIdent{.ns = {}, .name = "t1"};
   auto result = catalog_->TableExists(tableIdent);
   EXPECT_THAT(result, HasValue(::testing::Eq(false)));
+}
+
+TEST_F(InMemoryCatalogTest, RegisterTable) {
+  TableIdentifier tableIdent{.ns = {}, .name = "t1"};
+
+  std::unique_ptr<TableMetadata> metadata;
+  ASSERT_NO_FATAL_FAILURE(ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
+
+  auto status = TableMetadataUtil::Write(*file_io_, temp_filepath_, *metadata);
+  EXPECT_THAT(status, IsOk());
+
+  auto table = catalog_->RegisterTable(tableIdent, temp_filepath_);
+  EXPECT_THAT(table, IsOk());
+  ASSERT_EQ(table.value()->name().name, "t1");
+  ASSERT_EQ(table.value()->location(), "s3://bucket/test/location");
 }
 
 TEST_F(InMemoryCatalogTest, DropTable) {
