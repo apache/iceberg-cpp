@@ -100,11 +100,11 @@ const std::vector<std::shared_ptr<DataFile>>& FileScanTask::delete_files() const
 }
 
 int64_t FileScanTask::SizeBytes() const {
-  int64_t sizeInBytes = data_file_->file_size_in_bytes;
-  std::ranges::for_each(delete_files_, [&sizeInBytes](const auto& delete_file) {
-    sizeInBytes += delete_file->file_size_in_bytes;
+  int64_t size_in_bytes = data_file_->file_size_in_bytes;
+  std::ranges::for_each(delete_files_, [&size_in_bytes](const auto& delete_file) {
+    size_in_bytes += delete_file->file_size_in_bytes;
   });
-  return sizeInBytes;
+  return size_in_bytes;
 }
 
 int32_t FileScanTask::FilesCount() const {
@@ -115,9 +115,9 @@ int64_t FileScanTask::EstimatedRowCount() const {
   if (data_file_->file_size_in_bytes == 0) {
     return 0;
   }
-  const auto sizeInBytes = data_file_->file_size_in_bytes;
+  const auto size_in_bytes = data_file_->file_size_in_bytes;
   const double scannedFileFraction =
-      static_cast<double>(sizeInBytes) / data_file_->file_size_in_bytes;
+      static_cast<double>(size_in_bytes) / data_file_->file_size_in_bytes;
   return static_cast<int64_t>(scannedFileFraction * data_file_->record_count);
 }
 
@@ -172,10 +172,9 @@ Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
     return InvalidArgument("No snapshot ID specified for table {}",
                            table_metadata->table_uuid);
   }
-  auto iter = std::ranges::find_if(table_metadata->snapshots,
-                                   [&snapshot_id](const auto& snapshot) {
-                                     return snapshot->snapshot_id == *snapshot_id;
-                                   });
+  auto iter = std::ranges::find_if(
+      table_metadata->snapshots,
+      [id = *snapshot_id](const auto& snapshot) { return snapshot->snapshot_id == id; });
   if (iter == table_metadata->snapshots.end() || *iter == nullptr) {
     return NotFound("Snapshot with ID {} is not found", *snapshot_id);
   }
@@ -191,8 +190,8 @@ Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
     }
 
     const auto& schemas = table_metadata->schemas;
-    const auto it = std::ranges::find_if(schemas, [&schema_id](const auto& schema) {
-      return schema->schema_id() == *schema_id;
+    const auto it = std::ranges::find_if(schemas, [id = *schema_id](const auto& schema) {
+      return schema->schema_id() == id;
     });
     if (it == schemas.end()) {
       return InvalidArgument("Schema {} in snapshot {} is not found",
@@ -210,7 +209,8 @@ Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
         // TODO(gty404): support case-insensitive column names
         auto field_opt = schema->GetFieldByName(column_name);
         if (!field_opt) {
-          return InvalidArgument("Column {} not found in schema", column_name);
+          return InvalidArgument("Column {} not found in schema '{}'", column_name,
+                                 *schema_id);
         }
         projected_fields.emplace_back(field_opt.value().get());
       }
