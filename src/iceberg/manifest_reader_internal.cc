@@ -23,7 +23,7 @@
 
 #include <nanoarrow/nanoarrow.h>
 
-#include "iceberg/arrow_struct_guard.h"
+#include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/schema.h"

@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/arrow_struct_guard.h"
+#include "iceberg/arrow_c_data_guard_internal.h"
 
 namespace iceberg::internal {
 

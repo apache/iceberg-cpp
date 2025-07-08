@@ -27,7 +27,7 @@ namespace iceberg::internal {
 
 class ArrowArrayGuard {
  public:
-  ArrowArrayGuard(ArrowArray* array) : array_(array) {}
+  explicit ArrowArrayGuard(ArrowArray* array) : array_(array) {}
   ~ArrowArrayGuard();
 
  private:
@@ -36,7 +36,7 @@ class ArrowArrayGuard {
 
 class ArrowSchemaGuard {
  public:
-  ArrowSchemaGuard(ArrowSchema* schema) : schema_(schema) {}
+  explicit ArrowSchemaGuard(ArrowSchema* schema) : schema_(schema) {}
   ~ArrowSchemaGuard();
 
  private:
@@ -45,7 +45,7 @@ class ArrowSchemaGuard {
 
 class ArrowArrayViewGuard {
  public:
-  ArrowArrayViewGuard(ArrowArrayView* view) : view_(view) {}
+  explicit ArrowArrayViewGuard(ArrowArrayView* view) : view_(view) {}
   ~ArrowArrayViewGuard();
 
  private:
@@ -54,7 +54,7 @@ class ArrowArrayViewGuard {
 
 class ArrowArrayBufferGuard {
  public:
-  ArrowArrayBufferGuard(ArrowBuffer* buffer) : buffer_(buffer) {}
+  explicit ArrowArrayBufferGuard(ArrowBuffer* buffer) : buffer_(buffer) {}
   ~ArrowArrayBufferGuard();
 
  private:
