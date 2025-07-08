@@ -45,6 +45,7 @@ set(ICEBERG_SOURCES
     type.cc
     manifest_reader.cc
     manifest_reader_internal.cc
+    arrow_struct_guard.cc
     util/murmurhash3_internal.cc
     util/timepoint.cc
     util/unreachable.cc

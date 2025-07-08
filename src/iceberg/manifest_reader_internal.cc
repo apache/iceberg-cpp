@@ -23,6 +23,7 @@
 
 #include <nanoarrow/nanoarrow.h>
 
+#include "iceberg/arrow_struct_guard.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/schema.h"
@@ -51,6 +52,7 @@ Result<std::vector<std::unique_ptr<ManifestFile>>> ParseManifestListEntry(
   ArrowArrayView array_view;
   auto status = ArrowArrayViewInitFromSchema(&array_view, schema, &error);
   ARROW_RETURN_IF_NOT_OK(status, error);
+  internal::ArrowArrayViewGuard view_guard(&array_view);
   status = ArrowArrayViewSetArray(&array_view, array_in, &error);
   ARROW_RETURN_IF_NOT_OK(status, error);
   status = ArrowArrayViewValidate(&array_view, NANOARROW_VALIDATION_LEVEL_FULL, &error);
@@ -65,8 +67,6 @@ Result<std::vector<std::unique_ptr<ManifestFile>>> ParseManifestListEntry(
   for (int64_t idx = 0; idx < array_in->n_children; idx++) {
     const auto& field = iceberg_schema.GetFieldByIndex(idx);
     if (!field.has_value()) {
-      ArrowArrayRelease(array_in);
-      ArrowArrayViewReset(&array_view);
       return InvalidArgument("Field not found in schema: {}", idx);
     }
     auto field_name = field.value().get().name();
@@ -197,8 +197,6 @@ Result<std::vector<std::unique_ptr<ManifestFile>>> ParseManifestListEntry(
     }
   }
 #undef PARSE_PRIMITIVE_FIELD
-  ArrowArrayRelease(array_in);
-  ArrowArrayViewReset(&array_view);
   return manifest_files;
 }  // namespace iceberg
 
@@ -213,6 +211,7 @@ Result<std::vector<std::unique_ptr<ManifestFile>>> ManifestListReaderImpl::Files
     return InvalidArgument("Get schema failed in reader:{}",
                            arrow_schema.error().message);
   }
+  internal::ArrowSchemaGuard schema_guard(&arrow_schema.value());
   auto schema = FromArrowSchema(arrow_schema.value(), std::nullopt);
   if (!schema.has_value()) {
     return InvalidArgument("Parse iceberg schema failed:{}", schema.error().message);
@@ -224,6 +223,7 @@ Result<std::vector<std::unique_ptr<ManifestFile>>> ManifestListReaderImpl::Files
                              result.error().message);
     }
     if (result.value().has_value()) {
+      internal::ArrowArrayGuard array_guard(&result.value().value());
       auto parse_result = ParseManifestListEntry(
           &arrow_schema.value(), &result.value().value(), *schema.value());
       if (!parse_result.has_value()) {
@@ -234,6 +234,7 @@ Result<std::vector<std::unique_ptr<ManifestFile>>> ManifestListReaderImpl::Files
                             std::make_move_iterator(parse_result.value().begin()),
                             std::make_move_iterator(parse_result.value().end()));
     } else {
+      // eof
       break;
     }
   }
