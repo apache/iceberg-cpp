@@ -33,95 +33,17 @@
 
 namespace iceberg {
 
-namespace {
-/// \brief Use indexed data structures for efficient lookups
-class DeleteFileIndex {
- public:
-  /// \brief Build the index from a list of manifest entries.
-  explicit DeleteFileIndex(const std::vector<std::unique_ptr<ManifestEntry>>& entries) {
-    for (const auto& entry : entries) {
-      const int64_t seq_num =
-          entry->sequence_number.value_or(TableMetadata::kInitialSequenceNumber);
-      sequence_index.emplace(seq_num, entry.get());
-    }
-  }
-
-  /// \brief Find delete files that match the sequence number of a data entry.
-  std::vector<ManifestEntry*> FindRelevantEntries(const ManifestEntry& data_entry) const {
-    std::vector<ManifestEntry*> relevant_deletes;
-
-    // Use lower_bound for efficient range search
-    auto data_sequence_number =
-        data_entry.sequence_number.value_or(TableMetadata::kInitialSequenceNumber);
-    for (auto it = sequence_index.lower_bound(data_sequence_number);
-         it != sequence_index.end(); ++it) {
-      // Additional filtering logic here
-      relevant_deletes.push_back(it->second);
-    }
-
-    return relevant_deletes;
-  }
-
- private:
-  /// \brief Index by sequence number for quick filtering
-  std::multimap<int64_t, ManifestEntry*> sequence_index;
-};
-
-/// \brief Get matched delete files for a given data entry.
-std::vector<std::shared_ptr<DataFile>> GetMatchedDeletes(
-    const ManifestEntry& data_entry, const DeleteFileIndex& delete_file_index) {
-  const auto relevant_entries = delete_file_index.FindRelevantEntries(data_entry);
-  std::vector<std::shared_ptr<DataFile>> matched_deletes;
-  if (relevant_entries.empty()) {
-    return matched_deletes;
-  }
-
-  matched_deletes.reserve(relevant_entries.size());
-  for (const auto& delete_entry : relevant_entries) {
-    // TODO(gty404): check if the delete entry contains the data entry's file path
-    matched_deletes.emplace_back(delete_entry->data_file);
-  }
-  return matched_deletes;
-}
-}  // namespace
-
 // implement FileScanTask
-FileScanTask::FileScanTask(std::shared_ptr<DataFile> file,
-                           std::vector<std::shared_ptr<DataFile>> delete_files,
-                           std::shared_ptr<Expression> residual)
-    : data_file_(std::move(file)),
-      delete_files_(std::move(delete_files)),
-      residual_(std::move(residual)) {}
+FileScanTask::FileScanTask(std::shared_ptr<DataFile> file)
+    : data_file_(std::move(file)) {}
 
 const std::shared_ptr<DataFile>& FileScanTask::data_file() const { return data_file_; }
 
-const std::vector<std::shared_ptr<DataFile>>& FileScanTask::delete_files() const {
-  return delete_files_;
-}
+int64_t FileScanTask::size_bytes() const { return data_file_->file_size_in_bytes; }
 
-int64_t FileScanTask::SizeBytes() const {
-  int64_t size_in_bytes = data_file_->file_size_in_bytes;
-  std::ranges::for_each(delete_files_, [&size_in_bytes](const auto& delete_file) {
-    size_in_bytes += delete_file->file_size_in_bytes;
-  });
-  return size_in_bytes;
-}
+int32_t FileScanTask::files_count() const { return 1; }
 
-int32_t FileScanTask::FilesCount() const {
-  return static_cast<int32_t>(delete_files_.size() + 1);
-}
-
-int64_t FileScanTask::EstimatedRowCount() const {
-  if (data_file_->file_size_in_bytes == 0) {
-    return 0;
-  }
-  const auto size_in_bytes = data_file_->file_size_in_bytes;
-  const double scannedFileFraction =
-      static_cast<double>(size_in_bytes) / data_file_->file_size_in_bytes;
-  return static_cast<int64_t>(scannedFileFraction * data_file_->record_count);
-}
-
-const std::shared_ptr<Expression>& FileScanTask::residual() const { return residual_; }
+int64_t FileScanTask::estimated_row_count() const { return data_file_->record_count; }
 
 TableScanBuilder::TableScanBuilder(std::shared_ptr<TableMetadata> table_metadata,
                                    std::shared_ptr<FileIO> file_io)
@@ -175,7 +97,7 @@ Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
   auto iter = std::ranges::find_if(
       table_metadata->snapshots,
       [id = *snapshot_id](const auto& snapshot) { return snapshot->snapshot_id == id; });
-  if (iter == table_metadata->snapshots.end() || *iter == nullptr) {
+  if (iter == table_metadata->snapshots.end()) {
     return NotFound("Snapshot with ID {} is not found", *snapshot_id);
   }
   context_.snapshot = *iter;
@@ -243,8 +165,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
                           CreateManifestListReader(context_.snapshot->manifest_list));
   ICEBERG_ASSIGN_OR_RAISE(auto manifest_files, manifest_list_reader->Files());
 
-  std::vector<std::unique_ptr<ManifestEntry>> data_entries;
-  std::vector<std::unique_ptr<ManifestEntry>> positional_delete_entries;
+  std::vector<std::shared_ptr<FileScanTask>> tasks;
   for (const auto& manifest_file : manifest_files) {
     ICEBERG_ASSIGN_OR_RAISE(auto manifest_reader,
                             CreateManifestReader(manifest_file->manifest_path));
@@ -256,29 +177,15 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
       const auto& data_file = manifest_entry->data_file;
       switch (data_file->content) {
         case DataFile::Content::kData:
-          data_entries.push_back(std::move(manifest_entry));
+          tasks.emplace_back(std::make_shared<FileScanTask>(manifest_entry->data_file));
           break;
         case DataFile::Content::kPositionDeletes:
-          // TODO(gty404): check if the sequence number is greater than or equal to the
-          // minimum sequence number of all manifest entries
-          positional_delete_entries.push_back(std::move(manifest_entry));
-          break;
         case DataFile::Content::kEqualityDeletes:
-          return NotSupported("Equality deletes are not supported in data scan");
+          return NotSupported("Equality/Position deletes are not supported in data scan");
       }
     }
   }
 
-  // TODO(gty404): build residual expression from filter
-  std::shared_ptr<Expression> residual;
-  std::vector<std::shared_ptr<FileScanTask>> tasks;
-  DeleteFileIndex delete_file_index(positional_delete_entries);
-  for (const auto& data_entry : data_entries) {
-    auto matched_deletes = GetMatchedDeletes(*data_entry, delete_file_index);
-    const auto& data_file = data_entry->data_file;
-    tasks.emplace_back(
-        std::make_shared<FileScanTask>(data_file, std::move(matched_deletes), residual));
-  }
   return tasks;
 }
 

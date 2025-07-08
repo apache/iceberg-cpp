@@ -33,42 +33,30 @@ class ICEBERG_EXPORT ScanTask {
   virtual ~ScanTask() = default;
 
   /// \brief The number of bytes that should be read by this scan task.
-  virtual int64_t SizeBytes() const = 0;
+  virtual int64_t size_bytes() const = 0;
 
   /// \brief The number of files that should be read by this scan task.
-  virtual int32_t FilesCount() const = 0;
+  virtual int32_t files_count() const = 0;
 
   /// \brief The number of rows that should be read by this scan task.
-  virtual int64_t EstimatedRowCount() const = 0;
+  virtual int64_t estimated_row_count() const = 0;
 };
 
 /// \brief Task representing a data file and its corresponding delete files.
 class ICEBERG_EXPORT FileScanTask : public ScanTask {
  public:
-  FileScanTask(std::shared_ptr<DataFile> file,
-               std::vector<std::shared_ptr<DataFile>> delete_files,
-               std::shared_ptr<Expression> residual);
+  explicit FileScanTask(std::shared_ptr<DataFile> file);
 
   /// \brief The data file that should be read by this scan task.
   const std::shared_ptr<DataFile>& data_file() const;
 
-  /// \brief The delete files that should be read by this scan task.
-  const std::vector<std::shared_ptr<DataFile>>& delete_files() const;
-
-  /// \brief The residual expression to apply after scanning the data file.
-  const std::shared_ptr<Expression>& residual() const;
-
-  int64_t SizeBytes() const override;
-  int32_t FilesCount() const override;
-  int64_t EstimatedRowCount() const override;
+  int64_t size_bytes() const override;
+  int32_t files_count() const override;
+  int64_t estimated_row_count() const override;
 
  private:
   /// \brief Data file metadata.
   std::shared_ptr<DataFile> data_file_;
-  /// \brief Delete files metadata.
-  std::vector<std::shared_ptr<DataFile>> delete_files_;
-  /// \brief Residual expression to apply.
-  std::shared_ptr<Expression> residual_;
 };
 
 /// \brief Scan context holding snapshot and scan-specific metadata.
