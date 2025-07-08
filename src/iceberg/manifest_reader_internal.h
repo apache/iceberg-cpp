@@ -19,35 +19,39 @@
 
 #pragma once
 
-/// \file iceberg/manifest_reader.h
-/// Data reader interface for manifest files.
+/// \file iceberg/internal/manifest_reader_internal.h
+/// Reader implement for manifest files.
 
-#include <memory>
-#include <vector>
-
-#include "iceberg/file_reader.h"
-#include "iceberg/iceberg_export.h"
-#include "iceberg/type_fwd.h"
+#include "iceberg/manifest_reader.h"
 
 namespace iceberg {
 
 /// \brief Read manifest entries from a manifest file.
-class ICEBERG_EXPORT ManifestReader {
+class ManifestReaderImpl : public ManifestReader {
  public:
-  virtual Result<std::vector<ManifestEntry>> Entries() const = 0;
+  explicit ManifestReaderImpl(std::unique_ptr<Reader> reader,
+                              std::shared_ptr<Schema> schema)
+      : schema_(std::move(schema)), reader_(std::move(reader)) {}
 
-  static Result<std::shared_ptr<ManifestReader>> MakeReader(
-      const std::string& manifest_location, std::shared_ptr<FileIO> file_io,
-      std::shared_ptr<Schema> partition_schema);
+  Result<std::vector<ManifestEntry>> Entries() const override;
+
+ private:
+  std::shared_ptr<Schema> schema_;
+  std::unique_ptr<Reader> reader_;
 };
 
 /// \brief Read manifest files from a manifest list file.
-class ICEBERG_EXPORT ManifestListReader {
+class ManifestListReaderImpl : public ManifestListReader {
  public:
-  virtual Result<std::vector<ManifestFile>> Files() const = 0;
+  explicit ManifestListReaderImpl(std::unique_ptr<Reader> reader,
+                                  std::shared_ptr<Schema> schema)
+      : schema_(std::move(schema)), reader_(std::move(reader)) {}
 
-  static Result<std::shared_ptr<ManifestListReader>> MakeReader(
-      const std::string& manifest_list_location, std::shared_ptr<FileIO> file_io);
+  Result<std::vector<ManifestFile>> Files() const override;
+
+ private:
+  std::shared_ptr<Schema> schema_;
+  std::unique_ptr<Reader> reader_;
 };
 
 }  // namespace iceberg

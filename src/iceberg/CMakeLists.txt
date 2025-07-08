@@ -43,6 +43,9 @@ set(ICEBERG_SOURCES
     transform.cc
     transform_function.cc
     type.cc
+    manifest_reader.cc
+    manifest_reader_internal.cc
+    arrow_c_data_guard_internal.cc
     util/murmurhash3_internal.cc
     util/timepoint.cc
     util/unreachable.cc

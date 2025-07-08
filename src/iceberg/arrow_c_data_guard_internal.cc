@@ -17,29 +17,32 @@
  * under the License.
  */
 
-#include "iceberg/manifest_list.h"
+#include "iceberg/arrow_c_data_guard_internal.h"
 
-#include "iceberg/schema.h"
+namespace iceberg::internal {
 
-namespace iceberg {
-
-const StructType& PartitionFieldSummary::Type() {
-  static const StructType kInstance{{
-      PartitionFieldSummary::kContainsNull,
-      PartitionFieldSummary::kContainsNaN,
-      PartitionFieldSummary::kLowerBound,
-      PartitionFieldSummary::kUpperBound,
-  }};
-  return kInstance;
+ArrowArrayGuard::~ArrowArrayGuard() {
+  if (array_ != nullptr) {
+    ArrowArrayRelease(array_);
+  }
 }
 
-const StructType& ManifestFile::Type() {
-  static const StructType kInstance(
-      {kManifestPath, kManifestLength, kPartitionSpecId, kContent, kSequenceNumber,
-       kMinSequenceNumber, kAddedSnapshotId, kAddedFilesCount, kExistingFilesCount,
-       kDeletedFilesCount, kAddedRowsCount, kExistingRowsCount, kDeletedRowsCount,
-       kPartitions, kKeyMetadata, kFirstRowId});
-  return kInstance;
+ArrowSchemaGuard::~ArrowSchemaGuard() {
+  if (schema_ != nullptr) {
+    ArrowSchemaRelease(schema_);
+  }
 }
 
-}  // namespace iceberg
+ArrowArrayViewGuard::~ArrowArrayViewGuard() {
+  if (view_ != nullptr) {
+    ArrowArrayViewReset(view_);
+  }
+}
+
+ArrowArrayBufferGuard::~ArrowArrayBufferGuard() {
+  if (buffer_ != nullptr) {
+    ArrowBufferReset(buffer_);
+  }
+}
+
+}  // namespace iceberg::internal
