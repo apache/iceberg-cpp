@@ -29,24 +29,28 @@ namespace iceberg {
 /// \brief Read manifest entries from a manifest file.
 class ManifestReaderImpl : public ManifestReader {
  public:
-  explicit ManifestReaderImpl(std::unique_ptr<Reader> reader)
-      : reader_(std::move(reader)) {}
+  explicit ManifestReaderImpl(std::unique_ptr<Reader> reader,
+                              std::shared_ptr<Schema> schema)
+      : schema_(std::move(schema)), reader_(std::move(reader)) {}
 
   Result<std::vector<std::unique_ptr<ManifestEntry>>> Entries() const override;
 
  private:
+  std::shared_ptr<Schema> schema_;
   std::unique_ptr<Reader> reader_;
 };
 
 /// \brief Read manifest files from a manifest list file.
 class ManifestListReaderImpl : public ManifestListReader {
  public:
-  explicit ManifestListReaderImpl(std::unique_ptr<Reader> reader)
-      : reader_(std::move(reader)) {}
+  explicit ManifestListReaderImpl(std::unique_ptr<Reader> reader,
+                                  std::shared_ptr<Schema> schema)
+      : schema_(std::move(schema)), reader_(std::move(reader)) {}
 
   Result<std::vector<std::unique_ptr<ManifestFile>>> Files() const override;
 
  private:
+  std::shared_ptr<Schema> schema_;
   std::unique_ptr<Reader> reader_;
 };
 

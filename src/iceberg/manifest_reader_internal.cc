@@ -29,12 +29,13 @@
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/type.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
 #define ARROW_RETURN_IF_NOT_OK(status, error)                      \
-  if (status != NANOARROW_OK) {                                    \
-    return InvalidArrowData("NanoArrow error: {}", error.message); \
+  if (status != NANOARROW_OK) [[unlikely]] {                       \
+    return InvalidArrowData("Nanoarrow error: {}", error.message); \
   }
 
 Result<std::vector<std::unique_ptr<ManifestFile>>> ParseManifestListEntry(
@@ -206,16 +207,8 @@ Result<std::vector<std::unique_ptr<ManifestEntry>>> ManifestReaderImpl::Entries(
 
 Result<std::vector<std::unique_ptr<ManifestFile>>> ManifestListReaderImpl::Files() const {
   std::vector<std::unique_ptr<ManifestFile>> manifest_files;
-  auto arrow_schema = reader_->Schema();
-  if (!arrow_schema.has_value()) {
-    return InvalidArgument("Get schema failed in reader:{}",
-                           arrow_schema.error().message);
-  }
-  internal::ArrowSchemaGuard schema_guard(&arrow_schema.value());
-  auto schema = FromArrowSchema(arrow_schema.value(), std::nullopt);
-  if (!schema.has_value()) {
-    return InvalidArgument("Parse iceberg schema failed:{}", schema.error().message);
-  }
+  ICEBERG_ASSIGN_OR_RAISE(auto arrow_schema, reader_->Schema());
+  internal::ArrowSchemaGuard schema_guard(&arrow_schema);
   while (true) {
     auto result = reader_->Next();
     if (!result.has_value()) {
@@ -224,8 +217,8 @@ Result<std::vector<std::unique_ptr<ManifestFile>>> ManifestListReaderImpl::Files
     }
     if (result.value().has_value()) {
       internal::ArrowArrayGuard array_guard(&result.value().value());
-      auto parse_result = ParseManifestListEntry(
-          &arrow_schema.value(), &result.value().value(), *schema.value());
+      auto parse_result =
+          ParseManifestListEntry(&arrow_schema, &result.value().value(), *schema_);
       if (!parse_result.has_value()) {
         return InvalidArgument("Failed to parse manifest list entry:{}",
                                parse_result.error().message);

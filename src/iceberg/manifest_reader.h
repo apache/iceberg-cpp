@@ -36,7 +36,9 @@ class ICEBERG_EXPORT ManifestReader {
  public:
   virtual Result<std::vector<std::unique_ptr<ManifestEntry>>> Entries() const = 0;
 
-  static std::shared_ptr<ManifestReader> NewReader(std::unique_ptr<Reader> reader);
+  static Result<std::shared_ptr<ManifestReader>> MakeReader(
+      const std::string& manifest_location, std::shared_ptr<FileIO> file_io,
+      std::shared_ptr<Schema> partition_schema);
 };
 
 /// \brief Read manifest files from a manifest list file.
@@ -44,7 +46,8 @@ class ICEBERG_EXPORT ManifestListReader {
  public:
   virtual Result<std::vector<std::unique_ptr<ManifestFile>>> Files() const = 0;
 
-  static std::shared_ptr<ManifestListReader> NewReader(std::unique_ptr<Reader> reader);
+  static Result<std::shared_ptr<ManifestListReader>> MakeReader(
+      const std::string& manifest_list_location, std::shared_ptr<FileIO> file_io);
 };
 
 }  // namespace iceberg
