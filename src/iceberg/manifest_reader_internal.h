@@ -19,32 +19,33 @@
 
 #pragma once
 
-/// \file iceberg/manifest_reader.h
-/// Data reader interface for manifest files.
+/// \file iceberg/internal/manifest_reader_internal.h
+/// Reader implement for manifest files.
 
-#include <memory>
-#include <vector>
-
-#include "iceberg/file_reader.h"
-#include "iceberg/iceberg_export.h"
-#include "iceberg/type_fwd.h"
+#include "iceberg/manifest_reader.h"
 
 namespace iceberg {
 
 /// \brief Read manifest entries from a manifest file.
-class ICEBERG_EXPORT ManifestReader {
+class ManifestReaderImpl : public ManifestReader {
  public:
-  virtual Result<std::vector<std::unique_ptr<ManifestEntry>>> Entries() const = 0;
+  ManifestReaderImpl(std::unique_ptr<Reader> reader) : reader_(std::move(reader)) {}
 
-  static std::shared_ptr<ManifestReader> NewReader(std::unique_ptr<Reader> reader);
+  Result<std::vector<std::unique_ptr<ManifestEntry>>> Entries() const override;
+
+ private:
+  std::unique_ptr<Reader> reader_;
 };
 
 /// \brief Read manifest files from a manifest list file.
-class ICEBERG_EXPORT ManifestListReader {
+class ManifestListReaderImpl : public ManifestListReader {
  public:
-  virtual Result<std::vector<std::unique_ptr<ManifestFile>>> Files() const = 0;
+  ManifestListReaderImpl(std::unique_ptr<Reader> reader) : reader_(std::move(reader)) {}
 
-  static std::shared_ptr<ManifestListReader> NewReader(std::unique_ptr<Reader> reader);
+  Result<std::vector<std::unique_ptr<ManifestFile>>> Files() const override;
+
+ private:
+  std::unique_ptr<Reader> reader_;
 };
 
 }  // namespace iceberg

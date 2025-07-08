@@ -19,9 +19,7 @@
 
 #include "iceberg/manifest_list.h"
 
-#include <vector>
-
-#include "iceberg/type.h"
+#include "iceberg/schema.h"
 
 namespace iceberg {
 

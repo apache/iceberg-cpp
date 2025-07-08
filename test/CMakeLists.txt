@@ -78,10 +78,16 @@ add_test(NAME util_test COMMAND util_test)
 
 if(ICEBERG_BUILD_BUNDLE)
   add_executable(avro_test)
-  target_sources(avro_test PRIVATE avro_data_test.cc avro_test.cc avro_schema_test.cc
-                                   avro_stream_test.cc)
+  target_sources(avro_test
+                 PRIVATE avro_data_test.cc
+                         avro_test.cc
+                         avro_schema_test.cc
+                         avro_stream_test.cc
+                         manifest_list_reader_test.cc
+                         test_common.cc)
   target_link_libraries(avro_test PRIVATE iceberg_bundle_static GTest::gtest_main
                                           GTest::gmock)
+  target_include_directories(avro_test PRIVATE "${CMAKE_BINARY_DIR}")
   add_test(NAME avro_test COMMAND avro_test)
 
   add_executable(arrow_test)
