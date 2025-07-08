@@ -45,7 +45,6 @@ set(ICEBERG_SOURCES
     type.cc
     util/murmurhash3_internal.cc
     util/timepoint.cc
-    util/unreachable.cc
     util/gzip_internal.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
