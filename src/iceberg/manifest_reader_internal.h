@@ -33,7 +33,7 @@ class ManifestReaderImpl : public ManifestReader {
                               std::shared_ptr<Schema> schema)
       : schema_(std::move(schema)), reader_(std::move(reader)) {}
 
-  Result<std::vector<std::unique_ptr<ManifestEntry>>> Entries() const override;
+  Result<std::vector<ManifestEntry>> Entries() const override;
 
  private:
   std::shared_ptr<Schema> schema_;
@@ -47,7 +47,7 @@ class ManifestListReaderImpl : public ManifestListReader {
                                   std::shared_ptr<Schema> schema)
       : schema_(std::move(schema)), reader_(std::move(reader)) {}
 
-  Result<std::vector<std::unique_ptr<ManifestFile>>> Files() const override;
+  Result<std::vector<ManifestFile>> Files() const override;
 
  private:
   std::shared_ptr<Schema> schema_;

@@ -38,8 +38,9 @@ namespace iceberg {
     return InvalidArrowData("Nanoarrow error: {}", error.message); \
   }
 
-Result<std::vector<std::unique_ptr<ManifestFile>>> ParseManifestListEntry(
-    ArrowSchema* schema, ArrowArray* array_in, const Schema& iceberg_schema) {
+Result<std::vector<ManifestFile>> ParseManifestListEntry(ArrowSchema* schema,
+                                                         ArrowArray* array_in,
+                                                         const Schema& iceberg_schema) {
   if (schema->n_children != array_in->n_children) {
     return InvalidArgument("Columns size not match between schema:{} and array:{}",
                            schema->n_children, array_in->n_children);
@@ -59,11 +60,8 @@ Result<std::vector<std::unique_ptr<ManifestFile>>> ParseManifestListEntry(
   status = ArrowArrayViewValidate(&array_view, NANOARROW_VALIDATION_LEVEL_FULL, &error);
   ARROW_RETURN_IF_NOT_OK(status, error);
 
-  std::vector<std::unique_ptr<ManifestFile>> manifest_files;
+  std::vector<ManifestFile> manifest_files;
   manifest_files.resize(array_in->length);
-  for (auto& manifest_file : manifest_files) {
-    manifest_file = std::make_unique<ManifestFile>();
-  }
 
   for (int64_t idx = 0; idx < array_in->n_children; idx++) {
     const auto& field = iceberg_schema.GetFieldByIndex(idx);
@@ -77,7 +75,7 @@ Result<std::vector<std::unique_ptr<ManifestFile>>> ParseManifestListEntry(
   for (size_t row_idx = 0; row_idx < view_of_column->length; row_idx++) { \
     if (!ArrowArrayViewIsNull(view_of_column, row_idx)) {                 \
       auto value = ArrowArrayViewGetIntUnsafe(view_of_column, row_idx);   \
-      manifest_files[row_idx]->field_name = static_cast<type>(value);     \
+      manifest_files[row_idx].field_name = static_cast<type>(value);      \
     }                                                                     \
   }
 
@@ -86,7 +84,7 @@ Result<std::vector<std::unique_ptr<ManifestFile>>> ParseManifestListEntry(
         if (!ArrowArrayViewIsNull(view_of_column, row_idx)) {
           auto value = ArrowArrayViewGetStringUnsafe(view_of_column, row_idx);
           std::string path_str(value.data, value.size_bytes);
-          manifest_files[row_idx]->manifest_path = path_str;
+          manifest_files[row_idx].manifest_path = path_str;
         }
       }
     } else if (field_name == ManifestFile::kManifestLength.name()) {
@@ -97,7 +95,7 @@ Result<std::vector<std::unique_ptr<ManifestFile>>> ParseManifestListEntry(
       for (size_t row_idx = 0; row_idx < view_of_column->length; row_idx++) {
         if (!ArrowArrayViewIsNull(view_of_column, row_idx)) {
           auto value = ArrowArrayViewGetIntUnsafe(view_of_column, row_idx);
-          manifest_files[row_idx]->content = static_cast<ManifestFile::Content>(value);
+          manifest_files[row_idx].content = static_cast<ManifestFile::Content>(value);
         }
       }
     } else if (field_name == ManifestFile::kSequenceNumber.name()) {
@@ -180,14 +178,14 @@ Result<std::vector<std::unique_ptr<ManifestFile>>> ParseManifestListEntry(
                 buffer.data.as_char, buffer.data.as_char + buffer.size_bytes);
           }
 
-          manifest_file->partitions.emplace_back(partition_field_summary);
+          manifest_file.partitions.emplace_back(partition_field_summary);
         }
       }
     } else if (field_name == ManifestFile::kKeyMetadata.name()) {
       for (size_t row_idx = 0; row_idx < view_of_column->length; row_idx++) {
         if (!ArrowArrayViewIsNull(view_of_column, row_idx)) {
           auto buffer = ArrowArrayViewGetBytesUnsafe(view_of_column, row_idx);
-          manifest_files[row_idx]->key_metadata = std::vector<uint8_t>(
+          manifest_files[row_idx].key_metadata = std::vector<uint8_t>(
               buffer.data.as_char, buffer.data.as_char + buffer.size_bytes);
         }
       }
@@ -201,12 +199,10 @@ Result<std::vector<std::unique_ptr<ManifestFile>>> ParseManifestListEntry(
   return manifest_files;
 }  // namespace iceberg
 
-Result<std::vector<std::unique_ptr<ManifestEntry>>> ManifestReaderImpl::Entries() const {
-  return {};
-}
+Result<std::vector<ManifestEntry>> ManifestReaderImpl::Entries() const { return {}; }
 
-Result<std::vector<std::unique_ptr<ManifestFile>>> ManifestListReaderImpl::Files() const {
-  std::vector<std::unique_ptr<ManifestFile>> manifest_files;
+Result<std::vector<ManifestFile>> ManifestListReaderImpl::Files() const {
+  std::vector<ManifestFile> manifest_files;
   ICEBERG_ASSIGN_OR_RAISE(auto arrow_schema, reader_->Schema());
   internal::ArrowSchemaGuard schema_guard(&arrow_schema);
   while (true) {
