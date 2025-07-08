@@ -29,7 +29,8 @@ namespace iceberg {
 /// \brief Read manifest entries from a manifest file.
 class ManifestReaderImpl : public ManifestReader {
  public:
-  ManifestReaderImpl(std::unique_ptr<Reader> reader) : reader_(std::move(reader)) {}
+  explicit ManifestReaderImpl(std::unique_ptr<Reader> reader)
+      : reader_(std::move(reader)) {}
 
   Result<std::vector<std::unique_ptr<ManifestEntry>>> Entries() const override;
 
@@ -40,7 +41,8 @@ class ManifestReaderImpl : public ManifestReader {
 /// \brief Read manifest files from a manifest list file.
 class ManifestListReaderImpl : public ManifestListReader {
  public:
-  ManifestListReaderImpl(std::unique_ptr<Reader> reader) : reader_(std::move(reader)) {}
+  explicit ManifestListReaderImpl(std::unique_ptr<Reader> reader)
+      : reader_(std::move(reader)) {}
 
   Result<std::vector<std::unique_ptr<ManifestFile>>> Files() const override;
 

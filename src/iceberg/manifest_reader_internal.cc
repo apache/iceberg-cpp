@@ -72,11 +72,11 @@ Result<std::vector<std::unique_ptr<ManifestFile>>> ParseManifestListEntry(
     auto field_name = field.value().get().name();
     auto view_of_column = array_view.children[idx];
 
-#define PARSE_PRIMITIVE_FIELD(field_name)                                 \
+#define PARSE_PRIMITIVE_FIELD(field_name, type)                           \
   for (size_t row_idx = 0; row_idx < view_of_column->length; row_idx++) { \
     if (!ArrowArrayViewIsNull(view_of_column, row_idx)) {                 \
       auto value = ArrowArrayViewGetIntUnsafe(view_of_column, row_idx);   \
-      manifest_files[row_idx]->field_name = value;                        \
+      manifest_files[row_idx]->field_name = static_cast<type>(value);     \
     }                                                                     \
   }
 
@@ -89,9 +89,9 @@ Result<std::vector<std::unique_ptr<ManifestFile>>> ParseManifestListEntry(
         }
       }
     } else if (field_name == ManifestFile::kManifestLength.name()) {
-      PARSE_PRIMITIVE_FIELD(manifest_length);
+      PARSE_PRIMITIVE_FIELD(manifest_length, int64_t);
     } else if (field_name == ManifestFile::kPartitionSpecId.name()) {
-      PARSE_PRIMITIVE_FIELD(partition_spec_id);
+      PARSE_PRIMITIVE_FIELD(partition_spec_id, int32_t);
     } else if (field_name == ManifestFile::kContent.name()) {
       for (size_t row_idx = 0; row_idx < view_of_column->length; row_idx++) {
         if (!ArrowArrayViewIsNull(view_of_column, row_idx)) {
@@ -100,23 +100,23 @@ Result<std::vector<std::unique_ptr<ManifestFile>>> ParseManifestListEntry(
         }
       }
     } else if (field_name == ManifestFile::kSequenceNumber.name()) {
-      PARSE_PRIMITIVE_FIELD(sequence_number);
+      PARSE_PRIMITIVE_FIELD(sequence_number, int64_t);
     } else if (field_name == ManifestFile::kMinSequenceNumber.name()) {
-      PARSE_PRIMITIVE_FIELD(min_sequence_number);
+      PARSE_PRIMITIVE_FIELD(min_sequence_number, int64_t);
     } else if (field_name == ManifestFile::kAddedSnapshotId.name()) {
-      PARSE_PRIMITIVE_FIELD(added_snapshot_id);
+      PARSE_PRIMITIVE_FIELD(added_snapshot_id, int64_t);
     } else if (field_name == ManifestFile::kAddedFilesCount.name()) {
-      PARSE_PRIMITIVE_FIELD(added_files_count);
+      PARSE_PRIMITIVE_FIELD(added_files_count, int32_t);
     } else if (field_name == ManifestFile::kExistingFilesCount.name()) {
-      PARSE_PRIMITIVE_FIELD(existing_files_count);
+      PARSE_PRIMITIVE_FIELD(existing_files_count, int32_t);
     } else if (field_name == ManifestFile::kDeletedFilesCount.name()) {
-      PARSE_PRIMITIVE_FIELD(deleted_files_count);
+      PARSE_PRIMITIVE_FIELD(deleted_files_count, int32_t);
     } else if (field_name == ManifestFile::kAddedRowsCount.name()) {
-      PARSE_PRIMITIVE_FIELD(added_rows_count);
+      PARSE_PRIMITIVE_FIELD(added_rows_count, int64_t);
     } else if (field_name == ManifestFile::kExistingRowsCount.name()) {
-      PARSE_PRIMITIVE_FIELD(existing_rows_count);
+      PARSE_PRIMITIVE_FIELD(existing_rows_count, int64_t);
     } else if (field_name == ManifestFile::kDeletedRowsCount.name()) {
-      PARSE_PRIMITIVE_FIELD(deleted_rows_count);
+      PARSE_PRIMITIVE_FIELD(deleted_rows_count, int64_t);
     } else if (field_name == ManifestFile::kPartitions.name()) {
       // view_of_column is list<struct<PartitionFieldSummary>>
       auto manifest_count = view_of_column->length;
@@ -185,12 +185,13 @@ Result<std::vector<std::unique_ptr<ManifestFile>>> ParseManifestListEntry(
     } else if (field_name == ManifestFile::kKeyMetadata.name()) {
       for (size_t row_idx = 0; row_idx < view_of_column->length; row_idx++) {
         if (!ArrowArrayViewIsNull(view_of_column, row_idx)) {
-          auto value = ArrowArrayViewGetUIntUnsafe(view_of_column, row_idx);
-          manifest_files[row_idx]->key_metadata.push_back(value);
+          auto buffer = ArrowArrayViewGetBytesUnsafe(view_of_column, row_idx);
+          manifest_files[row_idx]->key_metadata = std::vector<uint8_t>(
+              buffer.data.as_char, buffer.data.as_char + buffer.size_bytes);
         }
       }
     } else if (field_name == ManifestFile::kFirstRowId.name()) {
-      PARSE_PRIMITIVE_FIELD(first_row_id);
+      PARSE_PRIMITIVE_FIELD(first_row_id, int64_t);
     } else {
       return InvalidArgument("Unsupported type: {}", field_name);
     }
