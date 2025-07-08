@@ -22,6 +22,7 @@
 #include <format>
 #include <string_view>
 #include <unordered_map>
+#include <utility>
 
 #include "iceberg/metadata_columns.h"
 #include "iceberg/schema.h"
@@ -29,7 +30,6 @@
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter_internal.h"
 #include "iceberg/util/macros.h"
-#include "iceberg/util/unreachable.h"
 
 namespace iceberg {
 
@@ -173,8 +173,7 @@ std::string_view ToString(FieldProjection::Kind kind) {
     case FieldProjection::Kind::kNull:
       return "null";
   }
-  internal::Unreachable(
-      std::format("Unknown field projection kind: {}", static_cast<int>(kind)));
+  std::unreachable();
 }
 
 std::string ToString(const FieldProjection& projection) {

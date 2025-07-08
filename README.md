@@ -24,7 +24,7 @@ C++ implementation of [Apache Iceberg™](https://iceberg.apache.org/).
 ## Requirements
 
 - CMake 3.25 or higher
-- C++20 compliant compiler
+- C++23 compliant compiler
 
 ## Build
 

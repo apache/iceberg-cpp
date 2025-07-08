@@ -227,6 +227,8 @@ class AvroReader::Impl {
   std::unique_ptr<ReadContext> context_;
 };
 
+AvroReader::~AvroReader() = default;
+
 Result<std::optional<ArrowArray>> AvroReader::Next() { return impl_->Next(); }
 
 Result<ArrowSchema> AvroReader::Schema() { return impl_->Schema(); }

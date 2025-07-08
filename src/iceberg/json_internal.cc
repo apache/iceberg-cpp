@@ -25,6 +25,7 @@
 #include <regex>
 #include <type_traits>
 #include <unordered_set>
+#include <utility>
 
 #include <nlohmann/json.hpp>
 
@@ -43,7 +44,6 @@
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
 #include "iceberg/util/timepoint.h"
-#include "iceberg/util/unreachable.h"
 
 namespace iceberg {
 
@@ -478,8 +478,7 @@ nlohmann::json ToJson(const Type& type) {
     case TypeId::kUuid:
       return "uuid";
   }
-  internal::Unreachable(
-      std::format("Unknown type id: {}", static_cast<int>(type.type_id())));
+  std::unreachable();
 }
 
 nlohmann::json ToJson(const Schema& schema) {
