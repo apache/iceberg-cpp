@@ -286,7 +286,7 @@ struct ICEBERG_EXPORT ManifestEntry {
   std::optional<int64_t> file_sequence_number;
   /// Field id: 2
   /// File path, partition tuple, metrics, ...
-  DataFile data_file;
+  std::shared_ptr<DataFile> data_file;
 
   inline static const SchemaField kStatus =
       SchemaField::MakeRequired(0, "status", iceberg::int32());

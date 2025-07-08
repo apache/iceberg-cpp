@@ -23,6 +23,7 @@
 #include "iceberg/schema.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_scan.h"
 
 namespace iceberg {
 
@@ -106,5 +107,9 @@ const std::vector<SnapshotLogEntry>& Table::history() const {
 }
 
 const std::shared_ptr<FileIO>& Table::io() const { return io_; }
+
+std::unique_ptr<TableScanBuilder> Table::NewScan() const {
+  return std::make_unique<TableScanBuilder>(metadata_, io_);
+}
 
 }  // namespace iceberg

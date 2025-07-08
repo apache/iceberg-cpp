@@ -40,6 +40,7 @@ set(ICEBERG_SOURCES
     statistics_file.cc
     table.cc
     table_metadata.cc
+    table_scan.cc
     transform.cc
     transform_function.cc
     type.cc

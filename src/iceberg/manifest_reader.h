@@ -34,6 +34,7 @@ namespace iceberg {
 /// \brief Read manifest entries from a manifest file.
 class ICEBERG_EXPORT ManifestReader {
  public:
+  virtual ~ManifestReader() = default;
   virtual Result<std::span<std::unique_ptr<ManifestEntry>>> Entries() const = 0;
 
  private:
@@ -43,10 +44,26 @@ class ICEBERG_EXPORT ManifestReader {
 /// \brief Read manifest files from a manifest list file.
 class ICEBERG_EXPORT ManifestListReader {
  public:
+  virtual ~ManifestListReader() = default;
   virtual Result<std::span<std::unique_ptr<ManifestFile>>> Files() const = 0;
 
  private:
   std::unique_ptr<Reader> reader_;
 };
+
+/// \brief Creates a reader for the manifest list.
+/// \param file_path Path to the manifest list file.
+/// \return A Result containing the reader or an error.
+Result<std::unique_ptr<ManifestListReader>> CreateManifestListReader(
+    std::string_view file_path) {
+  return NotImplemented("CreateManifestListReader is not implemented yet.");
+}
+
+/// \brief Creates a reader for a manifest file.
+/// \param file_path Path to the manifest file.
+/// \return A Result containing the reader or an error.
+Result<std::unique_ptr<ManifestReader>> CreateManifestReader(std::string_view file_path) {
+  return NotImplemented("CreateManifestReader is not implemented yet.");
+}
 
 }  // namespace iceberg
