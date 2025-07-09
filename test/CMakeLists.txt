@@ -78,6 +78,7 @@ if(ICEBERG_BUILD_BUNDLE)
                          avro_schema_test.cc
                          avro_stream_test.cc
                          manifest_list_reader_test.cc
+                         manifest_reader_test.cc
                          test_common.cc)
   target_link_libraries(avro_test PRIVATE iceberg_bundle_static GTest::gtest_main
                                           GTest::gmock)

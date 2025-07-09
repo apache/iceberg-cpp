@@ -27,6 +27,7 @@
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
+#include "iceberg/util/string_utils.h"
 
 namespace iceberg {
 
@@ -56,10 +57,11 @@ ICEBERG_EXPORT inline std::string_view ToString(FileFormatType format_type) {
 /// \brief Convert a string to a FileFormatType
 ICEBERG_EXPORT constexpr Result<FileFormatType> FileFormatTypeFromString(
     std::string_view str) noexcept {
-  if (str == "parquet") return FileFormatType::kParquet;
-  if (str == "avro") return FileFormatType::kAvro;
-  if (str == "orc") return FileFormatType::kOrc;
-  if (str == "puffin") return FileFormatType::kPuffin;
+  auto lower = internal::StringUtils::to_lower(str);
+  if (lower == "parquet") return FileFormatType::kParquet;
+  if (lower == "avro") return FileFormatType::kAvro;
+  if (lower == "orc") return FileFormatType::kOrc;
+  if (lower == "puffin") return FileFormatType::kPuffin;
   return InvalidArgument("Invalid file format type: {}", str);
 }
 

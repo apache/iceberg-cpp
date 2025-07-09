@@ -58,8 +58,7 @@ struct MapLogicalType : public ::avro::CustomLogicalType {
   std::call_once(flag, []() {
     // Register the map logical type with the avro custom logical type registry.
     // See https://github.com/apache/avro/pull/3326 for details.
-    ::avro::CustomLogicalTypeRegistry::instance().registerType(
-        "map", [](const std::string&) { return std::make_shared<MapLogicalType>(); });
+    RegisterLogicalTypes();
   });
   return ::avro::LogicalType(std::make_shared<MapLogicalType>());
 }
@@ -72,6 +71,11 @@ struct MapLogicalType : public ::avro::CustomLogicalType {
 }
 
 }  // namespace
+
+void RegisterLogicalTypes() {
+  ::avro::CustomLogicalTypeRegistry::instance().registerType(
+      "map", [](const std::string&) { return std::make_shared<MapLogicalType>(); });
+}
 
 std::string ToString(const ::avro::NodePtr& node) {
   std::stringstream ss;
