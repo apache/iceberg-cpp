@@ -31,7 +31,9 @@
 #include <avro/ValidSchema.hh>
 
 #include "iceberg/avro/avro_schema_util_internal.h"
+#include "iceberg/avro/constants.h"
 #include "iceberg/metadata_columns.h"
+#include "iceberg/name_mapping.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_util_internal.h"
 #include "iceberg/util/formatter.h"
@@ -781,6 +783,239 @@ Result<SchemaProjection> Project(const Schema& expected_schema,
       auto field_projection,
       ProjectNested(static_cast<const Type&>(expected_schema), avro_node, prune_source));
   return SchemaProjection{std::move(field_projection.children)};
+}
+
+namespace {
+
+Result<::avro::NodePtr> CreateRecordNodeWithFieldIds(const ::avro::NodePtr& original_node,
+                                                     const MappedField& field) {
+  auto new_record_node = std::make_shared<::avro::NodeRecord>();
+  new_record_node->setName(original_node->name());
+
+  if (original_node->leaves() > original_node->names()) {
+    return InvalidSchema("Node has {} leaves but only {} names", original_node->leaves(),
+                         original_node->names());
+  }
+
+  for (size_t i = 0; i < original_node->leaves(); ++i) {
+    const std::string& field_name = original_node->nameAt(i);
+    ::avro::NodePtr field_node = original_node->leafAt(i);
+
+    // TODO(liuxiaoyu): Add support for case sensitivity in name matching.
+    // Try to find nested field by name
+    const MappedField* nested_field = nullptr;
+    if (field.nested_mapping) {
+      auto fields_span = field.nested_mapping->fields();
+      for (const auto& f : fields_span) {
+        if (f.names.find(field_name) != f.names.end()) {
+          nested_field = &f;
+          break;
+        }
+      }
+    }
+
+    if (nested_field) {
+      // Check if field_id is present
+      if (!nested_field->field_id.has_value()) {
+        return InvalidSchema("Field ID is missing for field '{}' in nested mapping",
+                             field_name);
+      }
+
+      // Preserve existing custom attributes for this field
+      ::avro::CustomAttributes attributes;
+      if (i < original_node->customAttributes()) {
+        // Copy all existing attributes from the original node
+        const auto& original_attrs = original_node->customAttributesAt(i);
+        const auto& existing_attrs = original_attrs.attributes();
+        for (const auto& attr_pair : existing_attrs) {
+          attributes.addAttribute(attr_pair.first, attr_pair.second, false);
+        }
+      }
+
+      // Add field ID attribute to the new node (preserving existing attributes)
+      attributes.addAttribute(std::string(kFieldIdProp),
+                              std::to_string(nested_field->field_id.value()), false);
+
+      if (!attributes.attributes().empty()) {
+        new_record_node->addCustomAttributesForField(attributes);
+      }
+
+      // Recursively apply field IDs to nested fields
+      ICEBERG_ASSIGN_OR_RAISE(auto new_nested_node,
+                              CreateAvroNodeWithFieldIds(field_node, *nested_field));
+      new_record_node->addName(field_name);
+      new_record_node->addLeaf(new_nested_node);
+    } else {
+      // If no nested field found, this is an error
+      return InvalidSchema("Field '{}' not found in nested mapping", field_name);
+    }
+  }
+
+  return new_record_node;
+}
+
+Result<::avro::NodePtr> CreateArrayNodeWithFieldIds(const ::avro::NodePtr& original_node,
+                                                    const MappedField& field) {
+  if (original_node->leaves() != 1) {
+    return InvalidSchema("Array type must have exactly one leaf");
+  }
+
+  auto new_array_node = std::make_shared<::avro::NodeArray>();
+
+  // Check if this is a map represented as array
+  if (HasMapLogicalType(original_node)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto new_element_node,
+                            CreateAvroNodeWithFieldIds(original_node->leafAt(0), field));
+    new_array_node->addLeaf(new_element_node);
+    return new_array_node;
+  }
+
+  // For regular arrays, try to find element field ID from nested mapping
+  const MappedField* element_field = nullptr;
+  if (field.nested_mapping) {
+    auto fields_span = field.nested_mapping->fields();
+    for (const auto& f : fields_span) {
+      if (f.names.find(std::string(kElement)) != f.names.end()) {
+        element_field = &f;
+        break;
+      }
+    }
+  }
+
+  if (element_field) {
+    // Check if field_id is present
+    if (!element_field->field_id.has_value()) {
+      return InvalidSchema("Field ID is missing for element field in array");
+    }
+
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto new_element_node,
+        CreateAvroNodeWithFieldIds(original_node->leafAt(0), *element_field));
+    new_array_node->addLeaf(new_element_node);
+  } else {
+    // If no element field found, this is an error
+    return InvalidSchema("Element field not found in nested mapping for array");
+  }
+
+  return new_array_node;
+}
+
+Result<::avro::NodePtr> CreateMapNodeWithFieldIds(const ::avro::NodePtr& original_node,
+                                                  const MappedField& field) {
+  if (original_node->leaves() != 2) {
+    return InvalidSchema("Map type must have exactly two leaves");
+  }
+
+  auto new_map_node = std::make_shared<::avro::NodeMap>();
+
+  // Try to find key and value fields from nested mapping
+  const MappedField* key_field = nullptr;
+  const MappedField* value_field = nullptr;
+  if (field.nested_mapping) {
+    auto fields_span = field.nested_mapping->fields();
+    for (const auto& f : fields_span) {
+      if (f.names.find(std::string(kKey)) != f.names.end()) {
+        key_field = &f;
+      } else if (f.names.find(std::string(kValue)) != f.names.end()) {
+        value_field = &f;
+      }
+    }
+  }
+
+  // Check if both key and value fields are found
+  if (!key_field) {
+    return InvalidSchema("Key field not found in nested mapping for map");
+  }
+  if (!value_field) {
+    return InvalidSchema("Value field not found in nested mapping for map");
+  }
+
+  // Check if field_ids are present
+  if (!key_field->field_id.has_value()) {
+    return InvalidSchema("Field ID is missing for key field in map");
+  }
+  if (!value_field->field_id.has_value()) {
+    return InvalidSchema("Field ID is missing for value field in map");
+  }
+
+  // Add key and value nodes
+  ICEBERG_ASSIGN_OR_RAISE(auto new_key_node, CreateAvroNodeWithFieldIds(
+                                                 original_node->leafAt(0), *key_field));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto new_value_node,
+      CreateAvroNodeWithFieldIds(original_node->leafAt(1), *value_field));
+  new_map_node->addLeaf(new_key_node);
+  new_map_node->addLeaf(new_value_node);
+
+  return new_map_node;
+}
+
+Result<::avro::NodePtr> CreateUnionNodeWithFieldIds(const ::avro::NodePtr& original_node,
+                                                    const MappedField& field) {
+  if (original_node->leaves() != 2) {
+    return InvalidSchema("Union type must have exactly two branches");
+  }
+
+  const auto& branch_0 = original_node->leafAt(0);
+  const auto& branch_1 = original_node->leafAt(1);
+
+  bool branch_0_is_null = (branch_0->type() == ::avro::AVRO_NULL);
+  bool branch_1_is_null = (branch_1->type() == ::avro::AVRO_NULL);
+
+  if (branch_0_is_null && !branch_1_is_null) {
+    // branch_0 is null, branch_1 is not null
+    ICEBERG_ASSIGN_OR_RAISE(auto new_branch_1,
+                            CreateAvroNodeWithFieldIds(branch_1, field));
+    auto new_union_node = std::make_shared<::avro::NodeUnion>();
+    new_union_node->addLeaf(branch_0);  // null branch
+    new_union_node->addLeaf(new_branch_1);
+    return new_union_node;
+  } else if (!branch_0_is_null && branch_1_is_null) {
+    // branch_0 is not null, branch_1 is null
+    ICEBERG_ASSIGN_OR_RAISE(auto new_branch_0,
+                            CreateAvroNodeWithFieldIds(branch_0, field));
+    auto new_union_node = std::make_shared<::avro::NodeUnion>();
+    new_union_node->addLeaf(new_branch_0);
+    new_union_node->addLeaf(branch_1);  // null branch
+    return new_union_node;
+  } else if (branch_0_is_null && branch_1_is_null) {
+    // Both branches are null - this is invalid
+    return InvalidSchema("Union type cannot have two null branches");
+  } else {
+    // Neither branch is null - this is invalid
+    return InvalidSchema("Union type must have exactly one null branch");
+  }
+}
+
+}  // namespace
+
+Result<::avro::NodePtr> CreateAvroNodeWithFieldIds(const ::avro::NodePtr& original_node,
+                                                   const MappedField& mapped_field) {
+  switch (original_node->type()) {
+    case ::avro::AVRO_RECORD:
+      return CreateRecordNodeWithFieldIds(original_node, mapped_field);
+    case ::avro::AVRO_ARRAY:
+      return CreateArrayNodeWithFieldIds(original_node, mapped_field);
+    case ::avro::AVRO_MAP:
+      return CreateMapNodeWithFieldIds(original_node, mapped_field);
+    case ::avro::AVRO_UNION:
+      return CreateUnionNodeWithFieldIds(original_node, mapped_field);
+    case ::avro::AVRO_BOOL:
+    case ::avro::AVRO_INT:
+    case ::avro::AVRO_LONG:
+    case ::avro::AVRO_FLOAT:
+    case ::avro::AVRO_DOUBLE:
+    case ::avro::AVRO_STRING:
+    case ::avro::AVRO_BYTES:
+    case ::avro::AVRO_FIXED:
+      // For primitive types, just return a copy
+      return original_node;
+    case ::avro::AVRO_NULL:
+    case ::avro::AVRO_ENUM:
+    default:
+      return InvalidSchema("Unsupported Avro type for field ID application: {}",
+                           ToString(original_node));
+  }
 }
 
 }  // namespace iceberg::avro

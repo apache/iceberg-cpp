@@ -22,10 +22,15 @@
 #include <avro/Compiler.hh>
 #include <avro/NodeImpl.hh>
 #include <avro/Types.hh>
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
+#include "iceberg/avro/avro_reader.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
+#include "iceberg/json_internal.h"
 #include "iceberg/metadata_columns.h"
+#include "iceberg/name_mapping.h"
 #include "iceberg/schema.h"
 #include "matchers.h"
 
@@ -1056,5 +1061,4 @@ TEST(AvroSchemaProjectionTest, ProjectDecimalIncompatible) {
   ASSERT_THAT(projection_result, IsError(ErrorKind::kInvalidSchema));
   ASSERT_THAT(projection_result, HasErrorMessage("Cannot read"));
 }
-
 }  // namespace iceberg::avro
