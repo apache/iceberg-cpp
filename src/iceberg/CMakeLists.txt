@@ -40,6 +40,7 @@ set(ICEBERG_SOURCES
     statistics_file.cc
     table.cc
     table_metadata.cc
+    table_scan.cc
     transform.cc
     transform_function.cc
     type.cc
@@ -48,7 +49,6 @@ set(ICEBERG_SOURCES
     arrow_c_data_guard_internal.cc
     util/murmurhash3_internal.cc
     util/timepoint.cc
-    util/unreachable.cc
     util/gzip_internal.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
@@ -60,16 +60,24 @@ list(APPEND
      ICEBERG_STATIC_BUILD_INTERFACE_LIBS
      nanoarrow::nanoarrow
      nlohmann_json::nlohmann_json
+     spdlog::spdlog
      ZLIB::ZLIB)
 list(APPEND
      ICEBERG_SHARED_BUILD_INTERFACE_LIBS
      nanoarrow::nanoarrow
      nlohmann_json::nlohmann_json
+     spdlog::spdlog
      ZLIB::ZLIB)
-list(APPEND ICEBERG_STATIC_INSTALL_INTERFACE_LIBS "Iceberg::nanoarrow"
-     "Iceberg::nlohmann_json")
-list(APPEND ICEBERG_SHARED_INSTALL_INTERFACE_LIBS "Iceberg::nanoarrow"
-     "Iceberg::nlohmann_json")
+list(APPEND
+     ICEBERG_STATIC_INSTALL_INTERFACE_LIBS
+     "Iceberg::nanoarrow"
+     "Iceberg::nlohmann_json"
+     "$<IF:$<BOOL:${SPDLOG_VENDORED}>,Iceberg::spdlog,spdlog::spdlog>")
+list(APPEND
+     ICEBERG_SHARED_INSTALL_INTERFACE_LIBS
+     "Iceberg::nanoarrow"
+     "Iceberg::nlohmann_json"
+     "$<IF:$<BOOL:${SPDLOG_VENDORED}>,Iceberg::spdlog,spdlog::spdlog>")
 
 add_iceberg_lib(iceberg
                 SOURCES

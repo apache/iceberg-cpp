@@ -104,6 +104,12 @@ class ICEBERG_EXPORT Table {
   /// \return a vector of history entries
   const std::vector<SnapshotLogEntry>& history() const;
 
+  /// \brief Create a new table scan builder for this table
+  ///
+  /// Once a table scan builder is created, it can be refined to project columns and
+  /// filter data.
+  virtual std::unique_ptr<TableScanBuilder> NewScan() const;
+
   /// \brief Returns a FileIO to read and write table data and metadata files
   const std::shared_ptr<FileIO>& io() const;
 

@@ -29,7 +29,7 @@ class ICEBERG_BUNDLE_EXPORT AvroReader : public Reader {
  public:
   AvroReader() = default;
 
-  ~AvroReader() override = default;
+  ~AvroReader() override;
 
   Status Open(const ReaderOptions& options) final;
 
