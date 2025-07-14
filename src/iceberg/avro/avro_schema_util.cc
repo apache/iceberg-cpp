@@ -792,6 +792,9 @@ Result<::avro::NodePtr> CreateRecordNodeWithFieldIds(const ::avro::NodePtr& orig
       return InvalidSchema(...);
     }
     const std::string& field_name = original_node->nameAt(i);
+    if (i >= original_node->leaves()) {
+      return InvalidSchema(...);
+    }
     ::avro::NodePtr field_node = original_node->leafAt(i);
 
     // TODO(liuxiaoyu): Add support for case sensitivity in name matching.
