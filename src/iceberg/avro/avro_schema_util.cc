@@ -788,6 +788,9 @@ Result<::avro::NodePtr> CreateRecordNodeWithFieldIds(const ::avro::NodePtr& orig
   }
 
   for (size_t i = 0; i < original_node->leaves(); ++i) {
+    if (i >= original_node->names()) {
+      return InvalidSchema(...);
+    }
     const std::string& field_name = original_node->nameAt(i);
     ::avro::NodePtr field_node = original_node->leafAt(i);
 
