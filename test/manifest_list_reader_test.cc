@@ -51,7 +51,7 @@ TEST_F(ManifestListReaderTest, BasicTest) {
       "snap-7412193043800610213-1-2bccd69e-d642-4816-bba0-261cd9bd0d93.avro");
   auto manifest_reader_result = ManifestListReader::MakeReader(path, file_io_);
   ASSERT_EQ(manifest_reader_result.has_value(), true);
-  auto manifest_reader = manifest_reader_result.value();
+  auto manifest_reader = std::move(manifest_reader_result.value());
   auto read_result = manifest_reader->Files();
   ASSERT_EQ(read_result.has_value(), true);
   ASSERT_EQ(read_result.value().size(), 4);

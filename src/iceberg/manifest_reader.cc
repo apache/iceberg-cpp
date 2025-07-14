@@ -27,7 +27,7 @@
 
 namespace iceberg {
 
-Result<std::shared_ptr<ManifestReader>> ManifestReader::MakeReader(
+Result<std::unique_ptr<ManifestReader>> ManifestReader::MakeReader(
     const std::string& manifest_location, std::shared_ptr<FileIO> file_io,
     std::shared_ptr<Schema> partition_schema) {
   auto manifest_entry_schema = ManifestEntry::TypeFromPartitionType(partition_schema);
@@ -39,10 +39,10 @@ Result<std::shared_ptr<ManifestReader>> ManifestReader::MakeReader(
       ReaderFactoryRegistry::Open(
           FileFormatType::kAvro,
           {.path = manifest_location, .io = std::move(file_io), .projection = schema}));
-  return std::make_shared<ManifestReaderImpl>(std::move(reader), std::move(schema));
+  return std::make_unique<ManifestReaderImpl>(std::move(reader), std::move(schema));
 }
 
-Result<std::shared_ptr<ManifestListReader>> ManifestListReader::MakeReader(
+Result<std::unique_ptr<ManifestListReader>> ManifestListReader::MakeReader(
     const std::string& manifest_list_location, std::shared_ptr<FileIO> file_io) {
   std::vector<SchemaField> fields(ManifestFile::Type().fields().begin(),
                                   ManifestFile::Type().fields().end());
@@ -52,7 +52,7 @@ Result<std::shared_ptr<ManifestListReader>> ManifestListReader::MakeReader(
       ReaderFactoryRegistry::Open(FileFormatType::kAvro, {.path = manifest_list_location,
                                                           .io = std::move(file_io),
                                                           .projection = schema}));
-  return std::make_shared<ManifestListReaderImpl>(std::move(reader), std::move(schema));
+  return std::make_unique<ManifestListReaderImpl>(std::move(reader), std::move(schema));
 }
 
 }  // namespace iceberg

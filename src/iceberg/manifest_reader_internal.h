@@ -20,7 +20,7 @@
 #pragma once
 
 /// \file iceberg/internal/manifest_reader_internal.h
-/// Reader implement for manifest files.
+/// Reader implementation for manifest list files and manifest files.
 
 #include "iceberg/manifest_reader.h"
 
