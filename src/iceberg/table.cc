@@ -90,14 +90,7 @@ Result<std::shared_ptr<Snapshot>> Table::current_snapshot() const {
 }
 
 Result<std::shared_ptr<Snapshot>> Table::SnapshotById(int64_t snapshot_id) const {
-  auto iter = std::ranges::find_if(metadata_->snapshots,
-                                   [this, &snapshot_id](const auto& snapshot) {
-                                     return snapshot->snapshot_id == snapshot_id;
-                                   });
-  if (iter == metadata_->snapshots.end()) {
-    return NotFound("Snapshot with ID {} is not found", snapshot_id);
-  }
-  return *iter;
+  return metadata_->SnapshotById(snapshot_id);
 }
 
 const std::vector<std::shared_ptr<Snapshot>>& Table::snapshots() const {

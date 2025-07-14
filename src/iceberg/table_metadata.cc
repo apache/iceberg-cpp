@@ -47,11 +47,16 @@ std::string ToString(const MetadataLogEntry& entry) {
 }
 
 Result<std::shared_ptr<Schema>> TableMetadata::Schema() const {
-  auto iter = std::ranges::find_if(schemas, [this](const auto& schema) {
-    return schema->schema_id() == current_schema_id;
+  return SchemaById(current_schema_id);
+}
+
+Result<std::shared_ptr<Schema>> TableMetadata::SchemaById(
+    const std::optional<int32_t>& schema_id) const {
+  auto iter = std::ranges::find_if(schemas, [schema_id](const auto& schema) {
+    return schema->schema_id() == schema_id;
   });
   if (iter == schemas.end()) {
-    return NotFound("Current schema is not found");
+    return NotFound("Schema with ID {} is not found", schema_id.value_or(-1));
   }
   return *iter;
 }
@@ -77,11 +82,15 @@ Result<std::shared_ptr<SortOrder>> TableMetadata::SortOrder() const {
 }
 
 Result<std::shared_ptr<Snapshot>> TableMetadata::Snapshot() const {
-  auto iter = std::ranges::find_if(snapshots, [this](const auto& snapshot) {
-    return snapshot->snapshot_id == current_snapshot_id;
+  return SnapshotById(current_snapshot_id);
+}
+
+Result<std::shared_ptr<Snapshot>> TableMetadata::SnapshotById(int64_t snapshot_id) const {
+  auto iter = std::ranges::find_if(snapshots, [snapshot_id](const auto& snapshot) {
+    return snapshot->snapshot_id == snapshot_id;
   });
   if (iter == snapshots.end()) {
-    return NotFound("Current snapshot with ID {} is not found", current_snapshot_id);
+    return NotFound("Snapshot with ID {} is not found", snapshot_id);
   }
   return *iter;
 }

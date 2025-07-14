@@ -123,12 +123,17 @@ struct ICEBERG_EXPORT TableMetadata {
 
   /// \brief Get the current schema, return NotFoundError if not found
   Result<std::shared_ptr<Schema>> Schema() const;
+  /// \brief Get the current schema by ID, return NotFoundError if not found
+  Result<std::shared_ptr<iceberg::Schema>> SchemaById(
+      const std::optional<int32_t>& schema_id) const;
   /// \brief Get the current partition spec, return NotFoundError if not found
   Result<std::shared_ptr<PartitionSpec>> PartitionSpec() const;
   /// \brief Get the current sort order, return NotFoundError if not found
   Result<std::shared_ptr<SortOrder>> SortOrder() const;
   /// \brief Get the current snapshot, return NotFoundError if not found
   Result<std::shared_ptr<Snapshot>> Snapshot() const;
+  /// \brief Get the snapshot of this table with the given id
+  Result<std::shared_ptr<iceberg::Snapshot>> SnapshotById(int64_t snapshot_id) const;
 
   friend bool operator==(const TableMetadata& lhs, const TableMetadata& rhs);
 };

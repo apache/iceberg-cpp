@@ -34,8 +34,8 @@
 namespace iceberg {
 
 // implement FileScanTask
-FileScanTask::FileScanTask(std::shared_ptr<DataFile> file)
-    : data_file_(std::move(file)) {}
+FileScanTask::FileScanTask(std::shared_ptr<DataFile> data_file)
+    : data_file_(std::move(data_file)) {}
 
 const std::shared_ptr<DataFile>& FileScanTask::data_file() const { return data_file_; }
 
@@ -94,32 +94,13 @@ Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
     return InvalidArgument("No snapshot ID specified for table {}",
                            table_metadata->table_uuid);
   }
-  auto iter = std::ranges::find_if(
-      table_metadata->snapshots,
-      [id = *snapshot_id](const auto& snapshot) { return snapshot->snapshot_id == id; });
-  if (iter == table_metadata->snapshots.end()) {
-    return NotFound("Snapshot with ID {} is not found", *snapshot_id);
-  }
-  context_.snapshot = *iter;
+  ICEBERG_ASSIGN_OR_RAISE(context_.snapshot, table_metadata->SnapshotById(*snapshot_id));
 
   if (!context_.projected_schema) {
     const auto& snapshot = context_.snapshot;
     auto schema_id =
         snapshot->schema_id ? snapshot->schema_id : table_metadata->current_schema_id;
-    if (!schema_id) {
-      return InvalidArgument("No schema ID found in snapshot {} for table {}",
-                             snapshot->snapshot_id, table_metadata->table_uuid);
-    }
-
-    const auto& schemas = table_metadata->schemas;
-    const auto it = std::ranges::find_if(schemas, [id = *schema_id](const auto& schema) {
-      return schema->schema_id() == id;
-    });
-    if (it == schemas.end()) {
-      return InvalidArgument("Schema {} in snapshot {} is not found",
-                             *snapshot->schema_id, snapshot->snapshot_id);
-    }
-    const auto& schema = *it;
+    ICEBERG_ASSIGN_OR_RAISE(auto schema, table_metadata->SchemaById(schema_id));
 
     if (column_names_.empty()) {
       context_.projected_schema = schema;
@@ -139,6 +120,9 @@ Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
       context_.projected_schema =
           std::make_shared<Schema>(std::move(projected_fields), schema->schema_id());
     }
+  } else if (!column_names_.empty()) {
+    return InvalidArgument(
+        "Cannot specify column names when a projected schema is provided");
   }
 
   return std::make_unique<DataTableScan>(std::move(context_), file_io_);

@@ -45,7 +45,7 @@ class ICEBERG_EXPORT ScanTask {
 /// \brief Task representing a data file and its corresponding delete files.
 class ICEBERG_EXPORT FileScanTask : public ScanTask {
  public:
-  explicit FileScanTask(std::shared_ptr<DataFile> file);
+  explicit FileScanTask(std::shared_ptr<DataFile> data_file);
 
   /// \brief The data file that should be read by this scan task.
   const std::shared_ptr<DataFile>& data_file() const;
