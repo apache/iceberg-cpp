@@ -827,9 +827,7 @@ Result<::avro::NodePtr> CreateRecordNodeWithFieldIds(const ::avro::NodePtr& orig
       attributes.addAttribute(std::string(kFieldIdProp),
                               std::to_string(nested_field->field_id.value()), false);
 
-      if (!attributes.attributes().empty()) {
-        new_record_node->addCustomAttributesForField(attributes);
-      }
+      new_record_node->addCustomAttributesForField(attributes);
 
       // Recursively apply field IDs to nested fields
       ICEBERG_ASSIGN_OR_RAISE(auto new_nested_node,
