@@ -782,11 +782,6 @@ Result<::avro::NodePtr> CreateRecordNodeWithFieldIds(const ::avro::NodePtr& orig
   auto new_record_node = std::make_shared<::avro::NodeRecord>();
   new_record_node->setName(original_node->name());
 
-  if (original_node->leaves() > original_node->names()) {
-    return InvalidSchema("Node has {} leaves but only {} names", original_node->leaves(),
-                         original_node->names());
-  }
-
   for (size_t i = 0; i < original_node->leaves(); ++i) {
     if (i >= original_node->names()) {
       return InvalidSchema(...);
