@@ -55,4 +55,13 @@ Result<std::unique_ptr<ManifestListReader>> ManifestListReader::MakeReader(
   return std::make_unique<ManifestListReaderImpl>(std::move(reader), std::move(schema));
 }
 
+Result<std::unique_ptr<ManifestListReader>> CreateManifestListReader(
+    std::string_view file_path) {
+  return NotImplemented("CreateManifestListReader is not implemented yet.");
+}
+
+Result<std::unique_ptr<ManifestReader>> CreateManifestReader(std::string_view file_path) {
+  return NotImplemented("CreateManifestReader is not implemented yet.");
+}
+
 }  // namespace iceberg

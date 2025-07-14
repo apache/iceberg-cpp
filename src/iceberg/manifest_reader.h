@@ -56,15 +56,11 @@ class ICEBERG_EXPORT ManifestListReader {
 /// \param file_path Path to the manifest list file.
 /// \return A Result containing the reader or an error.
 Result<std::unique_ptr<ManifestListReader>> CreateManifestListReader(
-    std::string_view file_path) {
-  return NotImplemented("CreateManifestListReader is not implemented yet.");
-}
+    std::string_view file_path);
 
 /// \brief Creates a reader for a manifest file.
 /// \param file_path Path to the manifest file.
 /// \return A Result containing the reader or an error.
-Result<std::unique_ptr<ManifestReader>> CreateManifestReader(std::string_view file_path) {
-  return NotImplemented("CreateManifestReader is not implemented yet.");
-}
+Result<std::unique_ptr<ManifestReader>> CreateManifestReader(std::string_view file_path);
 
 }  // namespace iceberg

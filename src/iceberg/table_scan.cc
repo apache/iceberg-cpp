@@ -168,16 +168,16 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
   std::vector<std::shared_ptr<FileScanTask>> tasks;
   for (const auto& manifest_file : manifest_files) {
     ICEBERG_ASSIGN_OR_RAISE(auto manifest_reader,
-                            CreateManifestReader(manifest_file->manifest_path));
+                            CreateManifestReader(manifest_file.manifest_path));
     ICEBERG_ASSIGN_OR_RAISE(auto manifests, manifest_reader->Entries());
 
     // TODO(gty404): filter manifests using partition spec and filter expression
 
     for (auto& manifest_entry : manifests) {
-      const auto& data_file = manifest_entry->data_file;
+      const auto& data_file = manifest_entry.data_file;
       switch (data_file->content) {
         case DataFile::Content::kData:
-          tasks.emplace_back(std::make_shared<FileScanTask>(manifest_entry->data_file));
+          tasks.emplace_back(std::make_shared<FileScanTask>(manifest_entry.data_file));
           break;
         case DataFile::Content::kPositionDeletes:
         case DataFile::Content::kEqualityDeletes:
