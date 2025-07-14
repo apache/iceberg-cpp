@@ -34,6 +34,7 @@ namespace iceberg {
 /// \brief Read manifest entries from a manifest file.
 class ICEBERG_EXPORT ManifestReader {
  public:
+  virtual ~ManifestReader() = default;
   virtual Result<std::vector<ManifestEntry>> Entries() const = 0;
 
   static Result<std::unique_ptr<ManifestReader>> MakeReader(
@@ -44,6 +45,7 @@ class ICEBERG_EXPORT ManifestReader {
 /// \brief Read manifest files from a manifest list file.
 class ICEBERG_EXPORT ManifestListReader {
  public:
+  virtual ~ManifestListReader() = default;
   virtual Result<std::vector<ManifestFile>> Files() const = 0;
 
   static Result<std::unique_ptr<ManifestListReader>> MakeReader(
