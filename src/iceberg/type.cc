@@ -28,6 +28,16 @@
 
 namespace iceberg {
 
+namespace {
+bool StringEqualsCaseInsensitive(std::string_view lhs, std::string_view rhs) {
+  if (lhs.size() != rhs.size()) {
+    return false;
+  }
+  return std::equal(lhs.begin(), lhs.end(), rhs.begin(),
+                    [](char a, char b) { return std::tolower(a) == std::tolower(b); });
+}
+}  // namespace
+
 StructType::StructType(std::vector<SchemaField> fields) : fields_(std::move(fields)) {
   size_t index = 0;
   for (const auto& field : fields_) {
@@ -59,6 +69,7 @@ std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByI
   if (it == field_id_to_index_.end()) return std::nullopt;
   return fields_[it->second];
 }
+
 std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByIndex(
     int32_t index) const {
   if (index < 0 || index >= static_cast<int32_t>(fields_.size())) {
@@ -66,6 +77,7 @@ std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByI
   }
   return fields_[index];
 }
+
 std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByName(
     std::string_view name) const {
   // N.B. duplicate names are not permitted (looking at the Java
@@ -77,6 +89,17 @@ std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByN
   }
   return std::nullopt;
 }
+
+std::optional<std::reference_wrapper<const SchemaField>>
+StructType::GetFieldByNameCaseInsensitive(std::string_view name) const {
+  for (const auto& field : fields_) {
+    if (StringEqualsCaseInsensitive(field.name(), name)) {
+      return std::cref(field);
+    }
+  }
+  return std::nullopt;
+}
+
 bool StructType::Equals(const Type& other) const {
   if (other.type_id() != TypeId::kStruct) {
     return false;
@@ -126,6 +149,15 @@ std::optional<std::reference_wrapper<const SchemaField>> ListType::GetFieldByNam
   }
   return std::nullopt;
 }
+
+std::optional<std::reference_wrapper<const SchemaField>>
+ListType::GetFieldByNameCaseInsensitive(std::string_view name) const {
+  if (StringEqualsCaseInsensitive(element_.name(), name)) {
+    return std::cref(element_);
+  }
+  return std::nullopt;
+}
+
 bool ListType::Equals(const Type& other) const {
   if (other.type_id() != TypeId::kList) {
     return false;
@@ -186,6 +218,17 @@ std::optional<std::reference_wrapper<const SchemaField>> MapType::GetFieldByName
   }
   return std::nullopt;
 }
+
+std::optional<std::reference_wrapper<const SchemaField>>
+MapType::GetFieldByNameCaseInsensitive(std::string_view name) const {
+  if (StringEqualsCaseInsensitive(kKeyName, name)) {
+    return key();
+  } else if (StringEqualsCaseInsensitive(kValueName, name)) {
+    return value();
+  }
+  return std::nullopt;
+}
+
 bool MapType::Equals(const Type& other) const {
   if (other.type_id() != TypeId::kMap) {
     return false;

@@ -318,11 +318,17 @@ TEST(TypeTest, List) {
     ASSERT_THAT(list.GetFieldById(5), ::testing::Optional(field));
     ASSERT_THAT(list.GetFieldByIndex(0), ::testing::Optional(field));
     ASSERT_THAT(list.GetFieldByName("element"), ::testing::Optional(field));
+    ASSERT_THAT(list.GetFieldByNameCaseInsensitive("element"),
+                ::testing::Optional(field));
+    ASSERT_THAT(list.GetFieldByNameCaseInsensitive("ELEMENT"),
+                ::testing::Optional(field));
 
     ASSERT_EQ(std::nullopt, list.GetFieldById(0));
     ASSERT_EQ(std::nullopt, list.GetFieldByIndex(1));
     ASSERT_EQ(std::nullopt, list.GetFieldByIndex(-1));
     ASSERT_EQ(std::nullopt, list.GetFieldByName("foo"));
+    ASSERT_EQ(std::nullopt, list.GetFieldByNameCaseInsensitive("foo"));
+    ASSERT_EQ(std::nullopt, list.GetFieldByNameCaseInsensitive("FOO"));
   }
   ASSERT_THAT(
       []() {
@@ -347,12 +353,15 @@ TEST(TypeTest, Map) {
     ASSERT_THAT(map.GetFieldByIndex(0), ::testing::Optional(key));
     ASSERT_THAT(map.GetFieldByIndex(1), ::testing::Optional(value));
     ASSERT_THAT(map.GetFieldByName("key"), ::testing::Optional(key));
+    ASSERT_THAT(map.GetFieldByNameCaseInsensitive("kEY"), ::testing::Optional(key));
     ASSERT_THAT(map.GetFieldByName("value"), ::testing::Optional(value));
+    ASSERT_THAT(map.GetFieldByName("vALUE"), ::testing::Optional(value));
 
     ASSERT_EQ(std::nullopt, map.GetFieldById(0));
     ASSERT_EQ(std::nullopt, map.GetFieldByIndex(2));
     ASSERT_EQ(std::nullopt, map.GetFieldByIndex(-1));
     ASSERT_EQ(std::nullopt, map.GetFieldByName("element"));
+    ASSERT_EQ(std::nullopt, map.GetFieldByName("elemENt"));
   }
   ASSERT_THAT(
       []() {
@@ -386,12 +395,17 @@ TEST(TypeTest, Struct) {
     ASSERT_THAT(struct_.GetFieldByIndex(0), ::testing::Optional(field1));
     ASSERT_THAT(struct_.GetFieldByIndex(1), ::testing::Optional(field2));
     ASSERT_THAT(struct_.GetFieldByName("foo"), ::testing::Optional(field1));
+    ASSERT_THAT(struct_.GetFieldByName("FOO"), ::testing::Optional(field1));
     ASSERT_THAT(struct_.GetFieldByName("bar"), ::testing::Optional(field2));
+    ASSERT_THAT(struct_.GetFieldByNameCaseInsensitive("bar"),
+                ::testing::Optional(field2));
 
     ASSERT_EQ(std::nullopt, struct_.GetFieldById(0));
     ASSERT_EQ(std::nullopt, struct_.GetFieldByIndex(2));
     ASSERT_EQ(std::nullopt, struct_.GetFieldByIndex(-1));
     ASSERT_EQ(std::nullopt, struct_.GetFieldByName("element"));
+    ASSERT_EQ(std::nullopt, struct_.GetFieldByNameCaseInsensitive("element"));
+    ASSERT_EQ(std::nullopt, struct_.GetFieldByNameCaseInsensitive("ELEMENT"));
   }
   ASSERT_THAT(
       []() {
