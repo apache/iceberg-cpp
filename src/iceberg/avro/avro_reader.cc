@@ -117,16 +117,6 @@ class AvroReader::Impl {
         // Create a new schema with the updated root node
         auto new_schema = ::avro::ValidSchema(new_root_node);
 
-        // Verify that all fields now have IDs after applying the name mapping
-        HasIdVisitor verify_visitor;
-        ICEBERG_RETURN_UNEXPECTED(verify_visitor.Visit(new_schema));
-        if (!verify_visitor.AllHaveIds()) {
-          // TODO(liuxiaoyu): Print detailed error message with missing field IDs
-          // information in future
-          return InvalidSchema(
-              "Not all fields have field IDs after applying name mapping.");
-        }
-
         // Update the file schema to use the new schema with field IDs
         file_schema = new_schema;
       } else {

@@ -784,11 +784,13 @@ Result<::avro::NodePtr> CreateRecordNodeWithFieldIds(const ::avro::NodePtr& orig
 
   for (size_t i = 0; i < original_node->leaves(); ++i) {
     if (i >= original_node->names()) {
-      return InvalidSchema(...);
+      return InvalidSchema("Index {} is out of bounds for names (size: {})", i,
+                           original_node->names());
     }
     const std::string& field_name = original_node->nameAt(i);
     if (i >= original_node->leaves()) {
-      return InvalidSchema(...);
+      return InvalidSchema("Index {} is out of bounds for leaves (size: {})", i,
+                           original_node->leaves());
     }
     ::avro::NodePtr field_node = original_node->leafAt(i);
 
@@ -897,42 +899,29 @@ Result<::avro::NodePtr> CreateMapNodeWithFieldIds(const ::avro::NodePtr& origina
 
   auto new_map_node = std::make_shared<::avro::NodeMap>();
 
-  // Try to find key and value fields from nested mapping
-  const MappedField* key_field = nullptr;
-  const MappedField* value_field = nullptr;
-  if (field.nested_mapping) {
-    auto fields_span = field.nested_mapping->fields();
-    for (const auto& f : fields_span) {
-      if (f.names.find(std::string(kKey)) != f.names.end()) {
-        key_field = &f;
-      } else if (f.names.find(std::string(kValue)) != f.names.end()) {
-        value_field = &f;
-      }
-    }
-  }
+  // For map types, we use fixed field IDs for key and value
+  // Key field gets field ID 0, value field gets field ID 1
+  constexpr int32_t kMapKeyFieldId = 0;
+  constexpr int32_t kMapValueFieldId = 1;
 
-  // Check if both key and value fields are found
-  if (!key_field) {
-    return InvalidSchema("Key field not found in nested mapping for map");
-  }
-  if (!value_field) {
-    return InvalidSchema("Value field not found in nested mapping for map");
-  }
+  // Create key field with fixed field ID
+  MappedField key_field;
+  key_field.field_id = kMapKeyFieldId;
+  key_field.nested_mapping =
+      field.nested_mapping;  // Pass through nested mapping for complex key types
 
-  // Check if field_ids are present
-  if (!key_field->field_id.has_value()) {
-    return InvalidSchema("Field ID is missing for key field in map");
-  }
-  if (!value_field->field_id.has_value()) {
-    return InvalidSchema("Field ID is missing for value field in map");
-  }
+  // Create value field with fixed field ID
+  MappedField value_field;
+  value_field.field_id = kMapValueFieldId;
+  value_field.nested_mapping =
+      field.nested_mapping;  // Pass through nested mapping for complex value types
 
   // Add key and value nodes
-  ICEBERG_ASSIGN_OR_RAISE(auto new_key_node, CreateAvroNodeWithFieldIds(
-                                                 original_node->leafAt(0), *key_field));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto new_key_node, CreateAvroNodeWithFieldIds(original_node->leafAt(0), key_field));
   ICEBERG_ASSIGN_OR_RAISE(
       auto new_value_node,
-      CreateAvroNodeWithFieldIds(original_node->leafAt(1), *value_field));
+      CreateAvroNodeWithFieldIds(original_node->leafAt(1), value_field));
   new_map_node->addLeaf(new_key_node);
   new_map_node->addLeaf(new_value_node);
 
