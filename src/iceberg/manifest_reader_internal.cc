@@ -218,7 +218,7 @@ Result<std::vector<ManifestFile>> ParseManifestListEntry(ArrowSchema* schema,
     }
   }
   return manifest_files;
-}  // namespace iceberg
+}
 
 Result<std::vector<ManifestEntry>> ManifestReaderImpl::Entries() const { return {}; }
 

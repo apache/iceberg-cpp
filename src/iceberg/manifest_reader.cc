@@ -28,40 +28,31 @@
 namespace iceberg {
 
 Result<std::unique_ptr<ManifestReader>> ManifestReader::MakeReader(
-    const std::string& manifest_location, std::shared_ptr<FileIO> file_io,
+    std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
     std::shared_ptr<Schema> partition_schema) {
   auto manifest_entry_schema = ManifestEntry::TypeFromPartitionType(partition_schema);
   auto fields_span = manifest_entry_schema->fields();
   std::vector<SchemaField> fields(fields_span.begin(), fields_span.end());
   auto schema = std::make_shared<Schema>(fields);
   ICEBERG_ASSIGN_OR_RAISE(
-      auto reader,
-      ReaderFactoryRegistry::Open(
-          FileFormatType::kAvro,
-          {.path = manifest_location, .io = std::move(file_io), .projection = schema}));
+      auto reader, ReaderFactoryRegistry::Open(FileFormatType::kAvro,
+                                               {.path = std::string(manifest_location),
+                                                .io = std::move(file_io),
+                                                .projection = schema}));
   return std::make_unique<ManifestReaderImpl>(std::move(reader), std::move(schema));
 }
 
 Result<std::unique_ptr<ManifestListReader>> ManifestListReader::MakeReader(
-    const std::string& manifest_list_location, std::shared_ptr<FileIO> file_io) {
+    std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io) {
   std::vector<SchemaField> fields(ManifestFile::Type().fields().begin(),
                                   ManifestFile::Type().fields().end());
   auto schema = std::make_shared<Schema>(fields);
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto reader,
-      ReaderFactoryRegistry::Open(FileFormatType::kAvro, {.path = manifest_list_location,
-                                                          .io = std::move(file_io),
-                                                          .projection = schema}));
+  ICEBERG_ASSIGN_OR_RAISE(auto reader, ReaderFactoryRegistry::Open(
+                                           FileFormatType::kAvro,
+                                           {.path = std::string(manifest_list_location),
+                                            .io = std::move(file_io),
+                                            .projection = schema}));
   return std::make_unique<ManifestListReaderImpl>(std::move(reader), std::move(schema));
-}
-
-Result<std::unique_ptr<ManifestListReader>> CreateManifestListReader(
-    std::string_view file_path) {
-  return NotImplemented("CreateManifestListReader is not implemented yet.");
-}
-
-Result<std::unique_ptr<ManifestReader>> CreateManifestReader(std::string_view file_path) {
-  return NotImplemented("CreateManifestReader is not implemented yet.");
 }
 
 }  // namespace iceberg

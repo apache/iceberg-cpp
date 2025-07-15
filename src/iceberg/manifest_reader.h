@@ -37,8 +37,12 @@ class ICEBERG_EXPORT ManifestReader {
   virtual ~ManifestReader() = default;
   virtual Result<std::vector<ManifestEntry>> Entries() const = 0;
 
+  /// \brief Creates a reader for a manifest file.
+  /// \param manifest_location Path to the manifest file.
+  /// \param file_io File IO implementation to use.
+  /// \return A Result containing the reader or an error.
   static Result<std::unique_ptr<ManifestReader>> MakeReader(
-      const std::string& manifest_location, std::shared_ptr<FileIO> file_io,
+      std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
       std::shared_ptr<Schema> partition_schema);
 };
 
@@ -48,19 +52,12 @@ class ICEBERG_EXPORT ManifestListReader {
   virtual ~ManifestListReader() = default;
   virtual Result<std::vector<ManifestFile>> Files() const = 0;
 
+  /// \brief Creates a reader for the manifest list.
+  /// \param manifest_list_location Path to the manifest list file.
+  /// \param file_io File IO implementation to use.
+  /// \return A Result containing the reader or an error.
   static Result<std::unique_ptr<ManifestListReader>> MakeReader(
-      const std::string& manifest_list_location, std::shared_ptr<FileIO> file_io);
+      std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io);
 };
-
-/// \brief Creates a reader for the manifest list.
-/// \param file_path Path to the manifest list file.
-/// \return A Result containing the reader or an error.
-Result<std::unique_ptr<ManifestListReader>> CreateManifestListReader(
-    std::string_view file_path);
-
-/// \brief Creates a reader for a manifest file.
-/// \param file_path Path to the manifest file.
-/// \return A Result containing the reader or an error.
-Result<std::unique_ptr<ManifestReader>> CreateManifestReader(std::string_view file_path);
 
 }  // namespace iceberg
