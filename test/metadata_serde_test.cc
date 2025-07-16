@@ -106,11 +106,20 @@ TEST_F(MetadataSerdeTest, DeserializeV2Valid) {
                              /*optional=*/false);
   schema_fields.emplace_back(/*field_id=*/3, "z", iceberg::int64(),
                              /*optional=*/false);
-  auto expected_schema =
-      std::make_shared<Schema>(std::move(schema_fields), /*schema_id=*/1);
+  auto expected_schema = std::make_shared<Schema>(schema_fields, /*schema_id=*/1);
   auto schema = metadata->Schema();
   ASSERT_TRUE(schema.has_value());
   EXPECT_EQ(*(schema.value().get()), *expected_schema);
+
+  auto schema_v1 = metadata->SchemaById(1);
+  ASSERT_TRUE(schema_v1.has_value());
+  EXPECT_EQ(*(schema_v1.value().get()), *expected_schema);
+
+  auto expected_schema_v0 = std::make_shared<Schema>(
+      std::vector<SchemaField>{schema_fields.at(0)}, /*schema_id=*/0);
+  auto schema_v0 = metadata->SchemaById(0);
+  ASSERT_TRUE(schema_v0.has_value());
+  EXPECT_EQ(*(schema_v0.value().get()), *expected_schema_v0);
 
   // Compare partition spec
   EXPECT_EQ(metadata->default_spec_id, 0);
@@ -164,6 +173,13 @@ TEST_F(MetadataSerdeTest, DeserializeV2Valid) {
   for (size_t i = 0; i < expected_snapshots.size(); ++i) {
     EXPECT_EQ(*metadata->snapshots[i], expected_snapshots[i]);
   }
+  auto snapshot_v0 = metadata->SnapshotById(3051729675574597004);
+  ASSERT_TRUE(snapshot_v0.has_value());
+  EXPECT_EQ(*snapshot_v0.value(), expected_snapshots[0]);
+
+  auto snapshot_v1 = metadata->SnapshotById(3055729675574597004);
+  ASSERT_TRUE(snapshot_v1.has_value());
+  EXPECT_EQ(*snapshot_v1.value(), expected_snapshots[1]);
 
   // Compare snapshot logs
   std::vector<SnapshotLogEntry> expected_snapshot_log{
