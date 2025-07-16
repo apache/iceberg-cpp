@@ -238,7 +238,7 @@ function(resolve_nanoarrow_dependency)
 
   fetchcontent_declare(nanoarrow
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       URL "https://dlcdn.apache.org/arrow/apache-arrow-nanoarrow-0.6.0/apache-arrow-nanoarrow-0.6.0.tar.gz"
+                       URL "https://dlcdn.apache.org/arrow/apache-arrow-nanoarrow-0.7.0/apache-arrow-nanoarrow-0.7.0.tar.gz"
   )
   fetchcontent_makeavailable(nanoarrow)
 
