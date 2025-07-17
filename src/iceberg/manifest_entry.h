@@ -261,7 +261,7 @@ struct ICEBERG_EXPORT DataFile {
       SchemaField::MakeOptional(145, "content_size_in_bytes", iceberg::int64(),
                                 "The length of referenced content stored in the file");
 
-  bool operator==(const DataFile& other) const;
+  bool operator==(const DataFile& other) const = default;
 
   static std::shared_ptr<StructType> Type(std::shared_ptr<StructType> partition_type);
 };

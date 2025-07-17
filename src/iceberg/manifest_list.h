@@ -64,7 +64,7 @@ struct ICEBERG_EXPORT PartitionFieldSummary {
   inline static const SchemaField kUpperBound = SchemaField::MakeOptional(
       511, "upper_bound", iceberg::binary(), "Partition upper bound for all files");
 
-  bool operator==(const PartitionFieldSummary& other) const;
+  bool operator==(const PartitionFieldSummary& other) const = default;
 
   static const StructType& Type();
 };
@@ -190,7 +190,7 @@ struct ICEBERG_EXPORT ManifestFile {
       520, "first_row_id", iceberg::int64(),
       "Starting row ID to assign to new rows in ADDED data files");
 
-  bool operator==(const ManifestFile& other) const;
+  bool operator==(const ManifestFile& other) const = default;
 
   static const StructType& Type();
 };

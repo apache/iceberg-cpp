@@ -23,29 +23,6 @@
 
 namespace iceberg {
 
-bool PartitionFieldSummary::operator==(
-    const iceberg::PartitionFieldSummary& other) const {
-  return contains_null == other.contains_null && contains_nan == other.contains_nan &&
-         lower_bound == other.lower_bound && upper_bound == other.upper_bound;
-}
-
-bool ManifestFile::operator==(const iceberg::ManifestFile& other) const {
-  return manifest_path == other.manifest_path &&
-         manifest_length == other.manifest_length &&
-         partition_spec_id == other.partition_spec_id && content == other.content &&
-         sequence_number == other.sequence_number &&
-         min_sequence_number == other.min_sequence_number &&
-         added_snapshot_id == other.added_snapshot_id &&
-         added_files_count == other.added_files_count &&
-         existing_files_count == other.existing_files_count &&
-         deleted_files_count == other.deleted_files_count &&
-         added_rows_count == other.added_rows_count &&
-         existing_rows_count == other.existing_rows_count &&
-         deleted_rows_count == other.deleted_rows_count &&
-         partitions == other.partitions && key_metadata == other.key_metadata &&
-         first_row_id == other.first_row_id;
-}
-
 const StructType& PartitionFieldSummary::Type() {
   static const StructType kInstance{{
       PartitionFieldSummary::kContainsNull,
