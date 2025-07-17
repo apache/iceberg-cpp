@@ -44,11 +44,6 @@ target_sources(schema_test
 target_link_libraries(schema_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
 add_test(NAME schema_test COMMAND schema_test)
 
-add_executable(catalog_test)
-target_sources(catalog_test PRIVATE in_memory_catalog_test.cc)
-target_link_libraries(catalog_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
-add_test(NAME catalog_test COMMAND catalog_test)
-
 add_executable(table_test)
 target_include_directories(table_test PRIVATE "${CMAKE_BINARY_DIR}")
 target_sources(table_test PRIVATE test_common.cc json_internal_test.cc table_test.cc
@@ -95,4 +90,11 @@ if(ICEBERG_BUILD_BUNDLE)
   target_link_libraries(arrow_test PRIVATE iceberg_bundle_static GTest::gtest_main
                                            GTest::gmock)
   add_test(NAME arrow_test COMMAND arrow_test)
+
+  add_executable(catalog_test)
+  target_include_directories(catalog_test PRIVATE "${CMAKE_BINARY_DIR}")
+  target_sources(catalog_test PRIVATE test_common.cc in_memory_catalog_test.cc)
+  target_link_libraries(catalog_test PRIVATE iceberg_bundle_static GTest::gtest_main
+                                             GTest::gmock)
+  add_test(NAME catalog_test COMMAND catalog_test)
 endif()

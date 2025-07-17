@@ -19,9 +19,12 @@
 
 #pragma once
 
+#include <mutex>
+
 #include "iceberg/catalog.h"
 
 namespace iceberg {
+
 /**
  * @brief An in-memory implementation of the Iceberg Catalog interface.
  *
@@ -32,7 +35,9 @@ namespace iceberg {
  * @note This class is **not** suitable for production use.
  *       All data will be lost when the process exits.
  */
-class ICEBERG_EXPORT InMemoryCatalog : public Catalog {
+class ICEBERG_EXPORT InMemoryCatalog
+    : public Catalog,
+      public std::enable_shared_from_this<InMemoryCatalog> {
  public:
   InMemoryCatalog(std::string const& name, std::shared_ptr<FileIO> const& file_io,
                   std::string const& warehouse_location,
@@ -79,8 +84,7 @@ class ICEBERG_EXPORT InMemoryCatalog : public Catalog {
 
   Status DropTable(const TableIdentifier& identifier, bool purge) override;
 
-  Result<std::shared_ptr<Table>> LoadTable(
-      const TableIdentifier& identifier) const override;
+  Result<std::unique_ptr<Table>> LoadTable(const TableIdentifier& identifier) override;
 
   Result<std::shared_ptr<Table>> RegisterTable(
       const TableIdentifier& identifier,
@@ -90,7 +94,12 @@ class ICEBERG_EXPORT InMemoryCatalog : public Catalog {
                                                     const Schema& schema) const override;
 
  private:
-  std::unique_ptr<class InMemoryCatalogImpl> impl_;
+  std::string catalog_name_;
+  std::unordered_map<std::string, std::string> properties_;
+  std::shared_ptr<FileIO> file_io_;
+  std::string warehouse_location_;
+  std::unique_ptr<class InMemoryNamespace> root_namespace_;
+  mutable std::recursive_mutex mutex_;
 };
 
 }  // namespace iceberg

@@ -166,8 +166,7 @@ class ICEBERG_EXPORT Catalog {
   /// \param identifier a table identifier
   /// \return instance of Table implementation referred to by identifier or
   /// ErrorKind::kNoSuchTable if the table does not exist
-  virtual Result<std::shared_ptr<Table>> LoadTable(
-      const TableIdentifier& identifier) const = 0;
+  virtual Result<std::unique_ptr<Table>> LoadTable(const TableIdentifier& identifier) = 0;
 
   /// \brief Register a table with the catalog if it does not exist
   ///
