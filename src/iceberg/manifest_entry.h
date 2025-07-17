@@ -68,13 +68,13 @@ struct ICEBERG_EXPORT DataFile {
   /// Field id: 134
   /// Type of content stored by the data file: data, equality deletes, or position
   /// deletes (all v1 files are data files)
-  Content content;
+  Content content = Content::kData;
   /// Field id: 100
   /// Full URI for the file with FS scheme
   std::string file_path;
   /// Field id: 101
   /// File format type, avro, orc, parquet, or puffin
-  FileFormatType file_format;
+  FileFormatType file_format = FileFormatType::kUnknown;
   /// Field id: 102
   /// Partition data tuple, schema based on the partition spec output using partition
   /// field ids
@@ -146,7 +146,7 @@ struct ICEBERG_EXPORT DataFile {
   std::optional<int32_t> sort_order_id;
   /// This field is not included in spec, so it is not serialized into the manifest file.
   /// It is just store in memory representation used in process.
-  int32_t partition_spec_id;
+  int32_t partition_spec_id = 0;
   /// Field id: 142
   /// The _row_id for the first row in the data file.
   ///
@@ -261,6 +261,8 @@ struct ICEBERG_EXPORT DataFile {
       SchemaField::MakeOptional(145, "content_size_in_bytes", iceberg::int64(),
                                 "The length of referenced content stored in the file");
 
+  bool operator==(const DataFile& other) const;
+
   static std::shared_ptr<StructType> Type(std::shared_ptr<StructType> partition_type);
 };
 
@@ -272,7 +274,7 @@ struct ICEBERG_EXPORT ManifestEntry {
   /// Field id: 0
   /// Used to track additions and deletions. Deletes are informational only and not used
   /// in scans.
-  ManifestStatus status;
+  ManifestStatus status = ManifestStatus::kAdded;
   /// Field id: 1
   /// Snapshot id where the file was added, or deleted if status is 2. Inherited when
   /// null.
@@ -296,6 +298,8 @@ struct ICEBERG_EXPORT ManifestEntry {
       SchemaField::MakeOptional(3, "sequence_number", iceberg::int64());
   inline static const SchemaField kFileSequenceNumber =
       SchemaField::MakeOptional(4, "file_sequence_number", iceberg::int64());
+
+  bool operator==(const ManifestEntry& other) const;
 
   static std::shared_ptr<StructType> TypeFromPartitionType(
       std::shared_ptr<StructType> partition_type);
