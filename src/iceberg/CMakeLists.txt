@@ -55,24 +55,24 @@ set(ICEBERG_SHARED_INSTALL_INTERFACE_LIBS)
 
 list(APPEND
      ICEBERG_STATIC_BUILD_INTERFACE_LIBS
-     nanoarrow::nanoarrow
+     nanoarrow::nanoarrow_static
      nlohmann_json::nlohmann_json
      spdlog::spdlog
      ZLIB::ZLIB)
 list(APPEND
      ICEBERG_SHARED_BUILD_INTERFACE_LIBS
-     nanoarrow::nanoarrow
+     nanoarrow::nanoarrow_shared
      nlohmann_json::nlohmann_json
      spdlog::spdlog
      ZLIB::ZLIB)
 list(APPEND
      ICEBERG_STATIC_INSTALL_INTERFACE_LIBS
-     "Iceberg::nanoarrow"
+     "Iceberg::nanoarrow_static"
      "Iceberg::nlohmann_json"
      "$<IF:$<BOOL:${SPDLOG_VENDORED}>,Iceberg::spdlog,spdlog::spdlog>")
 list(APPEND
      ICEBERG_SHARED_INSTALL_INTERFACE_LIBS
-     "Iceberg::nanoarrow"
+     "Iceberg::nanoarrow_shared"
      "Iceberg::nlohmann_json"
      "$<IF:$<BOOL:${SPDLOG_VENDORED}>,Iceberg::spdlog,spdlog::spdlog>")
 

@@ -238,13 +238,14 @@ function(resolve_nanoarrow_dependency)
 
   fetchcontent_declare(nanoarrow
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       URL "https://dlcdn.apache.org/arrow/apache-arrow-nanoarrow-0.6.0/apache-arrow-nanoarrow-0.6.0.tar.gz"
+                       URL "https://dlcdn.apache.org/arrow/apache-arrow-nanoarrow-0.7.0/apache-arrow-nanoarrow-0.7.0.tar.gz"
   )
   fetchcontent_makeavailable(nanoarrow)
 
-  set_target_properties(nanoarrow PROPERTIES OUTPUT_NAME "iceberg_vendored_nanoarrow"
-                                             POSITION_INDEPENDENT_CODE ON)
-  install(TARGETS nanoarrow
+  set_target_properties(nanoarrow_static
+                        PROPERTIES OUTPUT_NAME "iceberg_vendored_nanoarrow"
+                                   POSITION_INDEPENDENT_CODE ON)
+  install(TARGETS nanoarrow_static
           EXPORT iceberg_targets
           RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
           ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
