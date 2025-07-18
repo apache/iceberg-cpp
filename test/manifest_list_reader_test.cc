@@ -21,7 +21,7 @@
 #include <avro/GenericDatum.hh>
 #include <gtest/gtest.h>
 
-#include "iceberg/arrow/arrow_fs_file_io.h"
+#include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/avro/avro_reader.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/manifest_reader.h"
