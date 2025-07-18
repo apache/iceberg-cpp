@@ -23,7 +23,7 @@
 #include <arrow/util/compression.h>
 #include <gtest/gtest.h>
 
-#include "iceberg/arrow/arrow_fs_file_io.h"
+#include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/file_io.h"
 #include "iceberg/util/gzip_internal.h"
 #include "matchers.h"

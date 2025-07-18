@@ -17,11 +17,13 @@
  * under the License.
  */
 
-#include "iceberg/arrow/arrow_fs_file_io.h"
+#include <chrono>
 
 #include <arrow/filesystem/localfs.h>
+#include <arrow/filesystem/mockfs.h>
 
 #include "iceberg/arrow/arrow_error_transform_internal.h"
+#include "iceberg/arrow/arrow_fs_file_io_internal.h"
 
 namespace iceberg::arrow {
 
@@ -65,6 +67,15 @@ Status ArrowFileSystemFileIO::WriteFile(const std::string& file_location,
 Status ArrowFileSystemFileIO::DeleteFile(const std::string& file_location) {
   ICEBERG_ARROW_RETURN_NOT_OK(arrow_fs_->DeleteFile(file_location));
   return {};
+}
+
+std::unique_ptr<::arrow::fs::FileSystem> ArrowFileSystemFileIO::MakeMockFileIO() {
+  return std::make_unique<::arrow::fs::internal::MockFileSystem>(
+      std::chrono::system_clock::now());
+}
+
+std::unique_ptr<::arrow::fs::FileSystem> ArrowFileSystemFileIO::MakeLocalFileIO() {
+  return std::make_unique<::arrow::fs::LocalFileSystem>();
 }
 
 }  // namespace iceberg::arrow

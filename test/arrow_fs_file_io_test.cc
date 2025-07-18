@@ -17,11 +17,10 @@
  * under the License.
  */
 
-#include "iceberg/arrow/arrow_fs_file_io.h"
-
 #include <arrow/filesystem/localfs.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "matchers.h"
 #include "temp_file_test_base.h"
 
