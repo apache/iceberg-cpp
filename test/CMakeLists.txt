@@ -30,8 +30,7 @@ configure_file("${CMAKE_SOURCE_DIR}/test/test_config.h.in"
 
 add_executable(schema_test)
 target_sources(schema_test
-               PRIVATE name_mapping_test.cc
-                       schema_test.cc
+               PRIVATE schema_test.cc
                        schema_field_test.cc
                        type_test.cc
                        transform_test.cc
@@ -83,7 +82,8 @@ if(ICEBERG_BUILD_BUNDLE)
                          avro_schema_test.cc
                          avro_stream_test.cc
                          manifest_list_reader_test.cc
-                         test_common.cc)
+                         test_common.cc
+                         name_mapping_test.cc)
   target_link_libraries(avro_test PRIVATE iceberg_bundle_static GTest::gtest_main
                                           GTest::gmock)
   target_include_directories(avro_test PRIVATE "${CMAKE_BINARY_DIR}")
