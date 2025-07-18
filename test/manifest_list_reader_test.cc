@@ -42,7 +42,7 @@ class ManifestListReaderTest : public TempFileTestBase {
     file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(local_fs_);
   }
 
-  std::vector<ManifestFile> prepare_test_manifest_list() {
+  std::vector<ManifestFile> PrepareTestManifestList() {
     std::vector<ManifestFile> manifest_files;
     std::string test_dir_prefix = "/tmp/db/db/iceberg_test/metadata/";
     std::vector<std::string> paths = {"2bccd69e-d642-4816-bba0-261cd9bd0d93-m0.avro",
@@ -96,7 +96,7 @@ TEST_F(ManifestListReaderTest, BasicTest) {
   ASSERT_EQ(read_result.has_value(), true);
   ASSERT_EQ(read_result.value().size(), 4);
 
-  auto expected_manifest_list = prepare_test_manifest_list();
+  auto expected_manifest_list = PrepareTestManifestList();
   ASSERT_EQ(read_result.value(), expected_manifest_list);
 }
 

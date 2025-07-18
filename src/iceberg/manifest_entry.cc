@@ -27,7 +27,7 @@
 
 namespace iceberg {
 
-bool ManifestEntry::operator==(const iceberg::ManifestEntry& other) const {
+bool ManifestEntry::operator==(const ManifestEntry& other) const {
   return status == other.status && snapshot_id == other.snapshot_id &&
              sequence_number == other.sequence_number &&
              file_sequence_number == other.file_sequence_number &&

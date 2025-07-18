@@ -36,7 +36,6 @@ enum class ICEBERG_EXPORT FileFormatType {
   kAvro,
   kOrc,
   kPuffin,
-  kUnknown = 99
 };
 
 /// \brief Convert a FileFormatType to a string

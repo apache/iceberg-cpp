@@ -179,9 +179,7 @@ std::strong_ordering CompareFloat(T lhs, T rhs) {
   return lhs_is_negative <=> rhs_is_negative;
 }
 
-bool Literal::operator==(const iceberg::Literal& other) const {
-  return (*this <=> other) == 0;
-}
+bool Literal::operator==(const Literal& other) const { return (*this <=> other) == 0; }
 
 // Three-way comparison operator
 std::partial_ordering Literal::operator<=>(const Literal& other) const {

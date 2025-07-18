@@ -74,7 +74,7 @@ struct ICEBERG_EXPORT DataFile {
   std::string file_path;
   /// Field id: 101
   /// File format type, avro, orc, parquet, or puffin
-  FileFormatType file_format = FileFormatType::kUnknown;
+  FileFormatType file_format = FileFormatType::kParquet;
   /// Field id: 102
   /// Partition data tuple, schema based on the partition spec output using partition
   /// field ids
