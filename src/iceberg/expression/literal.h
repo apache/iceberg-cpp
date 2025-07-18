@@ -105,6 +105,8 @@ class ICEBERG_EXPORT Literal {
   /// was not valid
   Result<Literal> CastTo(const std::shared_ptr<PrimitiveType>& target_type) const;
 
+  bool operator==(const Literal& other) const;
+
   /// \brief Compare two PrimitiveLiterals. Both literals must have the same type
   /// and should not be AboveMax or BelowMin.
   std::partial_ordering operator<=>(const Literal& other) const;

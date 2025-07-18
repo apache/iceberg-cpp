@@ -42,6 +42,46 @@ class ManifestListReaderTest : public TempFileTestBase {
     file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(local_fs_);
   }
 
+  std::vector<ManifestFile> PrepareTestManifestList() {
+    std::vector<ManifestFile> manifest_files;
+    std::string test_dir_prefix = "/tmp/db/db/iceberg_test/metadata/";
+    std::vector<std::string> paths = {"2bccd69e-d642-4816-bba0-261cd9bd0d93-m0.avro",
+                                      "9b6ffacd-ef10-4abf-a89c-01c733696796-m0.avro",
+                                      "2541e6b5-4923-4bd5-886d-72c6f7228400-m0.avro",
+                                      "3118c801-d2e0-4df6-8c7a-7d4eaade32f8-m0.avro"};
+    std::vector<int64_t> file_size = {7433, 7431, 7433, 7431};
+    std::vector<int64_t> snapshot_id = {7412193043800610213, 5485972788975780755,
+                                        1679468743751242972, 1579605567338877265};
+    std::vector<std::vector<uint8_t>> bounds = {{'x', ';', 0x07, 0x00},
+                                                {'(', 0x19, 0x07, 0x00},
+                                                {0xd0, 0xd4, 0x06, 0x00},
+                                                {0xb8, 0xd4, 0x06, 0x00}};
+    for (int i = 0; i < 4; ++i) {
+      ManifestFile manifest_file;
+      manifest_file.manifest_path = test_dir_prefix + paths[i];
+      manifest_file.manifest_length = file_size[i];
+      manifest_file.partition_spec_id = 0;
+      manifest_file.content = ManifestFile::Content::kData;
+      manifest_file.sequence_number = 4 - i;
+      manifest_file.min_sequence_number = 4 - i;
+      manifest_file.added_snapshot_id = snapshot_id[i];
+      manifest_file.added_files_count = 1;
+      manifest_file.existing_files_count = 0;
+      manifest_file.deleted_files_count = 0;
+      manifest_file.added_rows_count = 1;
+      manifest_file.existing_rows_count = 0;
+      manifest_file.deleted_rows_count = 0;
+      PartitionFieldSummary partition;
+      partition.contains_null = false;
+      partition.contains_nan = false;
+      partition.lower_bound = bounds[i];
+      partition.upper_bound = bounds[i];
+      manifest_file.partitions.emplace_back(partition);
+      manifest_files.emplace_back(manifest_file);
+    }
+    return manifest_files;
+  }
+
   std::shared_ptr<::arrow::fs::LocalFileSystem> local_fs_;
   std::shared_ptr<FileIO> file_io_;
 };
@@ -55,74 +95,9 @@ TEST_F(ManifestListReaderTest, BasicTest) {
   auto read_result = manifest_reader->Files();
   ASSERT_EQ(read_result.has_value(), true);
   ASSERT_EQ(read_result.value().size(), 4);
-  std::string test_dir_prefix = "/tmp/db/db/iceberg_test/metadata/";
-  for (const auto& file : read_result.value()) {
-    auto manifest_path = file.manifest_path.substr(test_dir_prefix.size());
-    if (manifest_path == "2bccd69e-d642-4816-bba0-261cd9bd0d93-m0.avro") {
-      ASSERT_EQ(file.added_snapshot_id, 7412193043800610213);
-      ASSERT_EQ(file.manifest_length, 7433);
-      ASSERT_EQ(file.sequence_number, 4);
-      ASSERT_EQ(file.min_sequence_number, 4);
-      ASSERT_EQ(file.partitions.size(), 1);
-      const auto& partition = file.partitions[0];
-      ASSERT_EQ(partition.contains_null, false);
-      ASSERT_EQ(partition.contains_nan.value(), false);
-      ASSERT_EQ(partition.lower_bound.value(),
-                std::vector<uint8_t>({'x', ';', 0x07, 0x00}));
-      ASSERT_EQ(partition.upper_bound.value(),
-                std::vector<uint8_t>({'x', ';', 0x07, 0x00}));
-    } else if (manifest_path == "9b6ffacd-ef10-4abf-a89c-01c733696796-m0.avro") {
-      ASSERT_EQ(file.added_snapshot_id, 5485972788975780755);
-      ASSERT_EQ(file.manifest_length, 7431);
-      ASSERT_EQ(file.sequence_number, 3);
-      ASSERT_EQ(file.min_sequence_number, 3);
-      ASSERT_EQ(file.partitions.size(), 1);
-      const auto& partition = file.partitions[0];
-      ASSERT_EQ(partition.contains_null, false);
-      ASSERT_EQ(partition.contains_nan.value(), false);
-      ASSERT_EQ(partition.lower_bound.value(),
-                std::vector<uint8_t>({'(', 0x19, 0x07, 0x00}));
-      ASSERT_EQ(partition.upper_bound.value(),
-                std::vector<uint8_t>({'(', 0x19, 0x07, 0x00}));
-    } else if (manifest_path == "2541e6b5-4923-4bd5-886d-72c6f7228400-m0.avro") {
-      ASSERT_EQ(file.added_snapshot_id, 1679468743751242972);
-      ASSERT_EQ(file.manifest_length, 7433);
-      ASSERT_EQ(file.sequence_number, 2);
-      ASSERT_EQ(file.min_sequence_number, 2);
-      ASSERT_EQ(file.partitions.size(), 1);
-      const auto& partition = file.partitions[0];
-      ASSERT_EQ(partition.contains_null, false);
-      ASSERT_EQ(partition.contains_nan.value(), false);
-      ASSERT_EQ(partition.lower_bound.value(),
-                std::vector<uint8_t>({0xd0, 0xd4, 0x06, 0x00}));
-      ASSERT_EQ(partition.upper_bound.value(),
-                std::vector<uint8_t>({0xd0, 0xd4, 0x06, 0x00}));
-    } else if (manifest_path == "3118c801-d2e0-4df6-8c7a-7d4eaade32f8-m0.avro") {
-      ASSERT_EQ(file.added_snapshot_id, 1579605567338877265);
-      ASSERT_EQ(file.manifest_length, 7431);
-      ASSERT_EQ(file.sequence_number, 1);
-      ASSERT_EQ(file.min_sequence_number, 1);
-      ASSERT_EQ(file.partitions.size(), 1);
-      const auto& partition = file.partitions[0];
-      ASSERT_EQ(partition.contains_null, false);
-      ASSERT_EQ(partition.contains_nan.value(), false);
-      ASSERT_EQ(partition.lower_bound.value(),
-                std::vector<uint8_t>({0xb8, 0xd4, 0x06, 0x00}));
-      ASSERT_EQ(partition.upper_bound.value(),
-                std::vector<uint8_t>({0xb8, 0xd4, 0x06, 0x00}));
-    } else {
-      ASSERT_TRUE(false) << "Unexpected manifest file: " << manifest_path;
-    }
-    ASSERT_EQ(file.partition_spec_id, 0);
-    ASSERT_EQ(file.content, ManifestFile::Content::kData);
-    ASSERT_EQ(file.added_files_count, 1);
-    ASSERT_EQ(file.existing_files_count, 0);
-    ASSERT_EQ(file.deleted_files_count, 0);
-    ASSERT_EQ(file.added_rows_count, 1);
-    ASSERT_EQ(file.existing_rows_count, 0);
-    ASSERT_EQ(file.deleted_rows_count, 0);
-    ASSERT_EQ(file.key_metadata.empty(), true);
-  }
+
+  auto expected_manifest_list = PrepareTestManifestList();
+  ASSERT_EQ(read_result.value(), expected_manifest_list);
 }
 
 }  // namespace iceberg

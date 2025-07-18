@@ -30,6 +30,8 @@
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/schema_field.h"
+#include "iceberg/snapshot.h"
+#include "iceberg/table_metadata.h"
 #include "iceberg/type.h"
 
 namespace iceberg {
@@ -40,7 +42,7 @@ namespace iceberg {
 struct ICEBERG_EXPORT PartitionFieldSummary {
   /// Field id: 509
   /// Whether the manifest contains at least one partition with a null value for the field
-  bool contains_null;
+  bool contains_null = true;
   /// Field id: 518
   /// Whether the manifest contains at least one partition with a NaN value for the field
   std::optional<bool> contains_nan;
@@ -64,6 +66,8 @@ struct ICEBERG_EXPORT PartitionFieldSummary {
   inline static const SchemaField kUpperBound = SchemaField::MakeOptional(
       511, "upper_bound", iceberg::binary(), "Partition upper bound for all files");
 
+  bool operator==(const PartitionFieldSummary& other) const = default;
+
   static const StructType& Type();
 };
 
@@ -83,26 +87,26 @@ struct ICEBERG_EXPORT ManifestFile {
   std::string manifest_path;
   /// Field id: 501
   /// Length of the manifest file in bytes
-  int64_t manifest_length;
+  int64_t manifest_length = 0;
   /// Field id: 502
   /// ID of a partition spec used to write the manifest; must be listed in table metadata
   /// partition-specs
-  int32_t partition_spec_id;
+  int32_t partition_spec_id = 0;
   /// Field id: 517
   /// The type of files tracked by the manifest, either data or delete files; 0 for all v1
   /// manifests
-  Content content;
+  Content content = Content::kData;
   /// Field id: 515
   /// The sequence number when the manifest was added to the table; use 0 when reading v1
   /// manifest lists
-  int64_t sequence_number;
+  int64_t sequence_number = TableMetadata::kInitialSequenceNumber;
   /// Field id: 516
   /// The minimum data sequence number of all live data or delete files in the manifest;
   /// use 0 when reading v1 manifest lists
-  int64_t min_sequence_number;
+  int64_t min_sequence_number = TableMetadata::kInitialSequenceNumber;
   /// Field id: 503
   /// ID of the snapshot where the manifest file was added
-  int64_t added_snapshot_id;
+  int64_t added_snapshot_id = Snapshot::kInvalidSnapshotId;
   /// Field id: 504
   /// Number of entries in the manifest that have status ADDED (1), when null this is
   /// assumed to be non-zero
@@ -137,7 +141,7 @@ struct ICEBERG_EXPORT ManifestFile {
   std::vector<uint8_t> key_metadata;
   /// Field id: 520
   /// The starting _row_id to assign to rows added by ADDED data files
-  int64_t first_row_id;
+  std::optional<int64_t> first_row_id;
 
   /// \brief Checks if this manifest file contains entries with ADDED status.
   bool has_added_files() const { return added_files_count.value_or(1) > 0; }
@@ -187,6 +191,8 @@ struct ICEBERG_EXPORT ManifestFile {
   inline static const SchemaField kFirstRowId = SchemaField::MakeOptional(
       520, "first_row_id", iceberg::int64(),
       "Starting row ID to assign to new rows in ADDED data files");
+
+  bool operator==(const ManifestFile& other) const = default;
 
   static const StructType& Type();
 };
