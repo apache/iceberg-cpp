@@ -98,8 +98,6 @@ function(resolve_arrow_dependency)
 
   fetchcontent_declare(VendoredArrow
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       #GIT_REPOSITORY https://github.com/apache/arrow.git
-                       #GIT_TAG f12356adaaabea86638407e995e73215dbb58bb2
                        URL ${ARROW_SOURCE_URL}
                        URL_HASH "SHA256=${ICEBERG_ARROW_BUILD_SHA256_CHECKSUM}"
                        SOURCE_SUBDIR
