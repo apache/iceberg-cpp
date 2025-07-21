@@ -28,6 +28,7 @@
 #include <utility>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/snapshot.h"
@@ -91,7 +92,7 @@ struct ICEBERG_EXPORT ManifestFile {
   /// Field id: 502
   /// ID of a partition spec used to write the manifest; must be listed in table metadata
   /// partition-specs
-  int32_t partition_spec_id = 0;
+  int32_t partition_spec_id = PartitionSpec::kInitialSpecId;
   /// Field id: 517
   /// The type of files tracked by the manifest, either data or delete files; 0 for all v1
   /// manifests

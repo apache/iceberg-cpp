@@ -29,6 +29,7 @@
 #include "iceberg/expression/literal.h"
 #include "iceberg/file_format.h"
 #include "iceberg/iceberg_export.h"
+#include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/type.h"
@@ -146,7 +147,7 @@ struct ICEBERG_EXPORT DataFile {
   std::optional<int32_t> sort_order_id;
   /// This field is not included in spec, so it is not serialized into the manifest file.
   /// It is just store in memory representation used in process.
-  int32_t partition_spec_id = 0;
+  int32_t partition_spec_id = PartitionSpec::kInitialSpecId;
   /// Field id: 142
   /// The _row_id for the first row in the data file.
   ///
