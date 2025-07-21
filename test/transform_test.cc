@@ -173,14 +173,21 @@ TEST(TransformResultTypeTest, NegativeCases) {
   };
 
   const std::vector<Case> cases = {
-      {.str = "identity", .source_type = nullptr},
       {.str = "year", .source_type = iceberg::string()},
       {.str = "month", .source_type = iceberg::string()},
       {.str = "day", .source_type = iceberg::string()},
       {.str = "hour", .source_type = iceberg::string()},
-      {.str = "void", .source_type = nullptr},
       {.str = "bucket[16]", .source_type = iceberg::float32()},
       {.str = "truncate[32]", .source_type = iceberg::float64()}};
+
+  const std::vector<Case> null_cases = {{.str = "identity", .source_type = nullptr},
+                                        {.str = "year", .source_type = nullptr},
+                                        {.str = "month", .source_type = nullptr},
+                                        {.str = "day", .source_type = nullptr},
+                                        {.str = "hour", .source_type = nullptr},
+                                        {.str = "void", .source_type = nullptr},
+                                        {.str = "bucket[16]", .source_type = nullptr},
+                                        {.str = "truncate[32]", .source_type = nullptr}};
 
   for (const auto& c : cases) {
     auto result = TransformFromString(c.str);
@@ -191,6 +198,17 @@ TEST(TransformResultTypeTest, NegativeCases) {
 
     auto result_type = transformPtr.value()->ResultType();
     ASSERT_THAT(result_type, IsError(ErrorKind::kNotSupported));
+  }
+
+  for (const auto& c : null_cases) {
+    auto result = TransformFromString(c.str);
+    ASSERT_TRUE(result.has_value()) << "Failed to parse: " << c.str;
+
+    const auto& transform = result.value();
+    auto transformPtr = transform->Bind(c.source_type);
+
+    ASSERT_THAT(transformPtr, IsError(ErrorKind::kNotSupported));
+    EXPECT_THAT(transformPtr, HasErrorMessage("null is not a valid"));
   }
 }
 
