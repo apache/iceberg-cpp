@@ -20,24 +20,23 @@
 #pragma once
 
 #include <algorithm>
+#include <ranges>
 #include <string>
 
 namespace iceberg::internal {
 
 class StringUtils {
  public:
-  static std::string to_lower(std::string_view str) {
+  static std::string ToLower(std::string_view str) {
     std::string input(str);
-    std::transform(input.begin(), input.end(), input.begin(),
-                   [](char c) { return std::tolower(c); });
-    return input;
+    return input | std::views::transform([](char c) { return std::tolower(c); }) |
+           std::ranges::to<std::string>();
   }
 
-  static std::string to_upper(std::string_view str) {
+  static std::string ToUpper(std::string_view str) {
     std::string input(str);
-    std::transform(input.begin(), input.end(), input.begin(),
-                   [](char c) { return std::toupper(c); });
-    return input;
+    return input | std::views::transform([](char c) { return std::toupper(c); }) |
+           std::ranges::to<std::string>();
   }
 };
 

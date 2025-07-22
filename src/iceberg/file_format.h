@@ -55,9 +55,9 @@ ICEBERG_EXPORT inline std::string_view ToString(FileFormatType format_type) {
 }
 
 /// \brief Convert a string to a FileFormatType
-ICEBERG_EXPORT constexpr Result<FileFormatType> FileFormatTypeFromString(
+ICEBERG_EXPORT Result<FileFormatType> FileFormatTypeFromString(
     std::string_view str) noexcept {
-  auto lower = internal::StringUtils::to_lower(str);
+  auto lower = internal::StringUtils::ToLower(str);
   if (lower == "parquet") return FileFormatType::kParquet;
   if (lower == "avro") return FileFormatType::kAvro;
   if (lower == "orc") return FileFormatType::kOrc;
