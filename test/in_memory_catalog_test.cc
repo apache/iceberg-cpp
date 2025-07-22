@@ -115,6 +115,30 @@ TEST_F(InMemoryCatalogTest, RegisterTable) {
   ASSERT_EQ(table.value()->location(), "s3://bucket/test/location");
 }
 
+TEST_F(InMemoryCatalogTest, RefreshTable) {
+  TableIdentifier tableIdent{.ns = {}, .name = "t1"};
+
+  std::unique_ptr<TableMetadata> metadata;
+  ASSERT_NO_FATAL_FAILURE(ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
+
+  auto table_location = GenerateTestTableLocation(tableIdent.name);
+  auto metadata_location = std::format("{}v0.metadata.json", table_location);
+  auto status = TableMetadataUtil::Write(*file_io_, metadata_location, *metadata);
+  EXPECT_THAT(status, IsOk());
+
+  auto table = catalog_->RegisterTable(tableIdent, metadata_location);
+  EXPECT_THAT(table, IsOk());
+  ASSERT_TRUE(table.value()->current_snapshot().has_value());
+  ASSERT_EQ(table.value()->current_snapshot().value()->snapshot_id, 3055729675574597004);
+
+  // Now we don't support commit method in catalog, so here only test refresh with the
+  // same version
+  status = table.value()->Refresh();
+  EXPECT_THAT(status, IsOk());
+  ASSERT_TRUE(table.value()->current_snapshot().has_value());
+  ASSERT_EQ(table.value()->current_snapshot().value()->snapshot_id, 3055729675574597004);
+}
+
 TEST_F(InMemoryCatalogTest, DropTable) {
   TableIdentifier tableIdent{.ns = {}, .name = "t1"};
   auto result = catalog_->DropTable(tableIdent, false);

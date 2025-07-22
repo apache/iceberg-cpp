@@ -21,15 +21,35 @@
 
 #include <algorithm>
 
+#include "iceberg/catalog.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_scan.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
 const std::string& Table::uuid() const { return metadata_->table_uuid; }
+
+Status Table::Refresh() {
+  if (!catalog_) {
+    return InvalidArgument("Cannot refresh table metadata without a catalog");
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto fresh, catalog_->LoadTable(identifier_));
+  if (metadata_location_ != fresh->metadata_location_) {
+    metadata_ = std::move(fresh->metadata_);
+    metadata_location_ = std::move(fresh->metadata_location_);
+    io_ = std::move(fresh->io_);
+
+    schemas_map_.reset();
+    partition_spec_map_.reset();
+    sort_orders_map_.reset();
+  }
+  return {};
+}
 
 Result<std::shared_ptr<Schema>> Table::schema() const { return metadata_->Schema(); }
 
