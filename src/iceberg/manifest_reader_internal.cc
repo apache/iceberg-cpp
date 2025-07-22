@@ -84,13 +84,13 @@ namespace iceberg {
     }                                                                                   \
   }
 
-#define PARSE_PRIMITIVE_VECTOR_FIELD(item, count, array_view)                       \
+#define PARSE_PRIMITIVE_VECTOR_FIELD(item, count, array_view, type)                 \
   for (int64_t manifest_idx = 0; manifest_idx < count; manifest_idx++) {            \
     auto offset = ArrowArrayViewListChildOffset(array_view, manifest_idx);          \
     auto next_offset = ArrowArrayViewListChildOffset(array_view, manifest_idx + 1); \
     for (int64_t offset_idx = offset; offset_idx < next_offset; offset_idx++) {     \
-      item.emplace_back(                                                            \
-          ArrowArrayViewGetIntUnsafe(array_view->children[0], offset_idx));         \
+      item.emplace_back(static_cast<type>(                                          \
+          ArrowArrayViewGetIntUnsafe(array_view->children[0], offset_idx)));        \
     }                                                                               \
   }
 
@@ -445,12 +445,12 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
       case 13:
         PARSE_PRIMITIVE_VECTOR_FIELD(
             manifest_entries[manifest_idx].data_file->split_offsets, manifest_entry_count,
-            view_of_file_field);
+            view_of_file_field, int64_t);
         break;
       case 14:
         PARSE_PRIMITIVE_VECTOR_FIELD(
             manifest_entries[manifest_idx].data_file->equality_ids, manifest_entry_count,
-            view_of_file_field);
+            view_of_file_field, int32_t);
         break;
       case 15:
         PARSE_PRIMITIVE_FIELD(manifest_entries[row_idx].data_file->sort_order_id,
