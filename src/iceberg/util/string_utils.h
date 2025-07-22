@@ -29,14 +29,18 @@ class StringUtils {
  public:
   static std::string ToLower(std::string_view str) {
     std::string input(str);
-    return input | std::views::transform([](char c) { return std::tolower(c); }) |
-           std::ranges::to<std::string>();
+    // TODO(xiao.dong) gcc 13.3 didn't support std::ranges::to
+    std::transform(input.begin(), input.end(), input.begin(),  // NOLINT
+                   [](char c) { return std::tolower(c); });    // NOLINT
+    return input;
   }
 
   static std::string ToUpper(std::string_view str) {
     std::string input(str);
-    return input | std::views::transform([](char c) { return std::toupper(c); }) |
-           std::ranges::to<std::string>();
+    // TODO(xiao.dong) gcc 13.3 didn't support std::ranges::to
+    std::transform(input.begin(), input.end(), input.begin(),  // NOLINT
+                   [](char c) { return std::toupper(c); });    // NOLINT
+    return input;
   }
 };
 
