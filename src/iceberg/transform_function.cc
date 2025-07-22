@@ -52,8 +52,15 @@ Result<ArrowArray> BucketTransform::Transform(const ArrowArray& input) {
 }
 
 Result<std::shared_ptr<Type>> BucketTransform::ResultType() const {
-  auto src_type = source_type();
-  switch (src_type->type_id()) {
+  return iceberg::int32();
+}
+
+Result<std::unique_ptr<TransformFunction>> BucketTransform::Make(
+    std::shared_ptr<Type> const& source_type, int32_t num_buckets) {
+  if (!source_type) {
+    return NotSupported("null is not a valid input type for bucket transform");
+  }
+  switch (source_type->type_id()) {
     case TypeId::kInt:
     case TypeId::kLong:
     case TypeId::kDecimal:
@@ -65,17 +72,13 @@ Result<std::shared_ptr<Type>> BucketTransform::ResultType() const {
     case TypeId::kUuid:
     case TypeId::kFixed:
     case TypeId::kBinary:
-      return iceberg::int32();
+      break;
     default:
       return NotSupported("{} is not a valid input type for bucket transform",
-                          src_type->ToString());
+                          source_type->ToString());
   }
-}
-
-Result<std::unique_ptr<TransformFunction>> BucketTransform::Make(
-    std::shared_ptr<Type> const& source_type, int32_t num_buckets) {
-  if (!source_type) {
-    return NotSupported("null is not a valid input type for bucket transform");
+  if (num_buckets <= 0) {
+    return InvalidArgument("Number of buckets must be positive, got {}", num_buckets);
   }
   return std::make_unique<BucketTransform>(source_type, num_buckets);
 }
@@ -89,24 +92,27 @@ Result<ArrowArray> TruncateTransform::Transform(const ArrowArray& input) {
 }
 
 Result<std::shared_ptr<Type>> TruncateTransform::ResultType() const {
-  auto src_type = source_type();
-  switch (src_type->type_id()) {
-    case TypeId::kInt:
-    case TypeId::kLong:
-    case TypeId::kDecimal:
-    case TypeId::kString:
-    case TypeId::kBinary:
-      return src_type;
-    default:
-      return NotSupported("{} is not a valid input type for truncate transform",
-                          src_type->ToString());
-  }
+  return source_type();
 }
 
 Result<std::unique_ptr<TransformFunction>> TruncateTransform::Make(
     std::shared_ptr<Type> const& source_type, int32_t width) {
   if (!source_type) {
     return NotSupported("null is not a valid input type for truncate transform");
+  }
+  switch (source_type->type_id()) {
+    case TypeId::kInt:
+    case TypeId::kLong:
+    case TypeId::kDecimal:
+    case TypeId::kString:
+    case TypeId::kBinary:
+      break;
+    default:
+      return NotSupported("{} is not a valid input type for truncate transform",
+                          source_type->ToString());
+  }
+  if (width <= 0) {
+    return InvalidArgument("Width must be positive, got {}", width);
   }
   return std::make_unique<TruncateTransform>(source_type, width);
 }
@@ -119,22 +125,22 @@ Result<ArrowArray> YearTransform::Transform(const ArrowArray& input) {
 }
 
 Result<std::shared_ptr<Type>> YearTransform::ResultType() const {
-  auto src_type = source_type();
-  switch (src_type->type_id()) {
-    case TypeId::kDate:
-    case TypeId::kTimestamp:
-    case TypeId::kTimestampTz:
-      return iceberg::int32();
-    default:
-      return NotSupported("{} is not a valid input type for year transform",
-                          src_type->ToString());
-  }
+  return iceberg::int32();
 }
 
 Result<std::unique_ptr<TransformFunction>> YearTransform::Make(
     std::shared_ptr<Type> const& source_type) {
   if (!source_type) {
     return NotSupported("null is not a valid input type for year transform");
+  }
+  switch (source_type->type_id()) {
+    case TypeId::kDate:
+    case TypeId::kTimestamp:
+    case TypeId::kTimestampTz:
+      break;
+    default:
+      return NotSupported("{} is not a valid input type for year transform",
+                          source_type->ToString());
   }
   return std::make_unique<YearTransform>(source_type);
 }
@@ -147,22 +153,22 @@ Result<ArrowArray> MonthTransform::Transform(const ArrowArray& input) {
 }
 
 Result<std::shared_ptr<Type>> MonthTransform::ResultType() const {
-  auto src_type = source_type();
-  switch (src_type->type_id()) {
-    case TypeId::kDate:
-    case TypeId::kTimestamp:
-    case TypeId::kTimestampTz:
-      return iceberg::int32();
-    default:
-      return NotSupported("{} is not a valid input type for month transform",
-                          src_type->ToString());
-  }
+  return iceberg::int32();
 }
 
 Result<std::unique_ptr<TransformFunction>> MonthTransform::Make(
     std::shared_ptr<Type> const& source_type) {
   if (!source_type) {
     return NotSupported("null is not a valid input type for month transform");
+  }
+  switch (source_type->type_id()) {
+    case TypeId::kDate:
+    case TypeId::kTimestamp:
+    case TypeId::kTimestampTz:
+      break;
+    default:
+      return NotSupported("{} is not a valid input type for month transform",
+                          source_type->ToString());
   }
   return std::make_unique<MonthTransform>(source_type);
 }
@@ -174,23 +180,21 @@ Result<ArrowArray> DayTransform::Transform(const ArrowArray& input) {
   return NotImplemented("DayTransform::Transform");
 }
 
-Result<std::shared_ptr<Type>> DayTransform::ResultType() const {
-  auto src_type = source_type();
-  switch (src_type->type_id()) {
-    case TypeId::kDate:
-    case TypeId::kTimestamp:
-    case TypeId::kTimestampTz:
-      return iceberg::date();
-    default:
-      return NotSupported("{} is not a valid input type for day transform",
-                          src_type->ToString());
-  }
-}
+Result<std::shared_ptr<Type>> DayTransform::ResultType() const { return iceberg::date(); }
 
 Result<std::unique_ptr<TransformFunction>> DayTransform::Make(
     std::shared_ptr<Type> const& source_type) {
   if (!source_type) {
     return NotSupported("null is not a valid input type for day transform");
+  }
+  switch (source_type->type_id()) {
+    case TypeId::kDate:
+    case TypeId::kTimestamp:
+    case TypeId::kTimestampTz:
+      break;
+    default:
+      return NotSupported("{} is not a valid input type for day transform",
+                          source_type->ToString());
   }
   return std::make_unique<DayTransform>(source_type);
 }
@@ -203,21 +207,21 @@ Result<ArrowArray> HourTransform::Transform(const ArrowArray& input) {
 }
 
 Result<std::shared_ptr<Type>> HourTransform::ResultType() const {
-  auto src_type = source_type();
-  switch (src_type->type_id()) {
-    case TypeId::kTimestamp:
-    case TypeId::kTimestampTz:
-      return iceberg::int32();
-    default:
-      return NotSupported("{} is not a valid input type for hour transform",
-                          src_type->ToString());
-  }
+  return iceberg::int32();
 }
 
 Result<std::unique_ptr<TransformFunction>> HourTransform::Make(
     std::shared_ptr<Type> const& source_type) {
   if (!source_type) {
     return NotSupported("null is not a valid input type for hour transform");
+  }
+  switch (source_type->type_id()) {
+    case TypeId::kTimestamp:
+    case TypeId::kTimestampTz:
+      break;
+    default:
+      return NotSupported("{} is not a valid input type for hour transform",
+                          source_type->ToString());
   }
   return std::make_unique<HourTransform>(source_type);
 }
