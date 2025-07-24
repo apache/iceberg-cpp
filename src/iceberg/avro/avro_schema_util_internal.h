@@ -34,6 +34,10 @@ class ValidSchema;
 
 namespace iceberg::avro {
 
+struct MapLogicalType : public ::avro::CustomLogicalType {
+  MapLogicalType() : ::avro::CustomLogicalType("map") {}
+};
+
 /// \brief A visitor that converts an Iceberg type to an Avro node.
 class ToAvroNodeVisitor {
  public:

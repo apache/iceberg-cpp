@@ -50,12 +50,7 @@ constexpr std::string_view kElementIdProp = "element-id";
 constexpr std::string_view kAdjustToUtcProp = "adjust-to-utc";
 
 ::avro::LogicalType GetMapLogicalType() {
-  static std::once_flag flag{};
-  std::call_once(flag, []() {
-    // Register the map logical type with the avro custom logical type registry.
-    // See https://github.com/apache/avro/pull/3326 for details.
-    RegisterLogicalTypes();
-  });
+  RegisterLogicalTypes();
   return ::avro::LogicalType(std::make_shared<MapLogicalType>());
 }
 

@@ -19,14 +19,10 @@
 
 #pragma once
 
-#include <avro/LogicalType.hh>
+#include "iceberg/iceberg_bundle_export.h"
 
 namespace iceberg::avro {
 
-struct MapLogicalType : public ::avro::CustomLogicalType {
-  MapLogicalType() : ::avro::CustomLogicalType("map") {}
-};
-
-void RegisterLogicalTypes();
+ICEBERG_BUNDLE_EXPORT void RegisterLogicalTypes();
 
 }  // namespace iceberg::avro
