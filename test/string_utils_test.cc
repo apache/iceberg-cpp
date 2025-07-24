@@ -17,28 +17,28 @@
  * under the License.
  */
 
-#include <gtest/gtest.h>
+#include "iceberg/util/string_utils.h"
 
-#include "iceberg/util/string_utils_internal.h"
+#include <gtest/gtest.h>
 
 namespace iceberg {
 
 TEST(StringUtilsTest, ToLower) {
-  ASSERT_EQ(internal::StringUtils::ToLower("AbC"), "abc");
-  ASSERT_EQ(internal::StringUtils::ToLower("A-bC"), "a-bc");
-  ASSERT_EQ(internal::StringUtils::ToLower("A_bC"), "a_bc");
-  ASSERT_EQ(internal::StringUtils::ToLower(""), "");
-  ASSERT_EQ(internal::StringUtils::ToLower(" "), " ");
-  ASSERT_EQ(internal::StringUtils::ToLower("123"), "123");
+  ASSERT_EQ(StringUtils::ToLower("AbC"), "abc");
+  ASSERT_EQ(StringUtils::ToLower("A-bC"), "a-bc");
+  ASSERT_EQ(StringUtils::ToLower("A_bC"), "a_bc");
+  ASSERT_EQ(StringUtils::ToLower(""), "");
+  ASSERT_EQ(StringUtils::ToLower(" "), " ");
+  ASSERT_EQ(StringUtils::ToLower("123"), "123");
 }
 
 TEST(StringUtilsTest, ToUpper) {
-  ASSERT_EQ(internal::StringUtils::ToUpper("abc"), "ABC");
-  ASSERT_EQ(internal::StringUtils::ToUpper("A-bC"), "A-BC");
-  ASSERT_EQ(internal::StringUtils::ToUpper("A_bC"), "A_BC");
-  ASSERT_EQ(internal::StringUtils::ToUpper(""), "");
-  ASSERT_EQ(internal::StringUtils::ToUpper(" "), " ");
-  ASSERT_EQ(internal::StringUtils::ToUpper("123"), "123");
+  ASSERT_EQ(StringUtils::ToUpper("abc"), "ABC");
+  ASSERT_EQ(StringUtils::ToUpper("A-bC"), "A-BC");
+  ASSERT_EQ(StringUtils::ToUpper("A_bC"), "A_BC");
+  ASSERT_EQ(StringUtils::ToUpper(""), "");
+  ASSERT_EQ(StringUtils::ToUpper(" "), " ");
+  ASSERT_EQ(StringUtils::ToUpper("123"), "123");
 }
 
 }  // namespace iceberg

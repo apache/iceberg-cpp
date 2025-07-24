@@ -25,9 +25,9 @@
 
 #include "iceberg/iceberg_export.h"
 
-namespace iceberg::internal {
+namespace iceberg {
 
-class StringUtils {
+class ICEBERG_EXPORT StringUtils {
  public:
   static std::string ToLower(std::string_view str) {
     std::string input(str);
@@ -35,7 +35,7 @@ class StringUtils {
     std::transform(input.begin(), input.end(), input.begin(),  // NOLINT
                    [](char c) { return std::tolower(c); });    // NOLINT
     return input;
-  }  // namespace iceberg::internal
+  }
 
   static std::string ToUpper(std::string_view str) {
     std::string input(str);
@@ -46,4 +46,4 @@ class StringUtils {
   }
 };
 
-}  // namespace iceberg::internal
+}  // namespace iceberg
