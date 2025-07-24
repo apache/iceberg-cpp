@@ -24,6 +24,7 @@
 
 #include "iceberg/arrow/arrow_fs_file_io.h"
 #include "iceberg/avro/avro_reader.h"
+#include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/schema.h"

@@ -17,31 +17,13 @@
  * under the License.
  */
 
-#pragma once
+#include "avro_register.h"
 
-#include <algorithm>
-#include <ranges>
-#include <string>
+namespace iceberg::avro {
 
-namespace iceberg::internal {
+void RegisterLogicalTypes() {
+  ::avro::CustomLogicalTypeRegistry::instance().registerType(
+      "map", [](const std::string&) { return std::make_shared<MapLogicalType>(); });
+}
 
-class StringUtils {
- public:
-  static std::string ToLower(std::string_view str) {
-    std::string input(str);
-    // TODO(xiao.dong) gcc 13.3 didn't support std::ranges::to
-    std::transform(input.begin(), input.end(), input.begin(),  // NOLINT
-                   [](char c) { return std::tolower(c); });    // NOLINT
-    return input;
-  }
-
-  static std::string ToUpper(std::string_view str) {
-    std::string input(str);
-    // TODO(xiao.dong) gcc 13.3 didn't support std::ranges::to
-    std::transform(input.begin(), input.end(), input.begin(),  // NOLINT
-                   [](char c) { return std::toupper(c); });    // NOLINT
-    return input;
-  }
-};
-
-}  // namespace iceberg::internal
+}  // namespace iceberg::avro

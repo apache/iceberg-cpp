@@ -108,6 +108,7 @@ if(ICEBERG_BUILD_BUNDLE)
       avro/avro_data_util.cc
       avro/avro_reader.cc
       avro/avro_schema_util.cc
+      avro/avro_register.cc
       avro/avro_stream_internal.cc)
 
   # Libraries to link with exported libiceberg_bundle.{so,a}.

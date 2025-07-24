@@ -49,23 +49,11 @@ namespace iceberg {
     }                                                                                   \
   }
 
-#define PARSE_ENUM_FIELD(item, array_view, type)                                        \
-  for (size_t row_idx = 0; row_idx < array_view->length; row_idx++) {                   \
-    if (!ArrowArrayViewIsNull(array_view, row_idx)) {                                   \
-      auto value = ArrowArrayViewGetIntUnsafe(array_view, row_idx);                     \
-      item = static_cast<type>(value);                                                  \
-    } else if (required) {                                                              \
-      return InvalidManifestList("Field {} is required but null at row {}", field_name, \
-                                 row_idx);                                              \
-    }                                                                                   \
-  }
-
 #define PARSE_STRING_FIELD(item, array_view)                                            \
   for (size_t row_idx = 0; row_idx < array_view->length; row_idx++) {                   \
     if (!ArrowArrayViewIsNull(array_view, row_idx)) {                                   \
       auto value = ArrowArrayViewGetStringUnsafe(array_view, row_idx);                  \
-      std::string path_str(value.data, value.size_bytes);                               \
-      item = path_str;                                                                  \
+      item = std::string(value.data, value.size_bytes);                                 \
     } else if (required) {                                                              \
       return InvalidManifestList("Field {} is required but null at row {}", field_name, \
                                  row_idx);                                              \
@@ -75,16 +63,14 @@ namespace iceberg {
 #define PARSE_BINARY_FIELD(item, array_view)                                            \
   for (size_t row_idx = 0; row_idx < array_view->length; row_idx++) {                   \
     if (!ArrowArrayViewIsNull(view_of_column, row_idx)) {                               \
-      auto buffer = ArrowArrayViewGetBytesUnsafe(array_view, row_idx);                  \
-      item = std::vector<uint8_t>(buffer.data.as_char,                                  \
-                                  buffer.data.as_char + buffer.size_bytes);             \
+      item = ArrowArrayViewGetInt8Vector(array_view, row_idx);                          \
     } else if (required) {                                                              \
       return InvalidManifestList("Field {} is required but null at row {}", field_name, \
                                  row_idx);                                              \
     }                                                                                   \
   }
 
-#define PARSE_PRIMITIVE_VECTOR_FIELD(item, count, array_view, type)                 \
+#define PARSE_INTEGER_VECTOR_FIELD(item, count, array_view, type)                   \
   for (int64_t manifest_idx = 0; manifest_idx < count; manifest_idx++) {            \
     auto offset = ArrowArrayViewListChildOffset(array_view, manifest_idx);          \
     auto next_offset = ArrowArrayViewListChildOffset(array_view, manifest_idx + 1); \
@@ -94,7 +80,7 @@ namespace iceberg {
     }                                                                               \
   }
 
-#define PARSE_PRIMITIVE_MAP_FIELD(item, count, array_view)                           \
+#define PARSE_MAP_FIELD(item, count, array_view, key_type, value_type, assignment)   \
   do {                                                                               \
     if (array_view->storage_type != ArrowType::NANOARROW_TYPE_MAP) {                 \
       return InvalidManifest("Field:{} should be a map.", field_name);               \
@@ -102,42 +88,28 @@ namespace iceberg {
     auto view_of_map = array_view->children[0];                                      \
     ASSERT_VIEW_TYPE_AND_CHILDREN(view_of_map, ArrowType::NANOARROW_TYPE_STRUCT, 2); \
     auto view_of_map_key = view_of_map->children[0];                                 \
-    ASSERT_VIEW_TYPE(view_of_map_key, ArrowType::NANOARROW_TYPE_INT32);              \
+    ASSERT_VIEW_TYPE(view_of_map_key, key_type);                                     \
     auto view_of_map_value = view_of_map->children[1];                               \
-    ASSERT_VIEW_TYPE(view_of_map_value, ArrowType::NANOARROW_TYPE_INT64);            \
+    ASSERT_VIEW_TYPE(view_of_map_value, value_type);                                 \
     for (int64_t row_idx = 0; row_idx < count; row_idx++) {                          \
       auto offset = array_view->buffer_views[1].data.as_int32[row_idx];              \
       auto next_offset = array_view->buffer_views[1].data.as_int32[row_idx + 1];     \
       for (int32_t offset_idx = offset; offset_idx < next_offset; offset_idx++) {    \
         auto key = ArrowArrayViewGetIntUnsafe(view_of_map_key, offset_idx);          \
-        auto value = ArrowArrayViewGetIntUnsafe(view_of_map_value, offset_idx);      \
-        item[key] = value;                                                           \
+        item[key] = assignment;                                                      \
       }                                                                              \
     }                                                                                \
   } while (0)
 
-#define PARSE_BINARY_MAP_FIELD(item, count, array_view)                              \
-  do {                                                                               \
-    if (array_view->storage_type != ArrowType::NANOARROW_TYPE_MAP) {                 \
-      return InvalidManifest("Field:{} should be a map.", field_name);               \
-    }                                                                                \
-    auto view_of_map = array_view->children[0];                                      \
-    ASSERT_VIEW_TYPE_AND_CHILDREN(view_of_map, ArrowType::NANOARROW_TYPE_STRUCT, 2); \
-    auto view_of_map_key = view_of_map->children[0];                                 \
-    ASSERT_VIEW_TYPE(view_of_map_key, ArrowType::NANOARROW_TYPE_INT32);              \
-    auto view_of_map_value = view_of_map->children[1];                               \
-    ASSERT_VIEW_TYPE(view_of_map_value, ArrowType::NANOARROW_TYPE_BINARY);           \
-    for (int64_t row_idx = 0; row_idx < count; row_idx++) {                          \
-      auto offset = array_view->buffer_views[1].data.as_int32[row_idx];              \
-      auto next_offset = array_view->buffer_views[1].data.as_int32[row_idx + 1];     \
-      for (int32_t offset_idx = offset; offset_idx < next_offset; offset_idx++) {    \
-        auto key = ArrowArrayViewGetIntUnsafe(view_of_map_key, offset_idx);          \
-        auto buffer = ArrowArrayViewGetBytesUnsafe(view_of_map_value, offset_idx);   \
-        item[key] = std::vector<uint8_t>(buffer.data.as_char,                        \
-                                         buffer.data.as_char + buffer.size_bytes);   \
-      }                                                                              \
-    }                                                                                \
-  } while (0)
+#define PARSE_INT_LONG_MAP_FIELD(item, count, array_view)                   \
+  PARSE_MAP_FIELD(item, count, array_view, ArrowType::NANOARROW_TYPE_INT32, \
+                  ArrowType::NANOARROW_TYPE_INT64,                          \
+                  ArrowArrayViewGetIntUnsafe(view_of_map_value, offset_idx));
+
+#define PARSE_INT_BINARY_MAP_FIELD(item, count, array_view)                 \
+  PARSE_MAP_FIELD(item, count, array_view, ArrowType::NANOARROW_TYPE_INT32, \
+                  ArrowType::NANOARROW_TYPE_BINARY,                         \
+                  ArrowArrayViewGetInt8Vector(view_of_map_value, offset_idx));
 
 #define ASSERT_VIEW_TYPE(view, type)                                           \
   if (view->storage_type != type) {                                            \
@@ -152,6 +124,12 @@ namespace iceberg {
     return InvalidManifest("Sub Field for:{} should have key&value:{} columns.", \
                            field_name, n_child);                                 \
   }
+
+std::vector<uint8_t> ArrowArrayViewGetInt8Vector(const ArrowArrayView* view,
+                                                 int32_t offset_idx) {
+  auto buffer = ArrowArrayViewGetBytesUnsafe(view, offset_idx);
+  return {buffer.data.as_char, buffer.data.as_char + buffer.size_bytes};
+}
 
 Status ParsePartitionFieldSummaryList(ArrowArrayView* view_of_column,
                                       std::vector<ManifestFile>& manifest_files) {
@@ -202,14 +180,12 @@ Status ParsePartitionFieldSummaryList(ArrowArrayView* view_of_column,
             ArrowArrayViewGetIntUnsafe(contains_nan, partition_idx);
       }
       if (!ArrowArrayViewIsNull(lower_bound_list, partition_idx)) {
-        auto buffer = ArrowArrayViewGetBytesUnsafe(lower_bound_list, partition_idx);
-        partition_field_summary.lower_bound = std::vector<uint8_t>(
-            buffer.data.as_char, buffer.data.as_char + buffer.size_bytes);
+        partition_field_summary.lower_bound =
+            ArrowArrayViewGetInt8Vector(lower_bound_list, partition_idx);
       }
       if (!ArrowArrayViewIsNull(upper_bound_list, partition_idx)) {
-        auto buffer = ArrowArrayViewGetBytesUnsafe(upper_bound_list, partition_idx);
-        partition_field_summary.upper_bound = std::vector<uint8_t>(
-            buffer.data.as_char, buffer.data.as_char + buffer.size_bytes);
+        partition_field_summary.upper_bound =
+            ArrowArrayViewGetInt8Vector(upper_bound_list, partition_idx);
       }
 
       manifest_file.partitions.emplace_back(partition_field_summary);
@@ -264,8 +240,8 @@ Result<std::vector<ManifestFile>> ParseManifestList(ArrowSchema* schema,
                               int32_t);
         break;
       case 3:
-        PARSE_ENUM_FIELD(manifest_files[row_idx].content, view_of_column,
-                         ManifestFile::Content);
+        PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].content, view_of_column,
+                              ManifestFile::Content);
         break;
       case 4:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].sequence_number, view_of_column,
@@ -373,8 +349,8 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
 
     switch (col_idx) {
       case 0:
-        PARSE_ENUM_FIELD(manifest_entries[row_idx].data_file->content, view_of_file_field,
-                         DataFile::Content);
+        PARSE_PRIMITIVE_FIELD(manifest_entries[row_idx].data_file->content,
+                              view_of_file_field, DataFile::Content);
         break;
       case 1:
         PARSE_STRING_FIELD(manifest_entries[row_idx].data_file->file_path,
@@ -415,42 +391,41 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
         // key&value should have the same offset
         // HACK(xiao.dong) workaround for arrow bug:
         // ArrowArrayViewListChildOffset can not get the correct offset for map
-        PARSE_PRIMITIVE_MAP_FIELD(manifest_entries[row_idx].data_file->column_sizes,
-                                  manifest_entry_count, view_of_file_field);
+        PARSE_INT_LONG_MAP_FIELD(manifest_entries[row_idx].data_file->column_sizes,
+                                 manifest_entry_count, view_of_file_field);
         break;
       case 7:
-        PARSE_PRIMITIVE_MAP_FIELD(manifest_entries[row_idx].data_file->value_counts,
-                                  manifest_entry_count, view_of_file_field);
+        PARSE_INT_LONG_MAP_FIELD(manifest_entries[row_idx].data_file->value_counts,
+                                 manifest_entry_count, view_of_file_field);
         break;
       case 8:
-        PARSE_PRIMITIVE_MAP_FIELD(manifest_entries[row_idx].data_file->null_value_counts,
-                                  manifest_entry_count, view_of_file_field);
+        PARSE_INT_LONG_MAP_FIELD(manifest_entries[row_idx].data_file->null_value_counts,
+                                 manifest_entry_count, view_of_file_field);
         break;
       case 9:
-        PARSE_PRIMITIVE_MAP_FIELD(manifest_entries[row_idx].data_file->nan_value_counts,
-                                  manifest_entry_count, view_of_file_field);
+        PARSE_INT_LONG_MAP_FIELD(manifest_entries[row_idx].data_file->nan_value_counts,
+                                 manifest_entry_count, view_of_file_field);
         break;
       case 10:
-        PARSE_BINARY_MAP_FIELD(manifest_entries[row_idx].data_file->lower_bounds,
-                               manifest_entry_count, view_of_file_field);
+        PARSE_INT_BINARY_MAP_FIELD(manifest_entries[row_idx].data_file->lower_bounds,
+                                   manifest_entry_count, view_of_file_field);
         break;
       case 11:
-        PARSE_BINARY_MAP_FIELD(manifest_entries[row_idx].data_file->upper_bounds,
-                               manifest_entry_count, view_of_file_field);
+        PARSE_INT_BINARY_MAP_FIELD(manifest_entries[row_idx].data_file->upper_bounds,
+                                   manifest_entry_count, view_of_file_field);
         break;
       case 12:
         PARSE_BINARY_FIELD(manifest_entries[row_idx].data_file->key_metadata,
                            view_of_file_field);
         break;
       case 13:
-        PARSE_PRIMITIVE_VECTOR_FIELD(
+        PARSE_INTEGER_VECTOR_FIELD(
             manifest_entries[manifest_idx].data_file->split_offsets, manifest_entry_count,
             view_of_file_field, int64_t);
         break;
       case 14:
-        PARSE_PRIMITIVE_VECTOR_FIELD(
-            manifest_entries[manifest_idx].data_file->equality_ids, manifest_entry_count,
-            view_of_file_field, int32_t);
+        PARSE_INTEGER_VECTOR_FIELD(manifest_entries[manifest_idx].data_file->equality_ids,
+                                   manifest_entry_count, view_of_file_field, int32_t);
         break;
       case 15:
         PARSE_PRIMITIVE_FIELD(manifest_entries[row_idx].data_file->sort_order_id,
@@ -518,8 +493,8 @@ Result<std::vector<ManifestEntry>> ParseManifestEntry(ArrowSchema* schema,
 
     switch (idx) {
       case 0:
-        PARSE_ENUM_FIELD(manifest_entries[row_idx].status, view_of_column,
-                         ManifestStatus);
+        PARSE_PRIMITIVE_FIELD(manifest_entries[row_idx].status, view_of_column,
+                              ManifestStatus);
         break;
       case 1:
         PARSE_PRIMITIVE_FIELD(manifest_entries[row_idx].snapshot_id, view_of_column,
