@@ -27,7 +27,7 @@
 
 namespace iceberg {
 
-class ICEBERG_EXPORT StringUtils {
+ICEBERG_EXPORT class StringUtils {
  public:
   static std::string ToLower(std::string_view str) {
     std::string input(str);
