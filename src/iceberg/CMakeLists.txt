@@ -109,7 +109,10 @@ if(ICEBERG_BUILD_BUNDLE)
       avro/avro_reader.cc
       avro/avro_schema_util.cc
       avro/avro_register.cc
-      avro/avro_stream_internal.cc)
+      avro/avro_stream_internal.cc
+      parquet/parquet_data_util.cc
+      parquet/parquet_reader.cc
+      parquet/parquet_schema_util.cc)
 
   # Libraries to link with exported libiceberg_bundle.{so,a}.
   set(ICEBERG_BUNDLE_STATIC_BUILD_INTERFACE_LIBS)
@@ -161,6 +164,7 @@ if(ICEBERG_BUILD_BUNDLE)
 
   add_subdirectory(arrow)
   add_subdirectory(avro)
+  add_subdirectory(parquet)
 
   install(FILES ${CMAKE_CURRENT_BINARY_DIR}/iceberg_bundle_export.h
           DESTINATION ${ICEBERG_INSTALL_INCLUDEDIR}/iceberg)

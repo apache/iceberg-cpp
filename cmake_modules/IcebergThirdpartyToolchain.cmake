@@ -65,8 +65,9 @@ function(resolve_arrow_dependency)
   set(ARROW_BUILD_STATIC
       ON
       CACHE BOOL "" FORCE)
+  # Workaround undefined symbol: arrow::ipc::ReadSchema(arrow::io::InputStream*, arrow::ipc::DictionaryMemo*)
   set(ARROW_IPC
-      OFF
+      ON
       CACHE BOOL "" FORCE)
   set(ARROW_FILESYSTEM
       ON
