@@ -69,6 +69,9 @@ add_executable(util_test)
 target_sources(util_test PRIVATE formatter_test.cc config_test.cc visit_type_test.cc
                                  logger_test.cc)
 target_link_libraries(util_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
+if(MSVC)
+  target_compile_options(util_test PRIVATE /Zc:preprocessor)
+endif()
 add_test(NAME util_test COMMAND util_test)
 
 if(ICEBERG_BUILD_BUNDLE)
