@@ -49,7 +49,8 @@ set(ICEBERG_SOURCES
     arrow_c_data_guard_internal.cc
     util/murmurhash3_internal.cc
     util/timepoint.cc
-    util/gzip_internal.cc)
+    util/gzip_internal.cc
+    util/logger.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_SHARED_BUILD_INTERFACE_LIBS)
