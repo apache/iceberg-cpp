@@ -108,13 +108,10 @@ class AvroReader::Impl {
       if (options.name_mapping) {
         ICEBERG_ASSIGN_OR_RAISE(
             auto new_root_node,
-            CreateAvroNodeWithFieldIds(file_schema.root(), *options.name_mapping));
-
-        // Create a new schema with the updated root node
-        auto new_schema = ::avro::ValidSchema(new_root_node);
+            MakeAvroNodeWithFieldIds(file_schema.root(), *options.name_mapping));
 
         // Update the file schema to use the new schema with field IDs
-        file_schema = new_schema;
+        file_schema = ::avro::ValidSchema(new_root_node);
       } else {
         return InvalidSchema(
             "Avro file schema has no field IDs and no name mapping provided");
