@@ -19,6 +19,9 @@
 
 #pragma once
 
+/// \file iceberg/expression/literal.h
+/// Literal class for Iceberg table operations.
+
 #include <compare>
 #include <memory>
 #include <string>
@@ -110,6 +113,8 @@ class ICEBERG_EXPORT Literal {
   /// \brief Compare two PrimitiveLiterals. Both literals must have the same type
   /// and should not be AboveMax or BelowMin.
   std::partial_ordering operator<=>(const Literal& other) const;
+
+  bool operator==(const Literal& other) const = default;
 
   /// Check if this literal represents a value above the maximum allowed value
   /// for its type. This occurs when casting from a wider type to a narrower type

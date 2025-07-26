@@ -22,6 +22,7 @@ set(ICEBERG_SOURCES
     catalog/in_memory_catalog.cc
     expression/expression.cc
     expression/literal.cc
+    expression/term.cc
     file_reader.cc
     json_internal.cc
     manifest_entry.cc
