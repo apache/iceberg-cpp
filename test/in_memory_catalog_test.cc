@@ -17,8 +17,6 @@
  * under the License.
  */
 
-#include "iceberg/catalog/in_memory_catalog.h"
-
 #include <filesystem>
 
 #include <arrow/filesystem/localfs.h>
@@ -29,6 +27,7 @@
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "matchers.h"
+#include "mock_catalog.h"
 #include "test_common.h"
 
 namespace iceberg {
@@ -39,8 +38,8 @@ class InMemoryCatalogTest : public ::testing::Test {
     file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(
         std::make_shared<::arrow::fs::LocalFileSystem>());
     std::unordered_map<std::string, std::string> properties = {{"prop1", "val1"}};
-    catalog_ = std::make_shared<InMemoryCatalog>("test_catalog", file_io_,
-                                                 "/tmp/warehouse/", properties);
+    catalog_ = std::make_shared<MockInMemoryCatalog>("test_catalog", file_io_,
+                                                     "/tmp/warehouse/", properties);
   }
 
   void TearDown() override {
@@ -74,7 +73,7 @@ class InMemoryCatalogTest : public ::testing::Test {
   }
 
   std::shared_ptr<FileIO> file_io_;
-  std::shared_ptr<InMemoryCatalog> catalog_;
+  std::shared_ptr<MockInMemoryCatalog> catalog_;
   // Used to store temporary paths created during the test
   std::vector<std::string> created_temp_paths_;
 };
@@ -121,6 +120,7 @@ TEST_F(InMemoryCatalogTest, RefreshTable) {
   std::unique_ptr<TableMetadata> metadata;
   ASSERT_NO_FATAL_FAILURE(ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
 
+  metadata->current_snapshot_id = 3051729675574597004;
   auto table_location = GenerateTestTableLocation(tableIdent.name);
   auto metadata_location = std::format("{}v0.metadata.json", table_location);
   auto status = TableMetadataUtil::Write(*file_io_, metadata_location, *metadata);
@@ -129,9 +129,18 @@ TEST_F(InMemoryCatalogTest, RefreshTable) {
   auto table = catalog_->RegisterTable(tableIdent, metadata_location);
   EXPECT_THAT(table, IsOk());
   ASSERT_TRUE(table.value()->current_snapshot().has_value());
-  ASSERT_EQ(table.value()->current_snapshot().value()->snapshot_id, 3055729675574597004);
+  ASSERT_EQ(table.value()->current_snapshot().value()->snapshot_id, 3051729675574597004);
 
-  // Now we don't support commit method in catalog, so here only test refresh with the
+  // update table version to 3055729675574597004
+  metadata_location = std::format("{}v1.metadata.json", table_location);
+  metadata->current_snapshot_id = 3055729675574597004;
+  status = TableMetadataUtil::Write(*file_io_, metadata_location, *metadata);
+  EXPECT_THAT(status, IsOk());
+
+  // update table metadata location in catalog
+  status = catalog_->UpdateTableMetaLocation(tableIdent, metadata_location);
+  EXPECT_THAT(status, IsOk());
+
   // same version
   status = table.value()->Refresh();
   EXPECT_THAT(status, IsOk());

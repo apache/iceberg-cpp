@@ -35,14 +35,14 @@ const std::string& Table::uuid() const { return metadata_->table_uuid; }
 
 Status Table::Refresh() {
   if (!catalog_) {
-    return InvalidArgument("Cannot refresh table metadata without a catalog");
+    return InvalidArgument("Refresh is not supported for table without a catalog");
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto fresh, catalog_->LoadTable(identifier_));
-  if (metadata_location_ != fresh->metadata_location_) {
-    metadata_ = std::move(fresh->metadata_);
-    metadata_location_ = std::move(fresh->metadata_location_);
-    io_ = std::move(fresh->io_);
+  ICEBERG_ASSIGN_OR_RAISE(auto refreshed_table, catalog_->LoadTable(identifier_));
+  if (metadata_location_ != refreshed_table->metadata_location_) {
+    metadata_ = std::move(refreshed_table->metadata_);
+    metadata_location_ = std::move(refreshed_table->metadata_location_);
+    io_ = std::move(refreshed_table->io_);
 
     schemas_map_.reset();
     partition_spec_map_.reset();
