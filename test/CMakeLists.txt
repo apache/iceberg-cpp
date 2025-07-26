@@ -28,75 +28,92 @@ set(ICEBERG_TEST_RESOURCES "${CMAKE_SOURCE_DIR}/test/resources")
 configure_file("${CMAKE_SOURCE_DIR}/test/test_config.h.in"
                "${CMAKE_BINARY_DIR}/iceberg/test/test_config.h")
 
-add_executable(schema_test)
-target_sources(schema_test
-               PRIVATE name_mapping_test.cc
-                       schema_test.cc
-                       schema_field_test.cc
-                       type_test.cc
-                       transform_test.cc
-                       partition_field_test.cc
-                       partition_spec_test.cc
-                       sort_field_test.cc
-                       sort_order_test.cc
-                       snapshot_test.cc
-                       schema_util_test.cc)
-target_link_libraries(schema_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
-add_test(NAME schema_test COMMAND schema_test)
+function(add_iceberg_test test_name)
+  set(options USE_BUNDLE)
+  set(oneValueArgs)
+  set(multiValueArgs SOURCES)
+  cmake_parse_arguments(ARG
+                        "${options}"
+                        "${oneValueArgs}"
+                        "${multiValueArgs}"
+                        ${ARGN})
 
-add_executable(table_test)
-target_include_directories(table_test PRIVATE "${CMAKE_BINARY_DIR}")
-target_sources(table_test PRIVATE test_common.cc json_internal_test.cc table_test.cc
-                                  schema_json_test.cc)
-target_link_libraries(table_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
-add_test(NAME table_test COMMAND table_test)
+  add_executable(${test_name})
+  target_include_directories(${test_name} PRIVATE "${CMAKE_BINARY_DIR}")
 
-add_executable(expression_test)
-target_sources(expression_test PRIVATE expression_test.cc literal_test.cc)
-target_link_libraries(expression_test PRIVATE iceberg_static GTest::gtest_main
-                                              GTest::gmock)
-add_test(NAME expression_test COMMAND expression_test)
+  target_sources(${test_name} PRIVATE ${ARG_SOURCES})
 
-add_executable(json_serde_test)
-target_include_directories(json_serde_test PRIVATE "${CMAKE_BINARY_DIR}")
-target_sources(json_serde_test PRIVATE test_common.cc json_internal_test.cc
-                                       metadata_serde_test.cc schema_json_test.cc)
-target_link_libraries(json_serde_test PRIVATE iceberg_static GTest::gtest_main
-                                              GTest::gmock)
-add_test(NAME json_serde_test COMMAND json_serde_test)
+  if(ARG_USE_BUNDLE)
+    target_link_libraries(${test_name} PRIVATE iceberg_bundle_static GTest::gtest_main
+                                               GTest::gmock)
+  else()
+    target_link_libraries(${test_name} PRIVATE iceberg_static GTest::gtest_main
+                                               GTest::gmock)
+  endif()
 
-add_executable(util_test)
-target_sources(util_test PRIVATE formatter_test.cc config_test.cc visit_type_test.cc
-                                 string_utils_test.cc)
-target_link_libraries(util_test PRIVATE iceberg_static GTest::gtest_main GTest::gmock)
-add_test(NAME util_test COMMAND util_test)
+  add_test(NAME ${test_name} COMMAND ${test_name})
+endfunction()
+
+add_iceberg_test(schema_test
+                 SOURCES
+                 name_mapping_test.cc
+                 schema_test.cc
+                 schema_field_test.cc
+                 type_test.cc
+                 transform_test.cc
+                 partition_field_test.cc
+                 partition_spec_test.cc
+                 sort_field_test.cc
+                 sort_order_test.cc
+                 snapshot_test.cc
+                 schema_util_test.cc)
+
+add_iceberg_test(table_test
+                 SOURCES
+                 test_common.cc
+                 json_internal_test.cc
+                 table_test.cc
+                 schema_json_test.cc)
+
+add_iceberg_test(expression_test SOURCES expression_test.cc literal_test.cc)
+
+add_iceberg_test(json_serde_test
+                 SOURCES
+                 test_common.cc
+                 json_internal_test.cc
+                 metadata_serde_test.cc
+                 schema_json_test.cc)
+
+add_iceberg_test(util_test
+                 SOURCES
+                 formatter_test.cc
+                 config_test.cc
+                 visit_type_test.cc
+                 string_utils_test.cc)
 
 if(ICEBERG_BUILD_BUNDLE)
-  add_executable(avro_test)
-  target_sources(avro_test
-                 PRIVATE avro_data_test.cc
-                         avro_test.cc
-                         avro_schema_test.cc
-                         avro_stream_test.cc
-                         manifest_list_reader_test.cc
-                         manifest_reader_test.cc
-                         test_common.cc)
-  target_link_libraries(avro_test PRIVATE iceberg_bundle_static GTest::gtest_main
-                                          GTest::gmock)
-  target_include_directories(avro_test PRIVATE "${CMAKE_BINARY_DIR}")
-  add_test(NAME avro_test COMMAND avro_test)
+  add_iceberg_test(avro_test
+                   USE_BUNDLE
+                   SOURCES
+                   avro_data_test.cc
+                   avro_test.cc
+                   avro_schema_test.cc
+                   avro_stream_test.cc
+                   manifest_list_reader_test.cc
+                   manifest_reader_test.cc
+                   test_common.cc)
 
-  add_executable(arrow_test)
-  target_sources(arrow_test PRIVATE arrow_test.cc arrow_fs_file_io_test.cc
-                                    metadata_io_test.cc gzip_decompress_test.cc)
-  target_link_libraries(arrow_test PRIVATE iceberg_bundle_static GTest::gtest_main
-                                           GTest::gmock)
-  add_test(NAME arrow_test COMMAND arrow_test)
+  add_iceberg_test(arrow_test
+                   USE_BUNDLE
+                   SOURCES
+                   arrow_test.cc
+                   arrow_fs_file_io_test.cc
+                   metadata_io_test.cc
+                   gzip_decompress_test.cc)
 
-  add_executable(catalog_test)
-  target_include_directories(catalog_test PRIVATE "${CMAKE_BINARY_DIR}")
-  target_sources(catalog_test PRIVATE test_common.cc in_memory_catalog_test.cc)
-  target_link_libraries(catalog_test PRIVATE iceberg_bundle_static GTest::gtest_main
-                                             GTest::gmock)
-  add_test(NAME catalog_test COMMAND catalog_test)
+  add_iceberg_test(catalog_test
+                   USE_BUNDLE
+                   SOURCES
+                   test_common.cc
+                   in_memory_catalog_test.cc)
 endif()
