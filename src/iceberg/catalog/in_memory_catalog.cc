@@ -109,6 +109,15 @@ class ICEBERG_EXPORT InMemoryNamespace {
   ///         ErrorKind::kNoSuchTable if the table does not exist.
   Status UnregisterTable(const TableIdentifier& table_ident);
 
+  /// \brief Updates the metadata location of an existing table.
+  ///
+  /// \param table_ident The fully qualified identifier of the table.
+  /// \param metadata_location The path to the table's metadata.
+  /// \return Status::OK if the table metadata location is updated;
+  ///         Error otherwise.
+  Status UpdateTableMetaLocation(const TableIdentifier& table_ident,
+                                 const std::string& metadata_location);
+
   /// \brief Checks if a table exists in the specified namespace.
   ///
   /// \param table_ident The identifier of the table to check.
@@ -297,6 +306,17 @@ Status InMemoryNamespace::UnregisterTable(TableIdentifier const& table_ident) {
   return {};
 }
 
+Status InMemoryNamespace::UpdateTableMetaLocation(const TableIdentifier& table_ident,
+                                                  const std::string& metadata_location) {
+  const auto ns = GetNamespace(this, table_ident.ns);
+  ICEBERG_RETURN_UNEXPECTED(ns);
+  if (!ns.value()->table_metadata_locations_.contains(table_ident.name)) {
+    return NotFound("{} does not exist", table_ident.name);
+  }
+  ns.value()->table_metadata_locations_[table_ident.name] = metadata_location;
+  return {};
+}
+
 Result<bool> InMemoryNamespace::TableExists(TableIdentifier const& table_ident) const {
   const auto ns = GetNamespace(this, table_ident.ns);
   ICEBERG_RETURN_UNEXPECTED(ns);
@@ -444,6 +464,12 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::RegisterTable(
 std::unique_ptr<TableBuilder> InMemoryCatalog::BuildTable(
     const TableIdentifier& identifier, const Schema& schema) const {
   throw IcebergError("not implemented");
+}
+
+Status InMemoryCatalog::UpdateTableMetaLocationInternal(
+    const TableIdentifier& identifier, const std::string& metadata_location) {
+  std::unique_lock lock(mutex_);
+  return root_namespace_->UpdateTableMetaLocation(identifier, metadata_location);
 }
 
 }  // namespace iceberg

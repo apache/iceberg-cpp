@@ -93,6 +93,10 @@ class ICEBERG_EXPORT InMemoryCatalog
   std::unique_ptr<iceberg::TableBuilder> BuildTable(const TableIdentifier& identifier,
                                                     const Schema& schema) const override;
 
+ protected:
+  Status UpdateTableMetaLocationInternal(const TableIdentifier& identifier,
+                                         const std::string& metadata_location);
+
  private:
   std::string catalog_name_;
   std::unordered_map<std::string, std::string> properties_;
