@@ -22,7 +22,7 @@
 #include <arrow/filesystem/localfs.h>
 #include <gtest/gtest.h>
 
-#include "iceberg/arrow/arrow_fs_file_io.h"
+#include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/avro/avro_reader.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
