@@ -23,6 +23,7 @@
 
 #include <avro/Node.hh>
 
+#include "iceberg/name_mapping.h"
 #include "iceberg/result.h"
 #include "iceberg/schema_util.h"
 #include "iceberg/type.h"
@@ -147,5 +148,19 @@ std::string ToString(const ::avro::LogicalType::Type& logical_type);
 /// \param node The Avro node to check.
 /// \return True if the node has a map logical type, false otherwise.
 bool HasMapLogicalType(const ::avro::NodePtr& node);
+
+/// \brief Create a new Avro node with field IDs from name mapping.
+/// \param original_node The original Avro node to copy.
+/// \param mapped_field The mapped field to apply field IDs from.
+/// \return A new Avro node with field IDs applied, or an error.
+Result<::avro::NodePtr> MakeAvroNodeWithFieldIds(const ::avro::NodePtr& original_node,
+                                                 const MappedField& mapped_field);
+
+/// \brief Create a new Avro node with field IDs from name mapping.
+/// \param original_node The original Avro node to copy.
+/// \param mapping The name mapping to apply field IDs from.
+/// \return A new Avro node with field IDs applied, or an error.
+Result<::avro::NodePtr> MakeAvroNodeWithFieldIds(const ::avro::NodePtr& original_node,
+                                                 const NameMapping& mapping);
 
 }  // namespace iceberg::avro
