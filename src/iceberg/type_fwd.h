@@ -120,6 +120,14 @@ class FileScanTask;
 class TableScan;
 class TableScanBuilder;
 
+struct DataFile;
+struct ManifestEntry;
+struct ManifestFile;
+struct ManifestList;
+
+class ManifestReader;
+class ManifestListReader;
+
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.
 /// ----------------------------------------------------------------------------
@@ -130,13 +138,5 @@ class MetadataUpdate;
 class UpdateRequirement;
 
 class AppendFiles;
-
-struct DataFile;
-struct ManifestEntry;
-struct ManifestFile;
-struct ManifestList;
-
-class ManifestReader;
-class ManifestListReader;
 
 }  // namespace iceberg

@@ -193,4 +193,296 @@ TEST(TransformResultTypeTest, NegativeCases) {
   }
 }
 
+TEST(TransformFunctionTransformTest, IdentityTransform) {
+  struct Case {
+    std::shared_ptr<Type> source_type;
+    Literal source;
+    Literal expected;
+  };
+
+  const std::vector<Case> cases = {
+      {.source_type = iceberg::boolean(),
+       .source = Literal::Boolean(true),
+       .expected = Literal::Boolean(true)},
+      {.source_type = iceberg::int32(),
+       .source = Literal::Int(42),
+       .expected = Literal::Int(42)},
+      {.source_type = iceberg::int32(),
+       .source = Literal::Date(30000),
+       .expected = Literal::Date(30000)},
+      {.source_type = iceberg::int64(),
+       .source = Literal::Long(1234567890),
+       .expected = Literal::Long(1234567890)},
+      {.source_type = iceberg::timestamp(),
+       .source = Literal::Timestamp(1622547800000),
+       .expected = Literal::Timestamp(1622547800000)},
+      {.source_type = iceberg::timestamp_tz(),
+       .source = Literal::TimestampTz(1622547800000),
+       .expected = Literal::TimestampTz(1622547800000)},
+      {.source_type = iceberg::float32(),
+       .source = Literal::Float(3.14),
+       .expected = Literal::Float(3.14)},
+      {.source_type = iceberg::float64(),
+       .source = Literal::Double(2.71828),
+       .expected = Literal::Double(2.71828)},
+      {.source_type = iceberg::string(),
+       .source = Literal::String("Hello, World!"),
+       .expected = Literal::String("Hello, World!")},
+      {.source_type = iceberg::binary(),
+       .source = Literal::Binary({0x01, 0x02, 0x03}),
+       .expected = Literal::Binary({0x01, 0x02, 0x03})},
+  };
+
+  for (const auto& c : cases) {
+    auto transform = Transform::Identity();
+    auto transformPtr = transform->Bind(c.source_type);
+    ASSERT_TRUE(transformPtr.has_value()) << "Failed to bind identity transform";
+
+    auto result = transformPtr.value()->Transform(c.source);
+    ASSERT_TRUE(result.has_value())
+        << "Failed to transform literal: " << c.source.ToString();
+
+    EXPECT_EQ(result.value(), c.expected)
+        << "Unexpected result for source: " << c.source.ToString();
+  }
+}
+
+TEST(TransformFunctionTransformTest, BucketTransform) {
+  constexpr int32_t num_buckets = 4;
+  auto transform = Transform::Bucket(num_buckets);
+
+  struct Case {
+    std::shared_ptr<Type> source_type;
+    Literal source;
+    Literal expected;
+  };
+
+  const std::vector<Case> cases = {
+      {.source_type = iceberg::int32(),
+       .source = Literal::Int(42),
+       .expected = Literal::Int(3)},
+      {.source_type = iceberg::date(),
+       .source = Literal::Date(30000),
+       .expected = Literal::Int(2)},
+      {.source_type = iceberg::int64(),
+       .source = Literal::Long(1234567890),
+       .expected = Literal::Int(3)},
+      {.source_type = iceberg::timestamp(),
+       .source = Literal::Timestamp(1622547800000),
+       .expected = Literal::Int(1)},
+      {.source_type = iceberg::timestamp_tz(),
+       .source = Literal::TimestampTz(1622547800000),
+       .expected = Literal::Int(1)},
+      {.source_type = iceberg::string(),
+       .source = Literal::String("test"),
+       .expected = Literal::Int(3)},
+  };
+
+  for (const auto& c : cases) {
+    auto transformPtr = transform->Bind(c.source_type);
+    ASSERT_TRUE(transformPtr.has_value()) << "Failed to bind bucket transform";
+    auto result = transformPtr.value()->Transform(c.source);
+    ASSERT_TRUE(result.has_value())
+        << "Failed to transform literal: " << c.source.ToString();
+
+    EXPECT_EQ(result.value(), c.expected)
+        << "Unexpected result for source: " << c.source.ToString();
+  }
+}
+
+TEST(TransformFunctionTransformTest, TruncateTransform) {
+  constexpr int32_t width = 5;
+  auto transform = Transform::Truncate(width);
+
+  struct Case {
+    std::shared_ptr<Type> source_type;
+    Literal source;
+    Literal expected;
+  };
+
+  const std::vector<Case> cases = {
+      {.source_type = iceberg::int32(),
+       .source = Literal::Int(123456),
+       .expected = Literal::Int(1)},
+      {.source_type = iceberg::string(),
+       .source = Literal::String("Hello, World!"),
+       .expected = Literal::String("Hello")},
+      {.source_type = iceberg::binary(),
+       .source = Literal::Binary({0x01, 0x02, 0x03, 0x04, 0x05, 0x06}),
+       .expected = Literal::Binary({0x01, 0x02, 0x03, 0x04, 0x05})},
+  };
+
+  for (const auto& c : cases) {
+    auto transformPtr = transform->Bind(c.source_type);
+    ASSERT_TRUE(transformPtr.has_value()) << "Failed to bind truncate transform";
+    auto result = transformPtr.value()->Transform(c.source);
+    ASSERT_TRUE(result.has_value())
+        << "Failed to transform literal: " << c.source.ToString();
+
+    EXPECT_EQ(result.value(), c.expected)
+        << "Unexpected result for source: " << c.source.ToString();
+  }
+}
+
+TEST(TransformFunctionTransformTest, YearTransform) {
+  auto transform = Transform::Year();
+
+  struct Case {
+    std::shared_ptr<Type> source_type;
+    Literal source;
+    Literal expected;
+  };
+
+  const std::vector<Case> cases = {
+      {.source_type = iceberg::timestamp(),
+       .source = Literal::Timestamp(1622547800000),
+       .expected = Literal::Int(2021)},
+      {.source_type = iceberg::timestamp_tz(),
+       .source = Literal::TimestampTz(1622547800000),
+       .expected = Literal::Int(2021)},
+      {.source_type = iceberg::date(),
+       .source = Literal::Date(30000),
+       .expected = Literal::Int(2052)},
+  };
+
+  for (const auto& c : cases) {
+    auto transformPtr = transform->Bind(c.source_type);
+    ASSERT_TRUE(transformPtr.has_value()) << "Failed to bind year transform";
+    auto result = transformPtr.value()->Transform(c.source);
+    ASSERT_TRUE(result.has_value())
+        << "Failed to transform literal: " << c.source.ToString();
+
+    EXPECT_EQ(result.value(), c.expected)
+        << "Unexpected result for source: " << c.source.ToString();
+  }
+}
+
+TEST(TransformFunctionTransformTest, MonthTransform) {
+  auto transform = Transform::Month();
+
+  struct Case {
+    std::shared_ptr<Type> source_type;
+    Literal source;
+    Literal expected;
+  };
+
+  const std::vector<Case> cases = {
+      {.source_type = iceberg::timestamp(),
+       .source = Literal::Timestamp(1622547800000),
+       .expected = Literal::Int(617)},
+      {.source_type = iceberg::timestamp_tz(),
+       .source = Literal::TimestampTz(1622547800000),
+       .expected = Literal::Int(617)},
+      {.source_type = iceberg::date(),
+       .source = Literal::Date(30000),
+       .expected = Literal::Int(985)},
+  };
+
+  for (const auto& c : cases) {
+    auto transformPtr = transform->Bind(c.source_type);
+    ASSERT_TRUE(transformPtr.has_value()) << "Failed to bind month transform";
+    auto result = transformPtr.value()->Transform(c.source);
+    ASSERT_TRUE(result.has_value())
+        << "Failed to transform literal: " << c.source.ToString();
+
+    EXPECT_EQ(result.value(), c.expected)
+        << "Unexpected result for source: " << c.source.ToString();
+  }
+}
+
+TEST(TransformFunctionTransformTest, DayTransform) {
+  auto transform = Transform::Day();
+
+  struct Case {
+    std::shared_ptr<Type> source_type;
+    Literal source;
+    Literal expected;
+  };
+
+  const std::vector<Case> cases = {
+      {.source_type = iceberg::timestamp(),
+       .source = Literal::Timestamp(1622547800000),
+       .expected = Literal::Date(18779)},
+      {.source_type = iceberg::timestamp_tz(),
+       .source = Literal::TimestampTz(1622547800000),
+       .expected = Literal::Date(18779)},
+      {.source_type = iceberg::date(),
+       .source = Literal::Date(30000),
+       .expected = Literal::Date(30000)},
+  };
+
+  for (const auto& c : cases) {
+    auto transformPtr = transform->Bind(c.source_type);
+    ASSERT_TRUE(transformPtr.has_value()) << "Failed to bind day transform";
+    auto result = transformPtr.value()->Transform(c.source);
+    ASSERT_TRUE(result.has_value())
+        << "Failed to transform literal: " << c.source.ToString();
+
+    EXPECT_EQ(result.value(), c.expected)
+        << "Unexpected result for source: " << c.source.ToString();
+  }
+}
+
+TEST(TransformFunctionTransformTest, HourTransform) {
+  auto transform = Transform::Hour();
+
+  struct Case {
+    std::shared_ptr<Type> source_type;
+    Literal source;
+    Literal expected;
+  };
+
+  const std::vector<Case> cases = {
+      {.source_type = iceberg::timestamp(),
+       .source = Literal::Timestamp(1622547800000),
+       .expected = Literal::Int(450707)},
+      {.source_type = iceberg::timestamp_tz(),
+       .source = Literal::TimestampTz(1622547800000),
+       .expected = Literal::Int(450707)},
+  };
+
+  for (const auto& c : cases) {
+    auto transformPtr = transform->Bind(c.source_type);
+    ASSERT_TRUE(transformPtr.has_value()) << "Failed to bind hour transform";
+    auto result = transformPtr.value()->Transform(c.source);
+    ASSERT_TRUE(result.has_value())
+        << "Failed to transform literal: " << c.source.ToString();
+
+    EXPECT_EQ(result.value(), c.expected)
+        << "Unexpected result for source: " << c.source.ToString();
+  }
+}
+
+TEST(TransformFunctionTransformTest, VoidTransform) {
+  auto transform = Transform::Void();
+
+  struct Case {
+    std::shared_ptr<Type> source_type;
+    Literal source;
+  };
+
+  const std::vector<Case> cases = {
+      {.source_type = iceberg::boolean(), .source = Literal::Boolean(true)},
+      {.source_type = iceberg::int32(), .source = Literal::Int(42)},
+      {.source_type = iceberg::int32(), .source = Literal::Date(30000)},
+      {.source_type = iceberg::int64(), .source = Literal::Long(1234567890)},
+      {.source_type = iceberg::timestamp(), .source = Literal::Timestamp(1622547800000)},
+      {.source_type = iceberg::timestamp_tz(),
+       .source = Literal::TimestampTz(1622547800000)},
+      {.source_type = iceberg::float32(), .source = Literal::Float(3.14)},
+      {.source_type = iceberg::float64(), .source = Literal::Double(2.71828)},
+      {.source_type = iceberg::string(), .source = Literal::String("Hello, World!")},
+      {.source_type = iceberg::binary(), .source = Literal::Binary({0x01, 0x02, 0x03})},
+  };
+
+  for (const auto& c : cases) {
+    auto transformPtr = transform->Bind(c.source_type);
+    ASSERT_TRUE(transformPtr.has_value()) << "Failed to bind void transform";
+    auto result = transformPtr.value()->Transform(c.source);
+    ASSERT_TRUE(result == std::nullopt)
+        << "Expected void transform to return no result for source: "
+        << c.source.ToString();
+  }
+}
+
 }  // namespace iceberg

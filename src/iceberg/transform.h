@@ -23,9 +23,11 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
 #include <variant>
 
 #include "iceberg/arrow_c_data.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -172,6 +174,8 @@ class ICEBERG_EXPORT TransformFunction {
   TransformFunction(TransformType transform_type, std::shared_ptr<Type> source_type);
   /// \brief Transform an input array to a new array
   virtual Result<ArrowArray> Transform(const ArrowArray& data) = 0;
+  /// \brief Transform an input Literal to a new Literal
+  virtual Result<std::optional<Literal>> Transform(const Literal& literal) = 0;
   /// \brief Get the transform type
   TransformType transform_type() const;
   /// \brief Get the source type of transform function

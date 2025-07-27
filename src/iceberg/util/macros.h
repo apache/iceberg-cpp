@@ -36,3 +36,8 @@
 #define ICEBERG_ASSIGN_OR_RAISE(lhs, rexpr)                                             \
   ICEBERG_ASSIGN_OR_RAISE_IMPL(ICEBERG_ASSIGN_OR_RAISE_NAME(result_, __COUNTER__), lhs, \
                                rexpr)
+
+#define NANOARROW_RETURN_IF_NOT_OK(status, error)                  \
+  if (status != NANOARROW_OK) [[unlikely]] {                       \
+    return InvalidArrowData("Nanoarrow error: {}", error.message); \
+  }

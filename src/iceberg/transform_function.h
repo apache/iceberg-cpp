@@ -33,6 +33,9 @@ class IdentityTransform : public TransformFunction {
   /// \brief Returns the input array without modification.
   Result<ArrowArray> Transform(const ArrowArray& input) override;
 
+  /// \brief Returns the same Literal as the input.
+  Result<std::optional<Literal>> Transform(const Literal& literal) override;
+
   /// \brief Returns the same type as the source type if it is valid.
   Result<std::shared_ptr<Type>> ResultType() const override;
 
@@ -52,6 +55,9 @@ class BucketTransform : public TransformFunction {
 
   /// \brief Applies the bucket hash function to the input array.
   Result<ArrowArray> Transform(const ArrowArray& input) override;
+
+  /// \brief Applies the bucket hash function to the input Literal.
+  Result<std::optional<Literal>> Transform(const Literal& literal) override;
 
   /// \brief Returns INT32 as the output type.
   Result<std::shared_ptr<Type>> ResultType() const override;
@@ -77,6 +83,9 @@ class TruncateTransform : public TransformFunction {
   /// \brief Truncates values in the input array to the specified width.
   Result<ArrowArray> Transform(const ArrowArray& input) override;
 
+  /// \brief Truncates the input Literal to the specified width.
+  Result<std::optional<Literal>> Transform(const Literal& literal) override;
+
   /// \brief Returns the same type as source_type.
   Result<std::shared_ptr<Type>> ResultType() const override;
 
@@ -100,6 +109,9 @@ class YearTransform : public TransformFunction {
   /// \brief Extracts the year from each timestamp in the input array.
   Result<ArrowArray> Transform(const ArrowArray& input) override;
 
+  /// \brief Extracts the year from a timestamp literal.
+  Result<std::optional<Literal>> Transform(const Literal& literal) override;
+
   /// \brief Returns INT32 as the output type.
   Result<std::shared_ptr<Type>> ResultType() const override;
 
@@ -118,6 +130,9 @@ class MonthTransform : public TransformFunction {
 
   /// \brief Extracts the month (1-12) from each timestamp in the input array.
   Result<ArrowArray> Transform(const ArrowArray& input) override;
+
+  /// \brief Extracts the month (1-12) from a timestamp literal.
+  Result<std::optional<Literal>> Transform(const Literal& literal) override;
 
   /// \brief Returns INT32 as the output type.
   Result<std::shared_ptr<Type>> ResultType() const override;
@@ -138,6 +153,9 @@ class DayTransform : public TransformFunction {
   /// \brief Extracts the day (1-31) from each timestamp in the input array.
   Result<ArrowArray> Transform(const ArrowArray& input) override;
 
+  /// \brief Extracts the day (1-31) from a timestamp literal.
+  Result<std::optional<Literal>> Transform(const Literal& literal) override;
+
   /// \brief Returns INT32 as the output type.
   Result<std::shared_ptr<Type>> ResultType() const override;
 
@@ -157,6 +175,9 @@ class HourTransform : public TransformFunction {
   /// \brief Extracts the hour (0-23) from each timestamp in the input array.
   Result<ArrowArray> Transform(const ArrowArray& input) override;
 
+  /// \brief Extracts the hour (0-23) from a timestamp literal.
+  Result<std::optional<Literal>> Transform(const Literal& literal) override;
+
   /// \brief Returns INT32 as the output type.
   Result<std::shared_ptr<Type>> ResultType() const override;
 
@@ -175,6 +196,9 @@ class VoidTransform : public TransformFunction {
 
   /// \brief Returns an all-null array of the same length as the input.
   Result<ArrowArray> Transform(const ArrowArray& input) override;
+
+  /// \brief Returns a null literal.
+  Result<std::optional<Literal>> Transform(const Literal& literal) override;
 
   /// \brief Returns null type or a sentinel type indicating void.
   Result<std::shared_ptr<Type>> ResultType() const override;
