@@ -23,12 +23,6 @@
 
 namespace iceberg::avro {
 
-// Avro field ID attribute constants
-constexpr std::string_view kFieldId = "field-id";
-constexpr std::string_view kElementId = "element-id";
-constexpr std::string_view kKeyId = "key-id";
-constexpr std::string_view kValueId = "value-id";
-
 // Avro logical type constants
 constexpr std::string_view kMapLogicalType = "map";
 

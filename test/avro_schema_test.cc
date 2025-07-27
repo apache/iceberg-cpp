@@ -22,10 +22,15 @@
 #include <avro/Compiler.hh>
 #include <avro/NodeImpl.hh>
 #include <avro/Types.hh>
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
+#include "iceberg/avro/avro_reader.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
+#include "iceberg/json_internal.h"
 #include "iceberg/metadata_columns.h"
+#include "iceberg/name_mapping.h"
 #include "iceberg/schema.h"
 #include "matchers.h"
 
@@ -1055,6 +1060,138 @@ TEST(AvroSchemaProjectionTest, ProjectDecimalIncompatible) {
       Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
   ASSERT_THAT(projection_result, IsError(ErrorKind::kInvalidSchema));
   ASSERT_THAT(projection_result, HasErrorMessage("Cannot read"));
+}
+
+}  // namespace iceberg::avro
+
+// NameMapping tests for Avro schema context
+namespace iceberg::avro {
+
+std::unique_ptr<NameMapping> CreateTestNameMapping() {
+  std::vector<MappedField> fields;
+  fields.emplace_back(MappedField{.names = {"id"}, .field_id = 1});
+  fields.emplace_back(MappedField{.names = {"name"}, .field_id = 2});
+
+  // Create nested mapping for the data field
+  std::vector<MappedField> nested_fields;
+  nested_fields.emplace_back(MappedField{.names = {"value"}, .field_id = 3});
+  nested_fields.emplace_back(MappedField{.names = {"description"}, .field_id = 4});
+  auto nested_mapping = MappedFields::Make(std::move(nested_fields));
+
+  fields.emplace_back(MappedField{
+      .names = {"data"}, .field_id = 5, .nested_mapping = std::move(nested_mapping)});
+
+  return NameMapping::Make(std::move(fields));
+}
+
+TEST(NameMappingBasicTest, Basic) {
+  auto name_mapping = CreateTestNameMapping();
+
+  // Test that the name mapping can be created and accessed
+  EXPECT_TRUE(name_mapping != nullptr);
+  EXPECT_EQ(name_mapping->AsMappedFields().Size(), 3);
+}
+
+TEST(NameMappingFindMethodsTest, FindMethodsWorkWithConst) {
+  auto name_mapping = CreateTestNameMapping();
+  const NameMapping& const_mapping = *name_mapping;
+
+  // Test that Find methods work on const objects
+  auto field_by_id = const_mapping.Find(1);
+  ASSERT_TRUE(field_by_id.has_value());
+  EXPECT_EQ(field_by_id->get().field_id, 1);
+  EXPECT_THAT(field_by_id->get().names, testing::UnorderedElementsAre("id"));
+
+  auto field_by_name = const_mapping.Find("name");
+  ASSERT_TRUE(field_by_name.has_value());
+  EXPECT_EQ(field_by_name->get().field_id, 2);
+  EXPECT_THAT(field_by_name->get().names, testing::UnorderedElementsAre("name"));
+
+  auto field_by_parts = const_mapping.Find(std::vector<std::string>{"data", "value"});
+  ASSERT_TRUE(field_by_parts.has_value());
+  EXPECT_EQ(field_by_parts->get().field_id, 3);
+  EXPECT_THAT(field_by_parts->get().names, testing::UnorderedElementsAre("value"));
+}
+
+TEST(NameMappingFromJsonTest, FromJsonWorks) {
+  std::string json_str = R"([
+    {"field-id": 1, "names": ["id"]},
+    {"field-id": 2, "names": ["name"]},
+    {"field-id": 3, "names": ["data"], "fields": [
+      {"field-id": 4, "names": ["value"]},
+      {"field-id": 5, "names": ["description"]}
+    ]}
+  ])";
+
+  auto result = iceberg::NameMappingFromJson(nlohmann::json::parse(json_str));
+  ASSERT_TRUE(result.has_value());
+
+  auto mapping = std::move(result.value());
+  const NameMapping& const_mapping = *mapping;
+
+  // Test that the parsed mapping works correctly
+  auto field_by_id = const_mapping.Find(1);
+  ASSERT_TRUE(field_by_id.has_value());
+  EXPECT_EQ(field_by_id->get().field_id, 1);
+  EXPECT_THAT(field_by_id->get().names, testing::UnorderedElementsAre("id"));
+
+  auto field_by_name = const_mapping.Find("name");
+  ASSERT_TRUE(field_by_name.has_value());
+  EXPECT_EQ(field_by_name->get().field_id, 2);
+  EXPECT_THAT(field_by_name->get().names, testing::UnorderedElementsAre("name"));
+
+  auto nested_field = const_mapping.Find("data.value");
+  ASSERT_TRUE(nested_field.has_value());
+  EXPECT_EQ(nested_field->get().field_id, 4);
+  EXPECT_THAT(nested_field->get().names, testing::UnorderedElementsAre("value"));
+}
+
+TEST(NameMappingNestedFieldsTest, WithNestedFields) {
+  auto name_mapping = CreateTestNameMapping();
+  const NameMapping& const_mapping = *name_mapping;
+
+  // Test nested field access
+  auto data_field = const_mapping.Find("data");
+  ASSERT_TRUE(data_field.has_value());
+  EXPECT_EQ(data_field->get().field_id, 5);
+  EXPECT_THAT(data_field->get().names, testing::UnorderedElementsAre("data"));
+
+  // Test that nested mapping exists
+  ASSERT_TRUE(data_field->get().nested_mapping != nullptr);
+  EXPECT_EQ(data_field->get().nested_mapping->Size(), 2);
+
+  // Test nested field access through the nested mapping
+  auto value_field = data_field->get().nested_mapping->Field(3);
+  ASSERT_TRUE(value_field.has_value());
+  EXPECT_EQ(value_field->get().field_id, 3);
+  EXPECT_THAT(value_field->get().names, testing::UnorderedElementsAre("value"));
+
+  auto description_field = data_field->get().nested_mapping->Field(4);
+  ASSERT_TRUE(description_field.has_value());
+  EXPECT_EQ(description_field->get().field_id, 4);
+  EXPECT_THAT(description_field->get().names,
+              testing::UnorderedElementsAre("description"));
+}
+
+TEST(NameMappingReaderOptionsTest, FromReaderOptionsWorks) {
+  // Create a name mapping
+  auto name_mapping = CreateTestNameMapping();
+  ASSERT_TRUE(name_mapping != nullptr);
+  EXPECT_EQ(name_mapping->AsMappedFields().Size(), 3);
+
+  // Create reader options with name mapping
+  ReaderOptions options;
+  options.name_mapping = std::move(name_mapping);
+
+  // Verify that the name mapping is accessible
+  ASSERT_TRUE(options.name_mapping != nullptr);
+  EXPECT_EQ(options.name_mapping->AsMappedFields().Size(), 3);
+
+  // Test that the name mapping works correctly
+  auto field_by_id = options.name_mapping->Find(1);
+  ASSERT_TRUE(field_by_id.has_value());
+  EXPECT_EQ(field_by_id->get().field_id, 1);
+  EXPECT_THAT(field_by_id->get().names, testing::UnorderedElementsAre("id"));
 }
 
 }  // namespace iceberg::avro
