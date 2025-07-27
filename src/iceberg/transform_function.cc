@@ -21,6 +21,7 @@
 
 #include <cassert>
 #include <chrono>
+#include <utility>
 
 #include "iceberg/type.h"
 #include "iceberg/util/murmurhash3_internal.h"

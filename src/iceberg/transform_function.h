@@ -106,10 +106,11 @@ class YearTransform : public TransformFunction {
   /// \param source_type Must be a timestamp type.
   explicit YearTransform(std::shared_ptr<Type> const& source_type);
 
-  /// \brief Extracts the year from each timestamp in the input array.
+  /// \brief Extracts the year from each date timestamp in the input array, as years from
+  /// 1970.
   Result<ArrowArray> Transform(const ArrowArray& input) override;
 
-  /// \brief Extracts the year from a timestamp literal.
+  /// \brief Extract a date or timestamp year, as years from 1970.
   Result<std::optional<Literal>> Transform(const Literal& literal) override;
 
   /// \brief Returns INT32 as the output type.
@@ -128,10 +129,11 @@ class MonthTransform : public TransformFunction {
   /// \param source_type Must be a timestamp type.
   explicit MonthTransform(std::shared_ptr<Type> const& source_type);
 
-  /// \brief Extracts the month (1-12) from each timestamp in the input array.
+  /// \brief Extracts the month from each date or timestamp in the input array, as months
+  /// from 1970-01-01.
   Result<ArrowArray> Transform(const ArrowArray& input) override;
 
-  /// \brief Extracts the month (1-12) from a timestamp literal.
+  /// \brief Extract a date or timestamp month, as months from 1970-01-01.
   Result<std::optional<Literal>> Transform(const Literal& literal) override;
 
   /// \brief Returns INT32 as the output type.
@@ -150,10 +152,11 @@ class DayTransform : public TransformFunction {
   /// \param source_type Must be a timestamp type.
   explicit DayTransform(std::shared_ptr<Type> const& source_type);
 
-  /// \brief Extracts the day (1-31) from each timestamp in the input array.
+  /// \brief Extracts the day from each date or timestamp in the input array, as days from
+  /// 1970-01-01.
   Result<ArrowArray> Transform(const ArrowArray& input) override;
 
-  /// \brief Extracts the day (1-31) from a timestamp literal.
+  /// \brief Extract a date or timestamp day, as days from 1970-01-01.
   Result<std::optional<Literal>> Transform(const Literal& literal) override;
 
   /// \brief Returns INT32 as the output type.
@@ -172,10 +175,11 @@ class HourTransform : public TransformFunction {
   /// \param source_type Must be a timestamp type.
   explicit HourTransform(std::shared_ptr<Type> const& source_type);
 
-  /// \brief Extracts the hour (0-23) from each timestamp in the input array.
+  /// \brief Extracts the hour from each timestamp in the input array, as hours from
+  /// 1970-01-01 00:00:00.
   Result<ArrowArray> Transform(const ArrowArray& input) override;
 
-  /// \brief Extracts the hour (0-23) from a timestamp literal.
+  /// \brief Extract a timestamp hour, as hours from 1970-01-01 00:00:00.
   Result<std::optional<Literal>> Transform(const Literal& literal) override;
 
   /// \brief Returns INT32 as the output type.
