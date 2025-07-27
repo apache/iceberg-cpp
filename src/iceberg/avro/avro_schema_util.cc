@@ -996,4 +996,11 @@ Result<::avro::NodePtr> CreateAvroNodeWithFieldIds(const ::avro::NodePtr& origin
   }
 }
 
+Result<::avro::NodePtr> CreateAvroNodeWithFieldIds(const ::avro::NodePtr& original_node,
+                                                   const NameMapping& mapping) {
+  MappedField mapped_field;
+  mapped_field.nested_mapping = std::make_shared<MappedFields>(mapping.AsMappedFields());
+  return CreateAvroNodeWithFieldIds(original_node, mapped_field);
+}
+
 }  // namespace iceberg::avro

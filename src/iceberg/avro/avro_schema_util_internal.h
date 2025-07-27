@@ -156,4 +156,11 @@ bool HasMapLogicalType(const ::avro::NodePtr& node);
 Result<::avro::NodePtr> CreateAvroNodeWithFieldIds(const ::avro::NodePtr& original_node,
                                                    const MappedField& mapped_field);
 
+/// \brief Create a new Avro node with field IDs from name mapping.
+/// \param original_node The original Avro node to copy.
+/// \param mapping The name mapping to apply field IDs from.
+/// \return A new Avro node with field IDs applied, or an error.
+Result<::avro::NodePtr> CreateAvroNodeWithFieldIds(const ::avro::NodePtr& original_node,
+                                                   const NameMapping& mapping);
+
 }  // namespace iceberg::avro

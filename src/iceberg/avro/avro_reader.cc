@@ -106,13 +106,9 @@ class AvroReader::Impl {
     if (has_id_visitor.HasNoIds()) {
       // Apply field IDs based on name mapping if available
       if (options.name_mapping) {
-        MappedField mapped_field;
-        // Convert NameMapping to MappedFields for nested mapping
-        mapped_field.nested_mapping =
-            std::make_shared<MappedFields>(options.name_mapping->AsMappedFields());
         ICEBERG_ASSIGN_OR_RAISE(
             auto new_root_node,
-            CreateAvroNodeWithFieldIds(file_schema.root(), mapped_field));
+            CreateAvroNodeWithFieldIds(file_schema.root(), *options.name_mapping));
 
         // Create a new schema with the updated root node
         auto new_schema = ::avro::ValidSchema(new_root_node);

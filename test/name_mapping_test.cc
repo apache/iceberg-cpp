@@ -24,17 +24,8 @@
 #include <unordered_set>
 #include <vector>
 
-#include <avro/Compiler.hh>
-#include <avro/NodeImpl.hh>
-#include <avro/Types.hh>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-
-#include "iceberg/avro/avro_reader.h"
-#include "iceberg/avro/avro_schema_util_internal.h"
-#include "iceberg/file_reader.h"
-#include "iceberg/json_internal.h"
-#include "matchers.h"
 
 namespace iceberg {
 
