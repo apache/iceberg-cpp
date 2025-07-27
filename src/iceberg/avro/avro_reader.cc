@@ -36,7 +36,6 @@
 #include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/avro/avro_stream_internal.h"
-#include "iceberg/json_internal.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/util/checked_cast.h"
@@ -107,14 +106,9 @@ class AvroReader::Impl {
 
     if (has_id_visitor.HasNoIds()) {
       // Apply field IDs based on name mapping if available
-      auto name_mapping_iter = options.properties.find("name_mapping");
-      if (name_mapping_iter != options.properties.end()) {
-        // Parse name mapping from JSON string
-        ICEBERG_ASSIGN_OR_RAISE(auto name_mapping,
-                                iceberg::NameMappingFromJson(
-                                    nlohmann::json::parse(name_mapping_iter->second)));
-        ICEBERG_RETURN_UNEXPECTED(
-            ApplyFieldIdsFromNameMapping(file_schema.root(), *name_mapping));
+      if (options.name_mapping) {
+        ICEBERG_RETURN_UNEXPECTED(ApplyFieldIdsFromNameMapping(*options.name_mapping,
+                                                               file_schema.root().get()));
       } else {
         return NotImplemented(
             "Avro file schema has no field IDs and no name mapping provided");
@@ -227,8 +221,8 @@ class AvroReader::Impl {
   }
 
   // Apply field IDs to Avro schema nodes based on name mapping
-  Status ApplyFieldIdsFromNameMapping(const ::avro::NodePtr& node,
-                                      const NameMapping& name_mapping) {
+  Status ApplyFieldIdsFromNameMapping(const NameMapping& name_mapping,
+                                      ::avro::Node* node) {
     switch (node->type()) {
       case ::avro::AVRO_RECORD:
         return ApplyFieldIdsToRecord(node, name_mapping);
@@ -255,19 +249,19 @@ class AvroReader::Impl {
     }
   }
 
-  Status ApplyFieldIdsToRecord(const ::avro::NodePtr& node,
-                               const NameMapping& name_mapping) {
+  Status ApplyFieldIdsToRecord(::avro::Node* node, const NameMapping& name_mapping) {
     for (size_t i = 0; i < node->leaves(); ++i) {
       const std::string& field_name = node->nameAt(i);
-      ::avro::NodePtr field_node = node->leafAt(i);
+      ::avro::Node* field_node = node->leafAt(i).get();
 
       // Try to find field ID by name in the name mapping
       if (auto field_ref = name_mapping.Find(field_name)) {
         if (field_ref->get().field_id.has_value()) {
           // Add field ID attribute to the node
           ::avro::CustomAttributes attributes;
-          attributes.addAttribute(
-              "field-id", std::to_string(field_ref->get().field_id.value()), false);
+          attributes.addAttribute(std::string(kFieldId),
+                                  std::to_string(field_ref->get().field_id.value()),
+                                  false);
           node->addCustomAttributesForField(attributes);
         }
 
@@ -279,23 +273,24 @@ class AvroReader::Impl {
           std::vector<MappedField> fields_vector(fields_span.begin(), fields_span.end());
           auto nested_name_mapping = NameMapping::Make(std::move(fields_vector));
           ICEBERG_RETURN_UNEXPECTED(
-              ApplyFieldIdsFromNameMapping(field_node, *nested_name_mapping));
+              ApplyFieldIdsFromNameMapping(*nested_name_mapping, field_node));
         } else {
           // Recursively apply field IDs to child nodes (only if not already handled by
           // nested mapping)
           ICEBERG_RETURN_UNEXPECTED(
-              ApplyFieldIdsFromNameMapping(field_node, name_mapping));
+              ApplyFieldIdsFromNameMapping(name_mapping, field_node));
         }
       } else {
         // Recursively apply field IDs to child nodes even if no mapping found
-        ICEBERG_RETURN_UNEXPECTED(ApplyFieldIdsFromNameMapping(field_node, name_mapping));
+        ICEBERG_RETURN_UNEXPECTED(ApplyFieldIdsFromNameMapping(name_mapping, field_node));
       }
     }
     return {};
   }
 
-  Status ApplyFieldIdsToArray(const ::avro::NodePtr& node,
-                              const NameMapping& name_mapping) {
+  Status ApplyFieldIdsToArray(::avro::Node* node, const NameMapping& name_mapping) {
+    // TODO(liuxiaoyu): Add debug logging to print node information for troubleshooting
+    // when array type validation fails
     if (node->leaves() != 1) {
       return InvalidSchema("Array type must have exactly one leaf");
     }
@@ -303,53 +298,53 @@ class AvroReader::Impl {
     // Check if this is a map represented as array
     if (node->logicalType().type() == ::avro::LogicalType::CUSTOM &&
         node->logicalType().customLogicalType() != nullptr &&
-        node->logicalType().customLogicalType()->name() == "map") {
-      return ApplyFieldIdsFromNameMapping(node->leafAt(0), name_mapping);
+        node->logicalType().customLogicalType()->name() == kMapLogicalType) {
+      return ApplyFieldIdsFromNameMapping(name_mapping, node->leafAt(0).get());
     }
 
     // For regular arrays, try to find element field ID
-    if (auto element_field = name_mapping.Find("element")) {
+    if (auto element_field = name_mapping.Find(std::string(kElement))) {
       if (element_field->get().field_id.has_value()) {
         ::avro::CustomAttributes attributes;
-        attributes.addAttribute(
-            "element-id", std::to_string(element_field->get().field_id.value()), false);
+        attributes.addAttribute(std::string(kElementId),
+                                std::to_string(element_field->get().field_id.value()),
+                                false);
         node->addCustomAttributesForField(attributes);
       }
     }
 
-    return ApplyFieldIdsFromNameMapping(node->leafAt(0), name_mapping);
+    return ApplyFieldIdsFromNameMapping(name_mapping, node->leafAt(0).get());
   }
 
-  Status ApplyFieldIdsToMap(const ::avro::NodePtr& node,
-                            const NameMapping& name_mapping) {
+  Status ApplyFieldIdsToMap(::avro::Node* node, const NameMapping& name_mapping) {
     if (node->leaves() != 2) {
       return InvalidSchema("Map type must have exactly two leaves");
     }
 
     // Try to find key and value field IDs
-    if (auto key_field = name_mapping.Find("key")) {
+    if (auto key_field = name_mapping.Find(std::string(kKey))) {
       if (key_field->get().field_id.has_value()) {
         ::avro::CustomAttributes attributes;
-        attributes.addAttribute("key-id",
+        attributes.addAttribute(std::string(kKeyId),
                                 std::to_string(key_field->get().field_id.value()), false);
         node->addCustomAttributesForField(attributes);
       }
     }
 
-    if (auto value_field = name_mapping.Find("value")) {
+    if (auto value_field = name_mapping.Find(std::string(kValue))) {
       if (value_field->get().field_id.has_value()) {
         ::avro::CustomAttributes attributes;
-        attributes.addAttribute(
-            "value-id", std::to_string(value_field->get().field_id.value()), false);
+        attributes.addAttribute(std::string(kValueId),
+                                std::to_string(value_field->get().field_id.value()),
+                                false);
         node->addCustomAttributesForField(attributes);
       }
     }
 
-    return ApplyFieldIdsFromNameMapping(node->leafAt(1), name_mapping);
+    return ApplyFieldIdsFromNameMapping(name_mapping, node->leafAt(1).get());
   }
 
-  Status ApplyFieldIdsToUnion(const ::avro::NodePtr& node,
-                              const NameMapping& name_mapping) {
+  Status ApplyFieldIdsToUnion(::avro::Node* node, const NameMapping& name_mapping) {
     if (node->leaves() != 2) {
       return InvalidSchema("Union type must have exactly two branches");
     }
@@ -357,14 +352,22 @@ class AvroReader::Impl {
     const auto& branch_0 = node->leafAt(0);
     const auto& branch_1 = node->leafAt(1);
 
-    if (branch_0->type() == ::avro::AVRO_NULL) {
-      return ApplyFieldIdsFromNameMapping(branch_1, name_mapping);
-    }
-    if (branch_1->type() == ::avro::AVRO_NULL) {
-      return ApplyFieldIdsFromNameMapping(branch_0, name_mapping);
-    }
+    bool branch_0_is_null = (branch_0->type() == ::avro::AVRO_NULL);
+    bool branch_1_is_null = (branch_1->type() == ::avro::AVRO_NULL);
 
-    return InvalidSchema("Union type must have exactly one null branch");
+    if (branch_0_is_null && !branch_1_is_null) {
+      // branch_0 is null, branch_1 is not null
+      return ApplyFieldIdsFromNameMapping(name_mapping, branch_1.get());
+    } else if (!branch_0_is_null && branch_1_is_null) {
+      // branch_0 is not null, branch_1 is null
+      return ApplyFieldIdsFromNameMapping(name_mapping, branch_0.get());
+    } else if (branch_0_is_null && branch_1_is_null) {
+      // Both branches are null - this is invalid
+      return InvalidSchema("Union type cannot have two null branches");
+    } else {
+      // Neither branch is null - this is invalid
+      return InvalidSchema("Union type must have exactly one null branch");
+    }
   }
 
  private:
