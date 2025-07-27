@@ -152,7 +152,7 @@ const std::unordered_map<int32_t, MappedFieldConstRef>& MappedFields::LazyIdToFi
 NameMapping::NameMapping(std::unique_ptr<MappedFields> mapping)
     : mapping_(std::move(mapping)) {}
 
-std::optional<MappedFieldConstRef> NameMapping::Find(int32_t id) {
+std::optional<MappedFieldConstRef> NameMapping::Find(int32_t id) const {
   const auto& fields_by_id = LazyFieldsById();
   if (auto iter = fields_by_id.find(id); iter != fields_by_id.cend()) {
     return iter->second;
@@ -160,14 +160,15 @@ std::optional<MappedFieldConstRef> NameMapping::Find(int32_t id) {
   return std::nullopt;
 }
 
-std::optional<MappedFieldConstRef> NameMapping::Find(std::span<const std::string> names) {
+std::optional<MappedFieldConstRef> NameMapping::Find(
+    std::span<const std::string> names) const {
   if (names.empty()) {
     return std::nullopt;
   }
   return Find(JoinByDot(names));
 }
 
-std::optional<MappedFieldConstRef> NameMapping::Find(const std::string& name) {
+std::optional<MappedFieldConstRef> NameMapping::Find(const std::string& name) const {
   const auto& fields_by_name = LazyFieldsByName();
   if (auto iter = fields_by_name.find(name); iter != fields_by_name.cend()) {
     return iter->second;

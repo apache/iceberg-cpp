@@ -104,13 +104,13 @@ class ICEBERG_EXPORT NameMapping {
   static std::unique_ptr<NameMapping> MakeEmpty();
 
   /// \brief Find a field by its ID.
-  std::optional<MappedFieldConstRef> Find(int32_t id);
+  std::optional<MappedFieldConstRef> Find(int32_t id) const;
 
   /// \brief Find a field by its unconcatenated names.
-  std::optional<MappedFieldConstRef> Find(std::span<const std::string> names);
+  std::optional<MappedFieldConstRef> Find(std::span<const std::string> names) const;
 
   /// \brief Find a field by its (concatenated) name.
-  std::optional<MappedFieldConstRef> Find(const std::string& name);
+  std::optional<MappedFieldConstRef> Find(const std::string& name) const;
 
   /// \brief Get the underlying MappedFields instance.
   const MappedFields& AsMappedFields() const;
