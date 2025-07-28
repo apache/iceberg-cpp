@@ -232,7 +232,7 @@ Result<std::optional<Literal>> YearTransform::Transform(const Literal& literal) 
         literal.ToString(), source_type()->ToString());
   }
 
-  using namespace std::chrono;
+  using namespace std::chrono;  // NOLINT
   switch (source_type()->type_id()) {
     case TypeId::kDate: {
       auto value = std::get<int32_t>(literal.value());
@@ -243,8 +243,8 @@ Result<std::optional<Literal>> YearTransform::Transform(const Literal& literal) 
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz: {
       auto value = std::get<int64_t>(literal.value());
-      // Convert milliseconds-since-epoch into a `year_month_day` object
-      auto ymd = year_month_day(floor<days>(sys_time<milliseconds>(milliseconds{value})));
+      // Convert microseconds-since-epoch into a `year_month_day` object
+      auto ymd = year_month_day(floor<days>(sys_time<microseconds>(microseconds{value})));
       return Literal::Int(static_cast<int32_t>(ymd.year()));
     }
     default:
@@ -288,7 +288,7 @@ Result<std::optional<Literal>> MonthTransform::Transform(const Literal& literal)
         literal.ToString(), source_type()->ToString());
   }
 
-  using namespace std::chrono;
+  using namespace std::chrono;  // NOLINT
   switch (source_type()->type_id()) {
     case TypeId::kDate: {
       auto value = std::get<int32_t>(literal.value());
@@ -305,8 +305,8 @@ Result<std::optional<Literal>> MonthTransform::Transform(const Literal& literal)
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz: {
       auto value = std::get<int64_t>(literal.value());
-      // Convert milliseconds-since-epoch into a `year_month_day` object
-      auto ymd = year_month_day(floor<days>(sys_time<milliseconds>(milliseconds{value})));
+      // Convert microseconds-since-epoch into a `year_month_day` object
+      auto ymd = year_month_day(floor<days>(sys_time<microseconds>(microseconds{value})));
       auto epoch_ymd = year_month_day(year{1970} / January / 1);
       auto delta = ymd.year() - epoch_ymd.year();
       // Calculate the month as months from 1970-01
@@ -356,7 +356,7 @@ Result<std::optional<Literal>> DayTransform::Transform(const Literal& literal) {
         literal.ToString(), source_type()->ToString());
   }
 
-  using namespace std::chrono;
+  using namespace std::chrono;  // NOLINT
   switch (source_type()->type_id()) {
     case TypeId::kDate: {
       // Day is the same as the date value
@@ -365,8 +365,8 @@ Result<std::optional<Literal>> DayTransform::Transform(const Literal& literal) {
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz: {
       auto value = std::get<int64_t>(literal.value());
-      // Convert milliseconds to `sys_days` (chronological days since epoch)
-      auto timestamp = sys_time<milliseconds>(milliseconds{value});
+      // Convert microseconds to `sys_days` (chronological days since epoch)
+      auto timestamp = sys_time<microseconds>(microseconds{value});
       auto days_since_epoch = floor<days>(timestamp);
 
       return Literal::Date(
@@ -411,13 +411,13 @@ Result<std::optional<Literal>> HourTransform::Transform(const Literal& literal) 
         literal.ToString(), source_type()->ToString());
   }
 
-  using namespace std::chrono;
+  using namespace std::chrono;  // NOLINT
   switch (source_type()->type_id()) {
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz: {
       auto value = std::get<int64_t>(literal.value());
-      // Create a `sys_time` object from the milliseconds value
-      auto timestamp = sys_time<milliseconds>(milliseconds{value});
+      // Create a `sys_time` object from the microseconds value
+      auto timestamp = sys_time<microseconds>(microseconds{value});
 
       // Convert the time since epoch directly into hours
       auto hours_since_epoch = duration_cast<hours>(timestamp.time_since_epoch()).count();

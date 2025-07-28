@@ -214,17 +214,17 @@ TEST(TransformFunctionTransformTest, IdentityTransform) {
        .source = Literal::Long(1234567890),
        .expected = Literal::Long(1234567890)},
       {.source_type = iceberg::timestamp(),
-       .source = Literal::Timestamp(1622547800000),
-       .expected = Literal::Timestamp(1622547800000)},
+       .source = Literal::Timestamp(1622547800000000),
+       .expected = Literal::Timestamp(1622547800000000)},
       {.source_type = iceberg::timestamp_tz(),
-       .source = Literal::TimestampTz(1622547800000),
-       .expected = Literal::TimestampTz(1622547800000)},
+       .source = Literal::TimestampTz(1622547800000000),
+       .expected = Literal::TimestampTz(1622547800000000)},
       {.source_type = iceberg::float32(),
        .source = Literal::Float(3.14),
        .expected = Literal::Float(3.14)},
       {.source_type = iceberg::float64(),
-       .source = Literal::Double(2.71828),
-       .expected = Literal::Double(2.71828)},
+       .source = Literal::Double(1.23e-5),
+       .expected = Literal::Double(1.23e-5)},
       {.source_type = iceberg::string(),
        .source = Literal::String("Hello, World!"),
        .expected = Literal::String("Hello, World!")},
@@ -268,10 +268,10 @@ TEST(TransformFunctionTransformTest, BucketTransform) {
        .source = Literal::Long(1234567890),
        .expected = Literal::Int(3)},
       {.source_type = iceberg::timestamp(),
-       .source = Literal::Timestamp(1622547800000),
+       .source = Literal::Timestamp(1622547800000000),
        .expected = Literal::Int(1)},
       {.source_type = iceberg::timestamp_tz(),
-       .source = Literal::TimestampTz(1622547800000),
+       .source = Literal::TimestampTz(1622547800000000),
        .expected = Literal::Int(1)},
       {.source_type = iceberg::string(),
        .source = Literal::String("test"),
@@ -335,10 +335,10 @@ TEST(TransformFunctionTransformTest, YearTransform) {
 
   const std::vector<Case> cases = {
       {.source_type = iceberg::timestamp(),
-       .source = Literal::Timestamp(1622547800000),
+       .source = Literal::Timestamp(1622547800000000),
        .expected = Literal::Int(2021)},
       {.source_type = iceberg::timestamp_tz(),
-       .source = Literal::TimestampTz(1622547800000),
+       .source = Literal::TimestampTz(1622547800000000),
        .expected = Literal::Int(2021)},
       {.source_type = iceberg::date(),
        .source = Literal::Date(30000),
@@ -368,10 +368,10 @@ TEST(TransformFunctionTransformTest, MonthTransform) {
 
   const std::vector<Case> cases = {
       {.source_type = iceberg::timestamp(),
-       .source = Literal::Timestamp(1622547800000),
+       .source = Literal::Timestamp(1622547800000000),
        .expected = Literal::Int(617)},
       {.source_type = iceberg::timestamp_tz(),
-       .source = Literal::TimestampTz(1622547800000),
+       .source = Literal::TimestampTz(1622547800000000),
        .expected = Literal::Int(617)},
       {.source_type = iceberg::date(),
        .source = Literal::Date(30000),
@@ -401,10 +401,10 @@ TEST(TransformFunctionTransformTest, DayTransform) {
 
   const std::vector<Case> cases = {
       {.source_type = iceberg::timestamp(),
-       .source = Literal::Timestamp(1622547800000),
+       .source = Literal::Timestamp(1622547800000000),
        .expected = Literal::Date(18779)},
       {.source_type = iceberg::timestamp_tz(),
-       .source = Literal::TimestampTz(1622547800000),
+       .source = Literal::TimestampTz(1622547800000000),
        .expected = Literal::Date(18779)},
       {.source_type = iceberg::date(),
        .source = Literal::Date(30000),
@@ -434,10 +434,10 @@ TEST(TransformFunctionTransformTest, HourTransform) {
 
   const std::vector<Case> cases = {
       {.source_type = iceberg::timestamp(),
-       .source = Literal::Timestamp(1622547800000),
+       .source = Literal::Timestamp(1622547800000000),
        .expected = Literal::Int(450707)},
       {.source_type = iceberg::timestamp_tz(),
-       .source = Literal::TimestampTz(1622547800000),
+       .source = Literal::TimestampTz(1622547800000000),
        .expected = Literal::Int(450707)},
   };
 
@@ -466,11 +466,12 @@ TEST(TransformFunctionTransformTest, VoidTransform) {
       {.source_type = iceberg::int32(), .source = Literal::Int(42)},
       {.source_type = iceberg::int32(), .source = Literal::Date(30000)},
       {.source_type = iceberg::int64(), .source = Literal::Long(1234567890)},
-      {.source_type = iceberg::timestamp(), .source = Literal::Timestamp(1622547800000)},
+      {.source_type = iceberg::timestamp(),
+       .source = Literal::Timestamp(1622547800000000)},
       {.source_type = iceberg::timestamp_tz(),
-       .source = Literal::TimestampTz(1622547800000)},
+       .source = Literal::TimestampTz(1622547800000000)},
       {.source_type = iceberg::float32(), .source = Literal::Float(3.14)},
-      {.source_type = iceberg::float64(), .source = Literal::Double(2.71828)},
+      {.source_type = iceberg::float64(), .source = Literal::Double(1.23e-5)},
       {.source_type = iceberg::string(), .source = Literal::String("Hello, World!")},
       {.source_type = iceberg::binary(), .source = Literal::Binary({0x01, 0x02, 0x03})},
   };
@@ -479,7 +480,7 @@ TEST(TransformFunctionTransformTest, VoidTransform) {
     auto transformPtr = transform->Bind(c.source_type);
     ASSERT_TRUE(transformPtr.has_value()) << "Failed to bind void transform";
     auto result = transformPtr.value()->Transform(c.source);
-    ASSERT_TRUE(result == std::nullopt)
+    ASSERT_EQ(std::nullopt, result)
         << "Expected void transform to return no result for source: "
         << c.source.ToString();
   }
