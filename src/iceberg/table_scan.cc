@@ -151,11 +151,13 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
   ICEBERG_ASSIGN_OR_RAISE(auto manifest_files, manifest_list_reader->Files());
 
   std::vector<std::shared_ptr<FileScanTask>> tasks;
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_spec, context_.table_metadata->PartitionSpec());
+  auto partition_schema = partition_spec->schema();
+
   for (const auto& manifest_file : manifest_files) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto manifest_reader,
-        ManifestReader::MakeReader(manifest_file.manifest_path, file_io_,
-                                   /* TODO(xiao.dong) partition schema*/ nullptr));
+    ICEBERG_ASSIGN_OR_RAISE(auto manifest_reader,
+                            ManifestReader::MakeReader(manifest_file.manifest_path,
+                                                       file_io_, partition_schema));
     ICEBERG_ASSIGN_OR_RAISE(auto manifests, manifest_reader->Entries());
 
     // TODO(gty404): filter manifests using partition spec and filter expression
