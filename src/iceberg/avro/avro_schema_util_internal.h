@@ -151,37 +151,9 @@ bool HasMapLogicalType(const ::avro::NodePtr& node);
 
 /// \brief Create a new Avro node with field IDs from name mapping.
 /// \param original_node The original Avro node to copy.
-/// \param name_mapping The name mapping to apply field IDs from.
+/// \param mapped_field The mapped field to apply field IDs from.
 /// \return A new Avro node with field IDs applied, or an error.
 Result<::avro::NodePtr> CreateAvroNodeWithFieldIds(const ::avro::NodePtr& original_node,
-                                                   const NameMapping& name_mapping);
-
-/// \brief Create a new Avro record node with field IDs from name mapping.
-/// \param original_node The original Avro record node to copy.
-/// \param name_mapping The name mapping to apply field IDs from.
-/// \return A new Avro record node with field IDs applied, or an error.
-Result<::avro::NodePtr> CreateRecordNodeWithFieldIds(const ::avro::NodePtr& original_node,
-                                                     const NameMapping& name_mapping);
-
-/// \brief Create a new Avro array node with field IDs from name mapping.
-/// \param original_node The original Avro array node to copy.
-/// \param name_mapping The name mapping to apply field IDs from.
-/// \return A new Avro array node with field IDs applied, or an error.
-Result<::avro::NodePtr> CreateArrayNodeWithFieldIds(const ::avro::NodePtr& original_node,
-                                                    const NameMapping& name_mapping);
-
-/// \brief Create a new Avro map node with field IDs from name mapping.
-/// \param original_node The original Avro map node to copy.
-/// \param name_mapping The name mapping to apply field IDs from.
-/// \return A new Avro map node with field IDs applied, or an error.
-Result<::avro::NodePtr> CreateMapNodeWithFieldIds(const ::avro::NodePtr& original_node,
-                                                  const NameMapping& name_mapping);
-
-/// \brief Create a new Avro union node with field IDs from name mapping.
-/// \param original_node The original Avro union node to copy.
-/// \param name_mapping The name mapping to apply field IDs from.
-/// \return A new Avro union node with field IDs applied, or an error.
-Result<::avro::NodePtr> CreateUnionNodeWithFieldIds(const ::avro::NodePtr& original_node,
-                                                    const NameMapping& name_mapping);
+                                                   const MappedField& mapped_field);
 
 }  // namespace iceberg::avro
