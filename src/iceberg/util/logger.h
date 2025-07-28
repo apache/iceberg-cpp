@@ -20,7 +20,6 @@
 #pragma once
 
 #include <format>
-#include <functional>
 #include <memory>
 #include <source_location>
 #include <string>
@@ -135,6 +134,10 @@ class LoggerInterface {
   ~LoggerInterface() = default;
 };
 
+/// \brief Concept to constrain types that implement the Logger interface
+template <typename T>
+concept Logger = std::is_base_of_v<LoggerInterface<T>, T>;
+
 /// \brief Default spdlog-based logger implementation
 class SpdlogLogger : public LoggerInterface<SpdlogLogger> {
  public:
@@ -211,15 +214,13 @@ class LoggerRegistry {
   ///
   /// \tparam LoggerImpl The logger implementation type
   /// \param logger The logger instance to set as default
-  template <typename LoggerImpl>
+  template <Logger LoggerImpl>
   void SetDefaultLogger(std::shared_ptr<LoggerImpl> logger) {
-    static_assert(std::is_base_of_v<LoggerInterface<LoggerImpl>, LoggerImpl>,
-                  "LoggerImpl must inherit from LoggerInterface");
     default_logger_ = std::static_pointer_cast<void>(logger);
-    log_func_ = [logger](LogLevel level, std::string_view format_str,
-                         const std::string& formatted_message) {
-      if (logger->ShouldLog(level)) {
-        logger->LogImpl(level, "{}", formatted_message);
+    log_func_ = [](const void* logger_ptr, LogLevel level, const std::string& message) {
+      auto* typed_logger = static_cast<const LoggerImpl*>(logger_ptr);
+      if (typed_logger->ShouldLog(level)) {
+        typed_logger->LogImpl(level, "{}", message);
       }
     };
   }
@@ -228,7 +229,7 @@ class LoggerRegistry {
   ///
   /// \tparam LoggerImpl The expected logger implementation type
   /// \return Shared pointer to the logger, or nullptr if type doesn't match
-  template <typename LoggerImpl>
+  template <Logger LoggerImpl>
   std::shared_ptr<LoggerImpl> GetDefaultLogger() const {
     return std::static_pointer_cast<LoggerImpl>(default_logger_);
   }
@@ -236,14 +237,14 @@ class LoggerRegistry {
   /// \brief Log using the default logger
   template <typename... Args>
   void Log(LogLevel level, std::string_view format_str, Args&&... args) const {
-    if (log_func_) {
+    if (default_logger_ && log_func_) {
       std::string formatted_message;
       if constexpr (sizeof...(args) > 0) {
         formatted_message = std::vformat(format_str, std::make_format_args(args...));
       } else {
         formatted_message = std::string(format_str);
       }
-      log_func_(level, format_str, formatted_message);
+      log_func_(default_logger_.get(), level, formatted_message);
     }
   }
 
@@ -254,7 +255,7 @@ class LoggerRegistry {
   LoggerRegistry() = default;
 
   std::shared_ptr<void> default_logger_;
-  std::function<void(LogLevel, std::string_view, const std::string&)> log_func_;
+  void (*log_func_)(const void*, LogLevel, const std::string&) = nullptr;
 };
 
 /// \brief Convenience macros for logging with automatic source location
