@@ -130,7 +130,15 @@ Literal Literal::Boolean(bool value) { return {Value{value}, iceberg::boolean()}
 
 Literal Literal::Int(int32_t value) { return {Value{value}, iceberg::int32()}; }
 
+Literal Literal::Date(int32_t value) { return {Value{value}, iceberg::date()}; }
+
 Literal Literal::Long(int64_t value) { return {Value{value}, iceberg::int64()}; }
+
+Literal Literal::Timestamp(int64_t value) { return {Value{value}, iceberg::timestamp()}; }
+
+Literal Literal::TimestampTz(int64_t value) {
+  return {Value{value}, iceberg::timestamp_tz()};
+}
 
 Literal Literal::Float(float value) { return {Value{value}, iceberg::float32()}; }
 
@@ -208,7 +216,25 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
       return this_val <=> other_val;
     }
 
+    case TypeId::kDate: {
+      auto this_val = std::get<int32_t>(value_);
+      auto other_val = std::get<int32_t>(other.value_);
+      return this_val <=> other_val;
+    }
+
     case TypeId::kLong: {
+      auto this_val = std::get<int64_t>(value_);
+      auto other_val = std::get<int64_t>(other.value_);
+      return this_val <=> other_val;
+    }
+
+    case TypeId::kTimestamp: {
+      auto this_val = std::get<int64_t>(value_);
+      auto other_val = std::get<int64_t>(other.value_);
+      return this_val <=> other_val;
+    }
+
+    case TypeId::kTimestampTz: {
       auto this_val = std::get<int64_t>(value_);
       auto other_val = std::get<int64_t>(other.value_);
       return this_val <=> other_val;
