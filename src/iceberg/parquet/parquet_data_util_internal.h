@@ -35,7 +35,7 @@ namespace iceberg::parquet {
 /// \param projected_schema The projected Iceberg schema.
 /// \param projection The projection from projected Iceberg schema to the record batch.
 /// \return The converted record batch.
-Result<std::shared_ptr<::arrow::RecordBatch>> ConvertRecordBatch(
+Result<std::shared_ptr<::arrow::RecordBatch>> ProjectRecordBatch(
     std::shared_ptr<::arrow::RecordBatch> record_batch,
     const std::shared_ptr<::arrow::Schema>& output_arrow_schema,
     const Schema& projected_schema, const SchemaProjection& projection);

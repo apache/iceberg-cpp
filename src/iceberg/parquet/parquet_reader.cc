@@ -26,17 +26,18 @@
 #include <arrow/record_batch.h>
 #include <arrow/result.h>
 #include <arrow/type.h>
-#include <iceberg/result.h>
-#include <iceberg/schema_util.h>
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/schema.h>
 #include <parquet/file_reader.h>
 #include <parquet/properties.h>
 
-#include "iceberg/arrow/arrow_fs_file_io.h"
+#include "iceberg/arrow/arrow_error_transform_internal.h"
+#include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/parquet/parquet_data_util_internal.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
+#include "iceberg/result.h"
 #include "iceberg/schema_internal.h"
+#include "iceberg/schema_util.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
@@ -52,13 +53,8 @@ Result<std::shared_ptr<::arrow::io::RandomAccessFile>> OpenInputStream(
   }
 
   auto io = internal::checked_pointer_cast<arrow::ArrowFileSystemFileIO>(options.io);
-  auto result = io->fs()->OpenInputFile(file_info);
-  if (!result.ok()) {
-    return IOError("Failed to open file {} for reading: {}", options.path,
-                   result.status().message());
-  }
-
-  return result.MoveValueUnsafe();
+  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto input, io->fs()->OpenInputFile(file_info));
+  return input;
 }
 
 Result<SchemaProjection> BuildProjection(::parquet::arrow::FileReader* reader,
@@ -73,17 +69,12 @@ Result<SchemaProjection> BuildProjection(::parquet::arrow::FileReader* reader,
   }
 
   ::parquet::arrow::SchemaManifest schema_manifest;
-  auto schema_manifest_result = ::parquet::arrow::SchemaManifest::Make(
+  ICEBERG_ARROW_RETURN_NOT_OK(::parquet::arrow::SchemaManifest::Make(
       metadata->schema(), metadata->key_value_metadata(), reader->properties(),
-      &schema_manifest);
-  if (!schema_manifest_result.ok()) {
-    return ParquetError("Failed to make schema manifest: {}",
-                        schema_manifest_result.message());
-  }
+      &schema_manifest));
 
   // Leverage SchemaManifest to project the schema
   ICEBERG_ASSIGN_OR_RAISE(auto projection, Project(read_schema, schema_manifest));
-
   return projection;
 }
 
@@ -141,11 +132,8 @@ class ParquetReader::Impl {
     ICEBERG_ASSIGN_OR_RAISE(auto input_stream, OpenInputStream(options));
     auto file_reader =
         ::parquet::ParquetFileReader::Open(std::move(input_stream), reader_properties);
-    auto make_reader_result = ::parquet::arrow::FileReader::Make(
-        pool, std::move(file_reader), arrow_reader_properties, &reader_);
-    if (!make_reader_result.ok()) {
-      return ParquetError("Failed to make file reader: {}", make_reader_result.message());
-    }
+    ICEBERG_ARROW_RETURN_NOT_OK(::parquet::arrow::FileReader::Make(
+        pool, std::move(file_reader), arrow_reader_properties, &reader_));
 
     // Project read schema onto the Parquet file schema
     ICEBERG_ASSIGN_OR_RAISE(projection_, BuildProjection(reader_.get(), *read_schema_));
@@ -159,27 +147,17 @@ class ParquetReader::Impl {
       ICEBERG_RETURN_UNEXPECTED(InitReadContext());
     }
 
-    auto next_result = context_->record_batch_reader_->Next();
-    if (!next_result.ok()) {
-      return ParquetError("Failed to read next batch: {}",
-                          next_result.status().message());
-    }
-
-    auto batch = next_result.MoveValueUnsafe();
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto batch, context_->record_batch_reader_->Next());
     if (!batch) {
       return std::nullopt;
     }
 
     ICEBERG_ASSIGN_OR_RAISE(
-        batch, ConvertRecordBatch(std::move(batch), context_->output_arrow_schema_,
+        batch, ProjectRecordBatch(std::move(batch), context_->output_arrow_schema_,
                                   *read_schema_, projection_));
 
     ArrowArray arrow_array;
-    auto export_result = ::arrow::ExportRecordBatch(*batch, &arrow_array);
-    if (!export_result.ok()) {
-      return ParquetError("Failed to export the Arrow record batch: {}",
-                          export_result.message());
-    }
+    ICEBERG_ARROW_RETURN_NOT_OK(::arrow::ExportRecordBatch(*batch, &arrow_array));
     return arrow_array;
   }
 
@@ -190,11 +168,7 @@ class ParquetReader::Impl {
     }
 
     if (context_ != nullptr) {
-      auto close_result = context_->record_batch_reader_->Close();
-      if (!close_result.ok()) {
-        return ParquetError("Failed to close record batch reader: {}",
-                            close_result.message());
-      }
+      ICEBERG_ARROW_RETURN_NOT_OK(context_->record_batch_reader_->Close());
       context_.reset();
     }
 
@@ -209,11 +183,8 @@ class ParquetReader::Impl {
     }
 
     ArrowSchema arrow_schema;
-    auto export_result =
-        ::arrow::ExportSchema(*context_->output_arrow_schema_, &arrow_schema);
-    if (!export_result.ok()) {
-      return ParquetError("Failed to export Arrow schema: {}", export_result.message());
-    }
+    ICEBERG_ARROW_RETURN_NOT_OK(
+        ::arrow::ExportSchema(*context_->output_arrow_schema_, &arrow_schema));
     return arrow_schema;
   }
 
@@ -224,12 +195,8 @@ class ParquetReader::Impl {
     // Build the output Arrow schema
     ArrowSchema arrow_schema;
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*read_schema_, &arrow_schema));
-    auto import_result = ::arrow::ImportSchema(&arrow_schema);
-    if (!import_result.ok()) {
-      return ParquetError("Failed to import Arrow schema: {}",
-                          import_result.status().message());
-    }
-    context_->output_arrow_schema_ = import_result.MoveValueUnsafe();
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(context_->output_arrow_schema_,
+                                   ::arrow::ImportSchema(&arrow_schema));
 
     // Row group pruning based on the split
     // TODO(gangwu): add row group filtering based on zone map, bloom filter, etc.
@@ -254,12 +221,9 @@ class ParquetReader::Impl {
 
     // Create the record batch reader
     ICEBERG_ASSIGN_OR_RAISE(auto column_indices, SelectedColumnIndices(projection_));
-    auto reader_result = reader_->GetRecordBatchReader(row_group_indices, column_indices);
-    if (!reader_result.ok()) {
-      return ParquetError("Failed to get record batch reader: {}",
-                          reader_result.status().message());
-    }
-    context_->record_batch_reader_ = std::move(reader_result).MoveValueUnsafe();
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(
+        context_->record_batch_reader_,
+        reader_->GetRecordBatchReader(row_group_indices, column_indices));
 
     return {};
   }

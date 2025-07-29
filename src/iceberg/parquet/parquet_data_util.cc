@@ -21,7 +21,7 @@
 
 namespace iceberg::parquet {
 
-Result<std::shared_ptr<::arrow::RecordBatch>> ConvertRecordBatch(
+Result<std::shared_ptr<::arrow::RecordBatch>> ProjectRecordBatch(
     std::shared_ptr<::arrow::RecordBatch> record_batch,
     const std::shared_ptr<::arrow::Schema>& output_arrow_schema,
     const Schema& projected_schema, const SchemaProjection& projection) {
