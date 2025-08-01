@@ -35,7 +35,7 @@ const std::string& Table::uuid() const { return metadata_->table_uuid; }
 
 Status Table::Refresh() {
   if (!catalog_) {
-    return InvalidArgument("Refresh is not supported for table without a catalog");
+    return NotSupported("Refresh is not supported for table without a catalog");
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto refreshed_table, catalog_->LoadTable(identifier_));

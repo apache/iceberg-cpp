@@ -117,32 +117,38 @@ TEST_F(InMemoryCatalogTest, RegisterTable) {
 TEST_F(InMemoryCatalogTest, RefreshTable) {
   TableIdentifier tableIdent{.ns = {}, .name = "t1"};
 
-  std::unique_ptr<TableMetadata> metadata;
-  ASSERT_NO_FATAL_FAILURE(ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
-
-  metadata->current_snapshot_id = 3051729675574597004;
   auto table_location = GenerateTestTableLocation(tableIdent.name);
-  auto metadata_location = std::format("{}v0.metadata.json", table_location);
-  auto status = TableMetadataUtil::Write(*file_io_, metadata_location, *metadata);
-  EXPECT_THAT(status, IsOk());
+  auto buildTable = [this, &tableIdent, &table_location](
+                        int64_t snapshot_id, int64_t version) -> std::unique_ptr<Table> {
+    std::unique_ptr<TableMetadata> metadata;
 
+    ReadTableMetadata("TableMetadataV2Valid.json", &metadata);
+    metadata->current_snapshot_id = snapshot_id;
+
+    auto metadata_location = std::format("{}v{}.metadata.json", table_location, version);
+    auto status = TableMetadataUtil::Write(*file_io_, metadata_location, *metadata);
+    EXPECT_THAT(status, IsOk());
+
+    return std::make_unique<Table>(tableIdent, std::move(metadata), metadata_location,
+                                   file_io_, std::static_pointer_cast<Catalog>(catalog_));
+  };
+
+  auto table_v0 = buildTable(3051729675574597004, 0);
+  auto table_v1 = buildTable(3055729675574597004, 1);
+  EXPECT_CALL(*catalog_, LoadTable(::testing::_))
+      .WillOnce(::testing::Return(
+          ::testing::ByMove(Result<std::unique_ptr<Table>>(std::move(table_v0)))))
+      .WillOnce(::testing::Return(
+          ::testing::ByMove(Result<std::unique_ptr<Table>>(std::move(table_v1)))));
+
+  auto metadata_location = std::format("{}v{}.metadata.json", table_location, 0);
   auto table = catalog_->RegisterTable(tableIdent, metadata_location);
   EXPECT_THAT(table, IsOk());
   ASSERT_TRUE(table.value()->current_snapshot().has_value());
   ASSERT_EQ(table.value()->current_snapshot().value()->snapshot_id, 3051729675574597004);
 
-  // update table version to 3055729675574597004
-  metadata_location = std::format("{}v1.metadata.json", table_location);
-  metadata->current_snapshot_id = 3055729675574597004;
-  status = TableMetadataUtil::Write(*file_io_, metadata_location, *metadata);
-  EXPECT_THAT(status, IsOk());
-
-  // update table metadata location in catalog
-  status = catalog_->UpdateTableMetaLocation(tableIdent, metadata_location);
-  EXPECT_THAT(status, IsOk());
-
   // same version
-  status = table.value()->Refresh();
+  auto status = table.value()->Refresh();
   EXPECT_THAT(status, IsOk());
   ASSERT_TRUE(table.value()->current_snapshot().has_value());
   ASSERT_EQ(table.value()->current_snapshot().value()->snapshot_id, 3055729675574597004);

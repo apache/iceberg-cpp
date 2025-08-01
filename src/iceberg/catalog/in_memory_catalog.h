@@ -84,7 +84,8 @@ class ICEBERG_EXPORT InMemoryCatalog
 
   Status DropTable(const TableIdentifier& identifier, bool purge) override;
 
-  Result<std::unique_ptr<Table>> LoadTable(const TableIdentifier& identifier) override;
+  virtual Result<std::unique_ptr<Table>> LoadTable(
+      const TableIdentifier& identifier) override;
 
   Result<std::shared_ptr<Table>> RegisterTable(
       const TableIdentifier& identifier,
@@ -92,10 +93,6 @@ class ICEBERG_EXPORT InMemoryCatalog
 
   std::unique_ptr<Catalog::TableBuilder> BuildTable(const TableIdentifier& identifier,
                                                     const Schema& schema) const override;
-
- protected:
-  Status UpdateTableMetaLocationInternal(const TableIdentifier& identifier,
-                                         const std::string& metadata_location);
 
  private:
   std::string catalog_name_;

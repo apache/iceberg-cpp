@@ -30,11 +30,7 @@ class ICEBERG_EXPORT MockInMemoryCatalog : public InMemoryCatalog {
                       std::unordered_map<std::string, std::string> const& properties)
       : InMemoryCatalog(name, file_io, warehouse_location, properties) {}
 
-  /// \brief Directly sets the metadata location of a table.
-  /// \note This should only be used in unit tests.
-  Status UpdateTableMetaLocation(const TableIdentifier& identifier,
-                                 const std::string& metadata_location) {
-    return UpdateTableMetaLocationInternal(identifier, metadata_location);
-  }
+  MOCK_METHOD(Result<std::unique_ptr<Table>>, LoadTable, (const TableIdentifier&),
+              (override));
 };
 }  // namespace iceberg

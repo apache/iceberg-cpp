@@ -466,10 +466,4 @@ std::unique_ptr<Catalog::TableBuilder> InMemoryCatalog::BuildTable(
   throw IcebergError("not implemented");
 }
 
-Status InMemoryCatalog::UpdateTableMetaLocationInternal(
-    const TableIdentifier& identifier, const std::string& metadata_location) {
-  std::unique_lock lock(mutex_);
-  return root_namespace_->UpdateTableMetaLocation(identifier, metadata_location);
-}
-
 }  // namespace iceberg
