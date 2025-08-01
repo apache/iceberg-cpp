@@ -38,8 +38,8 @@ class InMemoryCatalogTest : public ::testing::Test {
     file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(
         std::make_shared<::arrow::fs::LocalFileSystem>());
     std::unordered_map<std::string, std::string> properties = {{"prop1", "val1"}};
-    catalog_ = std::make_shared<MockInMemoryCatalog>("test_catalog", file_io_,
-                                                     "/tmp/warehouse/", properties);
+    catalog_ = std::make_shared<InMemoryCatalog>("test_catalog", file_io_,
+                                                 "/tmp/warehouse/", properties);
   }
 
   void TearDown() override {
@@ -73,7 +73,7 @@ class InMemoryCatalogTest : public ::testing::Test {
   }
 
   std::shared_ptr<FileIO> file_io_;
-  std::shared_ptr<MockInMemoryCatalog> catalog_;
+  std::shared_ptr<InMemoryCatalog> catalog_;
   // Used to store temporary paths created during the test
   std::vector<std::string> created_temp_paths_;
 };
@@ -116,9 +116,12 @@ TEST_F(InMemoryCatalogTest, RegisterTable) {
 
 TEST_F(InMemoryCatalogTest, RefreshTable) {
   TableIdentifier tableIdent{.ns = {}, .name = "t1"};
-
+  std::shared_ptr<MockInMemoryCatalog> mock_catalog =
+      std::make_shared<MockInMemoryCatalog>(
+          "mock_catalog", file_io_, "/tmp/warehouse/",
+          std::unordered_map<std::string, std::string>());
   auto table_location = GenerateTestTableLocation(tableIdent.name);
-  auto buildTable = [this, &tableIdent, &table_location](
+  auto buildTable = [this, &tableIdent, &mock_catalog, &table_location](
                         int64_t snapshot_id, int64_t version) -> std::unique_ptr<Table> {
     std::unique_ptr<TableMetadata> metadata;
 
@@ -130,19 +133,20 @@ TEST_F(InMemoryCatalogTest, RefreshTable) {
     EXPECT_THAT(status, IsOk());
 
     return std::make_unique<Table>(tableIdent, std::move(metadata), metadata_location,
-                                   file_io_, std::static_pointer_cast<Catalog>(catalog_));
+                                   file_io_,
+                                   std::static_pointer_cast<Catalog>(mock_catalog));
   };
 
   auto table_v0 = buildTable(3051729675574597004, 0);
   auto table_v1 = buildTable(3055729675574597004, 1);
-  EXPECT_CALL(*catalog_, LoadTable(::testing::_))
+  EXPECT_CALL(*mock_catalog, LoadTable(::testing::_))
       .WillOnce(::testing::Return(
           ::testing::ByMove(Result<std::unique_ptr<Table>>(std::move(table_v0)))))
       .WillOnce(::testing::Return(
           ::testing::ByMove(Result<std::unique_ptr<Table>>(std::move(table_v1)))));
 
   auto metadata_location = std::format("{}v{}.metadata.json", table_location, 0);
-  auto table = catalog_->RegisterTable(tableIdent, metadata_location);
+  auto table = mock_catalog->RegisterTable(tableIdent, metadata_location);
   EXPECT_THAT(table, IsOk());
   ASSERT_TRUE(table.value()->current_snapshot().has_value());
   ASSERT_EQ(table.value()->current_snapshot().value()->snapshot_id, 3051729675574597004);
