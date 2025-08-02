@@ -17,8 +17,6 @@
  * under the License.
  */
 
-#include "iceberg/catalog/in_memory_catalog.h"
-
 #include <filesystem>
 
 #include <arrow/filesystem/localfs.h>
@@ -29,6 +27,7 @@
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "matchers.h"
+#include "mock_catalog.h"
 #include "test_common.h"
 
 namespace iceberg {
@@ -113,6 +112,50 @@ TEST_F(InMemoryCatalogTest, RegisterTable) {
   EXPECT_THAT(table, IsOk());
   ASSERT_EQ(table.value()->name().name, "t1");
   ASSERT_EQ(table.value()->location(), "s3://bucket/test/location");
+}
+
+TEST_F(InMemoryCatalogTest, RefreshTable) {
+  TableIdentifier tableIdent{.ns = {}, .name = "t1"};
+  std::shared_ptr<MockInMemoryCatalog> mock_catalog =
+      std::make_shared<MockInMemoryCatalog>(
+          "mock_catalog", file_io_, "/tmp/warehouse/",
+          std::unordered_map<std::string, std::string>());
+  auto table_location = GenerateTestTableLocation(tableIdent.name);
+  auto buildTable = [this, &tableIdent, &mock_catalog, &table_location](
+                        int64_t snapshot_id, int64_t version) -> std::unique_ptr<Table> {
+    std::unique_ptr<TableMetadata> metadata;
+
+    ReadTableMetadata("TableMetadataV2Valid.json", &metadata);
+    metadata->current_snapshot_id = snapshot_id;
+
+    auto metadata_location = std::format("{}v{}.metadata.json", table_location, version);
+    auto status = TableMetadataUtil::Write(*file_io_, metadata_location, *metadata);
+    EXPECT_THAT(status, IsOk());
+
+    return std::make_unique<Table>(tableIdent, std::move(metadata), metadata_location,
+                                   file_io_,
+                                   std::static_pointer_cast<Catalog>(mock_catalog));
+  };
+
+  auto table_v0 = buildTable(3051729675574597004, 0);
+  auto table_v1 = buildTable(3055729675574597004, 1);
+  EXPECT_CALL(*mock_catalog, LoadTable(::testing::_))
+      .WillOnce(::testing::Return(
+          ::testing::ByMove(Result<std::unique_ptr<Table>>(std::move(table_v0)))))
+      .WillOnce(::testing::Return(
+          ::testing::ByMove(Result<std::unique_ptr<Table>>(std::move(table_v1)))));
+
+  auto metadata_location = std::format("{}v{}.metadata.json", table_location, 0);
+  auto table = mock_catalog->RegisterTable(tableIdent, metadata_location);
+  EXPECT_THAT(table, IsOk());
+  ASSERT_TRUE(table.value()->current_snapshot().has_value());
+  ASSERT_EQ(table.value()->current_snapshot().value()->snapshot_id, 3051729675574597004);
+
+  // same version
+  auto status = table.value()->Refresh();
+  EXPECT_THAT(status, IsOk());
+  ASSERT_TRUE(table.value()->current_snapshot().has_value());
+  ASSERT_EQ(table.value()->current_snapshot().value()->snapshot_id, 3055729675574597004);
 }
 
 TEST_F(InMemoryCatalogTest, DropTable) {
