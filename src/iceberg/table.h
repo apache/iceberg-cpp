@@ -117,8 +117,6 @@ class ICEBERG_EXPORT Table {
   const std::shared_ptr<FileIO>& io() const;
 
  private:
-  friend class Table;
-
   const TableIdentifier identifier_;
   std::shared_ptr<TableMetadata> metadata_;
   std::string metadata_location_;
