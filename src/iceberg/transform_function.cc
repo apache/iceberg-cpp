@@ -21,6 +21,7 @@
 
 #include <cassert>
 #include <chrono>
+#include <type_traits>
 #include <utility>
 
 #include "iceberg/type.h"
@@ -68,41 +69,29 @@ Result<std::optional<Literal>> BucketTransform::Transform(const Literal& literal
         literal.ToString(), source_type()->ToString());
   }
   int32_t hash_value = 0;
-  switch (source_type()->type_id()) {
-    case TypeId::kInt:
-    case TypeId::kDate: {
-      auto value = std::get<int32_t>(literal.value());
-      MurmurHash3_x86_32(&value, sizeof(int32_t), 0, &hash_value);
-      break;
-    }
-    case TypeId::kLong:
-    case TypeId::kTime:
-    case TypeId::kTimestamp:
-    case TypeId::kTimestampTz: {
-      auto value = std::get<int64_t>(literal.value());
-      MurmurHash3_x86_32(&value, sizeof(int64_t), 0, &hash_value);
-      break;
-    }
-    case TypeId::kDecimal:
-    case TypeId::kUuid: {
-      auto value = std::get<std::array<uint8_t, 16>>(literal.value());
-      MurmurHash3_x86_32(value.data(), sizeof(uint8_t) * 16, 0, &hash_value);
-      break;
-    }
-    case TypeId::kString: {
-      auto value = std::get<std::string>(literal.value());
-      MurmurHash3_x86_32(value.data(), value.size(), 0, &hash_value);
-      break;
-    }
-    case TypeId::kFixed:
-    case TypeId::kBinary: {
-      auto value = std::get<std::vector<uint8_t>>(literal.value());
-      MurmurHash3_x86_32(value.data(), value.size(), 0, &hash_value);
-      break;
-    }
-    default:
-      std::unreachable();
-  }
+  std::visit(
+      [&](auto&& value) {
+        using T = std::decay_t<decltype(value)>;
+        if constexpr (std::is_same_v<T, int32_t>) {
+          MurmurHash3_x86_32(&value, sizeof(int32_t), 0, &hash_value);
+        } else if constexpr (std::is_same_v<T, int64_t>) {
+          MurmurHash3_x86_32(&value, sizeof(int64_t), 0, &hash_value);
+        } else if constexpr (std::is_same_v<T, std::array<uint8_t, 16>>) {
+          MurmurHash3_x86_32(value.data(), sizeof(uint8_t) * 16, 0, &hash_value);
+        } else if constexpr (std::is_same_v<T, std::string>) {
+          MurmurHash3_x86_32(value.data(), value.size(), 0, &hash_value);
+        } else if constexpr (std::is_same_v<T, std::vector<uint8_t>>) {
+          MurmurHash3_x86_32(value.data(), value.size(), 0, &hash_value);
+        } else if constexpr (std::is_same_v<T, bool> || std::is_same_v<T, float> ||
+                             std::is_same_v<T, double> ||
+                             std::is_same_v<T, Literal::BelowMin> ||
+                             std::is_same_v<T, Literal::AboveMax>) {
+          std::unreachable();
+        } else {
+          static_assert(false, "Unhandled type in BucketTransform::Transform");
+        }
+      },
+      literal.value());
 
   // Calculate the bucket index
   int32_t bucket_index =

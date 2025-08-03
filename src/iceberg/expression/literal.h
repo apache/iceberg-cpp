@@ -32,7 +32,7 @@ namespace iceberg {
 
 /// \brief Literal is a literal value that is associated with a primitive type.
 class ICEBERG_EXPORT Literal {
- private:
+ public:
   /// \brief Sentinel value to indicate that the literal value is below the valid range
   /// of a specific primitive type. It can happen when casting a literal to a narrower
   /// primitive type.
@@ -48,8 +48,6 @@ class ICEBERG_EXPORT Literal {
     bool operator==(const AboveMax&) const = default;
     std::strong_ordering operator<=>(const AboveMax&) const = default;
   };
-
- public:
   using Value = std::variant<bool,         // for boolean
                              int32_t,      // for int, date
                              int64_t,      // for long, timestamp, timestamp_tz, time
