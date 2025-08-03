@@ -109,15 +109,6 @@ class ICEBERG_EXPORT InMemoryNamespace {
   ///         ErrorKind::kNoSuchTable if the table does not exist.
   Status UnregisterTable(const TableIdentifier& table_ident);
 
-  /// \brief Updates the metadata location of an existing table.
-  ///
-  /// \param table_ident The fully qualified identifier of the table.
-  /// \param metadata_location The path to the table's metadata.
-  /// \return Status::OK if the table metadata location is updated;
-  ///         Error otherwise.
-  Status UpdateTableMetaLocation(const TableIdentifier& table_ident,
-                                 const std::string& metadata_location);
-
   /// \brief Checks if a table exists in the specified namespace.
   ///
   /// \param table_ident The identifier of the table to check.
@@ -303,17 +294,6 @@ Status InMemoryNamespace::UnregisterTable(TableIdentifier const& table_ident) {
   const auto ns = GetNamespace(this, table_ident.ns);
   ICEBERG_RETURN_UNEXPECTED(ns);
   ns.value()->table_metadata_locations_.erase(table_ident.name);
-  return {};
-}
-
-Status InMemoryNamespace::UpdateTableMetaLocation(const TableIdentifier& table_ident,
-                                                  const std::string& metadata_location) {
-  const auto ns = GetNamespace(this, table_ident.ns);
-  ICEBERG_RETURN_UNEXPECTED(ns);
-  if (!ns.value()->table_metadata_locations_.contains(table_ident.name)) {
-    return NotFound("{} does not exist", table_ident.name);
-  }
-  ns.value()->table_metadata_locations_[table_ident.name] = metadata_location;
   return {};
 }
 

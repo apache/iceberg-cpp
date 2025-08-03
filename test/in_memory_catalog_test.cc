@@ -151,7 +151,7 @@ TEST_F(InMemoryCatalogTest, RefreshTable) {
   ASSERT_TRUE(table.value()->current_snapshot().has_value());
   ASSERT_EQ(table.value()->current_snapshot().value()->snapshot_id, 3051729675574597004);
 
-  // same version
+  // refresh table to new snapshot
   auto status = table.value()->Refresh();
   EXPECT_THAT(status, IsOk());
   ASSERT_TRUE(table.value()->current_snapshot().has_value());

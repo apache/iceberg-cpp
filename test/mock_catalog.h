@@ -23,7 +23,7 @@
 
 namespace iceberg {
 
-class ICEBERG_EXPORT MockInMemoryCatalog : public InMemoryCatalog {
+class MockInMemoryCatalog : public InMemoryCatalog {
  public:
   MockInMemoryCatalog(std::string const& name, std::shared_ptr<FileIO> const& file_io,
                       std::string const& warehouse_location,
