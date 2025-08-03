@@ -49,6 +49,7 @@ class ICEBERG_EXPORT Literal {
     std::strong_ordering operator<=>(const AboveMax&) const = default;
   };
 
+ public:
   using Value = std::variant<bool,         // for boolean
                              int32_t,      // for int, date
                              int64_t,      // for long, timestamp, timestamp_tz, time
@@ -59,12 +60,12 @@ class ICEBERG_EXPORT Literal {
                              std::array<uint8_t, 16>,  // for uuid and decimal
                              BelowMin, AboveMax>;
 
- public:
   /// \brief Factory methods for primitive types
   static Literal Boolean(bool value);
   static Literal Int(int32_t value);
   static Literal Date(int32_t value);
   static Literal Long(int64_t value);
+  static Literal Time(int64_t value);
   static Literal Timestamp(int64_t value);
   static Literal TimestampTz(int64_t value);
   static Literal Float(float value);

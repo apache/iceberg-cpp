@@ -33,6 +33,11 @@
 
 namespace iceberg {
 
+#define NANOARROW_RETURN_IF_NOT_OK(status, error)                  \
+  if (status != NANOARROW_OK) [[unlikely]] {                       \
+    return InvalidArrowData("Nanoarrow error: {}", error.message); \
+  }
+
 #define PARSE_PRIMITIVE_FIELD(item, array_view, type)                                   \
   for (size_t row_idx = 0; row_idx < array_view->length; row_idx++) {                   \
     if (!ArrowArrayViewIsNull(array_view, row_idx)) {                                   \
