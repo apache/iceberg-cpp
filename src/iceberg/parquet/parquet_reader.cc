@@ -61,9 +61,7 @@ Result<SchemaProjection> BuildProjection(::parquet::arrow::FileReader* reader,
                                          const Schema& read_schema) {
   auto metadata = reader->parquet_reader()->metadata();
 
-  ICEBERG_ASSIGN_OR_RAISE(auto has_field_ids,
-                          HasFieldIds(metadata->schema()->schema_root()));
-  if (!has_field_ids) {
+  if (!HasFieldIds(metadata->schema()->schema_root())) {
     // TODO(gangwu): apply name mapping to Parquet schema
     return NotImplemented("Applying name mapping to Parquet schema is not implemented");
   }

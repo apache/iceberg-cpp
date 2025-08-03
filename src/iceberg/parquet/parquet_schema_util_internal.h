@@ -47,8 +47,7 @@ Result<std::vector<int>> SelectedColumnIndices(const SchemaProjection& projectio
 /// \brief Check whether the Parquet schema has field IDs.
 ///
 /// \param root_node The root node of the Parquet schema.
-/// \return True if the Parquet schema has field IDs, false otherwise. Return error if
-/// the Parquet schema has partial field IDs.
-Result<bool> HasFieldIds(const ::parquet::schema::NodePtr& root_node);
+/// \return True if the Parquet schema has field IDs, false otherwise.
+bool HasFieldIds(const ::parquet::schema::NodePtr& root_node);
 
 }  // namespace iceberg::parquet

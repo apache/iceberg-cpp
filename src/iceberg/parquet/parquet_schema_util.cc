@@ -17,7 +17,10 @@
  * under the License.
  */
 
+#include <parquet/schema.h>
+
 #include "iceberg/parquet/parquet_schema_util_internal.h"
+#include "iceberg/util/checked_cast.h"
 
 namespace iceberg::parquet {
 
@@ -30,8 +33,21 @@ Result<std::vector<int>> SelectedColumnIndices(const SchemaProjection& projectio
   return NotImplemented("NYI");
 }
 
-Result<bool> HasFieldIds(const ::parquet::schema::NodePtr& root_node) {
-  return NotImplemented("NYI");
+bool HasFieldIds(const ::parquet::schema::NodePtr& node) {
+  if (node->field_id() >= 0) {
+    return true;
+  }
+
+  if (node->is_group()) {
+    auto group_node = internal::checked_pointer_cast<::parquet::schema::GroupNode>(node);
+    for (int i = 0; i < group_node->field_count(); i++) {
+      if (HasFieldIds(group_node->field(i))) {
+        return true;
+      }
+    }
+  }
+
+  return false;
 }
 
 }  // namespace iceberg::parquet
