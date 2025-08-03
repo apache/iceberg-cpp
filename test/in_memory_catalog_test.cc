@@ -124,17 +124,12 @@ TEST_F(InMemoryCatalogTest, RefreshTable) {
   auto buildTable = [this, &tableIdent, &mock_catalog, &table_location](
                         int64_t snapshot_id, int64_t version) -> std::unique_ptr<Table> {
     std::unique_ptr<TableMetadata> metadata;
-
     ReadTableMetadata("TableMetadataV2Valid.json", &metadata);
     metadata->current_snapshot_id = snapshot_id;
-
-    auto metadata_location = std::format("{}v{}.metadata.json", table_location, version);
-    auto status = TableMetadataUtil::Write(*file_io_, metadata_location, *metadata);
-    EXPECT_THAT(status, IsOk());
-
-    return std::make_unique<Table>(tableIdent, std::move(metadata), metadata_location,
-                                   file_io_,
-                                   std::static_pointer_cast<Catalog>(mock_catalog));
+    return std::make_unique<Table>(
+        tableIdent, std::move(metadata),
+        std::format("{}v{}.metadata.json", table_location, version), file_io_,
+        std::static_pointer_cast<Catalog>(mock_catalog));
   };
 
   auto table_v0 = buildTable(3051729675574597004, 0);
