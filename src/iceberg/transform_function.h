@@ -30,9 +30,6 @@ class IdentityTransform : public TransformFunction {
   /// \param source_type Type of the input data.
   explicit IdentityTransform(std::shared_ptr<Type> const& source_type);
 
-  /// \brief Returns the input array without modification.
-  Result<ArrowArray> Transform(const ArrowArray& input) override;
-
   /// \brief Returns the same Literal as the input.
   Result<std::optional<Literal>> Transform(const Literal& literal) override;
 
@@ -52,9 +49,6 @@ class BucketTransform : public TransformFunction {
   /// \param source_type Type of the input data.
   /// \param num_buckets Number of buckets to hash into.
   BucketTransform(std::shared_ptr<Type> const& source_type, int32_t num_buckets);
-
-  /// \brief Applies the bucket hash function to the input array.
-  Result<ArrowArray> Transform(const ArrowArray& input) override;
 
   /// \brief Applies the bucket hash function to the input Literal.
   Result<std::optional<Literal>> Transform(const Literal& literal) override;
@@ -80,9 +74,6 @@ class TruncateTransform : public TransformFunction {
   /// \param width The width to truncate to (e.g., for strings or numbers).
   TruncateTransform(std::shared_ptr<Type> const& source_type, int32_t width);
 
-  /// \brief Truncates values in the input array to the specified width.
-  Result<ArrowArray> Transform(const ArrowArray& input) override;
-
   /// \brief Truncates the input Literal to the specified width.
   Result<std::optional<Literal>> Transform(const Literal& literal) override;
 
@@ -106,10 +97,6 @@ class YearTransform : public TransformFunction {
   /// \param source_type Must be a timestamp type.
   explicit YearTransform(std::shared_ptr<Type> const& source_type);
 
-  /// \brief Extracts the year from each date timestamp in the input array, as years from
-  /// 1970.
-  Result<ArrowArray> Transform(const ArrowArray& input) override;
-
   /// \brief Extract a date or timestamp year, as years from 1970.
   Result<std::optional<Literal>> Transform(const Literal& literal) override;
 
@@ -128,10 +115,6 @@ class MonthTransform : public TransformFunction {
  public:
   /// \param source_type Must be a timestamp type.
   explicit MonthTransform(std::shared_ptr<Type> const& source_type);
-
-  /// \brief Extracts the month from each date or timestamp in the input array, as months
-  /// from 1970-01-01.
-  Result<ArrowArray> Transform(const ArrowArray& input) override;
 
   /// \brief Extract a date or timestamp month, as months from 1970-01-01.
   Result<std::optional<Literal>> Transform(const Literal& literal) override;
@@ -152,10 +135,6 @@ class DayTransform : public TransformFunction {
   /// \param source_type Must be a timestamp type.
   explicit DayTransform(std::shared_ptr<Type> const& source_type);
 
-  /// \brief Extracts the day from each date or timestamp in the input array, as days from
-  /// 1970-01-01.
-  Result<ArrowArray> Transform(const ArrowArray& input) override;
-
   /// \brief Extract a date or timestamp day, as days from 1970-01-01.
   Result<std::optional<Literal>> Transform(const Literal& literal) override;
 
@@ -175,10 +154,6 @@ class HourTransform : public TransformFunction {
   /// \param source_type Must be a timestamp type.
   explicit HourTransform(std::shared_ptr<Type> const& source_type);
 
-  /// \brief Extracts the hour from each timestamp in the input array, as hours from
-  /// 1970-01-01 00:00:00.
-  Result<ArrowArray> Transform(const ArrowArray& input) override;
-
   /// \brief Extract a timestamp hour, as hours from 1970-01-01 00:00:00.
   Result<std::optional<Literal>> Transform(const Literal& literal) override;
 
@@ -197,9 +172,6 @@ class VoidTransform : public TransformFunction {
  public:
   /// \param source_type Input type (ignored).
   explicit VoidTransform(std::shared_ptr<Type> const& source_type);
-
-  /// \brief Returns an all-null array of the same length as the input.
-  Result<ArrowArray> Transform(const ArrowArray& input) override;
 
   /// \brief Returns a null literal.
   Result<std::optional<Literal>> Transform(const Literal& literal) override;

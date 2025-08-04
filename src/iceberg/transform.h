@@ -172,8 +172,6 @@ class ICEBERG_EXPORT TransformFunction {
  public:
   virtual ~TransformFunction() = default;
   TransformFunction(TransformType transform_type, std::shared_ptr<Type> source_type);
-  /// \brief Transform an input array to a new array
-  virtual Result<ArrowArray> Transform(const ArrowArray& data) = 0;
   /// \brief Transform an input Literal to a new Literal
   virtual Result<std::optional<Literal>> Transform(const Literal& literal) = 0;
   /// \brief Get the transform type

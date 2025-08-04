@@ -32,10 +32,6 @@ namespace iceberg {
 IdentityTransform::IdentityTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kIdentity, source_type) {}
 
-Result<ArrowArray> IdentityTransform::Transform(const ArrowArray& input) {
-  return NotImplemented("IdentityTransform::Transform");
-}
-
 Result<std::optional<Literal>> IdentityTransform::Transform(const Literal& literal) {
   return literal;
 }
@@ -56,10 +52,6 @@ Result<std::unique_ptr<TransformFunction>> IdentityTransform::Make(
 BucketTransform::BucketTransform(std::shared_ptr<Type> const& source_type,
                                  int32_t num_buckets)
     : TransformFunction(TransformType::kBucket, source_type), num_buckets_(num_buckets) {}
-
-Result<ArrowArray> BucketTransform::Transform(const ArrowArray& input) {
-  return NotImplemented("BucketTransform::Transform");
-}
 
 Result<std::optional<Literal>> BucketTransform::Transform(const Literal& literal) {
   assert(literal.type() == source_type());
@@ -136,10 +128,6 @@ TruncateTransform::TruncateTransform(std::shared_ptr<Type> const& source_type,
                                      int32_t width)
     : TransformFunction(TransformType::kTruncate, source_type), width_(width) {}
 
-Result<ArrowArray> TruncateTransform::Transform(const ArrowArray& input) {
-  return NotImplemented("TruncateTransform::Transform");
-}
-
 Result<std::optional<Literal>> TruncateTransform::Transform(const Literal& literal) {
   assert(literal.type() == source_type());
   if (literal.IsBelowMin() || literal.IsAboveMax()) {
@@ -151,11 +139,11 @@ Result<std::optional<Literal>> TruncateTransform::Transform(const Literal& liter
   switch (source_type()->type_id()) {
     case TypeId::kInt: {
       auto value = std::get<int32_t>(literal.value());
-      return Literal::Int(value % width_);
+      return Literal::Int(value - (((value % width_) + width_) % width_));
     }
     case TypeId::kLong: {
       auto value = std::get<int64_t>(literal.value());
-      return Literal::Long(value % width_);
+      return Literal::Long(value - (((value % width_) + width_) % width_));
     }
     case TypeId::kDecimal: {
       // TODO(zhjwpku): Handle decimal truncation logic here
@@ -164,8 +152,15 @@ Result<std::optional<Literal>> TruncateTransform::Transform(const Literal& liter
     case TypeId::kString: {
       auto value = std::get<std::string>(literal.value());
       if (value.size() > static_cast<size_t>(width_)) {
-        value.resize(width_);
+        size_t safe_point = width_;
+        while (safe_point > 0 && (value[safe_point] & 0xC0) == 0x80) {
+          // Find the last valid UTF-8 character boundary before or at width_
+          safe_point--;
+        }
+        // Resize the string to the safe point
+        value.resize(safe_point);
       }
+
       return Literal::String(value);
     }
     case TypeId::kBinary: {
@@ -208,10 +203,6 @@ Result<std::unique_ptr<TransformFunction>> TruncateTransform::Make(
 
 YearTransform::YearTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kTruncate, source_type) {}
-
-Result<ArrowArray> YearTransform::Transform(const ArrowArray& input) {
-  return NotImplemented("YearTransform::Transform");
-}
 
 Result<std::optional<Literal>> YearTransform::Transform(const Literal& literal) {
   assert(literal.type() == source_type());
@@ -264,10 +255,6 @@ Result<std::unique_ptr<TransformFunction>> YearTransform::Make(
 
 MonthTransform::MonthTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kMonth, source_type) {}
-
-Result<ArrowArray> MonthTransform::Transform(const ArrowArray& input) {
-  return NotImplemented("MonthTransform::Transform");
-}
 
 Result<std::optional<Literal>> MonthTransform::Transform(const Literal& literal) {
   assert(literal.type() == source_type());
@@ -333,10 +320,6 @@ Result<std::unique_ptr<TransformFunction>> MonthTransform::Make(
 DayTransform::DayTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kDay, source_type) {}
 
-Result<ArrowArray> DayTransform::Transform(const ArrowArray& input) {
-  return NotImplemented("DayTransform::Transform");
-}
-
 Result<std::optional<Literal>> DayTransform::Transform(const Literal& literal) {
   assert(literal.type() == source_type());
   if (literal.IsBelowMin() || literal.IsAboveMax()) {
@@ -388,10 +371,6 @@ Result<std::unique_ptr<TransformFunction>> DayTransform::Make(
 HourTransform::HourTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kHour, source_type) {}
 
-Result<ArrowArray> HourTransform::Transform(const ArrowArray& input) {
-  return NotImplemented("HourTransform::Transform");
-}
-
 Result<std::optional<Literal>> HourTransform::Transform(const Literal& literal) {
   assert(literal.type() == source_type());
   if (literal.IsBelowMin() || literal.IsAboveMax()) {
@@ -440,10 +419,6 @@ Result<std::unique_ptr<TransformFunction>> HourTransform::Make(
 
 VoidTransform::VoidTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kVoid, source_type) {}
-
-Result<ArrowArray> VoidTransform::Transform(const ArrowArray& input) {
-  return NotImplemented("VoidTransform::Transform");
-}
 
 Result<std::optional<Literal>> VoidTransform::Transform(const Literal& literal) {
   return std::nullopt;

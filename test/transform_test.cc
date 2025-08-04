@@ -40,12 +40,6 @@ TEST(TransformTest, Transform) {
   auto source_type = iceberg::string();
   auto identity_transform = transform->Bind(source_type);
   ASSERT_TRUE(identity_transform);
-
-  ArrowArray arrow_array;
-  auto result = identity_transform.value()->Transform(arrow_array);
-  ASSERT_FALSE(result);
-  EXPECT_EQ(ErrorKind::kNotImplemented, result.error().kind);
-  EXPECT_EQ("IdentityTransform::Transform", result.error().message);
 }
 
 TEST(TransformFunctionTest, CreateBucketTransform) {
@@ -193,7 +187,7 @@ TEST(TransformResultTypeTest, NegativeCases) {
   }
 }
 
-TEST(TransformFunctionTransformTest, IdentityTransform) {
+TEST(TransformLiteralTest, IdentityTransform) {
   struct Case {
     std::shared_ptr<Type> source_type;
     Literal source;
@@ -247,7 +241,7 @@ TEST(TransformFunctionTransformTest, IdentityTransform) {
   }
 }
 
-TEST(TransformFunctionTransformTest, BucketTransform) {
+TEST(TransformLiteralTest, BucketTransform) {
   constexpr int32_t num_buckets = 4;
   auto transform = Transform::Bucket(num_buckets);
 
@@ -290,29 +284,47 @@ TEST(TransformFunctionTransformTest, BucketTransform) {
   }
 }
 
-TEST(TransformFunctionTransformTest, TruncateTransform) {
-  constexpr int32_t width = 5;
-  auto transform = Transform::Truncate(width);
-
+TEST(TransformLiteralTest, TruncateTransform) {
   struct Case {
     std::shared_ptr<Type> source_type;
+    int32_t width;
     Literal source;
     Literal expected;
   };
 
   const std::vector<Case> cases = {
       {.source_type = iceberg::int32(),
+       .width = 5,
        .source = Literal::Int(123456),
-       .expected = Literal::Int(1)},
+       .expected = Literal::Int(123455)},
       {.source_type = iceberg::string(),
+       .width = 5,
        .source = Literal::String("Hello, World!"),
        .expected = Literal::String("Hello")},
+      {.source_type = iceberg::string(),
+       .width = 5,
+       .source = Literal::String("😜🧐🤔🤪🥳"),
+       // Truncate to 5 bytes, the safe point should be four bytes which fits the first
+       // emoji
+       .expected = Literal::String("😜")},
+      {.source_type = iceberg::string(),
+       .width = 8,
+       .source = Literal::String("😜🧐🤔🤪🥳"),
+       // Truncate to 8 bytes, fits the first two emojis
+       .expected = Literal::String("😜🧐")},
+      {.source_type = iceberg::string(),
+       .width = 3,
+       .source = Literal::String("😜🧐🤔🤪🥳"),
+       // Truncate to 3 bytes, the saft point will be 0 bytes
+       .expected = Literal::String("")},
       {.source_type = iceberg::binary(),
+       .width = 5,
        .source = Literal::Binary({0x01, 0x02, 0x03, 0x04, 0x05, 0x06}),
        .expected = Literal::Binary({0x01, 0x02, 0x03, 0x04, 0x05})},
   };
 
   for (const auto& c : cases) {
+    auto transform = Transform::Truncate(c.width);
     auto transformPtr = transform->Bind(c.source_type);
     ASSERT_TRUE(transformPtr.has_value()) << "Failed to bind truncate transform";
     auto result = transformPtr.value()->Transform(c.source);
@@ -324,7 +336,7 @@ TEST(TransformFunctionTransformTest, TruncateTransform) {
   }
 }
 
-TEST(TransformFunctionTransformTest, YearTransform) {
+TEST(TransformLiteralTest, YearTransform) {
   auto transform = Transform::Year();
 
   struct Case {
@@ -335,6 +347,7 @@ TEST(TransformFunctionTransformTest, YearTransform) {
 
   const std::vector<Case> cases = {
       {.source_type = iceberg::timestamp(),
+       // 2021-06-01T11:43:20Z
        .source = Literal::Timestamp(1622547800000000),
        .expected = Literal::Int(2021)},
       {.source_type = iceberg::timestamp_tz(),
@@ -357,7 +370,7 @@ TEST(TransformFunctionTransformTest, YearTransform) {
   }
 }
 
-TEST(TransformFunctionTransformTest, MonthTransform) {
+TEST(TransformLiteralTest, MonthTransform) {
   auto transform = Transform::Month();
 
   struct Case {
@@ -423,7 +436,7 @@ TEST(TransformFunctionTransformTest, DayTransform) {
   }
 }
 
-TEST(TransformFunctionTransformTest, HourTransform) {
+TEST(TransformLiteralTest, HourTransform) {
   auto transform = Transform::Hour();
 
   struct Case {
@@ -453,7 +466,7 @@ TEST(TransformFunctionTransformTest, HourTransform) {
   }
 }
 
-TEST(TransformFunctionTransformTest, VoidTransform) {
+TEST(TransformLiteralTest, VoidTransform) {
   auto transform = Transform::Void();
 
   struct Case {
