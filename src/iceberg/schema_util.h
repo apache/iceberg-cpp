@@ -70,7 +70,7 @@ struct ICEBERG_EXPORT FieldProjection {
   /// \brief The children of the field if it is a nested field.
   std::vector<FieldProjection> children;
   /// \brief Format-specific attributes for the field.
-  std::shared_ptr<ExtraAttributes> extra;
+  std::shared_ptr<ExtraAttributes> attributes;
 };
 
 /// \brief A schema partner to carry projection information.
