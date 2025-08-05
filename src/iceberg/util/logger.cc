@@ -22,6 +22,8 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
+#include "iceberg/util/spdlog_logger.h"
+
 namespace iceberg {
 
 namespace {
@@ -94,14 +96,8 @@ bool SpdlogLogger::ShouldLogImpl(LogLevel level) const noexcept {
   return level >= current_level_;
 }
 
-void SpdlogLogger::LogRawImpl(LogLevel level, const std::string& message) const {
-  auto typed_logger = std::static_pointer_cast<spdlog::logger>(logger_);
-  auto spdlog_level = ToSpdlogLevel(level);
-  typed_logger->log(spdlog_level, message);
-}
-
-void SpdlogLogger::LogWithLocationRawImpl(LogLevel level, const std::string& message,
-                                          const std::source_location& location) const {
+void SpdlogLogger::LogRawImpl(LogLevel level, const std::source_location& location,
+                              const std::string& message) const {
   auto typed_logger = std::static_pointer_cast<spdlog::logger>(logger_);
   auto spdlog_level = ToSpdlogLevel(level);
 

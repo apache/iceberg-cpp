@@ -20,11 +20,14 @@
 #pragma once
 
 #include <format>
+#include <iostream>
 #include <memory>
 #include <source_location>
 #include <string>
 #include <string_view>
 #include <type_traits>
+
+#include <iceberg/iceberg_export.h>
 
 namespace iceberg {
 
@@ -40,7 +43,7 @@ enum class LogLevel : int {
 };
 
 /// \brief Convert log level to string representation
-constexpr std::string_view LogLevelToString(LogLevel level) {
+ICEBERG_EXPORT constexpr std::string_view LogLevelToString(LogLevel level) {
   switch (level) {
     case LogLevel::kTrace:
       return "TRACE";
@@ -64,148 +67,51 @@ constexpr std::string_view LogLevelToString(LogLevel level) {
 /// \brief Logger interface that uses CRTP to avoid virtual function overhead
 /// \tparam Derived The concrete logger implementation
 template <typename Derived>
-class LoggerInterface {
+class ICEBERG_EXPORT LoggerInterface {
  public:
   /// \brief Check if a log level is enabled
   bool ShouldLog(LogLevel level) const noexcept {
-    return static_cast<const Derived*>(this)->ShouldLogImpl(level);
+    return derived()->ShouldLogImpl(level);
   }
 
   /// \brief Log a message with the specified level
   template <typename... Args>
-  void Log(LogLevel level, std::string_view format_str, Args&&... args) const {
-    if (ShouldLog(level)) {
-      static_cast<const Derived*>(this)->LogImpl(level, format_str,
-                                                 std::forward<Args>(args)...);
-    }
-  }
-
-  /// \brief Log a message with source location information
-  template <typename... Args>
-  void LogWithLocation(LogLevel level, std::string_view format_str,
-                       const std::source_location& location, Args&&... args) const {
-    if (ShouldLog(level)) {
-      static_cast<const Derived*>(this)->LogWithLocationImpl(level, format_str, location,
-                                                             std::forward<Args>(args)...);
-    }
+  void Log(LogLevel level, const std::source_location& location,
+           std::string_view format_str, Args&&... args) const {
+    derived()->LogImpl(level, location, format_str, std::forward<Args>(args)...);
   }
 
   /// \brief Set the minimum log level
-  void SetLevel(LogLevel level) { static_cast<Derived*>(this)->SetLevelImpl(level); }
+  void SetLevel(LogLevel level) { derived()->SetLevelImpl(level); }
 
   /// \brief Get the current minimum log level
-  LogLevel GetLevel() const noexcept {
-    return static_cast<const Derived*>(this)->GetLevelImpl();
-  }
-
-  // Convenience methods for different log levels
-  template <typename... Args>
-  void Trace(std::string_view format_str, Args&&... args) const {
-    Log(LogLevel::kTrace, format_str, std::forward<Args>(args)...);
-  }
-
-  template <typename... Args>
-  void Debug(std::string_view format_str, Args&&... args) const {
-    Log(LogLevel::kDebug, format_str, std::forward<Args>(args)...);
-  }
-
-  template <typename... Args>
-  void Info(std::string_view format_str, Args&&... args) const {
-    Log(LogLevel::kInfo, format_str, std::forward<Args>(args)...);
-  }
-
-  template <typename... Args>
-  void Warn(std::string_view format_str, Args&&... args) const {
-    Log(LogLevel::kWarn, format_str, std::forward<Args>(args)...);
-  }
-
-  template <typename... Args>
-  void Error(std::string_view format_str, Args&&... args) const {
-    Log(LogLevel::kError, format_str, std::forward<Args>(args)...);
-  }
-
-  template <typename... Args>
-  void Critical(std::string_view format_str, Args&&... args) const {
-    Log(LogLevel::kCritical, format_str, std::forward<Args>(args)...);
-  }
+  LogLevel GetLevel() const noexcept { return derived()->GetLevelImpl(); }
 
  protected:
   LoggerInterface() = default;
   ~LoggerInterface() = default;
+
+ private:
+  /// \brief Get const pointer to the derived class instance
+  const Derived* derived() const noexcept { return static_cast<const Derived*>(this); }
+
+  /// \brief Get non-const pointer to the derived class instance
+  Derived* derived() noexcept { return static_cast<Derived*>(this); }
 };
 
 /// \brief Concept to constrain types that implement the Logger interface
 template <typename T>
-concept Logger = std::is_base_of_v<LoggerInterface<T>, T>;
-
-/// \brief Default spdlog-based logger implementation
-class SpdlogLogger : public LoggerInterface<SpdlogLogger> {
- public:
-  /// \brief Create a new spdlog logger with the given name
-  explicit SpdlogLogger(std::string_view logger_name = "iceberg");
-
-  /// \brief Create a spdlog logger from an existing spdlog::logger
-  explicit SpdlogLogger(std::shared_ptr<void> spdlog_logger);
-
-  // Implementation methods required by LoggerInterface
-  bool ShouldLogImpl(LogLevel level) const noexcept;
-
-  template <typename... Args>
-  void LogImpl(LogLevel level, std::string_view format_str, Args&&... args) const {
-    if constexpr (sizeof...(args) > 0) {
-      std::string formatted_message =
-          std::vformat(format_str, std::make_format_args(args...));
-      LogRawImpl(level, formatted_message);
-    } else {
-      LogRawImpl(level, std::string(format_str));
-    }
-  }
-
-  template <typename... Args>
-  void LogWithLocationImpl(LogLevel level, std::string_view format_str,
-                           const std::source_location& location, Args&&... args) const {
-    std::string message;
-    if constexpr (sizeof...(args) > 0) {
-      message = std::vformat(format_str, std::make_format_args(args...));
-    } else {
-      message = std::string(format_str);
-    }
-    LogWithLocationRawImpl(level, message, location);
-  }
-
-  void SetLevelImpl(LogLevel level);
-  LogLevel GetLevelImpl() const noexcept;
-
-  /// \brief Get the underlying spdlog logger (for advanced usage)
-  std::shared_ptr<void> GetUnderlyingLogger() const { return logger_; }
-
- private:
-  void LogRawImpl(LogLevel level, const std::string& message) const;
-  void LogWithLocationRawImpl(LogLevel level, const std::string& message,
-                              const std::source_location& location) const;
-
-  std::shared_ptr<void> logger_;  // Type-erased spdlog::logger
-  LogLevel current_level_ = LogLevel::kInfo;
-};
-
-/// \brief No-op logger implementation for performance-critical scenarios
-class NullLogger : public LoggerInterface<NullLogger> {
- public:
-  bool ShouldLogImpl(LogLevel) const noexcept { return false; }
-
-  template <typename... Args>
-  void LogImpl(LogLevel, std::string_view, Args&&...) const noexcept {}
-
-  template <typename... Args>
-  void LogWithLocationImpl(LogLevel, std::string_view, const std::source_location&,
-                           Args&&...) const noexcept {}
-
-  void SetLevelImpl(LogLevel) noexcept {}
-  LogLevel GetLevelImpl() const noexcept { return LogLevel::kOff; }
-};
+concept Logger = requires(const T& t, T& nt, LogLevel level,
+                          const std::source_location& location,
+                          std::string_view format_str) {
+  { t.ShouldLogImpl(level) } -> std::convertible_to<bool>;
+  { t.LogImpl(level, location, format_str) } -> std::same_as<void>;
+  { nt.SetLevelImpl(level) } -> std::same_as<void>;
+  { t.GetLevelImpl() } -> std::convertible_to<LogLevel>;
+} && std::is_base_of_v<LoggerInterface<T>, T>;
 
 /// \brief Global logger registry for managing logger instances
-class LoggerRegistry {
+class ICEBERG_EXPORT LoggerRegistry {
  public:
   /// \brief Get the singleton instance of the logger registry
   static LoggerRegistry& Instance();
@@ -217,11 +123,16 @@ class LoggerRegistry {
   template <Logger LoggerImpl>
   void SetDefaultLogger(std::shared_ptr<LoggerImpl> logger) {
     default_logger_ = std::static_pointer_cast<void>(logger);
-    log_func_ = [](const void* logger_ptr, LogLevel level, const std::string& message) {
+    log_func_ = [](const void* logger_ptr, LogLevel level,
+                   const std::source_location& location, std::string_view format_str,
+                   std::format_args args) {
       auto* typed_logger = static_cast<const LoggerImpl*>(logger_ptr);
-      if (typed_logger->ShouldLog(level)) {
-        typed_logger->LogImpl(level, "{}", message);
-      }
+      std::string formatted_message = std::vformat(format_str, args);
+      typed_logger->Log(level, location, "{}", formatted_message);
+    };
+    should_log_func_ = [](const void* logger_ptr, LogLevel level) -> bool {
+      auto* typed_logger = static_cast<const LoggerImpl*>(logger_ptr);
+      return typed_logger->ShouldLog(level);
     };
   }
 
@@ -236,15 +147,22 @@ class LoggerRegistry {
 
   /// \brief Log using the default logger
   template <typename... Args>
-  void Log(LogLevel level, std::string_view format_str, Args&&... args) const {
-    if (default_logger_ && log_func_) {
-      std::string formatted_message;
-      if constexpr (sizeof...(args) > 0) {
-        formatted_message = std::vformat(format_str, std::make_format_args(args...));
-      } else {
-        formatted_message = std::string(format_str);
+  void Log(LogLevel level, const std::source_location& location,
+           std::string_view format_str, Args&&... args) const {
+    if (default_logger_ && should_log_func_ && log_func_) {
+      if (should_log_func_(default_logger_.get(), level)) {
+        try {
+          if constexpr (sizeof...(args) > 0) {
+            auto args_store = std::make_format_args(args...);
+            log_func_(default_logger_.get(), level, location, format_str, args_store);
+          } else {
+            log_func_(default_logger_.get(), level, location, format_str,
+                      std::format_args{});
+          }
+        } catch (const std::exception& e) {
+          std::cerr << "Logging error: " << e.what() << std::endl;
+        }
       }
-      log_func_(default_logger_.get(), level, formatted_message);
     }
   }
 
@@ -255,32 +173,39 @@ class LoggerRegistry {
   LoggerRegistry() = default;
 
   std::shared_ptr<void> default_logger_;
-  void (*log_func_)(const void*, LogLevel, const std::string&) = nullptr;
+  void (*log_func_)(const void*, LogLevel, const std::source_location&, std::string_view,
+                    std::format_args) = nullptr;
+  bool (*should_log_func_)(const void*, LogLevel) = nullptr;
 };
 
 /// \brief Convenience macros for logging with automatic source location
-#define LOG_WITH_LOCATION(level, format_str, ...)                                     \
+#define ICEBERG_LOG_WITH_LOCATION(level, format_str, ...)                             \
   do {                                                                                \
-    ::iceberg::LoggerRegistry::Instance().Log(level,                                  \
+    ::iceberg::LoggerRegistry::Instance().Log(level, std::source_location::current(), \
                                               format_str __VA_OPT__(, ) __VA_ARGS__); \
-  } while (0)
+  } while (false)
 
-#define LOG_TRACE(format_str, ...) \
-  LOG_WITH_LOCATION(::iceberg::LogLevel::kTrace, format_str __VA_OPT__(, ) __VA_ARGS__)
+#define ICEBERG_LOG_TRACE(format_str, ...)               \
+  ICEBERG_LOG_WITH_LOCATION(::iceberg::LogLevel::kTrace, \
+                            format_str __VA_OPT__(, ) __VA_ARGS__)
 
-#define LOG_DEBUG(format_str, ...) \
-  LOG_WITH_LOCATION(::iceberg::LogLevel::kDebug, format_str __VA_OPT__(, ) __VA_ARGS__)
+#define ICEBERG_LOG_DEBUG(format_str, ...)               \
+  ICEBERG_LOG_WITH_LOCATION(::iceberg::LogLevel::kDebug, \
+                            format_str __VA_OPT__(, ) __VA_ARGS__)
 
-#define LOG_INFO(format_str, ...) \
-  LOG_WITH_LOCATION(::iceberg::LogLevel::kInfo, format_str __VA_OPT__(, ) __VA_ARGS__)
+#define ICEBERG_LOG_INFO(format_str, ...)               \
+  ICEBERG_LOG_WITH_LOCATION(::iceberg::LogLevel::kInfo, \
+                            format_str __VA_OPT__(, ) __VA_ARGS__)
 
-#define LOG_WARN(format_str, ...) \
-  LOG_WITH_LOCATION(::iceberg::LogLevel::kWarn, format_str __VA_OPT__(, ) __VA_ARGS__)
+#define ICEBERG_LOG_WARN(format_str, ...)               \
+  ICEBERG_LOG_WITH_LOCATION(::iceberg::LogLevel::kWarn, \
+                            format_str __VA_OPT__(, ) __VA_ARGS__)
 
-#define LOG_ERROR(format_str, ...) \
-  LOG_WITH_LOCATION(::iceberg::LogLevel::kError, format_str __VA_OPT__(, ) __VA_ARGS__)
+#define ICEBERG_LOG_ERROR(format_str, ...)               \
+  ICEBERG_LOG_WITH_LOCATION(::iceberg::LogLevel::kError, \
+                            format_str __VA_OPT__(, ) __VA_ARGS__)
 
-#define LOG_CRITICAL(format_str, ...) \
-  LOG_WITH_LOCATION(::iceberg::LogLevel::kCritical, format_str __VA_OPT__(, ) __VA_ARGS__)
-
+#define ICEBERG_LOG_CRITICAL(format_str, ...)               \
+  ICEBERG_LOG_WITH_LOCATION(::iceberg::LogLevel::kCritical, \
+                            format_str __VA_OPT__(, ) __VA_ARGS__)
 }  // namespace iceberg

@@ -23,6 +23,8 @@
 
 #include <gtest/gtest.h>
 
+#include "iceberg/util/spdlog_logger.h"
+
 namespace iceberg {
 
 /// \brief Example custom logger implementation using std::cout for testing
@@ -37,29 +39,15 @@ class StdoutLogger : public LoggerInterface<StdoutLogger> {
   bool ShouldLogImpl(LogLevel level) const noexcept { return level >= min_level_; }
 
   template <typename... Args>
-  void LogImpl(LogLevel level, std::string_view format_str, Args&&... args) const {
+  void LogImpl(LogLevel level, const std::source_location& location,
+               std::string_view format_str, Args&&... args) const {
     if constexpr (sizeof...(args) > 0) {
       std::string formatted_message =
           std::vformat(format_str, std::make_format_args(args...));
-      LogRawImpl(level, formatted_message);
+      LogRawImpl(level, location, formatted_message);
     } else {
-      LogRawImpl(level, std::string(format_str));
+      LogRawImpl(level, location, std::string(format_str));
     }
-  }
-
-  template <typename... Args>
-  void LogWithLocationImpl(LogLevel level, std::string_view format_str,
-                           const std::source_location& location, Args&&... args) const {
-    std::string message;
-    if constexpr (sizeof...(args) > 0) {
-      message = std::vformat(format_str, std::make_format_args(args...));
-    } else {
-      message = std::string(format_str);
-    }
-
-    std::string full_message =
-        std::format("[{}:{}] {}", location.file_name(), location.line(), message);
-    LogRawImpl(level, full_message);
   }
 
   void SetLevelImpl(LogLevel level) noexcept { min_level_ = level; }
@@ -67,7 +55,8 @@ class StdoutLogger : public LoggerInterface<StdoutLogger> {
   LogLevel GetLevelImpl() const noexcept { return min_level_; }
 
  private:
-  void LogRawImpl(LogLevel level, const std::string& message) const {
+  void LogRawImpl(LogLevel level, const std::source_location& location,
+                  const std::string& message) const {
     std::cout << "[" << LogLevelToString(level) << "] " << message << std::endl;
   }
 
@@ -91,10 +80,10 @@ TEST_F(LoggerTest, DefaultSpdlogLogger) {
   LoggerRegistry::Instance().InitializeDefault("test_logger");
 
   // Test basic logging functionality
-  LOG_INFO("This is an info message");
-  LOG_DEBUG("This is a debug message with value: {}", 42);
-  LOG_WARN("This is a warning message");
-  LOG_ERROR("This is an error message");
+  ICEBERG_LOG_INFO("This is an info message");
+  ICEBERG_LOG_DEBUG("This is a debug message with value: {}", 42);
+  ICEBERG_LOG_WARN("This is a warning message");
+  ICEBERG_LOG_ERROR("This is an error message");
 
   // The test passes if no exceptions are thrown
   SUCCEED();
@@ -106,9 +95,9 @@ TEST_F(LoggerTest, CustomStdoutLogger) {
   LoggerRegistry::Instance().SetDefaultLogger(custom_logger);
 
   // Test logging with custom logger
-  LOG_DEBUG("Debug message from custom logger");
-  LOG_INFO("Info message with parameter: {}", "test");
-  LOG_WARN("Warning from custom logger");
+  ICEBERG_LOG_DEBUG("Debug message from custom logger");
+  ICEBERG_LOG_INFO("Info message with parameter: {}", "test");
+  ICEBERG_LOG_WARN("Warning from custom logger");
 
   SUCCEED();
 }
