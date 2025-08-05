@@ -18,7 +18,6 @@
  */
 
 #include <arrow/type.h>
-#include <gtest/gtest.h>
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/schema.h>
 #include <parquet/schema.h>
@@ -128,26 +127,31 @@ constexpr std::string_view kParquetFieldIdKey = "PARQUET:field_id";
 
 }  // namespace
 
-TEST(HasFieldIds, PrimitiveNode) {
+TEST(HasFieldIdsTest, PrimitiveNode) {
   EXPECT_FALSE(HasFieldIds(MakeInt32Node("test_field")));
   EXPECT_TRUE(HasFieldIds(MakeInt32Node("test_field", /*field_id=*/1)));
+  EXPECT_FALSE(HasFieldIds(MakeInt32Node("test_field", /*field_id=*/-1)));
 }
 
-TEST(HasFieldIds, GroupNode) {
-  auto group_node_without_field_id =
-      MakeGroupNode("test_group", {MakeInt32Node("c1"), MakeInt32Node("c2")});
-  EXPECT_FALSE(HasFieldIds(group_node_without_field_id));
-
-  auto group_node_with_full_field_id = MakeGroupNode(
-      "test_group",
-      {MakeInt32Node("c1", /*field_id=*/2), MakeInt32Node("c2", /*field_id=*/3)},
-      /*field_id=*/1);
-  EXPECT_TRUE(HasFieldIds(group_node_with_full_field_id));
-
-  auto group_node_with_partial_field_id = MakeGroupNode(
-      "test_group", {MakeInt32Node("c1", /*field_id=*/1), MakeInt32Node("c2")});
-  EXPECT_TRUE(HasFieldIds(group_node_with_partial_field_id));
+// NOLINTBEGIN(clang-analyzer-cplusplus.NewDeleteLeaks)
+TEST(HasFieldIdsTest, GroupNode) {
+  EXPECT_FALSE(
+      HasFieldIds(MakeGroupNode("group_without_field_id", {
+                                                              MakeInt32Node("c1"),
+                                                              MakeInt32Node("c2"),
+                                                          })));
+  EXPECT_TRUE(HasFieldIds(
+      MakeGroupNode("group_with_full_field_id", {
+                                                    MakeInt32Node("c1", /*field_id=*/1),
+                                                    MakeInt32Node("c2", /*field_id=*/2),
+                                                })));
+  EXPECT_TRUE(HasFieldIds(MakeGroupNode("group_with_partial_field_id",
+                                        {
+                                            MakeInt32Node("c1", /*field_id=*/1),
+                                            MakeInt32Node("c2"),
+                                        })));
 }
+// NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)
 
 TEST(ParquetSchemaProjectionTest, ProjectIdenticalSchemas) {
   Schema expected_schema({

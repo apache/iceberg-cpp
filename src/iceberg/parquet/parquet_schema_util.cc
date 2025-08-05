@@ -17,6 +17,8 @@
  * under the License.
  */
 
+#include <charconv>
+
 #include <arrow/type.h>
 #include <arrow/type_fwd.h>
 #include <arrow/util/key_value_metadata.h>
@@ -42,26 +44,25 @@ std::optional<int32_t> FieldIdFromMetadata(
   if (!metadata) {
     return std::nullopt;
   }
-  int key = metadata->FindKey(kParquetFieldIdKey.data());
+  int key = metadata->FindKey(kParquetFieldIdKey);
   if (key < 0) {
     return std::nullopt;
   }
   std::string field_id_str = metadata->value(key);
   int32_t field_id = -1;
-  try {
-    field_id = std::stoi(field_id_str);
-  } catch (const std::invalid_argument& e) {
-    return std::nullopt;
-  } catch (const std::out_of_range& e) {
+  auto [_, ec] = std::from_chars(field_id_str.data(),
+                                 field_id_str.data() + field_id_str.size(), field_id);
+  if (ec != std::errc() || field_id < 0) {
     return std::nullopt;
   }
-  return field_id < 0 ? std::nullopt : std::make_optional(field_id);
+  return field_id;
 }
 
 std::optional<int32_t> GetFieldId(const ::parquet::arrow::SchemaField& parquet_field) {
   return FieldIdFromMetadata(parquet_field.field->metadata());
 }
 
+// TODO(gangwu): support v3 unknown type
 Status ValidateParquetSchemaEvolution(
     const Type& expected_type, const ::parquet::arrow::SchemaField& parquet_field) {
   const auto& arrow_type = parquet_field.field->type();
@@ -189,7 +190,7 @@ Status ValidateParquetSchemaEvolution(
 
 // Forward declaration
 Result<FieldProjection> ProjectNested(
-    const Type& expected_type,
+    const Type& nested_type,
     const std::vector<::parquet::arrow::SchemaField>& parquet_fields);
 
 Result<FieldProjection> ProjectStruct(
@@ -212,7 +213,7 @@ Result<FieldProjection> ProjectStruct(
             std::piecewise_construct, std::forward_as_tuple(field_id.value()),
             std::forward_as_tuple(i, parquet_field));
         !inserted) [[unlikely]] {
-      return InvalidSchema("Duplicate field id found in Parquet schema: {}",
+      return InvalidSchema("Duplicate field id {} found in Parquet schema",
                            field_id.value());
     }
   }
@@ -220,17 +221,17 @@ Result<FieldProjection> ProjectStruct(
   FieldProjection result;
   result.children.reserve(struct_type.fields().size());
 
-  for (const auto& expected_field : struct_type.fields()) {
-    int32_t field_id = expected_field.field_id();
+  for (const auto& field : struct_type.fields()) {
+    int32_t field_id = field.field_id();
     FieldProjection child_projection;
 
     if (auto iter = field_context_map.find(field_id); iter != field_context_map.cend()) {
       const auto& parquet_field = iter->second.parquet_field;
       ICEBERG_RETURN_UNEXPECTED(
-          ValidateParquetSchemaEvolution(*expected_field.type(), parquet_field));
-      if (expected_field.type()->is_nested()) {
-        ICEBERG_ASSIGN_OR_RAISE(child_projection, ProjectNested(*expected_field.type(),
-                                                                parquet_field.children));
+          ValidateParquetSchemaEvolution(*field.type(), parquet_field));
+      if (field.type()->is_nested()) {
+        ICEBERG_ASSIGN_OR_RAISE(child_projection,
+                                ProjectNested(*field.type(), parquet_field.children));
       } else {
         child_projection.attributes =
             std::make_shared<ParquetExtraAttributes>(parquet_field.column_index);
@@ -239,7 +240,7 @@ Result<FieldProjection> ProjectStruct(
       child_projection.kind = FieldProjection::Kind::kProjected;
     } else if (MetadataColumns::IsMetadataColumn(field_id)) {
       child_projection.kind = FieldProjection::Kind::kMetadata;
-    } else if (expected_field.optional()) {
+    } else if (field.optional()) {
       child_projection.kind = FieldProjection::Kind::kNull;
     } else {
       return InvalidSchema("Missing required field with id: {}", field_id);
@@ -260,26 +261,25 @@ Result<FieldProjection> ProjectList(
                          parquet_fields.size());
   }
 
-  const auto& parquet_field = parquet_fields[0];
+  const auto& parquet_field = parquet_fields.back();
   auto element_field_id = GetFieldId(parquet_field);
   if (!element_field_id) {
     return InvalidSchema("List element field missing field id");
   }
 
-  const auto& expected_element_field = list_type.fields().back();
-  if (expected_element_field.field_id() != element_field_id.value()) {
+  const auto& element_field = list_type.fields().back();
+  if (element_field.field_id() != element_field_id.value()) {
     return InvalidSchema("List element field id mismatch, expected {}, got {}",
-                         expected_element_field.field_id(), element_field_id.value());
+                         element_field.field_id(), element_field_id.value());
   }
 
   ICEBERG_RETURN_UNEXPECTED(
-      ValidateParquetSchemaEvolution(*expected_element_field.type(), parquet_field));
+      ValidateParquetSchemaEvolution(*element_field.type(), parquet_field));
 
   FieldProjection element_projection;
-  if (expected_element_field.type()->is_nested()) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        element_projection,
-        ProjectNested(*expected_element_field.type(), parquet_field.children));
+  if (element_field.type()->is_nested()) {
+    ICEBERG_ASSIGN_OR_RAISE(element_projection,
+                            ProjectNested(*element_field.type(), parquet_field.children));
   } else {
     element_projection.attributes =
         std::make_shared<ParquetExtraAttributes>(parquet_field.column_index);
@@ -310,28 +310,29 @@ Result<FieldProjection> ProjectMap(
     return InvalidSchema("Map value field missing field id");
   }
 
-  const auto& expected_key_field = map_type.key();
-  const auto& expected_value_field = map_type.value();
-  if (expected_key_field.field_id() != key_field_id.value()) {
+  const auto& key_field = map_type.key();
+  const auto& value_field = map_type.value();
+  if (key_field.field_id() != key_field_id.value()) {
     return InvalidSchema("Map key field id mismatch, expected {}, got {}",
-                         expected_key_field.field_id(), key_field_id.value());
+                         key_field.field_id(), key_field_id.value());
   }
-  if (expected_value_field.field_id() != value_field_id.value()) {
+  if (value_field.field_id() != value_field_id.value()) {
     return InvalidSchema("Map value field id mismatch, expected {}, got {}",
-                         expected_value_field.field_id(), value_field_id.value());
+                         value_field.field_id(), value_field_id.value());
   }
 
   FieldProjection result;
+  result.children.reserve(2);
 
   for (size_t i = 0; i < parquet_fields.size(); ++i) {
     FieldProjection sub_projection;
     const auto& sub_node = parquet_fields[i];
-    const auto& expected_sub_field = map_type.fields()[i];
+    const auto& sub_field = map_type.fields()[i];
     ICEBERG_RETURN_UNEXPECTED(
-        ValidateParquetSchemaEvolution(*expected_sub_field.type(), sub_node));
-    if (expected_sub_field.type()->is_nested()) {
-      ICEBERG_ASSIGN_OR_RAISE(
-          sub_projection, ProjectNested(*expected_sub_field.type(), sub_node.children));
+        ValidateParquetSchemaEvolution(*sub_field.type(), sub_node));
+    if (sub_field.type()->is_nested()) {
+      ICEBERG_ASSIGN_OR_RAISE(sub_projection,
+                              ProjectNested(*sub_field.type(), sub_node.children));
     } else {
       sub_projection.attributes =
           std::make_shared<ParquetExtraAttributes>(sub_node.column_index);
@@ -345,18 +346,18 @@ Result<FieldProjection> ProjectMap(
 }
 
 Result<FieldProjection> ProjectNested(
-    const Type& expected_type,
+    const Type& nested_type,
     const std::vector<::parquet::arrow::SchemaField>& parquet_fields) {
-  if (!expected_type.is_nested()) {
-    return InvalidSchema("Expected a nested type, but got {}", expected_type);
+  if (!nested_type.is_nested()) {
+    return InvalidSchema("Expected a nested type, but got {}", nested_type);
   }
 
-  switch (expected_type.type_id()) {
+  switch (nested_type.type_id()) {
     case TypeId::kStruct:
-      return ProjectStruct(internal::checked_cast<const StructType&>(expected_type),
+      return ProjectStruct(internal::checked_cast<const StructType&>(nested_type),
                            parquet_fields);
     case TypeId::kList:
-      return ProjectList(internal::checked_cast<const ListType&>(expected_type),
+      return ProjectList(internal::checked_cast<const ListType&>(nested_type),
                          parquet_fields);
     case TypeId::kMap:
       if (parquet_fields.size() != 1 ||
@@ -365,20 +366,20 @@ Result<FieldProjection> ProjectNested(
         return InvalidSchema(
             "Map type must have exactly one struct field with two children");
       }
-      return ProjectMap(internal::checked_cast<const MapType&>(expected_type),
+      return ProjectMap(internal::checked_cast<const MapType&>(nested_type),
                         parquet_fields[0].children);
     default:
-      return InvalidSchema("Unsupported nested type: {}", expected_type);
+      return InvalidSchema("Unsupported nested type: {}", nested_type);
   }
 }
 
 void CollectColumnIds(const FieldProjection& field_projection,
                       std::vector<int32_t>* column_ids) {
   if (field_projection.attributes) {
-    auto parquet_attributes = internal::checked_cast<const ParquetExtraAttributes&>(
+    const auto& attributes = internal::checked_cast<const ParquetExtraAttributes&>(
         *field_projection.attributes);
-    if (parquet_attributes.column_id) {
-      column_ids->push_back(parquet_attributes.column_id.value());
+    if (attributes.column_id) {
+      column_ids->push_back(attributes.column_id.value());
     }
   }
   for (const auto& child : field_projection.children) {
