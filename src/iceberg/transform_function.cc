@@ -23,6 +23,7 @@
 #include <chrono>
 #include <type_traits>
 #include <utility>
+#include <variant>
 
 #include "iceberg/type.h"
 #include "iceberg/util/murmurhash3_internal.h"
@@ -32,9 +33,7 @@ namespace iceberg {
 IdentityTransform::IdentityTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kIdentity, source_type) {}
 
-Result<std::optional<Literal>> IdentityTransform::Transform(const Literal& literal) {
-  return literal;
-}
+Result<Literal> IdentityTransform::Transform(const Literal& literal) { return literal; }
 
 Result<std::shared_ptr<Type>> IdentityTransform::ResultType() const {
   return source_type();
@@ -53,7 +52,7 @@ BucketTransform::BucketTransform(std::shared_ptr<Type> const& source_type,
                                  int32_t num_buckets)
     : TransformFunction(TransformType::kBucket, source_type), num_buckets_(num_buckets) {}
 
-Result<std::optional<Literal>> BucketTransform::Transform(const Literal& literal) {
+Result<Literal> BucketTransform::Transform(const Literal& literal) {
   assert(literal.type() == source_type());
   if (literal.IsBelowMin() || literal.IsAboveMax()) {
     return InvalidArgument(
@@ -74,7 +73,8 @@ Result<std::optional<Literal>> BucketTransform::Transform(const Literal& literal
           MurmurHash3_x86_32(value.data(), value.size(), 0, &hash_value);
         } else if constexpr (std::is_same_v<T, std::vector<uint8_t>>) {
           MurmurHash3_x86_32(value.data(), value.size(), 0, &hash_value);
-        } else if constexpr (std::is_same_v<T, bool> || std::is_same_v<T, float> ||
+        } else if constexpr (std::is_same_v<T, std::monostate> ||
+                             std::is_same_v<T, bool> || std::is_same_v<T, float> ||
                              std::is_same_v<T, double> ||
                              std::is_same_v<T, Literal::BelowMin> ||
                              std::is_same_v<T, Literal::AboveMax>) {
@@ -128,7 +128,7 @@ TruncateTransform::TruncateTransform(std::shared_ptr<Type> const& source_type,
                                      int32_t width)
     : TransformFunction(TransformType::kTruncate, source_type), width_(width) {}
 
-Result<std::optional<Literal>> TruncateTransform::Transform(const Literal& literal) {
+Result<Literal> TruncateTransform::Transform(const Literal& literal) {
   assert(literal.type() == source_type());
   if (literal.IsBelowMin() || literal.IsAboveMax()) {
     return InvalidArgument(
@@ -150,17 +150,25 @@ Result<std::optional<Literal>> TruncateTransform::Transform(const Literal& liter
       return NotImplemented("Truncate for Decimal is not implemented yet");
     }
     case TypeId::kString: {
+      // Strings are truncated to a valid UTF-8 string with no more than L code points.
       auto value = std::get<std::string>(literal.value());
-      if (value.size() > static_cast<size_t>(width_)) {
-        size_t safe_point = width_;
-        while (safe_point > 0 && (value[safe_point] & 0xC0) == 0x80) {
-          // Find the last valid UTF-8 character boundary before or at width_
-          safe_point--;
+      size_t code_point_count = 0;
+      size_t safe_point = 0;
+
+      for (size_t i = 0; i < value.size(); ++i) {
+        // Start of a new UTF-8 code point
+        if ((value[i] & 0xC0) != 0x80) {
+          code_point_count++;
+          if (code_point_count > static_cast<size_t>(width_)) {
+            safe_point = i;
+            break;
+          }
         }
-        // Resize the string to the safe point
-        value.resize(safe_point);
       }
 
+      if (safe_point != 0) {
+        value.resize(safe_point);  // Resize the string to the safe point
+      }
       return Literal::String(value);
     }
     case TypeId::kBinary: {
@@ -204,7 +212,7 @@ Result<std::unique_ptr<TransformFunction>> TruncateTransform::Make(
 YearTransform::YearTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kTruncate, source_type) {}
 
-Result<std::optional<Literal>> YearTransform::Transform(const Literal& literal) {
+Result<Literal> YearTransform::Transform(const Literal& literal) {
   assert(literal.type() == source_type());
   if (literal.IsBelowMin() || literal.IsAboveMax()) {
     return InvalidArgument(
@@ -256,7 +264,7 @@ Result<std::unique_ptr<TransformFunction>> YearTransform::Make(
 MonthTransform::MonthTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kMonth, source_type) {}
 
-Result<std::optional<Literal>> MonthTransform::Transform(const Literal& literal) {
+Result<Literal> MonthTransform::Transform(const Literal& literal) {
   assert(literal.type() == source_type());
   if (literal.IsBelowMin() || literal.IsAboveMax()) {
     return InvalidArgument(
@@ -320,7 +328,7 @@ Result<std::unique_ptr<TransformFunction>> MonthTransform::Make(
 DayTransform::DayTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kDay, source_type) {}
 
-Result<std::optional<Literal>> DayTransform::Transform(const Literal& literal) {
+Result<Literal> DayTransform::Transform(const Literal& literal) {
   assert(literal.type() == source_type());
   if (literal.IsBelowMin() || literal.IsAboveMax()) {
     return InvalidArgument(
@@ -371,7 +379,7 @@ Result<std::unique_ptr<TransformFunction>> DayTransform::Make(
 HourTransform::HourTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kHour, source_type) {}
 
-Result<std::optional<Literal>> HourTransform::Transform(const Literal& literal) {
+Result<Literal> HourTransform::Transform(const Literal& literal) {
   assert(literal.type() == source_type());
   if (literal.IsBelowMin() || literal.IsAboveMax()) {
     return InvalidArgument(
@@ -420,8 +428,8 @@ Result<std::unique_ptr<TransformFunction>> HourTransform::Make(
 VoidTransform::VoidTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kVoid, source_type) {}
 
-Result<std::optional<Literal>> VoidTransform::Transform(const Literal& literal) {
-  return std::nullopt;
+Result<Literal> VoidTransform::Transform(const Literal& literal) {
+  return Literal::Null();
 }
 
 Result<std::shared_ptr<Type>> VoidTransform::ResultType() const { return source_type(); }

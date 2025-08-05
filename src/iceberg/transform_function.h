@@ -31,7 +31,7 @@ class IdentityTransform : public TransformFunction {
   explicit IdentityTransform(std::shared_ptr<Type> const& source_type);
 
   /// \brief Returns the same Literal as the input.
-  Result<std::optional<Literal>> Transform(const Literal& literal) override;
+  Result<Literal> Transform(const Literal& literal) override;
 
   /// \brief Returns the same type as the source type if it is valid.
   Result<std::shared_ptr<Type>> ResultType() const override;
@@ -51,7 +51,7 @@ class BucketTransform : public TransformFunction {
   BucketTransform(std::shared_ptr<Type> const& source_type, int32_t num_buckets);
 
   /// \brief Applies the bucket hash function to the input Literal.
-  Result<std::optional<Literal>> Transform(const Literal& literal) override;
+  Result<Literal> Transform(const Literal& literal) override;
 
   /// \brief Returns INT32 as the output type.
   Result<std::shared_ptr<Type>> ResultType() const override;
@@ -75,7 +75,7 @@ class TruncateTransform : public TransformFunction {
   TruncateTransform(std::shared_ptr<Type> const& source_type, int32_t width);
 
   /// \brief Truncates the input Literal to the specified width.
-  Result<std::optional<Literal>> Transform(const Literal& literal) override;
+  Result<Literal> Transform(const Literal& literal) override;
 
   /// \brief Returns the same type as source_type.
   Result<std::shared_ptr<Type>> ResultType() const override;
@@ -98,7 +98,7 @@ class YearTransform : public TransformFunction {
   explicit YearTransform(std::shared_ptr<Type> const& source_type);
 
   /// \brief Extract a date or timestamp year, as years from 1970.
-  Result<std::optional<Literal>> Transform(const Literal& literal) override;
+  Result<Literal> Transform(const Literal& literal) override;
 
   /// \brief Returns INT32 as the output type.
   Result<std::shared_ptr<Type>> ResultType() const override;
@@ -117,7 +117,7 @@ class MonthTransform : public TransformFunction {
   explicit MonthTransform(std::shared_ptr<Type> const& source_type);
 
   /// \brief Extract a date or timestamp month, as months from 1970-01-01.
-  Result<std::optional<Literal>> Transform(const Literal& literal) override;
+  Result<Literal> Transform(const Literal& literal) override;
 
   /// \brief Returns INT32 as the output type.
   Result<std::shared_ptr<Type>> ResultType() const override;
@@ -136,7 +136,7 @@ class DayTransform : public TransformFunction {
   explicit DayTransform(std::shared_ptr<Type> const& source_type);
 
   /// \brief Extract a date or timestamp day, as days from 1970-01-01.
-  Result<std::optional<Literal>> Transform(const Literal& literal) override;
+  Result<Literal> Transform(const Literal& literal) override;
 
   /// \brief Returns INT32 as the output type.
   Result<std::shared_ptr<Type>> ResultType() const override;
@@ -155,7 +155,7 @@ class HourTransform : public TransformFunction {
   explicit HourTransform(std::shared_ptr<Type> const& source_type);
 
   /// \brief Extract a timestamp hour, as hours from 1970-01-01 00:00:00.
-  Result<std::optional<Literal>> Transform(const Literal& literal) override;
+  Result<Literal> Transform(const Literal& literal) override;
 
   /// \brief Returns INT32 as the output type.
   Result<std::shared_ptr<Type>> ResultType() const override;
@@ -174,7 +174,7 @@ class VoidTransform : public TransformFunction {
   explicit VoidTransform(std::shared_ptr<Type> const& source_type);
 
   /// \brief Returns a null literal.
-  Result<std::optional<Literal>> Transform(const Literal& literal) override;
+  Result<Literal> Transform(const Literal& literal) override;
 
   /// \brief Returns null type or a sentinel type indicating void.
   Result<std::shared_ptr<Type>> ResultType() const override;

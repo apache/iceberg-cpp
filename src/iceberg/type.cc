@@ -194,6 +194,10 @@ bool MapType::Equals(const Type& other) const {
   return fields_ == map.fields_;
 }
 
+TypeId NullType::type_id() const { return TypeId::kNull; }
+std::string NullType::ToString() const { return "null"; }
+bool NullType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
+
 TypeId BooleanType::type_id() const { return kTypeId; }
 std::string BooleanType::ToString() const { return "boolean"; }
 bool BooleanType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
@@ -296,6 +300,7 @@ bool BinaryType::Equals(const Type& other) const { return other.type_id() == kTy
     return result;                                                    \
   }
 
+TYPE_FACTORY(null, NullType)
 TYPE_FACTORY(boolean, BooleanType)
 TYPE_FACTORY(int32, IntType)
 TYPE_FACTORY(int64, LongType)

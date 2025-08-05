@@ -48,17 +48,19 @@ class ICEBERG_EXPORT Literal {
     bool operator==(const AboveMax&) const = default;
     std::strong_ordering operator<=>(const AboveMax&) const = default;
   };
-  using Value = std::variant<bool,         // for boolean
-                             int32_t,      // for int, date
-                             int64_t,      // for long, timestamp, timestamp_tz, time
-                             float,        // for float
-                             double,       // for double
-                             std::string,  // for string
+  using Value = std::variant<std::monostate,  // for null
+                             bool,            // for boolean
+                             int32_t,         // for int, date
+                             int64_t,         // for long, timestamp, timestamp_tz, time
+                             float,           // for float
+                             double,          // for double
+                             std::string,     // for string
                              std::vector<uint8_t>,     // for binary, fixed
                              std::array<uint8_t, 16>,  // for uuid and decimal
                              BelowMin, AboveMax>;
 
   /// \brief Factory methods for primitive types
+  static Literal Null();
   static Literal Boolean(bool value);
   static Literal Int(int32_t value);
   static Literal Date(int32_t value);

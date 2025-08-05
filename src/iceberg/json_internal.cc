@@ -477,8 +477,9 @@ nlohmann::json ToJson(const Type& type) {
     }
     case TypeId::kUuid:
       return "uuid";
+    default:
+      std::unreachable();
   }
-  std::unreachable();
 }
 
 nlohmann::json ToJson(const Schema& schema) {

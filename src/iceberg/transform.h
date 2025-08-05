@@ -26,7 +26,6 @@
 #include <optional>
 #include <variant>
 
-#include "iceberg/arrow_c_data.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
@@ -173,7 +172,7 @@ class ICEBERG_EXPORT TransformFunction {
   virtual ~TransformFunction() = default;
   TransformFunction(TransformType transform_type, std::shared_ptr<Type> source_type);
   /// \brief Transform an input Literal to a new Literal
-  virtual Result<std::optional<Literal>> Transform(const Literal& literal) = 0;
+  virtual Result<Literal> Transform(const Literal& literal) = 0;
   /// \brief Get the transform type
   TransformType transform_type() const;
   /// \brief Get the source type of transform function

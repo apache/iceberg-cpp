@@ -126,6 +126,8 @@ Literal::Literal(Value value, std::shared_ptr<PrimitiveType> type)
     : value_(std::move(value)), type_(std::move(type)) {}
 
 // Factory methods
+Literal Literal::Null() { return {Value{std::monostate{}}, iceberg::null()}; }
+
 Literal Literal::Boolean(bool value) { return {Value{value}, iceberg::boolean()}; }
 
 Literal Literal::Int(int32_t value) { return {Value{value}, iceberg::int32()}; }
@@ -205,6 +207,9 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
 
   // Same type comparison for normal values
   switch (type_->type_id()) {
+    case TypeId::kNull:
+      // Nulls are equivalent
+      return std::partial_ordering::equivalent;
     case TypeId::kBoolean: {
       auto this_val = std::get<bool>(value_);
       auto other_val = std::get<bool>(other.value_);

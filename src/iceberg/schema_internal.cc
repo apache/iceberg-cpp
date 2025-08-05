@@ -22,6 +22,7 @@
 #include <cstring>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "iceberg/schema.h"
 #include "iceberg/type.h"
@@ -139,6 +140,8 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
           ArrowMetadataBuilderAppend(&metadata_buffer, ArrowCharView(kArrowExtensionName),
                                      ArrowCharView(kArrowUuidExtensionName)));
     } break;
+    default:
+      std::unreachable();
   }
 
   if (!name.empty()) {

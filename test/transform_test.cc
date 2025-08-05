@@ -24,6 +24,7 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <iceberg/expression/literal.h>
 
 #include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
@@ -303,20 +304,13 @@ TEST(TransformLiteralTest, TruncateTransform) {
        .expected = Literal::String("Hello")},
       {.source_type = iceberg::string(),
        .width = 5,
-       .source = Literal::String("😜🧐🤔🤪🥳"),
-       // Truncate to 5 bytes, the safe point should be four bytes which fits the first
-       // emoji
-       .expected = Literal::String("😜")},
+       .source = Literal::String("😜🧐🤔🤪🥳😵‍💫😂"),
+       // Truncate to 5 utf-8 code points
+       .expected = Literal::String("😜🧐🤔🤪🥳")},
       {.source_type = iceberg::string(),
        .width = 8,
-       .source = Literal::String("😜🧐🤔🤪🥳"),
-       // Truncate to 8 bytes, fits the first two emojis
-       .expected = Literal::String("😜🧐")},
-      {.source_type = iceberg::string(),
-       .width = 3,
-       .source = Literal::String("😜🧐🤔🤪🥳"),
-       // Truncate to 3 bytes, the saft point will be 0 bytes
-       .expected = Literal::String("")},
+       .source = Literal::String("a😜b🧐c🤔d🤪e🥳"),
+       .expected = Literal::String("a😜b🧐c🤔d🤪")},
       {.source_type = iceberg::binary(),
        .width = 5,
        .source = Literal::Binary({0x01, 0x02, 0x03, 0x04, 0x05, 0x06}),
@@ -493,8 +487,8 @@ TEST(TransformLiteralTest, VoidTransform) {
     auto transformPtr = transform->Bind(c.source_type);
     ASSERT_TRUE(transformPtr.has_value()) << "Failed to bind void transform";
     auto result = transformPtr.value()->Transform(c.source);
-    ASSERT_EQ(std::nullopt, result)
-        << "Expected void transform to return no result for source: "
+    EXPECT_EQ(result.value(), Literal::Null())
+        << "Expected void transform to return null type for source: "
         << c.source.ToString();
   }
 }

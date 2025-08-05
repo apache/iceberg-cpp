@@ -36,6 +36,8 @@ enum class TypeId {
   kStruct,
   kList,
   kMap,
+  kNull,  // Note: A type having no physical storage. This is not an iceberg type, we add
+          // it to simplify the code logic.
   kBoolean,
   kInt,
   kLong,
@@ -69,6 +71,7 @@ class LongType;
 class ListType;
 class MapType;
 class NestedType;
+class NullType;
 class PartitionField;
 class PartitionSpec;
 class PrimitiveType;
