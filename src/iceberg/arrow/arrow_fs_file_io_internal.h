@@ -35,10 +35,10 @@ class ICEBERG_BUNDLE_EXPORT ArrowFileSystemFileIO : public FileIO {
       : arrow_fs_(std::move(arrow_fs)) {}
 
   /// \brief Make an in-memory FileIO backed by arrow::fs::internal::MockFileSystem.
-  static std::unique_ptr<::arrow::fs::FileSystem> MakeMockFileIO();
+  static std::unique_ptr<FileIO> MakeMockFileIO();
 
   /// \brief Make a local FileIO backed by arrow::fs::LocalFileSystem.
-  static std::unique_ptr<::arrow::fs::FileSystem> MakeLocalFileIO();
+  static std::unique_ptr<FileIO> MakeLocalFileIO();
 
   ~ArrowFileSystemFileIO() override = default;
 
