@@ -61,7 +61,7 @@ class ICEBERG_EXPORT Writer {
   /// \brief Close the writer.
   virtual Status Close() = 0;
 
-  /// \brief Read next data from file.
+  /// \brief Write arrow data to the file.
   ///
   /// \return Status of write results.
   virtual Status Write(const ArrowArray& data) = 0;
