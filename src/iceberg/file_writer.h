@@ -64,7 +64,7 @@ class ICEBERG_EXPORT Writer {
   /// \brief Write arrow data to the file.
   ///
   /// \return Status of write results.
-  virtual Status Write(const ArrowArray& data) = 0;
+  virtual Status Write(ArrowArray data) = 0;
 };
 
 /// \brief Factory function to create a writer of a specific file format.
