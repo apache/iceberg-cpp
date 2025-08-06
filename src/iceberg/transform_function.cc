@@ -27,6 +27,7 @@
 
 #include "iceberg/type.h"
 #include "iceberg/util/murmurhash3_internal.h"
+#include "iceberg/util/truncate_utils.h"
 
 namespace iceberg {
 
@@ -57,7 +58,7 @@ Result<Literal> BucketTransform::Transform(const Literal& literal) {
         "Cannot apply bucket transform to literal with value {} of type {}",
         literal.ToString(), source_type()->ToString());
   }
-  if (literal.IsNull()) {
+  if (literal.IsNull()) [[unlikely]] {
     return Literal::Null(iceberg::int32());
   }
 
@@ -135,7 +136,7 @@ Result<Literal> TruncateTransform::Transform(const Literal& literal) {
         "Cannot apply truncate transform to literal with value {} of type {}",
         literal.ToString(), source_type()->ToString());
   }
-  if (literal.IsNull()) {
+  if (literal.IsNull()) [[unlikely]] {
     // Return null as is
     return literal;
   }
@@ -143,11 +144,11 @@ Result<Literal> TruncateTransform::Transform(const Literal& literal) {
   switch (source_type()->type_id()) {
     case TypeId::kInt: {
       auto value = std::get<int32_t>(literal.value());
-      return Literal::Int(value - (((value % width_) + width_) % width_));
+      return Literal::Int(TruncateUtils::TruncateInt(value, width_));
     }
     case TypeId::kLong: {
       auto value = std::get<int64_t>(literal.value());
-      return Literal::Long(value - (((value % width_) + width_) % width_));
+      return Literal::Long(TruncateUtils::TruncateLong(value, width_));
     }
     case TypeId::kDecimal: {
       // TODO(zhjwpku): Handle decimal truncation logic here
@@ -156,26 +157,11 @@ Result<Literal> TruncateTransform::Transform(const Literal& literal) {
     case TypeId::kString: {
       // Strings are truncated to a valid UTF-8 string with no more than L code points.
       auto value = std::get<std::string>(literal.value());
-      size_t code_point_count = 0;
-      size_t safe_point = 0;
-
-      for (size_t i = 0; i < value.size(); ++i) {
-        // Start of a new UTF-8 code point
-        if ((value[i] & 0xC0) != 0x80) {
-          code_point_count++;
-          if (code_point_count > static_cast<size_t>(width_)) {
-            safe_point = i;
-            break;
-          }
-        }
-      }
-
-      if (safe_point != 0) {
-        value.resize(safe_point);  // Resize the string to the safe point
-      }
-      return Literal::String(value);
+      return Literal::String(TruncateUtils::TruncateUTF8(std::move(value), width_));
     }
     case TypeId::kBinary: {
+      /// In contrast to strings, binary values do not have an assumed encoding and are
+      /// truncated to L bytes.
       auto value = std::get<std::vector<uint8_t>>(literal.value());
       if (value.size() > static_cast<size_t>(width_)) {
         value.resize(width_);
@@ -221,7 +207,7 @@ Result<Literal> YearTransform::Transform(const Literal& literal) {
         "Cannot apply year transform to literal with value {} of type {}",
         literal.ToString(), source_type()->ToString());
   }
-  if (literal.IsNull()) {
+  if (literal.IsNull()) [[unlikely]] {
     return Literal::Null(iceberg::int32());
   }
 
@@ -274,7 +260,7 @@ Result<Literal> MonthTransform::Transform(const Literal& literal) {
         "Cannot apply month transform to literal with value {} of type {}",
         literal.ToString(), source_type()->ToString());
   }
-  if (literal.IsNull()) {
+  if (literal.IsNull()) [[unlikely]] {
     return Literal::Null(iceberg::int32());
   }
 
@@ -339,7 +325,7 @@ Result<Literal> DayTransform::Transform(const Literal& literal) {
         "Cannot apply day transform to literal with value {} of type {}",
         literal.ToString(), source_type()->ToString());
   }
-  if (literal.IsNull()) {
+  if (literal.IsNull()) [[unlikely]] {
     return Literal::Null(iceberg::int32());
   }
 
@@ -394,7 +380,7 @@ Result<Literal> HourTransform::Transform(const Literal& literal) {
         literal.ToString(), source_type()->ToString());
   }
 
-  if (literal.IsNull()) {
+  if (literal.IsNull()) [[unlikely]] {
     return Literal::Null(int32());
   }
 
