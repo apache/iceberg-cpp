@@ -191,23 +191,6 @@ class ICEBERG_EXPORT MapType : public NestedType {
 /// Primitive types do not have nested fields.
 /// @{
 
-/// \brief A data type that has no physical storage.
-/// Technically, this is a primitive type, we treat it as a primitive type for
-/// convenience.
-class ICEBERG_EXPORT NullType : public PrimitiveType {
- public:
-  constexpr static const TypeId kTypeId = TypeId::kNull;
-
-  NullType() = default;
-  ~NullType() override = default;
-
-  TypeId type_id() const override;
-  std::string ToString() const override;
-
- protected:
-  bool Equals(const Type& other) const override;
-};
-
 /// \brief A data type representing a boolean (true or false).
 class ICEBERG_EXPORT BooleanType : public PrimitiveType {
  public:
@@ -468,8 +451,6 @@ class ICEBERG_EXPORT UuidType : public PrimitiveType {
 /// Factory functions for creating primitive data types
 /// @{
 
-/// \brief Return a NullType instance.
-ICEBERG_EXPORT const std::shared_ptr<NullType>& null();
 /// \brief Return a BooleanType instance.
 ICEBERG_EXPORT const std::shared_ptr<BooleanType>& boolean();
 /// \brief Return an IntType instance.

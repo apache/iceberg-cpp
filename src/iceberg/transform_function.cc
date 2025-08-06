@@ -35,9 +35,7 @@ IdentityTransform::IdentityTransform(std::shared_ptr<Type> const& source_type)
 
 Result<Literal> IdentityTransform::Transform(const Literal& literal) { return literal; }
 
-Result<std::shared_ptr<Type>> IdentityTransform::ResultType() const {
-  return source_type();
-}
+std::shared_ptr<Type> IdentityTransform::ResultType() const { return source_type(); }
 
 Result<std::unique_ptr<TransformFunction>> IdentityTransform::Make(
     std::shared_ptr<Type> const& source_type) {
@@ -59,6 +57,10 @@ Result<Literal> BucketTransform::Transform(const Literal& literal) {
         "Cannot apply bucket transform to literal with value {} of type {}",
         literal.ToString(), source_type()->ToString());
   }
+  if (literal.IsNull()) {
+    return Literal::Null(iceberg::int32());
+  }
+
   int32_t hash_value = 0;
   std::visit(
       [&](auto&& value) {
@@ -92,9 +94,7 @@ Result<Literal> BucketTransform::Transform(const Literal& literal) {
   return Literal::Int(bucket_index);
 }
 
-Result<std::shared_ptr<Type>> BucketTransform::ResultType() const {
-  return iceberg::int32();
-}
+std::shared_ptr<Type> BucketTransform::ResultType() const { return iceberg::int32(); }
 
 Result<std::unique_ptr<TransformFunction>> BucketTransform::Make(
     std::shared_ptr<Type> const& source_type, int32_t num_buckets) {
@@ -134,6 +134,10 @@ Result<Literal> TruncateTransform::Transform(const Literal& literal) {
     return InvalidArgument(
         "Cannot apply truncate transform to literal with value {} of type {}",
         literal.ToString(), source_type()->ToString());
+  }
+  if (literal.IsNull()) {
+    // Return null as is
+    return literal;
   }
 
   switch (source_type()->type_id()) {
@@ -183,9 +187,7 @@ Result<Literal> TruncateTransform::Transform(const Literal& literal) {
   }
 }
 
-Result<std::shared_ptr<Type>> TruncateTransform::ResultType() const {
-  return source_type();
-}
+std::shared_ptr<Type> TruncateTransform::ResultType() const { return source_type(); }
 
 Result<std::unique_ptr<TransformFunction>> TruncateTransform::Make(
     std::shared_ptr<Type> const& source_type, int32_t width) {
@@ -219,6 +221,9 @@ Result<Literal> YearTransform::Transform(const Literal& literal) {
         "Cannot apply year transform to literal with value {} of type {}",
         literal.ToString(), source_type()->ToString());
   }
+  if (literal.IsNull()) {
+    return Literal::Null(iceberg::int32());
+  }
 
   using namespace std::chrono;  // NOLINT
   switch (source_type()->type_id()) {
@@ -240,9 +245,7 @@ Result<Literal> YearTransform::Transform(const Literal& literal) {
   }
 }
 
-Result<std::shared_ptr<Type>> YearTransform::ResultType() const {
-  return iceberg::int32();
-}
+std::shared_ptr<Type> YearTransform::ResultType() const { return iceberg::int32(); }
 
 Result<std::unique_ptr<TransformFunction>> YearTransform::Make(
     std::shared_ptr<Type> const& source_type) {
@@ -270,6 +273,9 @@ Result<Literal> MonthTransform::Transform(const Literal& literal) {
     return InvalidArgument(
         "Cannot apply month transform to literal with value {} of type {}",
         literal.ToString(), source_type()->ToString());
+  }
+  if (literal.IsNull()) {
+    return Literal::Null(iceberg::int32());
   }
 
   using namespace std::chrono;  // NOLINT
@@ -304,9 +310,7 @@ Result<Literal> MonthTransform::Transform(const Literal& literal) {
   }
 }
 
-Result<std::shared_ptr<Type>> MonthTransform::ResultType() const {
-  return iceberg::int32();
-}
+std::shared_ptr<Type> MonthTransform::ResultType() const { return iceberg::int32(); }
 
 Result<std::unique_ptr<TransformFunction>> MonthTransform::Make(
     std::shared_ptr<Type> const& source_type) {
@@ -335,6 +339,9 @@ Result<Literal> DayTransform::Transform(const Literal& literal) {
         "Cannot apply day transform to literal with value {} of type {}",
         literal.ToString(), source_type()->ToString());
   }
+  if (literal.IsNull()) {
+    return Literal::Null(iceberg::int32());
+  }
 
   using namespace std::chrono;  // NOLINT
   switch (source_type()->type_id()) {
@@ -357,7 +364,7 @@ Result<Literal> DayTransform::Transform(const Literal& literal) {
   }
 }
 
-Result<std::shared_ptr<Type>> DayTransform::ResultType() const { return iceberg::date(); }
+std::shared_ptr<Type> DayTransform::ResultType() const { return iceberg::int32(); }
 
 Result<std::unique_ptr<TransformFunction>> DayTransform::Make(
     std::shared_ptr<Type> const& source_type) {
@@ -387,6 +394,10 @@ Result<Literal> HourTransform::Transform(const Literal& literal) {
         literal.ToString(), source_type()->ToString());
   }
 
+  if (literal.IsNull()) {
+    return Literal::Null(int32());
+  }
+
   using namespace std::chrono;  // NOLINT
   switch (source_type()->type_id()) {
     case TypeId::kTimestamp:
@@ -405,9 +416,7 @@ Result<Literal> HourTransform::Transform(const Literal& literal) {
   }
 }
 
-Result<std::shared_ptr<Type>> HourTransform::ResultType() const {
-  return iceberg::int32();
-}
+std::shared_ptr<Type> HourTransform::ResultType() const { return iceberg::int32(); }
 
 Result<std::unique_ptr<TransformFunction>> HourTransform::Make(
     std::shared_ptr<Type> const& source_type) {
@@ -429,10 +438,10 @@ VoidTransform::VoidTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kVoid, source_type) {}
 
 Result<Literal> VoidTransform::Transform(const Literal& literal) {
-  return Literal::Null();
+  return literal.IsNull() ? literal : Literal::Null(literal.type());
 }
 
-Result<std::shared_ptr<Type>> VoidTransform::ResultType() const { return source_type(); }
+std::shared_ptr<Type> VoidTransform::ResultType() const { return source_type(); }
 
 Result<std::unique_ptr<TransformFunction>> VoidTransform::Make(
     std::shared_ptr<Type> const& source_type) {

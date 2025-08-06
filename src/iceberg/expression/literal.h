@@ -60,7 +60,6 @@ class ICEBERG_EXPORT Literal {
                              BelowMin, AboveMax>;
 
   /// \brief Factory methods for primitive types
-  static Literal Null();
   static Literal Boolean(bool value);
   static Literal Int(int32_t value);
   static Literal Date(int32_t value);
@@ -72,6 +71,11 @@ class ICEBERG_EXPORT Literal {
   static Literal Double(double value);
   static Literal String(std::string value);
   static Literal Binary(std::vector<uint8_t> value);
+
+  /// \brief Create a literal representing a null value.
+  static Literal Null(std::shared_ptr<PrimitiveType> type) {
+    return {Value{std::monostate{}}, std::move(type)};
+  }
 
   /// \brief Restore a literal from single-value serialization.
   ///
@@ -129,6 +133,10 @@ class ICEBERG_EXPORT Literal {
   /// and the value is less than the target type's minimum.
   /// \return true if this literal represents a BelowMin value, false otherwise
   bool IsBelowMin() const;
+
+  /// Check if this literal is null.
+  /// \return true if this literal is null, false otherwise
+  bool IsNull() const;
 
   std::string ToString() const;
 

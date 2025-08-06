@@ -33,8 +33,8 @@ class IdentityTransform : public TransformFunction {
   /// \brief Returns the same Literal as the input.
   Result<Literal> Transform(const Literal& literal) override;
 
-  /// \brief Returns the same type as the source type if it is valid.
-  Result<std::shared_ptr<Type>> ResultType() const override;
+  /// \brief Returns the same type as source_type.
+  std::shared_ptr<Type> ResultType() const override;
 
   /// \brief Create an IdentityTransform.
   /// \param source_type Type of the input data.
@@ -54,7 +54,7 @@ class BucketTransform : public TransformFunction {
   Result<Literal> Transform(const Literal& literal) override;
 
   /// \brief Returns INT32 as the output type.
-  Result<std::shared_ptr<Type>> ResultType() const override;
+  std::shared_ptr<Type> ResultType() const override;
 
   /// \brief Create a BucketTransform.
   /// \param source_type Type of the input data.
@@ -78,7 +78,7 @@ class TruncateTransform : public TransformFunction {
   Result<Literal> Transform(const Literal& literal) override;
 
   /// \brief Returns the same type as source_type.
-  Result<std::shared_ptr<Type>> ResultType() const override;
+  std::shared_ptr<Type> ResultType() const override;
 
   /// \brief Create a TruncateTransform.
   /// \param source_type Type of the input data.
@@ -101,7 +101,7 @@ class YearTransform : public TransformFunction {
   Result<Literal> Transform(const Literal& literal) override;
 
   /// \brief Returns INT32 as the output type.
-  Result<std::shared_ptr<Type>> ResultType() const override;
+  std::shared_ptr<Type> ResultType() const override;
 
   /// \brief Create a YearTransform.
   /// \param source_type Type of the input data.
@@ -120,7 +120,7 @@ class MonthTransform : public TransformFunction {
   Result<Literal> Transform(const Literal& literal) override;
 
   /// \brief Returns INT32 as the output type.
-  Result<std::shared_ptr<Type>> ResultType() const override;
+  std::shared_ptr<Type> ResultType() const override;
 
   /// \brief Create a MonthTransform.
   /// \param source_type Type of the input data.
@@ -139,7 +139,7 @@ class DayTransform : public TransformFunction {
   Result<Literal> Transform(const Literal& literal) override;
 
   /// \brief Returns INT32 as the output type.
-  Result<std::shared_ptr<Type>> ResultType() const override;
+  std::shared_ptr<Type> ResultType() const override;
 
   /// \brief Create a DayTransform.
   /// \param source_type Type of the input data.
@@ -158,7 +158,7 @@ class HourTransform : public TransformFunction {
   Result<Literal> Transform(const Literal& literal) override;
 
   /// \brief Returns INT32 as the output type.
-  Result<std::shared_ptr<Type>> ResultType() const override;
+  std::shared_ptr<Type> ResultType() const override;
 
   /// \brief Create a HourTransform.
   /// \param source_type Type of the input data.
@@ -176,8 +176,8 @@ class VoidTransform : public TransformFunction {
   /// \brief Returns a null literal.
   Result<Literal> Transform(const Literal& literal) override;
 
-  /// \brief Returns null type or a sentinel type indicating void.
-  Result<std::shared_ptr<Type>> ResultType() const override;
+  /// \brief Returns the same type as source_type.
+  std::shared_ptr<Type> ResultType() const override;
 
   /// \brief Create a VoidTransform.
   /// \param source_type Input type (ignored).

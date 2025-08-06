@@ -126,7 +126,6 @@ Literal::Literal(Value value, std::shared_ptr<PrimitiveType> type)
     : value_(std::move(value)), type_(std::move(type)) {}
 
 // Factory methods
-Literal Literal::Null() { return {Value{std::monostate{}}, iceberg::null()}; }
 
 Literal Literal::Boolean(bool value) { return {Value{value}, iceberg::boolean()}; }
 
@@ -200,16 +199,14 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
     return std::partial_ordering::unordered;
   }
 
-  // If either value is AboveMax or BelowMin, comparison is unordered
-  if (IsAboveMax() || IsBelowMin() || other.IsAboveMax() || other.IsBelowMin()) {
+  // If either value is AboveMax, BelowMin or null, comparison is unordered
+  if (IsAboveMax() || IsBelowMin() || other.IsAboveMax() || other.IsBelowMin() ||
+      IsNull() || other.IsNull()) {
     return std::partial_ordering::unordered;
   }
 
   // Same type comparison for normal values
   switch (type_->type_id()) {
-    case TypeId::kNull:
-      // Nulls are equivalent
-      return std::partial_ordering::equivalent;
     case TypeId::kBoolean: {
       auto this_val = std::get<bool>(value_);
       auto other_val = std::get<bool>(other.value_);
@@ -271,6 +268,9 @@ std::string Literal::ToString() const {
   if (std::holds_alternative<AboveMax>(value_)) {
     return "aboveMax";
   }
+  if (std::holds_alternative<std::monostate>(value_)) {
+    return "null";
+  }
 
   switch (type_->type_id()) {
     case TypeId::kBoolean: {
@@ -319,6 +319,8 @@ bool Literal::IsBelowMin() const { return std::holds_alternative<BelowMin>(value
 
 bool Literal::IsAboveMax() const { return std::holds_alternative<AboveMax>(value_); }
 
+bool Literal::IsNull() const { return std::holds_alternative<std::monostate>(value_); }
+
 // LiteralCaster implementation
 
 Result<Literal> LiteralCaster::CastTo(const Literal& literal,
@@ -330,7 +332,8 @@ Result<Literal> LiteralCaster::CastTo(const Literal& literal,
 
   // Handle special values
   if (std::holds_alternative<Literal::BelowMin>(literal.value_) ||
-      std::holds_alternative<Literal::AboveMax>(literal.value_)) {
+      std::holds_alternative<Literal::AboveMax>(literal.value_) ||
+      std::holds_alternative<std::monostate>(literal.value_)) {
     // Cannot cast type for special values
     return NotSupported("Cannot cast type for {}", literal.ToString());
   }

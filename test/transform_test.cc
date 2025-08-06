@@ -24,8 +24,8 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <iceberg/expression/literal.h>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "matchers.h"
@@ -131,7 +131,7 @@ TEST(TransformResultTypeTest, PositiveCases) {
        .expected_result_type = iceberg::int32()},
       {.str = "day",
        .source_type = iceberg::timestamp(),
-       .expected_result_type = iceberg::date()},
+       .expected_result_type = iceberg::int32()},
       {.str = "hour",
        .source_type = iceberg::timestamp(),
        .expected_result_type = iceberg::int32()},
@@ -155,8 +155,7 @@ TEST(TransformResultTypeTest, PositiveCases) {
     ASSERT_TRUE(transformPtr.has_value()) << "Failed to bind: " << c.str;
 
     auto result_type = transformPtr.value()->ResultType();
-    ASSERT_TRUE(result_type.has_value()) << "Failed to get result type for: " << c.str;
-    EXPECT_EQ(result_type.value()->type_id(), c.expected_result_type->type_id())
+    EXPECT_EQ(result_type->type_id(), c.expected_result_type->type_id())
         << "Unexpected result type for: " << c.str;
   }
 }
@@ -471,7 +470,7 @@ TEST(TransformLiteralTest, VoidTransform) {
   const std::vector<Case> cases = {
       {.source_type = iceberg::boolean(), .source = Literal::Boolean(true)},
       {.source_type = iceberg::int32(), .source = Literal::Int(42)},
-      {.source_type = iceberg::int32(), .source = Literal::Date(30000)},
+      {.source_type = iceberg::date(), .source = Literal::Date(30000)},
       {.source_type = iceberg::int64(), .source = Literal::Long(1234567890)},
       {.source_type = iceberg::timestamp(),
        .source = Literal::Timestamp(1622547800000000)},
@@ -487,8 +486,72 @@ TEST(TransformLiteralTest, VoidTransform) {
     auto transformPtr = transform->Bind(c.source_type);
     ASSERT_TRUE(transformPtr.has_value()) << "Failed to bind void transform";
     auto result = transformPtr.value()->Transform(c.source);
-    EXPECT_EQ(result.value(), Literal::Null())
+    EXPECT_TRUE(result->IsNull())
         << "Expected void transform to return null type for source: "
+        << c.source.ToString();
+    EXPECT_EQ(result->type()->type_id(), c.source_type->type_id())
+        << "Expected void transform to return same type as source for: "
+        << c.source.ToString();
+  }
+}
+
+TEST(TransformLiteralTest, NullLiteral) {
+  struct Case {
+    std::string str;
+    std::shared_ptr<Type> source_type;
+    Literal source;
+    std::shared_ptr<Type> expected_result_type;
+  };
+
+  const std::vector<Case> cases = {
+      {.str = "identity",
+       .source_type = iceberg::string(),
+       .source = Literal::Null(iceberg::string()),
+       .expected_result_type = iceberg::string()},
+      {.str = "year",
+       .source_type = iceberg::timestamp(),
+       .source = Literal::Null(iceberg::timestamp()),
+       .expected_result_type = iceberg::int32()},
+      {.str = "month",
+       .source_type = iceberg::timestamp(),
+       .source = Literal::Null(iceberg::timestamp()),
+       .expected_result_type = iceberg::int32()},
+      {.str = "day",
+       .source_type = iceberg::timestamp(),
+       .source = Literal::Null(iceberg::timestamp()),
+       .expected_result_type = iceberg::int32()},
+      {.str = "hour",
+       .source_type = iceberg::timestamp(),
+       .source = Literal::Null(iceberg::timestamp()),
+       .expected_result_type = iceberg::int32()},
+      {.str = "void",
+       .source_type = iceberg::string(),
+       .source = Literal::Null(iceberg::string()),
+       .expected_result_type = iceberg::string()},
+      {.str = "bucket[16]",
+       .source_type = iceberg::string(),
+       .source = Literal::Null(iceberg::string()),
+       .expected_result_type = iceberg::int32()},
+      {.str = "truncate[32]",
+       .source_type = iceberg::string(),
+       .source = Literal::Null(iceberg::string()),
+       .expected_result_type = iceberg::string()},
+  };
+
+  for (const auto& c : cases) {
+    auto result = TransformFromString(c.str);
+    ASSERT_TRUE(result.has_value()) << "Failed to parse: " << c.str;
+
+    const auto& transform = result.value();
+    const auto transformPtr = transform->Bind(c.source_type);
+    ASSERT_TRUE(transformPtr.has_value()) << "Failed to bind: " << c.str;
+
+    auto transform_result = transformPtr.value()->Transform(c.source);
+    EXPECT_TRUE(transform_result->IsNull())
+        << "Expected void transform to return null type for source: "
+        << c.source.ToString();
+    EXPECT_EQ(transform_result->type()->type_id(), c.expected_result_type->type_id())
+        << "Expected void transform to return same type as source for: "
         << c.source.ToString();
   }
 }

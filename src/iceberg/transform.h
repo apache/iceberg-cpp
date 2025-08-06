@@ -23,7 +23,6 @@
 
 #include <cstdint>
 #include <memory>
-#include <optional>
 #include <variant>
 
 #include "iceberg/expression/literal.h"
@@ -172,13 +171,15 @@ class ICEBERG_EXPORT TransformFunction {
   virtual ~TransformFunction() = default;
   TransformFunction(TransformType transform_type, std::shared_ptr<Type> source_type);
   /// \brief Transform an input Literal to a new Literal
+  ///
+  /// All transforms must return null for a null input value.
   virtual Result<Literal> Transform(const Literal& literal) = 0;
   /// \brief Get the transform type
   TransformType transform_type() const;
   /// \brief Get the source type of transform function
   const std::shared_ptr<Type>& source_type() const;
   /// \brief Get the result type of transform function
-  virtual Result<std::shared_ptr<Type>> ResultType() const = 0;
+  virtual std::shared_ptr<Type> ResultType() const = 0;
 
   friend bool operator==(const TransformFunction& lhs, const TransformFunction& rhs) {
     return lhs.Equals(rhs);
