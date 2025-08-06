@@ -144,11 +144,11 @@ Result<Literal> TruncateTransform::Transform(const Literal& literal) {
   switch (source_type()->type_id()) {
     case TypeId::kInt: {
       auto value = std::get<int32_t>(literal.value());
-      return Literal::Int(TruncateUtils::TruncateInt(value, width_));
+      return Literal::Int(TruncateUtils::TruncateInteger(value, width_));
     }
     case TypeId::kLong: {
       auto value = std::get<int64_t>(literal.value());
-      return Literal::Long(TruncateUtils::TruncateLong(value, width_));
+      return Literal::Long(TruncateUtils::TruncateInteger(value, width_));
     }
     case TypeId::kDecimal: {
       // TODO(zhjwpku): Handle decimal truncation logic here

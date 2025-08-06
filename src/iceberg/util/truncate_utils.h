@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include <cstdint>
 #include <string>
+#include <utility>
 
 #include "iceberg/iceberg_export.h"
 
@@ -28,6 +28,13 @@ namespace iceberg {
 
 ICEBERG_EXPORT class TruncateUtils {
  public:
+  /// \brief Truncate a UTF-8 string to a specified number of code points.
+  ///
+  /// \param source The input string to truncate.
+  /// \param L The maximum number of code points allowed in the output string.
+  /// \return A valid UTF-8 string truncated to L code points.
+  /// If the input string is already valid and has fewer than L code points, it is
+  /// returned unchanged.
   static std::string TruncateUTF8(std::string&& source, size_t L) {
     size_t code_point_count = 0;
     size_t safe_point = 0;
@@ -36,7 +43,7 @@ ICEBERG_EXPORT class TruncateUtils {
       // Start of a new UTF-8 code point
       if ((source[i] & 0xC0) != 0x80) {
         code_point_count++;
-        if (code_point_count > L) {
+        if (code_point_count > static_cast<size_t>(L)) {
           safe_point = i;
           break;
         }
@@ -49,6 +56,15 @@ ICEBERG_EXPORT class TruncateUtils {
     }
 
     return std::move(source);
+  }
+
+  /// \brief Truncate an integer v, either int32_t or int64_t, to v - (v % W).
+  ///
+  /// The remainder, v % W, must be positive. For languages where % can produce negative
+  /// values, the correct truncate function is: v - (((v % W) + W) % W)
+  template <typename T>
+  static inline T TruncateInteger(T v, size_t W) {
+    return v - (((v % W) + W) % W);
   }
 };
 
