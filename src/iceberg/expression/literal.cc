@@ -21,7 +21,6 @@
 
 #include <cmath>
 #include <concepts>
-#include <sstream>
 
 #include "iceberg/exception.h"
 
@@ -126,33 +125,28 @@ Literal::Literal(Value value, std::shared_ptr<PrimitiveType> type)
     : value_(std::move(value)), type_(std::move(type)) {}
 
 // Factory methods
+Literal Literal::Boolean(bool value) { return {Value{value}, boolean()}; }
 
-Literal Literal::Boolean(bool value) { return {Value{value}, iceberg::boolean()}; }
+Literal Literal::Int(int32_t value) { return {Value{value}, int32()}; }
 
-Literal Literal::Int(int32_t value) { return {Value{value}, iceberg::int32()}; }
+Literal Literal::Date(int32_t value) { return {Value{value}, date()}; }
 
-Literal Literal::Date(int32_t value) { return {Value{value}, iceberg::date()}; }
+Literal Literal::Long(int64_t value) { return {Value{value}, int64()}; }
 
-Literal Literal::Long(int64_t value) { return {Value{value}, iceberg::int64()}; }
+Literal Literal::Time(int64_t value) { return {Value{value}, time()}; }
 
-Literal Literal::Time(int64_t value) { return {Value{value}, iceberg::time()}; }
+Literal Literal::Timestamp(int64_t value) { return {Value{value}, timestamp()}; }
 
-Literal Literal::Timestamp(int64_t value) { return {Value{value}, iceberg::timestamp()}; }
+Literal Literal::TimestampTz(int64_t value) { return {Value{value}, timestamp_tz()}; }
 
-Literal Literal::TimestampTz(int64_t value) {
-  return {Value{value}, iceberg::timestamp_tz()};
-}
+Literal Literal::Float(float value) { return {Value{value}, float32()}; }
 
-Literal Literal::Float(float value) { return {Value{value}, iceberg::float32()}; }
+Literal Literal::Double(double value) { return {Value{value}, float64()}; }
 
-Literal Literal::Double(double value) { return {Value{value}, iceberg::float64()}; }
-
-Literal Literal::String(std::string value) {
-  return {Value{std::move(value)}, iceberg::string()};
-}
+Literal Literal::String(std::string value) { return {Value{std::move(value)}, string()}; }
 
 Literal Literal::Binary(std::vector<uint8_t> value) {
-  return {Value{std::move(value)}, iceberg::binary()};
+  return {Value{std::move(value)}, binary()};
 }
 
 Result<Literal> Literal::Deserialize(std::span<const uint8_t> data,

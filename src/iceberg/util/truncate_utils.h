@@ -63,6 +63,7 @@ ICEBERG_EXPORT class TruncateUtils {
   /// The remainder, v % W, must be positive. For languages where % can produce negative
   /// values, the correct truncate function is: v - (((v % W) + W) % W)
   template <typename T>
+    requires std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t>
   static inline T TruncateInteger(T v, size_t W) {
     return v - (((v % W) + W) % W);
   }
