@@ -69,13 +69,15 @@ Status ArrowFileSystemFileIO::DeleteFile(const std::string& file_location) {
   return {};
 }
 
-std::unique_ptr<::arrow::fs::FileSystem> ArrowFileSystemFileIO::MakeMockFileIO() {
-  return std::make_unique<::arrow::fs::internal::MockFileSystem>(
-      std::chrono::system_clock::now());
+std::unique_ptr<FileIO> ArrowFileSystemFileIO::MakeMockFileIO() {
+  return std::make_unique<ArrowFileSystemFileIO>(
+      std::make_shared<::arrow::fs::internal::MockFileSystem>(
+          std::chrono::system_clock::now()));
 }
 
-std::unique_ptr<::arrow::fs::FileSystem> ArrowFileSystemFileIO::MakeLocalFileIO() {
-  return std::make_unique<::arrow::fs::LocalFileSystem>();
+std::unique_ptr<FileIO> ArrowFileSystemFileIO::MakeLocalFileIO() {
+  return std::make_unique<ArrowFileSystemFileIO>(
+      std::make_shared<::arrow::fs::LocalFileSystem>());
 }
 
 }  // namespace iceberg::arrow
