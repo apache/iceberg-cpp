@@ -441,7 +441,7 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::RegisterTable(
   return LoadTable(identifier);
 }
 
-std::unique_ptr<iceberg::Catalog::TableBuilder> InMemoryCatalog::BuildTable(
+std::unique_ptr<Catalog::TableBuilder> InMemoryCatalog::BuildTable(
     const TableIdentifier& identifier, const Schema& schema) const {
   throw IcebergError("not implemented");
 }
