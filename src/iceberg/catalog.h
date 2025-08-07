@@ -231,8 +231,8 @@ class ICEBERG_EXPORT Catalog {
   /// \param identifier a table identifier
   /// \param schema a schema
   /// \return the builder to create a table or start a create/replace transaction
-  virtual std::unique_ptr<class TableBuilder> BuildTable(
-      const TableIdentifier& identifier, const Schema& schema) const = 0;
+  virtual std::unique_ptr<TableBuilder> BuildTable(const TableIdentifier& identifier,
+                                                   const Schema& schema) const = 0;
 };
 
 }  // namespace iceberg
