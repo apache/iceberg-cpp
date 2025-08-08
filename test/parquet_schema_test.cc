@@ -21,10 +21,12 @@
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/schema.h>
 #include <parquet/schema.h>
+#include <parquet/types.h>
 
 #include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
 #include "iceberg/schema.h"
+#include "iceberg/type.h"
 #include "matchers.h"
 
 namespace iceberg::parquet {
@@ -509,6 +511,125 @@ TEST(ParquetSchemaProjectionTest, ProjectDuplicateFieldIds) {
   auto projection_result = Project(expected_schema, schema_manifest);
   ASSERT_THAT(projection_result, IsError(ErrorKind::kInvalidSchema));
   ASSERT_THAT(projection_result, HasErrorMessage("Duplicate field id"));
+}
+
+TEST(ParquetSchemaProjectionTest, ProjectPrimitiveType) {
+  struct TestCase {
+    std::shared_ptr<Type> iceberg_type;
+    ::parquet::Type::type parquet_type;
+    std::shared_ptr<const ::parquet::LogicalType> parquet_logical_type;
+    int32_t primitive_length = -1;
+  };
+
+  std::vector<TestCase> test_cases = {
+      TestCase{.iceberg_type = float64(), .parquet_type = ::parquet::Type::DOUBLE},
+      TestCase{.iceberg_type = float32(), .parquet_type = ::parquet::Type::FLOAT},
+      TestCase{.iceberg_type = int64(), .parquet_type = ::parquet::Type::INT64},
+      TestCase{.iceberg_type = int32(), .parquet_type = ::parquet::Type::INT32},
+      TestCase{.iceberg_type = string(),
+               .parquet_type = ::parquet::Type::BYTE_ARRAY,
+               .parquet_logical_type = ::parquet::LogicalType::String()},
+      TestCase{.iceberg_type = binary(), .parquet_type = ::parquet::Type::BYTE_ARRAY},
+      TestCase{.iceberg_type = boolean(), .parquet_type = ::parquet::Type::BOOLEAN},
+      TestCase{.iceberg_type = date(),
+               .parquet_type = ::parquet::Type::INT32,
+               .parquet_logical_type = ::parquet::LogicalType::Date()},
+      TestCase{
+          .iceberg_type = time(),
+          .parquet_type = ::parquet::Type::INT64,
+          .parquet_logical_type = ::parquet::LogicalType::Time(
+              /*is_adjusted_to_utc=*/true, ::parquet::LogicalType::TimeUnit::MICROS)},
+      TestCase{
+          .iceberg_type = timestamp(),
+          .parquet_type = ::parquet::Type::INT64,
+          .parquet_logical_type = ::parquet::LogicalType::Timestamp(
+              /*is_adjusted_to_utc=*/false, ::parquet::LogicalType::TimeUnit::MICROS)},
+      TestCase{
+          .iceberg_type = timestamp_tz(),
+          .parquet_type = ::parquet::Type::INT64,
+          .parquet_logical_type = ::parquet::LogicalType::Timestamp(
+              /*is_adjusted_to_utc=*/true, ::parquet::LogicalType::TimeUnit::MICROS)},
+      TestCase{.iceberg_type = decimal(4, 2),
+               .parquet_type = ::parquet::Type::INT32,
+               .parquet_logical_type = ::parquet::LogicalType::Decimal(4, 2)},
+      TestCase{.iceberg_type = decimal(38, 18),
+               .parquet_type = ::parquet::Type::FIXED_LEN_BYTE_ARRAY,
+               .parquet_logical_type = ::parquet::LogicalType::Decimal(38, 18),
+               .primitive_length = 16},
+      TestCase{.iceberg_type = uuid(),
+               .parquet_type = ::parquet::Type::FIXED_LEN_BYTE_ARRAY,
+               .parquet_logical_type = ::parquet::LogicalType::UUID(),
+               .primitive_length = 16},
+      TestCase{.iceberg_type = fixed(8),
+               .parquet_type = ::parquet::Type::FIXED_LEN_BYTE_ARRAY,
+               .primitive_length = 8}};
+
+  for (const auto& test_case : test_cases) {
+    Schema expected_schema({SchemaField::MakeRequired(/*field_id=*/1, "test_field",
+                                                      test_case.iceberg_type)});
+    auto parquet_schema = MakeGroupNode(
+        "iceberg_schema",
+        {::parquet::schema::PrimitiveNode::Make(
+            "test_field", ::parquet::Repetition::REQUIRED, test_case.parquet_logical_type,
+            test_case.parquet_type, test_case.primitive_length,
+            /*field_id=*/1)});
+
+    auto schema_manifest = MakeSchemaManifest(parquet_schema);
+    auto projection_result = Project(expected_schema, schema_manifest);
+    ASSERT_THAT(projection_result, IsOk());
+
+    const auto& projection = *projection_result;
+    ASSERT_EQ(projection.fields.size(), 1);
+    ASSERT_PROJECTED_FIELD(projection.fields[0], 0);
+  }
+}
+
+TEST(ParquetSchemaProjectionTest, UnsuportedProjection) {
+  struct TestCase {
+    std::shared_ptr<Type> iceberg_type;
+    ::parquet::Type::type parquet_type;
+    std::shared_ptr<const ::parquet::LogicalType> parquet_logical_type;
+    int32_t primitive_length = -1;
+  };
+
+  std::vector<TestCase> test_cases = {
+      TestCase{.iceberg_type = float32(), .parquet_type = ::parquet::Type::DOUBLE},
+      TestCase{.iceberg_type = int32(), .parquet_type = ::parquet::Type::INT64},
+      TestCase{.iceberg_type = date(), .parquet_type = ::parquet::Type::INT32},
+      TestCase{.iceberg_type = time(),
+               .parquet_type = ::parquet::Type::INT64,
+               .parquet_logical_type = ::parquet::LogicalType::Time(
+                   /*is_adjusted_to_utc=*/true, ::parquet::LogicalType::TimeUnit::NANOS)},
+      TestCase{
+          .iceberg_type = timestamp(),
+          .parquet_type = ::parquet::Type::INT64,
+          .parquet_logical_type = ::parquet::LogicalType::Timestamp(
+              /*is_adjusted_to_utc=*/false, ::parquet::LogicalType::TimeUnit::NANOS)},
+      TestCase{.iceberg_type = timestamp_tz(),
+               .parquet_type = ::parquet::Type::INT64,
+               .parquet_logical_type = ::parquet::LogicalType::Timestamp(
+                   /*is_adjusted_to_utc=*/true, ::parquet::LogicalType::TimeUnit::NANOS)},
+      TestCase{.iceberg_type = decimal(4, 2),
+               .parquet_type = ::parquet::Type::INT32,
+               .parquet_logical_type = ::parquet::LogicalType::Decimal(4, 1)},
+      TestCase{.iceberg_type = fixed(8),
+               .parquet_type = ::parquet::Type::FIXED_LEN_BYTE_ARRAY,
+               .primitive_length = 4}};
+
+  for (const auto& test_case : test_cases) {
+    Schema expected_schema({SchemaField::MakeRequired(/*field_id=*/1, "test_field",
+                                                      test_case.iceberg_type)});
+    auto parquet_schema = MakeGroupNode(
+        "iceberg_schema",
+        {::parquet::schema::PrimitiveNode::Make(
+            "test_field", ::parquet::Repetition::REQUIRED, test_case.parquet_logical_type,
+            test_case.parquet_type, test_case.primitive_length,
+            /*field_id=*/1)});
+
+    auto schema_manifest = MakeSchemaManifest(parquet_schema);
+    auto projection_result = Project(expected_schema, schema_manifest);
+    ASSERT_THAT(projection_result, HasErrorMessage("Cannot read"));
+  }
 }
 
 }  // namespace iceberg::parquet

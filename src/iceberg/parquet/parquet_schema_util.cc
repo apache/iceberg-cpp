@@ -101,7 +101,11 @@ Status ValidateParquetSchemaEvolution(
       break;
     case TypeId::kTime:
       if (arrow_type->id() == ::arrow::Type::TIME64) {
-        return {};
+        const auto& time_type =
+            internal::checked_cast<const ::arrow::Time64Type&>(*arrow_type);
+        if (time_type.unit() == ::arrow::TimeUnit::MICRO) {
+          return {};
+        }
       }
       break;
     case TypeId::kTimestamp:
