@@ -35,7 +35,7 @@ ICEBERG_EXPORT class TruncateUtils {
   /// \return A valid UTF-8 string truncated to L code points.
   /// If the input string is already valid and has fewer than L code points, it is
   /// returned unchanged.
-  static std::string TruncateUTF8(std::string&& source, size_t L) {
+  static std::string TruncateUTF8(std::string source, size_t L) {
     size_t code_point_count = 0;
     size_t safe_point = 0;
 

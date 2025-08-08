@@ -59,7 +59,7 @@ Result<Literal> BucketTransform::Transform(const Literal& literal) {
         literal.ToString(), source_type()->ToString());
   }
   if (literal.IsNull()) [[unlikely]] {
-    return Literal::Null(iceberg::int32());
+    return Literal::Null(int32());
   }
 
   int32_t hash_value = 0;
@@ -95,7 +95,7 @@ Result<Literal> BucketTransform::Transform(const Literal& literal) {
   return Literal::Int(bucket_index);
 }
 
-std::shared_ptr<Type> BucketTransform::ResultType() const { return iceberg::int32(); }
+std::shared_ptr<Type> BucketTransform::ResultType() const { return int32(); }
 
 Result<std::unique_ptr<TransformFunction>> BucketTransform::Make(
     std::shared_ptr<Type> const& source_type, int32_t num_buckets) {
@@ -166,7 +166,7 @@ Result<Literal> TruncateTransform::Transform(const Literal& literal) {
       if (value.size() > static_cast<size_t>(width_)) {
         value.resize(width_);
       }
-      return Literal::Binary(value);
+      return Literal::Binary(std::move(value));
     }
     default:
       std::unreachable();
@@ -208,7 +208,7 @@ Result<Literal> YearTransform::Transform(const Literal& literal) {
         literal.ToString(), source_type()->ToString());
   }
   if (literal.IsNull()) [[unlikely]] {
-    return Literal::Null(iceberg::int32());
+    return Literal::Null(int32());
   }
 
   using namespace std::chrono;  // NOLINT
@@ -231,7 +231,7 @@ Result<Literal> YearTransform::Transform(const Literal& literal) {
   }
 }
 
-std::shared_ptr<Type> YearTransform::ResultType() const { return iceberg::int32(); }
+std::shared_ptr<Type> YearTransform::ResultType() const { return int32(); }
 
 Result<std::unique_ptr<TransformFunction>> YearTransform::Make(
     std::shared_ptr<Type> const& source_type) {
@@ -261,7 +261,7 @@ Result<Literal> MonthTransform::Transform(const Literal& literal) {
         literal.ToString(), source_type()->ToString());
   }
   if (literal.IsNull()) [[unlikely]] {
-    return Literal::Null(iceberg::int32());
+    return Literal::Null(int32());
   }
 
   using namespace std::chrono;  // NOLINT
@@ -296,7 +296,7 @@ Result<Literal> MonthTransform::Transform(const Literal& literal) {
   }
 }
 
-std::shared_ptr<Type> MonthTransform::ResultType() const { return iceberg::int32(); }
+std::shared_ptr<Type> MonthTransform::ResultType() const { return int32(); }
 
 Result<std::unique_ptr<TransformFunction>> MonthTransform::Make(
     std::shared_ptr<Type> const& source_type) {
@@ -326,7 +326,7 @@ Result<Literal> DayTransform::Transform(const Literal& literal) {
         literal.ToString(), source_type()->ToString());
   }
   if (literal.IsNull()) [[unlikely]] {
-    return Literal::Null(iceberg::int32());
+    return Literal::Null(int32());
   }
 
   using namespace std::chrono;  // NOLINT
@@ -350,7 +350,7 @@ Result<Literal> DayTransform::Transform(const Literal& literal) {
   }
 }
 
-std::shared_ptr<Type> DayTransform::ResultType() const { return iceberg::int32(); }
+std::shared_ptr<Type> DayTransform::ResultType() const { return int32(); }
 
 Result<std::unique_ptr<TransformFunction>> DayTransform::Make(
     std::shared_ptr<Type> const& source_type) {
@@ -402,7 +402,7 @@ Result<Literal> HourTransform::Transform(const Literal& literal) {
   }
 }
 
-std::shared_ptr<Type> HourTransform::ResultType() const { return iceberg::int32(); }
+std::shared_ptr<Type> HourTransform::ResultType() const { return int32(); }
 
 Result<std::unique_ptr<TransformFunction>> HourTransform::Make(
     std::shared_ptr<Type> const& source_type) {
