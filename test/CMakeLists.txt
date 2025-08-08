@@ -23,6 +23,10 @@ fetchcontent_declare(googletest
                      GTest)
 fetchcontent_makeavailable(googletest)
 
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 set(ICEBERG_TEST_RESOURCES "${CMAKE_SOURCE_DIR}/test/resources")
 
 configure_file("${CMAKE_SOURCE_DIR}/test/test_config.h.in"
