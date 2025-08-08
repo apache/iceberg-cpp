@@ -47,7 +47,7 @@ jobs:
         with:
           style: file
           tidy-checks: ''
-          version: 19
+          version: 22
           files-changed-only: true
           lines-changed-only: true
           thread-comments: true

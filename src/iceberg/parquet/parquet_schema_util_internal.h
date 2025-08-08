@@ -19,12 +19,23 @@
 
 #pragma once
 
+#include <optional>
+
 #include <parquet/arrow/schema.h>
 
 #include "iceberg/schema.h"
 #include "iceberg/schema_util.h"
 
 namespace iceberg::parquet {
+
+/// \brief Parquet specific attributes for the field.
+struct ParquetExtraAttributes : public FieldProjection::ExtraAttributes {
+  explicit ParquetExtraAttributes(int32_t column_id) : column_id(column_id) {}
+  ~ParquetExtraAttributes() override = default;
+
+  /// \brief The column id of projected Parquet column.
+  std::optional<int32_t> column_id;
+};
 
 /// \brief Project an Iceberg Schema onto a Parquet Schema.
 ///
@@ -34,7 +45,8 @@ namespace iceberg::parquet {
 ///
 /// \param expected_schema The Iceberg Schema that defines the expected structure.
 /// \param parquet_schema The Parquet schema to read data from.
-/// \return The schema projection result with column indices of projected Parquet columns.
+/// \return The schema projection result with column indices of projected Parquet columns
+/// specified via ParquetExtraAttributes.
 Result<SchemaProjection> Project(const Schema& expected_schema,
                                  const ::parquet::arrow::SchemaManifest& parquet_schema);
 
@@ -42,7 +54,7 @@ Result<SchemaProjection> Project(const Schema& expected_schema,
 ///
 /// \param projection The schema projection result.
 /// \return The selected column indices.
-Result<std::vector<int>> SelectedColumnIndices(const SchemaProjection& projection);
+std::vector<int32_t> SelectedColumnIndices(const SchemaProjection& projection);
 
 /// \brief Check whether the Parquet schema has field IDs.
 ///

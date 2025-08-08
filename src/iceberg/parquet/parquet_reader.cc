@@ -218,7 +218,7 @@ class ParquetReader::Impl {
     }
 
     // Create the record batch reader
-    ICEBERG_ASSIGN_OR_RAISE(auto column_indices, SelectedColumnIndices(projection_));
+    auto column_indices = SelectedColumnIndices(projection_);
     ICEBERG_ARROW_ASSIGN_OR_RETURN(
         context_->record_batch_reader_,
         reader_->GetRecordBatchReader(row_group_indices, column_indices));
