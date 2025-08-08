@@ -17,6 +17,8 @@
  * under the License.
  */
 
+#include "iceberg/catalog/in_memory_catalog.h"
+
 #include <filesystem>
 
 #include <arrow/filesystem/localfs.h>
@@ -24,6 +26,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
+#include "iceberg/schema.h"
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "matchers.h"
@@ -115,42 +118,53 @@ TEST_F(InMemoryCatalogTest, RegisterTable) {
 }
 
 TEST_F(InMemoryCatalogTest, RefreshTable) {
-  TableIdentifier tableIdent{.ns = {}, .name = "t1"};
-  std::shared_ptr<MockInMemoryCatalog> mock_catalog =
-      std::make_shared<MockInMemoryCatalog>(
-          "mock_catalog", file_io_, "/tmp/warehouse/",
-          std::unordered_map<std::string, std::string>());
-  auto table_location = GenerateTestTableLocation(tableIdent.name);
-  auto buildTable = [this, &tableIdent, &mock_catalog, &table_location](
-                        int64_t snapshot_id, int64_t version) -> std::unique_ptr<Table> {
-    std::unique_ptr<TableMetadata> metadata;
-    ReadTableMetadata("TableMetadataV2Valid.json", &metadata);
-    metadata->current_snapshot_id = snapshot_id;
-    return std::make_unique<Table>(
-        tableIdent, std::move(metadata),
-        std::format("{}v{}.metadata.json", table_location, version), file_io_,
-        std::static_pointer_cast<Catalog>(mock_catalog));
-  };
+  TableIdentifier table_ident{.ns = {}, .name = "t1"};
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "x", int64())},
+      /*schema_id=*/1);
 
-  auto table_v0 = buildTable(3051729675574597004, 0);
-  auto table_v1 = buildTable(3055729675574597004, 1);
-  EXPECT_CALL(*mock_catalog, LoadTable(::testing::_))
+  std::shared_ptr<FileIO> io;
+
+  auto catalog = std::make_shared<MockCatalog>();
+  // Mock 1st call to LoadTable
+  EXPECT_CALL(*catalog, LoadTable(::testing::_))
       .WillOnce(::testing::Return(
-          ::testing::ByMove(Result<std::unique_ptr<Table>>(std::move(table_v0)))))
+          std::make_unique<Table>(table_ident,
+                                  std::make_shared<TableMetadata>(TableMetadata{
+                                      .schemas = {schema},
+                                      .current_schema_id = 1,
+                                      .current_snapshot_id = 1,
+                                      .snapshots = {std::make_shared<Snapshot>(Snapshot{
+                                          .snapshot_id = 1,
+                                          .sequence_number = 1,
+                                      })}}),
+                                  "s3://location/1.json", io, catalog)));
+  auto load_table_result = catalog->LoadTable(table_ident);
+  ASSERT_THAT(load_table_result, IsOk());
+  auto loaded_table = std::move(load_table_result.value());
+  ASSERT_EQ(loaded_table->current_snapshot().value()->snapshot_id, 1);
+
+  // Mock 2nd call to LoadTable
+  EXPECT_CALL(*catalog, LoadTable(::testing::_))
       .WillOnce(::testing::Return(
-          ::testing::ByMove(Result<std::unique_ptr<Table>>(std::move(table_v1)))));
-
-  auto metadata_location = std::format("{}v{}.metadata.json", table_location, 0);
-  auto table = mock_catalog->RegisterTable(tableIdent, metadata_location);
-  EXPECT_THAT(table, IsOk());
-  ASSERT_TRUE(table.value()->current_snapshot().has_value());
-  ASSERT_EQ(table.value()->current_snapshot().value()->snapshot_id, 3051729675574597004);
-
-  // refresh table to new snapshot
-  auto status = table.value()->Refresh();
-  EXPECT_THAT(status, IsOk());
-  ASSERT_TRUE(table.value()->current_snapshot().has_value());
-  ASSERT_EQ(table.value()->current_snapshot().value()->snapshot_id, 3055729675574597004);
+          std::make_unique<Table>(table_ident,
+                                  std::make_shared<TableMetadata>(TableMetadata{
+                                      .schemas = {schema},
+                                      .current_schema_id = 1,
+                                      .current_snapshot_id = 2,
+                                      .snapshots = {std::make_shared<Snapshot>(Snapshot{
+                                                        .snapshot_id = 1,
+                                                        .sequence_number = 1,
+                                                    }),
+                                                    std::make_shared<Snapshot>(Snapshot{
+                                                        .snapshot_id = 2,
+                                                        .sequence_number = 2,
+                                                    })}}),
+                                  "s3://location/2.json", io, catalog)));
+  auto refreshed_result = loaded_table->Refresh();
+  ASSERT_THAT(refreshed_result, IsOk());
+  // check table is refreshed
+  ASSERT_EQ(loaded_table->current_snapshot().value()->snapshot_id, 2);
 }
 
 TEST_F(InMemoryCatalogTest, DropTable) {

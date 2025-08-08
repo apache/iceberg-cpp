@@ -19,18 +19,67 @@
 
 #pragma once
 
-#include "iceberg/catalog/in_memory_catalog.h"
+#include "iceberg/catalog.h"
 
 namespace iceberg {
 
-class MockInMemoryCatalog : public InMemoryCatalog {
+class MockCatalog : public Catalog {
  public:
-  MockInMemoryCatalog(std::string const& name, std::shared_ptr<FileIO> const& file_io,
-                      std::string const& warehouse_location,
-                      std::unordered_map<std::string, std::string> const& properties)
-      : InMemoryCatalog(name, file_io, warehouse_location, properties) {}
+  MockCatalog() = default;
+  ~MockCatalog() override = default;
 
-  MOCK_METHOD(Result<std::unique_ptr<Table>>, LoadTable, (const TableIdentifier&),
+  MOCK_METHOD(std::string_view, name, (), (const, override));
+
+  MOCK_METHOD(Status, CreateNamespace,
+              (const Namespace&, (const std::unordered_map<std::string, std::string>&)),
               (override));
+
+  MOCK_METHOD((Result<std::vector<Namespace>>), ListNamespaces, (const Namespace&),
+              (const, override));
+
+  MOCK_METHOD((Result<std::unordered_map<std::string, std::string>>),
+              GetNamespaceProperties, (const Namespace&), (const, override));
+
+  MOCK_METHOD(Status, UpdateNamespaceProperties,
+              (const Namespace&, (const std::unordered_map<std::string, std::string>&),
+               (const std::unordered_set<std::string>&)),
+              (override));
+
+  MOCK_METHOD(Status, DropNamespace, (const Namespace&), (override));
+
+  MOCK_METHOD(Result<bool>, NamespaceExists, (const Namespace&), (const, override));
+
+  MOCK_METHOD((Result<std::vector<TableIdentifier>>), ListTables, (const Namespace&),
+              (const, override));
+
+  MOCK_METHOD((Result<std::unique_ptr<Table>>), CreateTable,
+              (const TableIdentifier&, const Schema&, const PartitionSpec&,
+               const std::string&, (const std::unordered_map<std::string, std::string>&)),
+              (override));
+
+  MOCK_METHOD((Result<std::unique_ptr<Table>>), UpdateTable,
+              (const TableIdentifier&,
+               (const std::vector<std::unique_ptr<UpdateRequirement>>&),
+               (const std::vector<std::unique_ptr<MetadataUpdate>>&)),
+              (override));
+
+  MOCK_METHOD((Result<std::shared_ptr<Transaction>>), StageCreateTable,
+              (const TableIdentifier&, const Schema&, const PartitionSpec&,
+               const std::string&, (const std::unordered_map<std::string, std::string>&)),
+              (override));
+
+  MOCK_METHOD(Result<bool>, TableExists, (const TableIdentifier&), (const, override));
+
+  MOCK_METHOD(Status, DropTable, (const TableIdentifier&, bool), (override));
+
+  MOCK_METHOD((Result<std::unique_ptr<Table>>), LoadTable, (const TableIdentifier&),
+              (override));
+
+  MOCK_METHOD((Result<std::shared_ptr<Table>>), RegisterTable,
+              (const TableIdentifier&, const std::string&), (override));
+
+  MOCK_METHOD((std::unique_ptr<Catalog::TableBuilder>), BuildTable,
+              (const TableIdentifier&, const Schema&), (const, override));
 };
+
 }  // namespace iceberg
