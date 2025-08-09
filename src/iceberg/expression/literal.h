@@ -32,7 +32,7 @@ namespace iceberg {
 
 /// \brief Literal is a literal value that is associated with a primitive type.
 class ICEBERG_EXPORT Literal {
- private:
+ public:
   /// \brief Sentinel value to indicate that the literal value is below the valid range
   /// of a specific primitive type. It can happen when casting a literal to a narrower
   /// primitive type.
@@ -48,26 +48,34 @@ class ICEBERG_EXPORT Literal {
     bool operator==(const AboveMax&) const = default;
     std::strong_ordering operator<=>(const AboveMax&) const = default;
   };
-
-  using Value = std::variant<bool,         // for boolean
-                             int32_t,      // for int, date
-                             int64_t,      // for long, timestamp, timestamp_tz, time
-                             float,        // for float
-                             double,       // for double
-                             std::string,  // for string
+  using Value = std::variant<std::monostate,  // for null
+                             bool,            // for boolean
+                             int32_t,         // for int, date
+                             int64_t,         // for long, timestamp, timestamp_tz, time
+                             float,           // for float
+                             double,          // for double
+                             std::string,     // for string
                              std::vector<uint8_t>,     // for binary, fixed
                              std::array<uint8_t, 16>,  // for uuid and decimal
                              BelowMin, AboveMax>;
 
- public:
   /// \brief Factory methods for primitive types
   static Literal Boolean(bool value);
   static Literal Int(int32_t value);
+  static Literal Date(int32_t value);
   static Literal Long(int64_t value);
+  static Literal Time(int64_t value);
+  static Literal Timestamp(int64_t value);
+  static Literal TimestampTz(int64_t value);
   static Literal Float(float value);
   static Literal Double(double value);
   static Literal String(std::string value);
   static Literal Binary(std::vector<uint8_t> value);
+
+  /// \brief Create a literal representing a null value.
+  static Literal Null(std::shared_ptr<PrimitiveType> type) {
+    return {Value{std::monostate{}}, std::move(type)};
+  }
 
   /// \brief Restore a literal from single-value serialization.
   ///
@@ -84,6 +92,9 @@ class ICEBERG_EXPORT Literal {
 
   /// \brief Get the literal type.
   const std::shared_ptr<PrimitiveType>& type() const;
+
+  /// \brief Get the literal value.
+  const Value& value() const { return value_; }
 
   /// \brief Converts this literal to a literal of the given type.
   ///
@@ -122,6 +133,10 @@ class ICEBERG_EXPORT Literal {
   /// and the value is less than the target type's minimum.
   /// \return true if this literal represents a BelowMin value, false otherwise
   bool IsBelowMin() const;
+
+  /// Check if this literal is null.
+  /// \return true if this literal is null, false otherwise
+  bool IsNull() const;
 
   std::string ToString() const;
 

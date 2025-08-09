@@ -25,7 +25,7 @@
 #include <memory>
 #include <variant>
 
-#include "iceberg/arrow_c_data.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -170,14 +170,16 @@ class ICEBERG_EXPORT TransformFunction {
  public:
   virtual ~TransformFunction() = default;
   TransformFunction(TransformType transform_type, std::shared_ptr<Type> source_type);
-  /// \brief Transform an input array to a new array
-  virtual Result<ArrowArray> Transform(const ArrowArray& data) = 0;
+  /// \brief Transform an input Literal to a new Literal
+  ///
+  /// All transforms must return null for a null input value.
+  virtual Result<Literal> Transform(const Literal& literal) = 0;
   /// \brief Get the transform type
   TransformType transform_type() const;
   /// \brief Get the source type of transform function
   const std::shared_ptr<Type>& source_type() const;
   /// \brief Get the result type of transform function
-  virtual Result<std::shared_ptr<Type>> ResultType() const = 0;
+  virtual std::shared_ptr<Type> ResultType() const = 0;
 
   friend bool operator==(const TransformFunction& lhs, const TransformFunction& rhs) {
     return lhs.Equals(rhs);

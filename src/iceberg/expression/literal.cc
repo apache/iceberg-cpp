@@ -21,7 +21,6 @@
 
 #include <cmath>
 #include <concepts>
-#include <sstream>
 
 #include "iceberg/exception.h"
 
@@ -126,22 +125,28 @@ Literal::Literal(Value value, std::shared_ptr<PrimitiveType> type)
     : value_(std::move(value)), type_(std::move(type)) {}
 
 // Factory methods
-Literal Literal::Boolean(bool value) { return {Value{value}, iceberg::boolean()}; }
+Literal Literal::Boolean(bool value) { return {Value{value}, boolean()}; }
 
-Literal Literal::Int(int32_t value) { return {Value{value}, iceberg::int32()}; }
+Literal Literal::Int(int32_t value) { return {Value{value}, int32()}; }
 
-Literal Literal::Long(int64_t value) { return {Value{value}, iceberg::int64()}; }
+Literal Literal::Date(int32_t value) { return {Value{value}, date()}; }
 
-Literal Literal::Float(float value) { return {Value{value}, iceberg::float32()}; }
+Literal Literal::Long(int64_t value) { return {Value{value}, int64()}; }
 
-Literal Literal::Double(double value) { return {Value{value}, iceberg::float64()}; }
+Literal Literal::Time(int64_t value) { return {Value{value}, time()}; }
 
-Literal Literal::String(std::string value) {
-  return {Value{std::move(value)}, iceberg::string()};
-}
+Literal Literal::Timestamp(int64_t value) { return {Value{value}, timestamp()}; }
+
+Literal Literal::TimestampTz(int64_t value) { return {Value{value}, timestamp_tz()}; }
+
+Literal Literal::Float(float value) { return {Value{value}, float32()}; }
+
+Literal Literal::Double(double value) { return {Value{value}, float64()}; }
+
+Literal Literal::String(std::string value) { return {Value{std::move(value)}, string()}; }
 
 Literal Literal::Binary(std::vector<uint8_t> value) {
-  return {Value{std::move(value)}, iceberg::binary()};
+  return {Value{std::move(value)}, binary()};
 }
 
 Result<Literal> Literal::Deserialize(std::span<const uint8_t> data,
@@ -188,8 +193,9 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
     return std::partial_ordering::unordered;
   }
 
-  // If either value is AboveMax or BelowMin, comparison is unordered
-  if (IsAboveMax() || IsBelowMin() || other.IsAboveMax() || other.IsBelowMin()) {
+  // If either value is AboveMax, BelowMin or null, comparison is unordered
+  if (IsAboveMax() || IsBelowMin() || other.IsAboveMax() || other.IsBelowMin() ||
+      IsNull() || other.IsNull()) {
     return std::partial_ordering::unordered;
   }
 
@@ -202,13 +208,16 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
       return this_val ? std::partial_ordering::greater : std::partial_ordering::less;
     }
 
-    case TypeId::kInt: {
+    case TypeId::kInt:
+    case TypeId::kDate: {
       auto this_val = std::get<int32_t>(value_);
       auto other_val = std::get<int32_t>(other.value_);
       return this_val <=> other_val;
     }
 
-    case TypeId::kLong: {
+    case TypeId::kLong:
+    case TypeId::kTimestamp:
+    case TypeId::kTimestampTz: {
       auto this_val = std::get<int64_t>(value_);
       auto other_val = std::get<int64_t>(other.value_);
       return this_val <=> other_val;
@@ -252,6 +261,9 @@ std::string Literal::ToString() const {
   }
   if (std::holds_alternative<AboveMax>(value_)) {
     return "aboveMax";
+  }
+  if (std::holds_alternative<std::monostate>(value_)) {
+    return "null";
   }
 
   switch (type_->type_id()) {
@@ -301,6 +313,8 @@ bool Literal::IsBelowMin() const { return std::holds_alternative<BelowMin>(value
 
 bool Literal::IsAboveMax() const { return std::holds_alternative<AboveMax>(value_); }
 
+bool Literal::IsNull() const { return std::holds_alternative<std::monostate>(value_); }
+
 // LiteralCaster implementation
 
 Result<Literal> LiteralCaster::CastTo(const Literal& literal,
@@ -312,7 +326,8 @@ Result<Literal> LiteralCaster::CastTo(const Literal& literal,
 
   // Handle special values
   if (std::holds_alternative<Literal::BelowMin>(literal.value_) ||
-      std::holds_alternative<Literal::AboveMax>(literal.value_)) {
+      std::holds_alternative<Literal::AboveMax>(literal.value_) ||
+      std::holds_alternative<std::monostate>(literal.value_)) {
     // Cannot cast type for special values
     return NotSupported("Cannot cast type for {}", literal.ToString());
   }
