@@ -43,4 +43,13 @@ Status AppendDatumToBuilder(const ::avro::NodePtr& avro_node,
                             const Schema& projected_schema,
                             ::arrow::ArrayBuilder* array_builder);
 
+/// \brief Extract an Avro datum from an Arrow array.
+///
+/// \param array The Arrow array to extract from.
+/// \param index The index of the element to extract.
+/// \param datum The Avro datum to extract to. Its Avro type should be consistent with the
+/// Arrow type.
+Status ExtractDatumFromArray(const ::arrow::Array& array, int64_t index,
+                             ::avro::GenericDatum* datum);
+
 }  // namespace iceberg::avro
