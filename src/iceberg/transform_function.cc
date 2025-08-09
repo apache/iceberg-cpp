@@ -25,6 +25,7 @@
 #include <utility>
 #include <variant>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/murmurhash3_internal.h"
 #include "iceberg/util/truncate_utils.h"
@@ -332,8 +333,7 @@ Result<Literal> DayTransform::Transform(const Literal& literal) {
   using namespace std::chrono;  // NOLINT
   switch (source_type()->type_id()) {
     case TypeId::kDate: {
-      // Day is the same as the date value
-      return literal;
+      return Literal::Int(std::get<int32_t>(literal.value()));
     }
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz: {
@@ -342,7 +342,7 @@ Result<Literal> DayTransform::Transform(const Literal& literal) {
       auto timestamp = sys_time<microseconds>(microseconds{value});
       auto days_since_epoch = floor<days>(timestamp);
 
-      return Literal::Date(
+      return Literal::Int(
           static_cast<int32_t>(days_since_epoch.time_since_epoch().count()));
     }
     default:

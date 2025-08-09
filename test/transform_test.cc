@@ -408,13 +408,13 @@ TEST(TransformFunctionTransformTest, DayTransform) {
   const std::vector<Case> cases = {
       {.source_type = iceberg::timestamp(),
        .source = Literal::Timestamp(1622547800000000),
-       .expected = Literal::Date(18779)},
+       .expected = Literal::Int(18779)},
       {.source_type = iceberg::timestamp_tz(),
        .source = Literal::TimestampTz(1622547800000000),
-       .expected = Literal::Date(18779)},
+       .expected = Literal::Int(18779)},
       {.source_type = iceberg::date(),
        .source = Literal::Date(30000),
-       .expected = Literal::Date(30000)},
+       .expected = Literal::Int(30000)},
   };
 
   for (const auto& c : cases) {
