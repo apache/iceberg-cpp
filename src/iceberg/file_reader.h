@@ -86,6 +86,9 @@ struct ICEBERG_EXPORT ReaderOptions {
   /// \brief The filter to apply to the data. Reader implementations may ignore this if
   /// the file format does not support filtering.
   std::shared_ptr<class Expression> filter;
+  /// \brief Name mapping for schema evolution compatibility. Used when reading files
+  /// that may have different field names than the current schema.
+  std::shared_ptr<class NameMapping> name_mapping;
   /// \brief Format-specific or implementation-specific properties.
   std::unordered_map<std::string, std::string> properties;
 };
