@@ -175,7 +175,6 @@ class ICEBERG_EXPORT Catalog {
   /// \return a Table instance or ErrorKind::kAlreadyExists if the table already exists
   virtual Result<std::shared_ptr<Table>> RegisterTable(
       const TableIdentifier& identifier, const std::string& metadata_file_location) = 0;
-
   /// \brief A builder used to create valid tables or start create/replace transactions
   class TableBuilder {
    public:

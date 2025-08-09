@@ -57,6 +57,9 @@ class ICEBERG_EXPORT Table {
   /// \brief Returns the UUID of the table
   const std::string& uuid() const;
 
+  /// \brief Refresh the current table metadata
+  Status Refresh();
+
   /// \brief Return the schema for this table, return NotFoundError if not found
   Result<std::shared_ptr<Schema>> schema() const;
 
@@ -116,7 +119,7 @@ class ICEBERG_EXPORT Table {
  private:
   const TableIdentifier identifier_;
   std::shared_ptr<TableMetadata> metadata_;
-  const std::string metadata_location_;
+  std::string metadata_location_;
   std::shared_ptr<FileIO> io_;
   std::shared_ptr<Catalog> catalog_;
 
