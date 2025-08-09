@@ -84,8 +84,7 @@ class ICEBERG_EXPORT InMemoryCatalog
 
   Status DropTable(const TableIdentifier& identifier, bool purge) override;
 
-  virtual Result<std::unique_ptr<Table>> LoadTable(
-      const TableIdentifier& identifier) override;
+  Result<std::unique_ptr<Table>> LoadTable(const TableIdentifier& identifier) override;
 
   Result<std::shared_ptr<Table>> RegisterTable(
       const TableIdentifier& identifier,
