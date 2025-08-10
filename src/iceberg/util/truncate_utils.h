@@ -26,7 +26,7 @@
 
 namespace iceberg {
 
-ICEBERG_EXPORT class TruncateUtils {
+class ICEBERG_EXPORT TruncateUtils {
  public:
   /// \brief Truncate a UTF-8 string to a specified number of code points.
   ///
