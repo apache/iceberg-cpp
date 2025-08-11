@@ -128,7 +128,7 @@ class ICEBERG_EXPORT LoggerRegistry {
                    std::format_args args) {
       auto* typed_logger = static_cast<const LoggerImpl*>(logger_ptr);
       std::string formatted_message = std::vformat(format_str, args);
-      typed_logger->Log(level, location, "{}", formatted_message);
+      typed_logger->Log(level, location, formatted_message);
     };
     should_log_func_ = [](const void* logger_ptr, LogLevel level) -> bool {
       auto* typed_logger = static_cast<const LoggerImpl*>(logger_ptr);
@@ -157,7 +157,7 @@ class ICEBERG_EXPORT LoggerRegistry {
             log_func_(default_logger_.get(), level, location, format_str, args_store);
           } else {
             log_func_(default_logger_.get(), level, location, format_str,
-                      std::format_args{});
+                      std::make_format_args());
           }
         } catch (const std::exception& e) {
           std::cerr << "Logging error: " << e.what() << std::endl;
