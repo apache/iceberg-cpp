@@ -28,13 +28,13 @@ class MockCatalog : public Catalog {
   MockCatalog() = default;
   ~MockCatalog() override = default;
 
-  // NOLINTBEGIN
-  MOCK_METHOD(std::string_view, name, (), (const, override));
+  // NOLINTBEGIN(clang-diagnostic-error)
+  MOCK_METHOD((std::string_view), name, (), (const, override));
 
-  MOCK_METHOD(Status, CreateNamespace,
+  MOCK_METHOD((Status), CreateNamespace,
               (const Namespace&, (const std::unordered_map<std::string, std::string>&)),
               (override));
-  // NOLINTEND
+  // NOLINTEND(clang-diagnostic-error)
 
   MOCK_METHOD((Result<std::vector<Namespace>>), ListNamespaces, (const Namespace&),
               (const, override));
