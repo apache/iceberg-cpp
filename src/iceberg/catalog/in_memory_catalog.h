@@ -90,7 +90,7 @@ class ICEBERG_EXPORT InMemoryCatalog
       const TableIdentifier& identifier,
       const std::string& metadata_file_location) override;
 
-  std::unique_ptr<iceberg::TableBuilder> BuildTable(const TableIdentifier& identifier,
+  std::unique_ptr<Catalog::TableBuilder> BuildTable(const TableIdentifier& identifier,
                                                     const Schema& schema) const override;
 
  private:

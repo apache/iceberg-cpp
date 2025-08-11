@@ -115,11 +115,11 @@ Result<std::unique_ptr<TransformFunction>> Transform::Bind(
 
   switch (transform_type_) {
     case TransformType::kIdentity:
-      return std::make_unique<IdentityTransform>(source_type);
+      return IdentityTransform::Make(source_type);
 
     case TransformType::kBucket: {
       if (auto param = std::get_if<int32_t>(&param_)) {
-        return std::make_unique<BucketTransform>(source_type, *param);
+        return BucketTransform::Make(source_type, *param);
       }
       return InvalidArgument("Bucket requires int32 param, none found in transform '{}'",
                              type_str);
@@ -127,22 +127,22 @@ Result<std::unique_ptr<TransformFunction>> Transform::Bind(
 
     case TransformType::kTruncate: {
       if (auto param = std::get_if<int32_t>(&param_)) {
-        return std::make_unique<TruncateTransform>(source_type, *param);
+        return TruncateTransform::Make(source_type, *param);
       }
       return InvalidArgument(
           "Truncate requires int32 param, none found in transform '{}'", type_str);
     }
 
     case TransformType::kYear:
-      return std::make_unique<YearTransform>(source_type);
+      return YearTransform::Make(source_type);
     case TransformType::kMonth:
-      return std::make_unique<MonthTransform>(source_type);
+      return MonthTransform::Make(source_type);
     case TransformType::kDay:
-      return std::make_unique<DayTransform>(source_type);
+      return DayTransform::Make(source_type);
     case TransformType::kHour:
-      return std::make_unique<HourTransform>(source_type);
+      return HourTransform::Make(source_type);
     case TransformType::kVoid:
-      return std::make_unique<VoidTransform>(source_type);
+      return VoidTransform::Make(source_type);
 
     default:
       return NotSupported("Unsupported transform type: '{}'", type_str);

@@ -25,7 +25,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "iceberg/arrow/arrow_fs_file_io.h"
+#include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "matchers.h"

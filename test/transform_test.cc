@@ -117,4 +117,80 @@ TEST(TransformFromStringTest, NegativeCases) {
   }
 }
 
+TEST(TransformResultTypeTest, PositiveCases) {
+  struct Case {
+    std::string str;
+    std::shared_ptr<Type> source_type;
+    std::shared_ptr<Type> expected_result_type;
+  };
+
+  const std::vector<Case> cases = {
+      {.str = "identity",
+       .source_type = iceberg::string(),
+       .expected_result_type = iceberg::string()},
+      {.str = "year",
+       .source_type = iceberg::timestamp(),
+       .expected_result_type = iceberg::int32()},
+      {.str = "month",
+       .source_type = iceberg::timestamp(),
+       .expected_result_type = iceberg::int32()},
+      {.str = "day",
+       .source_type = iceberg::timestamp(),
+       .expected_result_type = iceberg::date()},
+      {.str = "hour",
+       .source_type = iceberg::timestamp(),
+       .expected_result_type = iceberg::int32()},
+      {.str = "void",
+       .source_type = iceberg::string(),
+       .expected_result_type = iceberg::string()},
+      {.str = "bucket[16]",
+       .source_type = iceberg::string(),
+       .expected_result_type = iceberg::int32()},
+      {.str = "truncate[32]",
+       .source_type = iceberg::string(),
+       .expected_result_type = iceberg::string()},
+  };
+
+  for (const auto& c : cases) {
+    auto result = TransformFromString(c.str);
+    ASSERT_TRUE(result.has_value()) << "Failed to parse: " << c.str;
+
+    const auto& transform = result.value();
+    const auto transformPtr = transform->Bind(c.source_type);
+    ASSERT_TRUE(transformPtr.has_value()) << "Failed to bind: " << c.str;
+
+    auto result_type = transformPtr.value()->ResultType();
+    ASSERT_TRUE(result_type.has_value()) << "Failed to get result type for: " << c.str;
+    EXPECT_EQ(result_type.value()->type_id(), c.expected_result_type->type_id())
+        << "Unexpected result type for: " << c.str;
+  }
+}
+
+TEST(TransformResultTypeTest, NegativeCases) {
+  struct Case {
+    std::string str;
+    std::shared_ptr<Type> source_type;
+  };
+
+  const std::vector<Case> cases = {
+      {.str = "identity", .source_type = nullptr},
+      {.str = "year", .source_type = iceberg::string()},
+      {.str = "month", .source_type = iceberg::string()},
+      {.str = "day", .source_type = iceberg::string()},
+      {.str = "hour", .source_type = iceberg::string()},
+      {.str = "void", .source_type = nullptr},
+      {.str = "bucket[16]", .source_type = iceberg::float32()},
+      {.str = "truncate[32]", .source_type = iceberg::float64()}};
+
+  for (const auto& c : cases) {
+    auto result = TransformFromString(c.str);
+    ASSERT_TRUE(result.has_value()) << "Failed to parse: " << c.str;
+
+    const auto& transform = result.value();
+    auto transformPtr = transform->Bind(c.source_type);
+
+    ASSERT_THAT(transformPtr, IsError(ErrorKind::kNotSupported));
+  }
+}
+
 }  // namespace iceberg

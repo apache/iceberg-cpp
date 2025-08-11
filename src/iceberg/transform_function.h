@@ -35,6 +35,12 @@ class IdentityTransform : public TransformFunction {
 
   /// \brief Returns the same type as the source type if it is valid.
   Result<std::shared_ptr<Type>> ResultType() const override;
+
+  /// \brief Create an IdentityTransform.
+  /// \param source_type Type of the input data.
+  /// \return A Result containing the IdentityTransform or an error.
+  static Result<std::unique_ptr<TransformFunction>> Make(
+      std::shared_ptr<Type> const& source_type);
 };
 
 /// \brief Bucket transform that hashes input values into N buckets.
@@ -49,6 +55,13 @@ class BucketTransform : public TransformFunction {
 
   /// \brief Returns INT32 as the output type.
   Result<std::shared_ptr<Type>> ResultType() const override;
+
+  /// \brief Create a BucketTransform.
+  /// \param source_type Type of the input data.
+  /// \param num_buckets Number of buckets to hash into.
+  /// \return A Result containing the BucketTransform or an error.
+  static Result<std::unique_ptr<TransformFunction>> Make(
+      std::shared_ptr<Type> const& source_type, int32_t num_buckets);
 
  private:
   int32_t num_buckets_;
@@ -67,6 +80,13 @@ class TruncateTransform : public TransformFunction {
   /// \brief Returns the same type as source_type.
   Result<std::shared_ptr<Type>> ResultType() const override;
 
+  /// \brief Create a TruncateTransform.
+  /// \param source_type Type of the input data.
+  /// \param width The width to truncate to.
+  /// \return A Result containing the TruncateTransform or an error.
+  static Result<std::unique_ptr<TransformFunction>> Make(
+      std::shared_ptr<Type> const& source_type, int32_t width);
+
  private:
   int32_t width_;
 };
@@ -82,6 +102,12 @@ class YearTransform : public TransformFunction {
 
   /// \brief Returns INT32 as the output type.
   Result<std::shared_ptr<Type>> ResultType() const override;
+
+  /// \brief Create a YearTransform.
+  /// \param source_type Type of the input data.
+  /// \return A Result containing the YearTransform or an error.
+  static Result<std::unique_ptr<TransformFunction>> Make(
+      std::shared_ptr<Type> const& source_type);
 };
 
 /// \brief Month transform that extracts the month component from timestamp inputs.
@@ -95,6 +121,12 @@ class MonthTransform : public TransformFunction {
 
   /// \brief Returns INT32 as the output type.
   Result<std::shared_ptr<Type>> ResultType() const override;
+
+  /// \brief Create a MonthTransform.
+  /// \param source_type Type of the input data.
+  /// \return A Result containing the MonthTransform or an error.
+  static Result<std::unique_ptr<TransformFunction>> Make(
+      std::shared_ptr<Type> const& source_type);
 };
 
 /// \brief Day transform that extracts the day of the month from timestamp inputs.
@@ -108,6 +140,12 @@ class DayTransform : public TransformFunction {
 
   /// \brief Returns INT32 as the output type.
   Result<std::shared_ptr<Type>> ResultType() const override;
+
+  /// \brief Create a DayTransform.
+  /// \param source_type Type of the input data.
+  /// \return A Result containing the DayTransform or an error.
+  static Result<std::unique_ptr<TransformFunction>> Make(
+      std::shared_ptr<Type> const& source_type);
 };
 
 /// \brief Hour transform that extracts the hour component from timestamp inputs.
@@ -121,6 +159,12 @@ class HourTransform : public TransformFunction {
 
   /// \brief Returns INT32 as the output type.
   Result<std::shared_ptr<Type>> ResultType() const override;
+
+  /// \brief Create a HourTransform.
+  /// \param source_type Type of the input data.
+  /// \return A Result containing the HourTransform or an error.
+  static Result<std::unique_ptr<TransformFunction>> Make(
+      std::shared_ptr<Type> const& source_type);
 };
 
 /// \brief Void transform that discards the input and always returns null.
@@ -134,6 +178,12 @@ class VoidTransform : public TransformFunction {
 
   /// \brief Returns null type or a sentinel type indicating void.
   Result<std::shared_ptr<Type>> ResultType() const override;
+
+  /// \brief Create a VoidTransform.
+  /// \param source_type Input type (ignored).
+  /// \return A Result containing the VoidTransform or an error.
+  static Result<std::unique_ptr<TransformFunction>> Make(
+      std::shared_ptr<Type> const& source_type);
 };
 
 }  // namespace iceberg

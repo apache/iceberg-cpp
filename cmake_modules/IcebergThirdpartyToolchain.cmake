@@ -23,9 +23,9 @@ set(ICEBERG_ARROW_INSTALL_INTERFACE_LIBS)
 # ----------------------------------------------------------------------
 # Versions and URLs for toolchain builds
 
-set(ICEBERG_ARROW_BUILD_VERSION "19.0.1")
+set(ICEBERG_ARROW_BUILD_VERSION "21.0.0")
 set(ICEBERG_ARROW_BUILD_SHA256_CHECKSUM
-    "acb76266e8b0c2fbb7eb15d542fbb462a73b3fd1e32b80fad6c2fafd95a51160")
+    "5d3f8db7e72fb9f65f4785b7a1634522e8d8e9657a445af53d4a34a3849857b5")
 
 if(DEFINED ENV{ICEBERG_ARROW_URL})
   set(ARROW_SOURCE_URL "$ENV{ICEBERG_ARROW_URL}")
@@ -65,8 +65,9 @@ function(resolve_arrow_dependency)
   set(ARROW_BUILD_STATIC
       ON
       CACHE BOOL "" FORCE)
+  # Work around undefined symbol: arrow::ipc::ReadSchema(arrow::io::InputStream*, arrow::ipc::DictionaryMemo*)
   set(ARROW_IPC
-      OFF
+      ON
       CACHE BOOL "" FORCE)
   set(ARROW_FILESYSTEM
       ON
@@ -98,10 +99,8 @@ function(resolve_arrow_dependency)
 
   fetchcontent_declare(VendoredArrow
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       GIT_REPOSITORY https://github.com/apache/arrow.git
-                       GIT_TAG f12356adaaabea86638407e995e73215dbb58bb2
-                       #URL ${ARROW_SOURCE_URL}
-                       #URL_HASH "SHA256=${ICEBERG_ARROW_BUILD_SHA256_CHECKSUM}"
+                       URL ${ARROW_SOURCE_URL}
+                       URL_HASH "SHA256=${ICEBERG_ARROW_BUILD_SHA256_CHECKSUM}"
                        SOURCE_SUBDIR
                        cpp
                        FIND_PACKAGE_ARGS

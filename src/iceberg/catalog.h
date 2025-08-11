@@ -176,15 +176,6 @@ class ICEBERG_EXPORT Catalog {
   virtual Result<std::shared_ptr<Table>> RegisterTable(
       const TableIdentifier& identifier, const std::string& metadata_file_location) = 0;
 
-  /// \brief Instantiate a builder to either create a table or start a create/replace
-  /// transaction
-  ///
-  /// \param identifier a table identifier
-  /// \param schema a schema
-  /// \return the builder to create a table or start a create/replace transaction
-  virtual std::unique_ptr<class TableBuilder> BuildTable(
-      const TableIdentifier& identifier, const Schema& schema) const = 0;
-
   /// \brief A builder used to create valid tables or start create/replace transactions
   class TableBuilder {
    public:
@@ -233,6 +224,15 @@ class ICEBERG_EXPORT Catalog {
     /// \return the Transaction to create the table
     virtual std::unique_ptr<Transaction> StageCreate() = 0;
   };
+
+  /// \brief Instantiate a builder to either create a table or start a create/replace
+  /// transaction
+  ///
+  /// \param identifier a table identifier
+  /// \param schema a schema
+  /// \return the builder to create a table or start a create/replace transaction
+  virtual std::unique_ptr<TableBuilder> BuildTable(const TableIdentifier& identifier,
+                                                   const Schema& schema) const = 0;
 };
 
 }  // namespace iceberg

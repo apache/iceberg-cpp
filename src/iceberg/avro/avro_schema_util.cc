@@ -22,7 +22,6 @@
 #include <string_view>
 
 #include <arrow/type.h>
-#include <arrow/util/decimal.h>
 #include <avro/CustomAttributes.hh>
 #include <avro/LogicalType.hh>
 #include <avro/NodeImpl.hh>
@@ -30,6 +29,7 @@
 #include <avro/Types.hh>
 #include <avro/ValidSchema.hh>
 
+#include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/schema.h"
@@ -49,18 +49,8 @@ constexpr std::string_view kValueIdProp = "value-id";
 constexpr std::string_view kElementIdProp = "element-id";
 constexpr std::string_view kAdjustToUtcProp = "adjust-to-utc";
 
-struct MapLogicalType : public ::avro::CustomLogicalType {
-  MapLogicalType() : ::avro::CustomLogicalType("map") {}
-};
-
 ::avro::LogicalType GetMapLogicalType() {
-  static std::once_flag flag{};
-  std::call_once(flag, []() {
-    // Register the map logical type with the avro custom logical type registry.
-    // See https://github.com/apache/avro/pull/3326 for details.
-    ::avro::CustomLogicalTypeRegistry::instance().registerType(
-        "map", [](const std::string&) { return std::make_shared<MapLogicalType>(); });
-  });
+  RegisterLogicalTypes();
   return ::avro::LogicalType(std::make_shared<MapLogicalType>());
 }
 
