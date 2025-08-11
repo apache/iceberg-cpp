@@ -83,32 +83,25 @@ class ManifestListReaderV1Test : public ::testing::Test {
 
   std::vector<ManifestFile> PrepareV2NonPartitionedTestManifestList() {
     std::vector<ManifestFile> manifest_files;
-    std::string test_dir_prefix =
-  "/tmp/db/db/v2_non_partitioned_test/metadata/";
+    std::string test_dir_prefix = "/tmp/db/db/v2_non_partitioned_test/metadata/";
 
-    std::vector<std::string> paths = {
-      "ccb6dbcb-0611-48da-be68-bd506ea63188-m0.avro",  
-      "b89a10c9-a7a8-4526-99c5-5587a4ea7527-m0.avro",  
-      "a74d20fa-c800-4706-9ddb-66be15a5ecb0-m0.avro",  
-      "ae7d5fce-7245-4335-9b57-bc598c595c84-m0.avro"   
-    };
+    std::vector<std::string> paths = {"ccb6dbcb-0611-48da-be68-bd506ea63188-m0.avro",
+                                      "b89a10c9-a7a8-4526-99c5-5587a4ea7527-m0.avro",
+                                      "a74d20fa-c800-4706-9ddb-66be15a5ecb0-m0.avro",
+                                      "ae7d5fce-7245-4335-9b57-bc598c595c84-m0.avro"};
 
     std::vector<int64_t> file_size = {7169, 7170, 7169, 7170};
 
-    std::vector<int64_t> snapshot_id = {
-      251167482216575399,  
-      4248697313956014690,  
-      281757490425433194,  
-      5521202581490753283   
-    };
+    std::vector<int64_t> snapshot_id = {251167482216575399, 4248697313956014690,
+                                        281757490425433194, 5521202581490753283};
 
     for (int i = 0; i < 4; ++i) {
       ManifestFile manifest_file;
       manifest_file.manifest_path = test_dir_prefix + paths[i];
       manifest_file.manifest_length = file_size[i];
-      manifest_file.partition_spec_id = 0;  
+      manifest_file.partition_spec_id = 0;
       manifest_file.content = ManifestFile::Content::kData;
-      manifest_file.sequence_number = 4 - i;  
+      manifest_file.sequence_number = 4 - i;
       manifest_file.min_sequence_number = 4 - i;
       manifest_file.added_snapshot_id = snapshot_id[i];
       manifest_file.added_files_count = 1;
@@ -296,13 +289,12 @@ TEST_F(ManifestListReaderV1Test, PartitionComplexTypeTest) {
 
 TEST_F(ManifestListReaderV1Test, V2NonPartitionedTest) {
   std::string path = GetResourcePath(
-    "snap-251167482216575399-1-ccb6dbcb-0611-48da-be68-bd506ea63188.avro");   
+      "snap-251167482216575399-1-ccb6dbcb-0611-48da-be68-bd506ea63188.avro");
 
   auto manifest_reader_result = ManifestListReader::MakeReader(path, file_io_);
   ASSERT_EQ(manifest_reader_result.has_value(), true);
 
-  auto manifest_reader =
-std::move(manifest_reader_result.value());
+  auto manifest_reader = std::move(manifest_reader_result.value());
   auto read_result = manifest_reader->Files();
   ASSERT_EQ(read_result.has_value(), true);
   ASSERT_EQ(read_result.value().size(), 4);
@@ -313,7 +305,7 @@ std::move(manifest_reader_result.value());
   // test all the manifest files are non-partitioned
   for (const auto& manifest : read_result.value()) {
     ASSERT_EQ(manifest.partition_spec_id, 0);
-    ASSERT_TRUE(manifest.partitions.empty());  // 
+    ASSERT_TRUE(manifest.partitions.empty());  //
     ASSERT_EQ(manifest.content, ManifestFile::Content::kData);
   }
 }
