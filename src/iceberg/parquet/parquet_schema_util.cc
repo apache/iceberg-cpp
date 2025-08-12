@@ -19,6 +19,7 @@
 
 #include <charconv>
 
+#include <arrow/extension_type.h>
 #include <arrow/type.h>
 #include <arrow/type_fwd.h>
 #include <arrow/util/key_value_metadata.h>
@@ -151,10 +152,10 @@ Status ValidateParquetSchemaEvolution(
       }
       break;
     case TypeId::kUuid:
-      if (arrow_type->id() == ::arrow::Type::FIXED_SIZE_BINARY) {
-        const auto& fixed_binary =
-            internal::checked_cast<const ::arrow::FixedSizeBinaryType&>(*arrow_type);
-        if (fixed_binary.byte_width() == 16) {
+      if (arrow_type->id() == ::arrow::Type::EXTENSION) {
+        const auto& extension_type =
+            internal::checked_cast<const ::arrow::ExtensionType&>(*arrow_type);
+        if (extension_type.extension_name() == "arrow.uuid") {
           return {};
         }
       }
@@ -213,10 +214,10 @@ Result<FieldProjection> ProjectStruct(
     if (!field_id) {
       continue;
     }
-    if (const auto [iter, inserted] = field_context_map.emplace(
-            std::piecewise_construct, std::forward_as_tuple(field_id.value()),
-            std::forward_as_tuple(i, parquet_field));
-        !inserted) [[unlikely]] {
+    if (!field_context_map
+             .emplace(field_id.value(),
+                      FieldContext{.local_index = i, .parquet_field = parquet_field})
+             .second) [[unlikely]] {
       return InvalidSchema("Duplicate field id {} found in Parquet schema",
                            field_id.value());
     }

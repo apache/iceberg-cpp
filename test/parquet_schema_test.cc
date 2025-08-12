@@ -110,10 +110,13 @@ constexpr std::string_view kParquetFieldIdKey = "PARQUET:field_id";
   auto parquet_schema_descriptor = std::make_shared<::parquet::SchemaDescriptor>();
   parquet_schema_descriptor->Init(parquet_schema);
 
+  auto properties = ::parquet::default_arrow_reader_properties();
+  properties.set_arrow_extensions_enabled(true);
+
   ::parquet::arrow::SchemaManifest manifest;
-  auto status = ::parquet::arrow::SchemaManifest::Make(
-      parquet_schema_descriptor.get(), /*key_value_metadata=*/nullptr,
-      ::parquet::default_arrow_reader_properties(), &manifest);
+  auto status = ::parquet::arrow::SchemaManifest::Make(parquet_schema_descriptor.get(),
+                                                       /*key_value_metadata=*/nullptr,
+                                                       properties, &manifest);
   if (!status.ok()) {
     throw std::runtime_error("Failed to create SchemaManifest: " + status.ToString());
   }
