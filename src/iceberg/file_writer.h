@@ -29,6 +29,7 @@
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/file_format.h"
 #include "iceberg/result.h"
+#include "iceberg/schema.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -38,7 +39,7 @@ struct ICEBERG_EXPORT WriterOptions {
   /// \brief The path to the file to write.
   std::string path;
   /// \brief The schema of the data to write.
-  ArrowSchema schema;
+  std::shared_ptr<Schema> schema;
   /// \brief FileIO instance to open the file. Writer implementations should down cast it
   /// to the specific FileIO implementation. By default, the `iceberg-bundle` library uses
   /// `ArrowFileSystemFileIO` as the default implementation.

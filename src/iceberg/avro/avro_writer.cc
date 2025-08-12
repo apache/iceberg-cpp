@@ -33,7 +33,6 @@
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/avro/avro_stream_internal.h"
 #include "iceberg/schema.h"
-#include "iceberg/schema_internal.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
@@ -60,8 +59,7 @@ struct WriteContext {};
 class AvroWriter::Impl {
  public:
   Status Open(const WriterOptions& options) {
-    write_arrow_schema_ = options.schema;
-    ICEBERG_ASSIGN_OR_RAISE(write_schema_, FromArrowSchema(options.schema, std::nullopt));
+    write_schema_ = options.schema;
 
     auto root = std::make_shared<::avro::NodeRecord>();
     ToAvroNodeVisitor visitor;
@@ -103,7 +101,6 @@ class AvroWriter::Impl {
   Status InitWriteContext() { return {}; }
 
  private:
-  ArrowSchema write_arrow_schema_;
   // The schema to write.
   std::shared_ptr<::iceberg::Schema> write_schema_;
   // The avro schema to write.

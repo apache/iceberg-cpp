@@ -37,6 +37,7 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeWriter(
   ICEBERG_ASSIGN_OR_RAISE(
       auto writer, WriterFactoryRegistry::Open(FileFormatType::kAvro,
                                                {.path = std::string(manifest_location),
+                                                .schema = schema,
                                                 .io = std::move(file_io)}));
   return std::make_unique<ManifestWriterImpl>(std::move(writer), std::move(schema));
 }
@@ -49,6 +50,7 @@ Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeWriter(
   ICEBERG_ASSIGN_OR_RAISE(auto writer, WriterFactoryRegistry::Open(
                                            FileFormatType::kAvro,
                                            {.path = std::string(manifest_list_location),
+                                            .schema = schema,
                                             .io = std::move(file_io)}));
   return std::make_unique<ManifestListWriterImpl>(std::move(writer), std::move(schema));
 }
