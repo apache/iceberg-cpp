@@ -33,12 +33,13 @@ class ICEBERG_EXPORT Metrics {
  public:
   Metrics() = default;
 
-  Metrics(int64_t row_count, std::unordered_map<int64_t, int64_t> column_sizes = {},
-          std::unordered_map<int64_t, int64_t> value_counts = {},
-          std::unordered_map<int64_t, int64_t> null_value_counts = {},
-          std::unordered_map<int64_t, int64_t> nan_value_counts = {},
-          std::unordered_map<int64_t, Literal> lower_bounds = {},
-          std::unordered_map<int64_t, Literal> upper_bounds = {})
+  explicit Metrics(int64_t row_count,
+                   std::unordered_map<int64_t, int64_t> column_sizes = {},
+                   std::unordered_map<int64_t, int64_t> value_counts = {},
+                   std::unordered_map<int64_t, int64_t> null_value_counts = {},
+                   std::unordered_map<int64_t, int64_t> nan_value_counts = {},
+                   std::unordered_map<int64_t, Literal> lower_bounds = {},
+                   std::unordered_map<int64_t, Literal> upper_bounds = {})
       : row_count_(row_count),
         column_sizes_(std::move(column_sizes)),
         value_counts_(std::move(value_counts)),
