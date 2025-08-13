@@ -23,6 +23,7 @@ set(ICEBERG_SOURCES
     expression/expression.cc
     expression/literal.cc
     file_reader.cc
+    file_writer.cc
     json_internal.cc
     manifest_entry.cc
     manifest_list.cc
@@ -107,6 +108,7 @@ if(ICEBERG_BUILD_BUNDLE)
       arrow/arrow_fs_file_io.cc
       avro/avro_data_util.cc
       avro/avro_reader.cc
+      avro/avro_writer.cc
       avro/avro_schema_util.cc
       avro/avro_register.cc
       avro/avro_stream_internal.cc

@@ -28,7 +28,9 @@
 
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/file_format.h"
+#include "iceberg/metrics.h"
 #include "iceberg/result.h"
+#include "iceberg/schema.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -38,7 +40,7 @@ struct ICEBERG_EXPORT WriterOptions {
   /// \brief The path to the file to write.
   std::string path;
   /// \brief The schema of the data to write.
-  ArrowSchema schema;
+  std::shared_ptr<Schema> schema;
   /// \brief FileIO instance to open the file. Writer implementations should down cast it
   /// to the specific FileIO implementation. By default, the `iceberg-bundle` library uses
   /// `ArrowFileSystemFileIO` as the default implementation.
@@ -65,6 +67,20 @@ class ICEBERG_EXPORT Writer {
   ///
   /// \return Status of write results.
   virtual Status Write(ArrowArray data) = 0;
+
+  /// \brief Get the file statistics.
+  /// Only valid after the file is closed.
+  virtual Metrics metrics() = 0;
+
+  /// \brief Get the file length.
+  /// Only valid after the file is closed.
+  virtual int64_t length() = 0;
+
+  /// \brief Returns a list of recommended split locations, if applicable, empty
+  /// otherwise. When available, this information is used for planning scan tasks whose
+  /// boundaries are determined by these offsets. The returned list must be sorted in
+  /// ascending order. Only valid after the file is closed.
+  virtual std::vector<int64_t> split_offsets() = 0;
 };
 
 /// \brief Factory function to create a writer of a specific file format.
