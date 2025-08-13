@@ -852,6 +852,25 @@ Result<::avro::NodePtr> CreateArrayNodeWithFieldIds(const ::avro::NodePtr& origi
     ICEBERG_ASSIGN_OR_RAISE(auto new_element_node,
                             MakeAvroNodeWithFieldIds(original_node->leafAt(0), field));
     new_array_node->addLeaf(new_element_node);
+
+    // Check and add custom attributes
+    if (original_node->customAttributes() > 0) {
+      ::avro::CustomAttributes merged_attributes;
+      const auto& original_attrs = original_node->customAttributesAt(0);
+      const auto& existing_attrs = original_attrs.attributes();
+      for (const auto& attr_pair : existing_attrs) {
+        // Skip element-id as we might set it differently
+        if (attr_pair.first != kElementIdProp) {
+          merged_attributes.addAttribute(attr_pair.first, attr_pair.second,
+                                         /*addQuote=*/false);
+        }
+      }
+      // Add merged attributes if we found any
+      if (merged_attributes.attributes().size() > 0) {
+        new_array_node->addCustomAttributesForField(merged_attributes);
+      }
+    }
+
     return new_array_node;
   }
 
@@ -871,12 +890,29 @@ Result<::avro::NodePtr> CreateArrayNodeWithFieldIds(const ::avro::NodePtr& origi
       MakeAvroNodeWithFieldIds(original_node->leafAt(0), element_field));
   new_array_node->addLeaf(new_element_node);
 
-  // Add element field ID as custom attribute
-  ::avro::CustomAttributes element_attributes;
-  element_attributes.addAttribute(std::string(kElementIdProp),
-                                  std::to_string(*element_field.field_id),
-                                  /*addQuote=*/false);
-  new_array_node->addCustomAttributesForField(element_attributes);
+  // Create merged custom attributes with element field ID
+  ::avro::CustomAttributes merged_attributes;
+
+  // First add our element field ID (highest priority)
+  merged_attributes.addAttribute(std::string(kElementIdProp),
+                                 std::to_string(*element_field.field_id),
+                                 /*addQuote=*/false);
+
+  // Then merge any custom attributes from original node (except element-id)
+  if (original_node->customAttributes() > 0) {
+    const auto& original_attrs = original_node->customAttributesAt(0);
+    const auto& existing_attrs = original_attrs.attributes();
+    for (const auto& attr_pair : existing_attrs) {
+      // Skip element-id as we've already set it above
+      if (attr_pair.first != kElementIdProp) {
+        merged_attributes.addAttribute(attr_pair.first, attr_pair.second,
+                                       /*addQuote=*/false);
+      }
+    }
+  }
+
+  // Add all attributes at once
+  new_array_node->addCustomAttributesForField(merged_attributes);
 
   return new_array_node;
 }
@@ -917,29 +953,47 @@ Result<::avro::NodePtr> CreateMapNodeWithFieldIds(const ::avro::NodePtr& origina
   new_map_node->addLeaf(new_key_node);
   new_map_node->addLeaf(new_value_node);
 
-  // Preserve existing custom attributes from the original node and add field ID
-  // attributes Copy existing attributes from the original node (if any)
-  if (original_node->customAttributes() > 0) {
-    const auto& original_attrs = original_node->customAttributesAt(0);
-    const auto& existing_attrs = original_attrs.attributes();
-    for (const auto& attr_pair : existing_attrs) {
-      // Copy each existing attribute to preserve original metadata
-      ::avro::CustomAttributes attributes;
-      attributes.addAttribute(attr_pair.first, attr_pair.second, /*addQuote=*/false);
-      new_map_node->addCustomAttributesForField(attributes);
-    }
-  }
-
+  // Create key and value attributes
   ::avro::CustomAttributes key_attributes;
+  ::avro::CustomAttributes value_attributes;
+
+  // Add required field IDs
   key_attributes.addAttribute(std::string(kKeyIdProp),
                               std::to_string(*key_mapped_field.field_id),
                               /*addQuote=*/false);
-  new_map_node->addCustomAttributesForField(key_attributes);
-
-  ::avro::CustomAttributes value_attributes;
   value_attributes.addAttribute(std::string(kValueIdProp),
                                 std::to_string(*value_mapped_field.field_id),
                                 /*addQuote=*/false);
+
+  // Merge custom attributes from original node if they exist
+  if (original_node->customAttributes() > 0) {
+    // Merge attributes for key (index 0)
+    const auto& original_key_attrs = original_node->customAttributesAt(0);
+    const auto& existing_key_attrs = original_key_attrs.attributes();
+    for (const auto& attr_pair : existing_key_attrs) {
+      // Skip if it's the key ID property we're already setting
+      if (attr_pair.first != kKeyIdProp) {
+        key_attributes.addAttribute(attr_pair.first, attr_pair.second,
+                                    /*addQuote=*/false);
+      }
+    }
+
+    // Merge attributes for value (index 1)
+    if (original_node->customAttributes() > 1) {
+      const auto& original_value_attrs = original_node->customAttributesAt(1);
+      const auto& existing_value_attrs = original_value_attrs.attributes();
+      for (const auto& attr_pair : existing_value_attrs) {
+        // Skip if it's the value ID property we're already setting
+        if (attr_pair.first != kValueIdProp) {
+          value_attributes.addAttribute(attr_pair.first, attr_pair.second,
+                                        /*addQuote=*/false);
+        }
+      }
+    }
+  }
+
+  // Add the merged attributes to the new map node
+  new_map_node->addCustomAttributesForField(key_attributes);
   new_map_node->addCustomAttributesForField(value_attributes);
 
   return new_map_node;
