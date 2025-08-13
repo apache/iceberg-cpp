@@ -37,9 +37,9 @@ class ICEBERG_BUNDLE_EXPORT AvroWriter : public Writer {
 
   Status Write(ArrowArray data) final;
 
-  Metrics metrics() final;
+  std::optional<Metrics> metrics() final;
 
-  int64_t length() final;
+  std::optional<int64_t> length() final;
 
   std::vector<int64_t> split_offsets() final;
 

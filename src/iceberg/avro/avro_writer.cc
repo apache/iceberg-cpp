@@ -27,8 +27,8 @@
 #include <arrow/result.h>
 #include <avro/DataFile.hh>
 #include <avro/GenericDatum.hh>
-#include <avro/NodeImpl.hh>
 
+#include "iceberg/arrow/arrow_error_transform_internal.h"
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/avro/avro_stream_internal.h"
@@ -43,12 +43,8 @@ namespace {
 Result<std::unique_ptr<AvroOutputStream>> CreateOutputStream(const WriterOptions& options,
                                                              int64_t buffer_size) {
   auto io = internal::checked_pointer_cast<arrow::ArrowFileSystemFileIO>(options.io);
-  auto result = io->fs()->OpenOutputStream(options.path);
-  if (!result.ok()) {
-    return IOError("Failed to open file {} for {}", options.path,
-                   result.status().message());
-  }
-  return std::make_unique<AvroOutputStream>(result.MoveValueUnsafe(), buffer_size);
+  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto output, io->fs()->OpenOutputStream(options.path));
+  return std::make_unique<AvroOutputStream>(output, buffer_size);
 }
 
 }  // namespace
@@ -120,19 +116,19 @@ Status AvroWriter::Close() {
   return {};
 }
 
-Metrics AvroWriter::metrics() {
+std::optional<Metrics> AvroWriter::metrics() {
   if (impl_->Closed()) {
     // TODO(xiao.dong) implement metrics
     return {};
   }
-  return {};
+  return std::nullopt;
 }
 
-int64_t AvroWriter::length() {
+std::optional<int64_t> AvroWriter::length() {
   if (impl_->Closed()) {
     return impl_->length();
   }
-  return 0;
+  return std::nullopt;
 }
 
 std::vector<int64_t> AvroWriter::split_offsets() { return {}; }

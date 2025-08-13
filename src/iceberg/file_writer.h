@@ -30,7 +30,6 @@
 #include "iceberg/file_format.h"
 #include "iceberg/metrics.h"
 #include "iceberg/result.h"
-#include "iceberg/schema.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -70,11 +69,11 @@ class ICEBERG_EXPORT Writer {
 
   /// \brief Get the file statistics.
   /// Only valid after the file is closed.
-  virtual Metrics metrics() = 0;
+  virtual std::optional<Metrics> metrics() = 0;
 
   /// \brief Get the file length.
   /// Only valid after the file is closed.
-  virtual int64_t length() = 0;
+  virtual std::optional<int64_t> length() = 0;
 
   /// \brief Returns a list of recommended split locations, if applicable, empty
   /// otherwise. When available, this information is used for planning scan tasks whose

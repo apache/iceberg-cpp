@@ -31,7 +31,7 @@ namespace iceberg {
 
 /// \brief Iceberg file format metrics
 struct ICEBERG_EXPORT Metrics {
-  int64_t row_count_ = 0;
+  int64_t row_count = 0;
   std::unordered_map<int64_t, int64_t> column_sizes;
   std::unordered_map<int64_t, int64_t> value_counts;
   std::unordered_map<int64_t, int64_t> null_value_counts;

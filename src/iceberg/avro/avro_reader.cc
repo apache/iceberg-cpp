@@ -31,6 +31,7 @@
 #include <avro/Generic.hh>
 #include <avro/GenericDatum.hh>
 
+#include "iceberg/arrow/arrow_error_transform_internal.h"
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
@@ -51,13 +52,8 @@ Result<std::unique_ptr<AvroInputStream>> CreateInputStream(const ReaderOptions& 
   }
 
   auto io = internal::checked_pointer_cast<arrow::ArrowFileSystemFileIO>(options.io);
-  auto result = io->fs()->OpenInputFile(file_info);
-  if (!result.ok()) {
-    return IOError("Failed to open file {} for {}", options.path,
-                   result.status().message());
-  }
-
-  return std::make_unique<AvroInputStream>(result.MoveValueUnsafe(), buffer_size);
+  ICEBERG_ARROW_ASSIGN_OR_RETURN(auto file, io->fs()->OpenInputFile(file_info));
+  return std::make_unique<AvroInputStream>(file, buffer_size);
 }
 
 }  // namespace
