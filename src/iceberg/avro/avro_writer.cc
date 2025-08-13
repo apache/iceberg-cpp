@@ -85,6 +85,7 @@ class AvroWriter::Impl {
       ICEBERG_RETURN_UNEXPECTED(InitWriteContext());
     }
     // TODO(xiao.dong) convert data and write to avro
+    // total_bytes_+= written_bytes;
     return {};
   }
 
@@ -97,10 +98,15 @@ class AvroWriter::Impl {
     return {};
   }
 
+  bool Closed() const { return writer_ == nullptr; }
+
+  int64_t length() { return total_bytes_; }
+
  private:
   Status InitWriteContext() { return {}; }
 
  private:
+  int64_t total_bytes_ = 0;
   // The schema to write.
   std::shared_ptr<::iceberg::Schema> write_schema_;
   // The avro schema to write.
@@ -120,7 +126,29 @@ Status AvroWriter::Open(const WriterOptions& options) {
   return impl_->Open(options);
 }
 
-Status AvroWriter::Close() { return impl_->Close(); }
+Status AvroWriter::Close() {
+  if (!impl_->Closed()) {
+    return impl_->Close();
+  }
+  return {};
+}
+
+std::shared_ptr<Metrics> AvroWriter::metrics() {
+  if (impl_->Closed()) {
+    // TODO(xiao.dong) implement metrics
+    return std::make_shared<Metrics>();
+  }
+  return nullptr;
+}
+
+int64_t AvroWriter::length() {
+  if (impl_->Closed()) {
+    return impl_->length();
+  }
+  return 0;
+}
+
+std::vector<int64_t> AvroWriter::splitOffsets() { return {}; }
 
 void AvroWriter::Register() {
   static WriterFactoryRegistry avro_writer_register(

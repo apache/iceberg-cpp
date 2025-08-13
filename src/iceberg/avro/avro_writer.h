@@ -37,6 +37,12 @@ class ICEBERG_BUNDLE_EXPORT AvroWriter : public Writer {
 
   Status Write(ArrowArray data) final;
 
+  std::shared_ptr<Metrics> metrics() final;
+
+  int64_t length() final;
+
+  std::vector<int64_t> splitOffsets() final;
+
   /// \brief Register this Avro writer implementation.
   static void Register();
 

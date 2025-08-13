@@ -35,8 +35,15 @@ namespace iceberg {
 class ICEBERG_EXPORT ManifestWriter {
  public:
   virtual ~ManifestWriter() = default;
+
+  /// \brief Write manifest entries to file
+  /// \param entries List of manifest entries to write.
+  /// \return Status::OK() if all entries were written successfully
   virtual Status WriteManifestEntries(
       const std::vector<ManifestEntry>& entries) const = 0;
+
+  /// \brief Close writer and flush to storage.
+  virtual void Close() = 0;
 
   /// \brief Creates a writer for a manifest file.
   /// \param manifest_location Path to the manifest file.
@@ -51,7 +58,14 @@ class ICEBERG_EXPORT ManifestWriter {
 class ICEBERG_EXPORT ManifestListWriter {
  public:
   virtual ~ManifestListWriter() = default;
+
+  /// \brief Write manifest file list to mainifest list file.
+  /// \param files List of manifest files to write.
+  /// \return Status::OK() if all files were written successfully
   virtual Status WriteManifestFiles(const std::vector<ManifestFile>& files) const = 0;
+
+  /// \brief Close writer and flush to storage.
+  virtual void Close() = 0;
 
   /// \brief Creates a writer for the manifest list.
   /// \param manifest_list_location Path to the manifest list file.

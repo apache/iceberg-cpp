@@ -35,6 +35,8 @@ class ManifestWriterImpl : public ManifestWriter {
 
   Status WriteManifestEntries(const std::vector<ManifestEntry>& entries) const override;
 
+  void Close() override {}
+
  private:
   std::shared_ptr<Schema> schema_;
   std::unique_ptr<Writer> writer_;
@@ -48,6 +50,8 @@ class ManifestListWriterImpl : public ManifestListWriter {
       : schema_(std::move(schema)), writer_(std::move(writer)) {}
 
   Status WriteManifestFiles(const std::vector<ManifestFile>& files) const override;
+
+  void Close() override {}
 
  private:
   std::shared_ptr<Schema> schema_;
