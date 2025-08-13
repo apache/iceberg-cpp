@@ -25,8 +25,6 @@
 #include "iceberg/avro/avro_reader.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/manifest_reader.h"
-#include "iceberg/schema.h"
-#include "matchers.h"
 #include "temp_file_test_base.h"
 #include "test_common.h"
 
@@ -41,7 +39,33 @@ class ManifestListReaderV1Test : public ::testing::Test {
     file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(local_fs_);
   }
 
-  std::vector<ManifestFile> PrepareTestManifestList() {
+  std::shared_ptr<::arrow::fs::LocalFileSystem> local_fs_;
+  std::shared_ptr<FileIO> file_io_;
+
+  void TestManifestListReading(const std::string& resource_name,
+                               const std::vector<ManifestFile>& expected_manifest_list) {
+    std::string path = GetResourcePath(resource_name);
+    auto manifest_reader_result = ManifestListReader::MakeReader(path, file_io_);
+    ASSERT_EQ(manifest_reader_result.has_value(), true);
+
+    auto manifest_reader = std::move(manifest_reader_result.value());
+    auto read_result = manifest_reader->Files();
+    ASSERT_EQ(read_result.has_value(), true);
+    ASSERT_EQ(read_result.value().size(), expected_manifest_list.size());
+    ASSERT_EQ(read_result.value(), expected_manifest_list);
+  }
+};
+
+class ManifestListReaderV2Test : public TempFileTestBase {
+ protected:
+  static void SetUpTestSuite() { avro::AvroReader::Register(); }
+
+  void SetUp() override {
+    local_fs_ = std::make_shared<::arrow::fs::LocalFileSystem>();
+    file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(local_fs_);
+  }
+
+  std::vector<ManifestFile> PrepareV2PartitionedTestManifestList() {
     std::vector<ManifestFile> manifest_files;
     std::string test_dir_prefix = "/tmp/db/db/iceberg_test/metadata/";
     std::vector<std::string> paths = {"2bccd69e-d642-4816-bba0-261cd9bd0d93-m0.avro",
@@ -115,6 +139,7 @@ class ManifestListReaderV1Test : public ::testing::Test {
     }
     return manifest_files;
   }
+
   std::shared_ptr<::arrow::fs::LocalFileSystem> local_fs_;
   std::shared_ptr<FileIO> file_io_;
 
@@ -287,10 +312,24 @@ TEST_F(ManifestListReaderV1Test, PartitionComplexTypeTest) {
       expected_manifest_list);
 }
 
-TEST_F(ManifestListReaderV1Test, V2NonPartitionedTest) {
+TEST_F(ManifestListReaderV2Test, V2PartitionedTest) {
+  std::string path = GetResourcePath(
+      "snap-7412193043800610213-1-2bccd69e-d642-4816-bba0-261cd9bd0d93.avro");
+  auto manifest_reader_result = ManifestListReader::MakeReader(path, file_io_);
+  ASSERT_EQ(manifest_reader_result.has_value(), true);
+
+  auto manifest_reader = std::move(manifest_reader_result.value());
+  auto read_result = manifest_reader->Files();
+  ASSERT_EQ(read_result.has_value(), true);
+  ASSERT_EQ(read_result.value().size(), 4);
+
+  auto expected_manifest_list = PrepareV2PartitionedTestManifestList();
+  ASSERT_EQ(read_result.value(), expected_manifest_list);
+}
+
+TEST_F(ManifestListReaderV2Test, V2NonPartitionedTest) {
   std::string path = GetResourcePath(
       "snap-251167482216575399-1-ccb6dbcb-0611-48da-be68-bd506ea63188.avro");
-
   auto manifest_reader_result = ManifestListReader::MakeReader(path, file_io_);
   ASSERT_EQ(manifest_reader_result.has_value(), true);
 
