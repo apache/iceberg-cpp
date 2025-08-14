@@ -35,29 +35,51 @@ namespace iceberg {
 class ICEBERG_EXPORT ManifestWriter {
  public:
   virtual ~ManifestWriter() = default;
-  virtual Status WriteManifestEntries(
-      const std::vector<ManifestEntry>& entries) const = 0;
+
+  /// \brief Write manifest entry to file
+  /// \param entry Manifest entry to write.
+  /// \return Status::OK() if all entry was written successfully
+  virtual Status WriteManifestEntry(const ManifestEntry& entry) const = 0;
+
+  /// \brief Close writer and flush to storage.
+  virtual Status Close() = 0;
 
   /// \brief Creates a writer for a manifest file.
+  /// \param format_version Format version of the manifest.
+  /// \param first_row_id First row ID of the snapshot.
   /// \param manifest_location Path to the manifest file.
   /// \param file_io File IO implementation to use.
   /// \return A Result containing the writer or an error.
   static Result<std::unique_ptr<ManifestWriter>> MakeWriter(
-      std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
-      std::shared_ptr<Schema> partition_schema);
+      int32_t format_version, int64_t first_row_id, std::string_view manifest_location,
+      std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> partition_schema);
 };
 
 /// \brief Write manifest files to a manifest list file.
 class ICEBERG_EXPORT ManifestListWriter {
  public:
   virtual ~ManifestListWriter() = default;
-  virtual Status WriteManifestFiles(const std::vector<ManifestFile>& files) const = 0;
+
+  /// \brief Write manifest file list to manifest list file.
+  /// \param file Manifest file to write.
+  /// \return Status::OK() if all file was written successfully
+  virtual Status WriteManifestFile(const ManifestFile& file) const = 0;
+
+  /// \brief Close writer and flush to storage.
+  virtual Status Close() = 0;
 
   /// \brief Creates a writer for the manifest list.
+  /// \param format_version Format version of the manifest list.
+  /// \param snapshot_id ID of the snapshot.
+  /// \param parent_snapshot_id ID of the parent snapshot.
+  /// \param sequence_number Sequence number of the snapshot.
+  /// \param first_row_id First row ID of the snapshot.
   /// \param manifest_list_location Path to the manifest list file.
   /// \param file_io File IO implementation to use.
   /// \return A Result containing the writer or an error.
   static Result<std::unique_ptr<ManifestListWriter>> MakeWriter(
+      int32_t format_version, int64_t snapshot_id, int64_t parent_snapshot_id,
+      int64_t sequence_number, int64_t first_row_id,
       std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io);
 };
 
