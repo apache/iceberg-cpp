@@ -372,7 +372,7 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
         }
         if (view_of_file_field->n_children > 0) {
           auto view_of_partition = view_of_file_field->children[0];
-          for (size_t row_idx = 0; row_idx < view_of_partition->length; row_idx++) {
+          for (int64_t row_idx = 0; row_idx < view_of_partition->length; row_idx++) {
             if (ArrowArrayViewIsNull(view_of_partition, row_idx)) {
               break;
             }
