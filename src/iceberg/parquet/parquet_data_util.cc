@@ -274,7 +274,7 @@ Result<std::shared_ptr<::arrow::RecordBatch>> ProjectRecordBatch(
       auto output_array,
       ProjectNestedArray(array, ::arrow::struct_(output_arrow_schema->fields()),
                          projected_schema, projection.fields, pool));
-  auto struct_array = internal::checked_pointer_cast<::arrow::StructArray>(output_array);
+  auto* struct_array = internal::checked_cast<::arrow::StructArray*>(output_array.get());
   return ::arrow::RecordBatch::Make(output_arrow_schema, record_batch->num_rows(),
                                     struct_array->fields());
 }
