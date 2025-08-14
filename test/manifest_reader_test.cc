@@ -142,7 +142,6 @@ class ManifestReaderV2Test : public TempFileTestBase {
     std::vector<int64_t> file_sizes = {1344};
     std::vector<int64_t> record_counts = {4};
 
-    // Real bounds data extracted from the manifest
     std::vector<std::map<int32_t, std::vector<uint8_t>>> lower_bounds = {
         {{1, {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
          {2, {'r', 'e', 'c', 'o', 'r', 'd', '_', 'f', 'o', 'u', 'r'}},
