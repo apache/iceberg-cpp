@@ -23,6 +23,7 @@
 #include <arrow/array/builder_decimal.h>
 #include <arrow/array/builder_nested.h>
 #include <arrow/array/builder_primitive.h>
+#include <arrow/extension_type.h>
 #include <arrow/json/from_string.h>
 #include <arrow/type.h>
 #include <arrow/util/decimal.h>
@@ -536,9 +537,7 @@ Status ExtractDatumFromArray(const ::arrow::Array& array, int64_t index,
           internal::checked_cast<const ::arrow::FixedSizeBinaryArray&>(array);
       std::string_view value = fixed_array.GetView(index);
       auto& fixed_datum = datum->value<::avro::GenericFixed>();
-      fixed_datum.value().assign(
-          reinterpret_cast<const char*>(value.data()),
-          reinterpret_cast<const char*>(value.data()) + value.size());
+      fixed_datum.value().assign(value.begin(), value.end());
       return {};
     }
 
@@ -573,7 +572,21 @@ Status ExtractDatumFromArray(const ::arrow::Array& array, int64_t index,
       return {};
     }
 
-      // TODO(gangwu): support uuid type.
+    case ::arrow::Type::EXTENSION: {
+      if (array.type()->name() == "arrow.uuid") {
+        const auto& extension_array =
+            internal::checked_cast<const ::arrow::ExtensionArray&>(array);
+        const auto& fixed_array =
+            internal::checked_cast<const ::arrow::FixedSizeBinaryArray&>(
+                *extension_array.storage());
+        std::string_view value = fixed_array.GetView(index);
+        auto& fixed_datum = datum->value<::avro::GenericFixed>();
+        fixed_datum.value().assign(value.begin(), value.end());
+        return {};
+      }
+
+      return NotSupported("Unsupported Arrow extension type: {}", array.type()->name());
+    }
 
     case ::arrow::Type::STRUCT: {
       const auto& struct_array =
