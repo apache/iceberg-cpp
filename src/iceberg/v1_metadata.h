@@ -45,9 +45,9 @@ class V1MetaData {
     ManifestEntry wrap(ManifestEntry entry) { return *this; }
   };
 
-  static ManifestFileWrapper manifestFileWrapper() { return ManifestFileWrapper(); }
+  static ManifestFileWrapper manifestFileWrapper() { return {}; }
 
-  static ManifestEntryWrapper manifestEntryWrapper() { return ManifestEntryWrapper(); }
+  static ManifestEntryWrapper manifestEntryWrapper() { return {}; }
 };
 
 }  // namespace iceberg
