@@ -84,7 +84,7 @@ Transform::Transform(TransformType transform_type, int32_t param)
 
 TransformType Transform::transform_type() const { return transform_type_; }
 
-Result<std::unique_ptr<TransformFunction>> Transform::Bind(
+Result<std::shared_ptr<TransformFunction>> Transform::Bind(
     const std::shared_ptr<Type>& source_type) const {
   auto type_str = TransformTypeToString(transform_type_);
 
