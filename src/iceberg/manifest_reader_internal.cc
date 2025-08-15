@@ -368,15 +368,17 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
         break;
       case 3: {
         if (view_of_file_field->storage_type != ArrowType::NANOARROW_TYPE_STRUCT) {
-          return InvalidManifest("Field:{} should be a list.", field_name);
+          return InvalidManifest("Field:{} should be a struct.", field_name);
         }
-        auto view_of_partition = view_of_file_field->children[0];
-        for (size_t row_idx = 0; row_idx < view_of_partition->length; row_idx++) {
-          if (ArrowArrayViewIsNull(view_of_partition, row_idx)) {
-            break;
+        if (view_of_file_field->n_children > 0) {
+          auto view_of_partition = view_of_file_field->children[0];
+          for (int64_t row_idx = 0; row_idx < view_of_partition->length; row_idx++) {
+            if (ArrowArrayViewIsNull(view_of_partition, row_idx)) {
+              break;
+            }
+            ICEBERG_RETURN_UNEXPECTED(
+                ParseLiteral(view_of_partition, row_idx, manifest_entries));
           }
-          ICEBERG_RETURN_UNEXPECTED(
-              ParseLiteral(view_of_partition, row_idx, manifest_entries));
         }
       } break;
       case 4:
