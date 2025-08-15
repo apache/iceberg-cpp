@@ -28,8 +28,9 @@
 namespace iceberg {
 
 Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeWriter(
-    int32_t format_version, int64_t first_row_id, std::string_view manifest_location,
-    std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> partition_schema) {
+    int32_t format_version, int64_t snapshot_id, int64_t first_row_id,
+    std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
+    std::shared_ptr<Schema> partition_schema) {
   auto manifest_entry_schema = ManifestEntry::TypeFromPartitionType(partition_schema);
   auto fields_span = manifest_entry_schema->fields();
   std::vector<SchemaField> fields(fields_span.begin(), fields_span.end());
@@ -41,14 +42,14 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeWriter(
                                                 .io = std::move(file_io)}));
   switch (format_version) {
     case 1:
-      return std::make_unique<ManifestWriterV1>(first_row_id, std::move(writer),
+      return std::make_unique<ManifestWriterV1>(snapshot_id, std::move(writer),
                                                 std::move(schema));
     case 2:
-      return std::make_unique<ManifestWriterV2>(first_row_id, std::move(writer),
+      return std::make_unique<ManifestWriterV2>(snapshot_id, std::move(writer),
                                                 std::move(schema));
     case 3:
-      return std::make_unique<ManifestWriterV3>(first_row_id, std::move(writer),
-                                                std::move(schema));
+      return std::make_unique<ManifestWriterV3>(snapshot_id, first_row_id,
+                                                std::move(writer), std::move(schema));
 
     default:
       return InvalidArgument("Unsupported manifest format version: {}", format_version);
@@ -70,12 +71,12 @@ Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeWriter(
   switch (format_version) {
     case 1:
       return std::make_unique<ManifestListWriterV1>(snapshot_id, parent_snapshot_id,
-                                                    sequence_number, first_row_id,
+
                                                     std::move(writer), std::move(schema));
     case 2:
       return std::make_unique<ManifestListWriterV2>(snapshot_id, parent_snapshot_id,
-                                                    sequence_number, first_row_id,
-                                                    std::move(writer), std::move(schema));
+                                                    sequence_number, std::move(writer),
+                                                    std::move(schema));
     case 3:
       return std::make_unique<ManifestListWriterV3>(snapshot_id, parent_snapshot_id,
                                                     sequence_number, first_row_id,

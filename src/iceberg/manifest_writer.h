@@ -46,13 +46,15 @@ class ICEBERG_EXPORT ManifestWriter {
 
   /// \brief Creates a writer for a manifest file.
   /// \param format_version Format version of the manifest.
+  /// \param snapshot_id ID of the snapshot.
   /// \param first_row_id First row ID of the snapshot.
   /// \param manifest_location Path to the manifest file.
   /// \param file_io File IO implementation to use.
   /// \return A Result containing the writer or an error.
   static Result<std::unique_ptr<ManifestWriter>> MakeWriter(
-      int32_t format_version, int64_t first_row_id, std::string_view manifest_location,
-      std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> partition_schema);
+      int32_t format_version, int64_t snapshot_id, int64_t first_row_id,
+      std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
+      std::shared_ptr<Schema> partition_schema);
 };
 
 /// \brief Write manifest files to a manifest list file.
