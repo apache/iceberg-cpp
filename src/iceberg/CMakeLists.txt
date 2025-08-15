@@ -24,6 +24,7 @@ set(ICEBERG_SOURCES
     expression/literal.cc
     file_reader.cc
     file_writer.cc
+    inheritable_metadata.cc
     json_internal.cc
     manifest_entry.cc
     manifest_list.cc
