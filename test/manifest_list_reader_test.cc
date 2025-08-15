@@ -43,7 +43,7 @@ class ManifestListReaderTestBase : public TempFileTestBase {
   void TestManifestListReading(const std::string& resource_name,
                                const std::vector<ManifestFile>& expected_manifest_list) {
     std::string path = GetResourcePath(resource_name);
-    auto manifest_reader_result = ManifestListReader::MakeReader(path, file_io_);
+    auto manifest_reader_result = ManifestListReader::Make(path, file_io_);
     ASSERT_EQ(manifest_reader_result.has_value(), true);
 
     auto manifest_reader = std::move(manifest_reader_result.value());
