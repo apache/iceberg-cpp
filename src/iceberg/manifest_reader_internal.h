@@ -22,6 +22,8 @@
 /// \file iceberg/internal/manifest_reader_internal.h
 /// Reader implementation for manifest list files and manifest files.
 
+#include "iceberg/file_reader.h"
+#include "iceberg/inheritable_metadata.h"
 #include "iceberg/manifest_reader.h"
 
 namespace iceberg {
@@ -29,23 +31,28 @@ namespace iceberg {
 /// \brief Read manifest entries from a manifest file.
 class ManifestReaderImpl : public ManifestReader {
  public:
-  explicit ManifestReaderImpl(std::unique_ptr<Reader> reader,
-                              std::shared_ptr<Schema> schema)
-      : schema_(std::move(schema)), reader_(std::move(reader)) {}
+  ManifestReaderImpl(std::unique_ptr<Reader> reader, std::shared_ptr<Schema> schema,
+                     std::unique_ptr<InheritableMetadata> inheritable_metadata)
+      : schema_(std::move(schema)),
+        reader_(std::move(reader)),
+        inheritable_metadata_(std::move(inheritable_metadata)) {}
+
+  ManifestReaderImpl() = default;
 
   Result<std::vector<ManifestEntry>> Entries() const override;
 
  private:
   std::shared_ptr<Schema> schema_;
   std::unique_ptr<Reader> reader_;
+  std::unique_ptr<InheritableMetadata> inheritable_metadata_;
 };
 
 /// \brief Read manifest files from a manifest list file.
 class ManifestListReaderImpl : public ManifestListReader {
  public:
-  explicit ManifestListReaderImpl(std::unique_ptr<Reader> reader,
-                                  std::shared_ptr<Schema> schema)
+  ManifestListReaderImpl(std::unique_ptr<Reader> reader, std::shared_ptr<Schema> schema)
       : schema_(std::move(schema)), reader_(std::move(reader)) {}
+  ManifestListReaderImpl() = default;
 
   Result<std::vector<ManifestFile>> Files() const override;
 

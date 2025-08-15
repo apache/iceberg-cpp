@@ -19,6 +19,7 @@
 
 #include "iceberg/manifest_reader.h"
 
+#include "iceberg/file_reader.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/manifest_reader_internal.h"
@@ -27,7 +28,33 @@
 
 namespace iceberg {
 
-Result<std::unique_ptr<ManifestReader>> ManifestReader::MakeReader(
+Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
+    const ManifestFile& manifest, std::shared_ptr<FileIO> file_io,
+    std::shared_ptr<Schema> partition_schema) {
+  // Validate manifest content type - only DATA manifests are supported by ManifestReader
+  if (manifest.content != ManifestFile::Content::kData) {
+    return InvalidArgument("Cannot read a delete manifest with a ManifestReader: {}",
+                           manifest.manifest_path);
+  }
+
+  auto manifest_entry_schema = ManifestEntry::TypeFromPartitionType(partition_schema);
+  auto fields_span = manifest_entry_schema->fields();
+  std::vector<SchemaField> fields(fields_span.begin(), fields_span.end());
+  auto schema = std::make_shared<Schema>(fields);
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto reader,
+      ReaderFactoryRegistry::Open(FileFormatType::kAvro, {.path = manifest.manifest_path,
+                                                          .io = std::move(file_io),
+                                                          .projection = schema}));
+  // Create inheritable metadata for this manifest
+  ICEBERG_ASSIGN_OR_RAISE(auto inheritable_metadata,
+                          InheritableMetadataFactory::FromManifest(manifest));
+
+  return std::make_unique<ManifestReaderImpl>(std::move(reader), std::move(schema),
+                                              std::move(inheritable_metadata));
+}
+
+Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
     std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
     std::shared_ptr<Schema> partition_schema) {
   auto manifest_entry_schema = ManifestEntry::TypeFromPartitionType(partition_schema);
@@ -39,10 +66,12 @@ Result<std::unique_ptr<ManifestReader>> ManifestReader::MakeReader(
                                                {.path = std::string(manifest_location),
                                                 .io = std::move(file_io),
                                                 .projection = schema}));
-  return std::make_unique<ManifestReaderImpl>(std::move(reader), std::move(schema));
+  ICEBERG_ASSIGN_OR_RAISE(auto inheritable_metadata, InheritableMetadataFactory::Empty());
+  return std::make_unique<ManifestReaderImpl>(std::move(reader), std::move(schema),
+                                              std::move(inheritable_metadata));
 }
 
-Result<std::unique_ptr<ManifestListReader>> ManifestListReader::MakeReader(
+Result<std::unique_ptr<ManifestListReader>> ManifestListReader::Make(
     std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io) {
   std::vector<SchemaField> fields(ManifestFile::Type().fields().begin(),
                                   ManifestFile::Type().fields().end());
