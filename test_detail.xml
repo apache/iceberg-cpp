@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites tests="2" failures="0" disabled="0" errors="0" time="0.028" timestamp="2025-08-11T16:23:42.868" name="AllTests">
+  <testsuite name="ManifestListReaderTest" tests="2" failures="0" disabled="0" skipped="0" errors="0" time="0.028" timestamp="2025-08-11T16:23:42.868">
+    <testcase name="BasicTest" file="/Users/yunqi/Dev/iceberg-cpp/test/manifest_list_reader_test.cc" line="135" status="run" result="completed" time="0.014" timestamp="2025-08-11T16:23:42.868" classname="ManifestListReaderTest" />
+    <testcase name="V2NonPartitionedTest" file="/Users/yunqi/Dev/iceberg-cpp/test/manifest_list_reader_test.cc" line="149" status="run" result="completed" time="0.014" timestamp="2025-08-11T16:23:42.882" classname="ManifestListReaderTest" />
+  </testsuite>
+</testsuites>

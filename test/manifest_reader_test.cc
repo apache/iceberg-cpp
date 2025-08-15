@@ -105,8 +105,7 @@ TEST_F(ManifestReaderV1Test, V1PartitionedBasicTest) {
   auto partition_schema =
       std::make_shared<Schema>(std::vector<SchemaField>({partition_field}));
   std::string path = GetResourcePath("56357cd7-391f-4df8-aa24-e7e667da8870-m4.avro");
-  auto manifest_reader_result =
-      ManifestReader::MakeReader(path, file_io_, partition_schema);
+  auto manifest_reader_result = ManifestReader::Make(path, file_io_, partition_schema);
   ASSERT_EQ(manifest_reader_result.has_value(), true)
       << manifest_reader_result.error().message;
   auto manifest_reader = std::move(manifest_reader_result.value());
