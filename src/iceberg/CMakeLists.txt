@@ -20,7 +20,10 @@ set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
 set(ICEBERG_SOURCES
     catalog/in_memory_catalog.cc
     expression/expression.cc
+    expression/expressions.cc
     expression/literal.cc
+    expression/predicate.cc
+    expression/term.cc
     file_reader.cc
     file_writer.cc
     inheritable_metadata.cc

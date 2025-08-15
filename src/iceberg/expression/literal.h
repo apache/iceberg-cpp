@@ -27,11 +27,12 @@
 
 #include "iceberg/result.h"
 #include "iceberg/type.h"
+#include "iceberg/util/formattable.h"
 
 namespace iceberg {
 
 /// \brief Literal is a literal value that is associated with a primitive type.
-class ICEBERG_EXPORT Literal {
+class ICEBERG_EXPORT Literal : public util::Formattable {
  public:
   /// \brief Sentinel value to indicate that the literal value is below the valid range
   /// of a specific primitive type. It can happen when casting a literal to a narrower
@@ -138,7 +139,7 @@ class ICEBERG_EXPORT Literal {
   /// \return true if this literal is null, false otherwise
   bool IsNull() const;
 
-  std::string ToString() const;
+  std::string ToString() const override;
 
  private:
   Literal(Value value, std::shared_ptr<PrimitiveType> type);

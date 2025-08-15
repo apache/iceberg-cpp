@@ -147,7 +147,7 @@ class ICEBERG_EXPORT Transform : public util::Formattable {
   /// parameter.
   /// \param source_type The source column type to bind to.
   /// \return A TransformFunction instance wrapped in `expected`, or an error on failure.
-  Result<std::unique_ptr<TransformFunction>> Bind(
+  Result<std::shared_ptr<TransformFunction>> Bind(
       const std::shared_ptr<Type>& source_type) const;
 
   /// \brief Returns a string representation of this transform (e.g., "bucket[16]").
