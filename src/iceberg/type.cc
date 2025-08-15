@@ -19,9 +19,17 @@
 
 #include "iceberg/type.h"
 
+#include <algorithm>
+#include <cctype>
 #include <format>
+#include <functional>
 #include <iterator>
 #include <memory>
+#include <optional>
+#include <ranges>
+#include <string_view>
+
+#include <iceberg/schema_field.h>
 
 #include "iceberg/exception.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
@@ -70,12 +78,19 @@ std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByN
     std::string_view name) const {
   // N.B. duplicate names are not permitted (looking at the Java
   // implementation) so there is nothing in particular we need to do here
-  for (const auto& field : fields_) {
-    if (field.name() == name) {
-      return field;
-    }
-  }
-  return std::nullopt;
+  InitNameToIdMap();
+  auto it = field_name_to_index_.find(std::string(name));
+  if (it == field_name_to_index_.end()) return std::nullopt;
+  return fields_[it->second];
+}
+std::optional<std::reference_wrapper<const SchemaField>>
+StructType::GetFieldByNameCaseInsensitive(std::string_view name) const {
+  InitNameToIdMapCaseInsensitive();
+  std::string lower_name(name);
+  std::ranges::transform(lower_name, lower_name.begin(), ::tolower);
+  auto it = caseinsensitive_field_name_to_index_.find(lower_name);
+  if (it == caseinsensitive_field_name_to_index_.end()) return std::nullopt;
+  return fields_[it->second];
 }
 bool StructType::Equals(const Type& other) const {
   if (other.type_id() != TypeId::kStruct) {
@@ -83,6 +98,26 @@ bool StructType::Equals(const Type& other) const {
   }
   const auto& struct_ = static_cast<const StructType&>(other);
   return fields_ == struct_.fields_;
+}
+void StructType::InitNameToIdMap() const {
+  if (!field_name_to_index_.empty()) {
+    return;
+  }
+
+  for (int i = 0; i < fields_.size(); i++) {
+    field_name_to_index_[std::string(fields_[i].name())] = i;
+  }
+}
+void StructType::InitNameToIdMapCaseInsensitive() const {
+  if (!caseinsensitive_field_name_to_index_.empty()) {
+    return;
+  }
+
+  for (int i = 0; i < fields_.size(); i++) {
+    std::string lowercase_name(fields_[i].name());
+    std::ranges::transform(lowercase_name, lowercase_name.begin(), ::tolower);
+    caseinsensitive_field_name_to_index_[lowercase_name] = i;
+  }
 }
 
 ListType::ListType(SchemaField element) : element_(std::move(element)) {
@@ -122,6 +157,15 @@ std::optional<std::reference_wrapper<const SchemaField>> ListType::GetFieldByInd
 std::optional<std::reference_wrapper<const SchemaField>> ListType::GetFieldByName(
     std::string_view name) const {
   if (name == element_.name()) {
+    return std::cref(element_);
+  }
+  return std::nullopt;
+}
+std::optional<std::reference_wrapper<const SchemaField>>
+ListType::GetFieldByNameCaseInsensitive(std::string_view name) const {
+  auto lower_name_view = name | std::views::transform(::tolower);
+  auto lower_field_name = element_.name() | std::views::transform(::tolower);
+  if (std::ranges::equal(lower_field_name, lower_name_view)) {
     return std::cref(element_);
   }
   return std::nullopt;
@@ -182,6 +226,18 @@ std::optional<std::reference_wrapper<const SchemaField>> MapType::GetFieldByName
   if (name == kKeyName) {
     return key();
   } else if (name == kValueName) {
+    return value();
+  }
+  return std::nullopt;
+}
+std::optional<std::reference_wrapper<const SchemaField>>
+MapType::GetFieldByNameCaseInsensitive(std::string_view name) const {
+  auto lower_name_view = name | std::views::transform(::tolower);
+  auto lower_key_view = kKeyName | std::views::transform(::tolower);
+  auto lower_value_view = kValueName | std::views::transform(::tolower);
+  if (std::ranges::equal(lower_key_view, lower_name_view)) {
+    return key();
+  } else if (std::ranges::equal(lower_value_view, lower_name_view)) {
     return value();
   }
   return std::nullopt;

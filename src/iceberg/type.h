@@ -24,7 +24,9 @@
 /// iceberg/type_fwd.h for the enum defining the list of types.
 
 #include <array>
+#include <cctype>
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <optional>
 #include <span>
@@ -81,6 +83,7 @@ class ICEBERG_EXPORT NestedType : public Type {
   [[nodiscard]] virtual std::optional<std::reference_wrapper<const SchemaField>>
   GetFieldById(int32_t field_id) const = 0;
   /// \brief Get a field by index.
+
   ///
   /// \note This is O(1) complexity.
   [[nodiscard]] virtual std::optional<std::reference_wrapper<const SchemaField>>
@@ -88,10 +91,14 @@ class ICEBERG_EXPORT NestedType : public Type {
   /// \brief Get a field by name (case-sensitive).  Behavior is undefined if
   ///   the field name is not unique; prefer GetFieldById or GetFieldByIndex
   ///   when possible.
+
   ///
-  /// \note This is currently O(n) complexity.
+  /// \note This is currently O(1) complexity.
   [[nodiscard]] virtual std::optional<std::reference_wrapper<const SchemaField>>
   GetFieldByName(std::string_view name) const = 0;
+
+  [[nodiscard]] virtual std::optional<std::reference_wrapper<const SchemaField>>
+  GetFieldByNameCaseInsensitive(std::string_view name) const = 0;
 };
 
 /// \defgroup type-nested Nested Types
@@ -115,12 +122,18 @@ class ICEBERG_EXPORT StructType : public NestedType {
       int32_t index) const override;
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
       std::string_view name) const override;
+  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByNameCaseInsensitive(
+      std::string_view name) const override;
+  void InitNameToIdMap() const;
+  void InitNameToIdMapCaseInsensitive() const;
 
  protected:
   bool Equals(const Type& other) const override;
 
   std::vector<SchemaField> fields_;
   std::unordered_map<int32_t, size_t> field_id_to_index_;
+  mutable std::unordered_map<std::string, size_t> field_name_to_index_;
+  mutable std::unordered_map<std::string, size_t> caseinsensitive_field_name_to_index_;
 };
 
 /// \brief A data type representing a list of values.
@@ -145,6 +158,8 @@ class ICEBERG_EXPORT ListType : public NestedType {
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldByIndex(
       int32_t index) const override;
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
+      std::string_view name) const override;
+  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByNameCaseInsensitive(
       std::string_view name) const override;
 
  protected:
@@ -177,6 +192,8 @@ class ICEBERG_EXPORT MapType : public NestedType {
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldByIndex(
       int32_t index) const override;
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
+      std::string_view name) const override;
+  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByNameCaseInsensitive(
       std::string_view name) const override;
 
  protected:

@@ -21,11 +21,13 @@
 
 #include <format>
 #include <memory>
+#include <optional>
 #include <string>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "gmock/gmock.h"
 #include "iceberg/exception.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
@@ -318,11 +320,14 @@ TEST(TypeTest, List) {
     ASSERT_THAT(list.GetFieldById(5), ::testing::Optional(field));
     ASSERT_THAT(list.GetFieldByIndex(0), ::testing::Optional(field));
     ASSERT_THAT(list.GetFieldByName("element"), ::testing::Optional(field));
+    ASSERT_THAT(list.GetFieldByNameCaseInsensitive("ELEMENT"),
+                ::testing::Optional(field));
 
     ASSERT_EQ(std::nullopt, list.GetFieldById(0));
     ASSERT_EQ(std::nullopt, list.GetFieldByIndex(1));
     ASSERT_EQ(std::nullopt, list.GetFieldByIndex(-1));
     ASSERT_EQ(std::nullopt, list.GetFieldByName("foo"));
+    ASSERT_EQ(std::nullopt, list.GetFieldByNameCaseInsensitive("FOO"));
   }
   ASSERT_THAT(
       []() {
@@ -348,11 +353,15 @@ TEST(TypeTest, Map) {
     ASSERT_THAT(map.GetFieldByIndex(1), ::testing::Optional(value));
     ASSERT_THAT(map.GetFieldByName("key"), ::testing::Optional(key));
     ASSERT_THAT(map.GetFieldByName("value"), ::testing::Optional(value));
+    ASSERT_THAT(map.GetFieldByNameCaseInsensitive("KEY"), ::testing::Optional(key));
+    ASSERT_THAT(map.GetFieldByNameCaseInsensitive("VALUE"), ::testing::Optional(value));
 
     ASSERT_EQ(std::nullopt, map.GetFieldById(0));
     ASSERT_EQ(std::nullopt, map.GetFieldByIndex(2));
     ASSERT_EQ(std::nullopt, map.GetFieldByIndex(-1));
     ASSERT_EQ(std::nullopt, map.GetFieldByName("element"));
+    ASSERT_EQ(std::nullopt, map.GetFieldByName(""));
+    ASSERT_EQ(std::nullopt, map.GetFieldByNameCaseInsensitive(""));
   }
   ASSERT_THAT(
       []() {
@@ -387,11 +396,16 @@ TEST(TypeTest, Struct) {
     ASSERT_THAT(struct_.GetFieldByIndex(1), ::testing::Optional(field2));
     ASSERT_THAT(struct_.GetFieldByName("foo"), ::testing::Optional(field1));
     ASSERT_THAT(struct_.GetFieldByName("bar"), ::testing::Optional(field2));
+    ASSERT_THAT(struct_.GetFieldByNameCaseInsensitive("FOO"),
+                ::testing::Optional(field1));
+    ASSERT_THAT(struct_.GetFieldByNameCaseInsensitive("Bar"),
+                ::testing::Optional(field2));
 
     ASSERT_EQ(std::nullopt, struct_.GetFieldById(0));
     ASSERT_EQ(std::nullopt, struct_.GetFieldByIndex(2));
     ASSERT_EQ(std::nullopt, struct_.GetFieldByIndex(-1));
     ASSERT_EQ(std::nullopt, struct_.GetFieldByName("element"));
+    ASSERT_EQ(std::nullopt, struct_.GetFieldByNameCaseInsensitive("element"));
   }
   ASSERT_THAT(
       []() {
