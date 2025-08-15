@@ -36,6 +36,7 @@
 #include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/avro/avro_stream_internal.h"
+#include "iceberg/name_mapping.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
@@ -92,16 +93,26 @@ class AvroReader::Impl {
     // Create a base reader without setting reader schema to enable projection.
     auto base_reader =
         std::make_unique<::avro::DataFileReaderBase>(std::move(input_stream));
-    const ::avro::ValidSchema& file_schema = base_reader->dataSchema();
+    ::avro::ValidSchema file_schema = base_reader->dataSchema();
 
     // Validate field ids in the file schema.
     HasIdVisitor has_id_visitor;
     ICEBERG_RETURN_UNEXPECTED(has_id_visitor.Visit(file_schema));
+
     if (has_id_visitor.HasNoIds()) {
-      // TODO(gangwu): support applying field-ids based on name mapping
-      return NotImplemented("Avro file schema has no field IDs");
-    }
-    if (!has_id_visitor.AllHaveIds()) {
+      // Apply field IDs based on name mapping if available
+      if (options.name_mapping) {
+        ICEBERG_ASSIGN_OR_RAISE(
+            auto new_root_node,
+            MakeAvroNodeWithFieldIds(file_schema.root(), *options.name_mapping));
+
+        // Update the file schema to use the new schema with field IDs
+        file_schema = ::avro::ValidSchema(new_root_node);
+      } else {
+        return InvalidSchema(
+            "Avro file schema has no field IDs and no name mapping provided");
+      }
+    } else if (!has_id_visitor.AllHaveIds()) {
       return InvalidSchema("Not all fields in the Avro file schema have field IDs");
     }
 

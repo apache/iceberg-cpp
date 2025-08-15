@@ -26,6 +26,7 @@
 
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/metadata_columns.h"
+#include "iceberg/name_mapping.h"
 #include "iceberg/schema.h"
 #include "matchers.h"
 
@@ -1055,6 +1056,385 @@ TEST(AvroSchemaProjectionTest, ProjectDecimalIncompatible) {
       Project(expected_schema, avro_schema.root(), /*prune_source=*/false);
   ASSERT_THAT(projection_result, IsError(ErrorKind::kInvalidSchema));
   ASSERT_THAT(projection_result, HasErrorMessage("Cannot read"));
+}
+
+// NameMapping tests for Avro schema context
+class NameMappingAvroSchemaTest : public ::testing::Test {
+ protected:
+  // Helper function to create a simple name mapping
+  std::unique_ptr<NameMapping> CreateSimpleNameMapping() {
+    std::vector<MappedField> fields;
+    fields.emplace_back(MappedField{.names = {"id"}, .field_id = 1});
+    fields.emplace_back(MappedField{.names = {"name"}, .field_id = 2});
+    fields.emplace_back(MappedField{.names = {"age"}, .field_id = 3});
+    return NameMapping::Make(std::move(fields));
+  }
+
+  // Helper function to create a nested name mapping
+  std::unique_ptr<NameMapping> CreateNestedNameMapping() {
+    std::vector<MappedField> fields;
+    fields.emplace_back(MappedField{.names = {"id"}, .field_id = 1});
+
+    // Nested mapping for address
+    std::vector<MappedField> address_fields;
+    address_fields.emplace_back(MappedField{.names = {"street"}, .field_id = 10});
+    address_fields.emplace_back(MappedField{.names = {"city"}, .field_id = 11});
+    address_fields.emplace_back(MappedField{.names = {"zip"}, .field_id = 12});
+    auto address_mapping = MappedFields::Make(std::move(address_fields));
+
+    fields.emplace_back(MappedField{.names = {"address"},
+                                    .field_id = 2,
+                                    .nested_mapping = std::move(address_mapping)});
+
+    return NameMapping::Make(std::move(fields));
+  }
+
+  // Helper function to create a name mapping for array types
+  std::unique_ptr<NameMapping> CreateArrayNameMapping() {
+    std::vector<MappedField> fields;
+    fields.emplace_back(MappedField{.names = {"id"}, .field_id = 1});
+
+    // Nested mapping for array element
+    std::vector<MappedField> element_fields;
+    element_fields.emplace_back(MappedField{.names = {"element"}, .field_id = 20});
+    auto element_mapping = MappedFields::Make(std::move(element_fields));
+
+    fields.emplace_back(MappedField{
+        .names = {"items"}, .field_id = 2, .nested_mapping = std::move(element_mapping)});
+
+    return NameMapping::Make(std::move(fields));
+  }
+
+  // Helper function to create a name mapping for map types
+  std::unique_ptr<NameMapping> CreateMapNameMapping() {
+    std::vector<MappedField> fields;
+    fields.emplace_back(MappedField{.names = {"id"}, .field_id = 1});
+
+    // Nested mapping for map key-value
+    std::vector<MappedField> map_fields;
+    map_fields.emplace_back(MappedField{.names = {"key"}, .field_id = 30});
+    map_fields.emplace_back(MappedField{.names = {"value"}, .field_id = 31});
+    auto map_mapping = MappedFields::Make(std::move(map_fields));
+
+    fields.emplace_back(MappedField{.names = {"properties"},
+                                    .field_id = 2,
+                                    .nested_mapping = std::move(map_mapping)});
+
+    return NameMapping::Make(std::move(fields));
+  }
+
+  // Helper function to create a name mapping for union types
+  std::unique_ptr<NameMapping> CreateUnionNameMapping() {
+    std::vector<MappedField> fields;
+    fields.emplace_back(MappedField{.names = {"id"}, .field_id = 1});
+    fields.emplace_back(MappedField{.names = {"data"}, .field_id = 2});
+    return NameMapping::Make(std::move(fields));
+  }
+
+  // Helper function to create a name mapping for complex map types
+  // (array<struct<key,value>>)
+  std::unique_ptr<NameMapping> CreateComplexMapNameMapping() {
+    std::vector<MappedField> fields;
+    fields.emplace_back(MappedField{.names = {"id"}, .field_id = 1});
+
+    // Nested mapping for array element (struct<key,value>)
+    std::vector<MappedField> element_fields;
+    element_fields.emplace_back(MappedField{.names = {"key"}, .field_id = 40});
+    element_fields.emplace_back(MappedField{.names = {"value"}, .field_id = 41});
+    auto element_mapping = MappedFields::Make(std::move(element_fields));
+
+    // Nested mapping for array
+    std::vector<MappedField> array_fields;
+    array_fields.emplace_back(MappedField{.names = {"element"},
+                                          .field_id = 50,
+                                          .nested_mapping = std::move(element_mapping)});
+    auto array_mapping = MappedFields::Make(std::move(array_fields));
+
+    fields.emplace_back(MappedField{
+        .names = {"entries"}, .field_id = 2, .nested_mapping = std::move(array_mapping)});
+
+    return NameMapping::Make(std::move(fields));
+  }
+};
+
+TEST_F(NameMappingAvroSchemaTest, ApplyNameMappingToRecord) {
+  // Create a simple Avro record schema without field IDs
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "test_record",
+    "fields": [
+      {"name": "id", "type": "int"},
+      {"name": "name", "type": "string"},
+      {"name": "age", "type": "int"}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto name_mapping = CreateSimpleNameMapping();
+
+  auto result = MakeAvroNodeWithFieldIds(avro_schema.root(), *name_mapping);
+  ASSERT_THAT(result, IsOk());
+
+  const auto& node = *result;
+  EXPECT_EQ(node->type(), ::avro::AVRO_RECORD);
+  EXPECT_EQ(node->names(), 3);
+  EXPECT_EQ(node->leaves(), 3);
+
+  // Check that field IDs are properly applied
+  ASSERT_EQ(node->customAttributes(), 3);
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(node, /*index=*/0, /*field_id=*/1));
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(node, /*index=*/1, /*field_id=*/2));
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(node, /*index=*/2, /*field_id=*/3));
+}
+
+TEST_F(NameMappingAvroSchemaTest, ApplyNameMappingToNestedRecord) {
+  // Create a nested Avro record schema without field IDs
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "test_record",
+    "fields": [
+      {"name": "id", "type": "int"},
+      {"name": "address", "type": {
+        "type": "record",
+        "name": "address",
+        "fields": [
+          {"name": "street", "type": "string"},
+          {"name": "city", "type": "string"},
+          {"name": "zip", "type": "string"}
+        ]
+      }}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto name_mapping = CreateNestedNameMapping();
+
+  auto result = MakeAvroNodeWithFieldIds(avro_schema.root(), *name_mapping);
+  ASSERT_THAT(result, IsOk());
+
+  const auto& node = *result;
+  EXPECT_EQ(node->type(), ::avro::AVRO_RECORD);
+  EXPECT_EQ(node->names(), 2);
+  EXPECT_EQ(node->leaves(), 2);
+
+  // Check that field IDs are properly applied to top-level fields
+  ASSERT_EQ(node->customAttributes(), 2);
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(node, /*index=*/0, /*field_id=*/1));
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(node, /*index=*/1, /*field_id=*/2));
+
+  // Check nested record
+  const auto& address_node = node->leafAt(1);
+  EXPECT_EQ(address_node->type(), ::avro::AVRO_RECORD);
+  EXPECT_EQ(address_node->names(), 3);
+  EXPECT_EQ(address_node->leaves(), 3);
+
+  // Check that field IDs are properly applied to nested fields
+  ASSERT_EQ(address_node->customAttributes(), 3);
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(address_node, /*index=*/0, /*field_id=*/10));
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(address_node, /*index=*/1, /*field_id=*/11));
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(address_node, /*index=*/2, /*field_id=*/12));
+}
+
+TEST_F(NameMappingAvroSchemaTest, ApplyNameMappingToArray) {
+  // Create an Avro array schema without field IDs
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "test_record",
+    "fields": [
+      {"name": "id", "type": "int"},
+      {"name": "items", "type": {
+        "type": "array",
+        "items": "string"
+      }}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto name_mapping = CreateArrayNameMapping();
+
+  auto result = MakeAvroNodeWithFieldIds(avro_schema.root(), *name_mapping);
+  ASSERT_THAT(result, IsOk());
+
+  const auto& new_node = *result;
+  EXPECT_EQ(new_node->type(), ::avro::AVRO_RECORD);
+  EXPECT_EQ(new_node->names(), 2);
+  EXPECT_EQ(new_node->leaves(), 2);
+
+  // Check that field IDs are properly applied to top-level fields
+  ASSERT_EQ(new_node->customAttributes(), 2);
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(new_node, /*index=*/0, /*field_id=*/1));
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(new_node, /*index=*/1, /*field_id=*/2));
+
+  // Check array field structure and element field ID
+  const auto& array_node = new_node->leafAt(1);
+  EXPECT_EQ(array_node->type(), ::avro::AVRO_ARRAY);
+  EXPECT_EQ(array_node->leaves(), 1);
+
+  // Check that array element has field ID applied
+  const auto& element_node = array_node->leafAt(0);
+  EXPECT_EQ(element_node->type(), ::avro::AVRO_STRING);
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(array_node, /*index=*/0, /*field_id=*/20,
+                                         /*key=*/"element-id"));
+}
+
+TEST_F(NameMappingAvroSchemaTest, ApplyNameMappingToMap) {
+  // Create an Avro map schema without field IDs
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "test_record",
+    "fields": [
+      {"name": "id", "type": "int"},
+      {"name": "properties", "type": {
+        "type": "map",
+        "values": "string"
+      }}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto name_mapping = CreateMapNameMapping();
+
+  auto result = MakeAvroNodeWithFieldIds(avro_schema.root(), *name_mapping);
+  ASSERT_THAT(result, IsOk());
+
+  const auto& new_node = *result;
+  EXPECT_EQ(new_node->type(), ::avro::AVRO_RECORD);
+  EXPECT_EQ(new_node->names(), 2);
+  EXPECT_EQ(new_node->leaves(), 2);
+
+  // Check that field IDs are properly applied to top-level fields
+  ASSERT_EQ(new_node->customAttributes(), 2);
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(new_node, /*index=*/0, /*field_id=*/1));
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(new_node, /*index=*/1, /*field_id=*/2));
+
+  // Check map field structure and key-value field IDs
+  const auto& map_node = new_node->leafAt(1);
+  EXPECT_EQ(map_node->type(), ::avro::AVRO_MAP);
+  ASSERT_GE(map_node->leaves(), 2);
+  EXPECT_EQ(map_node->leafAt(0)->type(), ::avro::AVRO_STRING);
+  EXPECT_EQ(map_node->leafAt(1)->type(), ::avro::AVRO_STRING);
+  ASSERT_EQ(map_node->customAttributes(), 2);
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(map_node, /*index=*/0, /*field_id=*/30,
+                                         /*key=*/"key-id"));
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(map_node, /*index=*/1, /*field_id=*/31,
+                                         /*key=*/"value-id"));
+}
+
+TEST_F(NameMappingAvroSchemaTest, ApplyNameMappingToComplexMap) {
+  // Create an Avro schema for complex map (array<struct<key,value>>) without field IDs
+  // This represents a map where key is not a string type
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "test_record",
+    "fields": [
+      {"name": "id", "type": "int"},
+      {"name": "entries", "type": {
+        "type": "array",
+        "items": {
+          "type": "record",
+          "name": "entry",
+          "fields": [
+            {"name": "key", "type": "int"},
+            {"name": "value", "type": "string"}
+          ]
+        }
+      }}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto name_mapping = CreateComplexMapNameMapping();
+
+  auto result = MakeAvroNodeWithFieldIds(avro_schema.root(), *name_mapping);
+  ASSERT_THAT(result, IsOk());
+
+  const auto& new_node = *result;
+  EXPECT_EQ(new_node->type(), ::avro::AVRO_RECORD);
+  EXPECT_EQ(new_node->names(), 2);
+  EXPECT_EQ(new_node->leaves(), 2);
+
+  // Check that field IDs are properly applied to top-level fields
+  ASSERT_EQ(new_node->customAttributes(), 2);
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(new_node, /*index=*/0, /*field_id=*/1));
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(new_node, /*index=*/1, /*field_id=*/2));
+
+  // Check array field structure (representing the map)
+  const auto& array_node = new_node->leafAt(1);
+  EXPECT_EQ(array_node->type(), ::avro::AVRO_ARRAY);
+  EXPECT_EQ(array_node->leaves(), 1);
+
+  // Check array element (struct<key,value>)
+  const auto& element_node = array_node->leafAt(0);
+  EXPECT_EQ(element_node->type(), ::avro::AVRO_RECORD);
+  EXPECT_EQ(element_node->names(), 2);
+  EXPECT_EQ(element_node->leaves(), 2);
+
+  // Check that field IDs are properly applied to struct fields
+  ASSERT_EQ(element_node->customAttributes(), 2);
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(element_node, /*index=*/0, /*field_id=*/40));
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(element_node, /*index=*/1, /*field_id=*/41));
+
+  // Check key and value types
+  EXPECT_EQ(element_node->leafAt(0)->type(), ::avro::AVRO_INT);
+  EXPECT_EQ(element_node->leafAt(1)->type(), ::avro::AVRO_STRING);
+}
+
+TEST_F(NameMappingAvroSchemaTest, ApplyNameMappingToUnion) {
+  // Create an Avro union schema without field IDs
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "test_record",
+    "fields": [
+      {"name": "id", "type": "int"},
+      {"name": "data", "type": ["null", "string"]}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto name_mapping = CreateUnionNameMapping();
+
+  auto result = MakeAvroNodeWithFieldIds(avro_schema.root(), *name_mapping);
+  ASSERT_THAT(result, IsOk());
+
+  const auto& new_node = *result;
+  EXPECT_EQ(new_node->type(), ::avro::AVRO_RECORD);
+  EXPECT_EQ(new_node->names(), 2);
+  EXPECT_EQ(new_node->leaves(), 2);
+
+  // Check that field IDs are properly applied to top-level fields
+  ASSERT_EQ(new_node->customAttributes(), 2);
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(new_node, /*index=*/0, /*field_id=*/1));
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(new_node, /*index=*/1, /*field_id=*/2));
+
+  // Check union field
+  const auto& union_node = new_node->leafAt(1);
+  EXPECT_EQ(union_node->type(), ::avro::AVRO_UNION);
+  EXPECT_EQ(union_node->leaves(), 2);
+
+  const auto& non_null_branch = union_node->leafAt(1);
+  EXPECT_EQ(non_null_branch->type(), ::avro::AVRO_STRING);
+}
+
+TEST_F(NameMappingAvroSchemaTest, MissingFieldIdError) {
+  // Create a name mapping with missing field ID
+  std::vector<MappedField> fields;
+  fields.emplace_back(MappedField{.names = {"id"}, .field_id = 1});
+  fields.emplace_back(MappedField{.names = {"name"}});  // Missing field_id
+  auto name_mapping = NameMapping::Make(std::move(fields));
+
+  // Create a simple Avro record schema
+  std::string avro_schema_json = R"({
+    "type": "record",
+    "name": "test_record",
+    "fields": [
+      {"name": "id", "type": "int"},
+      {"name": "name", "type": "string"}
+    ]
+  })";
+  auto avro_schema = ::avro::compileJsonSchemaFromString(avro_schema_json);
+
+  auto result = MakeAvroNodeWithFieldIds(avro_schema.root(), *name_mapping);
+  ASSERT_THAT(result, IsError(ErrorKind::kInvalidSchema));
 }
 
 }  // namespace iceberg::avro
