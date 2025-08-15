@@ -31,8 +31,9 @@ namespace iceberg {
 /// \brief Read manifest entries from a manifest file.
 class ManifestReaderImpl : public ManifestReader {
  public:
-  ManifestReaderImpl(std::unique_ptr<Reader> reader, std::shared_ptr<Schema> schema,
-                     std::unique_ptr<InheritableMetadata> inheritable_metadata)
+  explicit ManifestReaderImpl(std::unique_ptr<Reader> reader,
+                              std::shared_ptr<Schema> schema,
+                              std::unique_ptr<InheritableMetadata> inheritable_metadata)
       : schema_(std::move(schema)),
         reader_(std::move(reader)),
         inheritable_metadata_(std::move(inheritable_metadata)) {}
@@ -50,7 +51,8 @@ class ManifestReaderImpl : public ManifestReader {
 /// \brief Read manifest files from a manifest list file.
 class ManifestListReaderImpl : public ManifestListReader {
  public:
-  ManifestListReaderImpl(std::unique_ptr<Reader> reader, std::shared_ptr<Schema> schema)
+  explicit ManifestListReaderImpl(std::unique_ptr<Reader> reader,
+                                  std::shared_ptr<Schema> schema)
       : schema_(std::move(schema)), reader_(std::move(reader)) {}
   ManifestListReaderImpl() = default;
 
