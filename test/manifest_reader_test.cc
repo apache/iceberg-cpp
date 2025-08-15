@@ -46,7 +46,7 @@ class ManifestReaderV1Test : public TempFileTestBase {
     avro::RegisterLogicalTypes();
   }
 
-  std::vector<ManifestEntry> prepareV1ManifestEntries() {
+  std::vector<ManifestEntry> PrepareV1ManifestEntries() {
     std::vector<ManifestEntry> manifest_entries;
     std::string test_dir_prefix = "/tmp/db/db/iceberg_test/data/";
     std::vector<std::string> paths = {
@@ -116,7 +116,7 @@ TEST_F(ManifestReaderV1Test, V1PartitionedBasicTest) {
   auto read_result = manifest_reader->Entries();
   ASSERT_EQ(read_result.has_value(), true) << read_result.error().message;
 
-  auto expected_entries = prepareV1ManifestEntries();
+  auto expected_entries = PrepareV1ManifestEntries();
   ASSERT_EQ(read_result.value(), expected_entries);
 }
 
