@@ -117,11 +117,8 @@ class ParquetReader::Impl {
     split_ = options.split;
     read_schema_ = options.projection;
 
-    // TODO(gangwu): make memory pool configurable
-    ::arrow::MemoryPool* pool = ::arrow::default_memory_pool();
-
     // Prepare reader properties
-    ::parquet::ReaderProperties reader_properties(pool);
+    ::parquet::ReaderProperties reader_properties(pool_);
     ::parquet::ArrowReaderProperties arrow_reader_properties;
     arrow_reader_properties.set_batch_size(options.batch_size);
     arrow_reader_properties.set_arrow_extensions_enabled(true);
@@ -131,7 +128,7 @@ class ParquetReader::Impl {
     auto file_reader =
         ::parquet::ParquetFileReader::Open(std::move(input_stream), reader_properties);
     ICEBERG_ARROW_RETURN_NOT_OK(::parquet::arrow::FileReader::Make(
-        pool, std::move(file_reader), arrow_reader_properties, &reader_));
+        pool_, std::move(file_reader), arrow_reader_properties, &reader_));
 
     // Project read schema onto the Parquet file schema
     ICEBERG_ASSIGN_OR_RAISE(projection_, BuildProjection(reader_.get(), *read_schema_));
@@ -152,7 +149,7 @@ class ParquetReader::Impl {
 
     ICEBERG_ASSIGN_OR_RAISE(
         batch, ProjectRecordBatch(std::move(batch), context_->output_arrow_schema_,
-                                  *read_schema_, projection_));
+                                  *read_schema_, projection_, pool_));
 
     ArrowArray arrow_array;
     ICEBERG_ARROW_RETURN_NOT_OK(::arrow::ExportRecordBatch(*batch, &arrow_array));
@@ -227,6 +224,8 @@ class ParquetReader::Impl {
   }
 
  private:
+  // TODO(gangwu): make memory pool configurable
+  ::arrow::MemoryPool* pool_ = ::arrow::default_memory_pool();
   // The split to read from the Parquet file.
   std::optional<Split> split_;
   // Schema to read from the Parquet file.
