@@ -33,14 +33,14 @@ class V1MetaData {
  public:
   /// \brief v1 manifest file wrapper.
   struct ManifestFileWrapper : public ManifestFile {
-    explicit ManifestFileWrapper() {}
+    ManifestFileWrapper() = default;
 
     ManifestFile wrap(ManifestFile file, int64_t first_row_id) { return *this; }
   };
 
   /// \brief v1 manifest entry wrapper.
   struct ManifestEntryWrapper : public ManifestEntry {
-    explicit ManifestEntryWrapper() {}
+    ManifestEntryWrapper() = default;
 
     ManifestEntry wrap(ManifestEntry entry) { return *this; }
   };
