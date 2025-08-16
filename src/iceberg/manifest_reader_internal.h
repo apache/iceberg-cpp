@@ -60,4 +60,26 @@ class ManifestListReaderImpl : public ManifestListReader {
   std::unique_ptr<Reader> reader_;
 };
 
+enum class ManifestFileField : int32_t {
+  kManifestPath = 0,
+  kManifestLength,
+  kPartitionSpecId = 2,
+  kContent = 3,
+  kSequenceNumber = 4,
+  kMinSequenceNumber = 5,
+  kAddedSnapshotId = 6,
+  kAddedFilesCount = 7,
+  kExistingFilesCount = 8,
+  kDeletedFilesCount = 9,
+  kAddedRowsCount = 10,
+  kExistingRowsCount = 11,
+  kDeletedRowsCount = 12,
+  kPartitionFieldSummary = 13,
+  kKeyMetadata = 14,
+  kFirstRowId = 15,
+  kNextId = 16,
+};
+
+Result<ManifestFileField> ManifestFileFieldFromIndex(int32_t index);
+
 }  // namespace iceberg

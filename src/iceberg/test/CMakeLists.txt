@@ -110,10 +110,11 @@ if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(arrow_test
                    USE_BUNDLE
                    SOURCES
-                   arrow_test.cc
                    arrow_fs_file_io_test.cc
+                   arrow_test.cc
+                   gzip_decompress_test.cc
                    metadata_io_test.cc
-                   gzip_decompress_test.cc)
+                   struct_like_test.cc)
 
   add_iceberg_test(catalog_test
                    USE_BUNDLE
