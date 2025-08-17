@@ -75,7 +75,11 @@ add_iceberg_test(table_test
                  table_test.cc
                  schema_json_test.cc)
 
-add_iceberg_test(expression_test SOURCES expression_test.cc literal_test.cc)
+add_iceberg_test(expression_test
+                 SOURCES
+                 decimal_test.cc
+                 expression_test.cc
+                 literal_test.cc)
 
 add_iceberg_test(json_serde_test
                  SOURCES
