@@ -19,6 +19,7 @@ set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
                      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>")
 set(ICEBERG_SOURCES
     catalog/in_memory_catalog.cc
+    expression/decimal.cc
     expression/expression.cc
     expression/literal.cc
     file_reader.cc
