@@ -46,8 +46,8 @@ PartitionSpec::PartitionSpec(std::shared_ptr<Schema> schema, int32_t spec_id,
 const std::shared_ptr<PartitionSpec>& PartitionSpec::Unpartitioned() {
   static const std::shared_ptr<PartitionSpec> unpartitioned =
       std::make_shared<PartitionSpec>(
-          /*schema=*/nullptr, kInitialSpecId, std::vector<PartitionField>{},
-          kLegacyPartitionDataIdStart - 1);
+          /*schema=*/std::make_shared<Schema>(std::vector<SchemaField>{}), kInitialSpecId,
+          std::vector<PartitionField>{}, kLegacyPartitionDataIdStart - 1);
   return unpartitioned;
 }
 
