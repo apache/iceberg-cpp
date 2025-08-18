@@ -150,4 +150,18 @@ TEST(DecimalTest, SmallValues) {
   }
 }
 
+TEST(DecimalTest, LargeValues) {
+  const std::array<std::string, 4> string_values = {
+      "99999999999999999999999999999999999999", "-99999999999999999999999999999999999999",
+      "170141183460469231731687303715884105727",  // maximum positive value
+      "-170141183460469231731687303715884105728"  // minimum negative value
+  };
+
+  for (const auto& s : string_values) {
+    const Decimal value(s);
+    const std::string printed_value = value.ToIntegerString();
+    EXPECT_EQ(printed_value, s) << "Expected: " << s << ", but got: " << printed_value;
+  }
+}
+
 }  // namespace iceberg
