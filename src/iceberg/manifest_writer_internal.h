@@ -36,6 +36,9 @@ class ManifestWriterImpl : public ManifestWriter {
                               std::shared_ptr<Schema> schema)
       : schema_(std::move(schema)), writer_(std::move(writer)) {}
 
+ protected:
+  virtual ManifestEntry prepare(const ManifestEntry& entry) = 0;
+
  private:
   std::shared_ptr<Schema> schema_;
   std::unique_ptr<Writer> writer_;
@@ -48,9 +51,12 @@ class ManifestWriterV1 : public ManifestWriterImpl {
                             std::shared_ptr<Schema> schema)
       : ManifestWriterImpl(snapshot_id, std::move(writer), std::move(schema)) {}
 
-  Status WriteManifestEntry(const ManifestEntry& entry) const override;
-
+  Status Add(const ManifestEntry& entry) override;
+  Status AddAll(const std::vector<ManifestEntry>& entries) override;
   Status Close() override;
+
+ protected:
+  ManifestEntry prepare(const ManifestEntry& entry) override;
 
  private:
   V1MetaData::ManifestEntryWrapper wrapper_;
@@ -64,9 +70,13 @@ class ManifestWriterV2 : public ManifestWriterImpl {
       : ManifestWriterImpl(snapshot_id, std::move(writer), std::move(schema)),
         wrapper_(snapshot_id) {}
 
-  Status WriteManifestEntry(const ManifestEntry& entry) const override;
+  Status Add(const ManifestEntry& entry) override;
+  Status AddAll(const std::vector<ManifestEntry>& entries) override;
 
   Status Close() override;
+
+ protected:
+  ManifestEntry prepare(const ManifestEntry& entry) override;
 
  private:
   V2MetaData::ManifestEntryWrapper wrapper_;
@@ -81,9 +91,13 @@ class ManifestWriterV3 : public ManifestWriterImpl {
       : ManifestWriterImpl(snapshot_id, std::move(writer), std::move(schema)),
         wrapper_(snapshot_id) {}
 
-  Status WriteManifestEntry(const ManifestEntry& entry) const override;
+  Status Add(const ManifestEntry& entry) override;
+  Status AddAll(const std::vector<ManifestEntry>& entries) override;
 
   Status Close() override;
+
+ protected:
+  ManifestEntry prepare(const ManifestEntry& entry) override;
 
  private:
   V3MetaData::ManifestEntryWrapper wrapper_;
@@ -96,6 +110,9 @@ class ManifestListWriterImpl : public ManifestListWriter {
                                   std::unique_ptr<Writer> writer,
                                   std::shared_ptr<Schema> schema)
       : schema_(std::move(schema)), writer_(std::move(writer)) {}
+
+ protected:
+  virtual ManifestFile prepare(const ManifestFile& file) = 0;
 
  private:
   std::shared_ptr<Schema> schema_;
@@ -112,9 +129,12 @@ class ManifestListWriterV1 : public ManifestListWriterImpl {
       : ManifestListWriterImpl(snapshot_id, parent_snapshot_id, std::move(writer),
                                std::move(schema)) {}
 
-  Status WriteManifestFile(const ManifestFile& file) const override;
-
+  Status Add(const ManifestFile& file) override;
+  Status AddAll(const std::vector<ManifestFile>& files) override;
   Status Close() override;
+
+ protected:
+  ManifestFile prepare(const ManifestFile& file) override;
 
  private:
   V1MetaData::ManifestFileWrapper wrapper_;
@@ -130,9 +150,13 @@ class ManifestListWriterV2 : public ManifestListWriterImpl {
                                std::move(schema)),
         wrapper_(snapshot_id, sequence_number) {}
 
-  Status WriteManifestFile(const ManifestFile& file) const override;
+  Status Add(const ManifestFile& file) override;
+  Status AddAll(const std::vector<ManifestFile>& files) override;
 
   Status Close() override;
+
+ protected:
+  ManifestFile prepare(const ManifestFile& file) override;
 
  private:
   V2MetaData::ManifestFileWrapper wrapper_;
@@ -149,11 +173,16 @@ class ManifestListWriterV3 : public ManifestListWriterImpl {
                                std::move(schema)),
         wrapper_(snapshot_id, sequence_number) {}
 
-  Status WriteManifestFile(const ManifestFile& file) const override;
+  Status Add(const ManifestFile& file) override;
+  Status AddAll(const std::vector<ManifestFile>& files) override;
 
   Status Close() override;
 
+ protected:
+  ManifestFile prepare(const ManifestFile& file) override;
+
  private:
+  int64_t next_row_id_ = 0;
   V3MetaData::ManifestFileWrapper wrapper_;
 };
 

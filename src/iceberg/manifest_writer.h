@@ -36,10 +36,15 @@ class ICEBERG_EXPORT ManifestWriter {
  public:
   virtual ~ManifestWriter() = default;
 
-  /// \brief Write manifest entry to file
+  /// \brief Write manifest entry to file.
   /// \param entry Manifest entry to write.
-  /// \return Status::OK() if all entry was written successfully
-  virtual Status WriteManifestEntry(const ManifestEntry& entry) const = 0;
+  /// \return Status::OK() if entry was written successfully
+  virtual Status Add(const ManifestEntry& entry) = 0;
+
+  /// \brief Write manifest entries to file.
+  /// \param entries Manifest entries to write.
+  /// \return Status::OK() if all entries were written successfully
+  virtual Status AddAll(const std::vector<ManifestEntry>& entries) = 0;
 
   /// \brief Close writer and flush to storage.
   virtual Status Close() = 0;
@@ -51,8 +56,8 @@ class ICEBERG_EXPORT ManifestWriter {
   /// \param manifest_location Path to the manifest file.
   /// \param file_io File IO implementation to use.
   /// \return A Result containing the writer or an error.
-  static Result<std::unique_ptr<ManifestWriter>> MakeWriter(
-      int32_t format_version, int64_t snapshot_id, int64_t first_row_id,
+  static Result<std::unique_ptr<ManifestWriter>> Make(
+      int32_t format_version, int64_t snapshot_id, std::optional<int64_t> first_row_id,
       std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
       std::shared_ptr<Schema> partition_schema);
 };
@@ -62,10 +67,15 @@ class ICEBERG_EXPORT ManifestListWriter {
  public:
   virtual ~ManifestListWriter() = default;
 
-  /// \brief Write manifest file list to manifest list file.
+  /// \brief Write manifest file to manifest list file.
   /// \param file Manifest file to write.
-  /// \return Status::OK() if all file was written successfully
-  virtual Status WriteManifestFile(const ManifestFile& file) const = 0;
+  /// \return Status::OK() if file was written successfully
+  virtual Status Add(const ManifestFile& file) = 0;
+
+  /// \brief Write manifest file list to manifest list file.
+  /// \param files Manifest file list to write.
+  /// \return Status::OK() if all files were written successfully
+  virtual Status AddAll(const std::vector<ManifestFile>& files) = 0;
 
   /// \brief Close writer and flush to storage.
   virtual Status Close() = 0;
@@ -79,9 +89,9 @@ class ICEBERG_EXPORT ManifestListWriter {
   /// \param manifest_list_location Path to the manifest list file.
   /// \param file_io File IO implementation to use.
   /// \return A Result containing the writer or an error.
-  static Result<std::unique_ptr<ManifestListWriter>> MakeWriter(
+  static Result<std::unique_ptr<ManifestListWriter>> Make(
       int32_t format_version, int64_t snapshot_id, int64_t parent_snapshot_id,
-      int64_t sequence_number, int64_t first_row_id,
+      std::optional<int64_t> sequence_number, std::optional<int64_t> first_row_id,
       std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io);
 };
 

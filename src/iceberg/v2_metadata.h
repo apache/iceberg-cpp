@@ -35,14 +35,14 @@ class V2MetaData {
   struct ManifestFileWrapper : public ManifestFile {
     explicit ManifestFileWrapper(int64_t commit_snapshotId, int64_t sequence_number) {}
 
-    ManifestFile wrap(ManifestFile file, int64_t first_row_id) { return *this; }
+    ManifestFile Wrap(ManifestFile file) { return *this; }
   };
 
   /// \brief v2 manifest entry wrapper.
   struct ManifestEntryWrapper : public ManifestEntry {
     explicit ManifestEntryWrapper(int64_t commit_snapshot_id) {}
 
-    ManifestEntry wrap(ManifestEntry entry) { return *this; }
+    ManifestEntry Wrap(ManifestEntry entry) { return *this; }
   };
 
   static ManifestFileWrapper manifestFileWrapper(int64_t commit_snapshotId,

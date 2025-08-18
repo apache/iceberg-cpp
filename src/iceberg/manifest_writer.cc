@@ -27,11 +27,12 @@
 
 namespace iceberg {
 
-Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeWriter(
-    int32_t format_version, int64_t snapshot_id, int64_t first_row_id,
+Result<std::unique_ptr<ManifestWriter>> ManifestWriter::Make(
+    int32_t format_version, int64_t snapshot_id, std::optional<int64_t> first_row_id,
     std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
     std::shared_ptr<Schema> partition_schema) {
-  auto manifest_entry_schema = ManifestEntry::TypeFromPartitionType(partition_schema);
+  auto manifest_entry_schema =
+      ManifestEntry::TypeFromPartitionType(std::move(partition_schema));
   auto fields_span = manifest_entry_schema->fields();
   std::vector<SchemaField> fields(fields_span.begin(), fields_span.end());
   auto schema = std::make_shared<Schema>(fields);
@@ -48,17 +49,21 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeWriter(
       return std::make_unique<ManifestWriterV2>(snapshot_id, std::move(writer),
                                                 std::move(schema));
     case 3:
-      return std::make_unique<ManifestWriterV3>(snapshot_id, first_row_id,
+      // first_row_id is required for V3 manifest entry
+      if (!first_row_id.has_value()) {
+        return InvalidManifest("first_row_id is required for V3 manifest entry");
+      }
+      return std::make_unique<ManifestWriterV3>(snapshot_id, first_row_id.value(),
                                                 std::move(writer), std::move(schema));
 
     default:
-      return InvalidArgument("Unsupported manifest format version: {}", format_version);
+      return NotSupported("Unsupported manifest format version: {}", format_version);
   }
 }
 
-Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeWriter(
+Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::Make(
     int32_t format_version, int64_t snapshot_id, int64_t parent_snapshot_id,
-    int64_t sequence_number, int64_t first_row_id,
+    std::optional<int64_t> sequence_number, std::optional<int64_t> first_row_id,
     std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io) {
   std::vector<SchemaField> fields(ManifestFile::Type().fields().begin(),
                                   ManifestFile::Type().fields().end());
@@ -71,20 +76,25 @@ Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeWriter(
   switch (format_version) {
     case 1:
       return std::make_unique<ManifestListWriterV1>(snapshot_id, parent_snapshot_id,
-
                                                     std::move(writer), std::move(schema));
     case 2:
       return std::make_unique<ManifestListWriterV2>(snapshot_id, parent_snapshot_id,
-                                                    sequence_number, std::move(writer),
-                                                    std::move(schema));
-    case 3:
-      return std::make_unique<ManifestListWriterV3>(snapshot_id, parent_snapshot_id,
-                                                    sequence_number, first_row_id,
+                                                    sequence_number.value(),
                                                     std::move(writer), std::move(schema));
+    case 3:
+      // sequence_number&first_row_id is required for V3 manifest list
+      if (!sequence_number.has_value()) {
+        return InvalidManifestList("sequence_number is required for V3 manifest list");
+      }
+      if (!first_row_id.has_value()) {
+        return InvalidManifestList("first_row_id is required for V3 manifest list");
+      }
+      return std::make_unique<ManifestListWriterV3>(
+          snapshot_id, parent_snapshot_id, sequence_number.value(), first_row_id.value(),
+          std::move(writer), std::move(schema));
 
     default:
-      return InvalidArgument("Unsupported manifest list format version: {}",
-                             format_version);
+      return NotSupported("Unsupported manifest list format version: {}", format_version);
   }
 }
 
