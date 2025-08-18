@@ -44,7 +44,7 @@ class ICEBERG_EXPORT InheritableMetadata {
   virtual ~InheritableMetadata() = default;
 
   /// \brief Apply inheritable metadata to a manifest entry.
-  /// \param entry The manifest entry to modify in-place.
+  /// \param entry The manifest entry to modify.
   /// \return The modified manifest entry with inherited metadata applied.
   virtual Result<ManifestEntry> Apply(ManifestEntry& entry) = 0;
 };
@@ -62,7 +62,7 @@ class ICEBERG_EXPORT BaseInheritableMetadata : public InheritableMetadata {
                           std::string manifest_location);
 
   /// \brief Apply inheritance rules to a manifest entry.
-  /// \param entry The manifest entry to modify in-place.
+  /// \param entry The manifest entry to modify.
   /// \return The modified manifest entry.
   Result<ManifestEntry> Apply(ManifestEntry& entry) override;
 
@@ -90,7 +90,7 @@ class ICEBERG_EXPORT CopyInheritableMetadata : public InheritableMetadata {
   explicit CopyInheritableMetadata(int64_t snapshot_id);
 
   /// \brief Apply copy inheritance rules.
-  /// \param entry The manifest entry to modify in-place.
+  /// \param entry The manifest entry to modify.
   /// \return The modified manifest entry.
   Result<ManifestEntry> Apply(ManifestEntry& entry) override;
 
