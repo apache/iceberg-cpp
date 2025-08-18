@@ -19,6 +19,7 @@
 
 #include "iceberg/expression/decimal.h"
 
+#include <algorithm>
 #include <array>
 #include <bit>
 #include <cassert>
@@ -26,8 +27,10 @@
 #include <cstddef>
 #include <cstdint>
 #include <format>
+#include <iomanip>
 #include <iostream>
 #include <limits>
+#include <sstream>
 #include <string>
 #include <string_view>
 
@@ -622,9 +625,69 @@ static inline void ShiftAndAdd(std::string_view input, std::array<uint64_t, 2>& 
   }
 }
 
+// Returns a mask for the bit_index lower order bits.
+// Only valid for bit_index in the range [0, 64).
+constexpr uint64_t LeastSignificantBitMask(int64_t bit_index) {
+  return (static_cast<uint64_t>(1) << bit_index) - 1;
+}
+
 static void AppendLittleEndianArrayToString(const std::array<uint64_t, 2>& array,
                                             std::string* out) {
-  // TODO(zhjwpku): Implementation this.
+  const auto most_significant_non_zero = std::ranges::find_if(
+      array.rbegin(), array.rend(), [](uint64_t v) { return v != 0; });
+  if (most_significant_non_zero == array.rend()) {
+    out->push_back('0');
+    return;
+  }
+
+  size_t most_significant_elem_idx = &*most_significant_non_zero - array.data();
+  std::array<uint64_t, 2> copy = array;
+  constexpr uint32_t k1e9 = 1000000000U;
+  constexpr size_t kNumBits = 128;
+  // Segments will contain the array split into groups that map to decimal digits, in
+  // little endian order. Each segment will hold at most 9 decimal digits. For example, if
+  // the input represents 9876543210123456789, then segments will be [123456789,
+  // 876543210, 9].
+  // The max number of segments needed = ceil(kNumBits * log(2) / log(1e9))
+  // = ceil(kNumBits / 29.897352854) <= ceil(kNumBits / 29).
+  std::array<uint32_t, (kNumBits + 28) / 29> segments;
+  size_t num_segments = 0;
+  uint64_t* most_significant_elem = &copy[most_significant_elem_idx];
+
+  std::cout << copy[1] << " " << copy[0] << std::endl;
+  do {
+    // Compute remainder = copy % 1e9 and copy = copy / 1e9.
+    uint32_t remainder = 0;
+    uint64_t* elem = most_significant_elem;
+    do {
+      // Compute dividend = (remainder << 32) | *elem  (a virtual 96-bit integer);
+      // *elem = dividend / 1e9;
+      // remainder = dividend % 1e9.
+      auto hi = static_cast<uint32_t>(*elem >> 32);
+      auto lo = static_cast<uint32_t>(*elem & LeastSignificantBitMask(32));
+      uint64_t dividend_hi = (static_cast<uint64_t>(remainder) << 32) | hi;
+      uint64_t quotient_hi = dividend_hi / k1e9;
+      remainder = static_cast<uint32_t>(dividend_hi % k1e9);
+      uint64_t dividend_lo = (static_cast<uint64_t>(remainder) << 32) | lo;
+      uint64_t quotient_lo = dividend_lo / k1e9;
+      remainder = static_cast<uint32_t>(dividend_lo % k1e9);
+      *elem = (quotient_hi << 32) | quotient_lo;
+    } while (elem-- != copy.data());
+
+    segments[num_segments++] = remainder;
+  } while (*most_significant_elem != 0 || most_significant_elem-- != copy.data());
+
+  const uint32_t* segment = &segments[num_segments - 1];
+  std::stringstream oss;
+  // First segment is formatted as-is.
+  oss << *segment;
+  // Remaining segments are formatted with leading zeros to fill 9 digits. e.g. 123 is
+  // formatted as "000000123"
+  while (segment != segments.data()) {
+    --segment;
+    oss << std::setfill('0') << std::setw(9) << *segment;
+  }
+  out->append(oss.str());
 }
 
 }  // namespace
@@ -688,8 +751,6 @@ Result<Decimal> Decimal::FromString(std::string_view str, int32_t* precision,
   if (dec.sign == '-') {
     result.Negate();
   }
-
-  std::cout << result_array[1] << " " << result_array[0] << std::endl;
 
   if (parsed_scale < 0) {
     // For the scale to 0, to avoid negative scales (due to compatibility issues with
@@ -798,13 +859,11 @@ ICEBERG_EXPORT Decimal operator*(const Decimal& lhs, const Decimal& rhs) {
 }
 
 ICEBERG_EXPORT Decimal operator/(const Decimal& lhs, const Decimal& rhs) {
-  auto [result, _] = lhs.Divide(rhs).value();
-  return result;
+  return lhs.Divide(rhs).value().first;
 }
 
 ICEBERG_EXPORT Decimal operator%(const Decimal& lhs, const Decimal& rhs) {
-  auto [_, remainder] = lhs.Divide(rhs).value();
-  return remainder;
+  return lhs.Divide(rhs).value().second;
 }
 
 ICEBERG_EXPORT bool operator<(const Decimal& lhs, const Decimal& rhs) {
