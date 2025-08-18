@@ -22,8 +22,6 @@
 #include <cassert>
 #include <utility>
 
-#include <iceberg/result.h>
-
 #include "iceberg/manifest_entry.h"
 
 namespace iceberg {
@@ -36,7 +34,7 @@ BaseInheritableMetadata::BaseInheritableMetadata(int32_t spec_id, int64_t snapsh
       sequence_number_(sequence_number),
       manifest_location_(std::move(manifest_location)) {}
 
-Result<ManifestEntry> BaseInheritableMetadata::Apply(ManifestEntry entry) {
+Result<ManifestEntry> BaseInheritableMetadata::Apply(ManifestEntry& entry) {
   if (!entry.snapshot_id.has_value()) {
     entry.snapshot_id = snapshot_id_;
   }
@@ -64,14 +62,14 @@ Result<ManifestEntry> BaseInheritableMetadata::Apply(ManifestEntry entry) {
   return entry;
 }
 
-Result<ManifestEntry> EmptyInheritableMetadata::Apply(ManifestEntry entry) {
+Result<ManifestEntry> EmptyInheritableMetadata::Apply(ManifestEntry& entry) {
   return entry;
 }
 
 CopyInheritableMetadata::CopyInheritableMetadata(int64_t snapshot_id)
     : snapshot_id_(snapshot_id) {}
 
-Result<ManifestEntry> CopyInheritableMetadata::Apply(ManifestEntry entry) {
+Result<ManifestEntry> CopyInheritableMetadata::Apply(ManifestEntry& entry) {
   if (!entry.snapshot_id.has_value()) {
     entry.snapshot_id = snapshot_id_;
   }

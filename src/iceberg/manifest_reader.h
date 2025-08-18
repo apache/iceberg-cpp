@@ -25,7 +25,6 @@
 #include <memory>
 #include <vector>
 
-#include "iceberg/file_reader.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/type_fwd.h"

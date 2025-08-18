@@ -19,8 +19,6 @@
 
 #include "manifest_reader_internal.h"
 
-#include <array>
-
 #include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/arrow_c_data_guard_internal.h"
@@ -30,7 +28,6 @@
 #include "iceberg/schema.h"
 #include "iceberg/type.h"
 #include "iceberg/util/macros.h"
-#include "iceberg/util/visit_type.h"
 
 namespace iceberg {
 
@@ -547,7 +544,7 @@ Result<std::vector<ManifestEntry>> ManifestReaderImpl::Entries() const {
 
   // Apply inheritance to all entries
   for (auto& entry : manifest_entries) {
-    ICEBERG_ASSIGN_OR_RAISE(entry, inheritable_metadata_->Apply(std::move(entry)));
+    ICEBERG_ASSIGN_OR_RAISE(entry, inheritable_metadata_->Apply(entry));
   }
 
   return manifest_entries;

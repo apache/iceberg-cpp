@@ -19,7 +19,8 @@
 
 #include "iceberg/manifest_reader.h"
 
-#include "iceberg/file_reader.h"
+#include <iceberg/schema_internal.h>
+
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/manifest_reader_internal.h"
@@ -31,16 +32,10 @@ namespace iceberg {
 Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
     const ManifestFile& manifest, std::shared_ptr<FileIO> file_io,
     std::shared_ptr<Schema> partition_schema) {
-  // Validate manifest content type - only DATA manifests are supported by ManifestReader
-  if (manifest.content != ManifestFile::Content::kData) {
-    return InvalidArgument("Cannot read a delete manifest with a ManifestReader: {}",
-                           manifest.manifest_path);
-  }
-
   auto manifest_entry_schema = ManifestEntry::TypeFromPartitionType(partition_schema);
-  auto fields_span = manifest_entry_schema->fields();
-  std::vector<SchemaField> fields(fields_span.begin(), fields_span.end());
-  auto schema = std::make_shared<Schema>(fields);
+  auto schema_unique = FromStructType(std::move(*manifest_entry_schema), std::nullopt);
+  auto schema = std::shared_ptr<Schema>(std::move(schema_unique));
+
   ICEBERG_ASSIGN_OR_RAISE(
       auto reader,
       ReaderFactoryRegistry::Open(FileFormatType::kAvro, {.path = manifest.manifest_path,

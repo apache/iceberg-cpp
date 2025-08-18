@@ -38,8 +38,6 @@ class ManifestReaderImpl : public ManifestReader {
         reader_(std::move(reader)),
         inheritable_metadata_(std::move(inheritable_metadata)) {}
 
-  ManifestReaderImpl() = default;
-
   Result<std::vector<ManifestEntry>> Entries() const override;
 
  private:
@@ -54,7 +52,6 @@ class ManifestListReaderImpl : public ManifestListReader {
   explicit ManifestListReaderImpl(std::unique_ptr<Reader> reader,
                                   std::shared_ptr<Schema> schema)
       : schema_(std::move(schema)), reader_(std::move(reader)) {}
-  ManifestListReaderImpl() = default;
 
   Result<std::vector<ManifestFile>> Files() const override;
 
