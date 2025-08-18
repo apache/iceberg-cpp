@@ -515,6 +515,7 @@ Status ExtractDatumFromArray(const ::arrow::Array& array, int64_t index,
       return {};
     }
 
+    // TODO(gangwu): support LARGE_STRING.
     case ::arrow::Type::STRING: {
       const auto& string_array =
           internal::checked_cast<const ::arrow::StringArray&>(array);
@@ -522,6 +523,7 @@ Status ExtractDatumFromArray(const ::arrow::Array& array, int64_t index,
       return {};
     }
 
+    // TODO(gangwu): support LARGE_BINARY.
     case ::arrow::Type::BINARY: {
       const auto& binary_array =
           internal::checked_cast<const ::arrow::BinaryArray&>(array);
