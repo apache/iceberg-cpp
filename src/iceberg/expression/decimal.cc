@@ -188,9 +188,10 @@ static Status BuildFromArray(Decimal* result, const uint32_t* array, int64_t len
   int64_t next_index = length - 1;
   for (size_t i = 0; i < 2 && next_index >= 0; i++) {
     uint64_t lower_bits = array[next_index--];
-    result_array[i] = (next_index < 0)
-                          ? lower_bits
-                          : (static_cast<uint64_t>(lower_bits) << 32) | lower_bits;
+    result_array[i] =
+        (next_index < 0)
+            ? lower_bits
+            : (static_cast<uint64_t>(array[next_index--]) << 32) | lower_bits;
   }
 
   *result = Decimal(result_array[1], result_array[0]);
@@ -654,7 +655,6 @@ static void AppendLittleEndianArrayToString(const std::array<uint64_t, 2>& array
   size_t num_segments = 0;
   uint64_t* most_significant_elem = &copy[most_significant_elem_idx];
 
-  std::cout << copy[1] << " " << copy[0] << std::endl;
   do {
     // Compute remainder = copy % 1e9 and copy = copy / 1e9.
     uint32_t remainder = 0;
@@ -690,6 +690,71 @@ static void AppendLittleEndianArrayToString(const std::array<uint64_t, 2>& array
   out->append(oss.str());
 }
 
+static void AdjustIntegerStringWithScale(std::string* str, int32_t scale) {
+  if (scale == 0) {
+    return;
+  }
+  assert(str != nullptr);
+  assert(!str->empty());
+  const bool is_negative = str->front() == '-';
+  const auto is_negative_offset = static_cast<int32_t>(is_negative);
+  const auto len = static_cast<int32_t>(str->size());
+  const int32_t num_digits = len - is_negative_offset;
+  const int32_t adjusted_exponent = num_digits - 1 - scale;
+
+  // Note that the -6 is taken from the Java BigDecimal documentation.
+  if (scale < 0 || adjusted_exponent < -6) {
+    // Example 1:
+    // Precondition: *str = "123", is_negative_offset = 0, num_digits = 3, scale = -2,
+    //               adjusted_exponent = 4
+    // After inserting decimal point: *str = "1.23"
+    // After appending exponent: *str = "1.23E+4"
+    // Example 2:
+    // Precondition: *str = "-123", is_negative_offset = 1, num_digits = 3, scale = 9,
+    //               adjusted_exponent = -7
+    // After inserting decimal point: *str = "-1.23"
+    // After appending exponent: *str = "-1.23E-7"
+    // Example 3:
+    // Precondition: *str = "0", is_negative_offset = 0, num_digits = 1, scale = -1,
+    //               adjusted_exponent = 1
+    // After inserting decimal point: *str = "0" // Not inserted
+    // After appending exponent: *str = "0E+1"
+    if (num_digits > 1) {
+      str->insert(str->begin() + 1 + is_negative_offset, '.');
+    }
+    str->push_back('E');
+    if (adjusted_exponent >= 0) {
+      str->push_back('+');
+    }
+    // Append the adjusted exponent as a string.
+    str->append(std::to_string(adjusted_exponent));
+    return;
+  }
+
+  if (num_digits > scale) {
+    const auto n = static_cast<size_t>(len - scale);
+    // Example 1:
+    // Precondition: *str = "123", len = num_digits = 3, scale = 1, n = 2
+    // After inserting decimal point: *str = "12.3"
+    // Example 2:
+    // Precondition: *str = "-123", len = 4, num_digits = 3, scale = 1, n = 3
+    // After inserting decimal point: *str = "-12.3"
+    str->insert(str->begin() + n, '.');
+    return;
+  }
+
+  // Example 1:
+  // Precondition: *str = "123", is_negative_offset = 0, num_digits = 3, scale = 4
+  // After insert: *str = "000123"
+  // After setting decimal point: *str = "0.0123"
+  // Example 2:
+  // Precondition: *str = "-123", is_negative_offset = 1, num_digits = 3, scale = 4
+  // After insert: *str = "-000123"
+  // After setting decimal point: *str = "-0.0123"
+  str->insert(is_negative_offset, scale - num_digits + 2, '0');
+  str->at(is_negative_offset + 1) = '.';
+}
+
 }  // namespace
 
 Result<std::string> Decimal::ToString(int32_t scale) const {
@@ -698,7 +763,9 @@ Result<std::string> Decimal::ToString(int32_t scale) const {
         "Decimal::ToString: scale must be in the range [-{}, {}], was {}", kMaxScale,
         kMaxScale, scale);
   }
-  return NotImplemented("Decimal::ToString is not implemented yet");
+  std::string str(ToIntegerString());
+  AdjustIntegerStringWithScale(&str, scale);
+  return str;
 }
 
 std::string Decimal::ToIntegerString() const {
