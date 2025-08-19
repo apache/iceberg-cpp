@@ -19,7 +19,7 @@
 
 #include "iceberg/parquet/parquet_reader.h"
 
-#include <memory>
+#include <numeric>
 
 #include <arrow/c/bridge.h>
 #include <arrow/memory_pool.h>
@@ -207,18 +207,21 @@ class ParquetReader::Impl {
           break;
         }
       }
-      if (row_group_indices.empty()) {
-        // None of the row groups are selected, return an empty record batch reader
-        context_->record_batch_reader_ = std::make_unique<EmptyRecordBatchReader>();
-        return {};
-      }
+    } else {
+      row_group_indices.resize(reader_->parquet_reader()->metadata()->num_row_groups());
+      std::iota(row_group_indices.begin(), row_group_indices.end(), 0);  // NOLINT
     }
 
     // Create the record batch reader
-    auto column_indices = SelectedColumnIndices(projection_);
-    ICEBERG_ARROW_ASSIGN_OR_RETURN(
-        context_->record_batch_reader_,
-        reader_->GetRecordBatchReader(row_group_indices, column_indices));
+    if (row_group_indices.empty()) {
+      // None of the row groups are selected, return an empty record batch reader
+      context_->record_batch_reader_ = std::make_unique<EmptyRecordBatchReader>();
+    } else {
+      auto column_indices = SelectedColumnIndices(projection_);
+      ICEBERG_ARROW_ASSIGN_OR_RETURN(
+          context_->record_batch_reader_,
+          reader_->GetRecordBatchReader(row_group_indices, column_indices));
+    }
 
     return {};
   }
