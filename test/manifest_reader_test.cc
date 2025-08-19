@@ -126,7 +126,7 @@ class ManifestReaderV2Test : public TempFileTestBase {
     file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(local_fs_);
   }
 
-  std::vector<ManifestEntry> prepareV2NonPartitionedManifestEntries() {
+  std::vector<ManifestEntry> PrepareV2NonPartitionedManifestEntries() {
     std::vector<ManifestEntry> manifest_entries;
     std::string test_dir_prefix = "/tmp/db/db/v2_manifest_non_partitioned/data/";
 
@@ -241,7 +241,7 @@ TEST_F(ManifestReaderV2Test, V2NonPartitionedBasicTest) {
   ASSERT_EQ(read_result.has_value(), true) << read_result.error().message;
   ASSERT_EQ(read_result.value().size(), 1);
 
-  auto expected_entries = prepareV2NonPartitionedManifestEntries();
+  auto expected_entries = PrepareV2NonPartitionedManifestEntries();
   ASSERT_EQ(read_result.value(), expected_entries);
 }
 
