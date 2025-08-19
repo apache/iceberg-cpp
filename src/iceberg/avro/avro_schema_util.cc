@@ -777,6 +777,13 @@ Result<SchemaProjection> Project(const Schema& expected_schema,
 
 namespace {
 
+void CopyCustomAttributes(const ::avro::CustomAttributes& source,
+                          ::avro::CustomAttributes& target) {
+  for (const auto& attr_pair : source.attributes()) {
+    target.addAttribute(attr_pair.first, attr_pair.second, /*addQuote=*/false);
+  }
+}
+
 Result<::avro::NodePtr> CreateRecordNodeWithFieldIds(const ::avro::NodePtr& original_node,
                                                      const MappedField& field) {
   auto new_record_node = std::make_shared<::avro::NodeRecord>();
@@ -857,14 +864,7 @@ Result<::avro::NodePtr> CreateArrayNodeWithFieldIds(const ::avro::NodePtr& origi
     if (original_node->customAttributes() > 0) {
       ::avro::CustomAttributes merged_attributes;
       const auto& original_attrs = original_node->customAttributesAt(0);
-      const auto& existing_attrs = original_attrs.attributes();
-      for (const auto& attr_pair : existing_attrs) {
-        // Skip element-id as we might set it differently
-        if (attr_pair.first != kElementIdProp) {
-          merged_attributes.addAttribute(attr_pair.first, attr_pair.second,
-                                         /*addQuote=*/false);
-        }
-      }
+      CopyCustomAttributes(original_attrs, merged_attributes);
       // Add merged attributes if we found any
       if (merged_attributes.attributes().size() > 0) {
         new_array_node->addCustomAttributesForField(merged_attributes);
@@ -898,17 +898,10 @@ Result<::avro::NodePtr> CreateArrayNodeWithFieldIds(const ::avro::NodePtr& origi
                                  std::to_string(*element_field.field_id),
                                  /*addQuote=*/false);
 
-  // Then merge any custom attributes from original node (except element-id)
+  // Then merge any custom attributes from original node
   if (original_node->customAttributes() > 0) {
     const auto& original_attrs = original_node->customAttributesAt(0);
-    const auto& existing_attrs = original_attrs.attributes();
-    for (const auto& attr_pair : existing_attrs) {
-      // Skip element-id as we've already set it above
-      if (attr_pair.first != kElementIdProp) {
-        merged_attributes.addAttribute(attr_pair.first, attr_pair.second,
-                                       /*addQuote=*/false);
-      }
-    }
+    CopyCustomAttributes(original_attrs, merged_attributes);
   }
 
   // Add all attributes at once
@@ -969,26 +962,12 @@ Result<::avro::NodePtr> CreateMapNodeWithFieldIds(const ::avro::NodePtr& origina
   if (original_node->customAttributes() > 0) {
     // Merge attributes for key (index 0)
     const auto& original_key_attrs = original_node->customAttributesAt(0);
-    const auto& existing_key_attrs = original_key_attrs.attributes();
-    for (const auto& attr_pair : existing_key_attrs) {
-      // Skip if it's the key ID property we're already setting
-      if (attr_pair.first != kKeyIdProp) {
-        key_attributes.addAttribute(attr_pair.first, attr_pair.second,
-                                    /*addQuote=*/false);
-      }
-    }
+    CopyCustomAttributes(original_key_attrs, key_attributes);
 
     // Merge attributes for value (index 1)
     if (original_node->customAttributes() > 1) {
       const auto& original_value_attrs = original_node->customAttributesAt(1);
-      const auto& existing_value_attrs = original_value_attrs.attributes();
-      for (const auto& attr_pair : existing_value_attrs) {
-        // Skip if it's the value ID property we're already setting
-        if (attr_pair.first != kValueIdProp) {
-          value_attributes.addAttribute(attr_pair.first, attr_pair.second,
-                                        /*addQuote=*/false);
-        }
-      }
+      CopyCustomAttributes(original_value_attrs, value_attributes);
     }
   }
 
