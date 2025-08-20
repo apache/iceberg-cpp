@@ -19,7 +19,7 @@
 
 #pragma once
 
-/// \file iceberg/v3_metadata.h
+/// \file iceberg/v4_metadata.h
 
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
@@ -27,13 +27,13 @@
 
 namespace iceberg {
 
-/// \brief Adapter to convert V3ManifestEntry to `ArrowArray`.
-class ManifestEntryAdapterV3 : public ManifestEntryAdapter {
+/// \brief Adapter to convert V4 ManifestEntry to `ArrowArray`.
+class ManifestEntryAdapterV4 : public ManifestEntryAdapter {
  public:
-  ManifestEntryAdapterV3(std::optional<int64_t> snapshot_id,
+  ManifestEntryAdapterV4(std::optional<int64_t> snapshot_id,
                          std::optional<int64_t> first_row_id,
                          std::shared_ptr<Schema> schema) {
-    // TODO: init v3 schema
+    // TODO: init v4 schema
   }
   Status StartAppending() override { return {}; }
   Status Append(const ManifestEntry& entry) override { return {}; }
@@ -44,13 +44,13 @@ class ManifestEntryAdapterV3 : public ManifestEntryAdapter {
   ArrowSchema schema_;  // converted from manifest_schema_
 };
 
-/// \brief Adapter to convert V3 ManifestFile to `ArrowArray`.
-class ManifestFileAdapterV3 : public ManifestFileAdapter {
+/// \brief Adapter to convert V4 ManifestFile to `ArrowArray`.
+class ManifestFileAdapterV4 : public ManifestFileAdapter {
  public:
-  ManifestFileAdapterV3(int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
+  ManifestFileAdapterV4(int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
                         int64_t sequence_number, std::optional<int64_t> first_row_id,
                         std::shared_ptr<Schema> schema) {
-    // TODO: init v3 schema
+    // TODO: init v4 schema
   }
   Status StartAppending() override { return {}; }
   Status Append(const ManifestFile& file) override { return {}; }

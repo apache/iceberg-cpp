@@ -23,36 +23,40 @@
 
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
+#include "iceberg/metadata_adapter.h"
 
 namespace iceberg {
 
-/// \brief v2 metadata wrapper.
-///
-/// Wrapper for v2 manifest list and manifest entry.
-class V2MetaData {
+/// \brief Adapter to convert V2 ManifestEntry to `ArrowArray`.
+class ManifestEntryAdapterV2 : public ManifestEntryAdapter {
  public:
-  /// \brief v2 manifest file wrapper.
-  struct ManifestFileWrapper : public ManifestFile {
-    explicit ManifestFileWrapper(int64_t commit_snapshotId, int64_t sequence_number) {}
-
-    ManifestFile Wrap(ManifestFile file) { return *this; }
-  };
-
-  /// \brief v2 manifest entry wrapper.
-  struct ManifestEntryWrapper : public ManifestEntry {
-    explicit ManifestEntryWrapper(int64_t commit_snapshot_id) {}
-
-    ManifestEntry Wrap(ManifestEntry entry) { return *this; }
-  };
-
-  static ManifestFileWrapper manifestFileWrapper(int64_t commit_snapshotId,
-                                                 int64_t sequence_number) {
-    return ManifestFileWrapper(commit_snapshotId, sequence_number);
+  ManifestEntryAdapterV2(std::optional<int64_t> snapshot_id,
+                         std::shared_ptr<Schema> schema) {
+    // TODO: init v2 schema
   }
+  Status StartAppending() override { return {}; }
+  Status Append(const ManifestEntry& entry) override { return {}; }
+  Result<ArrowArray> FinishAppending() override { return {}; }
 
-  static ManifestEntryWrapper manifestEntryWrapper(int64_t commit_snapshot_id) {
-    return ManifestEntryWrapper(commit_snapshot_id);
+ private:
+  std::shared_ptr<Schema> manifest_schema_;
+  ArrowSchema schema_;  // converted from manifest_schema_
+};
+
+/// \brief Adapter to convert V2 ManifestFile to `ArrowArray`.
+class ManifestFileAdapterV2 : public ManifestFileAdapter {
+ public:
+  ManifestFileAdapterV2(int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
+                        int64_t sequence_number, std::shared_ptr<Schema> schema) {
+    // TODO: init v2 schema
   }
+  Status StartAppending() override { return {}; }
+  Status Append(const ManifestFile& file) override { return {}; }
+  Result<ArrowArray> FinishAppending() override { return {}; }
+
+ private:
+  std::shared_ptr<Schema> manifest_list_schema_;
+  ArrowSchema schema_;  // converted from manifest_list_schema_
 };
 
 }  // namespace iceberg

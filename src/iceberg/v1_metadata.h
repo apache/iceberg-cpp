@@ -23,31 +23,40 @@
 
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
+#include "iceberg/metadata_adapter.h"
 
 namespace iceberg {
 
-/// \brief v1 metadata wrapper.
-///
-/// Wrapper for v1 manifest list and manifest entry.
-class V1MetaData {
+/// \brief Adapter to convert V1 ManifestEntry to `ArrowArray`.
+class ManifestEntryAdapterV1 : public ManifestEntryAdapter {
  public:
-  /// \brief v1 manifest file wrapper.
-  struct ManifestFileWrapper : public ManifestFile {
-    ManifestFileWrapper() = default;
+  ManifestEntryAdapterV1(std::optional<int64_t> snapshot_id,
+                         std::shared_ptr<Schema> schema) {
+    // TODO: init v1 schema
+  }
+  Status StartAppending() override { return {}; }
+  Status Append(const ManifestEntry& entry) override { return {}; }
+  Result<ArrowArray> FinishAppending() override { return {}; }
 
-    ManifestFile Wrap(ManifestFile file) { return *this; }
-  };
+ private:
+  std::shared_ptr<Schema> manifest_schema_;
+  ArrowSchema schema_;  // converted from manifest_schema_
+};
 
-  /// \brief v1 manifest entry wrapper.
-  struct ManifestEntryWrapper : public ManifestEntry {
-    ManifestEntryWrapper() = default;
+/// \brief Adapter to convert V1 ManifestFile to `ArrowArray`.
+class ManifestFileAdapterV1 : public ManifestFileAdapter {
+ public:
+  ManifestFileAdapterV1(int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
+                        std::shared_ptr<Schema> schema) {
+    // TODO: init v1 schema
+  }
+  Status StartAppending() override { return {}; }
+  Status Append(const ManifestFile& file) override { return {}; }
+  Result<ArrowArray> FinishAppending() override { return {}; }
 
-    ManifestEntry Wrap(ManifestEntry entry) { return *this; }
-  };
-
-  static ManifestFileWrapper manifestFileWrapper() { return {}; }
-
-  static ManifestEntryWrapper manifestEntryWrapper() { return {}; }
+ private:
+  std::shared_ptr<Schema> manifest_list_schema_;
+  ArrowSchema schema_;  // converted from manifest_list_schema_
 };
 
 }  // namespace iceberg

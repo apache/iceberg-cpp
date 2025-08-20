@@ -50,14 +50,42 @@ class ICEBERG_EXPORT ManifestWriter {
   virtual Status Close() = 0;
 
   /// \brief Creates a writer for a manifest file.
-  /// \param format_version Format version of the manifest.
+  /// \param snapshot_id ID of the snapshot.
+  /// \param manifest_location Path to the manifest file.
+  /// \param file_io File IO implementation to use.
+  /// \return A Result containing the writer or an error.
+  static Result<std::unique_ptr<ManifestWriter>> MakeV1Writer(
+      std::optional<int64_t> snapshot_id, std::string_view manifest_location,
+      std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> partition_schema);
+
+  /// \brief Creates a writer for a manifest file.
+  /// \param snapshot_id ID of the snapshot.
+  /// \param manifest_location Path to the manifest file.
+  /// \param file_io File IO implementation to use.
+  /// \return A Result containing the writer or an error.
+  static Result<std::unique_ptr<ManifestWriter>> MakeV2Writer(
+      std::optional<int64_t> snapshot_id, std::string_view manifest_location,
+      std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> partition_schema);
+
+  /// \brief Creates a writer for a manifest file.
   /// \param snapshot_id ID of the snapshot.
   /// \param first_row_id First row ID of the snapshot.
   /// \param manifest_location Path to the manifest file.
   /// \param file_io File IO implementation to use.
   /// \return A Result containing the writer or an error.
-  static Result<std::unique_ptr<ManifestWriter>> Make(
-      int32_t format_version, int64_t snapshot_id, std::optional<int64_t> first_row_id,
+  static Result<std::unique_ptr<ManifestWriter>> MakeV3Writer(
+      std::optional<int64_t> snapshot_id, std::optional<int64_t> first_row_id,
+      std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
+      std::shared_ptr<Schema> partition_schema);
+
+  /// \brief Creates a writer for a manifest file.
+  /// \param snapshot_id ID of the snapshot.
+  /// \param first_row_id First row ID of the snapshot.
+  /// \param manifest_location Path to the manifest file.
+  /// \param file_io File IO implementation to use.
+  /// \return A Result containing the writer or an error.
+  static Result<std::unique_ptr<ManifestWriter>> MakeV4Writer(
+      std::optional<int64_t> snapshot_id, std::optional<int64_t> first_row_id,
       std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
       std::shared_ptr<Schema> partition_schema);
 };
@@ -80,8 +108,29 @@ class ICEBERG_EXPORT ManifestListWriter {
   /// \brief Close writer and flush to storage.
   virtual Status Close() = 0;
 
+  /// \brief Creates a writer for the v1 manifest list.
+  /// \param snapshot_id ID of the snapshot.
+  /// \param parent_snapshot_id ID of the parent snapshot.
+  /// \param manifest_list_location Path to the manifest list file.
+  /// \param file_io File IO implementation to use.
+  /// \return A Result containing the writer or an error.
+  static Result<std::unique_ptr<ManifestListWriter>> MakeV1Writer(
+      int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
+      std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io);
+
   /// \brief Creates a writer for the manifest list.
-  /// \param format_version Format version of the manifest list.
+  /// \param snapshot_id ID of the snapshot.
+  /// \param parent_snapshot_id ID of the parent snapshot.
+  /// \param sequence_number Sequence number of the snapshot.
+  /// \param manifest_list_location Path to the manifest list file.
+  /// \param file_io File IO implementation to use.
+  /// \return A Result containing the writer or an error.
+  static Result<std::unique_ptr<ManifestListWriter>> MakeV2Writer(
+      int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
+      int64_t sequence_number, std::string_view manifest_list_location,
+      std::shared_ptr<FileIO> file_io);
+
+  /// \brief Creates a writer for the manifest list.
   /// \param snapshot_id ID of the snapshot.
   /// \param parent_snapshot_id ID of the parent snapshot.
   /// \param sequence_number Sequence number of the snapshot.
@@ -89,9 +138,22 @@ class ICEBERG_EXPORT ManifestListWriter {
   /// \param manifest_list_location Path to the manifest list file.
   /// \param file_io File IO implementation to use.
   /// \return A Result containing the writer or an error.
-  static Result<std::unique_ptr<ManifestListWriter>> Make(
-      int32_t format_version, int64_t snapshot_id, int64_t parent_snapshot_id,
-      std::optional<int64_t> sequence_number, std::optional<int64_t> first_row_id,
+  static Result<std::unique_ptr<ManifestListWriter>> MakeV3Writer(
+      int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
+      int64_t sequence_number, std::optional<int64_t> first_row_id,
+      std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io);
+
+  /// \brief Creates a writer for the manifest list.
+  /// \param snapshot_id ID of the snapshot.
+  /// \param parent_snapshot_id ID of the parent snapshot.
+  /// \param sequence_number Sequence number of the snapshot.
+  /// \param first_row_id First row ID of the snapshot.
+  /// \param manifest_list_location Path to the manifest list file.
+  /// \param file_io File IO implementation to use.
+  /// \return A Result containing the writer or an error.
+  static Result<std::unique_ptr<ManifestListWriter>> MakeV4Writer(
+      int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
+      int64_t sequence_number, std::optional<int64_t> first_row_id,
       std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io);
 };
 
