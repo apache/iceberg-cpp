@@ -44,7 +44,7 @@ Status BaseInheritableMetadata::Apply(ManifestEntry& entry) {
   // In v1 tables, the data sequence number is not persisted and can be safely defaulted
   // to 0.
   // In v2 tables, the data sequence number should be inherited iff the entry status
-  // is ADDED
+  // is ADDED.
   if (!entry.sequence_number.has_value() &&
       (sequence_number_ == 0 || entry.status == ManifestStatus::kAdded)) {
     entry.sequence_number = sequence_number_;
@@ -52,8 +52,8 @@ Status BaseInheritableMetadata::Apply(ManifestEntry& entry) {
 
   // In v1 tables, the file sequence number is not persisted and can be safely defaulted
   // to 0.
-  //  In v2 tables, the file sequence number should be inherited iff the entry status
-  // is ADDED
+  // In v2 tables, the file sequence number should be inherited iff the entry status
+  // is ADDED.
   if (!entry.file_sequence_number.has_value() &&
       (sequence_number_ == 0 || entry.status == ManifestStatus::kAdded)) {
     entry.file_sequence_number = sequence_number_;
