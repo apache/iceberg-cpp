@@ -19,6 +19,7 @@
 
 #include "iceberg/schema_internal.h"
 
+#include <charconv>
 #include <cstring>
 #include <optional>
 #include <string>
@@ -192,7 +193,11 @@ int32_t GetFieldId(const ArrowSchema& schema) {
     return kUnknownFieldId;
   }
 
-  return std::stoi(std::string(field_id_value.data, field_id_value.size_bytes));
+  int32_t field_id = kUnknownFieldId;
+  std::from_chars(field_id_value.data, field_id_value.data + field_id_value.size_bytes,
+                  field_id);
+
+  return field_id;
 }
 
 Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {

@@ -17,10 +17,11 @@
  * under the License.
  */
 
+#include "iceberg/util/config.h"
+
 #include <string>
 
 #include <gtest/gtest.h>
-#include <iceberg/util/config.h>
 
 namespace iceberg {
 

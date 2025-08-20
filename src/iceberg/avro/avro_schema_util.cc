@@ -17,6 +17,7 @@
  * under the License.
  */
 
+#include <charconv>
 #include <format>
 #include <mutex>
 #include <string_view>
@@ -413,11 +414,13 @@ Result<int32_t> GetId(const ::avro::NodePtr& node, const std::string& attr_name,
     return InvalidSchema("Missing avro attribute: {}", attr_name);
   }
 
-  try {
-    return std::stoi(id_str.value());
-  } catch (const std::exception& e) {
-    return InvalidSchema("Invalid {}: {}", attr_name, id_str.value());
+  int32_t id;
+  const auto& id_value = id_str.value();
+  auto [_, ec] = std::from_chars(id_value.data(), id_value.data() + id_value.size(), id);
+  if (ec != std::errc()) {
+    return InvalidSchema("Invalid {}: {}", attr_name, id_value);
   }
+  return id;
 }
 
 Result<int32_t> GetElementId(const ::avro::NodePtr& node) {

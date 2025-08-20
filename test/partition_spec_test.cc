@@ -24,10 +24,10 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <iceberg/schema_field.h>
 
 #include "iceberg/partition_field.h"
 #include "iceberg/schema.h"
+#include "iceberg/schema_field.h"
 #include "iceberg/transform.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
