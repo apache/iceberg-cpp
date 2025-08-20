@@ -36,10 +36,10 @@ namespace iceberg {
 /// 38 significant digits.
 class ICEBERG_EXPORT Decimal {
  public:
-  static constexpr int kBitWidth = 128;
-  static constexpr int kByteWidth = kBitWidth / 8;
-  static constexpr int kMaxPrecision = 38;
-  static constexpr int kMaxScale = 38;
+  static constexpr int32_t kBitWidth = 128;
+  static constexpr int32_t kByteWidth = kBitWidth / 8;
+  static constexpr int32_t kMaxPrecision = 38;
+  static constexpr int32_t kMaxScale = 38;
 
   /// \brief Default constructor initializes to zero.
   constexpr Decimal() noexcept : data_{0, 0} {}
@@ -152,25 +152,45 @@ class ICEBERG_EXPORT Decimal {
 
   /// \brief Convert the floating-point value to a Decimal value with the given
   /// precision and scale.
-  template <typename T>
-    requires std::is_floating_point_v<T>
-  static Result<Decimal> FromReal(T value, int32_t precision, int32_t scale);
+  static Result<Decimal> FromReal(double real, int32_t precision, int32_t scale);
+  static Result<Decimal> FromReal(float real, int32_t precision, int32_t scale);
+
+  /// \brief separate the integer and fractional parts for the given scale.
+  Result<std::pair<Decimal, Decimal>> GetWholeAndFraction(int32_t scale) const;
 
   /// \brief Convert Decimal from one scale to another.
   Result<Decimal> Rescale(int32_t orig_scale, int32_t new_scale) const;
+
+  /// \brief Whether this number fits in the given precision
+  ///
+  /// Return true if the number of significant digits is less or equal to `precision`.
+  bool FitsInPrecision(int32_t precision) const;
+
+  /// \brief Convert to a floating-point number (scaled)
+  float ToFloat(int32_t scale) const;
+  /// \brief Convert to a floating-point number (scaled)
+  double ToDouble(int32_t scale) const;
 
   /// \brief Convert the Decimal value to a floating-point value with the given scale.
   /// \param scale The scale to use for the conversion.
   /// \return The floating-point value.
   template <typename T>
     requires std::is_floating_point_v<T>
-  T ToReal(int32_t scale = 0) const;
+  T ToReal(int32_t scale) const {
+    if constexpr (std::is_same_v<T, float>) {
+      return ToFloat(scale);
+    } else {
+      return ToDouble(scale);
+    }
+  }
 
   /// \brief Returns 1 if positive or zero, -1 if strictly negative.
   int64_t Sign() const { return 1 | (static_cast<int64_t>(data_[kHighIndex]) >> 63); }
 
   /// \brief Check if the Decimal value is negative.
   bool IsNegative() const { return static_cast<int64_t>(data_[kHighIndex]) < 0; }
+
+  explicit operator bool() const { return data_ != std::array<uint64_t, 2>{0, 0}; }
 
   friend bool operator==(const Decimal& lhs, const Decimal& rhs) {
     return lhs.data_ == rhs.data_;
@@ -182,11 +202,11 @@ class ICEBERG_EXPORT Decimal {
 
  private:
 #if ICEBERG_LITTLE_ENDIAN
-  static constexpr int kHighIndex = 1;
-  static constexpr int kLowIndex = 0;
+  static constexpr int32_t kHighIndex = 1;
+  static constexpr int32_t kLowIndex = 0;
 #else
-  static constexpr int kHighIndex = 0;
-  static constexpr int kLowIndex = 1;
+  static constexpr int32_t kHighIndex = 0;
+  static constexpr int32_t kLowIndex = 1;
 #endif
 
   std::array<uint64_t, 2> data_;
