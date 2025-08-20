@@ -118,7 +118,7 @@ constexpr const char* GetLongTypeName(TypeId type_id) {
   }
 }
 
-}  // anonymous namespace
+}  // namespace
 
 /// \brief LiteralSerializer handles serialization/deserialization operations for Literal.
 /// This is an internal implementation class.
