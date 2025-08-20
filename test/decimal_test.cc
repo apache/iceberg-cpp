@@ -415,4 +415,98 @@ TEST(DecimalTest, ToString) {
   }
 }
 
+template <typename Real>
+struct FromRealTestParam {
+  Real real;
+  int32_t precision;
+  int32_t scale;
+  const char* expected_string;
+};
+
+template <typename Real>
+void CheckDecimalFromReal(Real real, int32_t precision, int32_t scale,
+                          const char* expected_string) {
+  auto result = Decimal::FromReal(real, precision, scale);
+  ASSERT_THAT(result, IsOk()) << "Failed to convert real to Decimal: " << real
+                              << ", precision: " << precision << ", scale: " << scale;
+  const Decimal& decimal = result.value();
+  EXPECT_EQ(decimal.ToString(scale).value(), expected_string);
+  const std::string expected_neg =
+      (decimal) ? "-" + std::string(expected_string) : expected_string;
+  auto neg_result = Decimal::FromReal(-real, precision, scale);
+  ASSERT_THAT(neg_result, IsOk())
+      << "Failed to convert negative real to Decimal: " << -real
+      << ", precision: " << precision << ", scale: " << scale;
+  const Decimal& neg_decimal = neg_result.value();
+  EXPECT_EQ(neg_decimal.ToString(scale).value(), expected_neg);
+}
+
+using FromFloatTestParam = FromRealTestParam<float>;
+using FromDoubleTestParam = FromRealTestParam<double>;
+
+template <typename Real>
+class TestDecimalFromReal : public ::testing::Test {
+ public:
+  using ParamType = FromRealTestParam<Real>;
+
+  void TestSuccess() {
+    const std::vector<ParamType> params{
+        // clang-format off
+        {0.0f, 1, 0, "0"},
+        {0.0f, 19, 4, "0.0000"},
+        {123.0f, 7, 4, "123.0000"},
+        {456.78f, 7, 4, "456.7800"},
+        {456.784f, 5, 2, "456.78"},
+        {456.786f, 5, 2, "456.79"},
+        {999.99f, 5, 2, "999.99"},
+        {123.0f, 19, 0, "123"},
+        {123.4f, 19, 0, "123"},
+        {123.6f, 19, 0, "124"},
+        // 2**62
+        {4.6116860184273879e+18, 19, 0, "4611686018427387904"},
+        // 2**63
+        {9.2233720368547758e+18, 19, 0, "9223372036854775808"},
+        // 2**64
+        {1.8446744073709552e+19, 20, 0, "18446744073709551616"},
+        // clang-format on
+    };
+
+    for (const ParamType& param : params) {
+      CheckDecimalFromReal(param.real, param.precision, param.scale,
+                           param.expected_string);
+    }
+  }
+
+  void TestErrors() {
+    const std::vector<ParamType> params{
+        {std::numeric_limits<Real>::infinity(), Decimal::kMaxPrecision / 2, 4, ""},
+        {-std::numeric_limits<Real>::infinity(), Decimal::kMaxPrecision / 2, 4, ""},
+        {std::numeric_limits<Real>::quiet_NaN(), Decimal::kMaxPrecision / 2, 4, ""},
+        {-std::numeric_limits<Real>::quiet_NaN(), Decimal::kMaxPrecision / 2, 4, ""},
+    };
+
+    for (const ParamType& param : params) {
+      auto result = Decimal::FromReal(param.real, param.precision, param.scale);
+      ASSERT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+    }
+
+    const std::vector<ParamType> overflow_params{
+        // Overflow errors
+        {1000.0, 3, 0, ""},  {-1000.0, 3, 0, ""}, {1000.0, 5, 2, ""},
+        {-1000.0, 5, 2, ""}, {999.996, 5, 2, ""}, {-999.996, 5, 2, ""},
+    };
+    for (const ParamType& param : overflow_params) {
+      auto result = Decimal::FromReal(param.real, param.precision, param.scale);
+      ASSERT_THAT(result, IsError(ErrorKind::kOverflow));
+    }
+  }
+};
+
+using RealTypes = ::testing::Types<float, double>;
+TYPED_TEST_SUITE(TestDecimalFromReal, RealTypes);
+
+TYPED_TEST(TestDecimalFromReal, TestSuccess) { this->TestSuccess(); }
+
+TYPED_TEST(TestDecimalFromReal, TestErrors) { this->TestErrors(); }
+
 }  // namespace iceberg
