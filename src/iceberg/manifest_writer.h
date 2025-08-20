@@ -25,8 +25,8 @@
 #include <memory>
 #include <vector>
 
-#include "iceberg/file_writer.h"
 #include "iceberg/iceberg_export.h"
+#include "iceberg/manifest_entry.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {

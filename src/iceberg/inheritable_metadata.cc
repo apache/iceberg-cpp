@@ -23,6 +23,9 @@
 #include <utility>
 
 #include "iceberg/manifest_entry.h"
+#include "iceberg/manifest_list.h"
+#include "iceberg/snapshot.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
@@ -66,7 +69,7 @@ Status BaseInheritableMetadata::Apply(ManifestEntry& entry) {
 
 Status EmptyInheritableMetadata::Apply(ManifestEntry& entry) {
   if (!entry.snapshot_id.has_value()) {
-    return InvalidArgument(
+    return InvalidManifest(
         "Entries must have explicit snapshot ids if inherited metadata is empty");
   }
   return {};
@@ -88,7 +91,7 @@ Result<std::unique_ptr<InheritableMetadata>> InheritableMetadataFactory::FromMan
     const ManifestFile& manifest) {
   // Validate that the manifest has a snapshot ID assigned
   if (manifest.added_snapshot_id == Snapshot::kInvalidSnapshotId) {
-    return InvalidArgument("Manifest file {} has no snapshot ID", manifest.manifest_path);
+    return InvalidManifest("Manifest file {} has no snapshot ID", manifest.manifest_path);
   }
 
   return std::make_unique<BaseInheritableMetadata>(

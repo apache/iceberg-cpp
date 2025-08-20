@@ -36,11 +36,12 @@ Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
   std::shared_ptr<Schema> schema =
       FromStructType(std::move(*manifest_entry_schema), std::nullopt);
 
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto reader,
-      ReaderFactoryRegistry::Open(FileFormatType::kAvro, {.path = manifest.manifest_path,
-                                                          .io = std::move(file_io),
-                                                          .projection = schema}));
+  ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                          ReaderFactoryRegistry::Open(FileFormatType::kAvro,
+                                                      {.path = manifest.manifest_path,
+                                                       .length = manifest.manifest_length,
+                                                       .io = std::move(file_io),
+                                                       .projection = schema}));
   // Create inheritable metadata for this manifest
   ICEBERG_ASSIGN_OR_RAISE(auto inheritable_metadata,
                           InheritableMetadataFactory::FromManifest(manifest));

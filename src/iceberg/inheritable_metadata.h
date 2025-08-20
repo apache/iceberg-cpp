@@ -26,17 +26,15 @@
 #include <memory>
 #include <string>
 
-#include <iceberg/result.h>
-
 #include "iceberg/iceberg_export.h"
-#include "iceberg/manifest_entry.h"
-#include "iceberg/manifest_list.h"
+#include "iceberg/result.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
 /// \brief Interface for applying inheritable metadata to manifest entries.
 ///
-/// When manifest entries have null values for certain fields (snapshot_id,
+/// When manifest entries have null values for certain fields (snapshot id,
 /// data sequence number, file sequence number), these values should be inherited
 /// from the manifest file. This interface provides a way to apply such inheritance rules.
 class ICEBERG_EXPORT InheritableMetadata {
@@ -45,7 +43,7 @@ class ICEBERG_EXPORT InheritableMetadata {
 
   /// \brief Apply inheritable metadata to a manifest entry.
   /// \param entry The manifest entry to modify.
-  /// \return The modified manifest entry with inherited metadata applied.
+  /// \return Status indicating success or failure.
   virtual Status Apply(ManifestEntry& entry) = 0;
 };
 
@@ -61,9 +59,6 @@ class ICEBERG_EXPORT BaseInheritableMetadata : public InheritableMetadata {
   BaseInheritableMetadata(int32_t spec_id, int64_t snapshot_id, int64_t sequence_number,
                           std::string manifest_location);
 
-  /// \brief Apply inheritance rules to a manifest entry.
-  /// \param entry The manifest entry to modify.
-  /// \return The modified manifest entry.
   Status Apply(ManifestEntry& entry) override;
 
  private:
@@ -76,9 +71,6 @@ class ICEBERG_EXPORT BaseInheritableMetadata : public InheritableMetadata {
 /// \brief Empty implementation that applies no inheritance.
 class ICEBERG_EXPORT EmptyInheritableMetadata : public InheritableMetadata {
  public:
-  /// \brief Apply no inheritance - returns the entry unchanged.
-  /// \param entry The manifest entry (unchanged).
-  /// \return The manifest entry.
   Status Apply(ManifestEntry& entry) override;
 };
 
@@ -89,9 +81,6 @@ class ICEBERG_EXPORT CopyInheritableMetadata : public InheritableMetadata {
   /// \param snapshot_id The snapshot ID to use for copying.
   explicit CopyInheritableMetadata(int64_t snapshot_id);
 
-  /// \brief Apply copy inheritance rules.
-  /// \param entry The manifest entry to modify.
-  /// \return The modified manifest entry.
   Status Apply(ManifestEntry& entry) override;
 
  private:

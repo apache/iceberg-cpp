@@ -49,12 +49,12 @@ class ManifestReaderTestBase : public TempFileTestBase {
                            std::shared_ptr<Schema> partition_schema = nullptr) {
     std::string path = GetResourcePath(resource_name);
     auto manifest_reader_result = ManifestReader::Make(path, file_io_, partition_schema);
-    ASSERT_EQ(manifest_reader_result.has_value(), true)
+    ASSERT_TRUE(manifest_reader_result.has_value())
         << manifest_reader_result.error().message;
 
     auto manifest_reader = std::move(manifest_reader_result.value());
     auto read_result = manifest_reader->Entries();
-    ASSERT_EQ(read_result.has_value(), true) << read_result.error().message;
+    ASSERT_TRUE(read_result.has_value()) << read_result.error().message;
     ASSERT_EQ(read_result.value().size(), expected_entries.size());
     ASSERT_EQ(read_result.value(), expected_entries);
   }
@@ -65,12 +65,12 @@ class ManifestReaderTestBase : public TempFileTestBase {
       std::shared_ptr<Schema> partition_schema = nullptr) {
     auto manifest_reader_result =
         ManifestReader::Make(manifest_file, file_io_, partition_schema);
-    ASSERT_EQ(manifest_reader_result.has_value(), true)
+    ASSERT_TRUE(manifest_reader_result.has_value())
         << manifest_reader_result.error().message;
 
     auto manifest_reader = std::move(manifest_reader_result.value());
     auto read_result = manifest_reader->Entries();
-    ASSERT_EQ(read_result.has_value(), true) << read_result.error().message;
+    ASSERT_TRUE(read_result.has_value()) << read_result.error().message;
     ASSERT_EQ(read_result.value().size(), expected_entries.size());
     ASSERT_EQ(read_result.value(), expected_entries);
   }
@@ -207,7 +207,7 @@ class ManifestReaderV2Test : public ManifestReaderTestBase {
   }
 
   std::vector<ManifestEntry> PrepareMetadataInheritanceTestData() {
-    return CreateV2TestData(15, 12);
+    return CreateV2TestData(/*sequence_number=*/15, /*partition_spec_id*/ 12);
   }
 };
 
