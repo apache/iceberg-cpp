@@ -544,7 +544,8 @@ Result<std::vector<ManifestEntry>> ManifestReaderImpl::Entries() const {
 
   // Apply inheritance to all entries
   for (auto& entry : manifest_entries) {
-    ICEBERG_ASSIGN_OR_RAISE(entry, inheritable_metadata_->Apply(entry));
+    auto status = inheritable_metadata_->Apply(entry);
+    ICEBERG_RETURN_UNEXPECTED(status);
   }
 
   return manifest_entries;

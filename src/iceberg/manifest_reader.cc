@@ -33,8 +33,8 @@ Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
     const ManifestFile& manifest, std::shared_ptr<FileIO> file_io,
     std::shared_ptr<Schema> partition_schema) {
   auto manifest_entry_schema = ManifestEntry::TypeFromPartitionType(partition_schema);
-  auto schema_unique = FromStructType(std::move(*manifest_entry_schema), std::nullopt);
-  auto schema = std::shared_ptr<Schema>(std::move(schema_unique));
+  std::shared_ptr<Schema> schema =
+      FromStructType(std::move(*manifest_entry_schema), std::nullopt);
 
   ICEBERG_ASSIGN_OR_RAISE(
       auto reader,

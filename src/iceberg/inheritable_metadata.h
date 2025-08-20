@@ -46,7 +46,7 @@ class ICEBERG_EXPORT InheritableMetadata {
   /// \brief Apply inheritable metadata to a manifest entry.
   /// \param entry The manifest entry to modify.
   /// \return The modified manifest entry with inherited metadata applied.
-  virtual Result<ManifestEntry> Apply(ManifestEntry& entry) = 0;
+  virtual Status Apply(ManifestEntry& entry) = 0;
 };
 
 /// \brief Base implementation of InheritableMetadata that handles standard inheritance
@@ -64,7 +64,7 @@ class ICEBERG_EXPORT BaseInheritableMetadata : public InheritableMetadata {
   /// \brief Apply inheritance rules to a manifest entry.
   /// \param entry The manifest entry to modify.
   /// \return The modified manifest entry.
-  Result<ManifestEntry> Apply(ManifestEntry& entry) override;
+  Status Apply(ManifestEntry& entry) override;
 
  private:
   int32_t spec_id_;
@@ -79,7 +79,7 @@ class ICEBERG_EXPORT EmptyInheritableMetadata : public InheritableMetadata {
   /// \brief Apply no inheritance - returns the entry unchanged.
   /// \param entry The manifest entry (unchanged).
   /// \return The manifest entry.
-  Result<ManifestEntry> Apply(ManifestEntry& entry) override;
+  Status Apply(ManifestEntry& entry) override;
 };
 
 /// \brief Metadata inheritance for copying manifests before commit.
@@ -92,7 +92,7 @@ class ICEBERG_EXPORT CopyInheritableMetadata : public InheritableMetadata {
   /// \brief Apply copy inheritance rules.
   /// \param entry The manifest entry to modify.
   /// \return The modified manifest entry.
-  Result<ManifestEntry> Apply(ManifestEntry& entry) override;
+  Status Apply(ManifestEntry& entry) override;
 
  private:
   int64_t snapshot_id_;

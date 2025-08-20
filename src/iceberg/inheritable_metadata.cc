@@ -34,13 +34,14 @@ BaseInheritableMetadata::BaseInheritableMetadata(int32_t spec_id, int64_t snapsh
       sequence_number_(sequence_number),
       manifest_location_(std::move(manifest_location)) {}
 
-Result<ManifestEntry> BaseInheritableMetadata::Apply(ManifestEntry& entry) {
+Status BaseInheritableMetadata::Apply(ManifestEntry& entry) {
   if (!entry.snapshot_id.has_value()) {
     entry.snapshot_id = snapshot_id_;
   }
 
   // In v1 tables, the data sequence number is not persisted and can be safely defaulted
-  // to 0 In v2 tables, the data sequence number should be inherited iff the entry status
+  // to 0.
+  // In v2 tables, the data sequence number should be inherited iff the entry status
   // is ADDED
   if (!entry.sequence_number.has_value() &&
       (sequence_number_ == 0 || entry.status == ManifestStatus::kAdded)) {
@@ -48,7 +49,8 @@ Result<ManifestEntry> BaseInheritableMetadata::Apply(ManifestEntry& entry) {
   }
 
   // In v1 tables, the file sequence number is not persisted and can be safely defaulted
-  // to 0 In v2 tables, the file sequence number should be inherited iff the entry status
+  // to 0.
+  //  In v2 tables, the file sequence number should be inherited iff the entry status
   // is ADDED
   if (!entry.file_sequence_number.has_value() &&
       (sequence_number_ == 0 || entry.status == ManifestStatus::kAdded)) {
@@ -59,21 +61,23 @@ Result<ManifestEntry> BaseInheritableMetadata::Apply(ManifestEntry& entry) {
     entry.data_file->partition_spec_id = spec_id_;
   }
 
-  return entry;
+  return {};
 }
 
-Result<ManifestEntry> EmptyInheritableMetadata::Apply(ManifestEntry& entry) {
-  return entry;
+Status EmptyInheritableMetadata::Apply(ManifestEntry& entry) {
+  if (!entry.snapshot_id.has_value()) {
+    return InvalidArgument(
+        "Entries must have explicit snapshot ids if inherited metadata is empty");
+  }
+  return {};
 }
 
 CopyInheritableMetadata::CopyInheritableMetadata(int64_t snapshot_id)
     : snapshot_id_(snapshot_id) {}
 
-Result<ManifestEntry> CopyInheritableMetadata::Apply(ManifestEntry& entry) {
-  if (!entry.snapshot_id.has_value()) {
-    entry.snapshot_id = snapshot_id_;
-  }
-  return entry;
+Status CopyInheritableMetadata::Apply(ManifestEntry& entry) {
+  entry.snapshot_id = snapshot_id_;
+  return {};
 }
 
 Result<std::unique_ptr<InheritableMetadata>> InheritableMetadataFactory::Empty() {

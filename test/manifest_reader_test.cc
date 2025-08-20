@@ -27,6 +27,7 @@
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/manifest_entry.h"
+#include "iceberg/manifest_list.h"
 #include "iceberg/schema.h"
 #include "temp_file_test_base.h"
 #include "test_common.h"
