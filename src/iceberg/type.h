@@ -91,7 +91,10 @@ class ICEBERG_EXPORT NestedType : public Type {
   ///
   /// \note This is currently O(n) complexity.
   [[nodiscard]] virtual std::optional<std::reference_wrapper<const SchemaField>>
-  GetFieldByName(std::string_view name) const = 0;
+  GetFieldByName(std::string_view name, bool case_sensitive) const = 0;
+
+  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
+      std::string_view name) const;
 };
 
 /// \defgroup type-nested Nested Types
@@ -114,7 +117,9 @@ class ICEBERG_EXPORT StructType : public NestedType {
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldByIndex(
       int32_t index) const override;
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
-      std::string_view name) const override;
+      std::string_view name, bool case_sensitive) const override;
+  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
+      std::string_view name) const;
 
  protected:
   bool Equals(const Type& other) const override;
@@ -145,7 +150,9 @@ class ICEBERG_EXPORT ListType : public NestedType {
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldByIndex(
       int32_t index) const override;
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
-      std::string_view name) const override;
+      std::string_view name, bool case_sensitive) const override;
+  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
+      std::string_view name) const;
 
  protected:
   bool Equals(const Type& other) const override;
@@ -177,7 +184,9 @@ class ICEBERG_EXPORT MapType : public NestedType {
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldByIndex(
       int32_t index) const override;
   std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
-      std::string_view name) const override;
+      std::string_view name, bool case_sensitive) const override;
+  std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
+      std::string_view name) const;
 
  protected:
   bool Equals(const Type& other) const override;

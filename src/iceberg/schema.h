@@ -23,6 +23,7 @@
 /// Schemas for Iceberg tables.  This header contains the definition of Schema
 /// and any utility functions.  See iceberg/type.h and iceberg/field.h as well.
 
+#include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <string>
@@ -31,6 +32,7 @@
 #include "iceberg/iceberg_export.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/type.h"
+#include "iceberg/util/visit_type.h"
 
 namespace iceberg {
 
@@ -54,13 +56,42 @@ class ICEBERG_EXPORT Schema : public StructType {
 
   [[nodiscard]] std::string ToString() const override;
 
+  [[nodiscard]] std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
+      std::string_view name, bool case_sensitive) const override;
+
+  [[nodiscard]] std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
+      std::string_view name) const;
+
+  [[nodiscard]] std::optional<std::reference_wrapper<const SchemaField>> GetFieldById(
+      int32_t field_id) const override;
+
   friend bool operator==(const Schema& lhs, const Schema& rhs) { return lhs.Equals(rhs); }
+
+  mutable std::unordered_map<int, size_t> id_to_index_;
+  mutable std::unordered_map<std::string, size_t> name_to_index_;
+  mutable std::unordered_map<std::string, size_t> lowercase_name_to_index_;
+  mutable std::vector<SchemaField> full_schemafield_;
 
  private:
   /// \brief Compare two schemas for equality.
   [[nodiscard]] bool Equals(const Schema& other) const;
 
   const std::optional<int32_t> schema_id_;
+
+  void InitIdToIndexMap() const;
+  void InitNameToIndexMap() const;
+  void InitLowerCaseNameToIndexMap() const;
 };
 
+class SchemaFieldVisitor {
+ public:
+  Status Visit(const Type& type, std::unordered_map<int, size_t>& id_to_index,
+               std::vector<SchemaField>& full_schemafield);
+  std::string GetPath(const std::string& last_path, const std::string& field_name,
+                      bool case_sensitive);
+  Status Visit(const Type& type, std::unordered_map<std::string, size_t>& name_to_index,
+               std::string_view path,
+               std::unordered_map<std::string, size_t>& shortname_to_index,
+               std::string_view short_path, int& index, bool case_sensitive);
+};
 }  // namespace iceberg
