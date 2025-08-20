@@ -32,7 +32,7 @@ class ManifestEntryAdapterV2 : public ManifestEntryAdapter {
  public:
   ManifestEntryAdapterV2(std::optional<int64_t> snapshot_id,
                          std::shared_ptr<Schema> schema) {
-    // TODO: init v2 schema
+    // TODO(xiao.dong): init v2 schema
   }
   Status StartAppending() override { return {}; }
   Status Append(const ManifestEntry& entry) override { return {}; }
@@ -48,7 +48,7 @@ class ManifestFileAdapterV2 : public ManifestFileAdapter {
  public:
   ManifestFileAdapterV2(int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
                         int64_t sequence_number, std::shared_ptr<Schema> schema) {
-    // TODO: init v2 schema
+    // TODO(xiao.dong): init v2 schema
   }
   Status StartAppending() override { return {}; }
   Status Append(const ManifestFile& file) override { return {}; }
