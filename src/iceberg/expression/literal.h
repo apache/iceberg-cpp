@@ -144,6 +144,7 @@ class ICEBERG_EXPORT Literal {
   Literal(Value value, std::shared_ptr<PrimitiveType> type);
 
   friend class LiteralCaster;
+  friend class LiteralSerializer;
 
  private:
   Value value_;

@@ -19,6 +19,7 @@
 
 #include "iceberg/expression/literal.h"
 
+#include <algorithm>
 #include <limits>
 #include <numbers>
 #include <vector>
@@ -381,6 +382,199 @@ TEST(LiteralTest, DoubleZeroComparison) {
 
   // -0 should be less than +0
   EXPECT_EQ(neg_zero <=> pos_zero, std::partial_ordering::less);
+}
+
+void CheckBinaryRoundTrip(const std::vector<uint8_t>& input_bytes,
+                          const Literal& expected_literal,
+                          std::shared_ptr<PrimitiveType> type) {
+  // Deserialize from bytes
+  auto literal_result = Literal::Deserialize(input_bytes, type);
+  ASSERT_TRUE(literal_result.has_value());
+
+  // Check type and value are correct
+  EXPECT_EQ(literal_result->type()->type_id(), expected_literal.type()->type_id());
+  EXPECT_EQ(literal_result->ToString(), expected_literal.ToString());
+
+  // Serialize back to bytes
+  auto bytes_result = literal_result->Serialize();
+  ASSERT_TRUE(bytes_result.has_value());
+  EXPECT_EQ(*bytes_result, input_bytes);
+
+  // Deserialize again to verify
+  auto final_literal = Literal::Deserialize(*bytes_result, type);
+  ASSERT_TRUE(final_literal.has_value());
+  EXPECT_EQ(final_literal->type()->type_id(), expected_literal.type()->type_id());
+  EXPECT_EQ(final_literal->ToString(), expected_literal.ToString());
+}
+
+// Boolean binary serialization tests
+TEST(LiteralSerializationTest, BinaryBoolean) {
+  CheckBinaryRoundTrip({1}, Literal::Boolean(true), boolean());
+  CheckBinaryRoundTrip({0}, Literal::Boolean(false), boolean());
+}
+
+// Integer binary serialization tests
+TEST(LiteralSerializationTest, BinaryInt) {
+  CheckBinaryRoundTrip({32, 0, 0, 0}, Literal::Int(32), int32());
+}
+
+// Long binary serialization tests
+TEST(LiteralSerializationTest, BinaryLong) {
+  CheckBinaryRoundTrip({32, 0, 0, 0, 0, 0, 0, 0}, Literal::Long(32), int64());
+}
+
+// Float binary serialization tests
+TEST(LiteralSerializationTest, BinaryFloat) {
+  CheckBinaryRoundTrip({0, 0, 128, 63}, Literal::Float(1.0f), float32());
+}
+
+// Double binary serialization tests
+TEST(LiteralSerializationTest, BinaryDouble) {
+  CheckBinaryRoundTrip({0, 0, 0, 0, 0, 0, 240, 63}, Literal::Double(1.0), float64());
+}
+
+// String binary serialization tests
+TEST(LiteralSerializationTest, BinaryString) {
+  CheckBinaryRoundTrip({105, 99, 101, 98, 101, 114, 103}, Literal::String("iceberg"),
+                       string());
+}
+
+// Binary data type serialization tests
+TEST(LiteralSerializationTest, BinaryData) {
+  std::vector<uint8_t> data = {0x01, 0x02, 0x03, 0xFF};
+  CheckBinaryRoundTrip(data, Literal::Binary(data), binary());
+}
+
+// Type promotion tests - smaller types can be deserialized as larger types
+TEST(LiteralSerializationTest, TypePromotion) {
+  // 4-byte int data can be deserialized as long
+  std::vector<uint8_t> int_data = {32, 0, 0, 0};
+  auto long_result = Literal::Deserialize(int_data, int64());
+  ASSERT_TRUE(long_result.has_value());
+  EXPECT_EQ(long_result->type()->type_id(), TypeId::kLong);
+  EXPECT_EQ(long_result->ToString(), "32");
+
+  auto long_bytes = long_result->Serialize();
+  ASSERT_TRUE(long_bytes.has_value());
+  EXPECT_EQ(long_bytes->size(), 8);
+
+  // 4-byte float data can be deserialized as double
+  std::vector<uint8_t> float_data = {0, 0, 128, 63};
+  auto double_result = Literal::Deserialize(float_data, float64());
+  ASSERT_TRUE(double_result.has_value());
+  EXPECT_EQ(double_result->type()->type_id(), TypeId::kDouble);
+  EXPECT_EQ(double_result->ToString(), "1.000000");
+
+  auto double_bytes = double_result->Serialize();
+  ASSERT_TRUE(double_bytes.has_value());
+  EXPECT_EQ(double_bytes->size(), 8);
+}
+
+// Null value serialization tests
+TEST(LiteralSerializationTest, NullValues) {
+  // Empty byte array should deserialize to null
+  auto null_result = Literal::Deserialize({}, int32());
+  ASSERT_TRUE(null_result.has_value());
+  EXPECT_TRUE(null_result->IsNull());
+
+  // Null value serialization should return empty byte array
+  auto null_literal = Literal::Null(int32());
+  auto bytes_result = null_literal.Serialize();
+  ASSERT_TRUE(bytes_result.has_value());
+  EXPECT_TRUE(bytes_result->empty());
+}
+
+// Edge case serialization tests
+TEST(LiteralSerializationTest, EdgeCases) {
+  // Negative integers
+  CheckBinaryRoundTrip({224, 255, 255, 255}, Literal::Int(-32), int32());
+  CheckBinaryRoundTrip({224, 255, 255, 255, 255, 255, 255, 255}, Literal::Long(-32),
+                       int64());
+
+  // Empty string special handling: empty string -> empty bytes -> null conversion
+  auto empty_string = Literal::String("");
+  auto empty_bytes = empty_string.Serialize();
+  ASSERT_TRUE(empty_bytes.has_value());
+  EXPECT_TRUE(empty_bytes->empty());
+
+  // Empty bytes deserialize to null, not empty string
+  auto null_result = Literal::Deserialize(*empty_bytes, string());
+  ASSERT_TRUE(null_result.has_value());
+  EXPECT_TRUE(null_result->IsNull());
+
+  // Special floating point value serialization
+  auto nan_float = Literal::Float(std::numeric_limits<float>::quiet_NaN());
+  auto nan_bytes = nan_float.Serialize();
+  ASSERT_TRUE(nan_bytes.has_value());
+  EXPECT_EQ(nan_bytes->size(), 4);
+
+  auto inf_float = Literal::Float(std::numeric_limits<float>::infinity());
+  auto inf_bytes = inf_float.Serialize();
+  ASSERT_TRUE(inf_bytes.has_value());
+  EXPECT_EQ(inf_bytes->size(), 4);
+}
+
+// Error case serialization tests
+TEST(LiteralSerializationTest, ErrorCases) {
+  // AboveMax/BelowMin values cannot be serialized
+  auto long_literal =
+      Literal::Long(static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1);
+  auto above_max_result = long_literal.CastTo(int32());
+  ASSERT_TRUE(above_max_result.has_value());
+  EXPECT_TRUE(above_max_result->IsAboveMax());
+
+  auto serialize_result = above_max_result->Serialize();
+  EXPECT_FALSE(serialize_result.has_value());
+
+  // Insufficient data size for deserialization should fail
+  std::vector<uint8_t> insufficient_int_data = {0x01};  // Need 4 bytes but only have 1
+  auto insufficient_data = Literal::Deserialize(insufficient_int_data, int32());
+  EXPECT_FALSE(insufficient_data.has_value());
+
+  std::vector<uint8_t> insufficient_long_data = {
+      0x01, 0x02};  // Need 4 or 8 bytes but only have 2
+  auto insufficient_long = Literal::Deserialize(insufficient_long_data, int64());
+  EXPECT_FALSE(insufficient_long.has_value());
+
+  // Oversized decimal data should fail
+  std::vector<uint8_t> oversized_decimal(20, 0xFF);  // Exceeds 16-byte limit
+  auto oversized_result = Literal::Deserialize(oversized_decimal, decimal(10, 2));
+  EXPECT_FALSE(oversized_result.has_value());
+}
+
+// Fixed/UUID/Decimal type serialization tests
+TEST(LiteralSerializationTest, FixedUuidDecimal) {
+  // Fixed type - 16 bytes
+  std::vector<uint8_t> fixed_16_data(16, 0x42);
+  auto fixed_result = Literal::Deserialize(fixed_16_data, fixed(16));
+  ASSERT_TRUE(fixed_result.has_value());
+  auto fixed_bytes = fixed_result->Serialize();
+  ASSERT_TRUE(fixed_bytes.has_value());
+  EXPECT_EQ(*fixed_bytes, fixed_16_data);
+
+  // Fixed type - other sizes
+  std::vector<uint8_t> fixed_8_data(8, 0x33);
+  auto fixed_8_result = Literal::Deserialize(fixed_8_data, fixed(8));
+  ASSERT_TRUE(fixed_8_result.has_value());
+  auto fixed_8_bytes = fixed_8_result->Serialize();
+  ASSERT_TRUE(fixed_8_bytes.has_value());
+  EXPECT_EQ(*fixed_8_bytes, fixed_8_data);
+
+  // UUID type
+  std::vector<uint8_t> uuid_data(16, 0x55);
+  auto uuid_result = Literal::Deserialize(uuid_data, uuid());
+  ASSERT_TRUE(uuid_result.has_value());
+  auto uuid_bytes = uuid_result->Serialize();
+  ASSERT_TRUE(uuid_bytes.has_value());
+  EXPECT_EQ(*uuid_bytes, uuid_data);
+
+  // Decimal type
+  std::vector<uint8_t> decimal_data(16, 0x99);
+  auto decimal_result = Literal::Deserialize(decimal_data, decimal(10, 2));
+  ASSERT_TRUE(decimal_result.has_value());
+  auto decimal_bytes = decimal_result->Serialize();
+  ASSERT_TRUE(decimal_bytes.has_value());
+  EXPECT_EQ(*decimal_bytes, decimal_data);
 }
 
 }  // namespace iceberg
