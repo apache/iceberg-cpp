@@ -25,9 +25,8 @@
 #include <memory>
 #include <vector>
 
+#include "iceberg/file_writer.h"
 #include "iceberg/iceberg_export.h"
-#include "iceberg/manifest_entry.h"
-#include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
@@ -43,7 +42,7 @@ class ICEBERG_EXPORT ManifestWriter {
   /// \param file_io File IO implementation to use.
   /// \return A Result containing the writer or an error.
   static Result<std::unique_ptr<ManifestWriter>> MakeWriter(
-      std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
+      std::string_view manifest_location, std::shared_ptr<FileuuuIO> file_io,
       std::shared_ptr<Schema> partition_schema);
 };
 

@@ -19,12 +19,11 @@
 
 #include "iceberg/manifest_reader.h"
 
-#include <iceberg/schema_internal.h>
-
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/manifest_reader_internal.h"
 #include "iceberg/schema.h"
+#include "iceberg/schema_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {

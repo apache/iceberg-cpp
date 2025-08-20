@@ -25,7 +25,6 @@
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/snapshot.h"
-#include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
