@@ -21,9 +21,9 @@
 
 /// \file iceberg/v1_metadata.h
 
+#include "iceberg/manifest_adapter.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
-#include "iceberg/metadata_adapter.h"
 
 namespace iceberg {
 

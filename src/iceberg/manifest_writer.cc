@@ -26,7 +26,6 @@
 #include "iceberg/v1_metadata.h"
 #include "iceberg/v2_metadata.h"
 #include "iceberg/v3_metadata.h"
-#include "iceberg/v4_metadata.h"
 
 namespace iceberg {
 
@@ -67,14 +66,6 @@ class ManifestWriterImpl : public ManifestWriter {
   std::unique_ptr<ManifestEntryAdapter> adapter_;
 };
 
-std::shared_ptr<Schema> ParseSchema(std::shared_ptr<Schema> partition_schema) {
-  auto manifest_entry_schema =
-      ManifestEntry::TypeFromPartitionType(std::move(partition_schema));
-  auto fields_span = manifest_entry_schema->fields();
-  std::vector<SchemaField> fields(fields_span.begin(), fields_span.end());
-  return std::make_shared<Schema>(fields);
-}
-
 Result<std::unique_ptr<Writer>> OpenFileWriter(std::string_view location,
                                                const std::shared_ptr<Schema> schema,
                                                std::shared_ptr<FileIO> file_io) {
@@ -89,7 +80,12 @@ Result<std::unique_ptr<Writer>> OpenFileWriter(std::string_view location,
 Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV1Writer(
     std::optional<int64_t> snapshot_id, std::string_view manifest_location,
     std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> partition_schema) {
-  auto schema = ParseSchema(partition_schema);
+  // TODO(xiao.dong) parse v1 schema
+  auto manifest_entry_schema =
+      ManifestEntry::TypeFromPartitionType(std::move(partition_schema));
+  auto fields_span = manifest_entry_schema->fields();
+  std::vector<SchemaField> fields(fields_span.begin(), fields_span.end());
+  auto schema = std::make_shared<Schema>(fields);
   ICEBERG_ASSIGN_OR_RAISE(auto writer,
                           OpenFileWriter(manifest_location, schema, std::move(file_io)));
   auto adapter = std::make_unique<ManifestEntryAdapterV1>(snapshot_id, std::move(schema));
@@ -99,7 +95,12 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV1Writer(
 Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV2Writer(
     std::optional<int64_t> snapshot_id, std::string_view manifest_location,
     std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> partition_schema) {
-  auto schema = ParseSchema(partition_schema);
+  // TODO(xiao.dong) parse v2 schema
+  auto manifest_entry_schema =
+      ManifestEntry::TypeFromPartitionType(std::move(partition_schema));
+  auto fields_span = manifest_entry_schema->fields();
+  std::vector<SchemaField> fields(fields_span.begin(), fields_span.end());
+  auto schema = std::make_shared<Schema>(fields);
   ICEBERG_ASSIGN_OR_RAISE(auto writer,
                           OpenFileWriter(manifest_location, schema, std::move(file_io)));
   auto adapter = std::make_unique<ManifestEntryAdapterV2>(snapshot_id, std::move(schema));
@@ -110,22 +111,15 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV3Writer(
     std::optional<int64_t> snapshot_id, std::optional<int64_t> first_row_id,
     std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
     std::shared_ptr<Schema> partition_schema) {
-  auto schema = ParseSchema(partition_schema);
+  // TODO(xiao.dong) parse v3 schema
+  auto manifest_entry_schema =
+      ManifestEntry::TypeFromPartitionType(std::move(partition_schema));
+  auto fields_span = manifest_entry_schema->fields();
+  std::vector<SchemaField> fields(fields_span.begin(), fields_span.end());
+  auto schema = std::make_shared<Schema>(fields);
   ICEBERG_ASSIGN_OR_RAISE(auto writer,
                           OpenFileWriter(manifest_location, schema, std::move(file_io)));
   auto adapter = std::make_unique<ManifestEntryAdapterV3>(snapshot_id, first_row_id,
-                                                          std::move(schema));
-  return std::make_unique<ManifestWriterImpl>(std::move(writer), std::move(adapter));
-}
-
-Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV4Writer(
-    std::optional<int64_t> snapshot_id, std::optional<int64_t> first_row_id,
-    std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
-    std::shared_ptr<Schema> partition_schema) {
-  auto schema = ParseSchema(partition_schema);
-  ICEBERG_ASSIGN_OR_RAISE(auto writer,
-                          OpenFileWriter(manifest_location, schema, std::move(file_io)));
-  auto adapter = std::make_unique<ManifestEntryAdapterV4>(snapshot_id, first_row_id,
                                                           std::move(schema));
   return std::make_unique<ManifestWriterImpl>(std::move(writer), std::move(adapter));
 }
@@ -170,6 +164,7 @@ class ManifestListWriterImpl : public ManifestListWriter {
 Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV1Writer(
     int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
     std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io) {
+  // TODO(xiao.dong) parse v1 schema
   std::vector<SchemaField> fields(ManifestFile::Type().fields().begin(),
                                   ManifestFile::Type().fields().end());
   auto schema = std::make_shared<Schema>(fields);
@@ -184,6 +179,7 @@ Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV2Writer(
     int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
     int64_t sequence_number, std::string_view manifest_list_location,
     std::shared_ptr<FileIO> file_io) {
+  // TODO(xiao.dong) parse v2 schema
   std::vector<SchemaField> fields(ManifestFile::Type().fields().begin(),
                                   ManifestFile::Type().fields().end());
   auto schema = std::make_shared<Schema>(fields);
@@ -198,26 +194,13 @@ Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV3Writer(
     int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
     int64_t sequence_number, std::optional<int64_t> first_row_id,
     std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io) {
+  // TODO(xiao.dong) parse v3 schema
   std::vector<SchemaField> fields(ManifestFile::Type().fields().begin(),
                                   ManifestFile::Type().fields().end());
   auto schema = std::make_shared<Schema>(fields);
   ICEBERG_ASSIGN_OR_RAISE(
       auto writer, OpenFileWriter(manifest_list_location, schema, std::move(file_io)));
   auto adapter = std::make_unique<ManifestFileAdapterV3>(
-      snapshot_id, parent_snapshot_id, sequence_number, first_row_id, std::move(schema));
-  return std::make_unique<ManifestListWriterImpl>(std::move(writer), std::move(adapter));
-}
-
-Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV4Writer(
-    int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
-    int64_t sequence_number, std::optional<int64_t> first_row_id,
-    std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io) {
-  std::vector<SchemaField> fields(ManifestFile::Type().fields().begin(),
-                                  ManifestFile::Type().fields().end());
-  auto schema = std::make_shared<Schema>(fields);
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto writer, OpenFileWriter(manifest_list_location, schema, std::move(file_io)));
-  auto adapter = std::make_unique<ManifestFileAdapterV4>(
       snapshot_id, parent_snapshot_id, sequence_number, first_row_id, std::move(schema));
   return std::make_unique<ManifestListWriterImpl>(std::move(writer), std::move(adapter));
 }
