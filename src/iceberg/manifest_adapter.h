@@ -30,10 +30,10 @@
 namespace iceberg {
 
 // \brief Base class of adapter for v1v2v3v4 metadata.
-class ICEBERG_EXPORT MetadataAdapter {
+class ICEBERG_EXPORT ManifestAdapter {
  public:
-  MetadataAdapter() = default;
-  virtual ~MetadataAdapter() = default;
+  ManifestAdapter() = default;
+  virtual ~ManifestAdapter() = default;
 
   virtual Status StartAppending() = 0;
   virtual Result<ArrowArray> FinishAppending() = 0;
@@ -46,20 +46,20 @@ class ICEBERG_EXPORT MetadataAdapter {
 
 // \brief Implemented by different versions with different schemas to
 // append a list of `ManifestEntry`s to an `ArrowArray`.
-class ICEBERG_EXPORT ManifestEntryAdapter : public MetadataAdapter {
+class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
  public:
   ManifestEntryAdapter() = default;
-  virtual ~ManifestEntryAdapter() = default;
+  ~ManifestEntryAdapter() override = default;
 
   virtual Status Append(const ManifestEntry& entry) = 0;
 };
 
 // \brief Implemented by different versions with different schemas to
 // append a list of `ManifestFile`s to an `ArrowArray`.
-class ICEBERG_EXPORT ManifestFileAdapter : public MetadataAdapter {
+class ICEBERG_EXPORT ManifestFileAdapter : public ManifestAdapter {
  public:
   ManifestFileAdapter() = default;
-  virtual ~ManifestFileAdapter() = default;
+  ~ManifestFileAdapter() override = default;
 
   virtual Status Append(const ManifestFile& file) = 0;
 };
