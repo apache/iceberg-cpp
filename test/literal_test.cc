@@ -19,7 +19,6 @@
 
 #include "iceberg/expression/literal.h"
 
-#include <algorithm>
 #include <limits>
 #include <numbers>
 #include <vector>
@@ -407,45 +406,74 @@ void CheckBinaryRoundTrip(const std::vector<uint8_t>& input_bytes,
   EXPECT_EQ(final_literal->ToString(), expected_literal.ToString());
 }
 
-// Boolean binary serialization tests
+// binary serialization tests
 TEST(LiteralSerializationTest, BinaryBoolean) {
   CheckBinaryRoundTrip({1}, Literal::Boolean(true), boolean());
   CheckBinaryRoundTrip({0}, Literal::Boolean(false), boolean());
 }
 
-// Integer binary serialization tests
 TEST(LiteralSerializationTest, BinaryInt) {
   CheckBinaryRoundTrip({32, 0, 0, 0}, Literal::Int(32), int32());
 }
 
-// Long binary serialization tests
 TEST(LiteralSerializationTest, BinaryLong) {
   CheckBinaryRoundTrip({32, 0, 0, 0, 0, 0, 0, 0}, Literal::Long(32), int64());
 }
 
-// Float binary serialization tests
 TEST(LiteralSerializationTest, BinaryFloat) {
   CheckBinaryRoundTrip({0, 0, 128, 63}, Literal::Float(1.0f), float32());
 }
 
-// Double binary serialization tests
 TEST(LiteralSerializationTest, BinaryDouble) {
   CheckBinaryRoundTrip({0, 0, 0, 0, 0, 0, 240, 63}, Literal::Double(1.0), float64());
 }
 
-// String binary serialization tests
 TEST(LiteralSerializationTest, BinaryString) {
   CheckBinaryRoundTrip({105, 99, 101, 98, 101, 114, 103}, Literal::String("iceberg"),
                        string());
 }
 
-// Binary data type serialization tests
+TEST(LiteralSerializationTest, BinaryDate) {
+  CheckBinaryRoundTrip({32, 0, 0, 0}, Literal::Date(32), date());
+  CheckBinaryRoundTrip({4, 77, 0, 0}, Literal::Date(19716), date());
+  CheckBinaryRoundTrip({33, 156, 255, 255}, Literal::Date(-25567), date());
+}
+
+TEST(LiteralSerializationTest, BinaryTime) {
+  CheckBinaryRoundTrip({32, 0, 0, 0, 0, 0, 0, 0}, Literal::Time(32), time());
+  CheckBinaryRoundTrip({0, 176, 235, 14, 10, 0, 0, 0}, Literal::Time(43200000000LL),
+                       time());
+  CheckBinaryRoundTrip({128, 81, 13, 42, 12, 0, 0, 0}, Literal::Time(52245123456LL),
+                       time());
+}
+
+TEST(LiteralSerializationTest, BinaryTimestamp) {
+  CheckBinaryRoundTrip({32, 0, 0, 0, 0, 0, 0, 0}, Literal::Timestamp(32), timestamp());
+  CheckBinaryRoundTrip({0, 224, 55, 59, 1, 93, 3, 0},
+                       Literal::Timestamp(946684800000000LL), timestamp());
+  CheckBinaryRoundTrip({128, 209, 74, 105, 86, 13, 6, 0},
+                       Literal::Timestamp(1703514645123456LL), timestamp());
+  CheckBinaryRoundTrip({255, 255, 255, 255, 255, 255, 255, 255}, Literal::Timestamp(-1),
+                       timestamp());
+}
+
+TEST(LiteralSerializationTest, BinaryTimestampTz) {
+  CheckBinaryRoundTrip({32, 0, 0, 0, 0, 0, 0, 0}, Literal::TimestampTz(32),
+                       timestamp_tz());
+  CheckBinaryRoundTrip({0, 224, 55, 59, 1, 93, 3, 0},
+                       Literal::TimestampTz(946684800000000LL), timestamp_tz());
+  CheckBinaryRoundTrip({128, 209, 74, 105, 86, 13, 6, 0},
+                       Literal::TimestampTz(1703514645123456LL), timestamp_tz());
+  CheckBinaryRoundTrip({255, 255, 255, 255, 255, 255, 255, 255}, Literal::TimestampTz(-1),
+                       timestamp_tz());
+}
+
 TEST(LiteralSerializationTest, BinaryData) {
   std::vector<uint8_t> data = {0x01, 0x02, 0x03, 0xFF};
   CheckBinaryRoundTrip(data, Literal::Binary(data), binary());
 }
 
-// Type promotion tests - smaller types can be deserialized as larger types
+// Type promotion tests
 TEST(LiteralSerializationTest, TypePromotion) {
   // 4-byte int data can be deserialized as long
   std::vector<uint8_t> int_data = {32, 0, 0, 0};
@@ -512,6 +540,27 @@ TEST(LiteralSerializationTest, EdgeCases) {
   auto inf_bytes = inf_float.Serialize();
   ASSERT_TRUE(inf_bytes.has_value());
   EXPECT_EQ(inf_bytes->size(), 4);
+}
+
+// ToString formatting tests for date/time types
+TEST(LiteralFormattingTest, DateTimeToString) {
+  // Date formatting tests
+  EXPECT_EQ(Literal::Date(0).ToString(), "1970-01-01");
+  EXPECT_EQ(Literal::Date(-25567).ToString(), "1900-01-01");
+
+  // Time formatting tests
+  EXPECT_EQ(Literal::Time(0).ToString(), "00:00:00.000000");
+  EXPECT_EQ(Literal::Time(52245123456LL).ToString(), "14:30:45.123456");
+
+  // Timestamp formatting tests
+  EXPECT_EQ(Literal::Timestamp(0).ToString(), "1970-01-01T00:00:00.000000");
+  EXPECT_EQ(Literal::Timestamp(1703514645123456LL).ToString(),
+            "2023-12-25T14:30:45.123456");
+
+  // TimestampTz formatting tests
+  EXPECT_EQ(Literal::TimestampTz(0).ToString(), "1970-01-01T00:00:00.000000+00:00");
+  EXPECT_EQ(Literal::TimestampTz(1703514645123456LL).ToString(),
+            "2023-12-25T14:30:45.123456+00:00");
 }
 
 // Error case serialization tests

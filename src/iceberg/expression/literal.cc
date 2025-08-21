@@ -21,11 +21,15 @@
 
 #include <algorithm>
 #include <bit>
+#include <chrono>
 #include <cmath>
 #include <concepts>
 #include <cstring>
+#include <iomanip>
+#include <sstream>
 
 #include "iceberg/exception.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -400,13 +404,21 @@ std::string Literal::ToString() const {
       }
       return result;
     }
+    case TypeId::kDate: {
+      return FormatDate(std::get<int32_t>(value_));
+    }
+    case TypeId::kTime: {
+      return FormatTime(std::get<int64_t>(value_));
+    }
+    case TypeId::kTimestamp: {
+      return FormatTimestamp(std::get<int64_t>(value_));
+    }
+    case TypeId::kTimestampTz: {
+      return FormatTimestampTz(std::get<int64_t>(value_));
+    }
     case TypeId::kDecimal:
     case TypeId::kUuid:
-    case TypeId::kFixed:
-    case TypeId::kDate:
-    case TypeId::kTime:
-    case TypeId::kTimestamp:
-    case TypeId::kTimestampTz: {
+    case TypeId::kFixed: {
       throw IcebergError("Not implemented: ToString for " + type_->ToString());
     }
     default: {
@@ -602,28 +614,19 @@ Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
 
   switch (type_id) {
     case TypeId::kBoolean: {
-      auto result = ReadLittleEndian<uint8_t>(data);
-      if (!result) {
-        return std::unexpected<Error>(result.error());
-      }
+      ICEBERG_ASSIGN_OR_RAISE(auto value, ReadLittleEndian<uint8_t>(data));
       // 0x00 for false, non-zero byte for true
-      return Literal::Boolean(*result != 0x00);
+      return Literal::Boolean(value != 0x00);
     }
 
     case TypeId::kInt: {
-      auto result = ReadLittleEndian<int32_t>(data);
-      if (!result) {
-        return std::unexpected<Error>(result.error());
-      }
-      return Literal::Int(*result);
+      ICEBERG_ASSIGN_OR_RAISE(auto value, ReadLittleEndian<int32_t>(data));
+      return Literal::Int(value);
     }
 
     case TypeId::kDate: {
-      auto result = ReadLittleEndian<int32_t>(data);
-      if (!result) {
-        return std::unexpected<Error>(result.error());
-      }
-      return Literal::Date(*result);
+      ICEBERG_ASSIGN_OR_RAISE(auto value, ReadLittleEndian<int32_t>(data));
+      return Literal::Date(value);
     }
 
     case TypeId::kLong:
@@ -634,18 +637,12 @@ Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
 
       if (data.size() == 4) {
         // Type was promoted from int to long
-        auto int_result = ReadLittleEndian<int32_t>(data);
-        if (!int_result) {
-          return std::unexpected<Error>(int_result.error());
-        }
-        value = static_cast<int64_t>(*int_result);
+        ICEBERG_ASSIGN_OR_RAISE(auto int_value, ReadLittleEndian<int32_t>(data));
+        value = static_cast<int64_t>(int_value);
       } else if (data.size() == 8) {
         // Standard 8-byte long
-        auto long_result = ReadLittleEndian<int64_t>(data);
-        if (!long_result) {
-          return std::unexpected<Error>(long_result.error());
-        }
-        value = *long_result;
+        ICEBERG_ASSIGN_OR_RAISE(auto long_value, ReadLittleEndian<int64_t>(data));
+        value = long_value;
       } else {
         return InvalidArgument("{} requires 4 or 8 bytes, got {}",
                                GetLongTypeName(type_id), data.size());
@@ -655,28 +652,19 @@ Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
     }
 
     case TypeId::kFloat: {
-      auto result = ReadLittleEndian<float>(data);
-      if (!result) {
-        return std::unexpected<Error>(result.error());
-      }
-      return Literal::Float(*result);
+      ICEBERG_ASSIGN_OR_RAISE(auto value, ReadLittleEndian<float>(data));
+      return Literal::Float(value);
     }
 
     case TypeId::kDouble: {
       if (data.size() == 4) {
         // Type was promoted from float to double
-        auto float_result = ReadLittleEndian<float>(data);
-        if (!float_result) {
-          return std::unexpected<Error>(float_result.error());
-        }
-        return Literal::Double(static_cast<double>(*float_result));
+        ICEBERG_ASSIGN_OR_RAISE(auto float_value, ReadLittleEndian<float>(data));
+        return Literal::Double(static_cast<double>(float_value));
       } else if (data.size() == 8) {
         // Standard 8-byte double
-        auto double_result = ReadLittleEndian<double>(data);
-        if (!double_result) {
-          return std::unexpected<Error>(double_result.error());
-        }
-        return Literal::Double(*double_result);
+        ICEBERG_ASSIGN_OR_RAISE(auto double_value, ReadLittleEndian<double>(data));
+        return Literal::Double(double_value);
       } else {
         return InvalidArgument("Double requires 4 or 8 bytes, got {}", data.size());
       }
@@ -703,11 +691,8 @@ Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
     }
 
     case TypeId::kUuid: {
-      auto uuid_result = ReadBigEndian16(data);
-      if (!uuid_result) {
-        return std::unexpected<Error>(uuid_result.error());
-      }
-      return Literal(Literal::Value{*uuid_result}, type);
+      ICEBERG_ASSIGN_OR_RAISE(auto uuid_value, ReadBigEndian16(data));
+      return Literal(Literal::Value{uuid_value}, type);
     }
 
     case TypeId::kDecimal: {
@@ -730,6 +715,56 @@ Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
 
   // Should not reach here
   return InvalidArgument("Unexpected error in deserialization");
+}
+
+// Literal formatting member functions
+
+std::string Literal::FormatDate(int32_t days_since_epoch) const {
+  // Convert days since Unix epoch to date
+  auto time_point =
+      std::chrono::system_clock::time_point{} + std::chrono::days{days_since_epoch};
+  auto date = std::chrono::floor<std::chrono::days>(time_point);
+  auto ymd = std::chrono::year_month_day{date};
+
+  std::ostringstream oss;
+  oss << static_cast<int>(ymd.year()) << "-" << std::setfill('0') << std::setw(2)
+      << static_cast<unsigned>(ymd.month()) << "-" << std::setfill('0') << std::setw(2)
+      << static_cast<unsigned>(ymd.day());
+  return oss.str();
+}
+
+std::string Literal::FormatTime(int64_t microseconds_since_midnight) const {
+  auto hours = microseconds_since_midnight / (1000000LL * 3600);
+  auto minutes = (microseconds_since_midnight % (1000000LL * 3600)) / (1000000LL * 60);
+  auto seconds = (microseconds_since_midnight % (1000000LL * 60)) / 1000000LL;
+  auto micros = microseconds_since_midnight % 1000000LL;
+
+  std::ostringstream oss;
+  oss << std::setfill('0') << std::setw(2) << hours << ":" << std::setfill('0')
+      << std::setw(2) << minutes << ":" << std::setfill('0') << std::setw(2) << seconds
+      << "." << std::setfill('0') << std::setw(6) << micros;
+  return oss.str();
+}
+
+std::string Literal::FormatTimestamp(int64_t microseconds_since_epoch) const {
+  auto time_point = std::chrono::system_clock::time_point{} +
+                    std::chrono::microseconds{microseconds_since_epoch};
+  auto date = std::chrono::floor<std::chrono::days>(time_point);
+  auto time_of_day = time_point - date;
+  auto micros_of_day =
+      std::chrono::duration_cast<std::chrono::microseconds>(time_of_day).count();
+
+  auto ymd = std::chrono::year_month_day{date};
+
+  std::ostringstream oss;
+  oss << static_cast<int>(ymd.year()) << "-" << std::setfill('0') << std::setw(2)
+      << static_cast<unsigned>(ymd.month()) << "-" << std::setfill('0') << std::setw(2)
+      << static_cast<unsigned>(ymd.day()) << "T" << FormatTime(micros_of_day);
+  return oss.str();
+}
+
+std::string Literal::FormatTimestampTz(int64_t microseconds_since_epoch) const {
+  return FormatTimestamp(microseconds_since_epoch) + "+00:00";
 }
 
 }  // namespace iceberg
