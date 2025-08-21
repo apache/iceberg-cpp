@@ -29,42 +29,29 @@
 
 namespace iceberg {
 
-/// \brief Write manifest files to a manifest list file.
-class ManifestWriterImpl : public ManifestWriter {
- public:
-  ManifestWriterImpl(std::unique_ptr<Writer> writer,
-                     std::unique_ptr<ManifestEntryAdapter> adapter)
-      : writer_(std::move(writer)), adapter_(std::move(adapter)) {}
-
-  Status Add(const ManifestEntry& entry) override {
-    if (adapter_->size() >= kBatchSize) {
-      ICEBERG_ASSIGN_OR_RAISE(auto array, adapter_->FinishAppending());
-      ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
-      ICEBERG_RETURN_UNEXPECTED(adapter_->StartAppending());
-    }
-    return adapter_->Append(entry);
+Status ManifestWriter::Add(const ManifestEntry& entry) {
+  if (adapter_->size() >= kBatchSize) {
+    ICEBERG_ASSIGN_OR_RAISE(auto array, adapter_->FinishAppending());
+    ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
+    ICEBERG_RETURN_UNEXPECTED(adapter_->StartAppending());
   }
+  return adapter_->Append(entry);
+}
 
-  Status AddAll(const std::vector<ManifestEntry>& entries) override {
-    for (const auto& entry : entries) {
-      ICEBERG_RETURN_UNEXPECTED(Add(entry));
-    }
-    return {};
+Status ManifestWriter::AddAll(const std::vector<ManifestEntry>& entries) {
+  for (const auto& entry : entries) {
+    ICEBERG_RETURN_UNEXPECTED(Add(entry));
   }
+  return {};
+}
 
-  Status Close() override {
-    if (adapter_->size() > 0) {
-      ICEBERG_ASSIGN_OR_RAISE(auto array, adapter_->FinishAppending());
-      ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
-    }
-    return {};
+Status ManifestWriter::Close() {
+  if (adapter_->size() > 0) {
+    ICEBERG_ASSIGN_OR_RAISE(auto array, adapter_->FinishAppending());
+    ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
   }
-
- private:
-  static constexpr int64_t kBatchSize = 1024;
-  std::unique_ptr<Writer> writer_;
-  std::unique_ptr<ManifestEntryAdapter> adapter_;
-};
+  return {};
+}
 
 Result<std::unique_ptr<Writer>> OpenFileWriter(std::string_view location,
                                                const std::shared_ptr<Schema> schema,
@@ -89,7 +76,7 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV1Writer(
   ICEBERG_ASSIGN_OR_RAISE(auto writer,
                           OpenFileWriter(manifest_location, schema, std::move(file_io)));
   auto adapter = std::make_unique<ManifestEntryAdapterV1>(snapshot_id, std::move(schema));
-  return std::make_unique<ManifestWriterImpl>(std::move(writer), std::move(adapter));
+  return std::make_unique<ManifestWriter>(std::move(writer), std::move(adapter));
 }
 
 Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV2Writer(
@@ -104,7 +91,7 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV2Writer(
   ICEBERG_ASSIGN_OR_RAISE(auto writer,
                           OpenFileWriter(manifest_location, schema, std::move(file_io)));
   auto adapter = std::make_unique<ManifestEntryAdapterV2>(snapshot_id, std::move(schema));
-  return std::make_unique<ManifestWriterImpl>(std::move(writer), std::move(adapter));
+  return std::make_unique<ManifestWriter>(std::move(writer), std::move(adapter));
 }
 
 Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV3Writer(
@@ -121,45 +108,32 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV3Writer(
                           OpenFileWriter(manifest_location, schema, std::move(file_io)));
   auto adapter = std::make_unique<ManifestEntryAdapterV3>(snapshot_id, first_row_id,
                                                           std::move(schema));
-  return std::make_unique<ManifestWriterImpl>(std::move(writer), std::move(adapter));
+  return std::make_unique<ManifestWriter>(std::move(writer), std::move(adapter));
 }
 
-/// \brief Write manifest files to a manifest list file.
-class ManifestListWriterImpl : public ManifestListWriter {
- public:
-  ManifestListWriterImpl(std::unique_ptr<Writer> writer,
-                         std::unique_ptr<ManifestFileAdapter> adapter)
-      : writer_(std::move(writer)), adapter_(std::move(adapter)) {}
-
-  Status Add(const ManifestFile& file) override {
-    if (adapter_->size() >= kBatchSize) {
-      ICEBERG_ASSIGN_OR_RAISE(auto array, adapter_->FinishAppending());
-      ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
-      ICEBERG_RETURN_UNEXPECTED(adapter_->StartAppending());
-    }
-    return adapter_->Append(file);
+Status ManifestListWriter::Add(const ManifestFile& file) {
+  if (adapter_->size() >= kBatchSize) {
+    ICEBERG_ASSIGN_OR_RAISE(auto array, adapter_->FinishAppending());
+    ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
+    ICEBERG_RETURN_UNEXPECTED(adapter_->StartAppending());
   }
+  return adapter_->Append(file);
+}
 
-  Status AddAll(const std::vector<ManifestFile>& files) override {
-    for (const auto& file : files) {
-      ICEBERG_RETURN_UNEXPECTED(Add(file));
-    }
-    return {};
+Status ManifestListWriter::AddAll(const std::vector<ManifestFile>& files) {
+  for (const auto& file : files) {
+    ICEBERG_RETURN_UNEXPECTED(Add(file));
   }
+  return {};
+}
 
-  Status Close() override {
-    if (adapter_->size() > 0) {
-      ICEBERG_ASSIGN_OR_RAISE(auto array, adapter_->FinishAppending());
-      ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
-    }
-    return {};
+Status ManifestListWriter::Close() {
+  if (adapter_->size() > 0) {
+    ICEBERG_ASSIGN_OR_RAISE(auto array, adapter_->FinishAppending());
+    ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
   }
-
- private:
-  static constexpr int64_t kBatchSize = 1024;
-  std::unique_ptr<Writer> writer_;
-  std::unique_ptr<ManifestFileAdapter> adapter_;
-};
+  return {};
+}
 
 Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV1Writer(
     int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
@@ -172,7 +146,7 @@ Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV1Writer(
       auto writer, OpenFileWriter(manifest_list_location, schema, std::move(file_io)));
   auto adapter = std::make_unique<ManifestFileAdapterV1>(snapshot_id, parent_snapshot_id,
                                                          std::move(schema));
-  return std::make_unique<ManifestListWriterImpl>(std::move(writer), std::move(adapter));
+  return std::make_unique<ManifestListWriter>(std::move(writer), std::move(adapter));
 }
 
 Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV2Writer(
@@ -187,7 +161,7 @@ Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV2Writer(
       auto writer, OpenFileWriter(manifest_list_location, schema, std::move(file_io)));
   auto adapter = std::make_unique<ManifestFileAdapterV2>(
       snapshot_id, parent_snapshot_id, sequence_number, std::move(schema));
-  return std::make_unique<ManifestListWriterImpl>(std::move(writer), std::move(adapter));
+  return std::make_unique<ManifestListWriter>(std::move(writer), std::move(adapter));
 }
 
 Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV3Writer(
@@ -202,7 +176,7 @@ Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV3Writer(
       auto writer, OpenFileWriter(manifest_list_location, schema, std::move(file_io)));
   auto adapter = std::make_unique<ManifestFileAdapterV3>(
       snapshot_id, parent_snapshot_id, sequence_number, first_row_id, std::move(schema));
-  return std::make_unique<ManifestListWriterImpl>(std::move(writer), std::move(adapter));
+  return std::make_unique<ManifestListWriter>(std::move(writer), std::move(adapter));
 }
 
 }  // namespace iceberg

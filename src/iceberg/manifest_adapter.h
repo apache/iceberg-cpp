@@ -29,38 +29,39 @@
 
 namespace iceberg {
 
-// \brief Implemented by different versions with different schemas to
-// append a list of `ManifestEntry`s to an `ArrowArray`.
-class ManifestEntryAdapter {
+// \brief Base class of adapter for v1v2v3v4 metadata.
+class ICEBERG_EXPORT MetadataAdapter {
  public:
-  ManifestEntryAdapter() = default;
-  virtual ~ManifestEntryAdapter() = default;
+  MetadataAdapter() = default;
+  virtual ~MetadataAdapter() = default;
 
   virtual Status StartAppending() = 0;
-  virtual Status Append(const ManifestEntry& entry) = 0;
   virtual Result<ArrowArray> FinishAppending() = 0;
   int64_t size() const { return size_; }
 
  protected:
-  ArrowArray array_;  // array to append `ManifestEntry`s
+  ArrowArray array_;
   int64_t size_ = 0;
 };
 
 // \brief Implemented by different versions with different schemas to
+// append a list of `ManifestEntry`s to an `ArrowArray`.
+class ICEBERG_EXPORT ManifestEntryAdapter : public MetadataAdapter {
+ public:
+  ManifestEntryAdapter() = default;
+  virtual ~ManifestEntryAdapter() = default;
+
+  virtual Status Append(const ManifestEntry& entry) = 0;
+};
+
+// \brief Implemented by different versions with different schemas to
 // append a list of `ManifestFile`s to an `ArrowArray`.
-class ManifestFileAdapter {
+class ICEBERG_EXPORT ManifestFileAdapter : public MetadataAdapter {
  public:
   ManifestFileAdapter() = default;
   virtual ~ManifestFileAdapter() = default;
 
-  virtual Status StartAppending() = 0;
   virtual Status Append(const ManifestFile& file) = 0;
-  virtual Result<ArrowArray> FinishAppending() = 0;
-  int64_t size() const { return size_; }
-
- protected:
-  ArrowArray array_;  // array to append `ManifestFile`s
-  int64_t size_ = 0;
 };
 
 }  // namespace iceberg
