@@ -58,10 +58,9 @@ class ManifestReaderV1Test : public TempFileTestBase {
     std::vector<int64_t> partitions = {447696, 473976, 465192, 447672};
 
     // TODO(Li Feiyang): The Decimal type and its serialization logic are not yet fully
-    // implemented
-    //       to support variable-length encoding as required by the Iceberg specification.
-    //       Using Literal::Binary as a temporary substitute to represent the raw bytes
-    //       for the decimal values.
+    // implemented to support variable-length encoding as required by the Iceberg
+    // specification. Using Literal::Binary as a temporary substitute to represent the raw
+    // bytes for the decimal values.
     std::vector<std::map<int32_t, std::vector<uint8_t>>> bounds = {
         {{1, iceberg::Literal::Long(1234).Serialize().value()},
          {2, iceberg::Literal::Long(5678).Serialize().value()},
