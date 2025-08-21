@@ -24,6 +24,7 @@
 #include <bit>
 #include <cassert>
 #include <charconv>
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <format>
