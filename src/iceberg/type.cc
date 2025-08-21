@@ -70,6 +70,7 @@ std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByI
   }
   return fields_[index];
 }
+// todo
 std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByName(
     std::string_view name, bool case_sensitive) const {
   // N.B. duplicate names are not permitted (looking at the Java
@@ -127,6 +128,7 @@ std::optional<std::reference_wrapper<const SchemaField>> ListType::GetFieldByInd
   }
   return std::nullopt;
 }
+// todo
 std::optional<std::reference_wrapper<const SchemaField>> ListType::GetFieldByName(
     std::string_view name, bool case_sensitive) const {
   if (name == element_.name()) {
@@ -189,6 +191,7 @@ std::optional<std::reference_wrapper<const SchemaField>> MapType::GetFieldByInde
   }
   return std::nullopt;
 }
+// todo
 std::optional<std::reference_wrapper<const SchemaField>> MapType::GetFieldByName(
     std::string_view name, bool case_sensitive) const {
   if (name == kKeyName) {

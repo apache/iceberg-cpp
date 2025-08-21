@@ -32,6 +32,7 @@
 #include "iceberg/iceberg_export.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/type.h"
+#include "iceberg/util/macros.h"
 #include "iceberg/util/visit_type.h"
 
 namespace iceberg {
@@ -56,21 +57,32 @@ class ICEBERG_EXPORT Schema : public StructType {
 
   [[nodiscard]] std::string ToString() const override;
 
-  [[nodiscard]] std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
-      std::string_view name, bool case_sensitive) const override;
+  ///\brief Get thd SchemaField By Name
+  ///
+  /// Short names for maps and lists are included for any name that does not conflict with
+  /// a canonical name. For example, a list, 'l', of structs with field 'x' will produce
+  /// short name 'l.x' in addition to canonical name 'l.element.x'. a map 'm', if its
+  /// value include a structs with field 'x' wil produce short name 'm.x' in addition to
+  /// canonical name 'm.value.x'
+  [[nodiscard]] Result<std::optional<std::reference_wrapper<const SchemaField>>>
+  FindFieldByName(std::string_view name, bool case_sensitive) const;
 
-  [[nodiscard]] std::optional<std::reference_wrapper<const SchemaField>> GetFieldByName(
-      std::string_view name) const;
+  [[nodiscard]] Result<std::optional<std::reference_wrapper<const SchemaField>>>
+  FindFieldByName(std::string_view name) const;
 
-  [[nodiscard]] std::optional<std::reference_wrapper<const SchemaField>> GetFieldById(
-      int32_t field_id) const override;
+  [[nodiscard]] Result<std::optional<std::reference_wrapper<const SchemaField>>>
+  FindFieldById(int32_t field_id) const;
 
   friend bool operator==(const Schema& lhs, const Schema& rhs) { return lhs.Equals(rhs); }
 
+  /// Mapping from field id to index of `full_schemafield_`.
   mutable std::unordered_map<int, size_t> id_to_index_;
+  /// Mapping from field name to index of `full_schemafield_`.
   mutable std::unordered_map<std::string, size_t> name_to_index_;
+  /// Mapping from field lowercase_name(suppoert case_insensitive query) to index of
+  /// `full_schemafield_`.
   mutable std::unordered_map<std::string, size_t> lowercase_name_to_index_;
-  mutable std::vector<SchemaField> full_schemafield_;
+  mutable std::vector<std::reference_wrapper<const SchemaField>> full_schemafield_;
 
  private:
   /// \brief Compare two schemas for equality.
@@ -78,20 +90,8 @@ class ICEBERG_EXPORT Schema : public StructType {
 
   const std::optional<int32_t> schema_id_;
 
-  void InitIdToIndexMap() const;
-  void InitNameToIndexMap() const;
-  void InitLowerCaseNameToIndexMap() const;
-};
-
-class SchemaFieldVisitor {
- public:
-  Status Visit(const Type& type, std::unordered_map<int, size_t>& id_to_index,
-               std::vector<SchemaField>& full_schemafield);
-  std::string GetPath(const std::string& last_path, const std::string& field_name,
-                      bool case_sensitive);
-  Status Visit(const Type& type, std::unordered_map<std::string, size_t>& name_to_index,
-               std::string_view path,
-               std::unordered_map<std::string, size_t>& shortname_to_index,
-               std::string_view short_path, int& index, bool case_sensitive);
+  Result<Status> InitIdToIndexMap() const;
+  Result<Status> InitNameToIndexMap() const;
+  Result<Status> InitLowerCaseNameToIndexMap() const;
 };
 }  // namespace iceberg
