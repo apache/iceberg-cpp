@@ -1216,6 +1216,24 @@ struct DecimalRealConversion {
   }
 };
 
+// Helper function used by Decimal::FromBigEndian
+static inline uint64_t UInt64FromBigEndian(const uint8_t* bytes, int32_t length) {
+  // We don't bounds check the length here because this is called by
+  // FromBigEndian that has a Decimal128 as its out parameters and
+  // that function is already checking the length of the bytes and only
+  // passes lengths between zero and eight.
+  uint64_t result = 0;
+  // Using memcpy instead of special casing for length
+  // and doing the conversion in 16, 32 parts, which could
+  // possibly create unaligned memory access on certain platforms
+  memcpy(reinterpret_cast<uint8_t*>(&result) + 8 - length, bytes, length);
+#if ICEBERG_LITTLE_ENDIAN
+  return std::byteswap(result);
+#else
+  return result;
+#endif
+}
+
 }  // namespace
 
 Result<Decimal> Decimal::FromReal(float x, int32_t precision, int32_t scale) {
@@ -1231,6 +1249,59 @@ Result<std::pair<Decimal, Decimal>> Decimal::GetWholeAndFraction(int32_t scale) 
 
   Decimal multiplier(kDecimal128PowersOfTen[scale]);
   return Divide(multiplier);
+}
+
+Result<Decimal> Decimal::FromBigEndian(const uint8_t* bytes, int32_t length) {
+  static constexpr int32_t kMinDecimalBytes = 1;
+  static constexpr int32_t kMaxDecimalBytes = 16;
+
+  int64_t high, low;
+
+  if (length < kMinDecimalBytes || length > kMaxDecimalBytes) {
+    return InvalidArgument(
+        "Decimal::FromBigEndian: length must be in the range [{}, {}], was {}",
+        kMinDecimalBytes, kMaxDecimalBytes, length);
+  }
+
+  // Bytes are coming in big-endian, so the first byte is the MSB and therefore holds the
+  // sign bit.
+  const bool is_negative = static_cast<int8_t>(bytes[0]) < 0;
+
+  // 1. Extract the high bytes
+  // Stop byte of the high bytes
+  const int32_t high_bits_offset = std::max(0, length - 8);
+  const auto high_bits = UInt64FromBigEndian(bytes, high_bits_offset);
+
+  if (high_bits_offset == 8) {
+    // Avoid undefined shift by 64 below
+    high = high_bits;
+  } else {
+    high = -1 * (is_negative && length < kMaxDecimalBytes);
+    // Shift left enough bits to make room for the incoming int64_t
+    high = SafeLeftShift(high, high_bits_offset * CHAR_BIT);
+    // Preserve the upper bits by inplace OR-ing the int64_t
+    high |= high_bits;
+  }
+
+  // 2. Extract the low bytes
+  // Stop byte of the low bytes
+  const int32_t low_bits_offset = std::min(length, 8);
+  const auto low_bits =
+      UInt64FromBigEndian(bytes + high_bits_offset, length - high_bits_offset);
+
+  if (low_bits_offset == 8) {
+    // Avoid undefined shift by 64 below
+    low = low_bits;
+  } else {
+    // Sign extend the low bits if necessary
+    low = -1 * (is_negative && length < 8);
+    // Shift left enough bits to make room for the incoming int64_t
+    low = SafeLeftShift(low, low_bits_offset * CHAR_BIT);
+    // Preserve the upper bits by inplace OR-ing the int64_t
+    low |= low_bits;
+  }
+
+  return Decimal(high, static_cast<uint64_t>(low));
 }
 
 Result<Decimal> Decimal::Rescale(int32_t orig_scale, int32_t new_scale) const {

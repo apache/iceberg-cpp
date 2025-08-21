@@ -18,6 +18,7 @@
  */
 #include "iceberg/expression/decimal.h"
 
+#include <algorithm>
 #include <array>
 #include <cmath>
 #include <cstdint>
@@ -898,5 +899,78 @@ TEST(TestDecimalToReal, ToDoublePrecision) {
 }
 
 #endif  // __MINGW32__
+
+TEST(DecimalTest, FromBigEndian) {
+  // We test out a variety of scenarios:
+  //
+  // * Positive values that are left shifted
+  //   and filled in with the same bit pattern
+  // * Negated of the positive values
+  // * Complement of the positive values
+  //
+  // For the positive values, we can call FromBigEndian
+  // with a length that is less than 16, whereas we must
+  // pass all 16 bytes for the negative and complement.
+  //
+  // We use a number of bit patterns to increase the coverage
+  // of scenarios
+  constexpr int WidthMinusOne = Decimal::kByteWidth - 1;
+
+  for (int32_t start : {1, 15, /* 00001111 */
+                        85,    /* 01010101 */
+                        127 /* 01111111 */}) {
+    Decimal value(start);
+    for (int ii = 0; ii < Decimal::kByteWidth; ++ii) {
+      auto native_endian = value.ToBytes();
+#if ICEBERG_LITTLE_ENDIAN
+      std::ranges::reverse(native_endian);
+#endif
+      // Limit the number of bytes we are passing to make
+      // sure that it works correctly. That's why all of the
+      // 'start' values don't have a 1 in the most significant
+      // bit place
+      auto result =
+          Decimal::FromBigEndian(native_endian.data() + WidthMinusOne - ii, ii + 1);
+      ASSERT_THAT(result, IsOk());
+      const Decimal& decimal = result.value();
+      EXPECT_EQ(decimal, value);
+
+      // Negate it
+      auto negated = -value;
+      native_endian = negated.ToBytes();
+
+#if ICEBERG_LITTLE_ENDIAN
+      // convert to big endian
+      std::ranges::reverse(native_endian);
+#endif
+      result = Decimal::FromBigEndian(native_endian.data() + WidthMinusOne - ii, ii + 1);
+      ASSERT_THAT(result, IsOk());
+      const Decimal& negated_decimal = result.value();
+      EXPECT_EQ(negated_decimal, negated);
+
+      // Take the complement
+      auto complement = ~value;
+      native_endian = complement.ToBytes();
+
+#if ICEBERG_LITTLE_ENDIAN
+      // convert to big endian
+      std::ranges::reverse(native_endian);
+#endif
+      result = Decimal::FromBigEndian(native_endian.data(), Decimal::kByteWidth);
+      ASSERT_THAT(result, IsOk());
+      const Decimal& complement_decimal = result.value();
+      EXPECT_EQ(complement_decimal, complement);
+
+      value <<= 2;
+      value += Decimal(start);
+    }
+  }
+}
+
+TEST(DecimalTest, FromBigEndianInvalid) {
+  ASSERT_THAT(Decimal::FromBigEndian(nullptr, -1), IsError(ErrorKind::kInvalidArgument));
+  ASSERT_THAT(Decimal::FromBigEndian(nullptr, Decimal::kByteWidth + 1),
+              IsError(ErrorKind::kInvalidArgument));
+}
 
 }  // namespace iceberg

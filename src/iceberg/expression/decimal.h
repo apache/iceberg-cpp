@@ -155,6 +155,11 @@ class ICEBERG_EXPORT Decimal {
   static Result<Decimal> FromReal(double real, int32_t precision, int32_t scale);
   static Result<Decimal> FromReal(float real, int32_t precision, int32_t scale);
 
+  /// \brief Convert from a big-endian byte representation. The length must be
+  ///        between 1 and 16.
+  /// \return error status if the length is an invalid value
+  static Result<Decimal> FromBigEndian(const uint8_t* data, int32_t length);
+
   /// \brief separate the integer and fractional parts for the given scale.
   Result<std::pair<Decimal, Decimal>> GetWholeAndFraction(int32_t scale) const;
 
@@ -182,6 +187,17 @@ class ICEBERG_EXPORT Decimal {
     } else {
       return ToDouble(scale);
     }
+  }
+
+  const uint8_t* native_endian_bytes() const {
+    return reinterpret_cast<const uint8_t*>(data_.data());
+  }
+
+  /// \brief Return the raw bytes of the value in native-endian byte order.
+  std::array<uint8_t, kByteWidth> ToBytes() const {
+    std::array<uint8_t, kByteWidth> out{{0}};
+    memcpy(out.data(), data_.data(), kByteWidth);
+    return out;
   }
 
   /// \brief Returns 1 if positive or zero, -1 if strictly negative.
