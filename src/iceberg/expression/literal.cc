@@ -106,22 +106,6 @@ Result<Literal> CreateLongTypeLiteral(int64_t value, TypeId type_id) {
   }
 }
 
-/// \brief Get type name for long-compatible types.
-constexpr const char* GetLongTypeName(TypeId type_id) {
-  switch (type_id) {
-    case TypeId::kLong:
-      return "Long";
-    case TypeId::kTime:
-      return "Time";
-    case TypeId::kTimestamp:
-      return "Timestamp";
-    case TypeId::kTimestampTz:
-      return "TimestampTz";
-    default:
-      return "Unknown";
-  }
-}
-
 }  // namespace
 
 /// \brief LiteralSerializer handles serialization/deserialization operations for Literal.
@@ -644,8 +628,22 @@ Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
         ICEBERG_ASSIGN_OR_RAISE(auto long_value, ReadLittleEndian<int64_t>(data));
         value = long_value;
       } else {
-        return InvalidArgument("{} requires 4 or 8 bytes, got {}",
-                               GetLongTypeName(type_id), data.size());
+        const char* type_name = [type_id]() {
+          switch (type_id) {
+            case TypeId::kLong:
+              return "Long";
+            case TypeId::kTime:
+              return "Time";
+            case TypeId::kTimestamp:
+              return "Timestamp";
+            case TypeId::kTimestampTz:
+              return "TimestampTz";
+            default:
+              return "Unknown";
+          }
+        }();
+        return InvalidArgument("{} requires 4 or 8 bytes, got {}", type_name,
+                               data.size());
       }
 
       return CreateLongTypeLiteral(value, type_id);
