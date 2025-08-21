@@ -24,9 +24,11 @@
 #include <bit>
 #include <cassert>
 #include <charconv>
+#include <climits>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <format>
 #include <iomanip>
 #include <iostream>
@@ -1336,6 +1338,12 @@ float Decimal::ToFloat(int32_t scale) const {
 
 double Decimal::ToDouble(int32_t scale) const {
   return DecimalRealConversion::ToReal<double>(*this, scale);
+}
+
+std::array<uint8_t, Decimal::kByteWidth> Decimal::ToBytes() const {
+  std::array<uint8_t, kByteWidth> out{{0}};
+  memcpy(out.data(), data_.data(), kByteWidth);
+  return out;
 }
 
 // Unary operators

@@ -168,7 +168,7 @@ class ICEBERG_EXPORT Decimal {
 
   /// \brief Whether this number fits in the given precision
   ///
-  /// Return true if the number of significant digits is less or equal to `precision`.
+  /// Returns true if the number of significant digits is less or equal to `precision`.
   bool FitsInPrecision(int32_t precision) const;
 
   /// \brief Convert to a floating-point number (scaled)
@@ -193,12 +193,8 @@ class ICEBERG_EXPORT Decimal {
     return reinterpret_cast<const uint8_t*>(data_.data());
   }
 
-  /// \brief Return the raw bytes of the value in native-endian byte order.
-  std::array<uint8_t, kByteWidth> ToBytes() const {
-    std::array<uint8_t, kByteWidth> out{{0}};
-    memcpy(out.data(), data_.data(), kByteWidth);
-    return out;
-  }
+  /// \brief Returns the raw bytes of the value in native-endian byte order.
+  std::array<uint8_t, kByteWidth> ToBytes() const;
 
   /// \brief Returns 1 if positive or zero, -1 if strictly negative.
   int64_t Sign() const { return 1 | (static_cast<int64_t>(data_[kHighIndex]) >> 63); }
