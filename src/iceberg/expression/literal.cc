@@ -570,13 +570,6 @@ Result<std::vector<uint8_t>> LiteralSerializer::ToBytes(const Literal& literal) 
       return result;
     }
 
-    case TypeId::kDecimal: {
-      // Stores unscaled value as two's-complement big-endian binary
-      const auto& decimal_bytes = std::get<std::array<uint8_t, 16>>(value);
-      WriteBigEndian16(result, decimal_bytes);
-      return result;
-    }
-
     default:
       return NotImplemented("Serialization for type {} is not supported",
                             literal.type()->ToString());

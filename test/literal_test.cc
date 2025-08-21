@@ -616,14 +616,6 @@ TEST(LiteralSerializationTest, FixedUuidDecimal) {
   auto uuid_bytes = uuid_result->Serialize();
   ASSERT_TRUE(uuid_bytes.has_value());
   EXPECT_EQ(*uuid_bytes, uuid_data);
-
-  // Decimal type
-  std::vector<uint8_t> decimal_data(16, 0x99);
-  auto decimal_result = Literal::Deserialize(decimal_data, decimal(10, 2));
-  ASSERT_TRUE(decimal_result.has_value());
-  auto decimal_bytes = decimal_result->Serialize();
-  ASSERT_TRUE(decimal_bytes.has_value());
-  EXPECT_EQ(*decimal_bytes, decimal_data);
 }
 
 }  // namespace iceberg
