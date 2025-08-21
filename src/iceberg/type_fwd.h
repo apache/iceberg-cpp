@@ -115,8 +115,11 @@ enum class SnapshotRefType;
 enum class TransformType;
 
 class Expression;
+class Literal;
 
+class DataTableScan;
 class FileScanTask;
+class ScanTask;
 class TableScan;
 class TableScanBuilder;
 
@@ -125,27 +128,13 @@ struct ManifestEntry;
 struct ManifestFile;
 struct ManifestList;
 
-class ManifestReader;
 class ManifestListReader;
-class ManifestWriter;
 class ManifestListWriter;
+class ManifestReader;
+class ManifestWriter;
 
 class Reader;
 class Writer;
-
-class Avro;
-
-class ScanTask;
-class DataTableScan;
-
-class Literal;
-
-class IcebergError;
-
-class True;
-class False;
-class And;
-class Or;
 
 class StructLike;
 class MetadataUpdate;
