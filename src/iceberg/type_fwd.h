@@ -127,16 +127,29 @@ struct ManifestList;
 
 class ManifestReader;
 class ManifestListReader;
+class ManifestWriter;
+class ManifestListWriter;
 
-/// ----------------------------------------------------------------------------
-/// TODO: Forward declarations below are not added yet.
-/// ----------------------------------------------------------------------------
+class Reader;
+class Writer;
+
+class Avro;
+
+class ScanTask;
+class DataTableScan;
+
+class Literal;
+
+class IcebergError;
+
+class True;
+class False;
+class And;
+class Or;
 
 class StructLike;
-
 class MetadataUpdate;
 class UpdateRequirement;
-
 class AppendFiles;
 
 }  // namespace iceberg
