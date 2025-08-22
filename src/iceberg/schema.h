@@ -63,23 +63,21 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// value include a structs with field 'x' wil produce short name 'm.x' in addition to
   /// canonical name 'm.value.x'
   [[nodiscard]] Result<std::optional<std::reference_wrapper<const SchemaField>>>
-  FindFieldByName(std::string_view name, bool case_sensitive) const;
-
-  [[nodiscard]] Result<std::optional<std::reference_wrapper<const SchemaField>>>
-  FindFieldByName(std::string_view name) const;
+  FindFieldByName(std::string_view name, bool case_sensitive = true) const;
 
   [[nodiscard]] Result<std::optional<std::reference_wrapper<const SchemaField>>>
   FindFieldById(int32_t field_id) const;
 
   friend bool operator==(const Schema& lhs, const Schema& rhs) { return lhs.Equals(rhs); }
 
+ private:
   /// Mapping from field id to field.
   mutable std::unordered_map<int32_t, std::reference_wrapper<const SchemaField>>
       id_to_field_;
-  /// Mapping from field name to id of field.
-  mutable std::unordered_map<std::string, size_t> name_to_id_;
-  /// Mapping from field lowercase_name(suppoert case_insensitive query) to id of field
-  mutable std::unordered_map<std::string, size_t> lowercase_name_to_id_;
+  /// Mapping from field name to field id.
+  mutable std::unordered_map<std::string, int32_t> name_to_id_;
+  /// Mapping from lowercased field name to field id
+  mutable std::unordered_map<std::string, int32_t> lowercase_name_to_id_;
 
  private:
   /// \brief Compare two schemas for equality.

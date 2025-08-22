@@ -26,10 +26,11 @@
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
 #include "iceberg/util/visit_type.h"
+
 namespace iceberg {
-class IdVisitor {
+class IdToFieldVisitor {
  public:
-  explicit IdVisitor(
+  explicit IdToFieldVisitor(
       std::unordered_map<int32_t, std::reference_wrapper<const SchemaField>>&
           id_to_field);
   Status Visit(const Type& type);
@@ -38,9 +39,10 @@ class IdVisitor {
  private:
   std::unordered_map<int32_t, std::reference_wrapper<const SchemaField>>& id_to_field_;
 };
+
 class NametoIdVisitor {
  public:
-  explicit NametoIdVisitor(std::unordered_map<std::string, size_t>& name_to_id,
+  explicit NametoIdVisitor(std::unordered_map<std::string, int32_t>& name_to_id,
                            bool case_sensitive_ = true);
   Status Visit(const ListType& type, const std::string& path,
                const std::string& short_path);
@@ -50,13 +52,14 @@ class NametoIdVisitor {
                const std::string& short_path);
   Status Visit(const PrimitiveType& type, const std::string& path,
                const std::string& short_path);
-  static std::string GetPath(const std::string& last_path, const std::string& field_name,
-                             bool case_sensitive = true);
+  static std::string BuildPath(std::string_view prefix, std::string_view field_name,
+                               bool case_sensitive);
 
  private:
   bool case_sensitive_;
-  std::unordered_map<std::string, size_t>& name_to_id_;
+  std::unordered_map<std::string, int32_t>& name_to_id_;
 };
+
 Schema::Schema(std::vector<SchemaField> fields, std::optional<int32_t> schema_id)
     : StructType(std::move(fields)), schema_id_(schema_id) {}
 
@@ -91,16 +94,11 @@ Result<std::optional<std::reference_wrapper<const SchemaField>>> Schema::FindFie
   return FindFieldById(it->second);
 }
 
-Result<std::optional<std::reference_wrapper<const SchemaField>>> Schema::FindFieldByName(
-    std::string_view name) const {
-  return FindFieldByName(name, /*case_sensitive*/ true);
-}
-
 Result<Status> Schema::InitIdToIndexMap() const {
   if (!id_to_field_.empty()) {
     return {};
   }
-  IdVisitor visitor(id_to_field_);
+  IdToFieldVisitor visitor(id_to_field_);
   ICEBERG_RETURN_UNEXPECTED(VisitTypeInline(*this, &visitor));
   return {};
 }
@@ -135,18 +133,18 @@ Result<std::optional<std::reference_wrapper<const SchemaField>>> Schema::FindFie
   return it->second;
 }
 
-IdVisitor::IdVisitor(
+IdToFieldVisitor::IdToFieldVisitor(
     std::unordered_map<int32_t, std::reference_wrapper<const SchemaField>>& id_to_field)
     : id_to_field_(id_to_field) {}
 
-Status IdVisitor::Visit(const Type& type) {
+Status IdToFieldVisitor::Visit(const Type& type) {
   if (type.is_nested()) {
     ICEBERG_RETURN_UNEXPECTED(VisitNestedType(type));
   }
   return {};
 }
 
-Status IdVisitor::VisitNestedType(const Type& type) {
+Status IdToFieldVisitor::VisitNestedType(const Type& type) {
   const auto& nested = iceberg::internal::checked_cast<const NestedType&>(type);
   const auto& fields = nested.fields();
   for (const auto& field : fields) {
@@ -156,43 +154,43 @@ Status IdVisitor::VisitNestedType(const Type& type) {
   return {};
 }
 
-NametoIdVisitor::NametoIdVisitor(std::unordered_map<std::string, size_t>& name_to_id,
+NametoIdVisitor::NametoIdVisitor(std::unordered_map<std::string, int32_t>& name_to_id,
                                  bool case_sensitive)
     : name_to_id_(name_to_id), case_sensitive_(case_sensitive) {}
 
 Status NametoIdVisitor::Visit(const ListType& type, const std::string& path,
                               const std::string& short_path) {
   const auto& field = type.fields()[0];
-  std::string full_path = GetPath(path, std::string(field.name()), case_sensitive_);
-  std::string short_full_path;
+  std::string new_path = BuildPath(path, field.name(), case_sensitive_);
+  std::string new_short_path;
   if (field.type()->type_id() == TypeId::kStruct) {
-    short_full_path = short_path;
+    new_short_path = short_path;
   } else {
-    short_full_path = GetPath(short_path, std::string(field.name()), case_sensitive_);
+    new_short_path = BuildPath(short_path, field.name(), case_sensitive_);
   }
-  name_to_id_[full_path] = field.field_id();
-  name_to_id_.emplace(short_full_path, field.field_id());
+  name_to_id_[new_path] = field.field_id();
+  name_to_id_.emplace(new_short_path, field.field_id());
   ICEBERG_RETURN_UNEXPECTED(
-      VisitTypeInline(*field.type(), this, full_path, short_full_path));
+      VisitTypeInline(*field.type(), this, new_path, new_short_path));
   return {};
 }
 
 Status NametoIdVisitor::Visit(const MapType& type, const std::string& path,
                               const std::string& short_path) {
-  std::string full_path, short_full_path;
+  std::string new_path, new_short_path;
   const auto& fields = type.fields();
   for (const auto& field : fields) {
-    full_path = GetPath(path, std::string(field.name()), case_sensitive_);
+    new_path = BuildPath(path, field.name(), case_sensitive_);
     if (field.name() == MapType::kValueName &&
         field.type()->type_id() == TypeId::kStruct) {
-      short_full_path = short_path;
+      new_short_path = short_path;
     } else {
-      short_full_path = GetPath(path, std::string(field.name()), case_sensitive_);
+      new_short_path = BuildPath(short_path, field.name(), case_sensitive_);
     }
-    name_to_id_[full_path] = field.field_id();
-    name_to_id_.emplace(short_full_path, field.field_id());
+    name_to_id_[new_path] = field.field_id();
+    name_to_id_.emplace(new_short_path, field.field_id());
     ICEBERG_RETURN_UNEXPECTED(
-        VisitTypeInline(*field.type(), this, full_path, short_full_path));
+        VisitTypeInline(*field.type(), this, new_path, new_short_path));
   }
   return {};
 }
@@ -200,15 +198,14 @@ Status NametoIdVisitor::Visit(const MapType& type, const std::string& path,
 Status NametoIdVisitor::Visit(const StructType& type, const std::string& path,
                               const std::string& short_path) {
   const auto& fields = type.fields();
-  std::string full_path, short_full_path;
+  std::string new_path, new_short_path;
   for (const auto& field : fields) {
-    full_path =
-        NametoIdVisitor::GetPath(path, std::string(field.name()), case_sensitive_);
-    short_full_path = GetPath(short_path, std::string(field.name()), case_sensitive_);
-    name_to_id_[full_path] = field.field_id();
-    name_to_id_.emplace(short_full_path, field.field_id());
+    new_path = BuildPath(path, field.name(), case_sensitive_);
+    new_short_path = BuildPath(short_path, field.name(), case_sensitive_);
+    name_to_id_[new_path] = field.field_id();
+    name_to_id_.emplace(new_short_path, field.field_id());
     ICEBERG_RETURN_UNEXPECTED(
-        VisitTypeInline(*field.type(), this, full_path, short_full_path));
+        VisitTypeInline(*field.type(), this, new_path, new_short_path));
   }
   return {};
 }
@@ -218,13 +215,14 @@ Status NametoIdVisitor::Visit(const PrimitiveType& type, const std::string& path
   return {};
 }
 
-std::string NametoIdVisitor::GetPath(const std::string& last_path,
-                                     const std::string& field_name, bool case_sensitive) {
+std::string NametoIdVisitor::BuildPath(std::string_view prefix,
+                                       std::string_view field_name, bool case_sensitive) {
   if (case_sensitive) {
-    return last_path.empty() ? field_name : last_path + "." + field_name;
+    return prefix.empty() ? std::string(field_name)
+                          : std::string(prefix) + "." + std::string(field_name);
   }
   std::string lower_name(field_name);
   std::ranges::transform(lower_name, lower_name.begin(), ::tolower);
-  return last_path.empty() ? lower_name : last_path + "." + lower_name;
+  return prefix.empty() ? lower_name : std::string(prefix) + "." + lower_name;
 }
 }  // namespace iceberg

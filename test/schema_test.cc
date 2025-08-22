@@ -82,170 +82,259 @@ TEST(SchemaTest, Equality) {
   ASSERT_EQ(schema5, schema1);
 }
 
-TEST(SchemaTest, NestedType) {
-  iceberg::SchemaField field1(1, "Foo", iceberg::int32(), true);
-  iceberg::SchemaField field2(2, "Bar", iceberg::string(), true);
-  iceberg::SchemaField field3(3, "Foobar", iceberg::int32(), true);
+class NestedTypeTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    field1_ = iceberg::SchemaField(1, "Foo", iceberg::int32(), true);
+    field2_ = iceberg::SchemaField(2, "Bar", iceberg::string(), true);
+    field3_ = iceberg::SchemaField(3, "Foobar", iceberg::int32(), true);
 
-  iceberg::StructType structtype = iceberg::StructType({field1, field2, field3});
+    iceberg::StructType structtype =
+        iceberg::StructType(std::vector<iceberg::SchemaField>{
+            field1_.value(), field2_.value(), field3_.value()});
 
-  auto listype = iceberg::ListType(iceberg::SchemaField::MakeRequired(
-      4, "element", std::make_shared<iceberg::StructType>(structtype)));
+    auto listype = iceberg::ListType(iceberg::SchemaField::MakeRequired(
+        4, "element", std::make_shared<iceberg::StructType>(structtype)));
 
-  auto maptype =
-      iceberg::MapType(iceberg::SchemaField::MakeRequired(5, "key", iceberg::int32()),
-                       iceberg::SchemaField::MakeRequired(
-                           6, "value", std::make_shared<iceberg::ListType>(listype)));
+    auto maptype =
+        iceberg::MapType(iceberg::SchemaField::MakeRequired(5, "key", iceberg::int32()),
+                         iceberg::SchemaField::MakeRequired(
+                             6, "value", std::make_shared<iceberg::ListType>(listype)));
 
-  auto field4 = iceberg::SchemaField::MakeRequired(
-      4, "element", std::make_shared<iceberg::StructType>(structtype));
-  auto field5 = iceberg::SchemaField::MakeRequired(5, "key", iceberg::int32());
-  auto field6 = iceberg::SchemaField::MakeRequired(
-      6, "value", std::make_shared<iceberg::ListType>(listype));
-  auto field7 = iceberg::SchemaField::MakeRequired(
-      7, "Value", std::make_shared<iceberg::MapType>(maptype));
+    field4_ = iceberg::SchemaField::MakeRequired(
+        4, "element", std::make_shared<iceberg::StructType>(structtype));
+    field5_ = iceberg::SchemaField::MakeRequired(5, "key", iceberg::int32());
+    field6_ = iceberg::SchemaField::MakeRequired(
+        6, "value", std::make_shared<iceberg::ListType>(listype));
+    field7_ = iceberg::SchemaField::MakeRequired(
+        7, "Value", std::make_shared<iceberg::MapType>(maptype));
 
-  iceberg::Schema schema({field7}, 1);
+    schema_ = std::make_shared<iceberg::Schema>(
+        std::vector<iceberg::SchemaField>{field7_.value()}, 1);
+  }
 
-  ASSERT_EQ(schema.id_to_field_.size(), 0);
-  ASSERT_THAT(schema.FindFieldById(7), ::testing::Optional(field7));
-  ASSERT_THAT(schema.FindFieldById(6), ::testing::Optional(field6));
-  ASSERT_THAT(schema.FindFieldById(5), ::testing::Optional(field5));
-  ASSERT_THAT(schema.FindFieldById(4), ::testing::Optional(field4));
-  ASSERT_THAT(schema.FindFieldById(3), ::testing::Optional(field3));
-  ASSERT_THAT(schema.FindFieldById(2), ::testing::Optional(field2));
-  ASSERT_THAT(schema.FindFieldById(1), ::testing::Optional(field1));
+  std::shared_ptr<iceberg::Schema> schema_;
+  std::optional<iceberg::SchemaField> field1_;
+  std::optional<iceberg::SchemaField> field2_;
+  std::optional<iceberg::SchemaField> field3_;
+  std::optional<iceberg::SchemaField> field4_;
+  std::optional<iceberg::SchemaField> field5_;
+  std::optional<iceberg::SchemaField> field6_;
+  std::optional<iceberg::SchemaField> field7_;
+};
 
-  ASSERT_THAT(schema.FindFieldByName("Value"), ::testing::Optional(field7));
-  ASSERT_THAT(schema.FindFieldByName("Value.value"), ::testing::Optional(field6));
-  ASSERT_THAT(schema.FindFieldByName("Value.key"), ::testing::Optional(field5));
-  ASSERT_THAT(schema.FindFieldByName("Value.value.element"), ::testing::Optional(field4));
-  ASSERT_THAT(schema.FindFieldByName("Value.value.element.Foobar"),
-              ::testing::Optional(field3));
-  ASSERT_THAT(schema.FindFieldByName("Value.value.element.Bar"),
-              ::testing::Optional(field2));
-  ASSERT_THAT(schema.FindFieldByName("Value.value.element.Foo"),
-              ::testing::Optional(field1));
+TEST_F(NestedTypeTest, TestFindById) {
+  ASSERT_THAT(schema_->FindFieldById(7), ::testing::Optional(field7_));
+  ASSERT_THAT(schema_->FindFieldById(6), ::testing::Optional(field6_));
+  ASSERT_THAT(schema_->FindFieldById(5), ::testing::Optional(field5_));
+  ASSERT_THAT(schema_->FindFieldById(4), ::testing::Optional(field4_));
+  ASSERT_THAT(schema_->FindFieldById(3), ::testing::Optional(field3_));
+  ASSERT_THAT(schema_->FindFieldById(2), ::testing::Optional(field2_));
+  ASSERT_THAT(schema_->FindFieldById(1), ::testing::Optional(field1_));
 
-  ASSERT_THAT(schema.FindFieldByName("vALue", false), ::testing::Optional(field7));
-  ASSERT_THAT(schema.FindFieldByName("vALue.VALUE", false), ::testing::Optional(field6));
-  ASSERT_THAT(schema.FindFieldByName("valUe.kEy", false), ::testing::Optional(field5));
-  ASSERT_THAT(schema.FindFieldByName("vaLue.vAlue.elEment", false),
-              ::testing::Optional(field4));
-  ASSERT_THAT(schema.FindFieldByName("vaLue.vAlue.eLement.fOObar", false),
-              ::testing::Optional(field3));
-  ASSERT_THAT(schema.FindFieldByName("valUe.vaLUe.elemEnt.Bar", false),
-              ::testing::Optional(field2));
-  ASSERT_THAT(schema.FindFieldByName("valUe.valUe.ELEMENT.FOO", false),
-              ::testing::Optional(field1));
-
-  ASSERT_THAT(schema.FindFieldByName("vaLue.value.FOO", false),
-              ::testing::Optional(field1));
-  ASSERT_THAT(schema.FindFieldByName("Value.value.Bar", false),
-              ::testing::Optional(field2));
-  ASSERT_THAT(schema.FindFieldByName("Value.value.FooBAR", false),
-              ::testing::Optional(field3));
-
-  ASSERT_THAT(schema.FindFieldByName("Value.value.Foo"), ::testing::Optional(field1));
-  ASSERT_THAT(schema.FindFieldByName("Value.value.Bar"), ::testing::Optional(field2));
-  ASSERT_THAT(schema.FindFieldByName("Value.value.Foobar"), ::testing::Optional(field3));
-  ASSERT_EQ(schema.id_to_field_.size(), 7);
+  ASSERT_THAT(schema_->FindFieldById(10), ::testing::Optional(std::nullopt));
 }
 
-TEST(SchemaTest, NestType2) {
-  iceberg::SchemaField field1(1, "Foo", iceberg::int32(), true);
-  iceberg::SchemaField field2(2, "Bar", iceberg::string(), true);
-  iceberg::SchemaField field3(3, "Foobar", iceberg::int32(), true);
+TEST_F(NestedTypeTest, TestFindByName) {
+  ASSERT_THAT(schema_->FindFieldByName("Value"), ::testing::Optional(field7_));
+  ASSERT_THAT(schema_->FindFieldByName("Value.value"), ::testing::Optional(field6_));
+  ASSERT_THAT(schema_->FindFieldByName("Value.key"), ::testing::Optional(field5_));
+  ASSERT_THAT(schema_->FindFieldByName("Value.value.element"),
+              ::testing::Optional(field4_));
+  ASSERT_THAT(schema_->FindFieldByName("Value.value.element.Foobar"),
+              ::testing::Optional(field3_));
+  ASSERT_THAT(schema_->FindFieldByName("Value.value.element.Bar"),
+              ::testing::Optional(field2_));
+  ASSERT_THAT(schema_->FindFieldByName("Value.value.element.Foo"),
+              ::testing::Optional(field1_));
 
-  iceberg::StructType structtype = iceberg::StructType({field1, field2, field3});
+  ASSERT_THAT(schema_->FindFieldByName("Value.value.element.FoO"),
+              ::testing::Optional(std::nullopt));
+}
 
-  auto field4 = iceberg::SchemaField::MakeRequired(
+TEST_F(NestedTypeTest, TestFindByNameCaseInsensitive) {
+  ASSERT_THAT(schema_->FindFieldByName("vALue", false), ::testing::Optional(field7_));
+  ASSERT_THAT(schema_->FindFieldByName("vALue.VALUE", false),
+              ::testing::Optional(field6_));
+  ASSERT_THAT(schema_->FindFieldByName("valUe.kEy", false), ::testing::Optional(field5_));
+  ASSERT_THAT(schema_->FindFieldByName("vaLue.vAlue.elEment", false),
+              ::testing::Optional(field4_));
+  ASSERT_THAT(schema_->FindFieldByName("vaLue.vAlue.eLement.fOObar", false),
+              ::testing::Optional(field3_));
+  ASSERT_THAT(schema_->FindFieldByName("valUe.vaLUe.elemEnt.Bar", false),
+              ::testing::Optional(field2_));
+  ASSERT_THAT(schema_->FindFieldByName("valUe.valUe.ELEMENT.FOO", false),
+              ::testing::Optional(field1_));
+  ASSERT_THAT(schema_->FindFieldByName("valUe.valUe.ELEMENT.FO", false),
+              ::testing::Optional(std::nullopt));
+}
+
+TEST_F(NestedTypeTest, TestFindByShortNameCaseInsensitive) {
+  ASSERT_THAT(schema_->FindFieldByName("vaLue.value.FOO", false),
+              ::testing::Optional(field1_));
+  ASSERT_THAT(schema_->FindFieldByName("Value.value.Bar", false),
+              ::testing::Optional(field2_));
+  ASSERT_THAT(schema_->FindFieldByName("Value.value.FooBAR", false),
+              ::testing::Optional(field3_));
+  ASSERT_THAT(schema_->FindFieldByName("Value.value.FooBAR.a", false),
+              ::testing::Optional(std::nullopt));
+}
+
+class NestType2Test : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    field1_ = iceberg::SchemaField(1, "Foo", iceberg::int32(), true);
+    field2_ = iceberg::SchemaField(2, "Bar", iceberg::string(), true);
+    field3_ = iceberg::SchemaField(3, "Foobar", iceberg::int32(), true);
+
+    iceberg::StructType structtype =
+        iceberg::StructType({field1_.value(), field2_.value(), field3_.value()});
+
+    field4_ = iceberg::SchemaField::MakeRequired(
+        4, "element", std::make_shared<iceberg::StructType>(structtype));
+    auto listype = iceberg::ListType(field4_.value());
+
+    iceberg::StructType structtype2 = iceberg::StructType(
+        {iceberg::SchemaField::MakeRequired(5, "First_child", iceberg::int32()),
+         iceberg::SchemaField::MakeRequired(
+             6, "Second_child", std::make_shared<iceberg::ListType>(listype))});
+
+    auto maptype = iceberg::MapType(
+        iceberg::SchemaField::MakeRequired(7, "key", iceberg::int32()),
+        iceberg::SchemaField::MakeRequired(
+            8, "value", std::make_shared<iceberg::StructType>(structtype2)));
+
+    field5_ = iceberg::SchemaField::MakeRequired(5, "First_child", iceberg::int32());
+    field6_ = iceberg::SchemaField::MakeRequired(
+        6, "Second_child", std::make_shared<iceberg::ListType>(listype));
+    field7_ = iceberg::SchemaField::MakeRequired(7, "key", iceberg::int32());
+    field8_ = iceberg::SchemaField::MakeRequired(
+        8, "value", std::make_shared<iceberg::StructType>(structtype2));
+    field9_ = iceberg::SchemaField::MakeRequired(
+        9, "Map", std::make_shared<iceberg::MapType>(maptype));
+
+    schema_ = std::make_shared<iceberg::Schema>(
+        std::vector<iceberg::SchemaField>{field9_.value()}, 1);
+  }
+
+  std::shared_ptr<iceberg::Schema> schema_;
+  std::optional<iceberg::SchemaField> field1_;
+  std::optional<iceberg::SchemaField> field2_;
+  std::optional<iceberg::SchemaField> field3_;
+  std::optional<iceberg::SchemaField> field4_;
+  std::optional<iceberg::SchemaField> field5_;
+  std::optional<iceberg::SchemaField> field6_;
+  std::optional<iceberg::SchemaField> field7_;
+  std::optional<iceberg::SchemaField> field8_;
+  std::optional<iceberg::SchemaField> field9_;
+};
+
+TEST_F(NestType2Test, TestFindById) {
+  ASSERT_THAT(schema_->FindFieldById(9), ::testing::Optional(field9_));
+  ASSERT_THAT(schema_->FindFieldById(8), ::testing::Optional(field8_));
+  ASSERT_THAT(schema_->FindFieldById(7), ::testing::Optional(field7_));
+  ASSERT_THAT(schema_->FindFieldById(6), ::testing::Optional(field6_));
+  ASSERT_THAT(schema_->FindFieldById(5), ::testing::Optional(field5_));
+  ASSERT_THAT(schema_->FindFieldById(4), ::testing::Optional(field4_));
+  ASSERT_THAT(schema_->FindFieldById(3), ::testing::Optional(field3_));
+  ASSERT_THAT(schema_->FindFieldById(2), ::testing::Optional(field2_));
+  ASSERT_THAT(schema_->FindFieldById(1), ::testing::Optional(field1_));
+
+  ASSERT_THAT(schema_->FindFieldById(0), ::testing::Optional(std::nullopt));
+}
+
+TEST_F(NestType2Test, TestFindByName) {
+  ASSERT_THAT(schema_->FindFieldByName("Map"), ::testing::Optional(field9_));
+  ASSERT_THAT(schema_->FindFieldByName("Map.value"), ::testing::Optional(field8_));
+  ASSERT_THAT(schema_->FindFieldByName("Map.key"), ::testing::Optional(field7_));
+  ASSERT_THAT(schema_->FindFieldByName("Map.value.Second_child"),
+              ::testing::Optional(field6_));
+  ASSERT_THAT(schema_->FindFieldByName("Map.value.First_child"),
+              ::testing::Optional(field5_));
+  ASSERT_THAT(schema_->FindFieldByName("Map.value.Second_child.element"),
+              ::testing::Optional(field4_));
+  ASSERT_THAT(schema_->FindFieldByName("Map.value.Second_child.element.Foobar"),
+              ::testing::Optional(field3_));
+  ASSERT_THAT(schema_->FindFieldByName("Map.value.Second_child.element.Bar"),
+              ::testing::Optional(field2_));
+  ASSERT_THAT(schema_->FindFieldByName("Map.value.Second_child.element.Foo"),
+              ::testing::Optional(field1_));
+  ASSERT_THAT(schema_->FindFieldByName("Map.value.Second_child.element.Fooo"),
+              ::testing::Optional(std::nullopt));
+}
+
+TEST_F(NestType2Test, TestFindByNameCaseInsensitive) {
+  ASSERT_THAT(schema_->FindFieldByName("map", false), ::testing::Optional(field9_));
+  ASSERT_THAT(schema_->FindFieldByName("map.vALUE", false), ::testing::Optional(field8_));
+  ASSERT_THAT(schema_->FindFieldByName("map.Key", false), ::testing::Optional(field7_));
+  ASSERT_THAT(schema_->FindFieldByName("map.Value.second_Child", false),
+              ::testing::Optional(field6_));
+  ASSERT_THAT(schema_->FindFieldByName("map.Value.first_chIld", false),
+              ::testing::Optional(field5_));
+  ASSERT_THAT(schema_->FindFieldByName("map.Value.second_child.Element", false),
+              ::testing::Optional(field4_));
+  ASSERT_THAT(schema_->FindFieldByName("map.Value.second_child.Element.foobar", false),
+              ::testing::Optional(field3_));
+  ASSERT_THAT(schema_->FindFieldByName("map.VaLue.second_child.Element.bar", false),
+              ::testing::Optional(field2_));
+  ASSERT_THAT(schema_->FindFieldByName("map.value.Second_child.Element.foo", false),
+              ::testing::Optional(field1_));
+  ASSERT_THAT(schema_->FindFieldByName("map.value.Second_child.Element.fooo", false),
+              ::testing::Optional(std::nullopt));
+}
+
+TEST_F(NestType2Test, TestFindByShortName) {
+  ASSERT_THAT(schema_->FindFieldByName("Map.Second_child"), ::testing::Optional(field6_));
+  ASSERT_THAT(schema_->FindFieldByName("Map.First_child"), ::testing::Optional(field5_));
+  ASSERT_THAT(schema_->FindFieldByName("Map.Second_child.Foobar"),
+              ::testing::Optional(field3_));
+  ASSERT_THAT(schema_->FindFieldByName("Map.Second_child.Bar"),
+              ::testing::Optional(field2_));
+  ASSERT_THAT(schema_->FindFieldByName("Map.Second_child.Foo"),
+              ::testing::Optional(field1_));
+  ASSERT_THAT(schema_->FindFieldByName("Map.Second_child.aaa"),
+              ::testing::Optional(std::nullopt));
+}
+
+TEST_F(NestType2Test, TestFindByShortNameCaseInsensitive) {
+  ASSERT_THAT(schema_->FindFieldByName("map.second_child", false),
+              ::testing::Optional(field6_));
+  ASSERT_THAT(schema_->FindFieldByName("map.first_child", false),
+              ::testing::Optional(field5_));
+  ASSERT_THAT(schema_->FindFieldByName("map.second_child.foobar", false),
+              ::testing::Optional(field3_));
+  ASSERT_THAT(schema_->FindFieldByName("map.second_child.bar", false),
+              ::testing::Optional(field2_));
+  ASSERT_THAT(schema_->FindFieldByName("map.second_child.foo", false),
+              ::testing::Optional(field1_));
+  ASSERT_THAT(schema_->FindFieldByName("Map.Second_child.aaa", false),
+              ::testing::Optional(std::nullopt));
+}
+
+TEST_F(NestType2Test, TestMapKey) {
+  auto field1_ = iceberg::SchemaField(1, "Foo", iceberg::int32(), true);
+  auto field2_ = iceberg::SchemaField(2, "Bar", iceberg::string(), true);
+  auto field3_ = iceberg::SchemaField(3, "Foobar", iceberg::int32(), true);
+
+  iceberg::StructType structtype = iceberg::StructType({field1_, field2_, field3_});
+
+  auto field4_ = iceberg::SchemaField::MakeRequired(
       4, "element", std::make_shared<iceberg::StructType>(structtype));
 
-  auto listype = iceberg::ListType(field4);
+  iceberg::MapType maptype =
+      iceberg::MapType(iceberg::SchemaField::MakeRequired(
+                           5, "key", std::make_shared<iceberg::StructType>(structtype)),
+                       iceberg::SchemaField::MakeRequired(6, "value", iceberg::int32()));
 
-  auto structtype2 = iceberg::StructType(
-      {iceberg::SchemaField::MakeRequired(5, "First_child", iceberg::int32()),
-       iceberg::SchemaField::MakeRequired(6, "Second_child",
-                                          std::make_shared<iceberg::ListType>(listype))});
+  auto field5_ = iceberg::SchemaField::MakeRequired(
+      5, "key", std::make_shared<iceberg::StructType>(structtype));
+  auto field6_ = iceberg::SchemaField::MakeRequired(6, "value", iceberg::int32());
 
-  auto maptype = iceberg::MapType(
-      iceberg::SchemaField::MakeRequired(7, "key", iceberg::int32()),
-      iceberg::SchemaField::MakeRequired(
-          8, "value", std::make_shared<iceberg::StructType>(structtype2)));
+  auto field7_ = iceberg::SchemaField::MakeRequired(
+      7, "Map", std::make_shared<iceberg::MapType>(maptype));
 
-  auto field5 = iceberg::SchemaField::MakeRequired(5, "First_child", iceberg::int32());
-  auto field6 = iceberg::SchemaField::MakeRequired(
-      6, "Second_child", std::make_shared<iceberg::ListType>(listype));
-  auto field7 = iceberg::SchemaField::MakeRequired(7, "key", iceberg::int32());
-  auto field8 = iceberg::SchemaField::MakeRequired(
-      8, "value", std::make_shared<iceberg::StructType>(structtype2));
-  auto field9 = iceberg::SchemaField::MakeRequired(
-      9, "Map", std::make_shared<iceberg::MapType>(maptype));
+  iceberg::Schema schema({field7_}, 1);
 
-  iceberg::Schema schema({field9}, 1);
-
-  ASSERT_EQ(schema.id_to_field_.size(), 0);
-  ASSERT_THAT(schema.FindFieldById(9), ::testing::Optional(field9));
-  ASSERT_THAT(schema.FindFieldById(8), ::testing::Optional(field8));
-  ASSERT_THAT(schema.FindFieldById(7), ::testing::Optional(field7));
-  ASSERT_THAT(schema.FindFieldById(6), ::testing::Optional(field6));
-  ASSERT_THAT(schema.FindFieldById(5), ::testing::Optional(field5));
-  ASSERT_THAT(schema.FindFieldById(4), ::testing::Optional(field4));
-  ASSERT_THAT(schema.FindFieldById(3), ::testing::Optional(field3));
-  ASSERT_THAT(schema.FindFieldById(2), ::testing::Optional(field2));
-  ASSERT_THAT(schema.FindFieldById(1), ::testing::Optional(field1));
-
-  ASSERT_THAT(schema.FindFieldByName("Map"), ::testing::Optional(field9));
-  ASSERT_THAT(schema.FindFieldByName("Map.value"), ::testing::Optional(field8));
-  ASSERT_THAT(schema.FindFieldByName("Map.key"), ::testing::Optional(field7));
-  ASSERT_THAT(schema.FindFieldByName("Map.value.Second_child"),
-              ::testing::Optional(field6));
-  ASSERT_THAT(schema.FindFieldByName("Map.value.First_child"),
-              ::testing::Optional(field5));
-  ASSERT_THAT(schema.FindFieldByName("Map.value.Second_child.element"),
-              ::testing::Optional(field4));
-  ASSERT_THAT(schema.FindFieldByName("Map.value.Second_child.element.Foobar"),
-              ::testing::Optional(field3));
-  ASSERT_THAT(schema.FindFieldByName("Map.value.Second_child.element.Bar"),
-              ::testing::Optional(field2));
-  ASSERT_THAT(schema.FindFieldByName("Map.value.Second_child.element.Foo"),
-              ::testing::Optional(field1));
-
-  ASSERT_THAT(schema.FindFieldByName("map", false), ::testing::Optional(field9));
-  ASSERT_THAT(schema.FindFieldByName("map.vALUE", false), ::testing::Optional(field8));
-  ASSERT_THAT(schema.FindFieldByName("map.Key", false), ::testing::Optional(field7));
-  ASSERT_THAT(schema.FindFieldByName("map.Value.second_Child", false),
-              ::testing::Optional(field6));
-  ASSERT_THAT(schema.FindFieldByName("map.Value.first_chIld", false),
-              ::testing::Optional(field5));
-  ASSERT_THAT(schema.FindFieldByName("map.Value.second_child.Element", false),
-              ::testing::Optional(field4));
-  ASSERT_THAT(schema.FindFieldByName("map.Value.second_child.Element.foobar", false),
-              ::testing::Optional(field3));
-  ASSERT_THAT(schema.FindFieldByName("map.VaLue.second_child.Element.bar", false),
-              ::testing::Optional(field2));
-  ASSERT_THAT(schema.FindFieldByName("map.value.Second_child.Element.foo", false),
-              ::testing::Optional(field1));
-
-  ASSERT_THAT(schema.FindFieldByName("Map.Second_child"), ::testing::Optional(field6));
-  ASSERT_THAT(schema.FindFieldByName("Map.First_child"), ::testing::Optional(field5));
-  ASSERT_THAT(schema.FindFieldByName("Map.Second_child.Foobar"),
-              ::testing::Optional(field3));
-  ASSERT_THAT(schema.FindFieldByName("Map.Second_child.Bar"),
-              ::testing::Optional(field2));
-  ASSERT_THAT(schema.FindFieldByName("Map.Second_child.Foo"),
-              ::testing::Optional(field1));
-
-  ASSERT_THAT(schema.FindFieldByName("map.second_child", false),
-              ::testing::Optional(field6));
-  ASSERT_THAT(schema.FindFieldByName("map.first_child", false),
-              ::testing::Optional(field5));
-  ASSERT_THAT(schema.FindFieldByName("map.second_child.foobar", false),
-              ::testing::Optional(field3));
-  ASSERT_THAT(schema.FindFieldByName("map.second_child.bar", false),
-              ::testing::Optional(field2));
-  ASSERT_THAT(schema.FindFieldByName("map.second_child.foo", false),
-              ::testing::Optional(field1));
-  ASSERT_EQ(schema.id_to_field_.size(), 9);
+  ASSERT_THAT(schema.FindFieldByName("Map.key.Foo"), ::testing::Optional(field1_));
+  ASSERT_THAT(schema.FindFieldByName("Map.Foo"), ::testing::Optional(std::nullopt));
 }
