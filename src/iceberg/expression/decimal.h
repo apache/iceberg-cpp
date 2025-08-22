@@ -21,6 +21,7 @@
 
 #include <array>
 #include <cstdint>
+#include <iosfwd>
 #include <string>
 #include <string_view>
 #include <type_traits>
@@ -235,8 +236,6 @@ class ICEBERG_EXPORT Decimal {
     return lhs.data_ != rhs.data_;
   }
 
-  friend std::ostream& operator<<(std::ostream& os, const Decimal& decimal);
-
  private:
 #if ICEBERG_LITTLE_ENDIAN
   static constexpr int32_t kHighIndex = 1;
@@ -248,6 +247,8 @@ class ICEBERG_EXPORT Decimal {
 
   std::array<uint64_t, 2> data_;
 };
+
+ICEBERG_EXPORT std::ostream& operator<<(std::ostream& os, const Decimal& decimal);
 
 // Unary operators
 ICEBERG_EXPORT Decimal operator-(const Decimal& operand);
