@@ -1373,7 +1373,7 @@ std::array<uint8_t, Decimal::kByteWidth> Decimal::ToBytes() const {
   return out;
 }
 
-ICEBERG_EXPORT std::ostream& operator<<(std::ostream& os, const Decimal& decimal) {
+std::ostream& operator<<(std::ostream& os, const Decimal& decimal) {
   os << decimal.ToIntegerString();
   return os;
 }
