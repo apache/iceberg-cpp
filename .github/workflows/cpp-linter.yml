@@ -39,7 +39,7 @@ jobs:
           mkdir build && cd build
           cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           cmake --build .
-      - uses: cpp-linter/cpp-linter-action@f91c446a32ae3eb9f98fef8c9ed4c7cb613a4f8a
+      - uses: cpp-linter/cpp-linter-action@d7155ea6699028b6b09b0457e26b3c5d73f0ed46
         id: linter
         continue-on-error: true
         env:
