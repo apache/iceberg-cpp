@@ -28,7 +28,6 @@
 #include <gtest/gtest.h>
 #include <sys/types.h>
 
-#include "gmock/gmock.h"
 #include "iceberg/util/port.h"
 #include "matchers.h"
 
@@ -558,7 +557,9 @@ TEST(TestDecimalFromReal, FromFloat) {
       // 2**14 - 2**-10
       FromFloatTestParam{
           .real = 16383.999f, .precision = 8, .scale = 3, .expected_string = "16383.999"},
-      FromFloatTestParam{16383.999f, .precision = 19, .scale = 3,
+      FromFloatTestParam{.real = 16383.999f,
+                         .precision = 19,
+                         .scale = 3,
                          .expected_string = "16383.999"},
       // 1 - 2**-24
       FromFloatTestParam{.real = 0.99999994f,
@@ -1289,6 +1290,15 @@ TEST(DecimalTest, Negate) {
   check(Decimal(12, 0), Decimal(-12, 0));
   check(Decimal(12, 1), Decimal(-13, 0xFFFFFFFFFFFFFFFFULL));
   check(Decimal(12, 0xFFFFFFFFFFFFFFFFULL), Decimal(-13, 1));
+}
+
+TEST(DecimalTest, Rescale) {
+  ASSERT_EQ(Decimal(11100), Decimal(111).Rescale(0, 2).value());
+  ASSERT_EQ(Decimal(111), Decimal(11100).Rescale(2, 0).value());
+  ASSERT_EQ(Decimal(5), Decimal(500000).Rescale(6, 1).value());
+  ASSERT_EQ(Decimal(500000), Decimal(5).Rescale(1, 6).value());
+
+  ASSERT_THAT(Decimal(5555555).Rescale(6, 1), IsError(ErrorKind::kInvalid));
 }
 
 }  // namespace iceberg

@@ -1234,6 +1234,19 @@ static inline uint64_t UInt64FromBigEndian(const uint8_t* bytes, int32_t length)
 #endif
 }
 
+static bool RescaleWouldCauseDataLoss(const Decimal& value, int32_t delta_scale,
+                                      const Decimal& multiplier, Decimal* result) {
+  if (delta_scale < 0) {
+    auto res = value.Divide(multiplier);
+    assert(res);
+    *result = res->first;
+    return res->second != 0;
+  }
+
+  *result = value * multiplier;
+  return (value < 0) ? *result > value : *result < value;
+}
+
 }  // namespace
 
 Result<Decimal> Decimal::FromReal(float x, int32_t precision, int32_t scale) {
@@ -1322,7 +1335,23 @@ Result<Decimal> Decimal::Rescale(int32_t orig_scale, int32_t new_scale) const {
     return *this;
   }
 
-  return NotImplemented("Decimal::Rescale is not implemented yet");
+  const int32_t delta_scale = new_scale - orig_scale;
+  const int32_t abs_delta_scale = std::abs(delta_scale);
+  Decimal out;
+
+  assert(abs_delta_scale <= kMaxScale);
+
+  auto& multiplier = kDecimal128PowersOfTen[abs_delta_scale];
+
+  const bool rescale_would_cause_data_loss =
+      RescaleWouldCauseDataLoss(*this, delta_scale, multiplier, &out);
+
+  if (rescale_would_cause_data_loss) {
+    return Invalid("Rescale would cause data loss: {} -> {}", ToIntegerString(),
+                   out.ToIntegerString());
+  }
+
+  return out;
 }
 
 bool Decimal::FitsInPrecision(int32_t precision) const {
