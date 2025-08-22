@@ -33,6 +33,7 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <ostream>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -183,7 +184,7 @@ static Status BuildFromArray(Decimal* result, const uint32_t* array, int64_t len
   std::array<uint64_t, 2> result_array = {0, 0};
   for (int64_t i = length - 2 * 2 - 1; i >= 0; i--) {
     if (array[i] != 0) {
-      return Overflow("Decimal division overflow");
+      return Invalid("Decimal division overflow");
     }
   }
 
@@ -250,7 +251,7 @@ static inline Status DecimalDivide(const Decimal& dividend, const Decimal& divis
   }
 
   if (divisor_length == 0) {
-    return DivideByZero("Cannot divide by zero in DecimalDivide");
+    return Invalid("Cannot divide by zero in DecimalDivide");
   }
 
   if (divisor_length == 1) {
@@ -1013,9 +1014,8 @@ struct DecimalRealConversion {
     const auto x = std::nearbyint(real * PowerOfTen<double>(scale));
     const auto max_abs = PowerOfTen<double>(precision);
     if (x <= -max_abs || x >= max_abs) {
-      return Overflow(
-          "Cannot convert {} to Decimal(precision = {}, scale = {}): overflow", real,
-          precision, scale);
+      return Invalid("Cannot convert {} to Decimal(precision = {}, scale = {}): overflow",
+                     real, precision, scale);
     }
 
     // Extract high and low bits
@@ -1048,9 +1048,8 @@ struct DecimalRealConversion {
       // overflow.
       // NOTE: `limit` is allowed here as rounding can make it smaller than
       // the theoretical limit (for example, 1.0e23 < 10^23).
-      return Overflow(
-          "Cannot convert {} to Decimal(precision = {}, scale = {}): overflow", real,
-          precision, scale);
+      return Invalid("Cannot convert {} to Decimal(precision = {}, scale = {}): overflow",
+                     real, precision, scale);
     }
 
     // 2. Losslessly convert `real` to `mant * 2**k`
@@ -1140,9 +1139,8 @@ struct DecimalRealConversion {
 
     // Rounding might have pushed `x` just above the max precision, check again
     if (!x.FitsInPrecision(precision)) {
-      return Overflow(
-          "Cannot convert {} to Decimal(precision = {}, scale = {}): overflow", real,
-          precision, scale);
+      return Invalid("Cannot convert {} to Decimal(precision = {}, scale = {}): overflow",
+                     real, precision, scale);
     }
     return x;
   }
@@ -1344,6 +1342,11 @@ std::array<uint8_t, Decimal::kByteWidth> Decimal::ToBytes() const {
   std::array<uint8_t, kByteWidth> out{{0}};
   memcpy(out.data(), data_.data(), kByteWidth);
   return out;
+}
+
+ICEBERG_EXPORT std::ostream& operator<<(std::ostream& os, const Decimal& decimal) {
+  os << decimal.ToIntegerString();
+  return os;
 }
 
 // Unary operators
