@@ -24,11 +24,12 @@
 #include <cstdint>
 #include <vector>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <sys/types.h>
 
 #include "gmock/gmock.h"
-#include "gtest/gtest.h"
+#include "iceberg/util/port.h"
 #include "matchers.h"
 
 namespace iceberg {
@@ -45,6 +46,11 @@ void AssertDecimalFromString(const std::string& s, const Decimal& expected,
   EXPECT_EQ(expected, actual);
   EXPECT_EQ(expected_precision, precision);
   EXPECT_EQ(expected_scale, scale);
+}
+
+Decimal DecimalFromInt128(int128_t value) {
+  return {static_cast<int64_t>(value >> 64),
+          static_cast<uint64_t>(value & 0xFFFFFFFFFFFFFFFFULL)};
 }
 
 }  // namespace
@@ -519,7 +525,7 @@ class TestDecimalFromReal : public ::testing::Test {
     };
     for (const ParamType& param : overflow_params) {
       auto result = Decimal::FromReal(param.real, param.precision, param.scale);
-      ASSERT_THAT(result, IsError(ErrorKind::kOverflow));
+      ASSERT_THAT(result, IsError(ErrorKind::kInvalid));
     }
   }
 };
@@ -535,23 +541,52 @@ TEST(TestDecimalFromReal, FromFloat) {
   const std::vector<FromFloatTestParam> params{
       // -- Stress the 24 bits of precision of a float
       // 2**63 + 2**40
-      FromFloatTestParam{9.223373e+18f, 19, 0, "9223373136366403584"},
+      FromFloatTestParam{.real = 9.223373e+18f,
+                         .precision = 19,
+                         .scale = 0,
+                         .expected_string = "9223373136366403584"},
       // 2**64 - 2**40
-      FromFloatTestParam{1.8446743e+19f, 20, 0, "18446742974197923840"},
+      FromFloatTestParam{.real = 1.8446743e+19f,
+                         .precision = 20,
+                         .scale = 0,
+                         .expected_string = "18446742974197923840"},
       // 2**64 + 2**41
-      FromFloatTestParam{1.8446746e+19f, 20, 0, "18446746272732807168"},
+      FromFloatTestParam{.real = 1.8446746e+19f,
+                         .precision = 20,
+                         .scale = 0,
+                         .expected_string = "18446746272732807168"},
       // 2**14 - 2**-10
-      FromFloatTestParam{16383.999f, 8, 3, "16383.999"},
-      FromFloatTestParam{16383.999f, 19, 3, "16383.999"},
+      FromFloatTestParam{
+          .real = 16383.999f, .precision = 8, .scale = 3, .expected_string = "16383.999"},
+      FromFloatTestParam{16383.999f, .precision = 19, .scale = 3,
+                         .expected_string = "16383.999"},
       // 1 - 2**-24
-      FromFloatTestParam{0.99999994f, 10, 10, "0.9999999404"},
-      FromFloatTestParam{0.99999994f, 15, 15, "0.999999940395355"},
-      FromFloatTestParam{0.99999994f, 20, 20, "0.99999994039535522461"},
-      FromFloatTestParam{0.99999994f, 21, 21, "0.999999940395355224609"},
-      FromFloatTestParam{0.99999994f, 38, 38, "0.99999994039535522460937500000000000000"},
+      FromFloatTestParam{.real = 0.99999994f,
+                         .precision = 10,
+                         .scale = 10,
+                         .expected_string = "0.9999999404"},
+      FromFloatTestParam{.real = 0.99999994f,
+                         .precision = 15,
+                         .scale = 15,
+                         .expected_string = "0.999999940395355"},
+      FromFloatTestParam{.real = 0.99999994f,
+                         .precision = 20,
+                         .scale = 20,
+                         .expected_string = "0.99999994039535522461"},
+      FromFloatTestParam{.real = 0.99999994f,
+                         .precision = 21,
+                         .scale = 21,
+                         .expected_string = "0.999999940395355224609"},
+      FromFloatTestParam{.real = 0.99999994f,
+                         .precision = 38,
+                         .scale = 38,
+                         .expected_string = "0.99999994039535522460937500000000000000"},
       // -- Other cases
       // 10**38 - 2**103
-      FromFloatTestParam{9.999999e+37f, 38, 0, "99999986661652122824821048795547566080"},
+      FromFloatTestParam{.real = 9.999999e+37f,
+                         .precision = 38,
+                         .scale = 0,
+                         .expected_string = "99999986661652122824821048795547566080"},
   };
 
   for (const auto& param : params) {
@@ -577,51 +612,123 @@ TEST(TestDecimalFromReal, FromDouble) {
   const std::vector<FromDoubleTestParam> params{
       // -- Stress the 53 bits of precision of a double
       // 2**63 + 2**11
-      FromDoubleTestParam{9.223372036854778e+18, 19, 0, "9223372036854777856"},
+      FromDoubleTestParam{.real = 9.223372036854778e+18,
+                          .precision = 19,
+                          .scale = 0,
+                          .expected_string = "9223372036854777856"},
       // 2**64 - 2**11
-      FromDoubleTestParam{1.844674407370955e+19, 20, 0, "18446744073709549568"},
+      FromDoubleTestParam{.real = 1.844674407370955e+19,
+                          .precision = 20,
+                          .scale = 0,
+                          .expected_string = "18446744073709549568"},
       // 2**64 + 2**11
-      FromDoubleTestParam{1.8446744073709556e+19, 20, 0, "18446744073709555712"},
+      FromDoubleTestParam{.real = 1.8446744073709556e+19,
+                          .precision = 20,
+                          .scale = 0,
+                          .expected_string = "18446744073709555712"},
       // 2**126
-      FromDoubleTestParam{8.507059173023462e+37, 38, 0,
-                          "85070591730234615865843651857942052864"},
+      FromDoubleTestParam{.real = 8.507059173023462e+37,
+                          .precision = 38,
+                          .scale = 0,
+                          .expected_string = "85070591730234615865843651857942052864"},
       // 2**126 - 2**74
-      FromDoubleTestParam{8.50705917302346e+37, 38, 0,
-                          "85070591730234596976377720379361198080"},
+      FromDoubleTestParam{.real = 8.50705917302346e+37,
+                          .precision = 38,
+                          .scale = 0,
+                          .expected_string = "85070591730234596976377720379361198080"},
       // 2**36 - 2**-16
-      FromDoubleTestParam{68719476735.999985, 11, 0, "68719476736"},
-      FromDoubleTestParam{68719476735.999985, 38, 27,
-                          "68719476735.999984741210937500000000000"},
+      FromDoubleTestParam{.real = 68719476735.999985,
+                          .precision = 11,
+                          .scale = 0,
+                          .expected_string = "68719476736"},
+      FromDoubleTestParam{.real = 68719476735.999985,
+                          .precision = 38,
+                          .scale = 27,
+                          .expected_string = "68719476735.999984741210937500000000000"},
       // -- Other cases
       // Almost 10**38 (minus 2**73)
-      FromDoubleTestParam{9.999999999999998e+37, 38, 0,
-                          "99999999999999978859343891977453174784"},
-      FromDoubleTestParam{9.999999999999998e+27, 38, 10,
-                          "9999999999999997384096481280.0000000000"},
+      FromDoubleTestParam{.real = 9.999999999999998e+37,
+                          .precision = 38,
+                          .scale = 0,
+                          .expected_string = "99999999999999978859343891977453174784"},
+      FromDoubleTestParam{.real = 9.999999999999998e+27,
+                          .precision = 38,
+                          .scale = 10,
+                          .expected_string = "9999999999999997384096481280.0000000000"},
       // 10**N (sometimes fits in N digits)
-      FromDoubleTestParam{1e23, 23, 0, "99999999999999991611392"},
-      FromDoubleTestParam{1e23, 24, 1, "99999999999999991611392.0"},
-      FromDoubleTestParam{1e36, 37, 0, "1000000000000000042420637374017961984"},
-      FromDoubleTestParam{1e36, 38, 1, "1000000000000000042420637374017961984.0"},
-      FromDoubleTestParam{1e37, 37, 0, "9999999999999999538762658202121142272"},
-      FromDoubleTestParam{1e37, 38, 1, "9999999999999999538762658202121142272.0"},
-      FromDoubleTestParam{1e38, 38, 0, "99999999999999997748809823456034029568"},
+      FromDoubleTestParam{.real = 1e23,
+                          .precision = 23,
+                          .scale = 0,
+                          .expected_string = "99999999999999991611392"},
+      FromDoubleTestParam{.real = 1e23,
+                          .precision = 24,
+                          .scale = 1,
+                          .expected_string = "99999999999999991611392.0"},
+      FromDoubleTestParam{.real = 1e36,
+                          .precision = 37,
+                          .scale = 0,
+                          .expected_string = "1000000000000000042420637374017961984"},
+      FromDoubleTestParam{.real = 1e36,
+                          .precision = 38,
+                          .scale = 1,
+                          .expected_string = "1000000000000000042420637374017961984.0"},
+      FromDoubleTestParam{.real = 1e37,
+                          .precision = 37,
+                          .scale = 0,
+                          .expected_string = "9999999999999999538762658202121142272"},
+      FromDoubleTestParam{.real = 1e37,
+                          .precision = 38,
+                          .scale = 1,
+                          .expected_string = "9999999999999999538762658202121142272.0"},
+      FromDoubleTestParam{.real = 1e38,
+                          .precision = 38,
+                          .scale = 0,
+                          .expected_string = "99999999999999997748809823456034029568"},
       // Hand-picked test cases that can involve precision issues.
       // More comprehensive testing is done in the PyArrow test suite.
-      FromDoubleTestParam{9.223372036854778e+10, 19, 8, "92233720368.54777527"},
-      FromDoubleTestParam{1.8446744073709556e+15, 20, 4, "1844674407370955.5000"},
-      FromDoubleTestParam{999999999999999.0, 16, 1, "999999999999999.0"},
-      FromDoubleTestParam{9999999999999998.0, 17, 1, "9999999999999998.0"},
-      FromDoubleTestParam{999999999999999.9, 16, 1, "999999999999999.9"},
-      FromDoubleTestParam{9999999987., 38, 22, "9999999987.0000000000000000000000"},
-      FromDoubleTestParam{9999999987., 38, 28, "9999999987.0000000000000000000000000000"},
+      FromDoubleTestParam{.real = 9.223372036854778e+10,
+                          .precision = 19,
+                          .scale = 8,
+                          .expected_string = "92233720368.54777527"},
+      FromDoubleTestParam{.real = 1.8446744073709556e+15,
+                          .precision = 20,
+                          .scale = 4,
+                          .expected_string = "1844674407370955.5000"},
+      FromDoubleTestParam{.real = 999999999999999.0,
+                          .precision = 16,
+                          .scale = 1,
+                          .expected_string = "999999999999999.0"},
+      FromDoubleTestParam{.real = 9999999999999998.0,
+                          .precision = 17,
+                          .scale = 1,
+                          .expected_string = "9999999999999998.0"},
+      FromDoubleTestParam{.real = 999999999999999.9,
+                          .precision = 16,
+                          .scale = 1,
+                          .expected_string = "999999999999999.9"},
+      FromDoubleTestParam{.real = 9999999987.,
+                          .precision = 38,
+                          .scale = 22,
+                          .expected_string = "9999999987.0000000000000000000000"},
+      FromDoubleTestParam{.real = 9999999987.,
+                          .precision = 38,
+                          .scale = 28,
+                          .expected_string = "9999999987.0000000000000000000000000000"},
       // 1 - 2**-52
       // XXX the result should be 0.99999999999999977795539507496869191527
       // but our algorithm loses the right digit.
-      FromDoubleTestParam{0.9999999999999998, 38, 38,
-                          "0.99999999999999977795539507496869191520"},
-      FromDoubleTestParam{0.9999999999999998, 20, 20, "0.99999999999999977796"},
-      FromDoubleTestParam{0.9999999999999998, 16, 16, "0.9999999999999998"},
+      FromDoubleTestParam{.real = 0.9999999999999998,
+                          .precision = 38,
+                          .scale = 38,
+                          .expected_string = "0.99999999999999977795539507496869191520"},
+      FromDoubleTestParam{.real = 0.9999999999999998,
+                          .precision = 20,
+                          .scale = 20,
+                          .expected_string = "0.99999999999999977796"},
+      FromDoubleTestParam{.real = 0.9999999999999998,
+                          .precision = 16,
+                          .scale = 16,
+                          .expected_string = "0.9999999999999998"},
   };
 
   for (const auto& param : params) {
@@ -971,6 +1078,217 @@ TEST(DecimalTest, FromBigEndianInvalid) {
   ASSERT_THAT(Decimal::FromBigEndian(nullptr, -1), IsError(ErrorKind::kInvalidArgument));
   ASSERT_THAT(Decimal::FromBigEndian(nullptr, Decimal::kByteWidth + 1),
               IsError(ErrorKind::kInvalidArgument));
+}
+
+TEST(DecimalTestFunctionality, Multiply) {
+  ASSERT_EQ(Decimal(60501), Decimal(301) * Decimal(201));
+  ASSERT_EQ(Decimal(-60501), Decimal(-301) * Decimal(201));
+  ASSERT_EQ(Decimal(-60501), Decimal(301) * Decimal(-201));
+  ASSERT_EQ(Decimal(60501), Decimal(-301) * Decimal(-201));
+
+  // Edge cases
+  for (auto x : std::vector<int128_t>{-INT64_MAX, -INT32_MAX, 0, INT32_MAX, INT64_MAX}) {
+    for (auto y :
+         std::vector<int128_t>{-INT32_MAX, -32, -2, -1, 0, 1, 2, 32, INT32_MAX}) {
+      Decimal decimal_x = DecimalFromInt128(x);
+      Decimal decimal_y = DecimalFromInt128(y);
+      Decimal result = decimal_x * decimal_y;
+      EXPECT_EQ(DecimalFromInt128(x * y), result)
+          << " x: " << decimal_x << " y: " << decimal_y;
+    }
+  }
+}
+
+TEST(DecimalTestFunctionality, Divide) {
+  ASSERT_EQ(Decimal(66), Decimal(20100) / Decimal(301));
+  ASSERT_EQ(Decimal(-66), Decimal(-20100) / Decimal(301));
+  ASSERT_EQ(Decimal(-66), Decimal(20100) / Decimal(-301));
+  ASSERT_EQ(Decimal(66), Decimal(-20100) / Decimal(-301));
+
+  for (auto x : std::vector<int128_t>{-INT64_MAX, -INT32_MAX, 0, INT32_MAX, INT64_MAX}) {
+    for (auto y : std::vector<int128_t>{-INT32_MAX, -32, -2, -1, 1, 2, 32, INT32_MAX}) {
+      Decimal decimal_x = DecimalFromInt128(x);
+      Decimal decimal_y = DecimalFromInt128(y);
+      Decimal result = decimal_x / decimal_y;
+      EXPECT_EQ(DecimalFromInt128(x / y), result)
+          << " x: " << decimal_x << " y: " << decimal_y;
+    }
+  }
+}
+
+TEST(DecimalTestFunctionality, Modulo) {
+  ASSERT_EQ(Decimal(234), Decimal(20100) % Decimal(301));
+  ASSERT_EQ(Decimal(-234), Decimal(-20100) % Decimal(301));
+  ASSERT_EQ(Decimal(234), Decimal(20100) % Decimal(-301));
+  ASSERT_EQ(Decimal(-234), Decimal(-20100) % Decimal(-301));
+
+  // Test some edge cases
+  for (auto x : std::vector<int128_t>{-INT64_MAX, -INT32_MAX, 0, INT32_MAX, INT64_MAX}) {
+    for (auto y : std::vector<int128_t>{-INT32_MAX, -32, -2, -1, 1, 2, 32, INT32_MAX}) {
+      Decimal decimal_x = DecimalFromInt128(x);
+      Decimal decimal_y = DecimalFromInt128(y);
+      Decimal result = decimal_x % decimal_y;
+      EXPECT_EQ(DecimalFromInt128(x % y), result)
+          << " x: " << decimal_x << " y: " << decimal_y;
+    }
+  }
+}
+
+TEST(DecimalTestFunctionality, Sign) {
+  ASSERT_EQ(1, Decimal(999999).Sign());
+  ASSERT_EQ(-1, Decimal(-999999).Sign());
+  ASSERT_EQ(1, Decimal(0).Sign());
+}
+
+TEST(DecimalTestFunctionality, GetWholeAndFraction) {
+  Decimal value("123456");
+
+  auto check = [value](int32_t scale, std::pair<int32_t, int32_t> expected) {
+    int32_t out;
+    auto result = value.GetWholeAndFraction(scale);
+    ASSERT_THAT(result->first.ToInteger(&out), IsOk());
+    ASSERT_EQ(expected.first, out);
+    ASSERT_THAT(result->second.ToInteger(&out), IsOk());
+    ASSERT_EQ(expected.second, out);
+  };
+
+  check(0, {123456, 0});
+  check(1, {12345, 6});
+  check(5, {1, 23456});
+  check(7, {0, 123456});
+}
+
+TEST(DecimalTestFunctionality, GetWholeAndFractionNegative) {
+  Decimal value("-123456");
+
+  auto check = [value](int32_t scale, std::pair<int32_t, int32_t> expected) {
+    int32_t out;
+    auto result = value.GetWholeAndFraction(scale);
+    ASSERT_THAT(result->first.ToInteger(&out), IsOk());
+    ASSERT_EQ(expected.first, out);
+    ASSERT_THAT(result->second.ToInteger(&out), IsOk());
+    ASSERT_EQ(expected.second, out);
+  };
+
+  check(0, {-123456, 0});
+  check(1, {-12345, -6});
+  check(5, {-1, -23456});
+  check(7, {0, -123456});
+}
+
+TEST(DecimalTestFunctionality, FitsInPrecision) {
+  ASSERT_TRUE(Decimal("0").FitsInPrecision(1));
+  ASSERT_TRUE(Decimal("9").FitsInPrecision(1));
+  ASSERT_TRUE(Decimal("-9").FitsInPrecision(1));
+  ASSERT_FALSE(Decimal("10").FitsInPrecision(1));
+  ASSERT_FALSE(Decimal("-10").FitsInPrecision(1));
+
+  ASSERT_TRUE(Decimal("0").FitsInPrecision(2));
+  ASSERT_TRUE(Decimal("10").FitsInPrecision(2));
+  ASSERT_TRUE(Decimal("-10").FitsInPrecision(2));
+  ASSERT_TRUE(Decimal("99").FitsInPrecision(2));
+  ASSERT_TRUE(Decimal("-99").FitsInPrecision(2));
+  ASSERT_FALSE(Decimal("100").FitsInPrecision(2));
+  ASSERT_FALSE(Decimal("-100").FitsInPrecision(2));
+
+  std::string max_nines(Decimal::kMaxPrecision, '9');
+  ASSERT_TRUE(Decimal(max_nines).FitsInPrecision(Decimal::kMaxPrecision));
+  ASSERT_TRUE(Decimal("-" + max_nines).FitsInPrecision(Decimal::kMaxPrecision));
+
+  std::string max_zeros(Decimal::kMaxPrecision, '0');
+  ASSERT_FALSE(Decimal("1" + max_zeros).FitsInPrecision(Decimal::kMaxPrecision));
+  ASSERT_FALSE(Decimal("-1" + max_zeros).FitsInPrecision(Decimal::kMaxPrecision));
+}
+
+TEST(DecimalTest, LeftShift) {
+  auto check = [](int128_t x, uint32_t bits) {
+    auto expected = DecimalFromInt128(x << bits);
+    auto actual = DecimalFromInt128(x) << bits;
+    ASSERT_EQ(actual.low(), expected.low());
+    ASSERT_EQ(actual.high(), expected.high());
+  };
+
+  ASSERT_EQ(Decimal("0"), Decimal("0") << 0);
+  ASSERT_EQ(Decimal("0"), Decimal("0") << 1);
+  ASSERT_EQ(Decimal("0"), Decimal("0") << 63);
+  ASSERT_EQ(Decimal("0"), Decimal("0") << 127);
+
+  check(123, 0);
+  check(123, 1);
+  check(123, 63);
+  check(123, 64);
+  check(123, 120);
+
+  ASSERT_EQ(Decimal("199999999999998"), Decimal("99999999999999") << 1);
+  ASSERT_EQ(Decimal("3435973836799965640261632"), Decimal("99999999999999") << 35);
+  ASSERT_EQ(Decimal("120892581961461708544797985370825293824"), Decimal("99999999999999")
+                                                                    << 80);
+
+  ASSERT_EQ(Decimal("1234567890123456789012"), Decimal("1234567890123456789012") << 0);
+  ASSERT_EQ(Decimal("2469135780246913578024"), Decimal("1234567890123456789012") << 1);
+  ASSERT_EQ(Decimal("88959991838777271103427858320412639232"),
+            Decimal("1234567890123456789012") << 56);
+
+  check(-123, 0);
+  check(-123, 1);
+  check(-123, 63);
+  check(-123, 64);
+  check(-123, 120);
+
+  ASSERT_EQ(Decimal("-199999999999998"), Decimal("-99999999999999") << 1);
+  ASSERT_EQ(Decimal("-3435973836799965640261632"), Decimal("-99999999999999") << 35);
+  ASSERT_EQ(Decimal("-120892581961461708544797985370825293824"),
+            Decimal("-99999999999999") << 80);
+
+  ASSERT_EQ(Decimal("-1234567890123456789012"), Decimal("-1234567890123456789012") << 0);
+  ASSERT_EQ(Decimal("-2469135780246913578024"), Decimal("-1234567890123456789012") << 1);
+  ASSERT_EQ(Decimal("-88959991838777271103427858320412639232"),
+            Decimal("-1234567890123456789012") << 56);
+}
+
+TEST(DecimalTest, RightShift) {
+  ASSERT_EQ(Decimal("0"), Decimal("0") >> 0);
+  ASSERT_EQ(Decimal("0"), Decimal("0") >> 1);
+  ASSERT_EQ(Decimal("0"), Decimal("0") >> 63);
+  ASSERT_EQ(Decimal("0"), Decimal("0") >> 127);
+
+  ASSERT_EQ(Decimal("1"), Decimal("1") >> 0);
+  ASSERT_EQ(Decimal("0"), Decimal("1") >> 1);
+  ASSERT_EQ(Decimal("0"), Decimal("1") >> 63);
+  ASSERT_EQ(Decimal("0"), Decimal("1") >> 127);
+
+  ASSERT_EQ(Decimal("-1"), Decimal("-1") >> 0);
+  ASSERT_EQ(Decimal("-1"), Decimal("-1") >> 1);
+  ASSERT_EQ(Decimal("-1"), Decimal("-1") >> 63);
+  ASSERT_EQ(Decimal("-1"), Decimal("-1") >> 127);
+
+  ASSERT_EQ(Decimal("1096516"), Decimal("1234567890123456789012") >> 50);
+  ASSERT_EQ(Decimal("66"), Decimal("1234567890123456789012") >> 64);
+  ASSERT_EQ(Decimal("2"), Decimal("1234567890123456789012") >> 69);
+  ASSERT_EQ(Decimal("0"), Decimal("1234567890123456789012") >> 71);
+  ASSERT_EQ(Decimal("0"), Decimal("1234567890123456789012") >> 127);
+
+  ASSERT_EQ(Decimal("-1096517"), Decimal("-1234567890123456789012") >> 50);
+  ASSERT_EQ(Decimal("-67"), Decimal("-1234567890123456789012") >> 64);
+  ASSERT_EQ(Decimal("-3"), Decimal("-1234567890123456789012") >> 69);
+  ASSERT_EQ(Decimal("-1"), Decimal("-1234567890123456789012") >> 71);
+  ASSERT_EQ(Decimal("-1"), Decimal("-1234567890123456789012") >> 127);
+}
+
+TEST(DecimalTest, Negate) {
+  auto check = [](Decimal pos, Decimal neg) {
+    EXPECT_EQ(-pos, neg);
+    EXPECT_EQ(-neg, pos);
+  };
+
+  check(Decimal(0, 0), Decimal(0, 0));
+  check(Decimal(0, 1), Decimal(-1, 0xFFFFFFFFFFFFFFFFULL));
+  check(Decimal(0, 2), Decimal(-1, 0xFFFFFFFFFFFFFFFEULL));
+  check(Decimal(0, 0x8000000000000000ULL), Decimal(-1, 0x8000000000000000ULL));
+  check(Decimal(0, 0xFFFFFFFFFFFFFFFFULL), Decimal(-1, 1));
+  check(Decimal(12, 0), Decimal(-12, 0));
+  check(Decimal(12, 1), Decimal(-13, 0xFFFFFFFFFFFFFFFFULL));
+  check(Decimal(12, 0xFFFFFFFFFFFFFFFFULL), Decimal(-13, 1));
 }
 
 }  // namespace iceberg

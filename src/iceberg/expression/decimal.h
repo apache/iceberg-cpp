@@ -27,6 +27,7 @@
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
+#include "iceberg/util/macros.h"
 #include "iceberg/util/port.h"
 
 namespace iceberg {
@@ -171,6 +172,28 @@ class ICEBERG_EXPORT Decimal {
   /// Returns true if the number of significant digits is less or equal to `precision`.
   bool FitsInPrecision(int32_t precision) const;
 
+  /// \brief Convert to a signed integer
+  template <typename T>
+    requires std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t>
+  Result<T> ToInteger() const {
+    constexpr auto min_value = std::numeric_limits<T>::min();
+    constexpr auto max_value = std::numeric_limits<T>::max();
+    const auto& self = *this;
+    if (self < min_value || self > max_value) {
+      return Invalid("Invalid cast from Decimal to {} byte integer", sizeof(T));
+    }
+    return static_cast<T>(low());
+  }
+
+  /// \brief Convert to a signed integer
+  template <typename T>
+    requires std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t>
+  Status ToInteger(T* out) const {
+    ICEBERG_ASSIGN_OR_RAISE(auto result, ToInteger<T>());
+    *out = result;
+    return {};
+  }
+
   /// \brief Convert to a floating-point number (scaled)
   float ToFloat(int32_t scale) const;
   /// \brief Convert to a floating-point number (scaled)
@@ -211,6 +234,8 @@ class ICEBERG_EXPORT Decimal {
   friend bool operator!=(const Decimal& lhs, const Decimal& rhs) {
     return lhs.data_ != rhs.data_;
   }
+
+  friend std::ostream& operator<<(std::ostream& os, const Decimal& decimal);
 
  private:
 #if ICEBERG_LITTLE_ENDIAN

@@ -32,7 +32,7 @@ enum class ErrorKind {
   kAlreadyExists,
   kCommitStateUnknown,
   kDecompressError,
-  kDivideByZero,
+  kInvalid,  // For general invalid errors
   kInvalidArgument,
   kInvalidArrowData,
   kInvalidExpression,
@@ -47,8 +47,6 @@ enum class ErrorKind {
   kNotFound,
   kNotImplemented,
   kNotSupported,
-  kOverflow,
-  kRescaleDataLoss,
   kUnknownError,
 };
 
@@ -82,7 +80,7 @@ using Status = Result<void>;
 DEFINE_ERROR_FUNCTION(AlreadyExists)
 DEFINE_ERROR_FUNCTION(CommitStateUnknown)
 DEFINE_ERROR_FUNCTION(DecompressError)
-DEFINE_ERROR_FUNCTION(DivideByZero)
+DEFINE_ERROR_FUNCTION(Invalid)
 DEFINE_ERROR_FUNCTION(InvalidArgument)
 DEFINE_ERROR_FUNCTION(InvalidArrowData)
 DEFINE_ERROR_FUNCTION(InvalidExpression)
@@ -97,8 +95,6 @@ DEFINE_ERROR_FUNCTION(NotAllowed)
 DEFINE_ERROR_FUNCTION(NotFound)
 DEFINE_ERROR_FUNCTION(NotImplemented)
 DEFINE_ERROR_FUNCTION(NotSupported)
-DEFINE_ERROR_FUNCTION(Overflow)
-DEFINE_ERROR_FUNCTION(RescaleDataLoss)
 DEFINE_ERROR_FUNCTION(UnknownError)
 
 #undef DEFINE_ERROR_FUNCTION
