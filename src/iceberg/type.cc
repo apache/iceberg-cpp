@@ -27,10 +27,6 @@
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
 namespace iceberg {
-std::optional<std::reference_wrapper<const SchemaField>> NestedType::GetFieldByName(
-    std::string_view name) const {
-  return GetFieldByName(name, true);
-}
 
 StructType::StructType(std::vector<SchemaField> fields) : fields_(std::move(fields)) {
   size_t index = 0;
@@ -70,9 +66,8 @@ std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByI
   }
   return fields_[index];
 }
-// todo
 std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByName(
-    std::string_view name, bool case_sensitive) const {
+    std::string_view name) const {
   // N.B. duplicate names are not permitted (looking at the Java
   // implementation) so there is nothing in particular we need to do here
   for (const auto& field : fields_) {
@@ -88,10 +83,6 @@ bool StructType::Equals(const Type& other) const {
   }
   const auto& struct_ = static_cast<const StructType&>(other);
   return fields_ == struct_.fields_;
-}
-std::optional<std::reference_wrapper<const SchemaField>> StructType::GetFieldByName(
-    std::string_view name) const {
-  return GetFieldByName(name, true);
 }
 
 ListType::ListType(SchemaField element) : element_(std::move(element)) {
@@ -128,9 +119,8 @@ std::optional<std::reference_wrapper<const SchemaField>> ListType::GetFieldByInd
   }
   return std::nullopt;
 }
-// todo
 std::optional<std::reference_wrapper<const SchemaField>> ListType::GetFieldByName(
-    std::string_view name, bool case_sensitive) const {
+    std::string_view name) const {
   if (name == element_.name()) {
     return std::cref(element_);
   }
@@ -142,10 +132,6 @@ bool ListType::Equals(const Type& other) const {
   }
   const auto& list = static_cast<const ListType&>(other);
   return element_ == list.element_;
-}
-std::optional<std::reference_wrapper<const SchemaField>> ListType::GetFieldByName(
-    std::string_view name) const {
-  return GetFieldByName(name, false);
 }
 
 MapType::MapType(SchemaField key, SchemaField value)
@@ -191,9 +177,8 @@ std::optional<std::reference_wrapper<const SchemaField>> MapType::GetFieldByInde
   }
   return std::nullopt;
 }
-// todo
 std::optional<std::reference_wrapper<const SchemaField>> MapType::GetFieldByName(
-    std::string_view name, bool case_sensitive) const {
+    std::string_view name) const {
   if (name == kKeyName) {
     return key();
   } else if (name == kValueName) {
@@ -207,10 +192,6 @@ bool MapType::Equals(const Type& other) const {
   }
   const auto& map = static_cast<const MapType&>(other);
   return fields_ == map.fields_;
-}
-std::optional<std::reference_wrapper<const SchemaField>> MapType::GetFieldByName(
-    std::string_view name) const {
-  return GetFieldByName(name, false);
 }
 
 TypeId BooleanType::type_id() const { return kTypeId; }

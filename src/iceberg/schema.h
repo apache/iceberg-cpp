@@ -23,17 +23,15 @@
 /// Schemas for Iceberg tables.  This header contains the definition of Schema
 /// and any utility functions.  See iceberg/type.h and iceberg/field.h as well.
 
-#include <algorithm>
 #include <cstdint>
 #include <optional>
 #include <string>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/type.h"
-#include "iceberg/util/macros.h"
-#include "iceberg/util/visit_type.h"
 
 namespace iceberg {
 
@@ -57,7 +55,7 @@ class ICEBERG_EXPORT Schema : public StructType {
 
   [[nodiscard]] std::string ToString() const override;
 
-  ///\brief Get thd SchemaField By Name
+  ///\brief Find thd SchemaField By field name
   ///
   /// Short names for maps and lists are included for any name that does not conflict with
   /// a canonical name. For example, a list, 'l', of structs with field 'x' will produce
@@ -75,14 +73,13 @@ class ICEBERG_EXPORT Schema : public StructType {
 
   friend bool operator==(const Schema& lhs, const Schema& rhs) { return lhs.Equals(rhs); }
 
-  /// Mapping from field id to index of `full_schemafield_`.
-  mutable std::unordered_map<int, size_t> id_to_index_;
-  /// Mapping from field name to index of `full_schemafield_`.
-  mutable std::unordered_map<std::string, size_t> name_to_index_;
-  /// Mapping from field lowercase_name(suppoert case_insensitive query) to index of
-  /// `full_schemafield_`.
-  mutable std::unordered_map<std::string, size_t> lowercase_name_to_index_;
-  mutable std::vector<std::reference_wrapper<const SchemaField>> full_schemafield_;
+  /// Mapping from field id to field.
+  mutable std::unordered_map<int32_t, std::reference_wrapper<const SchemaField>>
+      id_to_field_;
+  /// Mapping from field name to id of field.
+  mutable std::unordered_map<std::string, size_t> name_to_id_;
+  /// Mapping from field lowercase_name(suppoert case_insensitive query) to id of field
+  mutable std::unordered_map<std::string, size_t> lowercase_name_to_id_;
 
  private:
   /// \brief Compare two schemas for equality.

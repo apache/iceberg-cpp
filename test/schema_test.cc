@@ -107,7 +107,7 @@ TEST(SchemaTest, NestedType) {
 
   iceberg::Schema schema({field7}, 1);
 
-  ASSERT_EQ(schema.full_schemafield_.size(), 0);
+  ASSERT_EQ(schema.id_to_field_.size(), 0);
   ASSERT_THAT(schema.FindFieldById(7), ::testing::Optional(field7));
   ASSERT_THAT(schema.FindFieldById(6), ::testing::Optional(field6));
   ASSERT_THAT(schema.FindFieldById(5), ::testing::Optional(field5));
@@ -115,7 +115,6 @@ TEST(SchemaTest, NestedType) {
   ASSERT_THAT(schema.FindFieldById(3), ::testing::Optional(field3));
   ASSERT_THAT(schema.FindFieldById(2), ::testing::Optional(field2));
   ASSERT_THAT(schema.FindFieldById(1), ::testing::Optional(field1));
-  ASSERT_EQ(schema.full_schemafield_.size(), 7);
 
   ASSERT_THAT(schema.FindFieldByName("Value"), ::testing::Optional(field7));
   ASSERT_THAT(schema.FindFieldByName("Value.value"), ::testing::Optional(field6));
@@ -127,7 +126,6 @@ TEST(SchemaTest, NestedType) {
               ::testing::Optional(field2));
   ASSERT_THAT(schema.FindFieldByName("Value.value.element.Foo"),
               ::testing::Optional(field1));
-  ASSERT_EQ(schema.full_schemafield_.size(), 7);
 
   ASSERT_THAT(schema.FindFieldByName("vALue", false), ::testing::Optional(field7));
   ASSERT_THAT(schema.FindFieldByName("vALue.VALUE", false), ::testing::Optional(field6));
@@ -140,7 +138,6 @@ TEST(SchemaTest, NestedType) {
               ::testing::Optional(field2));
   ASSERT_THAT(schema.FindFieldByName("valUe.valUe.ELEMENT.FOO", false),
               ::testing::Optional(field1));
-  ASSERT_EQ(schema.full_schemafield_.size(), 7);
 
   ASSERT_THAT(schema.FindFieldByName("vaLue.value.FOO", false),
               ::testing::Optional(field1));
@@ -152,6 +149,7 @@ TEST(SchemaTest, NestedType) {
   ASSERT_THAT(schema.FindFieldByName("Value.value.Foo"), ::testing::Optional(field1));
   ASSERT_THAT(schema.FindFieldByName("Value.value.Bar"), ::testing::Optional(field2));
   ASSERT_THAT(schema.FindFieldByName("Value.value.Foobar"), ::testing::Optional(field3));
+  ASSERT_EQ(schema.id_to_field_.size(), 7);
 }
 
 TEST(SchemaTest, NestType2) {
@@ -187,7 +185,7 @@ TEST(SchemaTest, NestType2) {
 
   iceberg::Schema schema({field9}, 1);
 
-  ASSERT_EQ(schema.full_schemafield_.size(), 0);
+  ASSERT_EQ(schema.id_to_field_.size(), 0);
   ASSERT_THAT(schema.FindFieldById(9), ::testing::Optional(field9));
   ASSERT_THAT(schema.FindFieldById(8), ::testing::Optional(field8));
   ASSERT_THAT(schema.FindFieldById(7), ::testing::Optional(field7));
@@ -197,7 +195,6 @@ TEST(SchemaTest, NestType2) {
   ASSERT_THAT(schema.FindFieldById(3), ::testing::Optional(field3));
   ASSERT_THAT(schema.FindFieldById(2), ::testing::Optional(field2));
   ASSERT_THAT(schema.FindFieldById(1), ::testing::Optional(field1));
-  ASSERT_EQ(schema.full_schemafield_.size(), 9);
 
   ASSERT_THAT(schema.FindFieldByName("Map"), ::testing::Optional(field9));
   ASSERT_THAT(schema.FindFieldByName("Map.value"), ::testing::Optional(field8));
@@ -214,7 +211,6 @@ TEST(SchemaTest, NestType2) {
               ::testing::Optional(field2));
   ASSERT_THAT(schema.FindFieldByName("Map.value.Second_child.element.Foo"),
               ::testing::Optional(field1));
-  ASSERT_EQ(schema.full_schemafield_.size(), 9);
 
   ASSERT_THAT(schema.FindFieldByName("map", false), ::testing::Optional(field9));
   ASSERT_THAT(schema.FindFieldByName("map.vALUE", false), ::testing::Optional(field8));
@@ -231,7 +227,6 @@ TEST(SchemaTest, NestType2) {
               ::testing::Optional(field2));
   ASSERT_THAT(schema.FindFieldByName("map.value.Second_child.Element.foo", false),
               ::testing::Optional(field1));
-  ASSERT_EQ(schema.full_schemafield_.size(), 9);
 
   ASSERT_THAT(schema.FindFieldByName("Map.Second_child"), ::testing::Optional(field6));
   ASSERT_THAT(schema.FindFieldByName("Map.First_child"), ::testing::Optional(field5));
@@ -241,7 +236,6 @@ TEST(SchemaTest, NestType2) {
               ::testing::Optional(field2));
   ASSERT_THAT(schema.FindFieldByName("Map.Second_child.Foo"),
               ::testing::Optional(field1));
-  ASSERT_EQ(schema.full_schemafield_.size(), 9);
 
   ASSERT_THAT(schema.FindFieldByName("map.second_child", false),
               ::testing::Optional(field6));
@@ -253,5 +247,5 @@ TEST(SchemaTest, NestType2) {
               ::testing::Optional(field2));
   ASSERT_THAT(schema.FindFieldByName("map.second_child.foo", false),
               ::testing::Optional(field1));
-  ASSERT_EQ(schema.full_schemafield_.size(), 9);
+  ASSERT_EQ(schema.id_to_field_.size(), 9);
 }
