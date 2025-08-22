@@ -17,6 +17,11 @@
  * under the License.
  */
 
+/// \file iceberg/expression/decimal.cc
+/// \brief 128-bit fixed-point decimal numbers.
+/// Adapted from Apache Arrow with only Decimal128 support.
+/// https://github.com/apache/arrow/blob/main/cpp/src/arrow/util/decimal.cc
+
 #include "iceberg/expression/decimal.h"
 
 #include <algorithm>

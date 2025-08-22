@@ -19,6 +19,11 @@
 
 #pragma once
 
+/// \file iceberg/expression/decimal.h
+/// \brief 128-bit fixed-point decimal numbers.
+/// Adapted from Apache Arrow with only Decimal128 support.
+/// https://github.com/apache/arrow/blob/main/cpp/src/arrow/util/decimal.h
+
 #include <array>
 #include <cstdint>
 #include <iosfwd>
