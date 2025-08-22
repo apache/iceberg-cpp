@@ -63,6 +63,33 @@ constexpr std::string_view kAdjustToUtcProp = "adjust-to-utc";
   return attributes;
 }
 
+std::string SanitizeFieldName(std::string_view field_name) {
+  if (field_name.empty()) {
+    return "_empty";
+  }
+
+  std::string result;
+  result.reserve(field_name.size());
+
+  // First character must be a letter or underscore
+  if (!std::isalpha(field_name[0]) && field_name[0] != '_') {
+    result.push_back('_');
+  } else {
+    result.push_back(field_name[0]);
+  }
+
+  // Rest of characters must be letters, digits, or underscores
+  for (size_t i = 1; i < field_name.size(); ++i) {
+    char c = field_name[i];
+    if (std::isalnum(c) || c == '_') {
+      result.push_back(c);
+    } else {
+      result.push_back('_');
+    }
+  }
+  return result;
+}
+
 }  // namespace
 
 std::string ToString(const ::avro::NodePtr& node) {
@@ -188,8 +215,17 @@ Status ToAvroNodeVisitor::Visit(const StructType& type, ::avro::NodePtr* node) {
     ::avro::NodePtr field_node;
     ICEBERG_RETURN_UNEXPECTED(Visit(sub_field, &field_node));
 
-    // TODO(gangwu): sanitize field name
-    (*node)->addName(std::string(sub_field.name()));
+    // Sanitize field name to ensure it follows Avro field name requirements
+    std::string sanitized_name = SanitizeFieldName(sub_field.name());
+    // Store original name as a custom attribute if it was modified
+    if (sanitized_name != sub_field.name()) {
+      // Add custom attribute to preserve the original field name
+      ::avro::CustomAttributes attrs;
+      attrs.addAttribute(std::string(kIcebergFieldNameProp),
+                         std::string(sub_field.name()));
+      (*node)->addCustomAttributesForField(attrs);
+    }
+    (*node)->addName(sanitized_name);
     (*node)->addLeaf(field_node);
     (*node)->addCustomAttributesForField(GetAttributesWithFieldId(sub_field.field_id()));
   }
@@ -839,7 +875,15 @@ Result<::avro::NodePtr> CreateRecordNodeWithFieldIds(const ::avro::NodePtr& orig
     // Recursively apply field IDs to nested fields
     ICEBERG_ASSIGN_OR_RAISE(auto new_nested_node,
                             MakeAvroNodeWithFieldIds(field_node, *nested_field));
-    new_record_node->addName(field_name);
+    std::string sanitized_name = SanitizeFieldName(field_name);
+    // Store original name as a custom attribute if it was modified
+    if (sanitized_name != field_name) {
+      // Add custom attribute to preserve the original field name
+      ::avro::CustomAttributes attrs;
+      attrs.addAttribute(std::string(kIcebergFieldNameProp), field_name);
+      new_record_node->addCustomAttributesForField(attrs);
+    }
+    new_record_node->addName(sanitized_name);
     new_record_node->addLeaf(new_nested_node);
   }
 
