@@ -156,4 +156,28 @@ bool HasMapLogicalType(const ::avro::NodePtr& node);
 Result<::avro::NodePtr> MakeAvroNodeWithFieldIds(const ::avro::NodePtr& original_node,
                                                  const NameMapping& mapping);
 
+/// \brief Sanitize a field name to make it compatible with Avro field name requirements.
+///
+/// Converts names that are not valid Avro names to valid Avro names.
+/// Conversion rules:
+/// 1. If the first character is not a letter or underscore, it is specially handled:
+///    - Digits: Prefixed with an underscore (e.g., '3' -> '_3')
+///    - Other characters: Converted to '_x' followed by the uppercase hexadecimal
+///    representation
+///      of the character (e.g., '$' -> '_x24')
+/// 2. For characters other than the first:
+///    - If it's a letter, digit, or underscore, it remains unchanged
+///    - Other characters: Converted to '_x' followed by the uppercase hexadecimal
+///    representation
+///
+/// Examples:
+/// - "123field" -> "_123field"
+/// - "user-name" -> "user_x2Dname"
+/// - "$price" -> "_x24price"
+/// - "valid_name_123" -> "valid_name_123" (no conversion needed)
+///
+/// \param field_name The original field name to sanitize.
+/// \return A sanitized field name that follows Avro naming conventions.
+std::string SanitizeFieldName(std::string_view field_name);
+
 }  // namespace iceberg::avro
