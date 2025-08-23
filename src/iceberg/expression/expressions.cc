@@ -308,6 +308,11 @@ std::shared_ptr<UnboundPredicate<BoundReference>> Expressions::Predicate(
 }
 
 std::shared_ptr<UnboundPredicate<BoundReference>> Expressions::Predicate(
+    Expression::Operation op, std::string name, std::initializer_list<Literal> values) {
+  return Predicate(op, name, std::vector<Literal>(values));
+}
+
+std::shared_ptr<UnboundPredicate<BoundReference>> Expressions::Predicate(
     Expression::Operation op, std::string name) {
   return std::make_shared<UnboundPredicate<BoundReference>>(op, Ref(std::move(name)));
 }
@@ -317,6 +322,13 @@ std::shared_ptr<UnboundPredicate<B>> Expressions::Predicate(
     Expression::Operation op, std::shared_ptr<UnboundTerm<B>> expr,
     std::vector<Literal> values) {
   return std::make_shared<UnboundPredicate<B>>(op, std::move(expr), std::move(values));
+}
+
+template <typename B>
+std::shared_ptr<UnboundPredicate<B>> Expressions::Predicate(
+    Expression::Operation op, std::shared_ptr<UnboundTerm<B>> expr,
+    std::initializer_list<Literal> values) {
+  return Predicate<B>(op, std::move(expr), std::vector<Literal>(values));
 }
 
 template <typename B>
