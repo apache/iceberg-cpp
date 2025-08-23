@@ -198,6 +198,6 @@ class ICEBERG_EXPORT Or : public Expression {
 ICEBERG_EXPORT std::string_view ToString(Expression::Operation op);
 
 /// \brief Returns the negated operation.
-Result<Expression::Operation> Negate(Expression::Operation op);
+ICEBERG_EXPORT Result<Expression::Operation> Negate(Expression::Operation op);
 
 }  // namespace iceberg

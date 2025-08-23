@@ -173,9 +173,18 @@ Result<Expression::Operation> Negate(Expression::Operation op) {
       return Expression::Operation::kNotStartsWith;
     case Expression::Operation::kNotStartsWith:
       return Expression::Operation::kStartsWith;
-    default:
+    case Expression::Operation::kTrue:
+    case Expression::Operation::kFalse:
+    case Expression::Operation::kNot:
+    case Expression::Operation::kCountStar:
+    case Expression::Operation::kMax:
+    case Expression::Operation::kMin:
+    case Expression::Operation::kAnd:
+    case Expression::Operation::kOr:
+    case Expression::Operation::kCount:
       return InvalidArgument("No negation for operation: {}", op);
   }
+  std::unreachable();
 }
 
 }  // namespace iceberg
