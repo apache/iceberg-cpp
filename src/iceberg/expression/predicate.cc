@@ -33,12 +33,12 @@
 namespace iceberg {
 
 // Predicate template implementations
-template <typename TermType>
-Predicate<TermType>::Predicate(Expression::Operation op, std::shared_ptr<TermType> term)
+template <TermType T>
+Predicate<T>::Predicate(Expression::Operation op, std::shared_ptr<T> term)
     : operation_(op), term_(std::move(term)) {}
 
-template <typename TermType>
-Predicate<TermType>::~Predicate() = default;
+template <TermType T>
+Predicate<T>::~Predicate() = default;
 
 // UnboundPredicate template implementations
 template <typename B>
@@ -287,18 +287,6 @@ Result<Literal::Value> BoundPredicate::Evaluate(const StructLike& data) const {
   ICEBERG_ASSIGN_OR_RAISE(auto eval_result, term_->Evaluate(data));
   ICEBERG_ASSIGN_OR_RAISE(auto test_result, Test(eval_result));
   return Literal::Value{test_result};
-}
-
-Result<std::vector<Literal::Value>> BoundPredicate::Evaluate(
-    const ArrowArray& data) const {
-  ICEBERG_ASSIGN_OR_RAISE(auto eval_result, term_->Evaluate(data));
-  std::vector<Literal::Value> result;
-  result.reserve(eval_result.size());
-  for (const auto& value : eval_result) {
-    ICEBERG_ASSIGN_OR_RAISE(auto test_result, Test(value));
-    result.emplace_back(test_result);
-  }
-  return result;
 }
 
 // BoundUnaryPredicate implementation

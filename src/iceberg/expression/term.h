@@ -26,7 +26,6 @@
 #include <string>
 #include <string_view>
 
-#include "iceberg/arrow_c_data.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/formattable.h"
@@ -81,9 +80,6 @@ class ICEBERG_EXPORT Bound {
 
   /// \brief Evaluate this expression against a row-based data.
   virtual Result<Literal::Value> Evaluate(const StructLike& data) const = 0;
-
-  /// \brief Evaluate this expression against an Arrow array.
-  virtual Result<std::vector<Literal::Value>> Evaluate(const ArrowArray& data) const = 0;
 
   /// \brief Returns the underlying bound reference for this term.
   virtual std::shared_ptr<class BoundReference> reference() = 0;
@@ -182,8 +178,6 @@ class ICEBERG_EXPORT BoundReference
 
   Result<Literal::Value> Evaluate(const StructLike& data) const override;
 
-  Result<std::vector<Literal::Value>> Evaluate(const ArrowArray& data) const override;
-
   std::shared_ptr<BoundReference> reference() override { return shared_from_this(); }
 
   std::shared_ptr<Type> type() const override { return field_.type(); }
@@ -243,8 +237,6 @@ class ICEBERG_EXPORT BoundTransform : public BoundTerm {
   std::string ToString() const override;
 
   Result<Literal::Value> Evaluate(const StructLike& data) const override;
-
-  Result<std::vector<Literal::Value>> Evaluate(const ArrowArray& data) const override;
 
   std::shared_ptr<BoundReference> reference() override { return ref_; }
 

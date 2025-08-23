@@ -22,33 +22,38 @@
 /// \file iceberg/expression/predicate.h
 /// Predicate interface for boolean expressions that test terms.
 
+#include <concepts>
+
 #include "iceberg/expression/expression.h"
 #include "iceberg/expression/term.h"
 
 namespace iceberg {
 
+template <typename T>
+concept TermType = std::derived_from<T, Term>;
+
 /// \brief A predicate is a boolean expression that tests a term against some criteria.
 ///
 /// \tparam TermType The type of the term being tested
-template <typename TermType>
+template <TermType T>
 class ICEBERG_EXPORT Predicate : public Expression {
  public:
   /// \brief Create a predicate with an operation and term.
   ///
   /// \param op The operation this predicate performs
   /// \param term The term this predicate tests
-  Predicate(Expression::Operation op, std::shared_ptr<TermType> term);
+  Predicate(Expression::Operation op, std::shared_ptr<T> term);
 
   ~Predicate() override;
 
   Expression::Operation op() const override { return operation_; }
 
   /// \brief Returns the term this predicate tests.
-  const std::shared_ptr<TermType>& term() const { return term_; }
+  const std::shared_ptr<T>& term() const { return term_; }
 
  protected:
   Expression::Operation operation_;
-  std::shared_ptr<TermType> term_;
+  std::shared_ptr<T> term_;
 };
 
 /// \brief Unbound predicates contain unbound terms and must be bound to a concrete schema
@@ -108,8 +113,6 @@ class ICEBERG_EXPORT BoundPredicate : public Predicate<BoundTerm>, public Bound 
 
   Result<Literal::Value> Evaluate(const StructLike& data) const override;
 
-  Result<std::vector<Literal::Value>> Evaluate(const ArrowArray& data) const override;
-
   /// \brief Test a value against this predicate.
   ///
   /// \param value The value to test
@@ -122,7 +125,7 @@ class ICEBERG_EXPORT BoundPredicate : public Predicate<BoundTerm>, public Bound 
     // A literal predicate (compares against a literal).
     kLiteral,
     // A set predicate (tests membership in a set).
-    kIn,
+    kSet,
   };
 
   /// \brief Returns the kind of this bound predicate.
@@ -195,7 +198,7 @@ class ICEBERG_EXPORT BoundSetPredicate : public BoundPredicate {
 
   Result<bool> Test(const Literal::Value& value) const override;
 
-  Kind kind() const override { return Kind::kIn; }
+  Kind kind() const override { return Kind::kSet; }
 
   std::string ToString() const override;
 

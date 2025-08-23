@@ -228,6 +228,10 @@ class ICEBERG_EXPORT Expressions {
   static std::shared_ptr<UnboundPredicate<BoundReference>> Predicate(
       Expression::Operation op, std::string name, std::vector<Literal> values);
 
+  /// \brief Create a predicate with operation and multiple values.
+  static std::shared_ptr<UnboundPredicate<BoundReference>> Predicate(
+      Expression::Operation op, std::string name, std::initializer_list<Literal> values);
+
   /// \brief Create a unary predicate (no values).
   static std::shared_ptr<UnboundPredicate<BoundReference>> Predicate(
       Expression::Operation op, std::string name);
@@ -237,6 +241,12 @@ class ICEBERG_EXPORT Expressions {
   static std::shared_ptr<UnboundPredicate<B>> Predicate(
       Expression::Operation op, std::shared_ptr<UnboundTerm<B>> expr,
       std::vector<Literal> values);
+
+  /// \brief Create a predicate with operation and multiple values.
+  template <typename B>
+  static std::shared_ptr<UnboundPredicate<B>> Predicate(
+      Expression::Operation op, std::shared_ptr<UnboundTerm<B>> expr,
+      std::initializer_list<Literal> values);
 
   /// \brief Create a unary predicate for unbound term.
   template <typename B>

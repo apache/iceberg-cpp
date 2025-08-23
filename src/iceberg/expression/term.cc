@@ -79,11 +79,6 @@ Result<Literal::Value> BoundReference::Evaluate(const StructLike& data) const {
   return NotImplemented("BoundReference::Evaluate(StructLike) not implemented");
 }
 
-Result<std::vector<Literal::Value>> BoundReference::Evaluate(
-    const ArrowArray& data) const {
-  return NotImplemented("BoundReference::Evaluate(ArrowArray) not implemented");
-}
-
 bool BoundReference::Equals(const BoundTerm& other) const {
   if (other.kind() != Term::Kind::kReference) {
     return false;
@@ -130,11 +125,6 @@ std::string BoundTransform::ToString() const {
 
 Result<Literal::Value> BoundTransform::Evaluate(const StructLike& data) const {
   throw IcebergError("BoundTransform::Evaluate(StructLike) not implemented");
-}
-
-Result<std::vector<Literal::Value>> BoundTransform::Evaluate(
-    const ArrowArray& data) const {
-  throw IcebergError("BoundTransform::Evaluate(ArrowArray) not implemented");
 }
 
 bool BoundTransform::MayProduceNull() const {
