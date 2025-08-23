@@ -149,14 +149,14 @@ Result<Scalar> ManifestFileStructLike::GetField(size_t pos) const {
         return manifest_file.first_row_id.value();
       }
       return {};
-    case ManifestFileField::kNextId:
+    case ManifestFileField::kNextUnusedId:
       return InvalidArgument("Invalid manifest file field index: {}", pos);
   }
   return InvalidArgument("Invalid manifest file field index: {}", pos);
 }
 
 size_t ManifestFileStructLike::num_fields() const {
-  return static_cast<size_t>(ManifestFileField::kNextId);
+  return static_cast<size_t>(ManifestFileField::kNextUnusedId);
 }
 
 std::unique_ptr<StructLike> FromManifestFile(const ManifestFile& file) {

@@ -62,7 +62,7 @@ class ManifestListReaderImpl : public ManifestListReader {
 
 enum class ManifestFileField : int32_t {
   kManifestPath = 0,
-  kManifestLength,
+  kManifestLength = 1,
   kPartitionSpecId = 2,
   kContent = 3,
   kSequenceNumber = 4,
@@ -77,7 +77,9 @@ enum class ManifestFileField : int32_t {
   kPartitionFieldSummary = 13,
   kKeyMetadata = 14,
   kFirstRowId = 15,
-  kNextId = 16,
+  // kNextUnusedId is the placeholder for the next unused index.
+  // Always keep this as the last index when adding new fields.
+  kNextUnusedId = 16,
 };
 
 Result<ManifestFileField> ManifestFileFieldFromIndex(int32_t index);

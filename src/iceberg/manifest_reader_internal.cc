@@ -574,7 +574,7 @@ Result<std::vector<ManifestFile>> ManifestListReaderImpl::Files() const {
 }
 
 Result<ManifestFileField> ManifestFileFieldFromIndex(int32_t index) {
-  if (index >= 0 && index < static_cast<int32_t>(ManifestFileField::kNextId)) {
+  if (index >= 0 && index < static_cast<int32_t>(ManifestFileField::kNextUnusedId)) {
     return static_cast<ManifestFileField>(index);
   }
   return InvalidArgument("Invalid manifest file field index: {}", index);
