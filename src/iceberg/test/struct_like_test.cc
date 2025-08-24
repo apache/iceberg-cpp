@@ -20,6 +20,7 @@
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
 #include <arrow/type.h>
+#include <arrow/util/decimal.h>
 
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/manifest_list.h"
@@ -37,6 +38,15 @@ namespace iceberg {
     auto scalar = result.value();                               \
     ASSERT_TRUE(std::holds_alternative<expected_type>(scalar)); \
     EXPECT_EQ(std::get<expected_type>(scalar), expected_value); \
+  } while (0)
+
+#define EXPECT_DECIMAL_EQ(result, scale, expected_value)  \
+  do {                                                    \
+    ASSERT_THAT(result, IsOk());                          \
+    auto scalar = result.value();                         \
+    ASSERT_TRUE(std::holds_alternative<Decimal>(scalar)); \
+    auto decimal = std::get<Decimal>(scalar);             \
+    EXPECT_EQ(decimal.ToString(scale), expected_value);   \
   } while (0)
 
 #define EXPECT_SCALAR_NULL(result)                               \
@@ -189,12 +199,22 @@ TEST(ArrowArrayStructLike, PrimitiveFields) {
       {::arrow::field("id", ::arrow::int64(), /*nullable=*/false),
        ::arrow::field("name", ::arrow::utf8(), /*nullable=*/true),
        ::arrow::field("score", ::arrow::float32(), /*nullable=*/true),
-       ::arrow::field("active", ::arrow::boolean(), /*nullable=*/false)});
+       ::arrow::field("active", ::arrow::boolean(), /*nullable=*/false),
+       ::arrow::field("date", ::arrow::date32(), /*nullable=*/false),
+       ::arrow::field("time", ::arrow::time64(::arrow::TimeUnit::MICRO),
+                      /*nullable=*/false),
+       ::arrow::field("timestamp", ::arrow::timestamp(::arrow::TimeUnit::MICRO),
+                      /*nullable=*/false),
+       ::arrow::field("fixed", ::arrow::fixed_size_binary(4), /*nullable=*/false),
+       ::arrow::field("decimal", ::arrow::decimal128(10, 2), /*nullable=*/false)});
 
   auto arrow_array = ::arrow::json::ArrayFromJSONString(struct_type, R"([
-    {"id": 1, "name": "Alice", "score": 95.5, "active": true},
-    {"id": 2, "name": "Bob", "score": null, "active": false},
-    {"id": 3, "name": null, "score": 87.2, "active": true}])")
+    {"id": 1, "name": "Alice", "score": 95.5, "active": true, "date": 1714396800,
+     "time": 123456, "timestamp": 1714396800000000, "fixed": "aaaa", "decimal": "1234.56"},
+    {"id": 2, "name": "Bob", "score": null, "active": false, "date": 1714396801,
+     "time": 123457, "timestamp": 1714396800000001, "fixed": "bbbb", "decimal": "-1234.56"},
+    {"id": 3, "name": null, "score": 87.2, "active": true, "date": 1714396802,
+     "time": 123458, "timestamp": 1714396800000002, "fixed": "cccc", "decimal": "1234.00"}])")
                          .ValueOrDie();
 
   ArrowSchema c_schema;
@@ -213,6 +233,12 @@ TEST(ArrowArrayStructLike, PrimitiveFields) {
   std::array<std::optional<std::string>, kNumRows> names = {"Alice", "Bob", std::nullopt};
   std::array<std::optional<float>, kNumRows> scores = {95.5f, std::nullopt, 87.2f};
   std::array<bool, kNumRows> actives = {true, false, true};
+  std::array<int32_t, kNumRows> dates = {1714396800, 1714396801, 1714396802};
+  std::array<int64_t, kNumRows> times = {123456, 123457, 123458};
+  std::array<int64_t, kNumRows> timestamps = {1714396800000000, 1714396800000001,
+                                              1714396800000002};
+  std::array<std::string, kNumRows> fixeds = {"aaaa", "bbbb", "cccc"};
+  std::array<std::string, kNumRows> decimals = {"1234.56", "-1234.56", "1234.00"};
 
   for (int64_t i = 0; i < kNumRows; ++i) {
     ASSERT_THAT(struct_like->Reset(i), IsOk());
@@ -228,6 +254,11 @@ TEST(ArrowArrayStructLike, PrimitiveFields) {
       EXPECT_SCALAR_NULL(struct_like->GetField(2));
     }
     EXPECT_SCALAR_EQ(struct_like->GetField(3), bool, actives[i]);
+    EXPECT_SCALAR_EQ(struct_like->GetField(4), int32_t, dates[i]);
+    EXPECT_SCALAR_EQ(struct_like->GetField(5), int64_t, times[i]);
+    EXPECT_SCALAR_EQ(struct_like->GetField(6), int64_t, timestamps[i]);
+    EXPECT_SCALAR_EQ(struct_like->GetField(7), std::string_view, fixeds[i]);
+    EXPECT_DECIMAL_EQ(struct_like->GetField(8), /*scale=*/2, decimals[i]);
   }
 }
 

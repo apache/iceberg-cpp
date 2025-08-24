@@ -19,6 +19,8 @@
 
 #include "iceberg/row/arrow_array_wrapper.h"
 
+#include <cstring>
+
 #include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/arrow_c_data_guard_internal.h"
@@ -45,8 +47,11 @@ Result<Scalar> ExtractValue(const ArrowSchema* schema, const ArrowArray* array,
     case NANOARROW_TYPE_BOOL:
       return static_cast<bool>(ArrowArrayViewGetIntUnsafe(array_view, index));
     case NANOARROW_TYPE_INT32:
+    case NANOARROW_TYPE_DATE32:
       return static_cast<int32_t>(ArrowArrayViewGetIntUnsafe(array_view, index));
     case NANOARROW_TYPE_INT64:
+    case NANOARROW_TYPE_TIME64:
+    case NANOARROW_TYPE_TIMESTAMP:
       return ArrowArrayViewGetIntUnsafe(array_view, index);
     case NANOARROW_TYPE_FLOAT:
       return static_cast<float>(ArrowArrayViewGetDoubleUnsafe(array_view, index));
@@ -61,6 +66,21 @@ Result<Scalar> ExtractValue(const ArrowSchema* schema, const ArrowArray* array,
     case NANOARROW_TYPE_LARGE_BINARY: {
       ArrowStringView value = ArrowArrayViewGetStringUnsafe(array_view, index);
       return std::string_view(value.data, value.size_bytes);
+    }
+    case NANOARROW_TYPE_DECIMAL128: {
+      ArrowError error;
+      ArrowSchemaView schema_view;
+      NANOARROW_RETURN_IF_NOT_OK(ArrowSchemaViewInit(&schema_view, schema, &error));
+      ArrowDecimal value;
+      ArrowDecimalInit(&value, schema_view.decimal_bitwidth,
+                       schema_view.decimal_precision, schema_view.decimal_scale);
+      ArrowArrayViewGetDecimalUnsafe(array_view, index, &value);
+      if (value.n_words != 2) {
+        return InvalidArrowData("Unsupported Arrow decimal words: {}", value.n_words);
+      }
+      int128_t int_value{0};
+      std::memcpy(&int_value, value.words, sizeof(int128_t));
+      return Decimal(int_value);
     }
     case NANOARROW_TYPE_STRUCT: {
       ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<StructLike> struct_like,
@@ -77,10 +97,6 @@ Result<Scalar> ExtractValue(const ArrowSchema* schema, const ArrowArray* array,
                               ArrowArrayMapLike::Make(*schema, *array, index));
       return map_like;
     }
-    case NANOARROW_TYPE_DATE32:
-    case NANOARROW_TYPE_TIME64:
-    case NANOARROW_TYPE_TIMESTAMP:
-    case NANOARROW_TYPE_DECIMAL128:
     case NANOARROW_TYPE_EXTENSION:
       // TODO(gangwu): Handle these types properly
     default:

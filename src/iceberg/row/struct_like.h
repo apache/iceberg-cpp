@@ -29,9 +29,11 @@
 #include <memory>
 #include <string_view>
 #include <variant>
+#include <vector>
 
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/decimal.h"
 
 namespace iceberg {
 
@@ -46,6 +48,7 @@ using Scalar = std::variant<std::monostate,  // for null
                             float,    // for float
                             double,   // for double
                             std::string_view,  // for non-owned string, binary and fixed
+                            Decimal,           // for decimal
                             std::shared_ptr<StructLike>,  // for struct
                             std::shared_ptr<ArrayLike>,   // for list
                             std::shared_ptr<MapLike>>;    // for map
