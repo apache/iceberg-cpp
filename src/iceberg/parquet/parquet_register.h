@@ -19,29 +19,20 @@
 
 #pragma once
 
-#include "iceberg/file_reader.h"
+/// \file iceberg/parquet/parquet_register.h
+/// \brief Provide functions to register Parquet implementations.
+
 #include "iceberg/iceberg_bundle_export.h"
 
-namespace iceberg::avro {
+namespace iceberg::parquet {
 
-/// \brief A reader that reads ArrowArray from Avro files.
-class ICEBERG_BUNDLE_EXPORT AvroReader : public Reader {
- public:
-  AvroReader() = default;
+/// \brief Register Parquet reader implementation.
+ICEBERG_BUNDLE_EXPORT void RegisterReader();
 
-  ~AvroReader() override;
+/// \brief Register Parquet writer implementation.
+ICEBERG_BUNDLE_EXPORT void RegisterWriter();
 
-  Status Open(const ReaderOptions& options) final;
+/// \brief Register Parquet reader and writer implementations.
+ICEBERG_BUNDLE_EXPORT void RegisterAll();
 
-  Status Close() final;
-
-  Result<std::optional<ArrowArray>> Next() final;
-
-  Result<ArrowSchema> Schema() final;
-
- private:
-  class Impl;
-  std::unique_ptr<Impl> impl_;
-};
-
-}  // namespace iceberg::avro
+}  // namespace iceberg::parquet

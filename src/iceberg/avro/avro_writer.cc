@@ -30,6 +30,7 @@
 
 #include "iceberg/arrow/arrow_error_transform_internal.h"
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
+#include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/avro/avro_stream_internal.h"
 #include "iceberg/schema.h"
@@ -133,7 +134,7 @@ std::optional<int64_t> AvroWriter::length() {
 
 std::vector<int64_t> AvroWriter::split_offsets() { return {}; }
 
-void AvroWriter::Register() {
+void RegisterWriter() {
   static WriterFactoryRegistry avro_writer_register(
       FileFormatType::kAvro,
       []() -> Result<std::unique_ptr<Writer>> { return std::make_unique<AvroWriter>(); });

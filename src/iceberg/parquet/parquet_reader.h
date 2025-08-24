@@ -39,8 +39,6 @@ class ICEBERG_BUNDLE_EXPORT ParquetReader : public Reader {
 
   Result<ArrowSchema> Schema() final;
 
-  static void Register();
-
  private:
   class Impl;
   std::unique_ptr<Impl> impl_;

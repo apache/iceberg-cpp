@@ -43,9 +43,6 @@ class ICEBERG_BUNDLE_EXPORT AvroWriter : public Writer {
 
   std::vector<int64_t> split_offsets() final;
 
-  /// \brief Register this Avro writer implementation.
-  static void Register();
-
  private:
   class Impl;
   std::unique_ptr<Impl> impl_;

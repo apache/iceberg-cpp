@@ -45,15 +45,7 @@ namespace iceberg::avro {
 
 namespace {
 
-constexpr std::string_view kIcebergFieldNameProp = "iceberg-field-name";
-constexpr std::string_view kFieldIdProp = "field-id";
-constexpr std::string_view kKeyIdProp = "key-id";
-constexpr std::string_view kValueIdProp = "value-id";
-constexpr std::string_view kElementIdProp = "element-id";
-constexpr std::string_view kAdjustToUtcProp = "adjust-to-utc";
-
 ::avro::LogicalType GetMapLogicalType() {
-  RegisterLogicalTypes();
   return ::avro::LogicalType(std::make_shared<MapLogicalType>());
 }
 

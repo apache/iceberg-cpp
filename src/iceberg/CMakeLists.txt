@@ -109,11 +109,12 @@ if(ICEBERG_BUILD_BUNDLE)
       avro/avro_data_util.cc
       avro/avro_reader.cc
       avro/avro_writer.cc
-      avro/avro_schema_util.cc
       avro/avro_register.cc
+      avro/avro_schema_util.cc
       avro/avro_stream_internal.cc
       parquet/parquet_data_util.cc
       parquet/parquet_reader.cc
+      parquet/parquet_register.cc
       parquet/parquet_schema_util.cc)
 
   # Libraries to link with exported libiceberg_bundle.{so,a}.

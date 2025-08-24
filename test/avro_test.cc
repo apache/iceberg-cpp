@@ -30,7 +30,8 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
-#include "iceberg/avro/avro_reader.h"
+#include "iceberg/avro/avro_register.h"
+#include "iceberg/file_reader.h"
 #include "iceberg/schema.h"
 #include "iceberg/type.h"
 #include "matchers.h"
@@ -40,7 +41,7 @@ namespace iceberg::avro {
 
 class AvroReaderTest : public TempFileTestBase {
  protected:
-  static void SetUpTestSuite() { AvroReader::Register(); }
+  static void SetUpTestSuite() { RegisterAll(); }
 
   void SetUp() override {
     TempFileTestBase::SetUp();

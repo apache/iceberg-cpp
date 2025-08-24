@@ -17,31 +17,15 @@
  * under the License.
  */
 
-#pragma once
+#include "iceberg/parquet/parquet_register.h"
 
-#include "iceberg/file_reader.h"
-#include "iceberg/iceberg_bundle_export.h"
+namespace iceberg::parquet {
 
-namespace iceberg::avro {
+void RegisterWriter() {}
 
-/// \brief A reader that reads ArrowArray from Avro files.
-class ICEBERG_BUNDLE_EXPORT AvroReader : public Reader {
- public:
-  AvroReader() = default;
+void RegisterAll() {
+  RegisterReader();
+  RegisterWriter();
+}
 
-  ~AvroReader() override;
-
-  Status Open(const ReaderOptions& options) final;
-
-  Status Close() final;
-
-  Result<std::optional<ArrowArray>> Next() final;
-
-  Result<ArrowSchema> Schema() final;
-
- private:
-  class Impl;
-  std::unique_ptr<Impl> impl_;
-};
-
-}  // namespace iceberg::avro
+}  // namespace iceberg::parquet

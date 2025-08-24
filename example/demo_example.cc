@@ -19,11 +19,13 @@
 
 #include <iostream>
 
-#include "iceberg/avro/avro_reader.h"
+#include "iceberg/avro/avro_register.h"
 #include "iceberg/file_reader.h"
+#include "iceberg/parquet/parquet_register.h"
 
 int main() {
-  iceberg::avro::AvroReader::Register();
+  iceberg::avro::RegisterAll();
+  iceberg::parquet::RegisterAll();
   auto open_result = iceberg::ReaderFactoryRegistry::Open(
       iceberg::FileFormatType::kAvro, {.path = "non-existing-file.avro"});
   if (!open_result.has_value()) {

@@ -24,13 +24,16 @@
 namespace iceberg::avro {
 
 void RegisterLogicalTypes() {
-  static std::once_flag flag{};
-  std::call_once(flag, []() {
-    // Register the map logical type with the avro custom logical type registry.
-    // See https://github.com/apache/avro/pull/3326 for details.
-    ::avro::CustomLogicalTypeRegistry::instance().registerType(
-        "map", [](const std::string&) { return std::make_shared<MapLogicalType>(); });
-  });
+  // Register the map logical type with the avro custom logical type registry.
+  // See https://github.com/apache/avro/pull/3326 for details.
+  ::avro::CustomLogicalTypeRegistry::instance().registerType(
+      "map", [](const std::string&) { return std::make_shared<MapLogicalType>(); });
+}
+
+void RegisterAll() {
+  RegisterLogicalTypes();
+  RegisterReader();
+  RegisterWriter();
 }
 
 }  // namespace iceberg::avro

@@ -29,6 +29,7 @@
 
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/parquet/parquet_reader.h"
+#include "iceberg/parquet/parquet_register.h"
 #include "iceberg/schema.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
@@ -39,7 +40,7 @@ namespace iceberg::parquet {
 
 class ParquetReaderTest : public TempFileTestBase {
  protected:
-  static void SetUpTestSuite() { ParquetReader::Register(); }
+  static void SetUpTestSuite() { parquet::RegisterAll(); }
 
   void SetUp() override {
     TempFileTestBase::SetUp();

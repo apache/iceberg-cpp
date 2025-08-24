@@ -34,6 +34,7 @@
 #include "iceberg/arrow/arrow_error_transform_internal.h"
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/avro/avro_data_util_internal.h"
+#include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/avro/avro_stream_internal.h"
 #include "iceberg/name_mapping.h"
@@ -247,7 +248,7 @@ Status AvroReader::Open(const ReaderOptions& options) {
 
 Status AvroReader::Close() { return impl_->Close(); }
 
-void AvroReader::Register() {
+void RegisterReader() {
   static ReaderFactoryRegistry avro_reader_register(
       FileFormatType::kAvro,
       []() -> Result<std::unique_ptr<Reader>> { return std::make_unique<AvroReader>(); });

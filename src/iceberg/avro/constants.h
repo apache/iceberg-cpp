@@ -31,4 +31,12 @@ constexpr std::string_view kElement = "element";
 constexpr std::string_view kKey = "key";
 constexpr std::string_view kValue = "value";
 
+// Avro custom attributes constants
+constexpr std::string_view kIcebergFieldNameProp = "iceberg-field-name";
+constexpr std::string_view kFieldIdProp = "field-id";
+constexpr std::string_view kKeyIdProp = "key-id";
+constexpr std::string_view kValueIdProp = "value-id";
+constexpr std::string_view kElementIdProp = "element-id";
+constexpr std::string_view kAdjustToUtcProp = "adjust-to-utc";
+
 }  // namespace iceberg::avro

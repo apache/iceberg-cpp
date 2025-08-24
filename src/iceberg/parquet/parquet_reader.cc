@@ -34,6 +34,7 @@
 #include "iceberg/arrow/arrow_error_transform_internal.h"
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/parquet/parquet_data_util_internal.h"
+#include "iceberg/parquet/parquet_register.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema_internal.h"
@@ -254,7 +255,7 @@ Status ParquetReader::Open(const ReaderOptions& options) {
 
 Status ParquetReader::Close() { return impl_->Close(); }
 
-void ParquetReader::Register() {
+void RegisterReader() {
   static ReaderFactoryRegistry parquet_reader_register(
       FileFormatType::kParquet, []() -> Result<std::unique_ptr<Reader>> {
         return std::make_unique<ParquetReader>();

@@ -25,7 +25,6 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
-#include "iceberg/avro/avro_reader.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/schema.h"
@@ -36,14 +35,12 @@ namespace iceberg {
 
 class ManifestReaderV1Test : public TempFileTestBase {
  protected:
-  static void SetUpTestSuite() { avro::AvroReader::Register(); }
+  static void SetUpTestSuite() { avro::RegisterAll(); }
 
   void SetUp() override {
     TempFileTestBase::SetUp();
     local_fs_ = std::make_shared<::arrow::fs::LocalFileSystem>();
     file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(local_fs_);
-
-    avro::RegisterLogicalTypes();
   }
 
   std::vector<ManifestEntry> PrepareV1ManifestEntries() {
@@ -122,14 +119,12 @@ TEST_F(ManifestReaderV1Test, V1PartitionedBasicTest) {
 
 class ManifestReaderV2Test : public TempFileTestBase {
  protected:
-  static void SetUpTestSuite() { avro::AvroReader::Register(); }
+  static void SetUpTestSuite() { avro::RegisterAll(); }
 
   void SetUp() override {
     TempFileTestBase::SetUp();
     local_fs_ = std::make_shared<::arrow::fs::LocalFileSystem>();
     file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(local_fs_);
-
-    avro::RegisterLogicalTypes();
   }
 
   std::vector<ManifestEntry> PrepareV2NonPartitionedManifestEntries() {

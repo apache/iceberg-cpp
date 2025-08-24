@@ -22,7 +22,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
-#include "iceberg/avro/avro_reader.h"
+#include "iceberg/avro/avro_register.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/manifest_reader.h"
 #include "temp_file_test_base.h"
@@ -32,7 +32,7 @@ namespace iceberg {
 
 class ManifestListReaderTestBase : public TempFileTestBase {
  protected:
-  static void SetUpTestSuite() { avro::AvroReader::Register(); }
+  static void SetUpTestSuite() { avro::RegisterAll(); }
 
   void SetUp() override {
     TempFileTestBase::SetUp();
