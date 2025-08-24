@@ -128,11 +128,13 @@ struct ManifestList;
 class ManifestReader;
 class ManifestListReader;
 
+class StructLike;
+class ArrayLike;
+class MapLike;
+
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.
 /// ----------------------------------------------------------------------------
-
-class StructLike;
 
 class MetadataUpdate;
 class UpdateRequirement;
