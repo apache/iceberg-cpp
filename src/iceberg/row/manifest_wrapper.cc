@@ -31,6 +31,14 @@ std::string_view ToView(const T& value) {
   return {reinterpret_cast<const char*>(value.data()), value.size()};  // NOLINT
 }
 
+template <typename T>
+Result<Scalar> FromOptional(const std::optional<T>& value) {
+  if (value.has_value()) {
+    return value.value();
+  }
+  return std::monostate{};
+}
+
 }  // namespace
 
 Result<Scalar> PartitionFieldSummaryStructLike::GetField(size_t pos) const {
@@ -40,24 +48,14 @@ Result<Scalar> PartitionFieldSummaryStructLike::GetField(size_t pos) const {
   switch (pos) {
     case 0:
       return summary_.get().contains_null;
-    case 1: {
-      if (summary_.get().contains_nan.has_value()) {
-        return summary_.get().contains_nan.value();
-      }
-      return {};
-    }
-    case 2: {
-      if (summary_.get().lower_bound.has_value()) {
-        return ToView(summary_.get().lower_bound.value());
-      }
-      return {};
-    }
-    case 3: {
-      if (summary_.get().upper_bound.has_value()) {
-        return ToView(summary_.get().upper_bound.value());
-      }
-      return {};
-    }
+    case 1:
+      return FromOptional(summary_.get().contains_nan);
+    case 2:
+      return FromOptional(
+          summary_.get().lower_bound.transform(ToView<std::vector<uint8_t>>));
+    case 3:
+      return FromOptional(
+          summary_.get().upper_bound.transform(ToView<std::vector<uint8_t>>));
     default:
       return InvalidArgument("Invalid partition field summary index: {}", pos);
   }
@@ -97,42 +95,18 @@ Result<Scalar> ManifestFileStructLike::GetField(size_t pos) const {
       return manifest_file.min_sequence_number;
     case ManifestFileField::kAddedSnapshotId:
       return manifest_file.added_snapshot_id;
-    case ManifestFileField::kAddedFilesCount: {
-      if (manifest_file.added_files_count.has_value()) {
-        return manifest_file.added_files_count.value();
-      }
-      return {};
-    }
-    case ManifestFileField::kExistingFilesCount: {
-      if (manifest_file.existing_files_count.has_value()) {
-        return manifest_file.existing_files_count.value();
-      }
-      return {};
-    }
-    case ManifestFileField::kDeletedFilesCount: {
-      if (manifest_file.deleted_files_count.has_value()) {
-        return manifest_file.deleted_files_count.value();
-      }
-      return {};
-    }
-    case ManifestFileField::kAddedRowsCount: {
-      if (manifest_file.added_rows_count.has_value()) {
-        return manifest_file.added_rows_count.value();
-      }
-      return {};
-    }
-    case ManifestFileField::kExistingRowsCount: {
-      if (manifest_file.existing_rows_count.has_value()) {
-        return manifest_file.existing_rows_count.value();
-      }
-      return {};
-    }
-    case ManifestFileField::kDeletedRowsCount: {
-      if (manifest_file.deleted_rows_count.has_value()) {
-        return manifest_file.deleted_rows_count.value();
-      }
-      return {};
-    }
+    case ManifestFileField::kAddedFilesCount:
+      return FromOptional(manifest_file.added_files_count);
+    case ManifestFileField::kExistingFilesCount:
+      return FromOptional(manifest_file.existing_files_count);
+    case ManifestFileField::kDeletedFilesCount:
+      return FromOptional(manifest_file.deleted_files_count);
+    case ManifestFileField::kAddedRowsCount:
+      return FromOptional(manifest_file.added_rows_count);
+    case ManifestFileField::kExistingRowsCount:
+      return FromOptional(manifest_file.existing_rows_count);
+    case ManifestFileField::kDeletedRowsCount:
+      return FromOptional(manifest_file.deleted_rows_count);
     case ManifestFileField::kPartitionFieldSummary: {
       if (summaries_ == nullptr) {
         summaries_ =
@@ -145,10 +119,7 @@ Result<Scalar> ManifestFileStructLike::GetField(size_t pos) const {
     case ManifestFileField::kKeyMetadata:
       return ToView(manifest_file.key_metadata);
     case ManifestFileField::kFirstRowId:
-      if (manifest_file.first_row_id.has_value()) {
-        return manifest_file.first_row_id.value();
-      }
-      return {};
+      return FromOptional(manifest_file.first_row_id);
     case ManifestFileField::kNextUnusedId:
       return InvalidArgument("Invalid manifest file field index: {}", pos);
   }
