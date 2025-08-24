@@ -187,7 +187,8 @@ Result<std::shared_ptr<Expression>> UnboundPredicate<B>::BindLiteralOperation(
   }
 
   if (values_.size() != 1) {
-    return InvalidExpression("Literal operation requires a single value");
+    return InvalidExpression("Literal operation requires a single value but got {}",
+                             values_.size());
   }
 
   const auto& literal = values_[0];
@@ -240,6 +241,7 @@ Result<std::shared_ptr<Expression>> UnboundPredicate<B>::BindInOperation(
       return InvalidExpression("Invalid value for conversion to type {}: {} ({})",
                                *bound_term->type(), literal.ToString(), *literal.type());
     }
+    // Filter out literals that are out of range after conversion.
     if (!converted.IsBelowMin() && !converted.IsAboveMax()) {
       converted_literals.push_back(std::move(converted));
     }
