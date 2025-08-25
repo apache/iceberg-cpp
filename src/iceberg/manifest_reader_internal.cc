@@ -19,8 +19,6 @@
 
 #include "manifest_reader_internal.h"
 
-#include <array>
-
 #include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/arrow_c_data_guard_internal.h"
@@ -543,6 +541,12 @@ Result<std::vector<ManifestEntry>> ManifestReaderImpl::Entries() const {
       break;
     }
   }
+
+  // Apply inheritance to all entries
+  for (auto& entry : manifest_entries) {
+    ICEBERG_RETURN_UNEXPECTED(inheritable_metadata_->Apply(entry));
+  }
+
   return manifest_entries;
 }
 

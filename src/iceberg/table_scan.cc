@@ -147,7 +147,7 @@ DataTableScan::DataTableScan(TableScanContext context, std::shared_ptr<FileIO> f
 Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() const {
   ICEBERG_ASSIGN_OR_RAISE(
       auto manifest_list_reader,
-      ManifestListReader::MakeReader(context_.snapshot->manifest_list, file_io_));
+      ManifestListReader::Make(context_.snapshot->manifest_list, file_io_));
   ICEBERG_ASSIGN_OR_RAISE(auto manifest_files, manifest_list_reader->Files());
 
   std::vector<std::shared_ptr<FileScanTask>> tasks;
@@ -155,9 +155,9 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
   auto partition_schema = partition_spec->schema();
 
   for (const auto& manifest_file : manifest_files) {
-    ICEBERG_ASSIGN_OR_RAISE(auto manifest_reader,
-                            ManifestReader::MakeReader(manifest_file.manifest_path,
-                                                       file_io_, partition_schema));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto manifest_reader,
+        ManifestReader::Make(manifest_file, file_io_, partition_schema));
     ICEBERG_ASSIGN_OR_RAISE(auto manifests, manifest_reader->Entries());
 
     // TODO(gty404): filter manifests using partition spec and filter expression

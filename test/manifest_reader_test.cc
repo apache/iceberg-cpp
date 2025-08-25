@@ -27,13 +27,14 @@
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/manifest_entry.h"
+#include "iceberg/manifest_list.h"
 #include "iceberg/schema.h"
 #include "temp_file_test_base.h"
 #include "test_common.h"
 
 namespace iceberg {
 
-class ManifestReaderV1Test : public TempFileTestBase {
+class ManifestReaderTestBase : public TempFileTestBase {
  protected:
   static void SetUpTestSuite() { avro::RegisterAll(); }
 
@@ -43,7 +44,44 @@ class ManifestReaderV1Test : public TempFileTestBase {
     file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(local_fs_);
   }
 
-  std::vector<ManifestEntry> PrepareV1ManifestEntries() {
+  void TestManifestReading(const std::string& resource_name,
+                           const std::vector<ManifestEntry>& expected_entries,
+                           std::shared_ptr<Schema> partition_schema = nullptr) {
+    std::string path = GetResourcePath(resource_name);
+    auto manifest_reader_result = ManifestReader::Make(path, file_io_, partition_schema);
+    ASSERT_TRUE(manifest_reader_result.has_value())
+        << manifest_reader_result.error().message;
+
+    auto manifest_reader = std::move(manifest_reader_result.value());
+    auto read_result = manifest_reader->Entries();
+    ASSERT_TRUE(read_result.has_value()) << read_result.error().message;
+    ASSERT_EQ(read_result.value().size(), expected_entries.size());
+    ASSERT_EQ(read_result.value(), expected_entries);
+  }
+
+  void TestManifestReadingWithManifestFile(
+      const ManifestFile& manifest_file,
+      const std::vector<ManifestEntry>& expected_entries,
+      std::shared_ptr<Schema> partition_schema = nullptr) {
+    auto manifest_reader_result =
+        ManifestReader::Make(manifest_file, file_io_, partition_schema);
+    ASSERT_TRUE(manifest_reader_result.has_value())
+        << manifest_reader_result.error().message;
+
+    auto manifest_reader = std::move(manifest_reader_result.value());
+    auto read_result = manifest_reader->Entries();
+    ASSERT_TRUE(read_result.has_value()) << read_result.error().message;
+    ASSERT_EQ(read_result.value().size(), expected_entries.size());
+    ASSERT_EQ(read_result.value(), expected_entries);
+  }
+
+  std::shared_ptr<::arrow::fs::LocalFileSystem> local_fs_;
+  std::shared_ptr<FileIO> file_io_;
+};
+
+class ManifestReaderV1Test : public ManifestReaderTestBase {
+ protected:
+  std::vector<ManifestEntry> PreparePartitionedTestData() {
     std::vector<ManifestEntry> manifest_entries;
     std::string test_dir_prefix = "/tmp/db/db/iceberg_test/data/";
     std::vector<std::string> paths = {
@@ -95,39 +133,22 @@ class ManifestReaderV1Test : public TempFileTestBase {
     }
     return manifest_entries;
   }
-
-  std::shared_ptr<::arrow::fs::LocalFileSystem> local_fs_;
-  std::shared_ptr<FileIO> file_io_;
 };
 
-TEST_F(ManifestReaderV1Test, V1PartitionedBasicTest) {
+TEST_F(ManifestReaderV1Test, PartitionedTest) {
   iceberg::SchemaField partition_field(1000, "order_ts_hour", iceberg::int32(), true);
   auto partition_schema =
       std::make_shared<Schema>(std::vector<SchemaField>({partition_field}));
-  std::string path = GetResourcePath("56357cd7-391f-4df8-aa24-e7e667da8870-m4.avro");
-  auto manifest_reader_result =
-      ManifestReader::MakeReader(path, file_io_, partition_schema);
-  ASSERT_EQ(manifest_reader_result.has_value(), true)
-      << manifest_reader_result.error().message;
-  auto manifest_reader = std::move(manifest_reader_result.value());
-  auto read_result = manifest_reader->Entries();
-  ASSERT_EQ(read_result.has_value(), true) << read_result.error().message;
-
-  auto expected_entries = PrepareV1ManifestEntries();
-  ASSERT_EQ(read_result.value(), expected_entries);
+  auto expected_entries = PreparePartitionedTestData();
+  TestManifestReading("56357cd7-391f-4df8-aa24-e7e667da8870-m4.avro", expected_entries,
+                      partition_schema);
 }
 
-class ManifestReaderV2Test : public TempFileTestBase {
+class ManifestReaderV2Test : public ManifestReaderTestBase {
  protected:
-  static void SetUpTestSuite() { avro::RegisterAll(); }
-
-  void SetUp() override {
-    TempFileTestBase::SetUp();
-    local_fs_ = std::make_shared<::arrow::fs::LocalFileSystem>();
-    file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(local_fs_);
-  }
-
-  std::vector<ManifestEntry> PrepareV2NonPartitionedManifestEntries() {
+  std::vector<ManifestEntry> CreateV2TestData(
+      std::optional<int64_t> sequence_number = std::nullopt,
+      std::optional<int32_t> partition_spec_id = std::nullopt) {
     std::vector<ManifestEntry> manifest_entries;
     std::string test_dir_prefix = "/tmp/db/db/v2_manifest_non_partitioned/data/";
 
@@ -149,51 +170,64 @@ class ManifestReaderV2Test : public TempFileTestBase {
          {3, {'d', 'a', 't', 'a', '_', 'c', 'o', 'n', 't', 'e', 'n', 't', '_', '4'}},
          {4, {0x14, 0xae, 0x47, 0xe1, 0x7a, 0x8c, 0x7c, 0x40}}}};
 
+    DataFile data_file{.file_path = test_dir_prefix + paths[0],
+                       .file_format = FileFormatType::kParquet,
+                       .record_count = record_counts[0],
+                       .file_size_in_bytes = file_sizes[0],
+                       .column_sizes = {{1, 56}, {2, 73}, {3, 66}, {4, 67}},
+                       .value_counts = {{1, 4}, {2, 4}, {3, 4}, {4, 4}},
+                       .null_value_counts = {{1, 0}, {2, 0}, {3, 0}, {4, 0}},
+                       .nan_value_counts = {{4, 0}},
+                       .lower_bounds = lower_bounds[0],
+                       .upper_bounds = upper_bounds[0],
+                       .key_metadata = {},
+                       .split_offsets = {4},
+                       .equality_ids = {},
+                       .sort_order_id = 0,
+                       .first_row_id = std::nullopt,
+                       .referenced_data_file = std::nullopt,
+                       .content_offset = std::nullopt,
+                       .content_size_in_bytes = std::nullopt};
+
+    if (partition_spec_id.has_value()) {
+      data_file.partition_spec_id = partition_spec_id.value();
+    }
+
     manifest_entries.emplace_back(
         ManifestEntry{.status = ManifestStatus::kAdded,
                       .snapshot_id = 679879563479918846LL,
-                      .sequence_number = std::nullopt,
-                      .file_sequence_number = std::nullopt,
-                      .data_file = std::make_shared<DataFile>(
-                          DataFile{.file_path = test_dir_prefix + paths[0],
-                                   .file_format = FileFormatType::kParquet,
-                                   .record_count = record_counts[0],
-                                   .file_size_in_bytes = file_sizes[0],
-                                   .column_sizes = {{1, 56}, {2, 73}, {3, 66}, {4, 67}},
-                                   .value_counts = {{1, 4}, {2, 4}, {3, 4}, {4, 4}},
-                                   .null_value_counts = {{1, 0}, {2, 0}, {3, 0}, {4, 0}},
-                                   .nan_value_counts = {{4, 0}},
-                                   .lower_bounds = lower_bounds[0],
-                                   .upper_bounds = upper_bounds[0],
-                                   .key_metadata = {},
-                                   .split_offsets = {4},
-                                   .equality_ids = {},
-                                   .sort_order_id = 0,
-                                   .first_row_id = std::nullopt,
-                                   .referenced_data_file = std::nullopt,
-                                   .content_offset = std::nullopt,
-                                   .content_size_in_bytes = std::nullopt})});
+                      .sequence_number = sequence_number,
+                      .file_sequence_number = sequence_number,
+                      .data_file = std::make_shared<DataFile>(data_file)});
     return manifest_entries;
   }
 
-  std::shared_ptr<::arrow::fs::LocalFileSystem> local_fs_;
-  std::shared_ptr<FileIO> file_io_;
+  std::vector<ManifestEntry> PrepareNonPartitionedTestData() {
+    return CreateV2TestData();
+  }
+
+  std::vector<ManifestEntry> PrepareMetadataInheritanceTestData() {
+    return CreateV2TestData(/*sequence_number=*/15, /*partition_spec_id*/ 12);
+  }
 };
 
-TEST_F(ManifestReaderV2Test, V2NonPartitionedBasicTest) {
+TEST_F(ManifestReaderV2Test, NonPartitionedTest) {
+  auto expected_entries = PrepareNonPartitionedTestData();
+  TestManifestReading("2ddf1bc9-830b-4015-aced-c060df36f150-m0.avro", expected_entries);
+}
+
+TEST_F(ManifestReaderV2Test, MetadataInheritanceTest) {
   std::string path = GetResourcePath("2ddf1bc9-830b-4015-aced-c060df36f150-m0.avro");
-
-  auto manifest_reader_result = ManifestReader::MakeReader(path, file_io_, nullptr);
-  ASSERT_EQ(manifest_reader_result.has_value(), true)
-      << manifest_reader_result.error().message;
-
-  auto manifest_reader = std::move(manifest_reader_result.value());
-  auto read_result = manifest_reader->Entries();
-  ASSERT_EQ(read_result.has_value(), true) << read_result.error().message;
-  ASSERT_EQ(read_result.value().size(), 1);
-
-  auto expected_entries = PrepareV2NonPartitionedManifestEntries();
-  ASSERT_EQ(read_result.value(), expected_entries);
+  ManifestFile manifest_file{
+      .manifest_path = path,
+      .manifest_length = 100,
+      .partition_spec_id = 12,
+      .content = ManifestFile::Content::kData,
+      .sequence_number = 15,
+      .added_snapshot_id = 679879563479918846LL,
+  };
+  auto expected_entries = PrepareMetadataInheritanceTestData();
+  TestManifestReadingWithManifestFile(manifest_file, expected_entries);
 }
 
 }  // namespace iceberg
