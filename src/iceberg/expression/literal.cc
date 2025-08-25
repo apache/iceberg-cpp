@@ -19,8 +19,10 @@
 
 #include "iceberg/expression/literal.h"
 
+#include <cmath>
 #include <concepts>
 #include <cstring>
+#include <utility>
 
 #include "iceberg/exception.h"
 #include "iceberg/util/endian.h"

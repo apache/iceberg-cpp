@@ -147,16 +147,16 @@ class ManifestReaderV2Test : public TempFileTestBase {
     std::vector<int64_t> record_counts = {4};
 
     std::vector<std::map<int32_t, std::vector<uint8_t>>> lower_bounds = {
-        {{1, iceberg::Literal::Long(1).Serialize().value()},
-         {2, iceberg::Literal::String("record_four").Serialize().value()},
-         {3, iceberg::Literal::String("data_content_1").Serialize().value()},
-         {4, iceberg::Literal::Double(123.45).Serialize().value()}}};
+        {{1, Literal::Long(1).Serialize().value()},
+         {2, Literal::String("record_four").Serialize().value()},
+         {3, Literal::String("data_content_1").Serialize().value()},
+         {4, Literal::Double(123.45).Serialize().value()}}};
 
     std::vector<std::map<int32_t, std::vector<uint8_t>>> upper_bounds = {
-        {{1, iceberg::Literal::Long(4).Serialize().value()},
-         {2, iceberg::Literal::String("record_two").Serialize().value()},
-         {3, iceberg::Literal::String("data_content_4").Serialize().value()},
-         {4, iceberg::Literal::Double(456.78).Serialize().value()}}};
+        {{1, Literal::Long(4).Serialize().value()},
+         {2, Literal::String("record_two").Serialize().value()},
+         {3, Literal::String("data_content_4").Serialize().value()},
+         {4, Literal::Double(456.78).Serialize().value()}}};
 
     manifest_entries.emplace_back(
         ManifestEntry{.status = ManifestStatus::kAdded,
