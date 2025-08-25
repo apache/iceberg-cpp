@@ -32,22 +32,6 @@
 
 namespace iceberg {
 
-/// \brief Create a literal from int64 value and long-type TypeId.
-Result<Literal> CreateLongTypeLiteral(int64_t value, TypeId type_id) {
-  switch (type_id) {
-    case TypeId::kLong:
-      return Literal::Long(value);
-    case TypeId::kTime:
-      return Literal::Time(value);
-    case TypeId::kTimestamp:
-      return Literal::Timestamp(value);
-    case TypeId::kTimestampTz:
-      return Literal::TimestampTz(value);
-    default:
-      return NotSupported("Unsupported long type: {}", static_cast<int>(type_id));
-  }
-}
-
 /// \brief LiteralSerializer handles serialization/deserialization operations for Literal.
 /// This is an internal implementation class.
 class LiteralSerializer {
@@ -578,7 +562,7 @@ Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
                                data.size());
       }
 
-      return CreateLongTypeLiteral(value, type_id);
+      return Literal(value, type);
     }
 
     case TypeId::kFloat: {

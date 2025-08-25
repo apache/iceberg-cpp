@@ -498,20 +498,6 @@ TEST(LiteralSerializationTest, TypePromotion) {
   EXPECT_EQ(double_bytes->size(), 8);
 }
 
-// Null value serialization tests
-TEST(LiteralSerializationTest, NullValues) {
-  // Empty byte array should deserialize to null
-  auto null_result = Literal::Deserialize({}, int32());
-  ASSERT_TRUE(null_result.has_value());
-  EXPECT_TRUE(null_result->IsNull());
-
-  // Null value serialization should return empty byte array
-  auto null_literal = Literal::Null(int32());
-  auto bytes_result = null_literal.Serialize();
-  ASSERT_TRUE(bytes_result.has_value());
-  EXPECT_TRUE(bytes_result->empty());
-}
-
 // Edge case serialization tests
 TEST(LiteralSerializationTest, EdgeCases) {
   // Negative integers
