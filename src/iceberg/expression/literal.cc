@@ -534,15 +534,14 @@ Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz: {
       int64_t value;
-
-      if (data.size() == 4) {
-        // Type was promoted from int to long
-        ICEBERG_ASSIGN_OR_RAISE(auto int_value, util::ReadLittleEndian<int32_t>(data));
-        value = static_cast<int64_t>(int_value);
-      } else if (data.size() == 8) {
+      if (data.size() == 8) {
         // Standard 8-byte long
         ICEBERG_ASSIGN_OR_RAISE(auto long_value, util::ReadLittleEndian<int64_t>(data));
         value = long_value;
+      } else if (data.size() == 4) {
+        // Type was promoted from int to long
+        ICEBERG_ASSIGN_OR_RAISE(auto int_value, util::ReadLittleEndian<int32_t>(data));
+        value = static_cast<int64_t>(int_value);
       } else {
         const char* type_name = [type_id]() {
           switch (type_id) {
@@ -571,14 +570,14 @@ Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
     }
 
     case TypeId::kDouble: {
-      if (data.size() == 4) {
-        // Type was promoted from float to double
-        ICEBERG_ASSIGN_OR_RAISE(auto float_value, util::ReadLittleEndian<float>(data));
-        return Literal::Double(static_cast<double>(float_value));
-      } else if (data.size() == 8) {
+      if (data.size() == 8) {
         // Standard 8-byte double
         ICEBERG_ASSIGN_OR_RAISE(auto double_value, util::ReadLittleEndian<double>(data));
         return Literal::Double(double_value);
+      } else if (data.size() == 4) {
+        // Type was promoted from float to double
+        ICEBERG_ASSIGN_OR_RAISE(auto float_value, util::ReadLittleEndian<float>(data));
+        return Literal::Double(static_cast<double>(float_value));
       } else {
         return InvalidArgument("Double requires 4 or 8 bytes, got {}", data.size());
       }
