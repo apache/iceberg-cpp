@@ -34,32 +34,31 @@
 namespace iceberg {
 
 namespace {
-/// \brief Write a value in little-endian format to the buffer.
 template <typename T>
-void WriteLittleEndian(std::vector<uint8_t>& buffer, T value) {
-  static_assert(std::is_trivially_copyable_v<T>, "Type must be trivially copyable");
+concept LittleEndianWritable =
+    std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t> ||
+    std::is_same_v<T, float> || std::is_same_v<T, double> || std::is_same_v<T, uint8_t>;
 
+/// \brief Write a value in little-endian format to the buffer.
+template <LittleEndianWritable T>
+void WriteLittleEndian(std::vector<uint8_t>& buffer, T value) {
   if constexpr (std::endian::native == std::endian::little) {
     const auto* bytes = reinterpret_cast<const uint8_t*>(&value);
     buffer.insert(buffer.end(), bytes, bytes + sizeof(T));
+  } else if constexpr (sizeof(T) > 1) {
+    T le_value = std::byteswap(value);
+    const auto* bytes = reinterpret_cast<const uint8_t*>(&le_value);
+    buffer.insert(buffer.end(), bytes, bytes + sizeof(T));
   } else {
-    if constexpr (sizeof(T) > 1) {
-      T le_value = std::byteswap(value);
-      const auto* bytes = reinterpret_cast<const uint8_t*>(&le_value);
-      buffer.insert(buffer.end(), bytes, bytes + sizeof(T));
-    } else {
-      // For single byte types, no byteswap needed
-      buffer.push_back(static_cast<uint8_t>(value));
-    }
+    // For single byte types, no byteswap needed
+    buffer.push_back(static_cast<uint8_t>(value));
   }
 }
 
 /// \brief Read a value in little-endian format from the data.
-template <typename T>
+template <LittleEndianWritable T>
 Result<T> ReadLittleEndian(std::span<const uint8_t> data) {
-  static_assert(std::is_trivially_copyable_v<T>, "Type must be trivially copyable");
-
-  if (data.size() < sizeof(T)) {
+  if (data.size() < sizeof(T)) [[unlikely]] {
     return InvalidArgument("Insufficient data to read {} bytes, got {}", sizeof(T),
                            data.size());
   }
