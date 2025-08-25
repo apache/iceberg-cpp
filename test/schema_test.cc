@@ -24,7 +24,6 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <iceberg/result.h>
 
 #include "iceberg/schema_field.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
@@ -83,14 +82,14 @@ TEST(SchemaTest, Equality) {
   ASSERT_EQ(schema5, schema1);
 }
 
-class NestedTypeTest : public ::testing::Test {
+class BasicShortNameTest : public ::testing::Test {
  protected:
   void SetUp() override {
     field1_ = std::make_unique<iceberg::SchemaField>(1, "Foo", iceberg::int32(), true);
     field2_ = std::make_unique<iceberg::SchemaField>(2, "Bar", iceberg::string(), true);
     field3_ = std::make_unique<iceberg::SchemaField>(3, "Foobar", iceberg::int32(), true);
 
-    iceberg::StructType structtype = iceberg::StructType(
+    auto structtype = iceberg::StructType(
         std::vector<iceberg::SchemaField>{*field1_, *field2_, *field3_});
 
     auto listype = iceberg::ListType(iceberg::SchemaField::MakeRequired(
@@ -123,7 +122,7 @@ class NestedTypeTest : public ::testing::Test {
   std::unique_ptr<iceberg::SchemaField> field7_;
 };
 
-TEST_F(NestedTypeTest, TestFindById) {
+TEST_F(BasicShortNameTest, TestFindById) {
   ASSERT_THAT(schema_->FindFieldById(7), ::testing::Optional(*field7_));
   ASSERT_THAT(schema_->FindFieldById(6), ::testing::Optional(*field6_));
   ASSERT_THAT(schema_->FindFieldById(5), ::testing::Optional(*field5_));
@@ -135,7 +134,7 @@ TEST_F(NestedTypeTest, TestFindById) {
   ASSERT_THAT(schema_->FindFieldById(10), ::testing::Optional(std::nullopt));
 }
 
-TEST_F(NestedTypeTest, TestFindByName) {
+TEST_F(BasicShortNameTest, TestFindByName) {
   ASSERT_THAT(schema_->FindFieldByName("Value"), ::testing::Optional(*field7_));
   ASSERT_THAT(schema_->FindFieldByName("Value.value"), ::testing::Optional(*field6_));
   ASSERT_THAT(schema_->FindFieldByName("Value.key"), ::testing::Optional(*field5_));
@@ -152,7 +151,7 @@ TEST_F(NestedTypeTest, TestFindByName) {
               ::testing::Optional(std::nullopt));
 }
 
-TEST_F(NestedTypeTest, TestFindByNameCaseInsensitive) {
+TEST_F(BasicShortNameTest, TestFindByNameCaseInsensitive) {
   ASSERT_THAT(schema_->FindFieldByName("vALue", false), ::testing::Optional(*field7_));
   ASSERT_THAT(schema_->FindFieldByName("vALue.VALUE", false),
               ::testing::Optional(*field6_));
@@ -170,7 +169,7 @@ TEST_F(NestedTypeTest, TestFindByNameCaseInsensitive) {
               ::testing::Optional(std::nullopt));
 }
 
-TEST_F(NestedTypeTest, TestFindByShortNameCaseInsensitive) {
+TEST_F(BasicShortNameTest, TestFindByShortNameCaseInsensitive) {
   ASSERT_THAT(schema_->FindFieldByName("vaLue.value.FOO", false),
               ::testing::Optional(*field1_));
   ASSERT_THAT(schema_->FindFieldByName("Value.value.Bar", false),
@@ -181,21 +180,21 @@ TEST_F(NestedTypeTest, TestFindByShortNameCaseInsensitive) {
               ::testing::Optional(std::nullopt));
 }
 
-class NestType2Test : public ::testing::Test {
+class ComplexShortNameTest : public ::testing::Test {
  protected:
   void SetUp() override {
     field1_ = std::make_unique<iceberg::SchemaField>(1, "Foo", iceberg::int32(), true);
     field2_ = std::make_unique<iceberg::SchemaField>(2, "Bar", iceberg::string(), true);
     field3_ = std::make_unique<iceberg::SchemaField>(3, "Foobar", iceberg::int32(), true);
 
-    iceberg::StructType structtype = iceberg::StructType({*field1_, *field2_, *field3_});
+    auto structtype = iceberg::StructType({*field1_, *field2_, *field3_});
 
     field4_ = std::make_unique<iceberg::SchemaField>(
         4, "element", std::make_shared<iceberg::StructType>(structtype), false);
 
     auto listype = iceberg::ListType(*field4_);
 
-    iceberg::StructType structtype2 = iceberg::StructType(
+    auto structtype2 = iceberg::StructType(
         {iceberg::SchemaField::MakeRequired(5, "First_child", iceberg::int32()),
          iceberg::SchemaField::MakeRequired(
              6, "Second_child", std::make_shared<iceberg::ListType>(listype))});
@@ -231,7 +230,7 @@ class NestType2Test : public ::testing::Test {
   std::unique_ptr<iceberg::SchemaField> field9_;
 };
 
-TEST_F(NestType2Test, TestFindById) {
+TEST_F(ComplexShortNameTest, TestFindById) {
   ASSERT_THAT(schema_->FindFieldById(9), ::testing::Optional(*field9_));
   ASSERT_THAT(schema_->FindFieldById(8), ::testing::Optional(*field8_));
   ASSERT_THAT(schema_->FindFieldById(7), ::testing::Optional(*field7_));
@@ -245,7 +244,7 @@ TEST_F(NestType2Test, TestFindById) {
   ASSERT_THAT(schema_->FindFieldById(0), ::testing::Optional(std::nullopt));
 }
 
-TEST_F(NestType2Test, TestFindByName) {
+TEST_F(ComplexShortNameTest, TestFindByName) {
   ASSERT_THAT(schema_->FindFieldByName("Map"), ::testing::Optional(*field9_));
   ASSERT_THAT(schema_->FindFieldByName("Map.value"), ::testing::Optional(*field8_));
   ASSERT_THAT(schema_->FindFieldByName("Map.key"), ::testing::Optional(*field7_));
@@ -265,7 +264,7 @@ TEST_F(NestType2Test, TestFindByName) {
               ::testing::Optional(std::nullopt));
 }
 
-TEST_F(NestType2Test, TestFindByNameCaseInsensitive) {
+TEST_F(ComplexShortNameTest, TestFindByNameCaseInsensitive) {
   ASSERT_THAT(schema_->FindFieldByName("map", false), ::testing::Optional(*field9_));
   ASSERT_THAT(schema_->FindFieldByName("map.vALUE", false),
               ::testing::Optional(*field8_));
@@ -286,7 +285,7 @@ TEST_F(NestType2Test, TestFindByNameCaseInsensitive) {
               ::testing::Optional(std::nullopt));
 }
 
-TEST_F(NestType2Test, TestFindByShortName) {
+TEST_F(ComplexShortNameTest, TestFindByShortName) {
   ASSERT_THAT(schema_->FindFieldByName("Map.Second_child"),
               ::testing::Optional(*field6_));
   ASSERT_THAT(schema_->FindFieldByName("Map.First_child"), ::testing::Optional(*field5_));
@@ -300,7 +299,7 @@ TEST_F(NestType2Test, TestFindByShortName) {
               ::testing::Optional(std::nullopt));
 }
 
-TEST_F(NestType2Test, TestFindByShortNameCaseInsensitive) {
+TEST_F(ComplexShortNameTest, TestFindByShortNameCaseInsensitive) {
   ASSERT_THAT(schema_->FindFieldByName("map.second_child", false),
               ::testing::Optional(*field6_));
   ASSERT_THAT(schema_->FindFieldByName("map.first_child", false),
@@ -315,7 +314,7 @@ TEST_F(NestType2Test, TestFindByShortNameCaseInsensitive) {
               ::testing::Optional(std::nullopt));
 }
 
-class ComplexMapStructTest : public ::testing::Test {
+class ComplexMapStructShortNameTest : public ::testing::Test {
  protected:
   void SetUp() override {
     // Separate inner struct for key: {inner_key: int, inner_value: int}
@@ -400,7 +399,7 @@ class ComplexMapStructTest : public ::testing::Test {
   std::unique_ptr<iceberg::SchemaField> exp_field_a_;
 };
 
-TEST_F(ComplexMapStructTest, TestFindById) {
+TEST_F(ComplexMapStructShortNameTest, TestFindById) {
   ASSERT_THAT(schema_->FindFieldById(20), ::testing::Optional(*exp_field_a_));
   ASSERT_THAT(schema_->FindFieldById(19), ::testing::Optional(*exp_map_value_));
   ASSERT_THAT(schema_->FindFieldById(18), ::testing::Optional(*exp_map_key_));
@@ -414,7 +413,7 @@ TEST_F(ComplexMapStructTest, TestFindById) {
   ASSERT_THAT(schema_->FindFieldById(10), ::testing::Optional(*exp_inner_key_key_));
 }
 
-TEST_F(ComplexMapStructTest, TestFindByName) {
+TEST_F(ComplexMapStructShortNameTest, TestFindByName) {
   ASSERT_THAT(schema_->FindFieldByName("a"), ::testing::Optional(*exp_field_a_));
   ASSERT_THAT(schema_->FindFieldByName("a.key"), ::testing::Optional(*exp_map_key_));
   ASSERT_THAT(schema_->FindFieldByName("a.value"), ::testing::Optional(*exp_map_value_));
@@ -436,7 +435,7 @@ TEST_F(ComplexMapStructTest, TestFindByName) {
               ::testing::Optional(*exp_inner_value_v_));
 }
 
-TEST_F(ComplexMapStructTest, TestFindByNameCaseInsensitive) {
+TEST_F(ComplexMapStructShortNameTest, TestFindByNameCaseInsensitive) {
   ASSERT_THAT(schema_->FindFieldByName("A", false), ::testing::Optional(*exp_field_a_));
   ASSERT_THAT(schema_->FindFieldByName("A.KEY", false),
               ::testing::Optional(*exp_map_key_));
@@ -460,7 +459,7 @@ TEST_F(ComplexMapStructTest, TestFindByNameCaseInsensitive) {
               ::testing::Optional(*exp_inner_value_v_));
 }
 
-TEST_F(ComplexMapStructTest, TestInvalidPaths) {
+TEST_F(ComplexMapStructShortNameTest, TestInvalidPaths) {
   ASSERT_THAT(schema_->FindFieldByName("a.invalid"), ::testing::Optional(std::nullopt));
   ASSERT_THAT(schema_->FindFieldByName("a.key.invalid"),
               ::testing::Optional(std::nullopt));
@@ -480,9 +479,9 @@ TEST(SchemaTest, DuplicatePathErrorCaseSensitive) {
 
   auto result = schema.FindFieldByName("a.b", /*case_sensitive=*/true);
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().kind, iceberg::ErrorKind::kNotSupported);
+  EXPECT_EQ(result.error().kind, iceberg::ErrorKind::kInvalidSchema);
   EXPECT_THAT(result.error().message,
-              ::testing::HasSubstr("Duplicate path in name_to_id_: a.b"));
+              ::testing::HasSubstr("Duplicate path found: a.b, prev id: 2, curr id: 3"));
 }
 
 TEST(SchemaTest, DuplicatePathErrorCaseInsensitive) {
@@ -495,7 +494,30 @@ TEST(SchemaTest, DuplicatePathErrorCaseInsensitive) {
 
   auto result = schema.FindFieldByName("A.B", /*case_sensitive=*/false);
   ASSERT_FALSE(result.has_value());
-  EXPECT_EQ(result.error().kind, iceberg::ErrorKind::kNotSupported);
+  EXPECT_EQ(result.error().kind, iceberg::ErrorKind::kInvalidSchema);
   EXPECT_THAT(result.error().message,
-              ::testing::HasSubstr("Duplicate path in name_to_id_: a.b"));
+              ::testing::HasSubstr("Duplicate path found: a.b, prev id: 2, curr id: 3"));
+}
+
+TEST(SchemaTest, NestedDuplicateFieldIdError) {
+  // Outer struct with field ID 1
+  iceberg::SchemaField outer_field(1, "outer", iceberg::int32(), true);
+
+  // Inner struct with duplicate field ID 1
+  iceberg::SchemaField inner_field(1, "inner", iceberg::string(), true);
+  auto inner_struct = iceberg::StructType({inner_field});
+
+  // Nested field with inner struct
+  iceberg::SchemaField nested_field(
+      2, "nested", std::make_shared<iceberg::StructType>(inner_struct), true);
+
+  // Schema with outer and nested fields
+  iceberg::Schema schema({outer_field, nested_field}, 1);
+
+  // Attempt to find a field, which should trigger duplicate ID detection
+  auto result = schema.FindFieldById(1);
+  ASSERT_FALSE(result.has_value());
+  EXPECT_EQ(result.error().kind, iceberg::ErrorKind::kInvalidSchema);
+  EXPECT_THAT(result.error().message,
+              ::testing::HasSubstr("Duplicate field id found: 1"));
 }
