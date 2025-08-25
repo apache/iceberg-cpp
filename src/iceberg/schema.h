@@ -62,6 +62,8 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// short name 'l.x' in addition to canonical name 'l.element.x'. a map 'm', if its
   /// value include a structs with field 'x' wil produce short name 'm.x' in addition to
   /// canonical name 'm.value.x'
+  /// FIXME: Currently only handles ASCII lowercase conversion; extend to support
+  /// non-ASCII characters (e.g., using std::towlower or ICU)
   [[nodiscard]] Result<std::optional<std::reference_wrapper<const SchemaField>>>
   FindFieldByName(std::string_view name, bool case_sensitive = true) const;
 
@@ -85,8 +87,11 @@ class ICEBERG_EXPORT Schema : public StructType {
 
   const std::optional<int32_t> schema_id_;
 
-  Result<Status> InitIdToIndexMap() const;
-  Result<Status> InitNameToIndexMap() const;
-  Result<Status> InitLowerCaseNameToIndexMap() const;
+  // TODO(nullccxsy): Address potential concurrency issues in lazy initialization (e.g.,
+  // use std::call_once)
+  Status InitIdToFieldMap() const;
+  Status InitNameToIdMap() const;
+  Status InitLowerCaseNameToIdMap() const;
 };
+
 }  // namespace iceberg
