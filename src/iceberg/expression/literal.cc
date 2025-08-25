@@ -38,7 +38,7 @@ class LiteralSerializer {
 
   /// \brief Deserialize binary data to a literal value.
   static Result<Literal> FromBytes(std::span<const uint8_t> data,
-                                   std::shared_ptr<PrimitiveType> type);
+                                   const std::shared_ptr<PrimitiveType>& type);
 };
 
 /// \brief LiteralCaster handles type casting operations for Literal.
@@ -501,7 +501,7 @@ Result<std::vector<uint8_t>> LiteralSerializer::ToBytes(const Literal& literal) 
 }
 
 Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
-                                             std::shared_ptr<PrimitiveType> type) {
+                                             const std::shared_ptr<PrimitiveType>& type) {
   if (!type) {
     return InvalidArgument("Type cannot be null");
   }
@@ -515,17 +515,28 @@ Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
 
   switch (type_id) {
     case TypeId::kBoolean: {
+      if (data.size() != 1) {
+        return InvalidArgument("Boolean requires 1 byte, got {}", data.size());
+      }
       ICEBERG_ASSIGN_OR_RAISE(auto value, util::ReadLittleEndian<uint8_t>(data));
       // 0x00 for false, non-zero byte for true
       return Literal::Boolean(value != 0x00);
     }
 
     case TypeId::kInt: {
+      if (data.size() != sizeof(int32_t)) {
+        return InvalidArgument("Int requires {} bytes, got {}", sizeof(int32_t),
+                               data.size());
+      }
       ICEBERG_ASSIGN_OR_RAISE(auto value, util::ReadLittleEndian<int32_t>(data));
       return Literal::Int(value);
     }
 
     case TypeId::kDate: {
+      if (data.size() != sizeof(int32_t)) {
+        return InvalidArgument("Date requires {} bytes, got {}", sizeof(int32_t),
+                               data.size());
+      }
       ICEBERG_ASSIGN_OR_RAISE(auto value, util::ReadLittleEndian<int32_t>(data));
       return Literal::Date(value);
     }
@@ -566,6 +577,10 @@ Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
     }
 
     case TypeId::kFloat: {
+      if (data.size() != sizeof(float)) {
+        return InvalidArgument("Float requires {} bytes, got {}", sizeof(float),
+                               data.size());
+      }
       ICEBERG_ASSIGN_OR_RAISE(auto value, util::ReadLittleEndian<float>(data));
       return Literal::Float(value);
     }
@@ -605,6 +620,9 @@ Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
     }
 
     case TypeId::kUuid: {
+      if (data.size() != 16) {
+        return InvalidArgument("UUID requires 16 bytes, got {}", data.size());
+      }
       ICEBERG_ASSIGN_OR_RAISE(auto uuid_value, util::ReadBigEndian16(data));
       return Literal(Literal::Value{uuid_value}, type);
     }
