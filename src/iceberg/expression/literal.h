@@ -146,19 +146,6 @@ class ICEBERG_EXPORT Literal {
   friend class LiteralCaster;
   friend class LiteralSerializer;
 
-  /// \brief Format a date value as a string.
-  std::string FormatDate(int32_t days_since_epoch) const;
-
-  /// \brief Format a time value as a string.
-  std::string FormatTime(int64_t microseconds_since_midnight) const;
-
-  /// \brief Format a timestamp value as a string.
-  std::string FormatTimestamp(int64_t microseconds_since_epoch) const;
-
-  /// \brief Format a timestamp with timezone value as a string.
-  std::string FormatTimestampTz(int64_t microseconds_since_epoch) const;
-
- private:
   Value value_;
   std::shared_ptr<PrimitiveType> type_;
 };

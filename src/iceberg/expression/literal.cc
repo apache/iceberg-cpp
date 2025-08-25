@@ -19,15 +19,12 @@
 
 #include "iceberg/expression/literal.h"
 
-#include <chrono>
-#include <cmath>
 #include <concepts>
 #include <cstring>
-#include <iomanip>
-#include <sstream>
 
 #include "iceberg/exception.h"
 #include "iceberg/util/endian.h"
+#include "iceberg/util/literal_format.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -627,56 +624,6 @@ Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
   }
 
   std::unreachable();
-}
-
-// Literal formatting member functions
-
-std::string Literal::FormatDate(int32_t days_since_epoch) const {
-  // Convert days since Unix epoch to date
-  auto time_point =
-      std::chrono::system_clock::time_point{} + std::chrono::days{days_since_epoch};
-  auto date = std::chrono::floor<std::chrono::days>(time_point);
-  auto ymd = std::chrono::year_month_day{date};
-
-  std::ostringstream oss;
-  oss << static_cast<int>(ymd.year()) << "-" << std::setfill('0') << std::setw(2)
-      << static_cast<unsigned>(ymd.month()) << "-" << std::setfill('0') << std::setw(2)
-      << static_cast<unsigned>(ymd.day());
-  return oss.str();
-}
-
-std::string Literal::FormatTime(int64_t microseconds_since_midnight) const {
-  auto hours = microseconds_since_midnight / (1000000LL * 3600);
-  auto minutes = (microseconds_since_midnight % (1000000LL * 3600)) / (1000000LL * 60);
-  auto seconds = (microseconds_since_midnight % (1000000LL * 60)) / 1000000LL;
-  auto micros = microseconds_since_midnight % 1000000LL;
-
-  std::ostringstream oss;
-  oss << std::setfill('0') << std::setw(2) << hours << ":" << std::setfill('0')
-      << std::setw(2) << minutes << ":" << std::setfill('0') << std::setw(2) << seconds
-      << "." << std::setfill('0') << std::setw(6) << micros;
-  return oss.str();
-}
-
-std::string Literal::FormatTimestamp(int64_t microseconds_since_epoch) const {
-  auto time_point = std::chrono::system_clock::time_point{} +
-                    std::chrono::microseconds{microseconds_since_epoch};
-  auto date = std::chrono::floor<std::chrono::days>(time_point);
-  auto time_of_day = time_point - date;
-  auto micros_of_day =
-      std::chrono::duration_cast<std::chrono::microseconds>(time_of_day).count();
-
-  auto ymd = std::chrono::year_month_day{date};
-
-  std::ostringstream oss;
-  oss << static_cast<int>(ymd.year()) << "-" << std::setfill('0') << std::setw(2)
-      << static_cast<unsigned>(ymd.month()) << "-" << std::setfill('0') << std::setw(2)
-      << static_cast<unsigned>(ymd.day()) << "T" << FormatTime(micros_of_day);
-  return oss.str();
-}
-
-std::string Literal::FormatTimestampTz(int64_t microseconds_since_epoch) const {
-  return FormatTimestamp(microseconds_since_epoch) + "+00:00";
 }
 
 }  // namespace iceberg
