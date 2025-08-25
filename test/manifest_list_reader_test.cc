@@ -23,7 +23,6 @@
 #include <iceberg/avro/avro_register.h>
 
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
-
 #include "iceberg/expression/literal.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/manifest_reader.h"
