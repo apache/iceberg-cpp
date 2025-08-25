@@ -58,6 +58,31 @@ namespace {
 
 }  // namespace
 
+std::string SanitizeFieldName(std::string_view field_name) {
+  if (field_name.empty()) {
+    return "_empty";
+  }
+
+  std::string result;
+  result.reserve(field_name.size() + 1);  // +1 for potential leading underscore
+
+  // First character must be a letter or underscore
+  char first_char = field_name[0];
+  if (!std::isalpha(static_cast<unsigned char>(first_char)) && first_char != '_') {
+    result.push_back('_');
+  }
+
+  // Process all characters
+  for (char c : field_name) {
+    if (std::isalnum(static_cast<unsigned char>(c)) || c == '_') {
+      result.push_back(c);
+    } else {
+      result.push_back('_');
+    }
+  }
+  return result;
+}
+
 std::string ToString(const ::avro::NodePtr& node) {
   std::stringstream ss;
   ss << *node;
@@ -181,8 +206,19 @@ Status ToAvroNodeVisitor::Visit(const StructType& type, ::avro::NodePtr* node) {
     ::avro::NodePtr field_node;
     ICEBERG_RETURN_UNEXPECTED(Visit(sub_field, &field_node));
 
-    // TODO(gangwu): sanitize field name
-    (*node)->addName(std::string(sub_field.name()));
+    // Sanitize field name to ensure it follows Avro field name requirements
+    std::string sanitized_name = SanitizeFieldName(sub_field.name());
+
+    // Store original name as a custom attribute if it was modified
+    if (sanitized_name != sub_field.name()) {
+      // Add custom attribute to preserve the original field name
+      ::avro::CustomAttributes name_attrs;
+      name_attrs.addAttribute(std::string(kIcebergFieldNameProp),
+                              std::string(sub_field.name()));
+      (*node)->addCustomAttributesForField(name_attrs);
+    }
+
+    (*node)->addName(sanitized_name);
     (*node)->addLeaf(field_node);
     (*node)->addCustomAttributesForField(GetAttributesWithFieldId(sub_field.field_id()));
   }
@@ -434,7 +470,54 @@ Result<int32_t> GetValueId(const ::avro::NodePtr& node) {
 
 Result<int32_t> GetFieldId(const ::avro::NodePtr& node, size_t field_idx) {
   static const std::string kFieldIdKey{kFieldIdProp};
-  return GetId(node, kFieldIdKey, field_idx);
+
+  // When field names are sanitized, we add custom attributes in this order for each
+  // field:
+  // 1. If the field name was sanitized: iceberg-field-name attribute
+  // 2. Always: field-id attribute
+  // So for field i, we need to find the correct attribute index containing field-id
+
+  size_t attribute_search_start = 0;
+  for (size_t field = 0; field <= field_idx; ++field) {
+    if (field == field_idx) {
+      // For the target field, search for field-id in the remaining attributes
+      for (size_t attr_idx = attribute_search_start; attr_idx < node->customAttributes();
+           ++attr_idx) {
+        auto id_str = node->customAttributesAt(attr_idx).getAttribute(kFieldIdKey);
+        if (id_str.has_value()) {
+          try {
+            return std::stoi(id_str.value());
+          } catch (const std::exception& e) {
+            return InvalidSchema("Invalid {}: {}", kFieldIdKey, id_str.value());
+          }
+        }
+        // If this attribute doesn't have field-id, move to next
+        auto name_attr = node->customAttributesAt(attr_idx).getAttribute(
+            std::string(kIcebergFieldNameProp));
+        if (name_attr.has_value()) {
+          // This is a name attribute, the next one should be field-id
+          continue;
+        }
+      }
+      break;
+    } else {
+      // For previous fields, count how many attributes they used
+      // Check if this field has a name attribute (means the field name was sanitized)
+      if (attribute_search_start < node->customAttributes()) {
+        auto name_attr = node->customAttributesAt(attribute_search_start)
+                             .getAttribute(std::string(kIcebergFieldNameProp));
+        if (name_attr.has_value()) {
+          // This field has both name and id attributes
+          attribute_search_start += 2;
+        } else {
+          // This field only has id attribute
+          attribute_search_start += 1;
+        }
+      }
+    }
+  }
+
+  return InvalidSchema("Missing avro attribute: {}", kFieldIdKey);
 }
 
 Status ValidateAvroSchemaEvolution(const Type& expected_type,
@@ -834,7 +917,15 @@ Result<::avro::NodePtr> CreateRecordNodeWithFieldIds(const ::avro::NodePtr& orig
     // Recursively apply field IDs to nested fields
     ICEBERG_ASSIGN_OR_RAISE(auto new_nested_node,
                             MakeAvroNodeWithFieldIds(field_node, *nested_field));
-    new_record_node->addName(field_name);
+    std::string sanitized_name = SanitizeFieldName(field_name);
+    // Store original name as a custom attribute if it was modified
+    if (sanitized_name != field_name) {
+      // Add custom attribute to preserve the original field name
+      ::avro::CustomAttributes attrs;
+      attrs.addAttribute(std::string(kIcebergFieldNameProp), field_name);
+      new_record_node->addCustomAttributesForField(attrs);
+    }
+    new_record_node->addName(sanitized_name);
     new_record_node->addLeaf(new_nested_node);
   }
 

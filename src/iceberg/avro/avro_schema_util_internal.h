@@ -163,4 +163,9 @@ Result<::avro::NodePtr> MakeAvroNodeWithFieldIds(const ::avro::NodePtr& original
 Result<::avro::NodePtr> MakeAvroNodeWithFieldIds(const ::avro::NodePtr& original_node,
                                                  const NameMapping& mapping);
 
+/// \brief Sanitize a field name to make it compatible with Avro field name requirements.
+/// \param field_name The original field name to sanitize.
+/// \return A sanitized field name that follows Avro naming conventions.
+std::string SanitizeFieldName(std::string_view field_name);
+
 }  // namespace iceberg::avro
