@@ -19,8 +19,6 @@
 
 #include "iceberg/expression/literal.h"
 
-#include <algorithm>
-#include <bit>
 #include <chrono>
 #include <cmath>
 #include <concepts>
@@ -404,17 +402,16 @@ Result<Literal> LiteralCaster::CastTo(const Literal& literal,
 Result<std::vector<uint8_t>> LiteralSerializer::ToBytes(const Literal& literal) {
   // Cannot serialize special values
   if (literal.IsAboveMax()) {
-    return InvalidArgument("Cannot serialize AboveMax literal");
+    return NotSupported("Cannot serialize AboveMax");
   }
   if (literal.IsBelowMin()) {
-    return InvalidArgument("Cannot serialize BelowMin literal");
+    return NotSupported("Cannot serialize BelowMin");
   }
 
   std::vector<uint8_t> result;
 
-  // Null values serialize to empty buffer
   if (literal.IsNull()) {
-    return result;
+    return NotSupported("Cannot serialize null");
   }
 
   const auto& value = literal.value();
@@ -513,8 +510,8 @@ Result<std::vector<uint8_t>> LiteralSerializer::ToBytes(const Literal& literal) 
     }
 
     default:
-      return NotImplemented("Serialization for type {} is not supported",
-                            literal.type()->ToString());
+      return NotSupported("Serialization for type {} is not supported",
+                          literal.type()->ToString());
   }
 }
 
@@ -642,12 +639,11 @@ Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
     }
 
     default:
-      return NotImplemented("Deserialization for type {} is not supported",
-                            type->ToString());
+      return NotSupported("Deserialization for type {} is not supported",
+                          type->ToString());
   }
 
-  // Should not reach here
-  return InvalidArgument("Unexpected error in deserialization");
+  std::unreachable();
 }
 
 // Literal formatting member functions
