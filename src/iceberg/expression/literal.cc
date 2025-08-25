@@ -465,7 +465,7 @@ Result<std::vector<uint8_t>> LiteralSerializer::ToBytes(const Literal& literal) 
     case TypeId::kBinary: {
       // Binary value (without length)
       const auto& binary_data = std::get<std::vector<uint8_t>>(value);
-      result = binary_data;
+      result.insert(result.end(), binary_data.begin(), binary_data.end());
       return result;
     }
 
@@ -478,7 +478,11 @@ Result<std::vector<uint8_t>> LiteralSerializer::ToBytes(const Literal& literal) 
       } else if (std::holds_alternative<std::vector<uint8_t>>(value)) {
         result = std::get<std::vector<uint8_t>>(value);
       } else {
-        return InvalidArgument("Invalid value type for Fixed literal");
+        std::string actual_type = std::visit(
+            [](auto&& arg) -> std::string { return typeid(arg).name(); }, value);
+
+        return InvalidArgument("Invalid value type for Fixed literal, got type: {}",
+                               actual_type);
       }
       return result;
     }

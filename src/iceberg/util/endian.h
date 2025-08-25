@@ -34,20 +34,27 @@ concept LittleEndianWritable =
     std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t> ||
     std::is_same_v<T, float> || std::is_same_v<T, double> || std::is_same_v<T, uint8_t>;
 
+/// \brief Convert a value to little-endian format.
+template <LittleEndianWritable T>
+T ToLittleEndian(T value) {
+  if constexpr (std::endian::native != std::endian::little && sizeof(T) > 1) {
+    return std::byteswap(value);
+  }
+  return value;
+}
+
+/// \brief Convert a value from little-endian format.
+template <LittleEndianWritable T>
+T FromLittleEndian(T value) {
+  return ToLittleEndian(value);
+}
+
 /// \brief Write a value in little-endian format to the buffer.
 template <LittleEndianWritable T>
 void WriteLittleEndian(std::vector<uint8_t>& buffer, T value) {
-  if constexpr (std::endian::native == std::endian::little) {
-    const auto* bytes = reinterpret_cast<const uint8_t*>(&value);
-    buffer.insert(buffer.end(), bytes, bytes + sizeof(T));
-  } else if constexpr (sizeof(T) > 1) {
-    T le_value = std::byteswap(value);
-    const auto* bytes = reinterpret_cast<const uint8_t*>(&le_value);
-    buffer.insert(buffer.end(), bytes, bytes + sizeof(T));
-  } else {
-    // For single byte types, no byteswap needed
-    buffer.push_back(static_cast<uint8_t>(value));
-  }
+  T le_value = ToLittleEndian(value);
+  const auto* bytes = reinterpret_cast<const uint8_t*>(&le_value);
+  buffer.insert(buffer.end(), bytes, bytes + sizeof(T));
 }
 
 /// \brief Read a value in little-endian format from the data.
@@ -60,11 +67,7 @@ Result<T> ReadLittleEndian(std::span<const uint8_t> data) {
 
   T value;
   std::memcpy(&value, data.data(), sizeof(T));
-
-  if constexpr (std::endian::native != std::endian::little && sizeof(T) > 1) {
-    value = std::byteswap(value);
-  }
-  return value;
+  return FromLittleEndian(value);
 }
 
 /// \brief Write a 16-byte value in big-endian format (for UUID and Decimal).
