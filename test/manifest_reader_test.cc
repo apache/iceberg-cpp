@@ -62,25 +62,25 @@ class ManifestReaderV1Test : public TempFileTestBase {
     // specification. Using Literal::Binary as a temporary substitute to represent the raw
     // bytes for the decimal values.
     std::vector<std::map<int32_t, std::vector<uint8_t>>> bounds = {
-        {{1, iceberg::Literal::Long(1234).Serialize().value()},
-         {2, iceberg::Literal::Long(5678).Serialize().value()},
-         {3, iceberg::Literal::Binary({0x12, 0xe2}).Serialize().value()},
+        {{1, Literal::Long(1234).Serialize().value()},
+         {2, Literal::Long(5678).Serialize().value()},
+         {3, Literal::Binary({0x12, 0xe2}).Serialize().value()},
 
-         {4, iceberg::Literal::Timestamp(1611706223000000LL).Serialize().value()}},
-        {{1, iceberg::Literal::Long(1234).Serialize().value()},
-         {2, iceberg::Literal::Long(5678).Serialize().value()},
-         {3, iceberg::Literal::Binary({0x12, 0xe3}).Serialize().value()},
+         {4, Literal::Timestamp(1611706223000000LL).Serialize().value()}},
+        {{1, Literal::Long(1234).Serialize().value()},
+         {2, Literal::Long(5678).Serialize().value()},
+         {3, Literal::Binary({0x12, 0xe3}).Serialize().value()},
 
-         {4, iceberg::Literal::Timestamp(1706314223000000LL).Serialize().value()}},
-        {{1, iceberg::Literal::Long(123).Serialize().value()},
-         {2, iceberg::Literal::Long(456).Serialize().value()},
-         {3, iceberg::Literal::Binary({0x0e, 0x22}).Serialize().value()},
+         {4, Literal::Timestamp(1706314223000000LL).Serialize().value()}},
+        {{1, Literal::Long(123).Serialize().value()},
+         {2, Literal::Long(456).Serialize().value()},
+         {3, Literal::Binary({0x0e, 0x22}).Serialize().value()},
 
-         {4, iceberg::Literal::Timestamp(1674691823000000LL).Serialize().value()}},
-        {{1, iceberg::Literal::Long(123).Serialize().value()},
-         {2, iceberg::Literal::Long(456).Serialize().value()},
-         {3, iceberg::Literal::Binary({0x0e, 0x21}).Serialize().value()},
-         {4, iceberg::Literal::Timestamp(1611619823000000LL).Serialize().value()}},
+         {4, Literal::Timestamp(1674691823000000LL).Serialize().value()}},
+        {{1, Literal::Long(123).Serialize().value()},
+         {2, Literal::Long(456).Serialize().value()},
+         {3, Literal::Binary({0x0e, 0x21}).Serialize().value()},
+         {4, Literal::Timestamp(1611619823000000LL).Serialize().value()}},
     };
 
     for (int i = 0; i < 4; ++i) {

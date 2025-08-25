@@ -91,10 +91,9 @@ class ManifestListReaderV1Test : public ManifestListReaderTestBase {
          .deleted_rows_count = 0,
          .partitions = {{.contains_null = false,
                          .contains_nan = false,
-                         .lower_bound =
-                             iceberg::Literal::String("2022-02-22").Serialize().value(),
+                         .lower_bound = Literal::String("2022-02-22").Serialize().value(),
                          .upper_bound =
-                             iceberg::Literal::String("2022-2-23").Serialize().value()}}},
+                             Literal::String("2022-2-23").Serialize().value()}}},
 
         {.manifest_path = paths[1],
          .manifest_length = file_size[1],
@@ -109,9 +108,8 @@ class ManifestListReaderV1Test : public ManifestListReaderTestBase {
          .partitions = {
              {.contains_null = false,
               .contains_nan = false,
-              .lower_bound = iceberg::Literal::String("2022-2-22").Serialize().value(),
-              .upper_bound =
-                  iceberg::Literal::String("2022-2-23").Serialize().value()}}}};
+              .lower_bound = Literal::String("2022-2-22").Serialize().value(),
+              .upper_bound = Literal::String("2022-2-23").Serialize().value()}}}};
   }
 
   std::vector<ManifestFile> PrepareComplexTypeTestData() {
