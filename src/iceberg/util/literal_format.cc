@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "literal_format.h"
+#include "iceberg/util/literal_format.h"
 
 #include <chrono>
 #include <cstring>
