@@ -80,8 +80,7 @@ std::string SanitizeFieldName(std::string_view field_name) {
   }
 
   // Process all characters
-  for (size_t i = 0; i < field_name.size(); ++i) {
-    char c = field_name[i];
+  for (char c : field_name) {
     if (std::isalnum(static_cast<unsigned char>(c)) || c == '_') {
       result.push_back(c);
     } else {
