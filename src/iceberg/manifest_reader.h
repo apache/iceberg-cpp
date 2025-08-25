@@ -41,7 +41,7 @@ class ICEBERG_EXPORT ManifestReader {
   /// \param manifest_location Path to the manifest file.
   /// \param file_io File IO implementation to use.
   /// \return A Result containing the reader or an error.
-  static Result<std::unique_ptr<ManifestReader>> MakeReader(
+  static Result<std::unique_ptr<ManifestReader>> Make(
       std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
       std::shared_ptr<Schema> partition_schema);
 };
@@ -56,7 +56,7 @@ class ICEBERG_EXPORT ManifestListReader {
   /// \param manifest_list_location Path to the manifest list file.
   /// \param file_io File IO implementation to use.
   /// \return A Result containing the reader or an error.
-  static Result<std::unique_ptr<ManifestListReader>> MakeReader(
+  static Result<std::unique_ptr<ManifestListReader>> Make(
       std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io);
 };
 

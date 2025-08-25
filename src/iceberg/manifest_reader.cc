@@ -27,7 +27,7 @@
 
 namespace iceberg {
 
-Result<std::unique_ptr<ManifestReader>> ManifestReader::MakeReader(
+Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
     std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
     std::shared_ptr<Schema> partition_schema) {
   auto manifest_entry_schema = ManifestEntry::TypeFromPartitionType(partition_schema);
@@ -42,7 +42,7 @@ Result<std::unique_ptr<ManifestReader>> ManifestReader::MakeReader(
   return std::make_unique<ManifestReaderImpl>(std::move(reader), std::move(schema));
 }
 
-Result<std::unique_ptr<ManifestListReader>> ManifestListReader::MakeReader(
+Result<std::unique_ptr<ManifestListReader>> ManifestListReader::Make(
     std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io) {
   std::vector<SchemaField> fields(ManifestFile::Type().fields().begin(),
                                   ManifestFile::Type().fields().end());
