@@ -55,7 +55,7 @@ class ICEBERG_EXPORT Schema : public StructType {
 
   [[nodiscard]] std::string ToString() const override;
 
-  /// \brief Find thd SchemaField By field name
+  /// \brief Find the SchemaField by field name.
   ///
   /// Short names for maps and lists are included for any name that does not conflict with
   /// a canonical name. For example, a list, 'l', of structs with field 'x' will produce
@@ -67,6 +67,7 @@ class ICEBERG_EXPORT Schema : public StructType {
   [[nodiscard]] Result<std::optional<std::reference_wrapper<const SchemaField>>>
   FindFieldByName(std::string_view name, bool case_sensitive = true) const;
 
+  /// \brief Find the SchemaField by field id.
   [[nodiscard]] Result<std::optional<std::reference_wrapper<const SchemaField>>>
   FindFieldById(int32_t field_id) const;
 

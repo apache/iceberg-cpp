@@ -89,30 +89,25 @@ class BasicShortNameTest : public ::testing::Test {
     field2_ = std::make_unique<iceberg::SchemaField>(2, "Bar", iceberg::string(), true);
     field3_ = std::make_unique<iceberg::SchemaField>(3, "Foobar", iceberg::int32(), true);
 
-    auto structtype = iceberg::StructType(
+    auto structtype = std::make_shared<iceberg::StructType>(
         std::vector<iceberg::SchemaField>{*field1_, *field2_, *field3_});
 
-    auto listype = iceberg::ListType(iceberg::SchemaField::MakeRequired(
-        4, "element", std::make_shared<iceberg::StructType>(structtype)));
+    field4_ = std::make_unique<iceberg::SchemaField>(4, "element", structtype, false);
 
-    auto maptype =
-        iceberg::MapType(iceberg::SchemaField::MakeRequired(5, "key", iceberg::int32()),
-                         iceberg::SchemaField::MakeRequired(
-                             6, "value", std::make_shared<iceberg::ListType>(listype)));
+    auto listype = std::make_shared<iceberg::ListType>(*field4_);
 
-    field4_ = std::make_unique<iceberg::SchemaField>(
-        4, "element", std::make_shared<iceberg::StructType>(structtype), false);
     field5_ = std::make_unique<iceberg::SchemaField>(5, "key", iceberg::int32(), false);
-    field6_ = std::make_unique<iceberg::SchemaField>(
-        6, "value", std::make_shared<iceberg::ListType>(listype), false);
-    field7_ = std::make_unique<iceberg::SchemaField>(
-        7, "Value", std::make_shared<iceberg::MapType>(maptype), false);
+    field6_ = std::make_unique<iceberg::SchemaField>(6, "value", listype, false);
+
+    auto maptype = std::make_shared<iceberg::MapType>(*field5_, *field6_);
+
+    field7_ = std::make_unique<iceberg::SchemaField>(7, "Value", maptype, false);
 
     schema_ =
-        std::make_shared<iceberg::Schema>(std::vector<iceberg::SchemaField>{*field7_}, 1);
+        std::make_unique<iceberg::Schema>(std::vector<iceberg::SchemaField>{*field7_}, 1);
   }
 
-  std::shared_ptr<iceberg::Schema> schema_;
+  std::unique_ptr<iceberg::Schema> schema_;
   std::unique_ptr<iceberg::SchemaField> field1_;
   std::unique_ptr<iceberg::SchemaField> field2_;
   std::unique_ptr<iceberg::SchemaField> field3_;
@@ -187,38 +182,32 @@ class ComplexShortNameTest : public ::testing::Test {
     field2_ = std::make_unique<iceberg::SchemaField>(2, "Bar", iceberg::string(), true);
     field3_ = std::make_unique<iceberg::SchemaField>(3, "Foobar", iceberg::int32(), true);
 
-    auto structtype = iceberg::StructType({*field1_, *field2_, *field3_});
+    auto structtype = std::make_shared<iceberg::StructType>(
+        std::vector<iceberg::SchemaField>{*field1_, *field2_, *field3_});
 
-    field4_ = std::make_unique<iceberg::SchemaField>(
-        4, "element", std::make_shared<iceberg::StructType>(structtype), false);
+    field4_ = std::make_unique<iceberg::SchemaField>(4, "element", structtype, false);
 
-    auto listype = iceberg::ListType(*field4_);
-
-    auto structtype2 = iceberg::StructType(
-        {iceberg::SchemaField::MakeRequired(5, "First_child", iceberg::int32()),
-         iceberg::SchemaField::MakeRequired(
-             6, "Second_child", std::make_shared<iceberg::ListType>(listype))});
-
-    auto maptype = iceberg::MapType(
-        iceberg::SchemaField::MakeRequired(7, "key", iceberg::int32()),
-        iceberg::SchemaField::MakeRequired(
-            8, "value", std::make_shared<iceberg::StructType>(structtype2)));
+    auto listype = std::make_shared<iceberg::ListType>(*field4_);
 
     field5_ =
         std::make_unique<iceberg::SchemaField>(5, "First_child", iceberg::int32(), false);
-    field6_ = std::make_unique<iceberg::SchemaField>(
-        6, "Second_child", std::make_shared<iceberg::ListType>(listype), false);
+    field6_ = std::make_unique<iceberg::SchemaField>(6, "Second_child", listype, false);
+
+    auto structtype2 = std::make_shared<iceberg::StructType>(
+        std::vector<iceberg::SchemaField>{*field5_, *field6_});
+
     field7_ = std::make_unique<iceberg::SchemaField>(7, "key", iceberg::int32(), false);
-    field8_ = std::make_unique<iceberg::SchemaField>(
-        8, "value", std::make_shared<iceberg::StructType>(structtype2), false);
-    field9_ = std::make_unique<iceberg::SchemaField>(
-        9, "Map", std::make_shared<iceberg::MapType>(maptype), false);
+    field8_ = std::make_unique<iceberg::SchemaField>(8, "value", structtype2, false);
+
+    auto maptype = std::make_shared<iceberg::MapType>(*field7_, *field8_);
+
+    field9_ = std::make_unique<iceberg::SchemaField>(9, "Map", maptype, false);
 
     schema_ =
-        std::make_shared<iceberg::Schema>(std::vector<iceberg::SchemaField>{*field9_}, 1);
+        std::make_unique<iceberg::Schema>(std::vector<iceberg::SchemaField>{*field9_}, 1);
   }
 
-  std::shared_ptr<iceberg::Schema> schema_;
+  std::unique_ptr<iceberg::Schema> schema_;
   std::unique_ptr<iceberg::SchemaField> field1_;
   std::unique_ptr<iceberg::SchemaField> field2_;
   std::unique_ptr<iceberg::SchemaField> field3_;
@@ -317,75 +306,48 @@ TEST_F(ComplexShortNameTest, TestFindByShortNameCaseInsensitive) {
 class ComplexMapStructShortNameTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    // Separate inner struct for key: {inner_key: int, inner_value: int}
-    inner_struct_type_key_ =
-        std::make_shared<iceberg::StructType>(std::vector<iceberg::SchemaField>{
-            iceberg::SchemaField(10, "inner_key", iceberg::int32(), false),
-            iceberg::SchemaField(11, "inner_value", iceberg::int32(), false)});
-
     exp_inner_key_key_ =
         std::make_unique<iceberg::SchemaField>(10, "inner_key", iceberg::int32(), false);
     exp_inner_key_value_ = std::make_unique<iceberg::SchemaField>(
         11, "inner_value", iceberg::int32(), false);
-
-    // Separate inner struct for value: {inner_k: int, inner_v: int}
-    inner_struct_type_value_ =
-        std::make_shared<iceberg::StructType>(std::vector<iceberg::SchemaField>{
-            iceberg::SchemaField(12, "inner_k", iceberg::int32(), false),
-            iceberg::SchemaField(13, "inner_v", iceberg::int32(), false)});
+    auto inner_struct_type_key_ = std::make_shared<iceberg::StructType>(
+        std::vector<iceberg::SchemaField>{*exp_inner_key_key_, *exp_inner_key_value_});
 
     exp_inner_value_k_ =
         std::make_unique<iceberg::SchemaField>(12, "inner_k", iceberg::int32(), false);
     exp_inner_value_v_ =
         std::make_unique<iceberg::SchemaField>(13, "inner_v", iceberg::int32(), false);
-
-    // Key struct: {key: int, value: inner_struct_key_}
-    key_struct_type_ =
-        std::make_shared<iceberg::StructType>(std::vector<iceberg::SchemaField>{
-            iceberg::SchemaField(14, "key", iceberg::int32(), false),
-            iceberg::SchemaField(15, "value", inner_struct_type_key_, false)});
+    auto inner_struct_type_value_ = std::make_shared<iceberg::StructType>(
+        std::vector<iceberg::SchemaField>{*exp_inner_value_k_, *exp_inner_value_v_});
 
     exp_key_struct_key_ =
         std::make_unique<iceberg::SchemaField>(14, "key", iceberg::int32(), false);
     exp_key_struct_value_ = std::make_unique<iceberg::SchemaField>(
         15, "value", inner_struct_type_key_, false);
-
-    // Value struct: {key: int, value: inner_struct_value_}
-    value_struct_type_ =
-        std::make_shared<iceberg::StructType>(std::vector<iceberg::SchemaField>{
-            iceberg::SchemaField(16, "key", iceberg::int32(), false),
-            iceberg::SchemaField(17, "value", inner_struct_type_value_, false)});
+    auto key_struct_type_ = std::make_shared<iceberg::StructType>(
+        std::vector<iceberg::SchemaField>{*exp_key_struct_key_, *exp_key_struct_value_});
 
     exp_value_struct_key_ =
         std::make_unique<iceberg::SchemaField>(16, "key", iceberg::int32(), false);
     exp_value_struct_value_ = std::make_unique<iceberg::SchemaField>(
         17, "value", inner_struct_type_value_, false);
-
-    // Map type: map<key_struct, value_struct>
-    map_type_ = std::make_shared<iceberg::MapType>(
-        iceberg::SchemaField(18, "key", key_struct_type_, false),
-        iceberg::SchemaField(19, "value", value_struct_type_, false));
+    auto value_struct_type_ =
+        std::make_shared<iceberg::StructType>(std::vector<iceberg::SchemaField>{
+            *exp_value_struct_key_, *exp_value_struct_value_});
 
     exp_map_key_ =
         std::make_unique<iceberg::SchemaField>(18, "key", key_struct_type_, false);
     exp_map_value_ =
         std::make_unique<iceberg::SchemaField>(19, "value", value_struct_type_, false);
+    auto map_type_ = std::make_shared<iceberg::MapType>(*exp_map_key_, *exp_map_value_);
 
-    // Top-level field: a: map<...>
     exp_field_a_ = std::make_unique<iceberg::SchemaField>(20, "a", map_type_, false);
 
-    // Create schema
-    schema_ = std::make_shared<iceberg::Schema>(
+    schema_ = std::make_unique<iceberg::Schema>(
         std::vector<iceberg::SchemaField>{*exp_field_a_}, 1);
   }
 
-  std::shared_ptr<iceberg::Schema> schema_;
-  std::shared_ptr<iceberg::StructType> inner_struct_type_key_;
-  std::shared_ptr<iceberg::StructType> inner_struct_type_value_;
-  std::shared_ptr<iceberg::StructType> key_struct_type_;
-  std::shared_ptr<iceberg::StructType> value_struct_type_;
-  std::shared_ptr<iceberg::MapType> map_type_;
-
+  std::unique_ptr<iceberg::Schema> schema_;
   std::unique_ptr<iceberg::SchemaField> exp_inner_key_key_;
   std::unique_ptr<iceberg::SchemaField> exp_inner_key_value_;
   std::unique_ptr<iceberg::SchemaField> exp_inner_value_k_;
@@ -470,14 +432,16 @@ TEST_F(ComplexMapStructShortNameTest, TestInvalidPaths) {
 }
 
 TEST(SchemaTest, DuplicatePathErrorCaseSensitive) {
-  iceberg::SchemaField nested_b(2, "b", iceberg::int32(), false);
-  iceberg::StructType nested_struct({nested_b});
-  iceberg::SchemaField a(1, "a", std::make_shared<iceberg::StructType>(nested_struct),
-                         false);
-  iceberg::SchemaField duplicate_ab(3, "a.b", iceberg::int32(), false);
-  iceberg::Schema schema({a, duplicate_ab}, 1);
+  auto nested_b = std::make_unique<iceberg::SchemaField>(2, "b", iceberg::int32(), false);
+  auto nested_struct =
+      std::make_shared<iceberg::StructType>(std::vector<iceberg::SchemaField>{*nested_b});
+  auto a = std::make_unique<iceberg::SchemaField>(1, "a", nested_struct, false);
+  auto duplicate_ab =
+      std::make_unique<iceberg::SchemaField>(3, "a.b", iceberg::int32(), false);
+  auto schema = std::make_unique<iceberg::Schema>(
+      std::vector<iceberg::SchemaField>{*a, *duplicate_ab}, 1);
 
-  auto result = schema.FindFieldByName("a.b", /*case_sensitive=*/true);
+  auto result = schema->FindFieldByName("a.b", /*case_sensitive=*/true);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().kind, iceberg::ErrorKind::kInvalidSchema);
   EXPECT_THAT(result.error().message,
@@ -485,14 +449,16 @@ TEST(SchemaTest, DuplicatePathErrorCaseSensitive) {
 }
 
 TEST(SchemaTest, DuplicatePathErrorCaseInsensitive) {
-  iceberg::SchemaField nested_b(2, "B", iceberg::int32(), false);
-  iceberg::StructType nested_struct({nested_b});
-  iceberg::SchemaField a(1, "A", std::make_shared<iceberg::StructType>(nested_struct),
-                         false);
-  iceberg::SchemaField duplicate_ab(3, "a.b", iceberg::int32(), false);
-  iceberg::Schema schema({a, duplicate_ab}, 1);
+  auto nested_b = std::make_unique<iceberg::SchemaField>(2, "B", iceberg::int32(), false);
+  auto nested_struct =
+      std::make_shared<iceberg::StructType>(std::vector<iceberg::SchemaField>{*nested_b});
+  auto a = std::make_unique<iceberg::SchemaField>(1, "A", nested_struct, false);
+  auto duplicate_ab =
+      std::make_unique<iceberg::SchemaField>(3, "a.b", iceberg::int32(), false);
+  auto schema = std::make_unique<iceberg::Schema>(
+      std::vector<iceberg::SchemaField>{*a, *duplicate_ab}, 1);
 
-  auto result = schema.FindFieldByName("A.B", /*case_sensitive=*/false);
+  auto result = schema->FindFieldByName("A.B", /*case_sensitive=*/false);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().kind, iceberg::ErrorKind::kInvalidSchema);
   EXPECT_THAT(result.error().message,
@@ -501,21 +467,25 @@ TEST(SchemaTest, DuplicatePathErrorCaseInsensitive) {
 
 TEST(SchemaTest, NestedDuplicateFieldIdError) {
   // Outer struct with field ID 1
-  iceberg::SchemaField outer_field(1, "outer", iceberg::int32(), true);
+  auto outer_field =
+      std::make_unique<iceberg::SchemaField>(1, "outer", iceberg::int32(), true);
 
   // Inner struct with duplicate field ID 1
-  iceberg::SchemaField inner_field(1, "inner", iceberg::string(), true);
-  auto inner_struct = iceberg::StructType({inner_field});
+  auto inner_field =
+      std::make_unique<iceberg::SchemaField>(1, "inner", iceberg::string(), true);
+  auto inner_struct = std::make_shared<iceberg::StructType>(
+      std::vector<iceberg::SchemaField>{*inner_field});
 
   // Nested field with inner struct
-  iceberg::SchemaField nested_field(
-      2, "nested", std::make_shared<iceberg::StructType>(inner_struct), true);
+  auto nested_field =
+      std::make_unique<iceberg::SchemaField>(2, "nested", inner_struct, true);
 
   // Schema with outer and nested fields
-  iceberg::Schema schema({outer_field, nested_field}, 1);
+  auto schema = std::make_unique<iceberg::Schema>(
+      std::vector<iceberg::SchemaField>{*outer_field, *nested_field}, 1);
 
   // Attempt to find a field, which should trigger duplicate ID detection
-  auto result = schema.FindFieldById(1);
+  auto result = schema->FindFieldById(1);
   ASSERT_FALSE(result.has_value());
   EXPECT_EQ(result.error().kind, iceberg::ErrorKind::kInvalidSchema);
   EXPECT_THAT(result.error().message,

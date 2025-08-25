@@ -23,11 +23,10 @@
 #include <format>
 #include <functional>
 
-#include <iceberg/util/string_utils.h>
-
 #include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_utils.h"
 #include "iceberg/util/visit_type.h"
 
 namespace iceberg {
@@ -47,7 +46,7 @@ class IdToFieldVisitor {
 class NameToIdVisitor {
  public:
   explicit NameToIdVisitor(
-      std::unordered_map<std::string, int32_t>& name_to_id, bool case_sensitive_ = true,
+      std::unordered_map<std::string, int32_t>& name_to_id, bool case_sensitive = true,
       std::function<std::string(std::string_view)> quoting_func = {});
   Status Visit(const ListType& type, const std::string& path,
                const std::string& short_path);
