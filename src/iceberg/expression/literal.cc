@@ -29,65 +29,10 @@
 #include <sstream>
 
 #include "iceberg/exception.h"
+#include "iceberg/util/endian.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
-
-namespace {
-template <typename T>
-concept LittleEndianWritable =
-    std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t> ||
-    std::is_same_v<T, float> || std::is_same_v<T, double> || std::is_same_v<T, uint8_t>;
-
-/// \brief Write a value in little-endian format to the buffer.
-template <LittleEndianWritable T>
-void WriteLittleEndian(std::vector<uint8_t>& buffer, T value) {
-  if constexpr (std::endian::native == std::endian::little) {
-    const auto* bytes = reinterpret_cast<const uint8_t*>(&value);
-    buffer.insert(buffer.end(), bytes, bytes + sizeof(T));
-  } else if constexpr (sizeof(T) > 1) {
-    T le_value = std::byteswap(value);
-    const auto* bytes = reinterpret_cast<const uint8_t*>(&le_value);
-    buffer.insert(buffer.end(), bytes, bytes + sizeof(T));
-  } else {
-    // For single byte types, no byteswap needed
-    buffer.push_back(static_cast<uint8_t>(value));
-  }
-}
-
-/// \brief Read a value in little-endian format from the data.
-template <LittleEndianWritable T>
-Result<T> ReadLittleEndian(std::span<const uint8_t> data) {
-  if (data.size() < sizeof(T)) [[unlikely]] {
-    return InvalidArgument("Insufficient data to read {} bytes, got {}", sizeof(T),
-                           data.size());
-  }
-
-  T value;
-  std::memcpy(&value, data.data(), sizeof(T));
-
-  if constexpr (std::endian::native != std::endian::little && sizeof(T) > 1) {
-    value = std::byteswap(value);
-  }
-  return value;
-}
-
-/// \brief Write a 16-byte value in big-endian format (for UUID and Decimal).
-void WriteBigEndian16(std::vector<uint8_t>& buffer,
-                      const std::array<uint8_t, 16>& value) {
-  buffer.insert(buffer.end(), value.begin(), value.end());
-}
-
-/// \brief Read a 16-byte value in big-endian format (for UUID and Decimal).
-Result<std::array<uint8_t, 16>> ReadBigEndian16(std::span<const uint8_t> data) {
-  if (data.size() < 16) {
-    return InvalidArgument("Insufficient data to read 16 bytes, got {}", data.size());
-  }
-
-  std::array<uint8_t, 16> result;
-  std::copy(data.begin(), data.begin() + 16, result.begin());
-  return result;
-}
 
 /// \brief Create a literal from int64 value and long-type TypeId.
 Result<Literal> CreateLongTypeLiteral(int64_t value, TypeId type_id) {
@@ -101,11 +46,9 @@ Result<Literal> CreateLongTypeLiteral(int64_t value, TypeId type_id) {
     case TypeId::kTimestampTz:
       return Literal::TimestampTz(value);
     default:
-      return InvalidArgument("Unsupported long type: {}", static_cast<int>(type_id));
+      return NotSupported("Unsupported long type: {}", static_cast<int>(type_id));
   }
 }
-
-}  // namespace
 
 /// \brief LiteralSerializer handles serialization/deserialization operations for Literal.
 /// This is an internal implementation class.
@@ -486,51 +429,51 @@ Result<std::vector<uint8_t>> LiteralSerializer::ToBytes(const Literal& literal) 
 
     case TypeId::kInt: {
       // Stored as 4-byte little-endian
-      WriteLittleEndian(result, std::get<int32_t>(value));
+      util::WriteLittleEndian(result, std::get<int32_t>(value));
       return result;
     }
 
     case TypeId::kDate: {
       // Stores days from 1970-01-01 in a 4-byte little-endian int
-      WriteLittleEndian(result, std::get<int32_t>(value));
+      util::WriteLittleEndian(result, std::get<int32_t>(value));
       return result;
     }
 
     case TypeId::kLong: {
       // Stored as 8-byte little-endian
-      WriteLittleEndian(result, std::get<int64_t>(value));
+      util::WriteLittleEndian(result, std::get<int64_t>(value));
       return result;
     }
 
     case TypeId::kTime: {
       // Stores microseconds from midnight in an 8-byte little-endian long
-      WriteLittleEndian(result, std::get<int64_t>(value));
+      util::WriteLittleEndian(result, std::get<int64_t>(value));
       return result;
     }
 
     case TypeId::kTimestamp: {
       // Stores microseconds from 1970-01-01 00:00:00.000000 in an 8-byte little-endian
       // long
-      WriteLittleEndian(result, std::get<int64_t>(value));
+      util::WriteLittleEndian(result, std::get<int64_t>(value));
       return result;
     }
 
     case TypeId::kTimestampTz: {
       // Stores microseconds from 1970-01-01 00:00:00.000000 UTC in an 8-byte
       // little-endian long
-      WriteLittleEndian(result, std::get<int64_t>(value));
+      util::WriteLittleEndian(result, std::get<int64_t>(value));
       return result;
     }
 
     case TypeId::kFloat: {
       // Stored as 4-byte little-endian
-      WriteLittleEndian(result, std::get<float>(value));
+      util::WriteLittleEndian(result, std::get<float>(value));
       return result;
     }
 
     case TypeId::kDouble: {
       // Stored as 8-byte little-endian
-      WriteLittleEndian(result, std::get<double>(value));
+      util::WriteLittleEndian(result, std::get<double>(value));
       return result;
     }
 
@@ -565,7 +508,7 @@ Result<std::vector<uint8_t>> LiteralSerializer::ToBytes(const Literal& literal) 
     case TypeId::kUuid: {
       // 16-byte big-endian value
       const auto& uuid_bytes = std::get<std::array<uint8_t, 16>>(value);
-      WriteBigEndian16(result, uuid_bytes);
+      util::WriteBigEndian16(result, uuid_bytes);
       return result;
     }
 
@@ -590,18 +533,18 @@ Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
 
   switch (type_id) {
     case TypeId::kBoolean: {
-      ICEBERG_ASSIGN_OR_RAISE(auto value, ReadLittleEndian<uint8_t>(data));
+      ICEBERG_ASSIGN_OR_RAISE(auto value, util::ReadLittleEndian<uint8_t>(data));
       // 0x00 for false, non-zero byte for true
       return Literal::Boolean(value != 0x00);
     }
 
     case TypeId::kInt: {
-      ICEBERG_ASSIGN_OR_RAISE(auto value, ReadLittleEndian<int32_t>(data));
+      ICEBERG_ASSIGN_OR_RAISE(auto value, util::ReadLittleEndian<int32_t>(data));
       return Literal::Int(value);
     }
 
     case TypeId::kDate: {
-      ICEBERG_ASSIGN_OR_RAISE(auto value, ReadLittleEndian<int32_t>(data));
+      ICEBERG_ASSIGN_OR_RAISE(auto value, util::ReadLittleEndian<int32_t>(data));
       return Literal::Date(value);
     }
 
@@ -613,11 +556,11 @@ Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
 
       if (data.size() == 4) {
         // Type was promoted from int to long
-        ICEBERG_ASSIGN_OR_RAISE(auto int_value, ReadLittleEndian<int32_t>(data));
+        ICEBERG_ASSIGN_OR_RAISE(auto int_value, util::ReadLittleEndian<int32_t>(data));
         value = static_cast<int64_t>(int_value);
       } else if (data.size() == 8) {
         // Standard 8-byte long
-        ICEBERG_ASSIGN_OR_RAISE(auto long_value, ReadLittleEndian<int64_t>(data));
+        ICEBERG_ASSIGN_OR_RAISE(auto long_value, util::ReadLittleEndian<int64_t>(data));
         value = long_value;
       } else {
         const char* type_name = [type_id]() {
@@ -642,18 +585,18 @@ Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
     }
 
     case TypeId::kFloat: {
-      ICEBERG_ASSIGN_OR_RAISE(auto value, ReadLittleEndian<float>(data));
+      ICEBERG_ASSIGN_OR_RAISE(auto value, util::ReadLittleEndian<float>(data));
       return Literal::Float(value);
     }
 
     case TypeId::kDouble: {
       if (data.size() == 4) {
         // Type was promoted from float to double
-        ICEBERG_ASSIGN_OR_RAISE(auto float_value, ReadLittleEndian<float>(data));
+        ICEBERG_ASSIGN_OR_RAISE(auto float_value, util::ReadLittleEndian<float>(data));
         return Literal::Double(static_cast<double>(float_value));
       } else if (data.size() == 8) {
         // Standard 8-byte double
-        ICEBERG_ASSIGN_OR_RAISE(auto double_value, ReadLittleEndian<double>(data));
+        ICEBERG_ASSIGN_OR_RAISE(auto double_value, util::ReadLittleEndian<double>(data));
         return Literal::Double(double_value);
       } else {
         return InvalidArgument("Double requires 4 or 8 bytes, got {}", data.size());
@@ -681,7 +624,7 @@ Result<Literal> LiteralSerializer::FromBytes(std::span<const uint8_t> data,
     }
 
     case TypeId::kUuid: {
-      ICEBERG_ASSIGN_OR_RAISE(auto uuid_value, ReadBigEndian16(data));
+      ICEBERG_ASSIGN_OR_RAISE(auto uuid_value, util::ReadBigEndian16(data));
       return Literal(Literal::Value{uuid_value}, type);
     }
 
