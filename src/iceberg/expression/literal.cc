@@ -21,8 +21,12 @@
 
 #include <cmath>
 #include <concepts>
+#include <cstring>
+#include <utility>
 
 #include "iceberg/exception.h"
+#include "iceberg/util/conversions.h"
+#include "iceberg/util/literal_format.h"
 
 namespace iceberg {
 
@@ -151,11 +155,11 @@ Literal Literal::Binary(std::vector<uint8_t> value) {
 
 Result<Literal> Literal::Deserialize(std::span<const uint8_t> data,
                                      std::shared_ptr<PrimitiveType> type) {
-  return NotImplemented("Deserialization of Literal is not implemented yet");
+  return Conversions::FromBytes(type, data);
 }
 
 Result<std::vector<uint8_t>> Literal::Serialize() const {
-  return NotImplemented("Serialization of Literal is not implemented yet");
+  return Conversions::ToBytes(*this);
 }
 
 // Getters
@@ -294,13 +298,21 @@ std::string Literal::ToString() const {
       }
       return result;
     }
+    case TypeId::kDate: {
+      return FormatDate(std::get<int32_t>(value_));
+    }
+    case TypeId::kTime: {
+      return FormatTime(std::get<int64_t>(value_));
+    }
+    case TypeId::kTimestamp: {
+      return FormatTimestamp(std::get<int64_t>(value_));
+    }
+    case TypeId::kTimestampTz: {
+      return FormatTimestampTz(std::get<int64_t>(value_));
+    }
     case TypeId::kDecimal:
     case TypeId::kUuid:
-    case TypeId::kFixed:
-    case TypeId::kDate:
-    case TypeId::kTime:
-    case TypeId::kTimestamp:
-    case TypeId::kTimestampTz: {
+    case TypeId::kFixed: {
       throw IcebergError("Not implemented: ToString for " + type_->ToString());
     }
     default: {
