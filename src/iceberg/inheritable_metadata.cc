@@ -22,6 +22,8 @@
 #include <cassert>
 #include <utility>
 
+#include <iceberg/result.h>
+
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/snapshot.h"
@@ -41,18 +43,18 @@ Status BaseInheritableMetadata::Apply(ManifestEntry& entry) {
     entry.snapshot_id = snapshot_id_;
   }
 
-  // In v1 tables, the data sequence number is not persisted and can be safely defaulted
+  // In v1 metadata, the data sequence number is not persisted and can be safely defaulted
   // to 0.
-  // In v2 tables, the data sequence number should be inherited iff the entry status
+  // In v2 metadata, the data sequence number should be inherited iff the entry status
   // is ADDED.
   if (!entry.sequence_number.has_value() &&
       (sequence_number_ == 0 || entry.status == ManifestStatus::kAdded)) {
     entry.sequence_number = sequence_number_;
   }
 
-  // In v1 tables, the file sequence number is not persisted and can be safely defaulted
+  // In v1 metadata, the file sequence number is not persisted and can be safely defaulted
   // to 0.
-  // In v2 tables, the file sequence number should be inherited iff the entry status
+  // In v2 metadata, the file sequence number should be inherited iff the entry status
   // is ADDED.
   if (!entry.file_sequence_number.has_value() &&
       (sequence_number_ == 0 || entry.status == ManifestStatus::kAdded)) {
@@ -61,6 +63,8 @@ Status BaseInheritableMetadata::Apply(ManifestEntry& entry) {
 
   if (entry.data_file) {
     entry.data_file->partition_spec_id = spec_id_;
+  } else {
+    return InvalidManifest("Manifest entry has no data file");
   }
 
   return {};
