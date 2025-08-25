@@ -145,6 +145,7 @@ class ICEBERG_EXPORT Literal {
 
   friend class LiteralCaster;
   friend class LiteralSerializer;
+  friend class Conversions;
 
   Value value_;
   std::shared_ptr<PrimitiveType> type_;

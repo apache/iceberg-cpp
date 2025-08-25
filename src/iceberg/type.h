@@ -489,4 +489,13 @@ ICEBERG_EXPORT std::shared_ptr<FixedType> fixed(int32_t length);
 
 /// @}
 
+/// \brief Get the lowercase string representation of a TypeId.
+///
+/// This returns the same lowercase string as used by Type::ToString() methods.
+/// For example: TypeId::kBoolean -> "boolean", TypeId::kInt -> "int", etc.
+///
+/// \param id The TypeId to convert to string
+/// \return A string_view containing the lowercase type name
+ICEBERG_EXPORT std::string_view ToString(TypeId id);
+
 }  // namespace iceberg
