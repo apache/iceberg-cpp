@@ -23,7 +23,8 @@
 
 #include "iceberg/iceberg_export.h"
 
-/// \file iceberg/
+/// \file iceberg/util/literal_format.h
+/// \brief Format literal values as strings
 
 namespace iceberg {
 

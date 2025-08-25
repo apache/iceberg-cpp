@@ -27,6 +27,9 @@
 
 #include "iceberg/result.h"
 
+/// \file iceberg/util/endian.h
+/// \brief Endianness conversion utilities
+
 namespace iceberg::util {
 
 template <typename T>
