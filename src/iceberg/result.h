@@ -32,6 +32,7 @@ enum class ErrorKind {
   kAlreadyExists,
   kCommitStateUnknown,
   kDecompressError,
+  kInvalid,  // For general invalid errors
   kInvalidArgument,
   kInvalidArrowData,
   kInvalidExpression,
@@ -79,6 +80,7 @@ using Status = Result<void>;
 DEFINE_ERROR_FUNCTION(AlreadyExists)
 DEFINE_ERROR_FUNCTION(CommitStateUnknown)
 DEFINE_ERROR_FUNCTION(DecompressError)
+DEFINE_ERROR_FUNCTION(Invalid)
 DEFINE_ERROR_FUNCTION(InvalidArgument)
 DEFINE_ERROR_FUNCTION(InvalidArrowData)
 DEFINE_ERROR_FUNCTION(InvalidExpression)
