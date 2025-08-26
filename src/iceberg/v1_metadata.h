@@ -21,6 +21,8 @@
 
 /// \file iceberg/v1_metadata.h
 
+#include <memory>
+
 #include "iceberg/manifest_adapter.h"
 
 namespace iceberg {
