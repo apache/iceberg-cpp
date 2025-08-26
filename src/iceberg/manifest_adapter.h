@@ -23,13 +23,12 @@
 /// Base class of adapter for v1v2v3v4 metadata.
 
 #include "iceberg/arrow_c_data.h"
-#include "iceberg/manifest_entry.h"
-#include "iceberg/manifest_list.h"
 #include "iceberg/result.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
-// \brief Base class of adapter for v1v2v3v4 metadata.
+// \brief Base class to append manifest metadata to Arrow array.
 class ICEBERG_EXPORT ManifestAdapter {
  public:
   ManifestAdapter() = default;

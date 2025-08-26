@@ -54,13 +54,13 @@ Status ManifestWriter::Close() {
 }
 
 Result<std::unique_ptr<Writer>> OpenFileWriter(std::string_view location,
-                                               const std::shared_ptr<Schema> schema,
+                                               std::shared_ptr<Schema> schema,
                                                std::shared_ptr<FileIO> file_io) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto writer,
-      WriterFactoryRegistry::Open(
-          FileFormatType::kAvro,
-          {.path = std::string(location), .schema = schema, .io = std::move(file_io)}));
+      WriterFactoryRegistry::Open(FileFormatType::kAvro, {.path = std::string(location),
+                                                          .schema = std::move(schema),
+                                                          .io = std::move(file_io)}));
   return writer;
 }
 
