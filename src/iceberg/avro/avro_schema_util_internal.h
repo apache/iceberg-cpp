@@ -151,13 +151,6 @@ bool HasMapLogicalType(const ::avro::NodePtr& node);
 
 /// \brief Create a new Avro node with field IDs from name mapping.
 /// \param original_node The original Avro node to copy.
-/// \param mapped_field The mapped field to apply field IDs from.
-/// \return A new Avro node with field IDs applied, or an error.
-Result<::avro::NodePtr> MakeAvroNodeWithFieldIds(const ::avro::NodePtr& original_node,
-                                                 const MappedField& mapped_field);
-
-/// \brief Create a new Avro node with field IDs from name mapping.
-/// \param original_node The original Avro node to copy.
 /// \param mapping The name mapping to apply field IDs from.
 /// \return A new Avro node with field IDs applied, or an error.
 Result<::avro::NodePtr> MakeAvroNodeWithFieldIds(const ::avro::NodePtr& original_node,
