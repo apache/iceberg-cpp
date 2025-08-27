@@ -36,6 +36,7 @@
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
+#include "iceberg/util/int128.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -51,22 +52,14 @@ class ICEBERG_EXPORT Decimal {
   static constexpr int32_t kMaxScale = 38;
 
   /// \brief Default constructor initializes to zero.
-  constexpr Decimal() noexcept : data_{0, 0} {}
-
-  /// \brief Construct a Decimal from an array of 2 64-bit integers.
-  explicit Decimal(std::array<uint64_t, 2> data) noexcept : data_(std::move(data)) {}
+  constexpr Decimal() noexcept = default;
 
   /// \brief Create a Decimal from any integer not wider than 64 bits.
   template <typename T>
     requires(std::is_integral_v<T> && (sizeof(T) <= sizeof(uint64_t)))
   constexpr Decimal(T value) noexcept  // NOLINT
   {
-    if (value < T{}) {
-      data_[highIndex()] = ~static_cast<uint64_t>(0);
-    } else {
-      data_[highIndex()] = 0;
-    }
-    data_[lowIndex()] = static_cast<uint64_t>(value);
+    data_ = static_cast<int128_t>(value);
   }
 
   /// \brief Parse a Decimal from a string representation.
@@ -74,11 +67,7 @@ class ICEBERG_EXPORT Decimal {
 
   /// \brief Create a Decimal from two 64-bit integers.
   constexpr Decimal(int64_t high, uint64_t low) noexcept {
-    if constexpr (std::endian::native == std::endian::little) {
-      data_ = {low, static_cast<uint64_t>(high)};
-    } else {
-      data_ = {static_cast<uint64_t>(high), low};
-    }
+    data_ = (static_cast<int128_t>(high) << 64) | low;
   }
 
   /// \brief Negate the current Decimal value (in place)
@@ -141,10 +130,10 @@ class ICEBERG_EXPORT Decimal {
   }
 
   /// \brief Get the high bits of the two's complement representation of the number.
-  constexpr int64_t high() const { return static_cast<int64_t>(data_[highIndex()]); }
+  constexpr int64_t high() const { return static_cast<int64_t>(data_ >> 64); }
 
   /// \brief Get the low bits of the two's complement representation of the number.
-  constexpr uint64_t low() const { return data_[lowIndex()]; }
+  constexpr uint64_t low() const { return static_cast<uint64_t>(data_); }
 
   /// \brief Convert the Decimal value to a base 10 decimal string with the given scale.
   /// \param scale The scale to use for the string representation.
@@ -229,19 +218,19 @@ class ICEBERG_EXPORT Decimal {
   }
 
   const uint8_t* native_endian_bytes() const {
-    return reinterpret_cast<const uint8_t*>(data_.data());
+    return reinterpret_cast<const uint8_t*>(data_);
   }
 
   /// \brief Returns the raw bytes of the value in native-endian byte order.
   std::array<uint8_t, kByteWidth> ToBytes() const;
 
   /// \brief Returns 1 if positive or zero, -1 if strictly negative.
-  int64_t Sign() const { return 1 | (static_cast<int64_t>(data_[highIndex()]) >> 63); }
+  int64_t Sign() const { return 1 | (high() >> 63); }
 
   /// \brief Check if the Decimal value is negative.
-  bool IsNegative() const { return static_cast<int64_t>(data_[highIndex()]) < 0; }
+  bool IsNegative() const { return (high() >> 63) < 0; }
 
-  explicit operator bool() const { return data_ != std::array<uint64_t, 2>{0, 0}; }
+  explicit operator bool() const { return data_ != 0; }
 
   friend bool operator==(const Decimal& lhs, const Decimal& rhs) {
     return lhs.data_ == rhs.data_;
@@ -268,7 +257,7 @@ class ICEBERG_EXPORT Decimal {
     }
   }
 
-  std::array<uint64_t, 2> data_;
+  int128_t data_{0};
 };
 
 ICEBERG_EXPORT std::ostream& operator<<(std::ostream& os, const Decimal& decimal);

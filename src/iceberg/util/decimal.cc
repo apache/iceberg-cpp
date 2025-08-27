@@ -419,14 +419,12 @@ Decimal& Decimal::operator/=(const Decimal& other) {
 }
 
 Decimal& Decimal::operator|=(const Decimal& other) {
-  data_[0] |= other.data_[0];
-  data_[1] |= other.data_[1];
+  data_ |= other.data_;
   return *this;
 }
 
 Decimal& Decimal::operator&=(const Decimal& other) {
-  data_[0] &= other.data_[0];
-  data_[1] &= other.data_[1];
+  data_ &= other.data_;
   return *this;
 }
 
@@ -1376,7 +1374,7 @@ double Decimal::ToDouble(int32_t scale) const {
 
 std::array<uint8_t, Decimal::kByteWidth> Decimal::ToBytes() const {
   std::array<uint8_t, kByteWidth> out{{0}};
-  memcpy(out.data(), data_.data(), kByteWidth);
+  memcpy(out.data(), &data_, kByteWidth);
   return out;
 }
 
