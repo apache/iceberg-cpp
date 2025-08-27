@@ -74,7 +74,7 @@ TEST(EndianTest, ConstexprEvaluation) {
   static_assert(FromLittleEndian<int8_t>(-1) == -1);
 
   static_assert(FromLittleEndian(ToLittleEndian(3.14f)) == 3.14f);
-  static_assert(FromBigEndian(ToBigEndian(2.718)) == 2.718);
+  static_assert(FromBigEndian(ToBigEndian(2.71)) == 2.71);
 }
 
 // test platform dependent behavior
