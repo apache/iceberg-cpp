@@ -86,11 +86,11 @@ add_iceberg_test(json_serde_test
 
 add_iceberg_test(util_test
                  SOURCES
-                 formatter_test.cc
                  config_test.cc
-                 visit_type_test.cc
+                 endian_test.cc
+                 formatter_test.cc
                  string_util_test.cc
-                 endian_test.cc)
+                 visit_type_test.cc)
 
 if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(avro_test

@@ -21,15 +21,35 @@
 
 #include <bit>
 #include <concepts>
+#include <cstdint>
 
 /// \file iceberg/util/endian.h
 /// \brief Endianness conversion utilities
 
 namespace iceberg {
 
-/// \brief Concept for values that can be written in little-endian format.
+/// \brief Concept for values that can be converted to/from another endian format.
 template <typename T>
 concept EndianConvertible = std::is_arithmetic_v<T> && !std::same_as<T, bool>;
+
+/// \brief Byte-swap a value. For floating-point types, only support 32-bit and 64-bit
+/// floats.
+template <EndianConvertible T>
+constexpr T ByteSwap(T value) {
+  if constexpr (sizeof(T) <= 1) {
+    return value;
+  } else if constexpr (std::is_integral_v<T>) {
+    return std::byteswap(value);
+  } else if constexpr (std::is_floating_point_v<T>) {
+    if constexpr (sizeof(T) == sizeof(uint32_t)) {
+      return std::bit_cast<T>(std::byteswap(std::bit_cast<uint32_t>(value)));
+    } else if constexpr (sizeof(T) == sizeof(uint64_t)) {
+      return std::bit_cast<T>(std::byteswap(std::bit_cast<uint64_t>(value)));
+    } else {
+      static_assert(false, "Unsupported floating-point size for endian conversion.");
+    }
+  }
+}
 
 /// \brief Convert a value to little-endian format.
 template <EndianConvertible T>
@@ -37,20 +57,7 @@ constexpr T ToLittleEndian(T value) {
   if constexpr (std::endian::native == std::endian::little || sizeof(T) <= 1) {
     return value;
   } else {
-    if constexpr (std::is_integral_v<T>) {
-      return std::byteswap(value);
-    } else if constexpr (std::is_floating_point_v<T>) {
-      // For floats, use the bit_cast -> byteswap -> bit_cast pattern.
-      if constexpr (sizeof(T) == sizeof(uint32_t)) {
-        uint32_t int_representation = std::bit_cast<uint32_t>(value);
-        int_representation = std::byteswap(int_representation);
-        return std::bit_cast<T>(int_representation);
-      } else if constexpr (sizeof(T) == sizeof(uint64_t)) {
-        uint64_t int_representation = std::bit_cast<uint64_t>(value);
-        int_representation = std::byteswap(int_representation);
-        return std::bit_cast<T>(int_representation);
-      }
-    }
+    return ByteSwap(value);
   }
 }
 
@@ -60,20 +67,7 @@ constexpr T FromLittleEndian(T value) {
   if constexpr (std::endian::native == std::endian::little || sizeof(T) <= 1) {
     return value;
   } else {
-    if constexpr (std::is_integral_v<T>) {
-      return std::byteswap(value);
-    } else if constexpr (std::is_floating_point_v<T>) {
-      // For floats, use the bit_cast -> byteswap -> bit_cast pattern.
-      if constexpr (sizeof(T) == sizeof(uint32_t)) {
-        uint32_t int_representation = std::bit_cast<uint32_t>(value);
-        int_representation = std::byteswap(int_representation);
-        return std::bit_cast<T>(int_representation);
-      } else if constexpr (sizeof(T) == sizeof(uint64_t)) {
-        uint64_t int_representation = std::bit_cast<uint64_t>(value);
-        int_representation = std::byteswap(int_representation);
-        return std::bit_cast<T>(int_representation);
-      }
-    }
+    return ByteSwap(value);
   }
 }
 
@@ -83,19 +77,7 @@ constexpr T ToBigEndian(T value) {
   if constexpr (std::endian::native == std::endian::big || sizeof(T) <= 1) {
     return value;
   } else {
-    if constexpr (std::is_integral_v<T>) {
-      return std::byteswap(value);
-    } else if constexpr (std::is_floating_point_v<T>) {
-      if constexpr (sizeof(T) == sizeof(uint32_t)) {
-        uint32_t int_representation = std::bit_cast<uint32_t>(value);
-        int_representation = std::byteswap(int_representation);
-        return std::bit_cast<T>(int_representation);
-      } else if constexpr (sizeof(T) == sizeof(uint64_t)) {
-        uint64_t int_representation = std::bit_cast<uint64_t>(value);
-        int_representation = std::byteswap(int_representation);
-        return std::bit_cast<T>(int_representation);
-      }
-    }
+    return ByteSwap(value);
   }
 }
 
@@ -105,19 +87,7 @@ constexpr T FromBigEndian(T value) {
   if constexpr (std::endian::native == std::endian::big || sizeof(T) <= 1) {
     return value;
   } else {
-    if constexpr (std::is_integral_v<T>) {
-      return std::byteswap(value);
-    } else if constexpr (std::is_floating_point_v<T>) {
-      if constexpr (sizeof(T) == sizeof(uint32_t)) {
-        uint32_t int_representation = std::bit_cast<uint32_t>(value);
-        int_representation = std::byteswap(int_representation);
-        return std::bit_cast<T>(int_representation);
-      } else if constexpr (sizeof(T) == sizeof(uint64_t)) {
-        uint64_t int_representation = std::bit_cast<uint64_t>(value);
-        int_representation = std::byteswap(int_representation);
-        return std::bit_cast<T>(int_representation);
-      }
-    }
+    return ByteSwap(value);
   }
 }
 
