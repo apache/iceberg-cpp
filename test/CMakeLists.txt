@@ -89,7 +89,8 @@ add_iceberg_test(util_test
                  formatter_test.cc
                  config_test.cc
                  visit_type_test.cc
-                 string_util_test.cc)
+                 string_util_test.cc
+                 endian_test.cc)
 
 if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(avro_test
