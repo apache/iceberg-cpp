@@ -54,6 +54,10 @@ class ICEBERG_EXPORT Decimal {
   /// \brief Default constructor initializes to zero.
   constexpr Decimal() noexcept = default;
 
+  /// \brief Create a Decimal from a 128-bit integer.
+  constexpr Decimal(int128_t value) noexcept  // NOLINT
+      : data_(value) {}
+
   /// \brief Create a Decimal from any integer not wider than 64 bits.
   template <typename T>
     requires(std::is_integral_v<T> && (sizeof(T) <= sizeof(uint64_t)))
@@ -128,6 +132,9 @@ class ICEBERG_EXPORT Decimal {
     result >>= shift;
     return result;
   }
+
+  /// \brief Get the underlying 128-bit integer representation of the number.
+  constexpr int128_t value() const { return data_; }
 
   /// \brief Get the high bits of the two's complement representation of the number.
   constexpr int64_t high() const { return static_cast<int64_t>(data_ >> 64); }
@@ -218,7 +225,7 @@ class ICEBERG_EXPORT Decimal {
   }
 
   const uint8_t* native_endian_bytes() const {
-    return reinterpret_cast<const uint8_t*>(data_);
+    return reinterpret_cast<const uint8_t*>(&data_);
   }
 
   /// \brief Returns the raw bytes of the value in native-endian byte order.
@@ -239,6 +246,15 @@ class ICEBERG_EXPORT Decimal {
   friend bool operator!=(const Decimal& lhs, const Decimal& rhs) {
     return lhs.data_ != rhs.data_;
   }
+
+  friend Decimal operator-(const Decimal& operand);
+  friend Decimal operator~(const Decimal& operand);
+
+  friend Decimal operator+(const Decimal& lhs, const Decimal& rhs);
+  friend Decimal operator-(const Decimal& lhs, const Decimal& rhs);
+  friend Decimal operator*(const Decimal& lhs, const Decimal& rhs);
+  friend Decimal operator/(const Decimal& lhs, const Decimal& rhs);
+  friend Decimal operator%(const Decimal& lhs, const Decimal& rhs);
 
  private:
   static constexpr int32_t highIndex() {
@@ -263,13 +279,5 @@ class ICEBERG_EXPORT Decimal {
 ICEBERG_EXPORT std::ostream& operator<<(std::ostream& os, const Decimal& decimal);
 
 // Unary operators
-ICEBERG_EXPORT Decimal operator-(const Decimal& operand);
-ICEBERG_EXPORT Decimal operator~(const Decimal& operand);
-
-ICEBERG_EXPORT Decimal operator+(const Decimal& lhs, const Decimal& rhs);
-ICEBERG_EXPORT Decimal operator-(const Decimal& lhs, const Decimal& rhs);
-ICEBERG_EXPORT Decimal operator*(const Decimal& lhs, const Decimal& rhs);
-ICEBERG_EXPORT Decimal operator/(const Decimal& lhs, const Decimal& rhs);
-ICEBERG_EXPORT Decimal operator%(const Decimal& lhs, const Decimal& rhs);
 
 }  // namespace iceberg
