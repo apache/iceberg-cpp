@@ -20,7 +20,7 @@
 #pragma once
 
 /// \file iceberg/manifest_writer.h
-/// Data writer interface for manifest files.
+/// Data writer interface for manifest files and manifest list files.
 
 #include <memory>
 #include <vector>
