@@ -42,6 +42,7 @@
 #include <sstream>
 #include <string>
 #include <string_view>
+#include <utility>
 
 #include "iceberg/result.h"
 #include "iceberg/util/int128.h"
@@ -51,61 +52,6 @@ namespace iceberg {
 
 namespace {
 
-static constexpr uint64_t kInt64Mask = 0xFFFFFFFFFFFFFFFF;
-
-// Convenience wrapper type over 128 bit unsigned integers. This class merely provides the
-// minimum necessary set of functions to perform 128 bit multiplication operations.
-struct Uint128 {
-  Uint128() = default;
-  Uint128(uint64_t high, uint64_t low)
-      : val_((static_cast<uint128_t>(high) << 64) | low) {}
-
-  explicit Uint128(uint64_t value) : val_(value) {}
-  explicit Uint128(const Decimal& decimal)
-      : val_((static_cast<uint128_t>(decimal.high()) << 64) | decimal.low()) {}
-
-  uint64_t high() const { return static_cast<uint64_t>(val_ >> 64); }
-  uint64_t low() const { return static_cast<uint64_t>(val_ & kInt64Mask); }
-
-  Uint128& operator+=(const Uint128& other) {
-    val_ += other.val_;
-    return *this;
-  }
-
-  Uint128& operator*=(const Uint128& other) {
-    val_ *= other.val_;
-    return *this;
-  }
-
-  uint128_t val_{};
-};
-
-// Signed addition with well-defined behaviour on overflow (as unsigned)
-template <typename SignedInt>
-  requires std::is_signed_v<SignedInt>
-constexpr SignedInt SafeSignedAdd(SignedInt u, SignedInt v) {
-  using UnsignedInt = std::make_unsigned_t<SignedInt>;
-  return static_cast<SignedInt>(static_cast<UnsignedInt>(u) +
-                                static_cast<UnsignedInt>(v));
-}
-
-// Signed subtraction with well-defined behaviour on overflow (as unsigned)
-template <typename SignedInt>
-  requires std::is_signed_v<SignedInt>
-constexpr SignedInt SafeSignedSubtract(SignedInt u, SignedInt v) {
-  using UnsignedInt = std::make_unsigned_t<SignedInt>;
-  return static_cast<SignedInt>(static_cast<UnsignedInt>(u) -
-                                static_cast<UnsignedInt>(v));
-}
-
-// Signed negation with well-defined behaviour on overflow (as unsigned)
-template <typename SignedInt>
-  requires std::is_signed_v<SignedInt>
-constexpr SignedInt SafeSignedNegate(SignedInt u) {
-  using UnsignedInt = std::make_unsigned_t<SignedInt>;
-  return static_cast<SignedInt>(~static_cast<UnsignedInt>(u) + 1);
-}
-
 // Signed left shift with well-defined behaviour on negative numbers or overflow
 template <typename SignedInt, typename Shift>
   requires std::is_signed_v<SignedInt> && std::is_integral_v<Shift>
@@ -113,364 +59,6 @@ constexpr SignedInt SafeLeftShift(SignedInt u, Shift shift) {
   using UnsignedInt = std::make_unsigned_t<SignedInt>;
   return static_cast<SignedInt>(static_cast<UnsignedInt>(u) << shift);
 }
-
-/// \brief Expands the given value into a big endian array of ints so that we can work on
-/// it. The array will be converted to an absolute value. The array will remove leading
-/// zeros from the value.
-/// \param array a big endian array of length 4 to set with the value
-/// \result the output length of the array
-static inline int64_t FillInArray(const Decimal& value, uint32_t* array) {
-  Decimal abs_value = Decimal::Abs(value);
-  auto high = static_cast<uint64_t>(abs_value.high());
-  auto low = abs_value.low();
-
-  if (high != 0) {
-    if (high > std::numeric_limits<uint32_t>::max()) {
-      array[0] = static_cast<uint32_t>(high >> 32);
-      array[1] = static_cast<uint32_t>(high);
-      array[2] = static_cast<uint32_t>(low >> 32);
-      array[3] = static_cast<uint32_t>(low);
-      return 4;
-    }
-
-    array[0] = static_cast<uint32_t>(high);
-    array[1] = static_cast<uint32_t>(low >> 32);
-    array[2] = static_cast<uint32_t>(low);
-    return 3;
-  }
-
-  if (low > std::numeric_limits<uint32_t>::max()) {
-    array[0] = static_cast<uint32_t>(low >> 32);
-    array[1] = static_cast<uint32_t>(low);
-    return 2;
-  }
-
-  if (low == 0) {
-    return 0;
-  }
-
-  array[0] = static_cast<uint32_t>(low);
-  return 1;
-}
-
-/// \brief Shift the number in the array left by bits positions.
-static inline void ShiftArrayLeft(uint32_t* array, int64_t length, int64_t bits) {
-  if (length > 0 && bits > 0) {
-    for (int32_t i = 0; i < length - 1; ++i) {
-      array[i] = (array[i] << bits) | (array[i + 1] >> (32 - bits));
-    }
-    array[length - 1] <<= bits;
-  }
-}
-
-/// \brief Shift the number in the array right by bits positions.
-static inline void ShiftArrayRight(uint32_t* array, int64_t length, int64_t bits) {
-  if (length > 0 && bits > 0) {
-    for (int32_t i = length - 1; i > 0; --i) {
-      array[i] = (array[i] >> bits) | (array[i - 1] << (32 - bits));
-    }
-    array[0] >>= bits;
-  }
-}
-
-/// \brief Fix the signs of the result and remainder after a division operation.
-static inline void FixDivisionSigns(Decimal* result, Decimal* remainder,
-                                    bool dividend_negative, bool divisor_negative) {
-  if (dividend_negative != divisor_negative) {
-    result->Negate();
-  }
-  if (dividend_negative) {
-    remainder->Negate();
-  }
-}
-
-/// \brief Build a Decimal from a big-endian array of uint32_t.
-static Status BuildFromArray(Decimal* result, const uint32_t* array, int64_t length) {
-  // result_array[0] is low, result_array[1] is high
-  std::array<uint64_t, 2> result_array = {0, 0};
-  for (int64_t i = length - 2 * 2 - 1; i >= 0; i--) {
-    if (array[i] != 0) {
-      return Invalid("Decimal division overflow");
-    }
-  }
-
-  // Construct the array in reverse order
-  int64_t next_index = length - 1;
-  for (size_t i = 0; i < 2 && next_index >= 0; i++) {
-    uint64_t lower_bits = array[next_index--];
-    result_array[i] =
-        (next_index < 0)
-            ? lower_bits
-            : (static_cast<uint64_t>(array[next_index--]) << 32) | lower_bits;
-  }
-
-  *result = Decimal(result_array[1], result_array[0]);
-  return {};
-}
-
-/// \brief Do a division where the divisor fits into a single 32-bit integer.
-static inline Status SingleDivide(const uint32_t* dividend, int64_t dividend_length,
-                                  uint32_t divisor, bool dividend_negative,
-                                  bool divisor_negative, Decimal* result,
-                                  Decimal* remainder) {
-  uint64_t r = 0;
-  constexpr int64_t kDecimalArrayLength = Decimal::kBitWidth / sizeof(uint32_t) + 1;
-  std::array<uint32_t, kDecimalArrayLength> quotient;
-  for (int64_t i = 0; i < dividend_length; ++i) {
-    r <<= 32;
-    r |= dividend[i];
-    if (r < divisor) {
-      quotient[i] = 0;
-    } else {
-      quotient[i] = static_cast<uint32_t>(r / divisor);
-      r -= static_cast<uint64_t>(quotient[i]) * divisor;
-    }
-  }
-
-  ICEBERG_RETURN_UNEXPECTED(BuildFromArray(result, quotient.data(), dividend_length));
-
-  *remainder = static_cast<int64_t>(r);
-  FixDivisionSigns(result, remainder, dividend_negative, divisor_negative);
-  return {};
-}
-
-/// \brief Divide two Decimal values and return the result and remainder.
-static inline Status DecimalDivide(const Decimal& dividend, const Decimal& divisor,
-                                   Decimal* result, Decimal* remainder) {
-  constexpr int64_t kDecimalArrayLength = Decimal::kBitWidth / sizeof(uint32_t);
-  // Split the dividend and divisor into 32-bit integer pieces so that we can work on
-  // them.
-  std::array<uint32_t, kDecimalArrayLength + 1> dividend_array;
-  std::array<uint32_t, kDecimalArrayLength> divisor_array;
-  bool dividend_negative = dividend.high() < 0;
-  bool divisor_negative = divisor.high() < 0;
-
-  // leave an extra zero before the dividend
-  dividend_array[0] = 0;
-  int64_t dividend_length = FillInArray(dividend, dividend_array.data() + 1) + 1;
-  int64_t divisor_length = FillInArray(divisor, divisor_array.data());
-
-  if (dividend_length <= divisor_length) {
-    *remainder = dividend;
-    *result = 0;
-    return {};
-  }
-
-  if (divisor_length == 0) {
-    return Invalid("Cannot divide by zero in DecimalDivide");
-  }
-
-  if (divisor_length == 1) {
-    ICEBERG_RETURN_UNEXPECTED(SingleDivide(dividend_array.data(), dividend_length,
-                                           divisor_array[0], dividend_negative,
-                                           divisor_negative, result, remainder));
-    return {};
-  }
-
-  int64_t result_length = dividend_length - divisor_length;
-  std::array<uint32_t, kDecimalArrayLength> result_array;
-
-  assert(result_length < kDecimalArrayLength);
-
-  // Normalize by shifting both by a multiple of 2 so that the digit guessing is easier.
-  // The requirement is that divisor_array[0] is greater than 2**31.
-  int64_t normalize_bits = std::countl_zero(divisor_array[0]);
-  ShiftArrayLeft(divisor_array.data(), divisor_length, normalize_bits);
-  ShiftArrayLeft(dividend_array.data(), dividend_length, normalize_bits);
-
-  // compute each digit in the result
-  for (int64_t i = 0; i < result_length; ++i) {
-    // Guess the next digit. At worst it is two too large
-    uint32_t guess = std::numeric_limits<uint32_t>::max();
-    const auto high_dividend =
-        static_cast<uint64_t>(dividend_array[i]) << 32 | dividend_array[i + 1];
-    if (dividend_array[i] != divisor_array[0]) {
-      guess = static_cast<uint32_t>(high_dividend / divisor_array[0]);
-    }
-
-    // catch all the cases where the guess is two too large and most of the cases where it
-    // is one too large
-    auto rhat = static_cast<uint32_t>(high_dividend -
-                                      guess * static_cast<uint64_t>(divisor_array[0]));
-    while (static_cast<uint64_t>(divisor_array[1]) * guess >
-           (static_cast<uint64_t>(rhat) << 32) + dividend_array[i + 2]) {
-      guess--;
-      rhat += divisor_array[0];
-      if (static_cast<uint64_t>(rhat) < divisor_array[1]) {
-        break;
-      }
-    }
-
-    // substract off the guess * divisor from the dividend
-    uint64_t mult = 0;
-    for (int64_t j = divisor_length - 1; j >= 0; --j) {
-      mult += static_cast<uint64_t>(guess) * divisor_array[j];
-      uint32_t prev = dividend_array[i + j + 1];
-      dividend_array[i + j + 1] -= static_cast<uint32_t>(mult);
-      mult >>= 32;
-      if (dividend_array[i + j + 1] > prev) {
-        ++mult;
-      }
-    }
-    uint32_t prev = dividend_array[i];
-    dividend_array[i] -= static_cast<uint32_t>(mult);
-
-    // if guess was too big, we add back divisor
-    if (dividend_array[i] > prev) {
-      guess--;
-      uint32_t carry = 0;
-      for (int64_t j = divisor_length - 1; j >= 0; --j) {
-        const auto sum =
-            static_cast<uint64_t>(divisor_array[j]) + dividend_array[i + j + 1] + carry;
-        dividend_array[i + j + 1] = static_cast<uint32_t>(sum);
-        carry = static_cast<uint32_t>(sum >> 32);
-      }
-      dividend_array[i] += carry;
-    }
-
-    result_array[i] = guess;
-  }
-
-  // denormalize the remainder
-  ShiftArrayRight(dividend_array.data(), dividend_length, normalize_bits);
-
-  // return result and remainder
-  ICEBERG_RETURN_UNEXPECTED(BuildFromArray(result, result_array.data(), result_length));
-  ICEBERG_RETURN_UNEXPECTED(
-      BuildFromArray(remainder, dividend_array.data(), dividend_length));
-
-  FixDivisionSigns(result, remainder, dividend_negative, divisor_negative);
-  return {};
-}
-
-}  // namespace
-
-Decimal::Decimal(std::string_view str) {
-  auto result = Decimal::FromString(str);
-  if (!result) {
-    throw std::runtime_error(
-        std::format("Failed to parse Decimal from string: {}, error: {}", str,
-                    result.error().message));
-  }
-  *this = std::move(result.value());
-}
-
-Decimal& Decimal::Negate() {
-  uint64_t result_low = ~low() + 1;
-  int64_t result_high = ~high();
-  if (result_low == 0) {
-    result_high = SafeSignedAdd<int64_t>(result_high, 1);
-  }
-  *this = Decimal(result_high, result_low);
-  return *this;
-}
-
-Decimal& Decimal::Abs() { return *this < 0 ? Negate() : *this; }
-
-Decimal Decimal::Abs(const Decimal& value) {
-  Decimal result(value);
-  return result.Abs();
-}
-
-Decimal& Decimal::operator+=(const Decimal& other) {
-  int64_t result_high = SafeSignedAdd(high(), other.high());
-  uint64_t result_low = low() + other.low();
-  result_high = SafeSignedAdd<int64_t>(result_high, result_low < low());
-  *this = Decimal(result_high, result_low);
-  return *this;
-}
-
-Decimal& Decimal::operator-=(const Decimal& other) {
-  int64_t result_high = SafeSignedSubtract(high(), other.high());
-  uint64_t result_low = low() - other.low();
-  result_high = SafeSignedSubtract<int64_t>(result_high, result_low > low());
-  *this = Decimal(result_high, result_low);
-  return *this;
-}
-
-Decimal& Decimal::operator*=(const Decimal& other) {
-  // Since the max value of Decimal is supposed to be 1e38 - 1 and the min the
-  // negation taking the abosolute values here should aways be safe.
-  const bool negate = Sign() != other.Sign();
-  Decimal x = Decimal::Abs(*this);
-  Decimal y = Decimal::Abs(other);
-
-  Uint128 r(x);
-  r *= Uint128(y);
-
-  *this = Decimal(static_cast<int64_t>(r.high()), r.low());
-  if (negate) {
-    Negate();
-  }
-  return *this;
-}
-
-Result<std::pair<Decimal, Decimal>> Decimal::Divide(const Decimal& divisor) const {
-  std::pair<Decimal, Decimal> result;
-  ICEBERG_RETURN_UNEXPECTED(DecimalDivide(*this, divisor, &result.first, &result.second));
-  return result;
-}
-
-Decimal& Decimal::operator/=(const Decimal& other) {
-  Decimal remainder;
-  auto s = DecimalDivide(*this, other, this, &remainder);
-  assert(s);
-  return *this;
-}
-
-Decimal& Decimal::operator|=(const Decimal& other) {
-  data_ |= other.data_;
-  return *this;
-}
-
-Decimal& Decimal::operator&=(const Decimal& other) {
-  data_ &= other.data_;
-  return *this;
-}
-
-Decimal& Decimal::operator<<=(uint32_t shift) {
-  if (shift != 0) {
-    uint64_t low_;
-    int64_t high_;
-    if (shift < 64) {
-      high_ = SafeLeftShift<int64_t>(high(), shift);
-      high_ |= low() >> (64 - shift);
-      low_ = low() << shift;
-    } else if (shift < 128) {
-      high_ = static_cast<int64_t>(low() << (shift - 64));
-      low_ = 0;
-    } else {
-      high_ = 0;
-      low_ = 0;
-    }
-    *this = Decimal(high_, low_);
-  }
-
-  return *this;
-}
-
-Decimal& Decimal::operator>>=(uint32_t shift) {
-  if (shift != 0) {
-    uint64_t low_;
-    int64_t high_;
-    if (shift < 64) {
-      low_ = low() >> shift;
-      low_ |= static_cast<uint64_t>(high()) << (64 - shift);
-      high_ = high() >> shift;
-    } else if (shift < 128) {
-      low_ = static_cast<uint64_t>(high() >> (shift - 64));
-      high_ = high() >> 63;
-    } else {
-      high_ = high() >> 63;
-      low_ = static_cast<uint64_t>(high_);
-    }
-    *this = Decimal(high_, low_);
-  }
-
-  return *this;
-}
-
-namespace {
 
 struct DecimalComponents {
   std::string_view while_digits;
@@ -616,7 +204,7 @@ constexpr std::array<Decimal, Decimal::kMaxScale + 1> kDecimal128PowersOfTen = {
     Decimal(542101086242752217LL, 68739955140067328ULL),
     Decimal(5421010862427522170LL, 687399551400673280ULL)};
 
-static inline void ShiftAndAdd(std::string_view input, std::array<uint64_t, 2>& out) {
+static inline void ShiftAndAdd(std::string_view input, uint128_t& out) {
   for (size_t pos = 0; pos < input.size();) {
     const size_t group_size = std::min(kInt64DecimalDigits, input.size() - pos);
     const uint64_t multiple = kUInt64PowersOfTen[group_size];
@@ -624,79 +212,9 @@ static inline void ShiftAndAdd(std::string_view input, std::array<uint64_t, 2>& 
 
     std::from_chars(input.data() + pos, input.data() + pos + group_size, value);
 
-    for (size_t i = 0; i < 2; ++i) {
-      Uint128 tmp(out[i]);
-      tmp *= Uint128(multiple);
-      tmp += Uint128(value);
-      out[i] = tmp.low();
-      value = tmp.high();
-    }
+    out = out * multiple + value;
     pos += group_size;
   }
-}
-
-// Returns a mask for the bit_index lower order bits.
-// Only valid for bit_index in the range [0, 64).
-constexpr uint64_t LeastSignificantBitMask(int64_t bit_index) {
-  return (static_cast<uint64_t>(1) << bit_index) - 1;
-}
-
-static void AppendLittleEndianArrayToString(const std::array<uint64_t, 2>& array,
-                                            std::string* out) {
-  const auto most_significant_non_zero = std::ranges::find_if(
-      array.rbegin(), array.rend(), [](uint64_t v) { return v != 0; });
-  if (most_significant_non_zero == array.rend()) {
-    out->push_back('0');
-    return;
-  }
-
-  size_t most_significant_elem_idx = &*most_significant_non_zero - array.data();
-  std::array<uint64_t, 2> copy = array;
-  constexpr uint32_t k1e9 = 1000000000U;
-  constexpr size_t kNumBits = 128;
-  // Segments will contain the array split into groups that map to decimal digits, in
-  // little endian order. Each segment will hold at most 9 decimal digits. For example, if
-  // the input represents 9876543210123456789, then segments will be [123456789,
-  // 876543210, 9].
-  // The max number of segments needed = ceil(kNumBits * log(2) / log(1e9))
-  // = ceil(kNumBits / 29.897352854) <= ceil(kNumBits / 29).
-  std::array<uint32_t, (kNumBits + 28) / 29> segments;
-  size_t num_segments = 0;
-  uint64_t* most_significant_elem = &copy[most_significant_elem_idx];
-
-  do {
-    // Compute remainder = copy % 1e9 and copy = copy / 1e9.
-    uint32_t remainder = 0;
-    uint64_t* elem = most_significant_elem;
-    do {
-      // Compute dividend = (remainder << 32) | *elem  (a virtual 96-bit integer);
-      // *elem = dividend / 1e9;
-      // remainder = dividend % 1e9.
-      auto hi = static_cast<uint32_t>(*elem >> 32);
-      auto lo = static_cast<uint32_t>(*elem & LeastSignificantBitMask(32));
-      uint64_t dividend_hi = (static_cast<uint64_t>(remainder) << 32) | hi;
-      uint64_t quotient_hi = dividend_hi / k1e9;
-      remainder = static_cast<uint32_t>(dividend_hi % k1e9);
-      uint64_t dividend_lo = (static_cast<uint64_t>(remainder) << 32) | lo;
-      uint64_t quotient_lo = dividend_lo / k1e9;
-      remainder = static_cast<uint32_t>(dividend_lo % k1e9);
-      *elem = (quotient_hi << 32) | quotient_lo;
-    } while (elem-- != copy.data());
-
-    segments[num_segments++] = remainder;
-  } while (*most_significant_elem != 0 || most_significant_elem-- != copy.data());
-
-  const uint32_t* segment = &segments[num_segments - 1];
-  std::stringstream oss;
-  // First segment is formatted as-is.
-  oss << *segment;
-  // Remaining segments are formatted with leading zeros to fill 9 digits. e.g. 123 is
-  // formatted as "000000123"
-  while (segment != segments.data()) {
-    --segment;
-    oss << std::setfill('0') << std::setw(9) << *segment;
-  }
-  out->append(oss.str());
 }
 
 static void AdjustIntegerStringWithScale(std::string* str, int32_t scale) {
@@ -766,6 +284,91 @@ static void AdjustIntegerStringWithScale(std::string* str, int32_t scale) {
 
 }  // namespace
 
+Decimal::Decimal(std::string_view str) {
+  auto result = Decimal::FromString(str);
+  if (!result) {
+    throw std::runtime_error(
+        std::format("Failed to parse Decimal from string: {}, error: {}", str,
+                    result.error().message));
+  }
+  *this = std::move(result.value());
+}
+
+Decimal& Decimal::Negate() {
+  uint128_t u = static_cast<uint128_t>(~data_) + 1;
+  data_ = static_cast<int128_t>(u);
+  return *this;
+}
+
+Decimal& Decimal::Abs() { return *this < 0 ? Negate() : *this; }
+
+Decimal Decimal::Abs(const Decimal& value) {
+  Decimal result(value);
+  return result.Abs();
+}
+
+Decimal& Decimal::operator+=(const Decimal& other) {
+  data_ += other.data_;
+  return *this;
+}
+
+Decimal& Decimal::operator-=(const Decimal& other) {
+  data_ -= other.data_;
+  return *this;
+}
+
+Decimal& Decimal::operator*=(const Decimal& other) {
+  data_ *= other.data_;
+  return *this;
+}
+
+Result<std::pair<Decimal, Decimal>> Decimal::Divide(const Decimal& divisor) const {
+  std::pair<Decimal, Decimal> result;
+  if (divisor == 0) {
+    return Invalid("Cannot divide by zero in Decimal::Divide");
+  }
+  return std::make_pair(*this / divisor, *this % divisor);
+}
+
+Decimal& Decimal::operator/=(const Decimal& other) {
+  data_ /= other.data_;
+  return *this;
+}
+
+Decimal& Decimal::operator|=(const Decimal& other) {
+  data_ |= other.data_;
+  return *this;
+}
+
+Decimal& Decimal::operator&=(const Decimal& other) {
+  data_ &= other.data_;
+  return *this;
+}
+
+Decimal& Decimal::operator<<=(uint32_t shift) {
+  if (shift != 0) {
+    if (shift < 128) {
+      data_ = static_cast<int128_t>(static_cast<uint128_t>(data_) << shift);
+    } else {
+      data_ = 0;
+    }
+  }
+
+  return *this;
+}
+
+Decimal& Decimal::operator>>=(uint32_t shift) {
+  if (shift != 0) {
+    if (shift < 128) {
+      data_ >>= shift;
+    } else {
+      data_ = (data_ < 0) ? -1 : 0;
+    }
+  }
+
+  return *this;
+}
+
 Result<std::string> Decimal::ToString(int32_t scale) const {
   if (scale < -kMaxScale || scale > kMaxScale) {
     return InvalidArgument(
@@ -778,17 +381,47 @@ Result<std::string> Decimal::ToString(int32_t scale) const {
 }
 
 std::string Decimal::ToIntegerString() const {
-  std::string result;
-  if (high() < 0) {
-    result.push_back('-');
-    Decimal abs = *this;
-    abs.Negate();
-    AppendLittleEndianArrayToString({abs.low(), static_cast<uint64_t>(abs.high())},
-                                    &result);
-  } else {
-    AppendLittleEndianArrayToString({low(), static_cast<uint64_t>(high())}, &result);
+  if (data_ == 0) {
+    return "0";
   }
-  return result;
+
+  bool negative = data_ < 0;
+  uint128_t uval =
+      negative ? -static_cast<uint128_t>(data_) : static_cast<uint128_t>(data_);
+
+  constexpr uint32_t k1e9 = 1000000000U;
+  constexpr size_t kNumBits = 128;
+  // Segments will contain the array split into groups that map to decimal digits, in
+  // little endian order. Each segment will hold at most 9 decimal digits. For example, if
+  // the input represents 9876543210123456789, then segments will be [123456789,
+  // 876543210, 9].
+  // The max number of segments needed = ceil(kNumBits * log(2) / log(1e9))
+  // = ceil(kNumBits / 29.897352854) <= ceil(kNumBits / 29).
+  std::array<uint32_t, (kNumBits + 28) / 29> segments;
+  size_t num_segments = 0;
+
+  while (uval > 0) {
+    // Compute remainder = uval % 1e9 and uval = uval / 1e9.
+    auto remainder = static_cast<uint32_t>(uval % k1e9);
+    uval /= k1e9;
+    segments[num_segments++] = remainder;
+  }
+
+  std::ostringstream oss;
+  if (negative) {
+    oss << '-';
+  }
+
+  // First segment is formatted as-is.
+  oss << segments[num_segments - 1];
+
+  // Remaining segments are formatted with leading zeros to fill 9 digits. e.g. 123 is
+  // formatted as "000000123"
+  for (size_t i = num_segments - 1; i-- > 0;) {
+    oss << std::setw(9) << std::setfill('0') << segments[i];
+  }
+
+  return oss.str();
 }
 
 Result<Decimal> Decimal::FromString(std::string_view str, int32_t* precision,
@@ -820,9 +453,10 @@ Result<Decimal> Decimal::FromString(std::string_view str, int32_t* precision,
 
   // Index 1 is the high part, index 0 is the low part
   std::array<uint64_t, 2> result_array = {0, 0};
-  ShiftAndAdd(dec.while_digits, result_array);
-  ShiftAndAdd(dec.fractional_digits, result_array);
-  Decimal result(static_cast<int64_t>(result_array[1]), result_array[0]);
+  uint128_t value = 0;
+  ShiftAndAdd(dec.while_digits, value);
+  ShiftAndAdd(dec.fractional_digits, value);
+  Decimal result(static_cast<int128_t>(value));
 
   if (dec.sign == '-') {
     result.Negate();
@@ -1384,40 +1018,38 @@ std::ostream& operator<<(std::ostream& os, const Decimal& decimal) {
 }
 
 // Unary operators
-ICEBERG_EXPORT Decimal operator-(const Decimal& operand) {
-  Decimal result(operand.high(), operand.low());
+Decimal operator-(const Decimal& operand) {
+  Decimal result(operand.data_);
   return result.Negate();
 }
 
-ICEBERG_EXPORT Decimal operator~(const Decimal& operand) {
-  return {~operand.high(), ~operand.low()};
-}
+Decimal operator~(const Decimal& operand) { return {~operand.data_}; }
 
 // Binary operators
-ICEBERG_EXPORT Decimal operator+(const Decimal& lhs, const Decimal& rhs) {
+Decimal operator+(const Decimal& lhs, const Decimal& rhs) {
   Decimal result(lhs);
   result += rhs;
   return result;
 }
 
-ICEBERG_EXPORT Decimal operator-(const Decimal& lhs, const Decimal& rhs) {
+Decimal operator-(const Decimal& lhs, const Decimal& rhs) {
   Decimal result(lhs);
   result -= rhs;
   return result;
 }
 
-ICEBERG_EXPORT Decimal operator*(const Decimal& lhs, const Decimal& rhs) {
+Decimal operator*(const Decimal& lhs, const Decimal& rhs) {
   Decimal result(lhs);
   result *= rhs;
   return result;
 }
 
-ICEBERG_EXPORT Decimal operator/(const Decimal& lhs, const Decimal& rhs) {
-  return lhs.Divide(rhs).value().first;
+Decimal operator/(const Decimal& lhs, const Decimal& rhs) {
+  return lhs.data_ / rhs.data_;
 }
 
-ICEBERG_EXPORT Decimal operator%(const Decimal& lhs, const Decimal& rhs) {
-  return lhs.Divide(rhs).value().second;
+Decimal operator%(const Decimal& lhs, const Decimal& rhs) {
+  return lhs.data_ % rhs.data_;
 }
 
 }  // namespace iceberg
