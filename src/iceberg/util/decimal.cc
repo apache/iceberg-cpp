@@ -17,12 +17,12 @@
  * under the License.
  */
 
-/// \file iceberg/expression/decimal.cc
+/// \file iceberg/util/decimal.cc
 /// \brief 128-bit fixed-point decimal numbers.
 /// Adapted from Apache Arrow with only Decimal128 support.
 /// https://github.com/apache/arrow/blob/main/cpp/src/arrow/util/decimal.cc
 
-#include "iceberg/expression/decimal.h"
+#include "iceberg/util/decimal.h"
 
 #include <algorithm>
 #include <array>
@@ -44,6 +44,7 @@
 #include <string_view>
 
 #include "iceberg/result.h"
+#include "iceberg/util/int128.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -314,7 +315,7 @@ static inline Status DecimalDivide(const Decimal& dividend, const Decimal& divis
     uint32_t prev = dividend_array[i];
     dividend_array[i] -= static_cast<uint32_t>(mult);
 
-    // if guess was too big,  we add back divisor
+    // if guess was too big, we add back divisor
     if (dividend_array[i] > prev) {
       guess--;
       uint32_t carry = 0;
@@ -1232,11 +1233,12 @@ static inline uint64_t UInt64FromBigEndian(const uint8_t* bytes, int32_t length)
   // and doing the conversion in 16, 32 parts, which could
   // possibly create unaligned memory access on certain platforms
   memcpy(reinterpret_cast<uint8_t*>(&result) + 8 - length, bytes, length);
-#if ICEBERG_LITTLE_ENDIAN
-  return std::byteswap(result);
-#else
-  return result;
-#endif
+
+  if constexpr (std::endian::native == std::endian::little) {
+    return std::byteswap(result);
+  } else {
+    return result;
+  }
 }
 
 static bool RescaleWouldCauseDataLoss(const Decimal& value, int32_t delta_scale,
@@ -1418,22 +1420,6 @@ ICEBERG_EXPORT Decimal operator/(const Decimal& lhs, const Decimal& rhs) {
 
 ICEBERG_EXPORT Decimal operator%(const Decimal& lhs, const Decimal& rhs) {
   return lhs.Divide(rhs).value().second;
-}
-
-ICEBERG_EXPORT bool operator<(const Decimal& lhs, const Decimal& rhs) {
-  return (lhs.high() < rhs.high()) || (lhs.high() == rhs.high() && lhs.low() < rhs.low());
-}
-
-ICEBERG_EXPORT bool operator<=(const Decimal& lhs, const Decimal& rhs) {
-  return !operator>(lhs, rhs);
-}
-
-ICEBERG_EXPORT bool operator>(const Decimal& lhs, const Decimal& rhs) {
-  return operator<(rhs, lhs);
-}
-
-ICEBERG_EXPORT bool operator>=(const Decimal& lhs, const Decimal& rhs) {
-  return !operator<(lhs, rhs);
 }
 
 }  // namespace iceberg

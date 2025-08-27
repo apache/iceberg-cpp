@@ -16,10 +16,11 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-#include "iceberg/expression/decimal.h"
+#include "iceberg/util/decimal.h"
 
 #include <algorithm>
 #include <array>
+#include <bit>
 #include <cmath>
 #include <cstdint>
 #include <vector>
@@ -28,7 +29,7 @@
 #include <gtest/gtest.h>
 #include <sys/types.h>
 
-#include "iceberg/util/port.h"
+#include "iceberg/util/int128.h"
 #include "matchers.h"
 
 namespace iceberg {
@@ -1030,9 +1031,10 @@ TEST(DecimalTest, FromBigEndian) {
     Decimal value(start);
     for (int ii = 0; ii < Decimal::kByteWidth; ++ii) {
       auto native_endian = value.ToBytes();
-#if ICEBERG_LITTLE_ENDIAN
-      std::ranges::reverse(native_endian);
-#endif
+      if constexpr (std::endian::native == std::endian::little) {
+        // convert to big endian
+        std::ranges::reverse(native_endian);
+      }
       // Limit the number of bytes we are passing to make
       // sure that it works correctly. That's why all of the
       // 'start' values don't have a 1 in the most significant
@@ -1047,10 +1049,11 @@ TEST(DecimalTest, FromBigEndian) {
       auto negated = -value;
       native_endian = negated.ToBytes();
 
-#if ICEBERG_LITTLE_ENDIAN
-      // convert to big endian
-      std::ranges::reverse(native_endian);
-#endif
+      if constexpr (std::endian::native == std::endian::little) {
+        // convert to big endian
+        std::ranges::reverse(native_endian);
+      }
+
       result = Decimal::FromBigEndian(native_endian.data() + WidthMinusOne - ii, ii + 1);
       ASSERT_THAT(result, IsOk());
       const Decimal& negated_decimal = result.value();
@@ -1060,10 +1063,10 @@ TEST(DecimalTest, FromBigEndian) {
       auto complement = ~value;
       native_endian = complement.ToBytes();
 
-#if ICEBERG_LITTLE_ENDIAN
-      // convert to big endian
-      std::ranges::reverse(native_endian);
-#endif
+      if constexpr (std::endian::native == std::endian::little) {
+        // convert to big endian
+        std::ranges::reverse(native_endian);
+      }
       result = Decimal::FromBigEndian(native_endian.data(), Decimal::kByteWidth);
       ASSERT_THAT(result, IsOk());
       const Decimal& complement_decimal = result.value();
