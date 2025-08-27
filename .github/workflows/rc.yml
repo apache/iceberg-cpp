@@ -15,81 +15,130 @@
 # specific language governing permissions and limitations
 # under the License.
 
-name: Release Candidate
-
+name: RC
 on:
   push:
     tags:
-      - 'v*-rc*'
+      - '*-rc*'
+
+concurrency:
+  group: ${{ github.repository }}-${{ github.head_ref || github.sha }}-${{ github.workflow }}
+  cancel-in-progress: true
+permissions:
+  contents: read
 
 jobs:
-  build-source-tarball:
+  archive:
+    name: Archive
     runs-on: ubuntu-latest
-
+    timeout-minutes: 5
     steps:
-      - name: Checkout repository
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Extract version from tag
-        id: extract_version
+      - name: Prepare for tag
+        if: github.ref_type == 'tag'
         run: |
-          TAG_NAME=${GITHUB_REF#refs/tags/}
-          echo "tag_name=${TAG_NAME}" >> $GITHUB_OUTPUT
-          VERSION=$(echo ${TAG_NAME} | sed 's/^v//' | sed 's/-rc.*$//')
-          RC=$(echo ${TAG_NAME} | sed 's/.*-rc//')
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
-          echo "rc=${RC}" >> $GITHUB_OUTPUT
-          echo "release_id=apache-iceberg-cpp-${VERSION}-rc${RC}" >> $GITHUB_OUTPUT
+          version=${GITHUB_REF_NAME#v}
+          version=${version%-rc*}
+          rc=${GITHUB_REF_NAME##*-rc}
+          echo "VERSION=${version}" >> ${GITHUB_ENV}
+          echo "RC=${rc}" >> ${GITHUB_ENV}
+          echo "VERSION=${version}"
+          echo "RC=${rc}"
 
-      - name: Install dependencies
+      - name: Archive
+        run: |
+          id="apache-iceberg-cpp-${VERSION}-rc${RC}"
+          tar_gz="${id}.tar.gz"
+          echo "TAR_GZ=${tar_gz}" >> ${GITHUB_ENV}
+          git archive HEAD --prefix "${id}/" --output "${tar_gz}"
+          sha512sum "${tar_gz}" > "${tar_gz}.sha512"
+
+      - name: Audit
+        run: |
+          dev/release/run_rat.sh "${TAR_GZ}"
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: archive
+          path: |
+            apache-iceberg-cpp-*
+
+  verify:
+    name: Verify
+    needs:
+      - archive
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+          # - windows-latest
+    steps:
+      - name: Install C++ Build Tools (Ubuntu)
+        if: runner.os == 'Linux'
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake build-essential
+          sudo apt-get install -y build-essential cmake ninja-build libssl-dev
 
-      - name: Create source tarball
+      - name: Install C++ Build Tools (macOS)
+        if: runner.os == 'macOS'
         run: |
-          # Create archive with git
-          git archive --format=tar.gz --output="${{ steps.extract_version.outputs.release_id }}.tar.gz" --prefix="${{ steps.extract_version.outputs.release_id }}/" HEAD
+          brew install cmake ninja openssl
 
-          # Generate SHA512 checksum
-          sha512sum "${{ steps.extract_version.outputs.release_id }}.tar.gz" > "${{ steps.extract_version.outputs.release_id }}.tar.gz.sha512"
+      - name: Checkout
+        uses: actions/checkout@v4
 
-          # Verify the tarball can be extracted and built
-          tar -xzf "${{ steps.extract_version.outputs.release_id }}.tar.gz"
-          cd "${{ steps.extract_version.outputs.release_id }}"
-
-          # Basic build test
-          cmake -S . -B build -DCMAKE_BUILD_TYPE=Release
-          cmake --build build --parallel $(nproc)
-
-      - name: Run license check
-        run: |
-          # Extract the tarball if not already extracted
-          if [ ! -d "${{ steps.extract_version.outputs.release_id }}" ]; then
-            tar -xzf "${{ steps.extract_version.outputs.release_id }}.tar.gz"
-          fi
-
-          cd "${{ steps.extract_version.outputs.release_id }}"
-          dev/release/run_rat.sh .
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
+      - uses: actions/download-artifact@v4
         with:
-          tag_name: ${{ steps.extract_version.outputs.tag_name }}
-          name: Apache Iceberg C++ ${{ steps.extract_version.outputs.version }} RC${{ steps.extract_version.outputs.rc }}
-          prerelease: true
-          draft: false
-          files: |
-            ${{ steps.extract_version.outputs.release_id }}.tar.gz
-            ${{ steps.extract_version.outputs.release_id }}.tar.gz.sha512
+          name: archive
+
+      - name: Verify
+        run: |
+          tar_gz=$(echo apache-iceberg-cpp-*.tar.gz)
+          version=${tar_gz#apache-iceberg-cpp-}
+          version=${version%.tar.gz}
+          version=${version%%-rc*}
+          if [ "${GITHUB_REF_TYPE}" = "tag" ]; then
+            rc=${GITHUB_REF_NAME##*-rc}
+          else
+            rc=100
+          fi
+          echo "VERSION=${version}"
+          echo "RC=${rc}"
+          # The verify_rc.sh script will untar and
+          # run cmake, build, tests (ctest) and install
+          VERIFY_SIGN=0 VERIFY_DOWNLOAD=0 dev/release/verify_rc.sh "${version}" "${rc}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v4
+  upload:
+    name: Upload
+    if: github.ref_type == 'tag'
+    needs:
+      - verify
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+
+      - uses: actions/download-artifact@v4
         with:
-          name: release-candidate-${{ steps.extract_version.outputs.version }}-rc${{ steps.extract_version.outputs.rc }}
-          path: |
-            ${{ steps.extract_version.outputs.release_id }}.tar.gz
-            ${{ steps.extract_version.outputs.release_id }}.tar.gz.sha512
-          retention-days: 30
+          name: archive
+
+      - name: Upload
+        run: |
+          gh release create ${GITHUB_REF_NAME} \
+            --prerelease \
+            --title "Apache Iceberg C++ ${GITHUB_REF_NAME}" \
+            --generate-notes \
+            --verify-tag \
+            apache-iceberg-cpp-*.tar.gz \
+            apache-iceberg-cpp-*.tar.gz.sha*
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

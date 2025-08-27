@@ -30,7 +30,13 @@ if len(sys.argv) != 3:
 exclude_globs_filename = sys.argv[1]
 xml_filename = sys.argv[2]
 
-globs = [line.strip() for line in open(exclude_globs_filename, "r")]
+globs = []
+with open(exclude_globs_filename, "r") as f:
+    for line in f:
+        stripped_line = line.strip()
+        if not stripped_line or stripped_line.startswith('#'):
+            continue
+        globs.append(stripped_line)
 
 tree = ET.parse(xml_filename)
 root = tree.getroot()

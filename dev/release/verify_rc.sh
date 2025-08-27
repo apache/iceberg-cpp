@@ -113,49 +113,6 @@ ensure_source_directory() {
   tar xf "${ARCHIVE_BASE_NAME}".tar.gz
 }
 
-check_compiler() {
-  echo "--- Verifying Build Environment ---"
-
-  # Check for minimum CMake version (e.g., 3.25)
-  MIN_CMAKE_VERSION="3.25"
-  CMAKE_VERSION=$(cmake --version | head -n1 | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
-  echo "Found CMake version: $CMAKE_VERSION"
-  if [ "$(printf '%s\n' "${MIN_CMAKE_VERSION}" "${CMAKE_VERSION}" | sort -V | head -n1)" != "${MIN_CMAKE_VERSION}" ]; then
-    echo "ERROR: CMake ${MIN_CMAKE_VERSION} or higher is required, but found ${CMAKE_VERSION}."
-    exit 1
-  fi
-
-  # Check for C++23 compliant compiler
-  local compiler_ok=0
-  if command -v g++ >/dev/null 2>&1; then
-    # Get major version: g++ (Debian 13.2.0-4) 13.2.0 -> 13
-    GCC_MAJOR_VERSION=$(g++ -dumpversion | cut -d. -f1)
-    echo "Found GCC version: $(g++ --version | head -n1)"
-    # GCC 13 is the first version with full C++23 support
-    if [ "${GCC_MAJOR_VERSION}" -ge 13 ]; then
-      echo "GCC version is sufficient for C++23."
-      compiler_ok=1
-    fi
-  fi
-
-  if [ "${compiler_ok}" -eq 0 ] && command -v clang++ >/dev/null 2>&1; then
-    CLANG_MAJOR_VERSION=$(clang++ --version | head -n1 | grep -oE '[0-9]+' | head -n1)
-    echo "Found Clang version: $(clang++ --version | head -n1)"
-    # Clang 16 is the first version with full C++23 support
-    if [ "${CLANG_MAJOR_VERSION}" -ge 16 ]; then
-      echo "Clang version is sufficient for C++23."
-      compiler_ok=1
-    fi
-  fi
-
-  if [ "${compiler_ok}" -eq 0 ]; then
-    echo "ERROR: No C++23 compliant compiler found (GCC 13+ or Clang 16+ required)."
-    exit 1
-  fi
-
-  echo "--- Environment check passed ---"
-}
-
 test_source_distribution() {
   echo "Building and testing Apache Iceberg C++..."
 
@@ -171,7 +128,11 @@ test_source_distribution() {
   # Run tests
   ctest --test-dir build --output-on-failure --parallel $(nproc || sysctl -n hw.ncpu || echo 4)
 
-  echo "Build and test completed successfully!"
+  # Install
+  mkdir -p ./install_test
+  cmake --install build --prefix ./install_test
+
+  echo "Build, test and install completed successfully!"
 }
 
 setup_tmpdir "iceberg-cpp-${VERSION}-${RC}"
@@ -181,7 +142,6 @@ cd "${VERIFY_TMPDIR}"
 import_gpg_keys
 fetch_archive
 ensure_source_directory
-check_compiler
 pushd "${ARCHIVE_BASE_NAME}"
 test_source_distribution
 popd

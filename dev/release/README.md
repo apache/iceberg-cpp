@@ -1,18 +1,20 @@
-<!---
-  Licensed to the Apache Software Foundation (ASF) under one
-  or more contributor license agreements.  See the NOTICE file
-  distributed with this work for additional information
-  regarding copyright ownership.  The ASF licenses this file
-  to you under the Apache License, Version 2.0 (the
-  "License"); you may not use this file except in compliance
-  with the License.  You may obtain a copy of the License at
-    http://www.apache.org/licenses/LICENSE-2.0
-  Unless required by applicable law or agreed to in writing,
-  software distributed under the License is distributed on an
-  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-  KIND, either express or implied.  See the License for the
-  specific language governing permissions and limitations
-  under the License.
+<!--
+  ~ Licensed to the Apache Software Foundation (ASF) under one
+  ~ or more contributor license agreements.  See the NOTICE file
+  ~ distributed with this work for additional information
+  ~ regarding copyright ownership.  The ASF licenses this file
+  ~ to you under the Apache License, Version 2.0 (the
+  ~ "License"); you may not use this file except in compliance
+  ~ with the License.  You may obtain a copy of the License at
+  ~
+  ~   http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing,
+  ~ software distributed under the License is distributed on an
+  ~ "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  ~ KIND, either express or implied.  See the License for the
+  ~ specific language governing permissions and limitations
+  ~ under the License.
 -->
 
 # Release
@@ -35,13 +37,13 @@ $ dev/release/release_rc.sh ${VERSION} ${RC}
  You can use a draft shown by release_rc.sh for the email.)
 ```
 
-Here is an example to release RC1:
+Here is an example to release RC0 of version 0.1.0:
 
 ```console
-$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/release_rc.sh 0.1.0 1
+$ GH_TOKEN=${YOUR_GITHUB_TOKEN} dev/release/release_rc.sh 0.1.0 0
 ```
 
-The arguments of `release_rc.sh` are the version and the RC number. If RC1 has a problem, we'll increment the RC number such as RC2, RC3 and so on.
+The arguments of `release_rc.sh` are the version and the RC number. If RC0 has a problem, we'll increment the RC number such as RC1, RC2 and so on.
 
 Requirements to run `release_rc.sh`:
 
@@ -69,9 +71,7 @@ $ svn ci KEYS
 
 ### Publish
 
-We need to do the following to publish a new release:
-
-    * Publish to apache.org
+We need to publish to apache.org to publish a new release.
 
 Run `dev/release/release.sh` to publish to apache.org:
 

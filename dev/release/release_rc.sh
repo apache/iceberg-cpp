@@ -49,10 +49,8 @@ cd "${SOURCE_TOP_DIR}"
 
 if [ "${RELEASE_PULL}" -gt 0 ] || [ "${RELEASE_PUSH_TAG}" -gt 0 ]; then
   git_origin_url="$(git remote get-url origin)"
-  if [ "${git_origin_url}" != "git@github.com:HeartLinked/iceberg-cpp.git" ]; then
-    echo "This script must be ran with working copy of HeartLinked/iceberg-cpp."
-  # if [ "${git_origin_url}" != "git@github.com:apache/iceberg-cpp.git" ]; then
-    # echo "This script must be ran with working copy of apache/iceberg-cpp."
+  if [ "${git_origin_url}" != "git@github.com:apache/iceberg-cpp.git" ]; then
+    echo "This script must be ran with working copy of apache/iceberg-cpp."
     echo "The origin's URL: ${git_origin_url}"
     exit 1
   fi
@@ -96,7 +94,6 @@ if [ "${RELEASE_SIGN}" -gt 0 ]; then
   echo "Found GitHub Actions workflow with ID: ${run_id}"
   gh run watch --repo "${repository}" --exit-status "${run_id}"
 
-  # Create release candidate directory structure
   mkdir -p "${id}"
 
   echo "Downloading .tar.gz from GitHub Releases"
