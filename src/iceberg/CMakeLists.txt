@@ -19,7 +19,7 @@ set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
                      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>")
 set(ICEBERG_SOURCES
     catalog/in_memory_catalog.cc
-    expression/decimal.cc
+    util/decimal.cc
     expression/expression.cc
     expression/literal.cc
     file_reader.cc
@@ -50,6 +50,7 @@ set(ICEBERG_SOURCES
     manifest_reader_internal.cc
     manifest_writer.cc
     arrow_c_data_guard_internal.cc
+    util/decimal.cc
     util/murmurhash3_internal.cc
     util/timepoint.cc
     util/gzip_internal.cc)

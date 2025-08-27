@@ -17,21 +17,10 @@
  * under the License.
  */
 
-/// \file iceberg/util/port.h
-/// \brief Portability macros and definitions for Iceberg C++ library
+/// \file iceberg/util/int128.h
+/// \brief 128-bit integer type
 
 #pragma once
-
-#if defined(_WIN32) /* Windows is always little endian */ \
-    || defined(__LITTLE_ENDIAN__) ||                      \
-    (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__)
-#  define ICEBERG_LITTLE_ENDIAN 1
-#elif defined(__BIG_ENDIAN__) || \
-    (defined(__BYTE_ORDER__) && __BYTE_ORDER__ == __ORDER_BIG_ENDIAN__)
-#  define ICEBERG_LITTLE_ENDIAN 0
-#else
-#  error "Unsupported or unknown endianness"
-#endif
 
 #if defined(_MSC_VER)
 #  include <__msvc_int128.hpp>

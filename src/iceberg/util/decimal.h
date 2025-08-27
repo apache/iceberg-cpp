@@ -19,22 +19,24 @@
 
 #pragma once
 
-/// \file iceberg/expression/decimal.h
+/// \file iceberg/util/decimal.h
 /// \brief 128-bit fixed-point decimal numbers.
 /// Adapted from Apache Arrow with only Decimal128 support.
 /// https://github.com/apache/arrow/blob/main/cpp/src/arrow/util/decimal.h
 
 #include <array>
+#include <bit>
 #include <cstdint>
 #include <iosfwd>
 #include <string>
 #include <string_view>
 #include <type_traits>
 
+#include <iceberg/type.h>
+
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/util/macros.h"
-#include "iceberg/util/port.h"
 
 namespace iceberg {
 
@@ -60,24 +62,24 @@ class ICEBERG_EXPORT Decimal {
   constexpr Decimal(T value) noexcept  // NOLINT
   {
     if (value < T{}) {
-      data_[kHighIndex] = ~static_cast<uint64_t>(0);
+      data_[highIndex()] = ~static_cast<uint64_t>(0);
     } else {
-      data_[kHighIndex] = 0;
+      data_[highIndex()] = 0;
     }
-    data_[kLowIndex] = static_cast<uint64_t>(value);
+    data_[lowIndex()] = static_cast<uint64_t>(value);
   }
 
   /// \brief Parse a Decimal from a string representation.
   explicit Decimal(std::string_view str);
 
-/// \brief Create a Decimal from two 64-bit integers.
-#if ICEBERG_LITTLE_ENDIAN
-  constexpr Decimal(int64_t high, uint64_t low) noexcept
-      : data_{low, static_cast<uint64_t>(high)} {}
-#else
-  constexpr Decimal(int64_t high, uint64_t low) noexcept
-      : data_{static_cast<uint64_t>(high), low} {}
-#endif
+  /// \brief Create a Decimal from two 64-bit integers.
+  constexpr Decimal(int64_t high, uint64_t low) noexcept {
+    if constexpr (std::endian::native == std::endian::little) {
+      data_ = {low, static_cast<uint64_t>(high)};
+    } else {
+      data_ = {static_cast<uint64_t>(high), low};
+    }
+  }
 
   /// \brief Negate the current Decimal value (in place)
   Decimal& Negate();
@@ -139,10 +141,10 @@ class ICEBERG_EXPORT Decimal {
   }
 
   /// \brief Get the high bits of the two's complement representation of the number.
-  constexpr int64_t high() const { return static_cast<int64_t>(data_[kHighIndex]); }
+  constexpr int64_t high() const { return static_cast<int64_t>(data_[highIndex()]); }
 
   /// \brief Get the low bits of the two's complement representation of the number.
-  constexpr uint64_t low() const { return data_[kLowIndex]; }
+  constexpr uint64_t low() const { return data_[lowIndex()]; }
 
   /// \brief Convert the Decimal value to a base 10 decimal string with the given scale.
   /// \param scale The scale to use for the string representation.
@@ -177,6 +179,14 @@ class ICEBERG_EXPORT Decimal {
   ///
   /// Returns true if the number of significant digits is less or equal to `precision`.
   bool FitsInPrecision(int32_t precision) const;
+
+  /// \brief Spaceship operator for three-way comparison.
+  std::strong_ordering operator<=>(const Decimal& other) const {
+    if (high() != other.high()) {
+      return high() <=> other.high();
+    }
+    return low() <=> other.low();
+  }
 
   /// \brief Convert to a signed integer
   template <typename T>
@@ -226,10 +236,10 @@ class ICEBERG_EXPORT Decimal {
   std::array<uint8_t, kByteWidth> ToBytes() const;
 
   /// \brief Returns 1 if positive or zero, -1 if strictly negative.
-  int64_t Sign() const { return 1 | (static_cast<int64_t>(data_[kHighIndex]) >> 63); }
+  int64_t Sign() const { return 1 | (static_cast<int64_t>(data_[highIndex()]) >> 63); }
 
   /// \brief Check if the Decimal value is negative.
-  bool IsNegative() const { return static_cast<int64_t>(data_[kHighIndex]) < 0; }
+  bool IsNegative() const { return static_cast<int64_t>(data_[highIndex()]) < 0; }
 
   explicit operator bool() const { return data_ != std::array<uint64_t, 2>{0, 0}; }
 
@@ -242,13 +252,21 @@ class ICEBERG_EXPORT Decimal {
   }
 
  private:
-#if ICEBERG_LITTLE_ENDIAN
-  static constexpr int32_t kHighIndex = 1;
-  static constexpr int32_t kLowIndex = 0;
-#else
-  static constexpr int32_t kHighIndex = 0;
-  static constexpr int32_t kLowIndex = 1;
-#endif
+  static constexpr int32_t highIndex() {
+    if constexpr (std::endian::native == std::endian::little) {
+      return 1;
+    } else {
+      return 0;
+    }
+  }
+
+  static constexpr int32_t lowIndex() {
+    if constexpr (std::endian::native == std::endian::little) {
+      return 0;
+    } else {
+      return 1;
+    }
+  }
 
   std::array<uint64_t, 2> data_;
 };
@@ -258,12 +276,6 @@ ICEBERG_EXPORT std::ostream& operator<<(std::ostream& os, const Decimal& decimal
 // Unary operators
 ICEBERG_EXPORT Decimal operator-(const Decimal& operand);
 ICEBERG_EXPORT Decimal operator~(const Decimal& operand);
-
-// Binary operators
-ICEBERG_EXPORT bool operator<=(const Decimal& lhs, const Decimal& rhs);
-ICEBERG_EXPORT bool operator<(const Decimal& lhs, const Decimal& rhs);
-ICEBERG_EXPORT bool operator>=(const Decimal& lhs, const Decimal& rhs);
-ICEBERG_EXPORT bool operator>(const Decimal& lhs, const Decimal& rhs);
 
 ICEBERG_EXPORT Decimal operator+(const Decimal& lhs, const Decimal& rhs);
 ICEBERG_EXPORT Decimal operator-(const Decimal& lhs, const Decimal& rhs);
