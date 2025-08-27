@@ -28,7 +28,7 @@
 #include "iceberg/expression/literal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/murmurhash3_internal.h"
-#include "iceberg/util/truncate_utils.h"
+#include "iceberg/util/truncate_util.h"
 
 namespace iceberg {
 

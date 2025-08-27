@@ -27,7 +27,7 @@
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
-#include "iceberg/util/string_utils.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 

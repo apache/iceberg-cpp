@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/util/string_utils.h"
+#include "iceberg/util/string_util.h"
 
 #include <gtest/gtest.h>
 
