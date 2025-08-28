@@ -19,12 +19,12 @@
 
 #pragma once
 
+#include <span>
 #include <vector>
 
 #include "iceberg/expression/literal.h"
-#include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
-#include "iceberg/type.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg {
 class ICEBERG_EXPORT Conversions {

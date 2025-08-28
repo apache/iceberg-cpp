@@ -433,41 +433,6 @@ TEST(LiteralSerializationTest, BinaryString) {
                        string());
 }
 
-TEST(LiteralSerializationTest, BinaryDate) {
-  CheckBinaryRoundTrip({32, 0, 0, 0}, Literal::Date(32), date());
-  CheckBinaryRoundTrip({4, 77, 0, 0}, Literal::Date(19716), date());
-  CheckBinaryRoundTrip({33, 156, 255, 255}, Literal::Date(-25567), date());
-}
-
-TEST(LiteralSerializationTest, BinaryTime) {
-  CheckBinaryRoundTrip({32, 0, 0, 0, 0, 0, 0, 0}, Literal::Time(32), time());
-  CheckBinaryRoundTrip({0, 176, 235, 14, 10, 0, 0, 0}, Literal::Time(43200000000LL),
-                       time());
-  CheckBinaryRoundTrip({128, 81, 13, 42, 12, 0, 0, 0}, Literal::Time(52245123456LL),
-                       time());
-}
-
-TEST(LiteralSerializationTest, BinaryTimestamp) {
-  CheckBinaryRoundTrip({32, 0, 0, 0, 0, 0, 0, 0}, Literal::Timestamp(32), timestamp());
-  CheckBinaryRoundTrip({0, 224, 55, 59, 1, 93, 3, 0},
-                       Literal::Timestamp(946684800000000LL), timestamp());
-  CheckBinaryRoundTrip({128, 209, 74, 105, 86, 13, 6, 0},
-                       Literal::Timestamp(1703514645123456LL), timestamp());
-  CheckBinaryRoundTrip({255, 255, 255, 255, 255, 255, 255, 255}, Literal::Timestamp(-1),
-                       timestamp());
-}
-
-TEST(LiteralSerializationTest, BinaryTimestampTz) {
-  CheckBinaryRoundTrip({32, 0, 0, 0, 0, 0, 0, 0}, Literal::TimestampTz(32),
-                       timestamp_tz());
-  CheckBinaryRoundTrip({0, 224, 55, 59, 1, 93, 3, 0},
-                       Literal::TimestampTz(946684800000000LL), timestamp_tz());
-  CheckBinaryRoundTrip({128, 209, 74, 105, 86, 13, 6, 0},
-                       Literal::TimestampTz(1703514645123456LL), timestamp_tz());
-  CheckBinaryRoundTrip({255, 255, 255, 255, 255, 255, 255, 255}, Literal::TimestampTz(-1),
-                       timestamp_tz());
-}
-
 TEST(LiteralSerializationTest, BinaryData) {
   std::vector<uint8_t> data = {0x01, 0x02, 0x03, 0xFF};
   CheckBinaryRoundTrip(data, Literal::Binary(data), binary());
@@ -528,27 +493,6 @@ TEST(LiteralSerializationTest, EdgeCases) {
   EXPECT_EQ(inf_bytes->size(), 4);
 }
 
-// ToString formatting tests for date/time types
-TEST(LiteralFormattingTest, DateTimeToString) {
-  // Date formatting tests
-  EXPECT_EQ(Literal::Date(0).ToString(), "1970-01-01");
-  EXPECT_EQ(Literal::Date(-25567).ToString(), "1900-01-01");
-
-  // Time formatting tests
-  EXPECT_EQ(Literal::Time(0).ToString(), "00:00:00.000000");
-  EXPECT_EQ(Literal::Time(52245123456LL).ToString(), "14:30:45.123456");
-
-  // Timestamp formatting tests
-  EXPECT_EQ(Literal::Timestamp(0).ToString(), "1970-01-01T00:00:00.000000");
-  EXPECT_EQ(Literal::Timestamp(1703514645123456LL).ToString(),
-            "2023-12-25T14:30:45.123456");
-
-  // TimestampTz formatting tests
-  EXPECT_EQ(Literal::TimestampTz(0).ToString(), "1970-01-01T00:00:00.000000+00:00");
-  EXPECT_EQ(Literal::TimestampTz(1703514645123456LL).ToString(),
-            "2023-12-25T14:30:45.123456+00:00");
-}
-
 // Error case serialization tests
 TEST(LiteralSerializationTest, ErrorCases) {
   // AboveMax/BelowMin values cannot be serialized
@@ -575,33 +519,6 @@ TEST(LiteralSerializationTest, ErrorCases) {
   std::vector<uint8_t> oversized_decimal(20, 0xFF);  // Exceeds 16-byte limit
   auto oversized_result = Literal::Deserialize(oversized_decimal, decimal(10, 2));
   EXPECT_FALSE(oversized_result.has_value());
-}
-
-// Fixed/UUID/Decimal type serialization tests
-TEST(LiteralSerializationTest, FixedUuidDecimal) {
-  // Fixed type - 16 bytes
-  std::vector<uint8_t> fixed_16_data(16, 0x42);
-  auto fixed_result = Literal::Deserialize(fixed_16_data, fixed(16));
-  ASSERT_TRUE(fixed_result.has_value());
-  auto fixed_bytes = fixed_result->Serialize();
-  ASSERT_TRUE(fixed_bytes.has_value());
-  EXPECT_EQ(*fixed_bytes, fixed_16_data);
-
-  // Fixed type - other sizes
-  std::vector<uint8_t> fixed_8_data(8, 0x33);
-  auto fixed_8_result = Literal::Deserialize(fixed_8_data, fixed(8));
-  ASSERT_TRUE(fixed_8_result.has_value());
-  auto fixed_8_bytes = fixed_8_result->Serialize();
-  ASSERT_TRUE(fixed_8_bytes.has_value());
-  EXPECT_EQ(*fixed_8_bytes, fixed_8_data);
-
-  // UUID type
-  std::vector<uint8_t> uuid_data(16, 0x55);
-  auto uuid_result = Literal::Deserialize(uuid_data, uuid());
-  ASSERT_TRUE(uuid_result.has_value());
-  auto uuid_bytes = uuid_result->Serialize();
-  ASSERT_TRUE(uuid_bytes.has_value());
-  EXPECT_EQ(*uuid_bytes, uuid_data);
 }
 
 }  // namespace iceberg

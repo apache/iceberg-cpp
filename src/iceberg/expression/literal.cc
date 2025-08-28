@@ -24,7 +24,6 @@
 
 #include "iceberg/exception.h"
 #include "iceberg/util/conversions.h"
-#include "iceberg/util/literal_format.h"
 
 namespace iceberg {
 
@@ -153,7 +152,7 @@ Literal Literal::Binary(std::vector<uint8_t> value) {
 
 Result<Literal> Literal::Deserialize(std::span<const uint8_t> data,
                                      std::shared_ptr<PrimitiveType> type) {
-  return Conversions::FromBytes(type, data);
+  return Conversions::FromBytes(std::move(type), data);
 }
 
 Result<std::vector<uint8_t>> Literal::Serialize() const {

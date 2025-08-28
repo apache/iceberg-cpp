@@ -19,16 +19,35 @@
 
 #include "iceberg/util/conversions.h"
 
-#include <cctype>
-#include <cstring>
-#include <ranges>
+#include <array>
+#include <span>
+#include <string>
 
-#include "iceberg/exception.h"
-#include "iceberg/type.h"
 #include "iceberg/util/endian.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
+
+/// \brief Write a value in little-endian format to the buffer.
+template <EndianConvertible T>
+void WriteLittleEndian(std::vector<uint8_t>& buffer, T value) {
+  value = ToLittleEndian(value);
+  const auto* bytes = reinterpret_cast<const uint8_t*>(&value);
+  buffer.insert(buffer.end(), bytes, bytes + sizeof(T));
+}
+
+/// \brief Read a value in little-endian format from the data.
+template <EndianConvertible T>
+Result<T> ReadLittleEndian(std::span<const uint8_t> data) {
+  if (data.size() < sizeof(T)) [[unlikely]] {
+    return InvalidArgument("Insufficient data to read {} bytes, got {}", sizeof(T),
+                           data.size());
+  }
+
+  T value;
+  std::memcpy(&value, data.data(), sizeof(T));
+  return FromLittleEndian(value);
+}
 
 Result<std::vector<uint8_t>> Conversions::ToBytes(const PrimitiveType& type,
                                                   const Literal::Value& value) {
@@ -123,13 +142,7 @@ Result<std::vector<uint8_t>> Conversions::ToBytes(const PrimitiveType& type,
       }
       return result;
     }
-
-    case TypeId::kUuid: {
-      // 16-byte big-endian value
-      const auto& uuid_bytes = std::get<std::array<uint8_t, 16>>(value);
-      WriteBigEndian16(result, uuid_bytes);
-      return result;
-    }
+      // TODO(Li Feiyang): Add support for UUID and Decimal
 
     default:
       return NotSupported("Serialization for type {} is not supported", type.ToString());
@@ -255,27 +268,7 @@ Result<Literal::Value> Conversions::FromBytes(const PrimitiveType& type,
         return Literal::Value{std::vector<uint8_t>(data.begin(), data.end())};
       }
     }
-
-    case TypeId::kUuid: {
-      if (data.size() != 16) {
-        return InvalidArgument("UUID requires 16 bytes, got {}", data.size());
-      }
-      ICEBERG_ASSIGN_OR_RAISE(auto uuid_value, ReadBigEndian16(data));
-      return Literal::Value{uuid_value};
-    }
-
-    case TypeId::kDecimal: {
-      if (data.size() > 16) {
-        return InvalidArgument(
-            "Decimal data too large, maximum 16 bytes supported, got {}", data.size());
-      }
-
-      std::array<uint8_t, 16> decimal_bytes{};
-      // Copy data to the end of the array (big-endian format for decimals)
-      // This handles variable-length decimals by right-aligning them
-      std::ranges::copy(data, decimal_bytes.end() - data.size());
-      return Literal::Value{decimal_bytes};
-    }
+      // TODO(Li Feiyang): Add support for UUID and Decimal
 
     default:
       return NotSupported("Deserialization for type {} is not supported",

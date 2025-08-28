@@ -51,8 +51,7 @@ set(ICEBERG_SOURCES
     util/murmurhash3_internal.cc
     util/timepoint.cc
     util/gzip_internal.cc
-    util/conversions.cc
-    util/literal_format.cc)
+    util/conversions.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_SHARED_BUILD_INTERFACE_LIBS)

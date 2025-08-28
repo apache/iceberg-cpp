@@ -19,26 +19,25 @@
 
 #pragma once
 
-#include <algorithm>
+#include <array>
 #include <bit>
-#include <cstring>
-#include <span>
-#include <vector>
-
-#include "iceberg/result.h"
+#include <concepts>
 
 /// \file iceberg/util/endian.h
 /// \brief Endianness conversion utilities
 
 namespace iceberg {
 
+/// \brief Concept for values that can be written in little-endian format.
 template <typename T>
-concept LittleEndianWritable =
-    std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t> ||
-    std::is_same_v<T, float> || std::is_same_v<T, double> || std::is_same_v<T, uint8_t>;
+concept EndianConvertible = std::is_arithmetic_v<T>;
+
+/// \brief Concept for values that can be written in big-endian format,
+template <typename T>
+concept BigEndianWritable = std::same_as<T, std::array<uint8_t, 16>>;
 
 /// \brief Convert a value to little-endian format.
-template <LittleEndianWritable T>
+template <EndianConvertible T>
 T ToLittleEndian(T value) {
   if constexpr (std::endian::native != std::endian::little && sizeof(T) > 1) {
     return std::byteswap(value);
@@ -47,47 +46,31 @@ T ToLittleEndian(T value) {
 }
 
 /// \brief Convert a value from little-endian format.
-template <LittleEndianWritable T>
+template <EndianConvertible T>
 T FromLittleEndian(T value) {
-  return ToLittleEndian(value);
-}
-
-/// \brief Write a value in little-endian format to the buffer.
-template <LittleEndianWritable T>
-void WriteLittleEndian(std::vector<uint8_t>& buffer, T value) {
-  T le_value = ToLittleEndian(value);
-  const auto* bytes = reinterpret_cast<const uint8_t*>(&le_value);
-  buffer.insert(buffer.end(), bytes, bytes + sizeof(T));
-}
-
-/// \brief Read a value in little-endian format from the data.
-template <LittleEndianWritable T>
-Result<T> ReadLittleEndian(std::span<const uint8_t> data) {
-  if (data.size() < sizeof(T)) [[unlikely]] {
-    return InvalidArgument("Insufficient data to read {} bytes, got {}", sizeof(T),
-                           data.size());
+  if constexpr (std::endian::native != std::endian::little && sizeof(T) > 1) {
+    return std::byteswap(value);
   }
-
-  T value;
-  std::memcpy(&value, data.data(), sizeof(T));
-  return FromLittleEndian(value);
+  return value;
 }
 
-/// \brief Write a 16-byte value in big-endian format (for UUID and Decimal).
-inline void WriteBigEndian16(std::vector<uint8_t>& buffer,
-                             const std::array<uint8_t, 16>& value) {
-  buffer.insert(buffer.end(), value.begin(), value.end());
-}
-
-/// \brief Read a 16-byte value in big-endian format (for UUID and Decimal).
-inline Result<std::array<uint8_t, 16>> ReadBigEndian16(std::span<const uint8_t> data) {
-  if (data.size() < 16) {
-    return InvalidArgument("Insufficient data to read 16 bytes, got {}", data.size());
+template <EndianConvertible T>
+constexpr T ToBigEndian(T value) {
+  if constexpr (std::endian::native == std::endian::big || sizeof(T) <= 1) {
+    return value;
+  } else {
+    return std::byteswap(value);
   }
+}
 
-  std::array<uint8_t, 16> result;
-  std::copy(data.begin(), data.begin() + 16, result.begin());
-  return result;
+/// \brief Convert a value from big-endian format to native.
+template <EndianConvertible T>
+constexpr T FromBigEndian(T value) {
+  if constexpr (std::endian::native == std::endian::big || sizeof(T) <= 1) {
+    return value;
+  } else {
+    return std::byteswap(value);
+  }
 }
 
 }  // namespace iceberg
