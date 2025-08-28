@@ -115,7 +115,8 @@ if(ICEBERG_BUILD_BUNDLE)
       parquet/parquet_data_util.cc
       parquet/parquet_reader.cc
       parquet/parquet_register.cc
-      parquet/parquet_schema_util.cc)
+      parquet/parquet_schema_util.cc
+      parquet/parquet_writer.cc)
 
   # Libraries to link with exported libiceberg_bundle.{so,a}.
   set(ICEBERG_BUNDLE_STATIC_BUILD_INTERFACE_LIBS)
