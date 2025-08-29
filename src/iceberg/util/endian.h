@@ -19,57 +19,75 @@
 
 #pragma once
 
-#include <array>
 #include <bit>
 #include <concepts>
+#include <cstdint>
 
 /// \file iceberg/util/endian.h
 /// \brief Endianness conversion utilities
 
 namespace iceberg {
 
-/// \brief Concept for values that can be written in little-endian format.
+/// \brief Concept for values that can be converted to/from another endian format.
 template <typename T>
-concept EndianConvertible = std::is_arithmetic_v<T>;
+concept EndianConvertible = std::is_arithmetic_v<T> && !std::same_as<T, bool>;
 
-/// \brief Concept for values that can be written in big-endian format,
-template <typename T>
-concept BigEndianWritable = std::same_as<T, std::array<uint8_t, 16>>;
+/// \brief Byte-swap a value. For floating-point types, only support 32-bit and 64-bit
+/// floats.
+template <EndianConvertible T>
+constexpr T ByteSwap(T value) {
+  if constexpr (sizeof(T) <= 1) {
+    return value;
+  } else if constexpr (std::is_integral_v<T>) {
+    return std::byteswap(value);
+  } else if constexpr (std::is_floating_point_v<T>) {
+    if constexpr (sizeof(T) == sizeof(uint32_t)) {
+      return std::bit_cast<T>(std::byteswap(std::bit_cast<uint32_t>(value)));
+    } else if constexpr (sizeof(T) == sizeof(uint64_t)) {
+      return std::bit_cast<T>(std::byteswap(std::bit_cast<uint64_t>(value)));
+    } else {
+      static_assert(false, "Unsupported floating-point size for endian conversion.");
+    }
+  }
+}
 
 /// \brief Convert a value to little-endian format.
 template <EndianConvertible T>
-T ToLittleEndian(T value) {
-  if constexpr (std::endian::native != std::endian::little && sizeof(T) > 1) {
-    return std::byteswap(value);
+constexpr T ToLittleEndian(T value) {
+  if constexpr (std::endian::native == std::endian::little || sizeof(T) <= 1) {
+    return value;
+  } else {
+    return ByteSwap(value);
   }
-  return value;
 }
 
 /// \brief Convert a value from little-endian format.
 template <EndianConvertible T>
-T FromLittleEndian(T value) {
-  if constexpr (std::endian::native != std::endian::little && sizeof(T) > 1) {
-    return std::byteswap(value);
+constexpr T FromLittleEndian(T value) {
+  if constexpr (std::endian::native == std::endian::little || sizeof(T) <= 1) {
+    return value;
+  } else {
+    return ByteSwap(value);
   }
-  return value;
 }
 
+/// \brief Convert a value to big-endian format.
 template <EndianConvertible T>
 constexpr T ToBigEndian(T value) {
   if constexpr (std::endian::native == std::endian::big || sizeof(T) <= 1) {
     return value;
   } else {
-    return std::byteswap(value);
+    return ByteSwap(value);
   }
 }
 
-/// \brief Convert a value from big-endian format to native.
+/// \brief Convert a value from big-endian format.
 template <EndianConvertible T>
 constexpr T FromBigEndian(T value) {
   if constexpr (std::endian::native == std::endian::big || sizeof(T) <= 1) {
     return value;
   } else {
-    return std::byteswap(value);
+    return ByteSwap(value);
   }
 }
 
