@@ -19,29 +19,28 @@
 
 #pragma once
 
-#include "iceberg/file_reader.h"
-#include "iceberg/iceberg_bundle_export.h"
+#include <optional>
 
-namespace iceberg::parquet {
+#include "iceberg/arrow_c_data.h"
+#include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 
-/// \brief A reader that reads ArrowArray from Parquet files.
-class ICEBERG_BUNDLE_EXPORT ParquetReader : public Reader {
+namespace iceberg {
+
+class ICEBERG_EXPORT ArrowArrayReader {
  public:
-  ParquetReader() = default;
+  /// \brief Read next batch of data.
+  ///
+  /// \return std::nullopt if the reader has no more data, otherwise `ArrowArray`.
+  virtual Result<std::optional<ArrowArray>> Next() = 0;
 
-  ~ParquetReader() override;
+  /// \brief Get schema of data returned by `Next`.
+  virtual Result<ArrowSchema> Schema() const = 0;
 
-  Status Open(const ReaderOptions& options) final;
+  /// \brief Close this reader and release all resources.
+  virtual Status Close() = 0;
 
-  Status Close() final;
-
-  Result<std::optional<ArrowArray>> Next() final;
-
-  Result<ArrowSchema> Schema() const final;
-
- private:
-  class Impl;
-  std::unique_ptr<Impl> impl_;
+  virtual ~ArrowArrayReader() = default;
 };
 
-}  // namespace iceberg::parquet
+}  // namespace iceberg

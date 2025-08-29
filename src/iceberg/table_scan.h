@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 
+#include "iceberg/arrow_array_reader.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/type_fwd.h"
 
@@ -40,23 +41,6 @@ class ICEBERG_EXPORT ScanTask {
 
   /// \brief The number of rows that should be read by this scan task.
   virtual int64_t estimated_row_count() const = 0;
-};
-
-/// \brief Task representing a data file and its corresponding delete files.
-class ICEBERG_EXPORT FileScanTask : public ScanTask {
- public:
-  explicit FileScanTask(std::shared_ptr<DataFile> data_file);
-
-  /// \brief The data file that should be read by this scan task.
-  const std::shared_ptr<DataFile>& data_file() const;
-
-  int64_t size_bytes() const override;
-  int32_t files_count() const override;
-  int64_t estimated_row_count() const override;
-
- private:
-  /// \brief Data file metadata.
-  std::shared_ptr<DataFile> data_file_;
 };
 
 /// \brief Scan context holding snapshot and scan-specific metadata.
@@ -183,6 +167,42 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
   /// \brief Plans the scan tasks by resolving manifests and data files.
   /// \return A Result containing scan tasks or an error.
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const override;
+};
+
+/// \brief Task representing a data file and its corresponding delete files.
+class ICEBERG_EXPORT FileScanTask : public ScanTask {
+ public:
+  explicit FileScanTask(std::shared_ptr<DataFile> data_file);
+
+  /// \brief The data file that should be read by this scan task.
+  const std::shared_ptr<DataFile>& data_file() const;
+
+  /// \brief The total size in bytes of the file split to be read.
+  int64_t size_bytes() const override;
+
+  /// \brief The number of files that should be read by this scan task.
+  int32_t files_count() const override;
+
+  /// \brief The number of rows that should be read by this scan task.
+  int64_t estimated_row_count() const override;
+
+  /**
+   * \brief Creates and returns an ArrowArrayReader to read the data for this task.
+   *
+   * This acts as a factory to instantiate a file-format-specific reader (e.g., Parquet)
+   * based on the metadata in this task and the provided context.
+   *
+   * \param context The table scan context, used to configure the reader (e.g., with the
+   * projected schema).
+   * \param io The FileIO instance for accessing the file data.
+   * \return A Result containing a unique pointer to the reader, or an error on failure.
+   */
+  Result<std::unique_ptr<ArrowArrayReader>> ToArrowArrayReader(
+      const TableScanContext& context, const std::shared_ptr<FileIO>& io) const;
+
+ private:
+  /// \brief Data file metadata.
+  std::shared_ptr<DataFile> data_file_;
 };
 
 }  // namespace iceberg

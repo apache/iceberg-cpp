@@ -173,7 +173,7 @@ class ParquetReader::Impl {
   }
 
   // Get the schema of the data
-  Result<ArrowSchema> Schema() {
+  Result<ArrowSchema> Schema() const {
     if (!context_) {
       ICEBERG_RETURN_UNEXPECTED(InitReadContext());
     }
@@ -185,7 +185,7 @@ class ParquetReader::Impl {
   }
 
  private:
-  Status InitReadContext() {
+  Status InitReadContext() const {
     context_ = std::make_unique<ReadContext>();
 
     // Build the output Arrow schema
@@ -239,14 +239,14 @@ class ParquetReader::Impl {
   // Parquet file reader to create RecordBatchReader.
   std::unique_ptr<::parquet::arrow::FileReader> reader_;
   // The context to keep track of the reading progress.
-  std::unique_ptr<ReadContext> context_;
+  mutable std::unique_ptr<ReadContext> context_;
 };
 
 ParquetReader::~ParquetReader() = default;
 
 Result<std::optional<ArrowArray>> ParquetReader::Next() { return impl_->Next(); }
 
-Result<ArrowSchema> ParquetReader::Schema() { return impl_->Schema(); }
+Result<ArrowSchema> ParquetReader::Schema() const { return impl_->Schema(); }
 
 Status ParquetReader::Open(const ReaderOptions& options) {
   impl_ = std::make_unique<Impl>();

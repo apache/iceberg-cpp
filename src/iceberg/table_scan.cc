@@ -21,7 +21,11 @@
 
 #include <algorithm>
 #include <ranges>
+#include <utility>
 
+#include <iceberg/file_format.h>
+
+#include "iceberg/file_reader.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/manifest_reader.h"
@@ -32,18 +36,6 @@
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
-
-// implement FileScanTask
-FileScanTask::FileScanTask(std::shared_ptr<DataFile> data_file)
-    : data_file_(std::move(data_file)) {}
-
-const std::shared_ptr<DataFile>& FileScanTask::data_file() const { return data_file_; }
-
-int64_t FileScanTask::size_bytes() const { return data_file_->file_size_in_bytes; }
-
-int32_t FileScanTask::files_count() const { return 1; }
-
-int64_t FileScanTask::estimated_row_count() const { return data_file_->record_count; }
 
 TableScanBuilder::TableScanBuilder(std::shared_ptr<TableMetadata> table_metadata,
                                    std::shared_ptr<FileIO> file_io)
@@ -176,6 +168,31 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
   }
 
   return tasks;
+}
+
+FileScanTask::FileScanTask(std::shared_ptr<DataFile> data_file)
+    : data_file_(std::move(data_file)) {}
+
+const std::shared_ptr<DataFile>& FileScanTask::data_file() const { return data_file_; }
+
+int64_t FileScanTask::size_bytes() const { return data_file_->file_size_in_bytes; }
+
+int32_t FileScanTask::files_count() const { return 1; }
+
+int64_t FileScanTask::estimated_row_count() const { return data_file_->record_count; }
+
+Result<std::unique_ptr<ArrowArrayReader>> FileScanTask::ToArrowArrayReader(
+    const TableScanContext& context, const std::shared_ptr<FileIO>& io) const {
+  const ReaderOptions options{.path = data_file_->file_path,
+                              .length = data_file_->file_size_in_bytes,
+                              .io = io,
+                              .projection = context.projected_schema,
+                              .filter = context.filter};
+
+  ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                          ReaderFactoryRegistry::Open(data_file_->file_format, options));
+
+  return std::move(reader);
 }
 
 }  // namespace iceberg

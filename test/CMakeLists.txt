@@ -122,5 +122,6 @@ if(ICEBERG_BUILD_BUNDLE)
                    SOURCES
                    parquet_data_test.cc
                    parquet_schema_test.cc
-                   parquet_test.cc)
+                   parquet_test.cc
+                   file_scan_task_test.cc)
 endif()

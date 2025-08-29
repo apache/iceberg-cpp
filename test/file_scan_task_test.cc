@@ -28,17 +28,20 @@
 #include <parquet/metadata.h>
 
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
-#include "iceberg/file_reader.h"
+#include "iceberg/arrow_array_reader.h"
+#include "iceberg/file_format.h"
+#include "iceberg/manifest_entry.h"
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/schema.h"
+#include "iceberg/table_scan.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "matchers.h"
 #include "temp_file_test_base.h"
 
-namespace iceberg::parquet {
+namespace iceberg {
 
-class ParquetReaderTest : public TempFileTestBase {
+class FileScanTaskTest : public TempFileTestBase {
  protected:
   static void SetUpTestSuite() { parquet::RegisterAll(); }
 
@@ -46,8 +49,11 @@ class ParquetReaderTest : public TempFileTestBase {
     TempFileTestBase::SetUp();
     file_io_ = arrow::ArrowFileSystemFileIO::MakeLocalFileIO();
     temp_parquet_file_ = CreateNewTempFilePathWithSuffix(".parquet");
+    CreateSimpleParquetFile();
   }
 
+  // Helper method to create a Parquet file with sample data.
+  // This is identical to the one in ParquetReaderTest.
   void CreateSimpleParquetFile() {
     const std::string kParquetFieldIdKey = "PARQUET:field_id";
     auto arrow_schema = ::arrow::schema(
@@ -68,11 +74,13 @@ class ParquetReaderTest : public TempFileTestBase {
     auto outfile = io.fs()->OpenOutputStream(temp_parquet_file_).ValueOrDie();
 
     ASSERT_TRUE(::parquet::arrow::WriteTable(*table, ::arrow::default_memory_pool(),
-                                             outfile, /*chunk_size=*/2)
+                                             outfile, /*chunk_size=*/1024)
                     .ok());
   }
 
-  void VerifyNextBatch(Reader& reader, std::string_view expected_json) {
+  // Helper method to verify the content of the next batch from the reader.
+  // This is identical to the one in ParquetReaderTest and AvroReaderTest.
+  void VerifyNextBatch(ArrowArrayReader& reader, std::string_view expected_json) {
     // Boilerplate to get Arrow schema
     auto schema_result = reader.Schema();
     ASSERT_THAT(schema_result, IsOk());
@@ -91,10 +99,13 @@ class ParquetReaderTest : public TempFileTestBase {
     // Verify data
     auto expected_array =
         ::arrow::json::ArrayFromJSONString(arrow_schema, expected_json).ValueOrDie();
-    ASSERT_TRUE(arrow_array->Equals(*expected_array));
+    ASSERT_TRUE(arrow_array->Equals(*expected_array))
+        << "Expected: " << expected_array->ToString()
+        << "\nGot: " << arrow_array->ToString();
   }
 
-  void VerifyExhausted(Reader& reader) {
+  // Helper method to verify that the reader is exhausted.
+  void VerifyExhausted(ArrowArrayReader& reader) {
     auto data = reader.Next();
     ASSERT_THAT(data, IsOk());
     ASSERT_FALSE(data.value().has_value());
@@ -104,18 +115,24 @@ class ParquetReaderTest : public TempFileTestBase {
   std::string temp_parquet_file_;
 };
 
-TEST_F(ParquetReaderTest, ReadTwoFields) {
-  CreateSimpleParquetFile();
+TEST_F(FileScanTaskTest, ReadFullSchema) {
+  auto data_file = std::make_shared<DataFile>();
+  data_file->file_path = temp_parquet_file_;
+  data_file->file_format = FileFormatType::kParquet;
 
-  auto schema = std::make_shared<Schema>(
+  auto io_internal = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
+  data_file->file_size_in_bytes =
+      io_internal.fs()->GetFileInfo(temp_parquet_file_).ValueOrDie().size();
+
+  TableScanContext context;
+  context.projected_schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
                                SchemaField::MakeOptional(2, "name", string())});
 
-  auto reader_result = ReaderFactoryRegistry::Open(
-      FileFormatType::kParquet,
-      {.path = temp_parquet_file_, .io = file_io_, .projection = schema});
-  ASSERT_THAT(reader_result, IsOk())
-      << "Failed to create reader: " << reader_result.error().message;
+  FileScanTask task(data_file);
+
+  auto reader_result = task.ToArrowArrayReader(context, file_io_);
+  ASSERT_THAT(reader_result, IsOk());
   auto reader = std::move(reader_result.value());
 
   ASSERT_NO_FATAL_FAILURE(
@@ -123,85 +140,29 @@ TEST_F(ParquetReaderTest, ReadTwoFields) {
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
 }
 
-TEST_F(ParquetReaderTest, ReadReorderedFieldsWithNulls) {
-  CreateSimpleParquetFile();
+TEST_F(FileScanTaskTest, ReadProjectedAndReorderedSchema) {
+  auto data_file = std::make_shared<DataFile>();
+  data_file->file_path = temp_parquet_file_;
+  data_file->file_format = FileFormatType::kParquet;
 
-  auto schema = std::make_shared<Schema>(
+  auto io_internal = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
+  data_file->file_size_in_bytes =
+      io_internal.fs()->GetFileInfo(temp_parquet_file_).ValueOrDie().size();
+
+  TableScanContext context;
+  context.projected_schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeOptional(2, "name", string()),
-                               SchemaField::MakeRequired(1, "id", int32()),
                                SchemaField::MakeOptional(3, "score", float64())});
 
-  auto reader_result = ReaderFactoryRegistry::Open(
-      FileFormatType::kParquet,
-      {.path = temp_parquet_file_, .io = file_io_, .projection = schema});
+  FileScanTask task(data_file);
+
+  auto reader_result = task.ToArrowArrayReader(context, file_io_);
   ASSERT_THAT(reader_result, IsOk());
   auto reader = std::move(reader_result.value());
 
-  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(
-      *reader, R"([["Foo", 1, null], ["Bar", 2, null], ["Baz", 3, null]])"));
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyNextBatch(*reader, R"([["Foo", null], ["Bar", null], ["Baz", null]])"));
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
 }
 
-TEST_F(ParquetReaderTest, ReadWithBatchSize) {
-  CreateSimpleParquetFile();
-
-  auto schema = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())});
-
-  auto reader_result =
-      ReaderFactoryRegistry::Open(FileFormatType::kParquet, {.path = temp_parquet_file_,
-                                                             .batch_size = 2,
-                                                             .io = file_io_,
-                                                             .projection = schema});
-  ASSERT_THAT(reader_result, IsOk());
-  auto reader = std::move(reader_result.value());
-
-  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[1], [2]])"));
-  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[3]])"));
-  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
-}
-
-TEST_F(ParquetReaderTest, ReadSplit) {
-  CreateSimpleParquetFile();
-
-  // Read split offsets
-  auto io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
-  auto input_stream = io.fs()->OpenInputFile(temp_parquet_file_).ValueOrDie();
-  auto metadata = ::parquet::ReadMetaData(input_stream);
-  std::vector<size_t> split_offsets;
-  for (int i = 0; i < metadata->num_row_groups(); ++i) {
-    split_offsets.push_back(static_cast<size_t>(metadata->RowGroup(i)->file_offset()));
-  }
-  ASSERT_EQ(split_offsets.size(), 2);
-
-  auto schema = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())});
-
-  std::vector<Split> splits = {
-      {.offset = 0, .length = std::numeric_limits<size_t>::max()},
-      {.offset = split_offsets[0], .length = split_offsets[1] - split_offsets[0]},
-      {.offset = split_offsets[1], .length = 1},
-      {.offset = split_offsets[1] + 1, .length = std::numeric_limits<size_t>::max()},
-      {.offset = 0, .length = split_offsets[0]},
-  };
-  std::vector<std::string> expected_json = {
-      R"([[1], [2], [3]])", R"([[1], [2]])", R"([[3]])", "", "",
-  };
-
-  for (size_t i = 0; i < splits.size(); ++i) {
-    auto reader_result =
-        ReaderFactoryRegistry::Open(FileFormatType::kParquet, {.path = temp_parquet_file_,
-                                                               .split = splits[i],
-                                                               .batch_size = 100,
-                                                               .io = file_io_,
-                                                               .projection = schema});
-    ASSERT_THAT(reader_result, IsOk());
-    auto reader = std::move(reader_result.value());
-    if (!expected_json[i].empty()) {
-      ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, expected_json[i]));
-    }
-    ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
-  }
-}
-
-}  // namespace iceberg::parquet
+}  // namespace iceberg
