@@ -23,11 +23,9 @@
 #include <bit>
 #include <cmath>
 #include <cstdint>
-#include <vector>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <sys/types.h>
 
 #include "iceberg/util/int128.h"
 #include "matchers.h"
@@ -46,11 +44,6 @@ void AssertDecimalFromString(const std::string& s, const Decimal& expected,
   EXPECT_EQ(expected, actual);
   EXPECT_EQ(expected_precision, precision);
   EXPECT_EQ(expected_scale, scale);
-}
-
-Decimal DecimalFromInt128(int128_t value) {
-  return {static_cast<int64_t>(value >> 64),
-          static_cast<uint64_t>(value & 0xFFFFFFFFFFFFFFFFULL)};
 }
 
 }  // namespace
@@ -279,23 +272,21 @@ TEST(DecimalTest, FromStringInvalid) {
   // Empty string
   auto result = Decimal::FromString("");
   ASSERT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-  ASSERT_THAT(result, HasErrorMessage(
-                          "Decimal::FromString: empty string is not a valid Decimal"));
+  ASSERT_THAT(result, HasErrorMessage("Empty string is not a valid Decimal"));
   for (const auto& invalid_string :
        std::vector<std::string>{"-", "0.0.0", "0-13-32", "a", "-23092.235-",
                                 "-+23092.235", "+-23092.235", "00a", "1e1a", "0.00123D/3",
                                 "1.23eA8", "1.23E+3A", "-1.23E--5", "1.2345E+++07"}) {
     auto result = Decimal::FromString(invalid_string);
     ASSERT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-    ASSERT_THAT(result, HasErrorMessage("Decimal::FromString: invalid decimal string"));
+    ASSERT_THAT(result, HasErrorMessage("Invalid decimal string"));
   }
 
   for (const auto& invalid_string :
        std::vector<std::string>{"1e39", "-1e39", "9e39", "-9e39", "9.9e40", "-9.9e40"}) {
     auto result = Decimal::FromString(invalid_string);
     ASSERT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-    ASSERT_THAT(result,
-                HasErrorMessage("Decimal::FromString: scale must be in the range"));
+    ASSERT_THAT(result, HasErrorMessage("scale must be in the range"));
   }
 }
 
@@ -1094,11 +1085,10 @@ TEST(DecimalTestFunctionality, Multiply) {
   for (auto x : std::vector<int128_t>{-INT64_MAX, -INT32_MAX, 0, INT32_MAX, INT64_MAX}) {
     for (auto y :
          std::vector<int128_t>{-INT32_MAX, -32, -2, -1, 0, 1, 2, 32, INT32_MAX}) {
-      Decimal decimal_x = DecimalFromInt128(x);
-      Decimal decimal_y = DecimalFromInt128(y);
+      Decimal decimal_x(x);
+      Decimal decimal_y(y);
       Decimal result = decimal_x * decimal_y;
-      EXPECT_EQ(DecimalFromInt128(x * y), result)
-          << " x: " << decimal_x << " y: " << decimal_y;
+      EXPECT_EQ(Decimal(x * y), result) << " x: " << decimal_x << " y: " << decimal_y;
     }
   }
 }
@@ -1111,11 +1101,10 @@ TEST(DecimalTestFunctionality, Divide) {
 
   for (auto x : std::vector<int128_t>{-INT64_MAX, -INT32_MAX, 0, INT32_MAX, INT64_MAX}) {
     for (auto y : std::vector<int128_t>{-INT32_MAX, -32, -2, -1, 1, 2, 32, INT32_MAX}) {
-      Decimal decimal_x = DecimalFromInt128(x);
-      Decimal decimal_y = DecimalFromInt128(y);
+      Decimal decimal_x(x);
+      Decimal decimal_y(y);
       Decimal result = decimal_x / decimal_y;
-      EXPECT_EQ(DecimalFromInt128(x / y), result)
-          << " x: " << decimal_x << " y: " << decimal_y;
+      EXPECT_EQ(Decimal(x / y), result) << " x: " << decimal_x << " y: " << decimal_y;
     }
   }
 }
@@ -1129,11 +1118,10 @@ TEST(DecimalTestFunctionality, Modulo) {
   // Test some edge cases
   for (auto x : std::vector<int128_t>{-INT64_MAX, -INT32_MAX, 0, INT32_MAX, INT64_MAX}) {
     for (auto y : std::vector<int128_t>{-INT32_MAX, -32, -2, -1, 1, 2, 32, INT32_MAX}) {
-      Decimal decimal_x = DecimalFromInt128(x);
-      Decimal decimal_y = DecimalFromInt128(y);
+      Decimal decimal_x(x);
+      Decimal decimal_y(y);
       Decimal result = decimal_x % decimal_y;
-      EXPECT_EQ(DecimalFromInt128(x % y), result)
-          << " x: " << decimal_x << " y: " << decimal_y;
+      EXPECT_EQ(Decimal(x % y), result) << " x: " << decimal_x << " y: " << decimal_y;
     }
   }
 }
@@ -1206,8 +1194,8 @@ TEST(DecimalTestFunctionality, FitsInPrecision) {
 
 TEST(DecimalTest, LeftShift) {
   auto check = [](int128_t x, uint32_t bits) {
-    auto expected = DecimalFromInt128(x << bits);
-    auto actual = DecimalFromInt128(x) << bits;
+    auto expected = Decimal(x << bits);
+    auto actual = Decimal(x) << bits;
     ASSERT_EQ(actual.low(), expected.low());
     ASSERT_EQ(actual.high(), expected.high());
   };

@@ -257,27 +257,9 @@ class ICEBERG_EXPORT Decimal {
   friend Decimal operator%(const Decimal& lhs, const Decimal& rhs);
 
  private:
-  static constexpr int32_t highIndex() {
-    if constexpr (std::endian::native == std::endian::little) {
-      return 1;
-    } else {
-      return 0;
-    }
-  }
-
-  static constexpr int32_t lowIndex() {
-    if constexpr (std::endian::native == std::endian::little) {
-      return 0;
-    } else {
-      return 1;
-    }
-  }
-
   int128_t data_{0};
 };
 
 ICEBERG_EXPORT std::ostream& operator<<(std::ostream& os, const Decimal& decimal);
-
-// Unary operators
 
 }  // namespace iceberg
