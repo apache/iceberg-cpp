@@ -20,6 +20,7 @@
 #include "iceberg/util/conversions.h"
 
 #include <array>
+#include <cstring>
 #include <span>
 #include <string>
 
