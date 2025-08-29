@@ -24,21 +24,17 @@
 
 #include "iceberg/util/decimal.h"
 
-#include <algorithm>
 #include <array>
 #include <bit>
 #include <cassert>
 #include <charconv>
 #include <climits>
 #include <cmath>
-#include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <format>
 #include <iomanip>
-#include <iostream>
 #include <limits>
-#include <ostream>
 #include <sstream>
 #include <string>
 #include <string_view>
@@ -427,11 +423,11 @@ std::string Decimal::ToIntegerString() const {
 Result<Decimal> Decimal::FromString(std::string_view str, int32_t* precision,
                                     int32_t* scale) {
   if (str.empty()) {
-    return InvalidArgument("Decimal::FromString: empty string is not a valid Decimal");
+    return InvalidArgument("Empty string is not a valid Decimal");
   }
   DecimalComponents dec;
   if (!ParseDecimalComponents(str, &dec)) {
-    return InvalidArgument("Decimal::FromString: invalid decimal string '{}'", str);
+    return InvalidArgument("Invalid decimal string '{}'", str);
   }
 
   // Count number of significant digits (without leading zeros)
@@ -451,8 +447,6 @@ Result<Decimal> Decimal::FromString(std::string_view str, int32_t* precision,
     parsed_scale = static_cast<int32_t>(dec.fractional_digits.size());
   }
 
-  // Index 1 is the high part, index 0 is the low part
-  std::array<uint64_t, 2> result_array = {0, 0};
   uint128_t value = 0;
   ShiftAndAdd(dec.while_digits, value);
   ShiftAndAdd(dec.fractional_digits, value);
@@ -466,9 +460,8 @@ Result<Decimal> Decimal::FromString(std::string_view str, int32_t* precision,
     // For the scale to 0, to avoid negative scales (due to compatibility issues with
     // external systems such as databases)
     if (parsed_scale < -kMaxScale) {
-      return InvalidArgument(
-          "Decimal::FromString: scale must be in the range [-{}, {}], was {}", kMaxScale,
-          kMaxScale, parsed_scale);
+      return InvalidArgument("scale must be in the range [-{}, {}], was {}", kMaxScale,
+                             kMaxScale, parsed_scale);
     }
 
     result *= kDecimal128PowersOfTen[-parsed_scale];
@@ -552,8 +545,6 @@ struct RealTraits<float> {
   static constexpr const float* powers_of_ten() { return kFloatPowersOfTen.data(); }
 
   static constexpr float two_to_64(float x) { return x * 1.8446744e+19f; }
-  static constexpr float two_to_128(float x) { return x == 0 ? 0 : kFloatInf; }
-  static constexpr float two_to_192(float x) { return x == 0 ? 0 : kFloatInf; }
 
   static constexpr int32_t kMantissaBits = 24;
   // ceil(log10(2 ^ kMantissaBits))
@@ -567,8 +558,6 @@ struct RealTraits<double> {
   static constexpr const double* powers_of_ten() { return kDoublePowersOfTen.data(); }
 
   static constexpr double two_to_64(double x) { return x * 1.8446744073709552e+19; }
-  static constexpr double two_to_128(double x) { return x * 3.402823669209385e+38; }
-  static constexpr double two_to_192(double x) { return x * 6.277101735386681e+57; }
 
   static constexpr int32_t kMantissaBits = 53;
   // ceil(log10(2 ^ kMantissaBits))
@@ -791,7 +780,7 @@ struct DecimalRealConversion {
     return x;
   }
 
-  /// An approximate conversion from Decimal128 to Real that guarantees:
+  /// An approximate conversion from Decimal to Real that guarantees:
   /// 1. If the decimal is an integer, the conversion is exact.
   /// 2. If the number of fractional digits is <= RealTraits<Real>::kMantissaDigits (e.g.
   ///    8 for float and 16 for double), the conversion is within 1 ULP of the exact
@@ -864,7 +853,7 @@ static inline uint64_t UInt64FromBigEndian(const uint8_t* bytes, int32_t length)
   // Using memcpy instead of special casing for length
   // and doing the conversion in 16, 32 parts, which could
   // possibly create unaligned memory access on certain platforms
-  memcpy(reinterpret_cast<uint8_t*>(&result) + 8 - length, bytes, length);
+  std::memcpy(reinterpret_cast<uint8_t*>(&result) + 8 - length, bytes, length);
 
   if constexpr (std::endian::native == std::endian::little) {
     return std::byteswap(result);
@@ -1008,7 +997,7 @@ double Decimal::ToDouble(int32_t scale) const {
 
 std::array<uint8_t, Decimal::kByteWidth> Decimal::ToBytes() const {
   std::array<uint8_t, kByteWidth> out{{0}};
-  memcpy(out.data(), &data_, kByteWidth);
+  std::memcpy(out.data(), &data_, kByteWidth);
   return out;
 }
 
