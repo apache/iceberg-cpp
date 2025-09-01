@@ -19,33 +19,10 @@
 
 #pragma once
 
-#include "iceberg/file_writer.h"
-#include "iceberg/iceberg_bundle_export.h"
+#include <string_view>
 
-namespace iceberg::parquet {
+namespace iceberg {
 
-/// \brief A writer that writes ArrowArray to Parquet files.
-class ICEBERG_BUNDLE_EXPORT ParquetWriter : public Writer {
- public:
-  ParquetWriter() = default;
+constexpr std::string_view kParquetFieldIdKey = "PARQUET:field_id";
 
-  ~ParquetWriter() override;
-
-  Status Open(const WriterOptions& options) final;
-
-  Status Close() final;
-
-  Status Write(ArrowArray array) final;
-
-  std::optional<Metrics> metrics() final;
-
-  std::optional<int64_t> length() final;
-
-  std::vector<int64_t> split_offsets() final;
-
- private:
-  class Impl;
-  std::unique_ptr<Impl> impl_;
-};
-
-}  // namespace iceberg::parquet
+}  // namespace iceberg

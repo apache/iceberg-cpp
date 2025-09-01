@@ -26,6 +26,7 @@
 #include <parquet/arrow/schema.h>
 #include <parquet/schema.h>
 
+#include "iceberg/constants.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
 #include "iceberg/result.h"
@@ -37,8 +38,6 @@
 namespace iceberg::parquet {
 
 namespace {
-
-constexpr std::string_view kParquetFieldIdKey = "PARQUET:field_id";
 
 std::optional<int32_t> FieldIdFromMetadata(
     const std::shared_ptr<const ::arrow::KeyValueMetadata>& metadata) {

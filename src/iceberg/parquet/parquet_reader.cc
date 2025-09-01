@@ -125,9 +125,9 @@ class ParquetReader::Impl {
     arrow_reader_properties.set_arrow_extensions_enabled(true);
 
     // Open the Parquet file reader
-    ICEBERG_ASSIGN_OR_RAISE(auto input_stream, OpenInputStream(options));
+    ICEBERG_ASSIGN_OR_RAISE(input_stream_, OpenInputStream(options));
     auto file_reader =
-        ::parquet::ParquetFileReader::Open(std::move(input_stream), reader_properties);
+        ::parquet::ParquetFileReader::Open(input_stream_, reader_properties);
     ICEBERG_ARROW_RETURN_NOT_OK(::parquet::arrow::FileReader::Make(
         pool_, std::move(file_reader), arrow_reader_properties, &reader_));
 
@@ -169,6 +169,7 @@ class ParquetReader::Impl {
     }
 
     reader_.reset();
+    ICEBERG_ARROW_RETURN_NOT_OK(input_stream_->Close());
     return {};
   }
 
@@ -240,6 +241,8 @@ class ParquetReader::Impl {
   std::unique_ptr<::parquet::arrow::FileReader> reader_;
   // The context to keep track of the reading progress.
   std::unique_ptr<ReadContext> context_;
+  // The input stream to read Parquet file.
+  std::shared_ptr<::arrow::io::RandomAccessFile> input_stream_;
 };
 
 ParquetReader::~ParquetReader() = default;

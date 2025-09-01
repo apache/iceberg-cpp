@@ -319,4 +319,16 @@ std::shared_ptr<FixedType> fixed(int32_t length) {
   return std::make_shared<FixedType>(length);
 }
 
+std::shared_ptr<MapType> map(SchemaField key, SchemaField value) {
+  return std::make_shared<MapType>(key, value);
+}
+
+std::shared_ptr<ListType> list(SchemaField element) {
+  return std::make_shared<ListType>(std::move(element));
+}
+
+std::shared_ptr<StructType> struct_(std::vector<SchemaField> fields) {
+  return std::make_shared<StructType>(std::move(fields));
+}
+
 }  // namespace iceberg

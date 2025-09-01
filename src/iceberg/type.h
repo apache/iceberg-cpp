@@ -487,6 +487,22 @@ ICEBERG_EXPORT std::shared_ptr<DecimalType> decimal(int32_t precision, int32_t s
 /// \return A shared pointer to the FixedType instance.
 ICEBERG_EXPORT std::shared_ptr<FixedType> fixed(int32_t length);
 
+/// \brief Create a StructType with the given fields.
+/// \param fields The fields of the struct.
+/// \return A shared pointer to the StructType instance.
+ICEBERG_EXPORT std::shared_ptr<StructType> struct_(std::vector<SchemaField> fields);
+
+/// \brief Create a ListType with the given element field.
+/// \param element The element field of the list.
+/// \return A shared pointer to the ListType instance.
+ICEBERG_EXPORT std::shared_ptr<ListType> list(SchemaField element);
+
+/// \brief Create a MapType with the given key and value fields.
+/// \param key The key field of the map.
+/// \param value The value field of the map.
+/// \return A shared pointer to the MapType instance.
+ICEBERG_EXPORT std::shared_ptr<MapType> map(SchemaField key, SchemaField value);
+
 /// @}
 
 }  // namespace iceberg

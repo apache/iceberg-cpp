@@ -69,9 +69,9 @@ class ParquetWriter::Impl {
     std::shared_ptr<::arrow::KeyValueMetadata> metadata =
         ::arrow::key_value_metadata(options.properties);
 
-    ICEBERG_ASSIGN_OR_RAISE(auto output_stream, OpenOutputStream(options));
-    auto file_writer = ::parquet::ParquetFileWriter::Open(
-        std::move(output_stream), schema_node, writer_properties, metadata);
+    ICEBERG_ASSIGN_OR_RAISE(output_stream_, OpenOutputStream(options));
+    auto file_writer = ::parquet::ParquetFileWriter::Open(output_stream_, schema_node,
+                                                          writer_properties, metadata);
     ICEBERG_ARROW_RETURN_NOT_OK(::parquet::arrow::FileWriter::Make(
         pool_, std::move(file_writer), arrow_schema_, arrow_writer_properties, &writer_));
 
@@ -89,10 +89,13 @@ class ParquetWriter::Impl {
 
   // Close the writer and release resources
   Status Close() {
-    if (writer_ != nullptr) {
-      ICEBERG_ARROW_RETURN_NOT_OK(writer_->Close());
-      writer_.reset();
+    if (writer_ == nullptr) {
+      return {};  // Already closed
     }
+
+    ICEBERG_ARROW_RETURN_NOT_OK(writer_->Close());
+    writer_.reset();
+    ICEBERG_ARROW_RETURN_NOT_OK(output_stream_->Close());
     return {};
   }
 
@@ -105,6 +108,8 @@ class ParquetWriter::Impl {
   std::shared_ptr<::arrow::Schema> arrow_schema_;
   // Parquet file writer to write ArrowArray.
   std::unique_ptr<::parquet::arrow::FileWriter> writer_;
+  // The output stream to write Parquet file.
+  std::shared_ptr<::arrow::io::OutputStream> output_stream_;
 };
 
 ParquetWriter::~ParquetWriter() = default;
@@ -139,7 +144,7 @@ std::vector<int64_t> ParquetWriter::split_offsets() {
   return {};
 }
 
-void ParquetWriter::Register() {
+void RegisterWriter() {
   static WriterFactoryRegistry parquet_writer_register(
       FileFormatType::kParquet, []() -> Result<std::unique_ptr<Writer>> {
         return std::make_unique<ParquetWriter>();

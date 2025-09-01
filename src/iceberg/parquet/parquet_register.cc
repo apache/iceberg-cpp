@@ -21,8 +21,6 @@
 
 namespace iceberg::parquet {
 
-void RegisterWriter() {}
-
 void RegisterAll() {
   RegisterReader();
   RegisterWriter();

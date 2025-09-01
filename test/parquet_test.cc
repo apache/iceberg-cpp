@@ -17,38 +17,118 @@
  * under the License.
  */
 
+#include <optional>
+
 #include <arrow/array.h>
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
 #include <arrow/record_batch.h>
 #include <arrow/table.h>
+#include <arrow/type.h>
 #include <arrow/util/key_value_metadata.h>
+#include <iceberg/arrow_c_data_guard_internal.h>
+#include <iceberg/file_reader.h>
+#include <iceberg/file_writer.h>
+#include <iceberg/result.h>
+#include <iceberg/schema_field.h>
+#include <iceberg/schema_internal.h>
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/writer.h>
 #include <parquet/metadata.h>
 
+#include "iceberg/arrow/arrow_error_transform_internal.h"
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
-#include "iceberg/parquet/parquet_reader.h"
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/schema.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
+#include "iceberg/util/macros.h"
 #include "matchers.h"
-#include "temp_file_test_base.h"
 
 namespace iceberg::parquet {
 
-class ParquetReaderTest : public TempFileTestBase {
+namespace {
+
+Status WriteTable(std::shared_ptr<::arrow::Array> data,
+                  const WriterOptions& writer_options) {
+  ArrowArray arr;
+  ICEBERG_ARROW_RETURN_NOT_OK(::arrow::ExportArray(*data, &arr));
+
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto writer, WriterFactoryRegistry::Open(FileFormatType::kParquet, writer_options));
+  {
+    internal::ArrowArrayGuard guard(&arr);
+    ICEBERG_RETURN_UNEXPECTED(writer->Write(arr));
+  }
+  return writer->Close();
+}
+
+Status ReadTable(std::optional<std::shared_ptr<::arrow::Array>>* out,
+                 const ReaderOptions& reader_options) {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto reader, ReaderFactoryRegistry::Open(FileFormatType::kParquet, reader_options));
+  ICEBERG_ASSIGN_OR_RAISE(auto read_data, reader->Next());
+
+  if (!read_data.has_value()) {
+    *out = std::nullopt;
+    return {};
+  }
+  auto arrow_c_array = read_data.value();
+
+  ArrowSchema arrow_schema;
+  ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*reader_options.projection, &arrow_schema));
+  ICEBERG_ARROW_ASSIGN_OR_RETURN(*out,
+                                 ::arrow::ImportArray(&arrow_c_array, &arrow_schema));
+  return {};
+}
+
+void DoRoundtrip(std::shared_ptr<::arrow::Array> data, std::shared_ptr<Schema> schema,
+                 std::shared_ptr<::arrow::Array>* out) {
+  std::shared_ptr<FileIO> file_io = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
+  const std::string basePath = "base.parquet";
+
+  ASSERT_THAT(WriteTable(data, {.path = basePath, .schema = schema, .io = file_io}),
+              IsOk());
+
+  std::optional<std::shared_ptr<::arrow::Array>> out_array;
+  ASSERT_THAT(
+      ReadTable(&out_array, {.path = basePath, .io = file_io, .projection = schema}),
+      IsOk());
+
+  ASSERT_TRUE(out_array.has_value()) << "Reader.Next() returned no data";
+  *out = std::move(out_array.value());
+}
+
+}  // namespace
+
+class ParquetReaderTest : public ::testing::Test {
  protected:
   static void SetUpTestSuite() { parquet::RegisterAll(); }
 
   void SetUp() override {
-    TempFileTestBase::SetUp();
-    file_io_ = arrow::ArrowFileSystemFileIO::MakeLocalFileIO();
-    temp_parquet_file_ = CreateNewTempFilePathWithSuffix(".parquet");
+    file_io_ = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
+    temp_parquet_file_ = "parquet_reader_test.parquet";
   }
 
   void CreateSimpleParquetFile() {
+    auto schema = std::make_shared<Schema>(
+        std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
+                                 SchemaField::MakeOptional(2, "name", string())});
+
+    ArrowSchema arrow_c_schema;
+    ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
+    auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+
+    auto array =
+        ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
+                                           R"([[1, "Foo"],[2, "Bar"],[3, "Baz"]])")
+            .ValueOrDie();
+
+    ASSERT_TRUE(WriteTable(
+        array, {.path = temp_parquet_file_, .schema = schema, .io = file_io_}));
+  }
+
+  void CreateSplitParquetFile() {
     const std::string kParquetFieldIdKey = "PARQUET:field_id";
     auto arrow_schema = ::arrow::schema(
         {::arrow::field("id", ::arrow::int32(), /*nullable=*/false,
@@ -70,6 +150,7 @@ class ParquetReaderTest : public TempFileTestBase {
     ASSERT_TRUE(::parquet::arrow::WriteTable(*table, ::arrow::default_memory_pool(),
                                              outfile, /*chunk_size=*/2)
                     .ok());
+    ASSERT_TRUE(outfile->Close().ok());
   }
 
   void VerifyNextBatch(Reader& reader, std::string_view expected_json) {
@@ -162,7 +243,7 @@ TEST_F(ParquetReaderTest, ReadWithBatchSize) {
 }
 
 TEST_F(ParquetReaderTest, ReadSplit) {
-  CreateSimpleParquetFile();
+  CreateSplitParquetFile();
 
   // Read split offsets
   auto io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
@@ -202,6 +283,87 @@ TEST_F(ParquetReaderTest, ReadSplit) {
     }
     ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
   }
+}
+
+class ParquetReadWrite : public ::testing::Test {
+ protected:
+  static void SetUpTestSuite() { parquet::RegisterAll(); }
+};
+
+TEST_F(ParquetReadWrite, EmptyStruct) {
+  auto schema =
+      std::make_shared<Schema>(std::vector<SchemaField>{SchemaField::MakeRequired(
+          1, "empty_struct", std::make_shared<StructType>(std::vector<SchemaField>{}))});
+
+  ArrowSchema arrow_c_schema;
+  ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
+  auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+
+  auto array = ::arrow::json::ArrayFromJSONString(
+                   ::arrow::struct_(arrow_schema->fields()), R"([null, {}])")
+                   .ValueOrDie();
+
+  std::shared_ptr<FileIO> file_io = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
+  const std::string basePath = "base.parquet";
+
+  ASSERT_THAT(WriteTable(array, {.path = basePath, .schema = schema, .io = file_io}),
+              IsError(ErrorKind::kUnknownError));
+}
+
+TEST_F(ParquetReadWrite, SimpleStructRoundTrip) {
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(1, "a",
+                                struct_({
+                                    SchemaField::MakeOptional(2, "a1", int64()),
+                                    SchemaField::MakeOptional(3, "a2", string()),
+                                })),
+  });
+
+  ArrowSchema arrow_c_schema;
+  ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
+  auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+
+  auto array =
+      ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
+                                         R"([[{"a1": 1, "a2": "abc"}],
+                                                  [{"a1": 0}],
+                                                  [{"a2": "edf"}],
+                                                  [{}]])")
+          .ValueOrDie();
+
+  std::shared_ptr<::arrow::Array> out;
+  DoRoundtrip(array, schema, &out);
+
+  ASSERT_TRUE(out->Equals(*array));
+}
+
+TEST_F(ParquetReadWrite, SimpleTypeRoundTrip) {
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeOptional(1, "a", boolean()),
+      SchemaField::MakeOptional(2, "b", int32()),
+      SchemaField::MakeOptional(3, "c", int64()),
+      SchemaField::MakeOptional(4, "d", float32()),
+      SchemaField::MakeOptional(5, "e", float64()),
+      SchemaField::MakeOptional(6, "f", string()),
+      SchemaField::MakeOptional(7, "g", time()),
+      SchemaField::MakeOptional(8, "h", timestamp()),
+  });
+
+  ArrowSchema arrow_c_schema;
+  ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
+  auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
+
+  auto array = ::arrow::json::ArrayFromJSONString(
+                   ::arrow::struct_(arrow_schema->fields()),
+                   R"([[true, 1, 2, 1.1, 1.2, "abc", 44614000, 1756696503000000],
+                            [false, 0, 0, 0, 0, "", 0, 0],
+                            [null, null, null, null, null, null, null, null]])")
+                   .ValueOrDie();
+
+  std::shared_ptr<::arrow::Array> out;
+  DoRoundtrip(array, schema, &out);
+
+  ASSERT_TRUE(out->Equals(*array));
 }
 
 }  // namespace iceberg::parquet
