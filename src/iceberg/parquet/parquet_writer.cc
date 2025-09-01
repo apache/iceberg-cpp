@@ -90,13 +90,24 @@ class ParquetWriter::Impl {
       return {};  // Already closed
     }
 
+    auto& metadata = writer_->metadata();
+    split_offsets_.reserve(metadata->num_row_groups());
+    for (int i = 0; i < metadata->num_row_groups(); ++i) {
+      split_offsets_.push_back(metadata->RowGroup(i)->file_offset());
+    }
     ICEBERG_ARROW_RETURN_NOT_OK(writer_->Close());
     writer_.reset();
+
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(total_bytes_, output_stream_->Tell());
     ICEBERG_ARROW_RETURN_NOT_OK(output_stream_->Close());
     return {};
   }
 
   bool Closed() const { return writer_ == nullptr; }
+
+  int64_t length() const { return total_bytes_; }
+
+  std::vector<int64_t> split_offsets() const { return split_offsets_; }
 
  private:
   // TODO(gangwu): make memory pool configurable
@@ -107,6 +118,10 @@ class ParquetWriter::Impl {
   std::shared_ptr<::arrow::io::OutputStream> output_stream_;
   // Parquet file writer to write ArrowArray.
   std::unique_ptr<::parquet::arrow::FileWriter> writer_;
+  // Total length of the written Parquet file.
+  int64_t total_bytes_;
+  // Row group start offsets in the Parquet file.
+  std::vector<int64_t> split_offsets_;
 };
 
 ParquetWriter::~ParquetWriter() = default;
@@ -131,14 +146,14 @@ std::optional<int64_t> ParquetWriter::length() {
   if (!impl_->Closed()) {
     return std::nullopt;
   }
-  return {};
+  return impl_->length();
 }
 
 std::vector<int64_t> ParquetWriter::split_offsets() {
   if (!impl_->Closed()) {
     return {};
   }
-  return {};
+  return impl_->split_offsets();
 }
 
 void RegisterWriter() {
