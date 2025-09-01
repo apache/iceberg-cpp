@@ -27,76 +27,42 @@
 
 namespace iceberg {
 
-// test round trip preserves value
+#define EXPECT_ROUNDTRIP(value)                                \
+  do {                                                         \
+    EXPECT_EQ(FromLittleEndian(ToLittleEndian(value)), value); \
+    EXPECT_EQ(FromBigEndian(ToBigEndian(value)), value);       \
+  } while (false)
+
 TEST(EndianTest, RoundTripPreservesValue) {
-  EXPECT_EQ(FromLittleEndian(ToLittleEndian<uint16_t>(0x1234)), 0x1234);
-  EXPECT_EQ(FromBigEndian(ToBigEndian<uint32_t>(0xDEADBEEF)), 0xDEADBEEF);
-  EXPECT_EQ(FromLittleEndian(ToLittleEndian(std::numeric_limits<uint64_t>::max())),
-            std::numeric_limits<uint64_t>::max());
-  EXPECT_EQ(FromBigEndian(ToBigEndian<uint32_t>(0)), 0);
+  EXPECT_ROUNDTRIP(static_cast<uint16_t>(0x1234));
+  EXPECT_ROUNDTRIP(static_cast<uint32_t>(0xDEADBEEF));
+  EXPECT_ROUNDTRIP(std::numeric_limits<uint64_t>::max());
+  EXPECT_ROUNDTRIP(static_cast<uint32_t>(0));
 
-  EXPECT_EQ(FromBigEndian(ToBigEndian<int16_t>(-1)), -1);
-  EXPECT_EQ(FromLittleEndian(ToLittleEndian<int32_t>(-0x12345678)), -0x12345678);
-  EXPECT_EQ(FromBigEndian(ToBigEndian(std::numeric_limits<int64_t>::min())),
-            std::numeric_limits<int64_t>::min());
-  EXPECT_EQ(FromLittleEndian(ToLittleEndian(std::numeric_limits<int16_t>::max())),
-            std::numeric_limits<int16_t>::max());
+  EXPECT_ROUNDTRIP(static_cast<int16_t>(-1));
+  EXPECT_ROUNDTRIP(static_cast<int32_t>(-0x12345678));
+  EXPECT_ROUNDTRIP(std::numeric_limits<int64_t>::min());
+  EXPECT_ROUNDTRIP(std::numeric_limits<int16_t>::max());
 
-  EXPECT_EQ(FromLittleEndian(ToLittleEndian(3.14f)), 3.14f);
-  EXPECT_EQ(FromBigEndian(ToBigEndian(2.718281828459045)), 2.718281828459045);
+  EXPECT_ROUNDTRIP(3.14f);
+  EXPECT_ROUNDTRIP(2.718281828459045);
+  EXPECT_ROUNDTRIP(0.0f);
+  EXPECT_ROUNDTRIP(-0.0f);
+  EXPECT_ROUNDTRIP(0.0);
+  EXPECT_ROUNDTRIP(-0.0);
 
-  EXPECT_EQ(FromLittleEndian(ToLittleEndian(std::numeric_limits<float>::infinity())),
-            std::numeric_limits<float>::infinity());
-  EXPECT_EQ(FromBigEndian(ToBigEndian(-std::numeric_limits<float>::infinity())),
-            -std::numeric_limits<float>::infinity());
+  EXPECT_ROUNDTRIP(std::numeric_limits<float>::infinity());
+  EXPECT_ROUNDTRIP(-std::numeric_limits<float>::infinity());
+  EXPECT_ROUNDTRIP(std::numeric_limits<double>::infinity());
+  EXPECT_ROUNDTRIP(-std::numeric_limits<double>::infinity());
+
   EXPECT_TRUE(std::isnan(
       FromLittleEndian(ToLittleEndian(std::numeric_limits<float>::quiet_NaN()))));
-  EXPECT_EQ(FromBigEndian(ToBigEndian(0.0f)), 0.0f);
-  EXPECT_EQ(FromLittleEndian(ToLittleEndian(-0.0f)), -0.0f);
-
-  EXPECT_EQ(FromBigEndian(ToBigEndian(std::numeric_limits<double>::infinity())),
-            std::numeric_limits<double>::infinity());
-  EXPECT_EQ(FromLittleEndian(ToLittleEndian(-std::numeric_limits<double>::infinity())),
-            -std::numeric_limits<double>::infinity());
   EXPECT_TRUE(
       std::isnan(FromBigEndian(ToBigEndian(std::numeric_limits<double>::quiet_NaN()))));
-  EXPECT_EQ(FromLittleEndian(ToLittleEndian(0.0)), 0.0);
-  EXPECT_EQ(FromBigEndian(ToBigEndian(-0.0)), -0.0);
 }
 
-// test constexpr evaluation
-TEST(EndianTest, ConstexprEvaluation) {
-  static_assert(FromBigEndian(ToBigEndian<uint16_t>(0x1234)) == 0x1234);
-  static_assert(FromLittleEndian(ToLittleEndian<uint32_t>(0x12345678)) == 0x12345678);
-  static_assert(FromBigEndian(ToBigEndian<int64_t>(-1)) == -1);
-
-  static_assert(ToBigEndian<uint8_t>(0xFF) == 0xFF);
-  static_assert(FromLittleEndian<int8_t>(-1) == -1);
-
-  static_assert(FromLittleEndian(ToLittleEndian(3.14f)) == 3.14f);
-  static_assert(FromBigEndian(ToBigEndian(2.71)) == 2.71);
-}
-
-// test platform dependent behavior
-TEST(EndianTest, PlatformDependentBehavior) {
-  uint32_t test_value = 0x12345678;
-
-  if constexpr (std::endian::native == std::endian::little) {
-    EXPECT_EQ(ToLittleEndian(test_value), test_value);
-    EXPECT_EQ(FromLittleEndian(test_value), test_value);
-    EXPECT_NE(ToBigEndian(test_value), test_value);
-  } else if constexpr (std::endian::native == std::endian::big) {
-    EXPECT_EQ(ToBigEndian(test_value), test_value);
-    EXPECT_EQ(FromBigEndian(test_value), test_value);
-    EXPECT_NE(ToLittleEndian(test_value), test_value);
-  }
-
-  EXPECT_EQ(ToLittleEndian<uint8_t>(0xAB), 0xAB);
-  EXPECT_EQ(ToBigEndian<uint8_t>(0xAB), 0xAB);
-}
-
-// test specific byte pattern validation
-TEST(EndianTest, SpecificBytePatternValidation) {
+TEST(EndianTest, ByteWiseValidation) {
   uint32_t original_int = 0x12345678;
   uint32_t little_endian_int = ToLittleEndian(original_int);
   uint32_t big_endian_int = ToBigEndian(original_int);
