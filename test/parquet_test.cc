@@ -48,14 +48,18 @@ namespace iceberg::parquet {
 
 namespace {
 
+Status WriteTableInner(Writer& writer, std::shared_ptr<::arrow::Array> data) {
+  ArrowArray arr;
+  ICEBERG_ARROW_RETURN_NOT_OK(::arrow::ExportArray(*data, &arr));
+  ICEBERG_RETURN_UNEXPECTED(writer.Write(arr));
+  return writer.Close();
+}
+
 Status WriteTable(std::shared_ptr<::arrow::Array> data,
                   const WriterOptions& writer_options) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto writer, WriterFactoryRegistry::Open(FileFormatType::kParquet, writer_options));
-  ArrowArray arr;
-  ICEBERG_ARROW_RETURN_NOT_OK(::arrow::ExportArray(*data, &arr));
-  ICEBERG_RETURN_UNEXPECTED(writer->Write(arr));
-  return writer->Close();
+  return WriteTableInner(*writer, data);
 }
 
 Status ReadTable(std::optional<std::shared_ptr<::arrow::Array>>* out,
@@ -82,13 +86,19 @@ void DoRoundtrip(std::shared_ptr<::arrow::Array> data, std::shared_ptr<Schema> s
   std::shared_ptr<FileIO> file_io = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
   const std::string basePath = "base.parquet";
 
-  ASSERT_THAT(WriteTable(data, {.path = basePath, .schema = schema, .io = file_io}),
-              IsOk());
+  auto writer_data = WriterFactoryRegistry::Open(
+      FileFormatType::kParquet, {.path = basePath, .schema = schema, .io = file_io});
+  ASSERT_THAT(writer_data, IsOk())
+      << "Failed to create writer: " << writer_data.error().message;
+  auto writer = std::move(writer_data.value());
+  ASSERT_THAT(WriteTableInner(*writer, data), IsOk());
 
   std::optional<std::shared_ptr<::arrow::Array>> out_array;
-  ASSERT_THAT(
-      ReadTable(&out_array, {.path = basePath, .io = file_io, .projection = schema}),
-      IsOk());
+  ASSERT_THAT(ReadTable(&out_array, {.path = basePath,
+                                     .length = writer->length(),
+                                     .io = file_io,
+                                     .projection = schema}),
+              IsOk());
 
   ASSERT_TRUE(out_array.has_value()) << "Reader.Next() returned no data";
   *out = std::move(out_array.value());

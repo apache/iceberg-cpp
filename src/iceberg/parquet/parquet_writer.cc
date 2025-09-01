@@ -90,12 +90,12 @@ class ParquetWriter::Impl {
       return {};  // Already closed
     }
 
+    ICEBERG_ARROW_RETURN_NOT_OK(writer_->Close());
     auto& metadata = writer_->metadata();
     split_offsets_.reserve(metadata->num_row_groups());
     for (int i = 0; i < metadata->num_row_groups(); ++i) {
       split_offsets_.push_back(metadata->RowGroup(i)->file_offset());
     }
-    ICEBERG_ARROW_RETURN_NOT_OK(writer_->Close());
     writer_.reset();
 
     ICEBERG_ARROW_ASSIGN_OR_RETURN(total_bytes_, output_stream_->Tell());
