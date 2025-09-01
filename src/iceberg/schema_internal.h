@@ -24,17 +24,11 @@
 
 #include <nanoarrow/nanoarrow.h>
 
-#include "iceberg/constants.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
-
-// Apache Arrow C++ uses "PARQUET:field_id" to store field IDs for Parquet.
-// Here we follow a similar convention for Iceberg but we might also add
-// "PARQUET:field_id" in the future once we implement a Parquet writer.
-constexpr std::string_view kFieldIdKey = kParquetFieldIdKey;
 
 /// \brief Convert an Iceberg schema to an Arrow schema.
 ///

@@ -28,6 +28,7 @@
 #include <arrow/util/key_value_metadata.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/constants.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "matchers.h"
@@ -64,8 +65,8 @@ TEST_P(ToArrowSchemaTest, PrimitiveType) {
   ASSERT_TRUE(field->type()->Equals(param.arrow_type));
 
   auto metadata = field->metadata();
-  ASSERT_TRUE(metadata->Contains(kFieldIdKey));
-  ASSERT_EQ(metadata->Get(kFieldIdKey), std::to_string(kFieldId));
+  ASSERT_TRUE(metadata->Contains(kParquetFieldIdKey));
+  ASSERT_EQ(metadata->Get(kParquetFieldIdKey), std::to_string(kFieldId));
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -112,8 +113,8 @@ void CheckArrowField(const ::arrow::Field& field, ::arrow::Type::type type_id,
 
   auto metadata = field.metadata();
   ASSERT_TRUE(metadata != nullptr);
-  ASSERT_TRUE(metadata->Contains(kFieldIdKey));
-  ASSERT_EQ(metadata->Get(kFieldIdKey), std::to_string(field_id));
+  ASSERT_TRUE(metadata->Contains(kParquetFieldIdKey));
+  ASSERT_EQ(metadata->Get(kParquetFieldIdKey), std::to_string(field_id));
 }
 
 }  // namespace
@@ -241,7 +242,7 @@ TEST_P(FromArrowSchemaTest, PrimitiveType) {
 
   auto metadata =
       ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
-          {std::string(kFieldIdKey), std::to_string(kFieldId)}});
+          {std::string(kParquetFieldIdKey), std::to_string(kFieldId)}});
   auto arrow_schema = ::arrow::schema({::arrow::field(
       std::string(kFieldName), param.arrow_type, param.optional, std::move(metadata))});
   ArrowSchema exported_schema;
@@ -309,16 +310,16 @@ TEST(FromArrowSchemaTest, StructType) {
   auto int_field = ::arrow::field(
       std::string(kIntFieldName), ::arrow::int32(), /*nullable=*/false,
       ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
-          {std::string(kFieldIdKey), std::to_string(kIntFieldId)}}));
+          {std::string(kParquetFieldIdKey), std::to_string(kIntFieldId)}}));
   auto str_field = ::arrow::field(
       std::string(kStrFieldName), ::arrow::utf8(), /*nullable=*/true,
       ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
-          {std::string(kFieldIdKey), std::to_string(kStrFieldId)}}));
+          {std::string(kParquetFieldIdKey), std::to_string(kStrFieldId)}}));
   auto struct_type = ::arrow::struct_({int_field, str_field});
   auto struct_field = ::arrow::field(
       std::string(kStructFieldName), struct_type, /*nullable=*/false,
       ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
-          {std::string(kFieldIdKey), std::to_string(kStructFieldId)}}));
+          {std::string(kParquetFieldIdKey), std::to_string(kStructFieldId)}}));
   auto arrow_schema = ::arrow::schema({struct_field});
   ArrowSchema exported_schema;
   ASSERT_TRUE(::arrow::ExportSchema(*arrow_schema, &exported_schema).ok());
@@ -363,12 +364,12 @@ TEST(FromArrowSchemaTest, ListType) {
   auto element_field = ::arrow::field(
       std::string(kElemFieldName), ::arrow::int64(), /*nullable=*/true,
       ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
-          {std::string(kFieldIdKey), std::to_string(kElemFieldId)}}));
+          {std::string(kParquetFieldIdKey), std::to_string(kElemFieldId)}}));
   auto list_type = ::arrow::list(element_field);
   auto list_field = ::arrow::field(
       std::string(kListFieldName), list_type, /*nullable=*/false,
       ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
-          {std::string(kFieldIdKey), std::to_string(kListFieldId)}}));
+          {std::string(kParquetFieldIdKey), std::to_string(kListFieldId)}}));
   auto arrow_schema = ::arrow::schema({list_field});
 
   ArrowSchema exported_schema;
@@ -410,16 +411,16 @@ TEST(FromArrowSchemaTest, MapType) {
   auto key_field = ::arrow::field(
       std::string(kKeyFieldName), ::arrow::utf8(), /*nullable=*/false,
       ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
-          {std::string(kFieldIdKey), std::to_string(kKeyFieldId)}}));
+          {std::string(kParquetFieldIdKey), std::to_string(kKeyFieldId)}}));
   auto value_field = ::arrow::field(
       std::string(kValueFieldName), ::arrow::int32(), /*nullable=*/true,
       ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
-          {std::string(kFieldIdKey), std::to_string(kValueFieldId)}}));
+          {std::string(kParquetFieldIdKey), std::to_string(kValueFieldId)}}));
   auto map_type = std::make_shared<::arrow::MapType>(key_field, value_field);
   auto map_field = ::arrow::field(
       std::string(kMapFieldName), map_type, /*nullable=*/true,
       ::arrow::key_value_metadata(std::unordered_map<std::string, std::string>{
-          {std::string(kFieldIdKey), std::to_string(kFieldId)}}));
+          {std::string(kParquetFieldIdKey), std::to_string(kFieldId)}}));
   auto arrow_schema = ::arrow::schema({map_field});
 
   ArrowSchema exported_schema;

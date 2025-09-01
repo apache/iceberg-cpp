@@ -24,6 +24,7 @@
 #include <optional>
 #include <string>
 
+#include "iceberg/constants.h"
 #include "iceberg/schema.h"
 #include "iceberg/type.h"
 #include "iceberg/util/macros.h"
@@ -45,7 +46,7 @@ ArrowErrorCode ToArrowSchema(const Type& type, bool optional, std::string_view n
   NANOARROW_RETURN_NOT_OK(ArrowMetadataBuilderInit(&metadata_buffer, nullptr));
   if (field_id.has_value()) {
     NANOARROW_RETURN_NOT_OK(ArrowMetadataBuilderAppend(
-        &metadata_buffer, ArrowCharView(std::string(kFieldIdKey).c_str()),
+        &metadata_buffer, ArrowCharView(std::string(kParquetFieldIdKey).c_str()),
         ArrowCharView(std::to_string(field_id.value()).c_str())));
   }
 
@@ -185,8 +186,8 @@ int32_t GetFieldId(const ArrowSchema& schema) {
     return kUnknownFieldId;
   }
 
-  ArrowStringView field_id_key{.data = kFieldIdKey.data(),
-                               .size_bytes = kFieldIdKey.size()};
+  ArrowStringView field_id_key{.data = kParquetFieldIdKey.data(),
+                               .size_bytes = kParquetFieldIdKey.size()};
   ArrowStringView field_id_value;
   if (ArrowMetadataGetValue(schema.metadata, field_id_key, &field_id_value) !=
       NANOARROW_OK) {

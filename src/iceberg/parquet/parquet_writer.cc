@@ -66,12 +66,9 @@ class ParquetWriter::Impl {
     auto schema_node = std::static_pointer_cast<::parquet::schema::GroupNode>(
         schema_descriptor->schema_root());
 
-    std::shared_ptr<::arrow::KeyValueMetadata> metadata =
-        ::arrow::key_value_metadata(options.properties);
-
     ICEBERG_ASSIGN_OR_RAISE(output_stream_, OpenOutputStream(options));
     auto file_writer = ::parquet::ParquetFileWriter::Open(output_stream_, schema_node,
-                                                          writer_properties, metadata);
+                                                          writer_properties);
     ICEBERG_ARROW_RETURN_NOT_OK(::parquet::arrow::FileWriter::Make(
         pool_, std::move(file_writer), arrow_schema_, arrow_writer_properties, &writer_));
 
@@ -106,10 +103,10 @@ class ParquetWriter::Impl {
   ::arrow::MemoryPool* pool_ = ::arrow::default_memory_pool();
   // Schema to write from the Parquet file.
   std::shared_ptr<::arrow::Schema> arrow_schema_;
-  // Parquet file writer to write ArrowArray.
-  std::unique_ptr<::parquet::arrow::FileWriter> writer_;
   // The output stream to write Parquet file.
   std::shared_ptr<::arrow::io::OutputStream> output_stream_;
+  // Parquet file writer to write ArrowArray.
+  std::unique_ptr<::parquet::arrow::FileWriter> writer_;
 };
 
 ParquetWriter::~ParquetWriter() = default;

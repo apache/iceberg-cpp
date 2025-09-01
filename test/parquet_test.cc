@@ -26,20 +26,19 @@
 #include <arrow/table.h>
 #include <arrow/type.h>
 #include <arrow/util/key_value_metadata.h>
-#include <iceberg/arrow_c_data_guard_internal.h>
-#include <iceberg/file_reader.h>
-#include <iceberg/file_writer.h>
-#include <iceberg/result.h>
-#include <iceberg/schema_field.h>
-#include <iceberg/schema_internal.h>
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/writer.h>
 #include <parquet/metadata.h>
 
 #include "iceberg/arrow/arrow_error_transform_internal.h"
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
+#include "iceberg/file_reader.h"
+#include "iceberg/file_writer.h"
 #include "iceberg/parquet/parquet_register.h"
+#include "iceberg/result.h"
 #include "iceberg/schema.h"
+#include "iceberg/schema_field.h"
+#include "iceberg/schema_internal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
@@ -51,15 +50,11 @@ namespace {
 
 Status WriteTable(std::shared_ptr<::arrow::Array> data,
                   const WriterOptions& writer_options) {
-  ArrowArray arr;
-  ICEBERG_ARROW_RETURN_NOT_OK(::arrow::ExportArray(*data, &arr));
-
   ICEBERG_ASSIGN_OR_RAISE(
       auto writer, WriterFactoryRegistry::Open(FileFormatType::kParquet, writer_options));
-  {
-    internal::ArrowArrayGuard guard(&arr);
-    ICEBERG_RETURN_UNEXPECTED(writer->Write(arr));
-  }
+  ArrowArray arr;
+  ICEBERG_ARROW_RETURN_NOT_OK(::arrow::ExportArray(*data, &arr));
+  ICEBERG_RETURN_UNEXPECTED(writer->Write(arr));
   return writer->Close();
 }
 
@@ -323,13 +318,10 @@ TEST_F(ParquetReadWrite, SimpleStructRoundTrip) {
   ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
   auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
 
-  auto array =
-      ::arrow::json::ArrayFromJSONString(::arrow::struct_(arrow_schema->fields()),
-                                         R"([[{"a1": 1, "a2": "abc"}],
-                                                  [{"a1": 0}],
-                                                  [{"a2": "edf"}],
-                                                  [{}]])")
-          .ValueOrDie();
+  auto array = ::arrow::json::ArrayFromJSONString(
+                   ::arrow::struct_(arrow_schema->fields()),
+                   R"([[{"a1": 1, "a2": "abc"}], [{"a1": 0}], [{"a2": "edf"}], [{}]])")
+                   .ValueOrDie();
 
   std::shared_ptr<::arrow::Array> out;
   DoRoundtrip(array, schema, &out);
@@ -353,12 +345,11 @@ TEST_F(ParquetReadWrite, SimpleTypeRoundTrip) {
   ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
   auto arrow_schema = ::arrow::ImportType(&arrow_c_schema).ValueOrDie();
 
-  auto array = ::arrow::json::ArrayFromJSONString(
-                   ::arrow::struct_(arrow_schema->fields()),
-                   R"([[true, 1, 2, 1.1, 1.2, "abc", 44614000, 1756696503000000],
-                            [false, 0, 0, 0, 0, "", 0, 0],
-                            [null, null, null, null, null, null, null, null]])")
-                   .ValueOrDie();
+  auto array =
+      ::arrow::json::ArrayFromJSONString(
+          ::arrow::struct_(arrow_schema->fields()),
+          R"([[true, 1, 2, 1.1, 1.2, "abc", 44614000, 1756696503000000], [false, 0, 0, 0, 0, "", 0, 0], [null, null, null, null, null, null, null, null]])")
+          .ValueOrDie();
 
   std::shared_ptr<::arrow::Array> out;
   DoRoundtrip(array, schema, &out);

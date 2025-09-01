@@ -237,12 +237,12 @@ class ParquetReader::Impl {
   std::shared_ptr<::iceberg::Schema> read_schema_;
   // The projection result to apply to the read schema.
   SchemaProjection projection_;
+  // The input stream to read Parquet file.
+  std::shared_ptr<::arrow::io::RandomAccessFile> input_stream_;
   // Parquet file reader to create RecordBatchReader.
   std::unique_ptr<::parquet::arrow::FileReader> reader_;
   // The context to keep track of the reading progress.
   std::unique_ptr<ReadContext> context_;
-  // The input stream to read Parquet file.
-  std::shared_ptr<::arrow::io::RandomAccessFile> input_stream_;
 };
 
 ParquetReader::~ParquetReader() = default;
