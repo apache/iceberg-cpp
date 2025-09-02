@@ -62,27 +62,27 @@ Status WriteTable(std::shared_ptr<::arrow::Array> data,
   return WriteTableInner(*writer, data);
 }
 
-Status ReadTable(std::optional<std::shared_ptr<::arrow::Array>>* out,
+Status ReadTable(std::shared_ptr<::arrow::Array>& out,
                  const ReaderOptions& reader_options) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto reader, ReaderFactoryRegistry::Open(FileFormatType::kParquet, reader_options));
   ICEBERG_ASSIGN_OR_RAISE(auto read_data, reader->Next());
 
   if (!read_data.has_value()) {
-    *out = std::nullopt;
+    out = nullptr;
     return {};
   }
   auto arrow_c_array = read_data.value();
 
   ArrowSchema arrow_schema;
   ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*reader_options.projection, &arrow_schema));
-  ICEBERG_ARROW_ASSIGN_OR_RETURN(*out,
+  ICEBERG_ARROW_ASSIGN_OR_RETURN(out,
                                  ::arrow::ImportArray(&arrow_c_array, &arrow_schema));
   return {};
 }
 
 void DoRoundtrip(std::shared_ptr<::arrow::Array> data, std::shared_ptr<Schema> schema,
-                 std::shared_ptr<::arrow::Array>* out) {
+                 std::shared_ptr<::arrow::Array>& out) {
   std::shared_ptr<FileIO> file_io = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
   const std::string basePath = "base.parquet";
 
@@ -93,15 +93,13 @@ void DoRoundtrip(std::shared_ptr<::arrow::Array> data, std::shared_ptr<Schema> s
   auto writer = std::move(writer_data.value());
   ASSERT_THAT(WriteTableInner(*writer, data), IsOk());
 
-  std::optional<std::shared_ptr<::arrow::Array>> out_array;
-  ASSERT_THAT(ReadTable(&out_array, {.path = basePath,
-                                     .length = writer->length(),
-                                     .io = file_io,
-                                     .projection = schema}),
+  ASSERT_THAT(ReadTable(out, {.path = basePath,
+                              .length = writer->length(),
+                              .io = file_io,
+                              .projection = schema}),
               IsOk());
 
-  ASSERT_TRUE(out_array.has_value()) << "Reader.Next() returned no data";
-  *out = std::move(out_array.value());
+  ASSERT_TRUE(out != nullptr) << "Reader.Next() returned no data";
 }
 
 }  // namespace
@@ -334,7 +332,7 @@ TEST_F(ParquetReadWrite, SimpleStructRoundTrip) {
                    .ValueOrDie();
 
   std::shared_ptr<::arrow::Array> out;
-  DoRoundtrip(array, schema, &out);
+  DoRoundtrip(array, schema, out);
 
   ASSERT_TRUE(out->Equals(*array));
 }
@@ -362,7 +360,7 @@ TEST_F(ParquetReadWrite, SimpleTypeRoundTrip) {
           .ValueOrDie();
 
   std::shared_ptr<::arrow::Array> out;
-  DoRoundtrip(array, schema, &out);
+  DoRoundtrip(array, schema, out);
 
   ASSERT_TRUE(out->Equals(*array));
 }
