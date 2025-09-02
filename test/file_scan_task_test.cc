@@ -124,14 +124,13 @@ TEST_F(FileScanTaskTest, ReadFullSchema) {
   data_file->file_size_in_bytes =
       io_internal.fs()->GetFileInfo(temp_parquet_file_).ValueOrDie().size();
 
-  TableScanContext context;
-  context.projected_schema = std::make_shared<Schema>(
+  auto projected_schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
                                SchemaField::MakeOptional(2, "name", string())});
 
   FileScanTask task(data_file);
 
-  auto reader_result = task.ToArrowArrayReader(context, file_io_);
+  auto reader_result = task.ToArrowArrayReader(projected_schema, nullptr, file_io_);
   ASSERT_THAT(reader_result, IsOk());
   auto reader = std::move(reader_result.value());
 
@@ -149,14 +148,13 @@ TEST_F(FileScanTaskTest, ReadProjectedAndReorderedSchema) {
   data_file->file_size_in_bytes =
       io_internal.fs()->GetFileInfo(temp_parquet_file_).ValueOrDie().size();
 
-  TableScanContext context;
-  context.projected_schema = std::make_shared<Schema>(
+  auto projected_schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeOptional(2, "name", string()),
                                SchemaField::MakeOptional(3, "score", float64())});
 
   FileScanTask task(data_file);
 
-  auto reader_result = task.ToArrowArrayReader(context, file_io_);
+  auto reader_result = task.ToArrowArrayReader(projected_schema, nullptr, file_io_);
   ASSERT_THAT(reader_result, IsOk());
   auto reader = std::move(reader_result.value());
 
