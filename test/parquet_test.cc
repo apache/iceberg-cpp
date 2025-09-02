@@ -310,7 +310,7 @@ TEST_F(ParquetReadWrite, EmptyStruct) {
   const std::string basePath = "base.parquet";
 
   ASSERT_THAT(WriteTable(array, {.path = basePath, .schema = schema, .io = file_io}),
-              IsError(ErrorKind::kUnknownError));
+              IsError(ErrorKind::kNotImplemented));
 }
 
 TEST_F(ParquetReadWrite, SimpleStructRoundTrip) {

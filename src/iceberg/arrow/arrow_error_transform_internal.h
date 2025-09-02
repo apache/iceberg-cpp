@@ -30,6 +30,8 @@ inline ErrorKind ToErrorKind(const ::arrow::Status& status) {
   switch (status.code()) {
     case ::arrow::StatusCode::IOError:
       return ErrorKind::kIOError;
+    case ::arrow::StatusCode::NotImplemented:
+      return ErrorKind::kNotImplemented;
     default:
       return ErrorKind::kUnknownError;
   }
