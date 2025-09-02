@@ -67,10 +67,11 @@ class ParquetWriter::Impl {
         schema_descriptor->schema_root());
 
     ICEBERG_ASSIGN_OR_RAISE(output_stream_, OpenOutputStream(options));
-    auto file_writer = ::parquet::ParquetFileWriter::Open(output_stream_, schema_node,
-                                                          writer_properties);
-    ICEBERG_ARROW_RETURN_NOT_OK(::parquet::arrow::FileWriter::Make(
-        pool_, std::move(file_writer), arrow_schema_, arrow_writer_properties, &writer_));
+    auto file_writer = ::parquet::ParquetFileWriter::Open(
+        output_stream_, std::move(schema_node), std::move(writer_properties));
+    ICEBERG_ARROW_RETURN_NOT_OK(
+        ::parquet::arrow::FileWriter::Make(pool_, std::move(file_writer), arrow_schema_,
+                                           std::move(arrow_writer_properties), &writer_));
 
     return {};
   }
