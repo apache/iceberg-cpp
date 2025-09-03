@@ -19,18 +19,63 @@
 
 #include <iostream>
 
+#include "iceberg/arrow/arrow_file_io.h"
 #include "iceberg/avro/avro_register.h"
-#include "iceberg/file_reader.h"
+#include "iceberg/catalog/in_memory_catalog.h"
 #include "iceberg/parquet/parquet_register.h"
+#include "iceberg/table.h"
+#include "iceberg/table_scan.h"
 
-int main() {
+int main(int argc, char** argv) {
+  if (argc != 4) {
+    std::cerr << "Usage: " << argv[0]
+              << " <warehouse_location> <table_name> <table_location>" << std::endl;
+    return 0;
+  }
+
+  const std::string warehouse_location = argv[1];
+  const std::string table_name = argv[2];
+  const std::string table_location = argv[3];
+  const std::unordered_map<std::string, std::string> properties;
+
   iceberg::avro::RegisterAll();
   iceberg::parquet::RegisterAll();
-  auto open_result = iceberg::ReaderFactoryRegistry::Open(
-      iceberg::FileFormatType::kAvro, {.path = "non-existing-file.avro"});
-  if (!open_result.has_value()) {
-    std::cerr << "Failed to open avro file" << std::endl;
+
+  auto catalog = iceberg::InMemoryCatalog::Make("test", iceberg::arrow::MakeLocalFileIO(),
+                                                warehouse_location, properties);
+
+  auto register_result = catalog->RegisterTable({.name = table_name}, table_location);
+  if (!register_result.has_value()) {
+    std::cerr << "Failed to register table: " << register_result.error().message
+              << std::endl;
     return 1;
   }
+
+  auto load_result = catalog->LoadTable({.name = table_name});
+  if (!load_result.has_value()) {
+    std::cerr << "Failed to load table: " << load_result.error().message << std::endl;
+    return 1;
+  }
+
+  auto table = std::move(load_result.value());
+  auto scan_result = table->NewScan()->Build();
+  if (!scan_result.has_value()) {
+    std::cerr << "Failed to build scan: " << scan_result.error().message << std::endl;
+    return 1;
+  }
+
+  auto scan = std::move(scan_result.value());
+  auto plan_result = scan->PlanFiles();
+  if (!plan_result.has_value()) {
+    std::cerr << "Failed to plan files: " << plan_result.error().message << std::endl;
+    return 1;
+  }
+
+  std::cout << "Scan tasks: " << std::endl;
+  auto scan_tasks = std::move(plan_result.value());
+  for (const auto& scan_task : scan_tasks) {
+    std::cout << " - " << scan_task->data_file()->file_path << std::endl;
+  }
+
   return 0;
 }

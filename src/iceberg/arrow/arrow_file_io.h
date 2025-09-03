@@ -19,16 +19,15 @@
 
 #pragma once
 
-#include <string>
+#include <memory>
 
-#include "iceberg/iceberg_export.h"
+#include "iceberg/file_io.h"
+#include "iceberg/iceberg_bundle_export.h"
 
-namespace iceberg {
+namespace iceberg::arrow {
 
-class ICEBERG_EXPORT Avro {
- public:
-  virtual ~Avro() = default;
-  virtual std::string print() const = 0;
-};
+ICEBERG_BUNDLE_EXPORT std::unique_ptr<FileIO> MakeMockFileIO();
 
-}  // namespace iceberg
+ICEBERG_BUNDLE_EXPORT std::unique_ptr<FileIO> MakeLocalFileIO();
+
+}  // namespace iceberg::arrow

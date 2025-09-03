@@ -30,9 +30,9 @@
 #include <avro/Types.hh>
 #include <avro/ValidSchema.hh>
 
+#include "iceberg/avro/avro_constants.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
-#include "iceberg/avro/constants.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/schema.h"

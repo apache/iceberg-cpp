@@ -314,6 +314,13 @@ Result<std::string> InMemoryNamespace::GetTableMetadataLocation(
   return it->second;
 }
 
+std::shared_ptr<InMemoryCatalog> InMemoryCatalog::Make(
+    std::string const& name, std::shared_ptr<FileIO> const& file_io,
+    std::string const& warehouse_location,
+    std::unordered_map<std::string, std::string> const& properties) {
+  return std::make_shared<InMemoryCatalog>(name, file_io, warehouse_location, properties);
+}
+
 InMemoryCatalog::InMemoryCatalog(
     std::string const& name, std::shared_ptr<FileIO> const& file_io,
     std::string const& warehouse_location,

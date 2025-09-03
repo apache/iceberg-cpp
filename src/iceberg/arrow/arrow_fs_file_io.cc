@@ -23,6 +23,7 @@
 #include <arrow/filesystem/mockfs.h>
 
 #include "iceberg/arrow/arrow_error_transform_internal.h"
+#include "iceberg/arrow/arrow_file_io.h"
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 
 namespace iceberg::arrow {
@@ -78,6 +79,14 @@ std::unique_ptr<FileIO> ArrowFileSystemFileIO::MakeMockFileIO() {
 std::unique_ptr<FileIO> ArrowFileSystemFileIO::MakeLocalFileIO() {
   return std::make_unique<ArrowFileSystemFileIO>(
       std::make_shared<::arrow::fs::LocalFileSystem>());
+}
+
+std::unique_ptr<FileIO> MakeMockFileIO() {
+  return ArrowFileSystemFileIO::MakeMockFileIO();
+}
+
+std::unique_ptr<FileIO> MakeLocalFileIO() {
+  return ArrowFileSystemFileIO::MakeLocalFileIO();
 }
 
 }  // namespace iceberg::arrow

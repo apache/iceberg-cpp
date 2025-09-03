@@ -44,6 +44,11 @@ class ICEBERG_EXPORT InMemoryCatalog
                   std::unordered_map<std::string, std::string> const& properties);
   ~InMemoryCatalog() override;
 
+  static std::shared_ptr<InMemoryCatalog> Make(
+      std::string const& name, std::shared_ptr<FileIO> const& file_io,
+      std::string const& warehouse_location,
+      std::unordered_map<std::string, std::string> const& properties);
+
   std::string_view name() const override;
 
   Status CreateNamespace(

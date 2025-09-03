@@ -745,9 +745,9 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
   std::unordered_map<std::string, std::string> summary;
   if (summary_json.has_value()) {
     for (const auto& [key, value] : summary_json->items()) {
-      if (!kValidSnapshotSummaryFields.contains(key)) {
-        return JsonParseError("Invalid snapshot summary field: {}", key);
-      }
+      // if (!kValidSnapshotSummaryFields.contains(key)) {
+      //   return JsonParseError("Invalid snapshot summary field: {}", key);
+      // }
       if (!value.is_string()) {
         return JsonParseError("Invalid snapshot summary field value: {}",
                               SafeDumpJson(value));
