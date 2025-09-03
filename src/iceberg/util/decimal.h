@@ -35,7 +35,6 @@
 #include "iceberg/result.h"
 #include "iceberg/util/formattable.h"
 #include "iceberg/util/int128.h"
-#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -160,18 +159,10 @@ class ICEBERG_EXPORT Decimal : public util::Formattable {
   static Result<Decimal> FromString(std::string_view str, int32_t* precision = nullptr,
                                     int32_t* scale = nullptr);
 
-  /// \brief Convert the floating-point value to a Decimal value with the given
-  /// precision and scale.
-  static Result<Decimal> FromReal(double real, int32_t precision, int32_t scale);
-  static Result<Decimal> FromReal(float real, int32_t precision, int32_t scale);
-
   /// \brief Convert from a big-endian byte representation. The length must be
   ///        between 1 and 16.
   /// \return error status if the length is an invalid value
   static Result<Decimal> FromBigEndian(const uint8_t* data, int32_t length);
-
-  /// \brief separate the integer and fractional parts for the given scale.
-  Result<std::pair<Decimal, Decimal>> GetWholeAndFraction(int32_t scale) const;
 
   /// \brief Convert Decimal from one scale to another.
   Result<Decimal> Rescale(int32_t orig_scale, int32_t new_scale) const;
@@ -187,46 +178,6 @@ class ICEBERG_EXPORT Decimal : public util::Formattable {
       return high() <=> other.high();
     }
     return low() <=> other.low();
-  }
-
-  /// \brief Convert to a signed integer
-  template <typename T>
-    requires std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t>
-  Result<T> ToInteger() const {
-    constexpr auto min_value = std::numeric_limits<T>::min();
-    constexpr auto max_value = std::numeric_limits<T>::max();
-    const auto& self = *this;
-    if (self < min_value || self > max_value) {
-      return Invalid("Invalid cast from Decimal to {} byte integer", sizeof(T));
-    }
-    return static_cast<T>(low());
-  }
-
-  /// \brief Convert to a signed integer
-  template <typename T>
-    requires std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t>
-  Status ToInteger(T* out) const {
-    ICEBERG_ASSIGN_OR_RAISE(auto result, ToInteger<T>());
-    *out = result;
-    return {};
-  }
-
-  /// \brief Convert to a floating-point number (scaled)
-  float ToFloat(int32_t scale) const;
-  /// \brief Convert to a floating-point number (scaled)
-  double ToDouble(int32_t scale) const;
-
-  /// \brief Convert the Decimal value to a floating-point value with the given scale.
-  /// \param scale The scale to use for the conversion.
-  /// \return The floating-point value.
-  template <typename T>
-    requires std::is_floating_point_v<T>
-  T ToReal(int32_t scale) const {
-    if constexpr (std::is_same_v<T, float>) {
-      return ToFloat(scale);
-    } else {
-      return ToDouble(scale);
-    }
   }
 
   const uint8_t* native_endian_bytes() const {
