@@ -48,7 +48,7 @@ namespace iceberg::parquet {
 
 namespace {
 
-Status WriteArrayInner(Writer& writer, std::shared_ptr<::arrow::Array> data) {
+Status WriteArray(std::shared_ptr<::arrow::Array> data, Writer& writer) {
   ArrowArray arr;
   ICEBERG_ARROW_RETURN_NOT_OK(::arrow::ExportArray(*data, &arr));
   ICEBERG_RETURN_UNEXPECTED(writer.Write(arr));
@@ -59,7 +59,7 @@ Status WriteArray(std::shared_ptr<::arrow::Array> data,
                   const WriterOptions& writer_options) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto writer, WriterFactoryRegistry::Open(FileFormatType::kParquet, writer_options));
-  return WriteArrayInner(*writer, data);
+  return WriteArray(data, *writer);
 }
 
 Status ReadArray(std::shared_ptr<::arrow::Array>& out,
@@ -90,7 +90,7 @@ void DoRoundtrip(std::shared_ptr<::arrow::Array> data, std::shared_ptr<Schema> s
   ASSERT_THAT(writer_data, IsOk())
       << "Failed to create writer: " << writer_data.error().message;
   auto writer = std::move(writer_data.value());
-  ASSERT_THAT(WriteArrayInner(*writer, data), IsOk());
+  ASSERT_THAT(WriteArray(data, *writer), IsOk());
 
   ASSERT_THAT(ReadArray(out, {.path = basePath,
                               .length = writer->length(),

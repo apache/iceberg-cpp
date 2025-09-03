@@ -120,7 +120,7 @@ class ParquetWriter::Impl {
   // Parquet file writer to write ArrowArray.
   std::unique_ptr<::parquet::arrow::FileWriter> writer_;
   // Total length of the written Parquet file.
-  int64_t total_bytes_;
+  int64_t total_bytes_{0};
   // Row group start offsets in the Parquet file.
   std::vector<int64_t> split_offsets_;
 };
