@@ -26,7 +26,6 @@
 
 #include <array>
 #include <bit>
-#include <cassert>
 #include <charconv>
 #include <climits>
 #include <cmath>
@@ -270,6 +269,19 @@ void AdjustIntegerStringWithScale(int32_t scale, std::string* str) {
   str->at(is_negative_offset + 1) = '.';
 }
 
+bool RescaleWouldCauseDataLoss(const Decimal& value, int32_t delta_scale,
+                               const Decimal& multiplier, Decimal* result) {
+  if (delta_scale < 0) {
+    auto res = value.Divide(multiplier);
+    ICEBERG_DCHECK(res, "Decimal::Divide failed");
+    *result = res->first;
+    return res->second != 0;
+  }
+
+  *result = value * multiplier;
+  return (value < 0) ? *result > value : *result < value;
+}
+
 }  // namespace
 
 Decimal::Decimal(std::string_view str) {
@@ -462,23 +474,6 @@ Result<Decimal> Decimal::FromString(std::string_view str, int32_t* precision,
 
   return result;
 }
-
-namespace {
-
-static bool RescaleWouldCauseDataLoss(const Decimal& value, int32_t delta_scale,
-                                      const Decimal& multiplier, Decimal* result) {
-  if (delta_scale < 0) {
-    auto res = value.Divide(multiplier);
-    ICEBERG_DCHECK(res, "Decimal::Divide failed");
-    *result = res->first;
-    return res->second != 0;
-  }
-
-  *result = value * multiplier;
-  return (value < 0) ? *result > value : *result < value;
-}
-
-}  // namespace
 
 Result<Decimal> Decimal::FromBigEndian(const uint8_t* bytes, int32_t length) {
   static constexpr int32_t kMinDecimalBytes = 1;
