@@ -92,3 +92,35 @@ echo "  https://dist.apache.org/repos/dist/release/iceberg/${release_id}"
 echo
 echo "Add this release to ASF's report database:"
 echo "  https://reporter.apache.org/addrelease.html?iceberg"
+
+echo "Draft email for announce@apache.org mailing list"
+echo ""
+echo "---------------------------------------------------------"
+cat <<MAIL
+To: announce@apache.org
+Hello everyone,
+
+I'm pleased to announce the release of Apache Iceberg C++ v${version}!
+
+Apache Iceberg is an open table format for huge analytic datasets,
+Iceberg delivers high query performance for tables with tens of
+petabytes of data, along with atomic commits, concurrent writes, and
+SQL-compatible table evolution.
+
+This release contains <COMMIT_COUNT> commits from <CONTRIBUTOR_COUNT> unique contributors. Among
+the changes in this release are the following highlights:
+
+- <FEATURE_1>
+- <FEATURE_2>
+- ...
+- <FEATURE_N>
+
+This release is hosted at: https://dist.apache.org/repos/dist/release/iceberg/apache-iceberg-cpp-${version}
+
+For release details and downloads, please visit: https://github.com/apache/iceberg-cpp/releases/tag/apache-iceberg-cpp-${version}
+
+Thanks to everyone for all your contributions!
+
+<AUTHOR>
+MAIL
+echo "---------------------------------------------------------"
