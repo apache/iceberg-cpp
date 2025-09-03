@@ -160,7 +160,7 @@ class AvroReader::Impl {
     return {};
   }
 
-  Result<ArrowSchema> Schema() {
+  Result<ArrowSchema> Schema() const {
     if (!context_) {
       ICEBERG_RETURN_UNEXPECTED(InitReadContext());
     }
@@ -174,7 +174,7 @@ class AvroReader::Impl {
   }
 
  private:
-  Status InitReadContext() {
+  Status InitReadContext() const {
     context_ = std::make_unique<ReadContext>();
     context_->datum_ = std::make_unique<::avro::GenericDatum>(reader_->readerSchema());
 
@@ -232,14 +232,14 @@ class AvroReader::Impl {
   // The avro reader to read the data into a datum.
   std::unique_ptr<::avro::DataFileReader<::avro::GenericDatum>> reader_;
   // The context to keep track of the reading progress.
-  std::unique_ptr<ReadContext> context_;
+  mutable std::unique_ptr<ReadContext> context_;
 };
 
 AvroReader::~AvroReader() = default;
 
 Result<std::optional<ArrowArray>> AvroReader::Next() { return impl_->Next(); }
 
-Result<ArrowSchema> AvroReader::Schema() { return impl_->Schema(); }
+Result<ArrowSchema> AvroReader::Schema() const { return impl_->Schema(); }
 
 Status AvroReader::Open(const ReaderOptions& options) {
   impl_ = std::make_unique<Impl>();

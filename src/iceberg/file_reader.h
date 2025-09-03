@@ -26,6 +26,7 @@
 #include <memory>
 #include <optional>
 
+#include "iceberg/arrow_array_reader.h"
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/file_format.h"
 #include "iceberg/result.h"
@@ -34,26 +35,14 @@
 namespace iceberg {
 
 /// \brief Base reader class to read data from different file formats.
-class ICEBERG_EXPORT Reader {
+class ICEBERG_EXPORT Reader : public ArrowArrayReader {
  public:
-  virtual ~Reader() = default;
   Reader() = default;
   Reader(const Reader&) = delete;
   Reader& operator=(const Reader&) = delete;
 
   /// \brief Open the reader.
   virtual Status Open(const struct ReaderOptions& options) = 0;
-
-  /// \brief Close the reader.
-  virtual Status Close() = 0;
-
-  /// \brief Read next data from file.
-  ///
-  /// \return std::nullopt if the reader has no more data, otherwise `ArrowArray`.
-  virtual Result<std::optional<ArrowArray>> Next() = 0;
-
-  /// \brief Get the schema of the data.
-  virtual Result<ArrowSchema> Schema() = 0;
 };
 
 /// \brief A split of the file to read.

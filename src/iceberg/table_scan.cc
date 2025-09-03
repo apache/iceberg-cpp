@@ -19,9 +19,7 @@
 
 #include "iceberg/table_scan.h"
 
-#include <algorithm>
-#include <ranges>
-
+#include "iceberg/file_reader.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/manifest_reader.h"
@@ -44,6 +42,21 @@ int64_t FileScanTask::size_bytes() const { return data_file_->file_size_in_bytes
 int32_t FileScanTask::files_count() const { return 1; }
 
 int64_t FileScanTask::estimated_row_count() const { return data_file_->record_count; }
+
+Result<std::unique_ptr<ArrowArrayReader>> FileScanTask::ToArrowArrayReader(
+    const std::shared_ptr<Schema>& projected_schema,
+    const std::shared_ptr<Expression>& filter, const std::shared_ptr<FileIO>& io) const {
+  const ReaderOptions options{.path = data_file_->file_path,
+                              .length = data_file_->file_size_in_bytes,
+                              .io = io,
+                              .projection = projected_schema,
+                              .filter = filter};
+
+  ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                          ReaderFactoryRegistry::Open(data_file_->file_format, options));
+
+  return reader;
+}
 
 TableScanBuilder::TableScanBuilder(std::shared_ptr<TableMetadata> table_metadata,
                                    std::shared_ptr<FileIO> file_io)
