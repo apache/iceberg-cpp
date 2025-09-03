@@ -48,14 +48,6 @@ namespace iceberg {
 
 namespace {
 
-// Signed left shift with well-defined behaviour on negative numbers or overflow
-template <typename SignedInt, typename Shift>
-  requires std::is_signed_v<SignedInt> && std::is_integral_v<Shift>
-constexpr SignedInt SafeLeftShift(SignedInt u, Shift bits) {
-  using UnsignedInt = std::make_unsigned_t<SignedInt>;
-  return static_cast<SignedInt>(static_cast<UnsignedInt>(u) << bits);
-}
-
 struct DecimalComponents {
   std::string_view while_digits;
   std::string_view fractional_digits;
@@ -205,7 +197,9 @@ inline void ShiftAndAdd(std::string_view input, uint128_t& out) {
     const uint64_t multiple = kUInt64PowersOfTen[group_size];
     uint64_t value = 0;
 
-    std::from_chars(input.data() + pos, input.data() + pos + group_size, value);
+    auto [_, ec] =
+        std::from_chars(input.data() + pos, input.data() + pos + group_size, value);
+    ICEBERG_DCHECK(ec == std::errc(), "Failed to parse digits in ShiftAndAdd");
 
     out = out * multiple + value;
     pos += group_size;
@@ -471,73 +465,6 @@ Result<Decimal> Decimal::FromString(std::string_view str, int32_t* precision,
 
 namespace {
 
-constexpr float kFloatInf = std::numeric_limits<float>::infinity();
-
-// Attention: these pre-computed constants might not exactly represent their
-// decimal counterparts:
-//   >>> int32_t(1e38)
-//   99999999999999997748809823456034029568
-
-constexpr int32_t kPrecomputedPowersOfTen = 76;
-
-constexpr std::array<float, 2 * kPrecomputedPowersOfTen + 1> kFloatPowersOfTen = {
-    0,         0,         0,         0,         0,         0,         0,
-    0,         0,         0,         0,         0,         0,         0,
-    0,         0,         0,         0,         0,         0,         0,
-    0,         0,         0,         0,         0,         0,         0,
-    0,         0,         0,         1e-45f,    1e-44f,    1e-43f,    1e-42f,
-    1e-41f,    1e-40f,    1e-39f,    1e-38f,    1e-37f,    1e-36f,    1e-35f,
-    1e-34f,    1e-33f,    1e-32f,    1e-31f,    1e-30f,    1e-29f,    1e-28f,
-    1e-27f,    1e-26f,    1e-25f,    1e-24f,    1e-23f,    1e-22f,    1e-21f,
-    1e-20f,    1e-19f,    1e-18f,    1e-17f,    1e-16f,    1e-15f,    1e-14f,
-    1e-13f,    1e-12f,    1e-11f,    1e-10f,    1e-9f,     1e-8f,     1e-7f,
-    1e-6f,     1e-5f,     1e-4f,     1e-3f,     1e-2f,     1e-1f,     1e0f,
-    1e1f,      1e2f,      1e3f,      1e4f,      1e5f,      1e6f,      1e7f,
-    1e8f,      1e9f,      1e10f,     1e11f,     1e12f,     1e13f,     1e14f,
-    1e15f,     1e16f,     1e17f,     1e18f,     1e19f,     1e20f,     1e21f,
-    1e22f,     1e23f,     1e24f,     1e25f,     1e26f,     1e27f,     1e28f,
-    1e29f,     1e30f,     1e31f,     1e32f,     1e33f,     1e34f,     1e35f,
-    1e36f,     1e37f,     1e38f,     kFloatInf, kFloatInf, kFloatInf, kFloatInf,
-    kFloatInf, kFloatInf, kFloatInf, kFloatInf, kFloatInf, kFloatInf, kFloatInf,
-    kFloatInf, kFloatInf, kFloatInf, kFloatInf, kFloatInf, kFloatInf, kFloatInf,
-    kFloatInf, kFloatInf, kFloatInf, kFloatInf, kFloatInf, kFloatInf, kFloatInf,
-    kFloatInf, kFloatInf, kFloatInf, kFloatInf, kFloatInf, kFloatInf, kFloatInf,
-    kFloatInf, kFloatInf, kFloatInf, kFloatInf, kFloatInf, kFloatInf};
-
-constexpr std::array<double, 2 * kPrecomputedPowersOfTen + 1> kDoublePowersOfTen = {
-    1e-76, 1e-75, 1e-74, 1e-73, 1e-72, 1e-71, 1e-70, 1e-69, 1e-68, 1e-67, 1e-66, 1e-65,
-    1e-64, 1e-63, 1e-62, 1e-61, 1e-60, 1e-59, 1e-58, 1e-57, 1e-56, 1e-55, 1e-54, 1e-53,
-    1e-52, 1e-51, 1e-50, 1e-49, 1e-48, 1e-47, 1e-46, 1e-45, 1e-44, 1e-43, 1e-42, 1e-41,
-    1e-40, 1e-39, 1e-38, 1e-37, 1e-36, 1e-35, 1e-34, 1e-33, 1e-32, 1e-31, 1e-30, 1e-29,
-    1e-28, 1e-27, 1e-26, 1e-25, 1e-24, 1e-23, 1e-22, 1e-21, 1e-20, 1e-19, 1e-18, 1e-17,
-    1e-16, 1e-15, 1e-14, 1e-13, 1e-12, 1e-11, 1e-10, 1e-9,  1e-8,  1e-7,  1e-6,  1e-5,
-    1e-4,  1e-3,  1e-2,  1e-1,  1e0,   1e1,   1e2,   1e3,   1e4,   1e5,   1e6,   1e7,
-    1e8,   1e9,   1e10,  1e11,  1e12,  1e13,  1e14,  1e15,  1e16,  1e17,  1e18,  1e19,
-    1e20,  1e21,  1e22,  1e23,  1e24,  1e25,  1e26,  1e27,  1e28,  1e29,  1e30,  1e31,
-    1e32,  1e33,  1e34,  1e35,  1e36,  1e37,  1e38,  1e39,  1e40,  1e41,  1e42,  1e43,
-    1e44,  1e45,  1e46,  1e47,  1e48,  1e49,  1e50,  1e51,  1e52,  1e53,  1e54,  1e55,
-    1e56,  1e57,  1e58,  1e59,  1e60,  1e61,  1e62,  1e63,  1e64,  1e65,  1e66,  1e67,
-    1e68,  1e69,  1e70,  1e71,  1e72,  1e73,  1e74,  1e75,  1e76};
-
-// Helper function used by Decimal::FromBigEndian
-static inline uint64_t UInt64FromBigEndian(const uint8_t* bytes, int32_t length) {
-  // We don't bounds check the length here because this is called by
-  // FromBigEndian that has a Decimal128 as its out parameters and
-  // that function is already checking the length of the bytes and only
-  // passes lengths between zero and eight.
-  uint64_t result = 0;
-  // Using memcpy instead of special casing for length
-  // and doing the conversion in 16, 32 parts, which could
-  // possibly create unaligned memory access on certain platforms
-  std::memcpy(reinterpret_cast<uint8_t*>(&result) + 8 - length, bytes, length);
-
-  if constexpr (std::endian::native == std::endian::little) {
-    return std::byteswap(result);
-  } else {
-    return result;
-  }
-}
-
 static bool RescaleWouldCauseDataLoss(const Decimal& value, int32_t delta_scale,
                                       const Decimal& multiplier, Decimal* result) {
   if (delta_scale < 0) {
@@ -569,41 +496,24 @@ Result<Decimal> Decimal::FromBigEndian(const uint8_t* bytes, int32_t length) {
   // sign bit.
   const bool is_negative = static_cast<int8_t>(bytes[0]) < 0;
 
-  // 1. Extract the high bytes
-  // Stop byte of the high bytes
-  const int32_t high_bits_offset = std::max(0, length - 8);
-  const auto high_bits = UInt64FromBigEndian(bytes, high_bits_offset);
+  uint128_t result = 0;
+  std::memcpy(reinterpret_cast<uint8_t*>(&result) + 16 - length, bytes, length);
 
-  if (high_bits_offset == 8) {
-    // Avoid undefined shift by 64 below
-    high = high_bits;
-  } else {
-    high = -1 * (is_negative && length < kMaxDecimalBytes);
-    // Shift left enough bits to make room for the incoming int64_t
-    high = SafeLeftShift(high, high_bits_offset * CHAR_BIT);
-    // Preserve the upper bits by inplace OR-ing the int64_t
-    high |= high_bits;
+  if constexpr (std::endian::native == std::endian::little) {
+    auto high = static_cast<uint64_t>(result >> 64);
+    auto low = static_cast<uint64_t>(result);
+    high = std::byteswap(high);
+    low = std::byteswap(low);
+    // also need to swap the two halves
+    result = (static_cast<uint128_t>(low) << 64) | high;
   }
 
-  // 2. Extract the low bytes
-  // Stop byte of the low bytes
-  const int32_t low_bits_offset = std::min(length, 8);
-  const auto low_bits =
-      UInt64FromBigEndian(bytes + high_bits_offset, length - high_bits_offset);
-
-  if (low_bits_offset == 8) {
-    // Avoid undefined shift by 64 below
-    low = low_bits;
-  } else {
-    // Sign extend the low bits if necessary
-    low = -1 * (is_negative && length < 8);
-    // Shift left enough bits to make room for the incoming int64_t
-    low = SafeLeftShift(low, low_bits_offset * CHAR_BIT);
-    // Preserve the upper bits by inplace OR-ing the int64_t
-    low |= low_bits;
+  if (is_negative && length < kMaxDecimalBytes) {
+    // Sign extend the high bits
+    result |= (static_cast<uint128_t>(-1) << (length * CHAR_BIT));
   }
 
-  return Decimal(high, static_cast<uint64_t>(low));
+  return Decimal(static_cast<int128_t>(result));
 }
 
 Result<Decimal> Decimal::Rescale(int32_t orig_scale, int32_t new_scale) const {
