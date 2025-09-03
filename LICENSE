@@ -250,12 +250,6 @@ The file src/iceberg/util/visit_type.h contains code adapted from
 
 https://github.com/apache/arrow/blob/main/cpp/src/arrow/visit_type_inline.h
 
-Copyright: 2016-2025 The Apache Software Foundation.
-Home page: https://arrow.apache.org/
-License: https://www.apache.org/licenses/LICENSE-2.0
-
---------------------------------------------------------------------------------
-
 The file src/iceberg/util/decimal.h contains code adapted from
 
 https://github.com/apache/arrow/blob/main/cpp/src/arrow/util/decimal.h

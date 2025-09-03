@@ -51,15 +51,15 @@ namespace {
 // Signed left shift with well-defined behaviour on negative numbers or overflow
 template <typename SignedInt, typename Shift>
   requires std::is_signed_v<SignedInt> && std::is_integral_v<Shift>
-constexpr SignedInt SafeLeftShift(SignedInt u, Shift shift) {
+constexpr SignedInt SafeLeftShift(SignedInt u, Shift bits) {
   using UnsignedInt = std::make_unsigned_t<SignedInt>;
-  return static_cast<SignedInt>(static_cast<UnsignedInt>(u) << shift);
+  return static_cast<SignedInt>(static_cast<UnsignedInt>(u) << bits);
 }
 
 struct DecimalComponents {
   std::string_view while_digits;
   std::string_view fractional_digits;
-  int32_t exponent;
+  int32_t exponent{0};
   char sign{0};
   bool has_exponent{false};
 };
@@ -100,9 +100,8 @@ bool ParseDecimalComponents(std::string_view str, DecimalComponents* out) {
 
   // Optional dot
   if (IsDot(str[pos])) {
-    ++pos;
     // Second run of digits after the dot
-    pos = ParseDigitsRun(str, pos, &out->fractional_digits);
+    pos = ParseDigitsRun(str, ++pos, &out->fractional_digits);
   }
   if (out->fractional_digits.empty() && out->while_digits.empty()) {
     // Need at least some digits (whole or fractional)
@@ -200,7 +199,7 @@ constexpr std::array<Decimal, Decimal::kMaxScale + 1> kDecimal128PowersOfTen = {
     Decimal(542101086242752217LL, 68739955140067328ULL),
     Decimal(5421010862427522170LL, 687399551400673280ULL)};
 
-static inline void ShiftAndAdd(std::string_view input, uint128_t& out) {
+inline void ShiftAndAdd(std::string_view input, uint128_t& out) {
   for (size_t pos = 0; pos < input.size();) {
     const size_t group_size = std::min(kInt64DecimalDigits, input.size() - pos);
     const uint64_t multiple = kUInt64PowersOfTen[group_size];
@@ -213,12 +212,11 @@ static inline void ShiftAndAdd(std::string_view input, uint128_t& out) {
   }
 }
 
-static void AdjustIntegerStringWithScale(std::string* str, int32_t scale) {
+void AdjustIntegerStringWithScale(int32_t scale, std::string* str) {
   if (scale == 0) {
     return;
   }
-  assert(str != nullptr);
-  assert(!str->empty());
+  ICEBERG_DCHECK(str != nullptr && !str->empty(), "str must not be null or empty");
   const bool is_negative = str->front() == '-';
   const auto is_negative_offset = static_cast<int32_t>(is_negative);
   const auto len = static_cast<int32_t>(str->size());
@@ -291,7 +289,7 @@ Decimal::Decimal(std::string_view str) {
 }
 
 Decimal& Decimal::Negate() {
-  uint128_t u = static_cast<uint128_t>(~data_) + 1;
+  uint128_t u = ~static_cast<uint128_t>(data_) + 1;
   data_ = static_cast<int128_t>(u);
   return *this;
 }
@@ -341,25 +339,17 @@ Decimal& Decimal::operator&=(const Decimal& other) {
   return *this;
 }
 
-Decimal& Decimal::operator<<=(uint32_t shift) {
-  if (shift != 0) {
-    if (shift < 128) {
-      data_ = static_cast<int128_t>(static_cast<uint128_t>(data_) << shift);
-    } else {
-      data_ = 0;
-    }
+Decimal& Decimal::operator<<=(uint32_t bits) {
+  if (bits != 0) {
+    data_ = static_cast<int128_t>(static_cast<uint128_t>(data_) << bits);
   }
 
   return *this;
 }
 
-Decimal& Decimal::operator>>=(uint32_t shift) {
-  if (shift != 0) {
-    if (shift < 128) {
-      data_ >>= shift;
-    } else {
-      data_ = (data_ < 0) ? -1 : 0;
-    }
+Decimal& Decimal::operator>>=(uint32_t bits) {
+  if (bits != 0) {
+    data_ >>= bits;
   }
 
   return *this;
@@ -372,7 +362,7 @@ Result<std::string> Decimal::ToString(int32_t scale) const {
         kMaxScale, scale);
   }
   std::string str(ToIntegerString());
-  AdjustIntegerStringWithScale(&str, scale);
+  AdjustIntegerStringWithScale(scale, &str);
   return str;
 }
 
@@ -571,7 +561,7 @@ struct DecimalRealConversion {
   template <typename Real>
   static Real PowerOfTen(int32_t exp) {
     constexpr int32_t N = kPrecomputedPowersOfTen;
-    assert(exp >= -N && exp <= N);
+    ICEBERG_DCHECK(exp >= -N && exp <= N, "");
     return RealTraits<Real>::powers_of_ten()[N + exp];
   }
 
@@ -590,7 +580,7 @@ struct DecimalRealConversion {
   static constexpr int32_t kMaxScale = Decimal::kMaxScale;
 
   static constexpr auto& DecimalPowerOfTen(int32_t exp) {
-    assert(exp >= 0 && exp <= kMaxPrecision);
+    ICEBERG_DCHECK(exp >= 0 && exp <= kMaxPrecision, "");
     return kDecimal128PowersOfTen[exp];
   }
 
@@ -635,11 +625,12 @@ struct DecimalRealConversion {
   }
 
   template <typename Real>
-  static Result<Decimal> FromPositiveApprox(Real real, int32_t precision, int32_t scale) {
+  static Result<Decimal> FromPositiveRealApprox(Real real, int32_t precision,
+                                                int32_t scale) {
     // Approximate algorithm that operates in the FP domain (thus subject
     // to precision loss).
-    const auto x = std::nearbyint(real * PowerOfTen<double>(scale));
-    const auto max_abs = PowerOfTen<double>(precision);
+    const auto x = std::nearbyint(real * PowerOfTen<Real>(scale));
+    const auto max_abs = PowerOfTen<Real>(precision);
     if (x <= -max_abs || x >= max_abs) {
       return Invalid("Cannot convert {} to Decimal(precision = {}, scale = {}): overflow",
                      real, precision, scale);
@@ -649,10 +640,10 @@ struct DecimalRealConversion {
     const auto high = std::floor(std::ldexp(x, -64));
     const auto low = x - std::ldexp(high, 64);
 
-    assert(high >= 0);
-    assert(high < 9.223372036854776e+18);  // 2**63
-    assert(low >= 0);
-    assert(low < 1.8446744073709552e+19);  // 2**64
+    ICEBERG_DCHECK(high >= 0, "");
+    ICEBERG_DCHECK(high < 9.223372036854776e+18, "");  // 2**63
+    ICEBERG_DCHECK(low >= 0, "");
+    ICEBERG_DCHECK(low < 1.8446744073709552e+19, "");  // 2**64
     return Decimal(static_cast<int64_t>(high), static_cast<uint64_t>(low));
   }
 
@@ -665,7 +656,7 @@ struct DecimalRealConversion {
     // closest to `real * 10^scale`.
     if (scale < 0) {
       // Negative scales are not handled below, fall back to approx algorithm
-      return FromPositiveApprox(real, precision, scale);
+      return FromPositiveRealApprox(real, precision, scale);
     }
 
     // 1. Check that `real` is within acceptable bounds.
@@ -737,7 +728,8 @@ struct DecimalRealConversion {
           total_exp += exp;
           // The supplementary right shift required so that
           // `x * 10^total_exp / 2^total_shift` fits in the decimal.
-          assert(static_cast<size_t>(total_exp) < sizeof(kCeilLog2PowersOfTen));
+          ICEBERG_DCHECK(static_cast<size_t>(total_exp) < sizeof(kCeilLog2PowersOfTen),
+                         "");
           const int32_t bits =
               std::min(right_shift_by, kCeilLog2PowersOfTen[total_exp] - total_shift);
           total_shift += bits;
@@ -799,7 +791,7 @@ struct DecimalRealConversion {
 
     // Split decimal into whole and fractional parts to avoid precision loss
     auto s = decimal.GetWholeAndFraction(scale);
-    assert(s);
+    ICEBERG_DCHECK(s, "Decimal::GetWholeAndFraction failed");
 
     Real whole = ToRealPositiveNoSplit<Real>(s->first, 0);
     Real fraction = ToRealPositiveNoSplit<Real>(s->second, scale);
@@ -809,8 +801,8 @@ struct DecimalRealConversion {
 
   template <typename Real>
   static Result<Decimal> FromReal(Real value, int32_t precision, int32_t scale) {
-    assert(precision >= 1 && precision <= kMaxPrecision);
-    assert(scale >= -kMaxScale && scale <= kMaxScale);
+    ICEBERG_DCHECK(precision >= 1 && precision <= kMaxPrecision, "");
+    ICEBERG_DCHECK(scale >= -kMaxScale && scale <= kMaxScale, "");
 
     if (!std::isfinite(value)) {
       return InvalidArgument("Cannot convert {} to Decimal", value);
@@ -830,7 +822,7 @@ struct DecimalRealConversion {
 
   template <typename Real>
   static Real ToReal(const Decimal& decimal, int32_t scale) {
-    assert(scale >= -kMaxScale && scale <= kMaxScale);
+    ICEBERG_DCHECK(scale >= -kMaxScale && scale <= kMaxScale, "");
 
     if (decimal.IsNegative()) {
       // Convert the absolute value to avoid precision loss
@@ -866,7 +858,7 @@ static bool RescaleWouldCauseDataLoss(const Decimal& value, int32_t delta_scale,
                                       const Decimal& multiplier, Decimal* result) {
   if (delta_scale < 0) {
     auto res = value.Divide(multiplier);
-    assert(res);
+    ICEBERG_DCHECK(res, "Decimal::Divide failed");
     *result = res->first;
     return res->second != 0;
   }
@@ -886,7 +878,7 @@ Result<Decimal> Decimal::FromReal(double x, int32_t precision, int32_t scale) {
 }
 
 Result<std::pair<Decimal, Decimal>> Decimal::GetWholeAndFraction(int32_t scale) const {
-  assert(scale >= 0 && scale <= kMaxScale);
+  ICEBERG_DCHECK(scale >= 0 && scale <= kMaxScale, "");
 
   Decimal multiplier(kDecimal128PowersOfTen[scale]);
   return Divide(multiplier);
@@ -946,19 +938,6 @@ Result<Decimal> Decimal::FromBigEndian(const uint8_t* bytes, int32_t length) {
 }
 
 Result<Decimal> Decimal::Rescale(int32_t orig_scale, int32_t new_scale) const {
-  if (orig_scale < 0 || orig_scale > kMaxScale) {
-    return InvalidArgument(
-        "Decimal::Rescale: original scale must be in the range [0, {}], "
-        "was {}",
-        kMaxScale, orig_scale);
-  }
-  if (new_scale < 0 || new_scale > kMaxScale) {
-    return InvalidArgument(
-        "Decimal::Rescale: new scale must be in the range [0, {}], "
-        "was {}",
-        kMaxScale, new_scale);
-  }
-
   if (orig_scale == new_scale) {
     return *this;
   }
@@ -967,7 +946,7 @@ Result<Decimal> Decimal::Rescale(int32_t orig_scale, int32_t new_scale) const {
   const int32_t abs_delta_scale = std::abs(delta_scale);
   Decimal out;
 
-  assert(abs_delta_scale <= kMaxScale);
+  ICEBERG_DCHECK(abs_delta_scale <= kMaxScale, "");
 
   auto& multiplier = kDecimal128PowersOfTen[abs_delta_scale];
 
@@ -975,15 +954,15 @@ Result<Decimal> Decimal::Rescale(int32_t orig_scale, int32_t new_scale) const {
       RescaleWouldCauseDataLoss(*this, delta_scale, multiplier, &out);
 
   if (rescale_would_cause_data_loss) {
-    return Invalid("Rescale would cause data loss: {} -> {}", ToIntegerString(),
-                   out.ToIntegerString());
+    return Invalid("Rescale {} from {} to {} would cause data loss", ToIntegerString(),
+                   orig_scale, new_scale);
   }
 
   return out;
 }
 
 bool Decimal::FitsInPrecision(int32_t precision) const {
-  assert(precision >= 1 && precision <= kMaxPrecision);
+  ICEBERG_DCHECK(precision >= 1 && precision <= kMaxPrecision, "");
   return Decimal::Abs(*this) < kDecimal128PowersOfTen[precision];
 }
 

@@ -25,17 +25,15 @@
 /// https://github.com/apache/arrow/blob/main/cpp/src/arrow/util/decimal.h
 
 #include <array>
-#include <bit>
 #include <cstdint>
 #include <iosfwd>
 #include <string>
 #include <string_view>
 #include <type_traits>
 
-#include <iceberg/type.h>
-
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
+#include "iceberg/util/formattable.h"
 #include "iceberg/util/int128.h"
 #include "iceberg/util/macros.h"
 
@@ -44,7 +42,7 @@ namespace iceberg {
 /// \brief Represents 128-bit fixed-point decimal numbers.
 /// The max decimal precision that can be safely represented is
 /// 38 significant digits.
-class ICEBERG_EXPORT Decimal {
+class ICEBERG_EXPORT Decimal : public util::Formattable {
  public:
   static constexpr int32_t kBitWidth = 128;
   static constexpr int32_t kByteWidth = kBitWidth / 8;
@@ -55,13 +53,13 @@ class ICEBERG_EXPORT Decimal {
   constexpr Decimal() noexcept = default;
 
   /// \brief Create a Decimal from a 128-bit integer.
-  constexpr Decimal(int128_t value) noexcept  // NOLINT
+  constexpr Decimal(int128_t value) noexcept  // NOLINT(google-explicit-constructor)
       : data_(value) {}
 
   /// \brief Create a Decimal from any integer not wider than 64 bits.
   template <typename T>
     requires(std::is_integral_v<T> && (sizeof(T) <= sizeof(uint64_t)))
-  constexpr Decimal(T value) noexcept  // NOLINT
+  constexpr Decimal(T value) noexcept  // NOLINT(google-explicit-constructor)
   {
     data_ = static_cast<int128_t>(value);
   }
@@ -150,8 +148,15 @@ class ICEBERG_EXPORT Decimal {
   /// \brief Convert the Decimal value to an integer string.
   std::string ToIntegerString() const;
 
+  /// \brief Returns an integer string representation of the decimal value.
+  std::string ToString() const override { return ToIntegerString(); }
+
   /// \brief Convert the decimal string to a Decimal value, optionally including precision
   /// and scale if they are provided not null.
+  /// \param str The string representation of the Decimal value.
+  /// \param[out] precision Optional pointer to store the precision of the parsed value.
+  /// \param[out] scale Optional pointer to store the scale of the parsed value.
+  /// \return The Decimal value.
   static Result<Decimal> FromString(std::string_view str, int32_t* precision = nullptr,
                                     int32_t* scale = nullptr);
 

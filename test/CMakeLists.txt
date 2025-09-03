@@ -75,11 +75,7 @@ add_iceberg_test(table_test
                  table_test.cc
                  schema_json_test.cc)
 
-add_iceberg_test(expression_test
-                 SOURCES
-                 decimal_test.cc
-                 expression_test.cc
-                 literal_test.cc)
+add_iceberg_test(expression_test SOURCES expression_test.cc literal_test.cc)
 
 add_iceberg_test(json_serde_test
                  SOURCES
@@ -91,6 +87,7 @@ add_iceberg_test(json_serde_test
 add_iceberg_test(util_test
                  SOURCES
                  config_test.cc
+                 decimal_test.cc
                  endian_test.cc
                  formatter_test.cc
                  string_util_test.cc
