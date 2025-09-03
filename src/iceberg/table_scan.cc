@@ -19,10 +19,6 @@
 
 #include "iceberg/table_scan.h"
 
-#include <algorithm>
-#include <ranges>
-#include <utility>
-
 #include "iceberg/file_reader.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
@@ -59,7 +55,7 @@ Result<std::unique_ptr<ArrowArrayReader>> FileScanTask::ToArrowArrayReader(
   ICEBERG_ASSIGN_OR_RAISE(auto reader,
                           ReaderFactoryRegistry::Open(data_file_->file_format, options));
 
-  return std::move(reader);
+  return reader;
 }
 
 TableScanBuilder::TableScanBuilder(std::shared_ptr<TableMetadata> table_metadata,

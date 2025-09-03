@@ -51,20 +51,14 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   /// \brief The data file that should be read by this scan task.
   const std::shared_ptr<DataFile>& data_file() const;
 
-  /// \brief The total size in bytes of the file split to be read.
   int64_t size_bytes() const override;
 
-  /// \brief The number of files that should be read by this scan task.
   int32_t files_count() const override;
 
-  /// \brief The number of rows that should be read by this scan task.
   int64_t estimated_row_count() const override;
 
   /**
    * \brief Returns an ArrowArrayReader to read the data for this task.
-   *
-   * This acts as a factory to instantiate a file-format-specific reader (e.g., Parquet)
-   * based on the metadata in this task and the provided parameters.
    *
    * \param projected_schema The projected schema for reading the data.
    * \param filter Optional filter expression to apply during reading.

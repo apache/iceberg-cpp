@@ -27,6 +27,7 @@
 
 namespace iceberg {
 
+/// \brief A reader interface that returns ArrowArray in a streaming fashion.
 class ICEBERG_EXPORT ArrowArrayReader {
  public:
   /// \brief Read next batch of data.

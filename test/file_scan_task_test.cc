@@ -120,9 +120,9 @@ TEST_F(FileScanTaskTest, ReadFullSchema) {
   data_file->file_path = temp_parquet_file_;
   data_file->file_format = FileFormatType::kParquet;
 
-  auto io_internal = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
+  auto io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
   data_file->file_size_in_bytes =
-      io_internal.fs()->GetFileInfo(temp_parquet_file_).ValueOrDie().size();
+      io.fs()->GetFileInfo(temp_parquet_file_).ValueOrDie().size();
 
   auto projected_schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
@@ -144,9 +144,9 @@ TEST_F(FileScanTaskTest, ReadProjectedAndReorderedSchema) {
   data_file->file_path = temp_parquet_file_;
   data_file->file_format = FileFormatType::kParquet;
 
-  auto io_internal = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
+  auto io = internal::checked_cast<arrow::ArrowFileSystemFileIO&>(*file_io_);
   data_file->file_size_in_bytes =
-      io_internal.fs()->GetFileInfo(temp_parquet_file_).ValueOrDie().size();
+      io.fs()->GetFileInfo(temp_parquet_file_).ValueOrDie().size();
 
   auto projected_schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeOptional(2, "name", string()),
