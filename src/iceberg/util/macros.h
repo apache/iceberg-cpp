@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include <cassert>
+
 #define ICEBERG_RETURN_UNEXPECTED(result)                       \
   if (auto&& result_name = result; !result_name) [[unlikely]] { \
     return std::unexpected<Error>(result_name.error());         \
@@ -36,3 +38,5 @@
 #define ICEBERG_ASSIGN_OR_RAISE(lhs, rexpr)                                             \
   ICEBERG_ASSIGN_OR_RAISE_IMPL(ICEBERG_ASSIGN_OR_RAISE_NAME(result_, __COUNTER__), lhs, \
                                rexpr)
+
+#define ICEBERG_DCHECK(expr, message) assert((expr) && (message))
