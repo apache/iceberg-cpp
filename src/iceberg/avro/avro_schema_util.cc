@@ -58,6 +58,56 @@ namespace {
 
 }  // namespace
 
+bool validAvroName(const std::string& name) {
+  if (name.empty()) {
+    throw std::runtime_error("Empty name");
+  }
+
+  char first = name[0];
+  if (!(std::isalpha(first) || first == '_')) {
+    return false;
+  }
+
+  for (size_t i = 1; i < name.length(); i++) {
+    char character = name[i];
+    if (!(std::isalnum(character) || character == '_')) {
+      return false;
+    }
+  }
+  return true;
+}
+
+std::string SanitizeChar(char c) {
+  if (std::isdigit(c)) {
+    return std::string("_") + c;
+  }
+  std::stringstream ss;
+  ss << "_x" << std::uppercase << std::hex << static_cast<int>(c);
+  return ss.str();
+}
+
+std::string SanitizeFieldName(std::string_view field_name) {
+  std::string result;
+  result.reserve(field_name.size());
+
+  if (!std::isalpha(field_name[0]) && field_name[0] != '_') {
+    result.append(SanitizeChar(field_name[0]));
+  } else {
+    result.push_back(field_name[0]);
+  }
+
+  for (size_t i = 1; i < field_name.size(); ++i) {
+    char c = field_name[i];
+    if (std::isalnum(c) || c == '_') {
+      result.push_back(c);
+    } else {
+      result.append(SanitizeChar(c));
+    }
+  }
+
+  return result;
+}
+
 std::string ToString(const ::avro::NodePtr& node) {
   std::stringstream ss;
   ss << *node;
@@ -181,8 +231,10 @@ Status ToAvroNodeVisitor::Visit(const StructType& type, ::avro::NodePtr* node) {
     ::avro::NodePtr field_node;
     ICEBERG_RETURN_UNEXPECTED(Visit(sub_field, &field_node));
 
-    // TODO(gangwu): sanitize field name
-    (*node)->addName(std::string(sub_field.name()));
+    bool isValidFieldName = validAvroName(std::string(sub_field.name()));
+    std::string fieldName = isValidFieldName ? std::string(sub_field.name())
+                                             : SanitizeFieldName(sub_field.name());
+    (*node)->addName(fieldName);
     (*node)->addLeaf(field_node);
     (*node)->addCustomAttributesForField(GetAttributesWithFieldId(sub_field.field_id()));
   }
