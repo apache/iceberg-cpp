@@ -26,10 +26,23 @@
 #include "iceberg/schema.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_properties.h"
 #include "iceberg/table_scan.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
+
+Table::~Table() = default;
+
+Table::Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
+             std::string metadata_location, std::shared_ptr<FileIO> io,
+             std::shared_ptr<Catalog> catalog)
+    : identifier_(std::move(identifier)),
+      metadata_(std::move(metadata)),
+      metadata_location_(std::move(metadata_location)),
+      io_(std::move(io)),
+      catalog_(std::move(catalog)),
+      properties_(TableProperties::FromMap(metadata_->properties)) {}
 
 const std::string& Table::uuid() const { return metadata_->table_uuid; }
 
@@ -43,6 +56,7 @@ Status Table::Refresh() {
     metadata_ = std::move(refreshed_table->metadata_);
     metadata_location_ = std::move(refreshed_table->metadata_location_);
     io_ = std::move(refreshed_table->io_);
+    properties_ = std::move(refreshed_table->properties_);
 
     schemas_map_.reset();
     partition_spec_map_.reset();
@@ -99,9 +113,7 @@ Table::sort_orders() const {
   return sort_orders_map_;
 }
 
-const std::unordered_map<std::string, std::string>& Table::properties() const {
-  return metadata_->properties;
-}
+const TableProperties& Table::properties() const { return *properties_; }
 
 const std::string& Table::location() const { return metadata_->location; }
 

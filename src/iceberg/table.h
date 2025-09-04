@@ -33,7 +33,7 @@ namespace iceberg {
 /// \brief Represents an Iceberg table
 class ICEBERG_EXPORT Table {
  public:
-  virtual ~Table() = default;
+  ~Table();
 
   /// \brief Construct a table.
   /// \param[in] identifier The identifier of the table.
@@ -44,12 +44,7 @@ class ICEBERG_EXPORT Table {
   /// be read-only.
   Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
         std::string metadata_location, std::shared_ptr<FileIO> io,
-        std::shared_ptr<Catalog> catalog)
-      : identifier_(std::move(identifier)),
-        metadata_(std::move(metadata)),
-        metadata_location_(std::move(metadata_location)),
-        io_(std::move(io)),
-        catalog_(std::move(catalog)) {};
+        std::shared_ptr<Catalog> catalog);
 
   /// \brief Return the identifier of this table
   const TableIdentifier& name() const { return identifier_; }
@@ -85,7 +80,7 @@ class ICEBERG_EXPORT Table {
   sort_orders() const;
 
   /// \brief Return a map of string properties for this table
-  const std::unordered_map<std::string, std::string>& properties() const;
+  const TableProperties& properties() const;
 
   /// \brief Return the table's base location
   const std::string& location() const;
@@ -122,6 +117,7 @@ class ICEBERG_EXPORT Table {
   std::string metadata_location_;
   std::shared_ptr<FileIO> io_;
   std::shared_ptr<Catalog> catalog_;
+  std::unique_ptr<TableProperties> properties_;
 
   // Cache lazy-initialized maps.
   mutable std::shared_ptr<std::unordered_map<int32_t, std::shared_ptr<Schema>>>
