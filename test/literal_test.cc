@@ -92,6 +92,12 @@ TEST(LiteralTest, IntCastTo) {
   auto double_result = int_literal.CastTo(iceberg::float64());
   ASSERT_THAT(double_result, IsOk());
   EXPECT_EQ(double_result->type()->type_id(), TypeId::kDouble);
+
+  // Cast to Date
+  auto date_result = int_literal.CastTo(iceberg::date());
+  ASSERT_THAT(date_result, IsOk());
+  EXPECT_EQ(date_result->type()->type_id(), TypeId::kDate);
+  EXPECT_EQ(date_result->ToString(), "42");
 }
 
 // Long type tests
@@ -134,9 +140,33 @@ TEST(LiteralTest, LongCastTo) {
   auto double_result = long_literal.CastTo(iceberg::float64());
   ASSERT_THAT(double_result, IsOk());
   EXPECT_EQ(double_result->type()->type_id(), TypeId::kDouble);
+
+  // Cast to Date
+  auto date_result = long_literal.CastTo(iceberg::date());
+  ASSERT_THAT(date_result, IsOk());
+  EXPECT_EQ(date_result->type()->type_id(), TypeId::kDate);
+  EXPECT_EQ(date_result->ToString(), "42");
+
+  // Cast to Time
+  auto time_result = long_literal.CastTo(iceberg::time());
+  ASSERT_THAT(time_result, IsOk());
+  EXPECT_EQ(time_result->type()->type_id(), TypeId::kTime);
+  EXPECT_EQ(time_result->ToString(), "42");
+
+  // Cast to Timestamp
+  auto timestamp_result = long_literal.CastTo(iceberg::timestamp());
+  ASSERT_THAT(timestamp_result, IsOk());
+  EXPECT_EQ(timestamp_result->type()->type_id(), TypeId::kTimestamp);
+  EXPECT_EQ(timestamp_result->ToString(), "42");
+
+  // Cast to TimestampTz
+  auto timestamptz_result = long_literal.CastTo(iceberg::timestamp_tz());
+  ASSERT_THAT(timestamptz_result, IsOk());
+  EXPECT_EQ(timestamptz_result->type()->type_id(), TypeId::kTimestampTz);
+  EXPECT_EQ(timestamptz_result->ToString(), "42");
 }
 
-TEST(LiteralTest, LongCastToIntOverflow) {
+TEST(LiteralTest, LongCastToOverflow) {
   // Test overflow cases
   auto max_long =
       Literal::Long(static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1);
@@ -148,6 +178,14 @@ TEST(LiteralTest, LongCastToIntOverflow) {
   EXPECT_TRUE(max_result->IsAboveMax());
 
   auto min_result = min_long.CastTo(iceberg::int32());
+  ASSERT_THAT(min_result, IsOk());
+  EXPECT_TRUE(min_result->IsBelowMin());
+
+  max_result = max_long.CastTo(iceberg::date());
+  ASSERT_THAT(max_result, IsOk());
+  EXPECT_TRUE(max_result->IsAboveMax());
+
+  min_result = min_long.CastTo(iceberg::date());
   ASSERT_THAT(min_result, IsOk());
   EXPECT_TRUE(min_result->IsBelowMin());
 }
@@ -205,6 +243,31 @@ TEST(LiteralTest, DoubleComparison) {
   EXPECT_EQ(double2 <=> double1, std::partial_ordering::greater);
 }
 
+TEST(LiteralTest, DoubleCastTo) {
+  auto double_literal = Literal::Double(3.14);
+
+  // Cast to Float
+  auto float_result = double_literal.CastTo(iceberg::float32());
+  ASSERT_THAT(float_result, IsOk());
+  EXPECT_EQ(float_result->type()->type_id(), TypeId::kFloat);
+}
+
+TEST(LiteralTest, DoubleCastToOverflow) {
+  // Test overflow cases for Double to Float
+  auto max_double =
+      Literal::Double(static_cast<double>(std::numeric_limits<float>::max()) * 2);
+  auto min_double =
+      Literal::Double(-static_cast<double>(std::numeric_limits<float>::max()) * 2);
+
+  auto max_result = max_double.CastTo(iceberg::float32());
+  ASSERT_THAT(max_result, IsOk());
+  EXPECT_TRUE(max_result->IsAboveMax());
+
+  auto min_result = min_double.CastTo(iceberg::float32());
+  ASSERT_THAT(min_result, IsOk());
+  EXPECT_TRUE(min_result->IsBelowMin());
+}
+
 // String type tests
 TEST(LiteralTest, StringBasics) {
   auto string_literal = Literal::String("hello world");
@@ -236,8 +299,8 @@ TEST(LiteralTest, BinaryBasics) {
   EXPECT_EQ(binary_literal.type()->type_id(), TypeId::kBinary);
   EXPECT_EQ(empty_binary.type()->type_id(), TypeId::kBinary);
 
-  EXPECT_EQ(binary_literal.ToString(), "010203FF");
-  EXPECT_EQ(empty_binary.ToString(), "");
+  EXPECT_EQ(binary_literal.ToString(), "X'010203FF'");
+  EXPECT_EQ(empty_binary.ToString(), "X''");
 }
 
 TEST(LiteralTest, BinaryComparison) {
@@ -252,6 +315,214 @@ TEST(LiteralTest, BinaryComparison) {
   EXPECT_EQ(binary1 <=> binary3, std::partial_ordering::equivalent);
   EXPECT_EQ(binary1 <=> binary2, std::partial_ordering::less);
   EXPECT_EQ(binary2 <=> binary1, std::partial_ordering::greater);
+}
+
+// Fixed type tests
+TEST(LiteralTest, FixedBasics) {
+  std::vector<uint8_t> data = {0x01, 0x02, 0x03, 0xFF};
+  auto fixed_literal = Literal::Fixed(data);
+  auto empty_fixed = Literal::Fixed({});
+
+  EXPECT_EQ(fixed_literal.type()->type_id(), TypeId::kFixed);
+  EXPECT_EQ(empty_fixed.type()->type_id(), TypeId::kFixed);
+
+  EXPECT_EQ(fixed_literal.ToString(), "X'010203FF'");
+  EXPECT_EQ(empty_fixed.ToString(), "X''");
+}
+
+TEST(LiteralTest, FixedComparison) {
+  std::vector<uint8_t> data1 = {0x01, 0x02};
+  std::vector<uint8_t> data2 = {0x01, 0x03};
+  std::vector<uint8_t> data3 = {0x01, 0x02};
+
+  auto fixed1 = Literal::Fixed(data1);
+  auto fixed2 = Literal::Fixed(data2);
+  auto fixed3 = Literal::Fixed(data3);
+
+  EXPECT_EQ(fixed1 <=> fixed3, std::partial_ordering::equivalent);
+  EXPECT_EQ(fixed1 <=> fixed2, std::partial_ordering::less);
+  EXPECT_EQ(fixed2 <=> fixed1, std::partial_ordering::greater);
+}
+
+// Date type tests
+TEST(LiteralTest, DateBasics) {
+  auto date_literal = Literal::Date(19489);  // May 15, 2023
+  auto negative_date = Literal::Date(-1);    // December 31, 1969
+
+  EXPECT_EQ(date_literal.type()->type_id(), TypeId::kDate);
+  EXPECT_EQ(negative_date.type()->type_id(), TypeId::kDate);
+
+  EXPECT_EQ(date_literal.ToString(), "19489");
+  EXPECT_EQ(negative_date.ToString(), "-1");
+}
+
+TEST(LiteralTest, DateComparison) {
+  auto date1 = Literal::Date(100);
+  auto date2 = Literal::Date(200);
+  auto date3 = Literal::Date(100);
+
+  EXPECT_EQ(date1 <=> date3, std::partial_ordering::equivalent);
+  EXPECT_EQ(date1 <=> date2, std::partial_ordering::less);
+  EXPECT_EQ(date2 <=> date1, std::partial_ordering::greater);
+}
+
+// Time type tests
+TEST(LiteralTest, TimeBasics) {
+  auto time_literal = Literal::Time(43200000000LL);  // 12:00:00 in microseconds
+  auto midnight = Literal::Time(0LL);
+
+  EXPECT_EQ(time_literal.type()->type_id(), TypeId::kTime);
+  EXPECT_EQ(midnight.type()->type_id(), TypeId::kTime);
+
+  EXPECT_EQ(time_literal.ToString(), "43200000000");
+  EXPECT_EQ(midnight.ToString(), "0");
+}
+
+TEST(LiteralTest, TimeComparison) {
+  auto time1 = Literal::Time(43200000000LL);  // 12:00:00
+  auto time2 = Literal::Time(86400000000LL);  // 24:00:00 (invalid but for testing)
+  auto time3 = Literal::Time(43200000000LL);
+
+  EXPECT_EQ(time1 <=> time3, std::partial_ordering::equivalent);
+  EXPECT_EQ(time1 <=> time2, std::partial_ordering::less);
+  EXPECT_EQ(time2 <=> time1, std::partial_ordering::greater);
+}
+
+// Timestamp type tests
+TEST(LiteralTest, TimestampBasics) {
+  auto timestamp_literal =
+      Literal::Timestamp(1684137600000000LL);  // May 15, 2023 12:00:00 UTC
+  auto epoch = Literal::Timestamp(0LL);
+
+  EXPECT_EQ(timestamp_literal.type()->type_id(), TypeId::kTimestamp);
+  EXPECT_EQ(epoch.type()->type_id(), TypeId::kTimestamp);
+
+  EXPECT_EQ(timestamp_literal.ToString(), "1684137600000000");
+  EXPECT_EQ(epoch.ToString(), "0");
+}
+
+TEST(LiteralTest, TimestampComparison) {
+  auto timestamp1 = Literal::Timestamp(1000000LL);
+  auto timestamp2 = Literal::Timestamp(2000000LL);
+  auto timestamp3 = Literal::Timestamp(1000000LL);
+
+  EXPECT_EQ(timestamp1 <=> timestamp3, std::partial_ordering::equivalent);
+  EXPECT_EQ(timestamp1 <=> timestamp2, std::partial_ordering::less);
+  EXPECT_EQ(timestamp2 <=> timestamp1, std::partial_ordering::greater);
+}
+
+TEST(LiteralTest, TimestampCastTo) {
+  auto timestamp_literal =
+      Literal::Timestamp(1684137600000000LL);  // May 15, 2023 12:00:00 UTC
+
+  // Cast to Date
+  auto date_result = timestamp_literal.CastTo(iceberg::date());
+  ASSERT_THAT(date_result, IsOk());
+  EXPECT_EQ(date_result->type()->type_id(), TypeId::kDate);
+
+  // Cast to TimestampTz
+  auto timestamptz_result = timestamp_literal.CastTo(iceberg::timestamp_tz());
+  ASSERT_THAT(timestamptz_result, IsOk());
+  EXPECT_EQ(timestamptz_result->type()->type_id(), TypeId::kTimestampTz);
+  EXPECT_EQ(timestamptz_result->ToString(), "1684137600000000");
+}
+
+// TimestampTz type tests
+TEST(LiteralTest, TimestampTzBasics) {
+  auto timestamptz_literal =
+      Literal::TimestampTz(1684137600000000LL);  // May 15, 2023 12:00:00 UTC
+  auto epoch = Literal::TimestampTz(0LL);
+
+  EXPECT_EQ(timestamptz_literal.type()->type_id(), TypeId::kTimestampTz);
+  EXPECT_EQ(epoch.type()->type_id(), TypeId::kTimestampTz);
+
+  EXPECT_EQ(timestamptz_literal.ToString(), "1684137600000000");
+  EXPECT_EQ(epoch.ToString(), "0");
+}
+
+TEST(LiteralTest, TimestampTzComparison) {
+  auto timestamptz1 = Literal::TimestampTz(1000000LL);
+  auto timestamptz2 = Literal::TimestampTz(2000000LL);
+  auto timestamptz3 = Literal::TimestampTz(1000000LL);
+
+  EXPECT_EQ(timestamptz1 <=> timestamptz3, std::partial_ordering::equivalent);
+  EXPECT_EQ(timestamptz1 <=> timestamptz2, std::partial_ordering::less);
+  EXPECT_EQ(timestamptz2 <=> timestamptz1, std::partial_ordering::greater);
+}
+
+TEST(LiteralTest, TimestampTzCastTo) {
+  auto timestamptz_literal =
+      Literal::TimestampTz(1684137600000000LL);  // May 15, 2023 12:00:00 UTC
+
+  // Cast to Date
+  auto date_result = timestamptz_literal.CastTo(iceberg::date());
+  ASSERT_THAT(date_result, IsOk());
+  EXPECT_EQ(date_result->type()->type_id(), TypeId::kDate);
+
+  // Cast to Timestamp
+  auto timestamp_result = timestamptz_literal.CastTo(iceberg::timestamp());
+  ASSERT_THAT(timestamp_result, IsOk());
+  EXPECT_EQ(timestamp_result->type()->type_id(), TypeId::kTimestamp);
+  EXPECT_EQ(timestamp_result->ToString(), "1684137600000000");
+}
+
+// Binary to Fixed casting tests
+TEST(LiteralTest, BinaryCastTo) {
+  std::vector<uint8_t> data4 = {0x01, 0x02, 0x03, 0x04};
+  auto binary_literal = Literal::Binary(data4);
+
+  // Cast to Fixed with matching length
+  auto fixed_result = binary_literal.CastTo(iceberg::fixed(4));
+  ASSERT_THAT(fixed_result, IsOk());
+  EXPECT_EQ(fixed_result->type()->type_id(), TypeId::kFixed);
+
+  // Cast to Fixed with different length should fail
+  auto fixed_result_wrong_length = binary_literal.CastTo(iceberg::fixed(5));
+  EXPECT_THAT(fixed_result_wrong_length, IsError(ErrorKind::kNotSupported));
+}
+
+// Fixed to Binary and Fixed casting tests
+TEST(LiteralTest, FixedCastTo) {
+  std::vector<uint8_t> data4 = {0x01, 0x02, 0x03, 0x04};
+  auto fixed_literal = Literal::Fixed(data4);
+
+  // Cast to Binary
+  auto binary_result = fixed_literal.CastTo(iceberg::binary());
+  ASSERT_THAT(binary_result, IsOk());
+  EXPECT_EQ(binary_result->type()->type_id(), TypeId::kBinary);
+
+  // Cast to Fixed with same length (should return same literal)
+  auto same_fixed_result = fixed_literal.CastTo(iceberg::fixed(4));
+  ASSERT_THAT(same_fixed_result, IsOk());
+  EXPECT_EQ(same_fixed_result->type()->type_id(), TypeId::kFixed);
+
+  // Cast to Fixed with different length should fail
+  auto different_fixed_result = fixed_literal.CastTo(iceberg::fixed(5));
+  EXPECT_THAT(different_fixed_result, IsError(ErrorKind::kNotSupported));
+}
+
+// Microseconds to Days conversion tests
+TEST(LiteralTest, MicrosToDaysConversion) {
+  // Test timestamp to date conversion (tests MicrosToDays function)
+  constexpr int64_t kMicrosPerDay = 86400000000LL;  // 24 * 60 * 60 * 1000 * 1000
+
+  // Test full day conversion
+  auto one_day_timestamp = Literal::Timestamp(kMicrosPerDay);
+  auto date_result = one_day_timestamp.CastTo(iceberg::date());
+  ASSERT_THAT(date_result, IsOk());
+  EXPECT_EQ(date_result->ToString(), "1");  // Should be day 1
+
+  // Test partial day conversion (should floor to 0)
+  auto partial_day_timestamp = Literal::Timestamp(kMicrosPerDay / 2);  // 12 hours
+  auto partial_date_result = partial_day_timestamp.CastTo(iceberg::date());
+  ASSERT_THAT(partial_date_result, IsOk());
+  EXPECT_EQ(partial_date_result->ToString(), "0");  // Should floor to day 0
+
+  // Test negative timestamp (should floor negative)
+  auto negative_timestamp = Literal::Timestamp(-kMicrosPerDay / 2);  // -12 hours
+  auto negative_date_result = negative_timestamp.CastTo(iceberg::date());
+  ASSERT_THAT(negative_date_result, IsOk());
+  EXPECT_EQ(negative_date_result->ToString(), "-1");  // Should floor to day -1
 }
 
 // Cross-type comparison tests
