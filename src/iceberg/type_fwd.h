@@ -128,6 +128,7 @@ struct DataFile;
 struct ManifestEntry;
 struct ManifestFile;
 struct ManifestList;
+struct PartitionFieldSummary;
 
 class ManifestListReader;
 class ManifestListWriter;

@@ -20,9 +20,6 @@
 #pragma once
 
 /// \file iceberg/v1_metadata.h
-
-#include <memory>
-
 #include "iceberg/manifest_adapter.h"
 
 namespace iceberg {
@@ -31,32 +28,31 @@ namespace iceberg {
 class ManifestEntryAdapterV1 : public ManifestEntryAdapter {
  public:
   ManifestEntryAdapterV1(std::optional<int64_t> snapshot_id,
-                         std::shared_ptr<Schema> schema) {
-    // TODO(xiao.dong): init v1 schema
-  }
-  Status StartAppending() override { return {}; }
-  Status Append(const ManifestEntry& entry) override { return {}; }
-  Result<ArrowArray> FinishAppending() override { return {}; }
+                         std::shared_ptr<Schema> partition_schema,
+                         std::shared_ptr<PartitionSpec> partition_spec)
+      : ManifestEntryAdapter(std::move(partition_schema), std::move(partition_spec)),
+        snapshot_id_(snapshot_id) {}
+  Status Init() override;
+  Status Append(const ManifestEntry& entry) override;
+
+ protected:
+  std::shared_ptr<StructType> GetManifestEntryStructType() override;
 
  private:
-  std::shared_ptr<Schema> manifest_schema_;
-  ArrowSchema schema_;  // converted from manifest_schema_
+  std::optional<int64_t> snapshot_id_;
 };
 
 /// \brief Adapter to convert V1 ManifestFile to `ArrowArray`.
 class ManifestFileAdapterV1 : public ManifestFileAdapter {
  public:
-  ManifestFileAdapterV1(int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
-                        std::shared_ptr<Schema> schema) {
-    // TODO(xiao.dong): init v1 schema
-  }
-  Status StartAppending() override { return {}; }
-  Status Append(const ManifestFile& file) override { return {}; }
-  Result<ArrowArray> FinishAppending() override { return {}; }
+  ManifestFileAdapterV1(int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id)
+      : snapshot_id_(snapshot_id), parent_snapshot_id_(parent_snapshot_id) {}
+  Status Init() override;
+  Status Append(const ManifestFile& file) override;
 
  private:
-  std::shared_ptr<Schema> manifest_list_schema_;
-  ArrowSchema schema_;  // converted from manifest_list_schema_
+  int64_t snapshot_id_;
+  std::optional<int64_t> parent_snapshot_id_;
 };
 
 }  // namespace iceberg
