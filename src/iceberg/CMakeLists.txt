@@ -48,6 +48,10 @@ set(ICEBERG_SOURCES
     manifest_reader.cc
     manifest_reader_internal.cc
     manifest_writer.cc
+    manifest_adapter.cc
+    v1_metadata.cc
+    v2_metadata.cc
+    v3_metadata.cc
     arrow_c_data_guard_internal.cc
     util/murmurhash3_internal.cc
     util/timepoint.cc
