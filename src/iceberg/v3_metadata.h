@@ -21,44 +21,65 @@
 
 /// \file iceberg/v3_metadata.h
 
-#include <memory>
-
 #include "iceberg/manifest_adapter.h"
 
 namespace iceberg {
 
-/// \brief Adapter to convert V3ManifestEntry to `ArrowArray`.
+/// \brief Adapter to convert V3 ManifestEntry to `ArrowArray`.
 class ManifestEntryAdapterV3 : public ManifestEntryAdapter {
  public:
   ManifestEntryAdapterV3(std::optional<int64_t> snapshot_id,
                          std::optional<int64_t> first_row_id,
-                         std::shared_ptr<Schema> schema) {
-    // TODO(xiao.dong): init v3 schema
-  }
-  Status StartAppending() override { return {}; }
-  Status Append(const ManifestEntry& entry) override { return {}; }
-  Result<ArrowArray> FinishAppending() override { return {}; }
+                         std::shared_ptr<Schema> partition_schema,
+                         std::shared_ptr<PartitionSpec> partition_spec)
+      : ManifestEntryAdapter(std::move(partition_schema), std::move(partition_spec)),
+        snapshot_id_(snapshot_id),
+        first_row_id_(first_row_id) {}
+  Status Init() override;
+  Status Append(const ManifestEntry& entry) override;
+
+ protected:
+  Result<std::optional<int64_t>> GetWrappedSequenceNumber(
+      const ManifestEntry& entry) override;
+  Result<std::optional<std::string>> GetWrappedReferenceDataFile(
+      const std::shared_ptr<DataFile>& file) override;
+  Result<std::optional<int64_t>> GetWrappedFirstRowId(
+      const std::shared_ptr<DataFile>& file) override;
+  Result<std::optional<int64_t>> GetWrappedContentOffset(
+      const std::shared_ptr<DataFile>& file) override;
+  Result<std::optional<int64_t>> GetWrappedContentSizeInBytes(
+      const std::shared_ptr<DataFile>& file) override;
 
  private:
-  std::shared_ptr<Schema> manifest_schema_;
-  ArrowSchema schema_;  // converted from manifest_schema_
+  std::optional<int64_t> snapshot_id_;
+  std::optional<int64_t> first_row_id_;
 };
 
 /// \brief Adapter to convert V3 ManifestFile to `ArrowArray`.
 class ManifestFileAdapterV3 : public ManifestFileAdapter {
  public:
   ManifestFileAdapterV3(int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
-                        int64_t sequence_number, std::optional<int64_t> first_row_id,
-                        std::shared_ptr<Schema> schema) {
-    // TODO(xiao.dong): init v3 schema
-  }
-  Status StartAppending() override { return {}; }
-  Status Append(const ManifestFile& file) override { return {}; }
-  Result<ArrowArray> FinishAppending() override { return {}; }
+                        int64_t sequence_number, std::optional<int64_t> first_row_id)
+      : snapshot_id_(snapshot_id),
+        parent_snapshot_id_(parent_snapshot_id),
+        sequence_number_(sequence_number),
+        next_row_id_(first_row_id) {}
+  Status Init() override;
+  Status Append(const ManifestFile& file) override;
+
+ protected:
+  Result<int64_t> GetWrappedSequenceNumber(const ManifestFile& file) override;
+  Result<int64_t> GetWrappedMinSequenceNumber(const ManifestFile& file) override;
+  Result<std::optional<int64_t>> GetWrappedFirstRowId(const ManifestFile& file) override;
 
  private:
-  std::shared_ptr<Schema> manifest_list_schema_;
-  ArrowSchema schema_;  // converted from manifest_list_schema_
+  bool WrappedFirstRowId(const ManifestFile& file);
+
+ private:
+  int64_t snapshot_id_;
+  std::optional<int64_t> parent_snapshot_id_;
+  int64_t sequence_number_;
+  std::optional<int64_t> next_row_id_;
 };
 
 }  // namespace iceberg

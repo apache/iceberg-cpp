@@ -21,8 +21,6 @@
 
 /// \file iceberg/v2_metadata.h
 
-#include <memory>
-
 #include "iceberg/manifest_adapter.h"
 
 namespace iceberg {
@@ -31,32 +29,42 @@ namespace iceberg {
 class ManifestEntryAdapterV2 : public ManifestEntryAdapter {
  public:
   ManifestEntryAdapterV2(std::optional<int64_t> snapshot_id,
-                         std::shared_ptr<Schema> schema) {
-    // TODO(xiao.dong): init v2 schema
-  }
-  Status StartAppending() override { return {}; }
-  Status Append(const ManifestEntry& entry) override { return {}; }
-  Result<ArrowArray> FinishAppending() override { return {}; }
+                         std::shared_ptr<Schema> partition_schema,
+                         std::shared_ptr<PartitionSpec> partition_spec)
+      : ManifestEntryAdapter(std::move(partition_schema), std::move(partition_spec)),
+        snapshot_id_(snapshot_id) {}
+  Status Init() override;
+  Status Append(const ManifestEntry& entry) override;
+
+ protected:
+  Result<std::optional<int64_t>> GetWrappedSequenceNumber(
+      const ManifestEntry& entry) override;
+  Result<std::optional<std::string>> GetWrappedReferenceDataFile(
+      const std::shared_ptr<DataFile>& file) override;
 
  private:
-  std::shared_ptr<Schema> manifest_schema_;
-  ArrowSchema schema_;  // converted from manifest_schema_
+  std::optional<int64_t> snapshot_id_;
 };
 
 /// \brief Adapter to convert V2 ManifestFile to `ArrowArray`.
 class ManifestFileAdapterV2 : public ManifestFileAdapter {
  public:
   ManifestFileAdapterV2(int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
-                        int64_t sequence_number, std::shared_ptr<Schema> schema) {
-    // TODO(xiao.dong): init v2 schema
-  }
-  Status StartAppending() override { return {}; }
-  Status Append(const ManifestFile& file) override { return {}; }
-  Result<ArrowArray> FinishAppending() override { return {}; }
+                        int64_t sequence_number)
+      : snapshot_id_(snapshot_id),
+        parent_snapshot_id_(parent_snapshot_id),
+        sequence_number_(sequence_number) {}
+  Status Init() override;
+  Status Append(const ManifestFile& file) override;
+
+ protected:
+  Result<int64_t> GetWrappedSequenceNumber(const ManifestFile& file) override;
+  Result<int64_t> GetWrappedMinSequenceNumber(const ManifestFile& file) override;
 
  private:
-  std::shared_ptr<Schema> manifest_list_schema_;
-  ArrowSchema schema_;  // converted from manifest_list_schema_
+  int64_t snapshot_id_;
+  std::optional<int64_t> parent_snapshot_id_;
+  int64_t sequence_number_;
 };
 
 }  // namespace iceberg

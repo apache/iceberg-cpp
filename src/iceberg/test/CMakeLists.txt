@@ -117,8 +117,8 @@ if(ICEBERG_BUILD_BUNDLE)
                    avro_test.cc
                    avro_schema_test.cc
                    avro_stream_test.cc
-                   manifest_list_reader_test.cc
-                   manifest_reader_test.cc
+                   manifest_list_reader_writer_test.cc
+                   manifest_reader_writer_test.cc
                    test_common.cc)
 
   add_iceberg_test(arrow_test
