@@ -53,20 +53,27 @@ Requirements to run `release_rc.sh`:
 If you don't have a PGP key, https://infra.apache.org/release-signing.html#generate
 may be helpful.
 
-Your PGP key must be registered to the following:
+Your PGP key must be published in the KEYS file, which is hosted at:
 
     * https://downloads.apache.org/iceberg/KEYS
 
 See the header comment of them for how to add a PGP key.
 
-Apache Iceberg committers can update them by Subversion client with their ASF account.
-e.g.:
+If you are a first-time release manager, you need to add your public key to this file. To prevent formatting errors, please use the following commands instead of editing the file manually:
+
++ Check out the release distribution directory:
 
 ```console
 $ svn co https://dist.apache.org/repos/dist/release/iceberg
 $ cd iceberg
-$ editor KEYS
-$ svn ci KEYS
+```
++ Append your GPG public key to the KEYS file. Replace <YOUR_KEY_ID> with your actual GPG key ID.
+
+```console
+$ echo "" >> KEYS   # append a newline
+$ gpg --list-sigs <YOUR_KEY_ID> >> KEYS  # append signatures
+$ gpg --armor --export <YOUR_KEY_ID> >> KEYS # append public key block
+$ svn commit -m "Add GPG key for <YOUR_NAME>"
 ```
 
 ### Publish

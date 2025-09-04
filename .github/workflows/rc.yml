@@ -49,10 +49,10 @@ jobs:
 
       - name: Archive
         run: |
-          id="apache-iceberg-cpp-${VERSION}-rc${RC}"
-          tar_gz="${id}.tar.gz"
+          ARCHIVE_FILE_NAME="apache-iceberg-cpp-${VERSION}-rc${RC}"
+          tar_gz="${ARCHIVE_FILE_NAME}.tar.gz"
           echo "TAR_GZ=${tar_gz}" >> ${GITHUB_ENV}
-          git archive HEAD --prefix "${id}/" --output "${tar_gz}"
+          git archive HEAD --prefix "${ARCHIVE_FILE_NAME}/" --output "${tar_gz}"
           sha512sum "${tar_gz}" > "${tar_gz}.sha512"
 
       - name: Audit
