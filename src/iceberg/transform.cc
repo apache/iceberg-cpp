@@ -27,41 +27,6 @@
 #include "iceberg/type.h"
 
 namespace iceberg {
-namespace {
-constexpr std::string_view kUnknownName = "unknown";
-constexpr std::string_view kIdentityName = "identity";
-constexpr std::string_view kBucketName = "bucket";
-constexpr std::string_view kTruncateName = "truncate";
-constexpr std::string_view kYearName = "year";
-constexpr std::string_view kMonthName = "month";
-constexpr std::string_view kDayName = "day";
-constexpr std::string_view kHourName = "hour";
-constexpr std::string_view kVoidName = "void";
-}  // namespace
-
-constexpr std::string_view TransformTypeToString(TransformType type) {
-  switch (type) {
-    case TransformType::kUnknown:
-      return kUnknownName;
-    case TransformType::kIdentity:
-      return kIdentityName;
-    case TransformType::kBucket:
-      return kBucketName;
-    case TransformType::kTruncate:
-      return kTruncateName;
-    case TransformType::kYear:
-      return kYearName;
-    case TransformType::kMonth:
-      return kMonthName;
-    case TransformType::kDay:
-      return kDayName;
-    case TransformType::kHour:
-      return kHourName;
-    case TransformType::kVoid:
-      return kVoidName;
-  }
-  std::unreachable();
-}
 
 std::shared_ptr<Transform> Transform::Identity() {
   static auto instance =
