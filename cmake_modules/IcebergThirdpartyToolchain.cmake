@@ -179,27 +179,27 @@ function(resolve_avro_dependency)
       OFF
       CACHE BOOL "" FORCE)
 
-  fetchcontent_declare(AvroCpp
+  fetchcontent_declare(avro-cpp
                        ${FC_DECLARE_COMMON_OPTIONS}
                        # TODO: switch to Apache Avro 1.13.0 once released.
                        GIT_REPOSITORY https://github.com/wgtmac/avro.git
-                       GIT_TAG 6326988a12bc3eff37ba24db167d780923ae0df4
+                       GIT_TAG c96d8984964e27435a99378d5f6ef20362bc458d
                        SOURCE_SUBDIR
                        lang/c++
                        FIND_PACKAGE_ARGS
                        NAMES
-                       AvroCpp
+                       avro-cpp
                        CONFIG)
 
-  fetchcontent_makeavailable(AvroCpp)
+  fetchcontent_makeavailable(avro-cpp)
 
-  if(avrocpp_SOURCE_DIR)
-    if(NOT TARGET AvroCpp::avrocpp_static)
-      add_library(AvroCpp::avrocpp_static INTERFACE IMPORTED)
-      target_link_libraries(AvroCpp::avrocpp_static INTERFACE avrocpp_s)
-      target_include_directories(AvroCpp::avrocpp_static
-                                 INTERFACE ${avrocpp_BINARY_DIR}
-                                           ${avrocpp_SOURCE_DIR}/lang/c++)
+  if(avro-cpp_SOURCE_DIR)
+    if(NOT TARGET avro-cpp::avrocpp_static)
+      add_library(avro-cpp::avrocpp_static INTERFACE IMPORTED)
+      target_link_libraries(avro-cpp::avrocpp_static INTERFACE avrocpp_s)
+      target_include_directories(avro-cpp::avrocpp_static
+                                 INTERFACE ${avro-cpp_BINARY_DIR}
+                                           ${avro-cpp_SOURCE_DIR}/lang/c++)
     endif()
 
     set(AVRO_VENDORED TRUE)
