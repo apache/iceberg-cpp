@@ -19,7 +19,6 @@
 
 #include "iceberg/inheritable_metadata.h"
 
-#include <cassert>
 #include <utility>
 
 #include <iceberg/result.h>
