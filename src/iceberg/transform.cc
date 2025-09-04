@@ -21,7 +21,6 @@
 
 #include <format>
 #include <regex>
-#include <utility>
 
 #include "iceberg/transform_function.h"
 #include "iceberg/type.h"

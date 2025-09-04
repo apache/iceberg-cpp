@@ -87,11 +87,11 @@ struct ICEBERG_EXPORT TableMetadata {
   /// The highest assigned column ID for the table
   int32_t last_column_id;
   /// A list of schemas
-  std::vector<std::shared_ptr<Schema>> schemas;
+  std::vector<std::shared_ptr<iceberg::Schema>> schemas;
   /// ID of the table's current schema
   std::optional<int32_t> current_schema_id;
   /// A list of partition specs
-  std::vector<std::shared_ptr<PartitionSpec>> partition_specs;
+  std::vector<std::shared_ptr<iceberg::PartitionSpec>> partition_specs;
   /// ID of the current partition spec that writers should use by default
   int32_t default_spec_id;
   /// The highest assigned partition field ID across all partition specs for the table
@@ -101,7 +101,7 @@ struct ICEBERG_EXPORT TableMetadata {
   /// ID of the current table snapshot
   int64_t current_snapshot_id;
   /// A list of valid snapshots
-  std::vector<std::shared_ptr<Snapshot>> snapshots;
+  std::vector<std::shared_ptr<iceberg::Snapshot>> snapshots;
   /// A list of timestamp and snapshot ID pairs that encodes changes to the current
   /// snapshot for the table
   std::vector<SnapshotLogEntry> snapshot_log;
@@ -109,7 +109,7 @@ struct ICEBERG_EXPORT TableMetadata {
   /// previous metadata files for the table
   std::vector<MetadataLogEntry> metadata_log;
   /// A list of sort orders
-  std::vector<std::shared_ptr<SortOrder>> sort_orders;
+  std::vector<std::shared_ptr<iceberg::SortOrder>> sort_orders;
   /// Default sort order id of the table
   int32_t default_sort_order_id;
   /// A map of snapshot references
@@ -122,16 +122,16 @@ struct ICEBERG_EXPORT TableMetadata {
   int64_t next_row_id;
 
   /// \brief Get the current schema, return NotFoundError if not found
-  Result<std::shared_ptr<Schema>> Schema() const;
+  Result<std::shared_ptr<iceberg::Schema>> Schema() const;
   /// \brief Get the current schema by ID, return NotFoundError if not found
   Result<std::shared_ptr<iceberg::Schema>> SchemaById(
       const std::optional<int32_t>& schema_id) const;
   /// \brief Get the current partition spec, return NotFoundError if not found
-  Result<std::shared_ptr<PartitionSpec>> PartitionSpec() const;
+  Result<std::shared_ptr<iceberg::PartitionSpec>> PartitionSpec() const;
   /// \brief Get the current sort order, return NotFoundError if not found
-  Result<std::shared_ptr<SortOrder>> SortOrder() const;
+  Result<std::shared_ptr<iceberg::SortOrder>> SortOrder() const;
   /// \brief Get the current snapshot, return NotFoundError if not found
-  Result<std::shared_ptr<Snapshot>> Snapshot() const;
+  Result<std::shared_ptr<iceberg::Snapshot>> Snapshot() const;
   /// \brief Get the snapshot of this table with the given id
   Result<std::shared_ptr<iceberg::Snapshot>> SnapshotById(int64_t snapshot_id) const;
 
@@ -145,7 +145,7 @@ ICEBERG_EXPORT std::string ToString(const SnapshotLogEntry& entry);
 ICEBERG_EXPORT std::string ToString(const MetadataLogEntry& entry);
 
 /// \brief The codec type of the table metadata file.
-ICEBERG_EXPORT enum class MetadataFileCodecType {
+enum class ICEBERG_EXPORT MetadataFileCodecType {
   kNone,
   kGzip,
 };
