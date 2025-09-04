@@ -19,6 +19,7 @@
 
 #include "iceberg/expression/literal.h"
 
+#include <chrono>
 #include <cmath>
 #include <concepts>
 
@@ -28,10 +29,10 @@ namespace iceberg {
 
 namespace {
 
-constexpr int64_t kMicrosPerDay = 86400000000LL;  // 24 * 60 * 60 * 1000 * 1000
-
-int32_t MicrosToDays(int64_t micros) {
-  return static_cast<int32_t>(std::floor(static_cast<double>(micros) / kMicrosPerDay));
+int32_t MicrosToDays(int64_t micros_since_epoch) {
+  std::chrono::microseconds micros(micros_since_epoch);
+  auto days_duration = std::chrono::floor<std::chrono::days>(micros);
+  return static_cast<int32_t>(days_duration.count());
 }
 
 }  // namespace
@@ -178,7 +179,7 @@ Result<Literal> LiteralCaster::CastFromDouble(
       if (double_val > static_cast<double>(std::numeric_limits<float>::max())) {
         return AboveMaxLiteral(target_type);
       }
-      if (double_val < -static_cast<double>(std::numeric_limits<float>::max())) {
+      if (double_val < static_cast<double>(std::numeric_limits<float>::lowest())) {
         return BelowMinLiteral(target_type);
       }
       return Literal::Float(static_cast<float>(double_val));
@@ -488,7 +489,7 @@ std::string Literal::ToString() const {
     }
     case TypeId::kDecimal:
     case TypeId::kUuid: {
-      throw IcebergError("Not implemented: ToString for " + type_->ToString());
+      throw NotImplemented("kDecimal and kUuid are not implemented yet");
     }
     default: {
       throw IcebergError("Unknown type: " + type_->ToString());
