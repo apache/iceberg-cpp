@@ -23,6 +23,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <utility>
 #include <variant>
 
 #include "iceberg/expression/literal.h"
@@ -56,8 +57,40 @@ enum class TransformType {
   kVoid,
 };
 
+constexpr std::string_view kUnknownName = "unknown";
+constexpr std::string_view kIdentityName = "identity";
+constexpr std::string_view kBucketName = "bucket";
+constexpr std::string_view kTruncateName = "truncate";
+constexpr std::string_view kYearName = "year";
+constexpr std::string_view kMonthName = "month";
+constexpr std::string_view kDayName = "day";
+constexpr std::string_view kHourName = "hour";
+constexpr std::string_view kVoidName = "void";
+
 /// \brief Get the relative transform name
-ICEBERG_EXPORT constexpr std::string_view TransformTypeToString(TransformType type);
+ICEBERG_EXPORT constexpr std::string_view TransformTypeToString(TransformType type) {
+  switch (type) {
+    case TransformType::kUnknown:
+      return kUnknownName;
+    case TransformType::kIdentity:
+      return kIdentityName;
+    case TransformType::kBucket:
+      return kBucketName;
+    case TransformType::kTruncate:
+      return kTruncateName;
+    case TransformType::kYear:
+      return kYearName;
+    case TransformType::kMonth:
+      return kMonthName;
+    case TransformType::kDay:
+      return kDayName;
+    case TransformType::kHour:
+      return kHourName;
+    case TransformType::kVoid:
+      return kVoidName;
+  }
+  std::unreachable();
+}
 
 /// \brief Represents a transform used in partitioning or sorting in Iceberg.
 ///
