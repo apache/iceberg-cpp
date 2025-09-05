@@ -22,8 +22,6 @@
 #include <cstring>
 #include <vector>
 
-#include <iceberg/result.h>
-
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/manifest_entry.h"
@@ -48,7 +46,7 @@ struct ReaderStreamPrivateData {
 
   ~ReaderStreamPrivateData() {
     if (reader) {
-      reader->Close();
+      std::ignore = reader->Close();
     }
   }
 };
@@ -301,30 +299,6 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
   }
 
   return tasks;
-}
-
-Result<std::vector<ArrowArrayStream>> DataTableScan::ToArrow() const {
-  Result<std::vector<std::shared_ptr<FileScanTask>>> tasks_result = PlanFiles();
-  if (!tasks_result.has_value()) {
-    return InvalidArgument("Failed to plan files: {}", tasks_result.error().message);
-  }
-  auto tasks = tasks_result.value();
-  if (tasks.empty()) {
-    // TODO(Li Feiyang): return a empty arrow stream
-    return NotImplemented("No files to scan");
-  }
-
-  std::vector<ArrowArrayStream> arrow_streams;
-  for (const auto& task : tasks_result.value()) {
-    Result<ArrowArrayStream> arrow_stream_result =
-        task->ToArrow(context_.projected_schema, context_.filter, file_io_);
-    if (!arrow_stream_result.has_value()) {
-      return InvalidArgument("Failed to get arrow stream: {}",
-                             arrow_stream_result.error().message);
-    }
-    arrow_streams.push_back(arrow_stream_result.value());
-  }
-  return std::move(arrow_streams);
 }
 
 }  // namespace iceberg

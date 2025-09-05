@@ -124,4 +124,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    parquet_data_test.cc
                    parquet_schema_test.cc
                    parquet_test.cc)
+
+  add_iceberg_test(scan_test USE_BUNDLE SOURCES file_scan_task_test.cc)
+
 endif()

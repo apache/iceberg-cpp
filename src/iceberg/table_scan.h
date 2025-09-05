@@ -55,8 +55,15 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   int32_t files_count() const override;
   int64_t estimated_row_count() const override;
 
+  /**
+   * \brief Returns a C-ABI compatible ArrowArrayStream to read the data for this task.
+   *
+   * \param projected_schema The projected schema for reading the data.
+   * \param filter Optional filter expression to apply during reading.
+   * \param io The FileIO instance for accessing the file data.
+   * \return A Result containing an ArrowArrayStream, or an error on failure.
+   */
   Result<ArrowArrayStream> ToArrow(const std::shared_ptr<Schema>& projected_schema,
-
                                    const std::shared_ptr<Expression>& filter,
                                    const std::shared_ptr<FileIO>& io) const;
 
@@ -189,8 +196,6 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
   /// \brief Plans the scan tasks by resolving manifests and data files.
   /// \return A Result containing scan tasks or an error.
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const override;
-
-  Result<std::vector<ArrowArrayStream>> ToArrow() const;
 };
 
 }  // namespace iceberg
