@@ -182,8 +182,8 @@ function(resolve_avro_dependency)
   fetchcontent_declare(avro-cpp
                        ${FC_DECLARE_COMMON_OPTIONS}
                        # TODO: switch to Apache Avro 1.13.0 once released.
-                       GIT_REPOSITORY https://github.com/wgtmac/avro.git
-                       GIT_TAG c96d8984964e27435a99378d5f6ef20362bc458d
+                       GIT_REPOSITORY https://github.com/apache/avro.git
+                       GIT_TAG e6c308780e876b4c11a470b9900995947f7b0fb5
                        SOURCE_SUBDIR
                        lang/c++
                        FIND_PACKAGE_ARGS
