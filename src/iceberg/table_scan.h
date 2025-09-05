@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 
+#include "iceberg/arrow_c_data.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/type_fwd.h"
 
@@ -53,6 +54,11 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   int64_t size_bytes() const override;
   int32_t files_count() const override;
   int64_t estimated_row_count() const override;
+
+  Result<ArrowArrayStream> ToArrow(const std::shared_ptr<Schema>& projected_schema,
+
+                                   const std::shared_ptr<Expression>& filter,
+                                   const std::shared_ptr<FileIO>& io) const;
 
  private:
   /// \brief Data file metadata.
@@ -183,6 +189,8 @@ class ICEBERG_EXPORT DataTableScan : public TableScan {
   /// \brief Plans the scan tasks by resolving manifests and data files.
   /// \return A Result containing scan tasks or an error.
   Result<std::vector<std::shared_ptr<FileScanTask>>> PlanFiles() const override;
+
+  Result<std::vector<ArrowArrayStream>> ToArrow() const;
 };
 
 }  // namespace iceberg
