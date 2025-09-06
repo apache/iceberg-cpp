@@ -25,6 +25,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/result.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "matchers.h"
@@ -490,3 +491,792 @@ TEST(SchemaTest, NestedDuplicateFieldIdError) {
   EXPECT_THAT(result.error().message,
               ::testing::HasSubstr("Duplicate field id found: 1"));
 }
+
+struct SelectTestParam {
+  std::string test_name;
+  std::function<std::shared_ptr<iceberg::Schema>()> create_schema;
+  std::vector<std::string> select_fields;
+  std::function<std::shared_ptr<iceberg::Schema>()> expected_schema;
+  bool should_succeed;
+  std::string expected_error_message;
+  bool case_sensitive = true;
+};
+
+class SelectParamTest : public ::testing::TestWithParam<SelectTestParam> {};
+
+TEST_P(SelectParamTest, SelectFields) {
+  const auto& param = GetParam();
+  auto input_schema = param.create_schema();
+
+  auto result = input_schema->Select(param.select_fields, param.case_sensitive);
+
+  if (param.should_succeed) {
+    ASSERT_TRUE(result.has_value()) << "Select should succeed for: " << param.test_name;
+
+    auto actual_schema = std::move(result.value());
+    auto expected_schema = param.expected_schema();
+    ASSERT_EQ(*actual_schema, *expected_schema)
+        << "Schema mismatch for: " << param.test_name;
+  } else {
+    ASSERT_FALSE(result.has_value()) << "Select should fail for: " << param.test_name;
+    ASSERT_THAT(result, iceberg::IsError(iceberg::ErrorKind::kInvalidArgument))
+        << "Should return InvalidArgument error for: " << param.test_name;
+
+    ASSERT_THAT(result, iceberg::HasErrorMessage(param.expected_error_message))
+        << "Error message mismatch for: " << param.test_name;
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    SelectTestCases, SelectParamTest,
+    ::testing::Values(
+        SelectTestParam{.test_name = "SelectAllColumns",
+                        .create_schema =
+                            []() {
+                              auto field1 = std::make_unique<iceberg::SchemaField>(
+                                  1, "id", iceberg::int32(), false);
+                              auto field2 = std::make_unique<iceberg::SchemaField>(
+                                  2, "name", iceberg::string(), true);
+                              auto field3 = std::make_unique<iceberg::SchemaField>(
+                                  3, "age", iceberg::int32(), true);
+                              auto field4 = std::make_unique<iceberg::SchemaField>(
+                                  4, "email", iceberg::string(), true);
+                              return std::make_shared<iceberg::Schema>(
+                                  std::vector<iceberg::SchemaField>{*field1, *field2,
+                                                                    *field3, *field4},
+                                  100);
+                            },
+                        .select_fields = {"*"},
+                        .expected_schema =
+                            []() {
+                              auto field1 = std::make_unique<iceberg::SchemaField>(
+                                  1, "id", iceberg::int32(), false);
+                              auto field2 = std::make_unique<iceberg::SchemaField>(
+                                  2, "name", iceberg::string(), true);
+                              auto field3 = std::make_unique<iceberg::SchemaField>(
+                                  3, "age", iceberg::int32(), true);
+                              auto field4 = std::make_unique<iceberg::SchemaField>(
+                                  4, "email", iceberg::string(), true);
+                              return std::make_shared<iceberg::Schema>(
+                                  std::vector<iceberg::SchemaField>{*field1, *field2,
+                                                                    *field3, *field4},
+                                  100);
+                            },
+                        .should_succeed = true},
+
+        SelectTestParam{.test_name = "SelectSingleField",
+                        .create_schema =
+                            []() {
+                              auto field1 = std::make_unique<iceberg::SchemaField>(
+                                  1, "id", iceberg::int32(), false);
+                              auto field2 = std::make_unique<iceberg::SchemaField>(
+                                  2, "name", iceberg::string(), true);
+                              auto field3 = std::make_unique<iceberg::SchemaField>(
+                                  3, "age", iceberg::int32(), true);
+                              auto field4 = std::make_unique<iceberg::SchemaField>(
+                                  4, "email", iceberg::string(), true);
+                              return std::make_shared<iceberg::Schema>(
+                                  std::vector<iceberg::SchemaField>{*field1, *field2,
+                                                                    *field3, *field4},
+                                  100);
+                            },
+                        .select_fields = {"name"},
+                        .expected_schema =
+                            []() {
+                              auto field = std::make_unique<iceberg::SchemaField>(
+                                  2, "name", iceberg::string(), true);
+                              return std::make_shared<iceberg::Schema>(
+                                  std::vector<iceberg::SchemaField>{*field}, 100);
+                            },
+                        .should_succeed = true},
+
+        SelectTestParam{
+            .test_name = "SelectMultipleFields",
+            .create_schema =
+                []() {
+                  auto field1 = std::make_unique<iceberg::SchemaField>(
+                      1, "id", iceberg::int32(), false);
+                  auto field2 = std::make_unique<iceberg::SchemaField>(
+                      2, "name", iceberg::string(), true);
+                  auto field3 = std::make_unique<iceberg::SchemaField>(
+                      3, "age", iceberg::int32(), true);
+                  auto field4 = std::make_unique<iceberg::SchemaField>(
+                      4, "email", iceberg::string(), true);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*field1, *field2, *field3,
+                                                        *field4},
+                      100);
+                },
+            .select_fields = {"id", "name", "age"},
+            .expected_schema =
+                []() {
+                  auto field1 = std::make_unique<iceberg::SchemaField>(
+                      1, "id", iceberg::int32(), false);
+                  auto field2 = std::make_unique<iceberg::SchemaField>(
+                      2, "name", iceberg::string(), true);
+                  auto field3 = std::make_unique<iceberg::SchemaField>(
+                      3, "age", iceberg::int32(), true);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*field1, *field2, *field3}, 100);
+                },
+            .should_succeed = true},
+
+        SelectTestParam{.test_name = "SelectNonExistentField",
+                        .create_schema =
+                            []() {
+                              auto field1 = std::make_unique<iceberg::SchemaField>(
+                                  1, "id", iceberg::int32(), false);
+                              auto field2 = std::make_unique<iceberg::SchemaField>(
+                                  2, "name", iceberg::string(), true);
+                              auto field3 = std::make_unique<iceberg::SchemaField>(
+                                  3, "age", iceberg::int32(), true);
+                              auto field4 = std::make_unique<iceberg::SchemaField>(
+                                  4, "email", iceberg::string(), true);
+                              return std::make_shared<iceberg::Schema>(
+                                  std::vector<iceberg::SchemaField>{*field1, *field2,
+                                                                    *field3, *field4},
+                                  100);
+                            },
+                        .select_fields = {"nonexistent"},
+                        .expected_schema =
+                            []() {
+                              return std::make_shared<iceberg::Schema>(
+                                  std::vector<iceberg::SchemaField>{}, 100);
+                            },
+                        .should_succeed = true},
+
+        SelectTestParam{.test_name = "SelectCaseSensitive",
+                        .create_schema =
+                            []() {
+                              auto field1 = std::make_unique<iceberg::SchemaField>(
+                                  1, "id", iceberg::int32(), false);
+                              auto field2 = std::make_unique<iceberg::SchemaField>(
+                                  2, "name", iceberg::string(), true);
+                              auto field3 = std::make_unique<iceberg::SchemaField>(
+                                  3, "age", iceberg::int32(), true);
+                              auto field4 = std::make_unique<iceberg::SchemaField>(
+                                  4, "email", iceberg::string(), true);
+                              return std::make_shared<iceberg::Schema>(
+                                  std::vector<iceberg::SchemaField>{*field1, *field2,
+                                                                    *field3, *field4},
+                                  100);
+                            },
+                        .select_fields = {"Name"},  // case-sensitive
+                        .expected_schema =
+                            []() {
+                              return std::make_shared<iceberg::Schema>(
+                                  std::vector<iceberg::SchemaField>{}, 100);
+                            },
+                        .should_succeed = true},
+
+        SelectTestParam{.test_name = "SelectCaseInsensitive",
+                        .create_schema =
+                            []() {
+                              auto field1 = std::make_unique<iceberg::SchemaField>(
+                                  1, "id", iceberg::int32(), false);
+                              auto field2 = std::make_unique<iceberg::SchemaField>(
+                                  2, "name", iceberg::string(), true);
+                              auto field3 = std::make_unique<iceberg::SchemaField>(
+                                  3, "age", iceberg::int32(), true);
+                              auto field4 = std::make_unique<iceberg::SchemaField>(
+                                  4, "email", iceberg::string(), true);
+                              return std::make_shared<iceberg::Schema>(
+                                  std::vector<iceberg::SchemaField>{*field1, *field2,
+                                                                    *field3, *field4},
+                                  100);
+                            },
+                        .select_fields = {"Name"},  // case-insensitive
+                        .expected_schema =
+                            []() {
+                              auto field = std::make_unique<iceberg::SchemaField>(
+                                  2, "name", iceberg::string(), true);
+                              return std::make_shared<iceberg::Schema>(
+                                  std::vector<iceberg::SchemaField>{*field}, 100);
+                            },
+                        .should_succeed = true,
+                        .case_sensitive = false}));
+
+INSTANTIATE_TEST_SUITE_P(
+    SelectNestedTestCases, SelectParamTest,
+    ::testing::Values(
+        SelectTestParam{
+            .test_name = "SelectTopLevelFields",
+            .create_schema =
+                []() {
+                  auto nested_field1 = std::make_unique<iceberg::SchemaField>(
+                      1, "street", iceberg::string(), true);
+                  auto nested_field2 = std::make_unique<iceberg::SchemaField>(
+                      2, "city", iceberg::string(), true);
+                  auto nested_field3 = std::make_unique<iceberg::SchemaField>(
+                      3, "zip", iceberg::int32(), true);
+                  auto address_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*nested_field1, *nested_field2,
+                                                        *nested_field3});
+                  auto field1 = std::make_unique<iceberg::SchemaField>(
+                      4, "id", iceberg::int32(), false);
+                  auto field2 = std::make_unique<iceberg::SchemaField>(
+                      5, "name", iceberg::string(), true);
+                  auto field3 = std::make_unique<iceberg::SchemaField>(
+                      6, "address", address_type, true);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*field1, *field2, *field3}, 200);
+                },
+            .select_fields = {"id", "name"},
+            .expected_schema =
+                []() {
+                  auto field1 = std::make_unique<iceberg::SchemaField>(
+                      4, "id", iceberg::int32(), false);
+                  auto field2 = std::make_unique<iceberg::SchemaField>(
+                      5, "name", iceberg::string(), true);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*field1, *field2}, 200);
+                },
+            .should_succeed = true},
+
+        SelectTestParam{
+            .test_name = "SelectNestedField",
+            .create_schema =
+                []() {
+                  auto nested_field1 = std::make_unique<iceberg::SchemaField>(
+                      1, "street", iceberg::string(), true);
+                  auto nested_field2 = std::make_unique<iceberg::SchemaField>(
+                      2, "city", iceberg::string(), true);
+                  auto nested_field3 = std::make_unique<iceberg::SchemaField>(
+                      3, "zip", iceberg::int32(), true);
+                  auto address_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*nested_field1, *nested_field2,
+                                                        *nested_field3});
+                  auto field1 = std::make_unique<iceberg::SchemaField>(
+                      4, "id", iceberg::int32(), false);
+                  auto field2 = std::make_unique<iceberg::SchemaField>(
+                      5, "name", iceberg::string(), true);
+                  auto field3 = std::make_unique<iceberg::SchemaField>(
+                      6, "address", address_type, true);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*field1, *field2, *field3}, 200);
+                },
+            .select_fields = {"address.street"},
+            .expected_schema =
+                []() {
+                  auto street_field = std::make_unique<iceberg::SchemaField>(
+                      1, "street", iceberg::string(), true);
+                  auto address_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*street_field});
+                  auto address_field = std::make_unique<iceberg::SchemaField>(
+                      6, "address", address_type, true);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*address_field}, 200);
+                },
+            .should_succeed = true}));
+
+INSTANTIATE_TEST_SUITE_P(
+    SelectMultiLevelTestCases, SelectParamTest,
+    ::testing::Values(
+        SelectTestParam{
+            .test_name = "SelectTopLevelAndNestedFields",
+            .create_schema =
+                []() {
+                  // {id: int, user: {name: string, address: {street: string, city:
+                  // string}}}
+                  auto street_field = std::make_unique<iceberg::SchemaField>(
+                      1, "street", iceberg::string(), true);
+                  auto city_field = std::make_unique<iceberg::SchemaField>(
+                      2, "city", iceberg::string(), true);
+                  auto address_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*street_field, *city_field});
+                  auto address_field = std::make_unique<iceberg::SchemaField>(
+                      3, "address", address_type, true);
+
+                  auto name_field = std::make_unique<iceberg::SchemaField>(
+                      4, "name", iceberg::string(), true);
+                  auto user_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*name_field, *address_field});
+                  auto user_field =
+                      std::make_unique<iceberg::SchemaField>(5, "user", user_type, true);
+
+                  auto id_field = std::make_unique<iceberg::SchemaField>(
+                      6, "id", iceberg::int32(), false);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*id_field, *user_field}, 300);
+                },
+            .select_fields = {"id", "user.name", "user.address.street"},
+            .expected_schema =
+                []() {
+                  auto id_field = std::make_unique<iceberg::SchemaField>(
+                      6, "id", iceberg::int32(), false);
+                  auto name_field = std::make_unique<iceberg::SchemaField>(
+                      4, "name", iceberg::string(), true);
+                  auto street_field = std::make_unique<iceberg::SchemaField>(
+                      1, "street", iceberg::string(), true);
+                  auto address_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*street_field});
+                  auto address_field = std::make_unique<iceberg::SchemaField>(
+                      3, "address", address_type, true);
+                  auto user_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*name_field, *address_field});
+                  auto user_field =
+                      std::make_unique<iceberg::SchemaField>(5, "user", user_type, true);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*id_field, *user_field}, 300);
+                },
+            .should_succeed = true},
+
+        SelectTestParam{
+            .test_name = "SelectNestedFieldsAtDifferentLevels",
+            .create_schema =
+                []() {
+                  // {id: int, user: {profile: {name: string, age: int}, settings: {theme:
+                  // string}}}
+                  auto name_field = std::make_unique<iceberg::SchemaField>(
+                      1, "name", iceberg::string(), true);
+                  auto age_field = std::make_unique<iceberg::SchemaField>(
+                      2, "age", iceberg::int32(), true);
+                  auto profile_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*name_field, *age_field});
+                  auto profile_field = std::make_unique<iceberg::SchemaField>(
+                      3, "profile", profile_type, true);
+
+                  auto theme_field = std::make_unique<iceberg::SchemaField>(
+                      4, "theme", iceberg::string(), true);
+                  auto settings_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*theme_field});
+                  auto settings_field = std::make_unique<iceberg::SchemaField>(
+                      5, "settings", settings_type, true);
+
+                  auto user_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*profile_field, *settings_field});
+                  auto user_field =
+                      std::make_unique<iceberg::SchemaField>(6, "user", user_type, true);
+
+                  auto id_field = std::make_unique<iceberg::SchemaField>(
+                      7, "id", iceberg::int32(), false);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*id_field, *user_field}, 400);
+                },
+            .select_fields = {"user.profile.name", "user.settings.theme"},
+            .expected_schema =
+                []() {
+                  auto name_field = std::make_unique<iceberg::SchemaField>(
+                      1, "name", iceberg::string(), true);
+                  auto profile_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*name_field});
+                  auto profile_field = std::make_unique<iceberg::SchemaField>(
+                      3, "profile", profile_type, true);
+
+                  auto theme_field = std::make_unique<iceberg::SchemaField>(
+                      4, "theme", iceberg::string(), true);
+                  auto settings_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*theme_field});
+                  auto settings_field = std::make_unique<iceberg::SchemaField>(
+                      5, "settings", settings_type, true);
+
+                  auto user_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*profile_field, *settings_field});
+                  auto user_field =
+                      std::make_unique<iceberg::SchemaField>(6, "user", user_type, true);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*user_field}, 400);
+                },
+            .should_succeed = true},
+
+        SelectTestParam{
+            .test_name = "SelectListAndNestedFields",
+            .create_schema =
+                []() {
+                  // {id: int, tags: list<string>, user: {name: string, age: int}}
+                  auto list_element = std::make_unique<iceberg::SchemaField>(
+                      1, "element", iceberg::string(), false);
+                  auto list_type = std::make_shared<iceberg::ListType>(*list_element);
+                  auto tags_field =
+                      std::make_unique<iceberg::SchemaField>(2, "tags", list_type, true);
+
+                  auto name_field = std::make_unique<iceberg::SchemaField>(
+                      3, "name", iceberg::string(), true);
+                  auto age_field = std::make_unique<iceberg::SchemaField>(
+                      4, "age", iceberg::int32(), true);
+                  auto user_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*name_field, *age_field});
+                  auto user_field =
+                      std::make_unique<iceberg::SchemaField>(5, "user", user_type, true);
+
+                  auto id_field = std::make_unique<iceberg::SchemaField>(
+                      6, "id", iceberg::int32(), false);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*id_field, *tags_field,
+                                                        *user_field},
+                      500);
+                },
+            .select_fields = {"id", "user.name"},
+            .expected_schema =
+                []() {
+                  auto id_field = std::make_unique<iceberg::SchemaField>(
+                      6, "id", iceberg::int32(), false);
+                  auto name_field = std::make_unique<iceberg::SchemaField>(
+                      3, "name", iceberg::string(), true);
+                  auto user_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*name_field});
+                  auto user_field =
+                      std::make_unique<iceberg::SchemaField>(5, "user", user_type, true);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*id_field, *user_field}, 500);
+                },
+            .should_succeed = true}));
+
+struct ProjectTestParam {
+  std::string test_name;
+  std::function<std::shared_ptr<iceberg::Schema>()> create_schema;
+  std::unordered_set<int32_t> selected_ids;
+  std::function<std::shared_ptr<iceberg::Schema>()> expected_schema;
+  bool should_succeed;
+  std::string expected_error_message;
+};
+
+class ProjectParamTest : public ::testing::TestWithParam<ProjectTestParam> {};
+
+TEST_P(ProjectParamTest, ProjectFields) {
+  const auto& param = GetParam();
+  auto input_schema = param.create_schema();
+  auto selected_ids = param.selected_ids;
+  auto result = input_schema->Project(selected_ids);
+
+  if (param.should_succeed) {
+    ASSERT_TRUE(result.has_value()) << "Project should succeed for: " << param.test_name;
+
+    auto actual_schema = std::move(result.value());
+    auto expected_schema = param.expected_schema();
+    ASSERT_EQ(*actual_schema, *expected_schema)
+        << "Schema mismatch for: " << param.test_name;
+  } else {
+    ASSERT_FALSE(result.has_value()) << "Project should fail for: " << param.test_name;
+    ASSERT_THAT(result, iceberg::IsError(iceberg::ErrorKind::kInvalidArgument))
+        << "Should return InvalidArgument error for: " << param.test_name;
+
+    if (!param.expected_error_message.empty()) {
+      ASSERT_THAT(result, iceberg::HasErrorMessage(param.expected_error_message))
+          << "Error message mismatch for: " << param.test_name;
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ProjectTestCases, ProjectParamTest,
+    ::testing::Values(
+        ProjectTestParam{
+            .test_name = "ProjectAllFields",
+            .create_schema =
+                []() {
+                  auto field1 = std::make_unique<iceberg::SchemaField>(
+                      1, "id", iceberg::int32(), false);
+                  auto field2 = std::make_unique<iceberg::SchemaField>(
+                      2, "name", iceberg::string(), true);
+                  auto field3 = std::make_unique<iceberg::SchemaField>(
+                      3, "age", iceberg::int32(), true);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*field1, *field2, *field3}, 100);
+                },
+            .selected_ids = {1, 2, 3},
+            .expected_schema =
+                []() {
+                  auto field1 = std::make_unique<iceberg::SchemaField>(
+                      1, "id", iceberg::int32(), false);
+                  auto field2 = std::make_unique<iceberg::SchemaField>(
+                      2, "name", iceberg::string(), true);
+                  auto field3 = std::make_unique<iceberg::SchemaField>(
+                      3, "age", iceberg::int32(), true);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*field1, *field2, *field3}, 100);
+                },
+            .should_succeed = true},
+
+        ProjectTestParam{
+            .test_name = "ProjectSingleField",
+            .create_schema =
+                []() {
+                  auto field1 = std::make_unique<iceberg::SchemaField>(
+                      1, "id", iceberg::int32(), false);
+                  auto field2 = std::make_unique<iceberg::SchemaField>(
+                      2, "name", iceberg::string(), true);
+                  auto field3 = std::make_unique<iceberg::SchemaField>(
+                      3, "age", iceberg::int32(), true);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*field1, *field2, *field3}, 100);
+                },
+            .selected_ids = {2},
+            .expected_schema =
+                []() {
+                  auto field = std::make_unique<iceberg::SchemaField>(
+                      2, "name", iceberg::string(), true);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*field}, 100);
+                },
+            .should_succeed = true},
+
+        ProjectTestParam{.test_name = "ProjectNonExistentFieldId",
+                         .create_schema =
+                             []() {
+                               auto field1 = std::make_unique<iceberg::SchemaField>(
+                                   1, "id", iceberg::int32(), false);
+                               auto field2 = std::make_unique<iceberg::SchemaField>(
+                                   2, "name", iceberg::string(), true);
+                               return std::make_shared<iceberg::Schema>(
+                                   std::vector<iceberg::SchemaField>{*field1, *field2},
+                                   100);
+                             },
+                         .selected_ids = {999},
+                         .expected_schema =
+                             []() {
+                               return std::make_shared<iceberg::Schema>(
+                                   std::vector<iceberg::SchemaField>{}, 100);
+                             },
+                         .should_succeed = true},
+
+        ProjectTestParam{.test_name = "ProjectEmptySelection",
+                         .create_schema =
+                             []() {
+                               auto field1 = std::make_unique<iceberg::SchemaField>(
+                                   1, "id", iceberg::int32(), false);
+                               auto field2 = std::make_unique<iceberg::SchemaField>(
+                                   2, "name", iceberg::string(), true);
+                               return std::make_shared<iceberg::Schema>(
+                                   std::vector<iceberg::SchemaField>{*field1, *field2},
+                                   100);
+                             },
+                         .selected_ids = {},
+                         .expected_schema =
+                             []() {
+                               return std::make_shared<iceberg::Schema>(
+                                   std::vector<iceberg::SchemaField>{}, 100);
+                             },
+                         .should_succeed = true}));
+
+INSTANTIATE_TEST_SUITE_P(
+    ProjectNestedTestCases, ProjectParamTest,
+    ::testing::Values(ProjectTestParam{
+        .test_name = "ProjectNestedStructField",
+        .create_schema =
+            []() {
+              auto nested_field1 = std::make_unique<iceberg::SchemaField>(
+                  1, "street", iceberg::string(), true);
+              auto nested_field2 = std::make_unique<iceberg::SchemaField>(
+                  2, "city", iceberg::string(), true);
+              auto address_type = std::make_shared<iceberg::StructType>(
+                  std::vector<iceberg::SchemaField>{*nested_field1, *nested_field2});
+              auto field1 = std::make_unique<iceberg::SchemaField>(
+                  3, "id", iceberg::int32(), false);
+              auto field2 = std::make_unique<iceberg::SchemaField>(4, "address",
+                                                                   address_type, true);
+              return std::make_shared<iceberg::Schema>(
+                  std::vector<iceberg::SchemaField>{*field1, *field2}, 200);
+            },
+        .selected_ids = {1},
+        .expected_schema =
+            []() {
+              auto street_field = std::make_unique<iceberg::SchemaField>(
+                  1, "street", iceberg::string(), true);
+              auto address_type = std::make_shared<iceberg::StructType>(
+                  std::vector<iceberg::SchemaField>{*street_field});
+              auto address_field = std::make_unique<iceberg::SchemaField>(
+                  4, "address", address_type, true);
+              return std::make_shared<iceberg::Schema>(
+                  std::vector<iceberg::SchemaField>{*address_field}, 200);
+            },
+        .should_succeed = true}));
+
+INSTANTIATE_TEST_SUITE_P(
+    ProjectMultiLevelTestCases, ProjectParamTest,
+    ::testing::Values(
+        ProjectTestParam{
+            .test_name = "ProjectTopLevelAndNestedFields",
+            .create_schema =
+                []() {
+                  // {id: int, user: {name: string, address: {street: string, city:
+                  // string}}}
+                  auto street_field = std::make_unique<iceberg::SchemaField>(
+                      1, "street", iceberg::string(), true);
+                  auto city_field = std::make_unique<iceberg::SchemaField>(
+                      2, "city", iceberg::string(), true);
+                  auto address_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*street_field, *city_field});
+                  auto address_field = std::make_unique<iceberg::SchemaField>(
+                      3, "address", address_type, true);
+
+                  auto name_field = std::make_unique<iceberg::SchemaField>(
+                      4, "name", iceberg::string(), true);
+                  auto user_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*name_field, *address_field});
+                  auto user_field =
+                      std::make_unique<iceberg::SchemaField>(5, "user", user_type, true);
+
+                  auto id_field = std::make_unique<iceberg::SchemaField>(
+                      6, "id", iceberg::int32(), false);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*id_field, *user_field}, 300);
+                },
+            .selected_ids = {6, 4, 1},
+            .expected_schema =
+                []() {
+                  auto id_field = std::make_unique<iceberg::SchemaField>(
+                      6, "id", iceberg::int32(), false);
+                  auto name_field = std::make_unique<iceberg::SchemaField>(
+                      4, "name", iceberg::string(), true);
+                  auto street_field = std::make_unique<iceberg::SchemaField>(
+                      1, "street", iceberg::string(), true);
+                  auto address_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*street_field});
+                  auto address_field = std::make_unique<iceberg::SchemaField>(
+                      3, "address", address_type, true);
+                  auto user_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*name_field, *address_field});
+                  auto user_field =
+                      std::make_unique<iceberg::SchemaField>(5, "user", user_type, true);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*id_field, *user_field}, 300);
+                },
+            .should_succeed = true},
+
+        ProjectTestParam{
+            .test_name = "ProjectNestedFieldsAtDifferentLevels",
+            .create_schema =
+                []() {
+                  // {id: int, user: {profile: {name: string, age: int}, settings: {theme:
+                  // string}}}
+                  auto name_field = std::make_unique<iceberg::SchemaField>(
+                      1, "name", iceberg::string(), true);
+                  auto age_field = std::make_unique<iceberg::SchemaField>(
+                      2, "age", iceberg::int32(), true);
+                  auto profile_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*name_field, *age_field});
+                  auto profile_field = std::make_unique<iceberg::SchemaField>(
+                      3, "profile", profile_type, true);
+
+                  auto theme_field = std::make_unique<iceberg::SchemaField>(
+                      4, "theme", iceberg::string(), true);
+                  auto settings_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*theme_field});
+                  auto settings_field = std::make_unique<iceberg::SchemaField>(
+                      5, "settings", settings_type, true);
+
+                  auto user_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*profile_field, *settings_field});
+                  auto user_field =
+                      std::make_unique<iceberg::SchemaField>(6, "user", user_type, true);
+
+                  auto id_field = std::make_unique<iceberg::SchemaField>(
+                      7, "id", iceberg::int32(), false);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*id_field, *user_field}, 400);
+                },
+            .selected_ids = {1, 4},
+            .expected_schema =
+                []() {
+                  auto name_field = std::make_unique<iceberg::SchemaField>(
+                      1, "name", iceberg::string(), true);
+                  auto profile_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*name_field});
+                  auto profile_field = std::make_unique<iceberg::SchemaField>(
+                      3, "profile", profile_type, true);
+
+                  auto theme_field = std::make_unique<iceberg::SchemaField>(
+                      4, "theme", iceberg::string(), true);
+                  auto settings_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*theme_field});
+                  auto settings_field = std::make_unique<iceberg::SchemaField>(
+                      5, "settings", settings_type, true);
+
+                  auto user_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*profile_field, *settings_field});
+                  auto user_field =
+                      std::make_unique<iceberg::SchemaField>(6, "user", user_type, true);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*user_field}, 400);
+                },
+            .should_succeed = true},
+
+        ProjectTestParam{
+            .test_name = "ProjectListAndNestedFields",
+            .create_schema =
+                []() {
+                  //  {id: int, tags: list<string>, user: {name: string, age: int}}
+                  auto list_element = std::make_unique<iceberg::SchemaField>(
+                      1, "element", iceberg::string(), false);
+                  auto list_type = std::make_shared<iceberg::ListType>(*list_element);
+                  auto tags_field =
+                      std::make_unique<iceberg::SchemaField>(2, "tags", list_type, true);
+
+                  auto name_field = std::make_unique<iceberg::SchemaField>(
+                      3, "name", iceberg::string(), true);
+                  auto age_field = std::make_unique<iceberg::SchemaField>(
+                      4, "age", iceberg::int32(), true);
+                  auto user_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*name_field, *age_field});
+                  auto user_field =
+                      std::make_unique<iceberg::SchemaField>(5, "user", user_type, true);
+
+                  auto id_field = std::make_unique<iceberg::SchemaField>(
+                      6, "id", iceberg::int32(), false);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*id_field, *tags_field,
+                                                        *user_field},
+                      500);
+                },
+            .selected_ids = {6, 3},
+            .expected_schema =
+                []() {
+                  auto id_field = std::make_unique<iceberg::SchemaField>(
+                      6, "id", iceberg::int32(), false);
+                  auto name_field = std::make_unique<iceberg::SchemaField>(
+                      3, "name", iceberg::string(), true);
+                  auto user_type = std::make_shared<iceberg::StructType>(
+                      std::vector<iceberg::SchemaField>{*name_field});
+                  auto user_field =
+                      std::make_unique<iceberg::SchemaField>(5, "user", user_type, true);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*id_field, *user_field}, 500);
+                },
+            .should_succeed = true}));
+
+INSTANTIATE_TEST_SUITE_P(
+    ProjectMapErrorTestCases, ProjectParamTest,
+    ::testing::Values(
+        ProjectTestParam{
+            .test_name = "ProjectMapTypeError",
+            .create_schema =
+                []() {
+                  auto map_key = std::make_unique<iceberg::SchemaField>(
+                      1, "key", iceberg::string(), false);
+                  auto map_value = std::make_unique<iceberg::SchemaField>(
+                      2, "value", iceberg::string(), false);
+                  auto map_type =
+                      std::make_shared<iceberg::MapType>(*map_key, *map_value);
+                  auto map_field = std::make_unique<iceberg::SchemaField>(
+                      3, "string_map", map_type, false);
+                  auto id_field = std::make_unique<iceberg::SchemaField>(
+                      4, "id", iceberg::int32(), false);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*id_field, *map_field}, 100);
+                },
+            .selected_ids = {3},
+            .expected_schema = []() { return nullptr; },
+            .should_succeed = false,
+            .expected_error_message =
+                R"(Cannot explicitly project List or Map types, 3:string_map of type map<key (1): string (required): value (2): string (required)> was selected)"},
+
+        ProjectTestParam{
+            .test_name = "ProjectListTypeError",
+            .create_schema =
+                []() {
+                  auto list_element = std::make_unique<iceberg::SchemaField>(
+                      1, "element", iceberg::int32(), false);
+                  auto list_type = std::make_shared<iceberg::ListType>(*list_element);
+                  auto list_field = std::make_unique<iceberg::SchemaField>(
+                      2, "int_list", list_type, false);
+                  auto id_field = std::make_unique<iceberg::SchemaField>(
+                      3, "id", iceberg::int32(), false);
+                  return std::make_shared<iceberg::Schema>(
+                      std::vector<iceberg::SchemaField>{*id_field, *list_field}, 100);
+                },
+            .selected_ids = {2},
+            .expected_schema = []() { return nullptr; },
+            .should_succeed = false,
+            .expected_error_message =
+                R"(Cannot explicitly project List or Map types, 2:int_list of type list<element (1): int (required)> was selected)"}));

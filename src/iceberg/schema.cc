@@ -22,6 +22,7 @@
 #include <format>
 #include <functional>
 
+#include "iceberg/schema_internal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
@@ -255,6 +256,270 @@ void NameToIdVisitor::Finish() {
   for (auto&& it : short_name_to_id_) {
     name_to_id_.try_emplace(it.first, it.second);
   }
+}
+
+/// \brief Visitor class for pruning schema columns based on selected field IDs.
+///
+/// This visitor traverses a schema and creates a projected version containing only
+/// the specified fields. It handles different projection modes:
+/// - select_full_types=true: Include entire fields when their ID is selected
+/// - select_full_types=false: Recursively project nested fields within selected structs
+///
+/// \warning Error conditions that will cause projection to fail:
+/// - Attempting to explicitly project List or Map types (returns InvalidArgument)
+/// - Projecting a List when element result is null (returns InvalidArgument)
+/// - Projecting a Map without a defined map value type (returns InvalidArgument)
+/// - Projecting a struct when result is not StructType (returns InvalidArgument)
+class PruneColumnVisitor {
+ public:
+  PruneColumnVisitor(const std::unordered_set<int32_t>& selected_ids,
+                     bool select_full_types)
+      : selected_ids_(selected_ids), select_full_types_(select_full_types) {}
+
+  Status Visit(const StructType& type, std::unique_ptr<Type>* out) const {
+    std::vector<std::shared_ptr<const Type>> selected_types;
+    for (const auto& field : type.fields()) {
+      std::unique_ptr<Type> child_result;
+      if (select_full_types_ and selected_ids_.contains(field.field_id())) {
+        selected_types.emplace_back(field.type());
+        continue;
+      }
+      ICEBERG_RETURN_UNEXPECTED(VisitTypeInline(*field.type(), this, &child_result));
+      if (selected_ids_.contains(field.field_id())) {
+        // select
+        if (field.type()->type_id() == TypeId::kStruct) {
+          // project(kstruct)
+          ICEBERG_RETURN_UNEXPECTED(ProjectStruct(field, &child_result));
+          selected_types.emplace_back(std::move(child_result));
+        } else {
+          // project(list, map, primitive)
+          if (!field.type()->is_primitive()) {
+            return InvalidArgument(
+                "Cannot explicitly project List or Map types, {}:{} of type {} was "
+                "selected",
+                field.field_id(), field.name(), field.type()->ToString());
+          }
+          selected_types.emplace_back(field.type());
+        }
+      } else if (child_result) {
+        // project, select
+        selected_types.emplace_back(std::move(child_result));
+      } else {
+        // project, select
+        selected_types.emplace_back(nullptr);
+      }
+    }
+
+    bool same_types = true;
+    std::vector<SchemaField> selected_fields;
+    const auto& fields = type.fields();
+    for (size_t i = 0; i < fields.size(); i++) {
+      if (fields[i].type() == selected_types[i]) {
+        selected_fields.emplace_back(fields[i]);
+      } else if (selected_types[i]) {
+        same_types = false;
+        selected_fields.emplace_back(fields[i].field_id(), std::string(fields[i].name()),
+                                     std::const_pointer_cast<Type>(selected_types[i]),
+                                     fields[i].optional(), std::string(fields[i].doc()));
+      }
+    }
+
+    if (!selected_fields.empty()) {
+      if (same_types && selected_fields.size() == fields.size()) {
+        *out = std::make_unique<StructType>(type);
+      } else {
+        *out = std::make_unique<StructType>(std::move(selected_fields));
+      }
+    }
+
+    return {};
+  }
+
+  Status Visit(const ListType& type, std::unique_ptr<Type>* out) const {
+    const auto& element_field = type.fields()[0];
+
+    if (select_full_types_ and selected_ids_.contains(element_field.field_id())) {
+      *out = std::make_unique<ListType>(type);
+      return {};
+    }
+
+    std::unique_ptr<Type> child_result;
+    ICEBERG_RETURN_UNEXPECTED(
+        VisitTypeInline(*element_field.type(), this, &child_result));
+
+    if (selected_ids_.contains(element_field.field_id())) {
+      if (element_field.type()->type_id() == TypeId::kStruct) {
+        ICEBERG_RETURN_UNEXPECTED(ProjectStruct(element_field, &child_result));
+        ICEBERG_RETURN_UNEXPECTED(
+            ProjectList(element_field, std::move(child_result), out));
+      } else {
+        if (!element_field.type()->is_primitive()) {
+          return InvalidArgument(
+              "Cannot explicitly project List or Map types, List element {} of type {} "
+              "was "
+              "selected",
+              element_field.field_id(), element_field.name());
+        }
+        *out = std::make_unique<ListType>(element_field);
+      }
+    } else if (child_result) {
+      ICEBERG_RETURN_UNEXPECTED(ProjectList(element_field, std::move(child_result), out));
+    }
+
+    return {};
+  }
+
+  Status Visit(const MapType& type, std::unique_ptr<Type>* out) const {
+    const auto& key_field = type.fields()[0];
+    const auto& value_field = type.fields()[1];
+
+    if (select_full_types_ and selected_ids_.contains(value_field.field_id())) {
+      *out = std::make_unique<MapType>(type);
+      return {};
+    }
+
+    std::unique_ptr<Type> key_result;
+    ICEBERG_RETURN_UNEXPECTED(VisitTypeInline(*key_field.type(), this, &key_result));
+
+    std::unique_ptr<Type> value_result;
+    ICEBERG_RETURN_UNEXPECTED(VisitTypeInline(*value_field.type(), this, &value_result));
+
+    if (selected_ids_.contains(value_field.field_id())) {
+      if (value_field.type()->type_id() == TypeId::kStruct) {
+        ICEBERG_RETURN_UNEXPECTED(ProjectStruct(value_field, &value_result));
+        ICEBERG_RETURN_UNEXPECTED(
+            ProjectMap(key_field, value_field, std::move(value_result), out));
+      } else {
+        if (!value_field.type()->is_primitive()) {
+          return InvalidArgument(
+              "Cannot explicitly project List or Map types, Map value {} of type {} was "
+              "selected",
+              value_field.field_id(), type.ToString());
+        }
+        *out = std::make_unique<MapType>(type);
+      }
+    } else if (value_result) {
+      ICEBERG_RETURN_UNEXPECTED(
+          ProjectMap(key_field, value_field, std::move(value_result), out));
+    } else if (selected_ids_.contains(key_field.field_id())) {
+      *out = std::make_unique<MapType>(type);
+    }
+
+    return {};
+  }
+
+  Status Visit(const PrimitiveType& type, std::unique_ptr<Type>* result) const {
+    return {};
+  }
+
+  Status ProjectList(const SchemaField& element_field, std::shared_ptr<Type> child_result,
+                     std::unique_ptr<Type>* out) const {
+    if (!child_result) {
+      return InvalidArgument("Cannot project a list when the element result is null");
+    }
+    if (element_field.type() == child_result) {
+      *out = std::make_unique<ListType>(element_field);
+    } else {
+      *out = std::make_unique<ListType>(element_field.field_id(), child_result,
+                                        element_field.optional());
+    }
+    return {};
+  }
+
+  Status ProjectMap(const SchemaField& key_field, const SchemaField& value_field,
+                    std::shared_ptr<Type> value_result,
+                    std::unique_ptr<Type>* out) const {
+    if (!value_result) {
+      return InvalidArgument(
+          "Attempted to project a map without a defined map value type");
+    }
+    if (value_field.type() == value_result) {
+      *out = std::make_unique<MapType>(key_field, value_field);
+    } else {
+      *out = std::make_unique<MapType>(
+          key_field, SchemaField(value_field.field_id(), std::string(value_field.name()),
+                                 value_result, value_field.optional()));
+    }
+    return {};
+  }
+
+  Status ProjectStruct(const SchemaField& field, std::unique_ptr<Type>* out) const {
+    if (*out && (*out)->type_id() != TypeId::kStruct) {
+      return InvalidArgument("Project struct {}:{}, but result is not StructType",
+                             field.name(), field.field_id());
+    }
+    if (*out == nullptr) {
+      *out = std::make_unique<StructType>(std::vector<SchemaField>{});
+    }
+    return {};
+  }
+
+ private:
+  const std::unordered_set<int32_t>& selected_ids_;
+  bool select_full_types_;
+};
+
+Result<std::unique_ptr<const Schema>> Schema::Select(std::span<const std::string> names,
+                                                     bool case_sensitive) const {
+  return SelectInternal(names, case_sensitive);
+}
+
+Result<std::unique_ptr<const Schema>> Schema::Select(
+    const std::initializer_list<std::string>& names, bool case_sensitive) const {
+  return SelectInternal(names, case_sensitive);
+}
+
+Result<std::unique_ptr<const Schema>> Schema::SelectInternal(
+    std::span<const std::string> names, bool case_sensitive) const {
+  const std::string kAllColumns = "*";
+  if (std::ranges::find(names, kAllColumns) != names.end()) {
+    return std::make_unique<Schema>(*this);
+  }
+
+  std::unordered_set<int32_t> selected_ids;
+  for (const auto& name : names) {
+    ICEBERG_ASSIGN_OR_RAISE(auto result, FindFieldByName(name, case_sensitive));
+    if (result.has_value()) {
+      selected_ids.insert(result.value().get().field_id());
+    }
+  }
+
+  std::unique_ptr<Type> result;
+  PruneColumnVisitor visitor(selected_ids, /*select_full_types=*/true);
+  ICEBERG_RETURN_UNEXPECTED(VisitTypeInline(*this, &visitor, &result));
+
+  if (!result) {
+    return std::make_unique<Schema>(std::vector<SchemaField>{}, schema_id_);
+  }
+
+  if (result->type_id() != TypeId::kStruct) {
+    return InvalidSchema("Projected type must be a struct type");
+  }
+
+  auto& projected_struct = internal::checked_cast<const StructType&>(*result);
+
+  return FromStructType(std::move(const_cast<StructType&>(projected_struct)), schema_id_);
+}
+
+Result<std::unique_ptr<const Schema>> Schema::Project(
+    std::unordered_set<int32_t>& field_ids) const {
+  PruneColumnVisitor visitor(field_ids, /*select_full_types=*/false);
+
+  std::unique_ptr<Type> result;
+  ICEBERG_RETURN_UNEXPECTED(VisitTypeInline(*this, &visitor, &result));
+
+  if (!result) {
+    return std::make_unique<Schema>(std::vector<SchemaField>{}, schema_id_);
+  }
+
+  if (result->type_id() != TypeId::kStruct) {
+    return InvalidSchema("Projected type must be a struct type");
+  }
+
+  const auto& projected_struct = internal::checked_cast<const StructType&>(*result);
+  std::vector<SchemaField> fields_vec(projected_struct.fields().begin(),
+                                      projected_struct.fields().end());
+  return std::make_unique<Schema>(std::move(fields_vec), schema_id_);
 }
 
 }  // namespace iceberg

@@ -26,6 +26,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
@@ -52,9 +53,9 @@ class ICEBERG_EXPORT Schema : public StructType {
   ///
   /// A schema is identified by a unique ID for the purposes of schema
   /// evolution.
-  [[nodiscard]] std::optional<int32_t> schema_id() const;
+  std::optional<int32_t> schema_id() const;
 
-  [[nodiscard]] std::string ToString() const override;
+  std::string ToString() const override;
 
   /// \brief Find the SchemaField by field name.
   ///
@@ -65,18 +66,110 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// canonical name 'm.value.x'
   /// FIXME: Currently only handles ASCII lowercase conversion; extend to support
   /// non-ASCII characters (e.g., using std::towlower or ICU)
-  [[nodiscard]] Result<std::optional<std::reference_wrapper<const SchemaField>>>
-  FindFieldByName(std::string_view name, bool case_sensitive = true) const;
+  Result<std::optional<std::reference_wrapper<const SchemaField>>> FindFieldByName(
+      std::string_view name, bool case_sensitive = true) const;
 
   /// \brief Find the SchemaField by field id.
-  [[nodiscard]] Result<std::optional<std::reference_wrapper<const SchemaField>>>
-  FindFieldById(int32_t field_id) const;
+  Result<std::optional<std::reference_wrapper<const SchemaField>>> FindFieldById(
+      int32_t field_id) const;
+
+  /// \brief Creates a projected schema from selected field names.
+  ///
+  /// Selects fields by their names using dot notation for nested fields.
+  /// Supports both canonical names (e.g., "user.address.street") and short names
+  /// (e.g., "user.street" for map values, "list.element" for list elements).
+  ///
+  /// \param names Field names to select (supports nested field paths)
+  /// \param case_sensitive Whether name matching is case-sensitive (default: true)
+  /// \return Projected schema containing only the specified fields
+  ///
+  /// \example
+  /// \code
+  /// // Original schema: struct {
+  /// //   id: int,
+  /// //   user: struct {
+  /// //     name: string,
+  /// //     address: struct { street: string, city: string }
+  /// //   }
+  /// // }
+  ///
+  /// // Select by names - you must specify the exact path
+  /// auto result1 = schema->Select({"id", "user.name"});
+  /// // Result: struct { id: int, user: struct { name: string } }
+  ///
+  /// auto result2 = schema->Select({"user.address.street"});
+  /// // Result: struct { user: struct { address: struct { street: string } } }
+  ///
+  /// auto result3 = schema->Select({"user.name"});
+  /// Result: struct { user: struct { name: string } }
+  /// \endcode
+  Result<std::unique_ptr<const Schema>> Select(std::span<const std::string> names,
+                                               bool case_sensitive = true) const;
+
+  /// \brief Creates a projected schema from selected field names.
+  Result<std::unique_ptr<const Schema>> Select(
+      const std::initializer_list<std::string>& names, bool case_sensitive = true) const;
+
+  /// \brief Creates a projected schema from selected field names.
+  template <typename... Args>
+  Result<std::unique_ptr<const Schema>> Select(Args&&... names,
+                                               bool case_sensitive = true) const {
+    static_assert(((std::is_convertible_v<Args, std::string> ||
+                    std::is_convertible_v<Args, std::string>) &&
+                   ...),
+                  "All arguments must be convertible to std::string");
+    return select({(names)...}, case_sensitive);
+  }
+
+  /// \brief Creates a projected schema from selected field IDs.
+  ///
+  /// Selects fields by their numeric IDs. More efficient than Select() when you
+  /// already know the field IDs. Handles recursive projection of nested structs.
+  ///
+  /// \param field_ids Set of field IDs to select
+  /// \return Projected schema containing only the specified fields
+  ///
+  /// \note When a struct field ID is specified:
+  ///       - If nested field IDs are also in field_ids, they are recursively projected
+  ///       - If no nested field IDs are in field_ids, an empty struct is included
+  ///       - List/Map types cannot be explicitly projected (returns error)
+  ///
+  /// \example
+  /// \code
+  /// // Original schema with field IDs:
+  /// // struct {
+  /// //   1: id: int,
+  /// //   2: user: struct {
+  /// //     3: name: string,
+  /// //     4: address: struct { 5: street: string, 6: city: string }
+  /// //   }
+  /// // }
+  ///
+  /// // Project by IDs - recursive behavior for structs
+  /// std::unordered_set<int32_t> ids1 = {1, 2, 3};  // id, user, user.name
+  /// auto result1 = schema->Project(ids1);
+  /// // Result: struct { id: int, user: struct { name: string } }
+  ///
+  /// std::unordered_set<int32_t> ids2 = {2};  // Only user struct
+  /// auto result2 = schema->Project(ids2);
+  /// // Result: struct { user: struct {} }  // Empty struct because no nested fields
+  /// selected
+  ///
+  /// std::unordered_set<int32_t> ids3 = {2, 5};  // user struct + street field
+  /// auto result3 = schema->Project(ids3);
+  /// // Result: struct { user: struct { address: struct { street: string } } }
+  /// \endcode
+  Result<std::unique_ptr<const Schema>> Project(
+      std::unordered_set<int32_t>& field_ids) const;
 
   friend bool operator==(const Schema& lhs, const Schema& rhs) { return lhs.Equals(rhs); }
 
  private:
   /// \brief Compare two schemas for equality.
-  [[nodiscard]] bool Equals(const Schema& other) const;
+  bool Equals(const Schema& other) const;
+
+  Result<std::unique_ptr<const Schema>> SelectInternal(std::span<const std::string> names,
+                                                       bool case_sensitive) const;
 
   // TODO(nullccxsy): Address potential concurrency issues in lazy initialization (e.g.,
   // use std::call_once)
