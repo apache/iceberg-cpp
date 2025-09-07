@@ -52,18 +52,18 @@ class ICEBERG_EXPORT Decimal : public util::Formattable {
   constexpr Decimal() noexcept = default;
 
   /// \brief Create a Decimal from a 128-bit integer.
-  constexpr Decimal(int128_t value) noexcept  // NOLINT(google-explicit-constructor)
+  constexpr Decimal(int128_t value) noexcept  // NOLINT implicit conversion
       : data_(value) {}
 
   /// \brief Create a Decimal from any integer not wider than 64 bits.
   template <typename T>
     requires(std::is_integral_v<T> && (sizeof(T) <= sizeof(uint64_t)))
-  constexpr Decimal(T value) noexcept  // NOLINT(google-explicit-constructor)
-  {
-    data_ = static_cast<int128_t>(value);
-  }
+  constexpr Decimal(T value) noexcept  // NOLINT implicit conversion
+      : data_(static_cast<int128_t>(value)) {}
 
   /// \brief Parse a Decimal from a string representation.
+  /// \throw This constructor throws an exception if parsing fails. Use
+  /// Decimal::FromString() if you want to handle errors more gracefully.
   explicit Decimal(std::string_view str);
 
   /// \brief Create a Decimal from two 64-bit integers.

@@ -24,21 +24,18 @@
 
 #include "iceberg/util/decimal.h"
 
-#include <array>
 #include <bit>
 #include <charconv>
 #include <climits>
 #include <cmath>
-#include <cstdint>
 #include <cstring>
 #include <format>
 #include <iomanip>
 #include <limits>
 #include <sstream>
-#include <string>
-#include <string_view>
 #include <utility>
 
+#include "iceberg/exception.h"
 #include "iceberg/result.h"
 #include "iceberg/util/int128.h"
 #include "iceberg/util/macros.h"
@@ -287,9 +284,8 @@ bool RescaleWouldCauseDataLoss(const Decimal& value, int32_t delta_scale,
 Decimal::Decimal(std::string_view str) {
   auto result = Decimal::FromString(str);
   if (!result) {
-    throw std::runtime_error(
-        std::format("Failed to parse Decimal from string: {}, error: {}", str,
-                    result.error().message));
+    throw IcebergError(std::format("Failed to parse Decimal from string: {}, error: {}",
+                                   str, result.error().message));
   }
   *this = std::move(result.value());
 }
