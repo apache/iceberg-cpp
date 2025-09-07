@@ -32,7 +32,7 @@ C++ implementation of [Apache Iceberg™](https://iceberg.apache.org/).
 
 ```bash
 cd iceberg-cpp
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/path/to/install -DICEBERG_BUILD_STATIC=ON -DICEBERG_BUILD_SHARED=ON
+cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX=/path/to/install -DICEBERG_BUILD_STATIC=ON -DICEBERG_BUILD_SHARED=ON
 cmake --build build
 ctest --test-dir build --output-on-failure
 cmake --install build
@@ -43,7 +43,7 @@ cmake --install build
 #### Vendored Apache Arrow (default)
 
 ```bash
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/path/to/install -DICEBERG_BUILD_BUNDLE=ON
+cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX=/path/to/install -DICEBERG_BUILD_BUNDLE=ON
 cmake --build build
 ctest --test-dir build --output-on-failure
 cmake --install build
@@ -52,7 +52,7 @@ cmake --install build
 #### Provided Apache Arrow
 
 ```bash
-cmake -S . -B build -DCMAKE_INSTALL_PREFIX=/path/to/install -DCMAKE_PREFIX_PATH=/path/to/arrow -DICEBERG_BUILD_BUNDLE=ON
+cmake -S . -B build -G Ninja -DCMAKE_INSTALL_PREFIX=/path/to/install -DCMAKE_PREFIX_PATH=/path/to/arrow -DICEBERG_BUILD_BUNDLE=ON
 cmake --build build
 ctest --test-dir build --output-on-failure
 cmake --install build
@@ -64,14 +64,14 @@ After installing the core libraries, you can build the examples:
 
 ```bash
 cd iceberg-cpp/example
-cmake -S . -B build -DCMAKE_PREFIX_PATH=/path/to/install
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH=/path/to/install
 cmake --build build
 ```
 
 If you are using provided Apache Arrow, you need to include `/path/to/arrow` in `CMAKE_PREFIX_PATH` as below.
 
 ```bash
-cmake -S . -B build -DCMAKE_PREFIX_PATH="/path/to/install;/path/to/arrow"
+cmake -S . -B build -G Ninja -DCMAKE_PREFIX_PATH="/path/to/install;/path/to/arrow"
 ```
 
 ## Contribute

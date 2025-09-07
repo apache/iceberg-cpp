@@ -30,6 +30,7 @@ is_windows() {
 }
 
 CMAKE_ARGS=(
+    "-G Ninja"
     "-DCMAKE_PREFIX_PATH=${CMAKE_INSTALL_PREFIX:-${ICEBERG_HOME}}"
 )
 

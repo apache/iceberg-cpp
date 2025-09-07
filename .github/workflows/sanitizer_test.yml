@@ -45,7 +45,7 @@ jobs:
       - name: Configure and Build with ASAN & UBSAN
         run: |
           mkdir build && cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Debug -DICEBERG_ENABLE_ASAN=ON -DICEBERG_ENABLE_UBSAN=ON
+          cmake .. -G Ninja -DCMAKE_BUILD_TYPE=Debug -DICEBERG_ENABLE_ASAN=ON -DICEBERG_ENABLE_UBSAN=ON
           cmake --build . --verbose
       - name: Run Tests
         working-directory: build

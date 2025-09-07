@@ -37,7 +37,7 @@ jobs:
       - name: Run build
         run: |
           mkdir build && cd build
-          cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+          cmake .. -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
           cmake --build .
       - uses: cpp-linter/cpp-linter-action@f91c446a32ae3eb9f98fef8c9ed4c7cb613a4f8a
         id: linter
