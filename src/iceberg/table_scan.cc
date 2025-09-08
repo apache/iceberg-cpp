@@ -122,12 +122,6 @@ Result<ArrowArrayStream> MakeArrowArrayStream(std::unique_ptr<Reader> reader) {
     return InvalidArgument("Reader cannot be null");
   }
 
-  auto schema_check = reader->Schema();
-  if (!schema_check.has_value()) {
-    return InvalidSchema("Failed to get schema from reader: {}",
-                         schema_check.error().message);
-  }
-
   auto private_data = std::make_unique<ReaderStreamPrivateData>(std::move(reader));
 
   ArrowArrayStream stream{.get_schema = GetSchema,
