@@ -23,6 +23,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <utility>
 #include <variant>
 
 #include "iceberg/expression/literal.h"
@@ -57,7 +58,29 @@ enum class TransformType {
 };
 
 /// \brief Get the relative transform name
-ICEBERG_EXPORT constexpr std::string_view TransformTypeToString(TransformType type);
+ICEBERG_EXPORT constexpr std::string_view TransformTypeToString(TransformType type) {
+  switch (type) {
+    case TransformType::kUnknown:
+      return "unknown";
+    case TransformType::kIdentity:
+      return "identity";
+    case TransformType::kBucket:
+      return "bucket";
+    case TransformType::kTruncate:
+      return "truncate";
+    case TransformType::kYear:
+      return "year";
+    case TransformType::kMonth:
+      return "month";
+    case TransformType::kDay:
+      return "day";
+    case TransformType::kHour:
+      return "hour";
+    case TransformType::kVoid:
+      return "void";
+  }
+  std::unreachable();
+}
 
 /// \brief Represents a transform used in partitioning or sorting in Iceberg.
 ///

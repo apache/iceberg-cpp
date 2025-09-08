@@ -96,10 +96,11 @@ if [ "${RELEASE_SIGN}" -gt 0 ]; then
 
   mkdir -p "${id}"
 
-  echo "Downloading .tar.gz from GitHub Releases"
+  echo "Downloading .tar.gz and .sha512 from GitHub Releases"
   gh release download "${rc_tag}" \
     --dir "${id}" \
     --pattern "${tar_gz}" \
+    --pattern "${tar_gz}.sha512" \
     --repo "${repository}" \
     --skip-existing
 

@@ -87,7 +87,7 @@ jobs:
       - name: Install C++ Build Tools (macOS)
         if: runner.os == 'macOS'
         run: |
-          brew install cmake ninja openssl
+          brew reinstall cmake ninja openssl
 
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0

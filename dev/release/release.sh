@@ -38,6 +38,7 @@ rc=$2
 git_origin_url="$(git remote get-url origin)"
 repository="${git_origin_url#*github.com?}"
 repository="${repository%.git}"
+
 if [ "${git_origin_url}" != "git@github.com:apache/iceberg-cpp.git" ]; then
   echo "This script must be ran with a working copy of apache/iceberg-cpp."
   echo "The origin's URL: ${git_origin_url}"
@@ -61,13 +62,22 @@ svn \
 
 svn co "${dist_url}/${release_id}"
 pushd "${release_id}"
+
+echo "Renaming artifacts to their final release names..."
+for fname in ./*; do
+  mv "${fname}" "${fname//-rc${rc}/}"
+done
+echo "Renamed files:"
+ls -l
+
 gh release create "${tag}" \
+  --repo "${repository}" \
   --title "Apache Iceberg C++ ${version}" \
   --generate-notes \
   --verify-tag \
-  ${release_id}.tar.gz \
-  ${release_id}.tar.gz.asc \
-  ${release_id}.tar.gz.sha512
+  *.tar.gz \
+  *.tar.gz.asc \
+  *.tar.gz.sha512
 popd
 
 rm -rf "${release_id}"
@@ -93,11 +103,12 @@ echo
 echo "Add this release to ASF's report database:"
 echo "  https://reporter.apache.org/addrelease.html?iceberg"
 
-echo "Draft email for announce@apache.org mailing list"
+echo "Draft email for announcement"
 echo ""
 echo "---------------------------------------------------------"
 cat <<MAIL
-To: announce@apache.org
+To: dev@iceberg.apache.org
+Cc: announce@apache.org
 Hello everyone,
 
 I'm pleased to announce the release of Apache Iceberg C++ v${version}!
