@@ -149,6 +149,16 @@ std::string ToString(const ::avro::LogicalType::Type& logical_type);
 /// \return True if the node has a map logical type, false otherwise.
 bool HasMapLogicalType(const ::avro::NodePtr& node);
 
+/// \brief Check if a string is a valid Avro name.
+///
+/// Valid Avro names must:
+/// 1. Start with a letter or underscore
+/// 2. Contain only letters, digits, or underscores
+///
+/// \param name The name to check.
+/// \return True if the name is valid, false otherwise.
+bool ValidAvroName(const std::string& name);
+
 /// \brief Create a new Avro node with field IDs from name mapping.
 /// \param original_node The original Avro node to copy.
 /// \param mapping The name mapping to apply field IDs from.
@@ -163,8 +173,7 @@ Result<::avro::NodePtr> MakeAvroNodeWithFieldIds(const ::avro::NodePtr& original
 /// 1. If the first character is not a letter or underscore, it is specially handled:
 ///    - Digits: Prefixed with an underscore (e.g., '3' -> '_3')
 ///    - Other characters: Converted to '_x' followed by the uppercase hexadecimal
-///    representation
-///      of the character (e.g., '$' -> '_x24')
+///    representation of the character (e.g., '$' -> '_x24')
 /// 2. For characters other than the first:
 ///    - If it's a letter, digit, or underscore, it remains unchanged
 ///    - Other characters: Converted to '_x' followed by the uppercase hexadecimal

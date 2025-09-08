@@ -20,6 +20,7 @@
 #include <charconv>
 #include <format>
 #include <mutex>
+#include <sstream>
 #include <string_view>
 
 #include <arrow/type.h>
@@ -56,11 +57,19 @@ namespace {
   return attributes;
 }
 
+void SanitizeChar(char c, std::ostringstream& os) {
+  if (std::isdigit(c)) {
+    os << '_' << c;
+  } else {
+    os << "_x" << std::uppercase << std::hex << static_cast<int>(c);
+  }
+}
+
 }  // namespace
 
-bool validAvroName(const std::string& name) {
+bool ValidAvroName(const std::string& name) {
   if (name.empty()) {
-    throw std::runtime_error("Empty name");
+    return false;
   }
 
   char first = name[0];
@@ -77,35 +86,29 @@ bool validAvroName(const std::string& name) {
   return true;
 }
 
-std::string SanitizeChar(char c) {
-  if (std::isdigit(c)) {
-    return std::string("_") + c;
-  }
-  std::stringstream ss;
-  ss << "_x" << std::uppercase << std::hex << static_cast<int>(c);
-  return ss.str();
-}
-
 std::string SanitizeFieldName(std::string_view field_name) {
-  std::string result;
-  result.reserve(field_name.size());
+  if (field_name.empty()) {
+    return "";
+  }
+
+  std::ostringstream result;
 
   if (!std::isalpha(field_name[0]) && field_name[0] != '_') {
-    result.append(SanitizeChar(field_name[0]));
+    SanitizeChar(field_name[0], result);
   } else {
-    result.push_back(field_name[0]);
+    result << field_name[0];
   }
 
   for (size_t i = 1; i < field_name.size(); ++i) {
     char c = field_name[i];
     if (std::isalnum(c) || c == '_') {
-      result.push_back(c);
+      result << c;
     } else {
-      result.append(SanitizeChar(c));
+      SanitizeChar(c, result);
     }
   }
 
-  return result;
+  return result.str();
 }
 
 std::string ToString(const ::avro::NodePtr& node) {
@@ -231,12 +234,20 @@ Status ToAvroNodeVisitor::Visit(const StructType& type, ::avro::NodePtr* node) {
     ::avro::NodePtr field_node;
     ICEBERG_RETURN_UNEXPECTED(Visit(sub_field, &field_node));
 
-    bool isValidFieldName = validAvroName(std::string(sub_field.name()));
-    std::string fieldName = isValidFieldName ? std::string(sub_field.name())
-                                             : SanitizeFieldName(sub_field.name());
+    std::string origFieldName = std::string(sub_field.name());
+    bool isValidFieldName = ValidAvroName(origFieldName);
+    std::string fieldName =
+        isValidFieldName ? origFieldName : SanitizeFieldName(origFieldName);
+
     (*node)->addName(fieldName);
     (*node)->addLeaf(field_node);
-    (*node)->addCustomAttributesForField(GetAttributesWithFieldId(sub_field.field_id()));
+
+    ::avro::CustomAttributes attributes = GetAttributesWithFieldId(sub_field.field_id());
+    if (!isValidFieldName) {
+      attributes.addAttribute(std::string(kIcebergFieldNameProp), origFieldName,
+                              /*addQuotes=*/true);
+    }
+    (*node)->addCustomAttributesForField(attributes);
   }
   return {};
 }

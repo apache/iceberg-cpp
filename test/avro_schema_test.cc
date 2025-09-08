@@ -32,9 +32,6 @@
 
 namespace iceberg::avro {
 
-// Forward declaration of functions to test
-bool validAvroName(const std::string& name);
-
 namespace {
 
 void CheckCustomLogicalType(const ::avro::NodePtr& node, const std::string& type_name) {
@@ -62,29 +59,29 @@ void CheckIcebergFieldName(const ::avro::NodePtr& node, size_t index,
 
 TEST(ValidAvroNameTest, ValidNames) {
   // Valid field names should return true
-  EXPECT_TRUE(validAvroName("valid_field"));
-  EXPECT_TRUE(validAvroName("field123"));
-  EXPECT_TRUE(validAvroName("_private"));
-  EXPECT_TRUE(validAvroName("CamelCase"));
-  EXPECT_TRUE(validAvroName("field_with_underscores"));
+  EXPECT_TRUE(ValidAvroName("valid_field"));
+  EXPECT_TRUE(ValidAvroName("field123"));
+  EXPECT_TRUE(ValidAvroName("_private"));
+  EXPECT_TRUE(ValidAvroName("CamelCase"));
+  EXPECT_TRUE(ValidAvroName("field_with_underscores"));
 }
 
 TEST(ValidAvroNameTest, InvalidNames) {
   // Names starting with numbers should return false
-  EXPECT_FALSE(validAvroName("123field"));
-  EXPECT_FALSE(validAvroName("0value"));
+  EXPECT_FALSE(ValidAvroName("123field"));
+  EXPECT_FALSE(ValidAvroName("0value"));
 
   // Names with special characters should return false
-  EXPECT_FALSE(validAvroName("field-name"));
-  EXPECT_FALSE(validAvroName("field.name"));
-  EXPECT_FALSE(validAvroName("field name"));
-  EXPECT_FALSE(validAvroName("field@name"));
-  EXPECT_FALSE(validAvroName("field#name"));
+  EXPECT_FALSE(ValidAvroName("field-name"));
+  EXPECT_FALSE(ValidAvroName("field.name"));
+  EXPECT_FALSE(ValidAvroName("field name"));
+  EXPECT_FALSE(ValidAvroName("field@name"));
+  EXPECT_FALSE(ValidAvroName("field#name"));
 }
 
 TEST(ValidAvroNameTest, EmptyName) {
-  // Empty name should throw an exception
-  EXPECT_THROW(validAvroName(""), std::runtime_error);
+  // Empty name should return false
+  EXPECT_FALSE(ValidAvroName(""));
 }
 
 TEST(SanitizeFieldNameTest, ValidFieldNames) {
@@ -116,7 +113,7 @@ TEST(SanitizeFieldNameTest, InvalidFieldNames) {
 
 TEST(SanitizeFieldNameTest, EdgeCases) {
   // Empty field name
-  EXPECT_EQ(SanitizeFieldName(""), "_x0");
+  EXPECT_EQ(SanitizeFieldName(""), "");
 
   // Field name with only special characters
   EXPECT_EQ(SanitizeFieldName("@#$"), "_x40_x23_x24");
@@ -258,67 +255,58 @@ TEST(ToAvroNodeVisitorTest, StructType) {
   EXPECT_EQ(node->leafAt(1)->leafAt(1)->type(), ::avro::AVRO_INT);
 }
 
-TEST(ToAvroNodeVisitorTest, StructTypeWithSanitizedFieldNames) {
-  // Test struct with field names that require sanitization
+TEST(ToAvroNodeVisitorTest, StructTypeWithFieldNames) {
   StructType struct_type{
       {SchemaField{/*field_id=*/1, "user-name", iceberg::string(),
                    /*optional=*/false},
-       SchemaField{/*field_id=*/2, "email.address", iceberg::string(),
-                   /*optional=*/true},
-       SchemaField{/*field_id=*/3, "123field", iceberg::int32(),
+       SchemaField{/*field_id=*/2, "valid_field", iceberg::string(),
                    /*optional=*/false},
-       SchemaField{/*field_id=*/4, "field with spaces", iceberg::boolean(),
+       SchemaField{/*field_id=*/3, "email.address", iceberg::string(),
+                   /*optional=*/true},
+       SchemaField{/*field_id=*/4, "AnotherField", iceberg::int32(),
+                   /*optional=*/true},
+       SchemaField{/*field_id=*/5, "123field", iceberg::int32(),
+                   /*optional=*/false},
+       SchemaField{/*field_id=*/6, "field with spaces", iceberg::boolean(),
                    /*optional=*/true}}};
-
   ::avro::NodePtr node;
   EXPECT_THAT(ToAvroNodeVisitor{}.Visit(struct_type, &node), IsOk());
   EXPECT_EQ(node->type(), ::avro::AVRO_RECORD);
 
-  // Check that field names are sanitized
-  ASSERT_EQ(node->names(), 4);
+  ASSERT_EQ(node->names(), 6);
+
   EXPECT_EQ(node->nameAt(0), "user_x2Dname");  // "user-name" -> "user_x2Dname"
-  EXPECT_EQ(node->nameAt(1),
+  EXPECT_EQ(node->nameAt(2),
             "email_x2Eaddress");            // "email.address" -> "email_x2Eaddress"
-  EXPECT_EQ(node->nameAt(2), "_123field");  // "123field" -> "_123field"
+  EXPECT_EQ(node->nameAt(4), "_123field");  // "123field" -> "_123field"
   EXPECT_EQ(
-      node->nameAt(3),
+      node->nameAt(5),
       "field_x20with_x20spaces");  // "field with spaces" -> "field_x20with_x20spaces"
 
-  // Check that field IDs are correctly applied
-  // Each field has 1 custom attribute: field-id
-  ASSERT_EQ(node->customAttributes(), 4);
+  EXPECT_EQ(node->nameAt(1), "valid_field");
+  EXPECT_EQ(node->nameAt(3), "AnotherField");
+
+  ASSERT_EQ(node->customAttributes(), 6);
   ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(node, /*index=*/0, /*field_id=*/1));
   ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(node, /*index=*/1, /*field_id=*/2));
   ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(node, /*index=*/2, /*field_id=*/3));
   ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(node, /*index=*/3, /*field_id=*/4));
-}
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(node, /*index=*/4, /*field_id=*/5));
+  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(node, /*index=*/5, /*field_id=*/6));
 
-TEST(ToAvroNodeVisitorTest, StructTypeWithValidFieldNames) {
-  // Test struct with field names that don't require sanitization
-  StructType struct_type{{SchemaField{/*field_id=*/1, "valid_field", iceberg::string(),
-                                      /*optional=*/false},
-                          SchemaField{/*field_id=*/2, "AnotherField", iceberg::int32(),
-                                      /*optional=*/true}}};
-
-  ::avro::NodePtr node;
-  EXPECT_THAT(ToAvroNodeVisitor{}.Visit(struct_type, &node), IsOk());
-  EXPECT_EQ(node->type(), ::avro::AVRO_RECORD);
-
-  // Check that field names remain unchanged
-  ASSERT_EQ(node->names(), 2);
-  EXPECT_EQ(node->nameAt(0), "valid_field");
-  EXPECT_EQ(node->nameAt(1), "AnotherField");
-
-  // Check that field IDs are correctly applied
-  ASSERT_EQ(node->customAttributes(), 2);
-  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(node, /*index=*/0, /*field_id=*/1));
-  ASSERT_NO_FATAL_FAILURE(CheckFieldIdAt(node, /*index=*/1, /*field_id=*/2));
-
-  // For valid field names, there should be no iceberg-field-name attributes
-  const auto& attrs0 = node->customAttributesAt(0);
-  const auto& attrs1 = node->customAttributesAt(1);
-  EXPECT_FALSE(attrs0.getAttribute("iceberg-field-name").has_value());
+  const auto& attrs1 = node->customAttributesAt(1);  // valid_field
+  const auto& attrs3 = node->customAttributesAt(3);  // AnotherField
   EXPECT_FALSE(attrs1.getAttribute("iceberg-field-name").has_value());
+  EXPECT_FALSE(attrs3.getAttribute("iceberg-field-name").has_value());
+
+  ASSERT_NO_FATAL_FAILURE(
+      CheckIcebergFieldName(node, /*index=*/0, /*original_name=*/"user-name"));
+  ASSERT_NO_FATAL_FAILURE(
+      CheckIcebergFieldName(node, /*index=*/2, /*original_name=*/"email.address"));
+  ASSERT_NO_FATAL_FAILURE(
+      CheckIcebergFieldName(node, /*index=*/4, /*original_name=*/"123field"));
+  ASSERT_NO_FATAL_FAILURE(
+      CheckIcebergFieldName(node, /*index=*/5, /*original_name=*/"field with spaces"));
 }
 
 TEST(ToAvroNodeVisitorTest, ListType) {
