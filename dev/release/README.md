@@ -31,7 +31,7 @@ Run `dev/release/release_rc.sh` on a working copy of
 `git@github.com:apache/iceberg-cpp` not from your fork:
 
 ```console
-$ git clone git@github.com:apache/iceberg-cpp.git
+$ git clone git@github.com:apache/iceberg-cpp.git && cd iceberg-cpp
 $ dev/release/release_rc.sh ${VERSION} ${RC}
 (Send a vote email to dev@iceberg.apache.org.
  You can use a draft shown by release_rc.sh for the email.)

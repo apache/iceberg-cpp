@@ -74,21 +74,10 @@ jobs:
       fail-fast: false
       matrix:
         os:
-          - macos-latest
-          - ubuntu-latest
+          - macos-15
+          - ubuntu-24.04
           # - windows-latest
     steps:
-      - name: Install C++ Build Tools (Ubuntu)
-        if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential cmake ninja-build libssl-dev
-
-      - name: Install C++ Build Tools (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew reinstall cmake ninja openssl
-
       - name: Checkout
         uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
 
