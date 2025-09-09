@@ -90,11 +90,12 @@ Status ManifestAdapter::AppendField(ArrowArray* arrowArray,
 }
 
 ManifestEntryAdapter::~ManifestEntryAdapter() {
-  // arrow::ImportedArrayData::Release() bridge.cc:1478 will release the
-  // internal array, so we have no need to release it here.
-  //  if (is_initialized_) {
-  //   ArrowArrayRelease(&array_);
-  //  }
+  if (is_initialized_) {
+    // arrow::ImportedArrayData::Release() bridge.cc:1478 will release the
+    // internal array, so we have no need to release it here.
+    // ArrowArrayRelease(&array_);
+    ArrowSchemaRelease(&schema_);
+  }
 }
 
 std::shared_ptr<StructType> ManifestEntryAdapter::GetManifestEntryStructType() {
@@ -471,11 +472,12 @@ Status ManifestEntryAdapter::InitSchema(const std::unordered_set<int32_t>& field
 }
 
 ManifestFileAdapter::~ManifestFileAdapter() {
-  // arrow::ImportedArrayData::Release() bridge.cc:1478 will release the
-  // internal array, so we have no need to release it here.
-  //  if (is_initialized_) {
-  //    ArrowArrayRelease(&array_);
-  //  }
+  if (is_initialized_) {
+    // arrow::ImportedArrayData::Release() bridge.cc:1478 will release the
+    // internal array, so we have no need to release it here.
+    // ArrowArrayRelease(&array_);
+    ArrowSchemaRelease(&schema_);
+  }
 }
 
 Status ManifestFileAdapter::AppendPartitions(
