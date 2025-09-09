@@ -26,6 +26,10 @@
 #include "iceberg/util/macros.h"
 #include "nanoarrow/nanoarrow.h"
 
+namespace {
+static constexpr int64_t kBlockSizeInBytes = 64 * 1024 * 1024L;
+}
+
 namespace iceberg {
 
 Status ManifestAdapter::StartAppending() {
@@ -264,7 +268,6 @@ Status ManifestEntryAdapter::AppendDataFile(
         break;
       case 105:  // block_size_in_bytes (compatible in v1)
         // always 64MB for v1
-        static const int64_t kBlockSizeInBytes = 64 * 1024 * 1024L;
         ICEBERG_RETURN_UNEXPECTED(AppendField(array, kBlockSizeInBytes));
         break;
       case 108:  // column_sizes (optional map)
