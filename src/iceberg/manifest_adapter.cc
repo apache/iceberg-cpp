@@ -36,10 +36,6 @@ Status ManifestAdapter::StartAppending() {
   if (size_ > 0) {
     return InvalidArgument("Adapter buffer not empty, cannot start appending.");
   }
-  if (is_initialized_) {
-    // reset buffer
-    ArrowArrayRelease(&array_);
-  }
   array_ = {};
   size_ = 0;
   ArrowError error;
@@ -47,7 +43,6 @@ Status ManifestAdapter::StartAppending() {
   NANOARROW_RETURN_IF_NOT_OK(status, error);
   status = ArrowArrayStartAppending(&array_);
   NANOARROW_RETURN_IF_NOT_OK(status, error);
-  is_initialized_ = true;
   return {};
 }
 
@@ -471,6 +466,7 @@ Status ManifestEntryAdapter::InitSchema(const std::unordered_set<int32_t>& field
   }
   manifest_schema_ = std::make_shared<Schema>(fields);
   ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*manifest_schema_, &schema_));
+  is_initialized_ = true;
   return {};
 }
 
@@ -701,6 +697,7 @@ Status ManifestFileAdapter::InitSchema(const std::unordered_set<int32_t>& fields
   }
   manifest_list_schema_ = std::make_shared<Schema>(fields);
   ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*manifest_list_schema_, &schema_));
+  is_initialized_ = true;
   return {};
 }
 
