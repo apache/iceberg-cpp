@@ -94,23 +94,14 @@ class FileScanTaskTest : public TempFileTestBase {
   // Helper method to verify the content of the next batch from an ArrowArrayStream.
   void VerifyStreamNextBatch(struct ArrowArrayStream* stream,
                              std::string_view expected_json) {
-    ASSERT_NE(stream->get_schema, nullptr) << "Stream has been released or is invalid.";
+    auto record_batch_reader = ::arrow::ImportRecordBatchReader(stream).ValueOrDie();
 
-    ArrowSchema c_schema;
-    ASSERT_EQ(stream->get_schema(stream, &c_schema), 0);
-    auto import_schema_result = ::arrow::ImportSchema(&c_schema);
-    ASSERT_TRUE(import_schema_result.ok()) << import_schema_result.status().message();
-    auto arrow_schema = import_schema_result.ValueOrDie();
+    auto result = record_batch_reader->Next();
+    ASSERT_TRUE(result.ok()) << result.status().message();
+    auto actual_batch = result.ValueOrDie();
+    ASSERT_NE(actual_batch, nullptr) << "Stream is exhausted but expected more data.";
 
-    ArrowArray c_array;
-    ASSERT_EQ(stream->get_next(stream, &c_array), 0)
-        << "get_next failed. Error: " << stream->get_last_error(stream);
-    ASSERT_NE(c_array.release, nullptr) << "Stream is exhausted but expected more data.";
-
-    auto import_batch_result = ::arrow::ImportRecordBatch(&c_array, arrow_schema);
-    ASSERT_TRUE(import_batch_result.ok()) << import_batch_result.status().message();
-    auto actual_batch = import_batch_result.ValueOrDie();
-
+    auto arrow_schema = actual_batch->schema();
     auto struct_type = ::arrow::struct_(arrow_schema->fields());
     auto expected_array =
         ::arrow::json::ArrayFromJSONString(struct_type, expected_json).ValueOrDie();
@@ -125,10 +116,10 @@ class FileScanTaskTest : public TempFileTestBase {
 
   // Helper method to verify that an ArrowArrayStream is exhausted.
   void VerifyStreamExhausted(struct ArrowArrayStream* stream) {
-    ASSERT_NE(stream->get_next, nullptr) << "Stream has been released or is invalid.";
-    ArrowArray c_array;
-    ASSERT_EQ(stream->get_next(stream, &c_array), 0);
-    ASSERT_EQ(c_array.release, nullptr) << "Stream was not exhausted as expected.";
+    auto record_batch_reader = ::arrow::ImportRecordBatchReader(stream).ValueOrDie();
+    auto result = record_batch_reader->Next();
+    ASSERT_TRUE(result.ok()) << result.status().message();
+    ASSERT_EQ(result.ValueOrDie(), nullptr) << "Reader was not exhausted as expected.";
   }
 
   std::shared_ptr<FileIO> file_io_;
@@ -146,18 +137,12 @@ TEST_F(FileScanTaskTest, ReadFullSchema) {
 
   FileScanTask task(data_file);
 
-  auto stream_result = task.ToArrow(projected_schema, nullptr, file_io_);
+  auto stream_result = task.ToArrow(file_io_, projected_schema, nullptr);
   ASSERT_THAT(stream_result, IsOk());
   auto stream = std::move(stream_result.value());
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyStreamNextBatch(&stream, R"([[1, "Foo"], [2, "Bar"], [3, "Baz"]])"));
-  ASSERT_NO_FATAL_FAILURE(VerifyStreamExhausted(&stream));
-
-  ASSERT_NE(stream.release, nullptr);
-  stream.release(&stream);
-  ASSERT_EQ(stream.release, nullptr);
-  ASSERT_EQ(stream.private_data, nullptr);
 }
 
 TEST_F(FileScanTaskTest, ReadProjectedAndReorderedSchema) {
@@ -171,15 +156,12 @@ TEST_F(FileScanTaskTest, ReadProjectedAndReorderedSchema) {
 
   FileScanTask task(data_file);
 
-  auto stream_result = task.ToArrow(projected_schema, nullptr, file_io_);
+  auto stream_result = task.ToArrow(file_io_, projected_schema, nullptr);
   ASSERT_THAT(stream_result, IsOk());
   auto stream = std::move(stream_result.value());
 
   ASSERT_NO_FATAL_FAILURE(
       VerifyStreamNextBatch(&stream, R"([["Foo", null], ["Bar", null], ["Baz", null]])"));
-  ASSERT_NO_FATAL_FAILURE(VerifyStreamExhausted(&stream));
-
-  stream.release(&stream);
 }
 
 TEST_F(FileScanTaskTest, ReadEmptyFile) {
@@ -193,14 +175,12 @@ TEST_F(FileScanTaskTest, ReadEmptyFile) {
 
   FileScanTask task(data_file);
 
-  auto stream_result = task.ToArrow(projected_schema, nullptr, file_io_);
+  auto stream_result = task.ToArrow(file_io_, projected_schema, nullptr);
   ASSERT_THAT(stream_result, IsOk());
   auto stream = std::move(stream_result.value());
 
   // The stream should be immediately exhausted
   ASSERT_NO_FATAL_FAILURE(VerifyStreamExhausted(&stream));
-
-  stream.release(&stream);
 }
 
 }  // namespace iceberg

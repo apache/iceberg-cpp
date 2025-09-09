@@ -148,8 +148,8 @@ int32_t FileScanTask::files_count() const { return 1; }
 int64_t FileScanTask::estimated_row_count() const { return data_file_->record_count; }
 
 Result<ArrowArrayStream> FileScanTask::ToArrow(
-    const std::shared_ptr<Schema>& projected_schema,
-    const std::shared_ptr<Expression>& filter, const std::shared_ptr<FileIO>& io) const {
+    const std::shared_ptr<FileIO>& io, const std::shared_ptr<Schema>& projected_schema,
+    const std::shared_ptr<Expression>& filter) const {
   const ReaderOptions options{.path = data_file_->file_path,
                               .length = data_file_->file_size_in_bytes,
                               .io = io,

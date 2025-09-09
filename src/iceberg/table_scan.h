@@ -58,14 +58,14 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   /**
    * \brief Returns a C-ABI compatible ArrowArrayStream to read the data for this task.
    *
+   * \param io The FileIO instance for accessing the file data.
    * \param projected_schema The projected schema for reading the data.
    * \param filter Optional filter expression to apply during reading.
-   * \param io The FileIO instance for accessing the file data.
    * \return A Result containing an ArrowArrayStream, or an error on failure.
    */
-  Result<ArrowArrayStream> ToArrow(const std::shared_ptr<Schema>& projected_schema,
-                                   const std::shared_ptr<Expression>& filter,
-                                   const std::shared_ptr<FileIO>& io) const;
+  Result<ArrowArrayStream> ToArrow(const std::shared_ptr<FileIO>& io,
+                                   const std::shared_ptr<Schema>& projected_schema,
+                                   const std::shared_ptr<Expression>& filter) const;
 
  private:
   /// \brief Data file metadata.
