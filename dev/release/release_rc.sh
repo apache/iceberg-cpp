@@ -71,7 +71,8 @@ fi
 
 rc_hash="$(git rev-list --max-count=1 "${rc_tag}")"
 
-id="apache-iceberg-cpp-${version}-rc${rc}"
+id="apache-iceberg-cpp-${version}"
+rc_id="${id}-${rc}"
 tar_gz="${id}.tar.gz"
 
 if [ "${RELEASE_SIGN}" -gt 0 ]; then
@@ -94,18 +95,18 @@ if [ "${RELEASE_SIGN}" -gt 0 ]; then
   echo "Found GitHub Actions workflow with ID: ${run_id}"
   gh run watch --repo "${repository}" --exit-status "${run_id}"
 
-  mkdir -p "${id}"
+  mkdir -p "${rc_id}"
 
   echo "Downloading .tar.gz and .sha512 from GitHub Releases"
   gh release download "${rc_tag}" \
-    --dir "${id}" \
+    --dir "${rc_id}" \
     --pattern "${tar_gz}" \
     --pattern "${tar_gz}.sha512" \
     --repo "${repository}" \
     --skip-existing
 
   echo "Signing tar.gz"
-  cd "${id}"
+  cd "${rc_id}"
   gpg --armor --output "${tar_gz}.asc" --detach-sig "${tar_gz}"
   echo "Add signature to GitHub release"
   gh release upload "${rc_tag}" \
@@ -117,13 +118,7 @@ fi
 
 if [ "${RELEASE_UPLOAD}" -gt 0 ]; then
   echo "Uploading to ASF dist/dev..."
-  # rename files to remove -rc${rc} suffix before uploading
-  pushd "${id}"
-  for fname in ./*; do
-    mv "${fname}" "${fname//-rc${rc}/}"
-  done
-  popd
-  svn import "${id}" "https://dist.apache.org/repos/dist/dev/iceberg/${id}" -m "Apache Iceberg C++ ${version} RC${rc}"
+  svn import "${rc_id}" "https://dist.apache.org/repos/dist/dev/iceberg/${rc_id}" -m "Apache Iceberg C++ ${version} RC${rc}"
 fi
 
 echo "Draft email for dev@iceberg.apache.org mailing list"

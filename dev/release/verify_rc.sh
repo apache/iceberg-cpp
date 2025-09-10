@@ -42,8 +42,9 @@ VERSION="$1"
 RC="$2"
 
 ICEBERG_DIST_BASE_URL="https://downloads.apache.org/iceberg"
-DOWNLOAD_RC_BASE_URL="https://dist.apache.org/repos/dist/dev/iceberg/apache-iceberg-cpp-${VERSION}-rc${RC}"
-ARCHIVE_BASE_NAME="apache-iceberg-cpp-${VERSION}-rc${RC}"
+RC_BASE_DIR="apache-iceberg-cpp-${VERSION}-rc${RC}"
+DOWNLOAD_RC_BASE_URL="https://dist.apache.org/repos/dist/dev/iceberg/${RC_BASE_DIR}"
+ARCHIVE_BASE_NAME="apache-iceberg-cpp-${VERSION}"
 
 : "${VERIFY_DEFAULT:=1}"
 : "${VERIFY_DOWNLOAD:=${VERIFY_DEFAULT}}"
@@ -142,7 +143,7 @@ cd "${VERIFY_TMPDIR}"
 import_gpg_keys
 fetch_archive
 ensure_source_directory
-pushd "${ARCHIVE_BASE_NAME}"
+pushd "${RC_BASE_DIR}"
 test_source_distribution
 popd
 

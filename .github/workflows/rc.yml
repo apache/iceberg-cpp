@@ -49,7 +49,7 @@ jobs:
 
       - name: Archive
         run: |
-          ARCHIVE_FILE_NAME="apache-iceberg-cpp-${VERSION}-rc${RC}"
+          ARCHIVE_FILE_NAME="apache-iceberg-cpp-${VERSION}"
           tar_gz="${ARCHIVE_FILE_NAME}.tar.gz"
           echo "TAR_GZ=${tar_gz}" >> ${GITHUB_ENV}
           git archive HEAD --prefix "${ARCHIVE_FILE_NAME}/" --output "${tar_gz}"
