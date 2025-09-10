@@ -49,6 +49,7 @@ set(ICEBERG_SOURCES
     manifest_reader_internal.cc
     manifest_writer.cc
     arrow_c_data_guard_internal.cc
+    util/decimal.cc
     util/murmurhash3_internal.cc
     util/timepoint.cc
     util/gzip_internal.cc)
