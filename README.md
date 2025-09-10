@@ -17,6 +17,11 @@
   ~ under the License.
 -->
 
+![Iceberg](https://iceberg.apache.org/assets/images/Iceberg-logo.svg)
+
+[![Slack](https://img.shields.io/badge/chat-on%20Slack-brightgreen.svg)](https://apache-iceberg.slack.com/)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/apache/iceberg-cpp)
+
 # Apache Iceberg™ C++
 
 C++ implementation of [Apache Iceberg™](https://iceberg.apache.org/).
