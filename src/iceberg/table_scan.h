@@ -22,6 +22,7 @@
 #include <string>
 #include <vector>
 
+#include "iceberg/arrow_c_data.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/type_fwd.h"
 
@@ -53,6 +54,18 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
   int64_t size_bytes() const override;
   int32_t files_count() const override;
   int64_t estimated_row_count() const override;
+
+  /**
+   * \brief Returns a C-ABI compatible ArrowArrayStream to read the data for this task.
+   *
+   * \param io The FileIO instance for accessing the file data.
+   * \param projected_schema The projected schema for reading the data.
+   * \param filter Optional filter expression to apply during reading.
+   * \return A Result containing an ArrowArrayStream, or an error on failure.
+   */
+  Result<ArrowArrayStream> ToArrow(const std::shared_ptr<FileIO>& io,
+                                   const std::shared_ptr<Schema>& projected_schema,
+                                   const std::shared_ptr<Expression>& filter) const;
 
  private:
   /// \brief Data file metadata.

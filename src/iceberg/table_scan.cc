@@ -19,9 +19,11 @@
 
 #include "iceberg/table_scan.h"
 
-#include <algorithm>
-#include <ranges>
+#include <cstring>
+#include <vector>
 
+#include "iceberg/arrow_c_data.h"
+#include "iceberg/file_reader.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/manifest_reader.h"
@@ -32,6 +34,106 @@
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
+
+namespace {
+/// \brief Private data structure to hold the Reader and error state
+struct ReaderStreamPrivateData {
+  std::unique_ptr<Reader> reader;
+  std::string last_error;
+
+  explicit ReaderStreamPrivateData(std::unique_ptr<Reader> reader_ptr)
+      : reader(std::move(reader_ptr)) {}
+
+  ~ReaderStreamPrivateData() {
+    if (reader) {
+      std::ignore = reader->Close();
+    }
+  }
+};
+
+/// \brief Callback to get the stream schema
+static int GetSchema(struct ArrowArrayStream* stream, struct ArrowSchema* out) {
+  if (!stream || !stream->private_data) {
+    return EINVAL;
+  }
+  auto* private_data = static_cast<ReaderStreamPrivateData*>(stream->private_data);
+  // Get schema from reader
+  auto schema_result = private_data->reader->Schema();
+  if (!schema_result.has_value()) {
+    private_data->last_error = schema_result.error().message;
+    std::memset(out, 0, sizeof(ArrowSchema));
+    return EIO;
+  }
+
+  *out = std::move(schema_result.value());
+  return 0;
+}
+
+/// \brief Callback to get the next array from the stream
+static int GetNext(struct ArrowArrayStream* stream, struct ArrowArray* out) {
+  if (!stream || !stream->private_data) {
+    return EINVAL;
+  }
+
+  auto* private_data = static_cast<ReaderStreamPrivateData*>(stream->private_data);
+
+  auto next_result = private_data->reader->Next();
+  if (!next_result.has_value()) {
+    private_data->last_error = next_result.error().message;
+    std::memset(out, 0, sizeof(ArrowArray));
+    return EIO;
+  }
+
+  auto& optional_array = next_result.value();
+  if (optional_array.has_value()) {
+    *out = std::move(optional_array.value());
+  } else {
+    // End of stream - set release to nullptr to signal end
+    std::memset(out, 0, sizeof(ArrowArray));
+    out->release = nullptr;
+  }
+
+  return 0;
+}
+
+/// \brief Callback to get the last error message
+static const char* GetLastError(struct ArrowArrayStream* stream) {
+  if (!stream || !stream->private_data) {
+    return nullptr;
+  }
+
+  auto* private_data = static_cast<ReaderStreamPrivateData*>(stream->private_data);
+  return private_data->last_error.empty() ? nullptr : private_data->last_error.c_str();
+}
+
+/// \brief Callback to release the stream resources
+static void Release(struct ArrowArrayStream* stream) {
+  if (!stream || !stream->private_data) {
+    return;
+  }
+
+  delete static_cast<ReaderStreamPrivateData*>(stream->private_data);
+  stream->private_data = nullptr;
+  stream->release = nullptr;
+}
+
+Result<ArrowArrayStream> MakeArrowArrayStream(std::unique_ptr<Reader> reader) {
+  if (!reader) {
+    return InvalidArgument("Reader cannot be null");
+  }
+
+  auto private_data = std::make_unique<ReaderStreamPrivateData>(std::move(reader));
+
+  ArrowArrayStream stream{.get_schema = GetSchema,
+                          .get_next = GetNext,
+                          .get_last_error = GetLastError,
+                          .release = Release,
+                          .private_data = private_data.release()};
+
+  return stream;
+}
+
+}  // namespace
 
 // implement FileScanTask
 FileScanTask::FileScanTask(std::shared_ptr<DataFile> data_file)
@@ -44,6 +146,21 @@ int64_t FileScanTask::size_bytes() const { return data_file_->file_size_in_bytes
 int32_t FileScanTask::files_count() const { return 1; }
 
 int64_t FileScanTask::estimated_row_count() const { return data_file_->record_count; }
+
+Result<ArrowArrayStream> FileScanTask::ToArrow(
+    const std::shared_ptr<FileIO>& io, const std::shared_ptr<Schema>& projected_schema,
+    const std::shared_ptr<Expression>& filter) const {
+  const ReaderOptions options{.path = data_file_->file_path,
+                              .length = data_file_->file_size_in_bytes,
+                              .io = io,
+                              .projection = projected_schema,
+                              .filter = filter};
+
+  ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                          ReaderFactoryRegistry::Open(data_file_->file_format, options));
+
+  return MakeArrowArrayStream(std::move(reader));
+}
 
 TableScanBuilder::TableScanBuilder(std::shared_ptr<TableMetadata> table_metadata,
                                    std::shared_ptr<FileIO> file_io)
