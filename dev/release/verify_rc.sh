@@ -31,7 +31,7 @@ TOP_SOURCE_DIR="$(dirname "$(dirname "${SOURCE_DIR}")")"
 
 if [ "$#" -ne 2 ]; then
   echo "Usage: $0 <version> <rc>"
-  echo " e.g.: $0 0.1.0 1"
+  echo " e.g.: $0 0.1.0 0"
   exit 1
 fi
 
@@ -42,8 +42,7 @@ VERSION="$1"
 RC="$2"
 
 ICEBERG_DIST_BASE_URL="https://downloads.apache.org/iceberg"
-RC_BASE_DIR="apache-iceberg-cpp-${VERSION}-rc${RC}"
-DOWNLOAD_RC_BASE_URL="https://dist.apache.org/repos/dist/dev/iceberg/${RC_BASE_DIR}"
+DOWNLOAD_RC_BASE_URL="https://dist.apache.org/repos/dist/dev/iceberg/apache-iceberg-cpp-${VERSION}-rc${RC}"
 ARCHIVE_BASE_NAME="apache-iceberg-cpp-${VERSION}"
 
 : "${VERIFY_DEFAULT:=1}"
@@ -143,7 +142,7 @@ cd "${VERIFY_TMPDIR}"
 import_gpg_keys
 fetch_archive
 ensure_source_directory
-pushd "${RC_BASE_DIR}"
+pushd "${ARCHIVE_BASE_NAME}"
 test_source_distribution
 popd
 

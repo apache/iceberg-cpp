@@ -31,7 +31,7 @@ SOURCE_TOP_DIR="$(cd "${SOURCE_DIR}/../../" && pwd)"
 
 if [ "$#" -ne 2 ]; then
   echo "Usage: $0 <version> <rc>"
-  echo " e.g.: $0 0.1.0 1"
+  echo " e.g.: $0 0.1.0 0"
   exit 1
 fi
 
