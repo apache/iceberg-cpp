@@ -72,7 +72,7 @@ fi
 rc_hash="$(git rev-list --max-count=1 "${rc_tag}")"
 
 id="apache-iceberg-cpp-${version}"
-rc_id="${id}-${rc}"
+rc_id="${id}-rc${rc}"
 tar_gz="${id}.tar.gz"
 
 if [ "${RELEASE_SIGN}" -gt 0 ]; then
@@ -126,26 +126,26 @@ echo ""
 echo "---------------------------------------------------------"
 cat <<MAIL
 To: dev@iceberg.apache.org
-Subject: [VOTE][C++] Release Apache Iceberg C++ v${version} RC${rc}
+Subject: [VOTE][C++] Release Apache Iceberg C++ ${version} RC${rc}
 
 Hi,
 
 I would like to propose the following release candidate (RC${rc}) of
-Apache Iceberg C++ version v${version}.
+Apache Iceberg C++ ${version}.
 
 This release candidate is based on commit:
 ${rc_hash} [1]
 
-The source release rc${rc} is hosted at [2].
+The source release RC${rc} is hosted at [2].
 
 Please download, verify checksums and signatures, run the unit tests,
 and vote on the release. See [3] for how to validate a release candidate.
 
 The vote will be open for at least 72 hours.
 
-[ ] +1 Release this as Apache Iceberg C++ v${version}
+[ ] +1 Release this as Apache Iceberg C++ ${version}
 [ ] +0
-[ ] -1 Do not release this as Apache Iceberg C++ v${version} because...
+[ ] -1 Do not release this as Apache Iceberg C++ ${version} because...
 
 [1]: https://github.com/apache/iceberg-cpp/tree/${rc_hash}
 [2]: https://dist.apache.org/repos/dist/dev/iceberg/apache-iceberg-cpp-${version}-rc${rc}

@@ -63,13 +63,6 @@ svn \
 svn co "${dist_url}/${release_id}"
 pushd "${release_id}"
 
-echo "Renaming artifacts to their final release names..."
-for fname in ./*; do
-  mv "${fname}" "${fname//-rc${rc}/}"
-done
-echo "Renamed files:"
-ls -l
-
 gh release create "${tag}" \
   --repo "${repository}" \
   --title "Apache Iceberg C++ ${version}" \
@@ -111,15 +104,15 @@ To: dev@iceberg.apache.org
 Cc: announce@apache.org
 Hello everyone,
 
-I'm pleased to announce the release of Apache Iceberg C++ v${version}!
+I'm pleased to announce the release of Apache Iceberg C++ ${version}!
 
-Apache Iceberg is an open table format for huge analytic datasets,
+Apache Iceberg is an open table format for huge analytic datasets.
 Iceberg delivers high query performance for tables with tens of
 petabytes of data, along with atomic commits, concurrent writes, and
 SQL-compatible table evolution.
 
-This release contains <COMMIT_COUNT> commits from <CONTRIBUTOR_COUNT> unique contributors. Among
-the changes in this release are the following highlights:
+This release contains <COMMIT_COUNT> commits from <CONTRIBUTOR_COUNT> unique contributors.
+Among the changes in this release are the following highlights:
 
 - <FEATURE_1>
 - <FEATURE_2>
