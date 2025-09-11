@@ -51,6 +51,14 @@ macro(prepare_fetchcontent)
   set(CMAKE_COMPILE_WARNING_AS_ERROR FALSE)
   set(CMAKE_EXPORT_NO_PACKAGE_REGISTRY TRUE)
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+  # Use "NEW" for CMP0077 by default.
+  #
+  # https://cmake.org/cmake/help/latest/policy/CMP0077.html
+  #
+  # option() honors normal variables.
+  set(CMAKE_POLICY_DEFAULT_CMP0077
+      NEW
+      CACHE STRING "")
 endmacro()
 
 # ----------------------------------------------------------------------
@@ -59,43 +67,20 @@ endmacro()
 function(resolve_arrow_dependency)
   prepare_fetchcontent()
 
-  set(ARROW_BUILD_SHARED
-      OFF
-      CACHE BOOL "" FORCE)
-  set(ARROW_BUILD_STATIC
-      ON
-      CACHE BOOL "" FORCE)
+  set(ARROW_BUILD_SHARED OFF)
+  set(ARROW_BUILD_STATIC ON)
   # Work around undefined symbol: arrow::ipc::ReadSchema(arrow::io::InputStream*, arrow::ipc::DictionaryMemo*)
-  set(ARROW_IPC
-      ON
-      CACHE BOOL "" FORCE)
-  set(ARROW_FILESYSTEM
-      ON
-      CACHE BOOL "" FORCE)
-  set(ARROW_JSON
-      ON
-      CACHE BOOL "" FORCE)
-  set(ARROW_PARQUET
-      ON
-      CACHE BOOL "" FORCE)
-  set(ARROW_SIMD_LEVEL
-      "NONE"
-      CACHE STRING "" FORCE)
-  set(ARROW_RUNTIME_SIMD_LEVEL
-      "NONE"
-      CACHE STRING "" FORCE)
-  set(ARROW_POSITION_INDEPENDENT_CODE
-      ON
-      CACHE BOOL "" FORCE)
-  set(ARROW_DEPENDENCY_SOURCE
-      "BUNDLED"
-      CACHE STRING "" FORCE)
-  set(ARROW_WITH_ZLIB
-      ON
-      CACHE BOOL "" FORCE)
-  set(ZLIB_SOURCE
-      "SYSTEM"
-      CACHE STRING "" FORCE)
+  set(ARROW_IPC ON)
+  set(ARROW_FILESYSTEM ON)
+  set(ARROW_JSON ON)
+  set(ARROW_PARQUET ON)
+  set(ARROW_SIMD_LEVEL "NONE")
+  set(ARROW_RUNTIME_SIMD_LEVEL "NONE")
+  set(ARROW_POSITION_INDEPENDENT_CODE ON)
+  set(ARROW_DEPENDENCY_SOURCE "BUNDLED")
+  set(ARROW_WITH_ZLIB ON)
+  set(ZLIB_SOURCE "SYSTEM")
+  set(ARROW_VERBOSE_THIRDPARTY_BUILD OFF)
 
   fetchcontent_declare(VendoredArrow
                        ${FC_DECLARE_COMMON_OPTIONS}

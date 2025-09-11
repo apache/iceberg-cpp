@@ -118,9 +118,11 @@ test_source_distribution() {
 
   # Configure build
   cmake -S . -B build \
+    -DCMAKE_CXX_FLAGS="-Wno-deprecated-declarations" \
     -DCMAKE_BUILD_TYPE=Release \
     -DICEBERG_BUILD_STATIC=ON \
-    -DICEBERG_BUILD_SHARED=ON
+    -DICEBERG_BUILD_SHARED=ON \
+    --compile-no-warning-as-error
 
   # Build
   cmake --build build --parallel $(nproc || sysctl -n hw.ncpu || echo 4)
