@@ -152,12 +152,10 @@ class ManifestReaderV1Test : public ManifestReaderTestBase {
   }
 
   void TestWriteManifest(const std::string& manifest_list_path,
-                         std::shared_ptr<Schema> partition_schema,
                          std::shared_ptr<PartitionSpec> partition_spec,
                          const std::vector<ManifestEntry>& manifest_entries) {
     std::cout << "Writing manifest list to " << manifest_list_path << std::endl;
     auto result = ManifestWriter::MakeV1Writer(1, manifest_list_path, file_io_,
-                                               std::move(partition_schema),
                                                std::move(partition_spec));
     ASSERT_TRUE(result.has_value()) << result.error().message;
     auto writer = std::move(result.value());
@@ -183,13 +181,12 @@ TEST_F(ManifestReaderV1Test, WritePartitionedTest) {
       std::make_shared<Schema>(std::vector<SchemaField>({partition_field}));
   auto identity_transform = Transform::Identity();
   std::vector<PartitionField> fields{
-      PartitionField(1, 1000, "order_ts_hour", identity_transform)};
+      PartitionField(1000, 1000, "order_ts_hour", identity_transform)};
   auto partition_spec = std::make_shared<PartitionSpec>(partition_schema, 1, fields);
 
   auto expected_entries = PreparePartitionedTestData();
   auto write_manifest_path = CreateNewTempFilePath();
-  TestWriteManifest(write_manifest_path, partition_schema, partition_spec,
-                    expected_entries);
+  TestWriteManifest(write_manifest_path, partition_spec, expected_entries);
 }
 
 class ManifestReaderV2Test : public ManifestReaderTestBase {
@@ -259,12 +256,10 @@ class ManifestReaderV2Test : public ManifestReaderTestBase {
   }
 
   void TestWriteManifest(int64_t snapshot_id, const std::string& manifest_list_path,
-                         std::shared_ptr<Schema> partition_schema,
                          std::shared_ptr<PartitionSpec> partition_spec,
                          const std::vector<ManifestEntry>& manifest_entries) {
     std::cout << "Writing manifest list to " << manifest_list_path << std::endl;
     auto result = ManifestWriter::MakeV2Writer(snapshot_id, manifest_list_path, file_io_,
-                                               std::move(partition_schema),
                                                std::move(partition_spec));
     ASSERT_TRUE(result.has_value()) << result.error().message;
     auto writer = std::move(result.value());
@@ -297,15 +292,13 @@ TEST_F(ManifestReaderV2Test, MetadataInheritanceTest) {
 TEST_F(ManifestReaderV2Test, WriteNonPartitionedTest) {
   auto expected_entries = PrepareNonPartitionedTestData();
   auto write_manifest_path = CreateNewTempFilePath();
-  TestWriteManifest(679879563479918846LL, write_manifest_path, nullptr, nullptr,
-                    expected_entries);
+  TestWriteManifest(679879563479918846LL, write_manifest_path, nullptr, expected_entries);
 }
 
 TEST_F(ManifestReaderV2Test, WriteInheritancePartitionedTest) {
   auto expected_entries = PrepareMetadataInheritanceTestData();
   auto write_manifest_path = CreateNewTempFilePath();
-  TestWriteManifest(679879563479918846LL, write_manifest_path, nullptr, nullptr,
-                    expected_entries);
+  TestWriteManifest(679879563479918846LL, write_manifest_path, nullptr, expected_entries);
 }
 
 }  // namespace iceberg

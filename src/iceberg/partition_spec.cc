@@ -24,7 +24,10 @@
 #include <ranges>
 
 #include "iceberg/schema.h"
+#include "iceberg/schema_field.h"
+#include "iceberg/transform.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -56,6 +59,49 @@ const std::shared_ptr<Schema>& PartitionSpec::schema() const { return schema_; }
 int32_t PartitionSpec::spec_id() const { return spec_id_; }
 
 std::span<const PartitionField> PartitionSpec::fields() const { return fields_; }
+
+Result<std::shared_ptr<Schema>> PartitionSpec::partition_schema() {
+  if (fields_.empty()) {
+    return nullptr;
+  }
+  {
+    std::lock_guard<std::mutex> lock(mutex_);
+    if (partition_schema_ != nullptr) {
+      return partition_schema_;
+    }
+  }
+
+  std::vector<SchemaField> partition_fields;
+  for (const auto& partition_field : fields_) {
+    // Get the source field from the original schema by source_id
+    ICEBERG_ASSIGN_OR_RAISE(auto source_field,
+                            schema_->FindFieldById(partition_field.source_id()));
+    if (!source_field.has_value()) {
+      return InvalidSchema("Cannot find source field for partition field:{}",
+                           partition_field.field_id());
+    }
+    auto source_field_type = source_field.value().get().type();
+    // Bind the transform to the source field type to get the result type
+    ICEBERG_ASSIGN_OR_RAISE(auto transform_function,
+                            partition_field.transform()->Bind(source_field_type));
+
+    auto result_type = transform_function->ResultType();
+
+    // Create the partition field with the transform result type
+    // Partition fields are always optional (can be null)
+    partition_fields.emplace_back(partition_field.field_id(),
+                                  std::string(partition_field.name()),
+                                  std::move(result_type),
+                                  true  // optional
+    );
+  }
+
+  std::lock_guard<std::mutex> lock(mutex_);
+  if (partition_schema_ == nullptr) {
+    partition_schema_ = std::make_shared<Schema>(std::move(partition_fields));
+  }
+  return partition_schema_;
+}
 
 std::string PartitionSpec::ToString() const {
   std::string repr = std::format("partition_spec[spec_id<{}>,\n", spec_id_);

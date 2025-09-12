@@ -30,17 +30,15 @@ class ManifestEntryAdapterV3 : public ManifestEntryAdapter {
  public:
   ManifestEntryAdapterV3(std::optional<int64_t> snapshot_id,
                          std::optional<int64_t> first_row_id,
-                         std::shared_ptr<Schema> partition_schema,
                          std::shared_ptr<PartitionSpec> partition_spec)
-      : ManifestEntryAdapter(std::move(partition_schema), std::move(partition_spec)),
+      : ManifestEntryAdapter(std::move(partition_spec)),
         snapshot_id_(snapshot_id),
         first_row_id_(first_row_id) {}
   Status Init() override;
   Status Append(const ManifestEntry& entry) override;
 
  protected:
-  Result<std::optional<int64_t>> GetWrappedSequenceNumber(
-      const ManifestEntry& entry) override;
+  Result<std::optional<int64_t>> GetSequenceNumber(const ManifestEntry& entry) override;
   Result<std::optional<std::string>> GetWrappedReferenceDataFile(
       const std::shared_ptr<DataFile>& file) override;
   Result<std::optional<int64_t>> GetWrappedFirstRowId(
@@ -68,7 +66,7 @@ class ManifestFileAdapterV3 : public ManifestFileAdapter {
   Status Append(const ManifestFile& file) override;
 
  protected:
-  Result<int64_t> GetWrappedSequenceNumber(const ManifestFile& file) override;
+  Result<int64_t> GetSequenceNumber(const ManifestFile& file) override;
   Result<int64_t> GetWrappedMinSequenceNumber(const ManifestFile& file) override;
   Result<std::optional<int64_t>> GetWrappedFirstRowId(const ManifestFile& file) override;
 

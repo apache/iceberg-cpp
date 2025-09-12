@@ -35,7 +35,7 @@ class ICEBERG_BUNDLE_EXPORT AvroWriter : public Writer {
 
   Status Close() final;
 
-  Status Write(ArrowArray data) final;
+  Status Write(ArrowArray& data) final;
 
   std::optional<Metrics> metrics() final;
 
