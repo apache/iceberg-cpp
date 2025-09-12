@@ -48,11 +48,11 @@ class ICEBERG_EXPORT ManifestAdapter {
   virtual std::shared_ptr<Schema> schema() const = 0;
 
  protected:
-  Status AppendField(ArrowArray* arrowArray, int64_t value);
-  Status AppendField(ArrowArray* arrowArray, uint64_t value);
-  Status AppendField(ArrowArray* arrowArray, double value);
-  Status AppendField(ArrowArray* arrowArray, std::string_view value);
-  Status AppendField(ArrowArray* arrowArray, const std::vector<uint8_t>& value);
+  static Status AppendField(ArrowArray* arrowArray, int64_t value);
+  static Status AppendField(ArrowArray* arrowArray, uint64_t value);
+  static Status AppendField(ArrowArray* arrowArray, double value);
+  static Status AppendField(ArrowArray* arrowArray, std::string_view value);
+  static Status AppendField(ArrowArray* arrowArray, const std::vector<uint8_t>& value);
 
  protected:
   bool is_initialized_ = false;
@@ -82,14 +82,17 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
   Status AppendDataFile(ArrowArray* arrow_array,
                         const std::shared_ptr<StructType>& data_file_type,
                         const std::shared_ptr<DataFile>& file);
-  Status AppendPartitions(ArrowArray* arrow_array,
-                          const std::shared_ptr<StructType>& partition_type,
-                          const std::vector<Literal>& partitions);
-  Status AppendList(ArrowArray* arrow_array, const std::vector<int32_t>& list_value);
-  Status AppendList(ArrowArray* arrow_array, const std::vector<int64_t>& list_value);
-  Status AppendMap(ArrowArray* arrow_array, const std::map<int32_t, int64_t>& map_value);
-  Status AppendMap(ArrowArray* arrow_array,
-                   const std::map<int32_t, std::vector<uint8_t>>& map_value);
+  static Status AppendPartitions(ArrowArray* arrow_array,
+                                 const std::shared_ptr<StructType>& partition_type,
+                                 const std::vector<Literal>& partitions);
+  static Status AppendList(ArrowArray* arrow_array,
+                           const std::vector<int32_t>& list_value);
+  static Status AppendList(ArrowArray* arrow_array,
+                           const std::vector<int64_t>& list_value);
+  static Status AppendMap(ArrowArray* arrow_array,
+                          const std::map<int32_t, int64_t>& map_value);
+  static Status AppendMap(ArrowArray* arrow_array,
+                          const std::map<int32_t, std::vector<uint8_t>>& map_value);
 
   virtual Result<std::optional<int64_t>> GetWrappedSequenceNumber(
       const ManifestEntry& entry);
@@ -123,9 +126,9 @@ class ICEBERG_EXPORT ManifestFileAdapter : public ManifestAdapter {
  protected:
   Status InitSchema(const std::unordered_set<int32_t>& fields_ids);
   Status AppendInternal(const ManifestFile& file);
-  Status AppendPartitions(ArrowArray* arrow_array,
-                          const std::shared_ptr<ListType>& partition_type,
-                          const std::vector<PartitionFieldSummary>& partitions);
+  static Status AppendPartitions(ArrowArray* arrow_array,
+                                 const std::shared_ptr<ListType>& partition_type,
+                                 const std::vector<PartitionFieldSummary>& partitions);
 
   virtual Result<int64_t> GetWrappedSequenceNumber(const ManifestFile& file);
   virtual Result<int64_t> GetWrappedMinSequenceNumber(const ManifestFile& file);

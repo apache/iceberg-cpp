@@ -18,7 +18,6 @@
  */
 
 #include <arrow/filesystem/localfs.h>
-#include <avro/GenericDatum.hh>
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"

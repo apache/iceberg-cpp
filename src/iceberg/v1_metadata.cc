@@ -21,7 +21,6 @@
 
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
-#include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 
 namespace iceberg {
@@ -46,7 +45,8 @@ Status ManifestEntryAdapterV1::Append(const iceberg::ManifestEntry& entry) {
 }
 
 std::shared_ptr<StructType> ManifestEntryAdapterV1::GetManifestEntryStructType() {
-  // V1 compatible fields. Official suggestions:
+  // 'block_size_in_bytes' (ID 105) is a deprecated field that is REQUIRED
+  // in the v1 data_file schema for backward compatibility.
   // Deprecated. Always write a default in v1. Do not write in v2 or v3.
   static const SchemaField kBlockSizeInBytes = SchemaField::MakeRequired(
       105, "block_size_in_bytes", iceberg::int64(), "Block size in bytes");

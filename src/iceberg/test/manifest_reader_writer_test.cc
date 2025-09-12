@@ -28,7 +28,6 @@
 #include "iceberg/manifest_list.h"
 #include "iceberg/manifest_reader.h"
 #include "iceberg/manifest_writer.h"
-#include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/transform.h"
 #include "matchers.h"
