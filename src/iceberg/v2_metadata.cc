@@ -26,9 +26,29 @@
 namespace iceberg {
 
 Status ManifestEntryAdapterV2::Init() {
-  static std::unordered_set<int32_t> compatible_fields{
-      0,   1,   2,   3,   4,   134, 100, 101, 102, 103, 104,
-      108, 109, 110, 137, 125, 128, 131, 132, 135, 140, 143,
+  static std::unordered_set<int32_t> kManifestEntryFieldIds{
+      ManifestEntry::kStatus.field_id(),
+      ManifestEntry::kSnapshotId.field_id(),
+      ManifestEntry::kDataFileFieldId,
+      ManifestEntry::kSequenceNumber.field_id(),
+      ManifestEntry::kFileSequenceNumber.field_id(),
+      DataFile::kContent.field_id(),
+      DataFile::kFilePath.field_id(),
+      DataFile::kFileFormat.field_id(),
+      DataFile::kPartitionFieldId,
+      DataFile::kRecordCount.field_id(),
+      DataFile::kFileSize.field_id(),
+      DataFile::kColumnSizes.field_id(),
+      DataFile::kValueCounts.field_id(),
+      DataFile::kNullValueCounts.field_id(),
+      DataFile::kNanValueCounts.field_id(),
+      DataFile::kLowerBounds.field_id(),
+      DataFile::kUpperBounds.field_id(),
+      DataFile::kKeyMetadata.field_id(),
+      DataFile::kSplitOffsets.field_id(),
+      DataFile::kEqualityIds.field_id(),
+      DataFile::kSortOrderId.field_id(),
+      DataFile::kReferencedDataFile.field_id(),
   };
   // TODO(xiao.dong) schema to json
   metadata_["schema"] = "{}";
@@ -39,15 +59,15 @@ Status ManifestEntryAdapterV2::Init() {
   }
   metadata_["format-version"] = "2";
   metadata_["content"] = "data";
-  return InitSchema(compatible_fields);
+  return InitSchema(kManifestEntryFieldIds);
 }
 
-Status ManifestEntryAdapterV2::Append(const iceberg::ManifestEntry& entry) {
+Status ManifestEntryAdapterV2::Append(const ManifestEntry& entry) {
   return AppendInternal(entry);
 }
 
-Result<std::optional<int64_t>> ManifestEntryAdapterV2::GetWrappedSequenceNumber(
-    const iceberg::ManifestEntry& entry) {
+Result<std::optional<int64_t>> ManifestEntryAdapterV2::GetSequenceNumber(
+    const ManifestEntry& entry) {
   if (!entry.sequence_number.has_value()) {
     // if the entry's data sequence number is null,
     // then it will inherit the sequence number of the current commit.
@@ -79,8 +99,22 @@ Result<std::optional<std::string>> ManifestEntryAdapterV2::GetWrappedReferenceDa
 }
 
 Status ManifestFileAdapterV2::Init() {
-  static std::unordered_set<int32_t> compatible_fields{
-      500, 501, 502, 517, 515, 516, 503, 504, 505, 506, 512, 513, 514, 507, 519,
+  static std::unordered_set<int32_t> kManifestFileFieldIds{
+      ManifestFile::kManifestPath.field_id(),
+      ManifestFile::kManifestLength.field_id(),
+      ManifestFile::kPartitionSpecId.field_id(),
+      ManifestFile::kContent.field_id(),
+      ManifestFile::kSequenceNumber.field_id(),
+      ManifestFile::kMinSequenceNumber.field_id(),
+      ManifestFile::kAddedSnapshotId.field_id(),
+      ManifestFile::kAddedFilesCount.field_id(),
+      ManifestFile::kExistingFilesCount.field_id(),
+      ManifestFile::kDeletedFilesCount.field_id(),
+      ManifestFile::kAddedRowsCount.field_id(),
+      ManifestFile::kExistingRowsCount.field_id(),
+      ManifestFile::kDeletedRowsCount.field_id(),
+      ManifestFile::kPartitions.field_id(),
+      ManifestFile::kKeyMetadata.field_id(),
   };
   metadata_["snapshot-id"] = std::to_string(snapshot_id_);
   metadata_["parent-snapshot-id"] = parent_snapshot_id_.has_value()
@@ -88,15 +122,14 @@ Status ManifestFileAdapterV2::Init() {
                                         : "null";
   metadata_["sequence-number"] = std::to_string(sequence_number_);
   metadata_["format-version"] = "2";
-  return InitSchema(compatible_fields);
+  return InitSchema(kManifestFileFieldIds);
 }
 
-Status ManifestFileAdapterV2::Append(const iceberg::ManifestFile& file) {
+Status ManifestFileAdapterV2::Append(const ManifestFile& file) {
   return AppendInternal(file);
 }
 
-Result<int64_t> ManifestFileAdapterV2::GetWrappedSequenceNumber(
-    const iceberg::ManifestFile& file) {
+Result<int64_t> ManifestFileAdapterV2::GetSequenceNumber(const ManifestFile& file) {
   if (file.sequence_number == TableMetadata::kInvalidSequenceNumber) {
     if (snapshot_id_ != file.added_snapshot_id) {
       return InvalidManifestList(
@@ -109,7 +142,7 @@ Result<int64_t> ManifestFileAdapterV2::GetWrappedSequenceNumber(
 }
 
 Result<int64_t> ManifestFileAdapterV2::GetWrappedMinSequenceNumber(
-    const iceberg::ManifestFile& file) {
+    const ManifestFile& file) {
   if (file.min_sequence_number == TableMetadata::kInvalidSequenceNumber) {
     if (snapshot_id_ != file.added_snapshot_id) {
       return InvalidManifestList(

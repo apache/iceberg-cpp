@@ -58,38 +58,32 @@ class ICEBERG_EXPORT ManifestWriter {
   /// \param snapshot_id ID of the snapshot.
   /// \param manifest_location Path to the manifest file.
   /// \param file_io File IO implementation to use.
-  /// \param partition_schema Schema of the partition columns.
   /// \param partition_spec Partition spec for the manifest.
   /// \return A Result containing the writer or an error.
   static Result<std::unique_ptr<ManifestWriter>> MakeV1Writer(
       std::optional<int64_t> snapshot_id, std::string_view manifest_location,
-      std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> partition_schema,
-      std::shared_ptr<PartitionSpec> partition_spec);
+      std::shared_ptr<FileIO> file_io, std::shared_ptr<PartitionSpec> partition_spec);
 
   /// \brief Creates a writer for a manifest file.
   /// \param snapshot_id ID of the snapshot.
   /// \param manifest_location Path to the manifest file.
   /// \param file_io File IO implementation to use.
-  /// \param partition_schema Schema of the partition columns.
   /// \param partition_spec Partition spec for the manifest.
   /// \return A Result containing the writer or an error.
   static Result<std::unique_ptr<ManifestWriter>> MakeV2Writer(
       std::optional<int64_t> snapshot_id, std::string_view manifest_location,
-      std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> partition_schema,
-      std::shared_ptr<PartitionSpec> partition_spec);
+      std::shared_ptr<FileIO> file_io, std::shared_ptr<PartitionSpec> partition_spec);
 
   /// \brief Creates a writer for a manifest file.
   /// \param snapshot_id ID of the snapshot.
   /// \param first_row_id First row ID of the snapshot.
   /// \param manifest_location Path to the manifest file.
   /// \param file_io File IO implementation to use.
-  /// \param partition_schema Schema of the partition columns.
   /// \param partition_spec Partition spec for the manifest.
   /// \return A Result containing the writer or an error.
   static Result<std::unique_ptr<ManifestWriter>> MakeV3Writer(
       std::optional<int64_t> snapshot_id, std::optional<int64_t> first_row_id,
       std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
-      std::shared_ptr<Schema> partition_schema,
       std::shared_ptr<PartitionSpec> partition_spec);
 
  private:

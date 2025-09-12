@@ -29,16 +29,13 @@ namespace iceberg {
 class ManifestEntryAdapterV2 : public ManifestEntryAdapter {
  public:
   ManifestEntryAdapterV2(std::optional<int64_t> snapshot_id,
-                         std::shared_ptr<Schema> partition_schema,
                          std::shared_ptr<PartitionSpec> partition_spec)
-      : ManifestEntryAdapter(std::move(partition_schema), std::move(partition_spec)),
-        snapshot_id_(snapshot_id) {}
+      : ManifestEntryAdapter(std::move(partition_spec)), snapshot_id_(snapshot_id) {}
   Status Init() override;
   Status Append(const ManifestEntry& entry) override;
 
  protected:
-  Result<std::optional<int64_t>> GetWrappedSequenceNumber(
-      const ManifestEntry& entry) override;
+  Result<std::optional<int64_t>> GetSequenceNumber(const ManifestEntry& entry) override;
   Result<std::optional<std::string>> GetWrappedReferenceDataFile(
       const std::shared_ptr<DataFile>& file) override;
 
@@ -58,7 +55,7 @@ class ManifestFileAdapterV2 : public ManifestFileAdapter {
   Status Append(const ManifestFile& file) override;
 
  protected:
-  Result<int64_t> GetWrappedSequenceNumber(const ManifestFile& file) override;
+  Result<int64_t> GetSequenceNumber(const ManifestFile& file) override;
   Result<int64_t> GetWrappedMinSequenceNumber(const ManifestFile& file) override;
 
  private:

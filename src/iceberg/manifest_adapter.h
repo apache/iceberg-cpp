@@ -25,6 +25,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <span>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -43,21 +44,20 @@ class ICEBERG_EXPORT ManifestAdapter {
   virtual Status Init() = 0;
 
   Status StartAppending();
-  Result<ArrowArray> FinishAppending();
+  Result<std::shared_ptr<ArrowArray>> FinishAppending();
   int64_t size() const { return size_; }
-  virtual std::shared_ptr<Schema> schema() const = 0;
+  virtual const std::shared_ptr<Schema>& schema() const = 0;
 
  protected:
   static Status AppendField(ArrowArray* arrowArray, int64_t value);
   static Status AppendField(ArrowArray* arrowArray, uint64_t value);
   static Status AppendField(ArrowArray* arrowArray, double value);
   static Status AppendField(ArrowArray* arrowArray, std::string_view value);
-  static Status AppendField(ArrowArray* arrowArray, const std::vector<uint8_t>& value);
-  static Status AppendField(ArrowArray* arrowArray, const std::array<uint8_t, 16>& value);
+  static Status AppendField(ArrowArray* arrowArray,
+                            const std::span<const uint8_t>& value);
 
  protected:
-  bool is_initialized_ = false;
-  ArrowArray array_;
+  std::shared_ptr<ArrowArray> array_;
   ArrowSchema schema_;  // converted from manifest_schema_ or manifest_list_schema_
   int64_t size_ = 0;
 };
@@ -66,26 +66,29 @@ class ICEBERG_EXPORT ManifestAdapter {
 // append a list of `ManifestEntry`s to an `ArrowArray`.
 class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
  public:
-  explicit ManifestEntryAdapter(std::shared_ptr<Schema> partition_schema,
-                                std::shared_ptr<PartitionSpec> partition_spec)
-      : partition_spec_(std::move(partition_spec)),
-        partition_schema_(std::move(partition_schema)) {}
+  explicit ManifestEntryAdapter(std::shared_ptr<PartitionSpec> partition_spec)
+      : partition_spec_(std::move(partition_spec)) {}
   ~ManifestEntryAdapter() override;
 
   virtual Status Append(const ManifestEntry& entry) = 0;
 
-  std::shared_ptr<Schema> schema() const override { return manifest_schema_; }
+  const std::shared_ptr<Schema>& schema() const override { return manifest_schema_; }
 
  protected:
-  virtual std::shared_ptr<StructType> GetManifestEntryStructType();
+  virtual Result<std::shared_ptr<StructType>> GetManifestEntryStructType();
+
+  /// \brief Init version-specific schema for each version.
+  ///
+  /// \param fields_ids each version of manifest schema has schema, we will init this
+  /// schema based on the fields_ids.
   Status InitSchema(const std::unordered_set<int32_t>& fields_ids);
   Status AppendInternal(const ManifestEntry& entry);
   Status AppendDataFile(ArrowArray* arrow_array,
                         const std::shared_ptr<StructType>& data_file_type,
                         const std::shared_ptr<DataFile>& file);
-  static Status AppendPartitions(ArrowArray* arrow_array,
-                                 const std::shared_ptr<StructType>& partition_type,
-                                 const std::vector<Literal>& partitions);
+  static Status AppendPartition(ArrowArray* arrow_array,
+                                const std::shared_ptr<StructType>& partition_type,
+                                const std::vector<Literal>& partitions);
   static Status AppendList(ArrowArray* arrow_array,
                            const std::vector<int32_t>& list_value);
   static Status AppendList(ArrowArray* arrow_array,
@@ -95,8 +98,7 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
   static Status AppendMap(ArrowArray* arrow_array,
                           const std::map<int32_t, std::vector<uint8_t>>& map_value);
 
-  virtual Result<std::optional<int64_t>> GetWrappedSequenceNumber(
-      const ManifestEntry& entry);
+  virtual Result<std::optional<int64_t>> GetSequenceNumber(const ManifestEntry& entry);
   virtual Result<std::optional<std::string>> GetWrappedReferenceDataFile(
       const std::shared_ptr<DataFile>& file);
   virtual Result<std::optional<int64_t>> GetWrappedFirstRowId(
@@ -108,7 +110,6 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
 
  protected:
   std::shared_ptr<PartitionSpec> partition_spec_;
-  std::shared_ptr<Schema> partition_schema_;
   std::shared_ptr<Schema> manifest_schema_;
   std::unordered_map<std::string, std::string> metadata_;
 };
@@ -122,16 +123,20 @@ class ICEBERG_EXPORT ManifestFileAdapter : public ManifestAdapter {
 
   virtual Status Append(const ManifestFile& file) = 0;
 
-  std::shared_ptr<Schema> schema() const override { return manifest_list_schema_; }
+  const std::shared_ptr<Schema>& schema() const override { return manifest_list_schema_; }
 
  protected:
+  /// \brief Init version-specific schema for each version.
+  ///
+  /// \param fields_ids each version of manifest schema has schema, we will init this
+  /// schema based on the fields_ids.
   Status InitSchema(const std::unordered_set<int32_t>& fields_ids);
   Status AppendInternal(const ManifestFile& file);
   static Status AppendPartitions(ArrowArray* arrow_array,
                                  const std::shared_ptr<ListType>& partition_type,
                                  const std::vector<PartitionFieldSummary>& partitions);
 
-  virtual Result<int64_t> GetWrappedSequenceNumber(const ManifestFile& file);
+  virtual Result<int64_t> GetSequenceNumber(const ManifestFile& file);
   virtual Result<int64_t> GetWrappedMinSequenceNumber(const ManifestFile& file);
   virtual Result<std::optional<int64_t>> GetWrappedFirstRowId(const ManifestFile& file);
 

@@ -22,12 +22,30 @@
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/schema.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
 Status ManifestEntryAdapterV1::Init() {
-  static std::unordered_set<int32_t> compatible_fields{
-      0, 1, 2, 100, 101, 102, 103, 104, 105, 108, 109, 110, 137, 125, 128, 131, 132, 140,
+  static std::unordered_set<int32_t> kManifestEntryFieldIds{
+      ManifestEntry::kStatus.field_id(),
+      ManifestEntry::kSnapshotId.field_id(),
+      ManifestEntry::kDataFileFieldId,
+      DataFile::kFilePath.field_id(),
+      DataFile::kFileFormat.field_id(),
+      DataFile::kPartitionFieldId,
+      DataFile::kRecordCount.field_id(),
+      DataFile::kFileSize.field_id(),
+      105,  // kBlockSizeInBytes field id
+      DataFile::kColumnSizes.field_id(),
+      DataFile::kValueCounts.field_id(),
+      DataFile::kNullValueCounts.field_id(),
+      DataFile::kNanValueCounts.field_id(),
+      DataFile::kLowerBounds.field_id(),
+      DataFile::kUpperBounds.field_id(),
+      DataFile::kKeyMetadata.field_id(),
+      DataFile::kSplitOffsets.field_id(),
+      DataFile::kSortOrderId.field_id(),
   };
   // TODO(xiao.dong) schema to json
   metadata_["schema"] = "{}";
@@ -37,20 +55,20 @@ Status ManifestEntryAdapterV1::Init() {
     metadata_["partition-spec-id"] = std::to_string(partition_spec_->spec_id());
   }
   metadata_["format-version"] = "1";
-  return InitSchema(compatible_fields);
+  return InitSchema(kManifestEntryFieldIds);
 }
 
-Status ManifestEntryAdapterV1::Append(const iceberg::ManifestEntry& entry) {
+Status ManifestEntryAdapterV1::Append(const ManifestEntry& entry) {
   return AppendInternal(entry);
 }
 
-std::shared_ptr<StructType> ManifestEntryAdapterV1::GetManifestEntryStructType() {
+Result<std::shared_ptr<StructType>> ManifestEntryAdapterV1::GetManifestEntryStructType() {
   // 'block_size_in_bytes' (ID 105) is a deprecated field that is REQUIRED
   // in the v1 data_file schema for backward compatibility.
   // Deprecated. Always write a default in v1. Do not write in v2 or v3.
   static const SchemaField kBlockSizeInBytes = SchemaField::MakeRequired(
-      105, "block_size_in_bytes", iceberg::int64(), "Block size in bytes");
-  std::shared_ptr<StructType> partition_type = partition_schema_;
+      105, "block_size_in_bytes", int64(), "Block size in bytes");
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_type, partition_spec_->partition_schema());
   if (!partition_type) {
     partition_type = PartitionSpec::Unpartitioned()->schema();
   }
@@ -70,18 +88,29 @@ std::shared_ptr<StructType> ManifestEntryAdapterV1::GetManifestEntryStructType()
 }
 
 Status ManifestFileAdapterV1::Init() {
-  static std::unordered_set<int32_t> compatible_fields{
-      500, 501, 502, 503, 504, 505, 506, 512, 513, 514, 507, 519,
+  static std::unordered_set<int32_t> kManifestFileFieldIds{
+      ManifestFile::kManifestPath.field_id(),
+      ManifestFile::kManifestLength.field_id(),
+      ManifestFile::kPartitionSpecId.field_id(),
+      ManifestFile::kAddedSnapshotId.field_id(),
+      ManifestFile::kAddedFilesCount.field_id(),
+      ManifestFile::kExistingFilesCount.field_id(),
+      ManifestFile::kDeletedFilesCount.field_id(),
+      ManifestFile::kAddedRowsCount.field_id(),
+      ManifestFile::kExistingRowsCount.field_id(),
+      ManifestFile::kDeletedRowsCount.field_id(),
+      ManifestFile::kPartitions.field_id(),
+      ManifestFile::kKeyMetadata.field_id(),
   };
   metadata_["snapshot-id"] = std::to_string(snapshot_id_);
   metadata_["parent-snapshot-id"] = parent_snapshot_id_.has_value()
                                         ? std::to_string(parent_snapshot_id_.value())
                                         : "null";
   metadata_["format-version"] = "1";
-  return InitSchema(compatible_fields);
+  return InitSchema(kManifestFileFieldIds);
 }
 
-Status ManifestFileAdapterV1::Append(const iceberg::ManifestFile& file) {
+Status ManifestFileAdapterV1::Append(const ManifestFile& file) {
   if (file.content != ManifestFile::Content::kData) {
     return InvalidManifestList("Cannot store delete manifests in a v1 table");
   }

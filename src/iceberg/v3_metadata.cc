@@ -27,9 +27,32 @@
 namespace iceberg {
 
 Status ManifestEntryAdapterV3::Init() {
-  static std::unordered_set<int32_t> compatible_fields{
-      0,   1,   2,   3,   4,   134, 100, 101, 102, 103, 104, 108, 109,
-      110, 137, 125, 128, 131, 132, 135, 140, 142, 143, 144, 145,
+  static std::unordered_set<int32_t> kManifestEntryFieldIds{
+      ManifestEntry::kStatus.field_id(),
+      ManifestEntry::kSnapshotId.field_id(),
+      ManifestEntry::kDataFileFieldId,
+      ManifestEntry::kSequenceNumber.field_id(),
+      ManifestEntry::kFileSequenceNumber.field_id(),
+      DataFile::kContent.field_id(),
+      DataFile::kFilePath.field_id(),
+      DataFile::kFileFormat.field_id(),
+      DataFile::kPartitionFieldId,
+      DataFile::kRecordCount.field_id(),
+      DataFile::kFileSize.field_id(),
+      DataFile::kColumnSizes.field_id(),
+      DataFile::kValueCounts.field_id(),
+      DataFile::kNullValueCounts.field_id(),
+      DataFile::kNanValueCounts.field_id(),
+      DataFile::kLowerBounds.field_id(),
+      DataFile::kUpperBounds.field_id(),
+      DataFile::kKeyMetadata.field_id(),
+      DataFile::kSplitOffsets.field_id(),
+      DataFile::kEqualityIds.field_id(),
+      DataFile::kSortOrderId.field_id(),
+      DataFile::kFirstRowId.field_id(),
+      DataFile::kReferencedDataFile.field_id(),
+      DataFile::kContentOffset.field_id(),
+      DataFile::kContentSize.field_id(),
   };
   // TODO(xiao.dong) schema to json
   metadata_["schema"] = "{}";
@@ -40,15 +63,15 @@ Status ManifestEntryAdapterV3::Init() {
   }
   metadata_["format-version"] = "3";
   metadata_["content"] = "data";
-  return InitSchema(compatible_fields);
+  return InitSchema(kManifestEntryFieldIds);
 }
 
-Status ManifestEntryAdapterV3::Append(const iceberg::ManifestEntry& entry) {
+Status ManifestEntryAdapterV3::Append(const ManifestEntry& entry) {
   return AppendInternal(entry);
 }
 
-Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetWrappedSequenceNumber(
-    const iceberg::ManifestEntry& entry) {
+Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetSequenceNumber(
+    const ManifestEntry& entry) {
   if (!entry.sequence_number.has_value()) {
     // if the entry's data sequence number is null,
     // then it will inherit the sequence number of the current commit.
@@ -104,8 +127,23 @@ Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetWrappedContentSizeInBy
 }
 
 Status ManifestFileAdapterV3::Init() {
-  static std::unordered_set<int32_t> compatible_fields{
-      500, 501, 502, 517, 515, 516, 503, 504, 505, 506, 512, 513, 514, 507, 519, 520,
+  static std::unordered_set<int32_t> kManifestFileFieldIds{
+      ManifestFile::kManifestPath.field_id(),
+      ManifestFile::kManifestLength.field_id(),
+      ManifestFile::kPartitionSpecId.field_id(),
+      ManifestFile::kContent.field_id(),
+      ManifestFile::kSequenceNumber.field_id(),
+      ManifestFile::kMinSequenceNumber.field_id(),
+      ManifestFile::kAddedSnapshotId.field_id(),
+      ManifestFile::kAddedFilesCount.field_id(),
+      ManifestFile::kExistingFilesCount.field_id(),
+      ManifestFile::kDeletedFilesCount.field_id(),
+      ManifestFile::kAddedRowsCount.field_id(),
+      ManifestFile::kExistingRowsCount.field_id(),
+      ManifestFile::kDeletedRowsCount.field_id(),
+      ManifestFile::kPartitions.field_id(),
+      ManifestFile::kKeyMetadata.field_id(),
+      ManifestFile::kFirstRowId.field_id(),
   };
   metadata_["snapshot-id"] = std::to_string(snapshot_id_);
   metadata_["parent-snapshot-id"] = parent_snapshot_id_.has_value()
@@ -115,10 +153,10 @@ Status ManifestFileAdapterV3::Init() {
   metadata_["first-row-id"] =
       next_row_id_.has_value() ? std::to_string(next_row_id_.value()) : "null";
   metadata_["format-version"] = "3";
-  return InitSchema(compatible_fields);
+  return InitSchema(kManifestFileFieldIds);
 }
 
-Status ManifestFileAdapterV3::Append(const iceberg::ManifestFile& file) {
+Status ManifestFileAdapterV3::Append(const ManifestFile& file) {
   auto status = AppendInternal(file);
   ICEBERG_RETURN_UNEXPECTED(status);
   if (WrappedFirstRowId(file) && next_row_id_.has_value()) {
@@ -128,8 +166,7 @@ Status ManifestFileAdapterV3::Append(const iceberg::ManifestFile& file) {
   return status;
 }
 
-Result<int64_t> ManifestFileAdapterV3::GetWrappedSequenceNumber(
-    const iceberg::ManifestFile& file) {
+Result<int64_t> ManifestFileAdapterV3::GetSequenceNumber(const ManifestFile& file) {
   if (file.sequence_number == TableMetadata::kInvalidSequenceNumber) {
     if (snapshot_id_ != file.added_snapshot_id) {
       return InvalidManifestList(
@@ -142,7 +179,7 @@ Result<int64_t> ManifestFileAdapterV3::GetWrappedSequenceNumber(
 }
 
 Result<int64_t> ManifestFileAdapterV3::GetWrappedMinSequenceNumber(
-    const iceberg::ManifestFile& file) {
+    const ManifestFile& file) {
   if (file.min_sequence_number == TableMetadata::kInvalidSequenceNumber) {
     if (snapshot_id_ != file.added_snapshot_id) {
       return InvalidManifestList(
@@ -155,7 +192,7 @@ Result<int64_t> ManifestFileAdapterV3::GetWrappedMinSequenceNumber(
 }
 
 Result<std::optional<int64_t>> ManifestFileAdapterV3::GetWrappedFirstRowId(
-    const iceberg::ManifestFile& file) {
+    const ManifestFile& file) {
   if (WrappedFirstRowId(file)) {
     return next_row_id_;
   } else if (file.content != ManifestFile::Content::kData) {
@@ -169,7 +206,7 @@ Result<std::optional<int64_t>> ManifestFileAdapterV3::GetWrappedFirstRowId(
   }
 }
 
-bool ManifestFileAdapterV3::WrappedFirstRowId(const iceberg::ManifestFile& file) {
+bool ManifestFileAdapterV3::WrappedFirstRowId(const ManifestFile& file) {
   return file.content == ManifestFile::Content::kData && !file.first_row_id.has_value();
 }
 
