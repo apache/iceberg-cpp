@@ -253,8 +253,7 @@ Result<Literal> LiteralCaster::CastFromFixed(
     const Literal& literal, const std::shared_ptr<PrimitiveType>& target_type) {
   switch (target_type->type_id()) {
     case TypeId::kBinary:
-      return Literal::Binary(
-          std::get<std::vector<uint8_t>>(literal.value_));  // 直接拷贝+move
+      return Literal::Binary(std::get<std::vector<uint8_t>>(literal.value_));
     default:
       return NotSupported("Cast from Fixed to {} is not supported",
                           target_type->ToString());
