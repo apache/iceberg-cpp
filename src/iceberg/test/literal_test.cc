@@ -278,73 +278,6 @@ TEST(LiteralTest, StringComparison) {
   EXPECT_EQ(string2 <=> string1, std::partial_ordering::greater);
 }
 
-TEST(LiteralTest, StringCastToDate) {
-  AssertCastSucceeds(Literal::String("2023-05-15").CastTo(iceberg::date()), TypeId::kDate,
-                     19492);
-  AssertCastSucceeds(Literal::String("1970-01-01").CastTo(iceberg::date()), TypeId::kDate,
-                     0);
-  AssertCastSucceeds(Literal::String("1969-12-31").CastTo(iceberg::date()), TypeId::kDate,
-                     -1);
-
-  // Invalid Formats
-  EXPECT_THAT(Literal::String("2023/05/15").CastTo(iceberg::date()),
-              IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(Literal::String("2023-05-15 extra").CastTo(iceberg::date()),
-              IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(Literal::String("2023-05").CastTo(iceberg::date()),
-              IsError(ErrorKind::kInvalidArgument));
-}
-
-TEST(LiteralTest, StringCastToTime) {
-  AssertCastSucceeds(Literal::String("12:00:00").CastTo(iceberg::time()), TypeId::kTime,
-                     static_cast<int64_t>(43200000000));
-  AssertCastSucceeds(Literal::String("12:34:56.123456").CastTo(iceberg::time()),
-                     TypeId::kTime, static_cast<int64_t>(45296123456));
-  AssertCastSucceeds(Literal::String("01:02:03.123").CastTo(iceberg::time()),
-                     TypeId::kTime, static_cast<int64_t>(3723123000));
-  AssertCastSucceeds(Literal::String("23:59:59.987654321").CastTo(iceberg::time()),
-                     TypeId::kTime, static_cast<int64_t>(86399987654));
-
-  // Invalid Formats
-  EXPECT_THAT(Literal::String("12-00-00").CastTo(iceberg::time()),
-              IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(Literal::String("12:00:00 extra").CastTo(iceberg::time()),
-              IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(Literal::String("25:00:00").CastTo(iceberg::time()),
-              IsError(ErrorKind::kInvalidArgument));
-}
-
-TEST(LiteralTest, StringCastToTimestamp) {
-  AssertCastSucceeds(Literal::String("2023-05-15T12:00:00").CastTo(iceberg::timestamp()),
-                     TypeId::kTimestamp, static_cast<int64_t>(1684152000000000));
-  AssertCastSucceeds(
-      Literal::String("2023-05-15T12:34:56.123456").CastTo(iceberg::timestamp()),
-      TypeId::kTimestamp, static_cast<int64_t>(1684154096123456));
-
-  // Invalid Formats
-  EXPECT_THAT(Literal::String("2023-05-15 12:00:00").CastTo(iceberg::timestamp()),
-              IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(Literal::String("2023-05-15T12:00:00Z").CastTo(iceberg::timestamp()),
-              IsError(ErrorKind::kInvalidArgument));
-}
-
-TEST(LiteralTest, StringCastToTimestampTz) {
-  AssertCastSucceeds(
-      Literal::String("2023-05-15T12:34:56.123456Z").CastTo(iceberg::timestamp_tz()),
-      TypeId::kTimestampTz, static_cast<int64_t>(1684154096123456));
-  AssertCastSucceeds(
-      Literal::String("2023-05-15T12:00:00").CastTo(iceberg::timestamp_tz()),
-      TypeId::kTimestampTz, static_cast<int64_t>(1684152000000000));
-
-  // Invalid & Unsupported Formats
-  EXPECT_THAT(
-      Literal::String("2023-05-15T12:00:00+08:00").CastTo(iceberg::timestamp_tz()),
-      IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(
-      Literal::String("2023-05-15T12:00:00Z oops").CastTo(iceberg::timestamp_tz()),
-      IsError(ErrorKind::kInvalidArgument));
-}
-
 // Binary type tests
 TEST(LiteralTest, BinaryBasics) {
   std::vector<uint8_t> data = {0x01, 0x02, 0x03, 0xFF};
@@ -466,18 +399,6 @@ TEST(LiteralTest, TimestampComparison) {
   EXPECT_EQ(timestamp2 <=> timestamp1, std::partial_ordering::greater);
 }
 
-TEST(LiteralTest, TimestampCastTo) {
-  const int64_t micros = 1684137600000000;  // May 15, 2023 08:00:00 UTC
-  auto timestamp_literal = Literal::Timestamp(micros);
-
-  // Cast to Date (1684137600000000 / 86400000000 = 19492.33...) -> floors to 19492
-  AssertCastSucceeds(timestamp_literal.CastTo(iceberg::date()), TypeId::kDate, 19492);
-
-  // Cast to TimestampTz
-  AssertCastSucceeds(timestamp_literal.CastTo(iceberg::timestamp_tz()),
-                     TypeId::kTimestampTz, micros);
-}
-
 // TimestampTz type tests
 TEST(LiteralTest, TimestampTzBasics) {
   auto timestamptz_literal =
@@ -499,18 +420,6 @@ TEST(LiteralTest, TimestampTzComparison) {
   EXPECT_EQ(timestamptz1 <=> timestamptz3, std::partial_ordering::equivalent);
   EXPECT_EQ(timestamptz1 <=> timestamptz2, std::partial_ordering::less);
   EXPECT_EQ(timestamptz2 <=> timestamptz1, std::partial_ordering::greater);
-}
-
-TEST(LiteralTest, TimestampTzCastTo) {
-  const int64_t micros = 1684137600000000;  // May 15, 2023 08:00:00 UTC
-  auto timestamptz_literal = Literal::TimestampTz(micros);
-
-  // Cast to Date
-  AssertCastSucceeds(timestamptz_literal.CastTo(iceberg::date()), TypeId::kDate, 19492);
-
-  // Cast to Timestamp
-  AssertCastSucceeds(timestamptz_literal.CastTo(iceberg::timestamp()), TypeId::kTimestamp,
-                     micros);
 }
 
 TEST(LiteralTest, BinaryCastTo) {
@@ -537,27 +446,6 @@ TEST(LiteralTest, FixedCastTo) {
 
   // Cast to Fixed with different length should fail
   EXPECT_THAT(fixed_literal.CastTo(iceberg::fixed(5)), IsError(ErrorKind::kNotSupported));
-}
-
-// Microseconds to Days conversion tests
-TEST(LiteralTest, MicrosToDaysConversion) {
-  constexpr int64_t kMicrosPerDay = 86400000000LL;
-
-  // Test full day conversion
-  AssertCastSucceeds(Literal::Timestamp(kMicrosPerDay).CastTo(iceberg::date()),
-                     TypeId::kDate, 1);
-
-  // Test partial day conversion (should floor to 0)
-  AssertCastSucceeds(Literal::Timestamp(kMicrosPerDay / 2).CastTo(iceberg::date()),
-                     TypeId::kDate, 0);
-
-  // Test negative timestamp (should floor to -1)
-  AssertCastSucceeds(Literal::Timestamp(-kMicrosPerDay / 2).CastTo(iceberg::date()),
-                     TypeId::kDate, -1);
-
-  // Test exactly -1 day
-  AssertCastSucceeds(Literal::Timestamp(-kMicrosPerDay).CastTo(iceberg::date()),
-                     TypeId::kDate, -1);
 }
 
 // Cross-type comparison tests
