@@ -325,4 +325,9 @@ Result<std::unique_ptr<Schema>> FromArrowSchema(const ArrowSchema& schema,
   return FromStructType(std::move(struct_type), schema_id);
 }
 
+std::unique_ptr<StructType> ToStructType(const Schema& schema) {
+  std::vector<SchemaField> fields(schema.fields().begin(), schema.fields().end());
+  return std::make_unique<StructType>(std::move(fields));
+}
+
 }  // namespace iceberg

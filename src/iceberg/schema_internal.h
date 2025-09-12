@@ -53,4 +53,6 @@ Result<std::unique_ptr<Schema>> FromArrowSchema(const ArrowSchema& schema,
 std::unique_ptr<Schema> FromStructType(StructType&& struct_type,
                                        std::optional<int32_t> schema_id);
 
+std::unique_ptr<StructType> ToStructType(const Schema& schema);
+
 }  // namespace iceberg
