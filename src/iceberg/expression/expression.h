@@ -25,13 +25,14 @@
 #include <memory>
 #include <string>
 
-#include "iceberg/exception.h"
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
+#include "iceberg/util/formattable.h"
 
 namespace iceberg {
 
 /// \brief Represents a boolean expression tree.
-class ICEBERG_EXPORT Expression {
+class ICEBERG_EXPORT Expression : public util::Formattable {
  public:
   /// Operation types for expressions
   enum class Operation {
@@ -66,8 +67,8 @@ class ICEBERG_EXPORT Expression {
   virtual Operation op() const = 0;
 
   /// \brief Returns the negation of this expression, equivalent to not(this).
-  virtual std::shared_ptr<Expression> Negate() const {
-    throw IcebergError("Expression cannot be negated");
+  virtual Result<std::shared_ptr<Expression>> Negate() const {
+    return NotSupported("Expression cannot be negated");
   }
 
   /// \brief Returns whether this expression will accept the same values as another.
@@ -78,7 +79,7 @@ class ICEBERG_EXPORT Expression {
     return false;
   }
 
-  virtual std::string ToString() const { return "Expression"; }
+  std::string ToString() const override { return "Expression"; }
 };
 
 /// \brief An Expression that is always true.
@@ -93,7 +94,7 @@ class ICEBERG_EXPORT True : public Expression {
 
   std::string ToString() const override { return "true"; }
 
-  std::shared_ptr<Expression> Negate() const override;
+  Result<std::shared_ptr<Expression>> Negate() const override;
 
   bool Equals(const Expression& other) const override {
     return other.op() == Operation::kTrue;
@@ -113,7 +114,7 @@ class ICEBERG_EXPORT False : public Expression {
 
   std::string ToString() const override { return "false"; }
 
-  std::shared_ptr<Expression> Negate() const override;
+  Result<std::shared_ptr<Expression>> Negate() const override;
 
   bool Equals(const Expression& other) const override {
     return other.op() == Operation::kFalse;
@@ -149,7 +150,7 @@ class ICEBERG_EXPORT And : public Expression {
 
   std::string ToString() const override;
 
-  std::shared_ptr<Expression> Negate() const override;
+  Result<std::shared_ptr<Expression>> Negate() const override;
 
   bool Equals(const Expression& other) const override;
 
@@ -184,7 +185,7 @@ class ICEBERG_EXPORT Or : public Expression {
 
   std::string ToString() const override;
 
-  std::shared_ptr<Expression> Negate() const override;
+  Result<std::shared_ptr<Expression>> Negate() const override;
 
   bool Equals(const Expression& other) const override;
 
@@ -192,5 +193,11 @@ class ICEBERG_EXPORT Or : public Expression {
   std::shared_ptr<Expression> left_;
   std::shared_ptr<Expression> right_;
 };
+
+/// \brief Returns a string representation of an expression operation.
+ICEBERG_EXPORT std::string_view ToString(Expression::Operation op);
+
+/// \brief Returns the negated operation.
+ICEBERG_EXPORT Result<Expression::Operation> Negate(Expression::Operation op);
 
 }  // namespace iceberg
