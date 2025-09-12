@@ -22,10 +22,7 @@
 #include <concepts>
 #include <cstdint>
 
-#include <iceberg/result.h>
-
 #include "iceberg/exception.h"
-#include "iceberg/util/date_time_util.h"
 
 namespace iceberg {
 
@@ -190,37 +187,12 @@ Result<Literal> LiteralCaster::CastFromString(
   const auto& str_val = std::get<std::string>(literal.value_);
 
   switch (target_type->type_id()) {
-    case TypeId::kDate: {
-      auto days_result = ParseDateString(str_val);
-      if (!days_result.has_value()) {
-        return std::unexpected(days_result.error());
-      }
-      return Literal::Date(days_result.value());
-    }
-
-    case TypeId::kTime: {
-      auto micros_result = ParseTimeString(str_val);
-      if (!micros_result.has_value()) {
-        return std::unexpected(micros_result.error());
-      }
-      return Literal::Time(micros_result.value());
-    }
-
-    case TypeId::kTimestamp: {
-      auto micros_result = ParseTimestampString(str_val);
-      if (!micros_result.has_value()) {
-        return std::unexpected(micros_result.error());
-      }
-      return Literal::Timestamp(micros_result.value());
-    }
-
-    case TypeId::kTimestampTz: {
-      auto micros_result = ParseTimestampTzString(str_val);
-      if (!micros_result.has_value()) {
-        return std::unexpected(micros_result.error());
-      }
-      return Literal::TimestampTz(micros_result.value());
-    }
+    case TypeId::kDate:
+    case TypeId::kTime:
+    case TypeId::kTimestamp:
+    case TypeId::kTimestampTz:
+      return NotImplemented("Cast from String to {} is not implemented yet",
+                            target_type->ToString());
       // TODO(Li Feiyang): Implement cast from String to uuid and decimal
 
     default:
@@ -235,7 +207,7 @@ Result<Literal> LiteralCaster::CastFromTimestamp(
 
   switch (target_type->type_id()) {
     case TypeId::kDate:
-      return Literal::Date(MicrosToDays(timestamp_val));
+      return NotImplemented("Cast from Timestamp to Date is not implemented yet");
     case TypeId::kTimestampTz:
       return Literal::TimestampTz(timestamp_val);
     default:
@@ -250,7 +222,7 @@ Result<Literal> LiteralCaster::CastFromTimestampTz(
 
   switch (target_type->type_id()) {
     case TypeId::kDate:
-      return Literal::Date(MicrosToDays(micros));
+      return NotImplemented("Cast from TimestampTz to Date is not implemented yet");
     case TypeId::kTimestamp:
       return Literal::Timestamp(micros);
     default:
