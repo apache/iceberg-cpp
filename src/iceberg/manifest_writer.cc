@@ -32,7 +32,7 @@ namespace iceberg {
 Status ManifestWriter::Add(const ManifestEntry& entry) {
   if (adapter_->size() >= kBatchSize) {
     ICEBERG_ASSIGN_OR_RAISE(auto array, adapter_->FinishAppending());
-    ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
+    ICEBERG_RETURN_UNEXPECTED(writer_->Write(*array));
     ICEBERG_RETURN_UNEXPECTED(adapter_->StartAppending());
   }
   return adapter_->Append(entry);
@@ -48,7 +48,7 @@ Status ManifestWriter::AddAll(const std::vector<ManifestEntry>& entries) {
 Status ManifestWriter::Close() {
   if (adapter_->size() > 0) {
     ICEBERG_ASSIGN_OR_RAISE(auto array, adapter_->FinishAppending());
-    ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
+    ICEBERG_RETURN_UNEXPECTED(writer_->Write(*array));
   }
   return writer_->Close();
 }
@@ -66,10 +66,9 @@ Result<std::unique_ptr<Writer>> OpenFileWriter(std::string_view location,
 
 Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV1Writer(
     std::optional<int64_t> snapshot_id, std::string_view manifest_location,
-    std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> partition_schema,
-    std::shared_ptr<PartitionSpec> partition_spec) {
-  auto adapter = std::make_unique<ManifestEntryAdapterV1>(
-      snapshot_id, std::move(partition_schema), std::move(partition_spec));
+    std::shared_ptr<FileIO> file_io, std::shared_ptr<PartitionSpec> partition_spec) {
+  auto adapter =
+      std::make_unique<ManifestEntryAdapterV1>(snapshot_id, std::move(partition_spec));
   ICEBERG_RETURN_UNEXPECTED(adapter->Init());
   ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
   ICEBERG_ASSIGN_OR_RAISE(
@@ -80,10 +79,9 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV1Writer(
 
 Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV2Writer(
     std::optional<int64_t> snapshot_id, std::string_view manifest_location,
-    std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> partition_schema,
-    std::shared_ptr<PartitionSpec> partition_spec) {
-  auto adapter = std::make_unique<ManifestEntryAdapterV2>(
-      snapshot_id, std::move(partition_schema), std::move(partition_spec));
+    std::shared_ptr<FileIO> file_io, std::shared_ptr<PartitionSpec> partition_spec) {
+  auto adapter =
+      std::make_unique<ManifestEntryAdapterV2>(snapshot_id, std::move(partition_spec));
   ICEBERG_RETURN_UNEXPECTED(adapter->Init());
   ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
   ICEBERG_ASSIGN_OR_RAISE(
@@ -95,10 +93,9 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV2Writer(
 Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV3Writer(
     std::optional<int64_t> snapshot_id, std::optional<int64_t> first_row_id,
     std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
-    std::shared_ptr<Schema> partition_schema,
     std::shared_ptr<PartitionSpec> partition_spec) {
-  auto adapter = std::make_unique<ManifestEntryAdapterV3>(
-      snapshot_id, first_row_id, std::move(partition_schema), std::move(partition_spec));
+  auto adapter = std::make_unique<ManifestEntryAdapterV3>(snapshot_id, first_row_id,
+                                                          std::move(partition_spec));
   ICEBERG_RETURN_UNEXPECTED(adapter->Init());
   ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
   ICEBERG_ASSIGN_OR_RAISE(
@@ -110,7 +107,7 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV3Writer(
 Status ManifestListWriter::Add(const ManifestFile& file) {
   if (adapter_->size() >= kBatchSize) {
     ICEBERG_ASSIGN_OR_RAISE(auto array, adapter_->FinishAppending());
-    ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
+    ICEBERG_RETURN_UNEXPECTED(writer_->Write(*array));
     ICEBERG_RETURN_UNEXPECTED(adapter_->StartAppending());
   }
   return adapter_->Append(file);
@@ -126,7 +123,7 @@ Status ManifestListWriter::AddAll(const std::vector<ManifestFile>& files) {
 Status ManifestListWriter::Close() {
   if (adapter_->size() > 0) {
     ICEBERG_ASSIGN_OR_RAISE(auto array, adapter_->FinishAppending());
-    ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
+    ICEBERG_RETURN_UNEXPECTED(writer_->Write(*array));
   }
   return writer_->Close();
 }
