@@ -65,7 +65,7 @@ Result<std::shared_ptr<Schema>> PartitionSpec::partition_schema() {
     return nullptr;
   }
   {
-    std::lock_guard<std::mutex> lock(mutex_);
+    std::scoped_lock<std::mutex> lock(mutex_);
     if (partition_schema_ != nullptr) {
       return partition_schema_;
     }
@@ -96,7 +96,7 @@ Result<std::shared_ptr<Schema>> PartitionSpec::partition_schema() {
     );
   }
 
-  std::lock_guard<std::mutex> lock(mutex_);
+  std::scoped_lock<std::mutex> lock(mutex_);
   if (partition_schema_ == nullptr) {
     partition_schema_ = std::make_shared<Schema>(std::move(partition_fields));
   }
