@@ -44,7 +44,8 @@ std::shared_ptr<StructType> DataFile::Type(std::shared_ptr<StructType> partition
       kContent,
       kFilePath,
       kFileFormat,
-      SchemaField::MakeRequired(102, kPartitionField, std::move(partition_type)),
+      SchemaField::MakeRequired(kPartitionFieldId, kPartitionField,
+                                std::move(partition_type)),
       kRecordCount,
       kFileSize,
       kColumnSizes,
@@ -70,9 +71,10 @@ std::shared_ptr<StructType> ManifestEntry::TypeFromPartitionType(
 
 std::shared_ptr<StructType> ManifestEntry::TypeFromDataFileType(
     std::shared_ptr<StructType> datafile_type) {
-  return std::make_shared<StructType>(std::vector<SchemaField>{
-      kStatus, kSnapshotId, kSequenceNumber, kFileSequenceNumber,
-      SchemaField::MakeRequired(2, kDataFileField, std::move(datafile_type))});
+  return std::make_shared<StructType>(
+      std::vector<SchemaField>{kStatus, kSnapshotId, kSequenceNumber, kFileSequenceNumber,
+                               SchemaField::MakeRequired(kDataFileFieldId, kDataFileField,
+                                                         std::move(datafile_type))});
 }
 
 }  // namespace iceberg
