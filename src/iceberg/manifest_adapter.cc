@@ -88,6 +88,16 @@ Status ManifestAdapter::AppendField(ArrowArray* arrowArray,
   return {};
 }
 
+Status ManifestAdapter::AppendField(ArrowArray* arrowArray,
+                                    const std::array<uint8_t, 16>& value) {
+  ArrowBufferViewData data;
+  data.as_char = reinterpret_cast<const char*>(value.data());
+  ArrowBufferView view(data, value.size());
+  auto status = ArrowArrayAppendBytes(arrowArray, view);
+  NANOARROW_RETURN_IF_FAILED(status);
+  return {};
+}
+
 ManifestEntryAdapter::~ManifestEntryAdapter() {
   if (is_initialized_) {
     // arrow::ImportedArrayData::Release() bridge.cc:1478 will release the
@@ -144,6 +154,7 @@ Status ManifestEntryAdapter::AppendPartitions(
           ICEBERG_RETURN_UNEXPECTED(
               AppendField(array, std::get<std::string>(partition.value())));
           break;
+        case TypeId::kFixed:
         case TypeId::kBinary:
           ICEBERG_RETURN_UNEXPECTED(
               AppendField(array, std::get<std::vector<uint8_t>>(partition.value())));
@@ -159,8 +170,13 @@ Status ManifestEntryAdapter::AppendPartitions(
               AppendField(array, std::get<int64_t>(partition.value())));
           break;
         case TypeId::kDecimal:
+          ICEBERG_RETURN_UNEXPECTED(
+              AppendField(array, std::get<std::array<uint8_t, 16>>(partition.value())));
+          break;
         case TypeId::kUuid:
-        case TypeId::kFixed:
+        case TypeId::kStruct:
+        case TypeId::kList:
+        case TypeId::kMap:
           // TODO(xiao.dong) currently literal does not support those types
         default:
           return InvalidManifest("Unsupported partition type: {}", field.ToString());
