@@ -53,6 +53,7 @@ class ICEBERG_EXPORT ManifestAdapter {
   static Status AppendField(ArrowArray* arrowArray, double value);
   static Status AppendField(ArrowArray* arrowArray, std::string_view value);
   static Status AppendField(ArrowArray* arrowArray, const std::vector<uint8_t>& value);
+  static Status AppendField(ArrowArray* arrowArray, const std::array<uint8_t, 16>& value);
 
  protected:
   bool is_initialized_ = false;
