@@ -238,17 +238,41 @@ function(resolve_nanoarrow_dependency)
   fetchcontent_declare(nanoarrow
                        ${FC_DECLARE_COMMON_OPTIONS}
                        URL "https://dlcdn.apache.org/arrow/apache-arrow-nanoarrow-0.7.0/apache-arrow-nanoarrow-0.7.0.tar.gz"
-  )
+                           FIND_PACKAGE_ARGS
+                           NAMES
+                           nanoarrow
+                           CONFIG)
   fetchcontent_makeavailable(nanoarrow)
 
-  set_target_properties(nanoarrow_static
-                        PROPERTIES OUTPUT_NAME "iceberg_vendored_nanoarrow"
-                                   POSITION_INDEPENDENT_CODE ON)
-  install(TARGETS nanoarrow_static
-          EXPORT iceberg_targets
-          RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
-          ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
-          LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+  if(nanoarrow_SOURCE_DIR)
+    if(NOT TARGET nanoarrow::nanoarrow_static)
+      add_library(nanoarrow::nanoarrow_static INTERFACE IMPORTED)
+      target_link_libraries(nanoarrow::nanoarrow_static INTERFACE nanoarrow_static)
+      target_include_directories(nanoarrow::nanoarrow_static
+                                 INTERFACE ${nanoarrow_BINARY_DIR}
+                                           ${nanoarrow_SOURCE_DIR})
+    endif()
+
+    set(NANOARROW_VENDORED TRUE)
+    set_target_properties(nanoarrow_static
+                          PROPERTIES OUTPUT_NAME "iceberg_vendored_nanoarrow"
+                                     POSITION_INDEPENDENT_CODE ON)
+    install(TARGETS nanoarrow_static
+            EXPORT iceberg_targets
+            RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
+            ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
+            LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+  else()
+    set(NANOARROW_VENDORED FALSE)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES nanoarrow)
+  endif()
+
+  set(ICEBERG_SYSTEM_DEPENDENCIES
+      ${ICEBERG_SYSTEM_DEPENDENCIES}
+      PARENT_SCOPE)
+  set(NANOARROW_VENDORED
+      ${NANOARROW_VENDORED}
+      PARENT_SCOPE)
 endfunction()
 
 # ----------------------------------------------------------------------
@@ -264,22 +288,46 @@ function(resolve_nlohmann_json_dependency)
   fetchcontent_declare(nlohmann_json
                        ${FC_DECLARE_COMMON_OPTIONS}
                        URL "https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz"
-  )
+                           FIND_PACKAGE_ARGS
+                           NAMES
+                           nlohmann_json
+                           CONFIG)
   fetchcontent_makeavailable(nlohmann_json)
 
-  set_target_properties(nlohmann_json
-                        PROPERTIES OUTPUT_NAME "iceberg_vendored_nlohmann_json"
-                                   POSITION_INDEPENDENT_CODE ON)
-  if(MSVC_TOOLCHAIN)
-    set(NLOHMANN_NATVIS_FILE ${nlohmann_json_SOURCE_DIR}/nlohmann_json.natvis)
-    install(FILES ${NLOHMANN_NATVIS_FILE} DESTINATION .)
+  if(nlohmann_json_SOURCE_DIR)
+    if(NOT TARGET nlohmann_json::nlohmann_json)
+      add_library(nlohmann_json::nlohmann_json INTERFACE IMPORTED)
+      target_link_libraries(nlohmann_json::nlohmann_json INTERFACE nlohmann_json)
+      target_include_directories(nlohmann_json::nlohmann_json
+                                 INTERFACE ${nlohmann_json_BINARY_DIR}
+                                           ${nlohmann_json_SOURCE_DIR})
+    endif()
+
+    set(NLOHMANN_JSON_VENDORED TRUE)
+    set_target_properties(nlohmann_json
+                          PROPERTIES OUTPUT_NAME "iceberg_vendored_nlohmann_json"
+                                     POSITION_INDEPENDENT_CODE ON)
+    if(MSVC_TOOLCHAIN)
+      set(NLOHMANN_NATVIS_FILE ${nlohmann_json_SOURCE_DIR}/nlohmann_json.natvis)
+      install(FILES ${NLOHMANN_NATVIS_FILE} DESTINATION .)
+    endif()
+
+    install(TARGETS nlohmann_json
+            EXPORT iceberg_targets
+            RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
+            ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
+            LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+  else()
+    set(NLOHMANN_JSON_VENDORED FALSE)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES nlohmann_json)
   endif()
 
-  install(TARGETS nlohmann_json
-          EXPORT iceberg_targets
-          RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
-          ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
-          LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+  set(ICEBERG_SYSTEM_DEPENDENCIES
+      ${ICEBERG_SYSTEM_DEPENDENCIES}
+      PARENT_SCOPE)
+  set(NLOHMANN_JSON_VENDORED
+      ${NLOHMANN_JSON_VENDORED}
+      PARENT_SCOPE)
 endfunction()
 
 # ----------------------------------------------------------------------

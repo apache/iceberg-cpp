@@ -72,13 +72,13 @@ list(APPEND
      ZLIB::ZLIB)
 list(APPEND
      ICEBERG_STATIC_INSTALL_INTERFACE_LIBS
-     "Iceberg::nanoarrow_static"
-     "Iceberg::nlohmann_json"
+     "$<IF:$<BOOL:${NANOARROW_VENDORED}>,Iceberg::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_static>,nanoarrow::nanoarrow_static,nanoarrow::nanoarrow_shared>>"
+     "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,Iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
      "$<IF:$<BOOL:${SPDLOG_VENDORED}>,Iceberg::spdlog,spdlog::spdlog>")
 list(APPEND
      ICEBERG_SHARED_INSTALL_INTERFACE_LIBS
-     "Iceberg::nanoarrow_shared"
-     "Iceberg::nlohmann_json"
+     "$<IF:$<BOOL:${NANOARROW_VENDORED}>,Iceberg::nanoarrow_shared,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_shared>,nanoarrow::nanoarrow_shared,nanoarrow::nanoarrow_static>>"
+     "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,Iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
      "$<IF:$<BOOL:${SPDLOG_VENDORED}>,Iceberg::spdlog,spdlog::spdlog>")
 
 add_iceberg_lib(iceberg
