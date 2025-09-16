@@ -203,14 +203,14 @@ class ICEBERG_EXPORT Decimal : public util::Formattable {
     return lhs.data_ != rhs.data_;
   }
 
-  friend Decimal operator-(const Decimal& operand);
-  friend Decimal operator~(const Decimal& operand);
+  ICEBERG_EXPORT friend Decimal operator-(const Decimal& operand);
+  ICEBERG_EXPORT friend Decimal operator~(const Decimal& operand);
 
-  friend Decimal operator+(const Decimal& lhs, const Decimal& rhs);
-  friend Decimal operator-(const Decimal& lhs, const Decimal& rhs);
-  friend Decimal operator*(const Decimal& lhs, const Decimal& rhs);
-  friend Decimal operator/(const Decimal& lhs, const Decimal& rhs);
-  friend Decimal operator%(const Decimal& lhs, const Decimal& rhs);
+  ICEBERG_EXPORT friend Decimal operator+(const Decimal& lhs, const Decimal& rhs);
+  ICEBERG_EXPORT friend Decimal operator-(const Decimal& lhs, const Decimal& rhs);
+  ICEBERG_EXPORT friend Decimal operator*(const Decimal& lhs, const Decimal& rhs);
+  ICEBERG_EXPORT friend Decimal operator/(const Decimal& lhs, const Decimal& rhs);
+  ICEBERG_EXPORT friend Decimal operator%(const Decimal& lhs, const Decimal& rhs);
 
  private:
   int128_t data_{0};

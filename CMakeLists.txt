@@ -64,7 +64,6 @@ include(CMakeParseArguments)
 include(IcebergBuildUtils)
 include(IcebergSanitizer)
 include(IcebergThirdpartyToolchain)
-include(GenerateExportHeader)
 
 if(ICEBERG_BUILD_TESTS)
   enable_testing()
