@@ -67,7 +67,7 @@ void SanitizeChar(char c, std::ostringstream& os) {
 
 }  // namespace
 
-bool ValidAvroName(const std::string& name) {
+bool ValidAvroName(std::string_view name) {
   if (name.empty()) {
     return false;
   }
@@ -234,17 +234,17 @@ Status ToAvroNodeVisitor::Visit(const StructType& type, ::avro::NodePtr* node) {
     ::avro::NodePtr field_node;
     ICEBERG_RETURN_UNEXPECTED(Visit(sub_field, &field_node));
 
-    std::string origFieldName = std::string(sub_field.name());
-    bool isValidFieldName = ValidAvroName(origFieldName);
-    std::string fieldName =
-        isValidFieldName ? origFieldName : SanitizeFieldName(origFieldName);
+    bool is_valid_field_name = ValidAvroName(sub_field.name());
+    std::string field_name = is_valid_field_name ? std::string(sub_field.name())
+                                                 : SanitizeFieldName(sub_field.name());
 
-    (*node)->addName(fieldName);
+    (*node)->addName(field_name);
     (*node)->addLeaf(field_node);
 
     ::avro::CustomAttributes attributes = GetAttributesWithFieldId(sub_field.field_id());
-    if (!isValidFieldName) {
-      attributes.addAttribute(std::string(kIcebergFieldNameProp), origFieldName,
+    if (!is_valid_field_name) {
+      attributes.addAttribute(std::string(kIcebergFieldNameProp),
+                              std::string(sub_field.name()),
                               /*addQuotes=*/true);
     }
     (*node)->addCustomAttributesForField(attributes);

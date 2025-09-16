@@ -157,7 +157,7 @@ bool HasMapLogicalType(const ::avro::NodePtr& node);
 ///
 /// \param name The name to check.
 /// \return True if the name is valid, false otherwise.
-bool ValidAvroName(const std::string& name);
+bool ValidAvroName(std::string_view name);
 
 /// \brief Create a new Avro node with field IDs from name mapping.
 /// \param original_node The original Avro node to copy.
