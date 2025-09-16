@@ -102,9 +102,6 @@ add_subdirectory(catalog)
 add_subdirectory(expression)
 add_subdirectory(util)
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/iceberg_export.h
-        DESTINATION ${ICEBERG_INSTALL_INCLUDEDIR}/iceberg)
-
 if(ICEBERG_BUILD_BUNDLE)
   set(ICEBERG_BUNDLE_SOURCES
       arrow/arrow_fs_file_io.cc
@@ -171,9 +168,6 @@ if(ICEBERG_BUILD_BUNDLE)
   add_subdirectory(arrow)
   add_subdirectory(avro)
   add_subdirectory(parquet)
-
-  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/iceberg_bundle_export.h
-          DESTINATION ${ICEBERG_INSTALL_INCLUDEDIR}/iceberg)
 endif()
 
 iceberg_install_cmake_package(Iceberg iceberg_targets)
