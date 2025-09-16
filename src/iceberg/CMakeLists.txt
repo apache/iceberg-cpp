@@ -94,7 +94,17 @@ add_iceberg_lib(iceberg
                 STATIC_INSTALL_INTERFACE_LIBS
                 ${ICEBERG_STATIC_INSTALL_INTERFACE_LIBS}
                 SHARED_INSTALL_INTERFACE_LIBS
-                ${ICEBERG_SHARED_INSTALL_INTERFACE_LIBS})
+                ${ICEBERG_SHARED_INSTALL_INTERFACE_LIBS}
+                OUTPUTS
+                ICEBERG_LIBRARIES)
+
+foreach(LIB_TARGET ${ICEBERG_LIBRARIES})
+  target_compile_definitions(${LIB_TARGET} PRIVATE ICEBERG_EXPORTING)
+endforeach()
+
+if(ICEBERG_BUILD_STATIC)
+  target_compile_definitions(iceberg_static PUBLIC ICEBERG_STATIC)
+endif()
 
 iceberg_install_all_headers(iceberg)
 
@@ -163,7 +173,17 @@ if(ICEBERG_BUILD_BUNDLE)
                   STATIC_INSTALL_INTERFACE_LIBS
                   ${ICEBERG_BUNDLE_STATIC_INSTALL_INTERFACE_LIBS}
                   SHARED_INSTALL_INTERFACE_LIBS
-                  ${ICEBERG_BUNDLE_SHARED_INSTALL_INTERFACE_LIBS})
+                  ${ICEBERG_BUNDLE_SHARED_INSTALL_INTERFACE_LIBS}
+                  OUTPUTS
+                  ICEBERG_BUNDLE_LIBRARIES)
+
+  foreach(LIB_TARGET ${ICEBERG_BUNDLE_LIBRARIES})
+    target_compile_definitions(${LIB_TARGET} PRIVATE ICEBERG_BUNDLE_EXPORTING)
+  endforeach()
+
+  if(ICEBERG_BUILD_STATIC)
+    target_compile_definitions(iceberg_bundle_static PUBLIC ICEBERG_BUNDLE_STATIC)
+  endif()
 
   add_subdirectory(arrow)
   add_subdirectory(avro)
