@@ -217,18 +217,6 @@ function(add_iceberg_lib LIB_NAME)
             DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
   endif()
 
-  # generate export header file
-  if(BUILD_SHARED)
-    generate_export_header(${LIB_NAME}_shared BASE_NAME ${LIB_NAME})
-    if(BUILD_STATIC)
-      string(TOUPPER ${LIB_NAME} LIB_NAME_UPPER)
-      target_compile_definitions(${LIB_NAME}_static
-                                 PUBLIC ${LIB_NAME_UPPER}_STATIC_DEFINE)
-    endif()
-  elseif(BUILD_STATIC)
-    generate_export_header(${LIB_NAME}_static BASE_NAME ${LIB_NAME})
-  endif()
-
   # Modify variable in calling scope
   if(ARG_OUTPUTS)
     set(${ARG_OUTPUTS}

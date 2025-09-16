@@ -15,20 +15,18 @@
 # specific language governing permissions and limitations
 # under the License.
 
-build/
-cmake-build-debug/
-cmake-build-release/
-.DS_Store
+project(
+    'iceberg',
+    'cpp',
+    version: '0.2.0',
+    license: 'Apache-2.0',
+    meson_version: '>=1.3.0',
+    default_options: ['cpp_std=c++23,c++latest', 'warning_level=2'],
+)
 
+subdir('src')
 
-# intellij files
-.idea
-
-# vscode files
-.vscode
-
-# meson subprojects - wrap files need to be kept to let meson download
-# dependencies as needed, but dependencies themselves should not be versioned
-/subprojects/*
-!/subprojects/packagefiles
-!/subprojects/*.wrap
+install_data(
+    ['LICENSE', 'NOTICE'],
+    install_dir: get_option('datadir') / 'doc/Iceberg',
+)

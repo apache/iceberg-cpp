@@ -48,7 +48,7 @@ function(add_iceberg_test test_name)
                         ${ARGN})
 
   add_executable(${test_name})
-  target_include_directories(${test_name} PRIVATE "${CMAKE_BINARY_DIR}")
+  target_include_directories(${test_name} PRIVATE "${CMAKE_BINARY_DIR}/iceberg/test/")
 
   target_sources(${test_name} PRIVATE ${ARG_SOURCES})
 

@@ -15,20 +15,4 @@
 # specific language governing permissions and limitations
 # under the License.
 
-build/
-cmake-build-debug/
-cmake-build-release/
-.DS_Store
-
-
-# intellij files
-.idea
-
-# vscode files
-.vscode
-
-# meson subprojects - wrap files need to be kept to let meson download
-# dependencies as needed, but dependencies themselves should not be versioned
-/subprojects/*
-!/subprojects/packagefiles
-!/subprojects/*.wrap
+install_headers(['in_memory_catalog.h'], subdir: 'iceberg/catalog')
