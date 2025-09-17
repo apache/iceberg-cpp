@@ -21,7 +21,6 @@
 
 #include <format>
 #include <regex>
-#include <utility>
 
 #include "iceberg/transform_function.h"
 #include "iceberg/type.h"
@@ -38,30 +37,6 @@ constexpr std::string_view kDayName = "day";
 constexpr std::string_view kHourName = "hour";
 constexpr std::string_view kVoidName = "void";
 }  // namespace
-
-constexpr std::string_view TransformTypeToString(TransformType type) {
-  switch (type) {
-    case TransformType::kUnknown:
-      return kUnknownName;
-    case TransformType::kIdentity:
-      return kIdentityName;
-    case TransformType::kBucket:
-      return kBucketName;
-    case TransformType::kTruncate:
-      return kTruncateName;
-    case TransformType::kYear:
-      return kYearName;
-    case TransformType::kMonth:
-      return kMonthName;
-    case TransformType::kDay:
-      return kDayName;
-    case TransformType::kHour:
-      return kHourName;
-    case TransformType::kVoid:
-      return kVoidName;
-  }
-  std::unreachable();
-}
 
 std::shared_ptr<Transform> Transform::Identity() {
   static auto instance =

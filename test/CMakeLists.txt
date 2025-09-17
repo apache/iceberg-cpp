@@ -87,6 +87,7 @@ add_iceberg_test(json_serde_test
 add_iceberg_test(util_test
                  SOURCES
                  config_test.cc
+                 decimal_test.cc
                  endian_test.cc
                  formatter_test.cc
                  string_util_test.cc
@@ -124,4 +125,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    parquet_data_test.cc
                    parquet_schema_test.cc
                    parquet_test.cc)
+
+  add_iceberg_test(scan_test USE_BUNDLE SOURCES file_scan_task_test.cc)
+
 endif()

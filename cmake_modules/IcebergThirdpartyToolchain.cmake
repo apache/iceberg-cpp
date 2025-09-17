@@ -51,6 +51,14 @@ macro(prepare_fetchcontent)
   set(CMAKE_COMPILE_WARNING_AS_ERROR FALSE)
   set(CMAKE_EXPORT_NO_PACKAGE_REGISTRY TRUE)
   set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+  # Use "NEW" for CMP0077 by default.
+  #
+  # https://cmake.org/cmake/help/latest/policy/CMP0077.html
+  #
+  # option() honors normal variables.
+  set(CMAKE_POLICY_DEFAULT_CMP0077
+      NEW
+      CACHE STRING "")
 endmacro()
 
 # ----------------------------------------------------------------------
@@ -59,43 +67,20 @@ endmacro()
 function(resolve_arrow_dependency)
   prepare_fetchcontent()
 
-  set(ARROW_BUILD_SHARED
-      OFF
-      CACHE BOOL "" FORCE)
-  set(ARROW_BUILD_STATIC
-      ON
-      CACHE BOOL "" FORCE)
+  set(ARROW_BUILD_SHARED OFF)
+  set(ARROW_BUILD_STATIC ON)
   # Work around undefined symbol: arrow::ipc::ReadSchema(arrow::io::InputStream*, arrow::ipc::DictionaryMemo*)
-  set(ARROW_IPC
-      ON
-      CACHE BOOL "" FORCE)
-  set(ARROW_FILESYSTEM
-      ON
-      CACHE BOOL "" FORCE)
-  set(ARROW_JSON
-      ON
-      CACHE BOOL "" FORCE)
-  set(ARROW_PARQUET
-      ON
-      CACHE BOOL "" FORCE)
-  set(ARROW_SIMD_LEVEL
-      "NONE"
-      CACHE STRING "" FORCE)
-  set(ARROW_RUNTIME_SIMD_LEVEL
-      "NONE"
-      CACHE STRING "" FORCE)
-  set(ARROW_POSITION_INDEPENDENT_CODE
-      ON
-      CACHE BOOL "" FORCE)
-  set(ARROW_DEPENDENCY_SOURCE
-      "BUNDLED"
-      CACHE STRING "" FORCE)
-  set(ARROW_WITH_ZLIB
-      ON
-      CACHE BOOL "" FORCE)
-  set(ZLIB_SOURCE
-      "SYSTEM"
-      CACHE STRING "" FORCE)
+  set(ARROW_IPC ON)
+  set(ARROW_FILESYSTEM ON)
+  set(ARROW_JSON ON)
+  set(ARROW_PARQUET ON)
+  set(ARROW_SIMD_LEVEL "NONE")
+  set(ARROW_RUNTIME_SIMD_LEVEL "NONE")
+  set(ARROW_POSITION_INDEPENDENT_CODE ON)
+  set(ARROW_DEPENDENCY_SOURCE "BUNDLED")
+  set(ARROW_WITH_ZLIB ON)
+  set(ZLIB_SOURCE "SYSTEM")
+  set(ARROW_VERBOSE_THIRDPARTY_BUILD OFF)
 
   fetchcontent_declare(VendoredArrow
                        ${FC_DECLARE_COMMON_OPTIONS}
@@ -179,26 +164,27 @@ function(resolve_avro_dependency)
       OFF
       CACHE BOOL "" FORCE)
 
-  fetchcontent_declare(Avro
+  fetchcontent_declare(avro-cpp
                        ${FC_DECLARE_COMMON_OPTIONS}
                        # TODO: switch to Apache Avro 1.13.0 once released.
                        GIT_REPOSITORY https://github.com/apache/avro.git
-                       GIT_TAG 82a2bc8b034de34626e2ab8bf091234122474d50
+                       GIT_TAG e6c308780e876b4c11a470b9900995947f7b0fb5
                        SOURCE_SUBDIR
                        lang/c++
                        FIND_PACKAGE_ARGS
                        NAMES
-                       Avro
+                       avro-cpp
                        CONFIG)
 
-  fetchcontent_makeavailable(Avro)
+  fetchcontent_makeavailable(avro-cpp)
 
-  if(avro_SOURCE_DIR)
-    if(NOT TARGET Avro::avrocpp_static)
-      add_library(Avro::avrocpp_static INTERFACE IMPORTED)
-      target_link_libraries(Avro::avrocpp_static INTERFACE avrocpp_s)
-      target_include_directories(Avro::avrocpp_static
-                                 INTERFACE ${avro_BINARY_DIR} ${avro_SOURCE_DIR}/lang/c++)
+  if(avro-cpp_SOURCE_DIR)
+    if(NOT TARGET avro-cpp::avrocpp_static)
+      add_library(avro-cpp::avrocpp_static INTERFACE IMPORTED)
+      target_link_libraries(avro-cpp::avrocpp_static INTERFACE avrocpp_s)
+      target_include_directories(avro-cpp::avrocpp_static
+                                 INTERFACE ${avro-cpp_BINARY_DIR}
+                                           ${avro-cpp_SOURCE_DIR}/lang/c++)
     endif()
 
     set(AVRO_VENDORED TRUE)
@@ -238,17 +224,41 @@ function(resolve_nanoarrow_dependency)
   fetchcontent_declare(nanoarrow
                        ${FC_DECLARE_COMMON_OPTIONS}
                        URL "https://dlcdn.apache.org/arrow/apache-arrow-nanoarrow-0.7.0/apache-arrow-nanoarrow-0.7.0.tar.gz"
-  )
+                           FIND_PACKAGE_ARGS
+                           NAMES
+                           nanoarrow
+                           CONFIG)
   fetchcontent_makeavailable(nanoarrow)
 
-  set_target_properties(nanoarrow_static
-                        PROPERTIES OUTPUT_NAME "iceberg_vendored_nanoarrow"
-                                   POSITION_INDEPENDENT_CODE ON)
-  install(TARGETS nanoarrow_static
-          EXPORT iceberg_targets
-          RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
-          ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
-          LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+  if(nanoarrow_SOURCE_DIR)
+    if(NOT TARGET nanoarrow::nanoarrow_static)
+      add_library(nanoarrow::nanoarrow_static INTERFACE IMPORTED)
+      target_link_libraries(nanoarrow::nanoarrow_static INTERFACE nanoarrow_static)
+      target_include_directories(nanoarrow::nanoarrow_static
+                                 INTERFACE ${nanoarrow_BINARY_DIR}
+                                           ${nanoarrow_SOURCE_DIR})
+    endif()
+
+    set(NANOARROW_VENDORED TRUE)
+    set_target_properties(nanoarrow_static
+                          PROPERTIES OUTPUT_NAME "iceberg_vendored_nanoarrow"
+                                     POSITION_INDEPENDENT_CODE ON)
+    install(TARGETS nanoarrow_static
+            EXPORT iceberg_targets
+            RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
+            ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
+            LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+  else()
+    set(NANOARROW_VENDORED FALSE)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES nanoarrow)
+  endif()
+
+  set(ICEBERG_SYSTEM_DEPENDENCIES
+      ${ICEBERG_SYSTEM_DEPENDENCIES}
+      PARENT_SCOPE)
+  set(NANOARROW_VENDORED
+      ${NANOARROW_VENDORED}
+      PARENT_SCOPE)
 endfunction()
 
 # ----------------------------------------------------------------------
@@ -264,22 +274,46 @@ function(resolve_nlohmann_json_dependency)
   fetchcontent_declare(nlohmann_json
                        ${FC_DECLARE_COMMON_OPTIONS}
                        URL "https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz"
-  )
+                           FIND_PACKAGE_ARGS
+                           NAMES
+                           nlohmann_json
+                           CONFIG)
   fetchcontent_makeavailable(nlohmann_json)
 
-  set_target_properties(nlohmann_json
-                        PROPERTIES OUTPUT_NAME "iceberg_vendored_nlohmann_json"
-                                   POSITION_INDEPENDENT_CODE ON)
-  if(MSVC_TOOLCHAIN)
-    set(NLOHMANN_NATVIS_FILE ${nlohmann_json_SOURCE_DIR}/nlohmann_json.natvis)
-    install(FILES ${NLOHMANN_NATVIS_FILE} DESTINATION .)
+  if(nlohmann_json_SOURCE_DIR)
+    if(NOT TARGET nlohmann_json::nlohmann_json)
+      add_library(nlohmann_json::nlohmann_json INTERFACE IMPORTED)
+      target_link_libraries(nlohmann_json::nlohmann_json INTERFACE nlohmann_json)
+      target_include_directories(nlohmann_json::nlohmann_json
+                                 INTERFACE ${nlohmann_json_BINARY_DIR}
+                                           ${nlohmann_json_SOURCE_DIR})
+    endif()
+
+    set(NLOHMANN_JSON_VENDORED TRUE)
+    set_target_properties(nlohmann_json
+                          PROPERTIES OUTPUT_NAME "iceberg_vendored_nlohmann_json"
+                                     POSITION_INDEPENDENT_CODE ON)
+    if(MSVC_TOOLCHAIN)
+      set(NLOHMANN_NATVIS_FILE ${nlohmann_json_SOURCE_DIR}/nlohmann_json.natvis)
+      install(FILES ${NLOHMANN_NATVIS_FILE} DESTINATION .)
+    endif()
+
+    install(TARGETS nlohmann_json
+            EXPORT iceberg_targets
+            RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
+            ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
+            LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+  else()
+    set(NLOHMANN_JSON_VENDORED FALSE)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES nlohmann_json)
   endif()
 
-  install(TARGETS nlohmann_json
-          EXPORT iceberg_targets
-          RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
-          ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
-          LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+  set(ICEBERG_SYSTEM_DEPENDENCIES
+      ${ICEBERG_SYSTEM_DEPENDENCIES}
+      PARENT_SCOPE)
+  set(NLOHMANN_JSON_VENDORED
+      ${NLOHMANN_JSON_VENDORED}
+      PARENT_SCOPE)
 endfunction()
 
 # ----------------------------------------------------------------------

@@ -24,7 +24,7 @@ endif()
 list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules")
 
 project(Iceberg
-        VERSION 0.1.0
+        VERSION 0.2.0
         DESCRIPTION "Iceberg C++ Project"
         LANGUAGES CXX)
 

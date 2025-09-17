@@ -131,7 +131,7 @@ function(add_iceberg_lib LIB_NAME)
     endif()
 
     if(LIB_INCLUDES)
-      target_include_directories(${LIB_NAME}_shared SYSTEM PUBLIC ${ARG_EXTRA_INCLUDES})
+      target_include_directories(${LIB_NAME}_shared PUBLIC ${ARG_EXTRA_INCLUDES})
     endif()
 
     if(ARG_PRIVATE_INCLUDES)
@@ -179,7 +179,7 @@ function(add_iceberg_lib LIB_NAME)
     endif()
 
     if(LIB_INCLUDES)
-      target_include_directories(${LIB_NAME}_static SYSTEM PUBLIC ${ARG_EXTRA_INCLUDES})
+      target_include_directories(${LIB_NAME}_static PUBLIC ${ARG_EXTRA_INCLUDES})
     endif()
 
     if(ARG_PRIVATE_INCLUDES)
