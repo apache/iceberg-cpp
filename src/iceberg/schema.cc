@@ -89,12 +89,14 @@ bool Schema::Equals(const Schema& other) const {
 Result<std::optional<std::reference_wrapper<const SchemaField>>> Schema::FindFieldByName(
     std::string_view name, bool case_sensitive) const {
   if (case_sensitive) {
-    ICEBERG_RETURN_UNEXPECTED(InitNameToIdMap());
+    ICEBERG_RETURN_UNEXPECTED(
+        LazyInitWithCallOnce(name_to_id_flag_, [this]() { return InitNameToIdMap(); }));
     auto it = name_to_id_.find(name);
     if (it == name_to_id_.end()) return std::nullopt;
     return FindFieldById(it->second);
   }
-  ICEBERG_RETURN_UNEXPECTED(InitLowerCaseNameToIdMap());
+  ICEBERG_RETURN_UNEXPECTED(LazyInitWithCallOnce(
+      lowercase_name_to_id_flag_, [this]() { return InitLowerCaseNameToIdMap(); }));
   auto it = lowercase_name_to_id_.find(StringUtils::ToLower(name));
   if (it == lowercase_name_to_id_.end()) return std::nullopt;
   return FindFieldById(it->second);
@@ -133,7 +135,8 @@ Status Schema::InitLowerCaseNameToIdMap() const {
 
 Result<std::optional<std::reference_wrapper<const SchemaField>>> Schema::FindFieldById(
     int32_t field_id) const {
-  ICEBERG_RETURN_UNEXPECTED(InitIdToFieldMap());
+  ICEBERG_RETURN_UNEXPECTED(
+      LazyInitWithCallOnce(id_to_field_flag_, [this]() { return InitIdToFieldMap(); }));
   auto it = id_to_field_.find(field_id);
   if (it == id_to_field_.end()) {
     return std::nullopt;

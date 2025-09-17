@@ -185,7 +185,9 @@ struct ICEBERG_EXPORT ManifestFile {
       507, "partitions",
       std::make_shared<ListType>(SchemaField::MakeRequired(
           508, std::string(ListType::kElementName),
-          std::make_shared<StructType>(PartitionFieldSummary::Type()))),
+          struct_(
+              {PartitionFieldSummary::kContainsNull, PartitionFieldSummary::kContainsNaN,
+               PartitionFieldSummary::kLowerBound, PartitionFieldSummary::kUpperBound}))),
       "Summary for each partition");
   inline static const SchemaField kKeyMetadata = SchemaField::MakeOptional(
       519, "key_metadata", iceberg::binary(), "Encryption key metadata blob");

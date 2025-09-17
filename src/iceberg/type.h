@@ -26,6 +26,7 @@
 #include <array>
 #include <cstdint>
 #include <memory>
+#include <mutex>
 #include <optional>
 #include <span>
 #include <string>
@@ -38,6 +39,13 @@
 #include "iceberg/util/formattable.h"
 
 namespace iceberg {
+
+template <typename Func>
+Status LazyInitWithCallOnce(std::once_flag& flag, Func&& func) {
+  Status status;
+  std::call_once(flag, [&status, &func]() { status = func(); });
+  return status;
+}
 
 /// \brief Interface for a data type for a field.
 class ICEBERG_EXPORT Type : public iceberg::util::Formattable {
@@ -124,8 +132,7 @@ class ICEBERG_EXPORT StructType : public NestedType {
 
  protected:
   bool Equals(const Type& other) const override;
-  // TODO(nullccxsy): Lazy initialization has concurrency issues, need to add proper
-  // synchronization mechanism
+
   Status InitFieldById() const;
   Status InitFieldByName() const;
   Status InitFieldByLowerCaseName() const;
@@ -134,6 +141,10 @@ class ICEBERG_EXPORT StructType : public NestedType {
   mutable std::unordered_map<int32_t, SchemaFieldConstRef> field_by_id_;
   mutable std::unordered_map<std::string_view, SchemaFieldConstRef> field_by_name_;
   mutable std::unordered_map<std::string, SchemaFieldConstRef> field_by_lowercase_name_;
+
+  mutable std::once_flag field_by_id_flag_;
+  mutable std::once_flag field_by_name_flag_;
+  mutable std::once_flag field_by_lowercase_name_flag_;
 };
 
 /// \brief A data type representing a list of values.

@@ -50,7 +50,8 @@ std::string StructType::ToString() const {
 std::span<const SchemaField> StructType::fields() const { return fields_; }
 Result<std::optional<NestedType::SchemaFieldConstRef>> StructType::GetFieldById(
     int32_t field_id) const {
-  ICEBERG_RETURN_UNEXPECTED(InitFieldById());
+  ICEBERG_RETURN_UNEXPECTED(
+      LazyInitWithCallOnce(field_by_id_flag_, [this]() { return InitFieldById(); }));
   auto it = field_by_id_.find(field_id);
   if (it == field_by_id_.end()) return std::nullopt;
   return it->second;
@@ -65,14 +66,16 @@ Result<std::optional<NestedType::SchemaFieldConstRef>> StructType::GetFieldByInd
 Result<std::optional<NestedType::SchemaFieldConstRef>> StructType::GetFieldByName(
     std::string_view name, bool case_sensitive) const {
   if (case_sensitive) {
-    ICEBERG_RETURN_UNEXPECTED(InitFieldByName());
+    ICEBERG_RETURN_UNEXPECTED(LazyInitWithCallOnce(
+        field_by_name_flag_, [this]() { return InitFieldByName(); }));
     auto it = field_by_name_.find(name);
     if (it != field_by_name_.end()) {
       return it->second;
     }
     return std::nullopt;
   }
-  ICEBERG_RETURN_UNEXPECTED(InitFieldByLowerCaseName());
+  ICEBERG_RETURN_UNEXPECTED(LazyInitWithCallOnce(
+      field_by_lowercase_name_flag_, [this]() { return InitFieldByLowerCaseName(); }));
   auto it = field_by_lowercase_name_.find(StringUtils::ToLower(name));
   if (it != field_by_lowercase_name_.end()) {
     return it->second;

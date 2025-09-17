@@ -24,6 +24,7 @@
 /// and any utility functions.  See iceberg/type.h and iceberg/field.h as well.
 
 #include <cstdint>
+#include <mutex>
 #include <optional>
 #include <string>
 #include <vector>
@@ -78,8 +79,6 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// \brief Compare two schemas for equality.
   [[nodiscard]] bool Equals(const Schema& other) const;
 
-  // TODO(nullccxsy): Address potential concurrency issues in lazy initialization (e.g.,
-  // use std::call_once)
   Status InitIdToFieldMap() const;
   Status InitNameToIdMap() const;
   Status InitLowerCaseNameToIdMap() const;
@@ -94,6 +93,10 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// Mapping from lowercased field name to field id
   mutable std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>
       lowercase_name_to_id_;
+
+  mutable std::once_flag id_to_field_flag_;
+  mutable std::once_flag name_to_id_flag_;
+  mutable std::once_flag lowercase_name_to_id_flag_;
 };
 
 }  // namespace iceberg

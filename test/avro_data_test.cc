@@ -1195,16 +1195,16 @@ TEST(ExtractDatumFromArrayTest, NullHandling) {
 
 struct RoundTripParam {
   std::string name;
-  Schema iceberg_schema;
+  std::shared_ptr<Schema> iceberg_schema;
   std::string arrow_json;
 };
 
 void VerifyRoundTripConversion(const RoundTripParam& test_case) {
   ::avro::NodePtr avro_node;
-  ASSERT_THAT(ToAvroNodeVisitor{}.Visit(test_case.iceberg_schema, &avro_node), IsOk());
+  ASSERT_THAT(ToAvroNodeVisitor{}.Visit(*test_case.iceberg_schema, &avro_node), IsOk());
 
   ArrowSchema arrow_c_schema;
-  ASSERT_THAT(ToArrowSchema(test_case.iceberg_schema, &arrow_c_schema), IsOk());
+  ASSERT_THAT(ToArrowSchema(*test_case.iceberg_schema, &arrow_c_schema), IsOk());
   auto arrow_schema = ::arrow::ImportSchema(&arrow_c_schema).ValueOrDie();
   auto arrow_struct_type = std::make_shared<::arrow::StructType>(arrow_schema->fields());
 
@@ -1221,14 +1221,14 @@ void VerifyRoundTripConversion(const RoundTripParam& test_case) {
   }
 
   auto projection_result =
-      Project(test_case.iceberg_schema, avro_node, /*prune_source=*/false);
+      Project(*test_case.iceberg_schema, avro_node, /*prune_source=*/false);
   ASSERT_THAT(projection_result, IsOk());
   auto projection = std::move(projection_result.value());
 
   auto builder = ::arrow::MakeBuilder(arrow_struct_type).ValueOrDie();
   for (const auto& datum : extracted_data) {
     ASSERT_THAT(AppendDatumToBuilder(avro_node, datum, projection,
-                                     test_case.iceberg_schema, builder.get()),
+                                     *test_case.iceberg_schema, builder.get()),
                 IsOk());
   }
 
@@ -1249,7 +1249,7 @@ TEST_P(AvroRoundTripConversionTest, ConvertTypes) {
 const std::vector<RoundTripParam> kRoundTripTestCases = {
     {
         .name = "SimpleStruct",
-        .iceberg_schema = Schema({
+        .iceberg_schema = std::make_shared<Schema>(std::vector<SchemaField>{
             SchemaField::MakeRequired(1, "id", int32()),
             SchemaField::MakeRequired(2, "name", string()),
             SchemaField::MakeOptional(3, "age", int32()),
@@ -1262,7 +1262,7 @@ const std::vector<RoundTripParam> kRoundTripTestCases = {
     },
     {
         .name = "PrimitiveTypes",
-        .iceberg_schema = Schema({
+        .iceberg_schema = std::make_shared<Schema>(std::vector<SchemaField>{
             SchemaField::MakeRequired(1, "bool_field", boolean()),
             SchemaField::MakeRequired(2, "int_field", int32()),
             SchemaField::MakeRequired(3, "long_field", int64()),
@@ -1277,7 +1277,7 @@ const std::vector<RoundTripParam> kRoundTripTestCases = {
     },
     {
         .name = "NestedStruct",
-        .iceberg_schema = Schema({
+        .iceberg_schema = std::make_shared<Schema>(std::vector<SchemaField>{
             SchemaField::MakeRequired(1, "id", int32()),
             SchemaField::MakeRequired(
                 2, "person",
@@ -1293,7 +1293,7 @@ const std::vector<RoundTripParam> kRoundTripTestCases = {
     },
     {
         .name = "ListOfIntegers",
-        .iceberg_schema = Schema({
+        .iceberg_schema = std::make_shared<Schema>(std::vector<SchemaField>{
             SchemaField::MakeRequired(
                 1, "numbers",
                 std::make_shared<ListType>(
@@ -1307,7 +1307,7 @@ const std::vector<RoundTripParam> kRoundTripTestCases = {
     },
     {
         .name = "MapStringToInt",
-        .iceberg_schema = Schema({
+        .iceberg_schema = std::make_shared<Schema>(std::vector<SchemaField>{
             SchemaField::MakeRequired(
                 1, "scores",
                 std::make_shared<MapType>(
@@ -1322,7 +1322,7 @@ const std::vector<RoundTripParam> kRoundTripTestCases = {
     },
     {
         .name = "ComplexNested",
-        .iceberg_schema = Schema({
+        .iceberg_schema = std::make_shared<Schema>(std::vector<SchemaField>{
             SchemaField::MakeRequired(
                 1, "data",
                 std::make_shared<StructType>(std::vector<SchemaField>{
@@ -1345,7 +1345,7 @@ const std::vector<RoundTripParam> kRoundTripTestCases = {
     },
     {
         .name = "NullablePrimitives",
-        .iceberg_schema = Schema({
+        .iceberg_schema = std::make_shared<Schema>(std::vector<SchemaField>{
             SchemaField::MakeOptional(1, "optional_bool", boolean()),
             SchemaField::MakeOptional(2, "optional_int", int32()),
             SchemaField::MakeOptional(3, "optional_long", int64()),
@@ -1361,7 +1361,7 @@ const std::vector<RoundTripParam> kRoundTripTestCases = {
     },
     {
         .name = "NullableNestedStruct",
-        .iceberg_schema = Schema({
+        .iceberg_schema = std::make_shared<Schema>(std::vector<SchemaField>{
             SchemaField::MakeRequired(1, "id", int32()),
             SchemaField::MakeOptional(
                 2, "person",
@@ -1381,7 +1381,7 @@ const std::vector<RoundTripParam> kRoundTripTestCases = {
     },
     {
         .name = "NullableListElements",
-        .iceberg_schema = Schema({
+        .iceberg_schema = std::make_shared<Schema>(std::vector<SchemaField>{
             SchemaField::MakeRequired(1, "id", int32()),
             SchemaField::MakeOptional(
                 2, "numbers",
@@ -1401,7 +1401,7 @@ const std::vector<RoundTripParam> kRoundTripTestCases = {
     },
     {
         .name = "NullableMapValues",
-        .iceberg_schema = Schema({
+        .iceberg_schema = std::make_shared<Schema>(std::vector<SchemaField>{
             SchemaField::MakeRequired(1, "id", int32()),
             SchemaField::MakeOptional(
                 2, "scores",
@@ -1423,7 +1423,7 @@ const std::vector<RoundTripParam> kRoundTripTestCases = {
     },
     {
         .name = "DeeplyNestedWithNulls",
-        .iceberg_schema = Schema({
+        .iceberg_schema = std::make_shared<Schema>(std::vector<SchemaField>{
             SchemaField::MakeRequired(
                 1, "root",
                 std::make_shared<StructType>(std::vector<SchemaField>{
@@ -1452,7 +1452,7 @@ const std::vector<RoundTripParam> kRoundTripTestCases = {
     },
     {
         .name = "AllNullsVariations",
-        .iceberg_schema = Schema({
+        .iceberg_schema = std::make_shared<Schema>(std::vector<SchemaField>{
             SchemaField::MakeOptional(1, "always_null", string()),
             SchemaField::MakeOptional(2, "sometimes_null", int32()),
             SchemaField::MakeOptional(
