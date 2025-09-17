@@ -46,7 +46,6 @@ class ICEBERG_EXPORT ManifestAdapter {
   Status StartAppending();
   Result<std::shared_ptr<ArrowArray>> FinishAppending();
   int64_t size() const { return size_; }
-  virtual const std::shared_ptr<Schema>& schema() const = 0;
 
  protected:
   static Status AppendField(ArrowArray* arrowArray, int64_t value);
@@ -72,7 +71,7 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
 
   virtual Status Append(const ManifestEntry& entry) = 0;
 
-  const std::shared_ptr<Schema>& schema() const override { return manifest_schema_; }
+  const std::shared_ptr<Schema>& schema() const { return manifest_schema_; }
 
  protected:
   virtual Result<std::shared_ptr<StructType>> GetManifestEntryStructType();
@@ -123,7 +122,7 @@ class ICEBERG_EXPORT ManifestFileAdapter : public ManifestAdapter {
 
   virtual Status Append(const ManifestFile& file) = 0;
 
-  const std::shared_ptr<Schema>& schema() const override { return manifest_list_schema_; }
+  const std::shared_ptr<Schema>& schema() const { return manifest_list_schema_; }
 
  protected:
   /// \brief Init version-specific schema for each version.
