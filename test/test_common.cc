@@ -28,7 +28,7 @@
 #include <nlohmann/json.hpp>
 
 #include "iceberg/json_internal.h"
-#include "iceberg/test/test_config.h"
+#include "test_config.h"
 
 namespace iceberg {
 

@@ -15,20 +15,16 @@
 # specific language governing permissions and limitations
 # under the License.
 
-build/
-cmake-build-debug/
-cmake-build-release/
-.DS_Store
+[wrap-file]
+directory = spdlog-1.15.3
+source_url = https://github.com/gabime/spdlog/archive/refs/tags/v1.15.3.tar.gz
+source_filename = spdlog-1.15.3.tar.gz
+source_hash = 15a04e69c222eb6c01094b5c7ff8a249b36bb22788d72519646fb85feb267e67
+patch_filename = spdlog_1.15.3-4_patch.zip
+patch_url = https://wrapdb.mesonbuild.com/v2/spdlog_1.15.3-4/get_patch
+patch_hash = ccdc72f3d965980d5edd1a56129a9b7fa5f7c86f31e4ecf2dba6a6068829d4e2
+source_fallback_url = https://github.com/mesonbuild/wrapdb/releases/download/spdlog_1.15.3-4/spdlog-1.15.3.tar.gz
+wrapdb_version = 1.15.3-4
 
-
-# intellij files
-.idea
-
-# vscode files
-.vscode
-
-# meson subprojects - wrap files need to be kept to let meson download
-# dependencies as needed, but dependencies themselves should not be versioned
-/subprojects/*
-!/subprojects/packagefiles
-!/subprojects/*.wrap
+[provide]
+spdlog = spdlog_dep
