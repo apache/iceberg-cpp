@@ -20,6 +20,7 @@
 #include <charconv>
 #include <format>
 #include <mutex>
+#include <sstream>
 #include <string_view>
 
 #include <arrow/type.h>
@@ -56,7 +57,59 @@ namespace {
   return attributes;
 }
 
+void SanitizeChar(char c, std::ostringstream& os) {
+  if (std::isdigit(c)) {
+    os << '_' << c;
+  } else {
+    os << "_x" << std::uppercase << std::hex << static_cast<int>(c);
+  }
+}
+
 }  // namespace
+
+bool ValidAvroName(std::string_view name) {
+  if (name.empty()) {
+    return false;
+  }
+
+  char first = name[0];
+  if (!(std::isalpha(first) || first == '_')) {
+    return false;
+  }
+
+  for (size_t i = 1; i < name.length(); i++) {
+    char character = name[i];
+    if (!(std::isalnum(character) || character == '_')) {
+      return false;
+    }
+  }
+  return true;
+}
+
+std::string SanitizeFieldName(std::string_view field_name) {
+  if (field_name.empty()) {
+    return "";
+  }
+
+  std::ostringstream result;
+
+  if (!std::isalpha(field_name[0]) && field_name[0] != '_') {
+    SanitizeChar(field_name[0], result);
+  } else {
+    result << field_name[0];
+  }
+
+  for (size_t i = 1; i < field_name.size(); ++i) {
+    char c = field_name[i];
+    if (std::isalnum(c) || c == '_') {
+      result << c;
+    } else {
+      SanitizeChar(c, result);
+    }
+  }
+
+  return result.str();
+}
 
 std::string ToString(const ::avro::NodePtr& node) {
   std::stringstream ss;
@@ -181,10 +234,20 @@ Status ToAvroNodeVisitor::Visit(const StructType& type, ::avro::NodePtr* node) {
     ::avro::NodePtr field_node;
     ICEBERG_RETURN_UNEXPECTED(Visit(sub_field, &field_node));
 
-    // TODO(gangwu): sanitize field name
-    (*node)->addName(std::string(sub_field.name()));
+    bool is_valid_field_name = ValidAvroName(sub_field.name());
+    std::string field_name = is_valid_field_name ? std::string(sub_field.name())
+                                                 : SanitizeFieldName(sub_field.name());
+
+    (*node)->addName(field_name);
     (*node)->addLeaf(field_node);
-    (*node)->addCustomAttributesForField(GetAttributesWithFieldId(sub_field.field_id()));
+
+    ::avro::CustomAttributes attributes = GetAttributesWithFieldId(sub_field.field_id());
+    if (!is_valid_field_name) {
+      attributes.addAttribute(std::string(kIcebergFieldNameProp),
+                              std::string(sub_field.name()),
+                              /*addQuotes=*/true);
+    }
+    (*node)->addCustomAttributesForField(attributes);
   }
   return {};
 }
