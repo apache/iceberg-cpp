@@ -512,8 +512,7 @@ function(resolve_curl_dependency)
   fetchcontent_makeavailable(CURL)
 
   if(TARGET OpenSSL::SSL)
-    message(STATUS "Detected that vendored curl depends on OpenSSL. Adding it to the system dependency list."
-    )
+    message(STATUS "Adding OpenSSL to the system dependency list.")
     list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL)
   endif()
 
@@ -535,6 +534,8 @@ function(resolve_curl_dependency)
             ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
             LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
     message(STATUS "Use vendored CURL")
+
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL)
   else()
     set(CURL_VENDORED FALSE)
     list(APPEND ICEBERG_SYSTEM_DEPENDENCIES CURL)
