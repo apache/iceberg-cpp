@@ -431,7 +431,7 @@ function(resolve_zlib_dependency)
 endfunction()
 
 # ----------------------------------------------------------------------
-# CURL
+# CURL (for cpr)
 
 function(resolve_curl_dependency)
   prepare_fetchcontent()
@@ -551,7 +551,7 @@ function(resolve_curl_dependency)
 endfunction()
 
 # ----------------------------------------------------------------------
-# cpr
+# cpr (C++ Requests)
 
 function(resolve_cpr_dependency)
   prepare_fetchcontent()
@@ -582,7 +582,7 @@ function(resolve_cpr_dependency)
   fetchcontent_declare(cpr
                        ${FC_DECLARE_COMMON_OPTIONS}
                        GIT_REPOSITORY https://github.com/libcpr/cpr.git
-                       GIT_TAG 1.11.0
+                       GIT_TAG 1.12.0
                        FIND_PACKAGE_ARGS
                        NAMES
                        cpr
