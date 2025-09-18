@@ -640,11 +640,13 @@ resolve_croaring_dependency()
 resolve_nlohmann_json_dependency()
 resolve_spdlog_dependency()
 
-resolve_curl_dependency()
-resolve_cpr_dependency()
-
 if(ICEBERG_BUILD_BUNDLE)
   resolve_arrow_dependency()
   resolve_avro_dependency()
   resolve_zstd_dependency()
+endif()
+
+if(ICEBERG_BUILD_REST_CATALOG)
+  resolve_curl_dependency()
+  resolve_cpr_dependency()
 endif()
