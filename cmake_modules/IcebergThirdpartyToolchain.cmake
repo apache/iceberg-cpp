@@ -511,6 +511,12 @@ function(resolve_curl_dependency)
 
   fetchcontent_makeavailable(CURL)
 
+  if(TARGET OpenSSL::SSL)
+    message(STATUS "Detected that vendored curl depends on OpenSSL. Adding it to the system dependency list."
+    )
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL)
+  endif()
+
   if(curl_SOURCE_DIR)
     if(NOT TARGET CURL::libcurl)
       add_library(CURL::libcurl INTERFACE IMPORTED)
