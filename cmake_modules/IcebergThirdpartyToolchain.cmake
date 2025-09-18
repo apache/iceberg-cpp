@@ -581,15 +581,7 @@ function(resolve_cpr_dependency)
                        cpr
                        CONFIG)
 
-  # Create a custom install command that does nothing
-  # function(install)
-  #   # Do nothing - effectively disables install
-  # endfunction()
-
   fetchcontent_makeavailable(cpr)
-
-  # Restore the original install function
-  # unset(install)
 
   if(cpr_SOURCE_DIR)
     if(NOT TARGET cpr::cpr)
