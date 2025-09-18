@@ -454,45 +454,6 @@ function(resolve_curl_dependency)
   set(HTTP_ONLY
       ON
       CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_LDAP
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_LDAPS
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_RTSP
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_FTP
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_FILE
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_TELNET
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_DICT
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_TFTP
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_GOPHER
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_POP3
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_IMAP
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_SMTP
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_SMB
-      ON
-      CACHE BOOL "" FORCE)
   set(CURL_CA_BUNDLE
       "auto"
       CACHE STRING "" FORCE)
@@ -502,12 +463,11 @@ function(resolve_curl_dependency)
 
   fetchcontent_declare(CURL
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       GIT_REPOSITORY https://github.com/curl/curl.git
-                       GIT_TAG curl-8_11_0
-                       FIND_PACKAGE_ARGS
-                       NAMES
-                       CURL
-                       CONFIG)
+                       URL https://curl.se/download/curl-8.11.0.tar.gz
+                           FIND_PACKAGE_ARGS
+                           NAMES
+                           CURL
+                           CONFIG)
 
   fetchcontent_makeavailable(CURL)
 
