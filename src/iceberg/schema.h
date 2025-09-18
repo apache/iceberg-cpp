@@ -26,6 +26,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
@@ -52,9 +53,9 @@ class ICEBERG_EXPORT Schema : public StructType {
   ///
   /// A schema is identified by a unique ID for the purposes of schema
   /// evolution.
-  [[nodiscard]] std::optional<int32_t> schema_id() const;
+  std::optional<int32_t> schema_id() const;
 
-  [[nodiscard]] std::string ToString() const override;
+  std::string ToString() const override;
 
   /// \brief Find the SchemaField by field name.
   ///
@@ -65,18 +66,37 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// canonical name 'm.value.x'
   /// FIXME: Currently only handles ASCII lowercase conversion; extend to support
   /// non-ASCII characters (e.g., using std::towlower or ICU)
-  [[nodiscard]] Result<std::optional<std::reference_wrapper<const SchemaField>>>
-  FindFieldByName(std::string_view name, bool case_sensitive = true) const;
+  Result<std::optional<std::reference_wrapper<const SchemaField>>> FindFieldByName(
+      std::string_view name, bool case_sensitive = true) const;
 
   /// \brief Find the SchemaField by field id.
-  [[nodiscard]] Result<std::optional<std::reference_wrapper<const SchemaField>>>
-  FindFieldById(int32_t field_id) const;
+  Result<std::optional<std::reference_wrapper<const SchemaField>>> FindFieldById(
+      int32_t field_id) const;
+
+  /// \brief Creates a projected schema from selected field names.
+  ///
+  /// \param names Selected field names and nested names are dot-concatenated.
+  /// \param case_sensitive Whether name matching is case-sensitive (default: true).
+  /// \return Projected schema containing only selected fields.
+  /// \note If the field name of a nested type has been selected, all of its
+  /// sub-fields will be selected.
+  Result<std::unique_ptr<Schema>> Select(std::span<const std::string> names,
+                                         bool case_sensitive = true) const;
+
+  /// \brief Creates a projected schema from selected field IDs.
+  ///
+  /// \param field_ids Set of field IDs to select
+  /// \return Projected schema containing only the specified fields.
+  /// \note Field ID of a nested field may not be projected unless at least
+  /// one of its sub-fields has been projected.
+  Result<std::unique_ptr<Schema>> Project(
+      const std::unordered_set<int32_t>& field_ids) const;
 
   friend bool operator==(const Schema& lhs, const Schema& rhs) { return lhs.Equals(rhs); }
 
  private:
   /// \brief Compare two schemas for equality.
-  [[nodiscard]] bool Equals(const Schema& other) const;
+  bool Equals(const Schema& other) const;
 
   // TODO(nullccxsy): Address potential concurrency issues in lazy initialization (e.g.,
   // use std::call_once)

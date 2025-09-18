@@ -22,6 +22,7 @@
 #include <format>
 #include <functional>
 
+#include "iceberg/schema_internal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
@@ -255,6 +256,150 @@ void NameToIdVisitor::Finish() {
   for (auto&& it : short_name_to_id_) {
     name_to_id_.try_emplace(it.first, it.second);
   }
+}
+
+/// \brief Visitor for pruning columns based on selected field IDs.
+///
+/// This visitor traverses a schema and creates a projected version containing only
+/// the specified fields. When `select_full_types` is true, a field with all its
+/// sub-fields are selected if its field-id has been selected; otherwise, only leaf
+/// fields of selected field-ids are selected.
+///
+/// \note It returns an error when projection is not successful.
+class PruneColumnVisitor {
+ public:
+  PruneColumnVisitor(const std::unordered_set<int32_t>& selected_ids,
+                     bool select_full_types)
+      : selected_ids_(selected_ids), select_full_types_(select_full_types) {}
+
+  Result<std::shared_ptr<Type>> Visit(const std::shared_ptr<Type>& type) const {
+    switch (type->type_id()) {
+      case TypeId::kStruct:
+        return Visit(internal::checked_pointer_cast<StructType>(type));
+      case TypeId::kList:
+        return Visit(internal::checked_pointer_cast<ListType>(type));
+      case TypeId::kMap:
+        return Visit(internal::checked_pointer_cast<MapType>(type));
+      default:
+        return nullptr;
+    }
+  }
+
+  Result<std::shared_ptr<Type>> Visit(const SchemaField& field) const {
+    if (selected_ids_.contains(field.field_id())) {
+      return (select_full_types_ || field.type()->is_primitive()) ? field.type()
+                                                                  : Visit(field.type());
+    }
+    return Visit(field.type());
+  }
+
+  static SchemaField MakeField(const SchemaField& field, std::shared_ptr<Type> type) {
+    return {field.field_id(), std::string(field.name()), std::move(type),
+            field.optional(), std::string(field.doc())};
+  }
+
+  Result<std::shared_ptr<Type>> Visit(const std::shared_ptr<StructType>& type) const {
+    bool same_types = true;
+    std::vector<SchemaField> selected_fields;
+    for (const auto& field : type->fields()) {
+      ICEBERG_ASSIGN_OR_RAISE(auto child_type, Visit(field));
+      if (child_type) {
+        same_types = same_types && (child_type == field.type());
+        selected_fields.emplace_back(MakeField(field, std::move(child_type)));
+      }
+    }
+
+    if (selected_fields.empty()) {
+      return nullptr;
+    } else if (same_types && selected_fields.size() == type->fields().size()) {
+      return type;
+    }
+    return std::make_shared<StructType>(std::move(selected_fields));
+  }
+
+  Result<std::shared_ptr<Type>> Visit(const std::shared_ptr<ListType>& type) const {
+    const auto& elem_field = type->fields()[0];
+    ICEBERG_ASSIGN_OR_RAISE(auto elem_type, Visit(elem_field));
+    if (elem_type == nullptr) {
+      return nullptr;
+    } else if (elem_type == elem_field.type()) {
+      return type;
+    }
+    return std::make_shared<ListType>(MakeField(elem_field, std::move(elem_type)));
+  }
+
+  Result<std::shared_ptr<Type>> Visit(const std::shared_ptr<MapType>& type) const {
+    const auto& key_field = type->fields()[0];
+    const auto& value_field = type->fields()[1];
+    ICEBERG_ASSIGN_OR_RAISE(auto key_type, Visit(key_field));
+    ICEBERG_ASSIGN_OR_RAISE(auto value_type, Visit(value_field));
+
+    if (key_type == nullptr && value_type == nullptr) {
+      return nullptr;
+    } else if (value_type == value_field.type() &&
+               (key_type == key_field.type() || key_type == nullptr)) {
+      return type;
+    } else if (value_type == nullptr) {
+      return InvalidArgument("Cannot project Map without value field");
+    }
+    return std::make_shared<MapType>(
+        (key_type == nullptr ? key_field : MakeField(key_field, std::move(key_type))),
+        MakeField(value_field, std::move(value_type)));
+  }
+
+ private:
+  const std::unordered_set<int32_t>& selected_ids_;
+  const bool select_full_types_;
+};
+
+Result<std::unique_ptr<Schema>> Schema::Select(std::span<const std::string> names,
+                                               bool case_sensitive) const {
+  const std::string kAllColumns = "*";
+  if (std::ranges::find(names, kAllColumns) != names.end()) {
+    auto struct_type = ToStructType(*this);
+    return FromStructType(std::move(*struct_type), std::nullopt);
+  }
+
+  std::unordered_set<int32_t> selected_ids;
+  for (const auto& name : names) {
+    ICEBERG_ASSIGN_OR_RAISE(auto result, FindFieldByName(name, case_sensitive));
+    if (result.has_value()) {
+      selected_ids.insert(result.value().get().field_id());
+    }
+  }
+
+  PruneColumnVisitor visitor(selected_ids, /*select_full_types=*/true);
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto pruned_type, visitor.Visit(std::shared_ptr<StructType>(ToStructType(*this))));
+
+  if (!pruned_type) {
+    return std::make_unique<Schema>(std::vector<SchemaField>{}, std::nullopt);
+  }
+
+  if (pruned_type->type_id() != TypeId::kStruct) {
+    return InvalidSchema("Projected type must be a struct type");
+  }
+
+  return FromStructType(std::move(internal::checked_cast<StructType&>(*pruned_type)),
+                        std::nullopt);
+}
+
+Result<std::unique_ptr<Schema>> Schema::Project(
+    const std::unordered_set<int32_t>& field_ids) const {
+  PruneColumnVisitor visitor(field_ids, /*select_full_types=*/false);
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto project_type, visitor.Visit(std::shared_ptr<StructType>(ToStructType(*this))));
+
+  if (!project_type) {
+    return std::make_unique<Schema>(std::vector<SchemaField>{}, std::nullopt);
+  }
+
+  if (project_type->type_id() != TypeId::kStruct) {
+    return InvalidSchema("Projected type must be a struct type");
+  }
+
+  return FromStructType(std::move(internal::checked_cast<StructType&>(*project_type)),
+                        std::nullopt);
 }
 
 }  // namespace iceberg
