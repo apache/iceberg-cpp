@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/catalog/in_memory_catalog.h"
+#include "iceberg/catalog/memory/in_memory_catalog.h"
 
 #include <algorithm>
 #include <iterator>  // IWYU pragma: keep
