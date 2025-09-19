@@ -436,9 +436,7 @@ endfunction()
 function(resolve_curl_dependency)
   prepare_fetchcontent()
 
-  set(BUILD_CURL_EXE
-      OFF
-      CACHE BOOL "" FORCE)
+  set(BUILD_CURL_EXE OFF)
   set(BUILD_TESTING
       OFF
       CACHE BOOL "" FORCE)
@@ -472,6 +470,7 @@ function(resolve_curl_dependency)
   fetchcontent_makeavailable(CURL)
 
   if(TARGET OpenSSL::SSL)
+    # curl depends on the system's OpenSSL
     message(STATUS "Adding OpenSSL to the system dependency list.")
     list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL)
   endif()
@@ -494,8 +493,6 @@ function(resolve_curl_dependency)
             ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
             LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
     message(STATUS "Use vendored CURL")
-
-    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL)
   else()
     set(CURL_VENDORED FALSE)
     list(APPEND ICEBERG_SYSTEM_DEPENDENCIES CURL)
@@ -600,8 +597,10 @@ resolve_croaring_dependency()
 resolve_nlohmann_json_dependency()
 resolve_spdlog_dependency()
 
-resolve_curl_dependency()
-resolve_cpr_dependency()
+if(ICEBERG_BUILD_REST_CATALOG)
+  resolve_curl_dependency()
+  resolve_cpr_dependency()
+endif()
 
 if(ICEBERG_BUILD_BUNDLE)
   resolve_arrow_dependency()
