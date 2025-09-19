@@ -27,6 +27,7 @@
 
 #include "iceberg/expression/literal.h"
 #include "iceberg/type.h"
+#include "iceberg/util/int128.h"
 #include "iceberg/util/murmurhash3_internal.h"
 #include "iceberg/util/truncate_util.h"
 
@@ -73,6 +74,8 @@ Result<Literal> BucketTransform::Transform(const Literal& literal) {
           MurmurHash3_x86_32(&value, sizeof(int64_t), 0, &hash_value);
         } else if constexpr (std::is_same_v<T, std::array<uint8_t, 16>>) {
           MurmurHash3_x86_32(value.data(), sizeof(uint8_t) * 16, 0, &hash_value);
+        } else if constexpr (std::is_same_v<T, int128_t>) {
+          MurmurHash3_x86_32(&value, sizeof(int128_t), 0, &hash_value);
         } else if constexpr (std::is_same_v<T, std::string>) {
           MurmurHash3_x86_32(value.data(), value.size(), 0, &hash_value);
         } else if constexpr (std::is_same_v<T, std::vector<uint8_t>>) {
