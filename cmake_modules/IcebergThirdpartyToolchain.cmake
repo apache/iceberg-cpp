@@ -535,12 +535,11 @@ function(resolve_cpr_dependency)
 
   fetchcontent_declare(cpr
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       GIT_REPOSITORY https://github.com/libcpr/cpr.git
-                       GIT_TAG 1.12.0
-                       FIND_PACKAGE_ARGS
-                       NAMES
-                       cpr
-                       CONFIG)
+                       URL https://github.com/libcpr/cpr/archive/refs/tags/1.12.0.tar.gz
+                           FIND_PACKAGE_ARGS
+                           NAMES
+                           cpr
+                           CONFIG)
 
   fetchcontent_makeavailable(cpr)
 
