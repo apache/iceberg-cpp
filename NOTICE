@@ -22,3 +22,19 @@ This product includes software developed by Jean-loup Gailly and Mark Adler
  * zlib: A Massively Spiffy Yet Delicately Unobtrusive Compression Library
  * Copyright (c) 1995-2024 Jean-loup Gailly and Mark Adler
  * https://zlib.net/
+
+This product includes software developed by Niels Lohmann
+ * nlohmann-json: JSON for Modern C++
+ * Copyright (c) 2013-2022 Niels Lohmann
+ * https://github.com/nlohmann/json
+
+This product includes software from the libcpr team and contributors
+ * cpr: A modern C++ HTTP requests library
+ * Copyright (c) 2017-2021 Huu Nguyen
+ * Copyright (c) 2022 libcpr and many other contributors
+ * https://github.com/libcpr/cpr
+
+This product includes software developed by Daniel Stenberg and contributors
+ * curl: A library for transferring data with URL syntax
+ * Copyright (c) 1996 - 2025, Daniel Stenberg, and many contributors
+ * https://curl.se/
