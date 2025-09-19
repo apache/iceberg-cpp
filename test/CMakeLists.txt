@@ -146,11 +146,4 @@ if(ICEBERG_BUILD_REST_CATALOG)
   add_iceberg_test(rest_catalog_test SOURCES rest_catalog_test.cc)
   target_link_libraries(rest_catalog_test PRIVATE iceberg_rest_catalog_static)
   target_include_directories(rest_catalog_test PRIVATE ${cpp-httplib_SOURCE_DIR})
-
-  if(WIN32)
-    target_link_libraries(rest_catalog_test PRIVATE ws2_32 crypt32)
-  else()
-    target_link_libraries(rest_catalog_test PRIVATE Threads::Threads)
-  endif()
-
 endif()

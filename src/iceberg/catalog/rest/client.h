@@ -26,7 +26,7 @@
 
 #include <nlohmann/json.hpp>
 
-#include "iceberg/iceberg_export.h"
+#include "iceberg/catalog/rest/iceberg_rest_catalog_export.h"
 
 namespace iceberg::catalog::rest {
 
@@ -35,7 +35,7 @@ using HttpHeaders = std::map<std::string, std::string>;
 /**
  * @brief Base exception for REST client errors.
  */
-class ICEBERG_EXPORT RestException : public std::runtime_error {
+class ICEBERG_REST_CATALOG_EXPORT RestException : public std::runtime_error {
  public:
   explicit RestException(const std::string& message) : std::runtime_error(message) {}
 };
@@ -46,7 +46,7 @@ class ICEBERG_EXPORT RestException : public std::runtime_error {
  * This corresponds to the generic `E` type in the Rust implementation,
  * which is deserialized from the error response body.
  */
-class ICEBERG_EXPORT ServerErrorException : public RestException {
+class ICEBERG_REST_CATALOG_EXPORT ServerErrorException : public RestException {
  public:
   ServerErrorException(int status_code, std::string response_body,
                        nlohmann::json error_payload)
@@ -70,7 +70,7 @@ class ICEBERG_EXPORT ServerErrorException : public RestException {
  *
  * This corresponds to the `Error::new(ErrorKind::Unexpected, ...)` part in Rust.
  */
-class ICEBERG_EXPORT ResponseParseException : public RestException {
+class ICEBERG_REST_CATALOG_EXPORT ResponseParseException : public RestException {
  public:
   ResponseParseException(std::string message, std::string response_body)
       : RestException(std::move(message)), response_body_(std::move(response_body)) {}
@@ -81,7 +81,7 @@ class ICEBERG_EXPORT ResponseParseException : public RestException {
   std::string response_body_;
 };
 
-class ICEBERG_EXPORT HttpClient {
+class ICEBERG_REST_CATALOG_EXPORT HttpClient {
  public:
   HttpClient(const std::string& base_uri, const HttpHeaders& common_headers);
   ~HttpClient();

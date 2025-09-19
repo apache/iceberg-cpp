@@ -138,6 +138,9 @@ function(add_iceberg_lib LIB_NAME)
       target_include_directories(${LIB_NAME}_shared PRIVATE ${ARG_PRIVATE_INCLUDES})
     endif()
 
+    target_include_directories(${LIB_NAME}_shared
+                               PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>")
+
     set_target_properties(${LIB_NAME}_shared
                           PROPERTIES LINK_FLAGS "${ARG_SHARED_LINK_FLAGS}" OUTPUT_NAME
                                                                            ${LIB_NAME})
@@ -191,6 +194,9 @@ function(add_iceberg_lib LIB_NAME)
     else()
       set(LIB_NAME_STATIC ${LIB_NAME})
     endif()
+
+    target_include_directories(${LIB_NAME}_static
+                               PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}>")
 
     set_target_properties(${LIB_NAME}_static PROPERTIES OUTPUT_NAME ${LIB_NAME_STATIC})
 

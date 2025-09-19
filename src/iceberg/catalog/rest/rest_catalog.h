@@ -21,11 +21,11 @@
 
 #include <cpr/cpr.h>
 
-#include "iceberg/iceberg_export.h"
+#include "iceberg/catalog/rest/iceberg_rest_catalog_export.h"
 
 namespace iceberg::catalog::rest {
 
-class ICEBERG_EXPORT RestCatalog {
+class ICEBERG_REST_CATALOG_EXPORT RestCatalog {
  public:
   explicit RestCatalog(const std::string& base_url);
   ~RestCatalog() = default;
