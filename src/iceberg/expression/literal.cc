@@ -21,8 +21,10 @@
 
 #include <concepts>
 #include <cstdint>
+#include <string>
 
 #include "iceberg/exception.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
@@ -294,6 +296,15 @@ Literal Literal::Fixed(std::vector<uint8_t> value) {
   return {Value{std::move(value)}, fixed(size)};
 }
 
+Literal Literal::Decimal(const iceberg::Decimal& value, int32_t precision,
+                         int32_t scale) {
+  return {Value{value.value()}, decimal(precision, scale)};
+}
+
+Literal Literal::Decimal(int128_t value, int32_t precision, int32_t scale) {
+  return {Value{value}, decimal(precision, scale)};
+}
+
 Result<Literal> Literal::Deserialize(std::span<const uint8_t> data,
                                      std::shared_ptr<PrimitiveType> type) {
   return NotImplemented("Deserialization of Literal is not implemented yet");
@@ -403,6 +414,8 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
 }
 
 std::string Literal::ToString() const {
+  auto invalid_ = [this]() { return std::format(" = {}", type_->ToString()); };
+
   if (std::holds_alternative<BelowMin>(value_)) {
     return "belowMin";
   }
@@ -452,9 +465,20 @@ std::string Literal::ToString() const {
     case TypeId::kDate: {
       return std::to_string(std::get<int32_t>(value_));
     }
-    case TypeId::kDecimal:
+    case TypeId::kDecimal: {
+      const auto unscaled_value = std::get<int128_t>(value_);
+      auto decimal_type = std::static_pointer_cast<DecimalType>(type_);
+      int32_t scale = decimal_type->scale();
+
+      iceberg::Decimal decimal_val(unscaled_value);
+      Result<std::string> str_res = decimal_val.ToString(scale);
+      if (str_res.has_value()) {
+        return str_res.value();
+      }
+      return
+    }
     case TypeId::kUuid: {
-      throw NotImplemented("kDecimal and kUuid are not implemented yet");
+      return {"kDecimal and kUuid are not implemented yet"};
     }
     default: {
       throw IcebergError("Unknown type: " + type_->ToString());

@@ -27,6 +27,8 @@
 
 #include "iceberg/result.h"
 #include "iceberg/type.h"
+#include "iceberg/util/decimal.h"
+#include "iceberg/util/int128.h"
 
 namespace iceberg {
 
@@ -56,7 +58,8 @@ class ICEBERG_EXPORT Literal {
                              double,          // for double
                              std::string,     // for string
                              std::vector<uint8_t>,     // for binary, fixed
-                             std::array<uint8_t, 16>,  // for uuid and decimal
+                             std::array<uint8_t, 16>,  // for uuid
+                             int128_t,                 // for decimal
                              BelowMin, AboveMax>;
 
   /// \brief Factory methods for primitive types
@@ -72,6 +75,10 @@ class ICEBERG_EXPORT Literal {
   static Literal String(std::string value);
   static Literal Binary(std::vector<uint8_t> value);
   static Literal Fixed(std::vector<uint8_t> value);
+
+  /// \brief Factory methods for decimal type
+  static Literal Decimal(const Decimal& value, int32_t precision, int32_t scale);
+  static Literal Decimal(int128_t value, int32_t precision, int32_t scale);
 
   /// \brief Create a literal representing a null value.
   static Literal Null(std::shared_ptr<PrimitiveType> type) {
@@ -139,7 +146,7 @@ class ICEBERG_EXPORT Literal {
   /// \return true if this literal is null, false otherwise
   bool IsNull() const;
 
-  std::string ToString() const;
+  Result<std::string> ToString() const;
 
  private:
   Literal(Value value, std::shared_ptr<PrimitiveType> type);
