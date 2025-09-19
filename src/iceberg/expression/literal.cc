@@ -19,10 +19,13 @@
 
 #include "iceberg/expression/literal.h"
 
-#include <cmath>
 #include <concepts>
+#include <cstdint>
+#include <string>
 
 #include "iceberg/exception.h"
+#include "iceberg/type_fwd.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -52,6 +55,30 @@ class LiteralCaster {
   /// Cast from Float type to target type.
   static Result<Literal> CastFromFloat(const Literal& literal,
                                        const std::shared_ptr<PrimitiveType>& target_type);
+
+  /// Cast from Double type to target type.
+  static Result<Literal> CastFromDouble(
+      const Literal& literal, const std::shared_ptr<PrimitiveType>& target_type);
+
+  /// Cast from String type to target type.
+  static Result<Literal> CastFromString(
+      const Literal& literal, const std::shared_ptr<PrimitiveType>& target_type);
+
+  /// Cast from Timestamp type to target type.
+  static Result<Literal> CastFromTimestamp(
+      const Literal& literal, const std::shared_ptr<PrimitiveType>& target_type);
+
+  /// Cast from TimestampTz type to target type.
+  static Result<Literal> CastFromTimestampTz(
+      const Literal& literal, const std::shared_ptr<PrimitiveType>& target_type);
+
+  /// Cast from Binary type to target type.
+  static Result<Literal> CastFromBinary(
+      const Literal& literal, const std::shared_ptr<PrimitiveType>& target_type);
+
+  /// Cast from Fixed type to target type.
+  static Result<Literal> CastFromFixed(const Literal& literal,
+                                       const std::shared_ptr<PrimitiveType>& target_type);
 };
 
 Literal LiteralCaster::BelowMinLiteral(std::shared_ptr<PrimitiveType> type) {
@@ -74,6 +101,12 @@ Result<Literal> LiteralCaster::CastFromInt(
       return Literal::Float(static_cast<float>(int_val));
     case TypeId::kDouble:
       return Literal::Double(static_cast<double>(int_val));
+    case TypeId::kDate:
+      return Literal::Date(int_val);
+    case TypeId::kDecimal: {
+      auto decimal_type = std::static_pointer_cast<DecimalType>(target_type);
+      return Literal::Decimal(int_val, decimal_type->precision(), decimal_type->scale());
+    }
     default:
       return NotSupported("Cast from Int to {} is not implemented",
                           target_type->ToString());
@@ -83,15 +116,14 @@ Result<Literal> LiteralCaster::CastFromInt(
 Result<Literal> LiteralCaster::CastFromLong(
     const Literal& literal, const std::shared_ptr<PrimitiveType>& target_type) {
   auto long_val = std::get<int64_t>(literal.value_);
-  auto target_type_id = target_type->type_id();
 
-  switch (target_type_id) {
+  switch (target_type->type_id()) {
     case TypeId::kInt: {
       // Check for overflow
-      if (long_val >= std::numeric_limits<int32_t>::max()) {
+      if (long_val > std::numeric_limits<int32_t>::max()) {
         return AboveMaxLiteral(target_type);
       }
-      if (long_val <= std::numeric_limits<int32_t>::min()) {
+      if (long_val < std::numeric_limits<int32_t>::min()) {
         return BelowMinLiteral(target_type);
       }
       return Literal::Int(static_cast<int32_t>(long_val));
@@ -100,6 +132,25 @@ Result<Literal> LiteralCaster::CastFromLong(
       return Literal::Float(static_cast<float>(long_val));
     case TypeId::kDouble:
       return Literal::Double(static_cast<double>(long_val));
+    case TypeId::kDate: {
+      if (long_val > std::numeric_limits<int32_t>::max()) {
+        return AboveMaxLiteral(target_type);
+      }
+      if (long_val < std::numeric_limits<int32_t>::min()) {
+        return BelowMinLiteral(target_type);
+      }
+      return Literal::Date(static_cast<int32_t>(long_val));
+    }
+    case TypeId::kTime:
+      return Literal::Time(long_val);
+    case TypeId::kTimestamp:
+      return Literal::Timestamp(long_val);
+    case TypeId::kTimestampTz:
+      return Literal::TimestampTz(long_val);
+    case TypeId::kDecimal: {
+      auto decimal_type = std::static_pointer_cast<DecimalType>(target_type);
+      return Literal::Decimal(long_val, decimal_type->precision(), decimal_type->scale());
+    }
     default:
       return NotSupported("Cast from Long to {} is not supported",
                           target_type->ToString());
@@ -109,13 +160,147 @@ Result<Literal> LiteralCaster::CastFromLong(
 Result<Literal> LiteralCaster::CastFromFloat(
     const Literal& literal, const std::shared_ptr<PrimitiveType>& target_type) {
   auto float_val = std::get<float>(literal.value_);
-  auto target_type_id = target_type->type_id();
 
-  switch (target_type_id) {
+  switch (target_type->type_id()) {
     case TypeId::kDouble:
       return Literal::Double(static_cast<double>(float_val));
+    case TypeId::kDecimal: {
+      auto decimal_type = std::static_pointer_cast<DecimalType>(target_type);
+      std::string float_str = std::to_string(float_val);
+
+      iceberg::Decimal parsed_val;
+      int32_t parsed_scale = 0;
+      ICEBERG_ASSIGN_OR_RAISE(
+          parsed_val, iceberg::Decimal::FromString(float_str, nullptr, &parsed_scale));
+      iceberg::Decimal rescaled_val;
+      ICEBERG_ASSIGN_OR_RAISE(rescaled_val,
+                              parsed_val.Rescale(parsed_scale, decimal_type->scale()));
+
+      return Literal::Decimal(rescaled_val.value(), decimal_type->precision(),
+                              decimal_type->scale());
+    }
     default:
       return NotSupported("Cast from Float to {} is not supported",
+                          target_type->ToString());
+  }
+}
+
+Result<Literal> LiteralCaster::CastFromDouble(
+    const Literal& literal, const std::shared_ptr<PrimitiveType>& target_type) {
+  auto double_val = std::get<double>(literal.value_);
+
+  switch (target_type->type_id()) {
+    case TypeId::kFloat: {
+      if (double_val > static_cast<double>(std::numeric_limits<float>::max())) {
+        return AboveMaxLiteral(target_type);
+      }
+      if (double_val < static_cast<double>(std::numeric_limits<float>::lowest())) {
+        return BelowMinLiteral(target_type);
+      }
+      return Literal::Float(static_cast<float>(double_val));
+    }
+    case TypeId::kDecimal: {
+      auto decimal_type = std::static_pointer_cast<DecimalType>(target_type);
+      std::string double_str = std::to_string(double_val);
+
+      iceberg::Decimal parsed_val;
+      int32_t parsed_scale = 0;
+      ICEBERG_ASSIGN_OR_RAISE(
+          parsed_val, iceberg::Decimal::FromString(double_str, nullptr, &parsed_scale));
+      iceberg::Decimal rescaled_val;
+      ICEBERG_ASSIGN_OR_RAISE(rescaled_val,
+                              parsed_val.Rescale(parsed_scale, decimal_type->scale()));
+
+      return Literal::Decimal(rescaled_val.value(), decimal_type->precision(),
+                              decimal_type->scale());
+    }
+    default:
+      return NotSupported("Cast from Double to {} is not supported",
+                          target_type->ToString());
+  }
+}
+
+Result<Literal> LiteralCaster::CastFromString(
+    const Literal& literal, const std::shared_ptr<PrimitiveType>& target_type) {
+  const auto& str_val = std::get<std::string>(literal.value_);
+
+  switch (target_type->type_id()) {
+    case TypeId::kDate:
+    case TypeId::kTime:
+    case TypeId::kTimestamp:
+    case TypeId::kTimestampTz:
+    case TypeId::kUuid:
+      return NotImplemented("Cast from String to {} is not implemented yet",
+                            target_type->ToString());
+    case TypeId::kDecimal: {
+      auto decimal_type = std::static_pointer_cast<DecimalType>(target_type);
+      iceberg::Decimal dec_val;
+      ICEBERG_ASSIGN_OR_RAISE(dec_val, iceberg::Decimal::FromString(str_val));
+      return Literal::Decimal(dec_val.value(), decimal_type->precision(),
+                              decimal_type->scale());
+    }
+
+    default:
+      return NotSupported("Cast from String to {} is not supported",
+                          target_type->ToString());
+  }
+}
+
+Result<Literal> LiteralCaster::CastFromTimestamp(
+    const Literal& literal, const std::shared_ptr<PrimitiveType>& target_type) {
+  auto timestamp_val = std::get<int64_t>(literal.value_);
+
+  switch (target_type->type_id()) {
+    case TypeId::kDate:
+      return NotImplemented("Cast from Timestamp to Date is not implemented yet");
+    case TypeId::kTimestampTz:
+      return Literal::TimestampTz(timestamp_val);
+    default:
+      return NotSupported("Cast from Timestamp to {} is not supported",
+                          target_type->ToString());
+  }
+}
+
+Result<Literal> LiteralCaster::CastFromTimestampTz(
+    const Literal& literal, const std::shared_ptr<PrimitiveType>& target_type) {
+  auto micros = std::get<int64_t>(literal.value_);
+
+  switch (target_type->type_id()) {
+    case TypeId::kDate:
+      return NotImplemented("Cast from TimestampTz to Date is not implemented yet");
+    case TypeId::kTimestamp:
+      return Literal::Timestamp(micros);
+    default:
+      return NotSupported("Cast from TimestampTz to {} is not supported",
+                          target_type->ToString());
+  }
+}
+
+Result<Literal> LiteralCaster::CastFromBinary(
+    const Literal& literal, const std::shared_ptr<PrimitiveType>& target_type) {
+  auto binary_val = std::get<std::vector<uint8_t>>(literal.value_);
+  switch (target_type->type_id()) {
+    case TypeId::kFixed: {
+      auto target_fixed_type = std::static_pointer_cast<FixedType>(target_type);
+      if (binary_val.size() == target_fixed_type->length()) {
+        return Literal::Fixed(std::move(binary_val));
+      }
+      return InvalidArgument("Failed to cast Binary with length {} to Fixed({})",
+                             binary_val.size(), target_fixed_type->length());
+    }
+    default:
+      return NotSupported("Cast from Binary to {} is not supported",
+                          target_type->ToString());
+  }
+}
+
+Result<Literal> LiteralCaster::CastFromFixed(
+    const Literal& literal, const std::shared_ptr<PrimitiveType>& target_type) {
+  switch (target_type->type_id()) {
+    case TypeId::kBinary:
+      return Literal::Binary(std::get<std::vector<uint8_t>>(literal.value_));
+    default:
+      return NotSupported("Cast from Fixed to {} is not supported",
                           target_type->ToString());
   }
 }
@@ -147,6 +332,20 @@ Literal Literal::String(std::string value) { return {Value{std::move(value)}, st
 
 Literal Literal::Binary(std::vector<uint8_t> value) {
   return {Value{std::move(value)}, binary()};
+}
+
+Literal Literal::Fixed(std::vector<uint8_t> value) {
+  const auto size = value.size();
+  return {Value{std::move(value)}, fixed(size)};
+}
+
+Literal Literal::Decimal(const iceberg::Decimal& value, int32_t precision,
+                         int32_t scale) {
+  return {Value{value.value()}, decimal(precision, scale)};
+}
+
+Literal Literal::Decimal(int128_t value, int32_t precision, int32_t scale) {
+  return {Value{value}, decimal(precision, scale)};
 }
 
 Result<Literal> Literal::Deserialize(std::span<const uint8_t> data,
@@ -216,6 +415,7 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
     }
 
     case TypeId::kLong:
+    case TypeId::kTime:
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz: {
       auto this_val = std::get<int64_t>(value_);
@@ -243,9 +443,16 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
       return this_val <=> other_val;
     }
 
-    case TypeId::kBinary: {
+    case TypeId::kBinary:
+    case TypeId::kFixed: {
       auto& this_val = std::get<std::vector<uint8_t>>(value_);
       auto& other_val = std::get<std::vector<uint8_t>>(other.value_);
+      return this_val <=> other_val;
+    }
+
+    case TypeId::kDecimal: {
+      auto this_val = std::get<int128_t>(value_);
+      auto other_val = std::get<int128_t>(other.value_);
       return this_val <=> other_val;
     }
 
@@ -256,6 +463,13 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
 }
 
 std::string Literal::ToString() const {
+  auto unsupported_error = [this]() {
+    return std::format("ToString not supported for type: {}", type_->ToString());
+  };
+  auto invalid_argument = [this]() {
+    return std::format("Invalid argument for type: {}", type_->ToString());
+  };
+
   if (std::holds_alternative<BelowMin>(value_)) {
     return "belowMin";
   }
@@ -283,28 +497,42 @@ std::string Literal::ToString() const {
       return std::to_string(std::get<double>(value_));
     }
     case TypeId::kString: {
-      return std::get<std::string>(value_);
+      return "\"" + std::get<std::string>(value_) + "\"";
     }
-    case TypeId::kBinary: {
+    case TypeId::kBinary:
+    case TypeId::kFixed: {
       const auto& binary_data = std::get<std::vector<uint8_t>>(value_);
-      std::string result;
-      result.reserve(binary_data.size() * 2);  // 2 chars per byte
+      std::string result = "X'";
+      result.reserve(2 + binary_data.size() * 2 +
+                     1);  // 2 chars per byte and 2 + 1 for prefix and suffix
       for (const auto& byte : binary_data) {
         std::format_to(std::back_inserter(result), "{:02X}", byte);
       }
+      result.push_back('\'');
       return result;
     }
-    case TypeId::kDecimal:
-    case TypeId::kUuid:
-    case TypeId::kFixed:
-    case TypeId::kDate:
     case TypeId::kTime:
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz: {
-      throw IcebergError("Not implemented: ToString for " + type_->ToString());
+      return std::to_string(std::get<int64_t>(value_));
+    }
+    case TypeId::kDate: {
+      return std::to_string(std::get<int32_t>(value_));
+    }
+    case TypeId::kDecimal: {
+      const auto unscaled_value = std::get<int128_t>(value_);
+      auto decimal_type = std::static_pointer_cast<DecimalType>(type_);
+      int32_t scale = decimal_type->scale();
+
+      iceberg::Decimal decimal_val(unscaled_value);
+      Result<std::string> str_res = decimal_val.ToString(scale);
+      if (str_res.has_value()) {
+        return str_res.value();
+      }
+      return invalid_argument();
     }
     default: {
-      throw IcebergError("Unknown type: " + type_->ToString());
+      return unsupported_error();
     }
   }
 }
@@ -336,6 +564,9 @@ Result<Literal> LiteralCaster::CastTo(const Literal& literal,
 
   // Delegate to specific cast functions based on source type
   switch (source_type_id) {
+    case TypeId::kBoolean:
+      // No casts defined for Boolean, other than to itself.
+      break;
     case TypeId::kInt:
       return CastFromInt(literal, target_type);
     case TypeId::kLong:
@@ -343,15 +574,22 @@ Result<Literal> LiteralCaster::CastTo(const Literal& literal,
     case TypeId::kFloat:
       return CastFromFloat(literal, target_type);
     case TypeId::kDouble:
-    case TypeId::kBoolean:
+      return CastFromDouble(literal, target_type);
     case TypeId::kString:
+      return CastFromString(literal, target_type);
     case TypeId::kBinary:
-      break;
+      return CastFromBinary(literal, target_type);
+    case TypeId::kFixed:
+      return CastFromFixed(literal, target_type);
+    case TypeId::kTimestamp:
+      return CastFromTimestamp(literal, target_type);
+    case TypeId::kTimestampTz:
+      return CastFromTimestampTz(literal, target_type);
     default:
       break;
   }
 
-  return NotSupported("Cast from {} to {} is not implemented", literal.type_->ToString(),
+  return NotSupported("Cast from {} to {} is not supported", literal.type_->ToString(),
                       target_type->ToString());
 }
 
