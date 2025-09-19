@@ -39,6 +39,8 @@ class ICEBERG_BUNDLE_EXPORT AvroReader : public Reader {
 
   Result<ArrowSchema> Schema() final;
 
+  Result<std::unordered_map<std::string, std::string>> Metadata() final;
+
  private:
   class Impl;
   std::unique_ptr<Impl> impl_;

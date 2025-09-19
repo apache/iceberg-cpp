@@ -26,6 +26,7 @@
 #include <arrow/record_batch.h>
 #include <arrow/result.h>
 #include <arrow/type.h>
+#include <arrow/util/key_value_metadata.h>
 #include <parquet/arrow/reader.h>
 #include <parquet/arrow/schema.h>
 #include <parquet/file_reader.h>
@@ -185,6 +186,35 @@ class ParquetReader::Impl {
     return arrow_schema;
   }
 
+  Result<std::unordered_map<std::string, std::string>> Metadata() {
+    if (reader_ == nullptr) {
+      return Invalid("Reader is not opened");
+    }
+
+    auto metadata = reader_->parquet_reader()->metadata();
+    if (!metadata) {
+      return Invalid("Failed to get Parquet file metadata");
+    }
+
+    const auto& kv_metadata = metadata->key_value_metadata();
+    if (!kv_metadata) {
+      return std::unordered_map<std::string, std::string>{};
+    }
+
+    std::unordered_map<std::string, std::string> metadata_map;
+    metadata_map.reserve(kv_metadata->size());
+
+    for (int i = 0; i < kv_metadata->size(); ++i) {
+      auto [it, inserted] =
+          metadata_map.try_emplace(kv_metadata->key(i), kv_metadata->value(i));
+      if (!inserted) {
+        return Invalid("Duplicate metadata key found: {}", kv_metadata->key(i));
+      }
+    }
+
+    return metadata_map;
+  }
+
  private:
   Status InitReadContext() {
     context_ = std::make_unique<ReadContext>();
@@ -250,6 +280,10 @@ ParquetReader::~ParquetReader() = default;
 Result<std::optional<ArrowArray>> ParquetReader::Next() { return impl_->Next(); }
 
 Result<ArrowSchema> ParquetReader::Schema() { return impl_->Schema(); }
+
+Result<std::unordered_map<std::string, std::string>> ParquetReader::Metadata() {
+  return impl_->Metadata();
+}
 
 Status ParquetReader::Open(const ReaderOptions& options) {
   impl_ = std::make_unique<Impl>();
