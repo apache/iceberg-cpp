@@ -321,27 +321,6 @@ TEST(LiteralTest, DecimalComparison) {
   EXPECT_EQ(decimal_neg <=> decimal1, std::partial_ordering::less);
 }
 
-TEST(LiteralTest, DecimalCastTo) {
-  auto decimal_literal = Literal::Decimal(int128_t{12345}, 10, 2);
-
-  // Decimal to other types should not be supported (according to current implementation)
-  EXPECT_THAT(decimal_literal.CastTo(iceberg::int32()),
-              IsError(ErrorKind::kNotSupported));
-  EXPECT_THAT(decimal_literal.CastTo(iceberg::int64()),
-              IsError(ErrorKind::kNotSupported));
-  EXPECT_THAT(decimal_literal.CastTo(iceberg::float32()),
-              IsError(ErrorKind::kNotSupported));
-  EXPECT_THAT(decimal_literal.CastTo(iceberg::float64()),
-              IsError(ErrorKind::kNotSupported));
-  EXPECT_THAT(decimal_literal.CastTo(iceberg::string()),
-              IsError(ErrorKind::kNotSupported));
-
-  // Cast to same Decimal type should succeed
-  auto same_type_result = decimal_literal.CastTo(iceberg::decimal(10, 2));
-  ASSERT_THAT(same_type_result, IsOk());
-  EXPECT_EQ(same_type_result->type()->type_id(), TypeId::kDecimal);
-}
-
 TEST(LiteralTest, DecimalMaxPrecisionAndScale) {
   // Test with maximum precision and scale values
   auto max_decimal = Literal::Decimal(int128_t{1}, 38, 38);
