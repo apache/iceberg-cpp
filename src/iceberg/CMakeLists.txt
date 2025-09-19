@@ -18,7 +18,7 @@
 set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
                      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>")
 set(ICEBERG_SOURCES
-    catalog/in_memory_catalog.cc
+    catalog/memory/in_memory_catalog.cc
     expression/expression.cc
     expression/literal.cc
     file_reader.cc
@@ -137,6 +137,11 @@ if(ICEBERG_BUILD_BUNDLE)
        "$<IF:$<TARGET_EXISTS:Parquet::parquet_static>,Parquet::parquet_static,Parquet::parquet_shared>"
        "$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_static>,avro-cpp::avrocpp_static,avro-cpp::avrocpp_shared>"
   )
+  if(ICEBERG_BUILD_REST_CATALOG)
+    list(APPEND ICEBERG_BUNDLE_STATIC_BUILD_INTERFACE_LIBS
+         "$<IF:$<TARGET_EXISTS:CURL::libcurl>,CURL::libcurl,CURL::libcurl>"
+         "$<IF:$<TARGET_EXISTS:cpr::cpr>,cpr::cpr,cpr::cpr>")
+  endif()
   list(APPEND
        ICEBERG_BUNDLE_SHARED_BUILD_INTERFACE_LIBS
        "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>"
@@ -144,6 +149,11 @@ if(ICEBERG_BUILD_BUNDLE)
        "$<IF:$<TARGET_EXISTS:Parquet::parquet_shared>,Parquet::parquet_shared,Parquet::parquet_static>"
        "$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_shared>,avro-cpp::avrocpp_shared,avro-cpp::avrocpp_static>"
   )
+  if(ICEBERG_BUILD_REST_CATALOG)
+    list(APPEND ICEBERG_BUNDLE_SHARED_BUILD_INTERFACE_LIBS
+         "$<IF:$<TARGET_EXISTS:CURL::libcurl>,CURL::libcurl,CURL::libcurl>"
+         "$<IF:$<TARGET_EXISTS:cpr::cpr>,cpr::cpr,cpr::cpr>")
+  endif()
 
   list(APPEND
        ICEBERG_BUNDLE_STATIC_INSTALL_INTERFACE_LIBS
@@ -152,6 +162,13 @@ if(ICEBERG_BUILD_BUNDLE)
        "$<IF:$<BOOL:${ARROW_VENDORED}>,Iceberg::parquet_static,$<IF:$<TARGET_EXISTS:Parquet::parquet_static>,Parquet::parquet_static,Parquet::parquet_shared>>"
        "$<IF:$<BOOL:${AVRO_VENDORED}>,Iceberg::avrocpp_s,$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_static>,avro-cpp::avrocpp_static,avro-cpp::avrocpp_shared>>"
   )
+  if(ICEBERG_BUILD_REST_CATALOG)
+    list(APPEND
+         ICEBERG_BUNDLE_STATIC_INSTALL_INTERFACE_LIBS
+         "$<IF:$<BOOL:${CURL_VENDORED}>,Iceberg::libcurl_static,$<IF:$<TARGET_EXISTS:CURL::libcurl>,CURL::libcurl,CURL::libcurl>>"
+         "$<IF:$<BOOL:${CPR_VENDORED}>,Iceberg::cpr,$<IF:$<TARGET_EXISTS:cpr::cpr>,cpr::cpr,cpr::cpr>>"
+    )
+  endif()
   list(APPEND
        ICEBERG_BUNDLE_SHARED_INSTALL_INTERFACE_LIBS
        "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_shared>,Iceberg::iceberg_shared,Iceberg::iceberg_static>"
@@ -159,6 +176,13 @@ if(ICEBERG_BUILD_BUNDLE)
        "$<IF:$<BOOL:${ARROW_VENDORED}>,Iceberg::parquet_static,$<IF:$<TARGET_EXISTS:Parquet::parquet_shared>,Parquet::parquet_shared,Parquet::parquet_static>>"
        "$<IF:$<BOOL:${AVRO_VENDORED}>,Iceberg::avrocpp_s,$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_shared>,avro-cpp::avrocpp_shared,avro-cpp::avrocpp_static>>"
   )
+  if(ICEBERG_BUILD_REST_CATALOG)
+    list(APPEND
+         ICEBERG_BUNDLE_SHARED_INSTALL_INTERFACE_LIBS
+         "$<IF:$<BOOL:${CURL_VENDORED}>,Iceberg::libcurl_static,$<IF:$<TARGET_EXISTS:CURL::libcurl>,CURL::libcurl,CURL::libcurl>>"
+         "$<IF:$<BOOL:${CPR_VENDORED}>,Iceberg::cpr,$<IF:$<TARGET_EXISTS:cpr::cpr>,cpr::cpr,cpr::cpr>>"
+    )
+  endif()
 
   add_iceberg_lib(iceberg_bundle
                   SOURCES
