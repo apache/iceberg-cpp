@@ -146,7 +146,7 @@ class ICEBERG_EXPORT Literal {
   /// \return true if this literal is null, false otherwise
   bool IsNull() const;
 
-  Result<std::string> ToString() const;
+  std::string ToString() const;
 
  private:
   Literal(Value value, std::shared_ptr<PrimitiveType> type);

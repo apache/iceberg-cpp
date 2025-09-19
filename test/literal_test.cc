@@ -105,6 +105,10 @@ TEST(LiteralTest, IntCastTo) {
 
   // Cast to Date
   AssertCastSucceeds(int_literal.CastTo(iceberg::date()), TypeId::kDate, 42);
+
+  // Cast to Decimal
+  AssertCastSucceeds(int_literal.CastTo(iceberg::decimal(10, 2)), TypeId::kDecimal,
+                     static_cast<int128_t>(42));
 }
 
 // Long type tests
@@ -155,6 +159,10 @@ TEST(LiteralTest, LongCastTo) {
   // Cast to TimestampTz
   AssertCastSucceeds(long_literal.CastTo(iceberg::timestamp_tz()), TypeId::kTimestampTz,
                      static_cast<int64_t>(42L));
+
+  // Cast to Decimal
+  AssertCastSucceeds(long_literal.CastTo(iceberg::decimal(15, 3)), TypeId::kDecimal,
+                     static_cast<int128_t>(42L));
 }
 
 TEST(LiteralTest, LongCastToOverflow) {
@@ -204,11 +212,16 @@ TEST(LiteralTest, FloatComparison) {
 }
 
 TEST(LiteralTest, FloatCastTo) {
-  auto float_literal = Literal::Float(3.14f);
+  auto float_literal = Literal::Float(2.0f);
 
   // Cast to Double
   AssertCastSucceeds(float_literal.CastTo(iceberg::float64()), TypeId::kDouble,
-                     static_cast<double>(3.14f));
+                     static_cast<double>(2.0f));
+
+  // Cast to Decimal
+  auto decimal_result = float_literal.CastTo(iceberg::decimal(10, 2));
+  ASSERT_THAT(decimal_result, IsOk());
+  EXPECT_EQ(decimal_result->type()->type_id(), TypeId::kDecimal);
 }
 
 // Double type tests
@@ -234,10 +247,15 @@ TEST(LiteralTest, DoubleComparison) {
 }
 
 TEST(LiteralTest, DoubleCastTo) {
-  auto double_literal = Literal::Double(3.14);
+  auto double_literal = Literal::Double(2.0);
 
   // Cast to Float
-  AssertCastSucceeds(double_literal.CastTo(iceberg::float32()), TypeId::kFloat, 3.14f);
+  AssertCastSucceeds(double_literal.CastTo(iceberg::float32()), TypeId::kFloat, 2.0f);
+
+  // Cast to Decimal
+  auto decimal_result = double_literal.CastTo(iceberg::decimal(15, 2));
+  ASSERT_THAT(decimal_result, IsOk());
+  EXPECT_EQ(decimal_result->type()->type_id(), TypeId::kDecimal);
 }
 
 TEST(LiteralTest, DoubleCastToOverflow) {
@@ -256,6 +274,94 @@ TEST(LiteralTest, DoubleCastToOverflow) {
   EXPECT_TRUE(min_result->IsBelowMin());
 }
 
+// Decimal type tests
+TEST(LiteralTest, DecimalBasics) {
+  // Test factory methods with different precision and scale
+  auto decimal1 = Literal::Decimal(iceberg::Decimal(12345), 10, 2);
+  auto decimal2 = Literal::Decimal(int128_t{-9876543}, 15, 3);
+  auto decimal_zero = Literal::Decimal(int128_t{0}, 5, 1);
+
+  EXPECT_EQ(decimal1.type()->type_id(), TypeId::kDecimal);
+  EXPECT_EQ(decimal2.type()->type_id(), TypeId::kDecimal);
+  EXPECT_EQ(decimal_zero.type()->type_id(), TypeId::kDecimal);
+
+  // Check type properties
+  auto decimal1_type = std::static_pointer_cast<iceberg::DecimalType>(decimal1.type());
+  EXPECT_EQ(decimal1_type->precision(), 10);
+  EXPECT_EQ(decimal1_type->scale(), 2);
+
+  auto decimal2_type = std::static_pointer_cast<iceberg::DecimalType>(decimal2.type());
+  EXPECT_EQ(decimal2_type->precision(), 15);
+  EXPECT_EQ(decimal2_type->scale(), 3);
+}
+
+TEST(LiteralTest, DecimalToString) {
+  // Test ToString for different decimal values with specific expected formats
+  auto decimal_pos = Literal::Decimal(int128_t{12345}, 10, 2);   // 123.45
+  auto decimal_neg = Literal::Decimal(int128_t{-9876}, 8, 3);    // -9.876
+  auto decimal_zero = Literal::Decimal(int128_t{0}, 5, 1);       // 0.0
+  auto decimal_no_scale = Literal::Decimal(int128_t{42}, 5, 0);  // 42
+
+  // Test expected decimal formatting
+  EXPECT_EQ(decimal_pos.ToString(), "123.45");
+  EXPECT_EQ(decimal_neg.ToString(), "-9.876");
+  EXPECT_EQ(decimal_zero.ToString(), "0.0");
+  EXPECT_EQ(decimal_no_scale.ToString(), "42");
+}
+
+TEST(LiteralTest, DecimalComparison) {
+  auto decimal1 = Literal::Decimal(int128_t{1000}, 10, 2);
+  auto decimal2 = Literal::Decimal(int128_t{2000}, 10, 2);
+  auto decimal3 = Literal::Decimal(int128_t{1000}, 10, 2);
+  auto decimal_neg = Literal::Decimal(int128_t{-1000}, 10, 2);
+
+  EXPECT_EQ(decimal1 <=> decimal3, std::partial_ordering::equivalent);
+  EXPECT_EQ(decimal1 <=> decimal2, std::partial_ordering::less);
+  EXPECT_EQ(decimal2 <=> decimal1, std::partial_ordering::greater);
+  EXPECT_EQ(decimal_neg <=> decimal1, std::partial_ordering::less);
+}
+
+TEST(LiteralTest, DecimalCastTo) {
+  auto decimal_literal = Literal::Decimal(int128_t{12345}, 10, 2);
+
+  // Decimal to other types should not be supported (according to current implementation)
+  EXPECT_THAT(decimal_literal.CastTo(iceberg::int32()),
+              IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(decimal_literal.CastTo(iceberg::int64()),
+              IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(decimal_literal.CastTo(iceberg::float32()),
+              IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(decimal_literal.CastTo(iceberg::float64()),
+              IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(decimal_literal.CastTo(iceberg::string()),
+              IsError(ErrorKind::kNotSupported));
+
+  // Cast to same Decimal type should succeed
+  auto same_type_result = decimal_literal.CastTo(iceberg::decimal(10, 2));
+  ASSERT_THAT(same_type_result, IsOk());
+  EXPECT_EQ(same_type_result->type()->type_id(), TypeId::kDecimal);
+}
+
+TEST(LiteralTest, DecimalMaxPrecisionAndScale) {
+  // Test with maximum precision and scale values
+  auto max_decimal = Literal::Decimal(int128_t{1}, 38, 38);
+
+  EXPECT_EQ(max_decimal.type()->type_id(), TypeId::kDecimal);
+  auto decimal_type = std::static_pointer_cast<iceberg::DecimalType>(max_decimal.type());
+  EXPECT_EQ(decimal_type->precision(), 38);
+  EXPECT_EQ(decimal_type->scale(), 38);
+}
+
+TEST(LiteralTest, DecimalZeroScale) {
+  // Test with zero scale (integer)
+  auto int_decimal = Literal::Decimal(int128_t{12345}, 10, 0);
+
+  EXPECT_EQ(int_decimal.type()->type_id(), TypeId::kDecimal);
+  auto decimal_type = std::static_pointer_cast<iceberg::DecimalType>(int_decimal.type());
+  EXPECT_EQ(decimal_type->precision(), 10);
+  EXPECT_EQ(decimal_type->scale(), 0);
+}
+
 // String type tests
 TEST(LiteralTest, StringBasics) {
   auto string_literal = Literal::String("hello world");
@@ -264,8 +370,8 @@ TEST(LiteralTest, StringBasics) {
   EXPECT_EQ(string_literal.type()->type_id(), TypeId::kString);
   EXPECT_EQ(empty_string.type()->type_id(), TypeId::kString);
 
-  EXPECT_EQ(string_literal.ToString(), "hello world");
-  EXPECT_EQ(empty_string.ToString(), "");
+  EXPECT_EQ(string_literal.ToString(), "\"hello world\"");
+  EXPECT_EQ(empty_string.ToString(), "\"\"");
 }
 
 TEST(LiteralTest, StringComparison) {
@@ -276,6 +382,20 @@ TEST(LiteralTest, StringComparison) {
   EXPECT_EQ(string1 <=> string3, std::partial_ordering::equivalent);
   EXPECT_EQ(string1 <=> string2, std::partial_ordering::less);
   EXPECT_EQ(string2 <=> string1, std::partial_ordering::greater);
+}
+
+TEST(LiteralTest, StringCastTo) {
+  auto string_literal = Literal::String("123.456");
+
+  // Cast to Decimal
+  auto decimal_result = string_literal.CastTo(iceberg::decimal(10, 3));
+  ASSERT_THAT(decimal_result, IsOk());
+  EXPECT_EQ(decimal_result->type()->type_id(), TypeId::kDecimal);
+
+  // Invalid string should fail
+  auto invalid_string = Literal::String("not_a_number");
+  EXPECT_THAT(invalid_string.CastTo(iceberg::decimal(10, 2)),
+              IsError(ErrorKind::kInvalidArgument));
 }
 
 // Binary type tests
@@ -305,6 +425,18 @@ TEST(LiteralTest, BinaryComparison) {
   EXPECT_EQ(binary2 <=> binary1, std::partial_ordering::greater);
 }
 
+TEST(LiteralTest, BinaryCastTo) {
+  std::vector<uint8_t> data4 = {0x01, 0x02, 0x03, 0x04};
+  auto binary_literal = Literal::Binary(data4);
+
+  // Cast to Fixed with matching length
+  AssertCastSucceeds(binary_literal.CastTo(iceberg::fixed(4)), TypeId::kFixed, data4);
+
+  // Cast to Fixed with different length should fail
+  EXPECT_THAT(binary_literal.CastTo(iceberg::fixed(5)),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
 // Fixed type tests
 TEST(LiteralTest, FixedBasics) {
   std::vector<uint8_t> data = {0x01, 0x02, 0x03, 0xFF};
@@ -330,6 +462,20 @@ TEST(LiteralTest, FixedComparison) {
   EXPECT_EQ(fixed1 <=> fixed3, std::partial_ordering::equivalent);
   EXPECT_EQ(fixed1 <=> fixed2, std::partial_ordering::less);
   EXPECT_EQ(fixed2 <=> fixed1, std::partial_ordering::greater);
+}
+
+TEST(LiteralTest, FixedCastTo) {
+  std::vector<uint8_t> data4 = {0x01, 0x02, 0x03, 0x04};
+  auto fixed_literal = Literal::Fixed(data4);
+
+  // Cast to Binary
+  AssertCastSucceeds(fixed_literal.CastTo(iceberg::binary()), TypeId::kBinary, data4);
+
+  // Cast to Fixed with same length
+  AssertCastSucceeds(fixed_literal.CastTo(iceberg::fixed(4)), TypeId::kFixed, data4);
+
+  // Cast to Fixed with different length should fail
+  EXPECT_THAT(fixed_literal.CastTo(iceberg::fixed(5)), IsError(ErrorKind::kNotSupported));
 }
 
 // Date type tests
@@ -422,57 +568,42 @@ TEST(LiteralTest, TimestampTzComparison) {
   EXPECT_EQ(timestamptz2 <=> timestamptz1, std::partial_ordering::greater);
 }
 
-TEST(LiteralTest, BinaryCastTo) {
-  std::vector<uint8_t> data4 = {0x01, 0x02, 0x03, 0x04};
-  auto binary_literal = Literal::Binary(data4);
-
-  // Cast to Fixed with matching length
-  AssertCastSucceeds(binary_literal.CastTo(iceberg::fixed(4)), TypeId::kFixed, data4);
-
-  // Cast to Fixed with different length should fail
-  EXPECT_THAT(binary_literal.CastTo(iceberg::fixed(5)),
-              IsError(ErrorKind::kInvalidArgument));
-}
-
-TEST(LiteralTest, FixedCastTo) {
-  std::vector<uint8_t> data4 = {0x01, 0x02, 0x03, 0x04};
-  auto fixed_literal = Literal::Fixed(data4);
-
-  // Cast to Binary
-  AssertCastSucceeds(fixed_literal.CastTo(iceberg::binary()), TypeId::kBinary, data4);
-
-  // Cast to Fixed with same length
-  AssertCastSucceeds(fixed_literal.CastTo(iceberg::fixed(4)), TypeId::kFixed, data4);
-
-  // Cast to Fixed with different length should fail
-  EXPECT_THAT(fixed_literal.CastTo(iceberg::fixed(5)), IsError(ErrorKind::kNotSupported));
-}
-
 // Cross-type comparison tests
 TEST(LiteralTest, CrossTypeComparison) {
   auto int_literal = Literal::Int(42);
   auto string_literal = Literal::String("42");
+  auto decimal_literal = Literal::Decimal(int128_t{42}, 10, 2);
 
   // Different types should return unordered
   EXPECT_EQ(int_literal <=> string_literal, std::partial_ordering::unordered);
+  EXPECT_EQ(decimal_literal <=> int_literal, std::partial_ordering::unordered);
+}
+
+// Same type cast tests
+TEST(LiteralTest, SameTypeCast) {
+  auto int_literal = Literal::Int(42);
+  auto decimal_literal = Literal::Decimal(int128_t{12345}, 10, 2);
+
+  auto int_same_type_result = int_literal.CastTo(iceberg::int32());
+  ASSERT_THAT(int_same_type_result, IsOk());
+  EXPECT_EQ(int_same_type_result->type()->type_id(), TypeId::kInt);
+  EXPECT_EQ(int_same_type_result->ToString(), "42");
+
+  auto decimal_same_type_result = decimal_literal.CastTo(iceberg::decimal(10, 2));
+  ASSERT_THAT(decimal_same_type_result, IsOk());
+  EXPECT_EQ(decimal_same_type_result->type()->type_id(), TypeId::kDecimal);
 }
 
 // Special value tests
 TEST(LiteralTest, SpecialValues) {
   auto int_literal = Literal::Int(42);
+  auto decimal_literal = Literal::Decimal(int128_t{12345}, 10, 2);
 
   EXPECT_FALSE(int_literal.IsAboveMax());
   EXPECT_FALSE(int_literal.IsBelowMin());
-}
-
-// Same type cast test
-TEST(LiteralTest, SameTypeCast) {
-  auto int_literal = Literal::Int(42);
-
-  auto same_type_result = int_literal.CastTo(iceberg::int32());
-  ASSERT_THAT(same_type_result, IsOk());
-  EXPECT_EQ(same_type_result->type()->type_id(), TypeId::kInt);
-  EXPECT_EQ(same_type_result->ToString(), "42");
+  EXPECT_FALSE(decimal_literal.IsAboveMax());
+  EXPECT_FALSE(decimal_literal.IsBelowMin());
+  EXPECT_FALSE(decimal_literal.IsNull());
 }
 
 // Float special values tests

@@ -25,6 +25,7 @@
 
 #include "iceberg/exception.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -102,7 +103,10 @@ Result<Literal> LiteralCaster::CastFromInt(
       return Literal::Double(static_cast<double>(int_val));
     case TypeId::kDate:
       return Literal::Date(int_val);
-    // TODO(Li Feiyang): Implement cast from Int to decimal
+    case TypeId::kDecimal: {
+      auto decimal_type = std::static_pointer_cast<DecimalType>(target_type);
+      return Literal::Decimal(int_val, decimal_type->precision(), decimal_type->scale());
+    }
     default:
       return NotSupported("Cast from Int to {} is not implemented",
                           target_type->ToString());
@@ -143,7 +147,10 @@ Result<Literal> LiteralCaster::CastFromLong(
       return Literal::Timestamp(long_val);
     case TypeId::kTimestampTz:
       return Literal::TimestampTz(long_val);
-    // TODO(Li Feiyang): Implement cast from Long to decimal, TimestampNs and
+    case TypeId::kDecimal: {
+      auto decimal_type = std::static_pointer_cast<DecimalType>(target_type);
+      return Literal::Decimal(long_val, decimal_type->precision(), decimal_type->scale());
+    }
     default:
       return NotSupported("Cast from Long to {} is not supported",
                           target_type->ToString());
@@ -157,7 +164,21 @@ Result<Literal> LiteralCaster::CastFromFloat(
   switch (target_type->type_id()) {
     case TypeId::kDouble:
       return Literal::Double(static_cast<double>(float_val));
-    // TODO(Li Feiyang): Implement cast from Float to decimal
+    case TypeId::kDecimal: {
+      auto decimal_type = std::static_pointer_cast<DecimalType>(target_type);
+      std::string float_str = std::to_string(float_val);
+
+      iceberg::Decimal parsed_val;
+      int32_t parsed_scale = 0;
+      ICEBERG_ASSIGN_OR_RAISE(
+          parsed_val, iceberg::Decimal::FromString(float_str, nullptr, &parsed_scale));
+      iceberg::Decimal rescaled_val;
+      ICEBERG_ASSIGN_OR_RAISE(rescaled_val,
+                              parsed_val.Rescale(parsed_scale, decimal_type->scale()));
+
+      return Literal::Decimal(rescaled_val.value(), decimal_type->precision(),
+                              decimal_type->scale());
+    }
     default:
       return NotSupported("Cast from Float to {} is not supported",
                           target_type->ToString());
@@ -178,6 +199,21 @@ Result<Literal> LiteralCaster::CastFromDouble(
       }
       return Literal::Float(static_cast<float>(double_val));
     }
+    case TypeId::kDecimal: {
+      auto decimal_type = std::static_pointer_cast<DecimalType>(target_type);
+      std::string double_str = std::to_string(double_val);
+
+      iceberg::Decimal parsed_val;
+      int32_t parsed_scale = 0;
+      ICEBERG_ASSIGN_OR_RAISE(
+          parsed_val, iceberg::Decimal::FromString(double_str, nullptr, &parsed_scale));
+      iceberg::Decimal rescaled_val;
+      ICEBERG_ASSIGN_OR_RAISE(rescaled_val,
+                              parsed_val.Rescale(parsed_scale, decimal_type->scale()));
+
+      return Literal::Decimal(rescaled_val.value(), decimal_type->precision(),
+                              decimal_type->scale());
+    }
     default:
       return NotSupported("Cast from Double to {} is not supported",
                           target_type->ToString());
@@ -193,9 +229,16 @@ Result<Literal> LiteralCaster::CastFromString(
     case TypeId::kTime:
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz:
+    case TypeId::kUuid:
       return NotImplemented("Cast from String to {} is not implemented yet",
                             target_type->ToString());
-      // TODO(Li Feiyang): Implement cast from String to uuid and decimal
+    case TypeId::kDecimal: {
+      auto decimal_type = std::static_pointer_cast<DecimalType>(target_type);
+      iceberg::Decimal dec_val;
+      ICEBERG_ASSIGN_OR_RAISE(dec_val, iceberg::Decimal::FromString(str_val));
+      return Literal::Decimal(dec_val.value(), decimal_type->precision(),
+                              decimal_type->scale());
+    }
 
     default:
       return NotSupported("Cast from String to {} is not supported",
@@ -407,6 +450,12 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
       return this_val <=> other_val;
     }
 
+    case TypeId::kDecimal: {
+      auto this_val = std::get<int128_t>(value_);
+      auto other_val = std::get<int128_t>(other.value_);
+      return this_val <=> other_val;
+    }
+
     default:
       // For unsupported types, return unordered
       return std::partial_ordering::unordered;
@@ -414,7 +463,12 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
 }
 
 std::string Literal::ToString() const {
-  auto invalid_ = [this]() { return std::format(" = {}", type_->ToString()); };
+  auto unsupported_error = [this]() {
+    return std::format("ToString not supported for type: {}", type_->ToString());
+  };
+  auto invalid_argument = [this]() {
+    return std::format("Invalid argument for type: {}", type_->ToString());
+  };
 
   if (std::holds_alternative<BelowMin>(value_)) {
     return "belowMin";
@@ -443,7 +497,7 @@ std::string Literal::ToString() const {
       return std::to_string(std::get<double>(value_));
     }
     case TypeId::kString: {
-      return std::get<std::string>(value_);
+      return "\"" + std::get<std::string>(value_) + "\"";
     }
     case TypeId::kBinary:
     case TypeId::kFixed: {
@@ -475,13 +529,10 @@ std::string Literal::ToString() const {
       if (str_res.has_value()) {
         return str_res.value();
       }
-      return
-    }
-    case TypeId::kUuid: {
-      return {"kDecimal and kUuid are not implemented yet"};
+      return invalid_argument();
     }
     default: {
-      throw IcebergError("Unknown type: " + type_->ToString());
+      return unsupported_error();
     }
   }
 }
@@ -513,6 +564,9 @@ Result<Literal> LiteralCaster::CastTo(const Literal& literal,
 
   // Delegate to specific cast functions based on source type
   switch (source_type_id) {
+    case TypeId::kBoolean:
+      // No casts defined for Boolean, other than to itself.
+      break;
     case TypeId::kInt:
       return CastFromInt(literal, target_type);
     case TypeId::kLong:
@@ -531,12 +585,11 @@ Result<Literal> LiteralCaster::CastTo(const Literal& literal,
       return CastFromTimestamp(literal, target_type);
     case TypeId::kTimestampTz:
       return CastFromTimestampTz(literal, target_type);
-    case TypeId::kBoolean:
     default:
       break;
   }
 
-  return NotSupported("Cast from {} to {} is not implemented", literal.type_->ToString(),
+  return NotSupported("Cast from {} to {} is not supported", literal.type_->ToString(),
                       target_type->ToString());
 }
 
