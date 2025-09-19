@@ -17,11 +17,17 @@
   ~ under the License.
 -->
 
-# Documentation
+# Configuration
 
-To build the documentation:
+Configuration documentation for Iceberg C++ is coming soon.
 
-1. Install [Doxygen](https://www.doxygen.nl/).
-1. From this directory, run `doxygen`.
+This page will cover:
 
-The output will be in `./build/html`.
+- Environment variables
+- Configuration files
+- Catalog configuration
+- FileIO configuration
+- Table properties
+- Performance tuning
+
+For now, please refer to the [API documentation](api/index.md) for programmatic configuration options.
