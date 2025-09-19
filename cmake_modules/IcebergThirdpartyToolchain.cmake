@@ -431,6 +431,149 @@ function(resolve_zlib_dependency)
 endfunction()
 
 # ----------------------------------------------------------------------
+# CURL (for cpr)
+
+function(resolve_curl_dependency)
+  prepare_fetchcontent()
+
+  set(BUILD_CURL_EXE OFF)
+  set(BUILD_TESTING
+      OFF
+      CACHE BOOL "" FORCE)
+  set(CURL_ENABLE_EXPORT_TARGET
+      OFF
+      CACHE BOOL "" FORCE)
+  set(BUILD_SHARED_LIBS
+      OFF
+      CACHE BOOL "" FORCE)
+  set(CURL_STATICLIB
+      ON
+      CACHE BOOL "" FORCE)
+  set(HTTP_ONLY
+      ON
+      CACHE BOOL "" FORCE)
+  set(CURL_CA_BUNDLE
+      "auto"
+      CACHE STRING "" FORCE)
+  set(USE_LIBIDN2
+      OFF
+      CACHE BOOL "" FORCE)
+
+  fetchcontent_declare(CURL
+                       ${FC_DECLARE_COMMON_OPTIONS}
+                       URL https://curl.se/download/curl-8.11.0.tar.gz
+                           FIND_PACKAGE_ARGS
+                           NAMES
+                           CURL
+                           CONFIG)
+
+  fetchcontent_makeavailable(CURL)
+
+  if(curl_SOURCE_DIR)
+    if(NOT TARGET CURL::libcurl)
+      add_library(CURL::libcurl INTERFACE IMPORTED)
+      target_link_libraries(CURL::libcurl INTERFACE libcurl_static)
+      target_include_directories(CURL::libcurl INTERFACE ${curl_BINARY_DIR}/include
+                                                         ${curl_SOURCE_DIR}/include)
+    endif()
+
+    set(CURL_VENDORED TRUE)
+    set_target_properties(libcurl_static PROPERTIES OUTPUT_NAME "iceberg_vendored_curl"
+                                                    POSITION_INDEPENDENT_CODE ON)
+    add_library(Iceberg::libcurl_static ALIAS libcurl_static)
+    install(TARGETS libcurl_static
+            EXPORT iceberg_targets
+            RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
+            ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
+            LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+    message(STATUS "Use vendored CURL")
+
+    # curl depends on the system's OpenSSL
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL)
+  else()
+    set(CURL_VENDORED FALSE)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES CURL)
+    message(STATUS "Use system CURL")
+  endif()
+
+  set(ICEBERG_SYSTEM_DEPENDENCIES
+      ${ICEBERG_SYSTEM_DEPENDENCIES}
+      PARENT_SCOPE)
+  set(CURL_VENDORED
+      ${CURL_VENDORED}
+      PARENT_SCOPE)
+endfunction()
+
+# ----------------------------------------------------------------------
+# cpr (C++ Requests)
+
+function(resolve_cpr_dependency)
+  prepare_fetchcontent()
+
+  set(CPR_BUILD_TESTS
+      OFF
+      CACHE BOOL "" FORCE)
+  set(CPR_BUILD_TESTS_SSL
+      OFF
+      CACHE BOOL "" FORCE)
+  set(CPR_ENABLE_SSL
+      ON
+      CACHE BOOL "" FORCE)
+  set(CPR_USE_SYSTEM_CURL
+      ON
+      CACHE BOOL "" FORCE)
+  set(CPR_CURL_NOSIGNAL
+      ON
+      CACHE BOOL "" FORCE)
+
+  set(CURL_VERSION_STRING
+      "8.11.0"
+      CACHE STRING "" FORCE)
+  set(CURL_LIB
+      "CURL::libcurl"
+      CACHE STRING "" FORCE)
+
+  fetchcontent_declare(cpr
+                       ${FC_DECLARE_COMMON_OPTIONS}
+                       URL https://github.com/libcpr/cpr/archive/refs/tags/1.12.0.tar.gz
+                           FIND_PACKAGE_ARGS
+                           NAMES
+                           cpr
+                           CONFIG)
+
+  fetchcontent_makeavailable(cpr)
+
+  if(cpr_SOURCE_DIR)
+    if(NOT TARGET cpr::cpr)
+      add_library(cpr::cpr INTERFACE IMPORTED)
+      target_link_libraries(cpr::cpr INTERFACE cpr)
+      target_include_directories(cpr::cpr INTERFACE ${cpr_BINARY_DIR}
+                                                    ${cpr_SOURCE_DIR}/include)
+    endif()
+
+    set(CPR_VENDORED TRUE)
+    set_target_properties(cpr PROPERTIES OUTPUT_NAME "iceberg_vendored_cpr"
+                                         POSITION_INDEPENDENT_CODE ON)
+    add_library(Iceberg::cpr ALIAS cpr)
+    install(TARGETS cpr
+            EXPORT iceberg_targets
+            RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
+            ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
+            LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+  else()
+    set(CPR_VENDORED FALSE)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES cpr)
+  endif()
+
+  set(ICEBERG_SYSTEM_DEPENDENCIES
+      ${ICEBERG_SYSTEM_DEPENDENCIES}
+      PARENT_SCOPE)
+  set(CPR_VENDORED
+      ${CPR_VENDORED}
+      PARENT_SCOPE)
+endfunction()
+
+# ----------------------------------------------------------------------
 # Zstd
 
 function(resolve_zstd_dependency)
@@ -454,4 +597,9 @@ if(ICEBERG_BUILD_BUNDLE)
   resolve_arrow_dependency()
   resolve_avro_dependency()
   resolve_zstd_dependency()
+endif()
+
+if(ICEBERG_BUILD_REST_CATALOG)
+  resolve_curl_dependency()
+  resolve_cpr_dependency()
 endif()
