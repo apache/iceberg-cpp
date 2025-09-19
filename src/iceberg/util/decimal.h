@@ -30,6 +30,7 @@
 #include <string>
 #include <string_view>
 #include <type_traits>
+#include <vector>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
@@ -142,7 +143,7 @@ class ICEBERG_EXPORT Decimal : public util::Formattable {
   /// \brief Convert the Decimal value to a base 10 decimal string with the given scale.
   /// \param scale The scale to use for the string representation.
   /// \return The string representation of the Decimal value.
-  Result<std::string> ToString(int32_t scale = 0) const;
+  Result<std::string> ToString(int32_t scale) const;
 
   /// \brief Convert the Decimal value to an integer string.
   std::string ToIntegerString() const;
@@ -163,6 +164,11 @@ class ICEBERG_EXPORT Decimal : public util::Formattable {
   ///        between 1 and 16.
   /// \return error status if the length is an invalid value
   static Result<Decimal> FromBigEndian(const uint8_t* data, int32_t length);
+
+  /// \brief Convert Decimal's unscaled value to two’s-complement big-endian binary, using
+  ///        the minimum number of bytes for the value.
+  /// \return A vector containing the big-endian bytes.
+  std::vector<uint8_t> ToBigEndian() const;
 
   /// \brief Convert Decimal from one scale to another.
   Result<Decimal> Rescale(int32_t orig_scale, int32_t new_scale) const;

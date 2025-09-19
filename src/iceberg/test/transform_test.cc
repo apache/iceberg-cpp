@@ -21,6 +21,7 @@
 
 #include <format>
 #include <memory>
+#include <string>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -245,6 +246,14 @@ TEST(TransformLiteralTest, BucketTransform) {
   constexpr int32_t num_buckets = 4;
   auto transform = Transform::Bucket(num_buckets);
 
+  // uuid
+  // f79c3e09-677c-4bbd-a479-3f349cb785e7
+  std::array<uint8_t, 16> uuid = {0xf7, 0x9c, 0x3e, 0x09, 0x67, 0x7c, 0x4b, 0xbd,
+                                  0xa4, 0x79, 0x3f, 0x34, 0x9c, 0xb7, 0x85, 0xe7};
+
+  // fixed & binary
+  std::vector<uint8_t> fixed = {0, 1, 2, 3};
+
   struct Case {
     std::shared_ptr<Type> source_type;
     Literal source;
@@ -253,23 +262,43 @@ TEST(TransformLiteralTest, BucketTransform) {
 
   const std::vector<Case> cases = {
       {.source_type = iceberg::int32(),
-       .source = Literal::Int(42),
+       .source = Literal::Int(34),
        .expected = Literal::Int(3)},
-      {.source_type = iceberg::date(),
-       .source = Literal::Date(30000),
-       .expected = Literal::Int(2)},
       {.source_type = iceberg::int64(),
-       .source = Literal::Long(1234567890),
+       .source = Literal::Long(34),
        .expected = Literal::Int(3)},
+      // decimal 14.20
+      {.source_type = iceberg::decimal(4, 2),
+       .source = Literal::Decimal(1420, 4, 2),
+       .expected = Literal::Int(3)},
+      // 2017-11-16
+      {.source_type = iceberg::date(),
+       .source = Literal::Date(17486),
+       .expected = Literal::Int(2)},
+      // // 22:31:08 in microseconds
+      {.source_type = iceberg::time(),
+       .source = Literal::Time(81068000000),
+       .expected = Literal::Int(3)},
+      // // 2017-11-16T22:31:08 in microseconds
       {.source_type = iceberg::timestamp(),
-       .source = Literal::Timestamp(1622547800000000),
-       .expected = Literal::Int(1)},
-      {.source_type = iceberg::timestamp_tz(),
-       .source = Literal::TimestampTz(1622547800000000),
-       .expected = Literal::Int(1)},
-      {.source_type = iceberg::string(),
-       .source = Literal::String("test"),
+       .source = Literal::Timestamp(1510871468000000),
        .expected = Literal::Int(3)},
+      // // 2017-11-16T22:31:08.000001 in microseconds
+      {.source_type = iceberg::timestamp_tz(),
+       .source = Literal::TimestampTz(1510871468000001),
+       .expected = Literal::Int(2)},
+      {.source_type = iceberg::string(),
+       .source = Literal::String("iceberg"),
+       .expected = Literal::Int(1)},
+      {.source_type = iceberg::uuid(),
+       .source = Literal::UUID(Uuid(uuid)),
+       .expected = Literal::Int(0)},
+      {.source_type = iceberg::fixed(4),
+       .source = Literal::Fixed(fixed),
+       .expected = Literal::Int(1)},
+      {.source_type = iceberg::binary(),
+       .source = Literal::Binary(fixed),
+       .expected = Literal::Int(1)},
   };
 
   for (const auto& c : cases) {
@@ -297,6 +326,14 @@ TEST(TransformLiteralTest, TruncateTransform) {
        .width = 5,
        .source = Literal::Int(123456),
        .expected = Literal::Int(123455)},
+      {.source_type = iceberg::int64(),
+       .width = 10,
+       .source = Literal::Long(-1),
+       .expected = Literal::Long(-10)},
+      {.source_type = iceberg::decimal(5, 2),
+       .width = 50,
+       .source = Literal::Decimal(12345, 5, 2),
+       .expected = Literal::Decimal(12300, 5, 2)},
       {.source_type = iceberg::string(),
        .width = 5,
        .source = Literal::String("Hello, World!"),

@@ -490,6 +490,50 @@ TEST(DecimalTest, FromBigEndianInvalid) {
               IsError(ErrorKind::kInvalidArgument));
 }
 
+TEST(DecimalTest, ToBigEndian) {
+  std::vector<int64_t> high_values = {0,
+                                      1,
+                                      -1,
+                                      INT32_MAX,
+                                      INT32_MIN,
+                                      static_cast<int64_t>(INT32_MAX) + 1,
+                                      static_cast<int64_t>(INT32_MIN) - 1,
+                                      INT64_MAX,
+                                      INT64_MIN};
+  std::vector<uint64_t> low_values = {0,
+                                      1,
+                                      255,
+                                      UINT32_MAX,
+                                      static_cast<uint64_t>(UINT32_MAX) + 1,
+                                      static_cast<uint64_t>(UINT32_MAX) + 2,
+                                      static_cast<uint64_t>(UINT32_MAX) + 3,
+                                      static_cast<uint64_t>(UINT32_MAX) + 4,
+                                      static_cast<uint64_t>(UINT32_MAX) + 5,
+                                      static_cast<uint64_t>(UINT32_MAX) + 6,
+                                      static_cast<uint64_t>(UINT32_MAX) + 7,
+                                      static_cast<uint64_t>(UINT32_MAX) + 8,
+                                      UINT64_MAX};
+
+  for (int64_t high : high_values) {
+    for (uint64_t low : low_values) {
+      Decimal decimal(high, low);
+      auto bytes = decimal.ToBigEndian();
+      auto result = Decimal::FromBigEndian(bytes.data(), bytes.size());
+      ASSERT_THAT(result, IsOk());
+      EXPECT_EQ(result.value(), decimal);
+    }
+  }
+
+  for (int128_t value : std::vector<int128_t>{-INT64_MAX, -INT32_MAX, -255, -1, 0, 1, 255,
+                                              256, INT32_MAX, INT64_MAX}) {
+    Decimal decimal(value);
+    auto bytes = decimal.ToBigEndian();
+    auto result = Decimal::FromBigEndian(bytes.data(), bytes.size());
+    ASSERT_THAT(result, IsOk());
+    EXPECT_EQ(result.value(), decimal);
+  }
+}
+
 TEST(DecimalTestFunctionality, Multiply) {
   ASSERT_EQ(Decimal(60501), Decimal(301) * Decimal(201));
   ASSERT_EQ(Decimal(-60501), Decimal(-301) * Decimal(201));

@@ -115,6 +115,7 @@ class NameMapping;
 enum class SnapshotRefType;
 enum class TransformType;
 
+class Decimal;
 class Expression;
 class Literal;
 

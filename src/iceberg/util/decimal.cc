@@ -24,6 +24,7 @@
 
 #include "iceberg/util/decimal.h"
 
+#include <algorithm>
 #include <bit>
 #include <charconv>
 #include <climits>
@@ -43,6 +44,9 @@
 namespace iceberg {
 
 namespace {
+
+static constexpr int32_t kMinDecimalBytes = 1;
+static constexpr int32_t kMaxDecimalBytes = 16;
 
 struct DecimalComponents {
   std::string_view while_digits;
@@ -470,11 +474,6 @@ Result<Decimal> Decimal::FromString(std::string_view str, int32_t* precision,
 }
 
 Result<Decimal> Decimal::FromBigEndian(const uint8_t* bytes, int32_t length) {
-  static constexpr int32_t kMinDecimalBytes = 1;
-  static constexpr int32_t kMaxDecimalBytes = 16;
-
-  int64_t high, low;
-
   if (length < kMinDecimalBytes || length > kMaxDecimalBytes) {
     return InvalidArgument(
         "Decimal::FromBigEndian: length must be in the range [{}, {}], was {}",
@@ -486,7 +485,8 @@ Result<Decimal> Decimal::FromBigEndian(const uint8_t* bytes, int32_t length) {
   const bool is_negative = static_cast<int8_t>(bytes[0]) < 0;
 
   uint128_t result = 0;
-  std::memcpy(reinterpret_cast<uint8_t*>(&result) + 16 - length, bytes, length);
+  std::memcpy(reinterpret_cast<uint8_t*>(&result) + kMaxDecimalBytes - length, bytes,
+              length);
 
   if constexpr (std::endian::native == std::endian::little) {
     auto high = static_cast<uint64_t>(result >> 64);
@@ -503,6 +503,36 @@ Result<Decimal> Decimal::FromBigEndian(const uint8_t* bytes, int32_t length) {
   }
 
   return Decimal(static_cast<int128_t>(result));
+}
+
+std::vector<uint8_t> Decimal::ToBigEndian() const {
+  std::vector<uint8_t> bytes(kMaxDecimalBytes);
+
+  auto uvalue = static_cast<uint128_t>(data_);
+  std::memcpy(bytes.data(), &uvalue, kMaxDecimalBytes);
+
+  if constexpr (std::endian::native == std::endian::little) {
+    std::ranges::reverse(bytes);
+  }
+
+  auto is_negative = data_ < 0;
+  int keep = kMaxDecimalBytes;
+  for (int32_t i = 0; i < kMaxDecimalBytes - 1; ++i) {
+    uint8_t byte = bytes[i];
+    uint8_t next = bytes[i + 1];
+    // For negative numbers, keep the leading 0xff byte if the next byte has its sign bit
+    // unset. For positive numbers, keep the leading 0x00 byte if the next byte has its
+    // sign bit set.
+    if ((is_negative && byte == 0xff && (next & 0x80)) ||
+        (!is_negative && byte == 0x00 && !(next & 0x80))) {
+      --keep;
+    } else {
+      break;
+    }
+  }
+
+  bytes.erase(bytes.begin(), bytes.begin() + (kMaxDecimalBytes - keep));
+  return bytes;
 }
 
 Result<Decimal> Decimal::Rescale(int32_t orig_scale, int32_t new_scale) const {

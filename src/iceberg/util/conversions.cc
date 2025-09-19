@@ -23,6 +23,7 @@
 #include <span>
 #include <string>
 
+#include "iceberg/util/decimal.h"
 #include "iceberg/util/endian.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/uuid.h"
@@ -65,6 +66,12 @@ Result<std::vector<uint8_t>> ToBytesImpl<TypeId::kBoolean>(const Literal::Value&
 }
 
 template <>
+Result<std::vector<uint8_t>> ToBytesImpl<TypeId::kDecimal>(const Literal::Value& value) {
+  const auto& decimal = std::get<Decimal>(value);
+  return decimal.ToBigEndian();
+}
+
+template <>
 Result<std::vector<uint8_t>> ToBytesImpl<TypeId::kString>(const Literal::Value& value) {
   const auto& str = std::get<std::string>(value);
   return std::vector<uint8_t>(str.begin(), str.end());
@@ -95,6 +102,7 @@ Result<std::vector<uint8_t>> Conversions::ToBytes(const PrimitiveType& type,
   const auto type_id = type.type_id();
 
   switch (type_id) {
+    DISPATCH_LITERAL_TO_BYTES(TypeId::kBoolean)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kInt)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kDate)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kLong)
@@ -103,12 +111,11 @@ Result<std::vector<uint8_t>> Conversions::ToBytes(const PrimitiveType& type,
     DISPATCH_LITERAL_TO_BYTES(TypeId::kTimestampTz)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kFloat)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kDouble)
-    DISPATCH_LITERAL_TO_BYTES(TypeId::kBoolean)
+    DISPATCH_LITERAL_TO_BYTES(TypeId::kDecimal)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kString)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kUuid)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kBinary)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kFixed)
-      // TODO(Li Feiyang): Add support for Decimal
 
     default:
       return NotSupported("Serialization for type {} is not supported", type.ToString());
@@ -177,6 +184,11 @@ Result<Literal::Value> Conversions::FromBytes(const PrimitiveType& type,
         return Literal::Value{double_value};
       }
     }
+    case TypeId::kDecimal: {
+      ICEBERG_ASSIGN_OR_RAISE(auto decimal,
+                              Decimal::FromBigEndian(data.data(), data.size()));
+      return Literal::Value{decimal};
+    }
     case TypeId::kString:
       return Literal::Value{
           std::string(reinterpret_cast<const char*>(data.data()), data.size())};
@@ -194,7 +206,6 @@ Result<Literal::Value> Conversions::FromBytes(const PrimitiveType& type,
       }
       return Literal::Value{std::vector<uint8_t>(data.begin(), data.end())};
     }
-    // TODO(Li Feiyang): Add support for Decimal
     default:
       return NotSupported("Deserialization for type {} is not supported",
                           type.ToString());

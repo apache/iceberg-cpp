@@ -24,9 +24,11 @@
 #include <cstdint>
 #include <string>
 
-#include "iceberg/type_fwd.h"
+#include "iceberg/exception.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/conversions.h"
+#include "iceberg/util/decimal.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -296,6 +298,10 @@ Literal Literal::Fixed(std::vector<uint8_t> value) {
   return {Value{std::move(value)}, fixed(size)};
 }
 
+Literal Literal::Decimal(int128_t value, int32_t precision, int32_t scale) {
+  return {Value{::iceberg::Decimal(value)}, decimal(precision, scale)};
+}
+
 Result<Literal> Literal::Deserialize(std::span<const uint8_t> data,
                                      std::shared_ptr<PrimitiveType> type) {
   return Conversions::FromBytes(std::move(type), data);
@@ -331,12 +337,42 @@ std::strong_ordering CompareFloat(T lhs, T rhs) {
   return lhs_is_negative <=> rhs_is_negative;
 }
 
+std::strong_ordering CompareDecimal(Literal const& lhs, Literal const& rhs) {
+  ICEBERG_DCHECK(std::holds_alternative<Decimal>(lhs.value()),
+                 "LHS of decimal comparison must hold Decimal");
+  ICEBERG_DCHECK(std::holds_alternative<Decimal>(rhs.value()),
+                 "RHS of decimal comparison must hold decimal");
+  const auto& lhs_type = std::dynamic_pointer_cast<DecimalType>(lhs.type());
+  const auto& rhs_type = std::dynamic_pointer_cast<DecimalType>(rhs.type());
+  auto lhs_decimal = std::get<Decimal>(lhs.value());
+  auto rhs_decimal = std::get<Decimal>(rhs.value());
+  if (lhs_type->scale() == rhs_type->scale()) {
+    return lhs_decimal <=> rhs_decimal;
+  } else if (lhs_type->scale() > rhs_type->scale()) {
+    // Rescale to larger scale
+    auto rhs_res = rhs_decimal.Rescale(rhs_type->scale(), lhs_type->scale());
+    if (!rhs_res) {
+      // Rescale would cause data loss, so lhs is definitely less than rhs
+      return std::strong_ordering::less;
+    }
+    return lhs_decimal <=> rhs_res.value();
+  } else {
+    // Rescale to larger scale
+    auto lhs_res = lhs_decimal.Rescale(lhs_type->scale(), rhs_type->scale());
+    if (!lhs_res) {
+      // Rescale would cause data loss, so lhs is definitely greater than rhs
+      return std::strong_ordering::greater;
+    }
+    return lhs_res.value() <=> rhs_decimal;
+  }
+}
+
 bool Literal::operator==(const Literal& other) const { return (*this <=> other) == 0; }
 
 // Three-way comparison operator
 std::partial_ordering Literal::operator<=>(const Literal& other) const {
   // If types are different, comparison is unordered
-  if (*type_ != *other.type_) {
+  if (type_->type_id() != other.type_->type_id()) {
     return std::partial_ordering::unordered;
   }
 
@@ -383,6 +419,10 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
       auto other_val = std::get<double>(other.value_);
       // Use strong_ordering for floating point as spec requests
       return CompareFloat(this_val, other_val);
+    }
+
+    case TypeId::kDecimal: {
+      return CompareDecimal(*this, other);
     }
 
     case TypeId::kString: {
@@ -439,6 +479,13 @@ std::string Literal::ToString() const {
     }
     case TypeId::kDouble: {
       return std::to_string(std::get<double>(value_));
+    }
+    case TypeId::kDecimal: {
+      auto decimal_type = internal::checked_pointer_cast<DecimalType>(type_);
+      auto decimal = std::get<::iceberg::Decimal>(value_);
+      auto result = decimal.ToString(decimal_type->scale());
+      ICEBERG_CHECK(result, "Decimal ToString failed");
+      return *result;
     }
     case TypeId::kString: {
       return "\"" + std::get<std::string>(value_) + "\"";

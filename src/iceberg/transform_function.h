@@ -51,6 +51,9 @@ class ICEBERG_EXPORT BucketTransform : public TransformFunction {
   BucketTransform(std::shared_ptr<Type> const& source_type, int32_t num_buckets);
 
   /// \brief Applies the bucket hash function to the input Literal.
+  ///
+  /// Reference:
+  /// - https://iceberg.apache.org/spec/#appendix-b-32-bit-hash-requirements
   Result<Literal> Transform(const Literal& literal) override;
 
   /// \brief Returns INT32 as the output type.

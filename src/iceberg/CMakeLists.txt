@@ -59,11 +59,14 @@ set(ICEBERG_SOURCES
     transform.cc
     transform_function.cc
     type.cc
+    util/bucket_util.cc
     util/conversions.cc
     util/decimal.cc
     util/gzip_internal.cc
     util/murmurhash3_internal.cc
+    util/temporal_util.cc
     util/timepoint.cc
+    util/truncate_util.cc
     util/uuid.cc
     v1_metadata.cc
     v2_metadata.cc
