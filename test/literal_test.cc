@@ -384,6 +384,24 @@ TEST(LiteralTest, DoubleZeroComparison) {
   EXPECT_EQ(neg_zero <=> pos_zero, std::partial_ordering::less);
 }
 
+TEST(LiteralTest, DecimalComparison) {
+  auto dec1 = Literal::Decimal("123.45");
+  auto dec2 = Literal::Decimal("123.450");
+  auto dec3 = Literal::Decimal("123.46");
+  auto dec4 = Literal::Decimal("-123.45");
+
+  ASSERT_THAT(dec1, IsOk());
+  ASSERT_THAT(dec2, IsOk());
+  ASSERT_THAT(dec3, IsOk());
+  ASSERT_THAT(dec4, IsOk());
+
+  EXPECT_EQ((*dec1 <=> *dec2), std::partial_ordering::equivalent);
+  EXPECT_EQ((*dec1 <=> *dec3), std::partial_ordering::less);
+  EXPECT_EQ((*dec3 <=> *dec1), std::partial_ordering::greater);
+  EXPECT_EQ((*dec1 <=> *dec4), std::partial_ordering::greater);
+  EXPECT_EQ((*dec4 <=> *dec1), std::partial_ordering::less);
+}
+
 TEST(LiteralTest, SerdeTest) {
   // int32
   auto int_literal = Literal::Int(42);

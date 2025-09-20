@@ -502,6 +502,7 @@ TEST(DecimalTest, ToBigEndian) {
                                       INT64_MIN};
   std::vector<uint64_t> low_values = {0,
                                       1,
+                                      255,
                                       UINT32_MAX,
                                       static_cast<uint64_t>(UINT32_MAX) + 1,
                                       static_cast<uint64_t>(UINT32_MAX) + 2,
@@ -521,6 +522,15 @@ TEST(DecimalTest, ToBigEndian) {
       ASSERT_THAT(result, IsOk());
       EXPECT_EQ(result.value(), value);
     }
+  }
+
+  for (int128_t value : std::vector<int128_t>{-INT64_MAX, -INT32_MAX, -255, -1, 0, 1, 255,
+                                              256, INT32_MAX, INT64_MAX}) {
+    Decimal decimal(value);
+    auto bytes = Decimal::ToBigEndian(decimal.value());
+    auto result = Decimal::FromBigEndian(bytes.data(), bytes.size());
+    ASSERT_THAT(result, IsOk());
+    EXPECT_EQ(result.value(), decimal);
   }
 }
 

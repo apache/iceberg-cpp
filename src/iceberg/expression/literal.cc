@@ -344,6 +344,42 @@ std::strong_ordering CompareFloat(T lhs, T rhs) {
   return lhs_is_negative <=> rhs_is_negative;
 }
 
+std::strong_ordering CompareDecimal(Literal const& lhs, Literal const& rhs) {
+  ICEBERG_DCHECK(std::holds_alternative<int128_t>(lhs.value()),
+                 "LHS of decimal comparison must hold int128_t");
+  ICEBERG_DCHECK(std::holds_alternative<int128_t>(rhs.value()),
+                 "RHS of decimal comparison must hold int128_t");
+  const auto& lhs_type = std::dynamic_pointer_cast<DecimalType>(lhs.type());
+  const auto& rhs_type = std::dynamic_pointer_cast<DecimalType>(rhs.type());
+  ICEBERG_DCHECK(lhs_type != nullptr, "LHS type must be DecimalType");
+  ICEBERG_DCHECK(rhs_type != nullptr, "RHS type must be DecimalType");
+  auto lhs_val = std::get<int128_t>(lhs.value());
+  auto rhs_val = std::get<int128_t>(rhs.value());
+  if (lhs_type->scale() == rhs_type->scale()) {
+    return lhs_val <=> rhs_val;
+  } else if (lhs_type->scale() > rhs_type->scale()) {
+    auto lhs_decimal = Decimal(lhs_val);
+    // Rescale to larger scale
+    auto rhs_decimal = Decimal(rhs_val).Rescale(rhs_type->scale(), lhs_type->scale());
+    if (!rhs_decimal) {
+      // Rescale would cause data loss, so lhs is definitely less than rhs
+      return std::strong_ordering::less;
+    }
+    return lhs_decimal <=> rhs_decimal.value();
+  } else {
+    auto rhs_decimal = Decimal(rhs_val);
+    // Rescale to larger scale
+    auto lhs_decimal = Decimal(lhs_val).Rescale(lhs_type->scale(), rhs_type->scale());
+    if (!lhs_decimal) {
+      // Rescale would cause data loss, so lhs is definitely greater than rhs
+      return std::strong_ordering::greater;
+    }
+    return lhs_decimal.value() <=> rhs_decimal;
+  }
+
+  return lhs_val <=> rhs_val;
+}
+
 bool Literal::operator==(const Literal& other) const { return (*this <=> other) == 0; }
 
 // Three-way comparison operator
@@ -410,10 +446,7 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
     }
 
     case TypeId::kDecimal: {
-      // TODO(zhjwpku): Handle precision/scale differences
-      auto this_val = std::get<int128_t>(value_);
-      auto other_val = std::get<int128_t>(other.value_);
-      return this_val <=> other_val;
+      return CompareDecimal(*this, other);
     }
 
     default:
