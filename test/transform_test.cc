@@ -19,14 +19,19 @@
 
 #include "iceberg/transform.h"
 
+#include <chrono>
 #include <format>
+#include <iostream>
 #include <memory>
+#include <string>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "iceberg/expression/literal.h"
+#include "iceberg/transform_function.h"
 #include "iceberg/type.h"
+#include "iceberg/util/decimal.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "matchers.h"
 
@@ -241,9 +246,74 @@ TEST(TransformLiteralTest, IdentityTransform) {
   }
 }
 
+// The following tests are from
+// https://iceberg.apache.org/spec/#appendix-b-32-bit-hash-requirements
+TEST(BucketTransformTest, HashHelper) {
+  // int and long
+  EXPECT_EQ(BucketTransform::HashInt(34), 2017239379);
+  EXPECT_EQ(BucketTransform::HashLong(34L), 2017239379);
+
+  // decimal hash
+  auto decimal = Decimal::FromString("14.20");
+  ASSERT_TRUE(decimal.has_value());
+  EXPECT_EQ(BucketTransform::HashBytes(Decimal::ToBigEndian(decimal->value())),
+            -500754589);
+
+  // date hash
+  // 2017-11-16
+  std::chrono::sys_days sd = std::chrono::year{2017} / 11 / 16;
+  std::chrono::sys_days epoch{std::chrono::year{1970} / 1 / 1};
+  int32_t days = (sd - epoch).count();
+  std::cout << "days: " << days << std::endl;
+  EXPECT_EQ(BucketTransform::HashInt(days), -653330422);
+
+  // time
+  // 22:31:08 in microseconds
+  int64_t time_micros = (22 * 3600 + 31 * 60 + 8) * 1000000LL;
+  std::cout << "time micros: " << time_micros << std::endl;
+  EXPECT_EQ(BucketTransform::HashLong(time_micros), -662762989);
+
+  // timestamp
+  // 2017-11-16T22:31:08 in microseconds
+  std::chrono::system_clock::time_point tp =
+      std::chrono::sys_days{std::chrono::year{2017} / 11 / 16} + std::chrono::hours{22} +
+      std::chrono::minutes{31} + std::chrono::seconds{8};
+  int64_t timestamp_micros =
+      std::chrono::duration_cast<std::chrono::microseconds>(tp.time_since_epoch())
+          .count();
+  std::cout << "timestamp micros: " << timestamp_micros << std::endl;
+  EXPECT_EQ(BucketTransform::HashLong(timestamp_micros), -2047944441);
+  // 2017-11-16T22:31:08.000001 in microseconds
+  EXPECT_EQ(BucketTransform::HashLong(timestamp_micros + 1), -1207196810);
+
+  // string
+  std::string str = "iceberg";
+  EXPECT_EQ(BucketTransform::HashBytes(std::span<const uint8_t>(
+                reinterpret_cast<const uint8_t*>(str.data()), str.size())),
+            1210000089);
+
+  // uuid
+  // f79c3e09-677c-4bbd-a479-3f349cb785e7
+  std::array<uint8_t, 16> uuid = {0xf7, 0x9c, 0x3e, 0x09, 0x67, 0x7c, 0x4b, 0xbd,
+                                  0xa4, 0x79, 0x3f, 0x34, 0x9c, 0xb7, 0x85, 0xe7};
+  EXPECT_EQ(BucketTransform::HashBytes(uuid), 1488055340);
+
+  // fixed & binary
+  std::vector<uint8_t> fixed = {0, 1, 2, 3};
+  EXPECT_EQ(BucketTransform::HashBytes(fixed), -188683207);
+}
+
 TEST(TransformLiteralTest, BucketTransform) {
   constexpr int32_t num_buckets = 4;
   auto transform = Transform::Bucket(num_buckets);
+
+  // uuid
+  // f79c3e09-677c-4bbd-a479-3f349cb785e7
+  std::array<uint8_t, 16> uuid = {0xf7, 0x9c, 0x3e, 0x09, 0x67, 0x7c, 0x4b, 0xbd,
+                                  0xa4, 0x79, 0x3f, 0x34, 0x9c, 0xb7, 0x85, 0xe7};
+
+  // fixed & binary
+  std::vector<uint8_t> fixed = {0, 1, 2, 3};
 
   struct Case {
     std::shared_ptr<Type> source_type;
@@ -253,23 +323,43 @@ TEST(TransformLiteralTest, BucketTransform) {
 
   const std::vector<Case> cases = {
       {.source_type = iceberg::int32(),
-       .source = Literal::Int(42),
+       .source = Literal::Int(34),
        .expected = Literal::Int(3)},
-      {.source_type = iceberg::date(),
-       .source = Literal::Date(30000),
-       .expected = Literal::Int(2)},
       {.source_type = iceberg::int64(),
-       .source = Literal::Long(1234567890),
+       .source = Literal::Long(34),
        .expected = Literal::Int(3)},
+      // decimal 14.20
+      {.source_type = iceberg::decimal(4, 2),
+       .source = Literal::Decimal(1420, 4, 2),
+       .expected = Literal::Int(3)},
+      // 2017-11-16
+      {.source_type = iceberg::date(),
+       .source = Literal::Date(17486),
+       .expected = Literal::Int(2)},
+      // // 22:31:08 in microseconds
+      {.source_type = iceberg::time(),
+       .source = Literal::Time(81068000000),
+       .expected = Literal::Int(3)},
+      // // 2017-11-16T22:31:08 in microseconds
       {.source_type = iceberg::timestamp(),
-       .source = Literal::Timestamp(1622547800000000),
-       .expected = Literal::Int(1)},
-      {.source_type = iceberg::timestamp_tz(),
-       .source = Literal::TimestampTz(1622547800000000),
-       .expected = Literal::Int(1)},
-      {.source_type = iceberg::string(),
-       .source = Literal::String("test"),
+       .source = Literal::Timestamp(1510871468000000),
        .expected = Literal::Int(3)},
+      // // 2017-11-16T22:31:08.000001 in microseconds
+      {.source_type = iceberg::timestamp_tz(),
+       .source = Literal::TimestampTz(1510871468000001),
+       .expected = Literal::Int(2)},
+      {.source_type = iceberg::string(),
+       .source = Literal::String("iceberg"),
+       .expected = Literal::Int(1)},
+      {.source_type = iceberg::uuid(),
+       .source = Literal::UUID(uuid),
+       .expected = Literal::Int(0)},
+      {.source_type = iceberg::fixed(4),
+       .source = Literal::Fixed(fixed),
+       .expected = Literal::Int(1)},
+      {.source_type = iceberg::binary(),
+       .source = Literal::Binary(fixed),
+       .expected = Literal::Int(1)},
   };
 
   for (const auto& c : cases) {
