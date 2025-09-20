@@ -27,7 +27,11 @@
 
 #include "iceberg/expression/literal.h"
 #include "iceberg/type.h"
+#include "iceberg/type_fwd.h"
+#include "iceberg/util/decimal.h"
+#include "iceberg/util/endian.h"
 #include "iceberg/util/int128.h"
+#include "iceberg/util/macros.h"
 #include "iceberg/util/murmurhash3_internal.h"
 #include "iceberg/util/truncate_util.h"
 
@@ -54,7 +58,8 @@ BucketTransform::BucketTransform(std::shared_ptr<Type> const& source_type,
     : TransformFunction(TransformType::kBucket, source_type), num_buckets_(num_buckets) {}
 
 Result<Literal> BucketTransform::Transform(const Literal& literal) {
-  assert(literal.type() == source_type());
+  ICEBERG_DCHECK(*literal.type() == *source_type(),
+                 "Literal type must match source type");
   if (literal.IsBelowMin() || literal.IsAboveMax()) {
     return InvalidArgument(
         "Cannot apply bucket transform to literal with value {} of type {}",
@@ -69,17 +74,18 @@ Result<Literal> BucketTransform::Transform(const Literal& literal) {
       [&](auto&& value) {
         using T = std::decay_t<decltype(value)>;
         if constexpr (std::is_same_v<T, int32_t>) {
-          MurmurHash3_x86_32(&value, sizeof(int32_t), 0, &hash_value);
+          hash_value = HashInt(value);
         } else if constexpr (std::is_same_v<T, int64_t>) {
-          MurmurHash3_x86_32(&value, sizeof(int64_t), 0, &hash_value);
+          hash_value = HashLong(value);
         } else if constexpr (std::is_same_v<T, std::array<uint8_t, 16>>) {
-          MurmurHash3_x86_32(value.data(), sizeof(uint8_t) * 16, 0, &hash_value);
+          hash_value = HashBytes(value);
         } else if constexpr (std::is_same_v<T, int128_t>) {
-          MurmurHash3_x86_32(&value, sizeof(int128_t), 0, &hash_value);
+          hash_value = HashBytes(Decimal::ToBigEndian(value));
         } else if constexpr (std::is_same_v<T, std::string>) {
-          MurmurHash3_x86_32(value.data(), value.size(), 0, &hash_value);
+          hash_value = HashBytes(std::span<const uint8_t>(
+              reinterpret_cast<const uint8_t*>(value.data()), value.size()));
         } else if constexpr (std::is_same_v<T, std::vector<uint8_t>>) {
-          MurmurHash3_x86_32(value.data(), value.size(), 0, &hash_value);
+          hash_value = HashBytes(value);
         } else if constexpr (std::is_same_v<T, std::monostate> ||
                              std::is_same_v<T, bool> || std::is_same_v<T, float> ||
                              std::is_same_v<T, double> ||
@@ -129,12 +135,30 @@ Result<std::unique_ptr<TransformFunction>> BucketTransform::Make(
   return std::make_unique<BucketTransform>(source_type, num_buckets);
 }
 
+int32_t BucketTransform::HashBytes(std::span<const uint8_t> bytes) {
+  int32_t hash_value = 0;
+  MurmurHash3_x86_32(bytes.data(), bytes.size(), 0, &hash_value);
+  return hash_value;
+}
+
+int32_t BucketTransform::HashInt(int32_t value) {
+  return HashLong(static_cast<int64_t>(value));
+}
+
+int32_t BucketTransform::HashLong(int64_t value) {
+  int32_t hash_value = 0;
+  value = ToLittleEndian(value);
+  MurmurHash3_x86_32(&value, sizeof(int64_t), 0, &hash_value);
+  return hash_value;
+}
+
 TruncateTransform::TruncateTransform(std::shared_ptr<Type> const& source_type,
                                      int32_t width)
     : TransformFunction(TransformType::kTruncate, source_type), width_(width) {}
 
 Result<Literal> TruncateTransform::Transform(const Literal& literal) {
-  assert(literal.type() == source_type());
+  ICEBERG_DCHECK(*literal.type() == *source_type(),
+                 "Literal type must match source type");
   if (literal.IsBelowMin() || literal.IsAboveMax()) {
     return InvalidArgument(
         "Cannot apply truncate transform to literal with value {} of type {}",
@@ -205,7 +229,8 @@ YearTransform::YearTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kTruncate, source_type) {}
 
 Result<Literal> YearTransform::Transform(const Literal& literal) {
-  assert(literal.type() == source_type());
+  ICEBERG_DCHECK(*literal.type() == *source_type(),
+                 "Literal type must match source type");
   if (literal.IsBelowMin() || literal.IsAboveMax()) {
     return InvalidArgument(
         "Cannot apply year transform to literal with value {} of type {}",
@@ -258,7 +283,8 @@ MonthTransform::MonthTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kMonth, source_type) {}
 
 Result<Literal> MonthTransform::Transform(const Literal& literal) {
-  assert(literal.type() == source_type());
+  ICEBERG_DCHECK(*literal.type() == *source_type(),
+                 "Literal type must match source type");
   if (literal.IsBelowMin() || literal.IsAboveMax()) {
     return InvalidArgument(
         "Cannot apply month transform to literal with value {} of type {}",
@@ -323,7 +349,8 @@ DayTransform::DayTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kDay, source_type) {}
 
 Result<Literal> DayTransform::Transform(const Literal& literal) {
-  assert(literal.type() == source_type());
+  ICEBERG_DCHECK(*literal.type() == *source_type(),
+                 "Literal type must match source type");
   if (literal.IsBelowMin() || literal.IsAboveMax()) {
     return InvalidArgument(
         "Cannot apply day transform to literal with value {} of type {}",
@@ -376,7 +403,8 @@ HourTransform::HourTransform(std::shared_ptr<Type> const& source_type)
     : TransformFunction(TransformType::kHour, source_type) {}
 
 Result<Literal> HourTransform::Transform(const Literal& literal) {
-  assert(literal.type() == source_type());
+  ICEBERG_DCHECK(*literal.type() == *source_type(),
+                 "Literal type must match source type");
   if (literal.IsBelowMin() || literal.IsAboveMax()) {
     return InvalidArgument(
         "Cannot apply hour transform to literal with value {} of type {}",

@@ -524,8 +524,8 @@ std::vector<uint8_t> Decimal::ToBigEndian(int128_t value) {
     // For negative numbers, keep the leading 0xff byte if the next byte has its sign bit
     // unset. For positive numbers, keep the leading 0x00 byte if the next byte has its
     // sign bit set.
-    if ((is_negative && byte == 0xff && (next & 0x80) == 0) ||
-        (!is_negative && byte == 0x00 && (next & 0x80) != 0)) {
+    if ((is_negative && byte == 0xff && (next & 0x80)) ||
+        (!is_negative && byte == 0x00 && !(next & 0x80))) {
       --keep;
     } else {
       break;

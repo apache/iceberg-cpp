@@ -166,6 +166,15 @@ Result<Literal> Literal::Decimal(std::string_view value) {
   return Literal{Value{decimal_value.value()}, decimal(precision, scale)};
 }
 
+Literal Literal::UUID(std::array<uint8_t, 16> value) {
+  return {Value{std::move(value)}, uuid()};
+}
+
+Literal Literal::Fixed(std::vector<uint8_t> value) {
+  auto length = static_cast<int32_t>(value.size());
+  return {Value{std::move(value)}, fixed(length)};
+}
+
 Result<Literal> Literal::Deserialize(std::span<const uint8_t> data,
                                      std::shared_ptr<PrimitiveType> type) {
   Literal::Value value;
