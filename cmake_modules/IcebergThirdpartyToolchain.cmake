@@ -267,9 +267,8 @@ endfunction()
 function(resolve_croaring_dependency)
   prepare_fetchcontent()
 
-  set(BUILD_TESTING
-      OFF
-      CACHE BOOL "Disable CRoaring tests" FORCE)
+  set(ENABLE_ROARING_TESTS OFF)
+  set(ENABLE_ROARING_MICROBENCHMARKS OFF)
 
   fetchcontent_declare(croaring
                        ${FC_DECLARE_COMMON_OPTIONS}
