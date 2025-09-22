@@ -423,38 +423,112 @@ INSTANTIATE_TEST_SUITE_P(
         // Basic types
         LiteralRoundTripParam{"BooleanTrue", {1}, Literal::Boolean(true), boolean()},
         LiteralRoundTripParam{"BooleanFalse", {0}, Literal::Boolean(false), boolean()},
+
         LiteralRoundTripParam{"Int", {32, 0, 0, 0}, Literal::Int(32), int32()},
         LiteralRoundTripParam{
-            "Long", {32, 0, 0, 0, 0, 0, 0, 0}, Literal::Long(32), int64()},
-        LiteralRoundTripParam{"Float", {0, 0, 128, 63}, Literal::Float(1.0f), float32()},
+            "IntMaxValue", {255, 255, 255, 127}, Literal::Int(2147483647), int32()},
         LiteralRoundTripParam{
-            "Double", {0, 0, 0, 0, 0, 0, 240, 63}, Literal::Double(1.0), float64()},
-        LiteralRoundTripParam{"String",
-                              {105, 99, 101, 98, 101, 114, 103},
-                              Literal::String("iceberg"),
-                              string()},
-        LiteralRoundTripParam{"BinaryData",
-                              {0x01, 0x02, 0x03, 0xFF},
-                              Literal::Binary({0x01, 0x02, 0x03, 0xFF}),
-                              binary()},
-        // Edge cases that fit the round-trip pattern
+            "IntMinValue", {0, 0, 0, 128}, Literal::Int(-2147483648), int32()},
         LiteralRoundTripParam{
             "NegativeInt", {224, 255, 255, 255}, Literal::Int(-32), int32()},
+
+        LiteralRoundTripParam{
+            "Long", {32, 0, 0, 0, 0, 0, 0, 0}, Literal::Long(32), int64()},
+        LiteralRoundTripParam{"LongMaxValue",
+                              {255, 255, 255, 255, 255, 255, 255, 127},
+                              Literal::Long(std::numeric_limits<int64_t>::max()),
+                              int64()},
+        LiteralRoundTripParam{"LongMinValue",
+                              {0, 0, 0, 0, 0, 0, 0, 128},
+                              Literal::Long(std::numeric_limits<int64_t>::min()),
+                              int64()},
         LiteralRoundTripParam{"NegativeLong",
                               {224, 255, 255, 255, 255, 255, 255, 255},
                               Literal::Long(-32),
                               int64()},
-        // IEEE 754 representation for NaN and Infinity (in little-endian)
-        LiteralRoundTripParam{"FloatInfinity",
-                              {0, 0, 128, 127},
-                              Literal::Float(std::numeric_limits<float>::infinity()),
+
+        LiteralRoundTripParam{"Float", {0, 0, 128, 63}, Literal::Float(1.0f), float32()},
+        LiteralRoundTripParam{"FloatNegativeInfinity",
+                              {0, 0, 128, 255},
+                              Literal::Float(-std::numeric_limits<float>::infinity()),
                               float32()},
-        LiteralRoundTripParam{"FloatNaN",
-                              {0, 0, 192, 127},
-                              Literal::Float(std::numeric_limits<float>::quiet_NaN()),
-                              float32()}
-        // TODO(Li Feiyang): Add tests for Date, Time, Timestamp, TimestampTz
-        ),
+        LiteralRoundTripParam{"FloatMaxValue",
+                              {255, 255, 127, 127},
+                              Literal::Float(std::numeric_limits<float>::max()),
+                              float32()},
+        LiteralRoundTripParam{"FloatMinValue",
+                              {255, 255, 127, 255},
+                              Literal::Float(std::numeric_limits<float>::lowest()),
+                              float32()},
+
+        LiteralRoundTripParam{
+            "Double", {0, 0, 0, 0, 0, 0, 240, 63}, Literal::Double(1.0), float64()},
+        LiteralRoundTripParam{"DoubleNegativeInfinity",
+                              {0, 0, 0, 0, 0, 0, 240, 255},
+                              Literal::Double(-std::numeric_limits<double>::infinity()),
+                              float64()},
+        LiteralRoundTripParam{"DoubleMaxValue",
+                              {255, 255, 255, 255, 255, 255, 239, 127},
+                              Literal::Double(std::numeric_limits<double>::max()),
+                              float64()},
+        LiteralRoundTripParam{"DoubleMinValue",
+                              {255, 255, 255, 255, 255, 255, 239, 255},
+                              Literal::Double(std::numeric_limits<double>::lowest()),
+                              float64()},
+
+        LiteralRoundTripParam{"String",
+                              {105, 99, 101, 98, 101, 114, 103},
+                              Literal::String("iceberg"),
+                              string()},
+        LiteralRoundTripParam{
+            "StringLong",
+            {65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65},
+            Literal::String("AAAAAAAAAAAAAAAA"),
+            string()},
+
+        LiteralRoundTripParam{"BinaryData",
+                              {0x01, 0x02, 0x03, 0xFF},
+                              Literal::Binary({0x01, 0x02, 0x03, 0xFF}),
+                              binary()},
+        LiteralRoundTripParam{"BinarySingleByte", {42}, Literal::Binary({42}), binary()},
+
+        // Temporal types
+        LiteralRoundTripParam{"DateEpoch", {0, 0, 0, 0}, Literal::Date(0), date()},
+        LiteralRoundTripParam{"DateNextDay", {1, 0, 0, 0}, Literal::Date(1), date()},
+        LiteralRoundTripParam{"DateY2K", {205, 42, 0, 0}, Literal::Date(10957), date()},
+        LiteralRoundTripParam{
+            "DateNegative", {255, 255, 255, 255}, Literal::Date(-1), date()},
+
+        LiteralRoundTripParam{
+            "TimeMidnight", {0, 0, 0, 0, 0, 0, 0, 0}, Literal::Time(0), time()},
+        LiteralRoundTripParam{"TimeNoon",
+                              {128, 9, 230, 124, 10, 0, 0, 0},
+                              Literal::Time(45045123456),
+                              time()},
+        LiteralRoundTripParam{
+            "TimeOneSecond", {64, 66, 15, 0, 0, 0, 0, 0}, Literal::Time(1000000), time()},
+
+        LiteralRoundTripParam{"TimestampEpoch",
+                              {0, 0, 0, 0, 0, 0, 0, 0},
+                              Literal::Timestamp(0),
+                              timestamp()},
+        LiteralRoundTripParam{"TimestampOneSecond",
+                              {64, 66, 15, 0, 0, 0, 0, 0},
+                              Literal::Timestamp(1000000),
+                              timestamp()},
+        LiteralRoundTripParam{"TimestampNoon2024",
+                              {128, 9, 230, 124, 10, 0, 0, 0},
+                              Literal::Timestamp(45045123456),
+                              timestamp()},
+
+        LiteralRoundTripParam{"TimestampTzEpoch",
+                              {0, 0, 0, 0, 0, 0, 0, 0},
+                              Literal::TimestampTz(0),
+                              timestamp_tz()},
+        LiteralRoundTripParam{"TimestampTzOneHour",
+                              {0, 164, 147, 214, 0, 0, 0, 0},
+                              Literal::TimestampTz(3600000000),
+                              timestamp_tz()}),
 
     [](const testing::TestParamInfo<LiteralSerializationParam::ParamType>& info) {
       return info.param.test_name;
