@@ -255,6 +255,20 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
       return this_val <=> other_val;
     }
 
+    case TypeId::kFixed: {
+      // Fixed types can only be compared if they have the same length
+      auto& this_fixed_type = static_cast<const FixedType&>(*type_);
+      auto& other_fixed_type = static_cast<const FixedType&>(*other.type_);
+
+      if (this_fixed_type.length() != other_fixed_type.length()) {
+        return std::partial_ordering::unordered;
+      }
+
+      auto& this_val = std::get<std::vector<uint8_t>>(value_);
+      auto& other_val = std::get<std::vector<uint8_t>>(other.value_);
+      return this_val <=> other_val;
+    }
+
     default:
       // For unsupported types, return unordered
       return std::partial_ordering::unordered;

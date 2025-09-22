@@ -492,6 +492,27 @@ INSTANTIATE_TEST_SUITE_P(
                               binary()},
         LiteralRoundTripParam{"BinarySingleByte", {42}, Literal::Binary({42}), binary()},
 
+        // Fixed type
+        LiteralRoundTripParam{"FixedLength4",
+                              {0x01, 0x02, 0x03, 0x04},
+                              Literal::Fixed({0x01, 0x02, 0x03, 0x04}, 4),
+                              fixed(4)},
+        LiteralRoundTripParam{
+            "FixedLength8",
+            {0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00, 0x11},
+            Literal::Fixed({0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00, 0x11}, 8),
+            fixed(8)},
+        LiteralRoundTripParam{
+            "FixedLength16",
+            {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C,
+             0x0D, 0x0E, 0x0F},
+            Literal::Fixed({0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
+                            0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F},
+                           16),
+            fixed(16)},
+        LiteralRoundTripParam{
+            "FixedSingleByte", {0xFF}, Literal::Fixed({0xFF}, 1), fixed(1)},
+
         // Temporal types
         LiteralRoundTripParam{"DateEpoch", {0, 0, 0, 0}, Literal::Date(0), date()},
         LiteralRoundTripParam{"DateNextDay", {1, 0, 0, 0}, Literal::Date(1), date()},
