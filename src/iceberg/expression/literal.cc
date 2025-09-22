@@ -150,6 +150,10 @@ Literal Literal::Binary(std::vector<uint8_t> value) {
   return {Value{std::move(value)}, binary()};
 }
 
+Literal Literal::Fixed(std::vector<uint8_t> value, int32_t length) {
+  return {Value{std::move(value)}, fixed(length)};
+}
+
 Result<Literal> Literal::Deserialize(std::span<const uint8_t> data,
                                      std::shared_ptr<PrimitiveType> type) {
   return Conversions::FromBytes(type, data);
@@ -217,6 +221,7 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
     }
 
     case TypeId::kLong:
+    case TypeId::kTime:
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz: {
       auto this_val = std::get<int64_t>(value_);
@@ -295,9 +300,17 @@ std::string Literal::ToString() const {
       }
       return result;
     }
+    case TypeId::kFixed: {
+      const auto& fixed_data = std::get<std::vector<uint8_t>>(value_);
+      std::string result;
+      result.reserve(fixed_data.size() * 2);  // 2 chars per byte
+      for (const auto& byte : fixed_data) {
+        std::format_to(std::back_inserter(result), "{:02X}", byte);
+      }
+      return result;
+    }
     case TypeId::kDecimal:
     case TypeId::kUuid:
-    case TypeId::kFixed:
     case TypeId::kDate:
     case TypeId::kTime:
     case TypeId::kTimestamp:
