@@ -81,7 +81,7 @@ TEST(LiteralTest, IntCastTo) {
   auto long_result = int_literal.CastTo(iceberg::int64());
   ASSERT_THAT(long_result, IsOk());
   EXPECT_EQ(long_result->type()->type_id(), TypeId::kLong);
-  EXPECT_EQ(long_result->ToString(), "42");
+  EXPECT_EQ(std::get<int64_t>(long_result->value()), 42L);
 
   // Cast to Float
   auto float_result = int_literal.CastTo(iceberg::float32());
@@ -136,8 +136,8 @@ TEST(LiteralTest, LongCastTo) {
   EXPECT_EQ(double_result->type()->type_id(), TypeId::kDouble);
 }
 
+// Test overflow cases
 TEST(LiteralTest, LongCastToIntOverflow) {
-  // Test overflow cases
   auto max_long =
       Literal::Long(static_cast<int64_t>(std::numeric_limits<int32_t>::max()) + 1);
   auto min_long =
@@ -383,31 +383,6 @@ TEST(LiteralTest, DoubleZeroComparison) {
   EXPECT_EQ(neg_zero <=> pos_zero, std::partial_ordering::less);
 }
 
-// Type promotion tests
-TEST(LiteralSerializationTest, TypePromotion) {
-  // 4-byte int data can be deserialized as long
-  std::vector<uint8_t> int_data = {32, 0, 0, 0};
-  auto long_result = Literal::Deserialize(int_data, int64());
-  ASSERT_TRUE(long_result.has_value());
-  EXPECT_EQ(long_result->type()->type_id(), TypeId::kLong);
-  EXPECT_EQ(long_result->ToString(), "32");
-
-  auto long_bytes = long_result->Serialize();
-  ASSERT_TRUE(long_bytes.has_value());
-  EXPECT_EQ(long_bytes->size(), 8);
-
-  // 4-byte float data can be deserialized as double
-  std::vector<uint8_t> float_data = {0, 0, 128, 63};
-  auto double_result = Literal::Deserialize(float_data, float64());
-  ASSERT_TRUE(double_result.has_value());
-  EXPECT_EQ(double_result->type()->type_id(), TypeId::kDouble);
-  EXPECT_EQ(double_result->ToString(), "1.000000");
-
-  auto double_bytes = double_result->Serialize();
-  ASSERT_TRUE(double_bytes.has_value());
-  EXPECT_EQ(double_bytes->size(), 8);
-}
-
 struct LiteralRoundTripParam {
   std::string test_name;
   std::vector<uint8_t> input_bytes;
@@ -415,10 +390,10 @@ struct LiteralRoundTripParam {
   std::shared_ptr<PrimitiveType> type;
 };
 
-class LiteralSerializationParamTest
-    : public ::testing::TestWithParam<LiteralRoundTripParam> {};
+class LiteralSerializationParam : public ::testing::TestWithParam<LiteralRoundTripParam> {
+};
 
-TEST_P(LiteralSerializationParamTest, RoundTrip) {
+TEST_P(LiteralSerializationParam, RoundTrip) {
   const auto& param = GetParam();
 
   // Deserialize from bytes
@@ -427,8 +402,7 @@ TEST_P(LiteralSerializationParamTest, RoundTrip) {
       << "Deserialization failed: " << literal_result.error().message;
 
   // Check type and value
-  EXPECT_EQ(literal_result->type()->type_id(), param.expected_literal.type()->type_id());
-  EXPECT_EQ(literal_result->ToString(), param.expected_literal.ToString());
+  EXPECT_EQ(*literal_result, param.expected_literal);
 
   // Serialize back to bytes
   Result<std::vector<uint8_t>> bytes_result = literal_result->Serialize();
@@ -440,12 +414,11 @@ TEST_P(LiteralSerializationParamTest, RoundTrip) {
   Result<Literal> final_literal = Literal::Deserialize(*bytes_result, param.type);
   ASSERT_TRUE(final_literal.has_value())
       << "Final deserialization failed: " << final_literal.error().message;
-  EXPECT_EQ(final_literal->type()->type_id(), param.expected_literal.type()->type_id());
-  EXPECT_EQ(final_literal->ToString(), param.expected_literal.ToString());
+  EXPECT_EQ(*final_literal, param.expected_literal);
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    BinarySerializationTests, LiteralSerializationParamTest,
+    BinarySerialization, LiteralSerializationParam,
     ::testing::Values(
         // Basic types
         LiteralRoundTripParam{"BooleanTrue", {1}, Literal::Boolean(true), boolean()},
@@ -483,11 +456,11 @@ INSTANTIATE_TEST_SUITE_P(
         // TODO(Li Feiyang): Add tests for Date, Time, Timestamp, TimestampTz
         ),
 
-    [](const testing::TestParamInfo<LiteralSerializationParamTest::ParamType>& info) {
+    [](const testing::TestParamInfo<LiteralSerializationParam::ParamType>& info) {
       return info.param.test_name;
     });
 
-TEST(LiteralSerializationEdgeCaseTest, EmptyStringSerialization) {
+TEST(LiteralSerializationTest, EmptyString) {
   auto empty_string = Literal::String("");
   auto empty_bytes = empty_string.Serialize();
   ASSERT_TRUE(empty_bytes.has_value());
@@ -495,6 +468,31 @@ TEST(LiteralSerializationEdgeCaseTest, EmptyStringSerialization) {
 
   auto deserialize_result = Literal::Deserialize(*empty_bytes, string());
   EXPECT_THAT(deserialize_result, IsError(ErrorKind::kInvalidArgument));
+}
+
+// Type promotion tests
+TEST(LiteralSerializationTest, TypePromotion) {
+  // 4-byte int data can be deserialized as long
+  std::vector<uint8_t> int_data = {32, 0, 0, 0};
+  auto long_result = Literal::Deserialize(int_data, int64());
+  ASSERT_TRUE(long_result.has_value());
+  EXPECT_EQ(long_result->type()->type_id(), TypeId::kLong);
+  EXPECT_EQ(std::get<int64_t>(long_result->value()), 32L);
+
+  auto long_bytes = long_result->Serialize();
+  ASSERT_TRUE(long_bytes.has_value());
+  EXPECT_EQ(long_bytes->size(), 8);
+
+  // 4-byte float data can be deserialized as double
+  std::vector<uint8_t> float_data = {0, 0, 128, 63};
+  auto double_result = Literal::Deserialize(float_data, float64());
+  ASSERT_TRUE(double_result.has_value());
+  EXPECT_EQ(double_result->type()->type_id(), TypeId::kDouble);
+  EXPECT_EQ(std::get<double>(double_result->value()), 1.0);
+
+  auto double_bytes = double_result->Serialize();
+  ASSERT_TRUE(double_bytes.has_value());
+  EXPECT_EQ(double_bytes->size(), 8);
 }
 
 }  // namespace iceberg

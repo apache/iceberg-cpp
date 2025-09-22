@@ -34,16 +34,30 @@ namespace iceberg {
 /// \brief Conversion utilities for primitive types
 class ICEBERG_EXPORT Conversions {
  public:
-  /// \brief Convert a literal value to bytes
+  /// \brief Serializes a raw literal value into a byte vector according to its type.
+  /// \param type The primitive type of the value.
+  /// \param value The std::variant holding the raw literal value to serialize.
+  /// \return A Result containing the serialized value.
   static Result<std::vector<uint8_t>> ToBytes(const PrimitiveType& type,
                                               const Literal::Value& value);
 
+  /// \brief Serializes a complete Literal object into a byte vector.
+  /// \param literal The Literal object to serialize.
+  /// \return A Result containing the serialized value.
   static Result<std::vector<uint8_t>> ToBytes(const Literal& literal);
 
-  /// \brief Convert bytes to a literal value
+  /// \brief Deserializes a span of bytes into a raw literal value based on the given
+  /// type.
+  /// \param type The target primitive type to interpret the bytes as.
+  /// \param data A std::span of bytes representing the serialized value.
+  /// \return A Result containing the deserialized value.
   static Result<Literal::Value> FromBytes(const PrimitiveType& type,
                                           std::span<const uint8_t> data);
 
+  /// \brief Deserializes a span of bytes into a complete Literal object.
+  /// \param type A shared pointer to the target primitive type.
+  /// \param data A std::span of bytes representing the serialized value.
+  /// \return A Result containing the deserialized value.
   static Result<Literal> FromBytes(std::shared_ptr<PrimitiveType> type,
                                    std::span<const uint8_t> data);
 };

@@ -42,7 +42,7 @@ std::vector<uint8_t> WriteLittleEndian(T value) {
 /// \brief Read a value in little-endian format from the data.
 template <EndianConvertible T>
 Result<T> ReadLittleEndian(std::span<const uint8_t> data) {
-  if (data.size() < sizeof(T)) [[unlikely]] {
+  if (data.size() != sizeof(T)) [[unlikely]] {
     return InvalidArgument("Insufficient data to read {} bytes, got {}", sizeof(T),
                            data.size());
   }
@@ -56,6 +56,35 @@ template <TypeId type_id>
 Result<std::vector<uint8_t>> ToBytesImpl(const Literal::Value& value) {
   using CppType = typename LiteralTraits<type_id>::ValueType;
   return WriteLittleEndian(std::get<CppType>(value));
+}
+
+template <>
+Result<std::vector<uint8_t>> ToBytesImpl<TypeId::kBoolean>(const Literal::Value& value) {
+  return std::vector<uint8_t>{std::get<bool>(value) ? static_cast<uint8_t>(0x01)
+                                                    : static_cast<uint8_t>(0x00)};
+}
+
+template <>
+Result<std::vector<uint8_t>> ToBytesImpl<TypeId::kString>(const Literal::Value& value) {
+  const auto& str = std::get<std::string>(value);
+  return std::vector<uint8_t>(str.begin(), str.end());
+}
+
+template <>
+Result<std::vector<uint8_t>> ToBytesImpl<TypeId::kBinary>(const Literal::Value& value) {
+  return std::get<std::vector<uint8_t>>(value);
+}
+
+template <>
+Result<std::vector<uint8_t>> ToBytesImpl<TypeId::kFixed>(const Literal::Value& value) {
+  if (std::holds_alternative<std::vector<uint8_t>>(value)) {
+    return std::get<std::vector<uint8_t>>(value);
+  } else {
+    std::string actual_type =
+        std::visit([](auto&& arg) -> std::string { return typeid(arg).name(); }, value);
+    return InvalidArgument("Invalid value type for Fixed literal, got type: {}",
+                           actual_type);
+  }
 }
 
 #define DISPATCH_LITERAL_TO_BYTES(type_id) \
@@ -75,33 +104,10 @@ Result<std::vector<uint8_t>> Conversions::ToBytes(const PrimitiveType& type,
     DISPATCH_LITERAL_TO_BYTES(TypeId::kTimestampTz)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kFloat)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kDouble)
-    case TypeId::kBoolean: {
-      return std::vector<uint8_t>{std::get<bool>(value) ? static_cast<uint8_t>(0x01)
-                                                        : static_cast<uint8_t>(0x00)};
-    }
-
-    case TypeId::kString: {
-      const auto& str = std::get<std::string>(value);
-      return std::vector<uint8_t>(str.begin(), str.end());
-    }
-
-    case TypeId::kBinary: {
-      return std::get<std::vector<uint8_t>>(value);
-    }
-
-    case TypeId::kFixed: {
-      if (std::holds_alternative<std::array<uint8_t, 16>>(value)) {
-        const auto& fixed_bytes = std::get<std::array<uint8_t, 16>>(value);
-        return std::vector<uint8_t>(fixed_bytes.begin(), fixed_bytes.end());
-      } else if (std::holds_alternative<std::vector<uint8_t>>(value)) {
-        return std::get<std::vector<uint8_t>>(value);
-      } else {
-        std::string actual_type = std::visit(
-            [](auto&& arg) -> std::string { return typeid(arg).name(); }, value);
-        return InvalidArgument("Invalid value type for Fixed literal, got type: {}",
-                               actual_type);
-      }
-    }
+    DISPATCH_LITERAL_TO_BYTES(TypeId::kBoolean)
+    DISPATCH_LITERAL_TO_BYTES(TypeId::kString)
+    DISPATCH_LITERAL_TO_BYTES(TypeId::kBinary)
+    DISPATCH_LITERAL_TO_BYTES(TypeId::kFixed)
       // TODO(Li Feiyang): Add support for UUID and Decimal
 
     default:
@@ -129,34 +135,23 @@ Result<std::vector<uint8_t>> Conversions::ToBytes(const Literal& literal) {
 Result<Literal::Value> Conversions::FromBytes(const PrimitiveType& type,
                                               std::span<const uint8_t> data) {
   if (data.empty()) {
-    return InvalidArgument("Data cannot be empty");
+    return InvalidArgument("Cannot deserialize empty value");
   }
 
   const auto type_id = type.type_id();
 
   switch (type_id) {
     case TypeId::kBoolean: {
-      if (data.size() != 1) {
-        return InvalidArgument("Boolean requires 1 byte, got {}", data.size());
-      }
       ICEBERG_ASSIGN_OR_RAISE(auto value, ReadLittleEndian<uint8_t>(data));
       return Literal::Value{static_cast<bool>(value != 0x00)};
     }
 
     case TypeId::kInt: {
-      if (data.size() != sizeof(int32_t)) {
-        return InvalidArgument("Int requires {} bytes, got {}", sizeof(int32_t),
-                               data.size());
-      }
       ICEBERG_ASSIGN_OR_RAISE(auto value, ReadLittleEndian<int32_t>(data));
       return Literal::Value{value};
     }
 
     case TypeId::kDate: {
-      if (data.size() != sizeof(int32_t)) {
-        return InvalidArgument("Date requires {} bytes, got {}", sizeof(int32_t),
-                               data.size());
-      }
       ICEBERG_ASSIGN_OR_RAISE(auto value, ReadLittleEndian<int32_t>(data));
       return Literal::Value{value};
     }
@@ -166,40 +161,30 @@ Result<Literal::Value> Conversions::FromBytes(const PrimitiveType& type,
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz: {
       int64_t value;
-      if (data.size() == 8) {
-        ICEBERG_ASSIGN_OR_RAISE(auto long_value, ReadLittleEndian<int64_t>(data));
-        value = long_value;
-      } else if (data.size() == 4) {
+      if (data.size() < 8) {
         // Type was promoted from int to long
         ICEBERG_ASSIGN_OR_RAISE(auto int_value, ReadLittleEndian<int32_t>(data));
         value = static_cast<int64_t>(int_value);
       } else {
-        return InvalidArgument("{} requires 4 or 8 bytes, got {}", ToString(type_id),
-                               data.size());
+        ICEBERG_ASSIGN_OR_RAISE(auto long_value, ReadLittleEndian<int64_t>(data));
+        value = long_value;
       }
-
       return Literal::Value{value};
     }
 
     case TypeId::kFloat: {
-      if (data.size() != sizeof(float)) {
-        return InvalidArgument("Float requires {} bytes, got {}", sizeof(float),
-                               data.size());
-      }
       ICEBERG_ASSIGN_OR_RAISE(auto value, ReadLittleEndian<float>(data));
       return Literal::Value{value};
     }
 
     case TypeId::kDouble: {
-      if (data.size() == 8) {
-        ICEBERG_ASSIGN_OR_RAISE(auto double_value, ReadLittleEndian<double>(data));
-        return Literal::Value{double_value};
-      } else if (data.size() == 4) {
+      if (data.size() < 8) {
         // Type was promoted from float to double
         ICEBERG_ASSIGN_OR_RAISE(auto float_value, ReadLittleEndian<float>(data));
         return Literal::Value{static_cast<double>(float_value)};
       } else {
-        return InvalidArgument("Double requires 4 or 8 bytes, got {}", data.size());
+        ICEBERG_ASSIGN_OR_RAISE(auto double_value, ReadLittleEndian<double>(data));
+        return Literal::Value{double_value};
       }
     }
 
