@@ -94,24 +94,33 @@ class ManifestReaderV1Test : public ManifestReaderTestBase {
         "order_ts_hour=2021-01-26-00/"
         "00000-2-d5ae78b7-4449-45ec-adb7-c0e9c0bdb714-0-00004.parquet"};
     std::vector<int64_t> partitions = {447696, 473976, 465192, 447672};
+
+    // TODO(Li Feiyang): The Decimal type and its serialization logic are not yet fully
+    // implemented to support variable-length encoding as required by the Iceberg
+    // specification. Using Literal::Binary as a temporary substitute to represent the raw
+    // bytes for the decimal values.
     std::vector<std::map<int32_t, std::vector<uint8_t>>> bounds = {
-        {{1, {0xd2, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
-         {2, {'.', 0x16, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
-         {3, {0x12, 0xe2}},
-         {4, {0xc0, 'y', 0xe7, 0x98, 0xd6, 0xb9, 0x05, 0x00}}},
-        {{1, {0xd2, 0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
-         {2, {'.', 0x16, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
-         {3, {0x12, 0xe3}},
-         {4, {0xc0, 0x19, '#', '=', 0xe2, 0x0f, 0x06, 0x00}}},
-        {{1, {'{', 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
-         {2, {0xc8, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
-         {3, {0x0e, '"'}},
-         {4, {0xc0, 0xd9, '7', 0x93, 0x1f, 0xf3, 0x05, 0x00}}},
-        {{1, {'{', 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
-         {2, {0xc8, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
-         {3, {0x0e, '!'}},
-         {4, {0xc0, 0x19, 0x10, '{', 0xc2, 0xb9, 0x05, 0x00}}},
+        {{1, Literal::Long(1234).Serialize().value()},
+         {2, Literal::Long(5678).Serialize().value()},
+         {3, Literal::Binary({0x12, 0xe2}).Serialize().value()},
+
+         {4, Literal::Timestamp(1611706223000000LL).Serialize().value()}},
+        {{1, Literal::Long(1234).Serialize().value()},
+         {2, Literal::Long(5678).Serialize().value()},
+         {3, Literal::Binary({0x12, 0xe3}).Serialize().value()},
+
+         {4, Literal::Timestamp(1706314223000000LL).Serialize().value()}},
+        {{1, Literal::Long(123).Serialize().value()},
+         {2, Literal::Long(456).Serialize().value()},
+         {3, Literal::Binary({0x0e, 0x22}).Serialize().value()},
+
+         {4, Literal::Timestamp(1674691823000000LL).Serialize().value()}},
+        {{1, Literal::Long(123).Serialize().value()},
+         {2, Literal::Long(456).Serialize().value()},
+         {3, Literal::Binary({0x0e, 0x21}).Serialize().value()},
+         {4, Literal::Timestamp(1611619823000000LL).Serialize().value()}},
     };
+
     for (int i = 0; i < 4; ++i) {
       ManifestEntry entry;
       entry.status = ManifestStatus::kAdded;
@@ -159,16 +168,16 @@ class ManifestReaderV2Test : public ManifestReaderTestBase {
     std::vector<int64_t> record_counts = {4};
 
     std::vector<std::map<int32_t, std::vector<uint8_t>>> lower_bounds = {
-        {{1, {0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
-         {2, {'r', 'e', 'c', 'o', 'r', 'd', '_', 'f', 'o', 'u', 'r'}},
-         {3, {'d', 'a', 't', 'a', '_', 'c', 'o', 'n', 't', 'e', 'n', 't', '_', '1'}},
-         {4, {0xcd, 0xcc, 0xcc, 0xcc, 0xcc, 0xdc, 0x5e, 0x40}}}};
+        {{1, Literal::Long(1).Serialize().value()},
+         {2, Literal::String("record_four").Serialize().value()},
+         {3, Literal::String("data_content_1").Serialize().value()},
+         {4, Literal::Double(123.45).Serialize().value()}}};
 
     std::vector<std::map<int32_t, std::vector<uint8_t>>> upper_bounds = {
-        {{1, {0x04, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
-         {2, {'r', 'e', 'c', 'o', 'r', 'd', '_', 't', 'w', 'o'}},
-         {3, {'d', 'a', 't', 'a', '_', 'c', 'o', 'n', 't', 'e', 'n', 't', '_', '4'}},
-         {4, {0x14, 0xae, 0x47, 0xe1, 0x7a, 0x8c, 0x7c, 0x40}}}};
+        {{1, Literal::Long(4).Serialize().value()},
+         {2, Literal::String("record_two").Serialize().value()},
+         {3, Literal::String("data_content_4").Serialize().value()},
+         {4, Literal::Double(456.78).Serialize().value()}}};
 
     DataFile data_file{.file_path = test_dir_prefix + paths[0],
                        .file_format = FileFormatType::kParquet,
