@@ -198,13 +198,12 @@ Result<Literal::Value> Conversions::FromBytes(const PrimitiveType& type,
     }
 
     case TypeId::kFixed: {
-      if (data.size() == 16) {
-        std::array<uint8_t, 16> fixed_bytes;
-        std::ranges::copy(data, fixed_bytes.begin());
-        return Literal::Value{fixed_bytes};
-      } else {
-        return Literal::Value{std::vector<uint8_t>(data.begin(), data.end())};
+      const auto& fixed_type = static_cast<const FixedType&>(type);
+      if (data.size() != fixed_type.length()) {
+        return InvalidArgument("Invalid data size for Fixed literal, got size: {}",
+                               data.size());
       }
+      return Literal::Value{std::vector<uint8_t>(data.begin(), data.end())};
     }
       // TODO(Li Feiyang): Add support for UUID and Decimal
 
@@ -221,12 +220,6 @@ Result<Literal> Conversions::FromBytes(std::shared_ptr<PrimitiveType> type,
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto value, FromBytes(*type, data));
-
-  // If we got a null value (monostate), create a null Literal
-  if (std::holds_alternative<std::monostate>(value)) {
-    return Literal::Null(std::move(type));
-  }
-
   return Literal(std::move(value), std::move(type));
 }
 
