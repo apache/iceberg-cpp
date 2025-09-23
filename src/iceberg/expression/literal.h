@@ -27,6 +27,8 @@
 
 #include "iceberg/result.h"
 #include "iceberg/type.h"
+#include "iceberg/util/decimal.h"
+#include "iceberg/util/int128.h"
 
 namespace iceberg {
 
@@ -56,7 +58,7 @@ class ICEBERG_EXPORT Literal {
                              double,          // for double
                              std::string,     // for string
                              std::vector<uint8_t>,     // for binary, fixed
-                             std::array<uint8_t, 16>,  // for uuid and decimal
+                             std::array<uint8_t, 16>,  // for uuid
                              BelowMin, AboveMax>;
 
   /// \brief Factory methods for primitive types
