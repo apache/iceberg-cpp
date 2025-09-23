@@ -25,6 +25,7 @@
 #include <random>
 #include <string>
 
+#include "iceberg/exception.h"
 #include "iceberg/result.h"
 #include "iceberg/util/int128.h"
 #include "iceberg/util/macros.h"
@@ -191,7 +192,7 @@ Result<std::array<uint8_t, 16>> UUIDUtils::FromString(std::string_view str) {
 
 std::string UUIDUtils::ToString(std::span<uint8_t> uuid) {
   static const char* hex_chars = "0123456789abcdef";
-  ICEBERG_DCHECK(uuid.size() == 16, "uuid must be 16 bytes long");
+  ICEBERG_CHECK(uuid.size() == 16, "uuid must be 16 bytes long");
 
   return std::format(
       "{:02x}{:02x}{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}{:02x}"
