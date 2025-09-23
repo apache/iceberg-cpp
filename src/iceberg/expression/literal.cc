@@ -156,7 +156,7 @@ Literal Literal::Fixed(std::vector<uint8_t> value, int32_t length) {
 
 Result<Literal> Literal::Deserialize(std::span<const uint8_t> data,
                                      std::shared_ptr<PrimitiveType> type) {
-  return Conversions::FromBytes(type, data);
+  return Conversions::FromBytes(std::move(type), data);
 }
 
 Result<std::vector<uint8_t>> Literal::Serialize() const {
