@@ -405,9 +405,6 @@ std::string Literal::ToString() const {
   auto unsupported_error = [this]() {
     return std::format("ToString not supported for type: {}", type_->ToString());
   };
-  auto invalid_argument = [this]() {
-    return std::format("Invalid argument for type: {}", type_->ToString());
-  };
 
   if (std::holds_alternative<BelowMin>(value_)) {
     return "belowMin";
