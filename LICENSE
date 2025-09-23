@@ -262,13 +262,3 @@ This product bundles cpr.
 Copyright: 2017-2021 Huu Nguyen, 2022 libcpr and contributors.
 Home page: https://github.com/libcpr/cpr
 License: https://mit-license.org/
-
---------------------------------------------------------------------------------
-
-This product bundles curl (as a dependency of cpr).
-
-* REST catalog implementation in src/iceberg/catalog/rest.
-
-Copyright: 1996-2025 Daniel Stenberg and many contributors.
-Home page: https://curl.se/
-License: https://curl.se/docs/copyright.html
