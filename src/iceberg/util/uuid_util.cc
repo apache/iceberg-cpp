@@ -192,16 +192,12 @@ Result<std::array<uint8_t, 16>> UUIDUtils::FromString(std::string_view str) {
 std::string UUIDUtils::ToString(std::span<uint8_t> uuid) {
   static const char* hex_chars = "0123456789abcdef";
   ICEBERG_DCHECK(uuid.size() == 16, "uuid must be 16 bytes long");
-  std::string str(36, '-');
 
-  for (size_t i = 0; i < 16; i++) {
-    str[i * 2 + (i >= 4 ? 1 : 0) + (i >= 6 ? 1 : 0) + (i >= 8 ? 1 : 0) +
-        (i >= 10 ? 1 : 0)] = hex_chars[(uuid[i] >> 4) & 0x0F];
-    str[i * 2 + 1 + (i >= 4 ? 1 : 0) + (i >= 6 ? 1 : 0) + (i >= 8 ? 1 : 0) +
-        (i >= 10 ? 1 : 0)] = hex_chars[uuid[i] & 0x0F];
-  }
-
-  return str;
+  return std::format(
+      "{:02x}{:02x}{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}{:02x}"
+      "{:02x}{:02x}{:02x}",
+      uuid[0], uuid[1], uuid[2], uuid[3], uuid[4], uuid[5], uuid[6], uuid[7], uuid[8],
+      uuid[9], uuid[10], uuid[11], uuid[12], uuid[13], uuid[14], uuid[15]);
 }
 
 }  // namespace iceberg
