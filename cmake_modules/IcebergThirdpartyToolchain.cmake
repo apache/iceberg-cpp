@@ -431,87 +431,31 @@ function(resolve_zlib_dependency)
 endfunction()
 
 # ----------------------------------------------------------------------
-# CURL
+# CURL (for cpr)
 
 function(resolve_curl_dependency)
   prepare_fetchcontent()
 
-  set(BUILD_CURL_EXE
-      OFF
-      CACHE BOOL "" FORCE)
-  set(BUILD_TESTING
-      OFF
-      CACHE BOOL "" FORCE)
-  set(CURL_ENABLE_EXPORT_TARGET
-      OFF
-      CACHE BOOL "" FORCE)
-  set(BUILD_SHARED_LIBS
-      OFF
-      CACHE BOOL "" FORCE)
-  set(CURL_STATICLIB
-      ON
-      CACHE BOOL "" FORCE)
-  set(HTTP_ONLY
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_LDAP
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_LDAPS
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_RTSP
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_FTP
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_FILE
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_TELNET
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_DICT
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_TFTP
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_GOPHER
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_POP3
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_IMAP
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_SMTP
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_DISABLE_SMB
-      ON
-      CACHE BOOL "" FORCE)
-  set(CURL_CA_BUNDLE
-      "auto"
-      CACHE STRING "" FORCE)
-  set(USE_LIBIDN2
-      OFF
-      CACHE BOOL "" FORCE)
+  set(BUILD_CURL_EXE OFF)
+  set(BUILD_SHARED_LIBS OFF)
+  set(BUILD_TESTING OFF)
+  set(CURL_CA_BUNDLE "auto")
+  set(CURL_ENABLE_EXPORT_TARGET OFF)
+  set(CURL_STATICLIB ON)
+  set(HTTP_ONLY ON)
+  set(USE_LIBIDN2 OFF)
 
-  fetchcontent_declare(CURL
+  fetchcontent_declare(curl
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       GIT_REPOSITORY https://github.com/curl/curl.git
-                       GIT_TAG curl-8_11_0
-                       FIND_PACKAGE_ARGS
-                       NAMES
-                       CURL
-                       CONFIG)
+                       URL https://curl.se/download/curl-8.11.0.tar.gz FIND_PACKAGE_ARGS
+                           NAMES curl)
 
   fetchcontent_makeavailable(CURL)
 
   if(curl_SOURCE_DIR)
+    set(CURL_VERSION_STRING
+        "8.11.0"
+        PARENT_SCOPE)
     if(NOT TARGET CURL::libcurl)
       add_library(CURL::libcurl INTERFACE IMPORTED)
       target_link_libraries(CURL::libcurl INTERFACE libcurl_static)
@@ -529,6 +473,9 @@ function(resolve_curl_dependency)
             ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
             LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
     message(STATUS "Use vendored CURL")
+
+    # curl depends on the system installed OpenSSL
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL)
   else()
     set(CURL_VENDORED FALSE)
     list(APPEND ICEBERG_SYSTEM_DEPENDENCIES CURL)
@@ -544,52 +491,26 @@ function(resolve_curl_dependency)
 endfunction()
 
 # ----------------------------------------------------------------------
-# cpr
+# cpr (C++ Requests)
 
 function(resolve_cpr_dependency)
   prepare_fetchcontent()
 
-  set(CPR_BUILD_TESTS
-      OFF
-      CACHE BOOL "" FORCE)
-  set(CPR_BUILD_TESTS_SSL
-      OFF
-      CACHE BOOL "" FORCE)
-  set(CPR_ENABLE_SSL
-      ON
-      CACHE BOOL "" FORCE)
-  set(CPR_USE_SYSTEM_CURL
-      ON
-      CACHE BOOL "" FORCE)
-  set(CPR_CURL_NOSIGNAL
-      ON
-      CACHE BOOL "" FORCE)
-
-  set(CURL_VERSION_STRING
-      "8.11.0"
-      CACHE STRING "" FORCE)
-  set(CURL_LIB
-      "CURL::libcurl"
-      CACHE STRING "" FORCE)
+  set(CPR_BUILD_TESTS OFF)
+  set(CPR_BUILD_TESTS_SSL OFF)
+  set(CPR_ENABLE_SSL ON)
+  set(CPR_USE_SYSTEM_CURL ON)
+  set(CPR_CURL_NOSIGNAL ON)
 
   fetchcontent_declare(cpr
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       GIT_REPOSITORY https://github.com/libcpr/cpr.git
-                       GIT_TAG 1.11.0
-                       FIND_PACKAGE_ARGS
-                       NAMES
-                       cpr
-                       CONFIG)
-
-  # Create a custom install command that does nothing
-  # function(install)
-  #   # Do nothing - effectively disables install
-  # endfunction()
+                       URL https://github.com/libcpr/cpr/archive/refs/tags/1.12.0.tar.gz
+                           FIND_PACKAGE_ARGS
+                           NAMES
+                           cpr
+                           CONFIG)
 
   fetchcontent_makeavailable(cpr)
-
-  # Restore the original install function
-  # unset(install)
 
   if(cpr_SOURCE_DIR)
     if(NOT TARGET cpr::cpr)
@@ -641,11 +562,13 @@ resolve_croaring_dependency()
 resolve_nlohmann_json_dependency()
 resolve_spdlog_dependency()
 
-resolve_curl_dependency()
-resolve_cpr_dependency()
-
 if(ICEBERG_BUILD_BUNDLE)
   resolve_arrow_dependency()
   resolve_avro_dependency()
   resolve_zstd_dependency()
+endif()
+
+if(ICEBERG_BUILD_REST)
+  resolve_curl_dependency()
+  resolve_cpr_dependency()
 endif()
