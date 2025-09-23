@@ -5,14 +5,14 @@ on:
     branches:
       - main
     paths:
-      - 'docs/**'
-      - 'mkdocs.yml'
+      - 'mkdocs/**'
+      - 'src/**'
   pull_request:
     branches:
       - main
     paths:
-      - 'docs/**'
-      - 'mkdocs.yml'
+      - 'mkdocs/**'
+      - 'src/**'
 
 permissions:
   contents: read
@@ -39,17 +39,31 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install mkdocs-material
+          sudo apt-get update
+          sudo apt-get install -y doxygen
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
 
+      - name: Build API documentation with Doxygen
+        run: |
+          cd mkdocs
+          mkdir -p docs/api
+          doxygen Doxyfile
+
       - name: Build with MkDocs
-        run: mkdocs build --clean
+        run: |
+          cd mkdocs
+          mkdocs build --clean
+
+      - name: Copy CNAME file
+        run: |
+          cp mkdocs/CNAME mkdocs/site/CNAME
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./site
+          path: ./mkdocs/site
 
   deploy:
     environment:

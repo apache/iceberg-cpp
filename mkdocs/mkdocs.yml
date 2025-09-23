@@ -47,18 +47,9 @@ markdown_extensions:
       permalink: true
 
 nav:
-  - Home: index.md
-  - Configuration: configuration.md
-  - Examples: examples.md
-  - Contributing: contributing.md
+  - Contributing: index.md
   - Releases: releases.md
-  - API Documentation:
-    - Overview: api/index.md
-    - Table API: api/table.md
-    - Catalog API: api/catalog.md
-    - Schema API: api/schema.md
-    - Data Types: api/types.md
-    - Table Scan API: api/table-scan.md
+  - API Documentation: api/index.html
 
 extra:
   social:

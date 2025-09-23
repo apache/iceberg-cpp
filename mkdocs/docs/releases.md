@@ -60,7 +60,7 @@ This is the first official release of Apache Iceberg C++. This release includes:
 
 #### Installation
 
-Download the release from GitHub and follow the installation instructions in our [Home page](index.md).
+Download the release from GitHub and follow the installation instructions in our [Contributing guide](index.md).
 
 #### Breaking Changes
 

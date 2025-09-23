@@ -32,11 +32,23 @@ if ! command -v mkdocs &> /dev/null; then
     exit 1
 fi
 
-echo "Installing MkDocs dependencies..."
+echo "Installing dependencies..."
 pip install mkdocs-material
 
+# Check if doxygen is available
+if ! command -v doxygen &> /dev/null; then
+    echo "Warning: doxygen is not installed, skipping API documentation generation"
+else
+    echo "Building API documentation with Doxygen..."
+    cd mkdocs
+    mkdir -p docs/api
+    doxygen Doxyfile
+    cd ..
+fi
+
 echo "Building MkDocs documentation..."
-mkdocs build --config-file docs/mkdocs.yml
+cd mkdocs
+mkdocs build --clean
 
 echo "Documentation build completed successfully!"
 echo "MkDocs site: docs/site/"
