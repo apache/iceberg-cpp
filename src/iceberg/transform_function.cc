@@ -27,6 +27,7 @@
 
 #include "iceberg/expression/literal.h"
 #include "iceberg/type.h"
+#include "iceberg/util/int128.h"
 #include "iceberg/util/murmurhash3_internal.h"
 #include "iceberg/util/truncate_util.h"
 

@@ -40,7 +40,7 @@ void AssertCastSucceeds(const Result<Literal>& result, TypeId expected_type_id,
   ASSERT_THAT(result, IsOk());
   EXPECT_EQ(result->type()->type_id(), expected_type_id);
   ASSERT_NO_THROW(EXPECT_EQ(std::get<T>(result->value()), expected_value))
-      << "Value type mismatch in std::get. Expected type for TypeId "
+      << "Type mismatch in std::get. Expected type for TypeId "
       << static_cast<int>(expected_type_id);
 }
 
@@ -164,19 +164,19 @@ TEST(LiteralTest, LongCastToOverflow) {
   auto min_long =
       Literal::Long(static_cast<int64_t>(std::numeric_limits<int32_t>::min()) - 1);
 
-  auto max_result = max_long.CastTo(iceberg::int32());
+  auto max_result = max_long.CastTo(int32());
   ASSERT_THAT(max_result, IsOk());
   EXPECT_TRUE(max_result->IsAboveMax());
 
-  auto min_result = min_long.CastTo(iceberg::int32());
+  auto min_result = min_long.CastTo(int32());
   ASSERT_THAT(min_result, IsOk());
   EXPECT_TRUE(min_result->IsBelowMin());
 
-  max_result = max_long.CastTo(iceberg::date());
+  max_result = max_long.CastTo(date());
   ASSERT_THAT(max_result, IsOk());
   EXPECT_TRUE(max_result->IsAboveMax());
 
-  min_result = min_long.CastTo(iceberg::date());
+  min_result = min_long.CastTo(date());
   ASSERT_THAT(min_result, IsOk());
   EXPECT_TRUE(min_result->IsBelowMin());
 }
@@ -204,11 +204,11 @@ TEST(LiteralTest, FloatComparison) {
 }
 
 TEST(LiteralTest, FloatCastTo) {
-  auto float_literal = Literal::Float(3.14f);
+  auto float_literal = Literal::Float(2.0f);
 
   // Cast to Double
-  AssertCastSucceeds(float_literal.CastTo(iceberg::float64()), TypeId::kDouble,
-                     static_cast<double>(3.14f));
+  AssertCastSucceeds(float_literal.CastTo(float64()), TypeId::kDouble,
+                     static_cast<double>(2.0f));
 }
 
 // Double type tests
@@ -234,10 +234,10 @@ TEST(LiteralTest, DoubleComparison) {
 }
 
 TEST(LiteralTest, DoubleCastTo) {
-  auto double_literal = Literal::Double(3.14);
+  auto double_literal = Literal::Double(2.0);
 
   // Cast to Float
-  AssertCastSucceeds(double_literal.CastTo(iceberg::float32()), TypeId::kFloat, 3.14f);
+  AssertCastSucceeds(double_literal.CastTo(float32()), TypeId::kFloat, 2.0f);
 }
 
 TEST(LiteralTest, DoubleCastToOverflow) {
@@ -247,11 +247,11 @@ TEST(LiteralTest, DoubleCastToOverflow) {
   auto min_double =
       Literal::Double(-static_cast<double>(std::numeric_limits<float>::max()) * 2);
 
-  auto max_result = max_double.CastTo(iceberg::float32());
+  auto max_result = max_double.CastTo(float32());
   ASSERT_THAT(max_result, IsOk());
   EXPECT_TRUE(max_result->IsAboveMax());
 
-  auto min_result = min_double.CastTo(iceberg::float32());
+  auto min_result = min_double.CastTo(float32());
   ASSERT_THAT(min_result, IsOk());
   EXPECT_TRUE(min_result->IsBelowMin());
 }
@@ -264,8 +264,8 @@ TEST(LiteralTest, StringBasics) {
   EXPECT_EQ(string_literal.type()->type_id(), TypeId::kString);
   EXPECT_EQ(empty_string.type()->type_id(), TypeId::kString);
 
-  EXPECT_EQ(string_literal.ToString(), "hello world");
-  EXPECT_EQ(empty_string.ToString(), "");
+  EXPECT_EQ(string_literal.ToString(), "\"hello world\"");
+  EXPECT_EQ(empty_string.ToString(), "\"\"");
 }
 
 TEST(LiteralTest, StringComparison) {
@@ -305,6 +305,18 @@ TEST(LiteralTest, BinaryComparison) {
   EXPECT_EQ(binary2 <=> binary1, std::partial_ordering::greater);
 }
 
+TEST(LiteralTest, BinaryCastTo) {
+  std::vector<uint8_t> data4 = {0x01, 0x02, 0x03, 0x04};
+  auto binary_literal = Literal::Binary(data4);
+
+  // Cast to Fixed with matching length
+  AssertCastSucceeds(binary_literal.CastTo(fixed(4)), TypeId::kFixed, data4);
+
+  // Cast to Fixed with different length should fail
+  EXPECT_THAT(binary_literal.CastTo(fixed(5)),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
 // Fixed type tests
 TEST(LiteralTest, FixedBasics) {
   std::vector<uint8_t> data = {0x01, 0x02, 0x03, 0xFF};
@@ -330,6 +342,20 @@ TEST(LiteralTest, FixedComparison) {
   EXPECT_EQ(fixed1 <=> fixed3, std::partial_ordering::equivalent);
   EXPECT_EQ(fixed1 <=> fixed2, std::partial_ordering::less);
   EXPECT_EQ(fixed2 <=> fixed1, std::partial_ordering::greater);
+}
+
+TEST(LiteralTest, FixedCastTo) {
+  std::vector<uint8_t> data4 = {0x01, 0x02, 0x03, 0x04};
+  auto fixed_literal = Literal::Fixed(data4);
+
+  // Cast to Binary
+  AssertCastSucceeds(fixed_literal.CastTo(binary()), TypeId::kBinary, data4);
+
+  // Cast to Fixed with same length
+  AssertCastSucceeds(fixed_literal.CastTo(fixed(4)), TypeId::kFixed, data4);
+
+  // Cast to Fixed with different length should fail
+  EXPECT_THAT(fixed_literal.CastTo(fixed(5)), IsError(ErrorKind::kNotSupported));
 }
 
 // Date type tests
@@ -422,32 +448,6 @@ TEST(LiteralTest, TimestampTzComparison) {
   EXPECT_EQ(timestamptz2 <=> timestamptz1, std::partial_ordering::greater);
 }
 
-TEST(LiteralTest, BinaryCastTo) {
-  std::vector<uint8_t> data4 = {0x01, 0x02, 0x03, 0x04};
-  auto binary_literal = Literal::Binary(data4);
-
-  // Cast to Fixed with matching length
-  AssertCastSucceeds(binary_literal.CastTo(iceberg::fixed(4)), TypeId::kFixed, data4);
-
-  // Cast to Fixed with different length should fail
-  EXPECT_THAT(binary_literal.CastTo(iceberg::fixed(5)),
-              IsError(ErrorKind::kInvalidArgument));
-}
-
-TEST(LiteralTest, FixedCastTo) {
-  std::vector<uint8_t> data4 = {0x01, 0x02, 0x03, 0x04};
-  auto fixed_literal = Literal::Fixed(data4);
-
-  // Cast to Binary
-  AssertCastSucceeds(fixed_literal.CastTo(iceberg::binary()), TypeId::kBinary, data4);
-
-  // Cast to Fixed with same length
-  AssertCastSucceeds(fixed_literal.CastTo(iceberg::fixed(4)), TypeId::kFixed, data4);
-
-  // Cast to Fixed with different length should fail
-  EXPECT_THAT(fixed_literal.CastTo(iceberg::fixed(5)), IsError(ErrorKind::kNotSupported));
-}
-
 // Cross-type comparison tests
 TEST(LiteralTest, CrossTypeComparison) {
   auto int_literal = Literal::Int(42);
@@ -457,22 +457,18 @@ TEST(LiteralTest, CrossTypeComparison) {
   EXPECT_EQ(int_literal <=> string_literal, std::partial_ordering::unordered);
 }
 
-// Special value tests
-TEST(LiteralTest, SpecialValues) {
-  auto int_literal = Literal::Int(42);
-
-  EXPECT_FALSE(int_literal.IsAboveMax());
-  EXPECT_FALSE(int_literal.IsBelowMin());
-}
-
-// Same type cast test
+// Same type cast tests
 TEST(LiteralTest, SameTypeCast) {
   auto int_literal = Literal::Int(42);
 
-  auto same_type_result = int_literal.CastTo(iceberg::int32());
-  ASSERT_THAT(same_type_result, IsOk());
-  EXPECT_EQ(same_type_result->type()->type_id(), TypeId::kInt);
-  EXPECT_EQ(same_type_result->ToString(), "42");
+  AssertCastSucceeds(int_literal.CastTo(int32()), TypeId::kInt, 42);
+}
+
+// Special value tests
+TEST(LiteralTest, SpecialValues) {
+  auto int_literal = Literal::Int(42);
+  EXPECT_FALSE(int_literal.IsAboveMax());
+  EXPECT_FALSE(int_literal.IsBelowMin());
 }
 
 // Float special values tests
