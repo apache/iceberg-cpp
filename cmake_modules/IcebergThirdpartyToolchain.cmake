@@ -527,6 +527,7 @@ function(resolve_cpr_dependency)
   fetchcontent_makeavailable(cpr)
 
   if(cpr_SOURCE_DIR)
+    message(STATUS "AAAAAaaaaaaaaaaaa")
     if(NOT TARGET cpr::cpr)
       add_library(cpr::cpr INTERFACE IMPORTED)
       target_link_libraries(cpr::cpr INTERFACE cpr)
@@ -543,7 +544,10 @@ function(resolve_cpr_dependency)
             RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
             ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
             LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL)
+
   else()
+    message(STATUS "BBBBbbbbbbbbbb")
     set(CPR_VENDORED FALSE)
     list(APPEND ICEBERG_SYSTEM_DEPENDENCIES cpr)
     list(APPEND ICEBERG_SYSTEM_DEPENDENCIES OpenSSL)
