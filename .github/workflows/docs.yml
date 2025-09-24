@@ -50,7 +50,7 @@ jobs:
         working-directory: ./mkdocs
         run: |
           echo "Copying site contents to /tmp/site"
-          cp -r ./site/* /tmp/site/
+          mv ./site /tmp/site/
 
       - name: Push changes to gh-pages branch
         run: |
