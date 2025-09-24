@@ -40,12 +40,57 @@ class ICEBERG_EXPORT Expressions {
   // Logical operations
 
   /// \brief Create an AND expression.
+  template <typename... Args>
   static std::shared_ptr<Expression> And(std::shared_ptr<Expression> left,
-                                         std::shared_ptr<Expression> right);
+                                         std::shared_ptr<Expression> right,
+                                         Args&&... args)
+    requires std::conjunction_v<std::is_same<Args, std::shared_ptr<Expression>>...>
+  {
+    if constexpr (sizeof...(args) == 0) {
+      if (left->op() == Expression::Operation::kFalse ||
+          right->op() == Expression::Operation::kFalse) {
+        return AlwaysFalse();
+      }
+
+      if (left->op() == Expression::Operation::kTrue) {
+        return right;
+      }
+
+      if (right->op() == Expression::Operation::kTrue) {
+        return left;
+      }
+
+      return std::make_shared<::iceberg::And>(std::move(left), std::move(right));
+    } else {
+      return And(And(std::move(left), std::move(right)), std::forward<Args>(args)...);
+    }
+  }
 
   /// \brief Create an OR expression.
+  template <typename... Args>
   static std::shared_ptr<Expression> Or(std::shared_ptr<Expression> left,
-                                        std::shared_ptr<Expression> right);
+                                        std::shared_ptr<Expression> right, Args&&... args)
+    requires std::conjunction_v<std::is_same<Args, std::shared_ptr<Expression>>...>
+  {
+    if constexpr (sizeof...(args) == 0) {
+      if (left->op() == Expression::Operation::kTrue ||
+          right->op() == Expression::Operation::kTrue) {
+        return AlwaysTrue();
+      }
+
+      if (left->op() == Expression::Operation::kFalse) {
+        return right;
+      }
+
+      if (right->op() == Expression::Operation::kFalse) {
+        return left;
+      }
+
+      return std::make_shared<::iceberg::Or>(std::move(left), std::move(right));
+    } else {
+      return Or(Or(std::move(left), std::move(right)), std::forward<Args>(args)...);
+    }
+  }
 
   // Transform functions
 

@@ -25,44 +25,6 @@
 
 namespace iceberg {
 
-// Logical operations
-
-std::shared_ptr<Expression> Expressions::And(std::shared_ptr<Expression> left,
-                                             std::shared_ptr<Expression> right) {
-  if (left->op() == Expression::Operation::kFalse ||
-      right->op() == Expression::Operation::kFalse) {
-    return AlwaysFalse();
-  }
-
-  if (left->op() == Expression::Operation::kTrue) {
-    return right;
-  }
-
-  if (right->op() == Expression::Operation::kTrue) {
-    return left;
-  }
-
-  return std::make_shared<::iceberg::And>(std::move(left), std::move(right));
-}
-
-std::shared_ptr<Expression> Expressions::Or(std::shared_ptr<Expression> left,
-                                            std::shared_ptr<Expression> right) {
-  if (left->op() == Expression::Operation::kTrue ||
-      right->op() == Expression::Operation::kTrue) {
-    return AlwaysTrue();
-  }
-
-  if (left->op() == Expression::Operation::kFalse) {
-    return right;
-  }
-
-  if (right->op() == Expression::Operation::kFalse) {
-    return left;
-  }
-
-  return std::make_shared<::iceberg::Or>(std::move(left), std::move(right));
-}
-
 // Transform functions
 
 std::shared_ptr<UnboundTransform> Expressions::Bucket(std::string name,

@@ -24,6 +24,7 @@
 
 #include "iceberg/exception.h"
 #include "iceberg/expression/expressions.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/result.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
@@ -191,7 +192,9 @@ Result<std::shared_ptr<Expression>> UnboundPredicate<B>::BindLiteralOperation(
                              values_.size());
   }
 
-  const auto& literal = values_[0];
+  ICEBERG_ASSIGN_OR_RAISE(auto literal,
+                          values_[0].CastTo(internal::checked_pointer_cast<PrimitiveType>(
+                              bound_term->type())));
 
   if (literal.IsNull()) {
     return InvalidExpression("Invalid value for conversion to type {}: {} ({})",
@@ -226,7 +229,7 @@ Result<std::shared_ptr<Expression>> UnboundPredicate<B>::BindLiteralOperation(
 
   // TODO(gangwu): translate truncate(col) == value to startsWith(value)
   return std::make_shared<BoundLiteralPredicate>(BASE::op(), std::move(bound_term),
-                                                 literal);
+                                                 std::move(literal));
 }
 
 template <typename B>
@@ -370,6 +373,8 @@ BoundSetPredicate::BoundSetPredicate(Expression::Operation op,
                                      std::span<const Literal> literals)
     : BoundPredicate(op, std::move(term)) {
   for (const auto& literal : literals) {
+    ICEBERG_DCHECK((*literal.type() == *term_->type()),
+                   "Literal type does not match term type");
     value_set_.push_back(literal.value());
   }
 }

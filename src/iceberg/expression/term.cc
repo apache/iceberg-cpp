@@ -49,17 +49,13 @@ NamedReference::~NamedReference() = default;
 
 Result<std::shared_ptr<BoundReference>> NamedReference::Bind(const Schema& schema,
                                                              bool case_sensitive) const {
-  if (!case_sensitive) {
-    return NotImplemented("case-insensitive lookup is not implemented");
-  }
-
-  auto field_opt = schema.GetFieldByName(field_name_);
+  ICEBERG_ASSIGN_OR_RAISE(auto field_opt,
+                          schema.GetFieldByName(field_name_, case_sensitive));
   if (!field_opt.has_value()) {
     return InvalidExpression("Cannot find field '{}' in struct: {}", field_name_,
                              schema.ToString());
   }
-
-  return std::make_shared<BoundReference>(field_opt->get());
+  return std::make_shared<BoundReference>(field_opt.value().get());
 }
 
 std::string NamedReference::ToString() const {
@@ -146,7 +142,7 @@ bool BoundTransform::Equals(const BoundTerm& other) const {
 
   if (transform_->transform_type() == TransformType::kIdentity &&
       other.kind() == Term::Kind::kReference) {
-    return ref_->Equals(other);
+    return *ref_ == other;
   }
 
   return false;

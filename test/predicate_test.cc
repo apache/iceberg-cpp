@@ -408,7 +408,7 @@ TEST_F(PredicateTest, LiteralConversionEdgeCases) {
   ASSERT_THAT(bound_large_result, IsOk());
 
   auto bound_large = bound_large_result.value();
-  EXPECT_EQ(bound_large->op(), Expression::Operation::kLt);
+  EXPECT_EQ(bound_large->op(), Expression::Operation::kTrue);
 }
 
 TEST_F(PredicateTest, ComplexExpressionCombinations) {
