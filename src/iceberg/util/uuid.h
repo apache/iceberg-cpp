@@ -27,18 +27,23 @@
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 
-/// \file iceberg/util/uuid_util.h
-/// \brief UUID (Universally Unique Identifier) utilities.
+/// \file iceberg/util/uuid.h
+/// \brief UUID (Universally Unique Identifier) representation.
 
 namespace iceberg {
 
-class ICEBERG_EXPORT UUIDUtils {
+class ICEBERG_EXPORT Uuid {
  public:
+  Uuid() = delete;
+  constexpr static size_t kUuidSize = 16;
+
+  explicit Uuid(std::array<uint8_t, kUuidSize> data);
+
   /// \brief Generate a random UUID (version 4).
-  static std::array<uint8_t, 16> GenerateUuidV4();
+  static Uuid GenerateV4();
 
   /// \brief Generate UUID version 7 per RFC 9562, with the current timestamp.
-  static std::array<uint8_t, 16> GenerateUuidV7();
+  static Uuid GenerateV7();
 
   /// \brief Generate UUID version 7 per RFC 9562, with the given timestamp.
   ///
@@ -48,13 +53,29 @@ class ICEBERG_EXPORT UUIDUtils {
   /// \param unix_ts_ms number of milliseconds since start of the UNIX epoch
   ///
   /// \note unix_ts_ms cannot be negative per RFC.
-  static std::array<uint8_t, 16> GenerateUuidV7(uint64_t unix_ts_ms);
+  static Uuid GenerateV7(uint64_t unix_ts_ms);
 
   /// \brief Create a UUID from a string in standard format.
-  static Result<std::array<uint8_t, 16>> FromString(std::string_view str);
+  static Result<Uuid> FromString(std::string_view str);
 
-  /// \brief Convert a UUID to a string in standard format.
-  static std::string ToString(std::span<uint8_t> uuid);
+  /// \brief Create a UUID from a 16-byte array.
+  static Result<Uuid> FromBytes(std::span<const uint8_t> bytes);
+
+  /// \brief Get the raw bytes of the UUID.
+  std::span<const uint8_t> bytes() const { return data_; }
+
+  /// \brief Access individual bytes of the UUID.
+  uint8_t operator[](size_t index) const;
+
+  /// \brief Convert the UUID to a string in standard format.
+  std::string ToString() const;
+
+  friend bool operator==(const Uuid& lhs, const Uuid& rhs) {
+    return lhs.data_ == rhs.data_;
+  }
+
+ private:
+  std::array<uint8_t, kUuidSize> data_;
 };
 
 }  // namespace iceberg

@@ -53,7 +53,7 @@ set(ICEBERG_SOURCES
     util/murmurhash3_internal.cc
     util/timepoint.cc
     util/gzip_internal.cc
-    util/uuid_util.cc)
+    util/uuid.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_SHARED_BUILD_INTERFACE_LIBS)

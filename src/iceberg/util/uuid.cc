@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/util/uuid_util.h"
+#include "iceberg/util/uuid.h"
 
 #include <chrono>
 #include <cstdint>
@@ -32,7 +32,9 @@
 
 namespace iceberg {
 
-std::array<uint8_t, 16> UUIDUtils::GenerateUuidV4() {
+Uuid::Uuid(std::array<uint8_t, kUuidSize> data) : data_(std::move(data)) {}
+
+Uuid Uuid::GenerateV4() {
   static std::random_device rd;
   static std::mt19937 gen(rd());
   static std::uniform_int_distribution<uint64_t> distrib(
@@ -55,20 +57,20 @@ std::array<uint8_t, 16> UUIDUtils::GenerateUuidV4() {
   // Set variant field, top two bits are 1, 0
   uuid[8] = (uuid[8] & 0x3F) | 0x80;
 
-  return uuid;
+  return Uuid(std::move(uuid));
 }
 
-std::array<uint8_t, 16> UUIDUtils::GenerateUuidV7() {
+Uuid Uuid::GenerateV7() {
   // Get the current time in milliseconds since the Unix epoch
   auto now = std::chrono::system_clock::now();
   auto duration_since_epoch = now.time_since_epoch();
   auto unix_ts_ms =
       std::chrono::duration_cast<std::chrono::milliseconds>(duration_since_epoch).count();
 
-  return GenerateUuidV7(static_cast<uint64_t>(unix_ts_ms));
+  return GenerateV7(static_cast<uint64_t>(unix_ts_ms));
 }
 
-std::array<uint8_t, 16> UUIDUtils::GenerateUuidV7(uint64_t unix_ts_ms) {
+Uuid Uuid::GenerateV7(uint64_t unix_ts_ms) {
   std::array<uint8_t, 16> uuid = {};
 
   // Set the timestamp (in milliseconds since Unix epoch)
@@ -98,14 +100,14 @@ std::array<uint8_t, 16> UUIDUtils::GenerateUuidV7(uint64_t unix_ts_ms) {
   // set variant field, top two bits are 1, 0
   uuid[8] = (uuid[8] & 0x3F) | 0x80;
 
-  return uuid;
+  return Uuid(std::move(uuid));
 }
 
 namespace {
 
 constexpr std::array<uint8_t, 256> BuildHexTable() {
   std::array<uint8_t, 256> buf{};
-  for (int i = 0; i < 256; i++) {
+  for (int32_t i = 0; i < 256; i++) {
     if (i >= '0' && i <= '9') {
       buf[i] = static_cast<uint8_t>(i - '0');
     } else if (i >= 'a' && i <= 'f') {
@@ -121,35 +123,35 @@ constexpr std::array<uint8_t, 256> BuildHexTable() {
 
 constexpr std::array<uint8_t, 256> BuildShl4Table() {
   std::array<uint8_t, 256> buf{};
-  for (int i = 0; i < 256; i++) {
+  for (int32_t i = 0; i < 256; i++) {
     buf[i] = static_cast<uint8_t>(i << 4);
   }
   return buf;
 }
 
-constexpr auto HEX_TABLE = BuildHexTable();
-constexpr auto SHL4_TABLE = BuildShl4Table();
+constexpr auto kHexTable = BuildHexTable();
+constexpr auto kShl4Table = BuildShl4Table();
 
 // Parse a UUID string without dashes, e.g. "67e5504410b1426f9247bb680e5fe0c8"
-inline Result<std::array<uint8_t, 16>> ParseSimple(std::string_view s) {
+inline Result<Uuid> ParseSimple(std::string_view s) {
   ICEBERG_DCHECK(s.size() == 32, "s must be 32 characters long");
 
-  std::array<uint8_t, 16> buf{};
+  std::array<uint8_t, 16> uuid{};
   for (size_t i = 0; i < 16; i++) {
-    uint8_t h1 = HEX_TABLE[static_cast<uint8_t>(s[i * 2])];
-    uint8_t h2 = HEX_TABLE[static_cast<uint8_t>(s[i * 2 + 1])];
+    uint8_t h1 = kHexTable[static_cast<uint8_t>(s[i * 2])];
+    uint8_t h2 = kHexTable[static_cast<uint8_t>(s[i * 2 + 1])];
 
-    if ((h1 | h2) == 0xff) {
+    if ((h1 | h2) == 0xFF) {
       return InvalidArgument("Invalid UUID string: {}", s);
     }
 
-    buf[i] = static_cast<uint8_t>(SHL4_TABLE[h1] | h2);
+    uuid[i] = static_cast<uint8_t>(kShl4Table[h1] | h2);
   }
-  return buf;
+  return Uuid(std::move(uuid));
 }
 
 // Parse a UUID string with dashes, e.g. "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-inline Result<std::array<uint8_t, 16>> ParseHyphenated(std::string_view s) {
+inline Result<Uuid> ParseHyphenated(std::string_view s) {
   ICEBERG_DCHECK(s.size() == 36, "s must be 36 characters long");
 
   // Check that dashes are in the right places
@@ -158,29 +160,29 @@ inline Result<std::array<uint8_t, 16>> ParseHyphenated(std::string_view s) {
   }
 
   constexpr std::array<size_t, 8> positions = {0, 4, 9, 14, 19, 24, 28, 32};
-  std::array<uint8_t, 16> buf{};
+  std::array<uint8_t, 16> uuid{};
 
   for (size_t j = 0; j < 8; j++) {
     size_t i = positions[j];
-    uint8_t h1 = HEX_TABLE[static_cast<uint8_t>(s[i])];
-    uint8_t h2 = HEX_TABLE[static_cast<uint8_t>(s[i + 1])];
-    uint8_t h3 = HEX_TABLE[static_cast<uint8_t>(s[i + 2])];
-    uint8_t h4 = HEX_TABLE[static_cast<uint8_t>(s[i + 3])];
+    uint8_t h1 = kHexTable[static_cast<uint8_t>(s[i])];
+    uint8_t h2 = kHexTable[static_cast<uint8_t>(s[i + 1])];
+    uint8_t h3 = kHexTable[static_cast<uint8_t>(s[i + 2])];
+    uint8_t h4 = kHexTable[static_cast<uint8_t>(s[i + 3])];
 
-    if ((h1 | h2 | h3 | h4) == 0xff) {
+    if ((h1 | h2 | h3 | h4) == 0xFF) {
       return InvalidArgument("Invalid UUID string: {}", s);
     }
 
-    buf[j * 2] = static_cast<uint8_t>(SHL4_TABLE[h1] | h2);
-    buf[j * 2 + 1] = static_cast<uint8_t>(SHL4_TABLE[h3] | h4);
+    uuid[j * 2] = static_cast<uint8_t>(kShl4Table[h1] | h2);
+    uuid[j * 2 + 1] = static_cast<uint8_t>(kShl4Table[h3] | h4);
   }
 
-  return buf;
+  return Uuid(std::move(uuid));
 }
 
 }  // namespace
 
-Result<std::array<uint8_t, 16>> UUIDUtils::FromString(std::string_view str) {
+Result<Uuid> Uuid::FromString(std::string_view str) {
   if (str.size() == 32) {
     return ParseSimple(str);
   } else if (str.size() == 36) {
@@ -190,15 +192,30 @@ Result<std::array<uint8_t, 16>> UUIDUtils::FromString(std::string_view str) {
   }
 }
 
-std::string UUIDUtils::ToString(std::span<uint8_t> uuid) {
+Result<Uuid> Uuid::FromBytes(std::span<const uint8_t> bytes) {
+  if (bytes.size() != kUuidSize) [[unlikely]] {
+    return InvalidArgument("UUID byte array must be exactly {} bytes, was {}", kUuidSize,
+                           bytes.size());
+  }
+  std::array<uint8_t, kUuidSize> data;
+  std::memcpy(data.data(), bytes.data(), kUuidSize);
+  return Uuid(std::move(data));
+}
+
+uint8_t Uuid::operator[](size_t index) const {
+  ICEBERG_CHECK(index < kUuidSize, "UUID index out of range: {}", index);
+  return data_[index];
+}
+
+std::string Uuid::ToString() const {
   static const char* hex_chars = "0123456789abcdef";
-  ICEBERG_CHECK(uuid.size() == 16, "uuid must be 16 bytes long");
 
   return std::format(
       "{:02x}{:02x}{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}{:02x}"
       "{:02x}{:02x}{:02x}",
-      uuid[0], uuid[1], uuid[2], uuid[3], uuid[4], uuid[5], uuid[6], uuid[7], uuid[8],
-      uuid[9], uuid[10], uuid[11], uuid[12], uuid[13], uuid[14], uuid[15]);
+      data_[0], data_[1], data_[2], data_[3], data_[4], data_[5], data_[6], data_[7],
+      data_[8], data_[9], data_[10], data_[11], data_[12], data_[13], data_[14],
+      data_[15]);
 }
 
 }  // namespace iceberg

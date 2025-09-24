@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/util/uuid_util.h"
+#include "iceberg/util/uuid.h"
 
 #include <vector>
 
@@ -28,9 +28,9 @@
 namespace iceberg {
 
 TEST(UUIDUtilTest, GenerateV4) {
-  auto uuid = UUIDUtils::GenerateUuidV4();
+  auto uuid = Uuid::GenerateV4();
   // just ensure it runs and produces a value
-  EXPECT_EQ(uuid.size(), 16);
+  EXPECT_EQ(uuid.bytes().size(), Uuid::kUuidSize);
   // Version 4 UUIDs have the version number (4) in the 7th byte
   EXPECT_EQ((uuid[6] >> 4) & 0x0F, 4);
   // Variant is in the 9th byte, the two most significant bits should be 10
@@ -38,9 +38,9 @@ TEST(UUIDUtilTest, GenerateV4) {
 }
 
 TEST(UUIDUtilTest, GenerateV7) {
-  auto uuid = UUIDUtils::GenerateUuidV7();
+  auto uuid = Uuid::GenerateV7();
   // just ensure it runs and produces a value
-  EXPECT_EQ(uuid.size(), 16);
+  EXPECT_EQ(uuid.bytes().size(), 16);
   // Version 7 UUIDs have the version number (7) in the 7th byte
   EXPECT_EQ((uuid[6] >> 4) & 0x0F, 7);
   // Variant is in the 9th byte, the two most significant bits should be 10
@@ -55,10 +55,10 @@ TEST(UUIDUtilTest, FromString) {
   };
 
   for (const auto& uuid_str : uuid_strings) {
-    auto result = UUIDUtils::FromString(uuid_str);
+    auto result = Uuid::FromString(uuid_str);
     EXPECT_THAT(result, IsOk());
     auto uuid = result.value();
-    EXPECT_EQ(UUIDUtils::ToString(uuid), uuid_str);
+    EXPECT_EQ(uuid.ToString(), uuid_str);
   }
 
   std::vector<std::pair<std::string, std::string>> uuid_string_pairs = {
@@ -68,10 +68,10 @@ TEST(UUIDUtilTest, FromString) {
   };
 
   for (const auto& [input_str, expected_str] : uuid_string_pairs) {
-    auto result = UUIDUtils::FromString(input_str);
+    auto result = Uuid::FromString(input_str);
     EXPECT_THAT(result, IsOk());
     auto uuid = result.value();
-    EXPECT_EQ(UUIDUtils::ToString(uuid), expected_str);
+    EXPECT_EQ(uuid.ToString(), expected_str);
   }
 }
 
@@ -88,10 +88,30 @@ TEST(UUIDUtilTest, FromStringInvalid) {
   };
 
   for (const auto& uuid_str : invalid_uuid_strings) {
-    auto result = UUIDUtils::FromString(uuid_str);
+    auto result = Uuid::FromString(uuid_str);
     EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
     EXPECT_THAT(result, HasErrorMessage("Invalid UUID string"));
   }
+}
+
+TEST(UUIDUtilTest, FromBytes) {
+  std::array<uint8_t, Uuid::kUuidSize> bytes = {0x12, 0x3e, 0x45, 0x67, 0xe8, 0x9b,
+                                                0x12, 0xd3, 0xa4, 0x56, 0x42, 0x66,
+                                                0x14, 0x17, 0x40, 0x00};
+  auto result = Uuid::FromBytes(bytes);
+  EXPECT_THAT(result, IsOk());
+  auto uuid = result.value();
+  EXPECT_EQ(uuid.ToString(), "123e4567-e89b-12d3-a456-426614174000");
+  EXPECT_EQ(uuid, Uuid(bytes));
+}
+
+TEST(UUIDUtilTest, FromBytesInvalid) {
+  std::array<uint8_t, Uuid::kUuidSize - 1> short_bytes = {0x12, 0x3e, 0x45, 0x67, 0xe8,
+                                                          0x9b, 0x12, 0xd3, 0xa4, 0x56,
+                                                          0x42, 0x66, 0x14, 0x17, 0x40};
+  auto result = Uuid::FromBytes(short_bytes);
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("UUID byte array must be exactly 16 bytes"));
 }
 
 }  // namespace iceberg
