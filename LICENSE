@@ -212,17 +212,6 @@ License: Public Domain
 
 --------------------------------------------------------------------------------
 
-This product bundles nlohmann-json.
-
-* JSON serialization/deserialization functionality in src/iceberg/json_internal.h and src/iceberg/json_internal.cc.
-* Used throughout the codebase for Iceberg table metadata processing.
-
-Copyright: 2013-2022 Niels Lohmann.
-Home page: https://github.com/nlohmann/json
-License: https://mit-license.org/
-
---------------------------------------------------------------------------------
-
 This product includes code from Apache Arrow.
 
 * checked_cast utility in src/iceberg/util/checked_cast.h.
@@ -234,31 +223,3 @@ Home page: https://arrow.apache.org/
 License: https://www.apache.org/licenses/LICENSE-2.0
 
 --------------------------------------------------------------------------------
-
-This product bundles spdlog.
-
-* Used for structured logging functionality.
-
-Copyright: 2016 Gabi Melman.
-Home page: https://github.com/gabime/spdlog
-License: https://mit-license.org/
-
---------------------------------------------------------------------------------
-
-This product bundles zlib.
-
-* gzip compression/decompression functionality in src/iceberg/util/gzip_internal.cc
-
-Copyright: 1995-2024 Jean-loup Gailly and Mark Adler.
-Home page: https://zlib.net/
-License: https://www.zlib.net/zlib_license.html
-
---------------------------------------------------------------------------------
-
-This product bundles cpr.
-
-* REST catalog implementation in src/iceberg/catalog/rest.
-
-Copyright: 2017-2021 Huu Nguyen, 2022 libcpr and contributors.
-Home page: https://github.com/libcpr/cpr
-License: https://mit-license.org/
