@@ -183,6 +183,7 @@ struct ICEBERG_EXPORT DataFile {
       100, "file_path", iceberg::string(), "Location URI with FS scheme");
   inline static const SchemaField kFileFormat = SchemaField::MakeRequired(
       101, "file_format", iceberg::string(), "File format name: avro, orc, or parquet");
+  inline static const int32_t kPartitionFieldId = 102;
   inline static const std::string kPartitionField = "partition";
   inline static const SchemaField kRecordCount = SchemaField::MakeRequired(
       103, "record_count", iceberg::int64(), "Number of records in the file");
@@ -296,11 +297,12 @@ struct ICEBERG_EXPORT ManifestEntry {
       SchemaField::MakeRequired(0, "status", iceberg::int32());
   inline static const SchemaField kSnapshotId =
       SchemaField::MakeOptional(1, "snapshot_id", iceberg::int64());
+  inline static const int32_t kDataFileFieldId = 2;
+  inline static const std::string kDataFileField = "data_file";
   inline static const SchemaField kSequenceNumber =
       SchemaField::MakeOptional(3, "sequence_number", iceberg::int64());
   inline static const SchemaField kFileSequenceNumber =
       SchemaField::MakeOptional(4, "file_sequence_number", iceberg::int64());
-  inline static const std::string kDataFileField = "data_file";
 
   bool operator==(const ManifestEntry& other) const;
 

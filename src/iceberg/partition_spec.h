@@ -23,6 +23,7 @@
 /// Partition specs for Iceberg tables.
 
 #include <cstdint>
+#include <mutex>
 #include <optional>
 #include <span>
 #include <string>
@@ -30,6 +31,7 @@
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/partition_field.h"
+#include "iceberg/result.h"
 #include "iceberg/util/formattable.h"
 
 namespace iceberg {
@@ -67,6 +69,8 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \brief Get a view of the partition fields.
   std::span<const PartitionField> fields() const;
 
+  Result<std::shared_ptr<Schema>> partition_schema();
+
   std::string ToString() const override;
 
   int32_t last_assigned_field_id() const { return last_assigned_field_id_; }
@@ -83,6 +87,8 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   const int32_t spec_id_;
   std::vector<PartitionField> fields_;
   int32_t last_assigned_field_id_;
+  std::mutex mutex_;
+  std::shared_ptr<Schema> partition_schema_;
 };
 
 }  // namespace iceberg

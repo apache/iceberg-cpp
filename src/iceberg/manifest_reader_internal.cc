@@ -21,6 +21,7 @@
 
 #include <nanoarrow/nanoarrow.h>
 
+#include "iceberg/arrow/nanoarrow_error_transform_internal.h"
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/file_format.h"
 #include "iceberg/manifest_entry.h"
@@ -30,11 +31,6 @@
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
-
-#define NANOARROW_RETURN_IF_NOT_OK(status, error)                  \
-  if (status != NANOARROW_OK) [[unlikely]] {                       \
-    return InvalidArrowData("Nanoarrow error: {}", error.message); \
-  }
 
 #define PARSE_PRIMITIVE_FIELD(item, array_view, type)                                   \
   for (size_t row_idx = 0; row_idx < array_view->length; row_idx++) {                   \
@@ -207,12 +203,12 @@ Result<std::vector<ManifestFile>> ParseManifestList(ArrowSchema* schema,
   ArrowError error;
   ArrowArrayView array_view;
   auto status = ArrowArrayViewInitFromSchema(&array_view, schema, &error);
-  NANOARROW_RETURN_IF_NOT_OK(status, error);
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(status, error);
   internal::ArrowArrayViewGuard view_guard(&array_view);
   status = ArrowArrayViewSetArray(&array_view, array_in, &error);
-  NANOARROW_RETURN_IF_NOT_OK(status, error);
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(status, error);
   status = ArrowArrayViewValidate(&array_view, NANOARROW_VALIDATION_LEVEL_FULL, &error);
-  NANOARROW_RETURN_IF_NOT_OK(status, error);
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(status, error);
 
   std::vector<ManifestFile> manifest_files;
   manifest_files.resize(array_in->length);
@@ -469,12 +465,12 @@ Result<std::vector<ManifestEntry>> ParseManifestEntry(ArrowSchema* schema,
   ArrowError error;
   ArrowArrayView array_view;
   auto status = ArrowArrayViewInitFromSchema(&array_view, schema, &error);
-  NANOARROW_RETURN_IF_NOT_OK(status, error);
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(status, error);
   internal::ArrowArrayViewGuard view_guard(&array_view);
   status = ArrowArrayViewSetArray(&array_view, array_in, &error);
-  NANOARROW_RETURN_IF_NOT_OK(status, error);
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(status, error);
   status = ArrowArrayViewValidate(&array_view, NANOARROW_VALIDATION_LEVEL_FULL, &error);
-  NANOARROW_RETURN_IF_NOT_OK(status, error);
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(status, error);
 
   std::vector<ManifestEntry> manifest_entries;
   manifest_entries.resize(array_in->length);
