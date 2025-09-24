@@ -52,14 +52,10 @@ jobs:
           echo "Copying site contents to /tmp/site"
           mv ./site /tmp/site/
 
-      - name: Push changes to gh-pages branch
-        run: |
-          git checkout --orphan gh-pages-tmp
-          git rm --quiet -rf .
-          cp -r /tmp/site/* .
-          git config --global user.name 'GitHub Actions'
-          git config --global user.email 'actions@github.com'
-          echo "cpp.iceberg.apache.org" > CNAME
-          git add --all
-          git commit -m 'Publish C++ docs'
-          git push -f origin gh-pages-tmp:gh-pages || true
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4.0.0
+        if: github.event_name == 'pull_request'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./mkdocs/site
+          publish_branch: gh-pages
