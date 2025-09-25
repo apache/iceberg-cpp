@@ -30,7 +30,7 @@ namespace iceberg {
 TEST(UUIDUtilTest, GenerateV4) {
   auto uuid = Uuid::GenerateV4();
   // just ensure it runs and produces a value
-  EXPECT_EQ(uuid.bytes().size(), Uuid::kUuidSize);
+  EXPECT_EQ(uuid.bytes().size(), Uuid::kLength);
   // Version 4 UUIDs have the version number (4) in the 7th byte
   EXPECT_EQ((uuid[6] >> 4) & 0x0F, 4);
   // Variant is in the 9th byte, the two most significant bits should be 10
@@ -95,9 +95,9 @@ TEST(UUIDUtilTest, FromStringInvalid) {
 }
 
 TEST(UUIDUtilTest, FromBytes) {
-  std::array<uint8_t, Uuid::kUuidSize> bytes = {0x12, 0x3e, 0x45, 0x67, 0xe8, 0x9b,
-                                                0x12, 0xd3, 0xa4, 0x56, 0x42, 0x66,
-                                                0x14, 0x17, 0x40, 0x00};
+  std::array<uint8_t, Uuid::kLength> bytes = {0x12, 0x3e, 0x45, 0x67, 0xe8, 0x9b,
+                                              0x12, 0xd3, 0xa4, 0x56, 0x42, 0x66,
+                                              0x14, 0x17, 0x40, 0x00};
   auto result = Uuid::FromBytes(bytes);
   EXPECT_THAT(result, IsOk());
   auto uuid = result.value();
@@ -106,9 +106,9 @@ TEST(UUIDUtilTest, FromBytes) {
 }
 
 TEST(UUIDUtilTest, FromBytesInvalid) {
-  std::array<uint8_t, Uuid::kUuidSize - 1> short_bytes = {0x12, 0x3e, 0x45, 0x67, 0xe8,
-                                                          0x9b, 0x12, 0xd3, 0xa4, 0x56,
-                                                          0x42, 0x66, 0x14, 0x17, 0x40};
+  std::array<uint8_t, Uuid::kLength - 1> short_bytes = {0x12, 0x3e, 0x45, 0x67, 0xe8,
+                                                        0x9b, 0x12, 0xd3, 0xa4, 0x56,
+                                                        0x42, 0x66, 0x14, 0x17, 0x40};
   auto result = Uuid::FromBytes(short_bytes);
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(result, HasErrorMessage("UUID byte array must be exactly 16 bytes"));

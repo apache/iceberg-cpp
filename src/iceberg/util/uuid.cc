@@ -32,77 +32,6 @@
 
 namespace iceberg {
 
-Uuid::Uuid(std::array<uint8_t, kUuidSize> data) : data_(std::move(data)) {}
-
-Uuid Uuid::GenerateV4() {
-  static std::random_device rd;
-  static std::mt19937 gen(rd());
-  static std::uniform_int_distribution<uint64_t> distrib(
-      std::numeric_limits<uint64_t>::min(), std::numeric_limits<uint64_t>::max());
-  std::array<uint8_t, 16> uuid;
-
-  // Generate two random 64-bit integers
-  uint64_t high_bits = distrib(gen);
-  uint64_t low_bits = distrib(gen);
-
-  // Combine them into a uint128_t
-  uint128_t random_128_bit_number = (static_cast<uint128_t>(high_bits) << 64) | low_bits;
-
-  // Copy the bytes into the uuid array
-  std::memcpy(uuid.data(), &random_128_bit_number, 16);
-
-  // Set magic numbers for a "version 4" (pseudorandom) UUID and variant,
-  // see https://datatracker.ietf.org/doc/html/rfc9562#name-uuid-version-4
-  uuid[6] = (uuid[6] & 0x0F) | 0x40;
-  // Set variant field, top two bits are 1, 0
-  uuid[8] = (uuid[8] & 0x3F) | 0x80;
-
-  return Uuid(std::move(uuid));
-}
-
-Uuid Uuid::GenerateV7() {
-  // Get the current time in milliseconds since the Unix epoch
-  auto now = std::chrono::system_clock::now();
-  auto duration_since_epoch = now.time_since_epoch();
-  auto unix_ts_ms =
-      std::chrono::duration_cast<std::chrono::milliseconds>(duration_since_epoch).count();
-
-  return GenerateV7(static_cast<uint64_t>(unix_ts_ms));
-}
-
-Uuid Uuid::GenerateV7(uint64_t unix_ts_ms) {
-  std::array<uint8_t, 16> uuid = {};
-
-  // Set the timestamp (in milliseconds since Unix epoch)
-  uuid[0] = (unix_ts_ms >> 40) & 0xFF;
-  uuid[1] = (unix_ts_ms >> 32) & 0xFF;
-  uuid[2] = (unix_ts_ms >> 24) & 0xFF;
-  uuid[3] = (unix_ts_ms >> 16) & 0xFF;
-  uuid[4] = (unix_ts_ms >> 8) & 0xFF;
-  uuid[5] = unix_ts_ms & 0xFF;
-
-  // Generate random bytes for the remaining fields
-  static std::random_device rd;
-  static std::mt19937 gen(rd());
-  static std::uniform_int_distribution<uint16_t> distrib(
-      std::numeric_limits<uint16_t>::min(), std::numeric_limits<uint16_t>::max());
-
-  // Note: uint8_t is invalid for uniform_int_distribution on Windows
-  for (size_t i = 6; i < 16; i += 2) {
-    auto rand = static_cast<uint16_t>(distrib(gen));
-    uuid[i] = (rand >> 8) & 0xFF;
-    uuid[i + 1] = rand & 0xFF;
-  }
-
-  // Set magic numbers for a "version 7" (pseudorandom) UUID and variant,
-  // see https://www.rfc-editor.org/rfc/rfc9562#name-version-field
-  uuid[6] = (uuid[6] & 0x0F) | 0x70;
-  // set variant field, top two bits are 1, 0
-  uuid[8] = (uuid[8] & 0x3F) | 0x80;
-
-  return Uuid(std::move(uuid));
-}
-
 namespace {
 
 constexpr std::array<uint8_t, 256> BuildHexTable() {
@@ -182,6 +111,77 @@ inline Result<Uuid> ParseHyphenated(std::string_view s) {
 
 }  // namespace
 
+Uuid::Uuid(std::array<uint8_t, kLength> data) : data_(std::move(data)) {}
+
+Uuid Uuid::GenerateV4() {
+  static std::random_device rd;
+  static std::mt19937 gen(rd());
+  static std::uniform_int_distribution<uint64_t> distrib(
+      std::numeric_limits<uint64_t>::min(), std::numeric_limits<uint64_t>::max());
+  std::array<uint8_t, 16> uuid;
+
+  // Generate two random 64-bit integers
+  uint64_t high_bits = distrib(gen);
+  uint64_t low_bits = distrib(gen);
+
+  // Combine them into a uint128_t
+  uint128_t random_128_bit_number = (static_cast<uint128_t>(high_bits) << 64) | low_bits;
+
+  // Copy the bytes into the uuid array
+  std::memcpy(uuid.data(), &random_128_bit_number, 16);
+
+  // Set magic numbers for a "version 4" (pseudorandom) UUID and variant,
+  // see https://datatracker.ietf.org/doc/html/rfc9562#name-uuid-version-4
+  uuid[6] = (uuid[6] & 0x0F) | 0x40;
+  // Set variant field, top two bits are 1, 0
+  uuid[8] = (uuid[8] & 0x3F) | 0x80;
+
+  return Uuid(std::move(uuid));
+}
+
+Uuid Uuid::GenerateV7() {
+  // Get the current time in milliseconds since the Unix epoch
+  auto now = std::chrono::system_clock::now();
+  auto duration_since_epoch = now.time_since_epoch();
+  auto unix_ts_ms =
+      std::chrono::duration_cast<std::chrono::milliseconds>(duration_since_epoch).count();
+
+  return GenerateV7(static_cast<uint64_t>(unix_ts_ms));
+}
+
+Uuid Uuid::GenerateV7(uint64_t unix_ts_ms) {
+  std::array<uint8_t, 16> uuid = {};
+
+  // Set the timestamp (in milliseconds since Unix epoch)
+  uuid[0] = (unix_ts_ms >> 40) & 0xFF;
+  uuid[1] = (unix_ts_ms >> 32) & 0xFF;
+  uuid[2] = (unix_ts_ms >> 24) & 0xFF;
+  uuid[3] = (unix_ts_ms >> 16) & 0xFF;
+  uuid[4] = (unix_ts_ms >> 8) & 0xFF;
+  uuid[5] = unix_ts_ms & 0xFF;
+
+  // Generate random bytes for the remaining fields
+  static std::random_device rd;
+  static std::mt19937 gen(rd());
+  static std::uniform_int_distribution<uint16_t> distrib(
+      std::numeric_limits<uint16_t>::min(), std::numeric_limits<uint16_t>::max());
+
+  // Note: uint8_t is invalid for uniform_int_distribution on Windows
+  for (size_t i = 6; i < 16; i += 2) {
+    auto rand = static_cast<uint16_t>(distrib(gen));
+    uuid[i] = (rand >> 8) & 0xFF;
+    uuid[i + 1] = rand & 0xFF;
+  }
+
+  // Set magic numbers for a "version 7" (pseudorandom) UUID and variant,
+  // see https://www.rfc-editor.org/rfc/rfc9562#name-version-field
+  uuid[6] = (uuid[6] & 0x0F) | 0x70;
+  // set variant field, top two bits are 1, 0
+  uuid[8] = (uuid[8] & 0x3F) | 0x80;
+
+  return Uuid(std::move(uuid));
+}
+
 Result<Uuid> Uuid::FromString(std::string_view str) {
   if (str.size() == 32) {
     return ParseSimple(str);
@@ -193,23 +193,23 @@ Result<Uuid> Uuid::FromString(std::string_view str) {
 }
 
 Result<Uuid> Uuid::FromBytes(std::span<const uint8_t> bytes) {
-  if (bytes.size() != kUuidSize) [[unlikely]] {
-    return InvalidArgument("UUID byte array must be exactly {} bytes, was {}", kUuidSize,
+  if (bytes.size() != kLength) [[unlikely]] {
+    return InvalidArgument("UUID byte array must be exactly {} bytes, was {}", kLength,
                            bytes.size());
   }
-  std::array<uint8_t, kUuidSize> data;
-  std::memcpy(data.data(), bytes.data(), kUuidSize);
+  std::array<uint8_t, kLength> data;
+  std::memcpy(data.data(), bytes.data(), kLength);
   return Uuid(std::move(data));
 }
 
 uint8_t Uuid::operator[](size_t index) const {
-  ICEBERG_CHECK(index < kUuidSize, "UUID index out of range: {}", index);
+  ICEBERG_CHECK(index < kLength, "UUID index out of range: {}", index);
   return data_[index];
 }
 
-std::string Uuid::ToString() const {
-  static const char* hex_chars = "0123456789abcdef";
+std::array<uint8_t, Uuid::kLength> Uuid::ToBigEndianBytes() const { return data_; }
 
+std::string Uuid::ToString() const {
   return std::format(
       "{:02x}{:02x}{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}{:02x}"
       "{:02x}{:02x}{:02x}",

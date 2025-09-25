@@ -35,9 +35,9 @@ namespace iceberg {
 class ICEBERG_EXPORT Uuid {
  public:
   Uuid() = delete;
-  constexpr static size_t kUuidSize = 16;
+  constexpr static size_t kLength = 16;
 
-  explicit Uuid(std::array<uint8_t, kUuidSize> data);
+  explicit Uuid(std::array<uint8_t, kLength> data);
 
   /// \brief Generate a random UUID (version 4).
   static Uuid GenerateV4();
@@ -61,10 +61,16 @@ class ICEBERG_EXPORT Uuid {
   /// \brief Create a UUID from a 16-byte array.
   static Result<Uuid> FromBytes(std::span<const uint8_t> bytes);
 
+  /// \brief Get the raw bytes of the UUID in big-endian order.
+  std::array<uint8_t, kLength> ToBigEndianBytes() const;
+
   /// \brief Get the raw bytes of the UUID.
   std::span<const uint8_t> bytes() const { return data_; }
 
   /// \brief Access individual bytes of the UUID.
+  /// \param index The index of the byte to access (0-15).
+  /// \return The byte at the specified index.
+  /// \throw IcebergError if index is out of bounds.
   uint8_t operator[](size_t index) const;
 
   /// \brief Convert the UUID to a string in standard format.
@@ -75,7 +81,7 @@ class ICEBERG_EXPORT Uuid {
   }
 
  private:
-  std::array<uint8_t, kUuidSize> data_;
+  std::array<uint8_t, kLength> data_;
 };
 
 }  // namespace iceberg
