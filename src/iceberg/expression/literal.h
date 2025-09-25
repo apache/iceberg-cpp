@@ -72,7 +72,7 @@ class ICEBERG_EXPORT Literal : public util::Formattable {
   static Literal Double(double value);
   static Literal String(std::string value);
   static Literal Binary(std::vector<uint8_t> value);
-  static Literal Fixed(std::vector<uint8_t> value, int32_t length);
+  static Literal Fixed(std::vector<uint8_t> value);
 
   /// \brief Create a literal representing a null value.
   static Literal Null(std::shared_ptr<PrimitiveType> type) {

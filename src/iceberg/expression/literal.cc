@@ -24,6 +24,7 @@
 
 #include "iceberg/exception.h"
 #include "iceberg/util/conversions.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -150,7 +151,8 @@ Literal Literal::Binary(std::vector<uint8_t> value) {
   return {Value{std::move(value)}, binary()};
 }
 
-Literal Literal::Fixed(std::vector<uint8_t> value, int32_t length) {
+Literal Literal::Fixed(std::vector<uint8_t> value) {
+  auto length = static_cast<int32_t>(value.size());
   return {Value{std::move(value)}, fixed(length)};
 }
 
@@ -194,7 +196,7 @@ bool Literal::operator==(const Literal& other) const { return (*this <=> other) 
 // Three-way comparison operator
 std::partial_ordering Literal::operator<=>(const Literal& other) const {
   // If types are different, comparison is unordered
-  if (type_->type_id() != other.type_->type_id()) {
+  if (*type_ != *other.type_) {
     return std::partial_ordering::unordered;
   }
 
@@ -256,14 +258,6 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
     }
 
     case TypeId::kFixed: {
-      // Fixed types can only be compared if they have the same length
-      auto& this_fixed_type = static_cast<const FixedType&>(*type_);
-      auto& other_fixed_type = static_cast<const FixedType&>(*other.type_);
-
-      if (this_fixed_type.length() != other_fixed_type.length()) {
-        return std::partial_ordering::unordered;
-      }
-
       auto& this_val = std::get<std::vector<uint8_t>>(value_);
       auto& other_val = std::get<std::vector<uint8_t>>(other.value_);
       return this_val <=> other_val;
