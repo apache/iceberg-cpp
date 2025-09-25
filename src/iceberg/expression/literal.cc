@@ -21,8 +21,13 @@
 
 #include <cmath>
 #include <concepts>
+#include <utility>
 
 #include "iceberg/exception.h"
+#include "iceberg/result.h"
+#include "iceberg/util/decimal.h"
+#include "iceberg/util/endian.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -149,13 +154,177 @@ Literal Literal::Binary(std::vector<uint8_t> value) {
   return {Value{std::move(value)}, binary()};
 }
 
+Literal Literal::Decimal(int128_t value, int32_t precision, int32_t scale) {
+  return {Value{value}, decimal(precision, scale)};
+}
+
+Result<Literal> Literal::Decimal(std::string_view value) {
+  int32_t precision = 0;
+  int32_t scale = 0;
+  ICEBERG_ASSIGN_OR_RAISE(auto decimal_value,
+                          Decimal::FromString(value, &precision, &scale));
+  return Literal{Value{decimal_value.value()}, decimal(precision, scale)};
+}
+
+Literal Literal::UUID(std::array<uint8_t, 16> value) {
+  return {Value{std::move(value)}, uuid()};
+}
+
+Literal Literal::Fixed(std::vector<uint8_t> value) {
+  auto length = static_cast<int32_t>(value.size());
+  return {Value{std::move(value)}, fixed(length)};
+}
+
 Result<Literal> Literal::Deserialize(std::span<const uint8_t> data,
                                      std::shared_ptr<PrimitiveType> type) {
-  return NotImplemented("Deserialization of Literal is not implemented yet");
+  Literal::Value value;
+  switch (type->type_id()) {
+    case TypeId::kBoolean:
+      if (data.size() == 1 && data[0] == 1) {
+        value = true;
+      } else {
+        value = false;
+      }
+      break;
+    case TypeId::kInt:
+    case TypeId::kDate:
+      if (data.size() != sizeof(int32_t)) {
+        return Invalid("Invalid data size for Int literal deserialization");
+      }
+      value = FromLittleEndian(*reinterpret_cast<const int32_t*>(data.data()));
+      break;
+    case TypeId::kLong:
+      // In the case of an evolved field
+      if (data.size() == sizeof(int32_t)) {
+        value = static_cast<int64_t>(
+            FromLittleEndian(*reinterpret_cast<const int32_t*>(data.data())));
+      } else if (data.size() == sizeof(int64_t)) {
+        value = FromLittleEndian(*reinterpret_cast<const int64_t*>(data.data()));
+      } else {
+        return Invalid("Invalid data size for Long literal deserialization");
+      }
+      break;
+    case TypeId::kFloat:
+      if (data.size() != sizeof(float)) {
+        return Invalid("Invalid data size for Float literal deserialization");
+      }
+      value = FromLittleEndian(*reinterpret_cast<const float*>(data.data()));
+      break;
+    case TypeId::kDouble:
+      // In the case of an evolved field
+      if (data.size() == sizeof(float)) {
+        value = static_cast<double>(
+            FromLittleEndian(*reinterpret_cast<const float*>(data.data())));
+      } else if (data.size() == sizeof(double)) {
+        value = FromLittleEndian(*reinterpret_cast<const double*>(data.data()));
+      } else {
+        return Invalid("Invalid data size for Double literal deserialization");
+      }
+      break;
+    case TypeId::kTime:
+    case TypeId::kTimestamp:
+    case TypeId::kTimestampTz:
+      if (data.size() != sizeof(int64_t)) {
+        return Invalid("Invalid data size for Timestamp/Time literal deserialization");
+      }
+      value = FromLittleEndian(*reinterpret_cast<const int64_t*>(data.data()));
+      break;
+    case TypeId::kString:
+      value = std::string(data.begin(), data.end());
+      break;
+    case TypeId::kUuid:
+      if (data.size() != 16) {
+        return Invalid("Invalid data size for UUID literal deserialization");
+      }
+      value = *reinterpret_cast<const std::array<uint8_t, 16>*>(data.data());
+      break;
+    case TypeId::kDecimal: {
+      ICEBERG_ASSIGN_OR_RAISE(auto unscaled_decimal,
+                              Decimal::FromBigEndian(data.data(), data.size()));
+      value = unscaled_decimal.value();
+    } break;
+    case TypeId::kFixed:
+    case TypeId::kBinary:
+      value = std::vector<uint8_t>(data.begin(), data.end());
+      break;
+    default:
+      std::unreachable();
+  }
+
+  return Literal(value, std::move(type));
 }
 
 Result<std::vector<uint8_t>> Literal::Serialize() const {
-  return NotImplemented("Serialization of Literal is not implemented yet");
+  if (IsAboveMax() || IsBelowMin()) {
+    return Invalid("Cannot serialize AboveMax or BelowMin literal");
+  }
+  if (IsNull()) {
+    return std::vector<uint8_t>{};
+  }
+
+  switch (type_->type_id()) {
+    case TypeId::kBoolean: {
+      bool bool_val = std::get<bool>(value_);
+      return std::vector<uint8_t>{static_cast<uint8_t>(bool_val ? 1 : 0)};
+    }
+    case TypeId::kInt:
+    case TypeId::kDate: {
+      int32_t int_val = std::get<int32_t>(value_);
+      int32_t le_val = ToLittleEndian(int_val);
+      const auto* bytes =
+          reinterpret_cast<const uint8_t*>(static_cast<const void*>(&le_val));
+      return std::vector<uint8_t>(bytes, bytes + sizeof(int32_t));
+    }
+    case TypeId::kLong: {
+      int64_t long_val = std::get<int64_t>(value_);
+      int64_t le_val = ToLittleEndian(long_val);
+      const auto* bytes =
+          reinterpret_cast<const uint8_t*>(static_cast<const void*>(&le_val));
+      return std::vector<uint8_t>(bytes, bytes + sizeof(int64_t));
+    }
+    case TypeId::kFloat: {
+      float float_val = std::get<float>(value_);
+      float le_val = ToLittleEndian(float_val);
+      const auto* bytes =
+          reinterpret_cast<const uint8_t*>(static_cast<const void*>(&le_val));
+      return std::vector<uint8_t>(bytes, bytes + sizeof(float));
+    }
+    case TypeId::kDouble: {
+      double double_val = std::get<double>(value_);
+      double le_val = ToLittleEndian(double_val);
+      const auto* bytes =
+          reinterpret_cast<const uint8_t*>(static_cast<const void*>(&le_val));
+      return std::vector<uint8_t>(bytes, bytes + sizeof(double));
+    }
+    case TypeId::kTime:
+    case TypeId::kTimestamp:
+    case TypeId::kTimestampTz: {
+      int64_t time_val = std::get<int64_t>(value_);
+      int64_t le_val = ToLittleEndian(time_val);
+      const auto* bytes =
+          reinterpret_cast<const uint8_t*>(static_cast<const void*>(&le_val));
+      return std::vector<uint8_t>(bytes, bytes + sizeof(int64_t));
+    }
+    case TypeId::kString: {
+      const auto& str_val = std::get<std::string>(value_);
+      return std::vector<uint8_t>(str_val.begin(), str_val.end());
+    }
+    case TypeId::kUuid: {
+      const auto& uuid_val = std::get<std::array<uint8_t, 16>>(value_);
+      return std::vector<uint8_t>(uuid_val.begin(), uuid_val.end());
+    }
+    case TypeId::kDecimal: {
+      int128_t decimal_val = std::get<int128_t>(value_);
+      return Decimal::ToBigEndian(decimal_val);
+    }
+    case TypeId::kFixed:
+    case TypeId::kBinary: {
+      const auto& bin_val = std::get<std::vector<uint8_t>>(value_);
+      return bin_val;
+    }
+    default:
+      std::unreachable();
+  }
 }
 
 // Getters
@@ -182,6 +351,42 @@ std::strong_ordering CompareFloat(T lhs, T rhs) {
   bool lhs_is_negative = std::signbit(lhs);
   bool rhs_is_negative = std::signbit(rhs);
   return lhs_is_negative <=> rhs_is_negative;
+}
+
+std::strong_ordering CompareDecimal(Literal const& lhs, Literal const& rhs) {
+  ICEBERG_DCHECK(std::holds_alternative<int128_t>(lhs.value()),
+                 "LHS of decimal comparison must hold int128_t");
+  ICEBERG_DCHECK(std::holds_alternative<int128_t>(rhs.value()),
+                 "RHS of decimal comparison must hold int128_t");
+  const auto& lhs_type = std::dynamic_pointer_cast<DecimalType>(lhs.type());
+  const auto& rhs_type = std::dynamic_pointer_cast<DecimalType>(rhs.type());
+  ICEBERG_DCHECK(lhs_type != nullptr, "LHS type must be DecimalType");
+  ICEBERG_DCHECK(rhs_type != nullptr, "RHS type must be DecimalType");
+  auto lhs_val = std::get<int128_t>(lhs.value());
+  auto rhs_val = std::get<int128_t>(rhs.value());
+  if (lhs_type->scale() == rhs_type->scale()) {
+    return lhs_val <=> rhs_val;
+  } else if (lhs_type->scale() > rhs_type->scale()) {
+    auto lhs_decimal = Decimal(lhs_val);
+    // Rescale to larger scale
+    auto rhs_decimal = Decimal(rhs_val).Rescale(rhs_type->scale(), lhs_type->scale());
+    if (!rhs_decimal) {
+      // Rescale would cause data loss, so lhs is definitely less than rhs
+      return std::strong_ordering::less;
+    }
+    return lhs_decimal <=> rhs_decimal.value();
+  } else {
+    auto rhs_decimal = Decimal(rhs_val);
+    // Rescale to larger scale
+    auto lhs_decimal = Decimal(lhs_val).Rescale(lhs_type->scale(), rhs_type->scale());
+    if (!lhs_decimal) {
+      // Rescale would cause data loss, so lhs is definitely greater than rhs
+      return std::strong_ordering::greater;
+    }
+    return lhs_decimal.value() <=> rhs_decimal;
+  }
+
+  return lhs_val <=> rhs_val;
 }
 
 bool Literal::operator==(const Literal& other) const { return (*this <=> other) == 0; }
@@ -247,6 +452,10 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
       auto& this_val = std::get<std::vector<uint8_t>>(value_);
       auto& other_val = std::get<std::vector<uint8_t>>(other.value_);
       return this_val <=> other_val;
+    }
+
+    case TypeId::kDecimal: {
+      return CompareDecimal(*this, other);
     }
 
     default:

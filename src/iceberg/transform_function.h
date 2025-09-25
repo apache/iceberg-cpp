@@ -51,6 +51,9 @@ class BucketTransform : public TransformFunction {
   BucketTransform(std::shared_ptr<Type> const& source_type, int32_t num_buckets);
 
   /// \brief Applies the bucket hash function to the input Literal.
+  ///
+  /// Reference:
+  /// - https://iceberg.apache.org/spec/#appendix-b-32-bit-hash-requirements
   Result<Literal> Transform(const Literal& literal) override;
 
   /// \brief Returns INT32 as the output type.
@@ -62,6 +65,24 @@ class BucketTransform : public TransformFunction {
   /// \return A Result containing the BucketTransform or an error.
   static Result<std::unique_ptr<TransformFunction>> Make(
       std::shared_ptr<Type> const& source_type, int32_t num_buckets);
+
+  /// \brief Hash a byte array using MurmurHash3 and return a 32-bit hash value.
+  /// \param bytes The input byte array to hash.
+  /// \return A 32-bit hash value.
+  static int32_t HashBytes(std::span<const uint8_t> bytes);
+
+  /// \brief Hash a 32-bit integer using MurmurHash3 and return a 32-bit hash value.
+  /// \param value The input integer to hash.
+  /// \note Integer and long hash results must be identical for all integer values. This
+  /// ensures that schema evolution does not change bucket partition values if integer
+  /// types are promoted.
+  /// \return A 32-bit hash value.
+  static int32_t HashInt(int32_t value);
+
+  /// \brief Hash a 64-bit integer using MurmurHash3 and return a 32-bit hash value.
+  /// \param value The input long to hash.
+  /// \return A 32-bit hash value.
+  static int32_t HashLong(int64_t value);
 
  private:
   int32_t num_buckets_;

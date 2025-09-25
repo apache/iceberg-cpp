@@ -25,6 +25,7 @@
 
 #include <gtest/gtest.h>
 
+#include "gmock/gmock.h"
 #include "iceberg/type.h"
 #include "matchers.h"
 
@@ -381,6 +382,96 @@ TEST(LiteralTest, DoubleZeroComparison) {
 
   // -0 should be less than +0
   EXPECT_EQ(neg_zero <=> pos_zero, std::partial_ordering::less);
+}
+
+TEST(LiteralTest, DecimalComparison) {
+  auto dec1 = Literal::Decimal("123.45");
+  auto dec2 = Literal::Decimal("123.450");
+  auto dec3 = Literal::Decimal("123.46");
+  auto dec4 = Literal::Decimal("-123.45");
+
+  ASSERT_THAT(dec1, IsOk());
+  ASSERT_THAT(dec2, IsOk());
+  ASSERT_THAT(dec3, IsOk());
+  ASSERT_THAT(dec4, IsOk());
+
+  EXPECT_EQ((*dec1 <=> *dec2), std::partial_ordering::equivalent);
+  EXPECT_EQ((*dec1 <=> *dec3), std::partial_ordering::less);
+  EXPECT_EQ((*dec3 <=> *dec1), std::partial_ordering::greater);
+  EXPECT_EQ((*dec1 <=> *dec4), std::partial_ordering::greater);
+  EXPECT_EQ((*dec4 <=> *dec1), std::partial_ordering::less);
+}
+
+TEST(LiteralTest, SerdeTest) {
+  // int32
+  auto int_literal = Literal::Int(42);
+  auto serialized = int_literal.Serialize();
+  ASSERT_THAT(serialized, IsOk());
+  auto deserialized_result = Literal::Deserialize(serialized.value(), iceberg::int32());
+  ASSERT_THAT(deserialized_result, IsOk());
+  auto deserialized = *deserialized_result;
+  EXPECT_EQ(int_literal, deserialized);
+
+  // int64
+  auto long_literal = Literal::Long(1234567890L);
+  auto serialized_long = long_literal.Serialize();
+  ASSERT_THAT(serialized_long, IsOk());
+  auto deserialized_long_result =
+      Literal::Deserialize(serialized_long.value(), iceberg::int64());
+  ASSERT_THAT(deserialized_long_result, IsOk());
+  auto deserialized_long = *deserialized_long_result;
+  EXPECT_EQ(long_literal, deserialized_long);
+
+  // float
+  auto float_literal = Literal::Float(3.14f);
+  auto serialized_float = float_literal.Serialize();
+  ASSERT_THAT(serialized_float, IsOk());
+  auto deserialized_float_result =
+      Literal::Deserialize(serialized_float.value(), iceberg::float32());
+  ASSERT_THAT(deserialized_float_result, IsOk());
+  auto deserialized_float = *deserialized_float_result;
+  EXPECT_EQ(float_literal, deserialized_float);
+
+  // double
+  auto double_literal = Literal::Double(std::numbers::pi);
+  auto serialized_double = double_literal.Serialize();
+  ASSERT_THAT(serialized_double, IsOk());
+  auto deserialized_double_result =
+      Literal::Deserialize(serialized_double.value(), iceberg::float64());
+  ASSERT_THAT(deserialized_double_result, IsOk());
+  auto deserialized_double = *deserialized_double_result;
+  EXPECT_EQ(double_literal, deserialized_double);
+
+  // string
+  auto string_literal = Literal::String("hello");
+  auto serialized_str = string_literal.Serialize();
+  ASSERT_THAT(serialized_str, IsOk());
+  auto deserialized_str_result =
+      Literal::Deserialize(serialized_str.value(), iceberg::string());
+  ASSERT_THAT(deserialized_str_result, IsOk());
+  auto deserialized_str = *deserialized_str_result;
+  EXPECT_EQ(string_literal, deserialized_str);
+
+  // binary
+  std::vector<uint8_t> data = {0x01, 0x02, 0x03};
+  auto binary_literal = Literal::Binary(data);
+  auto serialized_bin = binary_literal.Serialize();
+  ASSERT_THAT(serialized_bin, IsOk());
+  auto deserialized_bin_result =
+      Literal::Deserialize(serialized_bin.value(), iceberg::binary());
+  ASSERT_THAT(deserialized_bin_result, IsOk());
+  auto deserialized_bin = *deserialized_bin_result;
+  EXPECT_EQ(binary_literal, deserialized_bin);
+
+  // decimal
+  auto decimal_literal = Literal::Decimal("1234567890123456789");
+  auto serialized_dec = decimal_literal->Serialize();
+  ASSERT_THAT(serialized_dec, IsOk());
+  auto deserialized_dec_result =
+      Literal::Deserialize(serialized_dec.value(), decimal_literal->type());
+  ASSERT_THAT(deserialized_dec_result, IsOk());
+  auto deserialized_dec = *deserialized_dec_result;
+  EXPECT_EQ(*decimal_literal, deserialized_dec);
 }
 
 }  // namespace iceberg
