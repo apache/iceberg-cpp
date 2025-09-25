@@ -92,6 +92,7 @@ class LocationProvider;
 class SortField;
 class SortOrder;
 class Table;
+class TableProperties;
 class FileIO;
 class Transaction;
 class Transform;
