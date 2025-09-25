@@ -38,7 +38,7 @@ namespace iceberg {
 ///
 /// \param sort_field The `SortField` object to be serialized.
 /// \return A JSON object representing the `SortField` in the form of key-value pairs.
-nlohmann::json ToJson(const SortField& sort_field);
+ICEBERG_EXPORT nlohmann::json ToJson(const SortField& sort_field);
 
 /// \brief Deserializes a JSON object into a `SortField` object.
 ///
@@ -49,7 +49,8 @@ nlohmann::json ToJson(const SortField& sort_field);
 /// \param json The JSON object representing a `SortField`.
 /// \return An `expected` value containing either a `SortField` object or an error. If the
 /// JSON is malformed or missing expected fields, an error will be returned.
-Result<std::unique_ptr<SortField>> SortFieldFromJson(const nlohmann::json& json);
+ICEBERG_EXPORT Result<std::unique_ptr<SortField>> SortFieldFromJson(
+    const nlohmann::json& json);
 
 /// \brief Serializes a `SortOrder` object to JSON.
 ///
@@ -59,7 +60,7 @@ Result<std::unique_ptr<SortField>> SortFieldFromJson(const nlohmann::json& json)
 ///
 /// \param sort_order The `SortOrder` object to be serialized.
 /// \return A JSON object representing the `SortOrder` with its order ID and fields array.
-nlohmann::json ToJson(const SortOrder& sort_order);
+ICEBERG_EXPORT nlohmann::json ToJson(const SortOrder& sort_order);
 
 /// \brief Deserializes a JSON object into a `SortOrder` object.
 ///
@@ -70,43 +71,45 @@ nlohmann::json ToJson(const SortOrder& sort_order);
 /// \param json The JSON object representing a `SortOrder`.
 /// \return An `expected` value containing either a `SortOrder` object or an error. If the
 /// JSON is malformed or missing expected fields, an error will be returned.
-Result<std::unique_ptr<SortOrder>> SortOrderFromJson(const nlohmann::json& json);
+ICEBERG_EXPORT Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
+    const nlohmann::json& json);
 
 /// \brief Convert an Iceberg Schema to JSON.
 ///
 /// \param[in] schema The Iceberg schema to convert.
 /// \return The JSON representation of the schema.
-nlohmann::json ToJson(const Schema& schema);
+ICEBERG_EXPORT nlohmann::json ToJson(const Schema& schema);
 
 /// \brief Convert JSON to an Iceberg Schema.
 ///
 /// \param[in] json The JSON representation of the schema.
 /// \return The Iceberg schema or an error if the conversion fails.
-Result<std::unique_ptr<Schema>> SchemaFromJson(const nlohmann::json& json);
+ICEBERG_EXPORT Result<std::unique_ptr<Schema>> SchemaFromJson(const nlohmann::json& json);
 
 /// \brief Convert an Iceberg Type to JSON.
 ///
 /// \param[in] type The Iceberg type to convert.
 /// \return The JSON representation of the type.
-nlohmann::json ToJson(const Type& type);
+ICEBERG_EXPORT nlohmann::json ToJson(const Type& type);
 
 /// \brief Convert JSON to an Iceberg Type.
 ///
 /// \param[in] json The JSON representation of the type.
 /// \return The Iceberg type or an error if the conversion fails.
-Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json);
+ICEBERG_EXPORT Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json);
 
 /// \brief Convert an Iceberg SchemaField to JSON.
 ///
 /// \param[in] field The Iceberg field to convert.
 /// \return The JSON representation of the field.
-nlohmann::json ToJson(const SchemaField& field);
+ICEBERG_EXPORT nlohmann::json ToJson(const SchemaField& field);
 
 /// \brief Convert JSON to an Iceberg SchemaField.
 ///
 /// \param[in] json The JSON representation of the field.
 /// \return The Iceberg field or an error if the conversion fails.
-Result<std::unique_ptr<SchemaField>> FieldFromJson(const nlohmann::json& json);
+ICEBERG_EXPORT Result<std::unique_ptr<SchemaField>> FieldFromJson(
+    const nlohmann::json& json);
 
 /// \brief Serializes a `PartitionField` object to JSON.
 ///
@@ -117,7 +120,7 @@ Result<std::unique_ptr<SchemaField>> FieldFromJson(const nlohmann::json& json);
 /// \param partition_field The `PartitionField` object to be serialized.
 /// \return A JSON object representing the `PartitionField` in the form of key-value
 /// pairs.
-nlohmann::json ToJson(const PartitionField& partition_field);
+ICEBERG_EXPORT nlohmann::json ToJson(const PartitionField& partition_field);
 
 /// \brief Deserializes a JSON object into a `PartitionField` object.
 ///
@@ -130,7 +133,7 @@ nlohmann::json ToJson(const PartitionField& partition_field);
 /// happen when deserializing partition fields from V1 metadata files.
 /// \return An `expected` value containing either a `PartitionField` object or an error.
 /// If the JSON is malformed or missing expected fields, an error will be returned.
-Result<std::unique_ptr<PartitionField>> PartitionFieldFromJson(
+ICEBERG_EXPORT Result<std::unique_ptr<PartitionField>> PartitionFieldFromJson(
     const nlohmann::json& json, bool allow_field_id_missing = false);
 
 /// \brief Serializes a `PartitionSpec` object to JSON.
@@ -143,7 +146,7 @@ Result<std::unique_ptr<PartitionField>> PartitionFieldFromJson(
 /// \param partition_spec The `PartitionSpec` object to be serialized.
 /// \return A JSON object representing the `PartitionSpec` with its order ID and fields
 /// array.
-nlohmann::json ToJson(const PartitionSpec& partition_spec);
+ICEBERG_EXPORT nlohmann::json ToJson(const PartitionSpec& partition_spec);
 
 /// \brief Deserializes a JSON object into a `PartitionSpec` object.
 ///
@@ -155,141 +158,149 @@ nlohmann::json ToJson(const PartitionSpec& partition_spec);
 /// \param json The JSON object representing a `PartitionSpec`.
 /// \return An `expected` value containing either a `PartitionSpec` object or an error. If
 /// the JSON is malformed or missing expected fields, an error will be returned.
-Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
+ICEBERG_EXPORT Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
     const std::shared_ptr<Schema>& schema, const nlohmann::json& json);
 
 /// \brief Serializes a `SnapshotRef` object to JSON.
 ///
 /// \param[in] snapshot_ref The `SnapshotRef` object to be serialized.
 /// \return A JSON object representing the `SnapshotRef`.
-nlohmann::json ToJson(const SnapshotRef& snapshot_ref);
+ICEBERG_EXPORT nlohmann::json ToJson(const SnapshotRef& snapshot_ref);
 
 /// \brief Deserializes a JSON object into a `SnapshotRef` object.
 ///
 /// \param[in] json The JSON object representing a `SnapshotRef`.
 /// \return A `SnapshotRef` object or an error if the conversion fails.
-Result<std::unique_ptr<SnapshotRef>> SnapshotRefFromJson(const nlohmann::json& json);
+ICEBERG_EXPORT Result<std::unique_ptr<SnapshotRef>> SnapshotRefFromJson(
+    const nlohmann::json& json);
 
 /// \brief Serializes a `Snapshot` object to JSON.
 ///
 /// \param[in] snapshot The `Snapshot` object to be serialized.
 /// \return A JSON object representing the `snapshot`.
-nlohmann::json ToJson(const Snapshot& snapshot);
+ICEBERG_EXPORT nlohmann::json ToJson(const Snapshot& snapshot);
 
 /// \brief Deserializes a JSON object into a `Snapshot` object.
 ///
 /// \param[in] json The JSON representation of the snapshot.
 /// \return A `Snapshot` object or an error if the conversion fails.
-Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json);
+ICEBERG_EXPORT Result<std::unique_ptr<Snapshot>> SnapshotFromJson(
+    const nlohmann::json& json);
 
 /// \brief Serializes a `StatisticsFile` object to JSON.
 ///
 /// \param statistics_file The `StatisticsFile` object to be serialized.
 /// \return A JSON object representing the `StatisticsFile`.
-nlohmann::json ToJson(const StatisticsFile& statistics_file);
+ICEBERG_EXPORT nlohmann::json ToJson(const StatisticsFile& statistics_file);
 
 /// \brief Deserializes a JSON object into a `StatisticsFile` object.
 ///
 /// \param json The JSON object representing a `StatisticsFile`.
 /// \return A `StatisticsFile` object or an error if the conversion fails.
-Result<std::unique_ptr<StatisticsFile>> StatisticsFileFromJson(
+ICEBERG_EXPORT Result<std::unique_ptr<StatisticsFile>> StatisticsFileFromJson(
     const nlohmann::json& json);
 
 /// \brief Serializes a `PartitionStatisticsFile` object to JSON.
 ///
 /// \param partition_statistics_file The `PartitionStatisticsFile` object to be
 /// serialized. \return A JSON object representing the `PartitionStatisticsFile`.
-nlohmann::json ToJson(const PartitionStatisticsFile& partition_statistics_file);
+ICEBERG_EXPORT nlohmann::json ToJson(
+    const PartitionStatisticsFile& partition_statistics_file);
 
 /// \brief Deserializes a JSON object into a `PartitionStatisticsFile` object.
 ///
 /// \param json The JSON object representing a `PartitionStatisticsFile`.
 /// \return A `PartitionStatisticsFile` object or an error if the conversion fails.
-Result<std::unique_ptr<PartitionStatisticsFile>> PartitionStatisticsFileFromJson(
-    const nlohmann::json& json);
+ICEBERG_EXPORT Result<std::unique_ptr<PartitionStatisticsFile>>
+PartitionStatisticsFileFromJson(const nlohmann::json& json);
 
 /// \brief Serializes a `SnapshotLogEntry` object to JSON.
 ///
 /// \param snapshot_log_entry The `SnapshotLogEntry` object to be serialized.
 /// \return A JSON object representing the `SnapshotLogEntry`.
-nlohmann::json ToJson(const SnapshotLogEntry& snapshot_log_entry);
+ICEBERG_EXPORT nlohmann::json ToJson(const SnapshotLogEntry& snapshot_log_entry);
 
 /// \brief Deserializes a JSON object into a `SnapshotLogEntry` object.
 ///
 /// \param json The JSON object representing a `SnapshotLogEntry`.
 /// \return A `SnapshotLogEntry` object or an error if the conversion fails.
-Result<SnapshotLogEntry> SnapshotLogEntryFromJson(const nlohmann::json& json);
+ICEBERG_EXPORT Result<SnapshotLogEntry> SnapshotLogEntryFromJson(
+    const nlohmann::json& json);
 
 /// \brief Serializes a `MetadataLogEntry` object to JSON.
 ///
 /// \param metadata_log_entry The `MetadataLogEntry` object to be serialized.
 /// \return A JSON object representing the `MetadataLogEntry`.
-nlohmann::json ToJson(const MetadataLogEntry& metadata_log_entry);
+ICEBERG_EXPORT nlohmann::json ToJson(const MetadataLogEntry& metadata_log_entry);
 
 /// \brief Deserializes a JSON object into a `MetadataLogEntry` object.
 ///
 /// \param json The JSON object representing a `MetadataLogEntry`.
 /// \return A `MetadataLogEntry` object or an error if the conversion fails.
-Result<MetadataLogEntry> MetadataLogEntryFromJson(const nlohmann::json& json);
+ICEBERG_EXPORT Result<MetadataLogEntry> MetadataLogEntryFromJson(
+    const nlohmann::json& json);
 
 /// \brief Serializes a `TableMetadata` object to JSON.
 ///
 /// \param table_metadata The `TableMetadata` object to be serialized.
 /// \return A JSON object representing the `TableMetadata`.
-nlohmann::json ToJson(const TableMetadata& table_metadata);
+ICEBERG_EXPORT nlohmann::json ToJson(const TableMetadata& table_metadata);
 
 /// \brief Deserializes a JSON object into a `TableMetadata` object.
 ///
 /// \param json The JSON object representing a `TableMetadata`.
 /// \return A `TableMetadata` object or an error if the conversion fails.
-Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::json& json);
+ICEBERG_EXPORT Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(
+    const nlohmann::json& json);
 
 /// \brief Deserialize a JSON string into a `nlohmann::json` object.
 ///
 /// \param json_string The JSON string to deserialize.
 /// \return A `nlohmann::json` object or an error if the deserialization fails.
-Result<nlohmann::json> FromJsonString(const std::string& json_string);
+ICEBERG_EXPORT Result<nlohmann::json> FromJsonString(const std::string& json_string);
 
 /// \brief Serialize a `nlohmann::json` object into a JSON string.
 ///
 /// \param json The `nlohmann::json` object to serialize.
 /// \return A JSON string or an error if the serialization fails.
-Result<std::string> ToJsonString(const nlohmann::json& json);
+ICEBERG_EXPORT Result<std::string> ToJsonString(const nlohmann::json& json);
 
 /// \brief Serializes a `MappedField` object to JSON.
 ///
 /// \param[in] field The `MappedField` object to be serialized.
 /// \return A JSON object representing the `MappedField`.
-nlohmann::json ToJson(const MappedField& field);
+ICEBERG_EXPORT nlohmann::json ToJson(const MappedField& field);
 
 /// \brief Deserializes a JSON object into a `MappedField` object.
 ///
 /// \param[in] json The JSON object representing a `MappedField`.
 /// \return A `MappedField` object or an error if the conversion fails.
-Result<MappedField> MappedFieldFromJson(const nlohmann::json& json);
+ICEBERG_EXPORT Result<MappedField> MappedFieldFromJson(const nlohmann::json& json);
 
 /// \brief Serializes a `MappedFields` object to JSON.
 ///
 /// \param[in] mapped_fields The `MappedFields` object to be serialized.
 /// \return A JSON object representing the `MappedFields`.
-nlohmann::json ToJson(const MappedFields& mapped_fields);
+ICEBERG_EXPORT nlohmann::json ToJson(const MappedFields& mapped_fields);
 
 /// \brief Deserializes a JSON object into a `MappedFields` object.
 ///
 /// \param[in] json The JSON object representing a `MappedFields`.
 /// \return A `MappedFields` object or an error if the conversion fails.
-Result<std::unique_ptr<MappedFields>> MappedFieldsFromJson(const nlohmann::json& json);
+ICEBERG_EXPORT Result<std::unique_ptr<MappedFields>> MappedFieldsFromJson(
+    const nlohmann::json& json);
 
 /// \brief Serializes a `NameMapping` object to JSON.
 ///
 /// \param[in] name_mapping The `NameMapping` object to be serialized.
 /// \return A JSON object representing the `NameMapping`.
-nlohmann::json ToJson(const NameMapping& name_mapping);
+ICEBERG_EXPORT nlohmann::json ToJson(const NameMapping& name_mapping);
 
 /// \brief Deserializes a JSON object into a `NameMapping` object.
 ///
 /// \param[in] json The JSON object representing a `NameMapping`.
 /// \return A `NameMapping` object or an error if the conversion fails.
-Result<std::unique_ptr<NameMapping>> NameMappingFromJson(const nlohmann::json& json);
+ICEBERG_EXPORT Result<std::unique_ptr<NameMapping>> NameMappingFromJson(
+    const nlohmann::json& json);
 
 }  // namespace iceberg

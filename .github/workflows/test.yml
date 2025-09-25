@@ -99,3 +99,36 @@ jobs:
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
           bash -c "ci/scripts/build_example.sh $(pwd)/example"
+  meson:
+    name: Meson - ${{ matrix.title }}
+    runs-on: ${{ matrix.runs-on }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - title: AMD64 Ubuntu 24.04
+            runs-on: ubuntu-24.04
+          - title: AMD64 Windows 2022
+            runs-on: windows-2022
+            meson-setup-args: --vsenv
+          - title: AArch64 macOS 15
+            runs-on: macos-15
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Checkout iceberg-cpp
+        uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          fetch-depth: 0
+      - name: Install build dependencies
+        run: |
+          python3 -m pip install --upgrade pip
+          python3 -m pip install meson ninja
+      - name: Build Iceberg
+        run: |
+          meson setup builddir ${{ matrix.meson-setup-args || '' }}
+          meson compile -C builddir
+      - name: Test Iceberg
+        run: |
+          meson test -C builddir

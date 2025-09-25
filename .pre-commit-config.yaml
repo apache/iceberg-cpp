@@ -39,3 +39,15 @@ repos:
     rev: v0.6.10
     hooks:
       - id: cmake-format
+
+  - repo: https://github.com/trim21/pre-commit-mirror-meson
+    rev: v1.9.0
+    hooks:
+      - id: meson-fmt
+        alias: cpp
+        args: ['--inplace']
+        files: >-
+          (
+          ?.*meson\.build$|
+          ?.*meson\.options$|
+          )

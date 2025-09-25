@@ -61,7 +61,6 @@ include(CMakeParseArguments)
 include(IcebergBuildUtils)
 include(IcebergSanitizer)
 include(IcebergThirdpartyToolchain)
-include(GenerateExportHeader)
 
 add_subdirectory(src)
 
