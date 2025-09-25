@@ -23,12 +23,16 @@
 
 #include <gtest/gtest.h>
 
+#include "matchers.h"
+
 namespace iceberg {
 
 TEST(TrueFalseTest, Basic) {
   // Test negation of False returns True
   auto false_instance = False::Instance();
-  auto negated = false_instance->Negate();
+  auto negated_result = false_instance->Negate();
+  ASSERT_THAT(negated_result, IsOk());
+  auto negated = negated_result.value();
 
   // Check that negated expression is True
   EXPECT_EQ(negated->op(), Expression::Operation::kTrue);
@@ -36,7 +40,9 @@ TEST(TrueFalseTest, Basic) {
 
   // Test negation of True returns false
   auto true_instance = True::Instance();
-  negated = true_instance->Negate();
+  negated_result = true_instance->Negate();
+  ASSERT_THAT(negated_result, IsOk());
+  negated = negated_result.value();
 
   // Check that negated expression is False
   EXPECT_EQ(negated->op(), Expression::Operation::kFalse);
@@ -77,7 +83,9 @@ TEST(ORTest, Negation) {
   auto false_expr = False::Instance();
 
   auto or_expr = std::make_shared<Or>(true_expr, false_expr);
-  auto negated_or = or_expr->Negate();
+  auto negated_or_result = or_expr->Negate();
+  ASSERT_THAT(negated_or_result, IsOk());
+  auto negated_or = negated_or_result.value();
 
   // Should become AND expression
   EXPECT_EQ(negated_or->op(), Expression::Operation::kAnd);
@@ -112,7 +120,9 @@ TEST(ANDTest, Negation) {
   auto false_expr = False::Instance();
 
   auto and_expr = std::make_shared<And>(true_expr, false_expr);
-  auto negated_and = and_expr->Negate();
+  auto negated_and_result = and_expr->Negate();
+  ASSERT_THAT(negated_and_result, IsOk());
+  auto negated_and = negated_and_result.value();
 
   // Should become OR expression
   EXPECT_EQ(negated_and->op(), Expression::Operation::kOr);
@@ -141,7 +151,7 @@ TEST(ANDTest, Equals) {
   EXPECT_FALSE(and_expr1->Equals(*or_expr));
 }
 
-TEST(ExpressionTest, BaseClassNegateThrowsException) {
+TEST(ExpressionTest, BaseClassNegateErrorOut) {
   // Create a mock expression that doesn't override Negate()
   class MockExpression : public Expression {
    public:
@@ -151,7 +161,8 @@ TEST(ExpressionTest, BaseClassNegateThrowsException) {
 
   auto mock_expr = std::make_shared<MockExpression>();
 
-  // Should throw IcebergError when calling Negate() on base class
-  EXPECT_THROW(mock_expr->Negate(), IcebergError);
+  // Should return NotSupported error when calling Negate() on base class
+  auto negate_result = mock_expr->Negate();
+  EXPECT_THAT(negate_result, IsError(ErrorKind::kNotSupported));
 }
 }  // namespace iceberg
