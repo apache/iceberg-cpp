@@ -3,22 +3,3 @@ Copyright 2024-2025 The Apache Software Foundation
 
 This product includes software developed at
 The Apache Software Foundation (http://www.apache.org/).
-
-This product includes code from smhasher
- * MurmurHash3 was written by Austin Appleby, and is placed in the public
- * domain. The author hereby disclaims copyright to this source code.
- * https://github.com/aappleby/smhasher
-
-This product includes code from Apache Arrow
- * Copyright 2016-2025 The Apache Software Foundation
- * https://github.com/apache/arrow
-
-This product includes software developed by Gabi Melman
- * spdlog: Very fast, header-only/compiled, C++ logging library
- * Copyright (c) 2016 Gabi Melman
- * https://github.com/gabime/spdlog
-
-This product includes software developed by Jean-loup Gailly and Mark Adler
- * zlib: A Massively Spiffy Yet Delicately Unobtrusive Compression Library
- * Copyright (c) 1995-2024 Jean-loup Gailly and Mark Adler
- * https://zlib.net/
