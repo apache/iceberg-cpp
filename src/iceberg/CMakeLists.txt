@@ -181,3 +181,7 @@ if(ICEBERG_BUILD_BUNDLE)
 endif()
 
 iceberg_install_cmake_package(Iceberg iceberg_targets)
+
+if(ICEBERG_BUILD_TESTS)
+  add_subdirectory(test)
+endif()

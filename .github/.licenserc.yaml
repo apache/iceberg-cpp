@@ -30,6 +30,6 @@ header:
     - 'NOTICE'
     - 'src/iceberg/expected.h'
     - 'src/iceberg/util/murmurhash3_internal.*'
-    - 'test/resources/**'
+    - 'src/iceberg/test/resources/**'
 
   comment: on-failure

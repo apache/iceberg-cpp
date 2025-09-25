@@ -23,10 +23,9 @@ fetchcontent_declare(googletest
                      GTest)
 fetchcontent_makeavailable(googletest)
 
-set(ICEBERG_TEST_RESOURCES "${CMAKE_SOURCE_DIR}/test/resources")
+set(ICEBERG_TEST_RESOURCES "${CMAKE_SOURCE_DIR}/src/iceberg/test/resources")
 
-configure_file("${CMAKE_SOURCE_DIR}/test/test_config.h.in"
-               "${CMAKE_BINARY_DIR}/iceberg/test/test_config.h")
+configure_file("test_config.h.in" "test_config.h")
 
 function(add_iceberg_test test_name)
   set(options USE_BUNDLE)

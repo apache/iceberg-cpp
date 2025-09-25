@@ -63,11 +63,9 @@ include(IcebergSanitizer)
 include(IcebergThirdpartyToolchain)
 include(GenerateExportHeader)
 
-add_subdirectory(src)
-
 if(ICEBERG_BUILD_TESTS)
   enable_testing()
-  add_subdirectory(test)
 endif()
 
+add_subdirectory(src)
 install(FILES LICENSE NOTICE DESTINATION ${ICEBERG_INSTALL_DOCDIR})
