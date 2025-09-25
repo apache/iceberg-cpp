@@ -77,14 +77,7 @@ Result<std::vector<uint8_t>> ToBytesImpl<TypeId::kBinary>(const Literal::Value& 
 
 template <>
 Result<std::vector<uint8_t>> ToBytesImpl<TypeId::kFixed>(const Literal::Value& value) {
-  if (std::holds_alternative<std::vector<uint8_t>>(value)) {
-    return std::get<std::vector<uint8_t>>(value);
-  } else {
-    std::string actual_type =
-        std::visit([](auto&& arg) -> std::string { return typeid(arg).name(); }, value);
-    return InvalidArgument("Invalid value type for Fixed literal, got type: {}",
-                           actual_type);
-  }
+  return std::get<std::vector<uint8_t>>(value);
 }
 
 #define DISPATCH_LITERAL_TO_BYTES(type_id) \
@@ -134,28 +127,20 @@ Result<std::vector<uint8_t>> Conversions::ToBytes(const Literal& literal) {
 
 Result<Literal::Value> Conversions::FromBytes(const PrimitiveType& type,
                                               std::span<const uint8_t> data) {
-  if (data.empty()) {
-    return InvalidArgument("Cannot deserialize empty value");
-  }
-
   const auto type_id = type.type_id();
-
   switch (type_id) {
     case TypeId::kBoolean: {
       ICEBERG_ASSIGN_OR_RAISE(auto value, ReadLittleEndian<uint8_t>(data));
       return Literal::Value{static_cast<bool>(value != 0x00)};
     }
-
     case TypeId::kInt: {
       ICEBERG_ASSIGN_OR_RAISE(auto value, ReadLittleEndian<int32_t>(data));
       return Literal::Value{value};
     }
-
     case TypeId::kDate: {
       ICEBERG_ASSIGN_OR_RAISE(auto value, ReadLittleEndian<int32_t>(data));
       return Literal::Value{value};
     }
-
     case TypeId::kLong:
     case TypeId::kTime:
     case TypeId::kTimestamp:
@@ -171,12 +156,10 @@ Result<Literal::Value> Conversions::FromBytes(const PrimitiveType& type,
       }
       return Literal::Value{value};
     }
-
     case TypeId::kFloat: {
       ICEBERG_ASSIGN_OR_RAISE(auto value, ReadLittleEndian<float>(data));
       return Literal::Value{value};
     }
-
     case TypeId::kDouble: {
       if (data.size() < 8) {
         // Type was promoted from float to double
@@ -187,16 +170,11 @@ Result<Literal::Value> Conversions::FromBytes(const PrimitiveType& type,
         return Literal::Value{double_value};
       }
     }
-
-    case TypeId::kString: {
+    case TypeId::kString:
       return Literal::Value{
           std::string(reinterpret_cast<const char*>(data.data()), data.size())};
-    }
-
-    case TypeId::kBinary: {
+    case TypeId::kBinary:
       return Literal::Value{std::vector<uint8_t>(data.begin(), data.end())};
-    }
-
     case TypeId::kFixed: {
       const auto& fixed_type = static_cast<const FixedType&>(type);
       if (data.size() != fixed_type.length()) {
@@ -206,7 +184,6 @@ Result<Literal::Value> Conversions::FromBytes(const PrimitiveType& type,
       return Literal::Value{std::vector<uint8_t>(data.begin(), data.end())};
     }
       // TODO(Li Feiyang): Add support for UUID and Decimal
-
     default:
       return NotSupported("Deserialization for type {} is not supported",
                           type.ToString());
