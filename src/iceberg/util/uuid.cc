@@ -44,7 +44,7 @@ constexpr std::array<uint8_t, 256> BuildHexTable() {
     } else if (i >= 'A' && i <= 'F') {
       buf[i] = static_cast<uint8_t>(i - 'A' + 10);
     } else {
-      buf[i] = 0xff;
+      buf[i] = 0xFF;
     }
   }
   return buf;
