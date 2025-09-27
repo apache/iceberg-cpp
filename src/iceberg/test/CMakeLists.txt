@@ -15,13 +15,23 @@
 # specific language governing permissions and limitations
 # under the License.
 
+fetchcontent_declare(cpp-httplib
+                     GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
+                     GIT_TAG 89c932f313c6437c38f2982869beacc89c2f2246 #release-0.26.0
+)
+
 fetchcontent_declare(googletest
                      GIT_REPOSITORY https://github.com/google/googletest.git
                      GIT_TAG b514bdc898e2951020cbdca1304b75f5950d1f59 # release-1.15.2
                      FIND_PACKAGE_ARGS
                      NAMES
                      GTest)
-fetchcontent_makeavailable(googletest)
+
+if(ICEBERG_BUILD_REST_CATALOG)
+  fetchcontent_makeavailable(cpp-httplib googletest)
+else()
+  fetchcontent_makeavailable(googletest)
+endif()
 
 set(ICEBERG_TEST_RESOURCES "${CMAKE_SOURCE_DIR}/src/iceberg/test/resources")
 
@@ -135,4 +145,10 @@ if(ICEBERG_BUILD_BUNDLE)
 
   add_iceberg_test(scan_test USE_BUNDLE SOURCES file_scan_task_test.cc)
 
+endif()
+
+if(ICEBERG_BUILD_REST_CATALOG)
+  add_iceberg_test(rest_catalog_test SOURCES rest_catalog_test.cc)
+  target_link_libraries(rest_catalog_test PRIVATE iceberg_rest_catalog_static)
+  target_include_directories(rest_catalog_test PRIVATE ${cpp-httplib_SOURCE_DIR})
 endif()
