@@ -382,178 +382,172 @@ TEST(LiteralTest, DoubleZeroComparison) {
   EXPECT_EQ(neg_zero <=> pos_zero, std::partial_ordering::less);
 }
 
-struct LiteralRoundTripParam {
+struct LiteralParam {
   std::string test_name;
-  std::vector<uint8_t> input_bytes;
-  Literal expected_literal;
+  std::vector<uint8_t> serialized;
+  Literal value;
   std::shared_ptr<PrimitiveType> type;
 };
 
-class LiteralSerializationParam : public ::testing::TestWithParam<LiteralRoundTripParam> {
-};
+class LiteralSerDeParam : public ::testing::TestWithParam<LiteralParam> {};
 
-TEST_P(LiteralSerializationParam, RoundTrip) {
+TEST_P(LiteralSerDeParam, RoundTrip) {
   const auto& param = GetParam();
 
   // Deserialize from bytes
-  Result<Literal> literal_result = Literal::Deserialize(param.input_bytes, param.type);
+  Result<Literal> literal_result = Literal::Deserialize(param.serialized, param.type);
   ASSERT_TRUE(literal_result.has_value())
       << "Deserialization failed: " << literal_result.error().message;
 
   // Check type and value
-  EXPECT_EQ(*literal_result, param.expected_literal);
+  EXPECT_EQ(*literal_result, param.value);
 
   // Serialize back to bytes
   Result<std::vector<uint8_t>> bytes_result = literal_result->Serialize();
   ASSERT_TRUE(bytes_result.has_value())
       << "Serialization failed: " << bytes_result.error().message;
-  EXPECT_EQ(*bytes_result, param.input_bytes);
+  EXPECT_EQ(*bytes_result, param.serialized);
 
   // Deserialize again to verify idempotency
   Result<Literal> final_literal = Literal::Deserialize(*bytes_result, param.type);
   ASSERT_TRUE(final_literal.has_value())
       << "Final deserialization failed: " << final_literal.error().message;
-  EXPECT_EQ(*final_literal, param.expected_literal);
+  EXPECT_EQ(*final_literal, param.value);
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    BinarySerialization, LiteralSerializationParam,
+    BinarySerialization, LiteralSerDeParam,
     ::testing::Values(
         // Basic types
-        LiteralRoundTripParam{"BooleanTrue", {1}, Literal::Boolean(true), boolean()},
-        LiteralRoundTripParam{"BooleanFalse", {0}, Literal::Boolean(false), boolean()},
+        LiteralParam{"BooleanTrue", {1}, Literal::Boolean(true), boolean()},
+        LiteralParam{"BooleanFalse", {0}, Literal::Boolean(false), boolean()},
 
-        LiteralRoundTripParam{"Int", {32, 0, 0, 0}, Literal::Int(32), int32()},
-        LiteralRoundTripParam{
+        LiteralParam{"Int", {32, 0, 0, 0}, Literal::Int(32), int32()},
+        LiteralParam{
             "IntMaxValue", {255, 255, 255, 127}, Literal::Int(2147483647), int32()},
-        LiteralRoundTripParam{
-            "IntMinValue", {0, 0, 0, 128}, Literal::Int(-2147483648), int32()},
-        LiteralRoundTripParam{
-            "NegativeInt", {224, 255, 255, 255}, Literal::Int(-32), int32()},
+        LiteralParam{"IntMinValue", {0, 0, 0, 128}, Literal::Int(-2147483648), int32()},
+        LiteralParam{"NegativeInt", {224, 255, 255, 255}, Literal::Int(-32), int32()},
 
-        LiteralRoundTripParam{
-            "Long", {32, 0, 0, 0, 0, 0, 0, 0}, Literal::Long(32), int64()},
-        LiteralRoundTripParam{"LongMaxValue",
-                              {255, 255, 255, 255, 255, 255, 255, 127},
-                              Literal::Long(std::numeric_limits<int64_t>::max()),
-                              int64()},
-        LiteralRoundTripParam{"LongMinValue",
-                              {0, 0, 0, 0, 0, 0, 0, 128},
-                              Literal::Long(std::numeric_limits<int64_t>::min()),
-                              int64()},
-        LiteralRoundTripParam{"NegativeLong",
-                              {224, 255, 255, 255, 255, 255, 255, 255},
-                              Literal::Long(-32),
-                              int64()},
+        LiteralParam{"Long", {32, 0, 0, 0, 0, 0, 0, 0}, Literal::Long(32), int64()},
+        LiteralParam{"LongMaxValue",
+                     {255, 255, 255, 255, 255, 255, 255, 127},
+                     Literal::Long(std::numeric_limits<int64_t>::max()),
+                     int64()},
+        LiteralParam{"LongMinValue",
+                     {0, 0, 0, 0, 0, 0, 0, 128},
+                     Literal::Long(std::numeric_limits<int64_t>::min()),
+                     int64()},
+        LiteralParam{"NegativeLong",
+                     {224, 255, 255, 255, 255, 255, 255, 255},
+                     Literal::Long(-32),
+                     int64()},
 
-        LiteralRoundTripParam{"Float", {0, 0, 128, 63}, Literal::Float(1.0f), float32()},
-        LiteralRoundTripParam{"FloatNegativeInfinity",
-                              {0, 0, 128, 255},
-                              Literal::Float(-std::numeric_limits<float>::infinity()),
-                              float32()},
-        LiteralRoundTripParam{"FloatMaxValue",
-                              {255, 255, 127, 127},
-                              Literal::Float(std::numeric_limits<float>::max()),
-                              float32()},
-        LiteralRoundTripParam{"FloatMinValue",
-                              {255, 255, 127, 255},
-                              Literal::Float(std::numeric_limits<float>::lowest()),
-                              float32()},
+        LiteralParam{"Float", {0, 0, 128, 63}, Literal::Float(1.0f), float32()},
+        LiteralParam{"FloatNegativeInfinity",
+                     {0, 0, 128, 255},
+                     Literal::Float(-std::numeric_limits<float>::infinity()),
+                     float32()},
+        LiteralParam{"FloatMaxValue",
+                     {255, 255, 127, 127},
+                     Literal::Float(std::numeric_limits<float>::max()),
+                     float32()},
+        LiteralParam{"FloatMinValue",
+                     {255, 255, 127, 255},
+                     Literal::Float(std::numeric_limits<float>::lowest()),
+                     float32()},
 
-        LiteralRoundTripParam{
+        LiteralParam{
             "Double", {0, 0, 0, 0, 0, 0, 240, 63}, Literal::Double(1.0), float64()},
-        LiteralRoundTripParam{"DoubleNegativeInfinity",
-                              {0, 0, 0, 0, 0, 0, 240, 255},
-                              Literal::Double(-std::numeric_limits<double>::infinity()),
-                              float64()},
-        LiteralRoundTripParam{"DoubleMaxValue",
-                              {255, 255, 255, 255, 255, 255, 239, 127},
-                              Literal::Double(std::numeric_limits<double>::max()),
-                              float64()},
-        LiteralRoundTripParam{"DoubleMinValue",
-                              {255, 255, 255, 255, 255, 255, 239, 255},
-                              Literal::Double(std::numeric_limits<double>::lowest()),
-                              float64()},
+        LiteralParam{"DoubleNegativeInfinity",
+                     {0, 0, 0, 0, 0, 0, 240, 255},
+                     Literal::Double(-std::numeric_limits<double>::infinity()),
+                     float64()},
+        LiteralParam{"DoubleMaxValue",
+                     {255, 255, 255, 255, 255, 255, 239, 127},
+                     Literal::Double(std::numeric_limits<double>::max()),
+                     float64()},
+        LiteralParam{"DoubleMinValue",
+                     {255, 255, 255, 255, 255, 255, 239, 255},
+                     Literal::Double(std::numeric_limits<double>::lowest()),
+                     float64()},
 
-        LiteralRoundTripParam{"String",
-                              {105, 99, 101, 98, 101, 114, 103},
-                              Literal::String("iceberg"),
-                              string()},
-        LiteralRoundTripParam{
-            "StringLong",
-            {65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65},
-            Literal::String("AAAAAAAAAAAAAAAA"),
-            string()},
+        LiteralParam{"String",
+                     {105, 99, 101, 98, 101, 114, 103},
+                     Literal::String("iceberg"),
+                     string()},
+        LiteralParam{"StringLong",
+                     {65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65},
+                     Literal::String("AAAAAAAAAAAAAAAA"),
+                     string()},
 
-        LiteralRoundTripParam{"BinaryData",
-                              {0x01, 0x02, 0x03, 0xFF},
-                              Literal::Binary({0x01, 0x02, 0x03, 0xFF}),
-                              binary()},
-        LiteralRoundTripParam{"BinarySingleByte", {42}, Literal::Binary({42}), binary()},
+        LiteralParam{"BinaryData",
+                     {0x01, 0x02, 0x03, 0xFF},
+                     Literal::Binary({0x01, 0x02, 0x03, 0xFF}),
+                     binary()},
+        LiteralParam{"BinarySingleByte", {42}, Literal::Binary({42}), binary()},
 
         // Fixed type
-        LiteralRoundTripParam{"FixedLength4",
-                              {0x01, 0x02, 0x03, 0x04},
-                              Literal::Fixed({0x01, 0x02, 0x03, 0x04}),
-                              fixed(4)},
-        LiteralRoundTripParam{
-            "FixedLength8",
-            {0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00, 0x11},
-            Literal::Fixed({0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00, 0x11}),
-            fixed(8)},
-        LiteralRoundTripParam{
-            "FixedLength16",
-            {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C,
-             0x0D, 0x0E, 0x0F},
-            Literal::Fixed({0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09,
-                            0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F}),
-            fixed(16)},
-        LiteralRoundTripParam{
-            "FixedSingleByte", {0xFF}, Literal::Fixed({0xFF}), fixed(1)},
+        LiteralParam{"FixedLength4",
+                     {0x01, 0x02, 0x03, 0x04},
+                     Literal::Fixed({0x01, 0x02, 0x03, 0x04}),
+                     fixed(4)},
+        LiteralParam{"FixedLength8",
+                     {0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00, 0x11},
+                     Literal::Fixed({0xAA, 0xBB, 0xCC, 0xDD, 0xEE, 0xFF, 0x00, 0x11}),
+                     fixed(8)},
+        LiteralParam{"FixedLength16",
+                     {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0A,
+                      0x0B, 0x0C, 0x0D, 0x0E, 0x0F},
+                     Literal::Fixed({0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08,
+                                     0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F}),
+                     fixed(16)},
+        LiteralParam{"FixedSingleByte", {0xFF}, Literal::Fixed({0xFF}), fixed(1)},
 
         // Temporal types
-        LiteralRoundTripParam{"DateEpoch", {0, 0, 0, 0}, Literal::Date(0), date()},
-        LiteralRoundTripParam{"DateNextDay", {1, 0, 0, 0}, Literal::Date(1), date()},
-        LiteralRoundTripParam{"DateY2K", {205, 42, 0, 0}, Literal::Date(10957), date()},
-        LiteralRoundTripParam{
-            "DateNegative", {255, 255, 255, 255}, Literal::Date(-1), date()},
+        LiteralParam{"DateEpoch", {0, 0, 0, 0}, Literal::Date(0), date()},
+        LiteralParam{"DateNextDay", {1, 0, 0, 0}, Literal::Date(1), date()},
+        LiteralParam{"DateY2K", {205, 42, 0, 0}, Literal::Date(10957), date()},
+        LiteralParam{"DateNegative", {255, 255, 255, 255}, Literal::Date(-1), date()},
 
-        LiteralRoundTripParam{
-            "TimeMidnight", {0, 0, 0, 0, 0, 0, 0, 0}, Literal::Time(0), time()},
-        LiteralRoundTripParam{"TimeNoon",
-                              {128, 9, 230, 124, 10, 0, 0, 0},
-                              Literal::Time(45045123456),
-                              time()},
-        LiteralRoundTripParam{
+        LiteralParam{"TimeMidnight", {0, 0, 0, 0, 0, 0, 0, 0}, Literal::Time(0), time()},
+        LiteralParam{"TimeNoon",
+                     {128, 9, 230, 124, 10, 0, 0, 0},
+                     Literal::Time(45045123456),
+                     time()},
+        LiteralParam{
             "TimeOneSecond", {64, 66, 15, 0, 0, 0, 0, 0}, Literal::Time(1000000), time()},
 
-        LiteralRoundTripParam{"TimestampEpoch",
-                              {0, 0, 0, 0, 0, 0, 0, 0},
-                              Literal::Timestamp(0),
-                              timestamp()},
-        LiteralRoundTripParam{"TimestampOneSecond",
-                              {64, 66, 15, 0, 0, 0, 0, 0},
-                              Literal::Timestamp(1000000),
-                              timestamp()},
-        LiteralRoundTripParam{"TimestampNoon2024",
-                              {128, 9, 230, 124, 10, 0, 0, 0},
-                              Literal::Timestamp(45045123456),
-                              timestamp()},
+        LiteralParam{"TimestampEpoch",
+                     {0, 0, 0, 0, 0, 0, 0, 0},
+                     Literal::Timestamp(0),
+                     timestamp()},
+        LiteralParam{"TimestampOneSecond",
+                     {64, 66, 15, 0, 0, 0, 0, 0},
+                     Literal::Timestamp(1000000),
+                     timestamp()},
+        LiteralParam{"TimestampNoon2024",
+                     {128, 9, 230, 124, 10, 0, 0, 0},
+                     Literal::Timestamp(45045123456),
+                     timestamp()},
 
-        LiteralRoundTripParam{"TimestampTzEpoch",
-                              {0, 0, 0, 0, 0, 0, 0, 0},
-                              Literal::TimestampTz(0),
-                              timestamp_tz()},
-        LiteralRoundTripParam{"TimestampTzOneHour",
-                              {0, 164, 147, 214, 0, 0, 0, 0},
-                              Literal::TimestampTz(3600000000),
-                              timestamp_tz()}),
+        LiteralParam{"TimestampTzEpoch",
+                     {0, 0, 0, 0, 0, 0, 0, 0},
+                     Literal::TimestampTz(0),
+                     timestamp_tz()},
+        LiteralParam{"TimestampTzOneHour",
+                     {0, 164, 147, 214, 0, 0, 0, 0},
+                     Literal::TimestampTz(3600000000),
+                     timestamp_tz()},
 
-    [](const testing::TestParamInfo<LiteralSerializationParam::ParamType>& info) {
+        // Empty values
+        LiteralParam{"EmptyString", {}, Literal::String(""), string()},
+        LiteralParam{"EmptyBinary", {}, Literal::Binary({}), binary()}),
+
+    [](const testing::TestParamInfo<LiteralSerDeParam::ParamType>& info) {
       return info.param.test_name;
     });
 
-TEST(LiteralSerializationTest, EmptyString) {
+TEST(LiteralSerDeTest, EmptyString) {
   auto empty_string = Literal::String("");
   auto empty_bytes = empty_string.Serialize();
   ASSERT_TRUE(empty_bytes.has_value());
@@ -564,7 +558,7 @@ TEST(LiteralSerializationTest, EmptyString) {
   EXPECT_TRUE(std::get<std::string>(deserialize_result->value()).empty());
 }
 
-TEST(LiteralSerializationTest, EmptyBinary) {
+TEST(LiteralSerDeTest, EmptyBinary) {
   auto empty_binary = Literal::Binary({});
   auto empty_bytes = empty_binary.Serialize();
   ASSERT_TRUE(empty_bytes.has_value());
@@ -576,7 +570,7 @@ TEST(LiteralSerializationTest, EmptyBinary) {
 }
 
 // Type promotion tests
-TEST(LiteralSerializationTest, TypePromotion) {
+TEST(LiteralSerDeTest, TypePromotion) {
   // 4-byte int data can be deserialized as long
   std::vector<uint8_t> int_data = {32, 0, 0, 0};
   auto long_result = Literal::Deserialize(int_data, int64());
