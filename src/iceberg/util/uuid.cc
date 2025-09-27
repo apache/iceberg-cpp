@@ -207,8 +207,6 @@ uint8_t Uuid::operator[](size_t index) const {
   return data_[index];
 }
 
-std::array<uint8_t, Uuid::kLength> Uuid::ToBigEndianBytes() const { return data_; }
-
 std::string Uuid::ToString() const {
   return std::format(
       "{:02x}{:02x}{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}-{:02x}{:02x}{:02x}"

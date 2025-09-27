@@ -61,9 +61,6 @@ class ICEBERG_EXPORT Uuid {
   /// \brief Create a UUID from a 16-byte array.
   static Result<Uuid> FromBytes(std::span<const uint8_t> bytes);
 
-  /// \brief Get the raw bytes of the UUID in big-endian order.
-  std::array<uint8_t, kLength> ToBigEndianBytes() const;
-
   /// \brief Get the raw bytes of the UUID.
   std::span<const uint8_t> bytes() const { return data_; }
 
