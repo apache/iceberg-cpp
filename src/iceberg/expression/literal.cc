@@ -23,6 +23,8 @@
 #include <concepts>
 
 #include "iceberg/exception.h"
+#include "iceberg/util/conversions.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -149,13 +151,18 @@ Literal Literal::Binary(std::vector<uint8_t> value) {
   return {Value{std::move(value)}, binary()};
 }
 
+Literal Literal::Fixed(std::vector<uint8_t> value) {
+  auto length = static_cast<int32_t>(value.size());
+  return {Value{std::move(value)}, fixed(length)};
+}
+
 Result<Literal> Literal::Deserialize(std::span<const uint8_t> data,
                                      std::shared_ptr<PrimitiveType> type) {
-  return NotImplemented("Deserialization of Literal is not implemented yet");
+  return Conversions::FromBytes(std::move(type), data);
 }
 
 Result<std::vector<uint8_t>> Literal::Serialize() const {
-  return NotImplemented("Serialization of Literal is not implemented yet");
+  return Conversions::ToBytes(*this);
 }
 
 // Getters
@@ -189,7 +196,7 @@ bool Literal::operator==(const Literal& other) const { return (*this <=> other) 
 // Three-way comparison operator
 std::partial_ordering Literal::operator<=>(const Literal& other) const {
   // If types are different, comparison is unordered
-  if (type_->type_id() != other.type_->type_id()) {
+  if (*type_ != *other.type_) {
     return std::partial_ordering::unordered;
   }
 
@@ -216,6 +223,7 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
     }
 
     case TypeId::kLong:
+    case TypeId::kTime:
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz: {
       auto this_val = std::get<int64_t>(value_);
@@ -244,6 +252,12 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
     }
 
     case TypeId::kBinary: {
+      auto& this_val = std::get<std::vector<uint8_t>>(value_);
+      auto& other_val = std::get<std::vector<uint8_t>>(other.value_);
+      return this_val <=> other_val;
+    }
+
+    case TypeId::kFixed: {
       auto& this_val = std::get<std::vector<uint8_t>>(value_);
       auto& other_val = std::get<std::vector<uint8_t>>(other.value_);
       return this_val <=> other_val;
@@ -294,9 +308,17 @@ std::string Literal::ToString() const {
       }
       return result;
     }
+    case TypeId::kFixed: {
+      const auto& fixed_data = std::get<std::vector<uint8_t>>(value_);
+      std::string result;
+      result.reserve(fixed_data.size() * 2);  // 2 chars per byte
+      for (const auto& byte : fixed_data) {
+        std::format_to(std::back_inserter(result), "{:02X}", byte);
+      }
+      return result;
+    }
     case TypeId::kDecimal:
     case TypeId::kUuid:
-    case TypeId::kFixed:
     case TypeId::kDate:
     case TypeId::kTime:
     case TypeId::kTimestamp:

@@ -22,6 +22,7 @@
 #include <format>
 #include <iterator>
 #include <memory>
+#include <utility>
 
 #include "iceberg/exception.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
@@ -384,6 +385,47 @@ std::shared_ptr<ListType> list(SchemaField element) {
 
 std::shared_ptr<StructType> struct_(std::vector<SchemaField> fields) {
   return std::make_shared<StructType>(std::move(fields));
+}
+
+std::string_view ToString(TypeId id) {
+  switch (id) {
+    case TypeId::kStruct:
+      return "struct";
+    case TypeId::kList:
+      return "list";
+    case TypeId::kMap:
+      return "map";
+    case TypeId::kBoolean:
+      return "boolean";
+    case TypeId::kInt:
+      return "int";
+    case TypeId::kLong:
+      return "long";
+    case TypeId::kFloat:
+      return "float";
+    case TypeId::kDouble:
+      return "double";
+    case TypeId::kDecimal:
+      return "decimal";
+    case TypeId::kDate:
+      return "date";
+    case TypeId::kTime:
+      return "time";
+    case TypeId::kTimestamp:
+      return "timestamp";
+    case TypeId::kTimestampTz:
+      return "timestamptz";
+    case TypeId::kString:
+      return "string";
+    case TypeId::kUuid:
+      return "uuid";
+    case TypeId::kFixed:
+      return "fixed";
+    case TypeId::kBinary:
+      return "binary";
+  }
+
+  std::unreachable();
 }
 
 }  // namespace iceberg

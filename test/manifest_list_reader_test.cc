@@ -23,6 +23,7 @@
 
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/avro/avro_register.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/manifest_reader.h"
 #include "temp_file_test_base.h"
@@ -76,43 +77,38 @@ class ManifestListReaderV1Test : public ManifestListReaderTestBase {
     std::vector<int64_t> file_size = {6185, 6113};
     std::vector<int64_t> snapshot_id = {7532614258660258098, 7532614258660258098};
 
-    std::vector<std::vector<std::uint8_t>> lower_bounds = {
-        {0x32, 0x30, 0x32, 0x32, 0x2D, 0x30, 0x32, 0x2D, 0x32, 0x32},
-        {0x32, 0x30, 0x32, 0x32, 0x2D, 0x32, 0x2D, 0x32, 0x32}};
+    return {
+        {.manifest_path = paths[0],
+         .manifest_length = file_size[0],
+         .partition_spec_id = 0,
+         .added_snapshot_id = snapshot_id[0],
+         .added_files_count = 4,
+         .existing_files_count = 0,
+         .deleted_files_count = 0,
+         .added_rows_count = 6,
+         .existing_rows_count = 0,
+         .deleted_rows_count = 0,
+         .partitions = {{.contains_null = false,
+                         .contains_nan = false,
+                         .lower_bound = Literal::String("2022-02-22").Serialize().value(),
+                         .upper_bound =
+                             Literal::String("2022-2-23").Serialize().value()}}},
 
-    std::vector<std::vector<std::uint8_t>> upper_bounds = {
-        {0x32, 0x30, 0x32, 0x32, 0x2D, 0x32, 0x2D, 0x32, 0x33},
-        {0x32, 0x30, 0x32, 0x32, 0x2D, 0x32, 0x2D, 0x32, 0x33}};
-
-    return {{.manifest_path = paths[0],
-             .manifest_length = file_size[0],
-             .partition_spec_id = 0,
-             .added_snapshot_id = snapshot_id[0],
-             .added_files_count = 4,
-             .existing_files_count = 0,
-             .deleted_files_count = 0,
-             .added_rows_count = 6,
-             .existing_rows_count = 0,
-             .deleted_rows_count = 0,
-             .partitions = {{.contains_null = false,
-                             .contains_nan = false,
-                             .lower_bound = lower_bounds[0],
-                             .upper_bound = upper_bounds[0]}}},
-
-            {.manifest_path = paths[1],
-             .manifest_length = file_size[1],
-             .partition_spec_id = 0,
-             .added_snapshot_id = snapshot_id[1],
-             .added_files_count = 0,
-             .existing_files_count = 0,
-             .deleted_files_count = 2,
-             .added_rows_count = 0,
-             .existing_rows_count = 0,
-             .deleted_rows_count = 6,
-             .partitions = {{.contains_null = false,
-                             .contains_nan = false,
-                             .lower_bound = lower_bounds[1],
-                             .upper_bound = upper_bounds[1]}}}};
+        {.manifest_path = paths[1],
+         .manifest_length = file_size[1],
+         .partition_spec_id = 0,
+         .added_snapshot_id = snapshot_id[1],
+         .added_files_count = 0,
+         .existing_files_count = 0,
+         .deleted_files_count = 2,
+         .added_rows_count = 0,
+         .existing_rows_count = 0,
+         .deleted_rows_count = 6,
+         .partitions = {
+             {.contains_null = false,
+              .contains_nan = false,
+              .lower_bound = Literal::String("2022-2-22").Serialize().value(),
+              .upper_bound = Literal::String("2022-2-23").Serialize().value()}}}};
   }
 
   std::vector<ManifestFile> PrepareComplexTypeTestData() {
