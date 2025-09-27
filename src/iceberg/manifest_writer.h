@@ -39,7 +39,7 @@ class ICEBERG_EXPORT ManifestWriter {
                  std::unique_ptr<ManifestEntryAdapter> adapter)
       : writer_(std::move(writer)), adapter_(std::move(adapter)) {}
 
-  virtual ~ManifestWriter() = default;
+  ~ManifestWriter() = default;
 
   /// \brief Write manifest entry to file.
   /// \param entry Manifest entry to write.
@@ -58,30 +58,33 @@ class ICEBERG_EXPORT ManifestWriter {
   /// \param snapshot_id ID of the snapshot.
   /// \param manifest_location Path to the manifest file.
   /// \param file_io File IO implementation to use.
+  /// \param partition_spec Partition spec for the manifest.
   /// \return A Result containing the writer or an error.
   static Result<std::unique_ptr<ManifestWriter>> MakeV1Writer(
       std::optional<int64_t> snapshot_id, std::string_view manifest_location,
-      std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> partition_schema);
+      std::shared_ptr<FileIO> file_io, std::shared_ptr<PartitionSpec> partition_spec);
 
   /// \brief Creates a writer for a manifest file.
   /// \param snapshot_id ID of the snapshot.
   /// \param manifest_location Path to the manifest file.
   /// \param file_io File IO implementation to use.
+  /// \param partition_spec Partition spec for the manifest.
   /// \return A Result containing the writer or an error.
   static Result<std::unique_ptr<ManifestWriter>> MakeV2Writer(
       std::optional<int64_t> snapshot_id, std::string_view manifest_location,
-      std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> partition_schema);
+      std::shared_ptr<FileIO> file_io, std::shared_ptr<PartitionSpec> partition_spec);
 
   /// \brief Creates a writer for a manifest file.
   /// \param snapshot_id ID of the snapshot.
   /// \param first_row_id First row ID of the snapshot.
   /// \param manifest_location Path to the manifest file.
   /// \param file_io File IO implementation to use.
+  /// \param partition_spec Partition spec for the manifest.
   /// \return A Result containing the writer or an error.
   static Result<std::unique_ptr<ManifestWriter>> MakeV3Writer(
       std::optional<int64_t> snapshot_id, std::optional<int64_t> first_row_id,
       std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
-      std::shared_ptr<Schema> partition_schema);
+      std::shared_ptr<PartitionSpec> partition_spec);
 
  private:
   static constexpr int64_t kBatchSize = 1024;
@@ -96,7 +99,7 @@ class ICEBERG_EXPORT ManifestListWriter {
                      std::unique_ptr<ManifestFileAdapter> adapter)
       : writer_(std::move(writer)), adapter_(std::move(adapter)) {}
 
-  virtual ~ManifestListWriter() = default;
+  ~ManifestListWriter() = default;
 
   /// \brief Write manifest file to manifest list file.
   /// \param file Manifest file to write.
