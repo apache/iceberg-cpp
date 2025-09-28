@@ -26,13 +26,14 @@
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
+#include "iceberg/util/formattable.h"
 
 /// \file iceberg/util/uuid.h
 /// \brief UUID (Universally Unique Identifier) representation.
 
 namespace iceberg {
 
-class ICEBERG_EXPORT Uuid {
+class ICEBERG_EXPORT Uuid : public util::Formattable {
  public:
   Uuid() = delete;
   constexpr static size_t kLength = 16;
@@ -71,7 +72,7 @@ class ICEBERG_EXPORT Uuid {
   uint8_t operator[](size_t index) const;
 
   /// \brief Convert the UUID to a string in standard format.
-  std::string ToString() const;
+  std::string ToString() const override;
 
   friend bool operator==(const Uuid& lhs, const Uuid& rhs) {
     return lhs.data_ == rhs.data_;

@@ -27,6 +27,7 @@
 
 #include "iceberg/exception.h"
 #include "iceberg/result.h"
+#include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/int128.h"
 #include "iceberg/util/macros.h"
 
@@ -70,7 +71,7 @@ inline Result<Uuid> ParseSimple(std::string_view s) {
     uint8_t h1 = kHexTable[static_cast<uint8_t>(s[i * 2])];
     uint8_t h2 = kHexTable[static_cast<uint8_t>(s[i * 2 + 1])];
 
-    if ((h1 | h2) == 0xFF) {
+    if ((h1 | h2) == 0xFF) [[unlikely]] {
       return InvalidArgument("Invalid UUID string: {}", s);
     }
 
@@ -84,7 +85,7 @@ inline Result<Uuid> ParseHyphenated(std::string_view s) {
   ICEBERG_DCHECK(s.size() == 36, "s must be 36 characters long");
 
   // Check that dashes are in the right places
-  if (!(s[8] == '-' && s[13] == '-' && s[18] == '-' && s[23] == '-')) {
+  if (!(s[8] == '-' && s[13] == '-' && s[18] == '-' && s[23] == '-')) [[unlikely]] {
     return InvalidArgument("Invalid UUID string: {}", s);
   }
 
@@ -98,7 +99,7 @@ inline Result<Uuid> ParseHyphenated(std::string_view s) {
     uint8_t h3 = kHexTable[static_cast<uint8_t>(s[i + 2])];
     uint8_t h4 = kHexTable[static_cast<uint8_t>(s[i + 3])];
 
-    if ((h1 | h2 | h3 | h4) == 0xFF) {
+    if ((h1 | h2 | h3 | h4) == 0xFF) [[unlikely]] {
       return InvalidArgument("Invalid UUID string: {}", s);
     }
 
