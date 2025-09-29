@@ -108,8 +108,8 @@ jobs:
         include:
           - title: AMD64 Ubuntu 24.04
             runs-on: ubuntu-24.04
-          - title: AMD64 Windows 2022
-            runs-on: windows-2022
+          - title: AMD64 Windows 2025
+            runs-on: windows-2025
             meson-setup-args: --vsenv
           - title: AArch64 macOS 15
             runs-on: macos-15
