@@ -42,7 +42,7 @@ enum class SortDirection {
   kDescending,
 };
 /// \brief Get the relative sort direction name
-ICEBERG_EXPORT constexpr std::string_view SortDirectionToString(SortDirection direction) {
+ICEBERG_EXPORT constexpr std::string_view ToString(SortDirection direction) {
   switch (direction) {
     case SortDirection::kAscending:
       return "asc";
@@ -67,7 +67,7 @@ enum class NullOrder {
   kLast,
 };
 /// \brief Get the relative null order name
-ICEBERG_EXPORT constexpr std::string_view NullOrderToString(NullOrder null_order) {
+ICEBERG_EXPORT constexpr std::string_view ToString(NullOrder null_order) {
   switch (null_order) {
     case NullOrder::kFirst:
       return "nulls-first";

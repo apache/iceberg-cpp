@@ -44,7 +44,7 @@ NullOrder SortField::null_order() const { return null_order_; }
 std::string SortField::ToString() const {
   return std::format(
       "sort_field(source_id={}, transform={}, direction={}, null_order={})", source_id_,
-      *transform_, SortDirectionToString(direction_), NullOrderToString(null_order_));
+      *transform_, direction_, null_order_);
 }
 
 bool SortField::Equals(const SortField& other) const {

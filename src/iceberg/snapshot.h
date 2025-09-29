@@ -43,8 +43,7 @@ enum class SnapshotRefType {
 };
 
 /// \brief Get the relative snapshot reference type name
-ICEBERG_EXPORT constexpr std::string_view SnapshotRefTypeToString(
-    SnapshotRefType type) noexcept {
+ICEBERG_EXPORT constexpr std::string_view ToString(SnapshotRefType type) noexcept {
   switch (type) {
     case SnapshotRefType::kBranch:
       return "branch";
