@@ -62,6 +62,9 @@ iceberg_tests = {
         'string_util_test.cc',
         'visit_type_test.cc',
     ),
+    'roaring_test': files(
+        'roaring_test.cc',
+    )
 }
 
 foreach test_name, sources : iceberg_tests

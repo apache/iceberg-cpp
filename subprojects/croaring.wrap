@@ -1,0 +1,30 @@
+# Licensed to the Apache Software Foundation (ASF) under one
+# or more contributor license agreements.  See the NOTICE file
+# distributed with this work for additional information
+# regarding copyright ownership.  The ASF licenses this file
+# to you under the Apache License, Version 2.0 (the
+# "License"); you may not use this file except in compliance
+# with the License.  You may obtain a copy of the License at
+#
+#   http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+# KIND, either express or implied.  See the License for the
+# specific language governing permissions and limitations
+# under the License.
+
+[wrap-file]
+directory = CRoaring-4.3.11
+source_url = https://github.com/RoaringBitmap/CRoaring/archive/refs/tags/v4.3.11.tar.gz
+source_filename = CRoaring-4.3.11.tar.gz
+source_hash = acd3a17e6c95acf3154d60c38c90e927e6c531805bc740a040fa111819af380e
+patch_filename = croaring_4.3.11-1_patch.zip
+patch_url = https://wrapdb.mesonbuild.com/v2/croaring_4.3.11-1/get_patch
+patch_hash = ff26efa0b7e7bc24963e169ab1a4e15598fdfcb5f0b6db9f28eca9e26c22bb4a
+source_fallback_url = https://github.com/mesonbuild/wrapdb/releases/download/croaring_4.3.11-1/CRoaring-4.3.11.tar.gz
+wrapdb_version = 4.3.11-1
+
+[provide]
+dependency_names = croaring
