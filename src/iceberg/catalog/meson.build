@@ -16,3 +16,7 @@
 # under the License.
 
 install_headers(['in_memory_catalog.h'], subdir: 'iceberg/catalog')
+
+if get_option('rest').enabled()
+    subdir('rest')
+endif

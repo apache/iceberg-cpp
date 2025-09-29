@@ -21,7 +21,13 @@ project(
     version: '0.2.0',
     license: 'Apache-2.0',
     meson_version: '>=1.3.0',
-    default_options: ['cpp_std=c++23,c++latest', 'warning_level=2'],
+    default_options: [
+        'cpp_std=c++23,c++latest',
+        'warning_level=2',
+        # Don't build any tests for curl
+        'curl:tests=disabled',
+        'curl:unittests=disabled',
+    ],
 )
 
 subdir('src')
