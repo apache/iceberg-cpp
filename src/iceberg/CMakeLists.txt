@@ -83,16 +83,16 @@ list(APPEND
      ZLIB::ZLIB)
 list(APPEND
      ICEBERG_STATIC_INSTALL_INTERFACE_LIBS
-     "$<IF:$<BOOL:${NANOARROW_VENDORED}>,Iceberg::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_static>,nanoarrow::nanoarrow_static,nanoarrow::nanoarrow_shared>>"
-     "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,Iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
-     "$<IF:$<BOOL:${CROARING_VENDORED}>,Iceberg::roaring,roaring::roaring>"
-     "$<IF:$<BOOL:${SPDLOG_VENDORED}>,Iceberg::spdlog,spdlog::spdlog>")
+     "$<IF:$<BOOL:${NANOARROW_VENDORED}>,iceberg::nanoarrow_static,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_static>,nanoarrow::nanoarrow_static,nanoarrow::nanoarrow_shared>>"
+     "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
+     "$<IF:$<BOOL:${CROARING_VENDORED}>,iceberg::roaring,roaring::roaring>"
+     "$<IF:$<BOOL:${SPDLOG_VENDORED}>,iceberg::spdlog,spdlog::spdlog>")
 list(APPEND
      ICEBERG_SHARED_INSTALL_INTERFACE_LIBS
-     "$<IF:$<BOOL:${NANOARROW_VENDORED}>,Iceberg::nanoarrow_shared,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_shared>,nanoarrow::nanoarrow_shared,nanoarrow::nanoarrow_static>>"
-     "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,Iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
-     "$<IF:$<BOOL:${CROARING_VENDORED}>,Iceberg::roaring,roaring::roaring>"
-     "$<IF:$<BOOL:${SPDLOG_VENDORED}>,Iceberg::spdlog,spdlog::spdlog>")
+     "$<IF:$<BOOL:${NANOARROW_VENDORED}>,iceberg::nanoarrow_shared,$<IF:$<TARGET_EXISTS:nanoarrow::nanoarrow_shared>,nanoarrow::nanoarrow_shared,nanoarrow::nanoarrow_static>>"
+     "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,$<IF:$<TARGET_EXISTS:nlohmann_json::nlohmann_json>,nlohmann_json::nlohmann_json,nlohmann_json::nlohmann_json>>"
+     "$<IF:$<BOOL:${CROARING_VENDORED}>,iceberg::roaring,roaring::roaring>"
+     "$<IF:$<BOOL:${SPDLOG_VENDORED}>,iceberg::spdlog,spdlog::spdlog>")
 
 add_iceberg_lib(iceberg
                 SOURCES
@@ -163,17 +163,17 @@ if(ICEBERG_BUILD_BUNDLE)
 
   list(APPEND
        ICEBERG_BUNDLE_STATIC_INSTALL_INTERFACE_LIBS
-       "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_static>,Iceberg::iceberg_static,Iceberg::iceberg_shared>"
-       "$<IF:$<BOOL:${ARROW_VENDORED}>,Iceberg::arrow_static,$<IF:$<TARGET_EXISTS:Arrow::arrow_static>,Arrow::arrow_static,Arrow::arrow_shared>>"
-       "$<IF:$<BOOL:${ARROW_VENDORED}>,Iceberg::parquet_static,$<IF:$<TARGET_EXISTS:Parquet::parquet_static>,Parquet::parquet_static,Parquet::parquet_shared>>"
-       "$<IF:$<BOOL:${AVRO_VENDORED}>,Iceberg::avrocpp_s,$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_static>,avro-cpp::avrocpp_static,avro-cpp::avrocpp_shared>>"
+       "$<IF:$<TARGET_EXISTS:iceberg::iceberg_static>,iceberg::iceberg_static,iceberg::iceberg_shared>"
+       "$<IF:$<BOOL:${ARROW_VENDORED}>,iceberg::arrow_static,$<IF:$<TARGET_EXISTS:Arrow::arrow_static>,Arrow::arrow_static,Arrow::arrow_shared>>"
+       "$<IF:$<BOOL:${ARROW_VENDORED}>,iceberg::parquet_static,$<IF:$<TARGET_EXISTS:Parquet::parquet_static>,Parquet::parquet_static,Parquet::parquet_shared>>"
+       "$<IF:$<BOOL:${AVRO_VENDORED}>,iceberg::avrocpp_s,$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_static>,avro-cpp::avrocpp_static,avro-cpp::avrocpp_shared>>"
   )
   list(APPEND
        ICEBERG_BUNDLE_SHARED_INSTALL_INTERFACE_LIBS
-       "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_shared>,Iceberg::iceberg_shared,Iceberg::iceberg_static>"
-       "$<IF:$<BOOL:${ARROW_VENDORED}>,Iceberg::arrow_static,$<IF:$<TARGET_EXISTS:Arrow::arrow_shared>,Arrow::arrow_shared,Arrow::arrow_static>>"
-       "$<IF:$<BOOL:${ARROW_VENDORED}>,Iceberg::parquet_static,$<IF:$<TARGET_EXISTS:Parquet::parquet_shared>,Parquet::parquet_shared,Parquet::parquet_static>>"
-       "$<IF:$<BOOL:${AVRO_VENDORED}>,Iceberg::avrocpp_s,$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_shared>,avro-cpp::avrocpp_shared,avro-cpp::avrocpp_static>>"
+       "$<IF:$<TARGET_EXISTS:iceberg::iceberg_shared>,iceberg::iceberg_shared,iceberg::iceberg_static>"
+       "$<IF:$<BOOL:${ARROW_VENDORED}>,iceberg::arrow_static,$<IF:$<TARGET_EXISTS:Arrow::arrow_shared>,Arrow::arrow_shared,Arrow::arrow_static>>"
+       "$<IF:$<BOOL:${ARROW_VENDORED}>,iceberg::parquet_static,$<IF:$<TARGET_EXISTS:Parquet::parquet_shared>,Parquet::parquet_shared,Parquet::parquet_static>>"
+       "$<IF:$<BOOL:${AVRO_VENDORED}>,iceberg::avrocpp_s,$<IF:$<TARGET_EXISTS:avro-cpp::avrocpp_shared>,avro-cpp::avrocpp_shared,avro-cpp::avrocpp_static>>"
   )
 
   add_iceberg_lib(iceberg_bundle
@@ -190,20 +190,12 @@ if(ICEBERG_BUILD_BUNDLE)
                   OUTPUTS
                   ICEBERG_BUNDLE_LIBRARIES)
 
-  foreach(LIB_TARGET ${ICEBERG_BUNDLE_LIBRARIES})
-    target_compile_definitions(${LIB_TARGET} PRIVATE ICEBERG_BUNDLE_EXPORTING)
-  endforeach()
-
-  if(ICEBERG_BUILD_STATIC)
-    target_compile_definitions(iceberg_bundle_static PUBLIC ICEBERG_BUNDLE_STATIC)
-  endif()
-
   add_subdirectory(arrow)
   add_subdirectory(avro)
   add_subdirectory(parquet)
 endif()
 
-iceberg_install_cmake_package(Iceberg iceberg_targets)
+iceberg_install_cmake_package(iceberg iceberg_targets)
 
 if(ICEBERG_BUILD_TESTS)
   add_subdirectory(test)

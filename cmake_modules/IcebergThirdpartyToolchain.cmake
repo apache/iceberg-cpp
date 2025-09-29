@@ -461,7 +461,7 @@ function(resolve_cpr_dependency)
     set(CPR_VENDORED TRUE)
     set_target_properties(cpr PROPERTIES OUTPUT_NAME "iceberg_vendored_cpr"
                                          POSITION_INDEPENDENT_CODE ON)
-    add_library(Iceberg::cpr ALIAS cpr)
+    add_library(iceberg::cpr ALIAS cpr)
     install(TARGETS cpr
             EXPORT iceberg_targets
             RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
