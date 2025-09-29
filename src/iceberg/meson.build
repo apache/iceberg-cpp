@@ -15,6 +15,29 @@
 # specific language governing permissions and limitations
 # under the License.
 
+conf_data = configuration_data()
+version = meson.project_version()
+components = version.split('.')
+assert(
+    components.length() >= 3,
+    'The version does not contain major, minor and patch',
+)
+ver_major = components[0]
+ver_minor = components[1]
+ver_patch = components[2]
+conf_data.set('PROJECT_VERSION_MAJOR', ver_major)
+conf_data.set('PROJECT_VERSION_MINOR', ver_minor)
+conf_data.set('PROJECT_VERSION_PATCH', ver_patch)
+conf_data.set('PROJECT_VERSION', version)
+conf_data.set('PROJECT_NAME', meson.project_name())
+configure_file(
+    input: 'version.h.in',
+    output: 'version.h',
+    configuration: conf_data,
+    install: true,
+    install_dir: get_option('includedir') / 'iceberg',
+)
+
 iceberg_include_dir = include_directories('..')
 iceberg_sources = files(
     'arrow_c_data_guard_internal.cc',
