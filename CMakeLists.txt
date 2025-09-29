@@ -28,6 +28,9 @@ project(Iceberg
         DESCRIPTION "Iceberg C++ Project"
         LANGUAGES CXX)
 
+configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/iceberg/version.h.in"
+               "${CMAKE_BINARY_DIR}/src/iceberg/version.h")
+
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)

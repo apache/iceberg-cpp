@@ -23,7 +23,6 @@
 #include <cstdint>
 #include <format>
 #include <regex>
-#include <type_traits>
 #include <unordered_set>
 #include <utility>
 
@@ -351,8 +350,8 @@ nlohmann::json ToJson(const SortField& sort_field) {
   nlohmann::json json;
   json[kTransform] = std::format("{}", *sort_field.transform());
   json[kSourceId] = sort_field.source_id();
-  json[kDirection] = SortDirectionToString(sort_field.direction());
-  json[kNullOrder] = NullOrderToString(sort_field.null_order());
+  json[kDirection] = std::format("{}", sort_field.direction());
+  json[kNullOrder] = std::format("{}", sort_field.null_order());
   return json;
 }
 
@@ -491,7 +490,7 @@ nlohmann::json ToJson(const Schema& schema) {
 nlohmann::json ToJson(const SnapshotRef& ref) {
   nlohmann::json json;
   json[kSnapshotId] = ref.snapshot_id;
-  json[kType] = SnapshotRefTypeToString(ref.type());
+  json[kType] = std::format("{}", ref.type());
   if (ref.type() == SnapshotRefType::kBranch) {
     const auto& branch = std::get<SnapshotRef::Branch>(ref.retention);
     SetOptionalField(json, kMinSnapshotsToKeep, branch.min_snapshots_to_keep);
