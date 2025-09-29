@@ -15,4 +15,5 @@
 # specific language governing permissions and limitations
 # under the License.
 
+option('rest', type: 'feature', description: 'Build rest catalog client', value: 'enabled')
 option('tests', type: 'feature', description: 'Build tests', value: 'enabled')
