@@ -28,12 +28,12 @@ list(APPEND ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS
      "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>" cpr::cpr)
 list(APPEND
      ICEBERG_REST_STATIC_INSTALL_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_static>,Iceberg::iceberg_static,Iceberg::iceberg_shared>"
-     "$<IF:$<BOOL:${CPR_VENDORED}>,Iceberg::cpr,cpr::cpr>")
+     "$<IF:$<TARGET_EXISTS:iceberg::iceberg_static>,iceberg::iceberg_static,iceberg::iceberg_shared>"
+     "$<IF:$<BOOL:${CPR_VENDORED}>,iceberg::cpr,cpr::cpr>")
 list(APPEND
      ICEBERG_REST_SHARED_INSTALL_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_shared>,Iceberg::iceberg_shared,Iceberg::iceberg_static>"
-     "$<IF:$<BOOL:${CPR_VENDORED}>,Iceberg::cpr,cpr::cpr>")
+     "$<IF:$<TARGET_EXISTS:iceberg::iceberg_shared>,iceberg::iceberg_shared,iceberg::iceberg_static>"
+     "$<IF:$<BOOL:${CPR_VENDORED}>,iceberg::cpr,cpr::cpr>")
 
 add_iceberg_lib(iceberg_rest
                 SOURCES

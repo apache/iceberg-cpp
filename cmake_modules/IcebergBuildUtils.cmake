@@ -150,6 +150,9 @@ function(add_iceberg_lib LIB_NAME)
     target_link_libraries(${LIB_NAME}_shared
                           PUBLIC "$<BUILD_INTERFACE:iceberg_sanitizer_flags>")
 
+    string(TOUPPER ${LIB_NAME} VISIBILITY_NAME)
+    target_compile_definitions(${LIB_NAME}_shared PRIVATE ${VISIBILITY_NAME}_EXPORTING)
+
     install(TARGETS ${LIB_NAME}_shared
             EXPORT iceberg_targets
             ARCHIVE DESTINATION ${INSTALL_ARCHIVE_DIR}
@@ -208,6 +211,8 @@ function(add_iceberg_lib LIB_NAME)
     target_link_libraries(${LIB_NAME}_static
                           PUBLIC "$<BUILD_INTERFACE:iceberg_sanitizer_flags>")
 
+    string(TOUPPER ${LIB_NAME} VISIBILITY_NAME)
+    target_compile_definitions(${LIB_NAME}_static PUBLIC ${VISIBILITY_NAME}_STATIC)
     install(TARGETS ${LIB_NAME}_static
             EXPORT iceberg_targets
             ARCHIVE DESTINATION ${INSTALL_ARCHIVE_DIR}
