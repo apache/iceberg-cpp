@@ -19,14 +19,18 @@
 
 #pragma once
 
+#include <array>
 #include <compare>
+#include <cstdint>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <variant>
 #include <vector>
 
 #include "iceberg/result.h"
 #include "iceberg/type.h"
+#include "iceberg/util/int128.h"
 
 namespace iceberg {
 
@@ -56,7 +60,8 @@ class ICEBERG_EXPORT Literal {
                              double,          // for double
                              std::string,     // for string
                              std::vector<uint8_t>,     // for binary, fixed
-                             std::array<uint8_t, 16>,  // for uuid and decimal
+                             std::array<uint8_t, 16>,  // for uuid
+                             int128_t,                 // for decimal
                              BelowMin, AboveMax>;
 
   /// \brief Factory methods for primitive types
@@ -71,6 +76,10 @@ class ICEBERG_EXPORT Literal {
   static Literal Double(double value);
   static Literal String(std::string value);
   static Literal Binary(std::vector<uint8_t> value);
+  static Literal Decimal(int128_t value, int32_t precision, int32_t scale);
+  static Result<Literal> Decimal(std::string_view value);
+  static Literal UUID(std::array<uint8_t, 16> value);
+  static Literal Fixed(std::vector<uint8_t> value);
 
   /// \brief Create a literal representing a null value.
   static Literal Null(std::shared_ptr<PrimitiveType> type) {
