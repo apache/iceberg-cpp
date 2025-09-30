@@ -15,10 +15,4 @@
 # specific language governing permissions and limitations
 # under the License.
 
-iceberg_install_all_headers(iceberg/catalog)
-
-add_subdirectory(memory)
-
-if(ICEBERG_BUILD_REST)
-  add_subdirectory(rest)
-endif()
+iceberg_install_all_headers(iceberg/catalog/memory)
