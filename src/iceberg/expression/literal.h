@@ -71,6 +71,7 @@ class ICEBERG_EXPORT Literal {
   static Literal Double(double value);
   static Literal String(std::string value);
   static Literal Binary(std::vector<uint8_t> value);
+  static Literal Fixed(std::vector<uint8_t> value);
 
   /// \brief Create a literal representing a null value.
   static Literal Null(std::shared_ptr<PrimitiveType> type) {
@@ -143,11 +144,76 @@ class ICEBERG_EXPORT Literal {
  private:
   Literal(Value value, std::shared_ptr<PrimitiveType> type);
 
+  friend class Conversions;
   friend class LiteralCaster;
 
- private:
   Value value_;
   std::shared_ptr<PrimitiveType> type_;
+};
+
+template <TypeId type_id>
+struct LiteralTraits {
+  using ValueType = void;
+};
+
+template <>
+struct LiteralTraits<TypeId::kBoolean> {
+  using ValueType = bool;
+};
+
+template <>
+struct LiteralTraits<TypeId::kInt> {
+  using ValueType = int32_t;
+};
+
+template <>
+struct LiteralTraits<TypeId::kDate> {
+  using ValueType = int32_t;
+};
+
+template <>
+struct LiteralTraits<TypeId::kLong> {
+  using ValueType = int64_t;
+};
+
+template <>
+struct LiteralTraits<TypeId::kTime> {
+  using ValueType = int64_t;
+};
+
+template <>
+struct LiteralTraits<TypeId::kTimestamp> {
+  using ValueType = int64_t;
+};
+
+template <>
+struct LiteralTraits<TypeId::kTimestampTz> {
+  using ValueType = int64_t;
+};
+
+template <>
+struct LiteralTraits<TypeId::kFloat> {
+  using ValueType = float;
+};
+
+template <>
+struct LiteralTraits<TypeId::kDouble> {
+  using ValueType = double;
+};
+
+template <>
+struct LiteralTraits<TypeId::kString> {
+  using ValueType = std::string;
+};
+
+template <>
+struct LiteralTraits<TypeId::kBinary> {
+  using ValueType = std::vector<uint8_t>;
+};
+
+template <>
+struct LiteralTraits<TypeId::kFixed> {
+  using ValueType = std::vector<uint8_t>;
 };
 
 }  // namespace iceberg
