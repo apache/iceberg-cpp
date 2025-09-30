@@ -34,6 +34,7 @@ list(APPEND
      ICEBERG_REST_SHARED_INSTALL_INTERFACE_LIBS
      "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_shared>,Iceberg::iceberg_shared,Iceberg::iceberg_static>"
      "$<IF:$<BOOL:${CPR_VENDORED}>,Iceberg::cpr,cpr::cpr>")
+
 add_iceberg_lib(iceberg_rest
                 SOURCES
                 ${ICEBERG_REST_SOURCES}
