@@ -60,6 +60,7 @@ iceberg_tests = {
         'endian_test.cc',
         'formatter_test.cc',
         'string_util_test.cc',
+        'uuid_test.cc',
         'visit_type_test.cc',
     ),
     'roaring_test': files('roaring_test.cc'),

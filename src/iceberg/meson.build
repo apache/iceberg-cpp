@@ -73,8 +73,10 @@ iceberg_sources = files(
     'type.cc',
     'util/decimal.cc',
     'util/gzip_internal.cc',
+    'util/gzip_internal.cc',
     'util/murmurhash3_internal.cc',
     'util/timepoint.cc',
+    'util/uuid.cc',
 )
 
 # CRoaring does not export symbols, so on Windows it must
