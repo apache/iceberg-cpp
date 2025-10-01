@@ -25,7 +25,7 @@
 
 namespace iceberg {
 /// \brief Identity transform that returns the input unchanged.
-class IdentityTransform : public TransformFunction {
+class ICEBERG_EXPORT IdentityTransform : public TransformFunction {
  public:
   /// \param source_type Type of the input data.
   explicit IdentityTransform(std::shared_ptr<Type> const& source_type);
@@ -44,7 +44,7 @@ class IdentityTransform : public TransformFunction {
 };
 
 /// \brief Bucket transform that hashes input values into N buckets.
-class BucketTransform : public TransformFunction {
+class ICEBERG_EXPORT BucketTransform : public TransformFunction {
  public:
   /// \param source_type Type of the input data.
   /// \param num_buckets Number of buckets to hash into.
@@ -68,7 +68,7 @@ class BucketTransform : public TransformFunction {
 };
 
 /// \brief Truncate transform that truncates values to a specified width.
-class TruncateTransform : public TransformFunction {
+class ICEBERG_EXPORT TruncateTransform : public TransformFunction {
  public:
   /// \param source_type Type of the input data.
   /// \param width The width to truncate to (e.g., for strings or numbers).
@@ -92,7 +92,7 @@ class TruncateTransform : public TransformFunction {
 };
 
 /// \brief Year transform that extracts the year component from timestamp inputs.
-class YearTransform : public TransformFunction {
+class ICEBERG_EXPORT YearTransform : public TransformFunction {
  public:
   /// \param source_type Must be a timestamp type.
   explicit YearTransform(std::shared_ptr<Type> const& source_type);
@@ -111,7 +111,7 @@ class YearTransform : public TransformFunction {
 };
 
 /// \brief Month transform that extracts the month component from timestamp inputs.
-class MonthTransform : public TransformFunction {
+class ICEBERG_EXPORT MonthTransform : public TransformFunction {
  public:
   /// \param source_type Must be a timestamp type.
   explicit MonthTransform(std::shared_ptr<Type> const& source_type);
@@ -130,7 +130,7 @@ class MonthTransform : public TransformFunction {
 };
 
 /// \brief Day transform that extracts the day of the month from timestamp inputs.
-class DayTransform : public TransformFunction {
+class ICEBERG_EXPORT DayTransform : public TransformFunction {
  public:
   /// \param source_type Must be a timestamp type.
   explicit DayTransform(std::shared_ptr<Type> const& source_type);
@@ -149,7 +149,7 @@ class DayTransform : public TransformFunction {
 };
 
 /// \brief Hour transform that extracts the hour component from timestamp inputs.
-class HourTransform : public TransformFunction {
+class ICEBERG_EXPORT HourTransform : public TransformFunction {
  public:
   /// \param source_type Must be a timestamp type.
   explicit HourTransform(std::shared_ptr<Type> const& source_type);
@@ -168,7 +168,7 @@ class HourTransform : public TransformFunction {
 };
 
 /// \brief Void transform that discards the input and always returns null.
-class VoidTransform : public TransformFunction {
+class ICEBERG_EXPORT VoidTransform : public TransformFunction {
  public:
   /// \param source_type Input type (ignored).
   explicit VoidTransform(std::shared_ptr<Type> const& source_type);
