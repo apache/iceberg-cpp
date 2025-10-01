@@ -27,6 +27,7 @@
 #include "iceberg/manifest_list.h"
 #include "iceberg/schema.h"
 #include "iceberg/type.h"
+#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -37,7 +38,7 @@ namespace iceberg {
   }
 
 #define PARSE_PRIMITIVE_FIELD(item, array_view, type)                                   \
-  for (size_t row_idx = 0; row_idx < array_view->length; row_idx++) {                   \
+  for (int64_t row_idx = 0; row_idx < array_view->length; row_idx++) {                  \
     if (!ArrowArrayViewIsNull(array_view, row_idx)) {                                   \
       auto value = ArrowArrayViewGetIntUnsafe(array_view, row_idx);                     \
       item = static_cast<type>(value);                                                  \
@@ -48,7 +49,7 @@ namespace iceberg {
   }
 
 #define PARSE_STRING_FIELD(item, array_view)                                            \
-  for (size_t row_idx = 0; row_idx < array_view->length; row_idx++) {                   \
+  for (int64_t row_idx = 0; row_idx < array_view->length; row_idx++) {                  \
     if (!ArrowArrayViewIsNull(array_view, row_idx)) {                                   \
       auto value = ArrowArrayViewGetStringUnsafe(array_view, row_idx);                  \
       item = std::string(value.data, value.size_bytes);                                 \
@@ -59,7 +60,7 @@ namespace iceberg {
   }
 
 #define PARSE_BINARY_FIELD(item, array_view)                                            \
-  for (size_t row_idx = 0; row_idx < array_view->length; row_idx++) {                   \
+  for (int64_t row_idx = 0; row_idx < array_view->length; row_idx++) {                  \
     if (!ArrowArrayViewIsNull(view_of_column, row_idx)) {                               \
       item = ArrowArrayViewGetInt8Vector(array_view, row_idx);                          \
     } else if (required) {                                                              \
@@ -225,66 +226,67 @@ Result<std::vector<ManifestFile>> ParseManifestList(ArrowSchema* schema,
     auto field_name = field.value()->get().name();
     bool required = !field.value()->get().optional();
     auto view_of_column = array_view.children[idx];
-    switch (idx) {
-      case 0:
+    ICEBERG_ASSIGN_OR_RAISE(auto manifest_file_field, ManifestFileFieldFromIndex(idx));
+    switch (manifest_file_field) {
+      case ManifestFileField::kManifestPath:
         PARSE_STRING_FIELD(manifest_files[row_idx].manifest_path, view_of_column);
         break;
-      case 1:
+      case ManifestFileField::kManifestLength:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].manifest_length, view_of_column,
                               int64_t);
         break;
-      case 2:
+      case ManifestFileField::kPartitionSpecId:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].partition_spec_id, view_of_column,
                               int32_t);
         break;
-      case 3:
+      case ManifestFileField::kContent:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].content, view_of_column,
                               ManifestFile::Content);
         break;
-      case 4:
+      case ManifestFileField::kSequenceNumber:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].sequence_number, view_of_column,
                               int64_t);
         break;
-      case 5:
+      case ManifestFileField::kMinSequenceNumber:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].min_sequence_number, view_of_column,
                               int64_t);
         break;
-      case 6:
+      case ManifestFileField::kAddedSnapshotId:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].added_snapshot_id, view_of_column,
                               int64_t);
         break;
-      case 7:
+      case ManifestFileField::kAddedFilesCount:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].added_files_count, view_of_column,
                               int32_t);
         break;
-      case 8:
+      case ManifestFileField::kExistingFilesCount:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].existing_files_count,
                               view_of_column, int32_t);
         break;
-      case 9:
+      case ManifestFileField::kDeletedFilesCount:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].deleted_files_count, view_of_column,
                               int32_t);
         break;
-      case 10:
+      case ManifestFileField::kAddedRowsCount:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].added_rows_count, view_of_column,
                               int64_t);
         break;
-      case 11:
+      case ManifestFileField::kExistingRowsCount:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].existing_rows_count, view_of_column,
                               int64_t);
         break;
-      case 12:
+      case ManifestFileField::kDeletedRowsCount:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].deleted_rows_count, view_of_column,
                               int64_t);
         break;
-      case 13:
+      case ManifestFileField::kPartitionFieldSummary:
         ICEBERG_RETURN_UNEXPECTED(
             ParsePartitionFieldSummaryList(view_of_column, manifest_files));
         break;
-      case 14:
+      case ManifestFileField::kKeyMetadata:
         PARSE_BINARY_FIELD(manifest_files[row_idx].key_metadata, view_of_column);
         break;
-      case 15:
+      case ManifestFileField::kFirstRowId:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].first_row_id, view_of_column,
                               int64_t);
         break;
@@ -295,7 +297,7 @@ Result<std::vector<ManifestFile>> ParseManifestList(ArrowSchema* schema,
   return manifest_files;
 }
 
-Status ParseLiteral(ArrowArrayView* view_of_partition, size_t row_idx,
+Status ParseLiteral(ArrowArrayView* view_of_partition, int64_t row_idx,
                     std::vector<ManifestEntry>& manifest_entries) {
   if (view_of_partition->storage_type == ArrowType::NANOARROW_TYPE_BOOL) {
     auto value = ArrowArrayViewGetUIntUnsafe(view_of_partition, row_idx);
@@ -355,7 +357,7 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
                            view_of_file_field);
         break;
       case 2:
-        for (size_t row_idx = 0; row_idx < view_of_file_field->length; row_idx++) {
+        for (int64_t row_idx = 0; row_idx < view_of_file_field->length; row_idx++) {
           if (!ArrowArrayViewIsNull(view_of_file_field, row_idx)) {
             auto value = ArrowArrayViewGetStringUnsafe(view_of_file_field, row_idx);
             std::string_view path_str(value.data, value.size_bytes);
@@ -510,7 +512,7 @@ Result<std::vector<ManifestEntry>> ParseManifestEntry(ArrowSchema* schema,
         break;
       case 4: {
         auto data_file_schema =
-            dynamic_pointer_cast<StructType>(field.value()->get().type());
+            internal::checked_pointer_cast<StructType>(field.value()->get().type());
         ICEBERG_RETURN_UNEXPECTED(
             ParseDataFile(data_file_schema, view_of_column, manifest_entries));
         break;
@@ -569,6 +571,13 @@ Result<std::vector<ManifestFile>> ManifestListReaderImpl::Files() const {
     }
   }
   return manifest_files;
+}
+
+Result<ManifestFileField> ManifestFileFieldFromIndex(int32_t index) {
+  if (index >= 0 && index < static_cast<int32_t>(ManifestFileField::kNextUnusedId)) {
+    return static_cast<ManifestFileField>(index);
+  }
+  return InvalidArgument("Invalid manifest file field index: {}", index);
 }
 
 }  // namespace iceberg

@@ -31,6 +31,8 @@ set(ICEBERG_SOURCES
     name_mapping.cc
     partition_field.cc
     partition_spec.cc
+    row/arrow_array_wrapper.cc
+    row/manifest_wrapper.cc
     schema.cc
     schema_field.cc
     schema_internal.cc
@@ -105,6 +107,7 @@ iceberg_install_all_headers(iceberg)
 
 add_subdirectory(catalog)
 add_subdirectory(expression)
+add_subdirectory(row)
 add_subdirectory(util)
 
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/iceberg_export.h
