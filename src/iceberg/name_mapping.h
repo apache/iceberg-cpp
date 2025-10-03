@@ -75,7 +75,7 @@ class ICEBERG_EXPORT MappedFields {
   /// \brief Get the list of field mappings.
   std::span<const MappedField> fields() const;
 
-  friend bool operator==(const MappedFields& lhs, const MappedFields& rhs);
+  ICEBERG_EXPORT friend bool operator==(const MappedFields& lhs, const MappedFields& rhs);
 
  private:
   explicit MappedFields(std::vector<MappedField> fields);
@@ -115,7 +115,7 @@ class ICEBERG_EXPORT NameMapping {
   /// \brief Get the underlying MappedFields instance.
   const MappedFields& AsMappedFields() const;
 
-  friend bool operator==(const NameMapping& lhs, const NameMapping& rhs);
+  ICEBERG_EXPORT friend bool operator==(const NameMapping& lhs, const NameMapping& rhs);
 
  private:
   explicit NameMapping(std::unique_ptr<MappedFields> mapping);
