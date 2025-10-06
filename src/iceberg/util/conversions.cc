@@ -25,6 +25,7 @@
 
 #include "iceberg/util/endian.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -70,6 +71,12 @@ Result<std::vector<uint8_t>> ToBytesImpl<TypeId::kString>(const Literal::Value& 
 }
 
 template <>
+Result<std::vector<uint8_t>> ToBytesImpl<TypeId::kUuid>(const Literal::Value& value) {
+  const auto& uuid = std::get<Uuid>(value);
+  return std::vector<uint8_t>(uuid.bytes().begin(), uuid.bytes().end());
+}
+
+template <>
 Result<std::vector<uint8_t>> ToBytesImpl<TypeId::kBinary>(const Literal::Value& value) {
   return std::get<std::vector<uint8_t>>(value);
 }
@@ -98,9 +105,10 @@ Result<std::vector<uint8_t>> Conversions::ToBytes(const PrimitiveType& type,
     DISPATCH_LITERAL_TO_BYTES(TypeId::kDouble)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kBoolean)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kString)
+    DISPATCH_LITERAL_TO_BYTES(TypeId::kUuid)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kBinary)
     DISPATCH_LITERAL_TO_BYTES(TypeId::kFixed)
-      // TODO(Li Feiyang): Add support for UUID and Decimal
+      // TODO(Li Feiyang): Add support for Decimal
 
     default:
       return NotSupported("Serialization for type {} is not supported", type.ToString());
@@ -172,6 +180,10 @@ Result<Literal::Value> Conversions::FromBytes(const PrimitiveType& type,
     case TypeId::kString:
       return Literal::Value{
           std::string(reinterpret_cast<const char*>(data.data()), data.size())};
+    case TypeId::kUuid: {
+      ICEBERG_ASSIGN_OR_RAISE(auto uuid, Uuid::FromBytes(data));
+      return Literal::Value{uuid};
+    }
     case TypeId::kBinary:
       return Literal::Value{std::vector<uint8_t>(data.begin(), data.end())};
     case TypeId::kFixed: {
@@ -182,7 +194,7 @@ Result<Literal::Value> Conversions::FromBytes(const PrimitiveType& type,
       }
       return Literal::Value{std::vector<uint8_t>(data.begin(), data.end())};
     }
-      // TODO(Li Feiyang): Add support for UUID and Decimal
+    // TODO(Li Feiyang): Add support for Decimal
     default:
       return NotSupported("Deserialization for type {} is not supported",
                           type.ToString());

@@ -28,6 +28,7 @@
 #include "iceberg/result.h"
 #include "iceberg/type.h"
 #include "iceberg/util/formattable.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -56,8 +57,9 @@ class ICEBERG_EXPORT Literal : public util::Formattable {
                              float,           // for float
                              double,          // for double
                              std::string,     // for string
+                             Uuid,            // for uuid
                              std::vector<uint8_t>,     // for binary, fixed
-                             std::array<uint8_t, 16>,  // for uuid and decimal
+                             std::array<uint8_t, 16>,  // for decimal
                              BelowMin, AboveMax>;
 
   /// \brief Factory methods for primitive types
@@ -71,6 +73,7 @@ class ICEBERG_EXPORT Literal : public util::Formattable {
   static Literal Float(float value);
   static Literal Double(double value);
   static Literal String(std::string value);
+  static Literal UUID(Uuid value);
   static Literal Binary(std::vector<uint8_t> value);
   static Literal Fixed(std::vector<uint8_t> value);
 
@@ -205,6 +208,11 @@ struct LiteralTraits<TypeId::kDouble> {
 template <>
 struct LiteralTraits<TypeId::kString> {
   using ValueType = std::string;
+};
+
+template <>
+struct LiteralTraits<TypeId::kUuid> {
+  using ValueType = Uuid;
 };
 
 template <>

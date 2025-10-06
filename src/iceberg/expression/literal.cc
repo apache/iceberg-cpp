@@ -147,6 +147,8 @@ Literal Literal::Double(double value) { return {Value{value}, float64()}; }
 
 Literal Literal::String(std::string value) { return {Value{std::move(value)}, string()}; }
 
+Literal Literal::UUID(Uuid value) { return {Value{std::move(value)}, uuid()}; }
+
 Literal Literal::Binary(std::vector<uint8_t> value) {
   return {Value{std::move(value)}, binary()};
 }
@@ -251,6 +253,15 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
       return this_val <=> other_val;
     }
 
+    case TypeId::kUuid: {
+      auto& this_val = std::get<Uuid>(value_);
+      auto& other_val = std::get<Uuid>(other.value_);
+      if (this_val == other_val) {
+        return std::partial_ordering::equivalent;
+      }
+      return std::partial_ordering::unordered;
+    }
+
     case TypeId::kBinary: {
       auto& this_val = std::get<std::vector<uint8_t>>(value_);
       auto& other_val = std::get<std::vector<uint8_t>>(other.value_);
@@ -299,6 +310,9 @@ std::string Literal::ToString() const {
     case TypeId::kString: {
       return std::get<std::string>(value_);
     }
+    case TypeId::kUuid: {
+      return std::get<Uuid>(value_).ToString();
+    }
     case TypeId::kBinary: {
       const auto& binary_data = std::get<std::vector<uint8_t>>(value_);
       std::string result;
@@ -318,7 +332,6 @@ std::string Literal::ToString() const {
       return result;
     }
     case TypeId::kDecimal:
-    case TypeId::kUuid:
     case TypeId::kDate:
     case TypeId::kTime:
     case TypeId::kTimestamp:

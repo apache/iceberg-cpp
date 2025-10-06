@@ -216,6 +216,15 @@ TEST(LiteralTest, StringBasics) {
   EXPECT_EQ(empty_string.ToString(), "");
 }
 
+// Uuid type tests
+TEST(LiteralTest, UuidBasics) {
+  auto uuid = Uuid::FromString("123e4567-e89b-12d3-a456-426614174000").value();
+  auto uuid_literal = Literal::UUID(uuid);
+
+  EXPECT_EQ(uuid_literal.type()->type_id(), TypeId::kUuid);
+  EXPECT_EQ(uuid_literal.ToString(), "123e4567-e89b-12d3-a456-426614174000");
+}
+
 TEST(LiteralTest, StringComparison) {
   auto string1 = Literal::String("apple");
   auto string2 = Literal::String("banana");
@@ -479,6 +488,15 @@ INSTANTIATE_TEST_SUITE_P(
                      {65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65, 65},
                      Literal::String("AAAAAAAAAAAAAAAA"),
                      string()},
+
+        // Uuid type
+        LiteralParam{
+            "Uuid",
+            {0x12, 0x3E, 0x45, 0x67, 0xE8, 0x9B, 0x12, 0xD3, 0xA4, 0x56, 0x42, 0x66, 0x14,
+             0x17, 0x40, 0x00},
+            Literal::UUID(
+                Uuid::FromString("123e4567-e89b-12d3-a456-426614174000").value()),
+            uuid()},
 
         LiteralParam{"BinaryData",
                      {0x01, 0x02, 0x03, 0xFF},

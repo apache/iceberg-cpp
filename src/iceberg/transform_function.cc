@@ -29,6 +29,7 @@
 #include "iceberg/type.h"
 #include "iceberg/util/murmurhash3_internal.h"
 #include "iceberg/util/truncate_util.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -75,6 +76,9 @@ Result<Literal> BucketTransform::Transform(const Literal& literal) {
           MurmurHash3_x86_32(value.data(), sizeof(uint8_t) * 16, 0, &hash_value);
         } else if constexpr (std::is_same_v<T, std::string>) {
           MurmurHash3_x86_32(value.data(), value.size(), 0, &hash_value);
+        } else if constexpr (std::is_same_v<T, Uuid>) {
+          MurmurHash3_x86_32(std::get<Uuid>(literal.value()).bytes().data(),
+                             Uuid::kLength, 0, &hash_value);
         } else if constexpr (std::is_same_v<T, std::vector<uint8_t>>) {
           MurmurHash3_x86_32(value.data(), value.size(), 0, &hash_value);
         } else if constexpr (std::is_same_v<T, std::monostate> ||
