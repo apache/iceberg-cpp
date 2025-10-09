@@ -44,7 +44,7 @@ class ICEBERG_EXPORT ManifestAdapter {
   virtual Status Init() = 0;
 
   Status StartAppending();
-  Result<std::shared_ptr<ArrowArray>> FinishAppending();
+  Result<ArrowArray*> FinishAppending();
   int64_t size() const { return size_; }
 
  protected:
@@ -56,7 +56,7 @@ class ICEBERG_EXPORT ManifestAdapter {
                             const std::span<const uint8_t>& value);
 
  protected:
-  std::shared_ptr<ArrowArray> array_;
+  ArrowArray array_;
   ArrowSchema schema_;  // converted from manifest_schema_ or manifest_list_schema_
   int64_t size_ = 0;
 };

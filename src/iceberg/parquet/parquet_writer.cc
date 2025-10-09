@@ -76,9 +76,9 @@ class ParquetWriter::Impl {
     return {};
   }
 
-  Status Write(ArrowArray& array) {
+  Status Write(ArrowArray* array) {
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto batch,
-                                   ::arrow::ImportRecordBatch(&array, arrow_schema_));
+                                   ::arrow::ImportRecordBatch(array, arrow_schema_));
 
     ICEBERG_ARROW_RETURN_NOT_OK(writer_->WriteRecordBatch(*batch));
 
@@ -132,7 +132,7 @@ Status ParquetWriter::Open(const WriterOptions& options) {
   return impl_->Open(options);
 }
 
-Status ParquetWriter::Write(ArrowArray& array) { return impl_->Write(array); }
+Status ParquetWriter::Write(ArrowArray* array) { return impl_->Write(array); }
 
 Status ParquetWriter::Close() { return impl_->Close(); }
 

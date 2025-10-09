@@ -68,7 +68,7 @@ Result<std::shared_ptr<StructType>> ManifestEntryAdapterV1::GetManifestEntryStru
   // Deprecated. Always write a default in v1. Do not write in v2 or v3.
   static const SchemaField kBlockSizeInBytes = SchemaField::MakeRequired(
       105, "block_size_in_bytes", int64(), "Block size in bytes");
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_type, partition_spec_->partition_schema());
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_type, partition_spec_->GetPartitionSchema());
   if (!partition_type) {
     partition_type = PartitionSpec::Unpartitioned()->schema();
   }

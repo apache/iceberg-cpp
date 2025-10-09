@@ -187,6 +187,7 @@ TEST_F(ManifestReaderV1Test, WritePartitionedTest) {
   auto expected_entries = PreparePartitionedTestData();
   auto write_manifest_path = CreateNewTempFilePath();
   TestWriteManifest(write_manifest_path, partition_spec, expected_entries);
+  TestManifestReadingByPath(write_manifest_path, expected_entries, partition_schema);
 }
 
 class ManifestReaderV2Test : public ManifestReaderTestBase {
@@ -293,12 +294,17 @@ TEST_F(ManifestReaderV2Test, WriteNonPartitionedTest) {
   auto expected_entries = PrepareNonPartitionedTestData();
   auto write_manifest_path = CreateNewTempFilePath();
   TestWriteManifest(679879563479918846LL, write_manifest_path, nullptr, expected_entries);
+  TestManifestReadingByPath(write_manifest_path, expected_entries);
 }
 
 TEST_F(ManifestReaderV2Test, WriteInheritancePartitionedTest) {
   auto expected_entries = PrepareMetadataInheritanceTestData();
   auto write_manifest_path = CreateNewTempFilePath();
   TestWriteManifest(679879563479918846LL, write_manifest_path, nullptr, expected_entries);
+  for (auto& entry : expected_entries) {
+    entry.data_file->partition_spec_id = PartitionSpec::kInitialSpecId;
+  }
+  TestManifestReadingByPath(write_manifest_path, expected_entries);
 }
 
 }  // namespace iceberg
