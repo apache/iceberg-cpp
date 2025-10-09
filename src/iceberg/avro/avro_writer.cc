@@ -75,9 +75,9 @@ class AvroWriter::Impl {
     return {};
   }
 
-  Status Write(ArrowArray& data) {
+  Status Write(ArrowArray* data) {
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto result,
-                                   ::arrow::ImportArray(&data, &arrow_schema_));
+                                   ::arrow::ImportArray(data, &arrow_schema_));
 
     for (int64_t i = 0; i < result->length(); i++) {
       ICEBERG_RETURN_UNEXPECTED(ExtractDatumFromArray(*result, i, datum_.get()));
@@ -119,7 +119,7 @@ class AvroWriter::Impl {
 
 AvroWriter::~AvroWriter() = default;
 
-Status AvroWriter::Write(ArrowArray& data) { return impl_->Write(data); }
+Status AvroWriter::Write(ArrowArray* data) { return impl_->Write(data); }
 
 Status AvroWriter::Open(const WriterOptions& options) {
   impl_ = std::make_unique<Impl>();

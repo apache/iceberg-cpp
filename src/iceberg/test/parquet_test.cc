@@ -51,7 +51,7 @@ namespace {
 Status WriteArray(std::shared_ptr<::arrow::Array> data, Writer& writer) {
   ArrowArray arr;
   ICEBERG_ARROW_RETURN_NOT_OK(::arrow::ExportArray(*data, &arr));
-  ICEBERG_RETURN_UNEXPECTED(writer.Write(arr));
+  ICEBERG_RETURN_UNEXPECTED(writer.Write(&arr));
   return writer.Close();
 }
 

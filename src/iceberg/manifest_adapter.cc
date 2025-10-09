@@ -19,6 +19,8 @@
 
 #include "iceberg/manifest_adapter.h"
 
+#include <nanoarrow/nanoarrow.h>
+
 #include "iceberg/arrow/nanoarrow_error_transform_internal.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
@@ -26,11 +28,10 @@
 #include "iceberg/schema_internal.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
-#include "nanoarrow/nanoarrow.h"
 
-#define NANOARROW_RETURN_IF_FAILED(status)                       \
-  if (status != NANOARROW_OK) [[unlikely]] {                     \
-    return InvalidArrowData("Nanoarrow error code: {}", status); \
+#define NANOARROW_RETURN_IF_FAILED(status)                  \
+  if (status != NANOARROW_OK) [[unlikely]] {                \
+    return InvalidArrowData("nanoarrow error: {}", status); \
   }
 
 namespace {
@@ -43,20 +44,20 @@ Status ManifestAdapter::StartAppending() {
   if (size_ > 0) {
     return InvalidArgument("Adapter buffer not empty, cannot start appending.");
   }
-  array_ = std::make_shared<ArrowArray>();
+  array_ = {};
   size_ = 0;
   ArrowError error;
-  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(
-      ArrowArrayInitFromSchema(array_.get(), &schema_, &error), error);
-  NANOARROW_RETURN_IF_FAILED(ArrowArrayStartAppending(array_.get()));
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayInitFromSchema(&array_, &schema_, &error),
+                                     error);
+  NANOARROW_RETURN_IF_FAILED(ArrowArrayStartAppending(&array_));
   return {};
 }
 
-Result<std::shared_ptr<ArrowArray>> ManifestAdapter::FinishAppending() {
+Result<ArrowArray*> ManifestAdapter::FinishAppending() {
   ArrowError error;
-  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(
-      ArrowArrayFinishBuildingDefault(array_.get(), &error), error);
-  return array_;
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayFinishBuildingDefault(&array_, &error),
+                                     error);
+  return &array_;
 }
 
 Status ManifestAdapter::AppendField(ArrowArray* arrowArray, int64_t value) {
@@ -90,8 +91,8 @@ Status ManifestAdapter::AppendField(ArrowArray* arrowArray,
 }
 
 ManifestEntryAdapter::~ManifestEntryAdapter() {
-  if (array_ != nullptr && array_->release != nullptr) {
-    ArrowArrayRelease(array_.get());
+  if (array_.release != nullptr) {
+    ArrowArrayRelease(&array_);
   }
   if (schema_.release != nullptr) {
     ArrowSchemaRelease(&schema_);
@@ -102,7 +103,7 @@ Result<std::shared_ptr<StructType>> ManifestEntryAdapter::GetManifestEntryStruct
   if (partition_spec_ == nullptr) {
     return ManifestEntry::TypeFromPartitionType(nullptr);
   }
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_schema, partition_spec_->partition_schema());
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_schema, partition_spec_->GetPartitionSchema());
   return ManifestEntry::TypeFromPartitionType(std::move(partition_schema));
 }
 
@@ -215,6 +216,7 @@ Status ManifestEntryAdapter::AppendMap(ArrowArray* arrow_array,
     auto value_array = map_array->children[1];
     ICEBERG_RETURN_UNEXPECTED(AppendField(key_array, static_cast<int64_t>(key)));
     ICEBERG_RETURN_UNEXPECTED(AppendField(value_array, value));
+    NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(map_array));
   }
   NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(arrow_array));
   return {};
@@ -231,6 +233,7 @@ Status ManifestEntryAdapter::AppendMap(
     auto value_array = map_array->children[1];
     ICEBERG_RETURN_UNEXPECTED(AppendField(key_array, static_cast<int64_t>(key)));
     ICEBERG_RETURN_UNEXPECTED(AppendField(value_array, value));
+    NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(map_array));
   }
   NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(arrow_array));
   return {};
@@ -380,7 +383,7 @@ Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
   const auto& fields = manifest_schema_->fields();
   for (int32_t i = 0; i < fields.size(); i++) {
     const auto& field = fields[i];
-    auto array = array_->children[i];
+    auto array = array_.children[i];
 
     switch (field.field_id()) {
       case 0:  // status (required int32)
@@ -427,7 +430,7 @@ Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
     }
   }
 
-  NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(array_.get()));
+  NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(&array_));
   size_++;
   return {};
 }
@@ -464,8 +467,8 @@ Status ManifestEntryAdapter::InitSchema(const std::unordered_set<int32_t>& field
 }
 
 ManifestFileAdapter::~ManifestFileAdapter() {
-  if (array_ != nullptr && array_->release != nullptr) {
-    ArrowArrayRelease(array_.get());
+  if (array_.release != nullptr) {
+    ArrowArrayRelease(&array_);
   }
   if (schema_.release != nullptr) {
     ArrowSchemaRelease(&schema_);
@@ -553,7 +556,7 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
   const auto& fields = manifest_list_schema_->fields();
   for (int32_t i = 0; i < fields.size(); i++) {
     const auto& field = fields[i];
-    auto array = array_->children[i];
+    auto array = array_.children[i];
     switch (field.field_id()) {
       case 500:  // manifest_path
         ICEBERG_RETURN_UNEXPECTED(AppendField(array, file.manifest_path));
@@ -662,7 +665,7 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
         return InvalidManifestList("Unknown field id: {}", field.field_id());
     }
   }
-  NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(array_.get()));
+  NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(&array_));
   size_++;
   return {};
 }

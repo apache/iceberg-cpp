@@ -60,7 +60,7 @@ int32_t PartitionSpec::spec_id() const { return spec_id_; }
 
 std::span<const PartitionField> PartitionSpec::fields() const { return fields_; }
 
-Result<std::shared_ptr<Schema>> PartitionSpec::partition_schema() {
+Result<std::shared_ptr<Schema>> PartitionSpec::GetPartitionSchema() {
   if (fields_.empty()) {
     return nullptr;
   }
@@ -92,8 +92,7 @@ Result<std::shared_ptr<Schema>> PartitionSpec::partition_schema() {
     partition_fields.emplace_back(partition_field.field_id(),
                                   std::string(partition_field.name()),
                                   std::move(result_type),
-                                  true  // optional
-    );
+                                  /*optional=*/true);
   }
 
   std::scoped_lock<std::mutex> lock(mutex_);

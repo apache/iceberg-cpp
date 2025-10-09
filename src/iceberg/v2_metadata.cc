@@ -29,9 +29,9 @@ Status ManifestEntryAdapterV2::Init() {
   static std::unordered_set<int32_t> kManifestEntryFieldIds{
       ManifestEntry::kStatus.field_id(),
       ManifestEntry::kSnapshotId.field_id(),
-      ManifestEntry::kDataFileFieldId,
       ManifestEntry::kSequenceNumber.field_id(),
       ManifestEntry::kFileSequenceNumber.field_id(),
+      ManifestEntry::kDataFileFieldId,
       DataFile::kContent.field_id(),
       DataFile::kFilePath.field_id(),
       DataFile::kFileFormat.field_id(),

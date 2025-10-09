@@ -69,7 +69,7 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \brief Get a view of the partition fields.
   std::span<const PartitionField> fields() const;
 
-  Result<std::shared_ptr<Schema>> partition_schema();
+  Result<std::shared_ptr<Schema>> GetPartitionSchema();
 
   std::string ToString() const override;
 
