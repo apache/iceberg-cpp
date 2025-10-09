@@ -174,13 +174,17 @@ Result<Expression::Operation> Negate(Expression::Operation op) {
     case Expression::Operation::kNotStartsWith:
       return Expression::Operation::kStartsWith;
     case Expression::Operation::kTrue:
+      return Expression::Operation::kFalse;
     case Expression::Operation::kFalse:
+      return Expression::Operation::kTrue;
+    case Expression::Operation::kAnd:
+      return Expression::Operation::kOr;
+    case Expression::Operation::kOr:
+      return Expression::Operation::kAnd;
     case Expression::Operation::kNot:
     case Expression::Operation::kCountStar:
     case Expression::Operation::kMax:
     case Expression::Operation::kMin:
-    case Expression::Operation::kAnd:
-    case Expression::Operation::kOr:
     case Expression::Operation::kCount:
       return InvalidArgument("No negation for operation: {}", op);
   }
