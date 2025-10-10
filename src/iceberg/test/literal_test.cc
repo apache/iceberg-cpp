@@ -30,22 +30,6 @@
 
 namespace iceberg {
 
-namespace {
-
-// Helper function to assert that a CastTo operation succeeds and checks
-// the resulting type and value.
-template <typename T>
-void AssertCastSucceeds(const Result<Literal>& result, TypeId expected_type_id,
-                        const T& expected_value) {
-  ASSERT_THAT(result, IsOk());
-  ASSERT_EQ(result->type()->type_id(), expected_type_id);
-  EXPECT_EQ(std::get<T>(result->value()), expected_value)
-      << "Type mismatch in std::get. Expected type for TypeId "
-      << static_cast<int>(expected_type_id);
-}
-
-}  // namespace
-
 // Parameter struct for basic literal tests
 struct BasicLiteralTestParam {
   std::string test_name;
