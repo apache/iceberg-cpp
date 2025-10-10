@@ -53,20 +53,20 @@ class ICEBERG_EXPORT Type : public iceberg::util::Formattable {
   ~Type() override = default;
 
   /// \brief Get the type ID.
-  [[nodiscard]] virtual TypeId type_id() const = 0;
+  virtual TypeId type_id() const = 0;
 
   /// \brief Is this a primitive type (may not have child fields)?
-  [[nodiscard]] virtual bool is_primitive() const = 0;
+  virtual bool is_primitive() const = 0;
 
   /// \brief Is this a nested type (may have child fields)?
-  [[nodiscard]] virtual bool is_nested() const = 0;
+  virtual bool is_nested() const = 0;
 
   /// \brief Compare two types for equality.
   friend bool operator==(const Type& lhs, const Type& rhs) { return lhs.Equals(rhs); }
 
  protected:
   /// \brief Compare two types for equality.
-  [[nodiscard]] virtual bool Equals(const Type& other) const = 0;
+  virtual bool Equals(const Type& other) const = 0;
 };
 
 /// \brief A data type that does not have child fields.
@@ -83,28 +83,27 @@ class ICEBERG_EXPORT NestedType : public Type {
   bool is_nested() const override { return true; }
 
   /// \brief Get a view of the child fields.
-  [[nodiscard]] virtual std::span<const SchemaField> fields() const = 0;
+  virtual std::span<const SchemaField> fields() const = 0;
   using SchemaFieldConstRef = std::reference_wrapper<const SchemaField>;
   /// \brief Get a field by field ID.
   ///
   /// \note This is O(1) complexity.
-  [[nodiscard]] virtual Result<std::optional<SchemaFieldConstRef>> GetFieldById(
+  virtual Result<std::optional<SchemaFieldConstRef>> GetFieldById(
       int32_t field_id) const = 0;
   /// \brief Get a field by index.
   ///
   /// \note This is O(1) complexity.
-  [[nodiscard]] virtual Result<std::optional<SchemaFieldConstRef>> GetFieldByIndex(
+  virtual Result<std::optional<SchemaFieldConstRef>> GetFieldByIndex(
       int32_t index) const = 0;
   /// \brief Get a field by name.  Return an error Status if
   ///   the field name is not unique; prefer GetFieldById or GetFieldByIndex
   ///   when possible.
   ///
   /// \note This is O(1) complexity.
-  [[nodiscard]] virtual Result<std::optional<SchemaFieldConstRef>> GetFieldByName(
+  virtual Result<std::optional<SchemaFieldConstRef>> GetFieldByName(
       std::string_view name, bool case_sensitive) const = 0;
   /// \brief Get a field by name (case-sensitive).
-  [[nodiscard]] Result<std::optional<SchemaFieldConstRef>> GetFieldByName(
-      std::string_view name) const;
+  Result<std::optional<SchemaFieldConstRef>> GetFieldByName(std::string_view name) const;
 };
 
 /// \defgroup type-nested Nested Types
@@ -305,10 +304,10 @@ class ICEBERG_EXPORT DecimalType : public PrimitiveType {
   ~DecimalType() override = default;
 
   /// \brief Get the precision (the number of decimal digits).
-  [[nodiscard]] int32_t precision() const;
+  int32_t precision() const;
   /// \brief Get the scale (essentially, the number of decimal digits after
   ///   the decimal point; precisely, the value is scaled by $$10^{-s}$$.).
-  [[nodiscard]] int32_t scale() const;
+  int32_t scale() const;
 
   TypeId type_id() const override;
   std::string ToString() const override;
@@ -358,9 +357,9 @@ class ICEBERG_EXPORT TimeType : public PrimitiveType {
 class ICEBERG_EXPORT TimestampBase : public PrimitiveType {
  public:
   /// \brief Is this type zoned or naive?
-  [[nodiscard]] virtual bool is_zoned() const = 0;
+  virtual bool is_zoned() const = 0;
   /// \brief The time resolution.
-  [[nodiscard]] virtual TimeUnit time_unit() const = 0;
+  virtual TimeUnit time_unit() const = 0;
 };
 
 /// \brief A data type representing a timestamp in microseconds without
@@ -442,7 +441,7 @@ class ICEBERG_EXPORT FixedType : public PrimitiveType {
   ~FixedType() override = default;
 
   /// \brief The length (the number of bytes to store).
-  [[nodiscard]] int32_t length() const;
+  int32_t length() const;
 
   TypeId type_id() const override;
   std::string ToString() const override;

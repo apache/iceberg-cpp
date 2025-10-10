@@ -77,7 +77,7 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
 
  private:
   /// \brief Compare two partition specs for equality.
-  [[nodiscard]] bool Equals(const PartitionSpec& other) const;
+  bool Equals(const PartitionSpec& other) const;
 
   std::shared_ptr<Schema> schema_;
   const int32_t spec_id_;
