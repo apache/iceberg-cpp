@@ -38,8 +38,8 @@ template <typename T>
 void AssertCastSucceeds(const Result<Literal>& result, TypeId expected_type_id,
                         const T& expected_value) {
   ASSERT_THAT(result, IsOk());
-  EXPECT_EQ(result->type()->type_id(), expected_type_id);
-  ASSERT_NO_THROW(EXPECT_EQ(std::get<T>(result->value()), expected_value))
+  ASSERT_EQ(result->type()->type_id(), expected_type_id);
+  EXPECT_EQ(std::get<T>(result->value()), expected_value)
       << "Type mismatch in std::get. Expected type for TypeId "
       << static_cast<int>(expected_type_id);
 }
@@ -145,16 +145,14 @@ TEST(LiteralTest, LongCastTo) {
   AssertCastSucceeds(long_literal.CastTo(date()), TypeId::kDate, 42);
 
   // Cast to Time
-  AssertCastSucceeds(long_literal.CastTo(time()), TypeId::kTime,
-                     static_cast<int64_t>(42L));
+  AssertCastSucceeds(long_literal.CastTo(time()), TypeId::kTime, int64_t{42});
 
   // Cast to Timestamp
-  AssertCastSucceeds(long_literal.CastTo(timestamp()), TypeId::kTimestamp,
-                     static_cast<int64_t>(42L));
+  AssertCastSucceeds(long_literal.CastTo(timestamp()), TypeId::kTimestamp, int64_t{42});
 
   // Cast to TimestampTz
   AssertCastSucceeds(long_literal.CastTo(timestamp_tz()), TypeId::kTimestampTz,
-                     static_cast<int64_t>(42L));
+                     int64_t{42});
 }
 
 TEST(LiteralTest, LongCastToOverflow) {
@@ -207,8 +205,7 @@ TEST(LiteralTest, FloatCastTo) {
   auto float_literal = Literal::Float(2.0f);
 
   // Cast to Double
-  AssertCastSucceeds(float_literal.CastTo(float64()), TypeId::kDouble,
-                     static_cast<double>(2.0f));
+  AssertCastSucceeds(float_literal.CastTo(float64()), TypeId::kDouble, double{2.0f});
 }
 
 // Double type tests
@@ -242,10 +239,8 @@ TEST(LiteralTest, DoubleCastTo) {
 
 TEST(LiteralTest, DoubleCastToOverflow) {
   // Test overflow cases for Double to Float
-  auto max_double =
-      Literal::Double(static_cast<double>(std::numeric_limits<float>::max()) * 2);
-  auto min_double =
-      Literal::Double(-static_cast<double>(std::numeric_limits<float>::max()) * 2);
+  auto max_double = Literal::Double(double{std::numeric_limits<float>::max()} * 2);
+  auto min_double = Literal::Double(-double{std::numeric_limits<float>::max()} * 2);
 
   auto max_result = max_double.CastTo(float32());
   ASSERT_THAT(max_result, IsOk());
@@ -313,8 +308,7 @@ TEST(LiteralTest, BinaryCastTo) {
   AssertCastSucceeds(binary_literal.CastTo(fixed(4)), TypeId::kFixed, data4);
 
   // Cast to Fixed with different length should fail
-  EXPECT_THAT(binary_literal.CastTo(fixed(5)),
-              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(binary_literal.CastTo(fixed(5)), IsError(ErrorKind::kInvalidArgument));
 }
 
 // Fixed type tests

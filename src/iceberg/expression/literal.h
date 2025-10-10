@@ -57,7 +57,7 @@ class ICEBERG_EXPORT Literal : public util::Formattable {
                              double,          // for double
                              std::string,     // for string
                              std::vector<uint8_t>,     // for binary, fixed
-                             std::array<uint8_t, 16>,  // for uuid
+                             std::array<uint8_t, 16>,  // for uuid and decimal
                              BelowMin, AboveMax>;
 
   /// \brief Factory methods for primitive types

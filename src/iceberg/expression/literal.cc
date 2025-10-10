@@ -27,6 +27,7 @@
 #include "iceberg/util/conversions.h"
 #include "iceberg/exception.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -237,7 +238,7 @@ Result<Literal> LiteralCaster::CastFromBinary(
   auto binary_val = std::get<std::vector<uint8_t>>(literal.value_);
   switch (target_type->type_id()) {
     case TypeId::kFixed: {
-      auto target_fixed_type = std::static_pointer_cast<FixedType>(target_type);
+      auto target_fixed_type = internal::checked_pointer_cast<FixedType>(target_type);
       if (binary_val.size() == target_fixed_type->length()) {
         return Literal::Fixed(std::move(binary_val));
       }
@@ -404,13 +405,6 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
 }
 
 std::string Literal::ToString() const {
-  auto unsupported_error = [this]() {
-    return std::format("ToString not supported for type: {}", type_->ToString());
-  };
-  auto invalid_argument = [this]() {
-    return std::format("Invalid argument for type: {}", type_->ToString());
-  };
-
   if (std::holds_alternative<BelowMin>(value_)) {
     return "belowMin";
   }
@@ -460,7 +454,7 @@ std::string Literal::ToString() const {
       return std::to_string(std::get<int32_t>(value_));
     }
     default: {
-      return unsupported_error();
+      return std::format("invalid literal of type {}", type_->ToString());
     }
   }
 }
