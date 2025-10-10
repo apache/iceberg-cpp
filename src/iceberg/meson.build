@@ -57,6 +57,8 @@ iceberg_sources = files(
     'name_mapping.cc',
     'partition_field.cc',
     'partition_spec.cc',
+    'row/arrow_array_wrapper.cc',
+    'row/manifest_wrapper.cc',
     'schema.cc',
     'schema_field.cc',
     'schema_internal.cc',
@@ -175,6 +177,7 @@ install_headers(
 
 subdir('catalog')
 subdir('expression')
+subdir('row')
 subdir('util')
 
 if get_option('tests').enabled()
