@@ -28,53 +28,76 @@ configure_file(
 )
 
 iceberg_tests = {
-    'schema_test': files(
-        'name_mapping_test.cc',
-        'partition_field_test.cc',
-        'partition_spec_test.cc',
-        'schema_field_test.cc',
-        'schema_test.cc',
-        'schema_util_test.cc',
-        'snapshot_test.cc',
-        'sort_field_test.cc',
-        'sort_order_test.cc',
-        'transform_test.cc',
-        'type_test.cc',
-    ),
-    'table_test': files(
-        'json_internal_test.cc',
-        'schema_json_test.cc',
-        'table_test.cc',
-        'test_common.cc',
-    ),
-    'expression_test': files(
-        'expression_test.cc',
-        'literal_test.cc',
-        'predicate_test.cc',
-    ),
-    'json_serde_test': files(
-        'json_internal_test.cc',
-        'metadata_serde_test.cc',
-        'schema_json_test.cc',
-        'test_common.cc',
-    ),
-    'util_test': files(
-        'config_test.cc',
-        'decimal_test.cc',
-        'endian_test.cc',
-        'formatter_test.cc',
-        'string_util_test.cc',
-        'uuid_test.cc',
-        'visit_type_test.cc',
-    ),
-    'roaring_test': files('roaring_test.cc'),
+    'schema_test': {
+        'sources': files(
+            'name_mapping_test.cc',
+            'partition_field_test.cc',
+            'partition_spec_test.cc',
+            'schema_field_test.cc',
+            'schema_test.cc',
+            'schema_util_test.cc',
+            'snapshot_test.cc',
+            'sort_field_test.cc',
+            'sort_order_test.cc',
+            'transform_test.cc',
+            'type_test.cc',
+        ),
+    },
+    'table_test': {
+        'sources': files(
+            'json_internal_test.cc',
+            'schema_json_test.cc',
+            'table_test.cc',
+            'test_common.cc',
+        ),
+    },
+    'expression_test': {
+        'sources': files(
+            'expression_test.cc',
+            'literal_test.cc',
+            'predicate_test.cc',
+        ),
+    },
+    'json_serde_test': {
+        'sources': files(
+            'json_internal_test.cc',
+            'metadata_serde_test.cc',
+            'schema_json_test.cc',
+            'test_common.cc',
+        ),
+    },
+    'util_test': {
+        'sources': files(
+            'config_test.cc',
+            'decimal_test.cc',
+            'endian_test.cc',
+            'formatter_test.cc',
+            'string_util_test.cc',
+            'uuid_test.cc',
+            'visit_type_test.cc',
+        ),
+    },
+    'roaring_test': {'sources': files('roaring_test.cc')},
 }
 
-foreach test_name, sources : iceberg_tests
+if get_option('rest').enabled()
+    cpp_httplib_dep = dependency('cpp-httplib')
+    iceberg_tests += {
+        'rest_catalog_test': {
+            'sources': files('rest_catalog_test.cc'),
+            'dependencies': [iceberg_rest_dep, cpp_httplib_dep],
+        },
+    }
+endif
+
+foreach test_name, values : iceberg_tests
     exc = executable(
         test_name,
-        sources: sources,
-        dependencies: [iceberg_dep, gmock_main_dep],
+        sources: values['sources'],
+        dependencies: [iceberg_dep, gmock_main_dep] + values.get(
+            'dependencies',
+            [],
+        ),
     )
     test(test_name, exc)
 endforeach

@@ -15,8 +15,4 @@
 # specific language governing permissions and limitations
 # under the License.
 
-subdir('memory')
-
-if get_option('rest').enabled()
-    subdir('rest')
-endif
+install_headers(['in_memory_catalog.h'], subdir: 'iceberg/catalog/memory')

@@ -41,7 +41,7 @@ configure_file(
 iceberg_include_dir = include_directories('..')
 iceberg_sources = files(
     'arrow_c_data_guard_internal.cc',
-    'catalog/in_memory_catalog.cc',
+    'catalog/memory/in_memory_catalog.cc',
     'expression/expression.cc',
     'expression/expressions.cc',
     'expression/literal.cc',
