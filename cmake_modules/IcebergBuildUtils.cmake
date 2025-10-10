@@ -21,18 +21,18 @@
 include(CMakePackageConfigHelpers)
 
 function(iceberg_install_cmake_package PACKAGE_NAME EXPORT_NAME)
-  set(CONFIG_CMAKE "${PACKAGE_NAME}Config.cmake")
+  set(CONFIG_CMAKE "${PACKAGE_NAME}-config.cmake")
   set(BUILT_CONFIG_CMAKE "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_CMAKE}")
   configure_package_config_file("${CONFIG_CMAKE}.in" "${BUILT_CONFIG_CMAKE}"
                                 INSTALL_DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/${PACKAGE_NAME}"
   )
-  set(CONFIG_VERSION_CMAKE "${PACKAGE_NAME}ConfigVersion.cmake")
+  set(CONFIG_VERSION_CMAKE "${PACKAGE_NAME}config-version.cmake")
   set(BUILT_CONFIG_VERSION_CMAKE "${CMAKE_CURRENT_BINARY_DIR}/${CONFIG_VERSION_CMAKE}")
   write_basic_package_version_file("${BUILT_CONFIG_VERSION_CMAKE}"
                                    COMPATIBILITY SameMajorVersion)
   install(FILES "${BUILT_CONFIG_CMAKE}" "${BUILT_CONFIG_VERSION_CMAKE}"
           DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/${PACKAGE_NAME}")
-  set(TARGETS_CMAKE "${PACKAGE_NAME}Targets.cmake")
+  set(TARGETS_CMAKE "${PACKAGE_NAME}-targets.cmake")
   install(EXPORT ${EXPORT_NAME}
           DESTINATION "${ICEBERG_INSTALL_CMAKEDIR}/${PACKAGE_NAME}"
           NAMESPACE "${PACKAGE_NAME}::"
@@ -150,6 +150,9 @@ function(add_iceberg_lib LIB_NAME)
     target_link_libraries(${LIB_NAME}_shared
                           PUBLIC "$<BUILD_INTERFACE:iceberg_sanitizer_flags>")
 
+    string(TOUPPER ${LIB_NAME} VISIBILITY_NAME)
+    target_compile_definitions(${LIB_NAME}_shared PRIVATE ${VISIBILITY_NAME}_EXPORTING)
+
     install(TARGETS ${LIB_NAME}_shared
             EXPORT iceberg_targets
             ARCHIVE DESTINATION ${INSTALL_ARCHIVE_DIR}
@@ -208,6 +211,9 @@ function(add_iceberg_lib LIB_NAME)
     target_link_libraries(${LIB_NAME}_static
                           PUBLIC "$<BUILD_INTERFACE:iceberg_sanitizer_flags>")
 
+    string(TOUPPER ${LIB_NAME} VISIBILITY_NAME)
+    target_compile_definitions(${LIB_NAME}_static PUBLIC ${VISIBILITY_NAME}_STATIC)
+
     install(TARGETS ${LIB_NAME}_static
             EXPORT iceberg_targets
             ARCHIVE DESTINATION ${INSTALL_ARCHIVE_DIR}
@@ -215,18 +221,6 @@ function(add_iceberg_lib LIB_NAME)
             RUNTIME DESTINATION ${INSTALL_RUNTIME_DIR}
             INCLUDES
             DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
-  endif()
-
-  # generate export header file
-  if(BUILD_SHARED)
-    generate_export_header(${LIB_NAME}_shared BASE_NAME ${LIB_NAME})
-    if(BUILD_STATIC)
-      string(TOUPPER ${LIB_NAME} LIB_NAME_UPPER)
-      target_compile_definitions(${LIB_NAME}_static
-                                 PUBLIC ${LIB_NAME_UPPER}_STATIC_DEFINE)
-    endif()
-  elseif(BUILD_STATIC)
-    generate_export_header(${LIB_NAME}_static BASE_NAME ${LIB_NAME})
   endif()
 
   # Modify variable in calling scope

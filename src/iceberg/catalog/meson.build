@@ -15,16 +15,8 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# Please set CMAKE_PREFIX_PATH to the install prefix of iceberg.
-cmake_minimum_required(VERSION 3.25)
+subdir('memory')
 
-project(example)
-
-set(CMAKE_CXX_STANDARD 23)
-
-find_package(iceberg CONFIG REQUIRED)
-
-add_executable(demo_example demo_example.cc)
-
-target_link_libraries(demo_example PRIVATE iceberg::iceberg_bundle_static
-                                           iceberg::iceberg_rest_static)
+if get_option('rest').enabled()
+    subdir('rest')
+endif

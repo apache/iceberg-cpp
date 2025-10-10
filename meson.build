@@ -15,16 +15,24 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# Please set CMAKE_PREFIX_PATH to the install prefix of iceberg.
-cmake_minimum_required(VERSION 3.25)
+project(
+    'iceberg',
+    'cpp',
+    version: '0.2.0',
+    license: 'Apache-2.0',
+    meson_version: '>=1.3.0',
+    default_options: [
+        'cpp_std=c++23,c++latest',
+        'warning_level=2',
+        # Don't build any tests for curl
+        'curl:tests=disabled',
+        'curl:unittests=disabled',
+    ],
+)
 
-project(example)
+subdir('src')
 
-set(CMAKE_CXX_STANDARD 23)
-
-find_package(iceberg CONFIG REQUIRED)
-
-add_executable(demo_example demo_example.cc)
-
-target_link_libraries(demo_example PRIVATE iceberg::iceberg_bundle_static
-                                           iceberg::iceberg_rest_static)
+install_data(
+    ['LICENSE', 'NOTICE'],
+    install_dir: get_option('datadir') / 'doc/iceberg',
+)

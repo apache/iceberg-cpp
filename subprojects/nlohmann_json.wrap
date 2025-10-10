@@ -15,16 +15,14 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# Please set CMAKE_PREFIX_PATH to the install prefix of iceberg.
-cmake_minimum_required(VERSION 3.25)
+[wrap-file]
+directory = nlohmann_json-3.12.0
+lead_directory_missing = true
+source_url = https://github.com/nlohmann/json/releases/download/v3.12.0/include.zip
+source_filename = nlohmann_json-3.12.0.zip
+source_hash = b8cb0ef2dd7f57f18933997c9934bb1fa962594f701cd5a8d3c2c80541559372
+source_fallback_url = https://github.com/mesonbuild/wrapdb/releases/download/nlohmann_json_3.12.0-1/nlohmann_json-3.12.0.zip
+wrapdb_version = 3.12.0-1
 
-project(example)
-
-set(CMAKE_CXX_STANDARD 23)
-
-find_package(iceberg CONFIG REQUIRED)
-
-add_executable(demo_example demo_example.cc)
-
-target_link_libraries(demo_example PRIVATE iceberg::iceberg_bundle_static
-                                           iceberg::iceberg_rest_static)
+[provide]
+nlohmann_json = nlohmann_json_dep

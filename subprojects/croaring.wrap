@@ -15,16 +15,16 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# Please set CMAKE_PREFIX_PATH to the install prefix of iceberg.
-cmake_minimum_required(VERSION 3.25)
+[wrap-file]
+directory = CRoaring-4.3.11
+source_url = https://github.com/RoaringBitmap/CRoaring/archive/refs/tags/v4.3.11.tar.gz
+source_filename = CRoaring-4.3.11.tar.gz
+source_hash = acd3a17e6c95acf3154d60c38c90e927e6c531805bc740a040fa111819af380e
+patch_filename = croaring_4.3.11-1_patch.zip
+patch_url = https://wrapdb.mesonbuild.com/v2/croaring_4.3.11-1/get_patch
+patch_hash = ff26efa0b7e7bc24963e169ab1a4e15598fdfcb5f0b6db9f28eca9e26c22bb4a
+source_fallback_url = https://github.com/mesonbuild/wrapdb/releases/download/croaring_4.3.11-1/CRoaring-4.3.11.tar.gz
+wrapdb_version = 4.3.11-1
 
-project(example)
-
-set(CMAKE_CXX_STANDARD 23)
-
-find_package(iceberg CONFIG REQUIRED)
-
-add_executable(demo_example demo_example.cc)
-
-target_link_libraries(demo_example PRIVATE iceberg::iceberg_bundle_static
-                                           iceberg::iceberg_rest_static)
+[provide]
+dependency_names = croaring
