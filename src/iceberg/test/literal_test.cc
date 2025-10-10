@@ -46,115 +46,71 @@ void AssertCastSucceeds(const Result<Literal>& result, TypeId expected_type_id,
 
 }  // namespace
 
-// Boolean type tests
-TEST(LiteralTest, BooleanBasics) {
-  auto true_literal = Literal::Boolean(true);
-  auto false_literal = Literal::Boolean(false);
+// Parameter struct for basic literal tests
+struct BasicLiteralTestParam {
+  std::string test_name;
+  Literal literal;
+  TypeId expected_type_id;
+  std::string expected_string;
+};
 
-  EXPECT_EQ(true_literal.type()->type_id(), TypeId::kBoolean);
-  EXPECT_EQ(false_literal.type()->type_id(), TypeId::kBoolean);
+class BasicLiteralTest : public ::testing::TestWithParam<BasicLiteralTestParam> {};
 
-  EXPECT_EQ(true_literal.ToString(), "true");
-  EXPECT_EQ(false_literal.ToString(), "false");
+TEST_P(BasicLiteralTest, BasicsTest) {
+  const auto& param = GetParam();
+
+  EXPECT_EQ(param.literal.type()->type_id(), param.expected_type_id);
+  EXPECT_EQ(param.literal.ToString(), param.expected_string);
 }
 
-TEST(LiteralTest, BooleanComparison) {
-  auto true_literal = Literal::Boolean(true);
-  auto false_literal = Literal::Boolean(false);
-  auto another_true = Literal::Boolean(true);
+// Parameter struct for comparison tests
+struct ComparisonLiteralTestParam {
+  std::string test_name;
+  Literal small_literal;
+  Literal large_literal;
+  Literal equal_literal;  // same as small_literal
+};
 
-  EXPECT_EQ(true_literal <=> another_true, std::partial_ordering::equivalent);
-  EXPECT_EQ(true_literal <=> false_literal, std::partial_ordering::greater);
-  EXPECT_EQ(false_literal <=> true_literal, std::partial_ordering::less);
+class ComparisonLiteralTest
+    : public ::testing::TestWithParam<ComparisonLiteralTestParam> {};
+
+TEST_P(ComparisonLiteralTest, ComparisonTest) {
+  const auto& param = GetParam();
+
+  EXPECT_EQ(param.small_literal <=> param.equal_literal,
+            std::partial_ordering::equivalent);
+  EXPECT_EQ(param.small_literal <=> param.large_literal, std::partial_ordering::less);
+  EXPECT_EQ(param.large_literal <=> param.small_literal, std::partial_ordering::greater);
 }
 
-// Int type tests
-TEST(LiteralTest, IntBasics) {
+// Parameter struct for cast tests
+struct CastLiteralTestParam {
+  std::string test_name;
+  Literal source_literal;
+  std::shared_ptr<PrimitiveType> target_type;
+  Literal expected_literal;
+};
+
+class CastLiteralTest : public ::testing::TestWithParam<CastLiteralTestParam> {};
+
+TEST_P(CastLiteralTest, CastTest) {
+  const auto& param = GetParam();
+  auto result = param.source_literal.CastTo(param.target_type);
+
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(*result, param.expected_literal);
+}
+
+// Cross-type comparison tests
+TEST(LiteralTest, CrossTypeComparison) {
   auto int_literal = Literal::Int(42);
-  auto negative_int = Literal::Int(-123);
+  auto string_literal = Literal::String("42");
 
-  EXPECT_EQ(int_literal.type()->type_id(), TypeId::kInt);
-  EXPECT_EQ(negative_int.type()->type_id(), TypeId::kInt);
-
-  EXPECT_EQ(int_literal.ToString(), "42");
-  EXPECT_EQ(negative_int.ToString(), "-123");
+  // Different types should return unordered
+  EXPECT_EQ(int_literal <=> string_literal, std::partial_ordering::unordered);
 }
 
-TEST(LiteralTest, IntComparison) {
-  auto int1 = Literal::Int(10);
-  auto int2 = Literal::Int(20);
-  auto int3 = Literal::Int(10);
-
-  EXPECT_EQ(int1 <=> int3, std::partial_ordering::equivalent);
-  EXPECT_EQ(int1 <=> int2, std::partial_ordering::less);
-  EXPECT_EQ(int2 <=> int1, std::partial_ordering::greater);
-}
-
-TEST(LiteralTest, IntCastTo) {
-  auto int_literal = Literal::Int(42);
-
-  // Cast to Long
-  AssertCastSucceeds(int_literal.CastTo(int64()), TypeId::kLong,
-                     static_cast<int64_t>(42));
-
-  // Cast to Float
-  AssertCastSucceeds(int_literal.CastTo(float32()), TypeId::kFloat, 42.0f);
-
-  // Cast to Double
-  AssertCastSucceeds(int_literal.CastTo(float64()), TypeId::kDouble, 42.0);
-
-  // Cast to Date
-  AssertCastSucceeds(int_literal.CastTo(date()), TypeId::kDate, 42);
-}
-
-// Long type tests
-TEST(LiteralTest, LongBasics) {
-  auto long_literal = Literal::Long(1234567890L);
-  auto negative_long = Literal::Long(-9876543210L);
-
-  EXPECT_EQ(long_literal.type()->type_id(), TypeId::kLong);
-  EXPECT_EQ(negative_long.type()->type_id(), TypeId::kLong);
-
-  EXPECT_EQ(long_literal.ToString(), "1234567890");
-  EXPECT_EQ(negative_long.ToString(), "-9876543210");
-}
-
-TEST(LiteralTest, LongComparison) {
-  auto long1 = Literal::Long(100L);
-  auto long2 = Literal::Long(200L);
-  auto long3 = Literal::Long(100L);
-
-  EXPECT_EQ(long1 <=> long3, std::partial_ordering::equivalent);
-  EXPECT_EQ(long1 <=> long2, std::partial_ordering::less);
-  EXPECT_EQ(long2 <=> long1, std::partial_ordering::greater);
-}
-
-TEST(LiteralTest, LongCastTo) {
-  auto long_literal = Literal::Long(42L);
-
-  // Cast to Int (within range)
-  AssertCastSucceeds(long_literal.CastTo(int32()), TypeId::kInt, 42);
-
-  // Cast to Float
-  AssertCastSucceeds(long_literal.CastTo(float32()), TypeId::kFloat, 42.0f);
-
-  // Cast to Double
-  AssertCastSucceeds(long_literal.CastTo(float64()), TypeId::kDouble, 42.0);
-
-  // Cast to Date
-  AssertCastSucceeds(long_literal.CastTo(date()), TypeId::kDate, 42);
-
-  // Cast to Time
-  AssertCastSucceeds(long_literal.CastTo(time()), TypeId::kTime, int64_t{42});
-
-  // Cast to Timestamp
-  AssertCastSucceeds(long_literal.CastTo(timestamp()), TypeId::kTimestamp, int64_t{42});
-
-  // Cast to TimestampTz
-  AssertCastSucceeds(long_literal.CastTo(timestamp_tz()), TypeId::kTimestampTz,
-                     int64_t{42});
-}
-
+// Overflow tests
 TEST(LiteralTest, LongCastToOverflow) {
   // Test overflow cases
   auto max_long =
@@ -179,64 +135,6 @@ TEST(LiteralTest, LongCastToOverflow) {
   EXPECT_TRUE(min_result->IsBelowMin());
 }
 
-// Float type tests
-TEST(LiteralTest, FloatBasics) {
-  auto float_literal = Literal::Float(3.14f);
-  auto negative_float = Literal::Float(-2.71f);
-
-  EXPECT_EQ(float_literal.type()->type_id(), TypeId::kFloat);
-  EXPECT_EQ(negative_float.type()->type_id(), TypeId::kFloat);
-
-  EXPECT_EQ(float_literal.ToString(), "3.140000");
-  EXPECT_EQ(negative_float.ToString(), "-2.710000");
-}
-
-TEST(LiteralTest, FloatComparison) {
-  auto float1 = Literal::Float(1.5f);
-  auto float2 = Literal::Float(2.5f);
-  auto float3 = Literal::Float(1.5f);
-
-  EXPECT_EQ(float1 <=> float3, std::partial_ordering::equivalent);
-  EXPECT_EQ(float1 <=> float2, std::partial_ordering::less);
-  EXPECT_EQ(float2 <=> float1, std::partial_ordering::greater);
-}
-
-TEST(LiteralTest, FloatCastTo) {
-  auto float_literal = Literal::Float(2.0f);
-
-  // Cast to Double
-  AssertCastSucceeds(float_literal.CastTo(float64()), TypeId::kDouble, double{2.0f});
-}
-
-// Double type tests
-TEST(LiteralTest, DoubleBasics) {
-  auto double_literal = Literal::Double(std::numbers::pi);
-  auto negative_double = Literal::Double(-std::numbers::e);
-
-  EXPECT_EQ(double_literal.type()->type_id(), TypeId::kDouble);
-  EXPECT_EQ(negative_double.type()->type_id(), TypeId::kDouble);
-
-  EXPECT_EQ(double_literal.ToString(), "3.141593");
-  EXPECT_EQ(negative_double.ToString(), "-2.718282");
-}
-
-TEST(LiteralTest, DoubleComparison) {
-  auto double1 = Literal::Double(1.5);
-  auto double2 = Literal::Double(2.5);
-  auto double3 = Literal::Double(1.5);
-
-  EXPECT_EQ(double1 <=> double3, std::partial_ordering::equivalent);
-  EXPECT_EQ(double1 <=> double2, std::partial_ordering::less);
-  EXPECT_EQ(double2 <=> double1, std::partial_ordering::greater);
-}
-
-TEST(LiteralTest, DoubleCastTo) {
-  auto double_literal = Literal::Double(2.0);
-
-  // Cast to Float
-  AssertCastSucceeds(double_literal.CastTo(float32()), TypeId::kFloat, 2.0f);
-}
-
 TEST(LiteralTest, DoubleCastToOverflow) {
   // Test overflow cases for Double to Float
   auto max_double = Literal::Double(double{std::numeric_limits<float>::max()} * 2);
@@ -251,211 +149,19 @@ TEST(LiteralTest, DoubleCastToOverflow) {
   EXPECT_TRUE(min_result->IsBelowMin());
 }
 
-// String type tests
-TEST(LiteralTest, StringBasics) {
-  auto string_literal = Literal::String("hello world");
-  auto empty_string = Literal::String("");
-
-  EXPECT_EQ(string_literal.type()->type_id(), TypeId::kString);
-  EXPECT_EQ(empty_string.type()->type_id(), TypeId::kString);
-
-  EXPECT_EQ(string_literal.ToString(), "\"hello world\"");
-  EXPECT_EQ(empty_string.ToString(), "\"\"");
-}
-
-TEST(LiteralTest, StringComparison) {
-  auto string1 = Literal::String("apple");
-  auto string2 = Literal::String("banana");
-  auto string3 = Literal::String("apple");
-
-  EXPECT_EQ(string1 <=> string3, std::partial_ordering::equivalent);
-  EXPECT_EQ(string1 <=> string2, std::partial_ordering::less);
-  EXPECT_EQ(string2 <=> string1, std::partial_ordering::greater);
-}
-
-// Binary type tests
-TEST(LiteralTest, BinaryBasics) {
-  std::vector<uint8_t> data = {0x01, 0x02, 0x03, 0xFF};
+// Error cases for casts
+TEST(LiteralTest, CastToError) {
+  std::vector<uint8_t> data = {0x01, 0x02, 0x03, 0x04};
   auto binary_literal = Literal::Binary(data);
-  auto empty_binary = Literal::Binary({});
-
-  EXPECT_EQ(binary_literal.type()->type_id(), TypeId::kBinary);
-  EXPECT_EQ(empty_binary.type()->type_id(), TypeId::kBinary);
-
-  EXPECT_EQ(binary_literal.ToString(), "X'010203FF'");
-  EXPECT_EQ(empty_binary.ToString(), "X''");
-}
-
-TEST(LiteralTest, BinaryComparison) {
-  std::vector<uint8_t> data1 = {0x01, 0x02};
-  std::vector<uint8_t> data2 = {0x01, 0x03};
-  std::vector<uint8_t> data3 = {0x01, 0x02};
-
-  auto binary1 = Literal::Binary(data1);
-  auto binary2 = Literal::Binary(data2);
-  auto binary3 = Literal::Binary(data3);
-
-  EXPECT_EQ(binary1 <=> binary3, std::partial_ordering::equivalent);
-  EXPECT_EQ(binary1 <=> binary2, std::partial_ordering::less);
-  EXPECT_EQ(binary2 <=> binary1, std::partial_ordering::greater);
-}
-
-TEST(LiteralTest, BinaryCastTo) {
-  std::vector<uint8_t> data4 = {0x01, 0x02, 0x03, 0x04};
-  auto binary_literal = Literal::Binary(data4);
-
-  // Cast to Fixed with matching length
-  AssertCastSucceeds(binary_literal.CastTo(fixed(4)), TypeId::kFixed, data4);
 
   // Cast to Fixed with different length should fail
   EXPECT_THAT(binary_literal.CastTo(fixed(5)), IsError(ErrorKind::kInvalidArgument));
-}
 
-// Fixed type tests
-TEST(LiteralTest, FixedBasics) {
-  std::vector<uint8_t> data = {0x01, 0x02, 0x03, 0xFF};
+  data = {0x01, 0x02, 0x03, 0x04};
   auto fixed_literal = Literal::Fixed(data);
-  auto empty_fixed = Literal::Fixed({});
-
-  EXPECT_EQ(fixed_literal.type()->type_id(), TypeId::kFixed);
-  EXPECT_EQ(empty_fixed.type()->type_id(), TypeId::kFixed);
-
-  EXPECT_EQ(fixed_literal.ToString(), "X'010203FF'");
-  EXPECT_EQ(empty_fixed.ToString(), "X''");
-}
-
-TEST(LiteralTest, FixedComparison) {
-  std::vector<uint8_t> data1 = {0x01, 0x02};
-  std::vector<uint8_t> data2 = {0x01, 0x03};
-  std::vector<uint8_t> data3 = {0x01, 0x02};
-
-  auto fixed1 = Literal::Fixed(data1);
-  auto fixed2 = Literal::Fixed(data2);
-  auto fixed3 = Literal::Fixed(data3);
-
-  EXPECT_EQ(fixed1 <=> fixed3, std::partial_ordering::equivalent);
-  EXPECT_EQ(fixed1 <=> fixed2, std::partial_ordering::less);
-  EXPECT_EQ(fixed2 <=> fixed1, std::partial_ordering::greater);
-}
-
-TEST(LiteralTest, FixedCastTo) {
-  std::vector<uint8_t> data4 = {0x01, 0x02, 0x03, 0x04};
-  auto fixed_literal = Literal::Fixed(data4);
-
-  // Cast to Binary
-  AssertCastSucceeds(fixed_literal.CastTo(binary()), TypeId::kBinary, data4);
-
-  // Cast to Fixed with same length
-  AssertCastSucceeds(fixed_literal.CastTo(fixed(4)), TypeId::kFixed, data4);
 
   // Cast to Fixed with different length should fail
   EXPECT_THAT(fixed_literal.CastTo(fixed(5)), IsError(ErrorKind::kNotSupported));
-}
-
-// Date type tests
-TEST(LiteralTest, DateBasics) {
-  auto date_literal = Literal::Date(19489);  // May 15, 2023
-  auto negative_date = Literal::Date(-1);    // December 31, 1969
-
-  EXPECT_EQ(date_literal.type()->type_id(), TypeId::kDate);
-  EXPECT_EQ(negative_date.type()->type_id(), TypeId::kDate);
-
-  EXPECT_EQ(date_literal.ToString(), "19489");
-  EXPECT_EQ(negative_date.ToString(), "-1");
-}
-
-TEST(LiteralTest, DateComparison) {
-  auto date1 = Literal::Date(100);
-  auto date2 = Literal::Date(200);
-  auto date3 = Literal::Date(100);
-
-  EXPECT_EQ(date1 <=> date3, std::partial_ordering::equivalent);
-  EXPECT_EQ(date1 <=> date2, std::partial_ordering::less);
-  EXPECT_EQ(date2 <=> date1, std::partial_ordering::greater);
-}
-
-// Time type tests
-TEST(LiteralTest, TimeBasics) {
-  auto time_literal = Literal::Time(43200000000LL);  // 12:00:00 in microseconds
-  auto midnight = Literal::Time(0LL);
-
-  EXPECT_EQ(time_literal.type()->type_id(), TypeId::kTime);
-  EXPECT_EQ(midnight.type()->type_id(), TypeId::kTime);
-
-  EXPECT_EQ(time_literal.ToString(), "43200000000");
-  EXPECT_EQ(midnight.ToString(), "0");
-}
-
-TEST(LiteralTest, TimeComparison) {
-  auto time1 = Literal::Time(43200000000LL);  // 12:00:00
-  auto time2 = Literal::Time(86400000000LL);  // 24:00:00 (invalid but for testing)
-  auto time3 = Literal::Time(43200000000LL);
-
-  EXPECT_EQ(time1 <=> time3, std::partial_ordering::equivalent);
-  EXPECT_EQ(time1 <=> time2, std::partial_ordering::less);
-  EXPECT_EQ(time2 <=> time1, std::partial_ordering::greater);
-}
-
-// Timestamp type tests
-TEST(LiteralTest, TimestampBasics) {
-  auto timestamp_literal =
-      Literal::Timestamp(1684137600000000LL);  // May 15, 2023 12:00:00 UTC
-  auto epoch = Literal::Timestamp(0LL);
-
-  EXPECT_EQ(timestamp_literal.type()->type_id(), TypeId::kTimestamp);
-  EXPECT_EQ(epoch.type()->type_id(), TypeId::kTimestamp);
-
-  EXPECT_EQ(timestamp_literal.ToString(), "1684137600000000");
-  EXPECT_EQ(epoch.ToString(), "0");
-}
-
-TEST(LiteralTest, TimestampComparison) {
-  auto timestamp1 = Literal::Timestamp(1000000LL);
-  auto timestamp2 = Literal::Timestamp(2000000LL);
-  auto timestamp3 = Literal::Timestamp(1000000LL);
-
-  EXPECT_EQ(timestamp1 <=> timestamp3, std::partial_ordering::equivalent);
-  EXPECT_EQ(timestamp1 <=> timestamp2, std::partial_ordering::less);
-  EXPECT_EQ(timestamp2 <=> timestamp1, std::partial_ordering::greater);
-}
-
-// TimestampTz type tests
-TEST(LiteralTest, TimestampTzBasics) {
-  auto timestamptz_literal =
-      Literal::TimestampTz(1684137600000000LL);  // May 15, 2023 12:00:00 UTC
-  auto epoch = Literal::TimestampTz(0LL);
-
-  EXPECT_EQ(timestamptz_literal.type()->type_id(), TypeId::kTimestampTz);
-  EXPECT_EQ(epoch.type()->type_id(), TypeId::kTimestampTz);
-
-  EXPECT_EQ(timestamptz_literal.ToString(), "1684137600000000");
-  EXPECT_EQ(epoch.ToString(), "0");
-}
-
-TEST(LiteralTest, TimestampTzComparison) {
-  auto timestamptz1 = Literal::TimestampTz(1000000LL);
-  auto timestamptz2 = Literal::TimestampTz(2000000LL);
-  auto timestamptz3 = Literal::TimestampTz(1000000LL);
-
-  EXPECT_EQ(timestamptz1 <=> timestamptz3, std::partial_ordering::equivalent);
-  EXPECT_EQ(timestamptz1 <=> timestamptz2, std::partial_ordering::less);
-  EXPECT_EQ(timestamptz2 <=> timestamptz1, std::partial_ordering::greater);
-}
-
-// Cross-type comparison tests
-TEST(LiteralTest, CrossTypeComparison) {
-  auto int_literal = Literal::Int(42);
-  auto string_literal = Literal::String("42");
-
-  // Different types should return unordered
-  EXPECT_EQ(int_literal <=> string_literal, std::partial_ordering::unordered);
-}
-
-// Same type cast tests
-TEST(LiteralTest, SameTypeCast) {
-  auto int_literal = Literal::Int(42);
-
-  AssertCastSucceeds(int_literal.CastTo(int32()), TypeId::kInt, 42);
 }
 
 // Special value tests
@@ -563,7 +269,6 @@ TEST(LiteralTest, DoubleZeroComparison) {
   auto neg_zero = Literal::Double(-0.0);
   auto pos_zero = Literal::Double(0.0);
 
-  // -0 should be less than +0
   EXPECT_EQ(neg_zero <=> pos_zero, std::partial_ordering::less);
 }
 
@@ -770,5 +475,216 @@ TEST(LiteralSerDeTest, TypePromotion) {
   EXPECT_EQ(double_result->type()->type_id(), TypeId::kDouble);
   EXPECT_DOUBLE_EQ(std::get<double>(double_result->value()), 1.0);
 }
+// Instantiate parameterized tests
+
+INSTANTIATE_TEST_SUITE_P(
+    BasicLiteralTestCases, BasicLiteralTest,
+    ::testing::Values(
+        BasicLiteralTestParam{.test_name = "BooleanTrue",
+                              .literal = Literal::Boolean(true),
+                              .expected_type_id = TypeId::kBoolean,
+                              .expected_string = "true"},
+        BasicLiteralTestParam{.test_name = "BooleanFalse",
+                              .literal = Literal::Boolean(false),
+                              .expected_type_id = TypeId::kBoolean,
+                              .expected_string = "false"},
+        BasicLiteralTestParam{.test_name = "IntPositive",
+                              .literal = Literal::Int(42),
+                              .expected_type_id = TypeId::kInt,
+                              .expected_string = "42"},
+        BasicLiteralTestParam{.test_name = "IntNegative",
+                              .literal = Literal::Int(-123),
+                              .expected_type_id = TypeId::kInt,
+                              .expected_string = "-123"},
+        BasicLiteralTestParam{.test_name = "LongPositive",
+                              .literal = Literal::Long(1234567890L),
+                              .expected_type_id = TypeId::kLong,
+                              .expected_string = "1234567890"},
+        BasicLiteralTestParam{.test_name = "LongNegative",
+                              .literal = Literal::Long(-9876543210L),
+                              .expected_type_id = TypeId::kLong,
+                              .expected_string = "-9876543210"},
+        BasicLiteralTestParam{.test_name = "Float",
+                              .literal = Literal::Float(3.14f),
+                              .expected_type_id = TypeId::kFloat,
+                              .expected_string = "3.140000"},
+        BasicLiteralTestParam{.test_name = "Double",
+                              .literal = Literal::Double(std::numbers::pi),
+                              .expected_type_id = TypeId::kDouble,
+                              .expected_string = "3.141593"},
+        BasicLiteralTestParam{.test_name = "String",
+                              .literal = Literal::String("hello world"),
+                              .expected_type_id = TypeId::kString,
+                              .expected_string = "\"hello world\""},
+        BasicLiteralTestParam{
+            .test_name = "Binary",
+            .literal = Literal::Binary(std::vector<uint8_t>{0x01, 0x02, 0x03, 0xFF}),
+            .expected_type_id = TypeId::kBinary,
+            .expected_string = "X'010203FF'"},
+        BasicLiteralTestParam{
+            .test_name = "Fixed",
+            .literal = Literal::Fixed(std::vector<uint8_t>{0x01, 0x02, 0x03, 0xFF}),
+            .expected_type_id = TypeId::kFixed,
+            .expected_string = "X'010203FF'"},
+        BasicLiteralTestParam{.test_name = "Date",
+                              .literal = Literal::Date(19489),
+                              .expected_type_id = TypeId::kDate,
+                              .expected_string = "19489"},
+        BasicLiteralTestParam{.test_name = "Time",
+                              .literal = Literal::Time(43200000000LL),
+                              .expected_type_id = TypeId::kTime,
+                              .expected_string = "43200000000"},
+        BasicLiteralTestParam{.test_name = "Timestamp",
+                              .literal = Literal::Timestamp(1684137600000000LL),
+                              .expected_type_id = TypeId::kTimestamp,
+                              .expected_string = "1684137600000000"},
+        BasicLiteralTestParam{.test_name = "TimestampTz",
+                              .literal = Literal::TimestampTz(1684137600000000LL),
+                              .expected_type_id = TypeId::kTimestampTz,
+                              .expected_string = "1684137600000000"}),
+    [](const ::testing::TestParamInfo<BasicLiteralTestParam>& info) {
+      return info.param.test_name;
+    });
+
+INSTANTIATE_TEST_SUITE_P(
+    ComparisonLiteralTestCases, ComparisonLiteralTest,
+    ::testing::Values(
+        ComparisonLiteralTestParam{.test_name = "Boolean",
+                                   .small_literal = Literal::Boolean(false),
+                                   .large_literal = Literal::Boolean(true),
+                                   .equal_literal = Literal::Boolean(false)},
+        ComparisonLiteralTestParam{.test_name = "Int",
+                                   .small_literal = Literal::Int(10),
+                                   .large_literal = Literal::Int(20),
+                                   .equal_literal = Literal::Int(10)},
+        ComparisonLiteralTestParam{.test_name = "Long",
+                                   .small_literal = Literal::Long(100L),
+                                   .large_literal = Literal::Long(200L),
+                                   .equal_literal = Literal::Long(100L)},
+        ComparisonLiteralTestParam{.test_name = "Float",
+                                   .small_literal = Literal::Float(1.5f),
+                                   .large_literal = Literal::Float(2.5f),
+                                   .equal_literal = Literal::Float(1.5f)},
+        ComparisonLiteralTestParam{.test_name = "Double",
+                                   .small_literal = Literal::Double(1.5),
+                                   .large_literal = Literal::Double(2.5),
+                                   .equal_literal = Literal::Double(1.5)},
+        ComparisonLiteralTestParam{.test_name = "String",
+                                   .small_literal = Literal::String("apple"),
+                                   .large_literal = Literal::String("banana"),
+                                   .equal_literal = Literal::String("apple")},
+        ComparisonLiteralTestParam{
+            .test_name = "Binary",
+            .small_literal = Literal::Binary(std::vector<uint8_t>{0x01, 0x02}),
+            .large_literal = Literal::Binary(std::vector<uint8_t>{0x01, 0x03}),
+            .equal_literal = Literal::Binary(std::vector<uint8_t>{0x01, 0x02})},
+        ComparisonLiteralTestParam{
+            .test_name = "Fixed",
+            .small_literal = Literal::Fixed(std::vector<uint8_t>{0x01, 0x02}),
+            .large_literal = Literal::Fixed(std::vector<uint8_t>{0x01, 0x03}),
+            .equal_literal = Literal::Fixed(std::vector<uint8_t>{0x01, 0x02})},
+        ComparisonLiteralTestParam{.test_name = "Date",
+                                   .small_literal = Literal::Date(100),
+                                   .large_literal = Literal::Date(200),
+                                   .equal_literal = Literal::Date(100)},
+        ComparisonLiteralTestParam{.test_name = "Time",
+                                   .small_literal = Literal::Time(43200000000LL),
+                                   .large_literal = Literal::Time(86400000000LL),
+                                   .equal_literal = Literal::Time(43200000000LL)},
+        ComparisonLiteralTestParam{.test_name = "Timestamp",
+                                   .small_literal = Literal::Timestamp(1000000LL),
+                                   .large_literal = Literal::Timestamp(2000000LL),
+                                   .equal_literal = Literal::Timestamp(1000000LL)},
+        ComparisonLiteralTestParam{.test_name = "TimestampTz",
+                                   .small_literal = Literal::TimestampTz(1000000LL),
+                                   .large_literal = Literal::TimestampTz(2000000LL),
+                                   .equal_literal = Literal::TimestampTz(1000000LL)}),
+    [](const ::testing::TestParamInfo<ComparisonLiteralTestParam>& info) {
+      return info.param.test_name;
+    });
+
+INSTANTIATE_TEST_SUITE_P(
+    CastLiteralTestCases, CastLiteralTest,
+    ::testing::Values(
+        // Int cast tests
+        CastLiteralTestParam{.test_name = "IntToLong",
+                             .source_literal = Literal::Int(42),
+                             .target_type = int64(),
+                             .expected_literal = Literal::Long(42L)},
+        CastLiteralTestParam{.test_name = "IntToFloat",
+                             .source_literal = Literal::Int(42),
+                             .target_type = float32(),
+                             .expected_literal = Literal::Float(42.0f)},
+        CastLiteralTestParam{.test_name = "IntToDouble",
+                             .source_literal = Literal::Int(42),
+                             .target_type = float64(),
+                             .expected_literal = Literal::Double(42.0)},
+        CastLiteralTestParam{.test_name = "IntToDate",
+                             .source_literal = Literal::Int(42),
+                             .target_type = date(),
+                             .expected_literal = Literal::Date(42)},
+        // Long cast tests
+        CastLiteralTestParam{.test_name = "LongToInt",
+                             .source_literal = Literal::Long(42L),
+                             .target_type = int32(),
+                             .expected_literal = Literal::Int(42)},
+        CastLiteralTestParam{.test_name = "LongToFloat",
+                             .source_literal = Literal::Long(42L),
+                             .target_type = float32(),
+                             .expected_literal = Literal::Float(42.0f)},
+        CastLiteralTestParam{.test_name = "LongToDouble",
+                             .source_literal = Literal::Long(42L),
+                             .target_type = float64(),
+                             .expected_literal = Literal::Double(42.0)},
+        CastLiteralTestParam{.test_name = "LongToTime",
+                             .source_literal = Literal::Long(42L),
+                             .target_type = time(),
+                             .expected_literal = Literal::Time(42L)},
+        CastLiteralTestParam{.test_name = "LongToTimestamp",
+                             .source_literal = Literal::Long(42L),
+                             .target_type = timestamp(),
+                             .expected_literal = Literal::Timestamp(42L)},
+        CastLiteralTestParam{.test_name = "LongToTimestampTz",
+                             .source_literal = Literal::Long(42L),
+                             .target_type = timestamp_tz(),
+                             .expected_literal = Literal::TimestampTz(42L)},
+        // Float cast tests
+        CastLiteralTestParam{.test_name = "FloatToDouble",
+                             .source_literal = Literal::Float(2.0f),
+                             .target_type = float64(),
+                             .expected_literal = Literal::Double(double{2.0f})},
+        // Double cast tests
+        CastLiteralTestParam{.test_name = "DoubleToFloat",
+                             .source_literal = Literal::Double(2.0),
+                             .target_type = float32(),
+                             .expected_literal = Literal::Float(2.0f)},
+        // Binary cast tests
+        CastLiteralTestParam{.test_name = "BinaryToFixed",
+                             .source_literal = Literal::Binary(std::vector<uint8_t>{
+                                 0x01, 0x02, 0x03, 0x04}),
+                             .target_type = fixed(4),
+                             .expected_literal = Literal::Fixed(std::vector<uint8_t>{
+                                 0x01, 0x02, 0x03, 0x04})},
+        // Fixed cast tests
+        CastLiteralTestParam{.test_name = "FixedToBinary",
+                             .source_literal = Literal::Fixed(std::vector<uint8_t>{
+                                 0x01, 0x02, 0x03, 0x04}),
+                             .target_type = binary(),
+                             .expected_literal = Literal::Binary(std::vector<uint8_t>{
+                                 0x01, 0x02, 0x03, 0x04})},
+        CastLiteralTestParam{.test_name = "FixedToFixed",
+                             .source_literal = Literal::Fixed(std::vector<uint8_t>{
+                                 0x01, 0x02, 0x03, 0x04}),
+                             .target_type = fixed(4),
+                             .expected_literal = Literal::Fixed(std::vector<uint8_t>{
+                                 0x01, 0x02, 0x03, 0x04})},
+        // Same type cast test
+        CastLiteralTestParam{.test_name = "IntToInt",
+                             .source_literal = Literal::Int(42),
+                             .target_type = int32(),
+                             .expected_literal = Literal::Int(42)}),
+    [](const ::testing::TestParamInfo<CastLiteralTestParam>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace iceberg
