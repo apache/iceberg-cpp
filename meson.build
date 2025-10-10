@@ -34,5 +34,5 @@ subdir('src')
 
 install_data(
     ['LICENSE', 'NOTICE'],
-    install_dir: get_option('datadir') / 'doc/Iceberg',
+    install_dir: get_option('datadir') / 'doc/iceberg',
 )

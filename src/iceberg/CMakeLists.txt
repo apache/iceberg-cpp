@@ -110,14 +110,6 @@ add_iceberg_lib(iceberg
                 OUTPUTS
                 ICEBERG_LIBRARIES)
 
-foreach(LIB_TARGET ${ICEBERG_LIBRARIES})
-  target_compile_definitions(${LIB_TARGET} PRIVATE ICEBERG_EXPORTING)
-endforeach()
-
-if(ICEBERG_BUILD_STATIC)
-  target_compile_definitions(iceberg_static PUBLIC ICEBERG_STATIC)
-endif()
-
 iceberg_install_all_headers(iceberg)
 
 add_subdirectory(catalog)

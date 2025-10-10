@@ -15,6 +15,21 @@
 # specific language governing permissions and limitations
 # under the License.
 
+# Many of the options that CMake provides do not need to be implemented
+# in this configuration, as Meson offers built-in support for them.
+# For instance, instead of ICEBERG_BUILD_STATIC and ICEBERG_BUILD_SHARED
+# you can pass the `--default_library=<option>` to the meson setup command,
+# where <option> is one of "shared", "static", or "both"
+#
+# ICEBERG_ENABLE_ASAN / ICEBERG_ENABLE_UBSAN can be specified with
+# the -Db_sanitize=address,undefined option. Starting in Meson 1.8,
+# you can provide any array of sanitizers to that same argument,
+# including for example the "fuzzing" option
+#
+# ICEBERG_INSTALL_LIBDIR / ICEBERG_INSTALL_BINDIR / ICEBERG_INSTALL_INCLUDEDIR
+# and ICEBERG_INSTALL_DOCDIR correspond to Meson's --libdir / --bindir /
+# --includedir / --datadir arguments, respectively
+
 option(
     'rest',
     type: 'feature',
