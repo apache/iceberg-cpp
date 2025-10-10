@@ -47,7 +47,11 @@ iceberg_tests = {
         'table_test.cc',
         'test_common.cc',
     ),
-    'expression_test': files('expression_test.cc', 'literal_test.cc'),
+    'expression_test': files(
+        'expression_test.cc',
+        'literal_test.cc',
+        'predicate_test.cc',
+    ),
     'json_serde_test': files(
         'json_internal_test.cc',
         'metadata_serde_test.cc',
