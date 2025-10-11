@@ -29,6 +29,7 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/metadata_update.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/timepoint.h"
 
