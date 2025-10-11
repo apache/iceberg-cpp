@@ -22,10 +22,11 @@
 
 github:
   description: "Apache Iceberg C++"
-  homepage: https://iceberg.apache.org/
+  homepage: https://cpp.iceberg.apache.org/
   labels:
     - iceberg
     - apache
+    - cpp
   enabled_merge_buttons:
     merge: false
     squash: true
@@ -47,6 +48,8 @@ github:
     - raulcd
     - wgtmac
     - zhjwpku
+  ghp_branch: gh-pages
+  ghp_path: /
 
 notifications:
   commits:      commits@iceberg.apache.org
