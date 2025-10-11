@@ -30,6 +30,7 @@ namespace iceberg {
 /// \brief Error types for iceberg.
 enum class ErrorKind {
   kAlreadyExists,
+  kCommitFailed,
   kCommitStateUnknown,
   kDecompressError,
   kInvalid,  // For general invalid errors
@@ -78,6 +79,7 @@ using Status = Result<void>;
   }
 
 DEFINE_ERROR_FUNCTION(AlreadyExists)
+DEFINE_ERROR_FUNCTION(CommitFailed)
 DEFINE_ERROR_FUNCTION(CommitStateUnknown)
 DEFINE_ERROR_FUNCTION(DecompressError)
 DEFINE_ERROR_FUNCTION(Invalid)

@@ -142,12 +142,13 @@ class StructLike;
 class ArrayLike;
 class MapLike;
 
+class MetadataUpdate;
+class UpdateRequirement;
+
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.
 /// ----------------------------------------------------------------------------
 
-class MetadataUpdate;
-class UpdateRequirement;
 class AppendFiles;
 
 }  // namespace iceberg
