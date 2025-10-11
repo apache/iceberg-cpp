@@ -69,7 +69,7 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \brief Get a view of the partition fields.
   std::span<const PartitionField> fields() const;
 
-  Result<std::shared_ptr<Schema>> GetPartitionSchema();
+  Result<std::shared_ptr<StructType>> PartitionType();
 
   std::string ToString() const override;
 
@@ -88,7 +88,7 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   std::vector<PartitionField> fields_;
   int32_t last_assigned_field_id_;
   std::mutex mutex_;
-  std::shared_ptr<Schema> partition_schema_;
+  std::shared_ptr<StructType> partition_type_;
 };
 
 }  // namespace iceberg

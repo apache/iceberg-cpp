@@ -29,11 +29,6 @@
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
-#define NANOARROW_RETURN_IF_FAILED(status)                  \
-  if (status != NANOARROW_OK) [[unlikely]] {                \
-    return InvalidArrowData("nanoarrow error: {}", status); \
-  }
-
 namespace {
 static constexpr int64_t kBlockSizeInBytesV1 = 64 * 1024 * 1024L;
 }
@@ -47,46 +42,46 @@ Status ManifestAdapter::StartAppending() {
   array_ = {};
   size_ = 0;
   ArrowError error;
-  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayInitFromSchema(&array_, &schema_, &error),
-                                     error);
-  NANOARROW_RETURN_IF_FAILED(ArrowArrayStartAppending(&array_));
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK_WITH_ERROR(
+      ArrowArrayInitFromSchema(&array_, &schema_, &error), error);
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayStartAppending(&array_));
   return {};
 }
 
 Result<ArrowArray*> ManifestAdapter::FinishAppending() {
   ArrowError error;
-  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayFinishBuildingDefault(&array_, &error),
-                                     error);
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK_WITH_ERROR(
+      ArrowArrayFinishBuildingDefault(&array_, &error), error);
   return &array_;
 }
 
 Status ManifestAdapter::AppendField(ArrowArray* arrowArray, int64_t value) {
-  NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendInt(arrowArray, value));
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendInt(arrowArray, value));
   return {};
 }
 
 Status ManifestAdapter::AppendField(ArrowArray* arrowArray, uint64_t value) {
-  NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendUInt(arrowArray, value));
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendUInt(arrowArray, value));
   return {};
 }
 
 Status ManifestAdapter::AppendField(ArrowArray* arrowArray, double value) {
-  NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendDouble(arrowArray, value));
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendDouble(arrowArray, value));
   return {};
 }
 
 Status ManifestAdapter::AppendField(ArrowArray* arrowArray, std::string_view value) {
   ArrowStringView view(value.data(), value.size());
-  NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendString(arrowArray, view));
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendString(arrowArray, view));
   return {};
 }
 
 Status ManifestAdapter::AppendField(ArrowArray* arrowArray,
-                                    const std::span<const uint8_t>& value) {
+                                    std::span<const uint8_t> value) {
   ArrowBufferViewData data;
   data.as_char = reinterpret_cast<const char*>(value.data());
   ArrowBufferView view(data, value.size());
-  NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendBytes(arrowArray, view));
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendBytes(arrowArray, view));
   return {};
 }
 
@@ -100,10 +95,11 @@ ManifestEntryAdapter::~ManifestEntryAdapter() {
 }
 
 Result<std::shared_ptr<StructType>> ManifestEntryAdapter::GetManifestEntryStructType() {
-  if (partition_spec_ == nullptr) {
+  if (partition_spec_ == nullptr) [[unlikely]] {
+    // NOTICE: never reach here by design, partition_spec_ should always not null.
     return ManifestEntry::TypeFromPartitionType(nullptr);
   }
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_schema, partition_spec_->GetPartitionSchema());
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_schema, partition_spec_->PartitionType());
   return ManifestEntry::TypeFromPartitionType(std::move(partition_schema));
 }
 
@@ -123,7 +119,7 @@ Status ManifestEntryAdapter::AppendPartition(
     const auto& field = fields[i];
     auto array = arrow_array->children[i];
     if (partition.IsNull()) {
-      NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+      ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
       continue;
     }
     switch (field.type()->type_id()) {
@@ -180,7 +176,7 @@ Status ManifestEntryAdapter::AppendPartition(
         return InvalidManifest("Unsupported partition type: {}", field.ToString());
     }
   }
-  NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(arrow_array));
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayFinishElement(arrow_array));
   return {};
 }
 
@@ -188,10 +184,10 @@ Status ManifestEntryAdapter::AppendList(ArrowArray* arrow_array,
                                         const std::vector<int32_t>& list_value) {
   auto list_array = arrow_array->children[0];
   for (const auto& value : list_value) {
-    NANOARROW_RETURN_IF_FAILED(
+    ICEBERG_NANOARROW_RETURN_IF_NOT_OK(
         ArrowArrayAppendInt(list_array, static_cast<int64_t>(value)));
   }
-  NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(arrow_array));
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayFinishElement(arrow_array));
   return {};
 }
 
@@ -199,9 +195,9 @@ Status ManifestEntryAdapter::AppendList(ArrowArray* arrow_array,
                                         const std::vector<int64_t>& list_value) {
   auto list_array = arrow_array->children[0];
   for (const auto& value : list_value) {
-    NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendInt(list_array, value));
+    ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendInt(list_array, value));
   }
-  NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(arrow_array));
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayFinishElement(arrow_array));
   return {};
 }
 
@@ -216,9 +212,9 @@ Status ManifestEntryAdapter::AppendMap(ArrowArray* arrow_array,
     auto value_array = map_array->children[1];
     ICEBERG_RETURN_UNEXPECTED(AppendField(key_array, static_cast<int64_t>(key)));
     ICEBERG_RETURN_UNEXPECTED(AppendField(value_array, value));
-    NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(map_array));
+    ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayFinishElement(map_array));
   }
-  NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(arrow_array));
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayFinishElement(arrow_array));
   return {};
 }
 
@@ -233,9 +229,9 @@ Status ManifestEntryAdapter::AppendMap(
     auto value_array = map_array->children[1];
     ICEBERG_RETURN_UNEXPECTED(AppendField(key_array, static_cast<int64_t>(key)));
     ICEBERG_RETURN_UNEXPECTED(AppendField(value_array, value));
-    NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(map_array));
+    ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayFinishElement(map_array));
   }
-  NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(arrow_array));
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayFinishElement(arrow_array));
   return {};
 }
 
@@ -296,7 +292,7 @@ Status ManifestEntryAdapter::AppendDataFile(
         if (!file->key_metadata.empty()) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(array, file->key_metadata));
         } else {
-          NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+          ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       case 132:  // split_offsets (optional list)
@@ -310,24 +306,23 @@ Status ManifestEntryAdapter::AppendDataFile(
           ICEBERG_RETURN_UNEXPECTED(
               AppendField(array, static_cast<int64_t>(file->sort_order_id.value())));
         } else {
-          NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+          ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       case 142:  // first_row_id (optional int64)
         if (file->first_row_id.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(array, file->first_row_id.value()));
         } else {
-          NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+          ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       case 143:  // referenced_data_file (optional string)
       {
-        ICEBERG_ASSIGN_OR_RAISE(auto referenced_data_file,
-                                GetWrappedReferenceDataFile(file));
+        ICEBERG_ASSIGN_OR_RAISE(auto referenced_data_file, GetReferenceDataFile(file));
         if (referenced_data_file.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(array, referenced_data_file.value()));
         } else {
-          NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+          ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       }
@@ -335,7 +330,7 @@ Status ManifestEntryAdapter::AppendDataFile(
         if (file->content_offset.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(array, file->content_offset.value()));
         } else {
-          NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+          ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       case 145:  // content_size_in_bytes (optional int64)
@@ -343,14 +338,14 @@ Status ManifestEntryAdapter::AppendDataFile(
           ICEBERG_RETURN_UNEXPECTED(
               AppendField(array, file->content_size_in_bytes.value()));
         } else {
-          NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+          ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       default:
         return InvalidManifest("Unknown data file field id: {} ", field.field_id());
     }
   }
-  NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(arrow_array));
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayFinishElement(arrow_array));
   return {};
 }
 
@@ -359,22 +354,22 @@ Result<std::optional<int64_t>> ManifestEntryAdapter::GetSequenceNumber(
   return entry.sequence_number;
 }
 
-Result<std::optional<std::string>> ManifestEntryAdapter::GetWrappedReferenceDataFile(
+Result<std::optional<std::string>> ManifestEntryAdapter::GetReferenceDataFile(
     const std::shared_ptr<DataFile>& file) {
   return file->referenced_data_file;
 }
 
-Result<std::optional<int64_t>> ManifestEntryAdapter::GetWrappedFirstRowId(
+Result<std::optional<int64_t>> ManifestEntryAdapter::GetFirstRowId(
     const std::shared_ptr<DataFile>& file) {
   return file->first_row_id;
 }
 
-Result<std::optional<int64_t>> ManifestEntryAdapter::GetWrappedContentOffset(
+Result<std::optional<int64_t>> ManifestEntryAdapter::GetContentOffset(
     const std::shared_ptr<DataFile>& file) {
   return file->content_offset;
 }
 
-Result<std::optional<int64_t>> ManifestEntryAdapter::GetWrappedContentSizeInBytes(
+Result<std::optional<int64_t>> ManifestEntryAdapter::GetContentSizeInBytes(
     const std::shared_ptr<DataFile>& file) {
   return file->content_size_in_bytes;
 }
@@ -394,7 +389,7 @@ Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
         if (entry.snapshot_id.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(array, entry.snapshot_id.value()));
         } else {
-          NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+          ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       case 2:  // data_file (required struct)
@@ -404,7 +399,7 @@ Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
           ICEBERG_RETURN_UNEXPECTED(
               AppendDataFile(array, data_file_type, entry.data_file));
         } else {
-          NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+          return InvalidManifest("Missing required data file field.");
         }
         break;
       case 3:  // sequence_number (optional int64)
@@ -413,7 +408,7 @@ Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
         if (sequence_num.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(array, sequence_num.value()));
         } else {
-          NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+          ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       }
@@ -422,7 +417,7 @@ Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
           ICEBERG_RETURN_UNEXPECTED(
               AppendField(array, entry.file_sequence_number.value()));
         } else {
-          NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+          ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       default:
@@ -430,7 +425,7 @@ Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
     }
   }
 
-  NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(&array_));
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayFinishElement(&array_));
   size_++;
   return {};
 }
@@ -475,66 +470,65 @@ ManifestFileAdapter::~ManifestFileAdapter() {
   }
 }
 
-Status ManifestFileAdapter::AppendPartitions(
-    ArrowArray* arrow_array, const std::shared_ptr<ListType>& partition_type,
-    const std::vector<PartitionFieldSummary>& partitions) {
+Status ManifestFileAdapter::AppendPartitionSummary(
+    ArrowArray* arrow_array, const std::shared_ptr<ListType>& summary_type,
+    const std::vector<PartitionFieldSummary>& summaries) {
   auto& array = arrow_array->children[0];
   if (array->n_children != 4) {
     return InvalidManifestList("Invalid partition array.");
   }
-  auto partition_struct =
-      internal::checked_pointer_cast<StructType>(partition_type->fields()[0].type());
-  auto fields = partition_struct->fields();
-  for (const auto& partition : partitions) {
-    for (const auto& field : fields) {
-      switch (field.field_id()) {
+  auto summary_struct =
+      internal::checked_pointer_cast<StructType>(summary_type->fields()[0].type());
+  auto summary_fields = summary_struct->fields();
+  for (const auto& summary : summaries) {
+    for (const auto& summary_field : summary_fields) {
+      switch (summary_field.field_id()) {
         case 509:  // contains_null (required bool)
-          ICEBERG_RETURN_UNEXPECTED(
-              AppendField(array->children[0],
-                          static_cast<uint64_t>(partition.contains_null ? 1 : 0)));
+          ICEBERG_RETURN_UNEXPECTED(AppendField(
+              array->children[0], static_cast<uint64_t>(summary.contains_null ? 1 : 0)));
           break;
         case 518:  // contains_nan (optional bool)
         {
           auto field_array = array->children[1];
-          if (partition.contains_nan.has_value()) {
-            ICEBERG_RETURN_UNEXPECTED(AppendField(
-                field_array,
-                static_cast<uint64_t>(partition.contains_nan.value() ? 1 : 0)));
+          if (summary.contains_nan.has_value()) {
+            ICEBERG_RETURN_UNEXPECTED(
+                AppendField(field_array,
+                            static_cast<uint64_t>(summary.contains_nan.value() ? 1 : 0)));
           } else {
-            NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(field_array, 1));
+            ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(field_array, 1));
           }
           break;
         }
         case 510:  // lower_bound (optional binary)
         {
           auto field_array = array->children[2];
-          if (partition.lower_bound.has_value() && !partition.lower_bound->empty()) {
+          if (summary.lower_bound.has_value() && !summary.lower_bound->empty()) {
             ICEBERG_RETURN_UNEXPECTED(
-                AppendField(field_array, partition.lower_bound.value()));
+                AppendField(field_array, summary.lower_bound.value()));
           } else {
-            NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(field_array, 1));
+            ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(field_array, 1));
           }
           break;
         }
         case 511:  // upper_bound (optional binary)
         {
           auto field_array = array->children[3];
-          if (partition.upper_bound.has_value() && !partition.upper_bound->empty()) {
+          if (summary.upper_bound.has_value() && !summary.upper_bound->empty()) {
             ICEBERG_RETURN_UNEXPECTED(
-                AppendField(field_array, partition.upper_bound.value()));
+                AppendField(field_array, summary.upper_bound.value()));
           } else {
-            NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(field_array, 1));
+            ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(field_array, 1));
           }
           break;
         }
         default:
-          return InvalidManifestList("Unknown field id: {}", field.field_id());
+          return InvalidManifestList("Unknown field id: {}", summary_field.field_id());
       }
     }
-    NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(array));
+    ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayFinishElement(array));
   }
 
-  NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(arrow_array));
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayFinishElement(arrow_array));
   return {};
 }
 
@@ -542,12 +536,11 @@ Result<int64_t> ManifestFileAdapter::GetSequenceNumber(const ManifestFile& file)
   return file.sequence_number;
 }
 
-Result<int64_t> ManifestFileAdapter::GetWrappedMinSequenceNumber(
-    const ManifestFile& file) {
+Result<int64_t> ManifestFileAdapter::GetMinSequenceNumber(const ManifestFile& file) {
   return file.min_sequence_number;
 }
 
-Result<std::optional<int64_t>> ManifestFileAdapter::GetWrappedFirstRowId(
+Result<std::optional<int64_t>> ManifestFileAdapter::GetFirstRowId(
     const ManifestFile& file) {
   return file.first_row_id;
 }
@@ -580,7 +573,7 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
       }
       case 516:  // min_sequence_number
       {
-        ICEBERG_ASSIGN_OR_RAISE(auto min_sequence_num, GetWrappedMinSequenceNumber(file));
+        ICEBERG_ASSIGN_OR_RAISE(auto min_sequence_num, GetMinSequenceNumber(file));
         ICEBERG_RETURN_UNEXPECTED(AppendField(array, min_sequence_num));
         break;
       }
@@ -593,7 +586,7 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
               AppendField(array, static_cast<int64_t>(file.added_files_count.value())));
         } else {
           // Append null for optional field
-          NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+          ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       case 505:  // existing_files_count
@@ -602,7 +595,7 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
               array, static_cast<int64_t>(file.existing_files_count.value())));
         } else {
           // Append null for optional field
-          NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+          ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       case 506:  // deleted_files_count
@@ -611,7 +604,7 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
               AppendField(array, static_cast<int64_t>(file.deleted_files_count.value())));
         } else {
           // Append null for optional field
-          NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+          ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       case 512:  // added_rows_count
@@ -619,7 +612,7 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(array, file.added_rows_count.value()));
         } else {
           // Append null for optional field
-          NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+          ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       case 513:  // existing_rows_count
@@ -627,7 +620,7 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(array, file.existing_rows_count.value()));
         } else {
           // Append null for optional field
-          NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+          ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       case 514:  // deleted_rows_count
@@ -635,11 +628,11 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(array, file.deleted_rows_count.value()));
         } else {
           // Append null for optional field
-          NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+          ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       case 507:  // partitions
-        ICEBERG_RETURN_UNEXPECTED(AppendPartitions(
+        ICEBERG_RETURN_UNEXPECTED(AppendPartitionSummary(
             array, internal::checked_pointer_cast<ListType>(field.type()),
             file.partitions));
         break;
@@ -647,17 +640,17 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
         if (!file.key_metadata.empty()) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(array, file.key_metadata));
         } else {
-          NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+          ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       case 520:  // first_row_id
       {
-        ICEBERG_ASSIGN_OR_RAISE(auto first_row_id, GetWrappedFirstRowId(file));
+        ICEBERG_ASSIGN_OR_RAISE(auto first_row_id, GetFirstRowId(file));
         if (first_row_id.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(array, first_row_id.value()));
         } else {
           // Append null for optional field
-          NANOARROW_RETURN_IF_FAILED(ArrowArrayAppendNull(array, 1));
+          ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       }
@@ -665,7 +658,7 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
         return InvalidManifestList("Unknown field id: {}", field.field_id());
     }
   }
-  NANOARROW_RETURN_IF_FAILED(ArrowArrayFinishElement(&array_));
+  ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayFinishElement(&array_));
   size_++;
   return {};
 }

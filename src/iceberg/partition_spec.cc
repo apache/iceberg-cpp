@@ -60,14 +60,14 @@ int32_t PartitionSpec::spec_id() const { return spec_id_; }
 
 std::span<const PartitionField> PartitionSpec::fields() const { return fields_; }
 
-Result<std::shared_ptr<Schema>> PartitionSpec::GetPartitionSchema() {
+Result<std::shared_ptr<StructType>> PartitionSpec::PartitionType() {
   if (fields_.empty()) {
     return nullptr;
   }
   {
     std::scoped_lock<std::mutex> lock(mutex_);
-    if (partition_schema_ != nullptr) {
-      return partition_schema_;
+    if (partition_type_ != nullptr) {
+      return partition_type_;
     }
   }
 
@@ -77,6 +77,8 @@ Result<std::shared_ptr<Schema>> PartitionSpec::GetPartitionSchema() {
     ICEBERG_ASSIGN_OR_RAISE(auto source_field,
                             schema_->FindFieldById(partition_field.source_id()));
     if (!source_field.has_value()) {
+      // TODO(xiao.dong) when source field is missing,
+      // should return an error or just use UNKNOWN type
       return InvalidSchema("Cannot find source field for partition field:{}",
                            partition_field.field_id());
     }
@@ -96,10 +98,10 @@ Result<std::shared_ptr<Schema>> PartitionSpec::GetPartitionSchema() {
   }
 
   std::scoped_lock<std::mutex> lock(mutex_);
-  if (partition_schema_ == nullptr) {
-    partition_schema_ = std::make_shared<Schema>(std::move(partition_fields));
+  if (partition_type_ == nullptr) {
+    partition_type_ = std::make_shared<StructType>(std::move(partition_fields));
   }
-  return partition_schema_;
+  return partition_type_;
 }
 
 std::string PartitionSpec::ToString() const {

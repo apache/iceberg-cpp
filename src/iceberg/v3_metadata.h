@@ -39,13 +39,13 @@ class ManifestEntryAdapterV3 : public ManifestEntryAdapter {
 
  protected:
   Result<std::optional<int64_t>> GetSequenceNumber(const ManifestEntry& entry) override;
-  Result<std::optional<std::string>> GetWrappedReferenceDataFile(
+  Result<std::optional<std::string>> GetReferenceDataFile(
       const std::shared_ptr<DataFile>& file) override;
-  Result<std::optional<int64_t>> GetWrappedFirstRowId(
+  Result<std::optional<int64_t>> GetFirstRowId(
       const std::shared_ptr<DataFile>& file) override;
-  Result<std::optional<int64_t>> GetWrappedContentOffset(
+  Result<std::optional<int64_t>> GetContentOffset(
       const std::shared_ptr<DataFile>& file) override;
-  Result<std::optional<int64_t>> GetWrappedContentSizeInBytes(
+  Result<std::optional<int64_t>> GetContentSizeInBytes(
       const std::shared_ptr<DataFile>& file) override;
 
  private:
@@ -67,8 +67,8 @@ class ManifestFileAdapterV3 : public ManifestFileAdapter {
 
  protected:
   Result<int64_t> GetSequenceNumber(const ManifestFile& file) override;
-  Result<int64_t> GetWrappedMinSequenceNumber(const ManifestFile& file) override;
-  Result<std::optional<int64_t>> GetWrappedFirstRowId(const ManifestFile& file) override;
+  Result<int64_t> GetMinSequenceNumber(const ManifestFile& file) override;
+  Result<std::optional<int64_t>> GetFirstRowId(const ManifestFile& file) override;
 
  private:
   bool WrappedFirstRowId(const ManifestFile& file);
