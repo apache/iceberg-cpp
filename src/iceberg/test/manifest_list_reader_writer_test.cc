@@ -18,7 +18,6 @@
  */
 
 #include <arrow/filesystem/localfs.h>
-#include <avro/GenericDatum.hh>
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
@@ -26,12 +25,14 @@
 #include "iceberg/expression/literal.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/manifest_reader.h"
+#include "iceberg/manifest_writer.h"
+#include "matchers.h"
 #include "temp_file_test_base.h"
 #include "test_common.h"
 
 namespace iceberg {
 
-class ManifestListReaderTestBase : public TempFileTestBase {
+class ManifestListReaderWriterTestBase : public TempFileTestBase {
  protected:
   static void SetUpTestSuite() { avro::RegisterAll(); }
 
@@ -44,6 +45,11 @@ class ManifestListReaderTestBase : public TempFileTestBase {
   void TestManifestListReading(const std::string& resource_name,
                                const std::vector<ManifestFile>& expected_manifest_list) {
     std::string path = GetResourcePath(resource_name);
+    TestManifestListReadingByPath(path, expected_manifest_list);
+  }
+
+  void TestManifestListReadingByPath(
+      const std::string& path, const std::vector<ManifestFile>& expected_manifest_list) {
     auto manifest_reader_result = ManifestListReader::Make(path, file_io_);
     ASSERT_EQ(manifest_reader_result.has_value(), true);
 
@@ -66,7 +72,7 @@ class ManifestListReaderTestBase : public TempFileTestBase {
   std::shared_ptr<FileIO> file_io_;
 };
 
-class ManifestListReaderV1Test : public ManifestListReaderTestBase {
+class ManifestListReaderWriterV1Test : public ManifestListReaderWriterTestBase {
  protected:
   std::vector<ManifestFile> PreparePartitionedTestData() {
     std::vector<std::string> paths = {
@@ -202,9 +208,20 @@ class ManifestListReaderV1Test : public ManifestListReaderTestBase {
                              .lower_bound = lower_bounds[3],
                              .upper_bound = upper_bounds[3]}}}};
   }
+
+  void TestWriteManifestList(const std::string& manifest_list_path,
+                             const std::vector<ManifestFile>& manifest_files) {
+    auto result = ManifestListWriter::MakeV1Writer(1, 0, manifest_list_path, file_io_);
+    ASSERT_TRUE(result.has_value()) << result.error().message;
+    auto writer = std::move(result.value());
+    auto status = writer->AddAll(manifest_files);
+    EXPECT_THAT(status, IsOk());
+    status = writer->Close();
+    EXPECT_THAT(status, IsOk());
+  }
 };
 
-class ManifestListReaderV2Test : public ManifestListReaderTestBase {
+class ManifestListReaderWriterV2Test : public ManifestListReaderWriterTestBase {
  protected:
   std::vector<ManifestFile> PreparePartitionedTestData() {
     std::vector<ManifestFile> manifest_files;
@@ -280,43 +297,92 @@ class ManifestListReaderV2Test : public ManifestListReaderTestBase {
     }
     return manifest_files;
   }
+
+  void TestWriteManifestList(const std::string& manifest_list_path,
+                             const std::vector<ManifestFile>& manifest_files) {
+    auto result = ManifestListWriter::MakeV2Writer(1, 0, 4, manifest_list_path, file_io_);
+    ASSERT_TRUE(result.has_value()) << result.error().message;
+    auto writer = std::move(result.value());
+    auto status = writer->AddAll(manifest_files);
+    EXPECT_THAT(status, IsOk());
+    status = writer->Close();
+    EXPECT_THAT(status, IsOk());
+  }
 };
 
 // V1 Tests
-TEST_F(ManifestListReaderV1Test, PartitionedTest) {
+TEST_F(ManifestListReaderWriterV1Test, PartitionedTest) {
   auto expected_manifest_list = PreparePartitionedTestData();
   TestManifestListReading(
       "snap-7532614258660258098-1-eafd2972-f58e-4185-9237-6378f564787e.avro",
       expected_manifest_list);
 }
 
-TEST_F(ManifestListReaderV1Test, ComplexTypeTest) {
+TEST_F(ManifestListReaderWriterV1Test, ComplexTypeTest) {
   auto expected_manifest_list = PrepareComplexTypeTestData();
   TestManifestListReading(
       "snap-4134160420377642835-1-aeffe099-3bac-4011-bc17-5875210d8dc0.avro",
       expected_manifest_list);
 }
 
-TEST_F(ManifestListReaderV1Test, ComplexPartitionedTest) {
+TEST_F(ManifestListReaderWriterV1Test, ComplexPartitionedTest) {
   auto expected_manifest_list = PrepareComplexPartitionedTestData();
   TestManifestListReading(
       "snap-7522296285847100621-1-5d690750-8fb4-4cd1-8ae7-85c7b39abe14.avro",
       expected_manifest_list);
 }
 
+TEST_F(ManifestListReaderWriterV1Test, WritePartitionedTest) {
+  auto expected_manifest_list = PreparePartitionedTestData();
+  auto write_manifest_list_path = CreateNewTempFilePath();
+  TestWriteManifestList(write_manifest_list_path, expected_manifest_list);
+  TestManifestListReadingByPath(write_manifest_list_path, expected_manifest_list);
+}
+
+TEST_F(ManifestListReaderWriterV1Test, WriteComplexTypeTest) {
+  auto expected_manifest_list = PrepareComplexTypeTestData();
+  auto write_manifest_list_path = CreateNewTempFilePath();
+  TestWriteManifestList(write_manifest_list_path, expected_manifest_list);
+  TestManifestListReadingByPath(write_manifest_list_path, expected_manifest_list);
+}
+
+TEST_F(ManifestListReaderWriterV1Test, WriteComplexPartitionedTest) {
+  auto expected_manifest_list = PrepareComplexPartitionedTestData();
+  auto write_manifest_list_path = CreateNewTempFilePath();
+  TestWriteManifestList(write_manifest_list_path, expected_manifest_list);
+  TestManifestListReadingByPath(write_manifest_list_path, expected_manifest_list);
+}
+
 // V2 Tests
-TEST_F(ManifestListReaderV2Test, PartitionedTest) {
+TEST_F(ManifestListReaderWriterV2Test, PartitionedTest) {
   auto expected_manifest_list = PreparePartitionedTestData();
   TestManifestListReading(
       "snap-7412193043800610213-1-2bccd69e-d642-4816-bba0-261cd9bd0d93.avro",
       expected_manifest_list);
 }
 
-TEST_F(ManifestListReaderV2Test, NonPartitionedTest) {
+TEST_F(ManifestListReaderWriterV2Test, NonPartitionedTest) {
   auto expected_manifest_list = PrepareNonPartitionedTestData();
   TestManifestListReading(
       "snap-251167482216575399-1-ccb6dbcb-0611-48da-be68-bd506ea63188.avro",
       expected_manifest_list);
+
+  // Additional verification: ensure all manifests are truly non-partitioned
+  TestNonPartitionedManifests(expected_manifest_list);
+}
+
+TEST_F(ManifestListReaderWriterV2Test, WritePartitionedTest) {
+  auto expected_manifest_list = PreparePartitionedTestData();
+  auto write_manifest_list_path = CreateNewTempFilePath();
+  TestWriteManifestList(write_manifest_list_path, expected_manifest_list);
+  TestManifestListReadingByPath(write_manifest_list_path, expected_manifest_list);
+}
+
+TEST_F(ManifestListReaderWriterV2Test, WriteNonPartitionedTest) {
+  auto expected_manifest_list = PrepareNonPartitionedTestData();
+  auto write_manifest_list_path = CreateNewTempFilePath();
+  TestWriteManifestList(write_manifest_list_path, expected_manifest_list);
+  TestManifestListReadingByPath(write_manifest_list_path, expected_manifest_list);
 
   // Additional verification: ensure all manifests are truly non-partitioned
   TestNonPartitionedManifests(expected_manifest_list);

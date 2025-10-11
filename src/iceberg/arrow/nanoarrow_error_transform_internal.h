@@ -19,33 +19,13 @@
 
 #pragma once
 
-#include "iceberg/file_writer.h"
-#include "iceberg/iceberg_bundle_export.h"
+#define ICEBERG_NANOARROW_RETURN_IF_NOT_OK(status)                   \
+  if (status != NANOARROW_OK) [[unlikely]] {                         \
+    return iceberg::InvalidArrowData("nanoarrow error: {}", status); \
+  }
 
-namespace iceberg::avro {
-
-/// \brief A writer for serializing ArrowArray to Avro files.
-class ICEBERG_BUNDLE_EXPORT AvroWriter : public Writer {
- public:
-  AvroWriter() = default;
-
-  ~AvroWriter() override;
-
-  Status Open(const WriterOptions& options) final;
-
-  Status Close() final;
-
-  Status Write(ArrowArray* data) final;
-
-  std::optional<Metrics> metrics() final;
-
-  std::optional<int64_t> length() final;
-
-  std::vector<int64_t> split_offsets() final;
-
- private:
-  class Impl;
-  std::unique_ptr<Impl> impl_;
-};
-
-}  // namespace iceberg::avro
+#define ICEBERG_NANOARROW_RETURN_IF_NOT_OK_WITH_ERROR(status, error)       \
+  if (status != NANOARROW_OK) [[unlikely]] {                               \
+    return iceberg::InvalidArrowData("nanoarrow error: {} msg:{}", status, \
+                                     error.message);                       \
+  }

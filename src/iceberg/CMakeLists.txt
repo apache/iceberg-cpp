@@ -18,6 +18,7 @@
 set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
                      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>")
 set(ICEBERG_SOURCES
+    arrow_c_data_guard_internal.cc
     catalog/memory/in_memory_catalog.cc
     expression/expression.cc
     expression/expressions.cc
@@ -28,8 +29,12 @@ set(ICEBERG_SOURCES
     file_writer.cc
     inheritable_metadata.cc
     json_internal.cc
+    manifest_adapter.cc
     manifest_entry.cc
     manifest_list.cc
+    manifest_reader.cc
+    manifest_reader_internal.cc
+    manifest_writer.cc
     metadata_columns.cc
     name_mapping.cc
     partition_field.cc
@@ -51,16 +56,15 @@ set(ICEBERG_SOURCES
     transform.cc
     transform_function.cc
     type.cc
-    manifest_reader.cc
-    manifest_reader_internal.cc
-    manifest_writer.cc
-    arrow_c_data_guard_internal.cc
     util/conversions.cc
     util/decimal.cc
     util/gzip_internal.cc
     util/murmurhash3_internal.cc
     util/timepoint.cc
-    util/uuid.cc)
+    util/uuid.cc
+    v1_metadata.cc
+    v2_metadata.cc
+    v3_metadata.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_SHARED_BUILD_INTERFACE_LIBS)

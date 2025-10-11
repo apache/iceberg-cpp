@@ -128,7 +128,7 @@ class AvroReaderTest : public TempFileTestBase {
         {.path = temp_avro_file_, .schema = schema, .io = file_io_});
     ASSERT_TRUE(writer_result.has_value());
     auto writer = std::move(writer_result.value());
-    ASSERT_THAT(writer->Write(arrow_array), IsOk());
+    ASSERT_THAT(writer->Write(&arrow_array), IsOk());
     ASSERT_THAT(writer->Close(), IsOk());
 
     auto file_info_result = local_fs_->GetFileInfo(temp_avro_file_);

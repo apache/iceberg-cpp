@@ -35,7 +35,7 @@ class ICEBERG_BUNDLE_EXPORT ParquetWriter : public Writer {
 
   Status Close() final;
 
-  Status Write(ArrowArray array) final;
+  Status Write(ArrowArray* array) final;
 
   std::optional<Metrics> metrics() final;
 
