@@ -39,14 +39,10 @@ class ManifestEntryAdapterV3 : public ManifestEntryAdapter {
 
  protected:
   Result<std::optional<int64_t>> GetSequenceNumber(const ManifestEntry& entry) override;
-  Result<std::optional<std::string>> GetReferenceDataFile(
-      const std::shared_ptr<DataFile>& file) override;
-  Result<std::optional<int64_t>> GetFirstRowId(
-      const std::shared_ptr<DataFile>& file) override;
-  Result<std::optional<int64_t>> GetContentOffset(
-      const std::shared_ptr<DataFile>& file) override;
-  Result<std::optional<int64_t>> GetContentSizeInBytes(
-      const std::shared_ptr<DataFile>& file) override;
+  Result<std::optional<std::string>> GetReferenceDataFile(const DataFile& file) override;
+  Result<std::optional<int64_t>> GetFirstRowId(const DataFile& file) override;
+  Result<std::optional<int64_t>> GetContentOffset(const DataFile& file) override;
+  Result<std::optional<int64_t>> GetContentSizeInBytes(const DataFile& file) override;
 
  private:
   std::optional<int64_t> snapshot_id_;

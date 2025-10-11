@@ -237,7 +237,7 @@ Status ManifestEntryAdapter::AppendMap(
 
 Status ManifestEntryAdapter::AppendDataFile(
     ArrowArray* arrow_array, const std::shared_ptr<StructType>& data_file_type,
-    const std::shared_ptr<DataFile>& file) {
+    const DataFile& file) {
   auto fields = data_file_type->fields();
   for (int32_t i = 0; i < fields.size(); i++) {
     const auto& field = fields[i];
@@ -245,73 +245,71 @@ Status ManifestEntryAdapter::AppendDataFile(
 
     switch (field.field_id()) {
       case 134:  // content (optional int32)
-        ICEBERG_RETURN_UNEXPECTED(
-            AppendField(array, static_cast<int64_t>(file->content)));
+        ICEBERG_RETURN_UNEXPECTED(AppendField(array, static_cast<int64_t>(file.content)));
         break;
       case 100:  // file_path (required string)
-        ICEBERG_RETURN_UNEXPECTED(AppendField(array, file->file_path));
+        ICEBERG_RETURN_UNEXPECTED(AppendField(array, file.file_path));
         break;
       case 101:  // file_format (required string)
-        ICEBERG_RETURN_UNEXPECTED(AppendField(array, ToString(file->file_format)));
+        ICEBERG_RETURN_UNEXPECTED(AppendField(array, ToString(file.file_format)));
         break;
       case 102:  // partition (required struct)
       {
         auto partition_type = internal::checked_pointer_cast<StructType>(field.type());
-        ICEBERG_RETURN_UNEXPECTED(
-            AppendPartition(array, partition_type, file->partition));
+        ICEBERG_RETURN_UNEXPECTED(AppendPartition(array, partition_type, file.partition));
       } break;
       case 103:  // record_count (required int64)
-        ICEBERG_RETURN_UNEXPECTED(AppendField(array, file->record_count));
+        ICEBERG_RETURN_UNEXPECTED(AppendField(array, file.record_count));
         break;
       case 104:  // file_size_in_bytes (required int64)
-        ICEBERG_RETURN_UNEXPECTED(AppendField(array, file->file_size_in_bytes));
+        ICEBERG_RETURN_UNEXPECTED(AppendField(array, file.file_size_in_bytes));
         break;
       case 105:  // block_size_in_bytes (compatible in v1)
         // always 64MB for v1
         ICEBERG_RETURN_UNEXPECTED(AppendField(array, kBlockSizeInBytesV1));
         break;
       case 108:  // column_sizes (optional map)
-        ICEBERG_RETURN_UNEXPECTED(AppendMap(array, file->column_sizes));
+        ICEBERG_RETURN_UNEXPECTED(AppendMap(array, file.column_sizes));
         break;
       case 109:  // value_counts (optional map)
-        ICEBERG_RETURN_UNEXPECTED(AppendMap(array, file->value_counts));
+        ICEBERG_RETURN_UNEXPECTED(AppendMap(array, file.value_counts));
         break;
       case 110:  // null_value_counts (optional map)
-        ICEBERG_RETURN_UNEXPECTED(AppendMap(array, file->null_value_counts));
+        ICEBERG_RETURN_UNEXPECTED(AppendMap(array, file.null_value_counts));
         break;
       case 137:  // nan_value_counts (optional map)
-        ICEBERG_RETURN_UNEXPECTED(AppendMap(array, file->nan_value_counts));
+        ICEBERG_RETURN_UNEXPECTED(AppendMap(array, file.nan_value_counts));
         break;
       case 125:  // lower_bounds (optional map)
-        ICEBERG_RETURN_UNEXPECTED(AppendMap(array, file->lower_bounds));
+        ICEBERG_RETURN_UNEXPECTED(AppendMap(array, file.lower_bounds));
         break;
       case 128:  // upper_bounds (optional map)
-        ICEBERG_RETURN_UNEXPECTED(AppendMap(array, file->upper_bounds));
+        ICEBERG_RETURN_UNEXPECTED(AppendMap(array, file.upper_bounds));
         break;
       case 131:  // key_metadata (optional binary)
-        if (!file->key_metadata.empty()) {
-          ICEBERG_RETURN_UNEXPECTED(AppendField(array, file->key_metadata));
+        if (!file.key_metadata.empty()) {
+          ICEBERG_RETURN_UNEXPECTED(AppendField(array, file.key_metadata));
         } else {
           ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       case 132:  // split_offsets (optional list)
-        ICEBERG_RETURN_UNEXPECTED(AppendList(array, file->split_offsets));
+        ICEBERG_RETURN_UNEXPECTED(AppendList(array, file.split_offsets));
         break;
       case 135:  // equality_ids (optional list)
-        ICEBERG_RETURN_UNEXPECTED(AppendList(array, file->equality_ids));
+        ICEBERG_RETURN_UNEXPECTED(AppendList(array, file.equality_ids));
         break;
       case 140:  // sort_order_id (optional int32)
-        if (file->sort_order_id.has_value()) {
+        if (file.sort_order_id.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(
-              AppendField(array, static_cast<int64_t>(file->sort_order_id.value())));
+              AppendField(array, static_cast<int64_t>(file.sort_order_id.value())));
         } else {
           ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       case 142:  // first_row_id (optional int64)
-        if (file->first_row_id.has_value()) {
-          ICEBERG_RETURN_UNEXPECTED(AppendField(array, file->first_row_id.value()));
+        if (file.first_row_id.has_value()) {
+          ICEBERG_RETURN_UNEXPECTED(AppendField(array, file.first_row_id.value()));
         } else {
           ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
@@ -327,16 +325,16 @@ Status ManifestEntryAdapter::AppendDataFile(
         break;
       }
       case 144:  // content_offset (optional int64)
-        if (file->content_offset.has_value()) {
-          ICEBERG_RETURN_UNEXPECTED(AppendField(array, file->content_offset.value()));
+        if (file.content_offset.has_value()) {
+          ICEBERG_RETURN_UNEXPECTED(AppendField(array, file.content_offset.value()));
         } else {
           ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
         break;
       case 145:  // content_size_in_bytes (optional int64)
-        if (file->content_size_in_bytes.has_value()) {
+        if (file.content_size_in_bytes.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(
-              AppendField(array, file->content_size_in_bytes.value()));
+              AppendField(array, file.content_size_in_bytes.value()));
         } else {
           ICEBERG_NANOARROW_RETURN_IF_NOT_OK(ArrowArrayAppendNull(array, 1));
         }
@@ -355,23 +353,22 @@ Result<std::optional<int64_t>> ManifestEntryAdapter::GetSequenceNumber(
 }
 
 Result<std::optional<std::string>> ManifestEntryAdapter::GetReferenceDataFile(
-    const std::shared_ptr<DataFile>& file) {
-  return file->referenced_data_file;
+    const DataFile& file) {
+  return file.referenced_data_file;
 }
 
-Result<std::optional<int64_t>> ManifestEntryAdapter::GetFirstRowId(
-    const std::shared_ptr<DataFile>& file) {
-  return file->first_row_id;
+Result<std::optional<int64_t>> ManifestEntryAdapter::GetFirstRowId(const DataFile& file) {
+  return file.first_row_id;
 }
 
 Result<std::optional<int64_t>> ManifestEntryAdapter::GetContentOffset(
-    const std::shared_ptr<DataFile>& file) {
-  return file->content_offset;
+    const DataFile& file) {
+  return file.content_offset;
 }
 
 Result<std::optional<int64_t>> ManifestEntryAdapter::GetContentSizeInBytes(
-    const std::shared_ptr<DataFile>& file) {
-  return file->content_size_in_bytes;
+    const DataFile& file) {
+  return file.content_size_in_bytes;
 }
 
 Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
@@ -397,7 +394,7 @@ Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
           // Get the data file type from the field
           auto data_file_type = internal::checked_pointer_cast<StructType>(field.type());
           ICEBERG_RETURN_UNEXPECTED(
-              AppendDataFile(array, data_file_type, entry.data_file));
+              AppendDataFile(array, data_file_type, *entry.data_file));
         } else {
           return InvalidManifest("Missing required data file field.");
         }

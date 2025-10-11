@@ -84,7 +84,7 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
   Status AppendInternal(const ManifestEntry& entry);
   Status AppendDataFile(ArrowArray* arrow_array,
                         const std::shared_ptr<StructType>& data_file_type,
-                        const std::shared_ptr<DataFile>& file);
+                        const DataFile& file);
   static Status AppendPartition(ArrowArray* arrow_array,
                                 const std::shared_ptr<StructType>& partition_type,
                                 const std::vector<Literal>& partitions);
@@ -98,14 +98,10 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
                           const std::map<int32_t, std::vector<uint8_t>>& map_value);
 
   virtual Result<std::optional<int64_t>> GetSequenceNumber(const ManifestEntry& entry);
-  virtual Result<std::optional<std::string>> GetReferenceDataFile(
-      const std::shared_ptr<DataFile>& file);
-  virtual Result<std::optional<int64_t>> GetFirstRowId(
-      const std::shared_ptr<DataFile>& file);
-  virtual Result<std::optional<int64_t>> GetContentOffset(
-      const std::shared_ptr<DataFile>& file);
-  virtual Result<std::optional<int64_t>> GetContentSizeInBytes(
-      const std::shared_ptr<DataFile>& file);
+  virtual Result<std::optional<std::string>> GetReferenceDataFile(const DataFile& file);
+  virtual Result<std::optional<int64_t>> GetFirstRowId(const DataFile& file);
+  virtual Result<std::optional<int64_t>> GetContentOffset(const DataFile& file);
+  virtual Result<std::optional<int64_t>> GetContentSizeInBytes(const DataFile& file);
 
  protected:
   std::shared_ptr<PartitionSpec> partition_spec_;
