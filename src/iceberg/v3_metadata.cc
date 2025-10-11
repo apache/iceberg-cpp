@@ -95,33 +95,33 @@ Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetSequenceNumber(
 }
 
 Result<std::optional<std::string>> ManifestEntryAdapterV3::GetReferenceDataFile(
-    const std::shared_ptr<DataFile>& file) {
-  if (file->content == DataFile::Content::kPositionDeletes) {
-    return file->referenced_data_file;
+    const DataFile& file) {
+  if (file.content == DataFile::Content::kPositionDeletes) {
+    return file.referenced_data_file;
   }
   return std::nullopt;
 }
 
 Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetFirstRowId(
-    const std::shared_ptr<DataFile>& file) {
-  if (file->content == DataFile::Content::kData) {
-    return file->first_row_id;
+    const DataFile& file) {
+  if (file.content == DataFile::Content::kData) {
+    return file.first_row_id;
   }
   return std::nullopt;
 }
 
 Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetContentOffset(
-    const std::shared_ptr<DataFile>& file) {
-  if (file->content == DataFile::Content::kPositionDeletes) {
-    return file->content_offset;
+    const DataFile& file) {
+  if (file.content == DataFile::Content::kPositionDeletes) {
+    return file.content_offset;
   }
   return std::nullopt;
 }
 
 Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetContentSizeInBytes(
-    const std::shared_ptr<DataFile>& file) {
-  if (file->content == DataFile::Content::kPositionDeletes) {
-    return file->content_size_in_bytes;
+    const DataFile& file) {
+  if (file.content == DataFile::Content::kPositionDeletes) {
+    return file.content_size_in_bytes;
   }
   return std::nullopt;
 }

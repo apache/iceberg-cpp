@@ -91,9 +91,9 @@ Result<std::optional<int64_t>> ManifestEntryAdapterV2::GetSequenceNumber(
 }
 
 Result<std::optional<std::string>> ManifestEntryAdapterV2::GetReferenceDataFile(
-    const std::shared_ptr<DataFile>& file) {
-  if (file->content == DataFile::Content::kPositionDeletes) {
-    return file->referenced_data_file;
+    const DataFile& file) {
+  if (file.content == DataFile::Content::kPositionDeletes) {
+    return file.referenced_data_file;
   }
   return std::nullopt;
 }
