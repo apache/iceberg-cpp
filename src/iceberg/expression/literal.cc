@@ -24,11 +24,9 @@
 #include <cstdint>
 #include <string>
 
-#include "iceberg/util/conversions.h"
-#include "iceberg/exception.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/checked_cast.h"
-#include "iceberg/util/macros.h"
+#include "iceberg/util/conversions.h"
 
 namespace iceberg {
 

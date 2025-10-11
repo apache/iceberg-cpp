@@ -256,6 +256,7 @@ TEST(LiteralTest, DoubleZeroComparison) {
   EXPECT_EQ(neg_zero <=> pos_zero, std::partial_ordering::less);
 }
 
+// Parameter struct for literal serialization and deserialization tests
 struct LiteralParam {
   std::string test_name;
   std::vector<uint8_t> serialized;
