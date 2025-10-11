@@ -154,7 +154,6 @@ class ManifestReaderV1Test : public ManifestReaderTestBase {
   void TestWriteManifest(const std::string& manifest_list_path,
                          std::shared_ptr<PartitionSpec> partition_spec,
                          const std::vector<ManifestEntry>& manifest_entries) {
-    std::cout << "Writing manifest list to " << manifest_list_path << std::endl;
     auto result = ManifestWriter::MakeV1Writer(1, manifest_list_path, file_io_,
                                                std::move(partition_spec));
     ASSERT_TRUE(result.has_value()) << result.error().message;
@@ -167,6 +166,7 @@ class ManifestReaderV1Test : public ManifestReaderTestBase {
 };
 
 TEST_F(ManifestReaderV1Test, PartitionedTest) {
+  // TODO(xiao.dong) we need to add more cases for different partition types
   iceberg::SchemaField partition_field(1000, "order_ts_hour", iceberg::int32(), true);
   auto partition_schema =
       std::make_shared<Schema>(std::vector<SchemaField>({partition_field}));
@@ -176,13 +176,15 @@ TEST_F(ManifestReaderV1Test, PartitionedTest) {
 }
 
 TEST_F(ManifestReaderV1Test, WritePartitionedTest) {
+  iceberg::SchemaField table_field(1, "order_ts_hour_source", iceberg::int32(), true);
   iceberg::SchemaField partition_field(1000, "order_ts_hour", iceberg::int32(), true);
+  auto table_schema = std::make_shared<Schema>(std::vector<SchemaField>({table_field}));
   auto partition_schema =
       std::make_shared<Schema>(std::vector<SchemaField>({partition_field}));
   auto identity_transform = Transform::Identity();
   std::vector<PartitionField> fields{
-      PartitionField(1000, 1000, "order_ts_hour", identity_transform)};
-  auto partition_spec = std::make_shared<PartitionSpec>(partition_schema, 1, fields);
+      PartitionField(1, 1000, "order_ts_hour", identity_transform)};
+  auto partition_spec = std::make_shared<PartitionSpec>(table_schema, 1, fields);
 
   auto expected_entries = PreparePartitionedTestData();
   auto write_manifest_path = CreateNewTempFilePath();
@@ -259,7 +261,6 @@ class ManifestReaderV2Test : public ManifestReaderTestBase {
   void TestWriteManifest(int64_t snapshot_id, const std::string& manifest_list_path,
                          std::shared_ptr<PartitionSpec> partition_spec,
                          const std::vector<ManifestEntry>& manifest_entries) {
-    std::cout << "Writing manifest list to " << manifest_list_path << std::endl;
     auto result = ManifestWriter::MakeV2Writer(snapshot_id, manifest_list_path, file_io_,
                                                std::move(partition_spec));
     ASSERT_TRUE(result.has_value()) << result.error().message;
@@ -301,10 +302,15 @@ TEST_F(ManifestReaderV2Test, WriteInheritancePartitionedTest) {
   auto expected_entries = PrepareMetadataInheritanceTestData();
   auto write_manifest_path = CreateNewTempFilePath();
   TestWriteManifest(679879563479918846LL, write_manifest_path, nullptr, expected_entries);
-  for (auto& entry : expected_entries) {
-    entry.data_file->partition_spec_id = PartitionSpec::kInitialSpecId;
-  }
-  TestManifestReadingByPath(write_manifest_path, expected_entries);
+  ManifestFile manifest_file{
+      .manifest_path = write_manifest_path,
+      .manifest_length = 100,
+      .partition_spec_id = 12,
+      .content = ManifestFile::Content::kData,
+      .sequence_number = 15,
+      .added_snapshot_id = 679879563479918846LL,
+  };
+  TestManifestReadingWithManifestFile(manifest_file, expected_entries);
 }
 
 }  // namespace iceberg

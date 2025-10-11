@@ -90,7 +90,7 @@ Result<std::optional<int64_t>> ManifestEntryAdapterV2::GetSequenceNumber(
   return entry.sequence_number;
 }
 
-Result<std::optional<std::string>> ManifestEntryAdapterV2::GetWrappedReferenceDataFile(
+Result<std::optional<std::string>> ManifestEntryAdapterV2::GetReferenceDataFile(
     const std::shared_ptr<DataFile>& file) {
   if (file->content == DataFile::Content::kPositionDeletes) {
     return file->referenced_data_file;
@@ -141,8 +141,7 @@ Result<int64_t> ManifestFileAdapterV2::GetSequenceNumber(const ManifestFile& fil
   return file.sequence_number;
 }
 
-Result<int64_t> ManifestFileAdapterV2::GetWrappedMinSequenceNumber(
-    const ManifestFile& file) {
+Result<int64_t> ManifestFileAdapterV2::GetMinSequenceNumber(const ManifestFile& file) {
   if (file.min_sequence_number == TableMetadata::kInvalidSequenceNumber) {
     if (snapshot_id_ != file.added_snapshot_id) {
       return InvalidManifestList(

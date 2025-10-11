@@ -94,7 +94,7 @@ Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetSequenceNumber(
   return entry.sequence_number;
 }
 
-Result<std::optional<std::string>> ManifestEntryAdapterV3::GetWrappedReferenceDataFile(
+Result<std::optional<std::string>> ManifestEntryAdapterV3::GetReferenceDataFile(
     const std::shared_ptr<DataFile>& file) {
   if (file->content == DataFile::Content::kPositionDeletes) {
     return file->referenced_data_file;
@@ -102,7 +102,7 @@ Result<std::optional<std::string>> ManifestEntryAdapterV3::GetWrappedReferenceDa
   return std::nullopt;
 }
 
-Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetWrappedFirstRowId(
+Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetFirstRowId(
     const std::shared_ptr<DataFile>& file) {
   if (file->content == DataFile::Content::kData) {
     return file->first_row_id;
@@ -110,7 +110,7 @@ Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetWrappedFirstRowId(
   return std::nullopt;
 }
 
-Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetWrappedContentOffset(
+Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetContentOffset(
     const std::shared_ptr<DataFile>& file) {
   if (file->content == DataFile::Content::kPositionDeletes) {
     return file->content_offset;
@@ -118,7 +118,7 @@ Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetWrappedContentOffset(
   return std::nullopt;
 }
 
-Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetWrappedContentSizeInBytes(
+Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetContentSizeInBytes(
     const std::shared_ptr<DataFile>& file) {
   if (file->content == DataFile::Content::kPositionDeletes) {
     return file->content_size_in_bytes;
@@ -178,8 +178,7 @@ Result<int64_t> ManifestFileAdapterV3::GetSequenceNumber(const ManifestFile& fil
   return file.sequence_number;
 }
 
-Result<int64_t> ManifestFileAdapterV3::GetWrappedMinSequenceNumber(
-    const ManifestFile& file) {
+Result<int64_t> ManifestFileAdapterV3::GetMinSequenceNumber(const ManifestFile& file) {
   if (file.min_sequence_number == TableMetadata::kInvalidSequenceNumber) {
     if (snapshot_id_ != file.added_snapshot_id) {
       return InvalidManifestList(
@@ -191,7 +190,7 @@ Result<int64_t> ManifestFileAdapterV3::GetWrappedMinSequenceNumber(
   return file.min_sequence_number;
 }
 
-Result<std::optional<int64_t>> ManifestFileAdapterV3::GetWrappedFirstRowId(
+Result<std::optional<int64_t>> ManifestFileAdapterV3::GetFirstRowId(
     const ManifestFile& file) {
   if (WrappedFirstRowId(file)) {
     return next_row_id_;

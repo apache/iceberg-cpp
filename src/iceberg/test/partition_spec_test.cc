@@ -87,4 +87,23 @@ TEST(PartitionSpecTest, Equality) {
   ASSERT_NE(schema1, schema6);
   ASSERT_NE(schema6, schema1);
 }
+
+TEST(PartitionSpecTest, PartitionSchemaTest) {
+  SchemaField field1(5, "ts", iceberg::timestamp(), true);
+  SchemaField field2(7, "bar", iceberg::string(), true);
+  auto const schema =
+      std::make_shared<Schema>(std::vector<SchemaField>{field1, field2}, 100);
+  auto identity_transform = Transform::Identity();
+  PartitionField pt_field1(5, 1000, "day", identity_transform);
+  PartitionField pt_field2(7, 1001, "hour", identity_transform);
+  PartitionSpec spec(schema, 100, {pt_field1, pt_field2});
+
+  auto partition_schema = spec.PartitionType();
+  ASSERT_TRUE(partition_schema.has_value());
+  ASSERT_EQ(2, partition_schema.value()->fields().size());
+  EXPECT_EQ(pt_field1.name(), partition_schema.value()->fields()[0].name());
+  EXPECT_EQ(pt_field1.field_id(), partition_schema.value()->fields()[0].field_id());
+  EXPECT_EQ(pt_field2.name(), partition_schema.value()->fields()[1].name());
+  EXPECT_EQ(pt_field2.field_id(), partition_schema.value()->fields()[1].field_id());
+}
 }  // namespace iceberg

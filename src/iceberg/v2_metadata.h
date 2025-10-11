@@ -36,7 +36,7 @@ class ManifestEntryAdapterV2 : public ManifestEntryAdapter {
 
  protected:
   Result<std::optional<int64_t>> GetSequenceNumber(const ManifestEntry& entry) override;
-  Result<std::optional<std::string>> GetWrappedReferenceDataFile(
+  Result<std::optional<std::string>> GetReferenceDataFile(
       const std::shared_ptr<DataFile>& file) override;
 
  private:
@@ -56,7 +56,7 @@ class ManifestFileAdapterV2 : public ManifestFileAdapter {
 
  protected:
   Result<int64_t> GetSequenceNumber(const ManifestFile& file) override;
-  Result<int64_t> GetWrappedMinSequenceNumber(const ManifestFile& file) override;
+  Result<int64_t> GetMinSequenceNumber(const ManifestFile& file) override;
 
  private:
   int64_t snapshot_id_;

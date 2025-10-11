@@ -19,7 +19,13 @@
 
 #pragma once
 
-#define ICEBERG_NANOARROW_RETURN_IF_NOT_OK(status, error)          \
-  if (status != NANOARROW_OK) [[unlikely]] {                       \
-    return InvalidArrowData("nanoarrow error: {}", error.message); \
+#define ICEBERG_NANOARROW_RETURN_IF_NOT_OK(status)                   \
+  if (status != NANOARROW_OK) [[unlikely]] {                         \
+    return iceberg::InvalidArrowData("nanoarrow error: {}", status); \
+  }
+
+#define ICEBERG_NANOARROW_RETURN_IF_NOT_OK_WITH_ERROR(status, error)       \
+  if (status != NANOARROW_OK) [[unlikely]] {                               \
+    return iceberg::InvalidArrowData("nanoarrow error: {} msg:{}", status, \
+                                     error.message);                       \
   }
