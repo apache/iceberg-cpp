@@ -446,7 +446,8 @@ std::string Literal::ToString() const {
     case TypeId::kUuid: {
       return std::get<Uuid>(value_).ToString();
     }
-    case TypeId::kBinary: {
+    case TypeId::kBinary:
+    case TypeId::kFixed: {
       const auto& binary_data = std::get<std::vector<uint8_t>>(value_);
       std::string result = "X'";
       result.reserve(/*prefix*/ 2 + /*suffix*/ 1 + /*data*/ binary_data.size() * 2);
