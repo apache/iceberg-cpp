@@ -100,12 +100,11 @@ std::string UnboundPredicate<B>::ToString() const {
       return values_.size() == 1 ? std::format("{} != {}", term, values_[0])
                                  : invalid_predicate_string(op);
     case Expression::Operation::kStartsWith:
-      return values_.size() == 1 ? std::format("{} startsWith \"{}\"", term, values_[0])
+      return values_.size() == 1 ? std::format("{} startsWith {}", term, values_[0])
                                  : invalid_predicate_string(op);
     case Expression::Operation::kNotStartsWith:
-      return values_.size() == 1
-                 ? std::format("{} notStartsWith \"{}\"", term, values_[0])
-                 : invalid_predicate_string(op);
+      return values_.size() == 1 ? std::format("{} notStartsWith {}", term, values_[0])
+                                 : invalid_predicate_string(op);
     case Expression::Operation::kIn:
       return std::format("{} in {}", term, values_);
     case Expression::Operation::kNotIn:
