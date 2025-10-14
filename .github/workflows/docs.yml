@@ -46,16 +46,17 @@ jobs:
           mkdocs build --clean
           echo "MkDocs site built in site/"
 
-      - name: Copy
-        working-directory: ./mkdocs
-        run: |
-          echo "Copying site contents to /tmp/site"
-          mv ./site /tmp/site/
-
       - name: Deploy to gh-pages
         uses: peaceiris/actions-gh-pages@v4.0.0
         if: github.event_name == 'pull_request'
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./mkdocs/site
-          publish_branch: gh-pages
+        run: |
+          git config --global user.name 'GitHub Actions'
+          git config --global user.email 'actions@github.com'
+
+          git checkout --orphan gh-pages-tmp
+          git rm --quiet -rf .
+          cp -r ./mkdocs/site/* .
+          echo "cpp.iceberg.apache.org" > CNAME
+          git add --all
+          git commit -m "Publish docs from commit ${{ github.sha }}"
+          git push -f origin gh-pages-tmp:gh-pages || true
