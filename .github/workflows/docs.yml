@@ -47,7 +47,6 @@ jobs:
           echo "MkDocs site built in site/"
 
       - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v4.0.0
         if: github.event_name == 'pull_request'
         run: |
           git config --global user.name 'GitHub Actions'
