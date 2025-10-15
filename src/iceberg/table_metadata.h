@@ -153,6 +153,10 @@ ICEBERG_EXPORT std::string ToString(const MetadataLogEntry& entry);
 /// in a changes list. This allows the builder to maintain a complete history of all
 /// modifications made to the table metadata, which is important for tracking table
 /// evolution and for serialization purposes.
+///
+/// If a modification violates Iceberg table constraints (e.g., setting a current
+/// schema ID that does not exist), an error will be recorded and returned when
+/// Build() is called.
 class ICEBERG_EXPORT TableMetadataBuilder {
  public:
   /// \brief Create a builder for a new table
@@ -167,6 +171,19 @@ class ICEBERG_EXPORT TableMetadataBuilder {
   /// \param base The base table metadata to build from
   /// \return A new TableMetadataBuilder instance initialized with base metadata
   static std::unique_ptr<TableMetadataBuilder> BuildFrom(const TableMetadata* base);
+
+  /// \brief Set the metadata location of the table
+  ///
+  /// \param metadata_location The new metadata location
+  /// \return Reference to this builder for method chaining
+  TableMetadataBuilder& SetMetadataLocation(std::string_view metadata_location);
+
+  /// \brief Set the previous metadata location of the table
+  ///
+  /// \param previous_metadata_location The previous metadata location
+  /// \return Reference to this builder for method chaining
+  TableMetadataBuilder& SetPreviousMetadataLocation(
+      std::string_view previous_metadata_location);
 
   /// \brief Assign a UUID to the table
   ///
@@ -282,9 +299,51 @@ class ICEBERG_EXPORT TableMetadataBuilder {
 
   /// \brief Remove snapshots from the table
   ///
+  /// \param snapshots_to_remove The snapshots to remove
+  /// \return Reference to this builder for method chaining
+  TableMetadataBuilder& RemoveSnapshots(
+      const std::vector<std::shared_ptr<Snapshot>>& snapshots_to_remove);
+
+  /// \brief Remove snapshots from the table
+  ///
   /// \param snapshot_ids The IDs of snapshots to remove
   /// \return Reference to this builder for method chaining
   TableMetadataBuilder& RemoveSnapshots(const std::vector<int64_t>& snapshot_ids);
+
+  /// \brief  Suppresses snapshots that are historical, removing the metadata for lazy
+  /// snapshot loading.
+  ///
+  /// Note that the snapshots are not considered removed from metadata and no
+  /// RemoveSnapshot changes are created. A snapshot is historical if no ref directly
+  /// references its ID.
+  /// \return Reference to this builder for method chaining
+  TableMetadataBuilder& suppressHistoricalSnapshots();
+
+  /// \brief Set table statistics
+  ///
+  /// \param statistics_file The statistics file to set
+  /// \return Reference to this builder for method chaining
+  TableMetadataBuilder& SetStatistics(
+      const std::shared_ptr<StatisticsFile>& statistics_file);
+
+  /// \brief Remove table statistics by snapshot ID
+  ///
+  /// \param snapshot_id The snapshot ID whose statistics to remove
+  /// \return Reference to this builder for method chaining
+  TableMetadataBuilder& RemoveStatistics(int64_t snapshot_id);
+
+  /// \brief Set partition statistics
+  ///
+  /// \param partition_statistics_file The partition statistics file to set
+  /// \return Reference to this builder for method chaining
+  TableMetadataBuilder& SetPartitionStatistics(
+      const std::shared_ptr<PartitionStatisticsFile>& partition_statistics_file);
+
+  /// \brief Remove partition statistics by snapshot ID
+  ///
+  /// \param snapshot_id The snapshot ID whose partition statistics to remove
+  /// \return Reference to this builder for method chaining
+  TableMetadataBuilder& RemovePartitionStatistics(int64_t snapshot_id);
 
   /// \brief Set table properties
   ///
@@ -303,7 +362,19 @@ class ICEBERG_EXPORT TableMetadataBuilder {
   ///
   /// \param location The table base location
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& SetLocation(const std::string& location);
+  TableMetadataBuilder& SetLocation(std::string_view location);
+
+  /// \brief Add an encryption key to the table
+  ///
+  /// \param key The encryption key to add
+  /// \return Reference to this builder for method chaining
+  TableMetadataBuilder& AddEncryptionKey(std::shared_ptr<EncryptedKey> key);
+
+  /// \brief Remove an encryption key from the table by key ID
+  ///
+  /// \param key_id The ID of the encryption key to remove
+  /// \return Reference to this builder for method chaining
+  TableMetadataBuilder& RemoveEncryptionKey(std::string_view key_id);
 
   /// \brief Discard all accumulated changes
   ///

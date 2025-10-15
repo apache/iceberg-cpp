@@ -77,8 +77,8 @@ class ICEBERG_EXPORT InMemoryCatalog
 
   Result<std::unique_ptr<Table>> UpdateTable(
       const TableIdentifier& identifier,
-      const std::vector<std::unique_ptr<UpdateRequirement>>& requirements,
-      const std::vector<std::unique_ptr<MetadataUpdate>>& updates) override;
+      const std::vector<std::unique_ptr<TableRequirement>>& requirements,
+      const std::vector<std::unique_ptr<TableUpdate>>& updates) override;
 
   Result<std::shared_ptr<Transaction>> StageCreateTable(
       const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,

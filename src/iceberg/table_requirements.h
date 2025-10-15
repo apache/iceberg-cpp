@@ -30,8 +30,8 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/table_requirement.h"
 #include "iceberg/type_fwd.h"
-#include "iceberg/update_requirement.h"
 
 namespace iceberg {
 
@@ -40,26 +40,24 @@ namespace iceberg {
 /// This context is passed to each MetadataUpdate's GenerateRequirements method
 /// and maintains state about what requirements have already been added to avoid
 /// duplicates.
-class ICEBERG_EXPORT UpdateRequirementsContext {
+class ICEBERG_EXPORT MetadataUpdateContext {
  public:
   /// \brief Construct a context for requirement generation
   ///
   /// \param base The base table metadata (may be nullptr for table creation)
   /// \param is_replace Whether this is a replace operation (more permissive)
-  UpdateRequirementsContext(const TableMetadata* base, bool is_replace)
+  MetadataUpdateContext(const TableMetadata* base, bool is_replace)
       : base_(base), is_replace_(is_replace) {}
 
   // Delete copy operations (contains unique_ptr members)
-  UpdateRequirementsContext(const UpdateRequirementsContext&) = delete;
-  UpdateRequirementsContext& operator=(const UpdateRequirementsContext&) = delete;
+  MetadataUpdateContext(const MetadataUpdateContext&) = delete;
+  MetadataUpdateContext& operator=(const MetadataUpdateContext&) = delete;
 
   // Enable move construction only (assignment deleted due to const members)
-  UpdateRequirementsContext(UpdateRequirementsContext&&) noexcept = default;
+  MetadataUpdateContext(MetadataUpdateContext&&) noexcept = default;
 
   /// \brief Add a requirement to the list
-  void AddRequirement(std::unique_ptr<UpdateRequirement> requirement) {
-    requirements_.push_back(std::move(requirement));
-  }
+  void AddRequirement(std::unique_ptr<TableRequirement> requirement);
 
   /// \brief Get the base table metadata
   const TableMetadata* base() const { return base_; }
@@ -68,31 +66,29 @@ class ICEBERG_EXPORT UpdateRequirementsContext {
   bool is_replace() const { return is_replace_; }
 
   /// \brief Build and return the list of requirements
-  std::vector<std::unique_ptr<UpdateRequirement>> Build() {
-    return std::move(requirements_);
-  }
+  Result<std::vector<std::unique_ptr<TableRequirement>>> Build();
 
  private:
   const TableMetadata* base_;
   const bool is_replace_;
 
-  std::vector<std::unique_ptr<UpdateRequirement>> requirements_;
+  std::vector<std::unique_ptr<TableRequirement>> requirements_;
 };
 
 /// \brief Factory class for generating update requirements
 ///
 /// This class analyzes a sequence of metadata updates and generates the
 /// appropriate update requirements to ensure safe concurrent modifications.
-class ICEBERG_EXPORT UpdateRequirements {
+class ICEBERG_EXPORT TableRequirements {
  public:
   /// \brief Generate requirements for creating a new table
   ///
   /// For table creation, this requires that the table does not already exist.
   ///
-  /// \param metadata_updates The list of metadata updates for table creation
+  /// \param table_updates The list of metadata updates for table creation
   /// \return A list of update requirements to validate before creation
-  static std::vector<std::unique_ptr<UpdateRequirement>> ForCreateTable(
-      const std::vector<std::unique_ptr<MetadataUpdate>>& metadata_updates);
+  static std::vector<std::unique_ptr<TableRequirement>> ForCreateTable(
+      const std::vector<std::unique_ptr<TableUpdate>>& table_updates);
 
   /// \brief Generate requirements for replacing an existing table
   ///
@@ -100,11 +96,11 @@ class ICEBERG_EXPORT UpdateRequirements {
   /// allows more aggressive changes than a regular update.
   ///
   /// \param base The base table metadata
-  /// \param metadata_updates The list of metadata updates for replacement
+  /// \param table_updates The list of metadata updates for replacement
   /// \return A list of update requirements to validate before replacement
-  static std::vector<std::unique_ptr<UpdateRequirement>> ForReplaceTable(
+  static std::vector<std::unique_ptr<TableRequirement>> ForReplaceTable(
       const TableMetadata& base,
-      const std::vector<std::unique_ptr<MetadataUpdate>>& metadata_updates);
+      const std::vector<std::unique_ptr<TableUpdate>>& table_updates);
 
   /// \brief Generate requirements for updating an existing table
   ///
@@ -112,11 +108,11 @@ class ICEBERG_EXPORT UpdateRequirements {
   /// metadata properties haven't changed concurrently.
   ///
   /// \param base The base table metadata
-  /// \param metadata_updates The list of metadata updates
+  /// \param table_updates The list of metadata updates
   /// \return A list of update requirements to validate before update
-  static std::vector<std::unique_ptr<UpdateRequirement>> ForUpdateTable(
+  static std::vector<std::unique_ptr<TableRequirement>> ForUpdateTable(
       const TableMetadata& base,
-      const std::vector<std::unique_ptr<MetadataUpdate>>& metadata_updates);
+      const std::vector<std::unique_ptr<TableUpdate>>& table_updates);
 };
 
 }  // namespace iceberg

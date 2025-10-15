@@ -123,8 +123,8 @@ class ICEBERG_EXPORT Catalog {
   /// \return a Table instance or ErrorKind::kAlreadyExists if the table already exists
   virtual Result<std::unique_ptr<Table>> UpdateTable(
       const TableIdentifier& identifier,
-      const std::vector<std::unique_ptr<UpdateRequirement>>& requirements,
-      const std::vector<std::unique_ptr<MetadataUpdate>>& updates) = 0;
+      const std::vector<std::unique_ptr<TableRequirement>>& requirements,
+      const std::vector<std::unique_ptr<TableUpdate>>& updates) = 0;
 
   /// \brief Start a transaction to create a table
   ///

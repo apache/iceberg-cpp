@@ -41,12 +41,9 @@ namespace iceberg {
 /// Represents a requirement that must be validated before applying
 /// metadata updates to a table. Each concrete subclass represents
 /// a specific type of requirement check.
-class ICEBERG_EXPORT UpdateRequirement {
+class ICEBERG_EXPORT TableRequirement {
  public:
-  virtual ~UpdateRequirement() = default;
-
-  /// \brief Clone this update requirement
-  virtual std::unique_ptr<UpdateRequirement> Clone() const = 0;
+  virtual ~TableRequirement() = default;
 
   /// \brief Validate this requirement against table metadata
   ///
@@ -59,13 +56,9 @@ class ICEBERG_EXPORT UpdateRequirement {
 ///
 /// This requirement is used when creating a new table to ensure
 /// it doesn't already exist.
-class ICEBERG_EXPORT AssertTableDoesNotExist : public UpdateRequirement {
+class ICEBERG_EXPORT AssertTableDoesNotExist : public TableRequirement {
  public:
   AssertTableDoesNotExist() = default;
-
-  std::unique_ptr<UpdateRequirement> Clone() const override {
-    return std::make_unique<AssertTableDoesNotExist>();
-  }
 
   Status Validate(const TableMetadata* base) const override;
 };
@@ -74,15 +67,11 @@ class ICEBERG_EXPORT AssertTableDoesNotExist : public UpdateRequirement {
 ///
 /// This ensures the table hasn't been replaced or recreated between
 /// reading the metadata and attempting to update it.
-class ICEBERG_EXPORT AssertTableUUID : public UpdateRequirement {
+class ICEBERG_EXPORT AssertTableUUID : public TableRequirement {
  public:
   explicit AssertTableUUID(std::string uuid) : uuid_(std::move(uuid)) {}
 
   const std::string& uuid() const { return uuid_; }
-
-  std::unique_ptr<UpdateRequirement> Clone() const override {
-    return std::make_unique<AssertTableUUID>(uuid_);
-  }
 
   Status Validate(const TableMetadata* base) const override;
 
@@ -95,17 +84,14 @@ class ICEBERG_EXPORT AssertTableUUID : public UpdateRequirement {
 /// This requirement validates that a named reference (branch or tag) either:
 /// - Points to the expected snapshot ID
 /// - Does not exist (if snapshot_id is nullopt)
-class ICEBERG_EXPORT AssertRefSnapshotID : public UpdateRequirement {
+class ICEBERG_EXPORT AssertRefSnapshotID : public TableRequirement {
  public:
   AssertRefSnapshotID(std::string ref_name, std::optional<int64_t> snapshot_id)
       : ref_name_(std::move(ref_name)), snapshot_id_(snapshot_id) {}
 
   const std::string& ref_name() const { return ref_name_; }
-  const std::optional<int64_t>& snapshot_id() const { return snapshot_id_; }
 
-  std::unique_ptr<UpdateRequirement> Clone() const override {
-    return std::make_unique<AssertRefSnapshotID>(ref_name_, snapshot_id_);
-  }
+  const std::optional<int64_t>& snapshot_id() const { return snapshot_id_; }
 
   Status Validate(const TableMetadata* base) const override;
 
@@ -118,16 +104,12 @@ class ICEBERG_EXPORT AssertRefSnapshotID : public UpdateRequirement {
 ///
 /// This ensures the schema hasn't been modified (by adding fields)
 /// since the metadata was read.
-class ICEBERG_EXPORT AssertLastAssignedFieldId : public UpdateRequirement {
+class ICEBERG_EXPORT AssertLastAssignedFieldId : public TableRequirement {
  public:
   explicit AssertLastAssignedFieldId(int32_t last_assigned_field_id)
       : last_assigned_field_id_(last_assigned_field_id) {}
 
   int32_t last_assigned_field_id() const { return last_assigned_field_id_; }
-
-  std::unique_ptr<UpdateRequirement> Clone() const override {
-    return std::make_unique<AssertLastAssignedFieldId>(last_assigned_field_id_);
-  }
 
   Status Validate(const TableMetadata* base) const override;
 
@@ -139,15 +121,11 @@ class ICEBERG_EXPORT AssertLastAssignedFieldId : public UpdateRequirement {
 ///
 /// This ensures the active schema hasn't changed since the
 /// metadata was read.
-class ICEBERG_EXPORT AssertCurrentSchemaID : public UpdateRequirement {
+class ICEBERG_EXPORT AssertCurrentSchemaID : public TableRequirement {
  public:
   explicit AssertCurrentSchemaID(int32_t schema_id) : schema_id_(schema_id) {}
 
   int32_t schema_id() const { return schema_id_; }
-
-  std::unique_ptr<UpdateRequirement> Clone() const override {
-    return std::make_unique<AssertCurrentSchemaID>(schema_id_);
-  }
 
   Status Validate(const TableMetadata* base) const override;
 
@@ -159,16 +137,12 @@ class ICEBERG_EXPORT AssertCurrentSchemaID : public UpdateRequirement {
 ///
 /// This ensures partition specs haven't been modified since the
 /// metadata was read.
-class ICEBERG_EXPORT AssertLastAssignedPartitionId : public UpdateRequirement {
+class ICEBERG_EXPORT AssertLastAssignedPartitionId : public TableRequirement {
  public:
   explicit AssertLastAssignedPartitionId(int32_t last_assigned_partition_id)
       : last_assigned_partition_id_(last_assigned_partition_id) {}
 
   int32_t last_assigned_partition_id() const { return last_assigned_partition_id_; }
-
-  std::unique_ptr<UpdateRequirement> Clone() const override {
-    return std::make_unique<AssertLastAssignedPartitionId>(last_assigned_partition_id_);
-  }
 
   Status Validate(const TableMetadata* base) const override;
 
@@ -180,15 +154,11 @@ class ICEBERG_EXPORT AssertLastAssignedPartitionId : public UpdateRequirement {
 ///
 /// This ensures the default partition spec hasn't changed since
 /// the metadata was read.
-class ICEBERG_EXPORT AssertDefaultSpecID : public UpdateRequirement {
+class ICEBERG_EXPORT AssertDefaultSpecID : public TableRequirement {
  public:
   explicit AssertDefaultSpecID(int32_t spec_id) : spec_id_(spec_id) {}
 
   int32_t spec_id() const { return spec_id_; }
-
-  std::unique_ptr<UpdateRequirement> Clone() const override {
-    return std::make_unique<AssertDefaultSpecID>(spec_id_);
-  }
 
   Status Validate(const TableMetadata* base) const override;
 
@@ -200,16 +170,12 @@ class ICEBERG_EXPORT AssertDefaultSpecID : public UpdateRequirement {
 ///
 /// This ensures the default sort order hasn't changed since
 /// the metadata was read.
-class ICEBERG_EXPORT AssertDefaultSortOrderID : public UpdateRequirement {
+class ICEBERG_EXPORT AssertDefaultSortOrderID : public TableRequirement {
  public:
   explicit AssertDefaultSortOrderID(int32_t sort_order_id)
       : sort_order_id_(sort_order_id) {}
 
   int32_t sort_order_id() const { return sort_order_id_; }
-
-  std::unique_ptr<UpdateRequirement> Clone() const override {
-    return std::make_unique<AssertDefaultSortOrderID>(sort_order_id_);
-  }
 
   Status Validate(const TableMetadata* base) const override;
 

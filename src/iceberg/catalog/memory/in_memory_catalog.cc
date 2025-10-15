@@ -392,8 +392,8 @@ Result<std::unique_ptr<Table>> InMemoryCatalog::CreateTable(
 
 Result<std::unique_ptr<Table>> InMemoryCatalog::UpdateTable(
     const TableIdentifier& identifier,
-    const std::vector<std::unique_ptr<UpdateRequirement>>& requirements,
-    const std::vector<std::unique_ptr<MetadataUpdate>>& updates) {
+    const std::vector<std::unique_ptr<TableRequirement>>& requirements,
+    const std::vector<std::unique_ptr<TableUpdate>>& updates) {
   return NotImplemented("update table");
 }
 
