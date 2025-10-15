@@ -19,6 +19,7 @@
 
 #include "iceberg/update_requirement.h"
 
+#include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/util/string_util.h"
 

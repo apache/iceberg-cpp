@@ -29,7 +29,6 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/metadata_update.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/timepoint.h"
 
@@ -160,14 +159,14 @@ class ICEBERG_EXPORT TableMetadataBuilder {
   ///
   /// \param format_version The format version for the table
   /// \return A new TableMetadataBuilder instance
-  static TableMetadataBuilder BuildFromEmpty(
+  static std::unique_ptr<TableMetadataBuilder> BuildFromEmpty(
       int8_t format_version = TableMetadata::kDefaultTableFormatVersion);
 
   /// \brief Create a builder from existing table metadata
   ///
   /// \param base The base table metadata to build from
   /// \return A new TableMetadataBuilder instance initialized with base metadata
-  static TableMetadataBuilder BuildFrom(const std::shared_ptr<const TableMetadata>& base);
+  static std::unique_ptr<TableMetadataBuilder> BuildFrom(const TableMetadata* base);
 
   /// \brief Assign a UUID to the table
   ///
@@ -179,7 +178,7 @@ class ICEBERG_EXPORT TableMetadataBuilder {
   ///
   /// \param uuid The UUID string to assign
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& AssignUUID(const std::string& uuid);
+  TableMetadataBuilder& AssignUUID(std::string_view uuid);
 
   /// \brief Upgrade the format version of the table
   ///
@@ -192,7 +191,7 @@ class ICEBERG_EXPORT TableMetadataBuilder {
   /// \param schema The schema to set as current
   /// \param new_last_column_id The highest column ID in the schema
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& SetCurrentSchema(std::shared_ptr<iceberg::Schema> schema,
+  TableMetadataBuilder& SetCurrentSchema(std::shared_ptr<Schema> schema,
                                          int32_t new_last_column_id);
 
   /// \brief Set the current schema by schema ID
@@ -205,14 +204,13 @@ class ICEBERG_EXPORT TableMetadataBuilder {
   ///
   /// \param schema The schema to add
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& AddSchema(std::shared_ptr<iceberg::Schema> schema);
+  TableMetadataBuilder& AddSchema(std::shared_ptr<Schema> schema);
 
   /// \brief Set the default partition spec for the table
   ///
   /// \param spec The partition spec to set as default
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& SetDefaultPartitionSpec(
-      std::shared_ptr<iceberg::PartitionSpec> spec);
+  TableMetadataBuilder& SetDefaultPartitionSpec(std::shared_ptr<PartitionSpec> spec);
 
   /// \brief Set the default partition spec by spec ID
   ///
@@ -224,7 +222,7 @@ class ICEBERG_EXPORT TableMetadataBuilder {
   ///
   /// \param spec The partition spec to add
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& AddPartitionSpec(std::shared_ptr<iceberg::PartitionSpec> spec);
+  TableMetadataBuilder& AddPartitionSpec(std::shared_ptr<PartitionSpec> spec);
 
   /// \brief Remove partition specs from the table
   ///
@@ -242,7 +240,7 @@ class ICEBERG_EXPORT TableMetadataBuilder {
   ///
   /// \param order The sort order to set as default
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& SetDefaultSortOrder(std::shared_ptr<iceberg::SortOrder> order);
+  TableMetadataBuilder& SetDefaultSortOrder(std::shared_ptr<SortOrder> order);
 
   /// \brief Set the default sort order by order ID
   ///
@@ -254,13 +252,13 @@ class ICEBERG_EXPORT TableMetadataBuilder {
   ///
   /// \param order The sort order to add
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& AddSortOrder(std::shared_ptr<iceberg::SortOrder> order);
+  TableMetadataBuilder& AddSortOrder(std::shared_ptr<SortOrder> order);
 
   /// \brief Add a snapshot to the table
   ///
   /// \param snapshot The snapshot to add
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& AddSnapshot(std::shared_ptr<iceberg::Snapshot> snapshot);
+  TableMetadataBuilder& AddSnapshot(std::shared_ptr<Snapshot> snapshot);
 
   /// \brief Set a branch to point to a specific snapshot
   ///
@@ -335,7 +333,7 @@ class ICEBERG_EXPORT TableMetadataBuilder {
   explicit TableMetadataBuilder(int8_t format_version);
 
   /// \brief Private constructor for building from existing metadata
-  explicit TableMetadataBuilder(std::shared_ptr<const TableMetadata> base);
+  explicit TableMetadataBuilder(const TableMetadata* base);
 
   /// Internal state members
   struct Impl;

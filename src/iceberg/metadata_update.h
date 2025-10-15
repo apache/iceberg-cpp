@@ -109,10 +109,10 @@ class ICEBERG_EXPORT UpgradeFormatVersion : public MetadataUpdate {
 /// \brief Represents adding a new schema to the table
 class ICEBERG_EXPORT AddSchema : public MetadataUpdate {
  public:
-  explicit AddSchema(std::shared_ptr<iceberg::Schema> schema, int32_t last_column_id)
+  explicit AddSchema(std::shared_ptr<Schema> schema, int32_t last_column_id)
       : schema_(std::move(schema)), last_column_id_(last_column_id) {}
 
-  const std::shared_ptr<iceberg::Schema>& schema() const { return schema_; }
+  const std::shared_ptr<Schema>& schema() const { return schema_; }
 
   int32_t last_column_id() const { return last_column_id_; }
 
@@ -125,7 +125,7 @@ class ICEBERG_EXPORT AddSchema : public MetadataUpdate {
   void GenerateRequirements(UpdateRequirementsContext& context) const override;
 
  private:
-  std::shared_ptr<iceberg::Schema> schema_;
+  std::shared_ptr<Schema> schema_;
   int32_t last_column_id_;
 };
 
@@ -151,10 +151,10 @@ class ICEBERG_EXPORT SetCurrentSchema : public MetadataUpdate {
 /// \brief Represents adding a new partition spec to the table
 class ICEBERG_EXPORT AddPartitionSpec : public MetadataUpdate {
  public:
-  explicit AddPartitionSpec(std::shared_ptr<iceberg::PartitionSpec> spec)
+  explicit AddPartitionSpec(std::shared_ptr<PartitionSpec> spec)
       : spec_(std::move(spec)) {}
 
-  const std::shared_ptr<iceberg::PartitionSpec>& spec() const { return spec_; }
+  const std::shared_ptr<PartitionSpec>& spec() const { return spec_; }
 
   std::unique_ptr<MetadataUpdate> Clone() const override {
     return std::make_unique<AddPartitionSpec>(spec_);
@@ -165,7 +165,7 @@ class ICEBERG_EXPORT AddPartitionSpec : public MetadataUpdate {
   void GenerateRequirements(UpdateRequirementsContext& context) const override;
 
  private:
-  std::shared_ptr<iceberg::PartitionSpec> spec_;
+  std::shared_ptr<PartitionSpec> spec_;
 };
 
 /// \brief Represents setting the default partition spec
@@ -230,10 +230,10 @@ class ICEBERG_EXPORT RemoveSchemas : public MetadataUpdate {
 /// \brief Represents adding a new sort order to the table
 class ICEBERG_EXPORT AddSortOrder : public MetadataUpdate {
  public:
-  explicit AddSortOrder(std::shared_ptr<iceberg::SortOrder> sort_order)
+  explicit AddSortOrder(std::shared_ptr<SortOrder> sort_order)
       : sort_order_(std::move(sort_order)) {}
 
-  const std::shared_ptr<iceberg::SortOrder>& sort_order() const { return sort_order_; }
+  const std::shared_ptr<SortOrder>& sort_order() const { return sort_order_; }
 
   std::unique_ptr<MetadataUpdate> Clone() const override {
     return std::make_unique<AddSortOrder>(sort_order_);
@@ -244,7 +244,7 @@ class ICEBERG_EXPORT AddSortOrder : public MetadataUpdate {
   void GenerateRequirements(UpdateRequirementsContext& context) const override;
 
  private:
-  std::shared_ptr<iceberg::SortOrder> sort_order_;
+  std::shared_ptr<SortOrder> sort_order_;
 };
 
 /// \brief Represents setting the default sort order
@@ -269,10 +269,10 @@ class ICEBERG_EXPORT SetDefaultSortOrder : public MetadataUpdate {
 /// \brief Represents adding a snapshot to the table
 class ICEBERG_EXPORT AddSnapshot : public MetadataUpdate {
  public:
-  explicit AddSnapshot(std::shared_ptr<iceberg::Snapshot> snapshot)
+  explicit AddSnapshot(std::shared_ptr<Snapshot> snapshot)
       : snapshot_(std::move(snapshot)) {}
 
-  const std::shared_ptr<iceberg::Snapshot>& snapshot() const { return snapshot_; }
+  const std::shared_ptr<Snapshot>& snapshot() const { return snapshot_; }
 
   std::unique_ptr<MetadataUpdate> Clone() const override {
     return std::make_unique<AddSnapshot>(snapshot_);
@@ -283,7 +283,7 @@ class ICEBERG_EXPORT AddSnapshot : public MetadataUpdate {
   void GenerateRequirements(UpdateRequirementsContext& context) const override;
 
  private:
-  std::shared_ptr<iceberg::Snapshot> snapshot_;
+  std::shared_ptr<Snapshot> snapshot_;
 };
 
 /// \brief Represents removing snapshots from the table

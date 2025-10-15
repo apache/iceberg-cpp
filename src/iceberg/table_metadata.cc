@@ -27,6 +27,7 @@
 
 #include "iceberg/file_io.h"
 #include "iceberg/json_internal.h"
+#include "iceberg/metadata_update.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
@@ -201,47 +202,38 @@ Status TableMetadataUtil::Write(FileIO& io, const std::string& location,
 
 struct TableMetadataBuilder::Impl {
   // Base metadata (if building from existing metadata)
-  std::shared_ptr<const TableMetadata> base;
+  const TableMetadata* base{nullptr};
 
   // Mutable fields that will be used to build the final TableMetadata
   int8_t format_version;
   std::string table_uuid;
   std::string location;
-  int64_t last_sequence_number;
-  TimePointMs last_updated_ms;
-  int32_t last_column_id;
+  int64_t last_sequence_number{TableMetadata::kInitialSequenceNumber};
+  TimePointMs last_updated_ms{std::chrono::milliseconds(0)};
+  int32_t last_column_id{0};
   std::vector<std::shared_ptr<Schema>> schemas;
   std::optional<int32_t> current_schema_id;
   std::vector<std::shared_ptr<PartitionSpec>> partition_specs;
-  int32_t default_spec_id;
-  int32_t last_partition_id;
+  int32_t default_spec_id{0};
+  int32_t last_partition_id{0};
   std::unordered_map<std::string, std::string> properties;
-  int64_t current_snapshot_id;
+  int64_t current_snapshot_id{-1};
   std::vector<std::shared_ptr<Snapshot>> snapshots;
   std::vector<SnapshotLogEntry> snapshot_log;
   std::vector<MetadataLogEntry> metadata_log;
   std::vector<std::shared_ptr<SortOrder>> sort_orders;
-  int32_t default_sort_order_id;
+  int32_t default_sort_order_id{0};
   std::unordered_map<std::string, std::shared_ptr<SnapshotRef>> refs;
   std::vector<std::shared_ptr<StatisticsFile>> statistics;
   std::vector<std::shared_ptr<PartitionStatisticsFile>> partition_statistics;
-  int64_t next_row_id;
+  int64_t next_row_id{TableMetadata::kInitialRowId};
 
   // List of changes (MetadataUpdate objects)
   std::vector<std::unique_ptr<MetadataUpdate>> changes;
 
-  explicit Impl(int8_t fmt_version)
-      : format_version(fmt_version),
-        last_sequence_number(TableMetadata::kInitialSequenceNumber),
-        last_updated_ms(std::chrono::milliseconds(0)),
-        last_column_id(0),
-        default_spec_id(0),
-        last_partition_id(0),
-        current_snapshot_id(-1),
-        default_sort_order_id(0),
-        next_row_id(TableMetadata::kInitialRowId) {}
+  explicit Impl(int8_t fmt_version) : format_version(fmt_version) {}
 
-  explicit Impl(const std::shared_ptr<const TableMetadata>& base_metadata)
+  explicit Impl(const TableMetadata* base_metadata)
       : base(base_metadata),
         format_version(base_metadata->format_version),
         table_uuid(base_metadata->table_uuid),
@@ -270,7 +262,7 @@ struct TableMetadataBuilder::Impl {
 TableMetadataBuilder::TableMetadataBuilder(int8_t format_version)
     : impl_(std::make_unique<Impl>(format_version)) {}
 
-TableMetadataBuilder::TableMetadataBuilder(std::shared_ptr<const TableMetadata> base)
+TableMetadataBuilder::TableMetadataBuilder(const TableMetadata* base)
     : impl_(std::make_unique<Impl>(base)) {}
 
 TableMetadataBuilder::~TableMetadataBuilder() = default;
@@ -280,13 +272,15 @@ TableMetadataBuilder::TableMetadataBuilder(TableMetadataBuilder&&) noexcept = de
 TableMetadataBuilder& TableMetadataBuilder::operator=(TableMetadataBuilder&&) noexcept =
     default;
 
-TableMetadataBuilder TableMetadataBuilder::BuildFromEmpty(int8_t format_version) {
-  return TableMetadataBuilder(format_version);
+std::unique_ptr<TableMetadataBuilder> TableMetadataBuilder::BuildFromEmpty(
+    int8_t format_version) {
+  return std::unique_ptr<TableMetadataBuilder>(
+      new TableMetadataBuilder(format_version));  // NOLINT
 }
 
-TableMetadataBuilder TableMetadataBuilder::BuildFrom(
-    const std::shared_ptr<const TableMetadata>& base) {
-  return TableMetadataBuilder(base);
+std::unique_ptr<TableMetadataBuilder> TableMetadataBuilder::BuildFrom(
+    const TableMetadata* base) {
+  return std::unique_ptr<TableMetadataBuilder>(new TableMetadataBuilder(base));  // NOLINT
 }
 
 TableMetadataBuilder& TableMetadataBuilder::AssignUUID() {
@@ -294,7 +288,7 @@ TableMetadataBuilder& TableMetadataBuilder::AssignUUID() {
   return *this;
 }
 
-TableMetadataBuilder& TableMetadataBuilder::AssignUUID(const std::string& uuid) {
+TableMetadataBuilder& TableMetadataBuilder::AssignUUID(std::string_view uuid) {
   // TODO(gty404): Implement
   return *this;
 }
