@@ -32,6 +32,7 @@
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_order.h"
+#include "iceberg/table_update.h"
 #include "iceberg/util/gzip_internal.h"
 #include "iceberg/util/macros.h"
 
