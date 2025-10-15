@@ -52,7 +52,10 @@ set(ICEBERG_SOURCES
     table.cc
     table_metadata.cc
     table_properties.cc
+    table_requirement.cc
+    table_requirements.cc
     table_scan.cc
+    table_update.cc
     transform.cc
     transform_function.cc
     type.cc

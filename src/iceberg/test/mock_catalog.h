@@ -62,8 +62,8 @@ class MockCatalog : public Catalog {
 
   MOCK_METHOD((Result<std::unique_ptr<Table>>), UpdateTable,
               (const TableIdentifier&,
-               (const std::vector<std::unique_ptr<UpdateRequirement>>&),
-               (const std::vector<std::unique_ptr<MetadataUpdate>>&)),
+               (const std::vector<std::unique_ptr<TableRequirement>>&),
+               (const std::vector<std::unique_ptr<TableUpdate>>&)),
               (override));
 
   MOCK_METHOD((Result<std::shared_ptr<Transaction>>), StageCreateTable,

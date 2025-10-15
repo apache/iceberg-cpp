@@ -87,7 +87,7 @@ class ICEBERG_EXPORT TableRequirements {
   ///
   /// \param table_updates The list of metadata updates for table creation
   /// \return A list of update requirements to validate before creation
-  static std::vector<std::unique_ptr<TableRequirement>> ForCreateTable(
+  static Result<std::vector<std::unique_ptr<TableRequirement>>> ForCreateTable(
       const std::vector<std::unique_ptr<TableUpdate>>& table_updates);
 
   /// \brief Generate requirements for replacing an existing table
@@ -98,7 +98,7 @@ class ICEBERG_EXPORT TableRequirements {
   /// \param base The base table metadata
   /// \param table_updates The list of metadata updates for replacement
   /// \return A list of update requirements to validate before replacement
-  static std::vector<std::unique_ptr<TableRequirement>> ForReplaceTable(
+  static Result<std::vector<std::unique_ptr<TableRequirement>>> ForReplaceTable(
       const TableMetadata& base,
       const std::vector<std::unique_ptr<TableUpdate>>& table_updates);
 
@@ -110,7 +110,7 @@ class ICEBERG_EXPORT TableRequirements {
   /// \param base The base table metadata
   /// \param table_updates The list of metadata updates
   /// \return A list of update requirements to validate before update
-  static std::vector<std::unique_ptr<TableRequirement>> ForUpdateTable(
+  static Result<std::vector<std::unique_ptr<TableRequirement>>> ForUpdateTable(
       const TableMetadata& base,
       const std::vector<std::unique_ptr<TableUpdate>>& table_updates);
 };

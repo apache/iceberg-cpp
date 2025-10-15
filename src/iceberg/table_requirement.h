@@ -19,14 +19,13 @@
 
 #pragma once
 
-/// \file iceberg/update_requirement.h
+/// \file iceberg/table_requirement.h
 /// Update requirements for Iceberg table operations.
 ///
-/// Update requirements are conditions that must be satisfied before
+/// Table requirements are conditions that must be satisfied before
 /// applying metadata updates to a table. They are used for optimistic
 /// concurrency control in table operations.
 
-#include <memory>
 #include <optional>
 #include <string>
 

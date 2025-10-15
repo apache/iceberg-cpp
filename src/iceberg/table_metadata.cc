@@ -32,7 +32,6 @@
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_order.h"
-#include "iceberg/table_update.h"
 #include "iceberg/util/gzip_internal.h"
 #include "iceberg/util/macros.h"
 
@@ -196,6 +195,187 @@ Status TableMetadataUtil::Write(FileIO& io, const std::string& location,
   auto json = ToJson(metadata);
   ICEBERG_ASSIGN_OR_RAISE(auto json_string, ToJsonString(json));
   return io.WriteFile(location, json_string);
+}
+
+// TableMetadataBuilder implementation
+
+struct TableMetadataBuilder::Impl {};
+
+TableMetadataBuilder::TableMetadataBuilder(int8_t format_version)
+    : impl_(std::make_unique<Impl>()) {}
+
+TableMetadataBuilder::TableMetadataBuilder(const TableMetadata* base)
+    : impl_(std::make_unique<Impl>()) {}
+
+TableMetadataBuilder::~TableMetadataBuilder() = default;
+
+TableMetadataBuilder::TableMetadataBuilder(TableMetadataBuilder&&) noexcept = default;
+
+TableMetadataBuilder& TableMetadataBuilder::operator=(TableMetadataBuilder&&) noexcept =
+    default;
+
+std::unique_ptr<TableMetadataBuilder> TableMetadataBuilder::BuildFromEmpty(
+    int8_t format_version) {
+  return std::unique_ptr<TableMetadataBuilder>(
+      new TableMetadataBuilder(format_version));  // NOLINT
+}
+
+std::unique_ptr<TableMetadataBuilder> TableMetadataBuilder::BuildFrom(
+    const TableMetadata* base) {
+  return std::unique_ptr<TableMetadataBuilder>(new TableMetadataBuilder(base));  // NOLINT
+}
+
+TableMetadataBuilder& TableMetadataBuilder::SetMetadataLocation(
+    std::string_view metadata_location) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::SetPreviousMetadataLocation(
+    std::string_view previous_metadata_location) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::AssignUUID() { return *this; }
+
+TableMetadataBuilder& TableMetadataBuilder::AssignUUID(std::string_view uuid) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::UpgradeFormatVersion(
+    int8_t new_format_version) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::SetCurrentSchema(
+    std::shared_ptr<Schema> schema, int32_t new_last_column_id) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::SetCurrentSchema(int32_t schema_id) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::AddSchema(std::shared_ptr<Schema> schema) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::SetDefaultPartitionSpec(
+    std::shared_ptr<PartitionSpec> spec) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::SetDefaultPartitionSpec(int32_t spec_id) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::AddPartitionSpec(
+    std::shared_ptr<PartitionSpec> spec) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::RemovePartitionSpecs(
+    const std::vector<int32_t>& spec_ids) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::RemoveSchemas(
+    const std::vector<int32_t>& schema_ids) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::SetDefaultSortOrder(
+    std::shared_ptr<SortOrder> order) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::SetDefaultSortOrder(int32_t order_id) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::AddSortOrder(
+    std::shared_ptr<SortOrder> order) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::AddSnapshot(
+    std::shared_ptr<Snapshot> snapshot) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::SetBranchSnapshot(int64_t snapshot_id,
+                                                              const std::string& branch) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::SetRef(const std::string& name,
+                                                   std::shared_ptr<SnapshotRef> ref) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::RemoveRef(const std::string& name) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::RemoveSnapshots(
+    const std::vector<std::shared_ptr<Snapshot>>& snapshots_to_remove) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::RemoveSnapshots(
+    const std::vector<int64_t>& snapshot_ids) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::suppressHistoricalSnapshots() {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::SetStatistics(
+    const std::shared_ptr<StatisticsFile>& statistics_file) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::RemoveStatistics(int64_t snapshot_id) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::SetPartitionStatistics(
+    const std::shared_ptr<PartitionStatisticsFile>& partition_statistics_file) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::RemovePartitionStatistics(
+    int64_t snapshot_id) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::SetProperties(
+    const std::unordered_map<std::string, std::string>& updated) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::RemoveProperties(
+    const std::vector<std::string>& removed) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::SetLocation(std::string_view location) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::AddEncryptionKey(
+    std::shared_ptr<EncryptedKey> key) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::RemoveEncryptionKey(std::string_view key_id) {
+  return *this;
+}
+
+TableMetadataBuilder& TableMetadataBuilder::DiscardChanges() { return *this; }
+
+Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Build() {
+  return NotImplemented("TableMetadataBuilder::Build not implemented");
 }
 
 }  // namespace iceberg
