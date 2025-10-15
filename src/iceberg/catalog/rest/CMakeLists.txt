@@ -34,15 +34,15 @@ list(APPEND
      nlohmann_json::nlohmann_json)
 list(APPEND
      ICEBERG_REST_STATIC_INSTALL_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_static>,Iceberg::iceberg_static,Iceberg::iceberg_shared>"
-     "$<IF:$<BOOL:${CPR_VENDORED}>,Iceberg::cpr,cpr::cpr>"
-     "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,Iceberg::nlohmann_json,nlohmann_json::nlohmann_json>"
+     "$<IF:$<TARGET_EXISTS:iceberg::iceberg_static>,iceberg::iceberg_static,iceberg::iceberg_shared>"
+     "$<IF:$<BOOL:${CPR_VENDORED}>,iceberg::cpr,cpr::cpr>"
+     "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,nlohmann_json::nlohmann_json>"
 )
 list(APPEND
      ICEBERG_REST_SHARED_INSTALL_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:Iceberg::iceberg_shared>,Iceberg::iceberg_shared,Iceberg::iceberg_static>"
-     "$<IF:$<BOOL:${CPR_VENDORED}>,Iceberg::cpr,cpr::cpr>"
-     "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,Iceberg::nlohmann_json,nlohmann_json::nlohmann_json>"
+     "$<IF:$<TARGET_EXISTS:iceberg::iceberg_shared>,iceberg::iceberg_shared,iceberg::iceberg_static>"
+     "$<IF:$<BOOL:${CPR_VENDORED}>,iceberg::cpr,cpr::cpr>"
+     "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,nlohmann_json::nlohmann_json>"
 )
 
 add_iceberg_lib(iceberg_rest
