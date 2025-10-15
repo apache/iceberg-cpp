@@ -13,6 +13,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
+permissions:
+  contents: write
+
 jobs:
   docs:
     runs-on: ubuntu-latest
@@ -58,4 +61,4 @@ jobs:
           echo "cpp.iceberg.apache.org" > CNAME
           git add --all
           git commit -m "Publish docs from commit ${{ github.sha }}"
-          git push -f origin gh-pages-tmp:gh-pages || true
+          git push -f origin gh-pages-tmp:gh-pages
