@@ -719,6 +719,13 @@ INSTANTIATE_TEST_SUITE_P(
                              .target_type = fixed(4),
                              .expected_literal = Literal::Fixed(std::vector<uint8_t>{
                                  0x01, 0x02, 0x03, 0x04})},
+        // String cast tests
+        CastLiteralTestParam{
+            .test_name = "StringToUuid",
+            .source_literal = Literal::String("123e4567-e89b-12d3-a456-426614174000"),
+            .target_type = uuid(),
+            .expected_literal = Literal::UUID(
+                Uuid::FromString("123e4567-e89b-12d3-a456-426614174000").value())},
         // Same type cast test
         CastLiteralTestParam{.test_name = "IntToInt",
                              .source_literal = Literal::Int(42),

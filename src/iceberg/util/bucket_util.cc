@@ -23,7 +23,6 @@
 
 #include "iceberg/expression/literal.h"
 #include "iceberg/util/endian.h"
-#include "iceberg/util/macros.h"
 #include "iceberg/util/murmurhash3_internal.h"
 
 namespace iceberg {
@@ -115,8 +114,14 @@ int32_t BucketUtils::HashLong(int64_t value) {
     hash_value = HashLiteral<TYPE_ID>(literal); \
     break;
 
-int32_t BucketUtils::BucketIndex(const Literal& literal, int32_t num_buckets) {
-  ICEBERG_DCHECK(num_buckets > 0, "Number of buckets must be positive");
+Result<int32_t> BucketUtils::BucketIndex(const Literal& literal, int32_t num_buckets) {
+  if (num_buckets <= 0) [[unlikely]] {
+    return InvalidArgument("Number of buckets must be positive, got {}", num_buckets);
+  }
+
+  if (literal.IsAboveMax() || literal.IsBelowMin()) [[unlikely]] {
+    return NotSupported("Cannot compute bucket index for {}", literal.ToString());
+  }
 
   int32_t hash_value = 0;
   switch (literal.type()->type_id()) {
@@ -132,7 +137,8 @@ int32_t BucketUtils::BucketIndex(const Literal& literal, int32_t num_buckets) {
     DISPATCH_HASH_LITERAL(TypeId::kBinary)
     DISPATCH_HASH_LITERAL(TypeId::kFixed)
     default:
-      std::unreachable();
+      return NotSupported("Hashing not supported for type {}",
+                          literal.type()->ToString());
   }
 
   return (hash_value & std::numeric_limits<int32_t>::max()) % num_buckets;

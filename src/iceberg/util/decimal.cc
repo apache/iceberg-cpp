@@ -552,8 +552,8 @@ Result<Decimal> Decimal::Rescale(int32_t orig_scale, int32_t new_scale) const {
       RescaleWouldCauseDataLoss(*this, delta_scale, multiplier, &out);
 
   if (rescale_would_cause_data_loss) {
-    return Invalid("Rescale {} from {} to {} would cause data loss", ToIntegerString(),
-                   orig_scale, new_scale);
+    return RescaleDataLoss("Rescale {} from {} to {} would cause data loss",
+                           ToIntegerString(), orig_scale, new_scale);
   }
 
   return out;

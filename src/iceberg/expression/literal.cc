@@ -27,7 +27,6 @@
 #include "iceberg/exception.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/conversions.h"
-#include "iceberg/util/decimal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -190,11 +189,14 @@ Result<Literal> LiteralCaster::CastFromString(
   const auto& str_val = std::get<std::string>(literal.value_);
 
   switch (target_type->type_id()) {
+    case TypeId::kUuid: {
+      ICEBERG_ASSIGN_OR_RAISE(auto uuid, Uuid::FromString(str_val));
+      return Literal::UUID(uuid);
+    }
     case TypeId::kDate:
     case TypeId::kTime:
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz:
-    case TypeId::kUuid:
       return NotImplemented("Cast from String to {} is not implemented yet",
                             target_type->ToString());
     default:
@@ -337,13 +339,13 @@ std::strong_ordering CompareFloat(T lhs, T rhs) {
   return lhs_is_negative <=> rhs_is_negative;
 }
 
-std::strong_ordering CompareDecimal(Literal const& lhs, Literal const& rhs) {
+std::partial_ordering CompareDecimal(Literal const& lhs, Literal const& rhs) {
   ICEBERG_DCHECK(std::holds_alternative<Decimal>(lhs.value()),
                  "LHS of decimal comparison must hold Decimal");
   ICEBERG_DCHECK(std::holds_alternative<Decimal>(rhs.value()),
                  "RHS of decimal comparison must hold decimal");
-  const auto& lhs_type = std::dynamic_pointer_cast<DecimalType>(lhs.type());
-  const auto& rhs_type = std::dynamic_pointer_cast<DecimalType>(rhs.type());
+  auto lhs_type = internal::checked_pointer_cast<DecimalType>(lhs.type());
+  auto rhs_type = internal::checked_pointer_cast<DecimalType>(rhs.type());
   auto lhs_decimal = std::get<Decimal>(lhs.value());
   auto rhs_decimal = std::get<Decimal>(rhs.value());
   if (lhs_type->scale() == rhs_type->scale()) {
@@ -351,17 +353,25 @@ std::strong_ordering CompareDecimal(Literal const& lhs, Literal const& rhs) {
   } else if (lhs_type->scale() > rhs_type->scale()) {
     // Rescale to larger scale
     auto rhs_res = rhs_decimal.Rescale(rhs_type->scale(), lhs_type->scale());
-    if (!rhs_res) {
-      // Rescale would cause data loss, so lhs is definitely less than rhs
-      return std::strong_ordering::less;
+    if (!rhs_res.has_value()) {
+      if (rhs_res.error().kind == ErrorKind::kRescaleDataLoss) {
+        // Rescale would cause data loss, so lhs is definitely less than rhs
+        return std::partial_ordering::less;
+      }
+      // Other errors should return unordered
+      return std::partial_ordering::unordered;
     }
     return lhs_decimal <=> rhs_res.value();
   } else {
     // Rescale to larger scale
     auto lhs_res = lhs_decimal.Rescale(lhs_type->scale(), rhs_type->scale());
-    if (!lhs_res) {
-      // Rescale would cause data loss, so lhs is definitely greater than rhs
-      return std::strong_ordering::greater;
+    if (!lhs_res.has_value()) {
+      if (lhs_res.error().kind == ErrorKind::kRescaleDataLoss) {
+        // Rescale would cause data loss, so lhs is definitely greater than rhs
+        return std::partial_ordering::greater;
+      }
+      // Other errors should return unordered
+      return std::partial_ordering::unordered;
     }
     return lhs_res.value() <=> rhs_decimal;
   }

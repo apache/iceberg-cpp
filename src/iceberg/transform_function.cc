@@ -58,11 +58,10 @@ Result<Literal> BucketTransform::Transform(const Literal& literal) {
     return Literal::Null(int32());
   }
 
-  if (literal.IsAboveMax() || literal.IsBelowMin()) [[unlikely]] {
-    return NotSupported("Cannot compute bucket index for {}", literal.ToString());
-  }
+  ICEBERG_ASSIGN_OR_RAISE(auto bucket_index,
+                          BucketUtils::BucketIndex(literal, num_buckets_))
 
-  return Literal::Int(BucketUtils::BucketIndex(literal, num_buckets_));
+  return Literal::Int(bucket_index);
 }
 
 std::shared_ptr<Type> BucketTransform::ResultType() const { return int32(); }

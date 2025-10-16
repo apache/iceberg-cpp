@@ -23,6 +23,7 @@
 #include <span>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -53,7 +54,7 @@ class ICEBERG_EXPORT BucketUtils {
   /// \param literal The input literal to hash.
   /// \param num_buckets The number of buckets to hash into.
   /// \return (murmur3_x86_32_hash(literal) & Integer.MAX_VALUE) % num_buckets
-  static int32_t BucketIndex(const Literal& literal, int32_t num_buckets);
+  static Result<int32_t> BucketIndex(const Literal& literal, int32_t num_buckets);
 };
 
 }  // namespace iceberg

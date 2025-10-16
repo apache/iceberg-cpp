@@ -712,7 +712,7 @@ TEST(DecimalTest, Rescale) {
   ASSERT_EQ(Decimal(5), Decimal(500000).Rescale(6, 1).value());
   ASSERT_EQ(Decimal(500000), Decimal(5).Rescale(1, 6).value());
 
-  ASSERT_THAT(Decimal(5555555).Rescale(6, 1), IsError(ErrorKind::kInvalid));
+  ASSERT_THAT(Decimal(5555555).Rescale(6, 1), IsError(ErrorKind::kRescaleDataLoss));
 }
 
 }  // namespace iceberg
