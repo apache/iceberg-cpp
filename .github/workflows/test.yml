@@ -111,8 +111,8 @@ jobs:
           - title: AMD64 Windows 2025
             runs-on: windows-2025
             meson-setup-args: --vsenv
-          - title: AArch64 macOS 15
-            runs-on: macos-15
+          - title: AArch64 macOS 26
+            runs-on: macos-26
     steps:
       - uses: actions/setup-python@v5
         with:
