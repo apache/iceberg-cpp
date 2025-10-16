@@ -64,11 +64,14 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
 
   /// \brief Get the table schema
   const std::shared_ptr<Schema>& schema() const;
+
   /// \brief Get the spec ID.
   int32_t spec_id() const;
-  /// \brief Get a view of the partition fields.
+
+  /// \brief Get a list view of the partition fields.
   std::span<const PartitionField> fields() const;
 
+  /// \brief Get the partition type.
   Result<std::shared_ptr<StructType>> PartitionType();
 
   std::string ToString() const override;
@@ -81,12 +84,14 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
 
  private:
   /// \brief Compare two partition specs for equality.
-  [[nodiscard]] bool Equals(const PartitionSpec& other) const;
+  bool Equals(const PartitionSpec& other) const;
 
   std::shared_ptr<Schema> schema_;
   const int32_t spec_id_;
   std::vector<PartitionField> fields_;
   int32_t last_assigned_field_id_;
+
+  // FIXME: use similar lazy initialization pattern as in StructType
   std::mutex mutex_;
   std::shared_ptr<StructType> partition_type_;
 };

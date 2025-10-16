@@ -34,7 +34,7 @@ class ManifestEntryAdapterV1 : public ManifestEntryAdapter {
   Status Append(const ManifestEntry& entry) override;
 
  protected:
-  Result<std::shared_ptr<StructType>> GetManifestEntryStructType() override;
+  Result<std::shared_ptr<StructType>> GetManifestEntryType() override;
 
  private:
   std::optional<int64_t> snapshot_id_;

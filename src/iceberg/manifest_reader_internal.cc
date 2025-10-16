@@ -21,7 +21,7 @@
 
 #include <nanoarrow/nanoarrow.h>
 
-#include "iceberg/arrow/nanoarrow_error_transform_internal.h"
+#include "iceberg/arrow/nanoarrow_status_internal.h"
 #include "iceberg/arrow_c_data_guard_internal.h"
 #include "iceberg/file_format.h"
 #include "iceberg/manifest_entry.h"
@@ -204,12 +204,12 @@ Result<std::vector<ManifestFile>> ParseManifestList(ArrowSchema* schema,
   ArrowError error;
   ArrowArrayView array_view;
   auto status = ArrowArrayViewInitFromSchema(&array_view, schema, &error);
-  ICEBERG_NANOARROW_RETURN_IF_NOT_OK_WITH_ERROR(status, error);
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(status, error);
   internal::ArrowArrayViewGuard view_guard(&array_view);
   status = ArrowArrayViewSetArray(&array_view, array_in, &error);
-  ICEBERG_NANOARROW_RETURN_IF_NOT_OK_WITH_ERROR(status, error);
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(status, error);
   status = ArrowArrayViewValidate(&array_view, NANOARROW_VALIDATION_LEVEL_FULL, &error);
-  ICEBERG_NANOARROW_RETURN_IF_NOT_OK_WITH_ERROR(status, error);
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(status, error);
 
   std::vector<ManifestFile> manifest_files;
   manifest_files.resize(array_in->length);
@@ -467,12 +467,12 @@ Result<std::vector<ManifestEntry>> ParseManifestEntry(ArrowSchema* schema,
   ArrowError error;
   ArrowArrayView array_view;
   auto status = ArrowArrayViewInitFromSchema(&array_view, schema, &error);
-  ICEBERG_NANOARROW_RETURN_IF_NOT_OK_WITH_ERROR(status, error);
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(status, error);
   internal::ArrowArrayViewGuard view_guard(&array_view);
   status = ArrowArrayViewSetArray(&array_view, array_in, &error);
-  ICEBERG_NANOARROW_RETURN_IF_NOT_OK_WITH_ERROR(status, error);
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(status, error);
   status = ArrowArrayViewValidate(&array_view, NANOARROW_VALIDATION_LEVEL_FULL, &error);
-  ICEBERG_NANOARROW_RETURN_IF_NOT_OK_WITH_ERROR(status, error);
+  ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(status, error);
 
   std::vector<ManifestEntry> manifest_entries;
   manifest_entries.resize(array_in->length);

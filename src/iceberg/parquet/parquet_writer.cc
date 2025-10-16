@@ -29,8 +29,8 @@
 #include <parquet/file_writer.h>
 #include <parquet/properties.h>
 
-#include "iceberg/arrow/arrow_error_transform_internal.h"
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
+#include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"

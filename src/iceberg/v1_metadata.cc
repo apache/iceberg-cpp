@@ -62,7 +62,7 @@ Status ManifestEntryAdapterV1::Append(const ManifestEntry& entry) {
   return AppendInternal(entry);
 }
 
-Result<std::shared_ptr<StructType>> ManifestEntryAdapterV1::GetManifestEntryStructType() {
+Result<std::shared_ptr<StructType>> ManifestEntryAdapterV1::GetManifestEntryType() {
   // 'block_size_in_bytes' (ID 105) is a deprecated field that is REQUIRED
   // in the v1 data_file schema for backward compatibility.
   // Deprecated. Always write a default in v1. Do not write in v2 or v3.

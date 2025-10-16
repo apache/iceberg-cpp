@@ -71,7 +71,7 @@ Status ManifestEntryAdapterV3::Append(const ManifestEntry& entry) {
 }
 
 Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetSequenceNumber(
-    const ManifestEntry& entry) {
+    const ManifestEntry& entry) const {
   if (!entry.sequence_number.has_value()) {
     // if the entry's data sequence number is null,
     // then it will inherit the sequence number of the current commit.
@@ -95,7 +95,7 @@ Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetSequenceNumber(
 }
 
 Result<std::optional<std::string>> ManifestEntryAdapterV3::GetReferenceDataFile(
-    const DataFile& file) {
+    const DataFile& file) const {
   if (file.content == DataFile::Content::kPositionDeletes) {
     return file.referenced_data_file;
   }
@@ -103,7 +103,7 @@ Result<std::optional<std::string>> ManifestEntryAdapterV3::GetReferenceDataFile(
 }
 
 Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetFirstRowId(
-    const DataFile& file) {
+    const DataFile& file) const {
   if (file.content == DataFile::Content::kData) {
     return file.first_row_id;
   }
@@ -111,7 +111,7 @@ Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetFirstRowId(
 }
 
 Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetContentOffset(
-    const DataFile& file) {
+    const DataFile& file) const {
   if (file.content == DataFile::Content::kPositionDeletes) {
     return file.content_offset;
   }
@@ -119,7 +119,7 @@ Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetContentOffset(
 }
 
 Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetContentSizeInBytes(
-    const DataFile& file) {
+    const DataFile& file) const {
   if (file.content == DataFile::Content::kPositionDeletes) {
     return file.content_size_in_bytes;
   }
@@ -166,7 +166,7 @@ Status ManifestFileAdapterV3::Append(const ManifestFile& file) {
   return status;
 }
 
-Result<int64_t> ManifestFileAdapterV3::GetSequenceNumber(const ManifestFile& file) {
+Result<int64_t> ManifestFileAdapterV3::GetSequenceNumber(const ManifestFile& file) const {
   if (file.sequence_number == TableMetadata::kInvalidSequenceNumber) {
     if (snapshot_id_ != file.added_snapshot_id) {
       return InvalidManifestList(
@@ -178,7 +178,8 @@ Result<int64_t> ManifestFileAdapterV3::GetSequenceNumber(const ManifestFile& fil
   return file.sequence_number;
 }
 
-Result<int64_t> ManifestFileAdapterV3::GetMinSequenceNumber(const ManifestFile& file) {
+Result<int64_t> ManifestFileAdapterV3::GetMinSequenceNumber(
+    const ManifestFile& file) const {
   if (file.min_sequence_number == TableMetadata::kInvalidSequenceNumber) {
     if (snapshot_id_ != file.added_snapshot_id) {
       return InvalidManifestList(
@@ -191,7 +192,7 @@ Result<int64_t> ManifestFileAdapterV3::GetMinSequenceNumber(const ManifestFile& 
 }
 
 Result<std::optional<int64_t>> ManifestFileAdapterV3::GetFirstRowId(
-    const ManifestFile& file) {
+    const ManifestFile& file) const {
   if (WrappedFirstRowId(file)) {
     return next_row_id_;
   } else if (file.content != ManifestFile::Content::kData) {
@@ -205,7 +206,7 @@ Result<std::optional<int64_t>> ManifestFileAdapterV3::GetFirstRowId(
   }
 }
 
-bool ManifestFileAdapterV3::WrappedFirstRowId(const ManifestFile& file) {
+bool ManifestFileAdapterV3::WrappedFirstRowId(const ManifestFile& file) const {
   return file.content == ManifestFile::Content::kData && !file.first_row_id.has_value();
 }
 

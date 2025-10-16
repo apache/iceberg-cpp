@@ -67,7 +67,7 @@ Status ManifestEntryAdapterV2::Append(const ManifestEntry& entry) {
 }
 
 Result<std::optional<int64_t>> ManifestEntryAdapterV2::GetSequenceNumber(
-    const ManifestEntry& entry) {
+    const ManifestEntry& entry) const {
   if (!entry.sequence_number.has_value()) {
     // if the entry's data sequence number is null,
     // then it will inherit the sequence number of the current commit.
@@ -91,7 +91,7 @@ Result<std::optional<int64_t>> ManifestEntryAdapterV2::GetSequenceNumber(
 }
 
 Result<std::optional<std::string>> ManifestEntryAdapterV2::GetReferenceDataFile(
-    const DataFile& file) {
+    const DataFile& file) const {
   if (file.content == DataFile::Content::kPositionDeletes) {
     return file.referenced_data_file;
   }
@@ -129,7 +129,7 @@ Status ManifestFileAdapterV2::Append(const ManifestFile& file) {
   return AppendInternal(file);
 }
 
-Result<int64_t> ManifestFileAdapterV2::GetSequenceNumber(const ManifestFile& file) {
+Result<int64_t> ManifestFileAdapterV2::GetSequenceNumber(const ManifestFile& file) const {
   if (file.sequence_number == TableMetadata::kInvalidSequenceNumber) {
     if (snapshot_id_ != file.added_snapshot_id) {
       return InvalidManifestList(
@@ -141,7 +141,8 @@ Result<int64_t> ManifestFileAdapterV2::GetSequenceNumber(const ManifestFile& fil
   return file.sequence_number;
 }
 
-Result<int64_t> ManifestFileAdapterV2::GetMinSequenceNumber(const ManifestFile& file) {
+Result<int64_t> ManifestFileAdapterV2::GetMinSequenceNumber(
+    const ManifestFile& file) const {
   if (file.min_sequence_number == TableMetadata::kInvalidSequenceNumber) {
     if (snapshot_id_ != file.added_snapshot_id) {
       return InvalidManifestList(

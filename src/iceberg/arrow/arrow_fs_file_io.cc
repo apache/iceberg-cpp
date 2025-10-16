@@ -22,9 +22,9 @@
 #include <arrow/filesystem/localfs.h>
 #include <arrow/filesystem/mockfs.h>
 
-#include "iceberg/arrow/arrow_error_transform_internal.h"
 #include "iceberg/arrow/arrow_file_io.h"
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
+#include "iceberg/arrow/arrow_status_internal.h"
 
 namespace iceberg::arrow {
 

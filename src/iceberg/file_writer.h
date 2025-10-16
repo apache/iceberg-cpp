@@ -65,6 +65,7 @@ class ICEBERG_EXPORT Writer {
   /// \brief Write arrow data to the file.
   ///
   /// \return Status of write results.
+  /// \note Ownership of the data is transferred to the writer.
   virtual Status Write(ArrowArray* data) = 0;
 
   /// \brief Get the file statistics.

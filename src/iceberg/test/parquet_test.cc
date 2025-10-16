@@ -30,8 +30,8 @@
 #include <parquet/arrow/writer.h>
 #include <parquet/metadata.h>
 
-#include "iceberg/arrow/arrow_error_transform_internal.h"
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
+#include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/file_writer.h"
 #include "iceberg/parquet/parquet_register.h"

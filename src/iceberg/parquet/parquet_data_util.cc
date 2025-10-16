@@ -23,7 +23,7 @@
 #include <arrow/record_batch.h>
 #include <arrow/type.h>
 
-#include "iceberg/arrow/arrow_error_transform_internal.h"
+#include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/parquet/parquet_data_util_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_util.h"

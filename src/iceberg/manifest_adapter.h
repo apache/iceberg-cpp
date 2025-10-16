@@ -19,13 +19,11 @@
 
 #pragma once
 
-/// \file iceberg/metadata_adapter.h
-/// Base class of adapter for v1v2v3v4 metadata.
+/// \file iceberg/manifest_adapter.h
+/// Base class for adapters handling v1/v2/v3/v4 manifest metadata.
 
-#include <map>
 #include <memory>
 #include <optional>
-#include <span>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -36,7 +34,7 @@
 
 namespace iceberg {
 
-// \brief Base class to append manifest metadata to Arrow array.
+/// \brief Base class for appending manifest metadata to Arrow arrays.
 class ICEBERG_EXPORT ManifestAdapter {
  public:
   ManifestAdapter() = default;
@@ -48,21 +46,16 @@ class ICEBERG_EXPORT ManifestAdapter {
   int64_t size() const { return size_; }
 
  protected:
-  static Status AppendField(ArrowArray* arrowArray, int64_t value);
-  static Status AppendField(ArrowArray* arrowArray, uint64_t value);
-  static Status AppendField(ArrowArray* arrowArray, double value);
-  static Status AppendField(ArrowArray* arrowArray, std::string_view value);
-  static Status AppendField(ArrowArray* arrowArray, std::span<const uint8_t> value);
-
- protected:
   ArrowArray array_;
-  ArrowSchema schema_;  // converted from manifest_schema_ or manifest_list_schema_
+  // Arrow schema of manifest or manifest list depending on the subclass
+  ArrowSchema schema_;
+  // Number of appended elements in the array
   int64_t size_ = 0;
   std::unordered_map<std::string, std::string> metadata_;
 };
 
-// \brief Implemented by different versions with different schemas to
-// append a list of `ManifestEntry`s to an `ArrowArray`.
+/// \brief Adapter for appending a list of `ManifestEntry`s to an `ArrowArray`.
+/// Implemented by different versions with version-specific schemas.
 class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
  public:
   explicit ManifestEntryAdapter(std::shared_ptr<PartitionSpec> partition_spec)
@@ -74,42 +67,37 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
   const std::shared_ptr<Schema>& schema() const { return manifest_schema_; }
 
  protected:
-  virtual Result<std::shared_ptr<StructType>> GetManifestEntryStructType();
+  virtual Result<std::shared_ptr<StructType>> GetManifestEntryType();
 
-  /// \brief Init version-specific schema for each version.
+  /// \brief Initialize version-specific schema.
   ///
-  /// \param fields_ids each version of manifest schema has schema, we will init this
-  /// schema based on the fields_ids.
+  /// \param fields_ids Field IDs to include in the manifest schema. The schema will be
+  /// initialized to include only the fields with these IDs.
   Status InitSchema(const std::unordered_set<int32_t>& fields_ids);
   Status AppendInternal(const ManifestEntry& entry);
-  Status AppendDataFile(ArrowArray* arrow_array,
+  Status AppendDataFile(ArrowArray* array,
                         const std::shared_ptr<StructType>& data_file_type,
                         const DataFile& file);
-  static Status AppendPartition(ArrowArray* arrow_array,
-                                const std::shared_ptr<StructType>& partition_type,
-                                const std::vector<Literal>& partitions);
-  static Status AppendList(ArrowArray* arrow_array,
-                           const std::vector<int32_t>& list_value);
-  static Status AppendList(ArrowArray* arrow_array,
-                           const std::vector<int64_t>& list_value);
-  static Status AppendMap(ArrowArray* arrow_array,
-                          const std::map<int32_t, int64_t>& map_value);
-  static Status AppendMap(ArrowArray* arrow_array,
-                          const std::map<int32_t, std::vector<uint8_t>>& map_value);
+  static Status AppendPartitionValues(ArrowArray* array,
+                                      const std::shared_ptr<StructType>& partition_type,
+                                      const std::vector<Literal>& partition_values);
 
-  virtual Result<std::optional<int64_t>> GetSequenceNumber(const ManifestEntry& entry);
-  virtual Result<std::optional<std::string>> GetReferenceDataFile(const DataFile& file);
-  virtual Result<std::optional<int64_t>> GetFirstRowId(const DataFile& file);
-  virtual Result<std::optional<int64_t>> GetContentOffset(const DataFile& file);
-  virtual Result<std::optional<int64_t>> GetContentSizeInBytes(const DataFile& file);
+  virtual Result<std::optional<int64_t>> GetSequenceNumber(
+      const ManifestEntry& entry) const;
+  virtual Result<std::optional<std::string>> GetReferenceDataFile(
+      const DataFile& file) const;
+  virtual Result<std::optional<int64_t>> GetFirstRowId(const DataFile& file) const;
+  virtual Result<std::optional<int64_t>> GetContentOffset(const DataFile& file) const;
+  virtual Result<std::optional<int64_t>> GetContentSizeInBytes(
+      const DataFile& file) const;
 
  protected:
   std::shared_ptr<PartitionSpec> partition_spec_;
   std::shared_ptr<Schema> manifest_schema_;
 };
 
-// \brief Implemented by different versions with different schemas to
-// append a list of `ManifestFile`s to an `ArrowArray`.
+/// \brief Adapter for appending a list of `ManifestFile`s to an `ArrowArray`.
+/// Implemented by different versions with version-specific schemas.
 class ICEBERG_EXPORT ManifestFileAdapter : public ManifestAdapter {
  public:
   ManifestFileAdapter() = default;
@@ -120,19 +108,19 @@ class ICEBERG_EXPORT ManifestFileAdapter : public ManifestAdapter {
   const std::shared_ptr<Schema>& schema() const { return manifest_list_schema_; }
 
  protected:
-  /// \brief Init version-specific schema for each version.
+  /// \brief Initialize version-specific schema.
   ///
-  /// \param fields_ids each version of manifest schema has schema, we will init this
-  /// schema based on the fields_ids.
+  /// \param fields_ids Field IDs to include in the manifest list schema. The schema will
+  /// be initialized to include only the fields with these IDs.
   Status InitSchema(const std::unordered_set<int32_t>& fields_ids);
   Status AppendInternal(const ManifestFile& file);
   static Status AppendPartitionSummary(
-      ArrowArray* arrow_array, const std::shared_ptr<ListType>& summary_type,
+      ArrowArray* array, const std::shared_ptr<ListType>& summary_type,
       const std::vector<PartitionFieldSummary>& summaries);
 
-  virtual Result<int64_t> GetSequenceNumber(const ManifestFile& file);
-  virtual Result<int64_t> GetMinSequenceNumber(const ManifestFile& file);
-  virtual Result<std::optional<int64_t>> GetFirstRowId(const ManifestFile& file);
+  virtual Result<int64_t> GetSequenceNumber(const ManifestFile& file) const;
+  virtual Result<int64_t> GetMinSequenceNumber(const ManifestFile& file) const;
+  virtual Result<std::optional<int64_t>> GetFirstRowId(const ManifestFile& file) const;
 
  protected:
   std::shared_ptr<Schema> manifest_list_schema_;

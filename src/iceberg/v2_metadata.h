@@ -35,8 +35,10 @@ class ManifestEntryAdapterV2 : public ManifestEntryAdapter {
   Status Append(const ManifestEntry& entry) override;
 
  protected:
-  Result<std::optional<int64_t>> GetSequenceNumber(const ManifestEntry& entry) override;
-  Result<std::optional<std::string>> GetReferenceDataFile(const DataFile& file) override;
+  Result<std::optional<int64_t>> GetSequenceNumber(
+      const ManifestEntry& entry) const override;
+  Result<std::optional<std::string>> GetReferenceDataFile(
+      const DataFile& file) const override;
 
  private:
   std::optional<int64_t> snapshot_id_;
@@ -54,8 +56,8 @@ class ManifestFileAdapterV2 : public ManifestFileAdapter {
   Status Append(const ManifestFile& file) override;
 
  protected:
-  Result<int64_t> GetSequenceNumber(const ManifestFile& file) override;
-  Result<int64_t> GetMinSequenceNumber(const ManifestFile& file) override;
+  Result<int64_t> GetSequenceNumber(const ManifestFile& file) const override;
+  Result<int64_t> GetMinSequenceNumber(const ManifestFile& file) const override;
 
  private:
   int64_t snapshot_id_;
