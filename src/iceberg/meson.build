@@ -51,6 +51,7 @@ iceberg_sources = files(
     'file_writer.cc',
     'inheritable_metadata.cc',
     'json_internal.cc',
+    'manifest_adapter.cc',
     'manifest_entry.cc',
     'manifest_list.cc',
     'manifest_reader.cc',
@@ -83,6 +84,9 @@ iceberg_sources = files(
     'util/murmurhash3_internal.cc',
     'util/timepoint.cc',
     'util/uuid.cc',
+    'v1_metadata.cc',
+    'v2_metadata.cc',
+    'v3_metadata.cc',
 )
 
 # CRoaring does not export symbols, so on Windows it must
