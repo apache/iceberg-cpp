@@ -22,6 +22,7 @@
 #include <memory>
 #include <string>
 
+#include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -35,5 +36,8 @@ void ReadJsonFile(const std::string& file_name, std::string* content);
 /// \brief Read table metadata from a JSON file in the test resources directory
 void ReadTableMetadata(const std::string& file_name,
                        std::unique_ptr<TableMetadata>* metadata);
+
+/// \brief Read table metadata from a JSON file and return the Result directly
+Result<std::unique_ptr<TableMetadata>> ReadTableMetadata(const std::string& file_name);
 
 }  // namespace iceberg

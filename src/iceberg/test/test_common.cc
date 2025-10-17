@@ -21,7 +21,6 @@
 
 #include <filesystem>
 #include <fstream>
-#include <optional>
 #include <sstream>
 
 #include <gtest/gtest.h>
@@ -48,14 +47,18 @@ void ReadJsonFile(const std::string& file_name, std::string* content) {
 
 void ReadTableMetadata(const std::string& file_name,
                        std::unique_ptr<TableMetadata>* metadata) {
+  auto result = ReadTableMetadata(file_name);
+  ASSERT_TRUE(result.has_value()) << "Failed to parse table metadata from " << file_name
+                                  << ": " << result.error().message;
+  *metadata = std::move(result.value());
+}
+
+Result<std::unique_ptr<TableMetadata>> ReadTableMetadata(const std::string& file_name) {
   std::string json_content;
   ReadJsonFile(file_name, &json_content);
 
   nlohmann::json json = nlohmann::json::parse(json_content);
-  auto result = TableMetadataFromJson(json);
-  ASSERT_TRUE(result.has_value()) << "Failed to parse table metadata from " << file_name
-                                  << ": " << result.error().message;
-  *metadata = std::move(result.value());
+  return TableMetadataFromJson(json);
 }
 
 }  // namespace iceberg

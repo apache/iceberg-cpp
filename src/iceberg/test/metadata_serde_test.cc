@@ -17,13 +17,10 @@
  * under the License.
  */
 
-#include <filesystem>
-#include <fstream>
 #include <optional>
 #include <string>
 
 #include <gtest/gtest.h>
-#include <nlohmann/json.hpp>
 
 #include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"
@@ -32,174 +29,387 @@
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_field.h"
 #include "iceberg/sort_order.h"
+#include "iceberg/statistics_file.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
+#include "matchers.h"
 #include "test_common.h"
 
 namespace iceberg {
 
 namespace {
 
-class MetadataSerdeTest : public ::testing::Test {
- protected:
-  void SetUp() override {}
-};
+void ReadTableMetadataExpectError(const std::string& file_name,
+                                  const std::string& expected_error_substr) {
+  auto result = ReadTableMetadata(file_name);
+  ASSERT_FALSE(result.has_value()) << "Expected parsing to fail for " << file_name;
+  EXPECT_THAT(result, HasErrorMessage(expected_error_substr));
+}
+
+void AssertSchema(const TableMetadata& metadata, const Schema& expected_schema) {
+  auto schema = metadata.Schema();
+  ASSERT_TRUE(schema.has_value());
+  EXPECT_EQ(*(schema.value().get()), expected_schema);
+}
+
+void AssertSchemaById(const TableMetadata& metadata, int32_t schema_id,
+                      const Schema& expected_schema) {
+  auto schema = metadata.SchemaById(schema_id);
+  ASSERT_TRUE(schema.has_value());
+  EXPECT_EQ(*(schema.value().get()), expected_schema);
+}
+
+void AssertPartitionSpec(const TableMetadata& metadata,
+                         const PartitionSpec& expected_spec) {
+  auto partition_spec = metadata.PartitionSpec();
+  ASSERT_TRUE(partition_spec.has_value());
+  EXPECT_EQ(*(partition_spec.value().get()), expected_spec);
+}
+
+void AssertSortOrder(const TableMetadata& metadata,
+                     const SortOrder& expected_sort_order) {
+  auto sort_order = metadata.SortOrder();
+  ASSERT_TRUE(sort_order.has_value());
+  EXPECT_EQ(*(sort_order.value().get()), expected_sort_order);
+}
+
+void AssertSnapshot(const TableMetadata& metadata, const Snapshot& expected_snapshot) {
+  auto snapshot = metadata.Snapshot();
+  ASSERT_TRUE(snapshot.has_value());
+  EXPECT_EQ(*snapshot.value(), expected_snapshot);
+}
+
+void AssertSnapshotById(const TableMetadata& metadata, int64_t snapshot_id,
+                        const Snapshot& expected_snapshot) {
+  auto snapshot = metadata.SnapshotById(snapshot_id);
+  ASSERT_TRUE(snapshot.has_value());
+  EXPECT_EQ(*snapshot.value(), expected_snapshot);
+}
 
 }  // namespace
 
-TEST_F(MetadataSerdeTest, DeserializeV1Valid) {
+TEST(MetadataSerdeTest, DeserializeV1Valid) {
   std::unique_ptr<TableMetadata> metadata;
   ASSERT_NO_FATAL_FAILURE(ReadTableMetadata("TableMetadataV1Valid.json", &metadata));
 
-  EXPECT_EQ(metadata->format_version, 1);
-  EXPECT_EQ(metadata->table_uuid, "d20125c8-7284-442c-9aea-15fee620737c");
-  EXPECT_EQ(metadata->location, "s3://bucket/test/location");
-  EXPECT_EQ(metadata->last_updated_ms.time_since_epoch().count(), 1602638573874);
-  EXPECT_EQ(metadata->last_column_id, 3);
-  EXPECT_EQ(metadata->current_snapshot_id, -1);
+  auto expected_schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "x", int64()),
+                               SchemaField::MakeRequired(2, "y", int64()),
+                               SchemaField::MakeRequired(3, "z", int64())},
+      /*schema_id=*/std::nullopt);
 
-  // Compare schema
-  EXPECT_EQ(metadata->current_schema_id, std::nullopt);
-  std::vector<SchemaField> schema_fields;
-  schema_fields.emplace_back(/*field_id=*/1, "x", iceberg::int64(),
-                             /*optional=*/false);
-  schema_fields.emplace_back(/*field_id=*/2, "y", iceberg::int64(),
-                             /*optional=*/false);
-  schema_fields.emplace_back(/*field_id=*/3, "z", iceberg::int64(),
-                             /*optional=*/false);
-  auto expected_schema =
-      std::make_shared<Schema>(schema_fields, /*schema_id=*/std::nullopt);
-  auto schema = metadata->Schema();
-  ASSERT_TRUE(schema.has_value());
-  EXPECT_EQ(*(schema.value().get()), *expected_schema);
+  auto expected_spec = std::make_shared<PartitionSpec>(
+      expected_schema, /*spec_id=*/0,
+      std::vector<PartitionField>{PartitionField(/*source_id=*/1, /*field_id=*/1000, "x",
+                                                 Transform::Identity())});
 
-  // Compare partition spec
-  std::vector<PartitionField> partition_fields;
-  partition_fields.emplace_back(/*source_id=*/1, /*field_id=*/1000, /*name=*/"x",
-                                Transform::Identity());
-  auto expected_spec =
-      std::make_shared<PartitionSpec>(expected_schema, /*spec_id=*/0, partition_fields);
-  auto partition_spec = metadata->PartitionSpec();
-  ASSERT_TRUE(partition_spec.has_value());
-  EXPECT_EQ(*(partition_spec.value().get()), *expected_spec);
-  auto snapshot = metadata->Snapshot();
-  ASSERT_FALSE(snapshot.has_value());
+  TableMetadata expected{
+      .format_version = 1,
+      .table_uuid = "d20125c8-7284-442c-9aea-15fee620737c",
+      .location = "s3://bucket/test/location",
+      .last_sequence_number = 0,
+      .last_updated_ms = TimePointMsFromUnixMs(1602638573874).value(),
+      .last_column_id = 3,
+      .schemas = {expected_schema},
+      .current_schema_id = std::nullopt,
+      .partition_specs = {expected_spec},
+      .default_spec_id = 0,
+      .last_partition_id = 1000,
+      .current_snapshot_id = -1,
+      .sort_orders = {SortOrder::Unsorted()},
+      .default_sort_order_id = 0,
+      .next_row_id = 0,
+  };
+
+  ASSERT_EQ(*metadata, expected);
+  AssertSchema(*metadata, *expected_schema);
+  AssertPartitionSpec(*metadata, *expected_spec);
+  ASSERT_FALSE(metadata->Snapshot().has_value());
 }
 
-TEST_F(MetadataSerdeTest, DeserializeV2Valid) {
+TEST(MetadataSerdeTest, DeserializeV2Valid) {
   std::unique_ptr<TableMetadata> metadata;
   ASSERT_NO_FATAL_FAILURE(ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
 
-  EXPECT_EQ(metadata->format_version, 2);
-  EXPECT_EQ(metadata->table_uuid, "9c12d441-03fe-4693-9a96-a0705ddf69c1");
-  EXPECT_EQ(metadata->location, "s3://bucket/test/location");
-  EXPECT_EQ(metadata->last_updated_ms.time_since_epoch().count(), 1602638573590);
-  EXPECT_EQ(metadata->last_column_id, 3);
+  auto expected_schema_1 = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField(/*field_id=*/1, "x", iceberg::int64(),
+                                           /*optional=*/false)},
+      /*schema_id=*/0);
 
-  // Compare schema
-  EXPECT_EQ(metadata->current_schema_id, 1);
-  std::vector<SchemaField> schema_fields;
-  schema_fields.emplace_back(/*field_id=*/1, "x", iceberg::int64(),
-                             /*optional=*/false);
-  schema_fields.emplace_back(/*field_id=*/2, "y", iceberg::int64(),
-                             /*optional=*/false);
-  schema_fields.emplace_back(/*field_id=*/3, "z", iceberg::int64(),
-                             /*optional=*/false);
-  auto expected_schema = std::make_shared<Schema>(schema_fields, /*schema_id=*/1);
-  auto schema = metadata->Schema();
-  ASSERT_TRUE(schema.has_value());
-  EXPECT_EQ(*(schema.value().get()), *expected_schema);
+  auto expected_schema_2 = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "x", int64()),
+                               SchemaField::MakeRequired(2, "y", int64()),
+                               SchemaField::MakeRequired(3, "z", int64())},
+      /*schema_id=*/1);
 
-  // schema with ID 1
-  auto schema_v1 = metadata->SchemaById(1);
-  ASSERT_TRUE(schema_v1.has_value());
-  EXPECT_EQ(*(schema_v1.value().get()), *expected_schema);
+  auto expected_spec = std::make_shared<PartitionSpec>(
+      expected_schema_2, /*spec_id=*/0,
+      std::vector<PartitionField>{PartitionField(/*source_id=*/1, /*field_id=*/1000, "x",
+                                                 Transform::Identity())});
 
-  // schema with ID 0
-  auto expected_schema_v0 = std::make_shared<Schema>(
-      std::vector<SchemaField>{schema_fields.at(0)}, /*schema_id=*/0);
-  auto schema_v0 = metadata->SchemaById(0);
-  ASSERT_TRUE(schema_v0.has_value());
-  EXPECT_EQ(*(schema_v0.value().get()), *expected_schema_v0);
+  auto expected_sort_order = std::make_shared<SortOrder>(
+      /*order_id=*/3,
+      std::vector<SortField>{SortField(/*source_id=*/2, Transform::Identity(),
+                                       SortDirection::kAscending, NullOrder::kFirst),
+                             SortField(/*source_id=*/3, Transform::Bucket(4),
+                                       SortDirection::kDescending, NullOrder::kLast)});
 
-  // Compare partition spec
-  EXPECT_EQ(metadata->default_spec_id, 0);
-  std::vector<PartitionField> partition_fields;
-  partition_fields.emplace_back(/*source_id=*/1, /*field_id=*/1000, /*name=*/"x",
-                                Transform::Identity());
+  auto expected_snapshot_1 = std::make_shared<Snapshot>(Snapshot{
+      .snapshot_id = 3051729675574597004,
+      .sequence_number = 0,
+      .timestamp_ms = TimePointMsFromUnixMs(1515100955770).value(),
+      .manifest_list = "s3://a/b/1.avro",
+      .summary = {{"operation", "append"}},
+  });
+
+  auto expected_snapshot_2 = std::make_shared<Snapshot>(Snapshot{
+      .snapshot_id = 3055729675574597004,
+      .parent_snapshot_id = 3051729675574597004,
+      .sequence_number = 1,
+      .timestamp_ms = TimePointMsFromUnixMs(1555100955770).value(),
+      .manifest_list = "s3://a/b/2.avro",
+      .summary = {{"operation", "append"}},
+      .schema_id = 1,
+  });
+
+  TableMetadata expected{
+      .format_version = 2,
+      .table_uuid = "9c12d441-03fe-4693-9a96-a0705ddf69c1",
+      .location = "s3://bucket/test/location",
+      .last_sequence_number = 34,
+      .last_updated_ms = TimePointMsFromUnixMs(1602638573590).value(),
+      .last_column_id = 3,
+      .schemas = {expected_schema_1, expected_schema_2},
+      .current_schema_id = 1,
+      .partition_specs = {expected_spec},
+      .default_spec_id = 0,
+      .last_partition_id = 1000,
+      .current_snapshot_id = 3055729675574597004,
+      .snapshots = {expected_snapshot_1, expected_snapshot_2},
+      .snapshot_log = {SnapshotLogEntry{
+                           .timestamp_ms = TimePointMsFromUnixMs(1515100955770).value(),
+                           .snapshot_id = 3051729675574597004},
+                       SnapshotLogEntry{
+                           .timestamp_ms = TimePointMsFromUnixMs(1555100955770).value(),
+                           .snapshot_id = 3055729675574597004}},
+      .sort_orders = {expected_sort_order},
+      .default_sort_order_id = 3,
+      .refs = {{"main", std::make_shared<SnapshotRef>(
+                            SnapshotRef{.snapshot_id = 3055729675574597004,
+                                        .retention = SnapshotRef::Branch{}})}},
+      .next_row_id = 0,
+  };
+
+  ASSERT_EQ(*metadata, expected);
+  AssertSchema(*metadata, *expected_schema_2);
+  AssertSchemaById(*metadata, 0, *expected_schema_1);
+  AssertSchemaById(*metadata, 1, *expected_schema_2);
+  AssertPartitionSpec(*metadata, *expected_spec);
+  AssertSortOrder(*metadata, *expected_sort_order);
+  AssertSnapshot(*metadata, *expected_snapshot_2);
+  AssertSnapshotById(*metadata, 3051729675574597004, *expected_snapshot_1);
+  AssertSnapshotById(*metadata, 3055729675574597004, *expected_snapshot_2);
+}
+
+TEST(MetadataSerdeTest, DeserializeV2ValidMinimal) {
+  std::unique_ptr<TableMetadata> metadata;
+  ASSERT_NO_FATAL_FAILURE(
+      ReadTableMetadata("TableMetadataV2ValidMinimal.json", &metadata));
+
+  auto expected_schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "x", int64()),
+                               SchemaField::MakeRequired(2, "y", int64(), "comment"),
+                               SchemaField::MakeRequired(3, "z", int64())},
+      /*schema_id=*/0);
+
+  auto expected_spec = std::make_shared<PartitionSpec>(
+      expected_schema, /*spec_id=*/0,
+      std::vector<PartitionField>{PartitionField(/*source_id=*/1, /*field_id=*/1000, "x",
+                                                 Transform::Identity())});
+
+  auto expected_sort_order = std::make_shared<SortOrder>(
+      /*order_id=*/3, std::vector<SortField>{
+                          SortField(/*source_id=*/2, Transform::Identity(),
+                                    SortDirection::kAscending, NullOrder::kFirst),
+                          SortField(/*source_id=*/3, Transform::Bucket(4),
+                                    SortDirection::kDescending, NullOrder::kLast),
+                      });
+
+  TableMetadata expected{
+      .format_version = 2,
+      .table_uuid = "9c12d441-03fe-4693-9a96-a0705ddf69c1",
+      .location = "s3://bucket/test/location",
+      .last_sequence_number = 34,
+      .last_updated_ms = TimePointMsFromUnixMs(1602638573590).value(),
+      .last_column_id = 3,
+      .schemas = {expected_schema},
+      .current_schema_id = 0,
+      .partition_specs = {expected_spec},
+      .default_spec_id = 0,
+      .last_partition_id = 1000,
+      .current_snapshot_id = -1,
+      .sort_orders = {expected_sort_order},
+      .default_sort_order_id = 3,
+      .next_row_id = 0,
+  };
+
+  ASSERT_EQ(*metadata, expected);
+  AssertSchema(*metadata, *expected_schema);
+  AssertPartitionSpec(*metadata, *expected_spec);
+  AssertSortOrder(*metadata, *expected_sort_order);
+  ASSERT_FALSE(metadata->Snapshot().has_value());
+}
+
+TEST(MetadataSerdeTest, DeserializeStatisticsFiles) {
+  std::unique_ptr<TableMetadata> metadata;
+  ASSERT_NO_FATAL_FAILURE(
+      ReadTableMetadata("TableMetadataStatisticsFiles.json", &metadata));
+
+  auto expected_schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField(/*field_id=*/1, "x", iceberg::int64(),
+                                           /*optional=*/false)},
+      /*schema_id=*/0);
+
   auto expected_spec = std::make_shared<PartitionSpec>(expected_schema, /*spec_id=*/0,
-                                                       std::move(partition_fields));
-  auto partition_spec = metadata->PartitionSpec();
-  ASSERT_TRUE(partition_spec.has_value());
-  EXPECT_EQ(*(partition_spec.value().get()), *expected_spec);
+                                                       std::vector<PartitionField>{});
 
-  // Compare sort order
-  EXPECT_EQ(metadata->default_sort_order_id, 3);
-  std::vector<SortField> sort_fields;
-  sort_fields.emplace_back(/*source_id=*/2, Transform::Identity(),
-                           SortDirection::kAscending, NullOrder::kFirst);
-  sort_fields.emplace_back(/*source_id=*/3, Transform::Bucket(4),
-                           SortDirection::kDescending, NullOrder::kLast);
-  auto expected_sort_order =
-      std::make_shared<SortOrder>(/*order_id=*/3, std::move(sort_fields));
-  auto sort_order = metadata->SortOrder();
-  ASSERT_TRUE(sort_order.has_value());
-  EXPECT_EQ(*(sort_order.value().get()), *expected_sort_order);
+  auto expected_snapshot = std::make_shared<Snapshot>(Snapshot{
+      .snapshot_id = 3055729675574597004,
+      .sequence_number = 1,
+      .timestamp_ms = TimePointMsFromUnixMs(1555100955770).value(),
+      .manifest_list = "s3://a/b/2.avro",
+      .summary = {{"operation", "append"}},
+      .schema_id = 0,
+  });
 
-  // Compare snapshot
-  EXPECT_EQ(metadata->current_snapshot_id, 3055729675574597004);
-  auto snapshot = metadata->Snapshot();
-  ASSERT_TRUE(snapshot.has_value());
-  EXPECT_EQ(snapshot.value()->snapshot_id, 3055729675574597004);
+  auto expected_stats_file = std::make_shared<StatisticsFile>(StatisticsFile{
+      .snapshot_id = 3055729675574597004,
+      .path = "s3://a/b/stats.puffin",
+      .file_size_in_bytes = 413,
+      .file_footer_size_in_bytes = 42,
+      .blob_metadata =
+          {
+              BlobMetadata{
+                  .type = "ndv",
+                  .source_snapshot_id = 3055729675574597004,
+                  .source_snapshot_sequence_number = 1,
+                  .fields = {1},
+                  .properties = {},
+              },
+          },
+  });
 
-  // Compare snapshots
-  std::vector<Snapshot> expected_snapshots{
-      {
-          .snapshot_id = 3051729675574597004,
-          .sequence_number = 0,
-          .timestamp_ms = TimePointMsFromUnixMs(1515100955770).value(),
-          .manifest_list = "s3://a/b/1.avro",
-          .summary = {{"operation", "append"}},
-      },
-      {
+  TableMetadata expected{
+      .format_version = 2,
+      .table_uuid = "9c12d441-03fe-4693-9a96-a0705ddf69c1",
+      .location = "s3://bucket/test/location",
+      .last_sequence_number = 34,
+      .last_updated_ms = TimePointMsFromUnixMs(1602638573590).value(),
+      .last_column_id = 3,
+      .schemas = {expected_schema},
+      .current_schema_id = 0,
+      .partition_specs = {expected_spec},
+      .default_spec_id = 0,
+      .last_partition_id = 1000,
+      .properties = {},
+      .current_snapshot_id = 3055729675574597004,
+      .snapshots = {expected_snapshot},
+      .snapshot_log = {},
+      .metadata_log = {},
+      .sort_orders = {SortOrder::Unsorted()},
+      .default_sort_order_id = 0,
+      .refs = {{"main", std::make_shared<SnapshotRef>(
+                            SnapshotRef{.snapshot_id = 3055729675574597004,
+                                        .retention = SnapshotRef::Branch{}})}},
+      .statistics = {expected_stats_file},
+      .partition_statistics = {},
+      .next_row_id = 0,
+  };
+
+  ASSERT_EQ(*metadata, expected);
+}
+
+TEST(MetadataSerdeTest, DeserializePartitionStatisticsFiles) {
+  std::unique_ptr<TableMetadata> metadata;
+  ASSERT_NO_FATAL_FAILURE(
+      ReadTableMetadata("TableMetadataPartitionStatisticsFiles.json", &metadata));
+
+  TableMetadata expected{
+      .format_version = 2,
+      .table_uuid = "9c12d441-03fe-4693-9a96-a0705ddf69c1",
+      .location = "s3://bucket/test/location",
+      .last_sequence_number = 34,
+      .last_updated_ms = TimePointMsFromUnixMs(1602638573590).value(),
+      .last_column_id = 3,
+      .schemas = {std::make_shared<Schema>(
+          std::vector<SchemaField>{SchemaField(/*field_id=*/1, "x", iceberg::int64(),
+                                               /*optional=*/false)},
+          /*schema_id=*/0)},
+      .current_schema_id = 0,
+      .partition_specs = {PartitionSpec::Unpartitioned()},
+      .default_spec_id = 0,
+      .last_partition_id = 1000,
+      .properties = {},
+      .current_snapshot_id = 3055729675574597004,
+      .snapshots = {std::make_shared<Snapshot>(Snapshot{
           .snapshot_id = 3055729675574597004,
-          .parent_snapshot_id = 3051729675574597004,
           .sequence_number = 1,
           .timestamp_ms = TimePointMsFromUnixMs(1555100955770).value(),
           .manifest_list = "s3://a/b/2.avro",
           .summary = {{"operation", "append"}},
-          .schema_id = 1,
-      }};
-  EXPECT_EQ(metadata->snapshots.size(), expected_snapshots.size());
-  for (size_t i = 0; i < expected_snapshots.size(); ++i) {
-    EXPECT_EQ(*metadata->snapshots[i], expected_snapshots[i]);
-  }
+          .schema_id = 0,
+      })},
+      .snapshot_log = {},
+      .metadata_log = {},
+      .sort_orders = {SortOrder::Unsorted()},
+      .default_sort_order_id = 0,
+      .refs = {{"main", std::make_shared<SnapshotRef>(
+                            SnapshotRef{.snapshot_id = 3055729675574597004,
+                                        .retention = SnapshotRef::Branch{}})}},
+      .statistics = {},
+      .partition_statistics = {std::make_shared<PartitionStatisticsFile>(
+          PartitionStatisticsFile{.snapshot_id = 3055729675574597004,
+                                  .path = "s3://a/b/partition-stats.parquet",
+                                  .file_size_in_bytes = 43})},
+      .next_row_id = 0,
+  };
 
-  // snapshot with ID 3051729675574597004
-  auto snapshot_v0 = metadata->SnapshotById(3051729675574597004);
-  ASSERT_TRUE(snapshot_v0.has_value());
-  EXPECT_EQ(*snapshot_v0.value(), expected_snapshots[0]);
+  ASSERT_EQ(*metadata, expected);
+}
 
-  // snapshot with ID 3055729675574597004
-  auto snapshot_v1 = metadata->SnapshotById(3055729675574597004);
-  ASSERT_TRUE(snapshot_v1.has_value());
-  EXPECT_EQ(*snapshot_v1.value(), expected_snapshots[1]);
+TEST(MetadataSerdeTest, DeserializeUnsupportedVersion) {
+  ReadTableMetadataExpectError("TableMetadataUnsupportedVersion.json",
+                               "Cannot read unsupported version");
+}
 
-  // Compare snapshot logs
-  std::vector<SnapshotLogEntry> expected_snapshot_log{
-      {
-          .timestamp_ms = TimePointMsFromUnixMs(1515100955770).value(),
-          .snapshot_id = 3051729675574597004,
-      },
-      {
-          .timestamp_ms = TimePointMsFromUnixMs(1555100955770).value(),
-          .snapshot_id = 3055729675574597004,
-      }};
-  EXPECT_EQ(metadata->snapshot_log.size(), 2);
-  for (size_t i = 0; i < expected_snapshots.size(); ++i) {
-    EXPECT_EQ(metadata->snapshot_log[i], expected_snapshot_log[i]);
-  }
+TEST(MetadataSerdeTest, DeserializeV1MissingSchemaType) {
+  ReadTableMetadataExpectError("TableMetadataV1MissingSchemaType.json", "Missing 'type'");
+}
+
+TEST(MetadataSerdeTest, DeserializeV2CurrentSchemaNotFound) {
+  ReadTableMetadataExpectError("TableMetadataV2CurrentSchemaNotFound.json",
+                               "Cannot find schema with current-schema-id");
+}
+
+TEST(MetadataSerdeTest, DeserializeV2MissingLastPartitionId) {
+  ReadTableMetadataExpectError("TableMetadataV2MissingLastPartitionId.json",
+                               "last-partition-id must exist");
+}
+
+TEST(MetadataSerdeTest, DeserializeV2MissingPartitionSpecs) {
+  ReadTableMetadataExpectError("TableMetadataV2MissingPartitionSpecs.json",
+                               "partition-specs must exist");
+}
+
+TEST(MetadataSerdeTest, DeserializeV2MissingSchemas) {
+  ReadTableMetadataExpectError("TableMetadataV2MissingSchemas.json",
+                               "schemas must exist");
+}
+
+TEST(MetadataSerdeTest, DeserializeV2MissingSortOrder) {
+  ReadTableMetadataExpectError("TableMetadataV2MissingSortOrder.json",
+                               "sort-orders must exist");
 }
 
 }  // namespace iceberg

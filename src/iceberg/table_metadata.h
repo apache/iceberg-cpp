@@ -135,7 +135,8 @@ struct ICEBERG_EXPORT TableMetadata {
   /// \brief Get the snapshot of this table with the given id
   Result<std::shared_ptr<iceberg::Snapshot>> SnapshotById(int64_t snapshot_id) const;
 
-  friend bool operator==(const TableMetadata& lhs, const TableMetadata& rhs);
+  ICEBERG_EXPORT friend bool operator==(const TableMetadata& lhs,
+                                        const TableMetadata& rhs);
 };
 
 /// \brief Returns a string representation of a SnapshotLogEntry
