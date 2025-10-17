@@ -25,178 +25,182 @@
 
 namespace iceberg {
 
-// AssignTableUUID
+namespace table {
 
-void AssignTableUUID::ApplyTo(TableMetadataBuilder& builder) const {
+// AssignUUID
+
+void AssignUUID::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status AssignTableUUID::GenerateRequirements(TableUpdateContext& context) const {
+Status AssignUUID::GenerateRequirements(TableUpdateContext& context) const {
   return NotImplemented("AssignTableUUID::GenerateRequirements not implemented");
 }
 
-// UpgradeTableFormatVersion
+// UpgradeFormatVersion
 
-void UpgradeTableFormatVersion::ApplyTo(TableMetadataBuilder& builder) const {
+void UpgradeFormatVersion::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status UpgradeTableFormatVersion::GenerateRequirements(
+Status UpgradeFormatVersion::GenerateRequirements(
     TableUpdateContext& context) const {
   return NotImplemented(
       "UpgradeTableFormatVersion::GenerateRequirements not implemented");
 }
 
-// AddTableSchema
+// AddSchema
 
-void AddTableSchema::ApplyTo(TableMetadataBuilder& builder) const {
+void AddSchema::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status AddTableSchema::GenerateRequirements(TableUpdateContext& context) const {
+Status AddSchema::GenerateRequirements(TableUpdateContext& context) const {
   return NotImplemented("AddTableSchema::GenerateRequirements not implemented");
 }
 
-// SetCurrentTableSchema
+// SetCurrentSchema
 
-void SetCurrentTableSchema::ApplyTo(TableMetadataBuilder& builder) const {
+void SetCurrentSchema::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status SetCurrentTableSchema::GenerateRequirements(TableUpdateContext& context) const {
+Status SetCurrentSchema::GenerateRequirements(TableUpdateContext& context) const {
   return NotImplemented("SetCurrentTableSchema::GenerateRequirements not implemented");
 }
 
-// AddTablePartitionSpec
+// AddPartitionSpec
 
-void AddTablePartitionSpec::ApplyTo(TableMetadataBuilder& builder) const {
+void AddPartitionSpec::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status AddTablePartitionSpec::GenerateRequirements(TableUpdateContext& context) const {
+Status AddPartitionSpec::GenerateRequirements(TableUpdateContext& context) const {
   return NotImplemented("AddTablePartitionSpec::GenerateRequirements not implemented");
 }
 
-// SetDefaultTablePartitionSpec
+// SetDefaultPartitionSpec
 
-void SetDefaultTablePartitionSpec::ApplyTo(TableMetadataBuilder& builder) const {
+void SetDefaultPartitionSpec::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status SetDefaultTablePartitionSpec::GenerateRequirements(
+Status SetDefaultPartitionSpec::GenerateRequirements(
     TableUpdateContext& context) const {
   return NotImplemented(
       "SetDefaultTablePartitionSpec::GenerateRequirements not implemented");
 }
 
-// RemoveTablePartitionSpecs
+// RemovePartitionSpecs
 
-void RemoveTablePartitionSpecs::ApplyTo(TableMetadataBuilder& builder) const {
+void RemovePartitionSpecs::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status RemoveTablePartitionSpecs::GenerateRequirements(
+Status RemovePartitionSpecs::GenerateRequirements(
     TableUpdateContext& context) const {
   return NotImplemented(
       "RemoveTablePartitionSpecs::GenerateRequirements not implemented");
 }
 
-// RemoveTableSchemas
+// RemoveSchemas
 
-void RemoveTableSchemas::ApplyTo(TableMetadataBuilder& builder) const {
+void RemoveSchemas::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status RemoveTableSchemas::GenerateRequirements(TableUpdateContext& context) const {
+Status RemoveSchemas::GenerateRequirements(TableUpdateContext& context) const {
   return NotImplemented("RemoveTableSchemas::GenerateRequirements not implemented");
 }
 
-// AddTableSortOrder
+// AddSortOrder
 
-void AddTableSortOrder::ApplyTo(TableMetadataBuilder& builder) const {
+void AddSortOrder::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status AddTableSortOrder::GenerateRequirements(TableUpdateContext& context) const {
+Status AddSortOrder::GenerateRequirements(TableUpdateContext& context) const {
   return NotImplemented("AddTableSortOrder::GenerateRequirements not implemented");
 }
 
-// SetDefaultTableSortOrder
+// SetDefaultSortOrder
 
-void SetDefaultTableSortOrder::ApplyTo(TableMetadataBuilder& builder) const {
+void SetDefaultSortOrder::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status SetDefaultTableSortOrder::GenerateRequirements(TableUpdateContext& context) const {
+Status SetDefaultSortOrder::GenerateRequirements(TableUpdateContext& context) const {
   return NotImplemented("SetDefaultTableSortOrder::GenerateRequirements not implemented");
 }
 
-// AddTableSnapshot
+// AddSnapshot
 
-void AddTableSnapshot::ApplyTo(TableMetadataBuilder& builder) const {
+void AddSnapshot::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status AddTableSnapshot::GenerateRequirements(TableUpdateContext& context) const {
+Status AddSnapshot::GenerateRequirements(TableUpdateContext& context) const {
   return NotImplemented("AddTableSnapshot::GenerateRequirements not implemented");
 }
 
-// RemoveTableSnapshots
+// RemoveSnapshots
 
-void RemoveTableSnapshots::ApplyTo(TableMetadataBuilder& builder) const {}
+void RemoveSnapshots::ApplyTo(TableMetadataBuilder& builder) const {}
 
-Status RemoveTableSnapshots::GenerateRequirements(TableUpdateContext& context) const {
+Status RemoveSnapshots::GenerateRequirements(TableUpdateContext& context) const {
   return NotImplemented("RemoveTableSnapshots::GenerateRequirements not implemented");
 }
 
-// RemoveTableSnapshotRef
+// RemoveSnapshotRef
 
-void RemoveTableSnapshotRef::ApplyTo(TableMetadataBuilder& builder) const {
+void RemoveSnapshotRef::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status RemoveTableSnapshotRef::GenerateRequirements(TableUpdateContext& context) const {
+Status RemoveSnapshotRef::GenerateRequirements(TableUpdateContext& context) const {
   return NotImplemented("RemoveTableSnapshotRef::GenerateRequirements not implemented");
 }
 
-// SetTableSnapshotRef
+// SetSnapshotRef
 
-void SetTableSnapshotRef::ApplyTo(TableMetadataBuilder& builder) const {
+void SetSnapshotRef::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status SetTableSnapshotRef::GenerateRequirements(TableUpdateContext& context) const {
+Status SetSnapshotRef::GenerateRequirements(TableUpdateContext& context) const {
   return NotImplemented("SetTableSnapshotRef::GenerateRequirements not implemented");
 }
 
-// SetTableProperties
+// SetProperties
 
-void SetTableProperties::ApplyTo(TableMetadataBuilder& builder) const {
+void SetProperties::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status SetTableProperties::GenerateRequirements(TableUpdateContext& context) const {
+Status SetProperties::GenerateRequirements(TableUpdateContext& context) const {
   return NotImplemented("SetTableProperties::GenerateRequirements not implemented");
 }
 
-// RemoveTableProperties
+// RemoveProperties
 
-void RemoveTableProperties::ApplyTo(TableMetadataBuilder& builder) const {
+void RemoveProperties::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status RemoveTableProperties::GenerateRequirements(TableUpdateContext& context) const {
+Status RemoveProperties::GenerateRequirements(TableUpdateContext& context) const {
   return NotImplemented("RemoveTableProperties::GenerateRequirements not implemented");
 }
 
-// SetTableLocation
+// SetLocation
 
-void SetTableLocation::ApplyTo(TableMetadataBuilder& builder) const {
+void SetLocation::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status SetTableLocation::GenerateRequirements(TableUpdateContext& context) const {
+Status SetLocation::GenerateRequirements(TableUpdateContext& context) const {
   return NotImplemented("SetTableLocation::GenerateRequirements not implemented");
 }
+
+}  // namespace table
 
 }  // namespace iceberg

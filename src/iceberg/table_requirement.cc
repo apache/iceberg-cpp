@@ -23,39 +23,43 @@
 
 namespace iceberg {
 
-Status AssertTableDoesNotExist::Validate(const TableMetadata* base) const {
+namespace table {
+
+Status AssertDoesNotExist::Validate(const TableMetadata* base) const {
   return NotImplemented("AssertTableDoesNotExist::Validate not implemented");
 }
 
-Status AssertTableUUID::Validate(const TableMetadata* base) const {
+Status AssertUUID::Validate(const TableMetadata* base) const {
   return NotImplemented("AssertTableUUID::Validate not implemented");
 }
 
-Status AssertTableRefSnapshotID::Validate(const TableMetadata* base) const {
+Status AssertRefSnapshotID::Validate(const TableMetadata* base) const {
   return NotImplemented("AssertTableRefSnapshotID::Validate not implemented");
 }
 
-Status AssertCurrentTableLastAssignedFieldId::Validate(const TableMetadata* base) const {
+Status AssertLastAssignedFieldId::Validate(const TableMetadata* base) const {
   return NotImplemented(
       "AssertCurrentTableLastAssignedFieldId::Validate not implemented");
 }
 
-Status AssertCurrentTableSchemaID::Validate(const TableMetadata* base) const {
+Status AssertCurrentSchemaID::Validate(const TableMetadata* base) const {
   return NotImplemented("AssertCurrentTableSchemaID::Validate not implemented");
 }
 
-Status AssertCurrentTableLastAssignedPartitionId::Validate(
+Status AssertLastAssignedPartitionId::Validate(
     const TableMetadata* base) const {
   return NotImplemented(
       "AssertCurrentTableLastAssignedPartitionId::Validate not implemented");
 }
 
-Status AssertDefaultTableSpecID::Validate(const TableMetadata* base) const {
+Status AssertDefaultSpecID::Validate(const TableMetadata* base) const {
   return NotImplemented("AssertDefaultTableSpecID::Validate not implemented");
 }
 
-Status AssertDefaultTableSortOrderID::Validate(const TableMetadata* base) const {
+Status AssertDefaultSortOrderID::Validate(const TableMetadata* base) const {
   return NotImplemented("AssertDefaultTableSortOrderID::Validate not implemented");
 }
+
+}  // namespace table
 
 }  // namespace iceberg

@@ -62,10 +62,12 @@ class ICEBERG_EXPORT TableUpdate {
   virtual Status GenerateRequirements(TableUpdateContext& context) const = 0;
 };
 
+namespace table {
+
 /// \brief Represents an assignment of a UUID to the table
-class ICEBERG_EXPORT AssignTableUUID : public TableUpdate {
+class ICEBERG_EXPORT AssignUUID : public TableUpdate {
  public:
-  explicit AssignTableUUID(std::string uuid) : uuid_(std::move(uuid)) {}
+  explicit AssignUUID(std::string uuid) : uuid_(std::move(uuid)) {}
 
   const std::string& uuid() const { return uuid_; }
 
@@ -78,9 +80,9 @@ class ICEBERG_EXPORT AssignTableUUID : public TableUpdate {
 };
 
 /// \brief Represents an upgrade of the table format version
-class ICEBERG_EXPORT UpgradeTableFormatVersion : public TableUpdate {
+class ICEBERG_EXPORT UpgradeFormatVersion : public TableUpdate {
  public:
-  explicit UpgradeTableFormatVersion(int8_t format_version)
+  explicit UpgradeFormatVersion(int8_t format_version)
       : format_version_(format_version) {}
 
   int8_t format_version() const { return format_version_; }
@@ -94,9 +96,9 @@ class ICEBERG_EXPORT UpgradeTableFormatVersion : public TableUpdate {
 };
 
 /// \brief Represents adding a new schema to the table
-class ICEBERG_EXPORT AddTableSchema : public TableUpdate {
+class ICEBERG_EXPORT AddSchema : public TableUpdate {
  public:
-  explicit AddTableSchema(std::shared_ptr<Schema> schema, int32_t last_column_id)
+  explicit AddSchema(std::shared_ptr<Schema> schema, int32_t last_column_id)
       : schema_(std::move(schema)), last_column_id_(last_column_id) {}
 
   const std::shared_ptr<Schema>& schema() const { return schema_; }
@@ -113,9 +115,9 @@ class ICEBERG_EXPORT AddTableSchema : public TableUpdate {
 };
 
 /// \brief Represents setting the current schema
-class ICEBERG_EXPORT SetCurrentTableSchema : public TableUpdate {
+class ICEBERG_EXPORT SetCurrentSchema : public TableUpdate {
  public:
-  explicit SetCurrentTableSchema(int32_t schema_id) : schema_id_(schema_id) {}
+  explicit SetCurrentSchema(int32_t schema_id) : schema_id_(schema_id) {}
 
   int32_t schema_id() const { return schema_id_; }
 
@@ -128,9 +130,9 @@ class ICEBERG_EXPORT SetCurrentTableSchema : public TableUpdate {
 };
 
 /// \brief Represents adding a new partition spec to the table
-class ICEBERG_EXPORT AddTablePartitionSpec : public TableUpdate {
+class ICEBERG_EXPORT AddPartitionSpec : public TableUpdate {
  public:
-  explicit AddTablePartitionSpec(std::shared_ptr<PartitionSpec> spec)
+  explicit AddPartitionSpec(std::shared_ptr<PartitionSpec> spec)
       : spec_(std::move(spec)) {}
 
   const std::shared_ptr<PartitionSpec>& spec() const { return spec_; }
@@ -144,9 +146,9 @@ class ICEBERG_EXPORT AddTablePartitionSpec : public TableUpdate {
 };
 
 /// \brief Represents setting the default partition spec
-class ICEBERG_EXPORT SetDefaultTablePartitionSpec : public TableUpdate {
+class ICEBERG_EXPORT SetDefaultPartitionSpec : public TableUpdate {
  public:
-  explicit SetDefaultTablePartitionSpec(int32_t spec_id) : spec_id_(spec_id) {}
+  explicit SetDefaultPartitionSpec(int32_t spec_id) : spec_id_(spec_id) {}
 
   int32_t spec_id() const { return spec_id_; }
 
@@ -159,9 +161,9 @@ class ICEBERG_EXPORT SetDefaultTablePartitionSpec : public TableUpdate {
 };
 
 /// \brief Represents removing partition specs from the table
-class ICEBERG_EXPORT RemoveTablePartitionSpecs : public TableUpdate {
+class ICEBERG_EXPORT RemovePartitionSpecs : public TableUpdate {
  public:
-  explicit RemoveTablePartitionSpecs(std::vector<int32_t> spec_ids)
+  explicit RemovePartitionSpecs(std::vector<int32_t> spec_ids)
       : spec_ids_(std::move(spec_ids)) {}
 
   const std::vector<int32_t>& spec_ids() const { return spec_ids_; }
@@ -175,9 +177,9 @@ class ICEBERG_EXPORT RemoveTablePartitionSpecs : public TableUpdate {
 };
 
 /// \brief Represents removing schemas from the table
-class ICEBERG_EXPORT RemoveTableSchemas : public TableUpdate {
+class ICEBERG_EXPORT RemoveSchemas : public TableUpdate {
  public:
-  explicit RemoveTableSchemas(std::vector<int32_t> schema_ids)
+  explicit RemoveSchemas(std::vector<int32_t> schema_ids)
       : schema_ids_(std::move(schema_ids)) {}
 
   const std::vector<int32_t>& schema_ids() const { return schema_ids_; }
@@ -191,9 +193,9 @@ class ICEBERG_EXPORT RemoveTableSchemas : public TableUpdate {
 };
 
 /// \brief Represents adding a new sort order to the table
-class ICEBERG_EXPORT AddTableSortOrder : public TableUpdate {
+class ICEBERG_EXPORT AddSortOrder : public TableUpdate {
  public:
-  explicit AddTableSortOrder(std::shared_ptr<SortOrder> sort_order)
+  explicit AddSortOrder(std::shared_ptr<SortOrder> sort_order)
       : sort_order_(std::move(sort_order)) {}
 
   const std::shared_ptr<SortOrder>& sort_order() const { return sort_order_; }
@@ -207,9 +209,9 @@ class ICEBERG_EXPORT AddTableSortOrder : public TableUpdate {
 };
 
 /// \brief Represents setting the default sort order
-class ICEBERG_EXPORT SetDefaultTableSortOrder : public TableUpdate {
+class ICEBERG_EXPORT SetDefaultSortOrder : public TableUpdate {
  public:
-  explicit SetDefaultTableSortOrder(int32_t sort_order_id)
+  explicit SetDefaultSortOrder(int32_t sort_order_id)
       : sort_order_id_(sort_order_id) {}
 
   int32_t sort_order_id() const { return sort_order_id_; }
@@ -223,9 +225,9 @@ class ICEBERG_EXPORT SetDefaultTableSortOrder : public TableUpdate {
 };
 
 /// \brief Represents adding a snapshot to the table
-class ICEBERG_EXPORT AddTableSnapshot : public TableUpdate {
+class ICEBERG_EXPORT AddSnapshot : public TableUpdate {
  public:
-  explicit AddTableSnapshot(std::shared_ptr<Snapshot> snapshot)
+  explicit AddSnapshot(std::shared_ptr<Snapshot> snapshot)
       : snapshot_(std::move(snapshot)) {}
 
   const std::shared_ptr<Snapshot>& snapshot() const { return snapshot_; }
@@ -239,9 +241,9 @@ class ICEBERG_EXPORT AddTableSnapshot : public TableUpdate {
 };
 
 /// \brief Represents removing snapshots from the table
-class ICEBERG_EXPORT RemoveTableSnapshots : public TableUpdate {
+class ICEBERG_EXPORT RemoveSnapshots : public TableUpdate {
  public:
-  explicit RemoveTableSnapshots(std::vector<int64_t> snapshot_ids)
+  explicit RemoveSnapshots(std::vector<int64_t> snapshot_ids)
       : snapshot_ids_(std::move(snapshot_ids)) {}
 
   const std::vector<int64_t>& snapshot_ids() const { return snapshot_ids_; }
@@ -255,9 +257,9 @@ class ICEBERG_EXPORT RemoveTableSnapshots : public TableUpdate {
 };
 
 /// \brief Represents removing a snapshot reference
-class ICEBERG_EXPORT RemoveTableSnapshotRef : public TableUpdate {
+class ICEBERG_EXPORT RemoveSnapshotRef : public TableUpdate {
  public:
-  explicit RemoveTableSnapshotRef(std::string ref_name)
+  explicit RemoveSnapshotRef(std::string ref_name)
       : ref_name_(std::move(ref_name)) {}
 
   const std::string& ref_name() const { return ref_name_; }
@@ -271,9 +273,9 @@ class ICEBERG_EXPORT RemoveTableSnapshotRef : public TableUpdate {
 };
 
 /// \brief Represents setting a snapshot reference
-class ICEBERG_EXPORT SetTableSnapshotRef : public TableUpdate {
+class ICEBERG_EXPORT SetSnapshotRef : public TableUpdate {
  public:
-  SetTableSnapshotRef(std::string ref_name, int64_t snapshot_id, SnapshotRefType type,
+  SetSnapshotRef(std::string ref_name, int64_t snapshot_id, SnapshotRefType type,
                       std::optional<int32_t> min_snapshots_to_keep = std::nullopt,
                       std::optional<int64_t> max_snapshot_age_ms = std::nullopt,
                       std::optional<int64_t> max_ref_age_ms = std::nullopt)
@@ -309,9 +311,9 @@ class ICEBERG_EXPORT SetTableSnapshotRef : public TableUpdate {
 };
 
 /// \brief Represents setting table properties
-class ICEBERG_EXPORT SetTableProperties : public TableUpdate {
+class ICEBERG_EXPORT SetProperties : public TableUpdate {
  public:
-  explicit SetTableProperties(std::unordered_map<std::string, std::string> updated)
+  explicit SetProperties(std::unordered_map<std::string, std::string> updated)
       : updated_(std::move(updated)) {}
 
   const std::unordered_map<std::string, std::string>& updated() const { return updated_; }
@@ -325,9 +327,9 @@ class ICEBERG_EXPORT SetTableProperties : public TableUpdate {
 };
 
 /// \brief Represents removing table properties
-class ICEBERG_EXPORT RemoveTableProperties : public TableUpdate {
+class ICEBERG_EXPORT RemoveProperties : public TableUpdate {
  public:
-  explicit RemoveTableProperties(std::vector<std::string> removed)
+  explicit RemoveProperties(std::vector<std::string> removed)
       : removed_(std::move(removed)) {}
 
   const std::vector<std::string>& removed() const { return removed_; }
@@ -341,9 +343,9 @@ class ICEBERG_EXPORT RemoveTableProperties : public TableUpdate {
 };
 
 /// \brief Represents setting the table location
-class ICEBERG_EXPORT SetTableLocation : public TableUpdate {
+class ICEBERG_EXPORT SetLocation : public TableUpdate {
  public:
-  explicit SetTableLocation(std::string location) : location_(std::move(location)) {}
+  explicit SetLocation(std::string location) : location_(std::move(location)) {}
 
   const std::string& location() const { return location_; }
 
@@ -354,5 +356,7 @@ class ICEBERG_EXPORT SetTableLocation : public TableUpdate {
  private:
   std::string location_;
 };
+
+}  // namespace table
 
 }  // namespace iceberg

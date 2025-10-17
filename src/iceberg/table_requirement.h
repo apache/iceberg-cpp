@@ -51,13 +51,15 @@ class ICEBERG_EXPORT TableRequirement {
   virtual Status Validate(const TableMetadata* base) const = 0;
 };
 
+namespace table {
+
 /// \brief Requirement that the table does not exist
 ///
 /// This requirement is used when creating a new table to ensure
 /// it doesn't already exist.
-class ICEBERG_EXPORT AssertTableDoesNotExist : public TableRequirement {
+class ICEBERG_EXPORT AssertDoesNotExist : public TableRequirement {
  public:
-  AssertTableDoesNotExist() = default;
+  AssertDoesNotExist() = default;
 
   Status Validate(const TableMetadata* base) const override;
 };
@@ -66,9 +68,9 @@ class ICEBERG_EXPORT AssertTableDoesNotExist : public TableRequirement {
 ///
 /// This ensures the table hasn't been replaced or recreated between
 /// reading the metadata and attempting to update it.
-class ICEBERG_EXPORT AssertTableUUID : public TableRequirement {
+class ICEBERG_EXPORT AssertUUID : public TableRequirement {
  public:
-  explicit AssertTableUUID(std::string uuid) : uuid_(std::move(uuid)) {}
+  explicit AssertUUID(std::string uuid) : uuid_(std::move(uuid)) {}
 
   const std::string& uuid() const { return uuid_; }
 
@@ -83,9 +85,9 @@ class ICEBERG_EXPORT AssertTableUUID : public TableRequirement {
 /// This requirement validates that a named reference (branch or tag) either:
 /// - Points to the expected snapshot ID
 /// - Does not exist (if snapshot_id is nullopt)
-class ICEBERG_EXPORT AssertTableRefSnapshotID : public TableRequirement {
+class ICEBERG_EXPORT AssertRefSnapshotID : public TableRequirement {
  public:
-  AssertTableRefSnapshotID(std::string ref_name, std::optional<int64_t> snapshot_id)
+  AssertRefSnapshotID(std::string ref_name, std::optional<int64_t> snapshot_id)
       : ref_name_(std::move(ref_name)), snapshot_id_(snapshot_id) {}
 
   const std::string& ref_name() const { return ref_name_; }
@@ -103,9 +105,9 @@ class ICEBERG_EXPORT AssertTableRefSnapshotID : public TableRequirement {
 ///
 /// This ensures the schema hasn't been modified (by adding fields)
 /// since the metadata was read.
-class ICEBERG_EXPORT AssertCurrentTableLastAssignedFieldId : public TableRequirement {
+class ICEBERG_EXPORT AssertLastAssignedFieldId : public TableRequirement {
  public:
-  explicit AssertCurrentTableLastAssignedFieldId(int32_t last_assigned_field_id)
+  explicit AssertLastAssignedFieldId(int32_t last_assigned_field_id)
       : last_assigned_field_id_(last_assigned_field_id) {}
 
   int32_t last_assigned_field_id() const { return last_assigned_field_id_; }
@@ -120,9 +122,9 @@ class ICEBERG_EXPORT AssertCurrentTableLastAssignedFieldId : public TableRequire
 ///
 /// This ensures the active schema hasn't changed since the
 /// metadata was read.
-class ICEBERG_EXPORT AssertCurrentTableSchemaID : public TableRequirement {
+class ICEBERG_EXPORT AssertCurrentSchemaID : public TableRequirement {
  public:
-  explicit AssertCurrentTableSchemaID(int32_t schema_id) : schema_id_(schema_id) {}
+  explicit AssertCurrentSchemaID(int32_t schema_id) : schema_id_(schema_id) {}
 
   int32_t schema_id() const { return schema_id_; }
 
@@ -136,9 +138,9 @@ class ICEBERG_EXPORT AssertCurrentTableSchemaID : public TableRequirement {
 ///
 /// This ensures partition specs haven't been modified since the
 /// metadata was read.
-class ICEBERG_EXPORT AssertCurrentTableLastAssignedPartitionId : public TableRequirement {
+class ICEBERG_EXPORT AssertLastAssignedPartitionId : public TableRequirement {
  public:
-  explicit AssertCurrentTableLastAssignedPartitionId(int32_t last_assigned_partition_id)
+  explicit AssertLastAssignedPartitionId(int32_t last_assigned_partition_id)
       : last_assigned_partition_id_(last_assigned_partition_id) {}
 
   int32_t last_assigned_partition_id() const { return last_assigned_partition_id_; }
@@ -153,9 +155,9 @@ class ICEBERG_EXPORT AssertCurrentTableLastAssignedPartitionId : public TableReq
 ///
 /// This ensures the default partition spec hasn't changed since
 /// the metadata was read.
-class ICEBERG_EXPORT AssertDefaultTableSpecID : public TableRequirement {
+class ICEBERG_EXPORT AssertDefaultSpecID : public TableRequirement {
  public:
-  explicit AssertDefaultTableSpecID(int32_t spec_id) : spec_id_(spec_id) {}
+  explicit AssertDefaultSpecID(int32_t spec_id) : spec_id_(spec_id) {}
 
   int32_t spec_id() const { return spec_id_; }
 
@@ -169,9 +171,9 @@ class ICEBERG_EXPORT AssertDefaultTableSpecID : public TableRequirement {
 ///
 /// This ensures the default sort order hasn't changed since
 /// the metadata was read.
-class ICEBERG_EXPORT AssertDefaultTableSortOrderID : public TableRequirement {
+class ICEBERG_EXPORT AssertDefaultSortOrderID : public TableRequirement {
  public:
-  explicit AssertDefaultTableSortOrderID(int32_t sort_order_id)
+  explicit AssertDefaultSortOrderID(int32_t sort_order_id)
       : sort_order_id_(sort_order_id) {}
 
   int32_t sort_order_id() const { return sort_order_id_; }
@@ -181,5 +183,7 @@ class ICEBERG_EXPORT AssertDefaultTableSortOrderID : public TableRequirement {
  private:
   int32_t sort_order_id_;
 };
+
+}  // namespace table
 
 }  // namespace iceberg
