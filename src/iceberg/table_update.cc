@@ -23,9 +23,7 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_requirements.h"
 
-namespace iceberg {
-
-namespace table {
+namespace iceberg::table {
 
 // AssignUUID
 
@@ -198,6 +196,4 @@ Status SetLocation::GenerateRequirements(TableUpdateContext& context) const {
   return NotImplemented("SetTableLocation::GenerateRequirements not implemented");
 }
 
-}  // namespace table
-
-}  // namespace iceberg
+}  // namespace iceberg::table

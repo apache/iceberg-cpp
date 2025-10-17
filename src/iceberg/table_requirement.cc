@@ -21,9 +21,7 @@
 
 #include "iceberg/table_metadata.h"
 
-namespace iceberg {
-
-namespace table {
+namespace iceberg::table {
 
 Status AssertDoesNotExist::Validate(const TableMetadata* base) const {
   return NotImplemented("AssertTableDoesNotExist::Validate not implemented");
@@ -59,6 +57,4 @@ Status AssertDefaultSortOrderID::Validate(const TableMetadata* base) const {
   return NotImplemented("AssertDefaultTableSortOrderID::Validate not implemented");
 }
 
-}  // namespace table
-
-}  // namespace iceberg
+}  // namespace iceberg::table
