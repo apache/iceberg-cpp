@@ -64,7 +64,7 @@ class ICEBERG_EXPORT PartitionField : public util::Formattable {
 
  private:
   /// \brief Compare two fields for equality.
-  [[nodiscard]] bool Equals(const PartitionField& other) const;
+  bool Equals(const PartitionField& other) const;
 
   int32_t source_id_;
   int32_t field_id_;
