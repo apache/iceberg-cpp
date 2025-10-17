@@ -278,6 +278,13 @@ bool RescaleWouldCauseDataLoss(const Decimal& value, int32_t delta_scale,
     return res->second != 0;
   }
 
+  int128_t max_safe_value = std::numeric_limits<int128_t>::max() / multiplier.value();
+  int128_t min_safe_value = std::numeric_limits<int128_t>::min() / multiplier.value();
+  if (value.value() > max_safe_value || value.value() < min_safe_value) {
+    // Overflow would happen — treat as data loss
+    return true;
+  }
+
   *result = value * multiplier;
   return (value < 0) ? *result > value : *result < value;
 }
