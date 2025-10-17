@@ -25,7 +25,6 @@
 
 #include <nlohmann/json.hpp>
 
-#include "../../build/_deps/fmt-src/include/fmt/color.h"
 #include "iceberg/exception.h"
 #include "iceberg/file_io.h"
 #include "iceberg/json_internal.h"
