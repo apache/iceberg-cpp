@@ -33,7 +33,7 @@
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
-    namespace iceberg {
+                namespace iceberg {
 
   /// \brief Base class for update requirement operations
   ///

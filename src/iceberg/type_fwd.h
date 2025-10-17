@@ -145,7 +145,7 @@ class MapLike;
 class TableUpdate;
 class TableRequirement;
 class TableMetadataBuilder;
-class MetadataUpdateContext;
+class TableUpdateContext;
 
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.

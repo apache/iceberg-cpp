@@ -19,18 +19,18 @@
 
 #include "iceberg/table_requirements.h"
 
+#include "iceberg/exception.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_update.h"
 
 namespace iceberg {
 
-void MetadataUpdateContext::AddRequirement(
-    std::unique_ptr<TableRequirement> requirement) {
-  requirements_.push_back(std::move(requirement));
+void TableUpdateContext::AddRequirement(std::unique_ptr<TableRequirement> requirement) {
+  throw IcebergError("TableUpdateContext::AddRequirement not implemented");
 }
 
-Result<std::vector<std::unique_ptr<TableRequirement>>> MetadataUpdateContext::Build() {
-  return std::move(requirements_);
+Result<std::vector<std::unique_ptr<TableRequirement>>> TableUpdateContext::Build() {
+  return NotImplemented("TableUpdateContext::Build not implemented");
 }
 
 Result<std::vector<std::unique_ptr<TableRequirement>>> TableRequirements::ForCreateTable(

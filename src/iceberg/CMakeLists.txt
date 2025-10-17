@@ -59,8 +59,6 @@ set(ICEBERG_SOURCES
     transform.cc
     transform_function.cc
     type.cc
-    update_requirement.cc
-    update_requirements.cc
     util/conversions.cc
     util/decimal.cc
     util/gzip_internal.cc

@@ -31,28 +31,31 @@ Status AssertTableUUID::Validate(const TableMetadata* base) const {
   return NotImplemented("AssertTableUUID::Validate not implemented");
 }
 
-Status AssertRefSnapshotID::Validate(const TableMetadata* base) const {
-  return NotImplemented("AssertRefSnapshotID::Validate not implemented");
+Status AssertTableRefSnapshotID::Validate(const TableMetadata* base) const {
+  return NotImplemented("AssertTableRefSnapshotID::Validate not implemented");
 }
 
-Status AssertLastAssignedFieldId::Validate(const TableMetadata* base) const {
-  return NotImplemented("AssertLastAssignedFieldId::Validate not implemented");
+Status AssertCurrentTableLastAssignedFieldId::Validate(const TableMetadata* base) const {
+  return NotImplemented(
+      "AssertCurrentTableLastAssignedFieldId::Validate not implemented");
 }
 
-Status AssertCurrentSchemaID::Validate(const TableMetadata* base) const {
-  return NotImplemented("AssertCurrentSchemaID::Validate not implemented");
+Status AssertCurrentTableSchemaID::Validate(const TableMetadata* base) const {
+  return NotImplemented("AssertCurrentTableSchemaID::Validate not implemented");
 }
 
-Status AssertLastAssignedPartitionId::Validate(const TableMetadata* base) const {
-  return NotImplemented("AssertLastAssignedPartitionId::Validate not implemented");
+Status AssertCurrentTableLastAssignedPartitionId::Validate(
+    const TableMetadata* base) const {
+  return NotImplemented(
+      "AssertCurrentTableLastAssignedPartitionId::Validate not implemented");
 }
 
-Status AssertDefaultSpecID::Validate(const TableMetadata* base) const {
-  return NotImplemented("AssertDefaultSpecID::Validate not implemented");
+Status AssertDefaultTableSpecID::Validate(const TableMetadata* base) const {
+  return NotImplemented("AssertDefaultTableSpecID::Validate not implemented");
 }
 
-Status AssertDefaultSortOrderID::Validate(const TableMetadata* base) const {
-  return NotImplemented("AssertDefaultSortOrderID::Validate not implemented");
+Status AssertDefaultTableSortOrderID::Validate(const TableMetadata* base) const {
+  return NotImplemented("AssertDefaultTableSortOrderID::Validate not implemented");
 }
 
 }  // namespace iceberg

@@ -59,44 +59,44 @@ class ICEBERG_EXPORT TableUpdate {
   ///
   /// \param context The context containing base metadata and operation state
   /// \return Status indicating success or failure with error details
-  virtual Status GenerateRequirements(MetadataUpdateContext& context) const = 0;
+  virtual Status GenerateRequirements(TableUpdateContext& context) const = 0;
 };
 
 /// \brief Represents an assignment of a UUID to the table
-class ICEBERG_EXPORT AssignUUID : public TableUpdate {
+class ICEBERG_EXPORT AssignTableUUID : public TableUpdate {
  public:
-  explicit AssignUUID(std::string uuid) : uuid_(std::move(uuid)) {}
+  explicit AssignTableUUID(std::string uuid) : uuid_(std::move(uuid)) {}
 
   const std::string& uuid() const { return uuid_; }
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
-  Status GenerateRequirements(MetadataUpdateContext& context) const override;
+  Status GenerateRequirements(TableUpdateContext& context) const override;
 
  private:
   std::string uuid_;
 };
 
 /// \brief Represents an upgrade of the table format version
-class ICEBERG_EXPORT UpgradeFormatVersion : public TableUpdate {
+class ICEBERG_EXPORT UpgradeTableFormatVersion : public TableUpdate {
  public:
-  explicit UpgradeFormatVersion(int8_t format_version)
+  explicit UpgradeTableFormatVersion(int8_t format_version)
       : format_version_(format_version) {}
 
   int8_t format_version() const { return format_version_; }
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
-  Status GenerateRequirements(MetadataUpdateContext& context) const override;
+  Status GenerateRequirements(TableUpdateContext& context) const override;
 
  private:
   int8_t format_version_;
 };
 
 /// \brief Represents adding a new schema to the table
-class ICEBERG_EXPORT AddSchema : public TableUpdate {
+class ICEBERG_EXPORT AddTableSchema : public TableUpdate {
  public:
-  explicit AddSchema(std::shared_ptr<Schema> schema, int32_t last_column_id)
+  explicit AddTableSchema(std::shared_ptr<Schema> schema, int32_t last_column_id)
       : schema_(std::move(schema)), last_column_id_(last_column_id) {}
 
   const std::shared_ptr<Schema>& schema() const { return schema_; }
@@ -105,7 +105,7 @@ class ICEBERG_EXPORT AddSchema : public TableUpdate {
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
-  Status GenerateRequirements(MetadataUpdateContext& context) const override;
+  Status GenerateRequirements(TableUpdateContext& context) const override;
 
  private:
   std::shared_ptr<Schema> schema_;
@@ -113,168 +113,170 @@ class ICEBERG_EXPORT AddSchema : public TableUpdate {
 };
 
 /// \brief Represents setting the current schema
-class ICEBERG_EXPORT SetCurrentSchema : public TableUpdate {
+class ICEBERG_EXPORT SetCurrentTableSchema : public TableUpdate {
  public:
-  explicit SetCurrentSchema(int32_t schema_id) : schema_id_(schema_id) {}
+  explicit SetCurrentTableSchema(int32_t schema_id) : schema_id_(schema_id) {}
 
   int32_t schema_id() const { return schema_id_; }
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
-  Status GenerateRequirements(MetadataUpdateContext& context) const override;
+  Status GenerateRequirements(TableUpdateContext& context) const override;
 
  private:
   int32_t schema_id_;
 };
 
 /// \brief Represents adding a new partition spec to the table
-class ICEBERG_EXPORT AddPartitionSpec : public TableUpdate {
+class ICEBERG_EXPORT AddTablePartitionSpec : public TableUpdate {
  public:
-  explicit AddPartitionSpec(std::shared_ptr<PartitionSpec> spec)
+  explicit AddTablePartitionSpec(std::shared_ptr<PartitionSpec> spec)
       : spec_(std::move(spec)) {}
 
   const std::shared_ptr<PartitionSpec>& spec() const { return spec_; }
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
-  Status GenerateRequirements(MetadataUpdateContext& context) const override;
+  Status GenerateRequirements(TableUpdateContext& context) const override;
 
  private:
   std::shared_ptr<PartitionSpec> spec_;
 };
 
 /// \brief Represents setting the default partition spec
-class ICEBERG_EXPORT SetDefaultPartitionSpec : public TableUpdate {
+class ICEBERG_EXPORT SetDefaultTablePartitionSpec : public TableUpdate {
  public:
-  explicit SetDefaultPartitionSpec(int32_t spec_id) : spec_id_(spec_id) {}
+  explicit SetDefaultTablePartitionSpec(int32_t spec_id) : spec_id_(spec_id) {}
 
   int32_t spec_id() const { return spec_id_; }
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
-  Status GenerateRequirements(MetadataUpdateContext& context) const override;
+  Status GenerateRequirements(TableUpdateContext& context) const override;
 
  private:
   int32_t spec_id_;
 };
 
 /// \brief Represents removing partition specs from the table
-class ICEBERG_EXPORT RemovePartitionSpecs : public TableUpdate {
+class ICEBERG_EXPORT RemoveTablePartitionSpecs : public TableUpdate {
  public:
-  explicit RemovePartitionSpecs(std::vector<int32_t> spec_ids)
+  explicit RemoveTablePartitionSpecs(std::vector<int32_t> spec_ids)
       : spec_ids_(std::move(spec_ids)) {}
 
   const std::vector<int32_t>& spec_ids() const { return spec_ids_; }
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
-  Status GenerateRequirements(MetadataUpdateContext& context) const override;
+  Status GenerateRequirements(TableUpdateContext& context) const override;
 
  private:
   std::vector<int32_t> spec_ids_;
 };
 
 /// \brief Represents removing schemas from the table
-class ICEBERG_EXPORT RemoveSchemas : public TableUpdate {
+class ICEBERG_EXPORT RemoveTableSchemas : public TableUpdate {
  public:
-  explicit RemoveSchemas(std::vector<int32_t> schema_ids)
+  explicit RemoveTableSchemas(std::vector<int32_t> schema_ids)
       : schema_ids_(std::move(schema_ids)) {}
 
   const std::vector<int32_t>& schema_ids() const { return schema_ids_; }
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
-  Status GenerateRequirements(MetadataUpdateContext& context) const override;
+  Status GenerateRequirements(TableUpdateContext& context) const override;
 
  private:
   std::vector<int32_t> schema_ids_;
 };
 
 /// \brief Represents adding a new sort order to the table
-class ICEBERG_EXPORT AddSortOrder : public TableUpdate {
+class ICEBERG_EXPORT AddTableSortOrder : public TableUpdate {
  public:
-  explicit AddSortOrder(std::shared_ptr<SortOrder> sort_order)
+  explicit AddTableSortOrder(std::shared_ptr<SortOrder> sort_order)
       : sort_order_(std::move(sort_order)) {}
 
   const std::shared_ptr<SortOrder>& sort_order() const { return sort_order_; }
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
-  Status GenerateRequirements(MetadataUpdateContext& context) const override;
+  Status GenerateRequirements(TableUpdateContext& context) const override;
 
  private:
   std::shared_ptr<SortOrder> sort_order_;
 };
 
 /// \brief Represents setting the default sort order
-class ICEBERG_EXPORT SetDefaultSortOrder : public TableUpdate {
+class ICEBERG_EXPORT SetDefaultTableSortOrder : public TableUpdate {
  public:
-  explicit SetDefaultSortOrder(int32_t sort_order_id) : sort_order_id_(sort_order_id) {}
+  explicit SetDefaultTableSortOrder(int32_t sort_order_id)
+      : sort_order_id_(sort_order_id) {}
 
   int32_t sort_order_id() const { return sort_order_id_; }
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
-  Status GenerateRequirements(MetadataUpdateContext& context) const override;
+  Status GenerateRequirements(TableUpdateContext& context) const override;
 
  private:
   int32_t sort_order_id_;
 };
 
 /// \brief Represents adding a snapshot to the table
-class ICEBERG_EXPORT AddSnapshot : public TableUpdate {
+class ICEBERG_EXPORT AddTableSnapshot : public TableUpdate {
  public:
-  explicit AddSnapshot(std::shared_ptr<Snapshot> snapshot)
+  explicit AddTableSnapshot(std::shared_ptr<Snapshot> snapshot)
       : snapshot_(std::move(snapshot)) {}
 
   const std::shared_ptr<Snapshot>& snapshot() const { return snapshot_; }
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
-  Status GenerateRequirements(MetadataUpdateContext& context) const override;
+  Status GenerateRequirements(TableUpdateContext& context) const override;
 
  private:
   std::shared_ptr<Snapshot> snapshot_;
 };
 
 /// \brief Represents removing snapshots from the table
-class ICEBERG_EXPORT RemoveSnapshots : public TableUpdate {
+class ICEBERG_EXPORT RemoveTableSnapshots : public TableUpdate {
  public:
-  explicit RemoveSnapshots(std::vector<int64_t> snapshot_ids)
+  explicit RemoveTableSnapshots(std::vector<int64_t> snapshot_ids)
       : snapshot_ids_(std::move(snapshot_ids)) {}
 
   const std::vector<int64_t>& snapshot_ids() const { return snapshot_ids_; }
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
-  Status GenerateRequirements(MetadataUpdateContext& context) const override;
+  Status GenerateRequirements(TableUpdateContext& context) const override;
 
  private:
   std::vector<int64_t> snapshot_ids_;
 };
 
 /// \brief Represents removing a snapshot reference
-class ICEBERG_EXPORT RemoveSnapshotRef : public TableUpdate {
+class ICEBERG_EXPORT RemoveTableSnapshotRef : public TableUpdate {
  public:
-  explicit RemoveSnapshotRef(std::string ref_name) : ref_name_(std::move(ref_name)) {}
+  explicit RemoveTableSnapshotRef(std::string ref_name)
+      : ref_name_(std::move(ref_name)) {}
 
   const std::string& ref_name() const { return ref_name_; }
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
-  Status GenerateRequirements(MetadataUpdateContext& context) const override;
+  Status GenerateRequirements(TableUpdateContext& context) const override;
 
  private:
   std::string ref_name_;
 };
 
 /// \brief Represents setting a snapshot reference
-class ICEBERG_EXPORT SetSnapshotRef : public TableUpdate {
+class ICEBERG_EXPORT SetTableSnapshotRef : public TableUpdate {
  public:
-  SetSnapshotRef(std::string ref_name, int64_t snapshot_id, SnapshotRefType type,
-                 std::optional<int32_t> min_snapshots_to_keep = std::nullopt,
-                 std::optional<int64_t> max_snapshot_age_ms = std::nullopt,
-                 std::optional<int64_t> max_ref_age_ms = std::nullopt)
+  SetTableSnapshotRef(std::string ref_name, int64_t snapshot_id, SnapshotRefType type,
+                      std::optional<int32_t> min_snapshots_to_keep = std::nullopt,
+                      std::optional<int64_t> max_snapshot_age_ms = std::nullopt,
+                      std::optional<int64_t> max_ref_age_ms = std::nullopt)
       : ref_name_(std::move(ref_name)),
         snapshot_id_(snapshot_id),
         type_(type),
@@ -295,7 +297,7 @@ class ICEBERG_EXPORT SetSnapshotRef : public TableUpdate {
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
-  Status GenerateRequirements(MetadataUpdateContext& context) const override;
+  Status GenerateRequirements(TableUpdateContext& context) const override;
 
  private:
   std::string ref_name_;
@@ -307,47 +309,47 @@ class ICEBERG_EXPORT SetSnapshotRef : public TableUpdate {
 };
 
 /// \brief Represents setting table properties
-class ICEBERG_EXPORT SetProperties : public TableUpdate {
+class ICEBERG_EXPORT SetTableProperties : public TableUpdate {
  public:
-  explicit SetProperties(std::unordered_map<std::string, std::string> updated)
+  explicit SetTableProperties(std::unordered_map<std::string, std::string> updated)
       : updated_(std::move(updated)) {}
 
   const std::unordered_map<std::string, std::string>& updated() const { return updated_; }
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
-  Status GenerateRequirements(MetadataUpdateContext& context) const override;
+  Status GenerateRequirements(TableUpdateContext& context) const override;
 
  private:
   std::unordered_map<std::string, std::string> updated_;
 };
 
 /// \brief Represents removing table properties
-class ICEBERG_EXPORT RemoveProperties : public TableUpdate {
+class ICEBERG_EXPORT RemoveTableProperties : public TableUpdate {
  public:
-  explicit RemoveProperties(std::vector<std::string> removed)
+  explicit RemoveTableProperties(std::vector<std::string> removed)
       : removed_(std::move(removed)) {}
 
   const std::vector<std::string>& removed() const { return removed_; }
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
-  Status GenerateRequirements(MetadataUpdateContext& context) const override;
+  Status GenerateRequirements(TableUpdateContext& context) const override;
 
  private:
   std::vector<std::string> removed_;
 };
 
 /// \brief Represents setting the table location
-class ICEBERG_EXPORT SetLocation : public TableUpdate {
+class ICEBERG_EXPORT SetTableLocation : public TableUpdate {
  public:
-  explicit SetLocation(std::string location) : location_(std::move(location)) {}
+  explicit SetTableLocation(std::string location) : location_(std::move(location)) {}
 
   const std::string& location() const { return location_; }
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
-  Status GenerateRequirements(MetadataUpdateContext& context) const override;
+  Status GenerateRequirements(TableUpdateContext& context) const override;
 
  private:
   std::string location_;

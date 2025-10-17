@@ -25,6 +25,8 @@
 
 #include <nlohmann/json.hpp>
 
+#include "../../build/_deps/fmt-src/include/fmt/color.h"
+#include "iceberg/exception.h"
 #include "iceberg/file_io.h"
 #include "iceberg/json_internal.h"
 #include "iceberg/partition_spec.h"
@@ -228,152 +230,157 @@ std::unique_ptr<TableMetadataBuilder> TableMetadataBuilder::BuildFrom(
 
 TableMetadataBuilder& TableMetadataBuilder::SetMetadataLocation(
     std::string_view metadata_location) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetPreviousMetadataLocation(
     std::string_view previous_metadata_location) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-TableMetadataBuilder& TableMetadataBuilder::AssignUUID() { return *this; }
+TableMetadataBuilder& TableMetadataBuilder::AssignUUID() {
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+}
 
 TableMetadataBuilder& TableMetadataBuilder::AssignUUID(std::string_view uuid) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  ;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::UpgradeFormatVersion(
     int8_t new_format_version) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetCurrentSchema(
     std::shared_ptr<Schema> schema, int32_t new_last_column_id) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetCurrentSchema(int32_t schema_id) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::AddSchema(std::shared_ptr<Schema> schema) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetDefaultPartitionSpec(
     std::shared_ptr<PartitionSpec> spec) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetDefaultPartitionSpec(int32_t spec_id) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::AddPartitionSpec(
     std::shared_ptr<PartitionSpec> spec) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemovePartitionSpecs(
     const std::vector<int32_t>& spec_ids) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveSchemas(
     const std::vector<int32_t>& schema_ids) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetDefaultSortOrder(
     std::shared_ptr<SortOrder> order) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetDefaultSortOrder(int32_t order_id) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::AddSortOrder(
     std::shared_ptr<SortOrder> order) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::AddSnapshot(
     std::shared_ptr<Snapshot> snapshot) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetBranchSnapshot(int64_t snapshot_id,
                                                               const std::string& branch) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetRef(const std::string& name,
                                                    std::shared_ptr<SnapshotRef> ref) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveRef(const std::string& name) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveSnapshots(
     const std::vector<std::shared_ptr<Snapshot>>& snapshots_to_remove) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveSnapshots(
     const std::vector<int64_t>& snapshot_ids) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::suppressHistoricalSnapshots() {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetStatistics(
     const std::shared_ptr<StatisticsFile>& statistics_file) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveStatistics(int64_t snapshot_id) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetPartitionStatistics(
     const std::shared_ptr<PartitionStatisticsFile>& partition_statistics_file) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemovePartitionStatistics(
     int64_t snapshot_id) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetProperties(
     const std::unordered_map<std::string, std::string>& updated) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveProperties(
     const std::vector<std::string>& removed) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetLocation(std::string_view location) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::AddEncryptionKey(
     std::shared_ptr<EncryptedKey> key) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveEncryptionKey(std::string_view key_id) {
-  return *this;
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-TableMetadataBuilder& TableMetadataBuilder::DiscardChanges() { return *this; }
+TableMetadataBuilder& TableMetadataBuilder::DiscardChanges() {
+  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+}
 
 Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Build() {
   return NotImplemented("TableMetadataBuilder::Build not implemented");
