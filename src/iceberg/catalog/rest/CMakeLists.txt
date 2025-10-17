@@ -15,25 +15,35 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set(ICEBERG_REST_SOURCES rest_catalog.cc)
+set(ICEBERG_REST_SOURCES rest_catalog.cc json_internal.cc)
 
 set(ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS)
 set(ICEBERG_REST_STATIC_INSTALL_INTERFACE_LIBS)
 set(ICEBERG_REST_SHARED_INSTALL_INTERFACE_LIBS)
 
-list(APPEND ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>" cpr::cpr)
-list(APPEND ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS
-     "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>" cpr::cpr)
+list(APPEND
+     ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS
+     "$<IF:$<TARGET_EXISTS:iceberg_static>,iceberg_static,iceberg_shared>"
+     cpr::cpr
+     nlohmann_json::nlohmann_json)
+list(APPEND
+     ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS
+     "$<IF:$<TARGET_EXISTS:iceberg_shared>,iceberg_shared,iceberg_static>"
+     cpr::cpr
+     nlohmann_json::nlohmann_json)
 list(APPEND
      ICEBERG_REST_STATIC_INSTALL_INTERFACE_LIBS
      "$<IF:$<TARGET_EXISTS:iceberg::iceberg_static>,iceberg::iceberg_static,iceberg::iceberg_shared>"
-     "$<IF:$<BOOL:${CPR_VENDORED}>,iceberg::cpr,cpr::cpr>")
+     "$<IF:$<BOOL:${CPR_VENDORED}>,iceberg::cpr,cpr::cpr>"
+     "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,nlohmann_json::nlohmann_json>"
+)
 list(APPEND
      ICEBERG_REST_SHARED_INSTALL_INTERFACE_LIBS
      "$<IF:$<TARGET_EXISTS:iceberg::iceberg_shared>,iceberg::iceberg_shared,iceberg::iceberg_static>"
-     "$<IF:$<BOOL:${CPR_VENDORED}>,iceberg::cpr,cpr::cpr>")
+     "$<IF:$<BOOL:${CPR_VENDORED}>,iceberg::cpr,cpr::cpr>"
+     "$<IF:$<BOOL:${NLOHMANN_JSON_VENDORED}>,iceberg::nlohmann_json,nlohmann_json::nlohmann_json>"
+)
 
 add_iceberg_lib(iceberg_rest
                 SOURCES
