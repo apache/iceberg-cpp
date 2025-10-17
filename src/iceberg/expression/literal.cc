@@ -24,7 +24,6 @@
 #include <cstdint>
 #include <string>
 
-#include "iceberg/exception.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/conversions.h"
 #include "iceberg/util/macros.h"
@@ -339,50 +338,12 @@ std::strong_ordering CompareFloat(T lhs, T rhs) {
   return lhs_is_negative <=> rhs_is_negative;
 }
 
-std::partial_ordering CompareDecimal(Literal const& lhs, Literal const& rhs) {
-  ICEBERG_DCHECK(std::holds_alternative<Decimal>(lhs.value()),
-                 "LHS of decimal comparison must hold Decimal");
-  ICEBERG_DCHECK(std::holds_alternative<Decimal>(rhs.value()),
-                 "RHS of decimal comparison must hold decimal");
-  auto lhs_type = internal::checked_pointer_cast<DecimalType>(lhs.type());
-  auto rhs_type = internal::checked_pointer_cast<DecimalType>(rhs.type());
-  auto lhs_decimal = std::get<Decimal>(lhs.value());
-  auto rhs_decimal = std::get<Decimal>(rhs.value());
-  if (lhs_type->scale() == rhs_type->scale()) {
-    return lhs_decimal <=> rhs_decimal;
-  } else if (lhs_type->scale() > rhs_type->scale()) {
-    // Rescale to larger scale
-    auto rhs_res = rhs_decimal.Rescale(rhs_type->scale(), lhs_type->scale());
-    if (!rhs_res.has_value()) {
-      if (rhs_res.error().kind == ErrorKind::kRescaleDataLoss) {
-        // Rescale would cause data loss, so lhs is definitely less than rhs
-        return std::partial_ordering::less;
-      }
-      // Other errors should return unordered
-      return std::partial_ordering::unordered;
-    }
-    return lhs_decimal <=> rhs_res.value();
-  } else {
-    // Rescale to larger scale
-    auto lhs_res = lhs_decimal.Rescale(lhs_type->scale(), rhs_type->scale());
-    if (!lhs_res.has_value()) {
-      if (lhs_res.error().kind == ErrorKind::kRescaleDataLoss) {
-        // Rescale would cause data loss, so lhs is definitely greater than rhs
-        return std::partial_ordering::greater;
-      }
-      // Other errors should return unordered
-      return std::partial_ordering::unordered;
-    }
-    return lhs_res.value() <=> rhs_decimal;
-  }
-}
-
 bool Literal::operator==(const Literal& other) const { return (*this <=> other) == 0; }
 
 // Three-way comparison operator
 std::partial_ordering Literal::operator<=>(const Literal& other) const {
   // If types are different, comparison is unordered
-  if (type_->type_id() != other.type_->type_id()) {
+  if (*type_ != *other.type_) {
     return std::partial_ordering::unordered;
   }
 
@@ -432,7 +393,12 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
     }
 
     case TypeId::kDecimal: {
-      return CompareDecimal(*this, other);
+      auto& this_val = std::get<::iceberg::Decimal>(value_);
+      auto& other_val = std::get<::iceberg::Decimal>(other.value_);
+      const auto& this_decimal_type = internal::checked_cast<DecimalType&>(*type_);
+      const auto& other_decimal_type = internal::checked_cast<DecimalType&>(*other.type_);
+      return ::iceberg::Decimal::Compare(this_val, other_val, this_decimal_type.scale(),
+                                         other_decimal_type.scale());
     }
 
     case TypeId::kString: {
@@ -491,11 +457,10 @@ std::string Literal::ToString() const {
       return std::to_string(std::get<double>(value_));
     }
     case TypeId::kDecimal: {
-      auto decimal_type = internal::checked_pointer_cast<DecimalType>(type_);
-      auto decimal = std::get<::iceberg::Decimal>(value_);
-      auto result = decimal.ToString(decimal_type->scale());
-      ICEBERG_CHECK(result, "Decimal ToString failed");
-      return *result;
+      const auto& decimal_type = internal::checked_cast<DecimalType&>(*type_);
+      const auto& decimal = std::get<::iceberg::Decimal>(value_);
+      return decimal.ToString(decimal_type.scale())
+          .value_or("invalid literal of type decimal");
     }
     case TypeId::kString: {
       return "\"" + std::get<std::string>(value_) + "\"";

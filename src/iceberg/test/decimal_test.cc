@@ -712,7 +712,51 @@ TEST(DecimalTest, Rescale) {
   ASSERT_EQ(Decimal(5), Decimal(500000).Rescale(6, 1).value());
   ASSERT_EQ(Decimal(500000), Decimal(5).Rescale(1, 6).value());
 
-  ASSERT_THAT(Decimal(5555555).Rescale(6, 1), IsError(ErrorKind::kRescaleDataLoss));
+  ASSERT_THAT(Decimal(5555555).Rescale(6, 1), IsError(ErrorKind::kInvalid));
+}
+
+TEST(DecimalTest, Compare) {
+  // max positive unscaled value
+  ASSERT_EQ(Decimal::Compare(Decimal("170141183460469231731687303715884105727"),
+                             Decimal("170141183460469231731687303715884105727"), 2, 3),
+            std::partial_ordering::greater);
+
+  // min negative unscaled value
+  ASSERT_EQ(Decimal::Compare(Decimal("-170141183460469231731687303715884105728"),
+                             Decimal("-170141183460469231731687303715884105728"), 2, 3),
+            std::partial_ordering::less);
+
+  // equal values with different scales
+  ASSERT_EQ(Decimal::Compare(Decimal("123456789"), Decimal("1234567890"), 2, 3),
+            std::partial_ordering::equivalent);
+  ASSERT_EQ(Decimal::Compare(Decimal("-1234567890"), Decimal("-123456789"), 3, 2),
+            std::partial_ordering::equivalent);
+
+  // different values with different scales
+  ASSERT_EQ(Decimal::Compare(Decimal("123456788"), Decimal("1234567890"), 2, 3),
+            std::partial_ordering::less);
+  ASSERT_EQ(Decimal::Compare(Decimal("-1234567890"), Decimal("-123456788"), 2, 3),
+            std::partial_ordering::less);
+
+  // different values with same scales
+  ASSERT_EQ(Decimal::Compare(Decimal("123456790"), Decimal("123456789"), 2, 2),
+            std::partial_ordering::greater);
+  ASSERT_EQ(Decimal::Compare(Decimal("-123456790"), Decimal("-123456789"), 2, 2),
+            std::partial_ordering::less);
+
+  // different signs
+  ASSERT_EQ(Decimal::Compare(Decimal("123456789"), Decimal("-123456789"), 2, 3),
+            std::partial_ordering::greater);
+  ASSERT_EQ(Decimal::Compare(Decimal("-123456789"), Decimal("123456789"), 2, 3),
+            std::partial_ordering::less);
+
+  // zero comparisons
+  ASSERT_EQ(Decimal::Compare(Decimal("0"), Decimal("0"), 2, 3),
+            std::partial_ordering::equivalent);
+  ASSERT_EQ(Decimal::Compare(Decimal("0"), Decimal("123456789"), 2, 3),
+            std::partial_ordering::less);
+  ASSERT_EQ(Decimal::Compare(Decimal("-123456789"), Decimal("0"), 2, 3),
+            std::partial_ordering::less);
 }
 
 }  // namespace iceberg

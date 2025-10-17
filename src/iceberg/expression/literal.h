@@ -58,10 +58,10 @@ class ICEBERG_EXPORT Literal : public util::Formattable {
                              int64_t,         // for long, timestamp, timestamp_tz, time
                              float,           // for float
                              double,          // for double
-                             ::iceberg::Decimal,    // for decimal
-                             std::string,           // for string
-                             Uuid,                  // for uuid
+                             std::string,     // for string
                              std::vector<uint8_t>,  // for binary, fixed
+                             ::iceberg::Decimal,    // for decimal
+                             Uuid,                  // for uuid
                              BelowMin, AboveMax>;
 
   /// \brief Factory methods for primitive types

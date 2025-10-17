@@ -116,6 +116,8 @@ enum class SnapshotRefType;
 enum class TransformType;
 
 class Decimal;
+class Uuid;
+
 class Expression;
 class Literal;
 

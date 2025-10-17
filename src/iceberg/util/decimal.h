@@ -25,6 +25,7 @@
 /// https://github.com/apache/arrow/blob/main/cpp/src/arrow/util/decimal.h
 
 #include <array>
+#include <compare>
 #include <cstdint>
 #include <iosfwd>
 #include <string>
@@ -185,6 +186,10 @@ class ICEBERG_EXPORT Decimal : public util::Formattable {
     }
     return low() <=> other.low();
   }
+
+  /// \brief Compare two Decimals with different scales.
+  static std::partial_ordering Compare(const Decimal& lhs, const Decimal& rhs,
+                                       int32_t lhs_scale, int32_t rhs_scale);
 
   const uint8_t* native_endian_bytes() const {
     return reinterpret_cast<const uint8_t*>(&data_);

@@ -30,7 +30,6 @@
 #include <climits>
 #include <cmath>
 #include <cstring>
-#include <format>
 #include <iomanip>
 #include <limits>
 #include <sstream>
@@ -548,12 +547,9 @@ Result<Decimal> Decimal::Rescale(int32_t orig_scale, int32_t new_scale) const {
 
   auto& multiplier = kDecimal128PowersOfTen[abs_delta_scale];
 
-  const bool rescale_would_cause_data_loss =
-      RescaleWouldCauseDataLoss(*this, delta_scale, multiplier, &out);
-
-  if (rescale_would_cause_data_loss) {
-    return RescaleDataLoss("Rescale {} from {} to {} would cause data loss",
-                           ToIntegerString(), orig_scale, new_scale);
+  if (RescaleWouldCauseDataLoss(*this, delta_scale, multiplier, &out)) [[unlikely]] {
+    return Invalid("Rescale {} from {} to {} would cause data loss", ToIntegerString(),
+                   orig_scale, new_scale);
   }
 
   return out;
@@ -562,6 +558,52 @@ Result<Decimal> Decimal::Rescale(int32_t orig_scale, int32_t new_scale) const {
 bool Decimal::FitsInPrecision(int32_t precision) const {
   ICEBERG_DCHECK(precision >= 1 && precision <= kMaxPrecision, "");
   return Decimal::Abs(*this) < kDecimal128PowersOfTen[precision];
+}
+
+std::partial_ordering Decimal::Compare(const Decimal& lhs, const Decimal& rhs,
+                                       int32_t lhs_scale, int32_t rhs_scale) {
+  if (lhs_scale == rhs_scale || lhs.data_ == 0 || rhs.data_ == 0) {
+    return lhs <=> rhs;
+  }
+
+  // If one is negative and the other is positive, the positive is greater.
+  if (lhs.data_ < 0 && rhs.data_ > 0) {
+    return std::partial_ordering::less;
+  }
+  if (lhs.data_ > 0 && rhs.data_ < 0) {
+    return std::partial_ordering::greater;
+  }
+
+  // Both are negative
+  bool negative = lhs.data_ < 0 && rhs.data_ < 0;
+
+  const int32_t delta_scale = lhs_scale - rhs_scale;
+  const int32_t abs_delta_scale = std::abs(delta_scale);
+
+  ICEBERG_DCHECK(abs_delta_scale <= kMaxScale, "");
+
+  const auto& multiplier = kDecimal128PowersOfTen[abs_delta_scale];
+
+  Decimal adjusted_lhs;
+  Decimal adjusted_rhs;
+
+  if (delta_scale < 0) {
+    // lhs_scale < rhs_scale
+    if (RescaleWouldCauseDataLoss(lhs, -delta_scale, multiplier, &adjusted_lhs))
+        [[unlikely]] {
+      return negative ? std::partial_ordering::less : std::partial_ordering::greater;
+    }
+    adjusted_rhs = rhs;
+  } else {
+    // lhs_scale > rhs_scale
+    if (RescaleWouldCauseDataLoss(rhs, delta_scale, multiplier, &adjusted_rhs))
+        [[unlikely]] {
+      return negative ? std::partial_ordering::greater : std::partial_ordering::less;
+    }
+    adjusted_lhs = lhs;
+  }
+
+  return adjusted_lhs <=> adjusted_rhs;
 }
 
 std::array<uint8_t, Decimal::kByteWidth> Decimal::ToBytes() const {
