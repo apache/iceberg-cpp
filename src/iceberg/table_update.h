@@ -211,8 +211,7 @@ class ICEBERG_EXPORT AddSortOrder : public TableUpdate {
 /// \brief Represents setting the default sort order
 class ICEBERG_EXPORT SetDefaultSortOrder : public TableUpdate {
  public:
-  explicit SetDefaultSortOrder(int32_t sort_order_id)
-      : sort_order_id_(sort_order_id) {}
+  explicit SetDefaultSortOrder(int32_t sort_order_id) : sort_order_id_(sort_order_id) {}
 
   int32_t sort_order_id() const { return sort_order_id_; }
 
@@ -259,8 +258,7 @@ class ICEBERG_EXPORT RemoveSnapshots : public TableUpdate {
 /// \brief Represents removing a snapshot reference
 class ICEBERG_EXPORT RemoveSnapshotRef : public TableUpdate {
  public:
-  explicit RemoveSnapshotRef(std::string ref_name)
-      : ref_name_(std::move(ref_name)) {}
+  explicit RemoveSnapshotRef(std::string ref_name) : ref_name_(std::move(ref_name)) {}
 
   const std::string& ref_name() const { return ref_name_; }
 
@@ -276,9 +274,9 @@ class ICEBERG_EXPORT RemoveSnapshotRef : public TableUpdate {
 class ICEBERG_EXPORT SetSnapshotRef : public TableUpdate {
  public:
   SetSnapshotRef(std::string ref_name, int64_t snapshot_id, SnapshotRefType type,
-                      std::optional<int32_t> min_snapshots_to_keep = std::nullopt,
-                      std::optional<int64_t> max_snapshot_age_ms = std::nullopt,
-                      std::optional<int64_t> max_ref_age_ms = std::nullopt)
+                 std::optional<int32_t> min_snapshots_to_keep = std::nullopt,
+                 std::optional<int64_t> max_snapshot_age_ms = std::nullopt,
+                 std::optional<int64_t> max_ref_age_ms = std::nullopt)
       : ref_name_(std::move(ref_name)),
         snapshot_id_(snapshot_id),
         type_(type),

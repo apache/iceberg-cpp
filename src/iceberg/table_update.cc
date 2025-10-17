@@ -43,8 +43,7 @@ void UpgradeFormatVersion::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status UpgradeFormatVersion::GenerateRequirements(
-    TableUpdateContext& context) const {
+Status UpgradeFormatVersion::GenerateRequirements(TableUpdateContext& context) const {
   return NotImplemented(
       "UpgradeTableFormatVersion::GenerateRequirements not implemented");
 }
@@ -85,8 +84,7 @@ void SetDefaultPartitionSpec::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status SetDefaultPartitionSpec::GenerateRequirements(
-    TableUpdateContext& context) const {
+Status SetDefaultPartitionSpec::GenerateRequirements(TableUpdateContext& context) const {
   return NotImplemented(
       "SetDefaultTablePartitionSpec::GenerateRequirements not implemented");
 }
@@ -97,8 +95,7 @@ void RemovePartitionSpecs::ApplyTo(TableMetadataBuilder& builder) const {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-Status RemovePartitionSpecs::GenerateRequirements(
-    TableUpdateContext& context) const {
+Status RemovePartitionSpecs::GenerateRequirements(TableUpdateContext& context) const {
   return NotImplemented(
       "RemoveTablePartitionSpecs::GenerateRequirements not implemented");
 }

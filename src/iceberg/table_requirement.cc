@@ -46,8 +46,7 @@ Status AssertCurrentSchemaID::Validate(const TableMetadata* base) const {
   return NotImplemented("AssertCurrentTableSchemaID::Validate not implemented");
 }
 
-Status AssertLastAssignedPartitionId::Validate(
-    const TableMetadata* base) const {
+Status AssertLastAssignedPartitionId::Validate(const TableMetadata* base) const {
   return NotImplemented(
       "AssertCurrentTableLastAssignedPartitionId::Validate not implemented");
 }
