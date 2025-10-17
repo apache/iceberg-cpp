@@ -68,8 +68,16 @@ class AvroWriter::Impl {
     ICEBERG_ASSIGN_OR_RAISE(auto output_stream,
                             CreateOutputStream(options, kDefaultBufferSize));
     arrow_output_stream_ = output_stream->arrow_output_stream();
+    std::map<std::string, std::vector<uint8_t>> metadata;
+    for (const auto& [key, value] : options.properties) {
+      std::vector<uint8_t> vec;
+      vec.reserve(value.size());
+      vec.assign(value.begin(), value.end());
+      metadata.emplace(key, std::move(vec));
+    }
     writer_ = std::make_unique<::avro::DataFileWriter<::avro::GenericDatum>>(
-        std::move(output_stream), *avro_schema_);
+        std::move(output_stream), *avro_schema_, 16 * 1024 /*syncInterval*/,
+        ::avro::NULL_CODEC /*codec*/, metadata);
     datum_ = std::make_unique<::avro::GenericDatum>(*avro_schema_);
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*write_schema_, &arrow_schema_));
     return {};

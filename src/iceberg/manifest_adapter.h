@@ -44,6 +44,9 @@ class ICEBERG_EXPORT ManifestAdapter {
   Status StartAppending();
   Result<ArrowArray*> FinishAppending();
   int64_t size() const { return size_; }
+  const std::unordered_map<std::string, std::string>& metadata() const {
+    return metadata_;
+  }
 
  protected:
   ArrowArray array_;

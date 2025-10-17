@@ -19,6 +19,9 @@
 
 #include "iceberg/v3_metadata.h"
 
+#include <nlohmann/json.hpp>
+
+#include "iceberg/json_internal.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/schema.h"
@@ -54,16 +57,15 @@ Status ManifestEntryAdapterV3::Init() {
       DataFile::kContentOffset.field_id(),
       DataFile::kContentSize.field_id(),
   };
-  // TODO(xiao.dong) schema to json
-  metadata_["schema"] = "{}";
-  // TODO(xiao.dong) partition spec to json
-  metadata_["partition-spec"] = "{}";
+  ICEBERG_RETURN_UNEXPECTED(InitSchema(kManifestEntryFieldIds));
+  metadata_["schema"] = ToJson(*manifest_schema_).dump();
   if (partition_spec_ != nullptr) {
+    metadata_["partition-spec"] = ToJson(*partition_spec_).dump();
     metadata_["partition-spec-id"] = std::to_string(partition_spec_->spec_id());
   }
   metadata_["format-version"] = "3";
   metadata_["content"] = "data";
-  return InitSchema(kManifestEntryFieldIds);
+  return {};
 }
 
 Status ManifestEntryAdapterV3::Append(const ManifestEntry& entry) {
