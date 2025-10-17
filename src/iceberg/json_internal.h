@@ -80,6 +80,12 @@ ICEBERG_EXPORT Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
 /// \return The JSON representation of the schema.
 ICEBERG_EXPORT nlohmann::json ToJson(const Schema& schema);
 
+/// \brief Convert an Iceberg Schema to JSON.
+///
+/// \param[in] schema The Iceberg schema to convert.
+/// \return The JSON string of the schema.
+ICEBERG_EXPORT Result<std::string> ToJsonString(const Schema& schema);
+
 /// \brief Convert JSON to an Iceberg Schema.
 ///
 /// \param[in] json The JSON representation of the schema.
@@ -147,6 +153,18 @@ ICEBERG_EXPORT Result<std::unique_ptr<PartitionField>> PartitionFieldFromJson(
 /// \return A JSON object representing the `PartitionSpec` with its order ID and fields
 /// array.
 ICEBERG_EXPORT nlohmann::json ToJson(const PartitionSpec& partition_spec);
+
+/// \brief Serializes a `PartitionSpec` object to JSON.
+///
+/// This function converts a `PartitionSpec` object into a JSON representation.
+/// The resulting JSON includes the spec ID and a list of `PartitionField` objects.
+/// Each `PartitionField` is serialized as described in the `ToJson(PartitionField)`
+/// function.
+///
+/// \param partition_spec The `PartitionSpec` object to be serialized.
+/// \return A JSON string of the `PartitionSpec` with its order ID and fields
+/// array.
+ICEBERG_EXPORT Result<std::string> ToJsonString(const PartitionSpec& partition_spec);
 
 /// \brief Deserializes a JSON object into a `PartitionSpec` object.
 ///
@@ -245,6 +263,12 @@ ICEBERG_EXPORT Result<MetadataLogEntry> MetadataLogEntryFromJson(
 /// \param table_metadata The `TableMetadata` object to be serialized.
 /// \return A JSON object representing the `TableMetadata`.
 ICEBERG_EXPORT nlohmann::json ToJson(const TableMetadata& table_metadata);
+
+/// \brief Serializes a `TableMetadata` object to JSON.
+///
+/// \param table_metadata The `TableMetadata` object to be serialized.
+/// \return A JSON string of the `TableMetadata`.
+ICEBERG_EXPORT Result<std::string> ToJsonString(const TableMetadata& table_metadata);
 
 /// \brief Deserializes a JSON object into a `TableMetadata` object.
 ///

@@ -19,8 +19,6 @@
 
 #include "iceberg/v2_metadata.h"
 
-#include <nlohmann/json.hpp>
-
 #include "iceberg/json_internal.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
@@ -55,9 +53,9 @@ Status ManifestEntryAdapterV2::Init() {
       DataFile::kReferencedDataFile.field_id(),
   };
   ICEBERG_RETURN_UNEXPECTED(InitSchema(kManifestEntryFieldIds));
-  metadata_["schema"] = ToJson(*manifest_schema_).dump();
+  ICEBERG_ASSIGN_OR_RAISE(metadata_["schema"], ToJsonString(*manifest_schema_))
   if (partition_spec_ != nullptr) {
-    metadata_["partition-spec"] = ToJson(*partition_spec_).dump();
+    ICEBERG_ASSIGN_OR_RAISE(metadata_["partition-spec"], ToJsonString(*partition_spec_));
     metadata_["partition-spec-id"] = std::to_string(partition_spec_->spec_id());
   }
   metadata_["format-version"] = "2";

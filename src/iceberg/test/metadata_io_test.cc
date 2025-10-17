@@ -90,8 +90,7 @@ TEST_F(MetadataIOTest, ReadWriteMetadata) {
 TEST_F(MetadataIOTest, ReadWriteCompressedMetadata) {
   TableMetadata metadata = PrepareMetadata();
 
-  auto json = ToJson(metadata);
-  auto ret = ToJsonString(json);
+  auto ret = ToJsonString(metadata);
   ASSERT_TRUE(ret.has_value());
   auto json_string = ret.value();
 

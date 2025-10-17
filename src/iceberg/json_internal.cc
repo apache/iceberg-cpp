@@ -309,6 +309,10 @@ nlohmann::json ToJson(const Schema& schema) {
   return json;
 }
 
+Result<std::string> ToJsonString(const Schema& schema) {
+  return ToJsonString(ToJson(schema));
+}
+
 nlohmann::json ToJson(const SnapshotRef& ref) {
   nlohmann::json json;
   json[kSnapshotId] = ref.snapshot_id;
@@ -488,6 +492,10 @@ nlohmann::json ToJson(const PartitionSpec& partition_spec) {
   }
   json[kFields] = fields_json;
   return json;
+}
+
+Result<std::string> ToJsonString(const PartitionSpec& partition_spec) {
+  return ToJsonString(ToJson(partition_spec));
 }
 
 Result<std::unique_ptr<PartitionField>> PartitionFieldFromJson(
@@ -783,6 +791,10 @@ nlohmann::json ToJson(const TableMetadata& table_metadata) {
   json[kMetadataLog] = ToJsonList(table_metadata.metadata_log);
 
   return json;
+}
+
+Result<std::string> ToJsonString(const TableMetadata& table_metadata) {
+  return ToJsonString(ToJson(table_metadata));
 }
 
 namespace {
