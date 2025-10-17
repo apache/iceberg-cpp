@@ -57,7 +57,7 @@ Result<T> GetJsonValueImpl(const nlohmann::json& json, std::string_view key) {
 template <typename T>
 Result<std::optional<T>> GetJsonValueOptional(const nlohmann::json& json,
                                               std::string_view key) {
-  if (!json.contains(key)) {
+  if (!json.contains(key) || json.at(key).is_null()) {
     return std::nullopt;
   }
   ICEBERG_ASSIGN_OR_RAISE(auto value, GetJsonValueImpl<T>(json, key));
@@ -66,7 +66,7 @@ Result<std::optional<T>> GetJsonValueOptional(const nlohmann::json& json,
 
 template <typename T>
 Result<T> GetJsonValue(const nlohmann::json& json, std::string_view key) {
-  if (!json.contains(key)) {
+  if (!json.contains(key) || json.at(key).is_null()) {
     return JsonParseError("Missing '{}' in {}", key, SafeDumpJson(json));
   }
   return GetJsonValueImpl<T>(json, key);
@@ -75,7 +75,7 @@ Result<T> GetJsonValue(const nlohmann::json& json, std::string_view key) {
 template <typename T>
 Result<T> GetJsonValueOrDefault(const nlohmann::json& json, std::string_view key,
                                 T default_value = T{}) {
-  if (!json.contains(key)) {
+  if (!json.contains(key) || json.at(key).is_null()) {
     return default_value;
   }
   return GetJsonValueImpl<T>(json, key);
