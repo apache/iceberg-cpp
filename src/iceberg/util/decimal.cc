@@ -47,6 +47,15 @@ namespace {
 static constexpr int32_t kMinDecimalBytes = 1;
 static constexpr int32_t kMaxDecimalBytes = 16;
 
+// The maximum decimal value that can be represented with kMaxPrecision digits.
+// 10^38 - 1
+static constexpr Decimal kMaxDecimalValue(5421010862427522170LL, 687399551400673279ULL);
+// The mininum (most negative) decimal value that can be represented with kMaxPrecision
+// digits.
+// - (10^38 - 1)
+static constexpr Decimal kMinDecimalValue(-5421010862427522171LL,
+                                          17759344522308878337ULL);
+
 struct DecimalComponents {
   std::string_view while_digits;
   std::string_view fractional_digits;
@@ -278,15 +287,15 @@ bool RescaleWouldCauseDataLoss(const Decimal& value, int32_t delta_scale,
     return res->second != 0;
   }
 
-  int128_t max_safe_value = std::numeric_limits<int128_t>::max() / multiplier.value();
-  int128_t min_safe_value = std::numeric_limits<int128_t>::min() / multiplier.value();
-  if (value.value() > max_safe_value || value.value() < min_safe_value) {
+  auto max_safe_value = kMaxDecimalValue / multiplier;
+  auto min_safe_value = kMinDecimalValue / multiplier;
+  if (value > max_safe_value || value < min_safe_value) {
     // Overflow would happen — treat as data loss
     return true;
   }
 
   *result = value * multiplier;
-  return (value < 0) ? *result > value : *result < value;
+  return false;
 }
 
 }  // namespace

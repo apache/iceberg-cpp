@@ -717,14 +717,24 @@ TEST(DecimalTest, Rescale) {
 
 TEST(DecimalTest, Compare) {
   // max positive unscaled value
-  ASSERT_EQ(Decimal::Compare(Decimal("170141183460469231731687303715884105727"),
-                             Decimal("170141183460469231731687303715884105727"), 2, 3),
+  // 10^38 - 1 scale cause overflow
+  ASSERT_EQ(Decimal::Compare(Decimal("99999999999999999999999999999999999999"),
+                             Decimal("99999999999999999999999999999999999999"), 2, 3),
             std::partial_ordering::greater);
+  // 10^37 - 1 scale no overflow
+  ASSERT_EQ(Decimal::Compare(Decimal("9999999999999999999999999999999999999"),
+                             Decimal("99999999999999999999999999999999999999"), 2, 3),
+            std::partial_ordering::less);
 
   // min negative unscaled value
-  ASSERT_EQ(Decimal::Compare(Decimal("-170141183460469231731687303715884105728"),
-                             Decimal("-170141183460469231731687303715884105728"), 2, 3),
+  // -10^38 + 1 scale cause overflow
+  ASSERT_EQ(Decimal::Compare(Decimal("-99999999999999999999999999999999999999"),
+                             Decimal("-99999999999999999999999999999999999999"), 2, 3),
             std::partial_ordering::less);
+  // -10^37 + 1 scale no overflow
+  ASSERT_EQ(Decimal::Compare(Decimal("-9999999999999999999999999999999999999"),
+                             Decimal("-99999999999999999999999999999999999999"), 2, 3),
+            std::partial_ordering::greater);
 
   // equal values with different scales
   ASSERT_EQ(Decimal::Compare(Decimal("123456789"), Decimal("1234567890"), 2, 3),
