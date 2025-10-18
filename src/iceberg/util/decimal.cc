@@ -44,17 +44,15 @@ namespace iceberg {
 
 namespace {
 
-static constexpr int32_t kMinDecimalBytes = 1;
-static constexpr int32_t kMaxDecimalBytes = 16;
+constexpr int32_t kMinDecimalBytes = 1;
+constexpr int32_t kMaxDecimalBytes = 16;
 
 // The maximum decimal value that can be represented with kMaxPrecision digits.
 // 10^38 - 1
-static constexpr Decimal kMaxDecimalValue(5421010862427522170LL, 687399551400673279ULL);
-// The mininum (most negative) decimal value that can be represented with kMaxPrecision
-// digits.
+constexpr Decimal kMaxDecimalValue(5421010862427522170LL, 687399551400673279ULL);
+// The mininum decimal value that can be represented with kMaxPrecision digits.
 // - (10^38 - 1)
-static constexpr Decimal kMinDecimalValue(-5421010862427522171LL,
-                                          17759344522308878337ULL);
+constexpr Decimal kMinDecimalValue(-5421010862427522171LL, 17759344522308878337ULL);
 
 struct DecimalComponents {
   std::string_view while_digits;
