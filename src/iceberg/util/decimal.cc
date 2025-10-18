@@ -24,12 +24,12 @@
 
 #include "iceberg/util/decimal.h"
 
+#include <algorithm>
 #include <bit>
 #include <charconv>
 #include <climits>
 #include <cmath>
 #include <cstring>
-#include <format>
 #include <iomanip>
 #include <limits>
 #include <sstream>
@@ -43,6 +43,16 @@
 namespace iceberg {
 
 namespace {
+
+constexpr int32_t kMinDecimalBytes = 1;
+constexpr int32_t kMaxDecimalBytes = 16;
+
+// The maximum decimal value that can be represented with kMaxPrecision digits.
+// 10^38 - 1
+constexpr Decimal kMaxDecimalValue(5421010862427522170LL, 687399551400673279ULL);
+// The mininum decimal value that can be represented with kMaxPrecision digits.
+// - (10^38 - 1)
+constexpr Decimal kMinDecimalValue(-5421010862427522171LL, 17759344522308878337ULL);
 
 struct DecimalComponents {
   std::string_view while_digits;
@@ -275,8 +285,15 @@ bool RescaleWouldCauseDataLoss(const Decimal& value, int32_t delta_scale,
     return res->second != 0;
   }
 
+  auto max_safe_value = kMaxDecimalValue / multiplier;
+  auto min_safe_value = kMinDecimalValue / multiplier;
+  if (value > max_safe_value || value < min_safe_value) {
+    // Overflow would happen — treat as data loss
+    return true;
+  }
+
   *result = value * multiplier;
-  return (value < 0) ? *result > value : *result < value;
+  return false;
 }
 
 }  // namespace
@@ -470,11 +487,6 @@ Result<Decimal> Decimal::FromString(std::string_view str, int32_t* precision,
 }
 
 Result<Decimal> Decimal::FromBigEndian(const uint8_t* bytes, int32_t length) {
-  static constexpr int32_t kMinDecimalBytes = 1;
-  static constexpr int32_t kMaxDecimalBytes = 16;
-
-  int64_t high, low;
-
   if (length < kMinDecimalBytes || length > kMaxDecimalBytes) {
     return InvalidArgument(
         "Decimal::FromBigEndian: length must be in the range [{}, {}], was {}",
@@ -486,7 +498,8 @@ Result<Decimal> Decimal::FromBigEndian(const uint8_t* bytes, int32_t length) {
   const bool is_negative = static_cast<int8_t>(bytes[0]) < 0;
 
   uint128_t result = 0;
-  std::memcpy(reinterpret_cast<uint8_t*>(&result) + 16 - length, bytes, length);
+  std::memcpy(reinterpret_cast<uint8_t*>(&result) + kMaxDecimalBytes - length, bytes,
+              length);
 
   if constexpr (std::endian::native == std::endian::little) {
     auto high = static_cast<uint64_t>(result >> 64);
@@ -505,6 +518,36 @@ Result<Decimal> Decimal::FromBigEndian(const uint8_t* bytes, int32_t length) {
   return Decimal(static_cast<int128_t>(result));
 }
 
+std::vector<uint8_t> Decimal::ToBigEndian() const {
+  std::vector<uint8_t> bytes(kMaxDecimalBytes);
+
+  auto uvalue = static_cast<uint128_t>(data_);
+  std::memcpy(bytes.data(), &uvalue, kMaxDecimalBytes);
+
+  if constexpr (std::endian::native == std::endian::little) {
+    std::ranges::reverse(bytes);
+  }
+
+  auto is_negative = data_ < 0;
+  int keep = kMaxDecimalBytes;
+  for (int32_t i = 0; i < kMaxDecimalBytes - 1; ++i) {
+    uint8_t byte = bytes[i];
+    uint8_t next = bytes[i + 1];
+    // For negative numbers, keep the leading 0xff byte if the next byte has its sign bit
+    // unset. For positive numbers, keep the leading 0x00 byte if the next byte has its
+    // sign bit set.
+    if ((is_negative && byte == 0xff && (next & 0x80)) ||
+        (!is_negative && byte == 0x00 && !(next & 0x80))) {
+      --keep;
+    } else {
+      break;
+    }
+  }
+
+  bytes.erase(bytes.begin(), bytes.begin() + (kMaxDecimalBytes - keep));
+  return bytes;
+}
+
 Result<Decimal> Decimal::Rescale(int32_t orig_scale, int32_t new_scale) const {
   if (orig_scale == new_scale) {
     return *this;
@@ -518,10 +561,7 @@ Result<Decimal> Decimal::Rescale(int32_t orig_scale, int32_t new_scale) const {
 
   auto& multiplier = kDecimal128PowersOfTen[abs_delta_scale];
 
-  const bool rescale_would_cause_data_loss =
-      RescaleWouldCauseDataLoss(*this, delta_scale, multiplier, &out);
-
-  if (rescale_would_cause_data_loss) {
+  if (RescaleWouldCauseDataLoss(*this, delta_scale, multiplier, &out)) [[unlikely]] {
     return Invalid("Rescale {} from {} to {} would cause data loss", ToIntegerString(),
                    orig_scale, new_scale);
   }
@@ -532,6 +572,52 @@ Result<Decimal> Decimal::Rescale(int32_t orig_scale, int32_t new_scale) const {
 bool Decimal::FitsInPrecision(int32_t precision) const {
   ICEBERG_DCHECK(precision >= 1 && precision <= kMaxPrecision, "");
   return Decimal::Abs(*this) < kDecimal128PowersOfTen[precision];
+}
+
+std::partial_ordering Decimal::Compare(const Decimal& lhs, const Decimal& rhs,
+                                       int32_t lhs_scale, int32_t rhs_scale) {
+  if (lhs_scale == rhs_scale || lhs.data_ == 0 || rhs.data_ == 0) {
+    return lhs <=> rhs;
+  }
+
+  // If one is negative and the other is positive, the positive is greater.
+  if (lhs.data_ < 0 && rhs.data_ > 0) {
+    return std::partial_ordering::less;
+  }
+  if (lhs.data_ > 0 && rhs.data_ < 0) {
+    return std::partial_ordering::greater;
+  }
+
+  // Both are negative
+  bool negative = lhs.data_ < 0 && rhs.data_ < 0;
+
+  const int32_t delta_scale = lhs_scale - rhs_scale;
+  const int32_t abs_delta_scale = std::abs(delta_scale);
+
+  ICEBERG_DCHECK(abs_delta_scale <= kMaxScale, "");
+
+  const auto& multiplier = kDecimal128PowersOfTen[abs_delta_scale];
+
+  Decimal adjusted_lhs;
+  Decimal adjusted_rhs;
+
+  if (delta_scale < 0) {
+    // lhs_scale < rhs_scale
+    if (RescaleWouldCauseDataLoss(lhs, -delta_scale, multiplier, &adjusted_lhs))
+        [[unlikely]] {
+      return negative ? std::partial_ordering::less : std::partial_ordering::greater;
+    }
+    adjusted_rhs = rhs;
+  } else {
+    // lhs_scale > rhs_scale
+    if (RescaleWouldCauseDataLoss(rhs, delta_scale, multiplier, &adjusted_rhs))
+        [[unlikely]] {
+      return negative ? std::partial_ordering::greater : std::partial_ordering::less;
+    }
+    adjusted_lhs = lhs;
+  }
+
+  return adjusted_lhs <=> adjusted_rhs;
 }
 
 std::array<uint8_t, Decimal::kByteWidth> Decimal::ToBytes() const {

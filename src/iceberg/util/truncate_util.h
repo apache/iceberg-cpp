@@ -19,10 +19,13 @@
 
 #pragma once
 
+#include <cstdint>
 #include <string>
 #include <utility>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
@@ -64,9 +67,25 @@ class ICEBERG_EXPORT TruncateUtils {
   /// values, the correct truncate function is: v - (((v % W) + W) % W)
   template <typename T>
     requires std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t>
-  static inline T TruncateInteger(T v, size_t W) {
+  static inline T TruncateInteger(T v, int32_t W) {
     return v - (((v % W) + W) % W);
   }
+
+  /// \brief Truncate a Decimal to a specified width.
+  /// \param decimal The input Decimal to truncate.
+  /// \param width The width to truncate to.
+  /// \return A Decimal truncated to the specified width.
+  static Decimal TruncateDecimal(const Decimal& decimal, int32_t width);
+
+  /// \brief Truncate a Literal to a specified width.
+  /// \param literal The input Literal to truncate.
+  /// \param width The width to truncate to.
+  /// \return A Result containing the truncated Literal or an error.
+  /// Supported types are: INT, LONG, DECIMAL, STRING, BINARY.
+  /// Reference:
+  /// - [Truncate Transform
+  /// Details](https://iceberg.apache.org/spec/#truncate-transform-details)
+  static Result<Literal> TruncateLiteral(const Literal& literal, int32_t width);
 };
 
 }  // namespace iceberg

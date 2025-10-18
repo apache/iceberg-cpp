@@ -27,7 +27,9 @@
 
 #include "iceberg/result.h"
 #include "iceberg/type.h"
+#include "iceberg/util/decimal.h"
 #include "iceberg/util/formattable.h"
+#include "iceberg/util/int128.h"
 #include "iceberg/util/uuid.h"
 
 namespace iceberg {
@@ -57,9 +59,9 @@ class ICEBERG_EXPORT Literal : public util::Formattable {
                              float,           // for float
                              double,          // for double
                              std::string,     // for string
-                             Uuid,            // for uuid
-                             std::vector<uint8_t>,     // for binary, fixed
-                             std::array<uint8_t, 16>,  // for decimal
+                             std::vector<uint8_t>,  // for binary, fixed
+                             ::iceberg::Decimal,    // for decimal
+                             Uuid,                  // for uuid
                              BelowMin, AboveMax>;
 
   /// \brief Factory methods for primitive types
@@ -76,6 +78,10 @@ class ICEBERG_EXPORT Literal : public util::Formattable {
   static Literal UUID(Uuid value);
   static Literal Binary(std::vector<uint8_t> value);
   static Literal Fixed(std::vector<uint8_t> value);
+
+  /// \brief Create a decimal literal.
+  /// \param value The unscaled 128-bit integer value.
+  static Literal Decimal(int128_t value, int32_t precision, int32_t scale);
 
   /// \brief Create a literal representing a null value.
   static Literal Null(std::shared_ptr<PrimitiveType> type) {
@@ -203,6 +209,11 @@ struct LiteralTraits<TypeId::kFloat> {
 template <>
 struct LiteralTraits<TypeId::kDouble> {
   using ValueType = double;
+};
+
+template <>
+struct LiteralTraits<TypeId::kDecimal> {
+  using ValueType = Decimal;
 };
 
 template <>

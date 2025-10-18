@@ -220,9 +220,12 @@ Status ManifestEntryAdapter::AppendPartitionValues(
         break;
       case TypeId::kDecimal:
         ICEBERG_RETURN_UNEXPECTED(AppendField(
-            child_array, std::get<std::array<uint8_t, 16>>(partition_value.value())));
+            child_array, std::get<Decimal>(partition_value.value()).ToBytes()));
         break;
       case TypeId::kUuid:
+        ICEBERG_RETURN_UNEXPECTED(
+            AppendField(child_array, std::get<Uuid>(partition_value.value()).bytes()));
+        break;
       case TypeId::kStruct:
       case TypeId::kList:
       case TypeId::kMap:

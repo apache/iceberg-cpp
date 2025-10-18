@@ -68,11 +68,13 @@ iceberg_tests = {
     },
     'util_test': {
         'sources': files(
+            'bucket_util_test.cc',
             'config_test.cc',
             'decimal_test.cc',
             'endian_test.cc',
             'formatter_test.cc',
             'string_util_test.cc',
+            'truncate_util_test.cc',
             'uuid_test.cc',
             'visit_type_test.cc',
         ),

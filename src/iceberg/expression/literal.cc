@@ -24,9 +24,9 @@
 #include <cstdint>
 #include <string>
 
-#include "iceberg/type_fwd.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/conversions.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -188,11 +188,14 @@ Result<Literal> LiteralCaster::CastFromString(
   const auto& str_val = std::get<std::string>(literal.value_);
 
   switch (target_type->type_id()) {
+    case TypeId::kUuid: {
+      ICEBERG_ASSIGN_OR_RAISE(auto uuid, Uuid::FromString(str_val));
+      return Literal::UUID(uuid);
+    }
     case TypeId::kDate:
     case TypeId::kTime:
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz:
-    case TypeId::kUuid:
       return NotImplemented("Cast from String to {} is not implemented yet",
                             target_type->ToString());
     default:
@@ -296,6 +299,10 @@ Literal Literal::Fixed(std::vector<uint8_t> value) {
   return {Value{std::move(value)}, fixed(size)};
 }
 
+Literal Literal::Decimal(int128_t value, int32_t precision, int32_t scale) {
+  return {Value{::iceberg::Decimal(value)}, decimal(precision, scale)};
+}
+
 Result<Literal> Literal::Deserialize(std::span<const uint8_t> data,
                                      std::shared_ptr<PrimitiveType> type) {
   return Conversions::FromBytes(std::move(type), data);
@@ -385,6 +392,15 @@ std::partial_ordering Literal::operator<=>(const Literal& other) const {
       return CompareFloat(this_val, other_val);
     }
 
+    case TypeId::kDecimal: {
+      auto& this_val = std::get<::iceberg::Decimal>(value_);
+      auto& other_val = std::get<::iceberg::Decimal>(other.value_);
+      const auto& this_decimal_type = internal::checked_cast<DecimalType&>(*type_);
+      const auto& other_decimal_type = internal::checked_cast<DecimalType&>(*other.type_);
+      return ::iceberg::Decimal::Compare(this_val, other_val, this_decimal_type.scale(),
+                                         other_decimal_type.scale());
+    }
+
     case TypeId::kString: {
       auto& this_val = std::get<std::string>(value_);
       auto& other_val = std::get<std::string>(other.value_);
@@ -439,6 +455,12 @@ std::string Literal::ToString() const {
     }
     case TypeId::kDouble: {
       return std::to_string(std::get<double>(value_));
+    }
+    case TypeId::kDecimal: {
+      const auto& decimal_type = internal::checked_cast<DecimalType&>(*type_);
+      const auto& decimal = std::get<::iceberg::Decimal>(value_);
+      return decimal.ToString(decimal_type.scale())
+          .value_or("invalid literal of type decimal");
     }
     case TypeId::kString: {
       return "\"" + std::get<std::string>(value_) + "\"";

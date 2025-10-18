@@ -256,6 +256,20 @@ TEST(LiteralTest, DoubleZeroComparison) {
   EXPECT_EQ(neg_zero <=> pos_zero, std::partial_ordering::less);
 }
 
+TEST(LiteralTest, UuidComparison) {
+  auto uuid1 = Uuid::FromString("123e4567-e89b-12d3-a456-426614174000").value();
+  auto uuid2 = Uuid::FromString("123e4567-e89b-12d3-a456-426614174001").value();
+  auto uuid3 = Uuid::FromString("123e4567-e89b-12d3-a456-426614174000").value();
+
+  auto literal1 = Literal::UUID(uuid1);
+  auto literal2 = Literal::UUID(uuid2);
+  auto literal3 = Literal::UUID(uuid3);
+
+  EXPECT_EQ(literal1 <=> literal3, std::partial_ordering::equivalent);
+  EXPECT_EQ(literal1 <=> literal2, std::partial_ordering::unordered);
+  EXPECT_EQ(literal2 <=> literal1, std::partial_ordering::unordered);
+}
+
 // Parameter struct for literal serialization and deserialization tests
 struct LiteralParam {
   std::string test_name;
@@ -345,6 +359,17 @@ INSTANTIATE_TEST_SUITE_P(
                      {255, 255, 255, 255, 255, 255, 239, 255},
                      Literal::Double(std::numeric_limits<double>::lowest()),
                      float64()},
+
+        // Decimal type
+        LiteralParam{"DecimalPositive",
+                     {1, 226, 64},
+                     Literal::Decimal(123456, 6, 2),
+                     decimal(6, 2)},
+        LiteralParam{"DecimalNegative",
+                     {254, 29, 192},
+                     Literal::Decimal(-123456, 6, 2),
+                     decimal(6, 2)},
+        LiteralParam{"DecimalZero", {0}, Literal::Decimal(0, 3, 0), decimal(3, 0)},
 
         LiteralParam{"String",
                      {105, 99, 101, 98, 101, 114, 103},
@@ -506,10 +531,28 @@ INSTANTIATE_TEST_SUITE_P(
                               .literal = Literal::Double(std::numbers::pi),
                               .expected_type_id = TypeId::kDouble,
                               .expected_string = "3.141593"},
+        BasicLiteralTestParam{.test_name = "DecimalPositive",
+                              .literal = Literal::Decimal(123456, 6, 2),
+                              .expected_type_id = TypeId::kDecimal,
+                              .expected_string = "1234.56"},
+        BasicLiteralTestParam{.test_name = "DecimalNegative",
+                              .literal = Literal::Decimal(-123456, 6, 2),
+                              .expected_type_id = TypeId::kDecimal,
+                              .expected_string = "-1234.56"},
+        BasicLiteralTestParam{.test_name = "DecimalZero",
+                              .literal = Literal::Decimal(0, 3, 0),
+                              .expected_type_id = TypeId::kDecimal,
+                              .expected_string = "0"},
         BasicLiteralTestParam{.test_name = "String",
                               .literal = Literal::String("hello world"),
                               .expected_type_id = TypeId::kString,
                               .expected_string = "\"hello world\""},
+        BasicLiteralTestParam{
+            .test_name = "Uuid",
+            .literal = Literal::UUID(
+                Uuid::FromString("123e4567-e89b-12d3-a456-426614174000").value()),
+            .expected_type_id = TypeId::kUuid,
+            .expected_string = "123e4567-e89b-12d3-a456-426614174000"},
         BasicLiteralTestParam{
             .test_name = "Binary",
             .literal = Literal::Binary(std::vector<uint8_t>{0x01, 0x02, 0x03, 0xFF}),
@@ -563,6 +606,10 @@ INSTANTIATE_TEST_SUITE_P(
                                    .small_literal = Literal::Double(1.5),
                                    .large_literal = Literal::Double(2.5),
                                    .equal_literal = Literal::Double(1.5)},
+        ComparisonLiteralTestParam{.test_name = "Decimal",
+                                   .small_literal = Literal::Decimal(123456, 6, 2),
+                                   .large_literal = Literal::Decimal(234567, 6, 2),
+                                   .equal_literal = Literal::Decimal(123456, 6, 2)},
         ComparisonLiteralTestParam{.test_name = "String",
                                    .small_literal = Literal::String("apple"),
                                    .large_literal = Literal::String("banana"),
@@ -672,6 +719,13 @@ INSTANTIATE_TEST_SUITE_P(
                              .target_type = fixed(4),
                              .expected_literal = Literal::Fixed(std::vector<uint8_t>{
                                  0x01, 0x02, 0x03, 0x04})},
+        // String cast tests
+        CastLiteralTestParam{
+            .test_name = "StringToUuid",
+            .source_literal = Literal::String("123e4567-e89b-12d3-a456-426614174000"),
+            .target_type = uuid(),
+            .expected_literal = Literal::UUID(
+                Uuid::FromString("123e4567-e89b-12d3-a456-426614174000").value())},
         // Same type cast test
         CastLiteralTestParam{.test_name = "IntToInt",
                              .source_literal = Literal::Int(42),
