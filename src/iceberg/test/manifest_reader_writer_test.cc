@@ -103,29 +103,28 @@ class ManifestReaderV1Test : public ManifestReaderTestBase {
         "00000-2-d5ae78b7-4449-45ec-adb7-c0e9c0bdb714-0-00004.parquet"};
     std::vector<int64_t> partitions = {447696, 473976, 465192, 447672};
 
-    // TODO(Li Feiyang): The Decimal type and its serialization logic are not yet fully
-    // implemented to support variable-length encoding as required by the Iceberg
-    // specification. Using Literal::Binary as a temporary substitute to represent the raw
-    // bytes for the decimal values.
+    // Note: The precision and scale for decimal literals are chosen arbitrarily here,
+    // since the lower and upper bounds for decimal values are stored as unscaled int128_t
+    // values in manifest files.
     std::vector<std::map<int32_t, std::vector<uint8_t>>> bounds = {
         {{1, Literal::Long(1234).Serialize().value()},
          {2, Literal::Long(5678).Serialize().value()},
-         {3, Literal::Binary({0x12, 0xe2}).Serialize().value()},
-
+         {3, Literal::Decimal(4834, 10, 2).Serialize().value()},
          {4, Literal::Timestamp(1611706223000000LL).Serialize().value()}},
+
         {{1, Literal::Long(1234).Serialize().value()},
          {2, Literal::Long(5678).Serialize().value()},
-         {3, Literal::Binary({0x12, 0xe3}).Serialize().value()},
-
+         {3, Literal::Decimal(4835, 10, 2).Serialize().value()},
          {4, Literal::Timestamp(1706314223000000LL).Serialize().value()}},
-        {{1, Literal::Long(123).Serialize().value()},
-         {2, Literal::Long(456).Serialize().value()},
-         {3, Literal::Binary({0x0e, 0x22}).Serialize().value()},
 
-         {4, Literal::Timestamp(1674691823000000LL).Serialize().value()}},
         {{1, Literal::Long(123).Serialize().value()},
          {2, Literal::Long(456).Serialize().value()},
-         {3, Literal::Binary({0x0e, 0x21}).Serialize().value()},
+         {3, Literal::Decimal(3618, 10, 2).Serialize().value()},
+         {4, Literal::Timestamp(1674691823000000LL).Serialize().value()}},
+
+        {{1, Literal::Long(123).Serialize().value()},
+         {2, Literal::Long(456).Serialize().value()},
+         {3, Literal::Decimal(3617, 10, 2).Serialize().value()},
          {4, Literal::Timestamp(1611619823000000LL).Serialize().value()}},
     };
 
