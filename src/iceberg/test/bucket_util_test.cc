@@ -24,6 +24,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/util/decimal.h"
+#include "iceberg/util/temporal_util.h"
 #include "iceberg/util/uuid.h"
 
 namespace iceberg {
@@ -41,27 +42,54 @@ TEST(BucketUtilsTest, HashHelper) {
   EXPECT_EQ(BucketUtils::HashBytes(decimal->ToBigEndian()), -500754589);
 
   // date hash
-  std::chrono::sys_days sd = std::chrono::year{2017} / 11 / 16;
-  std::chrono::sys_days epoch{std::chrono::year{1970} / 1 / 1};
-  int32_t days = (sd - epoch).count();
-  EXPECT_EQ(BucketUtils::HashInt(days), -653330422);
+  EXPECT_EQ(BucketUtils::HashInt(
+                TemporalUtils::CreateDate({.year = 2017, .month = 11, .day = 16})),
+            -653330422);
 
   // time
-  // 22:31:08 in microseconds
-  int64_t time_micros = (22 * 3600 + 31 * 60 + 8) * 1000000LL;
-  EXPECT_EQ(BucketUtils::HashLong(time_micros), -662762989);
+  EXPECT_EQ(BucketUtils::HashLong(
+                TemporalUtils::CreateTime({.hour = 22, .minute = 31, .second = 8})),
+            -662762989);
 
   // timestamp
   // 2017-11-16T22:31:08 in microseconds
-  std::chrono::system_clock::time_point tp =
-      std::chrono::sys_days{std::chrono::year{2017} / 11 / 16} + std::chrono::hours{22} +
-      std::chrono::minutes{31} + std::chrono::seconds{8};
-  int64_t timestamp_micros =
-      std::chrono::duration_cast<std::chrono::microseconds>(tp.time_since_epoch())
-          .count();
-  EXPECT_EQ(BucketUtils::HashLong(timestamp_micros), -2047944441);
+  EXPECT_EQ(
+      BucketUtils::HashLong(TemporalUtils::CreateTimestamp(
+          {.year = 2017, .month = 11, .day = 16, .hour = 22, .minute = 31, .second = 8})),
+      -2047944441);
+
   // 2017-11-16T22:31:08.000001 in microseconds
-  EXPECT_EQ(BucketUtils::HashLong(timestamp_micros + 1), -1207196810);
+  EXPECT_EQ(BucketUtils::HashLong(TemporalUtils::CreateTimestamp({.year = 2017,
+                                                                  .month = 11,
+                                                                  .day = 16,
+                                                                  .hour = 22,
+                                                                  .minute = 31,
+                                                                  .second = 8,
+                                                                  .microsecond = 1})),
+            -1207196810);
+
+  // 2017-11-16T14:31:08-08:00 in microseconds
+  EXPECT_EQ(BucketUtils::HashLong(
+                TemporalUtils::CreateTimestampTz({.year = 2017,
+                                                  .month = 11,
+                                                  .day = 16,
+                                                  .hour = 14,
+                                                  .minute = 31,
+                                                  .second = 8,
+                                                  .tz_offset_minutes = -480})),
+            -2047944441);
+
+  // 2017-11-16T14:31:08.000001-08:00 in microseconds
+  EXPECT_EQ(BucketUtils::HashLong(
+                TemporalUtils::CreateTimestampTz({.year = 2017,
+                                                  .month = 11,
+                                                  .day = 16,
+                                                  .hour = 14,
+                                                  .minute = 31,
+                                                  .second = 8,
+                                                  .microsecond = 1,
+                                                  .tz_offset_minutes = -480})),
+            -1207196810);
 
   // string
   std::string str = "iceberg";

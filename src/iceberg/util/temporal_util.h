@@ -19,11 +19,26 @@
 
 #pragma once
 
+#include <cstdint>
+
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
+
+struct ICEBERG_EXPORT TemporalParts {
+  int32_t year{0};
+  uint16_t month{0};
+  uint16_t day{0};
+  int32_t hour{0};
+  int32_t minute{0};
+  int32_t second{0};
+  int32_t microsecond{0};
+  int32_t nanosecond{0};
+  // e.g. -480 for PST (UTC-8:00), +480 for Asia/Shanghai (UTC+8:00)
+  int32_t tz_offset_minutes;
+};
 
 class ICEBERG_EXPORT TemporalUtils {
  public:
@@ -38,6 +53,24 @@ class ICEBERG_EXPORT TemporalUtils {
 
   /// \brief Extract a timestamp hour, as hours from 1970-01-01 00:00:00
   static Result<Literal> ExtractHour(const Literal& literal);
+
+  /// \brief Construct a Calendar date without timezone or time
+  static int32_t CreateDate(const TemporalParts& parts);
+
+  /// \brief Construct a time-of-day, microsecond precision, without date, timezone
+  static int64_t CreateTime(const TemporalParts& parts);
+
+  /// \brief Construct a timestamp, microsecond precision, without timezone
+  static int64_t CreateTimestamp(const TemporalParts& parts);
+
+  /// \brief Construct a timestamp, microsecond precision, with timezone
+  static int64_t CreateTimestampTz(const TemporalParts& parts);
+
+  /// \brief Construct a timestamp, nanosecond precision, without timezone
+  static int64_t CreateTimestampNanos(const TemporalParts& parts);
+
+  /// \brief Construct a timestamp, nanosecond precision, with timezone
+  static int64_t CreateTimestampTzNanos(const TemporalParts& parts);
 };
 
 }  // namespace iceberg

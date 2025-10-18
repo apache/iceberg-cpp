@@ -105,6 +105,7 @@ add_iceberg_test(util_test
                  endian_test.cc
                  formatter_test.cc
                  string_util_test.cc
+                 temporal_util_test.cc
                  truncate_util_test.cc
                  uuid_test.cc
                  visit_type_test.cc)

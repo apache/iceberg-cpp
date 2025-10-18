@@ -20,6 +20,7 @@
 #include "iceberg/util/temporal_util.h"
 
 #include <chrono>
+#include <cstdint>
 #include <utility>
 
 #include "iceberg/expression/literal.h"
@@ -234,6 +235,55 @@ Result<Literal> TemporalUtils::ExtractHour(const Literal& literal) {
       return NotSupported("Extract hour from type {} is not supported",
                           literal.type()->ToString());
   }
+}
+
+int32_t TemporalUtils::CreateDate(const TemporalParts& parts) {
+  year_month_day ymd{year{parts.year}, month{parts.month}, day{parts.day}};
+  auto days_since_epoch = sys_days(ymd) - kEpochDays;
+  return static_cast<int32_t>(days_since_epoch.count());
+}
+
+int64_t TemporalUtils::CreateTime(const TemporalParts& parts) {
+  return duration_cast<microseconds>(hours(parts.hour) + minutes(parts.minute) +
+                                     seconds(parts.second) +
+                                     microseconds(parts.microsecond))
+      .count();
+}
+
+int64_t TemporalUtils::CreateTimestamp(const TemporalParts& parts) {
+  year_month_day ymd{year{parts.year}, month{parts.month}, day{parts.day}};
+  auto tp =
+      sys_time<microseconds>{(sys_days(ymd) + hours{parts.hour} + minutes{parts.minute} +
+                              seconds{parts.second} + microseconds{parts.microsecond})
+                                 .time_since_epoch()};
+  return tp.time_since_epoch().count();
+}
+
+int64_t TemporalUtils::CreateTimestampTz(const TemporalParts& parts) {
+  year_month_day ymd{year{parts.year}, month{parts.month}, day{parts.day}};
+  auto tp = sys_time<microseconds>{
+      (sys_days(ymd) + hours{parts.hour} + minutes{parts.minute} + seconds{parts.second} +
+       microseconds{parts.microsecond} - minutes{parts.tz_offset_minutes})
+          .time_since_epoch()};
+  return tp.time_since_epoch().count();
+}
+
+int64_t TemporalUtils::CreateTimestampNanos(const TemporalParts& parts) {
+  year_month_day ymd{year{parts.year}, month{parts.month}, day{parts.day}};
+  auto tp =
+      sys_time<nanoseconds>{(sys_days(ymd) + hours{parts.hour} + minutes{parts.minute} +
+                             seconds{parts.second} + nanoseconds{parts.nanosecond})
+                                .time_since_epoch()};
+  return tp.time_since_epoch().count();
+}
+
+int64_t TemporalUtils::CreateTimestampTzNanos(const TemporalParts& parts) {
+  year_month_day ymd{year{parts.year}, month{parts.month}, day{parts.day}};
+  auto tp = sys_time<nanoseconds>{
+      (sys_days(ymd) + hours{parts.hour} + minutes{parts.minute} + seconds{parts.second} +
+       nanoseconds{parts.nanosecond} - minutes{parts.tz_offset_minutes})
+          .time_since_epoch()};
+  return tp.time_since_epoch().count();
 }
 
 }  // namespace iceberg
