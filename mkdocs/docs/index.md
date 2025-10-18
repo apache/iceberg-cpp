@@ -117,16 +117,6 @@ Run specific test:
 ctest --test-dir build -R test_name
 ```
 
-#### Test Coverage
-
-We aim for high test coverage. Run tests with coverage:
-
-```bash
-cmake -S . -B build -DICEBERG_BUILD_COVERAGE=ON
-cmake --build build
-ctest --test-dir build
-```
-
 ### Linting
 
 Install the python package `pre-commit` and run once `pre-commit install`:

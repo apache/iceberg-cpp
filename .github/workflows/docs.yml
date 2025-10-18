@@ -31,23 +31,15 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install mkdocs-material
           sudo apt-get update
           sudo apt-get install -y doxygen
+          make install-deps
 
       - name: Build API documentation with Doxygen
-        run: |
-          cd mkdocs
-          mkdir -p docs/api
-          doxygen Doxyfile
-          echo "Doxygen output created in docs/api/"
+        run: make build-api-docs
 
       - name: Build docs
-        run: |
-          cd mkdocs
-          mkdocs build --clean
-          echo "MkDocs site built in site/"
+        run: make build-docs
 
       - name: Deploy to gh-pages
         if: github.event_name == 'pull_request'
