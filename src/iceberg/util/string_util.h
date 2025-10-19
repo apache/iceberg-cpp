@@ -44,11 +44,6 @@ class ICEBERG_EXPORT StringUtils {
                    [](char c) { return std::toupper(c); });    // NOLINT
     return input;
   }
-
-  static bool EqualsIgnoreCase(const std::string& lhs, const std::string& rhs) {
-    return std::ranges::equal(
-        lhs, rhs, [](char lc, char rc) { return std::tolower(lc) == std::tolower(rc); });
-  }
 };
 
 /// \brief Transparent hash function that supports std::string_view as lookup key
