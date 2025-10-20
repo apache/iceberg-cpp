@@ -80,6 +80,9 @@ iceberg_tests = {
         ),
     },
     'roaring_test': {'sources': files('roaring_test.cc')},
+    'table_metadata_builder_test': {
+        'sources': files('table_metadata_builder_test.cc'),
+    },
 }
 
 if get_option('rest').enabled()

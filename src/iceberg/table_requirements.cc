@@ -26,11 +26,11 @@
 namespace iceberg {
 
 void TableUpdateContext::AddRequirement(std::unique_ptr<TableRequirement> requirement) {
-  throw IcebergError("TableUpdateContext::AddRequirement not implemented");
+  requirements_.emplace_back(std::move(requirement));
 }
 
 Result<std::vector<std::unique_ptr<TableRequirement>>> TableUpdateContext::Build() {
-  return NotImplemented("TableUpdateContext::Build not implemented");
+  return std::move(requirements_);
 }
 
 Result<std::vector<std::unique_ptr<TableRequirement>>> TableRequirements::ForCreateTable(
