@@ -26,7 +26,6 @@
 #include <array>
 #include <cstdint>
 #include <memory>
-#include <mutex>
 #include <optional>
 #include <span>
 #include <string>
@@ -37,15 +36,9 @@
 #include "iceberg/result.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/util/formattable.h"
+#include "iceberg/util/lazy.h"
 
 namespace iceberg {
-
-template <typename Func>
-Status LazyInitWithCallOnce(std::once_flag& flag, Func&& func) {
-  Status status;
-  std::call_once(flag, [&status, &func]() { status = func(); });
-  return status;
-}
 
 /// \brief Interface for a data type for a field.
 class ICEBERG_EXPORT Type : public iceberg::util::Formattable {
@@ -133,18 +126,17 @@ class ICEBERG_EXPORT StructType : public NestedType {
  protected:
   bool Equals(const Type& other) const override;
 
-  Status InitFieldById() const;
-  Status InitFieldByName() const;
-  Status InitFieldByLowerCaseName() const;
+  static Result<std::unordered_map<int32_t, SchemaFieldConstRef>> InitFieldById(
+      const StructType&);
+  static Result<std::unordered_map<std::string_view, SchemaFieldConstRef>>
+  InitFieldByName(const StructType&);
+  static Result<std::unordered_map<std::string, SchemaFieldConstRef>>
+  InitFieldByLowerCaseName(const StructType&);
 
   std::vector<SchemaField> fields_;
-  mutable std::unordered_map<int32_t, SchemaFieldConstRef> field_by_id_;
-  mutable std::unordered_map<std::string_view, SchemaFieldConstRef> field_by_name_;
-  mutable std::unordered_map<std::string, SchemaFieldConstRef> field_by_lowercase_name_;
-
-  mutable std::once_flag field_by_id_flag_;
-  mutable std::once_flag field_by_name_flag_;
-  mutable std::once_flag field_by_lowercase_name_flag_;
+  Lazy<InitFieldById> field_by_id_;
+  Lazy<InitFieldByName> field_by_name_;
+  Lazy<InitFieldByLowerCaseName> field_by_lowercase_name_;
 };
 
 /// \brief A data type representing a list of values.

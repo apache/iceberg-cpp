@@ -90,56 +90,55 @@ bool Schema::Equals(const Schema& other) const {
 Result<std::optional<std::reference_wrapper<const SchemaField>>> Schema::FindFieldByName(
     std::string_view name, bool case_sensitive) const {
   if (case_sensitive) {
-    ICEBERG_RETURN_UNEXPECTED(
-        LazyInitWithCallOnce(name_to_id_flag_, [this]() { return InitNameToIdMap(); }));
-    auto it = name_to_id_.find(name);
-    if (it == name_to_id_.end()) return std::nullopt;
+    ICEBERG_ASSIGN_OR_RAISE(auto name_to_id, name_to_id_.Get(*this));
+    auto it = name_to_id.get().find(name);
+    if (it == name_to_id.get().end()) {
+      return std::nullopt;
+    };
     return FindFieldById(it->second);
   }
-  ICEBERG_RETURN_UNEXPECTED(LazyInitWithCallOnce(
-      lowercase_name_to_id_flag_, [this]() { return InitLowerCaseNameToIdMap(); }));
-  auto it = lowercase_name_to_id_.find(StringUtils::ToLower(name));
-  if (it == lowercase_name_to_id_.end()) return std::nullopt;
+  ICEBERG_ASSIGN_OR_RAISE(auto lowercase_name_to_id, lowercase_name_to_id_.Get(*this));
+  auto it = lowercase_name_to_id.get().find(StringUtils::ToLower(name));
+  if (it == lowercase_name_to_id.get().end()) {
+    return std::nullopt;
+  }
   return FindFieldById(it->second);
 }
 
-Status Schema::InitIdToFieldMap() const {
-  if (!id_to_field_.empty()) {
-    return {};
-  }
-  IdToFieldVisitor visitor(id_to_field_);
-  ICEBERG_RETURN_UNEXPECTED(VisitTypeInline(*this, &visitor));
-  return {};
+Result<std::unordered_map<int32_t, std::reference_wrapper<const SchemaField>>>
+Schema::InitIdToFieldMap(const Schema& self) {
+  std::unordered_map<int32_t, std::reference_wrapper<const SchemaField>> id_to_field;
+  IdToFieldVisitor visitor(id_to_field);
+  ICEBERG_RETURN_UNEXPECTED(VisitTypeInline(self, &visitor));
+  return id_to_field;
 }
 
-Status Schema::InitNameToIdMap() const {
-  if (!name_to_id_.empty()) {
-    return {};
-  }
-  NameToIdVisitor visitor(name_to_id_, /*case_sensitive=*/true);
+Result<std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>>
+Schema::InitNameToIdMap(const Schema& self) {
+  std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>> name_to_id;
+  NameToIdVisitor visitor(name_to_id, /*case_sensitive=*/true);
   ICEBERG_RETURN_UNEXPECTED(
-      VisitTypeInline(*this, &visitor, /*path=*/"", /*short_path=*/""));
+      VisitTypeInline(self, &visitor, /*path=*/"", /*short_path=*/""));
   visitor.Finish();
-  return {};
+  return name_to_id;
 }
 
-Status Schema::InitLowerCaseNameToIdMap() const {
-  if (!lowercase_name_to_id_.empty()) {
-    return {};
-  }
-  NameToIdVisitor visitor(lowercase_name_to_id_, /*case_sensitive=*/false);
+Result<std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>>
+Schema::InitLowerCaseNameToIdMap(const Schema& self) {
+  std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>
+      lowercase_name_to_id;
+  NameToIdVisitor visitor(lowercase_name_to_id, /*case_sensitive=*/false);
   ICEBERG_RETURN_UNEXPECTED(
-      VisitTypeInline(*this, &visitor, /*path=*/"", /*short_path=*/""));
+      VisitTypeInline(self, &visitor, /*path=*/"", /*short_path=*/""));
   visitor.Finish();
-  return {};
+  return lowercase_name_to_id;
 }
 
 Result<std::optional<std::reference_wrapper<const SchemaField>>> Schema::FindFieldById(
     int32_t field_id) const {
-  ICEBERG_RETURN_UNEXPECTED(
-      LazyInitWithCallOnce(id_to_field_flag_, [this]() { return InitIdToFieldMap(); }));
-  auto it = id_to_field_.find(field_id);
-  if (it == id_to_field_.end()) {
+  ICEBERG_ASSIGN_OR_RAISE(auto id_to_field, id_to_field_.Get(*this));
+  auto it = id_to_field.get().find(field_id);
+  if (it == id_to_field.get().end()) {
     return std::nullopt;
   }
   return it->second;

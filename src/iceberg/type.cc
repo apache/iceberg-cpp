@@ -51,10 +51,9 @@ std::string StructType::ToString() const {
 std::span<const SchemaField> StructType::fields() const { return fields_; }
 Result<std::optional<NestedType::SchemaFieldConstRef>> StructType::GetFieldById(
     int32_t field_id) const {
-  ICEBERG_RETURN_UNEXPECTED(
-      LazyInitWithCallOnce(field_by_id_flag_, [this]() { return InitFieldById(); }));
-  auto it = field_by_id_.find(field_id);
-  if (it == field_by_id_.end()) return std::nullopt;
+  ICEBERG_ASSIGN_OR_RAISE(auto field_by_id, field_by_id_.Get(*this));
+  auto it = field_by_id.get().find(field_id);
+  if (it == field_by_id.get().end()) return std::nullopt;
   return it->second;
 }
 Result<std::optional<NestedType::SchemaFieldConstRef>> StructType::GetFieldByIndex(
@@ -67,18 +66,17 @@ Result<std::optional<NestedType::SchemaFieldConstRef>> StructType::GetFieldByInd
 Result<std::optional<NestedType::SchemaFieldConstRef>> StructType::GetFieldByName(
     std::string_view name, bool case_sensitive) const {
   if (case_sensitive) {
-    ICEBERG_RETURN_UNEXPECTED(LazyInitWithCallOnce(
-        field_by_name_flag_, [this]() { return InitFieldByName(); }));
-    auto it = field_by_name_.find(name);
-    if (it != field_by_name_.end()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto field_by_name, field_by_name_.Get(*this));
+    auto it = field_by_name.get().find(name);
+    if (it != field_by_name.get().end()) {
       return it->second;
     }
     return std::nullopt;
   }
-  ICEBERG_RETURN_UNEXPECTED(LazyInitWithCallOnce(
-      field_by_lowercase_name_flag_, [this]() { return InitFieldByLowerCaseName(); }));
-  auto it = field_by_lowercase_name_.find(StringUtils::ToLower(name));
-  if (it != field_by_lowercase_name_.end()) {
+  ICEBERG_ASSIGN_OR_RAISE(auto field_by_lowercase_name,
+                          field_by_lowercase_name_.Get(*this));
+  auto it = field_by_lowercase_name.get().find(StringUtils::ToLower(name));
+  if (it != field_by_lowercase_name.get().end()) {
     return it->second;
   }
   return std::nullopt;
@@ -90,47 +88,44 @@ bool StructType::Equals(const Type& other) const {
   const auto& struct_ = static_cast<const StructType&>(other);
   return fields_ == struct_.fields_;
 }
-Status StructType::InitFieldById() const {
-  if (!field_by_id_.empty()) {
-    return {};
-  }
-  for (const auto& field : fields_) {
-    auto it = field_by_id_.try_emplace(field.field_id(), field);
+Result<std::unordered_map<int32_t, StructType::SchemaFieldConstRef>>
+StructType::InitFieldById(const StructType& self) {
+  std::unordered_map<int32_t, SchemaFieldConstRef> field_by_id;
+  for (const auto& field : self.fields_) {
+    auto it = field_by_id.try_emplace(field.field_id(), field);
     if (!it.second) {
       return InvalidSchema("Duplicate field id found: {} (prev name: {}, curr name: {})",
                            field.field_id(), it.first->second.get().name(), field.name());
     }
   }
-  return {};
+  return field_by_id;
 }
-Status StructType::InitFieldByName() const {
-  if (!field_by_name_.empty()) {
-    return {};
-  }
-  for (const auto& field : fields_) {
-    auto it = field_by_name_.try_emplace(field.name(), field);
+Result<std::unordered_map<std::string_view, StructType::SchemaFieldConstRef>>
+StructType::InitFieldByName(const StructType& self) {
+  std::unordered_map<std::string_view, StructType::SchemaFieldConstRef> field_by_name;
+  for (const auto& field : self.fields_) {
+    auto it = field_by_name.try_emplace(field.name(), field);
     if (!it.second) {
       return InvalidSchema("Duplicate field name found: {} (prev id: {}, curr id: {})",
                            it.first->first, it.first->second.get().field_id(),
                            field.field_id());
     }
   }
-  return {};
+  return field_by_name;
 }
-Status StructType::InitFieldByLowerCaseName() const {
-  if (!field_by_lowercase_name_.empty()) {
-    return {};
-  }
-  for (const auto& field : fields_) {
+Result<std::unordered_map<std::string, StructType::SchemaFieldConstRef>>
+StructType::InitFieldByLowerCaseName(const StructType& self) {
+  std::unordered_map<std::string, SchemaFieldConstRef> field_by_lowercase_name;
+  for (const auto& field : self.fields_) {
     auto it =
-        field_by_lowercase_name_.try_emplace(StringUtils::ToLower(field.name()), field);
+        field_by_lowercase_name.try_emplace(StringUtils::ToLower(field.name()), field);
     if (!it.second) {
       return InvalidSchema(
           "Duplicate lowercase field name found: {} (prev id: {}, curr id: {})",
           it.first->first, it.first->second.get().field_id(), field.field_id());
     }
   }
-  return {};
+  return field_by_lowercase_name;
 }
 
 ListType::ListType(SchemaField element) : element_(std::move(element)) {
