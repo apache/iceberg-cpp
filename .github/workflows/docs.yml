@@ -38,7 +38,7 @@ jobs:
         run: make build-api-docs
 
       - name: Build docs
-        run:
+        run: |
             make build-docs
             mkdir -p /tmp/site
             cp -r ./mkdocs/site/* /tmp/site/
