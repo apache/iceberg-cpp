@@ -24,8 +24,8 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/util/decimal.h"
-#include "iceberg/util/temporal_util.h"
 #include "iceberg/util/uuid.h"
+#include "temporal_test_helper.h"
 
 namespace iceberg {
 
@@ -43,52 +43,53 @@ TEST(BucketUtilsTest, HashHelper) {
 
   // date hash
   EXPECT_EQ(BucketUtils::HashInt(
-                TemporalUtils::CreateDate({.year = 2017, .month = 11, .day = 16})),
+                TemporalTestHelper::CreateDate({.year = 2017, .month = 11, .day = 16})),
             -653330422);
 
   // time
   EXPECT_EQ(BucketUtils::HashLong(
-                TemporalUtils::CreateTime({.hour = 22, .minute = 31, .second = 8})),
+                TemporalTestHelper::CreateTime({.hour = 22, .minute = 31, .second = 8})),
             -662762989);
 
   // timestamp
   // 2017-11-16T22:31:08 in microseconds
   EXPECT_EQ(
-      BucketUtils::HashLong(TemporalUtils::CreateTimestamp(
+      BucketUtils::HashLong(TemporalTestHelper::CreateTimestamp(
           {.year = 2017, .month = 11, .day = 16, .hour = 22, .minute = 31, .second = 8})),
       -2047944441);
 
   // 2017-11-16T22:31:08.000001 in microseconds
-  EXPECT_EQ(BucketUtils::HashLong(TemporalUtils::CreateTimestamp({.year = 2017,
-                                                                  .month = 11,
-                                                                  .day = 16,
-                                                                  .hour = 22,
-                                                                  .minute = 31,
-                                                                  .second = 8,
-                                                                  .microsecond = 1})),
-            -1207196810);
+  EXPECT_EQ(
+      BucketUtils::HashLong(TemporalTestHelper::CreateTimestamp({.year = 2017,
+                                                                 .month = 11,
+                                                                 .day = 16,
+                                                                 .hour = 22,
+                                                                 .minute = 31,
+                                                                 .second = 8,
+                                                                 .microsecond = 1})),
+      -1207196810);
 
   // 2017-11-16T14:31:08-08:00 in microseconds
   EXPECT_EQ(BucketUtils::HashLong(
-                TemporalUtils::CreateTimestampTz({.year = 2017,
-                                                  .month = 11,
-                                                  .day = 16,
-                                                  .hour = 14,
-                                                  .minute = 31,
-                                                  .second = 8,
-                                                  .tz_offset_minutes = -480})),
+                TemporalTestHelper::CreateTimestampTz({.year = 2017,
+                                                       .month = 11,
+                                                       .day = 16,
+                                                       .hour = 14,
+                                                       .minute = 31,
+                                                       .second = 8,
+                                                       .tz_offset_minutes = -480})),
             -2047944441);
 
   // 2017-11-16T14:31:08.000001-08:00 in microseconds
   EXPECT_EQ(BucketUtils::HashLong(
-                TemporalUtils::CreateTimestampTz({.year = 2017,
-                                                  .month = 11,
-                                                  .day = 16,
-                                                  .hour = 14,
-                                                  .minute = 31,
-                                                  .second = 8,
-                                                  .microsecond = 1,
-                                                  .tz_offset_minutes = -480})),
+                TemporalTestHelper::CreateTimestampTz({.year = 2017,
+                                                       .month = 11,
+                                                       .day = 16,
+                                                       .hour = 14,
+                                                       .minute = 31,
+                                                       .second = 8,
+                                                       .microsecond = 1,
+                                                       .tz_offset_minutes = -480})),
             -1207196810);
 
   // string

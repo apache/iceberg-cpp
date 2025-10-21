@@ -29,8 +29,8 @@
 #include "iceberg/expression/literal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
-#include "iceberg/util/temporal_util.h"
 #include "matchers.h"
+#include "temporal_test_helper.h"
 
 namespace iceberg {
 
@@ -316,38 +316,39 @@ INSTANTIATE_TEST_SUITE_P(
                        .expected = Literal::Int(3)},
         TransformParam{.str = "Date",
                        .source_type = iceberg::date(),
-                       .source = Literal::Date(TemporalUtils::CreateDate(
+                       .source = Literal::Date(TemporalTestHelper::CreateDate(
                            {.year = 2017, .month = 11, .day = 16})),
                        .expected = Literal::Int(2)},
         TransformParam{.str = "Time",
                        .source_type = iceberg::time(),
-                       .source = Literal::Time(TemporalUtils::CreateTime(
+                       .source = Literal::Time(TemporalTestHelper::CreateTime(
                            {.hour = 22, .minute = 31, .second = 8})),
                        .expected = Literal::Int(3)},
         TransformParam{.str = "Timestamp",
                        // 2017-11-16T22:31:08 in microseconds
                        .source_type = iceberg::timestamp(),
                        .source = Literal::Timestamp(
-                           TemporalUtils::CreateTimestamp({.year = 2017,
-                                                           .month = 11,
-                                                           .day = 16,
-                                                           .hour = 22,
-                                                           .minute = 31,
-                                                           .second = 8})),
+                           TemporalTestHelper::CreateTimestamp({.year = 2017,
+                                                                .month = 11,
+                                                                .day = 16,
+                                                                .hour = 22,
+                                                                .minute = 31,
+                                                                .second = 8})),
                        .expected = Literal::Int(3)},
-        TransformParam{.str = "TimestampTz",
-                       // 2017-11-16T14:31:08.000001-08:00 in microseconds
-                       .source_type = iceberg::timestamp_tz(),
-                       .source = Literal::TimestampTz(
-                           TemporalUtils::CreateTimestampTz({.year = 2017,
-                                                             .month = 11,
-                                                             .day = 16,
-                                                             .hour = 14,
-                                                             .minute = 31,
-                                                             .second = 8,
-                                                             .microsecond = 1,
-                                                             .tz_offset_minutes = -480})),
-                       .expected = Literal::Int(2)},
+        TransformParam{
+            .str = "TimestampTz",
+            // 2017-11-16T14:31:08.000001-08:00 in microseconds
+            .source_type = iceberg::timestamp_tz(),
+            .source = Literal::TimestampTz(
+                TemporalTestHelper::CreateTimestampTz({.year = 2017,
+                                                       .month = 11,
+                                                       .day = 16,
+                                                       .hour = 14,
+                                                       .minute = 31,
+                                                       .second = 8,
+                                                       .microsecond = 1,
+                                                       .tz_offset_minutes = -480})),
+            .expected = Literal::Int(2)},
         TransformParam{.str = "String",
                        .source_type = iceberg::string(),
                        .source = Literal::String("iceberg"),
@@ -443,32 +444,33 @@ TEST_P(YearTransformTest, YearTransform) {
 INSTANTIATE_TEST_SUITE_P(
     YearTransformTests, YearTransformTest,
     ::testing::Values(
+        TransformParam{.str = "Timestamp",
+                       // 2021-06-01T11:43:20Z
+                       .source_type = iceberg::timestamp(),
+                       .source = Literal::Timestamp(
+                           TemporalTestHelper::CreateTimestamp({.year = 2021,
+                                                                .month = 6,
+                                                                .day = 1,
+                                                                .hour = 11,
+                                                                .minute = 43,
+                                                                .second = 20})),
+                       .expected = Literal::Int(2021)},
         TransformParam{
-            .str = "Timestamp",
-            // 2021-06-01T11:43:20Z
-            .source_type = iceberg::timestamp(),
-            .source = Literal::Timestamp(TemporalUtils::CreateTimestamp({.year = 2021,
-                                                                         .month = 6,
-                                                                         .day = 1,
-                                                                         .hour = 11,
-                                                                         .minute = 43,
-                                                                         .second = 20})),
-            .expected = Literal::Int(2021)},
-        TransformParam{.str = "TimestampTz",
-                       // 2021-01-01T07:43:20+08:00, which is 2020-12-31T23:43:20Z
-                       .source_type = iceberg::timestamp_tz(),
-                       .source = Literal::TimestampTz(
-                           TemporalUtils::CreateTimestampTz({.year = 2021,
-                                                             .month = 1,
-                                                             .day = 1,
-                                                             .hour = 7,
-                                                             .minute = 43,
-                                                             .second = 20,
-                                                             .tz_offset_minutes = 480})),
-                       .expected = Literal::Int(2020)},
+            .str = "TimestampTz",
+            // 2021-01-01T07:43:20+08:00, which is 2020-12-31T23:43:20Z
+            .source_type = iceberg::timestamp_tz(),
+            .source = Literal::TimestampTz(
+                TemporalTestHelper::CreateTimestampTz({.year = 2021,
+                                                       .month = 1,
+                                                       .day = 1,
+                                                       .hour = 7,
+                                                       .minute = 43,
+                                                       .second = 20,
+                                                       .tz_offset_minutes = 480})),
+            .expected = Literal::Int(2020)},
         TransformParam{.str = "Date",
                        .source_type = iceberg::date(),
-                       .source = Literal::Date(TemporalUtils::CreateDate(
+                       .source = Literal::Date(TemporalTestHelper::CreateDate(
                            {.year = 2052, .month = 2, .day = 20})),
                        .expected = Literal::Int(2052)}),
     [](const ::testing::TestParamInfo<TransformParam>& info) { return info.param.str; });
@@ -526,29 +528,30 @@ TEST_P(DayTransformTest, DayTransform) {
 INSTANTIATE_TEST_SUITE_P(
     DayTransformTests, DayTransformTest,
     ::testing::Values(
+        TransformParam{.str = "Timestamp",
+                       .source_type = iceberg::timestamp(),
+                       .source = Literal::Timestamp(
+                           TemporalTestHelper::CreateTimestamp({.year = 2021,
+                                                                .month = 6,
+                                                                .day = 1,
+                                                                .hour = 11,
+                                                                .minute = 43,
+                                                                .second = 20})),
+                       .expected = Literal::Int(TemporalTestHelper::CreateDate(
+                           {.year = 2021, .month = 6, .day = 1}))},
         TransformParam{
-            .str = "Timestamp",
-            .source_type = iceberg::timestamp(),
-            .source = Literal::Timestamp(TemporalUtils::CreateTimestamp({.year = 2021,
-                                                                         .month = 6,
-                                                                         .day = 1,
-                                                                         .hour = 11,
-                                                                         .minute = 43,
-                                                                         .second = 20})),
+            .str = "TimestampTz",
+            .source_type = iceberg::timestamp_tz(),
+            .source = Literal::TimestampTz(
+                TemporalTestHelper::CreateTimestampTz({.year = 2021,
+                                                       .month = 1,
+                                                       .day = 1,
+                                                       .hour = 7,
+                                                       .minute = 43,
+                                                       .second = 20,
+                                                       .tz_offset_minutes = 480})),
             .expected = Literal::Int(
-                TemporalUtils::CreateDate({.year = 2021, .month = 6, .day = 1}))},
-        TransformParam{.str = "TimestampTz",
-                       .source_type = iceberg::timestamp_tz(),
-                       .source = Literal::TimestampTz(
-                           TemporalUtils::CreateTimestampTz({.year = 2021,
-                                                             .month = 1,
-                                                             .day = 1,
-                                                             .hour = 7,
-                                                             .minute = 43,
-                                                             .second = 20,
-                                                             .tz_offset_minutes = 480})),
-                       .expected = Literal::Int(TemporalUtils::CreateDate(
-                           {.year = 2020, .month = 12, .day = 31}))},
+                TemporalTestHelper::CreateDate({.year = 2020, .month = 12, .day = 31}))},
         TransformParam{.str = "Date",
                        .source_type = iceberg::date(),
                        .source = Literal::Date(30000),
