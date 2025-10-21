@@ -214,7 +214,7 @@ struct TableMetadataBuilder::Impl {
   std::vector<std::unique_ptr<TableUpdate>> changes;
 
   // Error collection (since methods return *this and cannot throw)
-  std::vector<Status> errors;
+  std::vector<Error> errors;
 
   // Metadata location tracking
   std::optional<std::string> metadata_location;
@@ -224,12 +224,12 @@ struct TableMetadataBuilder::Impl {
   explicit Impl(int8_t format_version) : base(nullptr), metadata{} {
     metadata.format_version = format_version;
     metadata.last_sequence_number = TableMetadata::kInitialSequenceNumber;
-    metadata.last_updated_ms = TimePointMs{std::chrono::milliseconds(0)};
-    metadata.last_column_id = 0;
-    metadata.default_spec_id = TableMetadata::kInitialSpecId;
-    metadata.last_partition_id = 0;
-    metadata.current_snapshot_id = TableMetadata::kInvalidSnapshotId;
-    metadata.default_sort_order_id = TableMetadata::kInitialSortOrderId;
+    metadata.last_updated_ms = TimePointMs::min();
+    metadata.last_column_id = Schema::kInvalidColumnId;
+    metadata.default_spec_id = PartitionSpec::kInitialSpecId;
+    metadata.last_partition_id = PartitionSpec::kInvalidPartitionFieldId;
+    metadata.current_snapshot_id = Snapshot::kInvalidSnapshotId;
+    metadata.default_sort_order_id = SortOrder::kInitialSortOrderId;
     metadata.next_row_id = TableMetadata::kInitialRowId;
   }
 
@@ -284,9 +284,9 @@ TableMetadataBuilder& TableMetadataBuilder::AssignUUID() {
 TableMetadataBuilder& TableMetadataBuilder::AssignUUID(std::string_view uuid) {
   std::string uuid_str(uuid);
 
-  // Validation: UUID cannot be null or empty
+  // Validation: UUID cannot be empty
   if (uuid_str.empty()) {
-    impl_->errors.emplace_back(InvalidArgument("Cannot assign null or empty UUID"));
+    impl_->errors.emplace_back(ErrorKind::kInvalidArgument, "Cannot assign empty UUID");
     return *this;
   }
 
@@ -299,7 +299,7 @@ TableMetadataBuilder& TableMetadataBuilder::AssignUUID(std::string_view uuid) {
   impl_->metadata.table_uuid = uuid_str;
 
   // Record the change
-  impl_->changes.push_back(std::make_unique<table::AssignUUID>(uuid_str));
+  impl_->changes.push_back(std::make_unique<table::AssignUUID>(std::move(uuid_str)));
 
   return *this;
 }
@@ -435,42 +435,20 @@ TableMetadataBuilder& TableMetadataBuilder::RemoveEncryptionKey(std::string_view
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-TableMetadataBuilder& TableMetadataBuilder::DiscardChanges() {
-  // Clear all changes and errors
-  impl_->changes.clear();
-  impl_->errors.clear();
-
-  // Reset metadata to base state
-  if (impl_->base != nullptr) {
-    impl_->metadata = *impl_->base;
-  } else {
-    // Reset to initial state for new table
-    *impl_ = Impl(impl_->metadata.format_version);
-  }
-
-  return *this;
-}
-
 Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Build() {
   // 1. Check for accumulated errors
   if (!impl_->errors.empty()) {
     std::string error_msg = "Failed to build TableMetadata due to validation errors:\n";
-    for (const auto& error : impl_->errors) {
-      error_msg += "  - " + error.error().message + "\n";
+    for (const auto& [kind, message] : impl_->errors) {
+      error_msg += "  - " + message + "\n";
     }
     return CommitFailed("{}", error_msg);
   }
 
-  // 2. Validate metadata consistency
-
-  // Validate UUID exists for format version > 1
-  if (impl_->metadata.format_version > 1 && impl_->metadata.table_uuid.empty()) {
-    return InvalidArgument("UUID is required for format version {}",
-                           impl_->metadata.format_version);
-  }
+  // 2. Validate metadata consistency through TableMetadata#Validate
 
   // 3. Update last_updated_ms if there are changes
-  if (!impl_->changes.empty() && impl_->base != nullptr) {
+  if (impl_->metadata.last_updated_ms == TimePointMs::min()) {
     impl_->metadata.last_updated_ms =
         TimePointMs{std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::system_clock::now().time_since_epoch())};

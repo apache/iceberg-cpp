@@ -45,7 +45,7 @@ class ICEBERG_EXPORT StringUtils {
     return input;
   }
 
-  static bool EqualsIgnoreCase(const std::string& lhs, const std::string& rhs) {
+  static bool EqualsIgnoreCase(std::string_view lhs, std::string_view rhs) {
     return std::ranges::equal(
         lhs, rhs, [](char lc, char rc) { return std::tolower(lc) == std::tolower(rc); });
   }

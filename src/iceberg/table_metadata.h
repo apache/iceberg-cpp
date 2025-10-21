@@ -73,9 +73,6 @@ struct ICEBERG_EXPORT TableMetadata {
   static constexpr int64_t kInitialSequenceNumber = 0;
   static constexpr int64_t kInvalidSequenceNumber = -1;
   static constexpr int64_t kInitialRowId = 0;
-  static constexpr int32_t kInitialSpecId = 0;
-  static constexpr int32_t kInitialSortOrderId = 1;
-  static constexpr int64_t kInvalidSnapshotId = -1;
 
   /// An integer version number for the format
   int8_t format_version;
@@ -379,13 +376,6 @@ class ICEBERG_EXPORT TableMetadataBuilder {
   /// \param key_id The ID of the encryption key to remove
   /// \return Reference to this builder for method chaining
   TableMetadataBuilder& RemoveEncryptionKey(std::string_view key_id);
-
-  /// \brief Discard all accumulated changes
-  ///
-  /// This is useful when you want to reset the builder state without
-  /// creating a new builder instance.
-  /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& DiscardChanges();
 
   /// \brief Build the TableMetadata object
   ///

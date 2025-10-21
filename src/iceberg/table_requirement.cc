@@ -20,7 +20,7 @@
 #include "iceberg/table_requirement.h"
 
 #include "iceberg/table_metadata.h"
-#include "util/string_util.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg::table {
 
