@@ -27,6 +27,7 @@
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/conversions.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/temporal_util.h"
 
 namespace iceberg {
 
@@ -209,8 +210,10 @@ Result<Literal> LiteralCaster::CastFromTimestamp(
   auto timestamp_val = std::get<int64_t>(literal.value_);
 
   switch (target_type->type_id()) {
-    case TypeId::kDate:
-      return NotImplemented("Cast from Timestamp to Date is not implemented yet");
+    case TypeId::kDate: {
+      ICEBERG_ASSIGN_OR_RAISE(auto days, TemporalUtils::ExtractDay(literal));
+      return Literal::Date(std::get<int32_t>(days.value()));
+    }
     case TypeId::kTimestampTz:
       return Literal::TimestampTz(timestamp_val);
     default:
@@ -224,8 +227,10 @@ Result<Literal> LiteralCaster::CastFromTimestampTz(
   auto micros = std::get<int64_t>(literal.value_);
 
   switch (target_type->type_id()) {
-    case TypeId::kDate:
-      return NotImplemented("Cast from TimestampTz to Date is not implemented yet");
+    case TypeId::kDate: {
+      ICEBERG_ASSIGN_OR_RAISE(auto days, TemporalUtils::ExtractDay(literal));
+      return Literal::Date(std::get<int32_t>(days.value()));
+    }
     case TypeId::kTimestamp:
       return Literal::Timestamp(micros);
     default:

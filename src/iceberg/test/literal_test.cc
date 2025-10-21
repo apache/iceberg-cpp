@@ -27,6 +27,7 @@
 
 #include "iceberg/type.h"
 #include "matchers.h"
+#include "temporal_test_helper.h"
 
 namespace iceberg {
 
@@ -689,6 +690,31 @@ INSTANTIATE_TEST_SUITE_P(
                              .source_literal = Literal::Long(42L),
                              .target_type = timestamp_tz(),
                              .expected_literal = Literal::TimestampTz(42L)},
+        CastLiteralTestParam{
+            .test_name = "TimestampToDate",
+            .source_literal =
+                Literal::Timestamp(TemporalTestHelper::CreateTimestamp({.year = 2021,
+                                                                        .month = 6,
+                                                                        .day = 1,
+                                                                        .hour = 11,
+                                                                        .minute = 43,
+                                                                        .second = 20})),
+            .target_type = date(),
+            .expected_literal = Literal::Date(
+                TemporalTestHelper::CreateDate({.year = 2021, .month = 6, .day = 1}))},
+        CastLiteralTestParam{
+            .test_name = "TimestampTzToDate",
+            .source_literal = Literal::TimestampTz(
+                TemporalTestHelper::CreateTimestampTz({.year = 2021,
+                                                       .month = 1,
+                                                       .day = 1,
+                                                       .hour = 7,
+                                                       .minute = 43,
+                                                       .second = 20,
+                                                       .tz_offset_minutes = 480})),
+            .target_type = date(),
+            .expected_literal = Literal::Date(
+                TemporalTestHelper::CreateDate({.year = 2020, .month = 12, .day = 31}))},
         // Float cast tests
         CastLiteralTestParam{.test_name = "FloatToDouble",
                              .source_literal = Literal::Float(2.0f),
