@@ -715,6 +715,26 @@ INSTANTIATE_TEST_SUITE_P(
             .target_type = date(),
             .expected_literal = Literal::Date(
                 TemporalTestHelper::CreateDate({.year = 2020, .month = 12, .day = 31}))},
+        CastLiteralTestParam{.test_name = "EpochToDate",
+                             .source_literal = Literal::Timestamp(
+                                 TemporalTestHelper::CreateTimestamp({.year = 1970,
+                                                                      .month = 1,
+                                                                      .day = 1,
+                                                                      .hour = 0,
+                                                                      .minute = 0,
+                                                                      .second = 0})),
+                             .target_type = date(),
+                             .expected_literal = Literal::Date(0)},
+        CastLiteralTestParam{.test_name = "TimestampBeforeEpochToDate",
+                             .source_literal = Literal::Timestamp(
+                                 TemporalTestHelper::CreateTimestamp({.year = 1969,
+                                                                      .month = 12,
+                                                                      .day = 31,
+                                                                      .hour = 23,
+                                                                      .minute = 59,
+                                                                      .second = 59})),
+                             .target_type = date(),
+                             .expected_literal = Literal::Date(-1)},
         // Float cast tests
         CastLiteralTestParam{.test_name = "FloatToDouble",
                              .source_literal = Literal::Float(2.0f),
