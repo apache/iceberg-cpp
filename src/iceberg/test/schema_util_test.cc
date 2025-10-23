@@ -27,8 +27,8 @@
 #include "iceberg/metadata_columns.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
+#include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
-#include "matchers.h"
 
 namespace iceberg {
 

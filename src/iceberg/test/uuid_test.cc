@@ -23,7 +23,7 @@
 
 #include <gtest/gtest.h>
 
-#include "matchers.h"
+#include "iceberg/test/matchers.h"
 
 namespace iceberg {
 

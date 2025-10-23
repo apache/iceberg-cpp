@@ -26,8 +26,8 @@
 #include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
 #include "iceberg/schema.h"
+#include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
-#include "matchers.h"
 
 namespace iceberg::parquet {
 

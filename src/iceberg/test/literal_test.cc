@@ -25,9 +25,9 @@
 
 #include <gtest/gtest.h>
 
+#include "iceberg/test/matchers.h"
+#include "iceberg/test/temporal_test_helper.h"
 #include "iceberg/type.h"
-#include "matchers.h"
-#include "temporal_test_helper.h"
 
 namespace iceberg {
 

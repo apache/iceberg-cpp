@@ -29,10 +29,10 @@
 #include "iceberg/manifest_reader.h"
 #include "iceberg/manifest_writer.h"
 #include "iceberg/schema.h"
+#include "iceberg/test/matchers.h"
+#include "iceberg/test/temp_file_test_base.h"
+#include "iceberg/test/test_common.h"
 #include "iceberg/transform.h"
-#include "matchers.h"
-#include "temp_file_test_base.h"
-#include "test_common.h"
 
 namespace iceberg {
 

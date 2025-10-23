@@ -19,8 +19,8 @@
 
 #include "iceberg/expression/expressions.h"
 #include "iceberg/schema.h"
+#include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
-#include "matchers.h"
 
 namespace iceberg {
 

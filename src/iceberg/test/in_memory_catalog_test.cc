@@ -29,9 +29,9 @@
 #include "iceberg/schema.h"
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
-#include "matchers.h"
-#include "mock_catalog.h"
-#include "test_common.h"
+#include "iceberg/test/matchers.h"
+#include "iceberg/test/mock_catalog.h"
+#include "iceberg/test/test_common.h"
 
 namespace iceberg {
 

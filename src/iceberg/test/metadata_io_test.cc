@@ -30,8 +30,8 @@
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
-#include "matchers.h"
-#include "temp_file_test_base.h"
+#include "iceberg/test/matchers.h"
+#include "iceberg/test/temp_file_test_base.h"
 
 namespace iceberg {
 

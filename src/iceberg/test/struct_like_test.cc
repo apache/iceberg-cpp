@@ -28,7 +28,7 @@
 #include "iceberg/row/arrow_array_wrapper.h"
 #include "iceberg/row/manifest_wrapper.h"
 #include "iceberg/schema_internal.h"
-#include "matchers.h"
+#include "iceberg/test/matchers.h"
 
 namespace iceberg {
 

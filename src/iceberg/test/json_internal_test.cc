@@ -31,11 +31,11 @@
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_field.h"
 #include "iceberg/sort_order.h"
+#include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"     // IWYU pragma: keep
 #include "iceberg/util/timepoint.h"
-#include "matchers.h"
 
 namespace iceberg {
 

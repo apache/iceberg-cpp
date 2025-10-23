@@ -25,8 +25,8 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/result.h"
+#include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
-#include "matchers.h"
 
 namespace iceberg {
 

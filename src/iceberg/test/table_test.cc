@@ -32,7 +32,7 @@
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
-#include "test_common.h"
+#include "iceberg/test/test_common.h"
 
 namespace iceberg {
 

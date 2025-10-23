@@ -31,7 +31,7 @@
 #include "iceberg/constants.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
-#include "matchers.h"
+#include "iceberg/test/matchers.h"
 
 namespace iceberg {
 

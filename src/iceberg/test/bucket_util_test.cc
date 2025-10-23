@@ -23,9 +23,9 @@
 
 #include <gtest/gtest.h>
 
+#include "iceberg/test/temporal_test_helper.h"
 #include "iceberg/util/decimal.h"
 #include "iceberg/util/uuid.h"
-#include "temporal_test_helper.h"
 
 namespace iceberg {
 

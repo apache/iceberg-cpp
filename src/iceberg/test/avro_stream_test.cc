@@ -22,7 +22,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/avro/avro_stream_internal.h"
-#include "temp_file_test_base.h"
+#include "iceberg/test/temp_file_test_base.h"
 
 namespace iceberg::avro {
 

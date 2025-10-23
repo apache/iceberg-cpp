@@ -34,9 +34,9 @@
 #include "iceberg/file_reader.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
+#include "iceberg/test/matchers.h"
+#include "iceberg/test/temp_file_test_base.h"
 #include "iceberg/type.h"
-#include "matchers.h"
-#include "temp_file_test_base.h"
 
 namespace iceberg::avro {
 

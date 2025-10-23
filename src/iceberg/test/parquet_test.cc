@@ -39,10 +39,10 @@
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/schema_internal.h"
+#include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
-#include "matchers.h"
 
 namespace iceberg::parquet {
 

@@ -16,6 +16,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 #include "iceberg/util/decimal.h"
 
 #include <algorithm>
@@ -26,8 +27,8 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/test/matchers.h"
 #include "iceberg/util/int128.h"
-#include "matchers.h"
 
 namespace iceberg {
 

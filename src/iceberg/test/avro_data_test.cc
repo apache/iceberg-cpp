@@ -34,8 +34,8 @@
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/schema_util.h"
+#include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
-#include "matchers.h"
 
 namespace iceberg::avro {
 

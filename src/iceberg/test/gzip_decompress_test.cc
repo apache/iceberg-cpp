@@ -25,9 +25,9 @@
 
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/file_io.h"
+#include "iceberg/test/matchers.h"
+#include "iceberg/test/temp_file_test_base.h"
 #include "iceberg/util/gzip_internal.h"
-#include "matchers.h"
-#include "temp_file_test_base.h"
 
 namespace iceberg {
 

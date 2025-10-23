@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "test_common.h"
+#include "iceberg/test/test_common.h"
 
 #include <filesystem>
 #include <fstream>

@@ -33,10 +33,10 @@
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_scan.h"
+#include "iceberg/test/matchers.h"
+#include "iceberg/test/temp_file_test_base.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
-#include "matchers.h"
-#include "temp_file_test_base.h"
 
 namespace iceberg {
 

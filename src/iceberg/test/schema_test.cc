@@ -19,7 +19,6 @@
 
 #include "iceberg/schema.h"
 
-#include <format>
 #include <memory>
 #include <thread>
 
@@ -29,8 +28,8 @@
 #include "gtest/gtest.h"
 #include "iceberg/result.h"
 #include "iceberg/schema_field.h"
+#include "iceberg/test/matchers.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
-#include "matchers.h"
 
 template <typename... Args>
 std::shared_ptr<iceberg::StructType> MakeStructType(Args&&... args) {

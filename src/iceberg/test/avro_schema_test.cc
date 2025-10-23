@@ -28,7 +28,7 @@
 #include "iceberg/metadata_columns.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/schema.h"
-#include "matchers.h"
+#include "iceberg/test/matchers.h"
 
 namespace iceberg::avro {
 

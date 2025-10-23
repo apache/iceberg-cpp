@@ -31,10 +31,10 @@
 #include "iceberg/sort_order.h"
 #include "iceberg/statistics_file.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/test/matchers.h"
+#include "iceberg/test/test_common.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
-#include "matchers.h"
-#include "test_common.h"
 
 namespace iceberg {
 
