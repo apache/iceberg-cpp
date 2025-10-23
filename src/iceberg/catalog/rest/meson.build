@@ -46,4 +46,4 @@ iceberg_rest_dep = declare_dependency(
 meson.override_dependency('iceberg-rest', iceberg_rest_dep)
 pkg.generate(iceberg_rest_lib)
 
-install_headers(['rest_catalog.h'], subdir: 'iceberg/catalog/rest')
+install_headers(['rest_catalog.h', 'types.h'], subdir: 'iceberg/catalog/rest')

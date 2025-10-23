@@ -23,6 +23,8 @@
 
 #include <cpr/cpr.h>
 
+#include "iceberg/catalog/rest/types.h"
+
 namespace iceberg::catalog::rest {
 
 RestCatalog::RestCatalog(const std::string& base_url) : base_url_(std::move(base_url)) {}
