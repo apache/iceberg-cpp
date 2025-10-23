@@ -166,8 +166,8 @@ Status IdToFieldVisitor::Visit(const NestedType& type) {
 NameToIdVisitor::NameToIdVisitor(
     std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>& name_to_id,
     bool case_sensitive, std::function<std::string(std::string_view)> quoting_func)
-    : name_to_id_(name_to_id),
-      case_sensitive_(case_sensitive),
+    : case_sensitive_(case_sensitive),
+      name_to_id_(name_to_id),
       quoting_func_(std::move(quoting_func)) {}
 
 Status NameToIdVisitor::Visit(const ListType& type, const std::string& path,

@@ -476,7 +476,7 @@ Result<std::vector<ManifestEntry>> ParseManifestEntry(ArrowSchema* schema,
 
   std::vector<ManifestEntry> manifest_entries;
   manifest_entries.resize(array_in->length);
-  for (size_t i = 0; i < array_in->length; i++) {
+  for (int64_t i = 0; i < array_in->length; i++) {
     manifest_entries[i].data_file = std::make_shared<DataFile>();
   }
 

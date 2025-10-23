@@ -167,7 +167,7 @@ Status ManifestEntryAdapter::AppendPartitionValues(
   }
   auto fields = partition_type->fields();
 
-  for (int32_t i = 0; i < fields.size(); i++) {
+  for (size_t i = 0; i < fields.size(); i++) {
     const auto& partition_value = partition_values[i];
     const auto& partition_field = fields[i];
     auto child_array = array->children[i];
@@ -243,7 +243,7 @@ Status ManifestEntryAdapter::AppendDataFile(
     ArrowArray* array, const std::shared_ptr<StructType>& data_file_type,
     const DataFile& file) {
   auto fields = data_file_type->fields();
-  for (int32_t i = 0; i < fields.size(); i++) {
+  for (size_t i = 0; i < fields.size(); i++) {
     const auto& field = fields[i];
     auto child_array = array->children[i];
 
@@ -382,7 +382,7 @@ Result<std::optional<int64_t>> ManifestEntryAdapter::GetContentSizeInBytes(
 
 Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
   const auto& fields = manifest_schema_->fields();
-  for (int32_t i = 0; i < fields.size(); i++) {
+  for (size_t i = 0; i < fields.size(); i++) {
     const auto& field = fields[i];
     auto array = array_.children[i];
 
@@ -555,7 +555,7 @@ Result<std::optional<int64_t>> ManifestFileAdapter::GetFirstRowId(
 
 Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
   const auto& fields = manifest_list_schema_->fields();
-  for (int32_t i = 0; i < fields.size(); i++) {
+  for (size_t i = 0; i < fields.size(); i++) {
     const auto& field = fields[i];
     auto array = array_.children[i];
     switch (field.field_id()) {

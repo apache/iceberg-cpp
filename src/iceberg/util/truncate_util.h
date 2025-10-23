@@ -58,7 +58,7 @@ class ICEBERG_EXPORT TruncateUtils {
       source.resize(safe_point);
     }
 
-    return std::move(source);
+    return source;
   }
 
   /// \brief Truncate an integer v, either int32_t or int64_t, to v - (v % W).
