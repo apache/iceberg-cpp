@@ -348,7 +348,7 @@ bool Literal::operator==(const Literal& other) const { return (*this <=> other) 
 // Three-way comparison operator
 std::partial_ordering Literal::operator<=>(const Literal& other) const {
   // If types are different, comparison is unordered
-  if (*type_ != *other.type_) {
+  if (type_->type_id() != other.type_->type_id()) {
     return std::partial_ordering::unordered;
   }
 
