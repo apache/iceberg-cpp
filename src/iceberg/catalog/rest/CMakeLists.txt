@@ -15,7 +15,7 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set(ICEBERG_REST_SOURCES rest_catalog.cc)
+set(ICEBERG_REST_SOURCES rest_catalog.cc json_internal.cc)
 
 set(ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS)
