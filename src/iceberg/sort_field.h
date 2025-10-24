@@ -115,7 +115,7 @@ class ICEBERG_EXPORT SortField : public util::Formattable {
 
  private:
   /// \brief Compare two fields for equality.
-  [[nodiscard]] bool Equals(const SortField& other) const;
+  bool Equals(const SortField& other) const;
 
   int32_t source_id_;
   std::shared_ptr<Transform> transform_;

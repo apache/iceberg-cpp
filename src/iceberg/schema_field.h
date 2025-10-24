@@ -56,21 +56,21 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
                                   std::shared_ptr<Type> type, std::string doc = {});
 
   /// \brief Get the field ID.
-  [[nodiscard]] int32_t field_id() const;
+  int32_t field_id() const;
 
   /// \brief Get the field name.
-  [[nodiscard]] std::string_view name() const;
+  std::string_view name() const;
 
   /// \brief Get the field type.
-  [[nodiscard]] const std::shared_ptr<Type>& type() const;
+  const std::shared_ptr<Type>& type() const;
 
   /// \brief Get whether the field is optional.
-  [[nodiscard]] bool optional() const;
+  bool optional() const;
 
   /// \brief Get the field documentation.
   std::string_view doc() const;
 
-  [[nodiscard]] std::string ToString() const override;
+  std::string ToString() const override;
 
   friend bool operator==(const SchemaField& lhs, const SchemaField& rhs) {
     return lhs.Equals(rhs);
@@ -78,7 +78,7 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
 
  private:
   /// \brief Compare two fields for equality.
-  [[nodiscard]] bool Equals(const SchemaField& other) const;
+  bool Equals(const SchemaField& other) const;
 
   int32_t field_id_;
   std::string name_;
