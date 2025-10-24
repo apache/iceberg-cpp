@@ -23,6 +23,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/result.h"
+#include "iceberg/util/macros.h"
 
 /*
  * \brief Define custom matchers for expected<T, Error> values
@@ -209,5 +210,18 @@ auto ErrorIs(MatcherT&& matcher) {
   return ::testing::MakePolymorphicMatcher(
       ResultMatcher<std::decay_t<MatcherT>>(false, std::forward<MatcherT>(matcher)));
 }
+
+// Evaluate `rexpr` which should return a Result<T, Error>.
+// On success: assign the contained value to `lhs`.
+// On failure: fail the test with the error message.
+#define ICEBERG_UNWRAP_OR_FAIL_IMPL(result_name, lhs, rexpr)  \
+  auto&& result_name = (rexpr);                               \
+  ASSERT_TRUE(result_name.has_value())                        \
+      << "Operation failed: " << result_name.error().message; \
+  lhs = std::move(result_name.value());
+
+#define ICEBERG_UNWRAP_OR_FAIL(lhs, rexpr)                                             \
+  ICEBERG_UNWRAP_OR_FAIL_IMPL(ICEBERG_ASSIGN_OR_RAISE_NAME(result_, __COUNTER__), lhs, \
+                              rexpr)
 
 }  // namespace iceberg

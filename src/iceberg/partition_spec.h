@@ -47,6 +47,7 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \brief The start ID for partition field.  It is only used to generate
   /// partition field id for v1 metadata where it is tracked.
   static constexpr int32_t kLegacyPartitionDataIdStart = 1000;
+  static constexpr int32_t kInvalidPartitionFieldId = -1;
 
   /// \brief Create a new partition spec.
   ///

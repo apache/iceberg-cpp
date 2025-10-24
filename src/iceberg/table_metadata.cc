@@ -20,6 +20,7 @@
 #include "iceberg/table_metadata.h"
 
 #include <algorithm>
+#include <chrono>
 #include <format>
 #include <string>
 
@@ -36,6 +37,7 @@
 #include "iceberg/table_update.h"
 #include "iceberg/util/gzip_internal.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -201,13 +203,46 @@ Status TableMetadataUtil::Write(FileIO& io, const std::string& location,
 
 // TableMetadataBuilder implementation
 
-struct TableMetadataBuilder::Impl {};
+struct TableMetadataBuilder::Impl {
+  // Base metadata (nullptr for new tables)
+  const TableMetadata* base;
+
+  // Working metadata copy
+  TableMetadata metadata;
+
+  // Change tracking
+  std::vector<std::unique_ptr<TableUpdate>> changes;
+
+  // Error collection (since methods return *this and cannot throw)
+  std::vector<Error> errors;
+
+  // Metadata location tracking
+  std::optional<std::string> metadata_location;
+  std::optional<std::string> previous_metadata_location;
+
+  // Constructor for new table
+  explicit Impl(int8_t format_version) : base(nullptr), metadata{} {
+    metadata.format_version = format_version;
+    metadata.last_sequence_number = TableMetadata::kInitialSequenceNumber;
+    metadata.last_updated_ms = TimePointMs::min();
+    metadata.last_column_id = Schema::kInvalidColumnId;
+    metadata.default_spec_id = PartitionSpec::kInitialSpecId;
+    metadata.last_partition_id = PartitionSpec::kInvalidPartitionFieldId;
+    metadata.current_snapshot_id = Snapshot::kInvalidSnapshotId;
+    metadata.default_sort_order_id = SortOrder::kInitialSortOrderId;
+    metadata.next_row_id = TableMetadata::kInitialRowId;
+  }
+
+  // Constructor from existing metadata
+  explicit Impl(const TableMetadata* base_metadata)
+      : base(base_metadata), metadata(*base_metadata) {}
+};
 
 TableMetadataBuilder::TableMetadataBuilder(int8_t format_version)
-    : impl_(std::make_unique<Impl>()) {}
+    : impl_(std::make_unique<Impl>(format_version)) {}
 
 TableMetadataBuilder::TableMetadataBuilder(const TableMetadata* base)
-    : impl_(std::make_unique<Impl>()) {}
+    : impl_(std::make_unique<Impl>(base)) {}
 
 TableMetadataBuilder::~TableMetadataBuilder() = default;
 
@@ -238,12 +273,35 @@ TableMetadataBuilder& TableMetadataBuilder::SetPreviousMetadataLocation(
 }
 
 TableMetadataBuilder& TableMetadataBuilder::AssignUUID() {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  if (impl_->metadata.table_uuid.empty()) {
+    // Generate a random UUID
+    return AssignUUID(Uuid::GenerateV4().ToString());
+  }
+
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::AssignUUID(std::string_view uuid) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
-  ;
+  std::string uuid_str(uuid);
+
+  // Validation: UUID cannot be empty
+  if (uuid_str.empty()) {
+    impl_->errors.emplace_back(ErrorKind::kInvalidArgument, "Cannot assign empty UUID");
+    return *this;
+  }
+
+  // Check if UUID is already set to the same value (no-op)
+  if (StringUtils::EqualsIgnoreCase(impl_->metadata.table_uuid, uuid_str)) {
+    return *this;
+  }
+
+  // Update the metadata
+  impl_->metadata.table_uuid = uuid_str;
+
+  // Record the change
+  impl_->changes.push_back(std::make_unique<table::AssignUUID>(std::move(uuid_str)));
+
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::UpgradeFormatVersion(
@@ -377,12 +435,29 @@ TableMetadataBuilder& TableMetadataBuilder::RemoveEncryptionKey(std::string_view
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-TableMetadataBuilder& TableMetadataBuilder::DiscardChanges() {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
-}
-
 Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Build() {
-  return NotImplemented("TableMetadataBuilder::Build not implemented");
+  // 1. Check for accumulated errors
+  if (!impl_->errors.empty()) {
+    std::string error_msg = "Failed to build TableMetadata due to validation errors:\n";
+    for (const auto& [kind, message] : impl_->errors) {
+      error_msg += "  - " + message + "\n";
+    }
+    return CommitFailed("{}", error_msg);
+  }
+
+  // 2. Validate metadata consistency through TableMetadata#Validate
+
+  // 3. Update last_updated_ms if there are changes
+  if (impl_->metadata.last_updated_ms == TimePointMs::min()) {
+    impl_->metadata.last_updated_ms =
+        TimePointMs{std::chrono::duration_cast<std::chrono::milliseconds>(
+            std::chrono::system_clock::now().time_since_epoch())};
+  }
+
+  // 4. Create and return the TableMetadata
+  auto result = std::make_unique<TableMetadata>(std::move(impl_->metadata));
+
+  return result;
 }
 
 }  // namespace iceberg

@@ -82,7 +82,8 @@ add_iceberg_test(table_test
                  test_common.cc
                  json_internal_test.cc
                  table_test.cc
-                 schema_json_test.cc)
+                 schema_json_test.cc
+                 table_metadata_builder_test.cc)
 
 add_iceberg_test(expression_test
                  SOURCES

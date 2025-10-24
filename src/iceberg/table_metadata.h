@@ -377,13 +377,6 @@ class ICEBERG_EXPORT TableMetadataBuilder {
   /// \return Reference to this builder for method chaining
   TableMetadataBuilder& RemoveEncryptionKey(std::string_view key_id);
 
-  /// \brief Discard all accumulated changes
-  ///
-  /// This is useful when you want to reset the builder state without
-  /// creating a new builder instance.
-  /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& DiscardChanges();
-
   /// \brief Build the TableMetadata object
   ///
   /// \return A Result containing the constructed TableMetadata or an error

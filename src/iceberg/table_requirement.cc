@@ -20,15 +20,28 @@
 #include "iceberg/table_requirement.h"
 
 #include "iceberg/table_metadata.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg::table {
 
 Status AssertDoesNotExist::Validate(const TableMetadata* base) const {
-  return NotImplemented("AssertTableDoesNotExist::Validate not implemented");
+  return NotImplemented("AssertDoesNotExist::Validate not implemented");
 }
 
 Status AssertUUID::Validate(const TableMetadata* base) const {
-  return NotImplemented("AssertTableUUID::Validate not implemented");
+  // Validate that the table UUID matches the expected value
+
+  if (base == nullptr) {
+    return CommitFailed("Requirement failed: current table metadata is missing");
+  }
+
+  if (!StringUtils::EqualsIgnoreCase(base->table_uuid, uuid_)) {
+    return CommitFailed(
+        "Requirement failed: table UUID does not match (expected='{}', actual='{}')",
+        uuid_, base->table_uuid);
+  }
+
+  return {};
 }
 
 Status AssertRefSnapshotID::Validate(const TableMetadata* base) const {

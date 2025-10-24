@@ -21,6 +21,7 @@
 
 #include "iceberg/exception.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_requirement.h"
 #include "iceberg/table_requirements.h"
 
 namespace iceberg::table {
@@ -28,11 +29,24 @@ namespace iceberg::table {
 // AssignUUID
 
 void AssignUUID::ApplyTo(TableMetadataBuilder& builder) const {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  builder.AssignUUID(uuid_);
 }
 
 Status AssignUUID::GenerateRequirements(TableUpdateContext& context) const {
-  return NotImplemented("AssignTableUUID::GenerateRequirements not implemented");
+  // AssignUUID operation generates a requirement to assert the table's UUID
+  // if a base metadata exists (i.e., this is an update operation)
+
+  const TableMetadata* base = context.base();
+
+  if (base != nullptr && !base->table_uuid.empty()) {
+    // For table updates, assert that the current UUID matches what we expect
+    context.AddRequirement(std::make_unique<AssertUUID>(base->table_uuid));
+  }
+
+  // Note: For table creation (base == nullptr), no UUID requirement is needed
+  // as the table doesn't exist yet
+
+  return {};
 }
 
 // UpgradeFormatVersion
@@ -42,8 +56,7 @@ void UpgradeFormatVersion::ApplyTo(TableMetadataBuilder& builder) const {
 }
 
 Status UpgradeFormatVersion::GenerateRequirements(TableUpdateContext& context) const {
-  return NotImplemented(
-      "UpgradeTableFormatVersion::GenerateRequirements not implemented");
+  return NotImplemented("UpgradeFormatVersion::GenerateRequirements not implemented");
 }
 
 // AddSchema

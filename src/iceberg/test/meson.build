@@ -47,6 +47,7 @@ iceberg_tests = {
         'sources': files(
             'json_internal_test.cc',
             'schema_json_test.cc',
+            'table_metadata_builder_test.cc',
             'table_test.cc',
             'test_common.cc',
         ),

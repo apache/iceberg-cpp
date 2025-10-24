@@ -46,6 +46,7 @@ namespace iceberg {
 class ICEBERG_EXPORT Schema : public StructType {
  public:
   static constexpr int32_t kInitialSchemaId = 0;
+  static constexpr int32_t kInvalidColumnId = -1;
 
   explicit Schema(std::vector<SchemaField> fields,
                   std::optional<int32_t> schema_id = std::nullopt);
