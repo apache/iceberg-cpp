@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::UpdateNamespacePropertiesRequest</compoundname>
+    <includes refid="types_8h" local="no">types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest_1a909ca9a49f74f6b3e10b533f80f39084" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::rest::UpdateNamespacePropertiesRequest::removals</definition>
+        <argsstring></argsstring>
+        <name>removals</name>
+        <qualifiedname>iceberg::rest::UpdateNamespacePropertiesRequest::removals</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="45" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest_1ac8da3405d31d81299566d655dd623811" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::rest::UpdateNamespacePropertiesRequest::updates</definition>
+        <argsstring></argsstring>
+        <name>updates</name>
+        <qualifiedname>iceberg::rest::UpdateNamespacePropertiesRequest::updates</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="46" column="22" bodyfile="iceberg/catalog/rest/types.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Update or delete namespace properties request. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::UpdateNamespacePropertiesRequest</label>
+        <link refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>removals</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>updates</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/types.h" line="44" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="44" bodyend="47"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest_1a909ca9a49f74f6b3e10b533f80f39084" prot="public" virt="non-virtual"><scope>iceberg::rest::UpdateNamespacePropertiesRequest</scope><name>removals</name></member>
+      <member refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest_1ac8da3405d31d81299566d655dd623811" prot="public" virt="non-virtual"><scope>iceberg::rest::UpdateNamespacePropertiesRequest</scope><name>updates</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,69 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1rest" kind="namespace" language="C++">
+    <compoundname>iceberg::rest</compoundname>
+    <innerclass refid="structiceberg_1_1rest_1_1CreateNamespaceRequest" prot="public">iceberg::rest::CreateNamespaceRequest</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1CreateNamespaceResponse" prot="public">iceberg::rest::CreateNamespaceResponse</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1CreateTableRequest" prot="public">iceberg::rest::CreateTableRequest</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1GetNamespaceResponse" prot="public">iceberg::rest::GetNamespaceResponse</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1ListNamespacesResponse" prot="public">iceberg::rest::ListNamespacesResponse</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1ListTablesResponse" prot="public">iceberg::rest::ListTablesResponse</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1LoadTableResult" prot="public">iceberg::rest::LoadTableResult</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1RegisterTableRequest" prot="public">iceberg::rest::RegisterTableRequest</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1RenameTableRequest" prot="public">iceberg::rest::RenameTableRequest</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest" prot="public">iceberg::rest::UpdateNamespacePropertiesRequest</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesResponse" prot="public">iceberg::rest::UpdateNamespacePropertiesResponse</innerclass>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="types_8h_1aa5da261c3599ae3870c211c7d9938f00" prot="public" static="no">
+        <type>std::string</type>
+        <definition>using iceberg::rest::PageToken = typedef std::string</definition>
+        <argsstring></argsstring>
+        <name>PageToken</name>
+        <qualifiedname>iceberg::rest::PageToken</qualifiedname>
+        <briefdescription>
+<para>An opaque token that allows clients to make use of pagination for list APIs. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="74" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="74" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="types_8h_1a6287a1bfacdfde9e8bab8fc4a2e79187" prot="public" static="no">
+        <type><ref refid="structiceberg_1_1rest_1_1LoadTableResult" kindref="compound">LoadTableResult</ref></type>
+        <definition>using iceberg::rest::CreateTableResponse = typedef LoadTableResult</definition>
+        <argsstring></argsstring>
+        <name>CreateTableResponse</name>
+        <qualifiedname>iceberg::rest::CreateTableResponse</qualifiedname>
+        <briefdescription>
+<para>Alias of <ref refid="structiceberg_1_1rest_1_1LoadTableResult" kindref="compound">LoadTableResult</ref> used as the body of CreateTableResponse. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="85" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="85" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="types_8h_1a18702d5684bd287584952a0206a7fb51" prot="public" static="no">
+        <type><ref refid="structiceberg_1_1rest_1_1LoadTableResult" kindref="compound">LoadTableResult</ref></type>
+        <definition>using iceberg::rest::LoadTableResponse = typedef LoadTableResult</definition>
+        <argsstring></argsstring>
+        <name>LoadTableResponse</name>
+        <qualifiedname>iceberg::rest::LoadTableResponse</qualifiedname>
+        <briefdescription>
+<para>Alias of <ref refid="structiceberg_1_1rest_1_1LoadTableResult" kindref="compound">LoadTableResult</ref> used as the body of LoadTableResponse. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="88" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="88" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/types.h" line="35" column="1"/>
+  </compounddef>
+</doxygen>

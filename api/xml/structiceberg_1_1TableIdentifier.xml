@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1TableIdentifier" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::TableIdentifier</compoundname>
+    <includes refid="table__identifier_8h" local="no">table_identifier.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1TableIdentifier_1a73347b5d88dad270dda4b65214ef2123" prot="public" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref></type>
+        <definition>Namespace iceberg::TableIdentifier::ns</definition>
+        <argsstring></argsstring>
+        <name>ns</name>
+        <qualifiedname>iceberg::TableIdentifier::ns</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_identifier.h" line="39" column="13" bodyfile="iceberg/table_identifier.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableIdentifier_1ab0a0d3cf153afe1e27a358ec41945a63" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::TableIdentifier::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::TableIdentifier::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_identifier.h" line="40" column="15" bodyfile="iceberg/table_identifier.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Identifies a table in iceberg catalog. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::Namespace</label>
+        <link refid="structiceberg_1_1Namespace"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>levels</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::TableIdentifier</label>
+        <link refid="structiceberg_1_1TableIdentifier"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>ns</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>name</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_identifier.h" line="38" column="1" bodyfile="iceberg/table_identifier.h" bodystart="38" bodyend="41"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1TableIdentifier_1ab0a0d3cf153afe1e27a358ec41945a63" prot="public" virt="non-virtual"><scope>iceberg::TableIdentifier</scope><name>name</name></member>
+      <member refid="structiceberg_1_1TableIdentifier_1a73347b5d88dad270dda4b65214ef2123" prot="public" virt="non-virtual"><scope>iceberg::TableIdentifier</scope><name>ns</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,86 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1ListNamespacesResponse" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::ListNamespacesResponse</compoundname>
+    <includes refid="types_8h" local="no">types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1ListNamespacesResponse_1a2cadcafb01999c53689549bb1b17a176" prot="public" static="no" mutable="no">
+        <type><ref refid="types_8h_1aa5da261c3599ae3870c211c7d9938f00" kindref="member">PageToken</ref></type>
+        <definition>PageToken iceberg::rest::ListNamespacesResponse::next_page_token</definition>
+        <argsstring></argsstring>
+        <name>next_page_token</name>
+        <qualifiedname>iceberg::rest::ListNamespacesResponse::next_page_token</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="92" column="13" bodyfile="iceberg/catalog/rest/types.h" bodystart="92" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1ListNamespacesResponse_1a7aec28ee23ed07626288a008802b1e98" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &gt;</type>
+        <definition>std::vector&lt;Namespace&gt; iceberg::rest::ListNamespacesResponse::namespaces</definition>
+        <argsstring></argsstring>
+        <name>namespaces</name>
+        <qualifiedname>iceberg::rest::ListNamespacesResponse::namespaces</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="93" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="93" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Response body for listing namespaces. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="5">
+        <label>iceberg::Namespace</label>
+        <link refid="structiceberg_1_1Namespace"/>
+        <childnode refid="6" relation="usage">
+          <edgelabel>levels</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::ListNamespacesResponse</label>
+        <link refid="structiceberg_1_1rest_1_1ListNamespacesResponse"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>next_page_token</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>namespaces</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; iceberg::Namespace &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/types.h" line="91" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="91" bodyend="94"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1ListNamespacesResponse_1a7aec28ee23ed07626288a008802b1e98" prot="public" virt="non-virtual"><scope>iceberg::rest::ListNamespacesResponse</scope><name>namespaces</name></member>
+      <member refid="structiceberg_1_1rest_1_1ListNamespacesResponse_1a2cadcafb01999c53689549bb1b17a176" prot="public" virt="non-virtual"><scope>iceberg::rest::ListNamespacesResponse</scope><name>next_page_token</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['readcontext_0',['readcontext',['../structiceberg_1_1parquet_1_1ReadContext.html',1,'iceberg::parquet::ReadContext'],['../structiceberg_1_1avro_1_1ReadContext.html',1,'iceberg::avro::ReadContext']]],
+  ['reader_1',['Reader',['../classiceberg_1_1Reader.html',1,'iceberg']]],
+  ['readerfactoryregistry_2',['ReaderFactoryRegistry',['../structiceberg_1_1ReaderFactoryRegistry.html',1,'iceberg']]],
+  ['readeroptions_3',['ReaderOptions',['../structiceberg_1_1ReaderOptions.html',1,'iceberg']]],
+  ['reference_4',['Reference',['../classiceberg_1_1Reference.html',1,'iceberg']]],
+  ['registertablerequest_5',['RegisterTableRequest',['../structiceberg_1_1rest_1_1RegisterTableRequest.html',1,'iceberg::rest']]],
+  ['removepartitionspecs_6',['RemovePartitionSpecs',['../classiceberg_1_1table_1_1RemovePartitionSpecs.html',1,'iceberg::table']]],
+  ['removeproperties_7',['RemoveProperties',['../classiceberg_1_1table_1_1RemoveProperties.html',1,'iceberg::table']]],
+  ['removeschemas_8',['RemoveSchemas',['../classiceberg_1_1table_1_1RemoveSchemas.html',1,'iceberg::table']]],
+  ['removesnapshotref_9',['RemoveSnapshotRef',['../classiceberg_1_1table_1_1RemoveSnapshotRef.html',1,'iceberg::table']]],
+  ['removesnapshots_10',['RemoveSnapshots',['../classiceberg_1_1table_1_1RemoveSnapshots.html',1,'iceberg::table']]],
+  ['renametablerequest_11',['RenameTableRequest',['../structiceberg_1_1rest_1_1RenameTableRequest.html',1,'iceberg::rest']]],
+  ['restcatalog_12',['RestCatalog',['../classiceberg_1_1catalog_1_1rest_1_1RestCatalog.html',1,'iceberg::catalog::rest']]],
+  ['restcatalogintegrationtest_13',['RestCatalogIntegrationTest',['../classiceberg_1_1catalog_1_1rest_1_1RestCatalogIntegrationTest.html',1,'iceberg::catalog::rest']]],
+  ['resultmatcher_14',['ResultMatcher',['../classiceberg_1_1ResultMatcher.html',1,'iceberg']]],
+  ['roundtripparam_15',['RoundTripParam',['../structiceberg_1_1avro_1_1RoundTripParam.html',1,'iceberg::avro']]]
+];

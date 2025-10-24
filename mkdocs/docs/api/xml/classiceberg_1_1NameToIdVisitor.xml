@@ -1,0 +1,258 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1NameToIdVisitor" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::NameToIdVisitor</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1NameToIdVisitor_1ac4dc5f1e703adfc99a873e754567c118" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::NameToIdVisitor::case_sensitive_</definition>
+        <argsstring></argsstring>
+        <name>case_sensitive_</name>
+        <qualifiedname>iceberg::NameToIdVisitor::case_sensitive_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.cc" line="66" column="8" bodyfile="iceberg/schema.cc" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1NameToIdVisitor_1a6825d27a1914c7bc010029ec27a8b4ca" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, int32_t, <ref refid="structiceberg_1_1StringHash" kindref="compound">StringHash</ref>, std::equal_to&lt;&gt; &gt; &amp;</type>
+        <definition>std::unordered_map&lt;std::string, int32_t, StringHash, std::equal_to&lt;&gt; &gt;&amp; iceberg::NameToIdVisitor::name_to_id_</definition>
+        <argsstring></argsstring>
+        <name>name_to_id_</name>
+        <qualifiedname>iceberg::NameToIdVisitor::name_to_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.cc" line="67" column="22" bodyfile="iceberg/schema.cc" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1NameToIdVisitor_1aed7399be60e866a58e87d517eb7a4d99" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, int32_t, <ref refid="structiceberg_1_1StringHash" kindref="compound">StringHash</ref>, std::equal_to&lt;&gt; &gt;</type>
+        <definition>std::unordered_map&lt;std::string, int32_t, StringHash, std::equal_to&lt;&gt; &gt; iceberg::NameToIdVisitor::short_name_to_id_</definition>
+        <argsstring></argsstring>
+        <name>short_name_to_id_</name>
+        <qualifiedname>iceberg::NameToIdVisitor::short_name_to_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.cc" line="68" column="22" bodyfile="iceberg/schema.cc" bodystart="68" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1NameToIdVisitor_1adebe833dac327a53e921609900c979ce" prot="private" static="no" mutable="no">
+        <type>std::function&lt; std::string(std::string_view)&gt;</type>
+        <definition>std::function&lt;std::string(std::string_view)&gt; iceberg::NameToIdVisitor::quoting_func_</definition>
+        <argsstring></argsstring>
+        <name>quoting_func_</name>
+        <qualifiedname>iceberg::NameToIdVisitor::quoting_func_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.cc" line="69" column="17" bodyfile="iceberg/schema.cc" bodystart="69" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1NameToIdVisitor_1a0b26d03c78e9ee8dfe0c9a01c8a5d0cd" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::NameToIdVisitor::NameToIdVisitor</definition>
+        <argsstring>(std::unordered_map&lt; std::string, int32_t, StringHash, std::equal_to&lt;&gt; &gt; &amp;name_to_id, bool case_sensitive=true, std::function&lt; std::string(std::string_view)&gt; quoting_func={})</argsstring>
+        <name>NameToIdVisitor</name>
+        <qualifiedname>iceberg::NameToIdVisitor::NameToIdVisitor</qualifiedname>
+        <param>
+          <type>std::unordered_map&lt; std::string, int32_t, <ref refid="structiceberg_1_1StringHash" kindref="compound">StringHash</ref>, std::equal_to&lt;&gt; &gt; &amp;</type>
+          <declname>name_to_id</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+          <defval>true</defval>
+        </param>
+        <param>
+          <type>std::function&lt; std::string(std::string_view)&gt;</type>
+          <declname>quoting_func</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.cc" line="47" column="12" bodyfile="iceberg/schema.cc" bodystart="166" bodyend="171"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1NameToIdVisitor_1afb383e43944c92646f11008818b8889c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::NameToIdVisitor::Visit</definition>
+        <argsstring>(const ListType &amp;type, const std::string &amp;path, const std::string &amp;short_path)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::NameToIdVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ListType" kindref="compound">ListType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>short_path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.cc" line="51" column="10" bodyfile="iceberg/schema.cc" bodystart="173" bodyend="192"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1NameToIdVisitor_1a834e1dc1232f088bf65ef0381abbfe81" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::NameToIdVisitor::Visit</definition>
+        <argsstring>(const MapType &amp;type, const std::string &amp;path, const std::string &amp;short_path)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::NameToIdVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1MapType" kindref="compound">MapType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>short_path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.cc" line="53" column="10" bodyfile="iceberg/schema.cc" bodystart="194" bodyend="216"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1NameToIdVisitor_1af14a36d906bbab22a43defcd39ed8b8a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::NameToIdVisitor::Visit</definition>
+        <argsstring>(const StructType &amp;type, const std::string &amp;path, const std::string &amp;short_path)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::NameToIdVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>short_path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.cc" line="55" column="10" bodyfile="iceberg/schema.cc" bodystart="218" bodyend="235"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1NameToIdVisitor_1abb2635f0e4bd64fc871d9d975aaba362" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::NameToIdVisitor::Visit</definition>
+        <argsstring>(const PrimitiveType &amp;type, const std::string &amp;path, const std::string &amp;short_path)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::NameToIdVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>short_path</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.cc" line="57" column="10" bodyfile="iceberg/schema.cc" bodystart="237" bodyend="240"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1NameToIdVisitor_1a7fd9e31c048ecb72645c51b0b81507c8" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::NameToIdVisitor::Finish</definition>
+        <argsstring>()</argsstring>
+        <name>Finish</name>
+        <qualifiedname>iceberg::NameToIdVisitor::Finish</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.cc" line="59" column="8" bodyfile="iceberg/schema.cc" bodystart="257" bodyend="261"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1NameToIdVisitor_1ae19592cf300f1e81e820dd1d2ebe05e3" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::NameToIdVisitor::BuildPath</definition>
+        <argsstring>(std::string_view prefix, std::string_view field_name, bool case_sensitive)</argsstring>
+        <name>BuildPath</name>
+        <qualifiedname>iceberg::NameToIdVisitor::BuildPath</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>prefix</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>field_name</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema.cc" line="62" column="15" bodyfile="iceberg/schema.cc" bodystart="242" bodyend="255"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/schema.cc" line="45" column="1" bodyfile="iceberg/schema.cc" bodystart="45" bodyend="70"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1NameToIdVisitor_1ae19592cf300f1e81e820dd1d2ebe05e3" prot="private" virt="non-virtual"><scope>iceberg::NameToIdVisitor</scope><name>BuildPath</name></member>
+      <member refid="classiceberg_1_1NameToIdVisitor_1ac4dc5f1e703adfc99a873e754567c118" prot="private" virt="non-virtual"><scope>iceberg::NameToIdVisitor</scope><name>case_sensitive_</name></member>
+      <member refid="classiceberg_1_1NameToIdVisitor_1a7fd9e31c048ecb72645c51b0b81507c8" prot="public" virt="non-virtual"><scope>iceberg::NameToIdVisitor</scope><name>Finish</name></member>
+      <member refid="classiceberg_1_1NameToIdVisitor_1a6825d27a1914c7bc010029ec27a8b4ca" prot="private" virt="non-virtual"><scope>iceberg::NameToIdVisitor</scope><name>name_to_id_</name></member>
+      <member refid="classiceberg_1_1NameToIdVisitor_1a0b26d03c78e9ee8dfe0c9a01c8a5d0cd" prot="public" virt="non-virtual"><scope>iceberg::NameToIdVisitor</scope><name>NameToIdVisitor</name></member>
+      <member refid="classiceberg_1_1NameToIdVisitor_1adebe833dac327a53e921609900c979ce" prot="private" virt="non-virtual"><scope>iceberg::NameToIdVisitor</scope><name>quoting_func_</name></member>
+      <member refid="classiceberg_1_1NameToIdVisitor_1aed7399be60e866a58e87d517eb7a4d99" prot="private" virt="non-virtual"><scope>iceberg::NameToIdVisitor</scope><name>short_name_to_id_</name></member>
+      <member refid="classiceberg_1_1NameToIdVisitor_1afb383e43944c92646f11008818b8889c" prot="public" virt="non-virtual"><scope>iceberg::NameToIdVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1NameToIdVisitor_1a834e1dc1232f088bf65ef0381abbfe81" prot="public" virt="non-virtual"><scope>iceberg::NameToIdVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1NameToIdVisitor_1af14a36d906bbab22a43defcd39ed8b8a" prot="public" virt="non-virtual"><scope>iceberg::NameToIdVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1NameToIdVisitor_1abb2635f0e4bd64fc871d9d975aaba362" prot="public" virt="non-virtual"><scope>iceberg::NameToIdVisitor</scope><name>Visit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

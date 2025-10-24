@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Transaction" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::Transaction</compoundname>
+    <includes refid="transaction_8h" local="no">transaction.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Transaction_1a09d72ffb9651a1739eb6c751d4bd1226" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::Transaction::~Transaction</definition>
+        <argsstring>()=default</argsstring>
+        <name>~Transaction</name>
+        <qualifiedname>iceberg::Transaction::~Transaction</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transaction.h" line="33" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transaction_1a3f2b9aa21620cf32e471ba6f041729c0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt; &amp;</type>
+        <definition>virtual const std::shared_ptr&lt; Table &gt; &amp; iceberg::Transaction::table</definition>
+        <argsstring>() const =0</argsstring>
+        <name>table</name>
+        <qualifiedname>iceberg::Transaction::table</qualifiedname>
+        <briefdescription>
+<para>Return the <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> that this transaction will update. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>this transaction&apos;s table </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transaction.h" line="38" column="33"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transaction_1a765ce9b84f55886486feffb028dc8124" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; AppendFiles &gt;</type>
+        <definition>virtual std::shared_ptr&lt; AppendFiles &gt; iceberg::Transaction::NewAppend</definition>
+        <argsstring>()=0</argsstring>
+        <name>NewAppend</name>
+        <qualifiedname>iceberg::Transaction::NewAppend</qualifiedname>
+        <briefdescription>
+<para>Create a new append API to add files to this table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>a new AppendFiles </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transaction.h" line="43" column="27"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transaction_1ac9ed8989dab53a9de22931e8424a6247" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void iceberg::Transaction::CommitTransaction</definition>
+        <argsstring>()=0</argsstring>
+        <name>CommitTransaction</name>
+        <qualifiedname>iceberg::Transaction::CommitTransaction</qualifiedname>
+        <briefdescription>
+<para>Apply the pending changes from all actions and commit. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>May throw ValidationException if any update cannot be applied to the current table metadata. May throw CommitFailedException if the updates cannot be committed due to conflicts. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transaction.h" line="50" column="16"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A transaction for performing multiple updates to a table. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/transaction.h" line="31" column="1" bodyfile="iceberg/transaction.h" bodystart="31" bodyend="51"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Transaction_1ac9ed8989dab53a9de22931e8424a6247" prot="public" virt="pure-virtual"><scope>iceberg::Transaction</scope><name>CommitTransaction</name></member>
+      <member refid="classiceberg_1_1Transaction_1a765ce9b84f55886486feffb028dc8124" prot="public" virt="pure-virtual"><scope>iceberg::Transaction</scope><name>NewAppend</name></member>
+      <member refid="classiceberg_1_1Transaction_1a3f2b9aa21620cf32e471ba6f041729c0" prot="public" virt="pure-virtual"><scope>iceberg::Transaction</scope><name>table</name></member>
+      <member refid="classiceberg_1_1Transaction_1a09d72ffb9651a1739eb6c751d4bd1226" prot="public" virt="virtual"><scope>iceberg::Transaction</scope><name>~Transaction</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

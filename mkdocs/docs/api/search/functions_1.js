@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['backup_0',['backup',['../classiceberg_1_1avro_1_1AvroOutputStream.html#a7177ab03a7fc28efe6a4c9ceef529ea1',1,'iceberg::avro::AvroOutputStream::backup()'],['../classiceberg_1_1avro_1_1AvroInputStream.html#afecbdae55db643317487431eeb4a90a6',1,'iceberg::avro::AvroInputStream::backup()']]],
+  ['base_1',['base',['../classiceberg_1_1TableUpdateContext.html#ac9ce6af878c98278aa07a5f717787819',1,'iceberg::TableUpdateContext']]],
+  ['baseinheritablemetadata_2',['BaseInheritableMetadata',['../classiceberg_1_1BaseInheritableMetadata.html#a8efe1f03ca251640876325b2abe56869',1,'iceberg::BaseInheritableMetadata']]],
+  ['belowminliteral_3',['BelowMinLiteral',['../classiceberg_1_1LiteralCaster.html#a376129a8851538cc2ec8f102136ae660',1,'iceberg::LiteralCaster']]],
+  ['binary_4',['binary',['../group__type-factories.html#ga33cd0c2e979eebcccc89cdbcd3f6af99',1,'iceberg']]],
+  ['bind_5',['bind',['../classiceberg_1_1Unbound.html#a3af63f1670bd36266714c7cf3296fc83',1,'iceberg::Unbound::Bind(const Schema &amp;schema, bool case_sensitive) const =0'],['../classiceberg_1_1Unbound.html#a032a320b067d50a56cfe7e5e6ed986e9',1,'iceberg::Unbound::Bind(const Schema &amp;schema) const'],['../classiceberg_1_1NamedReference.html#a3f3f71369896b2014bfd23dc027d290c',1,'iceberg::NamedReference::Bind()'],['../classiceberg_1_1UnboundTransform.html#aa6559c7e9a4b4c46cf58730d467327b2',1,'iceberg::UnboundTransform::Bind()'],['../classiceberg_1_1Transform.html#a4028210e3c0b3d5bfaed8bb07ef4dae6',1,'iceberg::Transform::Bind()'],['../classiceberg_1_1UnboundPredicate.html#a429cb076b452e9468bf8b564f07c1ffd',1,'iceberg::UnboundPredicate::Bind()']]],
+  ['boolean_6',['boolean',['../classiceberg_1_1Literal.html#ada29f73dbb21bde3e3da88e70ec56be3',1,'iceberg::Literal::Boolean()'],['../group__type-factories.html#gafb5f5aec1d1d6218809ee512e2f87e83',1,'iceberg::boolean()']]],
+  ['boundliteralpredicate_7',['BoundLiteralPredicate',['../classiceberg_1_1BoundLiteralPredicate.html#a919918ed9e109cb3b7166b01bb069557',1,'iceberg::BoundLiteralPredicate']]],
+  ['boundreference_8',['BoundReference',['../classiceberg_1_1BoundReference.html#a6b7e30c6009a1b1e41784c45ec7d1cf7',1,'iceberg::BoundReference']]],
+  ['boundsetpredicate_9',['BoundSetPredicate',['../classiceberg_1_1BoundSetPredicate.html#a2ce19fe11f99c04404b3bc425323d188',1,'iceberg::BoundSetPredicate']]],
+  ['boundtransform_10',['BoundTransform',['../classiceberg_1_1BoundTransform.html#aa80234be662e05126062fe48791f9f47',1,'iceberg::BoundTransform']]],
+  ['boundunarypredicate_11',['BoundUnaryPredicate',['../classiceberg_1_1BoundUnaryPredicate.html#a39ebf5867377eb675f5292514b11af67',1,'iceberg::BoundUnaryPredicate']]],
+  ['bucket_12',['bucket',['../classiceberg_1_1Expressions.html#a3794ab614f6d31e8ca375fc2cb461868',1,'iceberg::Expressions::Bucket()'],['../classiceberg_1_1Transform.html#ac8370cf16ba3c26216f314dbdac5259a',1,'iceberg::Transform::Bucket()']]],
+  ['bucketindex_13',['BucketIndex',['../classiceberg_1_1BucketUtils.html#a870e1bdf607990bebf4732eded33adab',1,'iceberg::BucketUtils']]],
+  ['buckettransform_14',['BucketTransform',['../classiceberg_1_1BucketTransform.html#a125bf86e3a179ecec02cfc183bf922d9',1,'iceberg::BucketTransform']]],
+  ['build_15',['build',['../classiceberg_1_1TableMetadataBuilder.html#a0b1be21e7f17b7a81e60eddffc5e1149',1,'iceberg::TableMetadataBuilder::Build()'],['../classiceberg_1_1TableUpdateContext.html#acd97d5656c2eed82d153e8140debe14a',1,'iceberg::TableUpdateContext::Build()'],['../classiceberg_1_1TableScanBuilder.html#a5c49dd5e6c2a18c20aa0e2f33d769454',1,'iceberg::TableScanBuilder::Build()']]],
+  ['buildfrom_16',['BuildFrom',['../classiceberg_1_1TableMetadataBuilder.html#a1b6f7b6b04c59ef83bc2005ad07af88a',1,'iceberg::TableMetadataBuilder']]],
+  ['buildfromempty_17',['BuildFromEmpty',['../classiceberg_1_1TableMetadataBuilder.html#abdcb399788fb9ddce9a41999fe140caf',1,'iceberg::TableMetadataBuilder']]],
+  ['buildtable_18',['buildtable',['../classiceberg_1_1Catalog.html#a9a40f3c416d752dc3565b060b217c371',1,'iceberg::Catalog::BuildTable()'],['../classiceberg_1_1InMemoryCatalog.html#aa09db37117901fc685fb90038ebb6bb5',1,'iceberg::InMemoryCatalog::BuildTable()']]],
+  ['bytecount_19',['bytecount',['../classiceberg_1_1avro_1_1AvroInputStream.html#a3f81fa5ff908f87c10d5a2b2f981c7ba',1,'iceberg::avro::AvroInputStream::byteCount()'],['../classiceberg_1_1avro_1_1AvroOutputStream.html#a1472ab3fdbb4e4dfa169739a06a4671f',1,'iceberg::avro::AvroOutputStream::byteCount()']]],
+  ['bytes_20',['bytes',['../classiceberg_1_1Uuid.html#ada159831eb6d5ec84bcd7e4ccf6f4219',1,'iceberg::Uuid']]],
+  ['byteswap_21',['ByteSwap',['../endian_8h.html#a75138160d348d482441451885e7903ed',1,'iceberg']]]
+];

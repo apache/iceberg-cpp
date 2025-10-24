@@ -1,0 +1,231 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SortOrder" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::SortOrder</compoundname>
+    <basecompoundref refid="classiceberg_1_1util_1_1Formattable" prot="public" virt="non-virtual">iceberg::util::Formattable</basecompoundref>
+    <includes refid="sort__order_8h" local="no">sort_order.h</includes>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SortOrder_1a8ee262f0eda7b2b206cdf49ab2194cfd" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::SortOrder::kInitialSortOrderId</definition>
+        <argsstring></argsstring>
+        <name>kInitialSortOrderId</name>
+        <qualifiedname>iceberg::SortOrder::kInitialSortOrderId</qualifiedname>
+        <initializer>= 1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_order.h" line="39" column="28" bodyfile="iceberg/sort_order.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SortOrder_1a3a36bc6cdef0de3e0ce2b5ac201979f1" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SortOrder::order_id_</definition>
+        <argsstring></argsstring>
+        <name>order_id_</name>
+        <qualifiedname>iceberg::SortOrder::order_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_order.h" line="62" column="11" bodyfile="iceberg/sort_order.h" bodystart="62" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SortOrder_1a464ff4c7cda5a33855231a9b4a04d5ea" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="classiceberg_1_1SortField" kindref="compound">SortField</ref> &gt;</type>
+        <definition>std::vector&lt;SortField&gt; iceberg::SortOrder::fields_</definition>
+        <argsstring></argsstring>
+        <name>fields_</name>
+        <qualifiedname>iceberg::SortOrder::fields_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_order.h" line="63" column="15" bodyfile="iceberg/sort_order.h" bodystart="63" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1SortOrder_1aaa7349d65e37b730c636438542dc5191" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::SortOrder::SortOrder</definition>
+        <argsstring>(int32_t order_id, std::vector&lt; SortField &gt; fields)</argsstring>
+        <name>SortOrder</name>
+        <qualifiedname>iceberg::SortOrder::SortOrder</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>order_id</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; <ref refid="classiceberg_1_1SortField" kindref="compound">SortField</ref> &gt;</type>
+          <declname>fields</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_order.h" line="41" column="3" bodyfile="iceberg/sort_order.cc" bodystart="28" bodyend="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SortOrder_1a435ae990ea0403f3ed72a4ca4eb16826" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SortOrder::order_id</definition>
+        <argsstring>() const</argsstring>
+        <name>order_id</name>
+        <qualifiedname>iceberg::SortOrder::order_id</qualifiedname>
+        <briefdescription>
+<para>Get the sort order id. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_order.h" line="47" column="11" bodyfile="iceberg/sort_order.cc" bodystart="37" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SortOrder_1a3d76e6d1e25bf0dbb71abafceb137460" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::span&lt; const <ref refid="classiceberg_1_1SortField" kindref="compound">SortField</ref> &gt;</type>
+        <definition>std::span&lt; const SortField &gt; iceberg::SortOrder::fields</definition>
+        <argsstring>() const</argsstring>
+        <name>fields</name>
+        <qualifiedname>iceberg::SortOrder::fields</qualifiedname>
+        <briefdescription>
+<para>Get the list of sort fields. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_order.h" line="50" column="13" bodyfile="iceberg/sort_order.cc" bodystart="39" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SortOrder_1a7d626fad1d95f50267685adaf32c4603" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::SortOrder::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::SortOrder::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <briefdescription>
+<para>Get a user-readable string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_order.h" line="52" column="15" bodyfile="iceberg/sort_order.cc" bodystart="41" bodyend="48"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1SortOrder_1a5d0c769867b9244b1d48cd308659326f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1SortOrder" kindref="compound">SortOrder</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; SortOrder &gt; &amp; iceberg::SortOrder::Unsorted</definition>
+        <argsstring>()</argsstring>
+        <name>Unsorted</name>
+        <qualifiedname>iceberg::SortOrder::Unsorted</qualifiedname>
+        <briefdescription>
+<para>Get an unsorted sort order singleton. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_order.h" line="44" column="32" bodyfile="iceberg/sort_order.cc" bodystart="31" bodyend="35"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classiceberg_1_1SortOrder_1a574b3ab78e704dfb9b528e60632c08fe" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const SortOrder &amp;lhs, const SortOrder &amp;rhs)</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::SortOrder::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1SortOrder" kindref="compound">SortOrder</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1SortOrder" kindref="compound">SortOrder</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_order.h" line="54" column="15" bodyfile="iceberg/sort_order.h" bodystart="54" bodyend="56"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1SortOrder_1a71de01aa773c0f25207b3c71c26eb98e" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::SortOrder::Equals</definition>
+        <argsstring>(const SortOrder &amp;other) const</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::SortOrder::Equals</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1SortOrder" kindref="compound">SortOrder</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Compare two sort orders for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/sort_order.h" line="60" column="8" bodyfile="iceberg/sort_order.cc" bodystart="50" bodyend="52"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A sort order for a table. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>A sort order is defined by a sort order id and a list of sort fields. The order of the sort fields within the list defines the order in which the sort is applied to the data. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::SortOrder</label>
+        <link refid="classiceberg_1_1SortOrder"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::SortOrder</label>
+        <link refid="classiceberg_1_1SortOrder"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/sort_order.h" line="37" column="1" bodyfile="iceberg/sort_order.h" bodystart="37" bodyend="64"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1SortOrder_1a71de01aa773c0f25207b3c71c26eb98e" prot="private" virt="non-virtual"><scope>iceberg::SortOrder</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1SortOrder_1a3d76e6d1e25bf0dbb71abafceb137460" prot="public" virt="non-virtual"><scope>iceberg::SortOrder</scope><name>fields</name></member>
+      <member refid="classiceberg_1_1SortOrder_1a464ff4c7cda5a33855231a9b4a04d5ea" prot="private" virt="non-virtual"><scope>iceberg::SortOrder</scope><name>fields_</name></member>
+      <member refid="classiceberg_1_1SortOrder_1a8ee262f0eda7b2b206cdf49ab2194cfd" prot="public" virt="non-virtual"><scope>iceberg::SortOrder</scope><name>kInitialSortOrderId</name></member>
+      <member refid="classiceberg_1_1SortOrder_1a574b3ab78e704dfb9b528e60632c08fe" prot="public" virt="non-virtual"><scope>iceberg::SortOrder</scope><name>operator==</name></member>
+      <member refid="classiceberg_1_1SortOrder_1a435ae990ea0403f3ed72a4ca4eb16826" prot="public" virt="non-virtual"><scope>iceberg::SortOrder</scope><name>order_id</name></member>
+      <member refid="classiceberg_1_1SortOrder_1a3a36bc6cdef0de3e0ce2b5ac201979f1" prot="private" virt="non-virtual"><scope>iceberg::SortOrder</scope><name>order_id_</name></member>
+      <member refid="classiceberg_1_1SortOrder_1aaa7349d65e37b730c636438542dc5191" prot="public" virt="non-virtual"><scope>iceberg::SortOrder</scope><name>SortOrder</name></member>
+      <member refid="classiceberg_1_1SortOrder_1a7d626fad1d95f50267685adaf32c4603" prot="public" virt="virtual"><scope>iceberg::SortOrder</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1SortOrder_1a5d0c769867b9244b1d48cd308659326f" prot="public" virt="non-virtual"><scope>iceberg::SortOrder</scope><name>Unsorted</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::SortOrder</scope><name>~Formattable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

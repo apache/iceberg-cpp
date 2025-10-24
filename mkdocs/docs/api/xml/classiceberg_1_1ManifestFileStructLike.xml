@@ -1,0 +1,212 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ManifestFileStructLike" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ManifestFileStructLike</compoundname>
+    <basecompoundref refid="classiceberg_1_1StructLike" prot="public" virt="non-virtual">iceberg::StructLike</basecompoundref>
+    <includes refid="manifest__wrapper_8h" local="no">manifest_wrapper.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ManifestFileStructLike_1a9ed17aae557942101cf8314b671c1bbc" prot="private" static="no" mutable="no">
+        <type>std::reference_wrapper&lt; const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt;</type>
+        <definition>std::reference_wrapper&lt;const ManifestFile&gt; iceberg::ManifestFileStructLike::manifest_file_</definition>
+        <argsstring></argsstring>
+        <name>manifest_file_</name>
+        <qualifiedname>iceberg::ManifestFileStructLike::manifest_file_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="96" column="26" bodyfile="iceberg/row/manifest_wrapper.h" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestFileStructLike_1abcac338c77d2cab07544b345543580cd" prot="private" static="no" mutable="yes">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionFieldSummaryArrayLike" kindref="compound">PartitionFieldSummaryArrayLike</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionFieldSummaryArrayLike&gt; iceberg::ManifestFileStructLike::summaries_</definition>
+        <argsstring></argsstring>
+        <name>summaries_</name>
+        <qualifiedname>iceberg::ManifestFileStructLike::summaries_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="97" column="27" bodyfile="iceberg/row/manifest_wrapper.h" bodystart="97" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestFileStructLike_1a71fa26854b7bd4f240142642452d7e84" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestFileStructLike::ManifestFileStructLike</definition>
+        <argsstring>(const ManifestFile &amp;file)</argsstring>
+        <name>ManifestFileStructLike</name>
+        <qualifiedname>iceberg::ManifestFileStructLike::ManifestFileStructLike</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="83" column="12" bodyfile="iceberg/row/manifest_wrapper.h" bodystart="83" bodyend="83"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestFileStructLike_1a01515dcb2eb657b077906aace3f79317" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestFileStructLike::~ManifestFileStructLike</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~ManifestFileStructLike</name>
+        <qualifiedname>iceberg::ManifestFileStructLike::~ManifestFileStructLike</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="84" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestFileStructLike_1a42e6459a2b048fa05f394ac483ebba6a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestFileStructLike::ManifestFileStructLike</definition>
+        <argsstring>(const ManifestFileStructLike &amp;)=delete</argsstring>
+        <name>ManifestFileStructLike</name>
+        <qualifiedname>iceberg::ManifestFileStructLike::ManifestFileStructLike</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ManifestFileStructLike" kindref="compound">ManifestFileStructLike</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="86" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestFileStructLike_1adc3a4aeb3287e937da889087a1226a42" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ManifestFileStructLike" kindref="compound">ManifestFileStructLike</ref> &amp;</type>
+        <definition>ManifestFileStructLike &amp; iceberg::ManifestFileStructLike::operator=</definition>
+        <argsstring>(const ManifestFileStructLike &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::ManifestFileStructLike::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ManifestFileStructLike" kindref="compound">ManifestFileStructLike</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="87" column="26"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestFileStructLike_1af1b2fdf5f3694a42277922789105d09d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>Result&lt; Scalar &gt; iceberg::ManifestFileStructLike::GetField</definition>
+        <argsstring>(size_t pos) const override</argsstring>
+        <name>GetField</name>
+        <qualifiedname>iceberg::ManifestFileStructLike::GetField</qualifiedname>
+        <reimplements refid="classiceberg_1_1StructLike_1a1bed712ac299583f54ad2fcd91087e11">GetField</reimplements>
+        <param>
+          <type>size_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Get the field value at the given position. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The position of the field in the struct. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="89" column="10" bodyfile="iceberg/row/manifest_wrapper.cc" bodystart="76" bodyend="127"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestFileStructLike_1a9f13ddccb795998fa0a081bfb48f8e9a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::ManifestFileStructLike::num_fields</definition>
+        <argsstring>() const override</argsstring>
+        <name>num_fields</name>
+        <qualifiedname>iceberg::ManifestFileStructLike::num_fields</qualifiedname>
+        <reimplements refid="classiceberg_1_1StructLike_1a3c9041a832eb91386eaf51753d745914">num_fields</reimplements>
+        <briefdescription>
+<para>Get the number of fields in the struct. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="91" column="10" bodyfile="iceberg/row/manifest_wrapper.cc" bodystart="129" bodyend="131"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestFileStructLike_1a182013eb5c7763cdc358a9bf5d47b4c5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ManifestFileStructLike::Reset</definition>
+        <argsstring>(const ManifestFile &amp;file)</argsstring>
+        <name>Reset</name>
+        <qualifiedname>iceberg::ManifestFileStructLike::Reset</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/manifest_wrapper.h" line="93" column="8" bodyfile="iceberg/row/manifest_wrapper.h" bodystart="93" bodyend="93"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> wrapper for <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::ManifestFileStructLike</label>
+        <link refid="classiceberg_1_1ManifestFileStructLike"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::ManifestFileStructLike</label>
+        <link refid="classiceberg_1_1ManifestFileStructLike"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/row/manifest_wrapper.h" line="81" column="1" bodyfile="iceberg/row/manifest_wrapper.h" bodystart="81" bodyend="98"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ManifestFileStructLike_1af1b2fdf5f3694a42277922789105d09d" prot="public" virt="virtual"><scope>iceberg::ManifestFileStructLike</scope><name>GetField</name></member>
+      <member refid="classiceberg_1_1ManifestFileStructLike_1a9ed17aae557942101cf8314b671c1bbc" prot="private" virt="non-virtual"><scope>iceberg::ManifestFileStructLike</scope><name>manifest_file_</name></member>
+      <member refid="classiceberg_1_1ManifestFileStructLike_1a71fa26854b7bd4f240142642452d7e84" prot="public" virt="non-virtual"><scope>iceberg::ManifestFileStructLike</scope><name>ManifestFileStructLike</name></member>
+      <member refid="classiceberg_1_1ManifestFileStructLike_1a42e6459a2b048fa05f394ac483ebba6a" prot="public" virt="non-virtual"><scope>iceberg::ManifestFileStructLike</scope><name>ManifestFileStructLike</name></member>
+      <member refid="classiceberg_1_1ManifestFileStructLike_1a9f13ddccb795998fa0a081bfb48f8e9a" prot="public" virt="virtual"><scope>iceberg::ManifestFileStructLike</scope><name>num_fields</name></member>
+      <member refid="classiceberg_1_1ManifestFileStructLike_1adc3a4aeb3287e937da889087a1226a42" prot="public" virt="non-virtual"><scope>iceberg::ManifestFileStructLike</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ManifestFileStructLike_1a182013eb5c7763cdc358a9bf5d47b4c5" prot="public" virt="non-virtual"><scope>iceberg::ManifestFileStructLike</scope><name>Reset</name></member>
+      <member refid="classiceberg_1_1ManifestFileStructLike_1abcac338c77d2cab07544b345543580cd" prot="private" virt="non-virtual"><scope>iceberg::ManifestFileStructLike</scope><name>summaries_</name></member>
+      <member refid="classiceberg_1_1ManifestFileStructLike_1a01515dcb2eb657b077906aace3f79317" prot="public" virt="non-virtual"><scope>iceberg::ManifestFileStructLike</scope><name>~ManifestFileStructLike</name></member>
+      <member refid="classiceberg_1_1StructLike_1a5f697a43dd30857364ee3a96f2064e4b" prot="public" virt="virtual"><scope>iceberg::ManifestFileStructLike</scope><name>~StructLike</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
