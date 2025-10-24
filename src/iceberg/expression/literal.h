@@ -25,6 +25,7 @@
 #include <variant>
 #include <vector>
 
+#include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type.h"
 #include "iceberg/util/decimal.h"
@@ -129,8 +130,12 @@ class ICEBERG_EXPORT Literal : public util::Formattable {
 
   bool operator==(const Literal& other) const;
 
-  /// \brief Compare two PrimitiveLiterals. Both literals must have the same type
-  /// and should not be AboveMax or BelowMin.
+  /// \brief Compare two literals of the same primitive type.
+  /// \param other The other literal to compare with.
+  /// \return The comparison result as std::partial_ordering. If either side is AboveMax,
+  /// BelowMin or Null, the result is unordered.
+  /// Note: This comparison cannot be used for sorting literals if any literal is
+  /// AboveMax, BelowMin or Null.
   std::partial_ordering operator<=>(const Literal& other) const;
 
   /// Check if this literal represents a value above the maximum allowed value
