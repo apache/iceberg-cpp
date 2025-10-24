@@ -130,12 +130,12 @@ class ICEBERG_EXPORT Literal : public util::Formattable {
 
   bool operator==(const Literal& other) const;
 
-  /// \brief Compare two PrimitiveLiterals. Both literals must have the same type.
-  /// \param other The other PrimitiveLiteral to compare with.
+  /// \brief Compare two literals of the same primitive type.
+  /// \param other The other literal to compare with.
   /// \return The comparison result as std::partial_ordering. If either side is AboveMax,
-  /// BelowMin or null, the result is unordered.
-  /// Note: This comparison can not be used for sorting literal vectors containing
-  /// AboveMax, BelowMin or null values.
+  /// BelowMin or Null, the result is unordered.
+  /// Note: This comparison cannot be used for sorting literals if any literal is
+  /// AboveMax, BelowMin or Null.
   std::partial_ordering operator<=>(const Literal& other) const;
 
   /// Check if this literal represents a value above the maximum allowed value
