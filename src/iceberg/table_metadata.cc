@@ -224,7 +224,7 @@ struct TableMetadataBuilder::Impl {
   explicit Impl(int8_t format_version) : base(nullptr), metadata{} {
     metadata.format_version = format_version;
     metadata.last_sequence_number = TableMetadata::kInitialSequenceNumber;
-    metadata.last_updated_ms = TimePointMs::min();
+    metadata.last_updated_ms = TableMetadata::kInvalidLastUpdatedMs;
     metadata.last_column_id = Schema::kInvalidColumnId;
     metadata.default_spec_id = PartitionSpec::kInitialSpecId;
     metadata.last_partition_id = PartitionSpec::kInvalidPartitionFieldId;
@@ -448,7 +448,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Build() {
   // 2. Validate metadata consistency through TableMetadata#Validate
 
   // 3. Update last_updated_ms if there are changes
-  if (impl_->metadata.last_updated_ms == TimePointMs::min()) {
+  if (impl_->metadata.last_updated_ms == TableMetadata::kInvalidLastUpdatedMs) {
     impl_->metadata.last_updated_ms =
         TimePointMs{std::chrono::duration_cast<std::chrono::milliseconds>(
             std::chrono::system_clock::now().time_since_epoch())};
