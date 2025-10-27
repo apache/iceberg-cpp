@@ -73,7 +73,6 @@ struct ICEBERG_EXPORT TableMetadata {
   static constexpr int64_t kInitialSequenceNumber = 0;
   static constexpr int64_t kInvalidSequenceNumber = -1;
   static constexpr int64_t kInitialRowId = 0;
-  static constexpr TimePointMs kInvalidLastUpdatedMs = TimePointMs::min();
 
   /// An integer version number for the format
   int8_t format_version;
