@@ -33,8 +33,8 @@
 #include "iceberg/sort_order.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
-#include "matchers.h"
 
 namespace iceberg::rest {
 
@@ -442,7 +442,7 @@ TEST(JsonRestNewTest, LoadTableResultFull) {
 
 TEST(JsonRestNewTest, LoadTableResultMinimal) {
   LoadTableResult r{
-      .metadata_location = std::nullopt, .metadata = CreateTableMetadata(), .config = {}};
+      .metadata_location = "", .metadata = CreateTableMetadata(), .config = {}};
 
   TestJsonRoundTrip(r);
 

@@ -327,4 +327,30 @@ ICEBERG_EXPORT nlohmann::json ToJson(const NameMapping& name_mapping);
 ICEBERG_EXPORT Result<std::unique_ptr<NameMapping>> NameMappingFromJson(
     const nlohmann::json& json);
 
+/// \brief Serializes a `TableIdentifier` object to JSON.
+///
+/// \param[in] identifier The `TableIdentifier` object to be serialized.
+/// \return A JSON object representing the `TableIdentifier` in the form of key-value
+/// pairs.
+ICEBERG_EXPORT nlohmann::json ToJson(const TableIdentifier& identifier);
+
+/// \brief Deserializes a JSON object into a `TableIdentifier` object.
+///
+/// \param[in] json The JSON object representing a `TableIdentifier`.
+/// \return A `TableIdentifier` object or an error if the conversion fails.
+ICEBERG_EXPORT Result<TableIdentifier> TableIdentifierFromJson(
+    const nlohmann::json& json);
+
+/// \brief Serializes a `Namespace` object to JSON.
+///
+/// \param[in] ns The `Namespace` object to be serialized.
+/// \return A JSON array representing the namespace levels.
+ICEBERG_EXPORT nlohmann::json ToJson(const Namespace& ns);
+
+/// \brief Deserializes a JSON array into a `Namespace` object.
+///
+/// \param[in] json The JSON array representing a `Namespace`.
+/// \return A `Namespace` object or an error if the conversion fails.
+ICEBERG_EXPORT Result<Namespace> NamespaceFromJson(const nlohmann::json& json);
+
 }  // namespace iceberg

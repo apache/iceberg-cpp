@@ -45,6 +45,15 @@ inline std::string SafeDumpJson(const nlohmann::json& json) {
 }
 
 template <typename T>
+Result<T> GetTypedJsonValue(const nlohmann::json& json) {
+  try {
+    return json.get<T>();
+  } catch (const std::exception& ex) {
+    return JsonParseError("Failed to parse {}: {}", SafeDumpJson(json), ex.what());
+  }
+}
+
+template <typename T>
 Result<T> GetJsonValueImpl(const nlohmann::json& json, std::string_view key) {
   try {
     return json.at(key).get<T>();

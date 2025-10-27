@@ -75,8 +75,8 @@ using PageToken = std::string;
 
 /// \brief Result body for table create/load/register APIs.
 struct ICEBERG_REST_EXPORT LoadTableResult {
-  std::optional<std::string> metadata_location;
-  std::shared_ptr<TableMetadata> metadata;  // required  // required
+  std::string metadata_location;
+  std::shared_ptr<TableMetadata> metadata;  // required
   std::unordered_map<std::string, std::string> config;
   // TODO(Li Feiyang): Add std::shared_ptr<StorageCredential> storage_credential;
 };

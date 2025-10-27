@@ -37,6 +37,7 @@
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/statistics_file.h"
+#include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
@@ -73,6 +74,7 @@ constexpr std::string_view kKey = "key";
 constexpr std::string_view kValue = "value";
 constexpr std::string_view kDoc = "doc";
 constexpr std::string_view kName = "name";
+constexpr std::string_view kNamespace = "namespace";
 constexpr std::string_view kNames = "names";
 constexpr std::string_view kId = "id";
 constexpr std::string_view kInitialDefault = "initial-default";
@@ -1145,6 +1147,34 @@ nlohmann::json ToJson(const NameMapping& name_mapping) {
 Result<std::unique_ptr<NameMapping>> NameMappingFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto mapped_fields, MappedFieldsFromJson(json));
   return NameMapping::Make(std::move(mapped_fields));
+}
+
+nlohmann::json ToJson(const TableIdentifier& identifier) {
+  nlohmann::json json;
+  json[kNamespace] = identifier.ns.levels;
+  json[kName] = identifier.name;
+  return json;
+}
+
+Result<TableIdentifier> TableIdentifierFromJson(const nlohmann::json& json) {
+  TableIdentifier identifier;
+  ICEBERG_ASSIGN_OR_RAISE(
+      identifier.ns.levels,
+      GetJsonValueOrDefault<std::vector<std::string>>(json, kNamespace));
+  ICEBERG_ASSIGN_OR_RAISE(identifier.name, GetJsonValue<std::string>(json, kName));
+
+  return identifier;
+}
+
+nlohmann::json ToJson(const Namespace& ns) { return ns.levels; }
+
+Result<Namespace> NamespaceFromJson(const nlohmann::json& json) {
+  if (!json.is_array()) [[unlikely]] {
+    return JsonParseError("Cannot parse namespace from non-array:{}", SafeDumpJson(json));
+  }
+  Namespace ns;
+  ICEBERG_ASSIGN_OR_RAISE(ns.levels, GetTypedJsonValue<std::vector<std::string>>(json));
+  return ns;
 }
 
 }  // namespace iceberg
