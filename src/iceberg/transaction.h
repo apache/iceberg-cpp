@@ -38,9 +38,9 @@ class ICEBERG_EXPORT Transaction {
   /// \return this transaction's table
   virtual const std::shared_ptr<Table>& table() const = 0;
 
-  /// \brief Create a new append API to add data files to this table
+  /// \brief Create a new append API to add files to this table
   ///
-  /// \return a new AppendFiles instance
+  /// \return a new AppendFiles
   virtual std::shared_ptr<AppendFiles> NewAppend() = 0;
 
   /// \brief Apply multiple metadata updates to this transaction
