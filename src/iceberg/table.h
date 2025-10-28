@@ -109,6 +109,11 @@ class ICEBERG_EXPORT Table {
   /// filter data.
   virtual std::unique_ptr<TableScanBuilder> NewScan() const;
 
+  /// \brief Create a new transaction for this table
+  ///
+  /// \return a shared pointer to the new Transaction
+  virtual std::shared_ptr<Transaction> NewTransaction();
+
   /// \brief Returns a FileIO to read and write table data and metadata files
   const std::shared_ptr<FileIO>& io() const;
 

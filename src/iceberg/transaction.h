@@ -21,6 +21,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/type_fwd.h"
@@ -37,17 +38,28 @@ class ICEBERG_EXPORT Transaction {
   /// \return this transaction's table
   virtual const std::shared_ptr<Table>& table() const = 0;
 
-  /// \brief Create a new append API to add files to this table
+  /// \brief Create a new append API to add data files to this table
   ///
-  /// \return a new AppendFiles
+  /// \return a new AppendFiles instance
   virtual std::shared_ptr<AppendFiles> NewAppend() = 0;
+
+  /// \brief Apply multiple metadata updates to this transaction
+  ///
+  /// \param requirements the table requirements to validate
+  /// \param updates the table updates to apply
+  /// \return Status::OK if all updates were queued successfully
+  virtual Status UpdateTable(
+      const std::vector<std::unique_ptr<TableRequirement>>& requirements,
+      std::vector<std::unique_ptr<TableUpdate>> updates) = 0;
 
   /// \brief Apply the pending changes from all actions and commit
   ///
-  /// May throw ValidationException if any update cannot be applied to the current table
-  /// metadata. May throw CommitFailedException if the updates cannot be committed due to
-  /// conflicts.
-  virtual void CommitTransaction() = 0;
+  /// This method applies all pending data operations and metadata updates in the
+  /// transaction and commits them to the table in a single atomic operation.
+  ///
+  /// \return Status::OK if the transaction was committed successfully, or an error
+  ///         status if validation failed or the commit encountered conflicts
+  virtual Status CommitTransaction() = 0;
 };
 
 }  // namespace iceberg

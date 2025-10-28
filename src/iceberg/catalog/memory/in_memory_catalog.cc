@@ -404,6 +404,13 @@ Result<std::shared_ptr<Transaction>> InMemoryCatalog::StageCreateTable(
   return NotImplemented("stage create table");
 }
 
+Result<std::shared_ptr<Transaction>> InMemoryCatalog::StageReplaceTable(
+    const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
+    const std::string& location,
+    const std::unordered_map<std::string, std::string>& properties, bool orCreate) {
+  return NotImplemented("stage replace table");
+}
+
 Result<bool> InMemoryCatalog::TableExists(const TableIdentifier& identifier) const {
   std::unique_lock lock(mutex_);
   return root_namespace_->TableExists(identifier);
@@ -413,6 +420,12 @@ Status InMemoryCatalog::DropTable(const TableIdentifier& identifier, bool purge)
   std::unique_lock lock(mutex_);
   // TODO(Guotao): Delete all metadata files if purge is true.
   return root_namespace_->UnregisterTable(identifier);
+}
+
+Status InMemoryCatalog::RenameTable(const TableIdentifier& from,
+                                    const TableIdentifier& to) {
+  std::unique_lock lock(mutex_);
+  return NotImplemented("rename table");
 }
 
 Result<std::unique_ptr<Table>> InMemoryCatalog::LoadTable(
