@@ -79,7 +79,7 @@ class ICEBERG_EXPORT Bound {
   virtual ~Bound();
 
   /// \brief Evaluate this expression against a row-based data.
-  virtual Result<Literal::Value> Evaluate(const StructLike& data) const = 0;
+  virtual Result<Literal> Evaluate(const StructLike& data) const = 0;
 
   /// \brief Returns the underlying bound reference for this term.
   virtual std::shared_ptr<class BoundReference> reference() = 0;
@@ -176,7 +176,7 @@ class ICEBERG_EXPORT BoundReference
 
   std::string ToString() const override;
 
-  Result<Literal::Value> Evaluate(const StructLike& data) const override;
+  Result<Literal> Evaluate(const StructLike& data) const override;
 
   std::shared_ptr<BoundReference> reference() override { return shared_from_this(); }
 
@@ -236,7 +236,7 @@ class ICEBERG_EXPORT BoundTransform : public BoundTerm {
 
   std::string ToString() const override;
 
-  Result<Literal::Value> Evaluate(const StructLike& data) const override;
+  Result<Literal> Evaluate(const StructLike& data) const override;
 
   std::shared_ptr<BoundReference> reference() override { return ref_; }
 

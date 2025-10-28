@@ -21,6 +21,9 @@
 
 #include <cassert>
 
+#include "iceberg/exception.h"
+#include "iceberg/result.h"
+
 #define ICEBERG_RETURN_UNEXPECTED(result)                       \
   if (auto&& result_name = result; !result_name) [[unlikely]] { \
     return std::unexpected<Error>(result_name.error());         \
@@ -40,3 +43,17 @@
                                rexpr)
 
 #define ICEBERG_DCHECK(expr, message) assert((expr) && (message))
+
+#define ICEBERG_THROW_NOT_OK(result)                            \
+  if (auto&& result_name = result; !result_name) [[unlikely]] { \
+    throw iceberg::IcebergError(result_name.error().message);   \
+  }
+
+#define ICEBERG_ASSIGN_OR_THROW_IMPL(result_name, lhs, rexpr) \
+  auto&& result_name = (rexpr);                               \
+  ICEBERG_THROW_NOT_OK(result_name);                          \
+  lhs = std::move(result_name.value());
+
+#define ICEBERG_ASSIGN_OR_THROW(lhs, rexpr) \
+  ICEBERG_ASSIGN_OR_THROW_IMPL(             \
+      ICEBERG_ASSIGN_OR_RAISE_NAME(_error_or_value, __COUNTER__), lhs, rexpr);

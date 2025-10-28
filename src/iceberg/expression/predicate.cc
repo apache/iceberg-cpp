@@ -20,9 +20,9 @@
 #include "iceberg/expression/predicate.h"
 
 #include <algorithm>
+#include <cmath>
 #include <format>
 
-#include "iceberg/exception.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/result.h"
@@ -141,6 +141,26 @@ namespace {
 
 bool IsFloatingType(TypeId type) {
   return type == TypeId::kFloat || type == TypeId::kDouble;
+}
+
+bool IsNan(const Literal& literal) {
+  const auto& value = literal.value();
+  if (std::holds_alternative<float>(value)) {
+    return std::isnan(std::get<float>(value));
+  } else if (std::holds_alternative<double>(value)) {
+    return std::isnan(std::get<double>(value));
+  }
+  return false;
+}
+
+bool StartsWith(const Literal& lhs, const Literal& rhs) {
+  const auto& lhs_value = lhs.value();
+  const auto& rhs_value = rhs.value();
+  if (std::holds_alternative<std::string>(lhs_value) &&
+      std::holds_alternative<std::string>(rhs_value)) {
+    return std::get<std::string>(lhs_value).starts_with(std::get<std::string>(rhs_value));
+  }
+  return false;
 }
 
 }  // namespace
@@ -287,10 +307,10 @@ BoundPredicate::BoundPredicate(Expression::Operation op, std::shared_ptr<BoundTe
 
 BoundPredicate::~BoundPredicate() = default;
 
-Result<Literal::Value> BoundPredicate::Evaluate(const StructLike& data) const {
+Result<Literal> BoundPredicate::Evaluate(const StructLike& data) const {
   ICEBERG_ASSIGN_OR_RAISE(auto eval_result, term_->Evaluate(data));
   ICEBERG_ASSIGN_OR_RAISE(auto test_result, Test(eval_result));
-  return Literal::Value{test_result};
+  return Literal::Boolean(test_result);
 }
 
 // BoundUnaryPredicate implementation
@@ -300,8 +320,19 @@ BoundUnaryPredicate::BoundUnaryPredicate(Expression::Operation op,
 
 BoundUnaryPredicate::~BoundUnaryPredicate() = default;
 
-Result<bool> BoundUnaryPredicate::Test(const Literal::Value& value) const {
-  return NotImplemented("BoundUnaryPredicate::Test not implemented");
+Result<bool> BoundUnaryPredicate::Test(const Literal& literal) const {
+  switch (op()) {
+    case Expression::Operation::kIsNull:
+      return literal.IsNull();
+    case Expression::Operation::kNotNull:
+      return !literal.IsNull();
+    case Expression::Operation::kIsNan:
+      return IsNan(literal);
+    case Expression::Operation::kNotNan:
+      return !IsNan(literal);
+    default:
+      return InvalidExpression("Invalid operation for BoundUnaryPredicate: {}", op());
+  }
 }
 
 Result<std::shared_ptr<Expression>> BoundUnaryPredicate::Negate() const {
@@ -345,8 +376,27 @@ BoundLiteralPredicate::BoundLiteralPredicate(Expression::Operation op,
 
 BoundLiteralPredicate::~BoundLiteralPredicate() = default;
 
-Result<bool> BoundLiteralPredicate::Test(const Literal::Value& value) const {
-  return NotImplemented("BoundLiteralPredicate::Test not implemented");
+Result<bool> BoundLiteralPredicate::Test(const Literal& value) const {
+  switch (op()) {
+    case Expression::Operation::kLt:
+      return value < literal_;
+    case Expression::Operation::kLtEq:
+      return value <= literal_;
+    case Expression::Operation::kGt:
+      return value > literal_;
+    case Expression::Operation::kGtEq:
+      return value >= literal_;
+    case Expression::Operation::kEq:
+      return value == literal_;
+    case Expression::Operation::kNotEq:
+      return value != literal_;
+    case Expression::Operation::kStartsWith:
+      return StartsWith(value, literal_);
+    case Expression::Operation::kNotStartsWith:
+      return !StartsWith(value, literal_);
+    default:
+      return InvalidExpression("Invalid operation for BoundLiteralPredicate: {}", op());
+  }
 }
 
 Result<std::shared_ptr<Expression>> BoundLiteralPredicate::Negate() const {
@@ -453,8 +503,15 @@ BoundSetPredicate::BoundSetPredicate(Expression::Operation op,
 
 BoundSetPredicate::~BoundSetPredicate() = default;
 
-Result<bool> BoundSetPredicate::Test(const Literal::Value& value) const {
-  return NotImplemented("BoundSetPredicate::Test not implemented");
+Result<bool> BoundSetPredicate::Test(const Literal& value) const {
+  switch (op()) {
+    case Expression::Operation::kIn:
+      return value_set_.contains(value);
+    case Expression::Operation::kNotIn:
+      return !value_set_.contains(value);
+    default:
+      return InvalidExpression("Invalid operation for BoundSetPredicate: {}", op());
+  }
 }
 
 Result<std::shared_ptr<Expression>> BoundSetPredicate::Negate() const {

@@ -113,13 +113,13 @@ class ICEBERG_EXPORT BoundPredicate : public Predicate<BoundTerm>, public Bound 
 
   std::shared_ptr<BoundReference> reference() override { return term_->reference(); }
 
-  Result<Literal::Value> Evaluate(const StructLike& data) const override;
+  Result<Literal> Evaluate(const StructLike& data) const override;
 
   /// \brief Test a value against this predicate.
   ///
-  /// \param value The value to test
+  /// \param value The literal value to test
   /// \return true if the predicate passes, false otherwise
-  virtual Result<bool> Test(const Literal::Value& value) const = 0;
+  virtual Result<bool> Test(const Literal& value) const = 0;
 
   enum class Kind : int8_t {
     // A unary predicate (tests for null, not-null, etc.).
@@ -145,7 +145,7 @@ class ICEBERG_EXPORT BoundUnaryPredicate : public BoundPredicate {
 
   ~BoundUnaryPredicate() override;
 
-  Result<bool> Test(const Literal::Value& value) const override;
+  Result<bool> Test(const Literal& value) const override;
 
   Kind kind() const override { return Kind::kUnary; }
 
@@ -172,7 +172,7 @@ class ICEBERG_EXPORT BoundLiteralPredicate : public BoundPredicate {
   /// \brief Returns the literal being compared against.
   const Literal& literal() const { return literal_; }
 
-  Result<bool> Test(const Literal::Value& value) const override;
+  Result<bool> Test(const Literal& value) const override;
 
   Kind kind() const override { return Kind::kLiteral; }
 
@@ -208,7 +208,7 @@ class ICEBERG_EXPORT BoundSetPredicate : public BoundPredicate {
   /// \brief Returns the set of literals to test against.
   const LiteralSet& literal_set() const { return value_set_; }
 
-  Result<bool> Test(const Literal::Value& value) const override;
+  Result<bool> Test(const Literal& value) const override;
 
   Kind kind() const override { return Kind::kSet; }
 
