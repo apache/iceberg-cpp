@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_0154c816bded9243a1feaa2fbd30be18" kind="dir">
+    <compoundname>iceberg/test</compoundname>
+    <innerfile refid="arrow__fs__file__io__test_8cc">arrow_fs_file_io_test.cc</innerfile>
+    <innerfile refid="arrow__test_8cc">arrow_test.cc</innerfile>
+    <innerfile refid="avro__data__test_8cc">avro_data_test.cc</innerfile>
+    <innerfile refid="avro__schema__test_8cc">avro_schema_test.cc</innerfile>
+    <innerfile refid="avro__stream__test_8cc">avro_stream_test.cc</innerfile>
+    <innerfile refid="avro__test_8cc">avro_test.cc</innerfile>
+    <innerfile refid="bucket__util__test_8cc">bucket_util_test.cc</innerfile>
+    <innerfile refid="config__test_8cc">config_test.cc</innerfile>
+    <innerfile refid="decimal__test_8cc">decimal_test.cc</innerfile>
+    <innerfile refid="endian__test_8cc">endian_test.cc</innerfile>
+    <innerfile refid="expression__test_8cc">expression_test.cc</innerfile>
+    <innerfile refid="file__scan__task__test_8cc">file_scan_task_test.cc</innerfile>
+    <innerfile refid="formatter__test_8cc">formatter_test.cc</innerfile>
+    <innerfile refid="gzip__decompress__test_8cc">gzip_decompress_test.cc</innerfile>
+    <innerfile refid="in__memory__catalog__test_8cc">in_memory_catalog_test.cc</innerfile>
+    <innerfile refid="json__internal__test_8cc">json_internal_test.cc</innerfile>
+    <innerfile refid="literal__test_8cc">literal_test.cc</innerfile>
+    <innerfile refid="manifest__list__reader__writer__test_8cc">manifest_list_reader_writer_test.cc</innerfile>
+    <innerfile refid="manifest__reader__writer__test_8cc">manifest_reader_writer_test.cc</innerfile>
+    <innerfile refid="matchers_8h">matchers.h</innerfile>
+    <innerfile refid="metadata__io__test_8cc">metadata_io_test.cc</innerfile>
+    <innerfile refid="metadata__serde__test_8cc">metadata_serde_test.cc</innerfile>
+    <innerfile refid="mock__catalog_8h">mock_catalog.h</innerfile>
+    <innerfile refid="name__mapping__test_8cc">name_mapping_test.cc</innerfile>
+    <innerfile refid="parquet__data__test_8cc">parquet_data_test.cc</innerfile>
+    <innerfile refid="parquet__schema__test_8cc">parquet_schema_test.cc</innerfile>
+    <innerfile refid="parquet__test_8cc">parquet_test.cc</innerfile>
+    <innerfile refid="partition__field__test_8cc">partition_field_test.cc</innerfile>
+    <innerfile refid="partition__spec__test_8cc">partition_spec_test.cc</innerfile>
+    <innerfile refid="predicate__test_8cc">predicate_test.cc</innerfile>
+    <innerfile refid="rest__catalog__test_8cc">rest_catalog_test.cc</innerfile>
+    <innerfile refid="roaring__test_8cc">roaring_test.cc</innerfile>
+    <innerfile refid="schema__field__test_8cc">schema_field_test.cc</innerfile>
+    <innerfile refid="schema__json__test_8cc">schema_json_test.cc</innerfile>
+    <innerfile refid="schema__test_8cc">schema_test.cc</innerfile>
+    <innerfile refid="schema__util__test_8cc">schema_util_test.cc</innerfile>
+    <innerfile refid="snapshot__test_8cc">snapshot_test.cc</innerfile>
+    <innerfile refid="sort__field__test_8cc">sort_field_test.cc</innerfile>
+    <innerfile refid="sort__order__test_8cc">sort_order_test.cc</innerfile>
+    <innerfile refid="string__util__test_8cc">string_util_test.cc</innerfile>
+    <innerfile refid="struct__like__test_8cc">struct_like_test.cc</innerfile>
+    <innerfile refid="table__metadata__builder__test_8cc">table_metadata_builder_test.cc</innerfile>
+    <innerfile refid="table__test_8cc">table_test.cc</innerfile>
+    <innerfile refid="temp__file__test__base_8h">temp_file_test_base.h</innerfile>
+    <innerfile refid="temporal__test__helper_8h">temporal_test_helper.h</innerfile>
+    <innerfile refid="test__common_8cc">test_common.cc</innerfile>
+    <innerfile refid="test__common_8h">test_common.h</innerfile>
+    <innerfile refid="transform__test_8cc">transform_test.cc</innerfile>
+    <innerfile refid="truncate__util__test_8cc">truncate_util_test.cc</innerfile>
+    <innerfile refid="type__test_8cc">type_test.cc</innerfile>
+    <innerfile refid="uuid__test_8cc">uuid_test.cc</innerfile>
+    <innerfile refid="visit__type__test_8cc">visit_type_test.cc</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/test/"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,402 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="macros_8h" kind="file" language="C++">
+    <compoundname>macros.h</compoundname>
+    <includes local="no">cassert</includes>
+    <includedby refid="avro__data__util_8cc" local="yes">iceberg/avro/avro_data_util.cc</includedby>
+    <includedby refid="avro__reader_8cc" local="yes">iceberg/avro/avro_reader.cc</includedby>
+    <includedby refid="avro__schema__util_8cc" local="yes">iceberg/avro/avro_schema_util.cc</includedby>
+    <includedby refid="avro__writer_8cc" local="yes">iceberg/avro/avro_writer.cc</includedby>
+    <includedby refid="in__memory__catalog_8cc" local="yes">iceberg/catalog/memory/in_memory_catalog.cc</includedby>
+    <includedby refid="expression_8cc" local="yes">iceberg/expression/expression.cc</includedby>
+    <includedby refid="literal_8cc" local="yes">iceberg/expression/literal.cc</includedby>
+    <includedby refid="predicate_8cc" local="yes">iceberg/expression/predicate.cc</includedby>
+    <includedby refid="term_8cc" local="yes">iceberg/expression/term.cc</includedby>
+    <includedby refid="file__reader_8cc" local="yes">iceberg/file_reader.cc</includedby>
+    <includedby refid="file__writer_8cc" local="yes">iceberg/file_writer.cc</includedby>
+    <includedby refid="json__internal_8cc" local="yes">iceberg/json_internal.cc</includedby>
+    <includedby refid="manifest__adapter_8cc" local="yes">iceberg/manifest_adapter.cc</includedby>
+    <includedby refid="manifest__reader_8cc" local="yes">iceberg/manifest_reader.cc</includedby>
+    <includedby refid="manifest__reader__internal_8cc" local="yes">iceberg/manifest_reader_internal.cc</includedby>
+    <includedby refid="manifest__writer_8cc" local="yes">iceberg/manifest_writer.cc</includedby>
+    <includedby refid="name__mapping_8cc" local="yes">iceberg/name_mapping.cc</includedby>
+    <includedby refid="parquet__data__util_8cc" local="yes">iceberg/parquet/parquet_data_util.cc</includedby>
+    <includedby refid="parquet__reader_8cc" local="yes">iceberg/parquet/parquet_reader.cc</includedby>
+    <includedby refid="parquet__schema__util_8cc" local="yes">iceberg/parquet/parquet_schema_util.cc</includedby>
+    <includedby refid="parquet__writer_8cc" local="yes">iceberg/parquet/parquet_writer.cc</includedby>
+    <includedby refid="partition__spec_8cc" local="yes">iceberg/partition_spec.cc</includedby>
+    <includedby refid="arrow__array__wrapper_8cc" local="yes">iceberg/row/arrow_array_wrapper.cc</includedby>
+    <includedby refid="manifest__wrapper_8cc" local="yes">iceberg/row/manifest_wrapper.cc</includedby>
+    <includedby refid="schema_8cc" local="yes">iceberg/schema.cc</includedby>
+    <includedby refid="schema__internal_8cc" local="yes">iceberg/schema_internal.cc</includedby>
+    <includedby refid="schema__util_8cc" local="yes">iceberg/schema_util.cc</includedby>
+    <includedby refid="table_8cc" local="yes">iceberg/table.cc</includedby>
+    <includedby refid="table__metadata_8cc" local="yes">iceberg/table_metadata.cc</includedby>
+    <includedby refid="table__scan_8cc" local="yes">iceberg/table_scan.cc</includedby>
+    <includedby refid="json__internal__test_8cc" local="yes">iceberg/test/json_internal_test.cc</includedby>
+    <includedby refid="matchers_8h" local="yes">iceberg/test/matchers.h</includedby>
+    <includedby refid="parquet__test_8cc" local="yes">iceberg/test/parquet_test.cc</includedby>
+    <includedby refid="transform__function_8cc" local="yes">iceberg/transform_function.cc</includedby>
+    <includedby refid="type_8cc" local="yes">iceberg/type.cc</includedby>
+    <includedby refid="conversions_8cc" local="yes">iceberg/util/conversions.cc</includedby>
+    <includedby refid="decimal_8cc" local="yes">iceberg/util/decimal.cc</includedby>
+    <includedby refid="gzip__internal_8cc" local="yes">iceberg/util/gzip_internal.cc</includedby>
+    <includedby refid="json__util__internal_8h" local="yes">iceberg/util/json_util_internal.h</includedby>
+    <includedby refid="lazy_8h" local="yes">iceberg/util/lazy.h</includedby>
+    <includedby refid="uuid_8cc" local="yes">iceberg/util/uuid.cc</includedby>
+    <includedby refid="v1__metadata_8cc" local="yes">iceberg/v1_metadata.cc</includedby>
+    <includedby refid="v2__metadata_8cc" local="yes">iceberg/v2_metadata.cc</includedby>
+    <includedby refid="v3__metadata_8cc" local="yes">iceberg/v3_metadata.cc</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>cassert</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="23">
+        <label>iceberg/avro/avro_data_util_internal.h</label>
+        <link refid="avro__data__util__internal_8h_source"/>
+      </node>
+      <node id="8">
+        <label>iceberg/avro/avro_schema_util_internal.h</label>
+        <link refid="avro__schema__util__internal_8h_source"/>
+      </node>
+      <node id="19">
+        <label>iceberg/avro/avro_writer.h</label>
+        <link refid="avro__writer_8h_source"/>
+      </node>
+      <node id="12">
+        <label>iceberg/expression/expressions.h</label>
+        <link refid="expressions_8h"/>
+      </node>
+      <node id="11">
+        <label>iceberg/expression/literal.h</label>
+        <link refid="literal_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg/expression/predicate.h</label>
+        <link refid="predicate_8h"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg/expression/term.h</label>
+        <link refid="term_8h"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>iceberg/file_writer.h</label>
+        <link refid="file__writer_8h"/>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg/manifest_entry.h</label>
+        <link refid="manifest__entry_8h_source"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>iceberg/manifest_list.h</label>
+        <link refid="manifest__list_8h"/>
+        <childnode refid="30" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>iceberg/manifest_writer.h</label>
+        <link refid="manifest__writer_8h"/>
+      </node>
+      <node id="31">
+        <label>iceberg/metadata_columns.h</label>
+        <link refid="metadata__columns_8h"/>
+      </node>
+      <node id="17">
+        <label>iceberg/metrics.h</label>
+        <link refid="metrics_8h"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg/name_mapping.h</label>
+        <link refid="name__mapping_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>iceberg/parquet/parquet_data_util_internal.h</label>
+        <link refid="parquet__data__util__internal_8h_source"/>
+      </node>
+      <node id="9">
+        <label>iceberg/parquet/parquet_schema_util_internal.h</label>
+        <link refid="parquet__schema__util__internal_8h_source"/>
+      </node>
+      <node id="21">
+        <label>iceberg/parquet/parquet_writer.h</label>
+        <link refid="parquet__writer_8h_source"/>
+      </node>
+      <node id="30">
+        <label>iceberg/row/manifest_wrapper.h</label>
+        <link refid="manifest__wrapper_8h_source"/>
+      </node>
+      <node id="6">
+        <label>iceberg/schema.h</label>
+        <link refid="schema_8h"/>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg/schema_util.h</label>
+        <link refid="schema__util_8h_source"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>iceberg/schema_util_internal.h</label>
+        <link refid="schema__util__internal_8h_source"/>
+      </node>
+      <node id="16">
+        <label>iceberg/table_scan.h</label>
+        <link refid="table__scan_8h_source"/>
+      </node>
+      <node id="2">
+        <label>iceberg/test/matchers.h</label>
+        <link refid="matchers_8h_source"/>
+      </node>
+      <node id="26">
+        <label>iceberg/transform.h</label>
+        <link refid="transform_8h"/>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>iceberg/transform_function.h</label>
+        <link refid="transform__function_8h"/>
+      </node>
+      <node id="10">
+        <label>iceberg/type.h</label>
+        <link refid="type_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+      </node>
+      <node id="28">
+        <label>iceberg/util/conversions.h</label>
+        <link refid="conversions_8h"/>
+      </node>
+      <node id="3">
+        <label>iceberg/util/decimal.cc</label>
+        <link refid="decimal_8cc"/>
+      </node>
+      <node id="4">
+        <label>iceberg/util/json_util_internal.h</label>
+        <link refid="json__util__internal_8h"/>
+      </node>
+      <node id="5">
+        <label>iceberg/util/lazy.h</label>
+        <link refid="lazy_8h"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+      </node>
+      <node id="32">
+        <label>iceberg/util/visit_type.h</label>
+        <link refid="visit__type_8h"/>
+      </node>
+    </invincdepgraph>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="macros_8h_1a9e7aa5800faf9b1b52ef312030bd0776" prot="public" static="no">
+        <name>ICEBERG_RETURN_UNEXPECTED</name>
+        <param><defname>result</defname></param>
+        <initializer>  if (auto&amp;&amp; result_name = result; !result_name) [[unlikely]] { \
+    return std::unexpected&lt;Error&gt;(result_name.error());         \
+  }</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/macros.h" line="24" column="9" bodyfile="iceberg/util/macros.h" bodystart="24" bodyend="27"/>
+      </memberdef>
+      <memberdef kind="define" id="macros_8h_1a11505e1997a372d8e512ea5f712f557d" prot="public" static="no">
+        <name>ICEBERG_ASSIGN_OR_RAISE_IMPL</name>
+        <param><defname>result_name</defname></param>
+        <param><defname>lhs</defname></param>
+        <param><defname>rexpr</defname></param>
+        <initializer>  auto&amp;&amp; result_name = (rexpr);                               \
+  ICEBERG_RETURN_UNEXPECTED(result_name)                      \
+  lhs = std::move(result_name.value());</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/macros.h" line="29" column="9" bodyfile="iceberg/util/macros.h" bodystart="29" bodyend="32"/>
+      </memberdef>
+      <memberdef kind="define" id="macros_8h_1af6de4873866caa5d256ab7a591af5d00" prot="public" static="no">
+        <name>ICEBERG_CONCAT</name>
+        <param><defname>x</defname></param>
+        <param><defname>y</defname></param>
+        <initializer>x##y</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/macros.h" line="34" column="9" bodyfile="iceberg/util/macros.h" bodystart="34" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="macros_8h_1abbadbdd6b6291ab37ab8123cbaa6dbfa" prot="public" static="no">
+        <name>ICEBERG_ASSIGN_OR_RAISE_NAME</name>
+        <param><defname>x</defname></param>
+        <param><defname>y</defname></param>
+        <initializer>ICEBERG_CONCAT(x, y)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/macros.h" line="36" column="9" bodyfile="iceberg/util/macros.h" bodystart="36" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="define" id="macros_8h_1ad7761a99326d87edbbf3bca9b674fd23" prot="public" static="no">
+        <name>ICEBERG_ASSIGN_OR_RAISE</name>
+        <param><defname>lhs</defname></param>
+        <param><defname>rexpr</defname></param>
+        <initializer>  ICEBERG_ASSIGN_OR_RAISE_IMPL(ICEBERG_ASSIGN_OR_RAISE_NAME(result_, __COUNTER__), lhs, \
+                               rexpr)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/macros.h" line="38" column="9" bodyfile="iceberg/util/macros.h" bodystart="38" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="define" id="macros_8h_1a0c7c6e6653dde54c00b74ca777dae161" prot="public" static="no">
+        <name>ICEBERG_DCHECK</name>
+        <param><defname>expr</defname></param>
+        <param><defname>message</defname></param>
+        <initializer>assert((expr) &amp;&amp; (message))</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/macros.h" line="42" column="9" bodyfile="iceberg/util/macros.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cassert&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ICEBERG_RETURN_UNEXPECTED(result)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="25"><highlight class="preprocessor"><sp/><sp/>if<sp/>(auto&amp;&amp;<sp/>result_name<sp/>=<sp/>result;<sp/>!result_name)<sp/>[[unlikely]]<sp/>{<sp/>\</highlight></codeline>
+<codeline lineno="26"><highlight class="preprocessor"><sp/><sp/><sp/><sp/>return<sp/>std::unexpected&lt;Error&gt;(result_name.error());<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="27"><highlight class="preprocessor"><sp/><sp/>}</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ICEBERG_ASSIGN_OR_RAISE_IMPL(result_name,<sp/>lhs,<sp/>rexpr)<sp/>\</highlight></codeline>
+<codeline lineno="30"><highlight class="preprocessor"><sp/><sp/>auto&amp;&amp;<sp/>result_name<sp/>=<sp/>(rexpr);<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="31"><highlight class="preprocessor"><sp/><sp/>ICEBERG_RETURN_UNEXPECTED(result_name)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="32"><highlight class="preprocessor"><sp/><sp/>lhs<sp/>=<sp/>std::move(result_name.value());</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ICEBERG_CONCAT(x,<sp/>y)<sp/>x##y</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ICEBERG_ASSIGN_OR_RAISE_NAME(x,<sp/>y)<sp/>ICEBERG_CONCAT(x,<sp/>y)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ICEBERG_ASSIGN_OR_RAISE(lhs,<sp/>rexpr)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="39"><highlight class="preprocessor"><sp/><sp/>ICEBERG_ASSIGN_OR_RAISE_IMPL(ICEBERG_ASSIGN_OR_RAISE_NAME(result_,<sp/>__COUNTER__),<sp/>lhs,<sp/>\</highlight></codeline>
+<codeline lineno="40"><highlight class="preprocessor"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>rexpr)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ICEBERG_DCHECK(expr,<sp/>message)<sp/>assert((expr)<sp/>&amp;&amp;<sp/>(message))</highlight></codeline>
+    </programlisting>
+    <location file="iceberg/util/macros.h"/>
+  </compounddef>
+</doxygen>

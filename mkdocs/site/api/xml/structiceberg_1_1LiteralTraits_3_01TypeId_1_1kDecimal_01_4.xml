@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1LiteralTraits_3_01TypeId_1_1kDecimal_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::LiteralTraits&lt; TypeId::kDecimal &gt;</compoundname>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structiceberg_1_1LiteralTraits_3_01TypeId_1_1kDecimal_01_4_1a22150c3bd8c2d74118c9989e4f3455b0" prot="public" static="no">
+        <type><ref refid="classiceberg_1_1Decimal" kindref="compound">Decimal</ref></type>
+        <definition>using iceberg::LiteralTraits&lt; TypeId::kDecimal &gt;::ValueType =  Decimal</definition>
+        <argsstring></argsstring>
+        <name>ValueType</name>
+        <qualifiedname>iceberg::LiteralTraits&lt; TypeId::kDecimal &gt;::ValueType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/literal.h" line="221" column="3" bodyfile="iceberg/expression/literal.h" bodystart="221" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/expression/literal.h" line="220" column="1" bodyfile="iceberg/expression/literal.h" bodystart="220" bodyend="222"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1LiteralTraits_3_01TypeId_1_1kDecimal_01_4_1a22150c3bd8c2d74118c9989e4f3455b0" prot="public" virt="non-virtual"><scope>iceberg::LiteralTraits&lt; TypeId::kDecimal &gt;</scope><name>ValueType</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

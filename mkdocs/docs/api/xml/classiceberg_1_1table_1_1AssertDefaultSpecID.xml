@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1table_1_1AssertDefaultSpecID" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::table::AssertDefaultSpecID</compoundname>
+    <basecompoundref refid="classiceberg_1_1TableRequirement" prot="public" virt="non-virtual">iceberg::TableRequirement</basecompoundref>
+    <includes refid="table__requirement_8h" local="no">table_requirement.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1table_1_1AssertDefaultSpecID_1a8cd19889f9994937a52b4f10263bf049" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::table::AssertDefaultSpecID::spec_id_</definition>
+        <argsstring></argsstring>
+        <name>spec_id_</name>
+        <qualifiedname>iceberg::table::AssertDefaultSpecID::spec_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="167" column="11" bodyfile="iceberg/table_requirement.h" bodystart="167" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertDefaultSpecID_1ae072434b920d0502e1e68cefbf91b950" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::table::AssertDefaultSpecID::AssertDefaultSpecID</definition>
+        <argsstring>(int32_t spec_id)</argsstring>
+        <name>AssertDefaultSpecID</name>
+        <qualifiedname>iceberg::table::AssertDefaultSpecID::AssertDefaultSpecID</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>spec_id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="160" column="12" bodyfile="iceberg/table_requirement.h" bodystart="160" bodyend="160"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertDefaultSpecID_1acd7faa22d7616f420ba6b4b9dcd63c65" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::table::AssertDefaultSpecID::spec_id</definition>
+        <argsstring>() const</argsstring>
+        <name>spec_id</name>
+        <qualifiedname>iceberg::table::AssertDefaultSpecID::spec_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="162" column="11" bodyfile="iceberg/table_requirement.h" bodystart="162" bodyend="162"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertDefaultSpecID_1a204aab5a48395e44877cacdb2f571bf7" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::table::AssertDefaultSpecID::Validate</definition>
+        <argsstring>(const TableMetadata *base) const override</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::table::AssertDefaultSpecID::Validate</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableRequirement_1ae122a03307e1dc67692d8e98b389fb15">Validate</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+          <declname>base</declname>
+        </param>
+        <briefdescription>
+<para>Validate this requirement against table metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>base</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The base table metadata to validate against (may be nullptr) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure with error details </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="164" column="10" bodyfile="iceberg/table_requirement.cc" bodystart="65" bodyend="67"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Requirement that the default partition spec ID matches. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This ensures the default partition spec hasn&apos;t changed since the metadata was read. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::TableRequirement</label>
+        <link refid="classiceberg_1_1TableRequirement"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::AssertDefaultSpecID</label>
+        <link refid="classiceberg_1_1table_1_1AssertDefaultSpecID"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::TableRequirement</label>
+        <link refid="classiceberg_1_1TableRequirement"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::AssertDefaultSpecID</label>
+        <link refid="classiceberg_1_1table_1_1AssertDefaultSpecID"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_requirement.h" line="158" column="1" bodyfile="iceberg/table_requirement.h" bodystart="158" bodyend="168"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1table_1_1AssertDefaultSpecID_1ae072434b920d0502e1e68cefbf91b950" prot="public" virt="non-virtual"><scope>iceberg::table::AssertDefaultSpecID</scope><name>AssertDefaultSpecID</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertDefaultSpecID_1acd7faa22d7616f420ba6b4b9dcd63c65" prot="public" virt="non-virtual"><scope>iceberg::table::AssertDefaultSpecID</scope><name>spec_id</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertDefaultSpecID_1a8cd19889f9994937a52b4f10263bf049" prot="private" virt="non-virtual"><scope>iceberg::table::AssertDefaultSpecID</scope><name>spec_id_</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertDefaultSpecID_1a204aab5a48395e44877cacdb2f571bf7" prot="public" virt="virtual"><scope>iceberg::table::AssertDefaultSpecID</scope><name>Validate</name></member>
+      <member refid="classiceberg_1_1TableRequirement_1a91a754d5e846ec2607aec5bf09896270" prot="public" virt="virtual"><scope>iceberg::table::AssertDefaultSpecID</scope><name>~TableRequirement</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

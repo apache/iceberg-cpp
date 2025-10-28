@@ -1,0 +1,242 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Catalog_1_1TableBuilder" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::Catalog::TableBuilder</compoundname>
+    <includes refid="catalog_8h" local="no">catalog.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Catalog_1_1TableBuilder_1a3f13edeb43726bee1c60746a175c0a1c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::Catalog::TableBuilder::~TableBuilder</definition>
+        <argsstring>()=default</argsstring>
+        <name>~TableBuilder</name>
+        <qualifiedname>iceberg::Catalog::TableBuilder::~TableBuilder</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog.h" line="182" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Catalog_1_1TableBuilder_1a04171d43d779fa5c0194b1a90a72bbd7" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="classiceberg_1_1Catalog_1_1TableBuilder" kindref="compound">TableBuilder</ref> &amp;</type>
+        <definition>virtual TableBuilder &amp; iceberg::Catalog::TableBuilder::WithPartitionSpec</definition>
+        <argsstring>(const PartitionSpec &amp;spec)=0</argsstring>
+        <name>WithPartitionSpec</name>
+        <qualifiedname>iceberg::Catalog::TableBuilder::WithPartitionSpec</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <briefdescription>
+<para>Sets a partition spec for the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a partition spec </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>this for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog.h" line="188" column="26"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Catalog_1_1TableBuilder_1aaa2bd0d11b0cf18c71f453ce27cadf9e" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="classiceberg_1_1Catalog_1_1TableBuilder" kindref="compound">TableBuilder</ref> &amp;</type>
+        <definition>virtual TableBuilder &amp; iceberg::Catalog::TableBuilder::WithSortOrder</definition>
+        <argsstring>(const SortOrder &amp;sort_order)=0</argsstring>
+        <name>WithSortOrder</name>
+        <qualifiedname>iceberg::Catalog::TableBuilder::WithSortOrder</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1SortOrder" kindref="compound">SortOrder</ref> &amp;</type>
+          <declname>sort_order</declname>
+        </param>
+        <briefdescription>
+<para>Sets a sort order for the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>sort_order</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a sort order </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>this for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog.h" line="194" column="26"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Catalog_1_1TableBuilder_1a2633126192bfff6d82650f243b42cf40" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="classiceberg_1_1Catalog_1_1TableBuilder" kindref="compound">TableBuilder</ref> &amp;</type>
+        <definition>virtual TableBuilder &amp; iceberg::Catalog::TableBuilder::WithLocation</definition>
+        <argsstring>(const std::string &amp;location)=0</argsstring>
+        <name>WithLocation</name>
+        <qualifiedname>iceberg::Catalog::TableBuilder::WithLocation</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>location</declname>
+        </param>
+        <briefdescription>
+<para>Sets a location for the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a location </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>this for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog.h" line="200" column="26"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Catalog_1_1TableBuilder_1a14bd7183af54bc6602c04227e9aa6c19" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="classiceberg_1_1Catalog_1_1TableBuilder" kindref="compound">TableBuilder</ref> &amp;</type>
+        <definition>virtual TableBuilder &amp; iceberg::Catalog::TableBuilder::WithProperties</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)=0</argsstring>
+        <name>WithProperties</name>
+        <qualifiedname>iceberg::Catalog::TableBuilder::WithProperties</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Adds key/value properties to the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>key/value properties </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>this for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog.h" line="206" column="26"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Catalog_1_1TableBuilder_1a0ee38952e18bc7cd6da6074999b3d862" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="classiceberg_1_1Catalog_1_1TableBuilder" kindref="compound">TableBuilder</ref> &amp;</type>
+        <definition>virtual TableBuilder &amp; iceberg::Catalog::TableBuilder::WithProperty</definition>
+        <argsstring>(const std::string &amp;key, const std::string &amp;value)=0</argsstring>
+        <name>WithProperty</name>
+        <qualifiedname>iceberg::Catalog::TableBuilder::WithProperty</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Adds a key/value property to the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>key</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a key </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a value </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>this for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog.h" line="214" column="26"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Catalog_1_1TableBuilder_1a89740121473e839e4c2959e19b50334f" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &gt;</type>
+        <definition>virtual std::unique_ptr&lt; Table &gt; iceberg::Catalog::TableBuilder::Create</definition>
+        <argsstring>()=0</argsstring>
+        <name>Create</name>
+        <qualifiedname>iceberg::Catalog::TableBuilder::Create</qualifiedname>
+        <briefdescription>
+<para>Creates the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>the created table </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog.h" line="220" column="29"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Catalog_1_1TableBuilder_1a8e5362c1550160b39f69c57ce1f735fb" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref> &gt;</type>
+        <definition>virtual std::unique_ptr&lt; Transaction &gt; iceberg::Catalog::TableBuilder::StageCreate</definition>
+        <argsstring>()=0</argsstring>
+        <name>StageCreate</name>
+        <qualifiedname>iceberg::Catalog::TableBuilder::StageCreate</qualifiedname>
+        <briefdescription>
+<para>Starts a transaction to create the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>the <ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref> to create the table </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog.h" line="225" column="29"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A builder used to create valid tables or start create/replace transactions. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog.h" line="180" column="3" bodyfile="iceberg/catalog.h" bodystart="180" bodyend="226"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Catalog_1_1TableBuilder_1a89740121473e839e4c2959e19b50334f" prot="public" virt="pure-virtual"><scope>iceberg::Catalog::TableBuilder</scope><name>Create</name></member>
+      <member refid="classiceberg_1_1Catalog_1_1TableBuilder_1a8e5362c1550160b39f69c57ce1f735fb" prot="public" virt="pure-virtual"><scope>iceberg::Catalog::TableBuilder</scope><name>StageCreate</name></member>
+      <member refid="classiceberg_1_1Catalog_1_1TableBuilder_1a2633126192bfff6d82650f243b42cf40" prot="public" virt="pure-virtual"><scope>iceberg::Catalog::TableBuilder</scope><name>WithLocation</name></member>
+      <member refid="classiceberg_1_1Catalog_1_1TableBuilder_1a04171d43d779fa5c0194b1a90a72bbd7" prot="public" virt="pure-virtual"><scope>iceberg::Catalog::TableBuilder</scope><name>WithPartitionSpec</name></member>
+      <member refid="classiceberg_1_1Catalog_1_1TableBuilder_1a14bd7183af54bc6602c04227e9aa6c19" prot="public" virt="pure-virtual"><scope>iceberg::Catalog::TableBuilder</scope><name>WithProperties</name></member>
+      <member refid="classiceberg_1_1Catalog_1_1TableBuilder_1a0ee38952e18bc7cd6da6074999b3d862" prot="public" virt="pure-virtual"><scope>iceberg::Catalog::TableBuilder</scope><name>WithProperty</name></member>
+      <member refid="classiceberg_1_1Catalog_1_1TableBuilder_1aaa2bd0d11b0cf18c71f453ce27cadf9e" prot="public" virt="pure-virtual"><scope>iceberg::Catalog::TableBuilder</scope><name>WithSortOrder</name></member>
+      <member refid="classiceberg_1_1Catalog_1_1TableBuilder_1a3f13edeb43726bee1c60746a175c0a1c" prot="public" virt="virtual"><scope>iceberg::Catalog::TableBuilder</scope><name>~TableBuilder</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

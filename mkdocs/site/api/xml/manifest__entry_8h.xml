@@ -1,0 +1,619 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="manifest__entry_8h" kind="file" language="C++">
+    <compoundname>manifest_entry.h</compoundname>
+    <includes local="no">cstdint</includes>
+    <includes local="no">map</includes>
+    <includes local="no">memory</includes>
+    <includes local="no">optional</includes>
+    <includes local="no">string</includes>
+    <includes local="no">vector</includes>
+    <includes refid="literal_8h" local="yes">iceberg/expression/literal.h</includes>
+    <includes refid="file__format_8h" local="yes">iceberg/file_format.h</includes>
+    <includes refid="iceberg__export_8h" local="yes">iceberg/iceberg_export.h</includes>
+    <includes refid="partition__spec_8h" local="yes">iceberg/partition_spec.h</includes>
+    <includes refid="result_8h" local="yes">iceberg/result.h</includes>
+    <includes refid="schema__field_8h" local="yes">iceberg/schema_field.h</includes>
+    <includes refid="type_8h" local="yes">iceberg/type.h</includes>
+    <includedby refid="inheritable__metadata_8cc" local="yes">iceberg/inheritable_metadata.cc</includedby>
+    <includedby refid="manifest__adapter_8cc" local="yes">iceberg/manifest_adapter.cc</includedby>
+    <includedby refid="manifest__entry_8cc" local="yes">iceberg/manifest_entry.cc</includedby>
+    <includedby refid="manifest__reader_8cc" local="yes">iceberg/manifest_reader.cc</includedby>
+    <includedby refid="manifest__reader__internal_8cc" local="yes">iceberg/manifest_reader_internal.cc</includedby>
+    <includedby refid="manifest__writer_8cc" local="yes">iceberg/manifest_writer.cc</includedby>
+    <includedby refid="table__scan_8cc" local="yes">iceberg/table_scan.cc</includedby>
+    <includedby refid="table__scan_8h" local="yes">iceberg/table_scan.h</includedby>
+    <includedby refid="file__scan__task__test_8cc" local="yes">iceberg/test/file_scan_task_test.cc</includedby>
+    <includedby refid="manifest__reader__writer__test_8cc" local="yes">iceberg/test/manifest_reader_writer_test.cc</includedby>
+    <includedby refid="v1__metadata_8cc" local="yes">iceberg/v1_metadata.cc</includedby>
+    <includedby refid="v2__metadata_8cc" local="yes">iceberg/v2_metadata.cc</includedby>
+    <includedby refid="v3__metadata_8cc" local="yes">iceberg/v3_metadata.cc</includedby>
+    <incdepgraph>
+      <node id="8">
+        <label>iceberg/expression/literal.h</label>
+        <link refid="literal_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+      </node>
+      <node id="34">
+        <label>iceberg/file_format.h</label>
+        <link refid="file__format_8h"/>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="1">
+        <label>iceberg/manifest_entry.h</label>
+        <link refid="manifest__entry_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="40">
+        <label>iceberg/partition_field.h</label>
+        <link refid="partition__field_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>iceberg/partition_spec.h</label>
+        <link refid="partition__spec_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg/schema_field.h</label>
+        <link refid="schema__field_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg/type.h</label>
+        <link refid="type_8h"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="29">
+        <label>iceberg/util/decimal.h</label>
+        <link refid="decimal_8h"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg/util/formattable.h</label>
+        <link refid="formattable_8h"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="32">
+        <label>iceberg/util/int128.h</label>
+        <link refid="int128_8h"/>
+      </node>
+      <node id="23">
+        <label>iceberg/util/lazy.h</label>
+        <link refid="lazy_8h"/>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h_source"/>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>iceberg/util/string_util.h</label>
+        <link refid="string__util_8h_source"/>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="33">
+        <label>iceberg/util/uuid.h</label>
+        <link refid="uuid_8h"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>algorithm</label>
+      </node>
+      <node id="16">
+        <label>array</label>
+      </node>
+      <node id="28">
+        <label>cassert</label>
+      </node>
+      <node id="9">
+        <label>compare</label>
+      </node>
+      <node id="24">
+        <label>concepts</label>
+      </node>
+      <node id="2">
+        <label>cstdint</label>
+      </node>
+      <node id="13">
+        <label>expected</label>
+      </node>
+      <node id="14">
+        <label>format</label>
+      </node>
+      <node id="25">
+        <label>functional</label>
+      </node>
+      <node id="30">
+        <label>iosfwd</label>
+      </node>
+      <node id="3">
+        <label>map</label>
+      </node>
+      <node id="4">
+        <label>memory</label>
+      </node>
+      <node id="26">
+        <label>mutex</label>
+      </node>
+      <node id="5">
+        <label>optional</label>
+      </node>
+      <node id="38">
+        <label>ranges</label>
+      </node>
+      <node id="17">
+        <label>span</label>
+      </node>
+      <node id="6">
+        <label>string</label>
+      </node>
+      <node id="20">
+        <label>string_view</label>
+      </node>
+      <node id="31">
+        <label>type_traits</label>
+      </node>
+      <node id="18">
+        <label>unordered_map</label>
+      </node>
+      <node id="35">
+        <label>utility</label>
+      </node>
+      <node id="10">
+        <label>variant</label>
+      </node>
+      <node id="7">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>iceberg/manifest_entry.h</label>
+        <link refid="manifest__entry_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg/table_scan.h</label>
+        <link refid="table__scan_8h_source"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structiceberg_1_1DataFile" prot="public">iceberg::DataFile</innerclass>
+    <innerclass refid="structiceberg_1_1ManifestEntry" prot="public">iceberg::ManifestEntry</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;cstdint&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;optional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/expression/literal.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="file__format_8h" kindref="compound">iceberg/file_format.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/iceberg_export.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="partition__spec_8h" kindref="compound">iceberg/partition_spec.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/result.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="schema__field_8h" kindref="compound">iceberg/schema_field.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="type_8h" kindref="compound">iceberg/type.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg<sp/>{</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>ManifestStatus<sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/>kExisting<sp/>=<sp/>0,</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/>kAdded<sp/>=<sp/>1,</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/>kDeleted<sp/>=<sp/>2,</highlight></codeline>
+<codeline lineno="43"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="44"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal">ICEBERG_EXPORT<sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>Result&lt;ManifestStatus&gt;<sp/>ManifestStatusFromInt(</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>status)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal"><sp/>(status)<sp/>{</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>0:</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ManifestStatus::kExisting;</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>1:</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ManifestStatus::kAdded;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>2:</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ManifestStatus::kDeleted;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>InvalidArgument(</highlight><highlight class="stringliteral">&quot;Invalid<sp/>manifest<sp/>status:<sp/>{}&quot;</highlight><highlight class="normal">,<sp/>status);</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="58"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61" refid="structiceberg_1_1DataFile" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref><sp/>{</highlight></codeline>
+<codeline lineno="63" refid="structiceberg_1_1DataFile_1a526cb5d9e7fc986cf3fc0190b0927857" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1DataFile_1a526cb5d9e7fc986cf3fc0190b0927857" kindref="member">Content</ref><sp/>{</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>kData<sp/>=<sp/>0,</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/>kPositionDeletes<sp/>=<sp/>1,</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/>kEqualityDeletes<sp/>=<sp/>2,</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72" refid="structiceberg_1_1DataFile_1a03ba5db838a4d23170cf5e305465a2f5" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1DataFile_1a526cb5d9e7fc986cf3fc0190b0927857" kindref="member">Content</ref><sp/>content<sp/>=<sp/>Content::kData;</highlight></codeline>
+<codeline lineno="75" refid="structiceberg_1_1DataFile_1af67f7ebac6579d80b4ac807e2cd665b8" refkind="member"><highlight class="normal"><sp/><sp/>std::string<sp/><ref refid="structiceberg_1_1DataFile_1af67f7ebac6579d80b4ac807e2cd665b8" kindref="member">file_path</ref>;</highlight></codeline>
+<codeline lineno="78" refid="structiceberg_1_1DataFile_1a368bc28fe2db97e3ec6001ff810cb527" refkind="member"><highlight class="normal"><sp/><sp/>FileFormatType<sp/>file_format<sp/>=<sp/>FileFormatType::kParquet;</highlight></codeline>
+<codeline lineno="82" refid="structiceberg_1_1DataFile_1af395c7673fa4194eac9bdf7137bd4ab7" refkind="member"><highlight class="normal"><sp/><sp/>std::vector&lt;Literal&gt;<sp/><ref refid="structiceberg_1_1DataFile_1af395c7673fa4194eac9bdf7137bd4ab7" kindref="member">partition</ref>;</highlight></codeline>
+<codeline lineno="85" refid="structiceberg_1_1DataFile_1a45beea978f69e41e67719c532c935141" refkind="member"><highlight class="normal"><sp/><sp/>int64_t<sp/>record_count<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="88" refid="structiceberg_1_1DataFile_1a3b73f63230f0fd255c787221eec1967a" refkind="member"><highlight class="normal"><sp/><sp/>int64_t<sp/>file_size_in_bytes<sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="95" refid="structiceberg_1_1DataFile_1a68c1f9fa2c80dd7992f40739d6946900" refkind="member"><highlight class="normal"><sp/><sp/>std::map&lt;int32_t,<sp/>int64_t&gt;<sp/><ref refid="structiceberg_1_1DataFile_1a68c1f9fa2c80dd7992f40739d6946900" kindref="member">column_sizes</ref>;</highlight></codeline>
+<codeline lineno="100" refid="structiceberg_1_1DataFile_1af8b885543c36d433088a9aca00532083" refkind="member"><highlight class="normal"><sp/><sp/>std::map&lt;int32_t,<sp/>int64_t&gt;<sp/><ref refid="structiceberg_1_1DataFile_1af8b885543c36d433088a9aca00532083" kindref="member">value_counts</ref>;</highlight></codeline>
+<codeline lineno="105" refid="structiceberg_1_1DataFile_1a7df12e8070320e57f426b4450d9d2ff6" refkind="member"><highlight class="normal"><sp/><sp/>std::map&lt;int32_t,<sp/>int64_t&gt;<sp/><ref refid="structiceberg_1_1DataFile_1a7df12e8070320e57f426b4450d9d2ff6" kindref="member">null_value_counts</ref>;</highlight></codeline>
+<codeline lineno="110" refid="structiceberg_1_1DataFile_1aaecefeea56d351113ed3223173c81872" refkind="member"><highlight class="normal"><sp/><sp/>std::map&lt;int32_t,<sp/>int64_t&gt;<sp/><ref refid="structiceberg_1_1DataFile_1aaecefeea56d351113ed3223173c81872" kindref="member">nan_value_counts</ref>;</highlight></codeline>
+<codeline lineno="117" refid="structiceberg_1_1DataFile_1a080e58d5188f19f5b3d69ea9c284f449" refkind="member"><highlight class="normal"><sp/><sp/>std::map&lt;int32_t,<sp/>std::vector&lt;uint8_t&gt;&gt;<sp/><ref refid="structiceberg_1_1DataFile_1a080e58d5188f19f5b3d69ea9c284f449" kindref="member">lower_bounds</ref>;</highlight></codeline>
+<codeline lineno="124" refid="structiceberg_1_1DataFile_1aaac83ddaeded403515f844c9e7b25be5" refkind="member"><highlight class="normal"><sp/><sp/>std::map&lt;int32_t,<sp/>std::vector&lt;uint8_t&gt;&gt;<sp/><ref refid="structiceberg_1_1DataFile_1aaac83ddaeded403515f844c9e7b25be5" kindref="member">upper_bounds</ref>;</highlight></codeline>
+<codeline lineno="127" refid="structiceberg_1_1DataFile_1a9d85eadb07348a091a84caa98fb84255" refkind="member"><highlight class="normal"><sp/><sp/>std::vector&lt;uint8_t&gt;<sp/><ref refid="structiceberg_1_1DataFile_1a9d85eadb07348a091a84caa98fb84255" kindref="member">key_metadata</ref>;</highlight></codeline>
+<codeline lineno="132" refid="structiceberg_1_1DataFile_1abc1093a971f7e5f06c0e227a78e8bef5" refkind="member"><highlight class="normal"><sp/><sp/>std::vector&lt;int64_t&gt;<sp/><ref refid="structiceberg_1_1DataFile_1abc1093a971f7e5f06c0e227a78e8bef5" kindref="member">split_offsets</ref>;</highlight></codeline>
+<codeline lineno="138" refid="structiceberg_1_1DataFile_1a4d44d6ae245ac89a8a6fa3f39ec518ed" refkind="member"><highlight class="normal"><sp/><sp/>std::vector&lt;int32_t&gt;<sp/><ref refid="structiceberg_1_1DataFile_1a4d44d6ae245ac89a8a6fa3f39ec518ed" kindref="member">equality_ids</ref>;</highlight></codeline>
+<codeline lineno="147" refid="structiceberg_1_1DataFile_1ad05003bae8454bfce2ed9d6e1fdb8c33" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;int32_t&gt;<sp/><ref refid="structiceberg_1_1DataFile_1ad05003bae8454bfce2ed9d6e1fdb8c33" kindref="member">sort_order_id</ref>;</highlight></codeline>
+<codeline lineno="150" refid="structiceberg_1_1DataFile_1ac3b5a54940f4ebcf63539feaf633caf0" refkind="member"><highlight class="normal"><sp/><sp/>int32_t<sp/>partition_spec_id<sp/>=<sp/>PartitionSpec::kInitialSpecId;</highlight></codeline>
+<codeline lineno="157" refid="structiceberg_1_1DataFile_1a1c0a85917f6c013b2dbc6a86fc09f37a" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;int64_t&gt;<sp/><ref refid="structiceberg_1_1DataFile_1a1c0a85917f6c013b2dbc6a86fc09f37a" kindref="member">first_row_id</ref>;</highlight></codeline>
+<codeline lineno="165" refid="structiceberg_1_1DataFile_1a83d38ba4f28a89228d7b28a2b4923b74" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;std::string&gt;<sp/><ref refid="structiceberg_1_1DataFile_1a83d38ba4f28a89228d7b28a2b4923b74" kindref="member">referenced_data_file</ref>;</highlight></codeline>
+<codeline lineno="173" refid="structiceberg_1_1DataFile_1a07a53b1bc593468af67aa91b73637ebf" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;int64_t&gt;<sp/><ref refid="structiceberg_1_1DataFile_1a07a53b1bc593468af67aa91b73637ebf" kindref="member">content_offset</ref>;</highlight></codeline>
+<codeline lineno="177" refid="structiceberg_1_1DataFile_1a11f745bcb8786a401b2e58cdbae6c8c3" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;int64_t&gt;<sp/><ref refid="structiceberg_1_1DataFile_1a11f745bcb8786a401b2e58cdbae6c8c3" kindref="member">content_size_in_bytes</ref>;</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"></highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kContent<sp/>=<sp/>SchemaField::MakeOptional(</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>134,<sp/></highlight><highlight class="stringliteral">&quot;content&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">iceberg::int32</ref>(),</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Contents<sp/>of<sp/>the<sp/>file:<sp/>0=data,<sp/>1=position<sp/>deletes,<sp/>2=equality<sp/>deletes&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kFilePath<sp/>=<sp/>SchemaField::MakeRequired(</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>100,<sp/></highlight><highlight class="stringliteral">&quot;file_path&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">iceberg::string</ref>(),<sp/></highlight><highlight class="stringliteral">&quot;Location<sp/>URI<sp/>with<sp/>FS<sp/>scheme&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kFileFormat<sp/>=<sp/>SchemaField::MakeRequired(</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>101,<sp/></highlight><highlight class="stringliteral">&quot;file_format&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">iceberg::string</ref>(),<sp/></highlight><highlight class="stringliteral">&quot;File<sp/>format<sp/>name:<sp/>avro,<sp/>orc,<sp/>or<sp/>parquet&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int32_t<sp/>kPartitionFieldId<sp/>=<sp/>102;</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kPartitionField<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;partition&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kRecordCount<sp/>=<sp/>SchemaField::MakeRequired(</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>103,<sp/></highlight><highlight class="stringliteral">&quot;record_count&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>(),<sp/></highlight><highlight class="stringliteral">&quot;Number<sp/>of<sp/>records<sp/>in<sp/>the<sp/>file&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kFileSize<sp/>=<sp/>SchemaField::MakeRequired(</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>104,<sp/></highlight><highlight class="stringliteral">&quot;file_size_in_bytes&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>(),<sp/></highlight><highlight class="stringliteral">&quot;Total<sp/>file<sp/>size<sp/>in<sp/>bytes&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kColumnSizes<sp/>=<sp/>SchemaField::MakeOptional(</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>108,<sp/></highlight><highlight class="stringliteral">&quot;column_sizes&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::make_shared&lt;MapType&gt;(</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(117,<sp/>std::string(MapType::kKeyName),</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">iceberg::int32</ref>()),</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(118,<sp/>std::string(MapType::kValueName),</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>())),</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Map<sp/>of<sp/>column<sp/>id<sp/>to<sp/>total<sp/>size<sp/>on<sp/>disk&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kValueCounts<sp/>=<sp/>SchemaField::MakeOptional(</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>109,<sp/></highlight><highlight class="stringliteral">&quot;value_counts&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::make_shared&lt;MapType&gt;(</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(119,<sp/>std::string(MapType::kKeyName),</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">iceberg::int32</ref>()),</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(120,<sp/>std::string(MapType::kValueName),</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>())),</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Map<sp/>of<sp/>column<sp/>id<sp/>to<sp/>total<sp/>count,<sp/>including<sp/>null<sp/>and<sp/>NaN&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kNullValueCounts<sp/>=<sp/>SchemaField::MakeOptional(</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>110,<sp/></highlight><highlight class="stringliteral">&quot;null_value_counts&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::make_shared&lt;MapType&gt;(</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(121,<sp/>std::string(MapType::kKeyName),</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">iceberg::int32</ref>()),</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(122,<sp/>std::string(MapType::kValueName),</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>())),</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Map<sp/>of<sp/>column<sp/>id<sp/>to<sp/>null<sp/>value<sp/>count&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kNanValueCounts<sp/>=<sp/>SchemaField::MakeOptional(</highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>137,<sp/></highlight><highlight class="stringliteral">&quot;nan_value_counts&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::make_shared&lt;MapType&gt;(</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(138,<sp/>std::string(MapType::kKeyName),</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">iceberg::int32</ref>()),</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(139,<sp/>std::string(MapType::kValueName),</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>())),</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Map<sp/>of<sp/>column<sp/>id<sp/>to<sp/>number<sp/>of<sp/>NaN<sp/>values<sp/>in<sp/>the<sp/>column&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kLowerBounds<sp/>=<sp/>SchemaField::MakeOptional(</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>125,<sp/></highlight><highlight class="stringliteral">&quot;lower_bounds&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::make_shared&lt;MapType&gt;(</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(126,<sp/>std::string(MapType::kKeyName),</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">iceberg::int32</ref>()),</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(127,<sp/>std::string(MapType::kValueName),</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="group__type-factories_1ga33cd0c2e979eebcccc89cdbcd3f6af99" kindref="member">iceberg::binary</ref>())),</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Map<sp/>of<sp/>column<sp/>id<sp/>to<sp/>lower<sp/>bound&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kUpperBounds<sp/>=<sp/>SchemaField::MakeOptional(</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>128,<sp/></highlight><highlight class="stringliteral">&quot;upper_bounds&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::make_shared&lt;MapType&gt;(</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(129,<sp/>std::string(MapType::kKeyName),</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">iceberg::int32</ref>()),</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(130,<sp/>std::string(MapType::kValueName),</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="group__type-factories_1ga33cd0c2e979eebcccc89cdbcd3f6af99" kindref="member">iceberg::binary</ref>())),</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Map<sp/>of<sp/>column<sp/>id<sp/>to<sp/>upper<sp/>bound&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kKeyMetadata<sp/>=<sp/>SchemaField::MakeOptional(</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>131,<sp/></highlight><highlight class="stringliteral">&quot;key_metadata&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga33cd0c2e979eebcccc89cdbcd3f6af99" kindref="member">iceberg::binary</ref>(),<sp/></highlight><highlight class="stringliteral">&quot;Encryption<sp/>key<sp/>metadata<sp/>blob&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kSplitOffsets<sp/>=<sp/>SchemaField::MakeOptional(</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>132,<sp/></highlight><highlight class="stringliteral">&quot;split_offsets&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::make_shared&lt;ListType&gt;(SchemaField::MakeRequired(</highlight></codeline>
+<codeline lineno="245"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>133,<sp/>std::string(ListType::kElementName),<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>())),</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Splittable<sp/>offsets&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kEqualityIds<sp/>=<sp/>SchemaField::MakeOptional(</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>135,<sp/></highlight><highlight class="stringliteral">&quot;equality_ids&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="249"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::make_shared&lt;ListType&gt;(SchemaField::MakeRequired(</highlight></codeline>
+<codeline lineno="250"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>136,<sp/>std::string(ListType::kElementName),<sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">iceberg::int32</ref>())),</highlight></codeline>
+<codeline lineno="251"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Equality<sp/>comparison<sp/>field<sp/>IDs&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kSortOrderId<sp/>=</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(140,<sp/></highlight><highlight class="stringliteral">&quot;sort_order_id&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">iceberg::int32</ref>(),<sp/></highlight><highlight class="stringliteral">&quot;Sort<sp/>order<sp/>ID&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kFirstRowId<sp/>=<sp/>SchemaField::MakeOptional(</highlight></codeline>
+<codeline lineno="255"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>142,<sp/></highlight><highlight class="stringliteral">&quot;first_row_id&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>(),<sp/></highlight><highlight class="stringliteral">&quot;Starting<sp/>row<sp/>ID<sp/>to<sp/>assign<sp/>to<sp/>new<sp/>rows&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kReferencedDataFile<sp/>=<sp/>SchemaField::MakeOptional(</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>143,<sp/></highlight><highlight class="stringliteral">&quot;referenced_data_file&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">iceberg::string</ref>(),</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Fully<sp/>qualified<sp/>location<sp/>(URI<sp/>with<sp/>FS<sp/>scheme)<sp/>of<sp/>a<sp/>data<sp/>file<sp/>that<sp/>all<sp/>deletes<sp/>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="259"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;reference&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="260"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kContentOffset<sp/>=</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(144,<sp/></highlight><highlight class="stringliteral">&quot;content_offset&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>(),</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;The<sp/>offset<sp/>in<sp/>the<sp/>file<sp/>where<sp/>the<sp/>content<sp/>starts&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kContentSize<sp/>=</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(145,<sp/></highlight><highlight class="stringliteral">&quot;content_size_in_bytes&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>(),</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;The<sp/>length<sp/>of<sp/>referenced<sp/>content<sp/>stored<sp/>in<sp/>the<sp/>file&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"></highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"></highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;StructType&gt;<sp/><ref refid="classiceberg_1_1Type" kindref="compound">Type</ref>(std::shared_ptr&lt;StructType&gt;<sp/>partition_type);</highlight></codeline>
+<codeline lineno="270"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"></highlight></codeline>
+<codeline lineno="274"></codeline>
+<codeline lineno="276" refid="structiceberg_1_1ManifestEntry" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref><sp/>{</highlight></codeline>
+<codeline lineno="280" refid="structiceberg_1_1ManifestEntry_1adcaea3bfa81ceb698fadd1f04b4b7b81" refkind="member"><highlight class="normal"><sp/><sp/>ManifestStatus<sp/>status<sp/>=<sp/>ManifestStatus::kAdded;</highlight></codeline>
+<codeline lineno="284" refid="structiceberg_1_1ManifestEntry_1a111546aa262e2f12866313c3d7f13a8c" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;int64_t&gt;<sp/><ref refid="structiceberg_1_1ManifestEntry_1a111546aa262e2f12866313c3d7f13a8c" kindref="member">snapshot_id</ref>;</highlight></codeline>
+<codeline lineno="287" refid="structiceberg_1_1ManifestEntry_1a357b286d5d9a3fa93dcb2cab58c1ddf5" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;int64_t&gt;<sp/><ref refid="structiceberg_1_1ManifestEntry_1a357b286d5d9a3fa93dcb2cab58c1ddf5" kindref="member">sequence_number</ref>;</highlight></codeline>
+<codeline lineno="291" refid="structiceberg_1_1ManifestEntry_1a25e3368468e2b43b7751729cdb4e2e4a" refkind="member"><highlight class="normal"><sp/><sp/>std::optional&lt;int64_t&gt;<sp/><ref refid="structiceberg_1_1ManifestEntry_1a25e3368468e2b43b7751729cdb4e2e4a" kindref="member">file_sequence_number</ref>;</highlight></codeline>
+<codeline lineno="294" refid="structiceberg_1_1ManifestEntry_1a9b5f9b8341261f1d10379d7eee814135" refkind="member"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;DataFile&gt;<sp/><ref refid="structiceberg_1_1ManifestEntry_1a9b5f9b8341261f1d10379d7eee814135" kindref="member">data_file</ref>;</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"></highlight></codeline>
+<codeline lineno="296"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kStatus<sp/>=</highlight></codeline>
+<codeline lineno="297"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(0,<sp/></highlight><highlight class="stringliteral">&quot;status&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">iceberg::int32</ref>());</highlight></codeline>
+<codeline lineno="298"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kSnapshotId<sp/>=</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(1,<sp/></highlight><highlight class="stringliteral">&quot;snapshot_id&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>());</highlight></codeline>
+<codeline lineno="300"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>int32_t<sp/>kDataFileFieldId<sp/>=<sp/>2;</highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string<sp/>kDataFileField<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;data_file&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kSequenceNumber<sp/>=</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(3,<sp/></highlight><highlight class="stringliteral">&quot;sequence_number&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>());</highlight></codeline>
+<codeline lineno="304"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">inline</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref><sp/>kFileSequenceNumber<sp/>=</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(4,<sp/></highlight><highlight class="stringliteral">&quot;file_sequence_number&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>());</highlight></codeline>
+<codeline lineno="306"><highlight class="normal"></highlight></codeline>
+<codeline lineno="307"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="308"><highlight class="normal"></highlight></codeline>
+<codeline lineno="309"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;StructType&gt;<sp/>TypeFromPartitionType(</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;StructType&gt;<sp/>partition_type);</highlight></codeline>
+<codeline lineno="311"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;StructType&gt;<sp/>TypeFromDataFileType(</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;StructType&gt;<sp/>datafile_type);</highlight></codeline>
+<codeline lineno="313"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="314"><highlight class="normal"></highlight></codeline>
+<codeline lineno="316"><highlight class="normal">ICEBERG_EXPORT<sp/></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>Result&lt;DataFile::Content&gt;<sp/>DataFileContentFromInt(</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>content)<sp/></highlight><highlight class="keyword">noexcept</highlight><highlight class="normal"><sp/>{</highlight></codeline>
+<codeline lineno="318"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">switch</highlight><highlight class="normal"><sp/>(content)<sp/>{</highlight></codeline>
+<codeline lineno="319"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>0:</highlight></codeline>
+<codeline lineno="320"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>DataFile::Content::kData;</highlight></codeline>
+<codeline lineno="321"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>1:</highlight></codeline>
+<codeline lineno="322"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>DataFile::Content::kPositionDeletes;</highlight></codeline>
+<codeline lineno="323"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">case</highlight><highlight class="normal"><sp/>2:</highlight></codeline>
+<codeline lineno="324"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>DataFile::Content::kEqualityDeletes;</highlight></codeline>
+<codeline lineno="325"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="326"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>InvalidArgument(</highlight><highlight class="stringliteral">&quot;Invalid<sp/>data<sp/>file<sp/>content:<sp/>{}&quot;</highlight><highlight class="normal">,<sp/>content);</highlight></codeline>
+<codeline lineno="327"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="328"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="329"><highlight class="normal"></highlight></codeline>
+<codeline lineno="330"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/manifest_entry.h"/>
+  </compounddef>
+</doxygen>

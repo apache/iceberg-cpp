@@ -1,0 +1,482 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1TableMetadataBuilder_1_1Impl" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::TableMetadataBuilder::Impl</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadataBuilder_1_1Impl_1ad5acfeba2ddafbfcad887da9046b6903" prot="public" static="no" mutable="no">
+        <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+        <definition>const TableMetadata* iceberg::TableMetadataBuilder::Impl::base</definition>
+        <argsstring></argsstring>
+        <name>base</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::Impl::base</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.cc" line="212" column="23" bodyfile="iceberg/table_metadata.cc" bodystart="212" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadataBuilder_1_1Impl_1a3a11f64a4a616f071631128f94556039" prot="public" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref></type>
+        <definition>TableMetadata iceberg::TableMetadataBuilder::Impl::metadata</definition>
+        <argsstring></argsstring>
+        <name>metadata</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::Impl::metadata</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.cc" line="215" column="17" bodyfile="iceberg/table_metadata.cc" bodystart="215" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadataBuilder_1_1Impl_1a5c2bb67938a79be9c470c8f663b7b082" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1TableUpdate" kindref="compound">TableUpdate</ref> &gt; &gt;</type>
+        <definition>std::vector&lt;std::unique_ptr&lt;TableUpdate&gt; &gt; iceberg::TableMetadataBuilder::Impl::changes</definition>
+        <argsstring></argsstring>
+        <name>changes</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::Impl::changes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.cc" line="218" column="15" bodyfile="iceberg/table_metadata.cc" bodystart="218" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadataBuilder_1_1Impl_1aab4bd873233896530d901a7cdcb23c23" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1Error" kindref="compound">Error</ref> &gt;</type>
+        <definition>std::vector&lt;Error&gt; iceberg::TableMetadataBuilder::Impl::errors</definition>
+        <argsstring></argsstring>
+        <name>errors</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::Impl::errors</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.cc" line="221" column="15" bodyfile="iceberg/table_metadata.cc" bodystart="221" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadataBuilder_1_1Impl_1a8cde8d5227a6d0e00eab3dac25c1c7ed" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; std::string &gt;</type>
+        <definition>std::optional&lt;std::string&gt; iceberg::TableMetadataBuilder::Impl::metadata_location</definition>
+        <argsstring></argsstring>
+        <name>metadata_location</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::Impl::metadata_location</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.cc" line="224" column="17" bodyfile="iceberg/table_metadata.cc" bodystart="224" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableMetadataBuilder_1_1Impl_1add556909684b81b817aca09de0f818fc" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; std::string &gt;</type>
+        <definition>std::optional&lt;std::string&gt; iceberg::TableMetadataBuilder::Impl::previous_metadata_location</definition>
+        <argsstring></argsstring>
+        <name>previous_metadata_location</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::Impl::previous_metadata_location</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.cc" line="225" column="17" bodyfile="iceberg/table_metadata.cc" bodystart="225" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1TableMetadataBuilder_1_1Impl_1a079f9f2e1bfb9e148f07b41caa1a0228" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TableMetadataBuilder::Impl::Impl</definition>
+        <argsstring>(int8_t format_version)</argsstring>
+        <name>Impl</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::Impl::Impl</qualifiedname>
+        <param>
+          <type>int8_t</type>
+          <declname>format_version</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.cc" line="228" column="12" bodyfile="iceberg/table_metadata.cc" bodystart="228" bodyend="238"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1TableMetadataBuilder_1_1Impl_1a3d3eb65b7858f2204692cb171734d9aa" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::TableMetadataBuilder::Impl::Impl</definition>
+        <argsstring>(const TableMetadata *base_metadata)</argsstring>
+        <name>Impl</name>
+        <qualifiedname>iceberg::TableMetadataBuilder::Impl::Impl</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+          <declname>base_metadata</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.cc" line="241" column="12" bodyfile="iceberg/table_metadata.cc" bodystart="241" bodyend="242"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="14">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="16">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="15">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="38">
+        <label>iceberg::BlobMetadata</label>
+        <link refid="structiceberg_1_1BlobMetadata"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="39" relation="usage">
+          <edgelabel>fields</edgelabel>
+        </childnode>
+        <childnode refid="20" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="47">
+        <label>iceberg::Error</label>
+        <link refid="structiceberg_1_1Error"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>message</edgelabel>
+        </childnode>
+      </node>
+      <node id="27">
+        <label>iceberg::MetadataLogEntry</label>
+        <link refid="structiceberg_1_1MetadataLogEntry"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>metadata_file</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="42">
+        <label>iceberg::PartitionStatisticsFile</label>
+        <link refid="structiceberg_1_1PartitionStatisticsFile"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>path</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>iceberg::Snapshot</label>
+        <link refid="structiceberg_1_1Snapshot"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>manifest_list</edgelabel>
+        </childnode>
+        <childnode refid="20" relation="usage">
+          <edgelabel>summary</edgelabel>
+        </childnode>
+      </node>
+      <node id="25">
+        <label>iceberg::SnapshotLogEntry</label>
+        <link refid="structiceberg_1_1SnapshotLogEntry"/>
+      </node>
+      <node id="33">
+        <label>iceberg::SnapshotRef</label>
+        <link refid="structiceberg_1_1SnapshotRef"/>
+      </node>
+      <node id="30">
+        <label>iceberg::SortOrder</label>
+        <link refid="classiceberg_1_1SortOrder"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>iceberg::StatisticsFile</label>
+        <link refid="structiceberg_1_1StatisticsFile"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>path</edgelabel>
+        </childnode>
+        <childnode refid="37" relation="usage">
+          <edgelabel>blob_metadata</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::TableMetadata</label>
+        <link refid="structiceberg_1_1TableMetadata"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>location</edgelabel>
+          <edgelabel>table_uuid</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>schemas</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>partition_specs</edgelabel>
+        </childnode>
+        <childnode refid="20" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+        <childnode refid="21" relation="usage">
+          <edgelabel>snapshots</edgelabel>
+        </childnode>
+        <childnode refid="24" relation="usage">
+          <edgelabel>snapshot_log</edgelabel>
+        </childnode>
+        <childnode refid="26" relation="usage">
+          <edgelabel>metadata_log</edgelabel>
+        </childnode>
+        <childnode refid="28" relation="usage">
+          <edgelabel>sort_orders</edgelabel>
+        </childnode>
+        <childnode refid="31" relation="usage">
+          <edgelabel>refs</edgelabel>
+        </childnode>
+        <childnode refid="34" relation="usage">
+          <edgelabel>statistics</edgelabel>
+        </childnode>
+        <childnode refid="40" relation="usage">
+          <edgelabel>partition_statistics</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::TableMetadataBuilder::Impl</label>
+        <link refid="structiceberg_1_1TableMetadataBuilder_1_1Impl"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>base</edgelabel>
+          <edgelabel>metadata</edgelabel>
+        </childnode>
+        <childnode refid="43" relation="usage">
+          <edgelabel>changes</edgelabel>
+        </childnode>
+        <childnode refid="46" relation="usage">
+          <edgelabel>errors</edgelabel>
+        </childnode>
+      </node>
+      <node id="45">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="10">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="18">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="19" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="22">
+        <label>std::shared_ptr&lt; iceberg::Snapshot &gt;</label>
+        <childnode refid="23" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="32">
+        <label>std::shared_ptr&lt; iceberg::SnapshotRef &gt;</label>
+        <childnode refid="33" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="29">
+        <label>std::shared_ptr&lt; iceberg::SortOrder &gt;</label>
+        <childnode refid="30" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="41">
+        <label>std::shared_ptr&lt; struct iceberg::PartitionStatisticsFile &gt;</label>
+        <childnode refid="42" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="35">
+        <label>std::shared_ptr&lt; struct iceberg::StatisticsFile &gt;</label>
+        <childnode refid="36" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="44">
+        <label>std::unique_ptr&lt; iceberg::TableUpdate &gt;</label>
+        <childnode refid="45" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="31">
+        <label>std::unordered_map&lt; std::string, std::shared_ptr&lt; iceberg::SnapshotRef &gt; &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="32" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="20">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="37">
+        <label>std::vector&lt; iceberg::BlobMetadata &gt;</label>
+        <childnode refid="38" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="46">
+        <label>std::vector&lt; iceberg::Error &gt;</label>
+        <childnode refid="47" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="26">
+        <label>std::vector&lt; iceberg::MetadataLogEntry &gt;</label>
+        <childnode refid="27" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="13" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="24">
+        <label>std::vector&lt; iceberg::SnapshotLogEntry &gt;</label>
+        <childnode refid="25" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="39">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="17">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::PartitionSpec &gt; &gt;</label>
+        <childnode refid="18" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::Schema &gt; &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="21">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::Snapshot &gt; &gt;</label>
+        <childnode refid="22" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="28">
+        <label>std::vector&lt; std::shared_ptr&lt; iceberg::SortOrder &gt; &gt;</label>
+        <childnode refid="29" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="40">
+        <label>std::vector&lt; std::shared_ptr&lt; struct iceberg::PartitionStatisticsFile &gt; &gt;</label>
+        <childnode refid="41" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="34">
+        <label>std::vector&lt; std::shared_ptr&lt; struct iceberg::StatisticsFile &gt; &gt;</label>
+        <childnode refid="35" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="43">
+        <label>std::vector&lt; std::unique_ptr&lt; iceberg::TableUpdate &gt; &gt;</label>
+        <childnode refid="44" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_metadata.cc" line="210" column="1" bodyfile="iceberg/table_metadata.cc" bodystart="210" bodyend="243"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1TableMetadataBuilder_1_1Impl_1ad5acfeba2ddafbfcad887da9046b6903" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder::Impl</scope><name>base</name></member>
+      <member refid="structiceberg_1_1TableMetadataBuilder_1_1Impl_1a5c2bb67938a79be9c470c8f663b7b082" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder::Impl</scope><name>changes</name></member>
+      <member refid="structiceberg_1_1TableMetadataBuilder_1_1Impl_1aab4bd873233896530d901a7cdcb23c23" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder::Impl</scope><name>errors</name></member>
+      <member refid="structiceberg_1_1TableMetadataBuilder_1_1Impl_1a079f9f2e1bfb9e148f07b41caa1a0228" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder::Impl</scope><name>Impl</name></member>
+      <member refid="structiceberg_1_1TableMetadataBuilder_1_1Impl_1a3d3eb65b7858f2204692cb171734d9aa" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder::Impl</scope><name>Impl</name></member>
+      <member refid="structiceberg_1_1TableMetadataBuilder_1_1Impl_1a3a11f64a4a616f071631128f94556039" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder::Impl</scope><name>metadata</name></member>
+      <member refid="structiceberg_1_1TableMetadataBuilder_1_1Impl_1a8cde8d5227a6d0e00eab3dac25c1c7ed" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder::Impl</scope><name>metadata_location</name></member>
+      <member refid="structiceberg_1_1TableMetadataBuilder_1_1Impl_1add556909684b81b817aca09de0f818fc" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataBuilder::Impl</scope><name>previous_metadata_location</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

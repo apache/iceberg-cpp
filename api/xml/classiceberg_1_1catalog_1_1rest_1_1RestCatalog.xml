@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1catalog_1_1rest_1_1RestCatalog" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::catalog::rest::RestCatalog</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1catalog_1_1rest_1_1RestCatalog_1aac253275301abe46a12103ca1d0704c5" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::catalog::rest::RestCatalog::base_url_</definition>
+        <argsstring></argsstring>
+        <name>base_url_</name>
+        <qualifiedname>iceberg::catalog::rest::RestCatalog::base_url_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/rest_catalog.h" line="38" column="15" bodyfile="iceberg/catalog/rest/rest_catalog.h" bodystart="38" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1catalog_1_1rest_1_1RestCatalog_1a1593f0203afc0523d3767342e8eb3c3e" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::catalog::rest::RestCatalog::RestCatalog</definition>
+        <argsstring>(const std::string &amp;base_url)</argsstring>
+        <name>RestCatalog</name>
+        <qualifiedname>iceberg::catalog::rest::RestCatalog::RestCatalog</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>base_url</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/rest_catalog.h" line="30" column="12" bodyfile="iceberg/catalog/rest/rest_catalog.cc" bodystart="30" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1catalog_1_1rest_1_1RestCatalog_1aa7918e7b75beee98c86db851302dfb3a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::catalog::rest::RestCatalog::~RestCatalog</definition>
+        <argsstring>()=default</argsstring>
+        <name>~RestCatalog</name>
+        <qualifiedname>iceberg::catalog::rest::RestCatalog::~RestCatalog</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/rest_catalog.h" line="31" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1catalog_1_1rest_1_1RestCatalog_1ad08949fdbc136552aeb2db4e206ab433" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>cpr::Response</type>
+        <definition>cpr::Response iceberg::catalog::rest::RestCatalog::GetConfig</definition>
+        <argsstring>()</argsstring>
+        <name>GetConfig</name>
+        <qualifiedname>iceberg::catalog::rest::RestCatalog::GetConfig</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/rest_catalog.h" line="33" column="17" bodyfile="iceberg/catalog/rest/rest_catalog.cc" bodystart="32" bodyend="36"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1catalog_1_1rest_1_1RestCatalog_1a0c3c15d19280aabe6977f5896b3dbd85" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>cpr::Response</type>
+        <definition>cpr::Response iceberg::catalog::rest::RestCatalog::ListNamespaces</definition>
+        <argsstring>()</argsstring>
+        <name>ListNamespaces</name>
+        <qualifiedname>iceberg::catalog::rest::RestCatalog::ListNamespaces</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/rest_catalog.h" line="35" column="17" bodyfile="iceberg/catalog/rest/rest_catalog.cc" bodystart="38" bodyend="42"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/rest_catalog.h" line="28" column="1" bodyfile="iceberg/catalog/rest/rest_catalog.h" bodystart="28" bodyend="39"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1catalog_1_1rest_1_1RestCatalog_1aac253275301abe46a12103ca1d0704c5" prot="private" virt="non-virtual"><scope>iceberg::catalog::rest::RestCatalog</scope><name>base_url_</name></member>
+      <member refid="classiceberg_1_1catalog_1_1rest_1_1RestCatalog_1ad08949fdbc136552aeb2db4e206ab433" prot="public" virt="non-virtual"><scope>iceberg::catalog::rest::RestCatalog</scope><name>GetConfig</name></member>
+      <member refid="classiceberg_1_1catalog_1_1rest_1_1RestCatalog_1a0c3c15d19280aabe6977f5896b3dbd85" prot="public" virt="non-virtual"><scope>iceberg::catalog::rest::RestCatalog</scope><name>ListNamespaces</name></member>
+      <member refid="classiceberg_1_1catalog_1_1rest_1_1RestCatalog_1a1593f0203afc0523d3767342e8eb3c3e" prot="public" virt="non-virtual"><scope>iceberg::catalog::rest::RestCatalog</scope><name>RestCatalog</name></member>
+      <member refid="classiceberg_1_1catalog_1_1rest_1_1RestCatalog_1aa7918e7b75beee98c86db851302dfb3a" prot="public" virt="non-virtual"><scope>iceberg::catalog::rest::RestCatalog</scope><name>~RestCatalog</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

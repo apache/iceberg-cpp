@@ -1,0 +1,25 @@
+var searchData=
+[
+  ['unbound_0',['Unbound',['../classiceberg_1_1Unbound.html',1,'iceberg']]],
+  ['unbound_3c_20boundreference_20_3e_1',['Unbound&lt; BoundReference &gt;',['../classiceberg_1_1Unbound.html',1,'iceberg']]],
+  ['unbound_3c_20class_20boundtransform_20_3e_2',['Unbound&lt; class BoundTransform &gt;',['../classiceberg_1_1Unbound.html',1,'iceberg']]],
+  ['unbound_3c_20expression_20_3e_3',['Unbound&lt; Expression &gt;',['../classiceberg_1_1Unbound.html',1,'iceberg']]],
+  ['unboundpredicate_4',['UnboundPredicate',['../classiceberg_1_1UnboundPredicate.html',1,'iceberg']]],
+  ['unboundterm_5',['UnboundTerm',['../classiceberg_1_1UnboundTerm.html',1,'iceberg']]],
+  ['unboundterm_3c_20boundreference_20_3e_6',['UnboundTerm&lt; BoundReference &gt;',['../classiceberg_1_1UnboundTerm.html',1,'iceberg']]],
+  ['unboundterm_3c_20class_20boundtransform_20_3e_7',['UnboundTerm&lt; class BoundTransform &gt;',['../classiceberg_1_1UnboundTerm.html',1,'iceberg']]],
+  ['unboundtransform_8',['unboundtransform',['../classiceberg_1_1UnboundTransform.html',1,'iceberg::UnboundTransform'],['../classiceberg_1_1UnboundTransform.html#abcec092747f5945b643998f68ac93d08',1,'iceberg::UnboundTransform::UnboundTransform()']]],
+  ['unpartitioned_9',['Unpartitioned',['../classiceberg_1_1PartitionSpec.html#a2955a97e29cf0637fa5275b031b198dc',1,'iceberg::PartitionSpec']]],
+  ['unregistertable_10',['UnregisterTable',['../classiceberg_1_1InMemoryNamespace.html#adc683e8a2a2ce1e6e9d14ebabf18b920',1,'iceberg::InMemoryNamespace']]],
+  ['unsorted_11',['Unsorted',['../classiceberg_1_1SortOrder.html#a5d0c769867b9244b1d48cd308659326f',1,'iceberg::SortOrder']]],
+  ['updatenamespaceproperties_12',['updatenamespaceproperties',['../classiceberg_1_1InMemoryNamespace.html#a031484d8bdfd6d060a0b42afda63da8e',1,'iceberg::InMemoryNamespace::UpdateNamespaceProperties()'],['../classiceberg_1_1Catalog.html#a45740f35337266cce1dcf7257e561e0d',1,'iceberg::Catalog::UpdateNamespaceProperties()'],['../classiceberg_1_1InMemoryCatalog.html#a3c65a9fb5b8abf7e512bb797236be04d',1,'iceberg::InMemoryCatalog::UpdateNamespaceProperties()']]],
+  ['updatenamespacepropertiesrequest_13',['UpdateNamespacePropertiesRequest',['../structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest.html',1,'iceberg::rest']]],
+  ['updatenamespacepropertiesresponse_14',['UpdateNamespacePropertiesResponse',['../structiceberg_1_1rest_1_1UpdateNamespacePropertiesResponse.html',1,'iceberg::rest']]],
+  ['updatetable_15',['updatetable',['../classiceberg_1_1Catalog.html#ae3f88953ab1979d8845cef73943433cc',1,'iceberg::Catalog::UpdateTable()'],['../classiceberg_1_1InMemoryCatalog.html#a40d29c3342fea93ace793f2deffe633a',1,'iceberg::InMemoryCatalog::UpdateTable()']]],
+  ['upgradeformatversion_16',['upgradeformatversion',['../classiceberg_1_1TableMetadataBuilder.html#ac035c8ba028e276800710040cf5f55ad',1,'iceberg::TableMetadataBuilder::UpgradeFormatVersion()'],['../classiceberg_1_1table_1_1UpgradeFormatVersion.html',1,'iceberg::table::UpgradeFormatVersion']]],
+  ['upper_5fbound_17',['upper_bound',['../structiceberg_1_1PartitionFieldSummary.html#abacf2fd506572ceed3ce049661aa3033',1,'iceberg::PartitionFieldSummary']]],
+  ['upper_5fbounds_18',['upper_bounds',['../structiceberg_1_1DataFile.html#aaac83ddaeded403515f844c9e7b25be5',1,'iceberg::DataFile']]],
+  ['uuid_19',['uuid',['../classiceberg_1_1Table.html#aa20b8f513435c2ea5c10eeacd48d9a6b',1,'iceberg::Table::uuid()'],['../group__type-factories.html#gafcf0f5e6522390678b91a9515b174bcf',1,'iceberg::uuid()'],['../classiceberg_1_1Uuid.html',1,'iceberg::Uuid']]],
+  ['uuid_2eh_20',['uuid.h',['../uuid_8h.html',1,'']]],
+  ['uuidtype_21',['UuidType',['../classiceberg_1_1UuidType.html',1,'iceberg']]]
+];

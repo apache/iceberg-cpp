@@ -1,0 +1,175 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ManifestReader" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::ManifestReader</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1ManifestReaderImpl" prot="public" virt="non-virtual">iceberg::ManifestReaderImpl</derivedcompoundref>
+    <includes refid="manifest__reader_8h" local="no">manifest_reader.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestReader_1a02a075b50bf3481e7c4faec9b774c02c" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::ManifestReader::~ManifestReader</definition>
+        <argsstring>()=default</argsstring>
+        <name>~ManifestReader</name>
+        <qualifiedname>iceberg::ManifestReader::~ManifestReader</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest_reader.h" line="37" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestReader_1aff9d73c0288d8ed0364f77e5c6f8ec68" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &gt; &gt;</type>
+        <definition>virtual Result&lt; std::vector&lt; ManifestEntry &gt; &gt; iceberg::ManifestReader::Entries</definition>
+        <argsstring>() const =0</argsstring>
+        <name>Entries</name>
+        <qualifiedname>iceberg::ManifestReader::Entries</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1ManifestReaderImpl_1a4c7700707aa22144273fd02a325df6a2">Entries</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest_reader.h" line="38" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestReader_1a5d31a384cebc71d317143829ca6b9eb3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1ManifestReader" kindref="compound">ManifestReader</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; ManifestReader &gt; &gt; iceberg::ManifestReader::Make</definition>
+        <argsstring>(const ManifestFile &amp;manifest, std::shared_ptr&lt; FileIO &gt; file_io, std::shared_ptr&lt; Schema &gt; partition_schema)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::ManifestReader::Make</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>file_io</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>partition_schema</declname>
+        </param>
+        <briefdescription>
+<para>Creates a reader for a manifest file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>manifest</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> object containing metadata about the manifest. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file_io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>File IO implementation to use. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>partition_schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> for the partition. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing the reader or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest_reader.h" line="45" column="17" bodyfile="iceberg/manifest_reader.cc" bodystart="31" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestReader_1a0e5d52d660cd1121337466d441a7cdd7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1ManifestReader" kindref="compound">ManifestReader</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; ManifestReader &gt; &gt; iceberg::ManifestReader::Make</definition>
+        <argsstring>(std::string_view manifest_location, std::shared_ptr&lt; FileIO &gt; file_io, std::shared_ptr&lt; Schema &gt; partition_schema)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::ManifestReader::Make</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>manifest_location</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>file_io</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>partition_schema</declname>
+        </param>
+        <briefdescription>
+<para>Creates a reader for a manifest file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>manifest_location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Path to the manifest file. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file_io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>File IO implementation to use. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>partition_schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> for the partition. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing the reader or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest_reader.h" line="54" column="17" bodyfile="iceberg/manifest_reader.cc" bodystart="52" bodyend="67"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Read manifest entries from a manifest file. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::ManifestReader</label>
+        <link refid="classiceberg_1_1ManifestReader"/>
+      </node>
+      <node id="2">
+        <label>iceberg::ManifestReaderImpl</label>
+        <link refid="classiceberg_1_1ManifestReaderImpl"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/manifest_reader.h" line="35" column="1" bodyfile="iceberg/manifest_reader.h" bodystart="35" bodyend="57"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ManifestReader_1aff9d73c0288d8ed0364f77e5c6f8ec68" prot="public" virt="pure-virtual"><scope>iceberg::ManifestReader</scope><name>Entries</name></member>
+      <member refid="classiceberg_1_1ManifestReader_1a5d31a384cebc71d317143829ca6b9eb3" prot="public" virt="non-virtual"><scope>iceberg::ManifestReader</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1ManifestReader_1a0e5d52d660cd1121337466d441a7cdd7" prot="public" virt="non-virtual"><scope>iceberg::ManifestReader</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1ManifestReader_1a02a075b50bf3481e7c4faec9b774c02c" prot="public" virt="virtual"><scope>iceberg::ManifestReader</scope><name>~ManifestReader</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

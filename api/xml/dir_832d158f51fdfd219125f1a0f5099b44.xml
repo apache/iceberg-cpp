@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_832d158f51fdfd219125f1a0f5099b44" kind="dir">
+    <compoundname>iceberg/expression</compoundname>
+    <innerfile refid="expression_8cc">expression.cc</innerfile>
+    <innerfile refid="expression_8h">expression.h</innerfile>
+    <innerfile refid="expressions_8cc">expressions.cc</innerfile>
+    <innerfile refid="expressions_8h">expressions.h</innerfile>
+    <innerfile refid="literal_8cc">literal.cc</innerfile>
+    <innerfile refid="literal_8h">literal.h</innerfile>
+    <innerfile refid="predicate_8cc">predicate.cc</innerfile>
+    <innerfile refid="predicate_8h">predicate.h</innerfile>
+    <innerfile refid="term_8cc">term.cc</innerfile>
+    <innerfile refid="term_8h">term.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/expression/"/>
+  </compounddef>
+</doxygen>

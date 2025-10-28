@@ -1,0 +1,15 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_3772e67070704cbb8771b4d409046ed1" kind="dir">
+    <compoundname>iceberg/catalog/rest</compoundname>
+    <innerfile refid="iceberg__rest__export_8h">iceberg_rest_export.h</innerfile>
+    <innerfile refid="rest__catalog_8cc">rest_catalog.cc</innerfile>
+    <innerfile refid="rest__catalog_8h">rest_catalog.h</innerfile>
+    <innerfile refid="types_8h">types.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/"/>
+  </compounddef>
+</doxygen>

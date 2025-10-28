@@ -1,0 +1,200 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="types_8h" kind="file" language="C++">
+    <compoundname>types.h</compoundname>
+    <includes local="no">memory</includes>
+    <includes local="no">optional</includes>
+    <includes local="no">string</includes>
+    <includes local="no">unordered_map</includes>
+    <includes local="no">vector</includes>
+    <includes refid="iceberg__rest__export_8h" local="yes">iceberg/catalog/rest/iceberg_rest_export.h</includes>
+    <includes refid="table__identifier_8h" local="yes">iceberg/table_identifier.h</includes>
+    <includes refid="type__fwd_8h" local="yes">iceberg/type_fwd.h</includes>
+    <includedby refid="rest__catalog_8cc" local="yes">iceberg/catalog/rest/rest_catalog.cc</includedby>
+    <incdepgraph>
+      <node id="7">
+        <label>iceberg/catalog/rest/iceberg_rest_export.h</label>
+        <link refid="iceberg__rest__export_8h_source"/>
+      </node>
+      <node id="1">
+        <label>iceberg/catalog/rest/types.h</label>
+        <link refid="types_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="8">
+        <label>iceberg/table_identifier.h</label>
+        <link refid="table__identifier_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="2">
+        <label>memory</label>
+      </node>
+      <node id="3">
+        <label>optional</label>
+      </node>
+      <node id="4">
+        <label>string</label>
+      </node>
+      <node id="5">
+        <label>unordered_map</label>
+      </node>
+      <node id="6">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="structiceberg_1_1rest_1_1CreateNamespaceRequest" prot="public">iceberg::rest::CreateNamespaceRequest</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest" prot="public">iceberg::rest::UpdateNamespacePropertiesRequest</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1CreateTableRequest" prot="public">iceberg::rest::CreateTableRequest</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1RegisterTableRequest" prot="public">iceberg::rest::RegisterTableRequest</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1RenameTableRequest" prot="public">iceberg::rest::RenameTableRequest</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1LoadTableResult" prot="public">iceberg::rest::LoadTableResult</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1ListNamespacesResponse" prot="public">iceberg::rest::ListNamespacesResponse</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1CreateNamespaceResponse" prot="public">iceberg::rest::CreateNamespaceResponse</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1GetNamespaceResponse" prot="public">iceberg::rest::GetNamespaceResponse</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesResponse" prot="public">iceberg::rest::UpdateNamespacePropertiesResponse</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1ListTablesResponse" prot="public">iceberg::rest::ListTablesResponse</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1rest">iceberg::rest</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Request and response types for Iceberg REST Catalog API. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;optional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;unordered_map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/catalog/rest/iceberg_rest_export.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="table__identifier_8h" kindref="compound">iceberg/table_identifier.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="type__fwd_8h" kindref="compound">iceberg/type_fwd.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg::rest<sp/>{</highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38" refid="structiceberg_1_1rest_1_1CreateNamespaceRequest" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1CreateNamespaceRequest" kindref="compound">CreateNamespaceRequest</ref><sp/>{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref><sp/>namespace_;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44" refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest" kindref="compound">UpdateNamespacePropertiesRequest</ref><sp/>{</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/>std::vector&lt;std::string&gt;<sp/>removals;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>updates;</highlight></codeline>
+<codeline lineno="47"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="50" refid="structiceberg_1_1rest_1_1CreateTableRequest" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1CreateTableRequest" kindref="compound">CreateTableRequest</ref><sp/>{</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/>std::string<sp/>name;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/>std::string<sp/>location;</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Schema&gt;<sp/>schema;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;PartitionSpec&gt;<sp/>partition_spec;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;SortOrder&gt;<sp/>write_order;</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/>std::optional&lt;bool&gt;<sp/>stage_create;</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"></highlight></codeline>
+<codeline lineno="61" refid="structiceberg_1_1rest_1_1RegisterTableRequest" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1RegisterTableRequest" kindref="compound">RegisterTableRequest</ref><sp/>{</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/>std::string<sp/>name;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/>std::string<sp/>metadata_location;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>overwrite<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="65"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68" refid="structiceberg_1_1rest_1_1RenameTableRequest" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1RenameTableRequest" kindref="compound">RenameTableRequest</ref><sp/>{</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref><sp/>source;<sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref><sp/>destination;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74" refid="types_8h_1aa5da261c3599ae3870c211c7d9938f00" refkind="member"><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="types_8h_1aa5da261c3599ae3870c211c7d9938f00" kindref="member">PageToken</ref><sp/>=<sp/>std::string;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77" refid="structiceberg_1_1rest_1_1LoadTableResult" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1LoadTableResult" kindref="compound">LoadTableResult</ref><sp/>{</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/>std::optional&lt;std::string&gt;<sp/>metadata_location;</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;TableMetadata&gt;<sp/>metadata;<sp/><sp/></highlight><highlight class="comment">//<sp/>required<sp/><sp/>//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>config;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO(Li<sp/>Feiyang):<sp/>Add<sp/>std::shared_ptr&lt;StorageCredential&gt;<sp/>storage_credential;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="82"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85" refid="types_8h_1a6287a1bfacdfde9e8bab8fc4a2e79187" refkind="member"><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structiceberg_1_1rest_1_1LoadTableResult" kindref="compound">CreateTableResponse</ref><sp/>=<sp/><ref refid="structiceberg_1_1rest_1_1LoadTableResult" kindref="compound">LoadTableResult</ref>;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="88" refid="types_8h_1a18702d5684bd287584952a0206a7fb51" refkind="member"><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structiceberg_1_1rest_1_1LoadTableResult" kindref="compound">LoadTableResponse</ref><sp/>=<sp/><ref refid="structiceberg_1_1rest_1_1LoadTableResult" kindref="compound">LoadTableResult</ref>;</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91" refid="structiceberg_1_1rest_1_1ListNamespacesResponse" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1ListNamespacesResponse" kindref="compound">ListNamespacesResponse</ref><sp/>{</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><ref refid="types_8h_1aa5da261c3599ae3870c211c7d9938f00" kindref="member">PageToken</ref><sp/>next_page_token;</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/>std::vector&lt;Namespace&gt;<sp/>namespaces;</highlight></codeline>
+<codeline lineno="94"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="97" refid="structiceberg_1_1rest_1_1CreateNamespaceResponse" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1CreateNamespaceResponse" kindref="compound">CreateNamespaceResponse</ref><sp/>{</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref><sp/>namespace_;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties;</highlight></codeline>
+<codeline lineno="100"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103" refid="structiceberg_1_1rest_1_1GetNamespaceResponse" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1GetNamespaceResponse" kindref="compound">GetNamespaceResponse</ref><sp/>{</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref><sp/>namespace_;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties;</highlight></codeline>
+<codeline lineno="106"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="109" refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesResponse" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesResponse" kindref="compound">UpdateNamespacePropertiesResponse</ref><sp/>{</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/>std::vector&lt;std::string&gt;<sp/>updated;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/>std::vector&lt;std::string&gt;<sp/>removed;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="112"><highlight class="normal"><sp/><sp/>std::vector&lt;std::string&gt;<sp/>missing;</highlight></codeline>
+<codeline lineno="113"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116" refid="structiceberg_1_1rest_1_1ListTablesResponse" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1ListTablesResponse" kindref="compound">ListTablesResponse</ref><sp/>{</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><ref refid="types_8h_1aa5da261c3599ae3870c211c7d9938f00" kindref="member">PageToken</ref><sp/>next_page_token;</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/>std::vector&lt;TableIdentifier&gt;<sp/>identifiers;</highlight></codeline>
+<codeline lineno="119"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"></highlight></codeline>
+<codeline lineno="121"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg::rest</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/catalog/rest/types.h"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1catalog_1_1rest" kind="namespace" language="C++">
+    <compoundname>iceberg::catalog::rest</compoundname>
+    <innerclass refid="classiceberg_1_1catalog_1_1rest_1_1RestCatalog" prot="public">iceberg::catalog::rest::RestCatalog</innerclass>
+    <innerclass refid="classiceberg_1_1catalog_1_1rest_1_1RestCatalogIntegrationTest" prot="public">iceberg::catalog::rest::RestCatalogIntegrationTest</innerclass>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="rest__catalog__test_8cc_1a3130caad4e8f1e5d606faed8b645853e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::catalog::rest::TEST_F</definition>
+        <argsstring>(RestCatalogIntegrationTest, GetConfigSuccessfully)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::catalog::rest::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1catalog_1_1rest_1_1RestCatalogIntegrationTest" kindref="compound">RestCatalogIntegrationTest</ref></type>
+        </param>
+        <param>
+          <type>GetConfigSuccessfully</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_catalog_test.cc" line="54" column="1" bodyfile="iceberg/test/rest_catalog_test.cc" bodystart="54" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="rest__catalog__test_8cc_1a5b685e8b6a95230ab1eda59bcf1c5dcc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::catalog::rest::TEST_F</definition>
+        <argsstring>(RestCatalogIntegrationTest, ListNamespacesReturnsMultipleResults)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::catalog::rest::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1catalog_1_1rest_1_1RestCatalogIntegrationTest" kindref="compound">RestCatalogIntegrationTest</ref></type>
+        </param>
+        <param>
+          <type>ListNamespacesReturnsMultipleResults</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_catalog_test.cc" line="71" column="1" bodyfile="iceberg/test/rest_catalog_test.cc" bodystart="71" bodyend="94"/>
+      </memberdef>
+      <memberdef kind="function" id="rest__catalog__test_8cc_1ae3d07952133b36c0f758bbf45f23cd54" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::catalog::rest::TEST_F</definition>
+        <argsstring>(RestCatalogIntegrationTest, HandlesServerError)</argsstring>
+        <name>TEST_F</name>
+        <qualifiedname>iceberg::catalog::rest::TEST_F</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1catalog_1_1rest_1_1RestCatalogIntegrationTest" kindref="compound">RestCatalogIntegrationTest</ref></type>
+        </param>
+        <param>
+          <type>HandlesServerError</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_catalog_test.cc" line="96" column="1" bodyfile="iceberg/test/rest_catalog_test.cc" bodystart="96" bodyend="109"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/rest_catalog.cc" line="28" column="1"/>
+  </compounddef>
+</doxygen>

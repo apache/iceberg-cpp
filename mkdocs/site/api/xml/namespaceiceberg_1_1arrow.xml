@@ -1,0 +1,60 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1arrow" kind="namespace" language="C++">
+    <compoundname>iceberg::arrow</compoundname>
+    <innerclass refid="classiceberg_1_1arrow_1_1ArrowFileSystemFileIO" prot="public">iceberg::arrow::ArrowFileSystemFileIO</innerclass>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="arrow__file__io_8h_1ac01e55e4fc2199c722e98a3c8a42d2f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT std::unique_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FileIO &gt; iceberg::arrow::MakeMockFileIO</definition>
+        <argsstring>()</argsstring>
+        <name>MakeMockFileIO</name>
+        <qualifiedname>iceberg::arrow::MakeMockFileIO</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_fs_file_io.cc" line="84" column="17" bodyfile="iceberg/arrow/arrow_fs_file_io.cc" bodystart="84" bodyend="86" declfile="iceberg/arrow/arrow_file_io.h" declline="29" declcolumn="39"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__file__io_8h_1a261510dc94452d5775918724032b63f0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_BUNDLE_EXPORT std::unique_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; FileIO &gt; iceberg::arrow::MakeLocalFileIO</definition>
+        <argsstring>()</argsstring>
+        <name>MakeLocalFileIO</name>
+        <qualifiedname>iceberg::arrow::MakeLocalFileIO</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_fs_file_io.cc" line="88" column="17" bodyfile="iceberg/arrow/arrow_fs_file_io.cc" bodystart="88" bodyend="90" declfile="iceberg/arrow/arrow_file_io.h" declline="31" declcolumn="39"/>
+      </memberdef>
+      <memberdef kind="function" id="arrow__status__internal_8h_1a824ce51f59bd212336814486d03a0415" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>ErrorKind</type>
+        <definition>ErrorKind iceberg::arrow::ToErrorKind</definition>
+        <argsstring>(const ::arrow::Status &amp;status)</argsstring>
+        <name>ToErrorKind</name>
+        <qualifiedname>iceberg::arrow::ToErrorKind</qualifiedname>
+        <param>
+          <type>const ::arrow::Status &amp;</type>
+          <declname>status</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow/arrow_status_internal.h" line="29" column="18" bodyfile="iceberg/arrow/arrow_status_internal.h" bodystart="29" bodyend="38"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/arrow/arrow_file_io.h" line="27" column="1"/>
+  </compounddef>
+</doxygen>

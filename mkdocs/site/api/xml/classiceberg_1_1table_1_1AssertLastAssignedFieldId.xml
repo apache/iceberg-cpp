@@ -1,0 +1,128 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1table_1_1AssertLastAssignedFieldId" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::table::AssertLastAssignedFieldId</compoundname>
+    <basecompoundref refid="classiceberg_1_1TableRequirement" prot="public" virt="non-virtual">iceberg::TableRequirement</basecompoundref>
+    <includes refid="table__requirement_8h" local="no">table_requirement.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1table_1_1AssertLastAssignedFieldId_1af438d55dde40a45f9840bfb8fe0f6fa2" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::table::AssertLastAssignedFieldId::last_assigned_field_id_</definition>
+        <argsstring></argsstring>
+        <name>last_assigned_field_id_</name>
+        <qualifiedname>iceberg::table::AssertLastAssignedFieldId::last_assigned_field_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="118" column="11" bodyfile="iceberg/table_requirement.h" bodystart="118" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertLastAssignedFieldId_1aea229e38a3e2767a25008021cb7a43a6" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::table::AssertLastAssignedFieldId::AssertLastAssignedFieldId</definition>
+        <argsstring>(int32_t last_assigned_field_id)</argsstring>
+        <name>AssertLastAssignedFieldId</name>
+        <qualifiedname>iceberg::table::AssertLastAssignedFieldId::AssertLastAssignedFieldId</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>last_assigned_field_id</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="110" column="12" bodyfile="iceberg/table_requirement.h" bodystart="110" bodyend="111"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertLastAssignedFieldId_1a4a51c222c3ea26a8a2548bc2a8a9436e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::table::AssertLastAssignedFieldId::last_assigned_field_id</definition>
+        <argsstring>() const</argsstring>
+        <name>last_assigned_field_id</name>
+        <qualifiedname>iceberg::table::AssertLastAssignedFieldId::last_assigned_field_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="113" column="11" bodyfile="iceberg/table_requirement.h" bodystart="113" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AssertLastAssignedFieldId_1af7fa8cf94c3ae72cfa9e2d842fea42c2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::table::AssertLastAssignedFieldId::Validate</definition>
+        <argsstring>(const TableMetadata *base) const override</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::table::AssertLastAssignedFieldId::Validate</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableRequirement_1ae122a03307e1dc67692d8e98b389fb15">Validate</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> *</type>
+          <declname>base</declname>
+        </param>
+        <briefdescription>
+<para>Validate this requirement against table metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>base</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The base table metadata to validate against (may be nullptr) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure with error details </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_requirement.h" line="115" column="10" bodyfile="iceberg/table_requirement.cc" bodystart="51" bodyend="54"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Requirement that the last assigned field ID matches. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This ensures the schema hasn&apos;t been modified (by adding fields) since the metadata was read. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::TableRequirement</label>
+        <link refid="classiceberg_1_1TableRequirement"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::AssertLastAssignedFieldId</label>
+        <link refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::TableRequirement</label>
+        <link refid="classiceberg_1_1TableRequirement"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::AssertLastAssignedFieldId</label>
+        <link refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_requirement.h" line="108" column="1" bodyfile="iceberg/table_requirement.h" bodystart="108" bodyend="119"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId_1aea229e38a3e2767a25008021cb7a43a6" prot="public" virt="non-virtual"><scope>iceberg::table::AssertLastAssignedFieldId</scope><name>AssertLastAssignedFieldId</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId_1a4a51c222c3ea26a8a2548bc2a8a9436e" prot="public" virt="non-virtual"><scope>iceberg::table::AssertLastAssignedFieldId</scope><name>last_assigned_field_id</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId_1af438d55dde40a45f9840bfb8fe0f6fa2" prot="private" virt="non-virtual"><scope>iceberg::table::AssertLastAssignedFieldId</scope><name>last_assigned_field_id_</name></member>
+      <member refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId_1af7fa8cf94c3ae72cfa9e2d842fea42c2" prot="public" virt="virtual"><scope>iceberg::table::AssertLastAssignedFieldId</scope><name>Validate</name></member>
+      <member refid="classiceberg_1_1TableRequirement_1a91a754d5e846ec2607aec5bf09896270" prot="public" virt="virtual"><scope>iceberg::table::AssertLastAssignedFieldId</scope><name>~TableRequirement</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
