@@ -92,6 +92,15 @@ class ICEBERG_EXPORT Expressions {
     }
   }
 
+  /// \brief Create a NOT expression.
+  ///
+  /// \param child The expression to negate
+  /// \return A negated expression with optimizations applied:
+  ///   - not(true) returns false
+  ///   - not(false) returns true
+  ///   - not(not(x)) returns x
+  static std::shared_ptr<Expression> Not(std::shared_ptr<Expression> child);
+
   // Transform functions
 
   /// \brief Create a bucket transform term.

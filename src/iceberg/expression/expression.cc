@@ -22,6 +22,7 @@
 #include <format>
 #include <utility>
 
+#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter_internal.h"
 #include "iceberg/util/macros.h"
 
@@ -89,6 +90,18 @@ bool Or::Equals(const Expression& expr) const {
            (left_->Equals(*other.right()) && right_->Equals(*other.left()));
   }
   return false;
+}
+
+// Not implementation
+Not::Not(std::shared_ptr<Expression> child) : child_(std::move(child)) {}
+
+std::string Not::ToString() const { return std::format("not({})", child_->ToString()); }
+
+Result<std::shared_ptr<Expression>> Not::Negate() const { return child_; }
+
+bool Not::Equals(const Expression& other) const {
+  return other.op() == Operation::kNot &&
+         internal::checked_cast<const Not&>(other).child_->Equals(*child_);
 }
 
 std::string_view ToString(Expression::Operation op) {

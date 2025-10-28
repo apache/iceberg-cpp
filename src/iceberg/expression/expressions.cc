@@ -25,6 +25,25 @@
 
 namespace iceberg {
 
+// Logical NOT operation
+std::shared_ptr<Expression> Expressions::Not(std::shared_ptr<Expression> child) {
+  if (child->op() == Expression::Operation::kTrue) {
+    return AlwaysFalse();
+  }
+
+  if (child->op() == Expression::Operation::kFalse) {
+    return AlwaysTrue();
+  }
+
+  // not(not(x)) = x
+  if (child->op() == Expression::Operation::kNot) {
+    const auto& not_expr = static_cast<const ::iceberg::Not&>(*child);
+    return not_expr.child();
+  }
+
+  return std::make_shared<::iceberg::Not>(std::move(child));
+}
+
 // Transform functions
 
 std::shared_ptr<UnboundTransform> Expressions::Bucket(std::string name,

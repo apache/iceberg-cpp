@@ -165,4 +165,45 @@ TEST(ExpressionTest, BaseClassNegateErrorOut) {
   auto negate_result = mock_expr->Negate();
   EXPECT_THAT(negate_result, IsError(ErrorKind::kNotSupported));
 }
+
+TEST(NotTest, Basic) {
+  auto true_expr = True::Instance();
+  auto not_expr = std::make_shared<Not>(true_expr);
+
+  EXPECT_EQ(not_expr->op(), Expression::Operation::kNot);
+  EXPECT_EQ(not_expr->ToString(), "not(true)");
+  EXPECT_EQ(not_expr->child()->op(), Expression::Operation::kTrue);
+}
+
+TEST(NotTest, Negation) {
+  // Test that not(not(x)) = x
+  auto true_expr = True::Instance();
+  auto not_expr = std::make_shared<Not>(true_expr);
+
+  auto negated_result = not_expr->Negate();
+  ASSERT_THAT(negated_result, IsOk());
+  auto negated = negated_result.value();
+
+  // Should return the original true expression
+  EXPECT_EQ(negated->op(), Expression::Operation::kTrue);
+}
+
+TEST(NotTest, Equals) {
+  auto true_expr = True::Instance();
+  auto false_expr = False::Instance();
+
+  // Test basic equality
+  auto not_expr1 = std::make_shared<Not>(true_expr);
+  auto not_expr2 = std::make_shared<Not>(true_expr);
+  EXPECT_TRUE(not_expr1->Equals(*not_expr2));
+
+  // Test inequality with different child expressions
+  auto not_expr3 = std::make_shared<Not>(false_expr);
+  EXPECT_FALSE(not_expr1->Equals(*not_expr3));
+
+  // Test inequality with different operation types
+  auto and_expr = std::make_shared<And>(true_expr, false_expr);
+  EXPECT_FALSE(not_expr1->Equals(*and_expr));
+}
+
 }  // namespace iceberg

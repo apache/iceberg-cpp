@@ -194,6 +194,33 @@ class ICEBERG_EXPORT Or : public Expression {
   std::shared_ptr<Expression> right_;
 };
 
+/// \brief An Expression that represents logical NOT operation.
+///
+/// This expression negates its child expression.
+class ICEBERG_EXPORT Not : public Expression {
+ public:
+  /// \brief Constructs a Not expression from a child expression.
+  ///
+  /// \param child The expression to negate
+  explicit Not(std::shared_ptr<Expression> child);
+
+  /// \brief Returns the child expression.
+  ///
+  /// \return The child expression being negated
+  const std::shared_ptr<Expression>& child() const { return child_; }
+
+  Operation op() const override { return Operation::kNot; }
+
+  std::string ToString() const override;
+
+  Result<std::shared_ptr<Expression>> Negate() const override;
+
+  bool Equals(const Expression& other) const override;
+
+ private:
+  std::shared_ptr<Expression> child_;
+};
+
 /// \brief Returns a string representation of an expression operation.
 ICEBERG_EXPORT std::string_view ToString(Expression::Operation op);
 
