@@ -554,4 +554,51 @@ Result<Literal> LiteralCaster::CastTo(const Literal& literal,
                       target_type->ToString());
 }
 
+// LiteralValueHash implementation
+std::size_t LiteralValueHash::operator()(const Literal::Value& value) const noexcept {
+  return std::visit(
+      [](const auto& v) -> std::size_t {
+        using T = std::decay_t<decltype(v)>;
+
+        constexpr size_t kHashPrime = 0x9e3779b9;
+
+        if constexpr (std::is_same_v<T, std::monostate>) {
+          return 0;
+        } else if constexpr (std::is_same_v<T, Literal::BelowMin>) {
+          return std::numeric_limits<std::size_t>::min();
+        } else if constexpr (std::is_same_v<T, Literal::AboveMax>) {
+          return std::numeric_limits<std::size_t>::max();
+        } else if constexpr (std::is_same_v<T, bool> || std::is_same_v<T, int32_t> ||
+                             std::is_same_v<T, int64_t> || std::is_same_v<T, float> ||
+                             std::is_same_v<T, double> ||
+                             std::is_same_v<T, std::string>) {
+          return std::hash<T>{}(v);
+        } else if constexpr (std::is_same_v<T, std::vector<uint8_t>>) {
+          std::size_t hash = 0;
+          for (size_t i = 0; i < v.size(); ++i) {
+            hash ^= std::hash<uint8_t>{}(v[i]) + kHashPrime + (hash << 6) + (hash >> 2);
+          }
+          return hash;
+        } else if constexpr (std::is_same_v<T, Decimal>) {
+          const int128_t& val = v.value();
+          std::size_t hash = std::hash<uint64_t>{}(static_cast<uint64_t>(val >> 64));
+          hash ^= std::hash<uint64_t>{}(static_cast<uint64_t>(val)) + kHashPrime +
+                  (hash << 6) + (hash >> 2);
+          return hash;
+        } else if constexpr (std::is_same_v<T, Uuid>) {
+          std::size_t hash = 0;
+          const auto& bytes = v.bytes();
+          for (size_t i = 0; i < bytes.size(); ++i) {
+            hash ^=
+                std::hash<uint8_t>{}(bytes[i]) + kHashPrime + (hash << 6) + (hash >> 2);
+          }
+          return hash;
+        } else {
+          static_assert(sizeof(T) == 0, "Unhandled variant type in LiteralValueHash");
+          return 0;
+        }
+      },
+      value);
+}
+
 }  // namespace iceberg

@@ -23,8 +23,10 @@
 /// Predicate interface for boolean expressions that test terms.
 
 #include <concepts>
+#include <unordered_set>
 
 #include "iceberg/expression/expression.h"
+#include "iceberg/expression/literal.h"
 #include "iceberg/expression/term.h"
 
 namespace iceberg {
@@ -149,6 +151,8 @@ class ICEBERG_EXPORT BoundUnaryPredicate : public BoundPredicate {
 
   std::string ToString() const override;
 
+  Result<std::shared_ptr<Expression>> Negate() const override;
+
   bool Equals(const Expression& other) const override;
 };
 
@@ -174,6 +178,8 @@ class ICEBERG_EXPORT BoundLiteralPredicate : public BoundPredicate {
 
   std::string ToString() const override;
 
+  Result<std::shared_ptr<Expression>> Negate() const override;
+
   bool Equals(const Expression& other) const override;
 
  private:
@@ -183,6 +189,8 @@ class ICEBERG_EXPORT BoundLiteralPredicate : public BoundPredicate {
 /// \brief Bound set predicate (membership testing against a set of values).
 class ICEBERG_EXPORT BoundSetPredicate : public BoundPredicate {
  public:
+  using LiteralSet = std::unordered_set<Literal, LiteralHash>;
+
   /// \brief Create a bound set predicate.
   ///
   /// \param op The set operation (kIn, kNotIn)
@@ -191,10 +199,14 @@ class ICEBERG_EXPORT BoundSetPredicate : public BoundPredicate {
   BoundSetPredicate(Expression::Operation op, std::shared_ptr<BoundTerm> term,
                     std::span<const Literal> literals);
 
+  /// \brief Create a bound set predicate using a set of literals.
+  BoundSetPredicate(Expression::Operation op, std::shared_ptr<BoundTerm> term,
+                    LiteralSet value_set);
+
   ~BoundSetPredicate() override;
 
   /// \brief Returns the set of literals to test against.
-  const std::vector<Literal::Value>& literal_set() const { return value_set_; }
+  const LiteralSet& literal_set() const { return value_set_; }
 
   Result<bool> Test(const Literal::Value& value) const override;
 
@@ -202,12 +214,12 @@ class ICEBERG_EXPORT BoundSetPredicate : public BoundPredicate {
 
   std::string ToString() const override;
 
+  Result<std::shared_ptr<Expression>> Negate() const override;
+
   bool Equals(const Expression& other) const override;
 
  private:
-  /// FIXME: Literal::Value does not have hash support. We need to add this
-  /// and replace the vector with a unordered_set.
-  std::vector<Literal::Value> value_set_;
+  LiteralSet value_set_;
 };
 
 }  // namespace iceberg

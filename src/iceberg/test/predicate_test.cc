@@ -433,4 +433,160 @@ TEST_F(PredicateTest, ComplexExpressionCombinations) {
   EXPECT_EQ(nested->op(), Expression::Operation::kAnd);
 }
 
+TEST_F(PredicateTest, BoundUnaryPredicateNegate) {
+  auto is_null_pred = Expressions::IsNull("name");
+  auto bound_null = is_null_pred->Bind(*schema_, /*case_sensitive=*/true).value();
+
+  auto negated_result = bound_null->Negate();
+  ASSERT_THAT(negated_result, IsOk());
+  auto negated = negated_result.value();
+  EXPECT_EQ(negated->op(), Expression::Operation::kNotNull);
+
+  // Double negation should return the original predicate
+  auto double_neg_result = negated->Negate();
+  ASSERT_THAT(double_neg_result, IsOk());
+  auto double_neg = double_neg_result.value();
+  EXPECT_EQ(double_neg->op(), Expression::Operation::kIsNull);
+}
+
+TEST_F(PredicateTest, BoundUnaryPredicateEquals) {
+  auto is_null_name1 = Expressions::IsNull("name");
+  auto is_null_name2 = Expressions::IsNull("name");
+  auto is_null_age = Expressions::IsNull("age");
+  auto not_null_name = Expressions::NotNull("name");
+
+  auto bound_null1 = is_null_name1->Bind(*schema_, true).value();
+  auto bound_null2 = is_null_name2->Bind(*schema_, true).value();
+  auto bound_null_age = is_null_age->Bind(*schema_, true).value();
+  auto bound_not_null = not_null_name->Bind(*schema_, true).value();
+
+  // Same predicate should be equal
+  EXPECT_TRUE(bound_null1->Equals(*bound_null2));
+  EXPECT_TRUE(bound_null2->Equals(*bound_null1));
+
+  // Different fields should not be equal
+  EXPECT_FALSE(bound_null1->Equals(*bound_null_age));
+
+  // Different operations should not be equal
+  EXPECT_FALSE(bound_null1->Equals(*bound_not_null));
+}
+
+TEST_F(PredicateTest, BoundLiteralPredicateNegate) {
+  auto eq_pred = Expressions::Equal("age", Literal::Int(25));
+  auto bound_eq = eq_pred->Bind(*schema_, true).value();
+
+  auto negated_result = bound_eq->Negate();
+  ASSERT_THAT(negated_result, IsOk());
+
+  auto negated = negated_result.value();
+  EXPECT_EQ(negated->op(), Expression::Operation::kNotEq);
+
+  // Test less than negation
+  auto lt_pred = Expressions::LessThan("age", Literal::Int(30));
+  auto bound_lt = lt_pred->Bind(*schema_, true).value();
+  auto neg_lt_result = bound_lt->Negate();
+  ASSERT_THAT(neg_lt_result, IsOk());
+  EXPECT_EQ(neg_lt_result.value()->op(), Expression::Operation::kGtEq);
+}
+
+TEST_F(PredicateTest, BoundLiteralPredicateEquals) {
+  auto eq1 = Expressions::Equal("age", Literal::Int(25));
+  auto eq2 = Expressions::Equal("age", Literal::Int(25));
+  auto eq3 = Expressions::Equal("age", Literal::Int(30));
+  auto neq = Expressions::NotEqual("age", Literal::Int(25));
+
+  auto bound_eq1 = eq1->Bind(*schema_, true).value();
+  auto bound_eq2 = eq2->Bind(*schema_, true).value();
+  auto bound_eq3 = eq3->Bind(*schema_, true).value();
+  auto bound_neq = neq->Bind(*schema_, true).value();
+
+  // Same predicate should be equal
+  EXPECT_TRUE(bound_eq1->Equals(*bound_eq2));
+
+  // Different literal values should not be equal
+  EXPECT_FALSE(bound_eq1->Equals(*bound_eq3));
+
+  // Different operations should not be equal
+  EXPECT_FALSE(bound_eq1->Equals(*bound_neq));
+}
+
+TEST_F(PredicateTest, BoundLiteralPredicateIntegerEquivalence) {
+  // Test that < 6 is equivalent to <= 5
+  auto lt_6 = Expressions::LessThan("age", Literal::Int(6));
+  auto lte_5 = Expressions::LessThanOrEqual("age", Literal::Int(5));
+  auto bound_lt = lt_6->Bind(*schema_, true).value();
+  auto bound_lte = lte_5->Bind(*schema_, true).value();
+  EXPECT_TRUE(bound_lt->Equals(*bound_lte));
+  EXPECT_TRUE(bound_lte->Equals(*bound_lt));
+
+  // Test that > 5 is equivalent to >= 6
+  auto gt_5 = Expressions::GreaterThan("age", Literal::Int(5));
+  auto gte_6 = Expressions::GreaterThanOrEqual("age", Literal::Int(6));
+  auto bound_gt = gt_5->Bind(*schema_, true).value();
+  auto bound_gte = gte_6->Bind(*schema_, true).value();
+  EXPECT_TRUE(bound_gt->Equals(*bound_gte));
+  EXPECT_TRUE(bound_gte->Equals(*bound_gt));
+
+  // Test that < 6 is not equivalent to <= 6
+  auto lte_6 = Expressions::LessThanOrEqual("age", Literal::Int(6));
+  auto bound_lte_6 = lte_6->Bind(*schema_, true).value();
+  EXPECT_FALSE(bound_lt->Equals(*bound_lte_6));
+}
+
+TEST_F(PredicateTest, BoundSetPredicateToString) {
+  auto in_pred =
+      Expressions::In("age", {Literal::Int(10), Literal::Int(20), Literal::Int(30)});
+  auto bound_in = in_pred->Bind(*schema_, true).value();
+
+  auto str = bound_in->ToString();
+  // The set order might vary, but should contain the key elements
+  // BoundReference uses field_id in ToString, so check for id=3 (age field)
+  EXPECT_TRUE(str.find("id=3") != std::string::npos);
+  EXPECT_TRUE(str.find("in") != std::string::npos);
+
+  auto not_in_pred =
+      Expressions::NotIn("name", {Literal::String("a"), Literal::String("b")});
+  auto bound_not_in = not_in_pred->Bind(*schema_, true).value();
+
+  auto not_in_str = bound_not_in->ToString();
+  // Check for id=2 (name field)
+  EXPECT_TRUE(not_in_str.find("id=2") != std::string::npos);
+  EXPECT_TRUE(not_in_str.find("not in") != std::string::npos);
+}
+
+TEST_F(PredicateTest, BoundSetPredicateNegate) {
+  auto in_pred = Expressions::In("age", {Literal::Int(10), Literal::Int(20)});
+  auto bound_in = in_pred->Bind(*schema_, true).value();
+
+  auto negated_result = bound_in->Negate();
+  ASSERT_THAT(negated_result, IsOk());
+
+  auto negated = negated_result.value();
+  EXPECT_EQ(negated->op(), Expression::Operation::kNotIn);
+
+  // Test double negation
+  auto double_neg_result = negated->Negate();
+  ASSERT_THAT(double_neg_result, IsOk());
+  EXPECT_EQ(double_neg_result.value()->op(), Expression::Operation::kIn);
+}
+
+TEST_F(PredicateTest, BoundSetPredicateEquals) {
+  auto in1 = Expressions::In("age", {Literal::Int(10), Literal::Int(20)});
+  auto in2 =
+      Expressions::In("age", {Literal::Int(20), Literal::Int(10)});  // Different order
+  auto in3 =
+      Expressions::In("age", {Literal::Int(10), Literal::Int(30)});  // Different values
+
+  auto bound_in1 = in1->Bind(*schema_, /*case_sensitive=*/true).value();
+  auto bound_in2 = in2->Bind(*schema_, /*case_sensitive=*/true).value();
+  auto bound_in3 = in3->Bind(*schema_, /*case_sensitive=*/true).value();
+
+  // Same values in different order should be equal (unordered_set)
+  EXPECT_TRUE(bound_in1->Equals(*bound_in2));
+  EXPECT_TRUE(bound_in2->Equals(*bound_in1));
+
+  // Different values should not be equal
+  EXPECT_FALSE(bound_in1->Equals(*bound_in3));
+}
+
 }  // namespace iceberg

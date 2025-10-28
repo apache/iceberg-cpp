@@ -166,79 +166,43 @@ class ICEBERG_EXPORT Literal : public util::Formattable {
   std::shared_ptr<PrimitiveType> type_;
 };
 
+/// \brief Hash function for Literal to facilitate use in unordered containers
+struct ICEBERG_EXPORT LiteralValueHash {
+  std::size_t operator()(const Literal::Value& value) const noexcept;
+};
+
+struct ICEBERG_EXPORT LiteralHash {
+  std::size_t operator()(const Literal& value) const noexcept {
+    return LiteralValueHash{}(value.value());
+  }
+};
+
 template <TypeId type_id>
 struct LiteralTraits {
   using ValueType = void;
 };
 
-template <>
-struct LiteralTraits<TypeId::kBoolean> {
-  using ValueType = bool;
-};
+#define DEFINE_LITERAL_TRAIT(TYPE_ID, VALUE_TYPE) \
+  template <>                                     \
+  struct LiteralTraits<TypeId::TYPE_ID> {         \
+    using ValueType = VALUE_TYPE;                 \
+  };
 
-template <>
-struct LiteralTraits<TypeId::kInt> {
-  using ValueType = int32_t;
-};
+DEFINE_LITERAL_TRAIT(kBoolean, bool)
+DEFINE_LITERAL_TRAIT(kInt, int32_t)
+DEFINE_LITERAL_TRAIT(kDate, int32_t)
+DEFINE_LITERAL_TRAIT(kLong, int64_t)
+DEFINE_LITERAL_TRAIT(kTime, int64_t)
+DEFINE_LITERAL_TRAIT(kTimestamp, int64_t)
+DEFINE_LITERAL_TRAIT(kTimestampTz, int64_t)
+DEFINE_LITERAL_TRAIT(kFloat, float)
+DEFINE_LITERAL_TRAIT(kDouble, double)
+DEFINE_LITERAL_TRAIT(kDecimal, Decimal)
+DEFINE_LITERAL_TRAIT(kString, std::string)
+DEFINE_LITERAL_TRAIT(kUuid, Uuid)
+DEFINE_LITERAL_TRAIT(kBinary, std::vector<uint8_t>)
+DEFINE_LITERAL_TRAIT(kFixed, std::vector<uint8_t>)
 
-template <>
-struct LiteralTraits<TypeId::kDate> {
-  using ValueType = int32_t;
-};
-
-template <>
-struct LiteralTraits<TypeId::kLong> {
-  using ValueType = int64_t;
-};
-
-template <>
-struct LiteralTraits<TypeId::kTime> {
-  using ValueType = int64_t;
-};
-
-template <>
-struct LiteralTraits<TypeId::kTimestamp> {
-  using ValueType = int64_t;
-};
-
-template <>
-struct LiteralTraits<TypeId::kTimestampTz> {
-  using ValueType = int64_t;
-};
-
-template <>
-struct LiteralTraits<TypeId::kFloat> {
-  using ValueType = float;
-};
-
-template <>
-struct LiteralTraits<TypeId::kDouble> {
-  using ValueType = double;
-};
-
-template <>
-struct LiteralTraits<TypeId::kDecimal> {
-  using ValueType = Decimal;
-};
-
-template <>
-struct LiteralTraits<TypeId::kString> {
-  using ValueType = std::string;
-};
-
-template <>
-struct LiteralTraits<TypeId::kUuid> {
-  using ValueType = Uuid;
-};
-
-template <>
-struct LiteralTraits<TypeId::kBinary> {
-  using ValueType = std::vector<uint8_t>;
-};
-
-template <>
-struct LiteralTraits<TypeId::kFixed> {
-  using ValueType = std::vector<uint8_t>;
-};
+#undef DEFINE_LITERAL_TRAIT
 
 }  // namespace iceberg
