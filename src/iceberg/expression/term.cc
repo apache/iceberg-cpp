@@ -71,7 +71,7 @@ std::string BoundReference::ToString() const {
   return std::format("ref(id={}, type={})", field_.field_id(), field_.type()->ToString());
 }
 
-Result<Literal::Value> BoundReference::Evaluate(const StructLike& data) const {
+Result<Literal> BoundReference::Evaluate(const StructLike& data) const {
   return NotImplemented("BoundReference::Evaluate(StructLike) not implemented");
 }
 
@@ -119,7 +119,7 @@ std::string BoundTransform::ToString() const {
   return std::format("{}({})", transform_->ToString(), ref_->ToString());
 }
 
-Result<Literal::Value> BoundTransform::Evaluate(const StructLike& data) const {
+Result<Literal> BoundTransform::Evaluate(const StructLike& data) const {
   throw IcebergError("BoundTransform::Evaluate(StructLike) not implemented");
 }
 

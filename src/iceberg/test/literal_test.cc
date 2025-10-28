@@ -21,6 +21,7 @@
 
 #include <limits>
 #include <numbers>
+#include <unordered_set>
 #include <vector>
 
 #include <gtest/gtest.h>
@@ -794,5 +795,35 @@ INSTANTIATE_TEST_SUITE_P(
     [](const ::testing::TestParamInfo<CastLiteralTestParam>& info) {
       return info.param.test_name;
     });
+
+TEST(LiteralTest, LiteralHash) {
+  LiteralHash hasher;
+
+  EXPECT_EQ(hasher(Literal::Int(42)), hasher(Literal::Int(42)));
+  EXPECT_NE(hasher(Literal::Int(42)), hasher(Literal::Int(43)));
+
+  EXPECT_EQ(hasher(Literal::String("hello")), hasher(Literal::String("hello")));
+  EXPECT_NE(hasher(Literal::String("hello")), hasher(Literal::String("world")));
+}
+
+TEST(LiteralTest, LiteralHashUnorderedSet) {
+  std::unordered_set<Literal, LiteralHash> literal_set;
+
+  literal_set.insert(Literal::Int(1));
+  literal_set.insert(Literal::Int(2));
+  literal_set.insert(Literal::Int(1));  // Duplicate
+
+  EXPECT_EQ(literal_set.size(), 2);
+  EXPECT_TRUE(literal_set.contains(Literal::Int(1)));
+  EXPECT_TRUE(literal_set.contains(Literal::Int(2)));
+  EXPECT_FALSE(literal_set.contains(Literal::Int(3)));
+
+  std::unordered_set<Literal, LiteralHash> string_set;
+  string_set.insert(Literal::String("a"));
+  string_set.insert(Literal::String("b"));
+  string_set.insert(Literal::String("a"));  // Duplicate
+
+  EXPECT_EQ(string_set.size(), 2);
+}
 
 }  // namespace iceberg

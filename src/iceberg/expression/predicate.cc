@@ -20,9 +20,9 @@
 #include "iceberg/expression/predicate.h"
 
 #include <algorithm>
+#include <cmath>
 #include <format>
 
-#include "iceberg/exception.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/result.h"
@@ -141,6 +141,26 @@ namespace {
 
 bool IsFloatingType(TypeId type) {
   return type == TypeId::kFloat || type == TypeId::kDouble;
+}
+
+bool IsNan(const Literal& literal) {
+  const auto& value = literal.value();
+  if (std::holds_alternative<float>(value)) {
+    return std::isnan(std::get<float>(value));
+  } else if (std::holds_alternative<double>(value)) {
+    return std::isnan(std::get<double>(value));
+  }
+  return false;
+}
+
+bool StartsWith(const Literal& lhs, const Literal& rhs) {
+  const auto& lhs_value = lhs.value();
+  const auto& rhs_value = rhs.value();
+  if (std::holds_alternative<std::string>(lhs_value) &&
+      std::holds_alternative<std::string>(rhs_value)) {
+    return std::get<std::string>(lhs_value).starts_with(std::get<std::string>(rhs_value));
+  }
+  return false;
 }
 
 }  // namespace
@@ -287,10 +307,10 @@ BoundPredicate::BoundPredicate(Expression::Operation op, std::shared_ptr<BoundTe
 
 BoundPredicate::~BoundPredicate() = default;
 
-Result<Literal::Value> BoundPredicate::Evaluate(const StructLike& data) const {
+Result<Literal> BoundPredicate::Evaluate(const StructLike& data) const {
   ICEBERG_ASSIGN_OR_RAISE(auto eval_result, term_->Evaluate(data));
   ICEBERG_ASSIGN_OR_RAISE(auto test_result, Test(eval_result));
-  return Literal::Value{test_result};
+  return Literal::Boolean(test_result);
 }
 
 // BoundUnaryPredicate implementation
@@ -300,12 +320,37 @@ BoundUnaryPredicate::BoundUnaryPredicate(Expression::Operation op,
 
 BoundUnaryPredicate::~BoundUnaryPredicate() = default;
 
-Result<bool> BoundUnaryPredicate::Test(const Literal::Value& value) const {
-  return NotImplemented("BoundUnaryPredicate::Test not implemented");
+Result<bool> BoundUnaryPredicate::Test(const Literal& literal) const {
+  switch (op()) {
+    case Expression::Operation::kIsNull:
+      return literal.IsNull();
+    case Expression::Operation::kNotNull:
+      return !literal.IsNull();
+    case Expression::Operation::kIsNan:
+      return IsNan(literal);
+    case Expression::Operation::kNotNan:
+      return !IsNan(literal);
+    default:
+      return InvalidExpression("Invalid operation for BoundUnaryPredicate: {}", op());
+  }
+}
+
+Result<std::shared_ptr<Expression>> BoundUnaryPredicate::Negate() const {
+  ICEBERG_ASSIGN_OR_RAISE(auto negated_op, ::iceberg::Negate(op()));
+  return std::make_shared<BoundUnaryPredicate>(negated_op, term_);
 }
 
 bool BoundUnaryPredicate::Equals(const Expression& other) const {
-  throw IcebergError("BoundUnaryPredicate::Equals not implemented");
+  if (op() != other.op()) {
+    return false;
+  }
+
+  if (const auto* other_pred = dynamic_cast<const BoundUnaryPredicate*>(&other);
+      other_pred) {
+    return term_->Equals(*other_pred->term());
+  }
+
+  return false;
 }
 
 std::string BoundUnaryPredicate::ToString() const {
@@ -331,12 +376,91 @@ BoundLiteralPredicate::BoundLiteralPredicate(Expression::Operation op,
 
 BoundLiteralPredicate::~BoundLiteralPredicate() = default;
 
-Result<bool> BoundLiteralPredicate::Test(const Literal::Value& value) const {
-  return NotImplemented("BoundLiteralPredicate::Test not implemented");
+Result<bool> BoundLiteralPredicate::Test(const Literal& value) const {
+  switch (op()) {
+    case Expression::Operation::kLt:
+      return value < literal_;
+    case Expression::Operation::kLtEq:
+      return value <= literal_;
+    case Expression::Operation::kGt:
+      return value > literal_;
+    case Expression::Operation::kGtEq:
+      return value >= literal_;
+    case Expression::Operation::kEq:
+      return value == literal_;
+    case Expression::Operation::kNotEq:
+      return value != literal_;
+    case Expression::Operation::kStartsWith:
+      return StartsWith(value, literal_);
+    case Expression::Operation::kNotStartsWith:
+      return !StartsWith(value, literal_);
+    default:
+      return InvalidExpression("Invalid operation for BoundLiteralPredicate: {}", op());
+  }
+}
+
+Result<std::shared_ptr<Expression>> BoundLiteralPredicate::Negate() const {
+  ICEBERG_ASSIGN_OR_RAISE(auto negated_op, ::iceberg::Negate(op()));
+  return std::make_shared<BoundLiteralPredicate>(negated_op, term_, literal_);
 }
 
 bool BoundLiteralPredicate::Equals(const Expression& other) const {
-  throw IcebergError("BoundLiteralPredicate::Equals not implemented");
+  const auto* other_pred = dynamic_cast<const BoundLiteralPredicate*>(&other);
+  if (!other_pred) {
+    return false;
+  }
+
+  if (op() == other.op()) {
+    if (term_->Equals(*other_pred->term())) {
+      // because the term is equivalent, the literal must have the same type
+      return literal_ == other_pred->literal();
+    }
+  }
+
+  // TODO(gangwu): add TypeId::kTimestampNano
+  static const std::unordered_set<TypeId> kIntegralTypes = {
+      TypeId::kInt,  TypeId::kLong,      TypeId::kDate,
+      TypeId::kTime, TypeId::kTimestamp, TypeId::kTimestampTz};
+
+  if (kIntegralTypes.contains(term_->type()->type_id()) &&
+      term_->Equals(*other_pred->term())) {
+    auto get_long = [](const Literal& lit) -> std::optional<int64_t> {
+      const auto& val = lit.value();
+      if (std::holds_alternative<int32_t>(val)) {
+        return std::get<int32_t>(val);
+      } else if (std::holds_alternative<int64_t>(val)) {
+        return std::get<int64_t>(val);
+      }
+      return std::nullopt;
+    };
+
+    auto this_val = get_long(literal_);
+    auto other_val = get_long(other_pred->literal());
+    if (this_val && other_val) {
+      switch (op()) {
+        case Expression::Operation::kLt:
+          // < 6 is equivalent to <= 5
+          return other_pred->op() == Expression::Operation::kLtEq &&
+                 *this_val == *other_val + 1;
+        case Expression::Operation::kLtEq:
+          // <= 5 is equivalent to < 6
+          return other_pred->op() == Expression::Operation::kLt &&
+                 *this_val == *other_val - 1;
+        case Expression::Operation::kGt:
+          // > 5 is equivalent to >= 6
+          return other_pred->op() == Expression::Operation::kGtEq &&
+                 *this_val == *other_val - 1;
+        case Expression::Operation::kGtEq:
+          // >= 6 is equivalent to > 5
+          return other_pred->op() == Expression::Operation::kGt &&
+                 *this_val == *other_val + 1;
+        default:
+          return false;
+      }
+    }
+  }
+
+  return false;
 }
 
 std::string BoundLiteralPredicate::ToString() const {
@@ -370,27 +494,54 @@ std::string BoundLiteralPredicate::ToString() const {
 BoundSetPredicate::BoundSetPredicate(Expression::Operation op,
                                      std::shared_ptr<BoundTerm> term,
                                      std::span<const Literal> literals)
-    : BoundPredicate(op, std::move(term)) {
-  for (const auto& literal : literals) {
-    ICEBERG_DCHECK((*literal.type() == *term_->type()),
-                   "Literal type does not match term type");
-    value_set_.push_back(literal.value());
-  }
-}
+    : BoundPredicate(op, std::move(term)), value_set_(literals.begin(), literals.end()) {}
+
+BoundSetPredicate::BoundSetPredicate(Expression::Operation op,
+                                     std::shared_ptr<BoundTerm> term,
+                                     LiteralSet value_set)
+    : BoundPredicate(op, std::move(term)), value_set_(std::move(value_set)) {}
 
 BoundSetPredicate::~BoundSetPredicate() = default;
 
-Result<bool> BoundSetPredicate::Test(const Literal::Value& value) const {
-  return NotImplemented("BoundSetPredicate::Test not implemented");
+Result<bool> BoundSetPredicate::Test(const Literal& value) const {
+  switch (op()) {
+    case Expression::Operation::kIn:
+      return value_set_.contains(value);
+    case Expression::Operation::kNotIn:
+      return !value_set_.contains(value);
+    default:
+      return InvalidExpression("Invalid operation for BoundSetPredicate: {}", op());
+  }
+}
+
+Result<std::shared_ptr<Expression>> BoundSetPredicate::Negate() const {
+  ICEBERG_ASSIGN_OR_RAISE(auto negated_op, ::iceberg::Negate(op()));
+  return std::make_shared<BoundSetPredicate>(negated_op, term_, value_set_);
 }
 
 bool BoundSetPredicate::Equals(const Expression& other) const {
-  throw IcebergError("BoundSetPredicate::Equals not implemented");
+  if (op() != other.op()) {
+    return false;
+  }
+
+  if (const auto* other_pred = dynamic_cast<const BoundSetPredicate*>(&other);
+      other_pred) {
+    return value_set_ == other_pred->value_set_;
+  }
+
+  return false;
 }
 
 std::string BoundSetPredicate::ToString() const {
-  // TODO(gangwu): Literal::Value does not have std::format support.
-  throw IcebergError("BoundSetPredicate::ToString not implemented");
+  switch (op()) {
+    case Expression::Operation::kIn:
+      return std::format("{} in {}", *term(), FormatRange(value_set_, ", ", "(", ")"));
+    case Expression::Operation::kNotIn:
+      return std::format("{} not in {}", *term(),
+                         FormatRange(value_set_, ", ", "(", ")"));
+    default:
+      return std::format("Invalid set predicate: operation = {}", op());
+  }
 }
 
 // Explicit template instantiations
