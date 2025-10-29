@@ -133,6 +133,10 @@ const std::vector<SnapshotLogEntry>& Table::history() const {
   return metadata_->snapshot_log;
 }
 
+std::shared_ptr<Transaction> Table::NewTransaction() {
+  throw NotImplemented("Table::NewTransaction is not implemented");
+}
+
 const std::shared_ptr<FileIO>& Table::io() const { return io_; }
 
 std::unique_ptr<TableScanBuilder> Table::NewScan() const {

@@ -85,9 +85,17 @@ class ICEBERG_EXPORT InMemoryCatalog
       const std::string& location,
       const std::unordered_map<std::string, std::string>& properties) override;
 
+  Result<std::shared_ptr<Transaction>> StageReplaceTable(
+      const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
+      const std::string& location,
+      const std::unordered_map<std::string, std::string>& properties,
+      bool orCreate) override;
+
   Result<bool> TableExists(const TableIdentifier& identifier) const override;
 
   Status DropTable(const TableIdentifier& identifier, bool purge) override;
+
+  Status RenameTable(const TableIdentifier& from, const TableIdentifier& to) override;
 
   Result<std::unique_ptr<Table>> LoadTable(const TableIdentifier& identifier) override;
 
