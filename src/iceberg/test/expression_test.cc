@@ -55,12 +55,15 @@ TEST(ANDTest, Basic) {
   auto true_expr2 = True::Instance();
 
   // Create an AND expression
-  auto and_expr = std::make_shared<And>(true_expr1, true_expr2);
+  auto and_expr_result = And::Make(true_expr1, true_expr2);
+  ASSERT_THAT(and_expr_result, IsOk());
+  auto and_expr = std::shared_ptr<Expression>(std::move(and_expr_result.value()));
 
   EXPECT_EQ(and_expr->op(), Expression::Operation::kAnd);
   EXPECT_EQ(and_expr->ToString(), "(true and true)");
-  EXPECT_EQ(and_expr->left()->op(), Expression::Operation::kTrue);
-  EXPECT_EQ(and_expr->right()->op(), Expression::Operation::kTrue);
+  auto& and_ref = static_cast<const And&>(*and_expr);
+  EXPECT_EQ(and_ref.left()->op(), Expression::Operation::kTrue);
+  EXPECT_EQ(and_ref.right()->op(), Expression::Operation::kTrue);
 }
 
 TEST(ORTest, Basic) {
@@ -69,12 +72,15 @@ TEST(ORTest, Basic) {
   auto false_expr = False::Instance();
 
   // Create an OR expression
-  auto or_expr = std::make_shared<Or>(true_expr, false_expr);
+  auto or_expr_result = Or::Make(true_expr, false_expr);
+  ASSERT_THAT(or_expr_result, IsOk());
+  auto or_expr = std::shared_ptr<Expression>(std::move(or_expr_result.value()));
 
   EXPECT_EQ(or_expr->op(), Expression::Operation::kOr);
   EXPECT_EQ(or_expr->ToString(), "(true or false)");
-  EXPECT_EQ(or_expr->left()->op(), Expression::Operation::kTrue);
-  EXPECT_EQ(or_expr->right()->op(), Expression::Operation::kFalse);
+  auto& or_ref = static_cast<const Or&>(*or_expr);
+  EXPECT_EQ(or_ref.left()->op(), Expression::Operation::kTrue);
+  EXPECT_EQ(or_ref.right()->op(), Expression::Operation::kFalse);
 }
 
 TEST(ORTest, Negation) {
@@ -82,7 +88,9 @@ TEST(ORTest, Negation) {
   auto true_expr = True::Instance();
   auto false_expr = False::Instance();
 
-  auto or_expr = std::make_shared<Or>(true_expr, false_expr);
+  auto or_expr_result = Or::Make(true_expr, false_expr);
+  ASSERT_THAT(or_expr_result, IsOk());
+  auto or_expr = std::shared_ptr<Expression>(std::move(or_expr_result.value()));
   auto negated_or_result = or_expr->Negate();
   ASSERT_THAT(negated_or_result, IsOk());
   auto negated_or = negated_or_result.value();
@@ -97,20 +105,31 @@ TEST(ORTest, Equals) {
   auto false_expr = False::Instance();
 
   // Test basic equality
-  auto or_expr1 = std::make_shared<Or>(true_expr, false_expr);
-  auto or_expr2 = std::make_shared<Or>(true_expr, false_expr);
+  auto or_expr1_result = Or::Make(true_expr, false_expr);
+  ASSERT_THAT(or_expr1_result, IsOk());
+  auto or_expr1 = std::shared_ptr<Expression>(std::move(or_expr1_result.value()));
+
+  auto or_expr2_result = Or::Make(true_expr, false_expr);
+  ASSERT_THAT(or_expr2_result, IsOk());
+  auto or_expr2 = std::shared_ptr<Expression>(std::move(or_expr2_result.value()));
   EXPECT_TRUE(or_expr1->Equals(*or_expr2));
 
   // Test commutativity: (A or B) equals (B or A)
-  auto or_expr3 = std::make_shared<Or>(false_expr, true_expr);
+  auto or_expr3_result = Or::Make(false_expr, true_expr);
+  ASSERT_THAT(or_expr3_result, IsOk());
+  auto or_expr3 = std::shared_ptr<Expression>(std::move(or_expr3_result.value()));
   EXPECT_TRUE(or_expr1->Equals(*or_expr3));
 
   // Test inequality with different expressions
-  auto or_expr4 = std::make_shared<Or>(true_expr, true_expr);
+  auto or_expr4_result = Or::Make(true_expr, true_expr);
+  ASSERT_THAT(or_expr4_result, IsOk());
+  auto or_expr4 = std::shared_ptr<Expression>(std::move(or_expr4_result.value()));
   EXPECT_FALSE(or_expr1->Equals(*or_expr4));
 
   // Test inequality with different operation types
-  auto and_expr = std::make_shared<And>(true_expr, false_expr);
+  auto and_expr_result = And::Make(true_expr, false_expr);
+  ASSERT_THAT(and_expr_result, IsOk());
+  auto and_expr = std::shared_ptr<Expression>(std::move(and_expr_result.value()));
   EXPECT_FALSE(or_expr1->Equals(*and_expr));
 }
 
@@ -119,7 +138,9 @@ TEST(ANDTest, Negation) {
   auto true_expr = True::Instance();
   auto false_expr = False::Instance();
 
-  auto and_expr = std::make_shared<And>(true_expr, false_expr);
+  auto and_expr_result = And::Make(true_expr, false_expr);
+  ASSERT_THAT(and_expr_result, IsOk());
+  auto and_expr = std::shared_ptr<Expression>(std::move(and_expr_result.value()));
   auto negated_and_result = and_expr->Negate();
   ASSERT_THAT(negated_and_result, IsOk());
   auto negated_and = negated_and_result.value();
@@ -134,20 +155,31 @@ TEST(ANDTest, Equals) {
   auto false_expr = False::Instance();
 
   // Test basic equality
-  auto and_expr1 = std::make_shared<And>(true_expr, false_expr);
-  auto and_expr2 = std::make_shared<And>(true_expr, false_expr);
+  auto and_expr1_result = And::Make(true_expr, false_expr);
+  ASSERT_THAT(and_expr1_result, IsOk());
+  auto and_expr1 = std::shared_ptr<Expression>(std::move(and_expr1_result.value()));
+
+  auto and_expr2_result = And::Make(true_expr, false_expr);
+  ASSERT_THAT(and_expr2_result, IsOk());
+  auto and_expr2 = std::shared_ptr<Expression>(std::move(and_expr2_result.value()));
   EXPECT_TRUE(and_expr1->Equals(*and_expr2));
 
   // Test commutativity: (A and B) equals (B and A)
-  auto and_expr3 = std::make_shared<And>(false_expr, true_expr);
+  auto and_expr3_result = And::Make(false_expr, true_expr);
+  ASSERT_THAT(and_expr3_result, IsOk());
+  auto and_expr3 = std::shared_ptr<Expression>(std::move(and_expr3_result.value()));
   EXPECT_TRUE(and_expr1->Equals(*and_expr3));
 
   // Test inequality with different expressions
-  auto and_expr4 = std::make_shared<And>(true_expr, true_expr);
+  auto and_expr4_result = And::Make(true_expr, true_expr);
+  ASSERT_THAT(and_expr4_result, IsOk());
+  auto and_expr4 = std::shared_ptr<Expression>(std::move(and_expr4_result.value()));
   EXPECT_FALSE(and_expr1->Equals(*and_expr4));
 
   // Test inequality with different operation types
-  auto or_expr = std::make_shared<Or>(true_expr, false_expr);
+  auto or_expr_result = Or::Make(true_expr, false_expr);
+  ASSERT_THAT(or_expr_result, IsOk());
+  auto or_expr = std::shared_ptr<Expression>(std::move(or_expr_result.value()));
   EXPECT_FALSE(and_expr1->Equals(*or_expr));
 }
 
@@ -168,17 +200,22 @@ TEST(ExpressionTest, BaseClassNegateErrorOut) {
 
 TEST(NotTest, Basic) {
   auto true_expr = True::Instance();
-  auto not_expr = std::make_shared<Not>(true_expr);
+  auto not_expr_result = Not::Make(true_expr);
+  ASSERT_THAT(not_expr_result, IsOk());
+  auto not_expr = std::shared_ptr<Expression>(std::move(not_expr_result.value()));
 
   EXPECT_EQ(not_expr->op(), Expression::Operation::kNot);
   EXPECT_EQ(not_expr->ToString(), "not(true)");
-  EXPECT_EQ(not_expr->child()->op(), Expression::Operation::kTrue);
+  auto& not_ref = static_cast<const Not&>(*not_expr);
+  EXPECT_EQ(not_ref.child()->op(), Expression::Operation::kTrue);
 }
 
 TEST(NotTest, Negation) {
   // Test that not(not(x)) = x
   auto true_expr = True::Instance();
-  auto not_expr = std::make_shared<Not>(true_expr);
+  auto not_expr_result = Not::Make(true_expr);
+  ASSERT_THAT(not_expr_result, IsOk());
+  auto not_expr = std::shared_ptr<Expression>(std::move(not_expr_result.value()));
 
   auto negated_result = not_expr->Negate();
   ASSERT_THAT(negated_result, IsOk());
@@ -193,16 +230,25 @@ TEST(NotTest, Equals) {
   auto false_expr = False::Instance();
 
   // Test basic equality
-  auto not_expr1 = std::make_shared<Not>(true_expr);
-  auto not_expr2 = std::make_shared<Not>(true_expr);
+  auto not_expr1_result = Not::Make(true_expr);
+  ASSERT_THAT(not_expr1_result, IsOk());
+  auto not_expr1 = std::shared_ptr<Expression>(std::move(not_expr1_result.value()));
+
+  auto not_expr2_result = Not::Make(true_expr);
+  ASSERT_THAT(not_expr2_result, IsOk());
+  auto not_expr2 = std::shared_ptr<Expression>(std::move(not_expr2_result.value()));
   EXPECT_TRUE(not_expr1->Equals(*not_expr2));
 
   // Test inequality with different child expressions
-  auto not_expr3 = std::make_shared<Not>(false_expr);
+  auto not_expr3_result = Not::Make(false_expr);
+  ASSERT_THAT(not_expr3_result, IsOk());
+  auto not_expr3 = std::shared_ptr<Expression>(std::move(not_expr3_result.value()));
   EXPECT_FALSE(not_expr1->Equals(*not_expr3));
 
   // Test inequality with different operation types
-  auto and_expr = std::make_shared<And>(true_expr, false_expr);
+  auto and_expr_result = And::Make(true_expr, false_expr);
+  ASSERT_THAT(and_expr_result, IsOk());
+  auto and_expr = std::shared_ptr<Expression>(std::move(and_expr_result.value()));
   EXPECT_FALSE(not_expr1->Equals(*and_expr));
 }
 
