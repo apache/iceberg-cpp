@@ -49,6 +49,20 @@ class ICEBERG_EXPORT SortOrder : public util::Formattable {
   /// \brief Get the list of sort fields.
   std::span<const SortField> fields() const;
 
+  /// \brief Returns true if the sort order is sorted
+  bool IsSorted() const { return !fields_.empty(); }
+
+  /// \brief Returns true if the sort order is unsorted
+  /// A SortOrder is unsorted if it has no sort fields.
+  bool IsUnsorted() const { return fields_.empty(); }
+
+  /// \brief Checks whether this order satisfies another order.
+  bool Satisfies(const SortOrder& other) const;
+
+  /// \brief Checks whether this order is equivalent to another order while ignoring the
+  /// order id.
+  bool SameOrder(const SortOrder& other) const;
+
   std::string ToString() const override;
 
   friend bool operator==(const SortOrder& lhs, const SortOrder& rhs) {

@@ -41,10 +41,18 @@ SortDirection SortField::direction() const { return direction_; }
 
 NullOrder SortField::null_order() const { return null_order_; }
 
+bool SortField::Satisfies(const SortField& other) const {
+  if (*this == other) {
+    return true;
+  } else if (source_id_ != other.source_id() || direction_ != other.direction() ||
+             null_order_ != other.null_order()) {
+    return false;
+  }
+  return transform_->SatisfiesOrderOf(*other.transform());
+}
+
 std::string SortField::ToString() const {
-  return std::format(
-      "sort_field(source_id={}, transform={}, direction={}, null_order={})", source_id_,
-      *transform_, direction_, null_order_);
+  return std::format("{}({}) {} {}", *transform_, source_id_, direction_, null_order_);
 }
 
 bool SortField::Equals(const SortField& other) const {

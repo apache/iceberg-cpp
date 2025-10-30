@@ -720,4 +720,111 @@ INSTANTIATE_TEST_SUITE_P(
                                      .source = Literal::Null(iceberg::string()),
                                      .expected = Literal::Null(iceberg::string())}));
 
+TEST(TransformPreservesOrderTest, PreservesOrder) {
+  struct Case {
+    std::string transform_str;
+    bool expected;
+  };
+
+  const std::vector<Case> cases = {
+      {.transform_str = "identity", .expected = true},
+      {.transform_str = "year", .expected = true},
+      {.transform_str = "month", .expected = true},
+      {.transform_str = "day", .expected = true},
+      {.transform_str = "hour", .expected = true},
+      {.transform_str = "void", .expected = false},
+      {.transform_str = "bucket[16]", .expected = false},
+      {.transform_str = "truncate[32]", .expected = true},
+  };
+
+  for (const auto& c : cases) {
+    auto transform = TransformFromString(c.transform_str);
+    ASSERT_TRUE(transform.has_value()) << "Failed to parse: " << c.transform_str;
+
+    EXPECT_EQ(transform.value()->PreservesOrder(), c.expected)
+        << "Unexpected result for transform: " << c.transform_str;
+  }
+}
+
+TEST(TransformSatisfiesOrderOfTest, SatisfiesOrderOf) {
+  struct Case {
+    std::string transform_str;
+    std::string other_transform_str;
+    bool expected;
+  };
+
+  const std::vector<Case> cases = {
+      // Identity satisfies all order-preserving transforms
+      {.transform_str = "identity", .other_transform_str = "identity", .expected = true},
+      {.transform_str = "identity", .other_transform_str = "year", .expected = true},
+      {.transform_str = "identity", .other_transform_str = "month", .expected = true},
+      {.transform_str = "identity", .other_transform_str = "day", .expected = true},
+      {.transform_str = "identity", .other_transform_str = "hour", .expected = true},
+      {.transform_str = "identity",
+       .other_transform_str = "truncate[32]",
+       .expected = true},
+      {.transform_str = "identity",
+       .other_transform_str = "bucket[16]",
+       .expected = false},
+
+      // Hour satisfies hour, day, month, and year
+      {.transform_str = "hour", .other_transform_str = "hour", .expected = true},
+      {.transform_str = "hour", .other_transform_str = "day", .expected = true},
+      {.transform_str = "hour", .other_transform_str = "month", .expected = true},
+      {.transform_str = "hour", .other_transform_str = "year", .expected = true},
+      {.transform_str = "hour", .other_transform_str = "identity", .expected = false},
+      {.transform_str = "hour", .other_transform_str = "bucket[16]", .expected = false},
+
+      // Day satisfies day, month, and year
+      {.transform_str = "day", .other_transform_str = "day", .expected = true},
+      {.transform_str = "day", .other_transform_str = "month", .expected = true},
+      {.transform_str = "day", .other_transform_str = "year", .expected = true},
+      {.transform_str = "day", .other_transform_str = "hour", .expected = false},
+      {.transform_str = "day", .other_transform_str = "identity", .expected = false},
+
+      // Month satisfies month and year
+      {.transform_str = "month", .other_transform_str = "month", .expected = true},
+      {.transform_str = "month", .other_transform_str = "year", .expected = true},
+      {.transform_str = "month", .other_transform_str = "day", .expected = false},
+      {.transform_str = "month", .other_transform_str = "hour", .expected = false},
+
+      // Year satisfies only year
+      {.transform_str = "year", .other_transform_str = "year", .expected = true},
+      {.transform_str = "year", .other_transform_str = "month", .expected = false},
+      {.transform_str = "year", .other_transform_str = "day", .expected = false},
+      {.transform_str = "year", .other_transform_str = "hour", .expected = false},
+
+      // Void satisfies no order-preserving transforms
+      {.transform_str = "void", .other_transform_str = "identity", .expected = false},
+      {.transform_str = "void", .other_transform_str = "year", .expected = false},
+      {.transform_str = "void", .other_transform_str = "month", .expected = false},
+      {.transform_str = "void", .other_transform_str = "day", .expected = false},
+      {.transform_str = "void", .other_transform_str = "hour", .expected = false},
+
+      // Bucket satisfies only itself
+      {.transform_str = "bucket[16]",
+       .other_transform_str = "bucket[16]",
+       .expected = true},
+      {.transform_str = "bucket[16]",
+       .other_transform_str = "bucket[32]",
+       .expected = false},
+      {.transform_str = "bucket[16]",
+       .other_transform_str = "identity",
+       .expected = false},
+  };
+
+  for (const auto& c : cases) {
+    auto transform = TransformFromString(c.transform_str);
+    auto other_transform = TransformFromString(c.other_transform_str);
+
+    ASSERT_TRUE(transform.has_value()) << "Failed to parse: " << c.transform_str;
+    ASSERT_TRUE(other_transform.has_value())
+        << "Failed to parse: " << c.other_transform_str;
+
+    EXPECT_EQ(transform.value()->SatisfiesOrderOf(*other_transform.value()), c.expected)
+        << "Unexpected result for transform: " << c.transform_str
+        << " and other transform: " << c.other_transform_str;
+  }
+}
+
 }  // namespace iceberg

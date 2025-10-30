@@ -20,6 +20,7 @@
 #include "iceberg/sort_order.h"
 
 #include <format>
+#include <ranges>
 
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
@@ -38,10 +39,48 @@ int32_t SortOrder::order_id() const { return order_id_; }
 
 std::span<const SortField> SortOrder::fields() const { return fields_; }
 
+bool SortOrder::Satisfies(const SortOrder& other) const {
+  // any ordering satisfies an unsorted ordering
+  if (other.IsUnsorted()) {
+    return true;
+  }
+
+  // this ordering cannot satisfy an ordering with more sort fields
+  if (fields_.size() < other.fields().size()) {
+    return false;
+  }
+
+  // this ordering has either more or the same number of sort fields
+  for (const auto& [field, other_field] : std::views::zip(fields_, other.fields_)) {
+    if (!field.Satisfies(other_field)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+bool SortOrder::SameOrder(const SortOrder& other) const {
+  if (fields_.size() != other.fields().size()) {
+    return false;
+  }
+
+  for (const auto& [field, other_field] : std::views::zip(fields_, other.fields())) {
+    if (!(field == other_field)) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
 std::string SortOrder::ToString() const {
-  std::string repr = std::format("sort_order[order_id<{}>,\n", order_id_);
+  std::string repr = "[";
   for (const auto& field : fields_) {
-    std::format_to(std::back_inserter(repr), "  {}\n", field);
+    std::format_to(std::back_inserter(repr), "\n  {}", field);
+  }
+  if (!fields_.empty()) {
+    repr.push_back('\n');
   }
   repr += "]";
   return repr;
