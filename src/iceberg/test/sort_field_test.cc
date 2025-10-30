@@ -36,14 +36,8 @@ TEST(SortFieldTest, Basics) {
     EXPECT_EQ(*transform, *field.transform());
     EXPECT_EQ(SortDirection::kAscending, field.direction());
     EXPECT_EQ(NullOrder::kFirst, field.null_order());
-    EXPECT_EQ(
-        "sort_field(source_id=1, transform=identity, direction=asc, "
-        "null_order=nulls-first)",
-        field.ToString());
-    EXPECT_EQ(
-        "sort_field(source_id=1, transform=identity, direction=asc, "
-        "null_order=nulls-first)",
-        std::format("{}", field));
+    EXPECT_EQ(field.ToString(), "identity(1) asc nulls-first");
+    EXPECT_EQ(std::format("{}", field), "identity(1) asc nulls-first");
   }
 }
 
@@ -67,4 +61,23 @@ TEST(SortFieldTest, Equality) {
   ASSERT_NE(field1, field5);
   ASSERT_NE(field5, field1);
 }
+
+TEST(SortFieldTest, Satisfies) {
+  const auto bucket_transform = Transform::Bucket(8);
+  const auto identity_transform = Transform::Identity();
+
+  SortField field1(1, bucket_transform, SortDirection::kAscending, NullOrder::kFirst);
+  SortField field2(1, bucket_transform, SortDirection::kAscending, NullOrder::kFirst);
+  SortField field3(1, identity_transform, SortDirection::kAscending, NullOrder::kFirst);
+  SortField field4(1, bucket_transform, SortDirection::kDescending, NullOrder::kFirst);
+  SortField field5(1, bucket_transform, SortDirection::kAscending, NullOrder::kLast);
+  SortField field6(2, bucket_transform, SortDirection::kAscending, NullOrder::kFirst);
+
+  EXPECT_TRUE(field1.Satisfies(field2));   // Same fields
+  EXPECT_FALSE(field1.Satisfies(field3));  // Different transform
+  EXPECT_FALSE(field1.Satisfies(field4));  // Different direction
+  EXPECT_FALSE(field1.Satisfies(field5));  // Different null order
+  EXPECT_FALSE(field1.Satisfies(field6));  // Different source_id
+}
+
 }  // namespace iceberg

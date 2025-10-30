@@ -150,6 +150,20 @@ class ICEBERG_EXPORT Transform : public util::Formattable {
   Result<std::shared_ptr<TransformFunction>> Bind(
       const std::shared_ptr<Type>& source_type) const;
 
+  /// \brief Whether the transform preserves the order of values (is monotonic).
+  bool PreservesOrder() const;
+
+  /// \brief Whether ordering by this transform's result satisfies the ordering of another
+  /// transform's result.
+  ///
+  /// For example, sorting by day(ts) will produce an ordering that is also by month(ts)
+  /// or year(ts). However, sorting by day(ts) will not satisfy the order of hour(ts) or
+  /// identity(ts).
+  ///
+  /// \return true if ordering by this transform is equivalent to ordering by the other
+  /// transform.
+  bool SatisfiesOrderOf(const Transform& other) const;
+
   /// \brief Returns a string representation of this transform (e.g., "bucket[16]").
   std::string ToString() const override;
 

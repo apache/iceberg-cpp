@@ -124,6 +124,35 @@ Result<std::shared_ptr<TransformFunction>> Transform::Bind(
   }
 }
 
+bool Transform::PreservesOrder() const {
+  switch (transform_type_) {
+    case TransformType::kUnknown:
+    case TransformType::kVoid:
+    case TransformType::kBucket:
+      return false;
+    default:
+      return true;
+  }
+}
+
+bool Transform::SatisfiesOrderOf(const Transform& other) const {
+  auto other_type = other.transform_type();
+  switch (transform_type_) {
+    case TransformType::kIdentity:
+      return other.PreservesOrder();
+    case TransformType::kHour:
+      return other_type == TransformType::kHour || other_type == TransformType::kDay ||
+             other_type == TransformType::kMonth || other_type == TransformType::kYear;
+    case TransformType::kDay:
+      return other_type == TransformType::kDay || other_type == TransformType::kMonth ||
+             other_type == TransformType::kYear;
+    case TransformType::kMonth:
+      return other_type == TransformType::kMonth || other_type == TransformType::kYear;
+    default:
+      return *this == other;
+  }
+}
+
 bool TransformFunction::Equals(const TransformFunction& other) const {
   return transform_type_ == other.transform_type_ && *source_type_ == *other.source_type_;
 }

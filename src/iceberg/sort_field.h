@@ -107,9 +107,15 @@ class ICEBERG_EXPORT SortField : public util::Formattable {
   /// \brief Get the null order.
   NullOrder null_order() const;
 
+  /// \brief Checks whether this field's order satisfies another field's order.
+  bool Satisfies(const SortField& other) const;
+
   std::string ToString() const override;
 
   friend bool operator==(const SortField& lhs, const SortField& rhs) {
+    if (&lhs == &rhs) {
+      return true;
+    }
     return lhs.Equals(rhs);
   }
 

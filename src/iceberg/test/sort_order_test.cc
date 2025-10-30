@@ -48,13 +48,12 @@ TEST(SortOrderTest, Basics) {
     ASSERT_EQ(st_field1, fields[0]);
     ASSERT_EQ(st_field2, fields[1]);
     auto sort_order_str =
-        "sort_order[order_id<100>,\n"
-        "  sort_field(source_id=5, transform=identity, direction=asc, "
-        "null_order=nulls-first)\n"
-        "  sort_field(source_id=7, transform=identity, direction=desc, "
-        "null_order=nulls-first)\n]";
-    EXPECT_EQ(sort_order_str, sort_order.ToString());
-    EXPECT_EQ(sort_order_str, std::format("{}", sort_order));
+        "[\n"
+        "  identity(5) asc nulls-first\n"
+        "  identity(7) desc nulls-first\n"
+        "]";
+    EXPECT_EQ(sort_order.ToString(), sort_order_str);
+    EXPECT_EQ(std::format("{}", sort_order), sort_order_str);
   }
 }
 
@@ -84,4 +83,69 @@ TEST(SortOrderTest, Equality) {
   ASSERT_NE(sort_order1, sort_order5);
   ASSERT_NE(sort_order5, sort_order1);
 }
+
+TEST(SortOrderTest, IsUnsorted) {
+  auto unsorted = SortOrder::Unsorted();
+  EXPECT_TRUE(unsorted->IsUnsorted());
+  EXPECT_FALSE(unsorted->IsSorted());
+}
+
+TEST(SortOrderTest, IsSorted) {
+  SchemaField field1(5, "ts", iceberg::timestamp(), true);
+  auto identity_transform = Transform::Identity();
+  SortField st_field1(5, identity_transform, SortDirection::kAscending,
+                      NullOrder::kFirst);
+  SortOrder sorted_order(100, {st_field1});
+
+  EXPECT_TRUE(sorted_order.IsSorted());
+  EXPECT_FALSE(sorted_order.IsUnsorted());
+}
+
+TEST(SortOrderTest, Satisfies) {
+  SchemaField field1(5, "ts", iceberg::timestamp(), true);
+  SchemaField field2(7, "bar", iceberg::string(), true);
+  auto identity_transform = Transform::Identity();
+  auto bucket_transform = Transform::Bucket(8);
+
+  SortField st_field1(5, identity_transform, SortDirection::kAscending,
+                      NullOrder::kFirst);
+  SortField st_field2(7, identity_transform, SortDirection::kDescending,
+                      NullOrder::kFirst);
+  SortField st_field3(7, bucket_transform, SortDirection::kAscending, NullOrder::kFirst);
+
+  SortOrder sort_order1(100, {st_field1, st_field2});
+  SortOrder sort_order2(101, {st_field1});
+  SortOrder sort_order3(102, {st_field1, st_field3});
+  SortOrder sort_order4(104, {st_field2});
+  auto unsorted = SortOrder::Unsorted();
+
+  // Any order satisfies an unsorted order, including unsorted itself
+  EXPECT_TRUE(unsorted->Satisfies(*unsorted));
+  EXPECT_TRUE(sort_order1.Satisfies(*unsorted));
+  EXPECT_TRUE(sort_order2.Satisfies(*unsorted));
+  EXPECT_TRUE(sort_order3.Satisfies(*unsorted));
+
+  // Unsorted does not satisfy any sorted order
+  EXPECT_FALSE(unsorted->Satisfies(sort_order1));
+  EXPECT_FALSE(unsorted->Satisfies(sort_order2));
+  EXPECT_FALSE(unsorted->Satisfies(sort_order3));
+
+  // A sort order satisfies itself
+  EXPECT_TRUE(sort_order1.Satisfies(sort_order1));
+  EXPECT_TRUE(sort_order2.Satisfies(sort_order2));
+  EXPECT_TRUE(sort_order3.Satisfies(sort_order3));
+
+  // A sort order with more fields satisfy one with fewer fields
+  EXPECT_TRUE(sort_order1.Satisfies(sort_order2));
+  EXPECT_TRUE(sort_order3.Satisfies(sort_order2));
+
+  // A sort order does not satisfy one with more fields
+  EXPECT_FALSE(sort_order2.Satisfies(sort_order1));
+  EXPECT_FALSE(sort_order2.Satisfies(sort_order3));
+
+  // A sort order does not satify one with different fields
+  EXPECT_FALSE(sort_order4.Satisfies(sort_order2));
+  EXPECT_FALSE(sort_order2.Satisfies(sort_order4));
+}
+
 }  // namespace iceberg
