@@ -87,7 +87,10 @@ if get_option('rest').enabled()
     cpp_httplib_dep = dependency('cpp-httplib')
     iceberg_tests += {
         'rest_catalog_test': {
-            'sources': files('rest_catalog_test.cc'),
+            'sources': files(
+                'rest_catalog_test.cc',
+                'rest_json_internal_test.cc',
+            ),
             'dependencies': [iceberg_rest_dep, cpp_httplib_dep],
         },
     }

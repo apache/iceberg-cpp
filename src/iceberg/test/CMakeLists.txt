@@ -151,7 +151,8 @@ if(ICEBERG_BUILD_BUNDLE)
 endif()
 
 if(ICEBERG_BUILD_REST)
-  add_iceberg_test(rest_catalog_test SOURCES rest_catalog_test.cc)
+  add_iceberg_test(rest_catalog_test SOURCES rest_catalog_test.cc
+                   rest_json_internal_test.cc)
   target_link_libraries(rest_catalog_test PRIVATE iceberg_rest_static)
   target_include_directories(rest_catalog_test PRIVATE ${cpp-httplib_SOURCE_DIR})
 endif()
