@@ -41,41 +41,72 @@ std::shared_ptr<Expression> Expressions::Not(std::shared_ptr<Expression> child) 
     return not_expr.child();
   }
 
-  return std::make_shared<::iceberg::Not>(std::move(child));
+  auto result = ::iceberg::Not::Make(std::move(child));
+  if (!result) {
+    throw ExpressionError(result.error().message);
+  }
+  return {std::move(result.value())};
 }
 
 // Transform functions
 
 std::shared_ptr<UnboundTransform> Expressions::Bucket(std::string name,
                                                       int32_t num_buckets) {
-  return std::make_shared<UnboundTransform>(Ref(std::move(name)),
-                                            Transform::Bucket(num_buckets));
+  auto result =
+      UnboundTransform::Make(Ref(std::move(name)), Transform::Bucket(num_buckets));
+  if (!result) {
+    throw ExpressionError(result.error().message);
+  }
+  return {std::move(result.value())};
 }
 
 std::shared_ptr<UnboundTransform> Expressions::Year(std::string name) {
-  return std::make_shared<UnboundTransform>(Ref(std::move(name)), Transform::Year());
+  auto result = UnboundTransform::Make(Ref(std::move(name)), Transform::Year());
+  if (!result) {
+    throw ExpressionError(result.error().message);
+  }
+  return {std::move(result.value())};
 }
 
 std::shared_ptr<UnboundTransform> Expressions::Month(std::string name) {
-  return std::make_shared<UnboundTransform>(Ref(std::move(name)), Transform::Month());
+  auto result = UnboundTransform::Make(Ref(std::move(name)), Transform::Month());
+  if (!result) {
+    throw ExpressionError(result.error().message);
+  }
+  return {std::move(result.value())};
 }
 
 std::shared_ptr<UnboundTransform> Expressions::Day(std::string name) {
-  return std::make_shared<UnboundTransform>(Ref(std::move(name)), Transform::Day());
+  auto result = UnboundTransform::Make(Ref(std::move(name)), Transform::Day());
+  if (!result) {
+    throw ExpressionError(result.error().message);
+  }
+  return {std::move(result.value())};
 }
 
 std::shared_ptr<UnboundTransform> Expressions::Hour(std::string name) {
-  return std::make_shared<UnboundTransform>(Ref(std::move(name)), Transform::Hour());
+  auto result = UnboundTransform::Make(Ref(std::move(name)), Transform::Hour());
+  if (!result) {
+    throw ExpressionError(result.error().message);
+  }
+  return {std::move(result.value())};
 }
 
 std::shared_ptr<UnboundTransform> Expressions::Truncate(std::string name, int32_t width) {
-  return std::make_shared<UnboundTransform>(Ref(std::move(name)),
-                                            Transform::Truncate(width));
+  auto result = UnboundTransform::Make(Ref(std::move(name)), Transform::Truncate(width));
+  if (!result) {
+    throw ExpressionError(result.error().message);
+  }
+  return {std::move(result.value())};
 }
 
 std::shared_ptr<UnboundTransform> Expressions::Transform(
     std::string name, std::shared_ptr<::iceberg::Transform> transform) {
-  return std::make_shared<UnboundTransform>(Ref(std::move(name)), std::move(transform));
+  auto result = UnboundTransform::Make(Ref(std::move(name)), std::move(transform));
+  if (!result) {
+    throw ExpressionError(result.error().message);
+  }
+  return {std::move(result.value())};
 }
 
 // Template implementations for unary predicates
@@ -327,11 +358,15 @@ std::shared_ptr<False> Expressions::AlwaysFalse() { return False::Instance(); }
 // Utilities
 
 std::shared_ptr<NamedReference> Expressions::Ref(std::string name) {
-  return std::make_shared<NamedReference>(std::move(name));
+  auto result = NamedReference::Make(std::move(name));
+  if (!result) {
+    throw ExpressionError(result.error().message);
+  }
+  return {std::move(result.value())};
 }
 
 Literal Expressions::Lit(Literal::Value value, std::shared_ptr<PrimitiveType> type) {
-  throw IcebergError("Literal creation is not implemented");
+  throw ExpressionError("Literal creation is not implemented");
 }
 
 }  // namespace iceberg

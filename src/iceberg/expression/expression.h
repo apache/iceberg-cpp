@@ -130,11 +130,14 @@ class ICEBERG_EXPORT False : public Expression {
 /// evaluate to true.
 class ICEBERG_EXPORT And : public Expression {
  public:
-  /// \brief Constructs an And expression from two sub-expressions.
+  /// \brief Creates an And expression from two sub-expressions.
   ///
   /// \param left The left operand of the AND expression
   /// \param right The right operand of the AND expression
-  And(std::shared_ptr<Expression> left, std::shared_ptr<Expression> right);
+  /// \return A Result containing a unique pointer to And, or an error if either parameter
+  /// is nullptr
+  static Result<std::unique_ptr<And>> Make(std::shared_ptr<Expression> left,
+                                           std::shared_ptr<Expression> right);
 
   /// \brief Returns the left operand of the AND expression.
   ///
@@ -155,6 +158,8 @@ class ICEBERG_EXPORT And : public Expression {
   bool Equals(const Expression& other) const override;
 
  private:
+  And(std::shared_ptr<Expression> left, std::shared_ptr<Expression> right);
+
   std::shared_ptr<Expression> left_;
   std::shared_ptr<Expression> right_;
 };
@@ -165,11 +170,14 @@ class ICEBERG_EXPORT And : public Expression {
 /// evaluates to true.
 class ICEBERG_EXPORT Or : public Expression {
  public:
-  /// \brief Constructs an Or expression from two sub-expressions.
+  /// \brief Creates an Or expression from two sub-expressions.
   ///
   /// \param left The left operand of the OR expression
   /// \param right The right operand of the OR expression
-  Or(std::shared_ptr<Expression> left, std::shared_ptr<Expression> right);
+  /// \return A Result containing a unique pointer to Or, or an error if either parameter
+  /// is nullptr
+  static Result<std::unique_ptr<Or>> Make(std::shared_ptr<Expression> left,
+                                          std::shared_ptr<Expression> right);
 
   /// \brief Returns the left operand of the OR expression.
   ///
@@ -190,6 +198,8 @@ class ICEBERG_EXPORT Or : public Expression {
   bool Equals(const Expression& other) const override;
 
  private:
+  Or(std::shared_ptr<Expression> left, std::shared_ptr<Expression> right);
+
   std::shared_ptr<Expression> left_;
   std::shared_ptr<Expression> right_;
 };
@@ -199,10 +209,11 @@ class ICEBERG_EXPORT Or : public Expression {
 /// This expression negates its child expression.
 class ICEBERG_EXPORT Not : public Expression {
  public:
-  /// \brief Constructs a Not expression from a child expression.
+  /// \brief Creates a Not expression from a child expression.
   ///
   /// \param child The expression to negate
-  explicit Not(std::shared_ptr<Expression> child);
+  /// \return A Result containing a unique pointer to Not, or an error if child is nullptr
+  static Result<std::unique_ptr<Not>> Make(std::shared_ptr<Expression> child);
 
   /// \brief Returns the child expression.
   ///
@@ -218,6 +229,8 @@ class ICEBERG_EXPORT Not : public Expression {
   bool Equals(const Expression& other) const override;
 
  private:
+  explicit Not(std::shared_ptr<Expression> child);
+
   std::shared_ptr<Expression> child_;
 };
 

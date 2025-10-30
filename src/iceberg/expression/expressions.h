@@ -27,6 +27,7 @@
 #include <string>
 #include <vector>
 
+#include "iceberg/exception.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/expression/predicate.h"
 #include "iceberg/expression/term.h"
@@ -34,7 +35,9 @@
 
 namespace iceberg {
 
-/// \brief Factory methods for creating expressions.
+/// \brief Factory methods for quickly creating expressions. Unlike most APIs in this
+/// codebase that return Result<T>, these factory methods throw ExpressionError exceptions
+/// on failures to provide a more convenient API for expression construction.
 class ICEBERG_EXPORT Expressions {
  public:
   // Logical operations
@@ -60,7 +63,11 @@ class ICEBERG_EXPORT Expressions {
         return left;
       }
 
-      return std::make_shared<::iceberg::And>(std::move(left), std::move(right));
+      auto result = ::iceberg::And::Make(std::move(left), std::move(right));
+      if (!result) {
+        throw ExpressionError(result.error().message);
+      }
+      return {std::move(result.value())};
     } else {
       return And(And(std::move(left), std::move(right)), std::forward<Args>(args)...);
     }
@@ -86,7 +93,11 @@ class ICEBERG_EXPORT Expressions {
         return left;
       }
 
-      return std::make_shared<::iceberg::Or>(std::move(left), std::move(right));
+      auto result = ::iceberg::Or::Make(std::move(left), std::move(right));
+      if (!result) {
+        throw ExpressionError(result.error().message);
+      }
+      return {std::move(result.value())};
     } else {
       return Or(Or(std::move(left), std::move(right)), std::forward<Args>(args)...);
     }
