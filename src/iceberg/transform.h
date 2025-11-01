@@ -202,6 +202,11 @@ class ICEBERG_EXPORT TransformFunction {
   /// \brief Get the source type of transform function
   const std::shared_ptr<Type>& source_type() const;
   /// \brief Get the result type of transform function
+  ///
+  /// Note: This method defines both the physical and display representation of the
+  /// partition field. The physical representation must conform to the Iceberg spec. The
+  /// display representation can deviate from the spec, such as by transforming the value
+  /// into a more human-readable format.
   virtual std::shared_ptr<Type> ResultType() const = 0;
 
   friend bool operator==(const TransformFunction& lhs, const TransformFunction& rhs) {

@@ -141,7 +141,11 @@ class ICEBERG_EXPORT DayTransform : public TransformFunction {
   /// \brief Extract a date or timestamp day, as days from 1970-01-01.
   Result<Literal> Transform(const Literal& literal) override;
 
-  /// \brief Returns INT32 as the output type.
+  /// \brief Return the result type of a day transform.
+  ///
+  /// Note: The physical representation conforms to the Iceberg spec as DateType is
+  /// internally converted to int. The DateType returned here provides a more
+  /// human-readable way to display the partition field.
   std::shared_ptr<Type> ResultType() const override;
 
   /// \brief Create a DayTransform.

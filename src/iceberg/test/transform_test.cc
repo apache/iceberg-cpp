@@ -134,7 +134,7 @@ TEST(TransformResultTypeTest, PositiveCases) {
        .expected_result_type = iceberg::int32()},
       {.str = "day",
        .source_type = iceberg::timestamp(),
-       .expected_result_type = iceberg::int32()},
+       .expected_result_type = iceberg::date()},
       {.str = "hour",
        .source_type = iceberg::timestamp(),
        .expected_result_type = iceberg::int32()},
