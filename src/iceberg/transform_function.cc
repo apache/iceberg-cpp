@@ -193,7 +193,7 @@ Result<Literal> DayTransform::Transform(const Literal& literal) {
   return TemporalUtils::ExtractDay(literal);
 }
 
-std::shared_ptr<Type> DayTransform::ResultType() const { return int32(); }
+std::shared_ptr<Type> DayTransform::ResultType() const { return date(); }
 
 Result<std::unique_ptr<TransformFunction>> DayTransform::Make(
     std::shared_ptr<Type> const& source_type) {
