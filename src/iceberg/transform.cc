@@ -23,6 +23,7 @@
 #include <regex>
 #include <utility>
 
+#include "iceberg/result.h"
 #include "iceberg/transform_function.h"
 #include "iceberg/type.h"
 
@@ -122,6 +123,84 @@ Result<std::shared_ptr<TransformFunction>> Transform::Bind(
 
     default:
       return NotSupported("Unsupported transform type: '{}'", type_str);
+  }
+}
+
+Result<std::shared_ptr<Type>> Transform::ResultType(
+    const std::shared_ptr<Type>& source_type) const {
+  switch (transform_type_) {
+    case TransformType::kIdentity:
+      if (!source_type->is_primitive()) [[unlikely]] {
+        return InvalidArgument("{} is not a valid input type of identity transform",
+                               source_type->ToString());
+      }
+      return source_type;
+    case TransformType::kVoid:
+      return source_type;
+    case TransformType::kUnknown:
+      return string();
+    case TransformType::kBucket:
+      switch (source_type->type_id()) {
+        case TypeId::kInt:
+        case TypeId::kLong:
+        case TypeId::kDecimal:
+        case TypeId::kDate:
+        case TypeId::kTime:
+        case TypeId::kTimestamp:
+        case TypeId::kTimestampTz:
+        case TypeId::kString:
+        case TypeId::kUuid:
+        case TypeId::kFixed:
+        case TypeId::kBinary:
+          return int32();
+        default:
+          return InvalidArgument("{} is not a valid input type of bucket transform",
+                                 source_type->ToString());
+      }
+    case TransformType::kTruncate:
+      switch (source_type->type_id()) {
+        case TypeId::kInt:
+        case TypeId::kLong:
+        case TypeId::kString:
+        case TypeId::kBinary:
+        case TypeId::kDecimal:
+          return source_type;
+        default:
+          return InvalidArgument("{} is not a valid input type of truncate transform",
+                                 source_type->ToString());
+      }
+    case TransformType::kYear:
+    case TransformType::kMonth:
+      switch (source_type->type_id()) {
+        case TypeId::kDate:
+        case TypeId::kTimestamp:
+        case TypeId::kTimestampTz:
+          return int32();
+        default:
+          return InvalidArgument("{} is not a valid input type of {} transform",
+                                 source_type->ToString(), this->ToString());
+      }
+    case TransformType::kDay:
+      switch (source_type->type_id()) {
+        case TypeId::kDate:
+        case TypeId::kTimestamp:
+        case TypeId::kTimestampTz:
+          return date();
+        default:
+          return InvalidArgument("{} is not a valid input type of day transform",
+                                 source_type->ToString());
+      }
+    case TransformType::kHour:
+      switch (source_type->type_id()) {
+        case TypeId::kTimestamp:
+        case TypeId::kTimestampTz:
+          return int32();
+        default:
+          return InvalidArgument("{} is not a valid input type of hour transform",
+                                 source_type->ToString());
+      }
+    default:
+      std::unreachable();
   }
 }
 

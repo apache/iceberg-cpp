@@ -25,7 +25,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "gtest/gtest.h"
 #include "iceberg/result.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/test/matchers.h"

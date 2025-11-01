@@ -20,11 +20,13 @@
 #pragma once
 
 #include <cstdint>
+#include <memory>
 #include <span>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/sort_field.h"
+#include "iceberg/type_fwd.h"
 #include "iceberg/util/formattable.h"
 
 namespace iceberg {
@@ -36,6 +38,7 @@ namespace iceberg {
 /// applied to the data.
 class ICEBERG_EXPORT SortOrder : public util::Formattable {
  public:
+  static constexpr int32_t kUnsortedOrderId = 0;
   static constexpr int32_t kInitialSortOrderId = 1;
 
   SortOrder(int32_t order_id, std::vector<SortField> fields);
@@ -68,6 +71,28 @@ class ICEBERG_EXPORT SortOrder : public util::Formattable {
   friend bool operator==(const SortOrder& lhs, const SortOrder& rhs) {
     return lhs.Equals(rhs);
   }
+
+  /// \brief Checks whether the sort order is bound to the given schema.
+  /// \param schema The schema to check against.
+  /// \return true if the sort order is valid for the given schema.
+  bool IsBoundToSchema(const Schema& schema) const;
+
+  /// \brief Create a SortOrder.
+  /// \param schema The schema to bind the sort order to.
+  /// \param sort_id The sort order id.
+  /// \param fields The sort fields.
+  /// \return A Result containing the SortOrder or an error.
+  static Result<std::unique_ptr<SortOrder>> Make(const Schema& schema, int32_t sort_id,
+                                                 std::vector<SortField> fields);
+
+  /// \brief Create a SortOrder without binding to a schema.
+  /// \param sort_id The sort order id.
+  /// \param fields The sort fields.
+  /// \return A Result containing the SortOrder or an error.
+  /// \note This method does not check whether the sort fields are valid for any schema.
+  /// Use IsBoundToSchema to check if the sort order is valid for a given schema.
+  static Result<std::unique_ptr<SortOrder>> Make(int32_t sort_id,
+                                                 std::vector<SortField> fields);
 
  private:
   /// \brief Compare two sort orders for equality.

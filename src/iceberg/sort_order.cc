@@ -20,9 +20,15 @@
 #include "iceberg/sort_order.h"
 
 #include <format>
+#include <optional>
 #include <ranges>
 
+#include "iceberg/result.h"
+#include "iceberg/schema.h"
+#include "iceberg/sort_field.h"
+#include "iceberg/transform.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -31,7 +37,7 @@ SortOrder::SortOrder(int32_t order_id, std::vector<SortField> fields)
 
 const std::shared_ptr<SortOrder>& SortOrder::Unsorted() {
   static const std::shared_ptr<SortOrder> unsorted =
-      std::make_shared<SortOrder>(/*order_id=*/0, std::vector<SortField>{});
+      std::make_shared<SortOrder>(kUnsortedOrderId, std::vector<SortField>{});
   return unsorted;
 }
 
@@ -78,6 +84,68 @@ std::string SortOrder::ToString() const {
 
 bool SortOrder::Equals(const SortOrder& other) const {
   return order_id_ == other.order_id_ && fields_ == other.fields_;
+}
+
+bool SortOrder::IsBoundToSchema(const Schema& schema) const {
+  for (const auto& field : fields_) {
+    auto schema_field = schema.FindFieldById(field.source_id());
+    if (!schema_field.has_value() || schema_field.value() == std::nullopt) {
+      return false;
+    }
+
+    const auto& source_type = schema_field.value().value().get().type();
+    if (!source_type->is_primitive()) {
+      return false;
+    }
+
+    auto result = field.transform()->ResultType(source_type);
+    if (!result) {
+      return false;
+    }
+  }
+  return true;
+}
+
+Result<std::unique_ptr<SortOrder>> SortOrder::Make(const Schema& schema, int32_t sort_id,
+                                                   std::vector<SortField> fields) {
+  if (!fields.empty() && sort_id == kUnsortedOrderId) [[unlikely]] {
+    return InvalidArgument("{} is reserved for unsorted sort order", kUnsortedOrderId);
+  }
+
+  if (fields.empty() && sort_id != kUnsortedOrderId) [[unlikely]] {
+    return InvalidArgument("Sort order must have at least one sort field");
+  }
+
+  for (const auto& field : fields) {
+    ICEBERG_ASSIGN_OR_RAISE(auto schema_field, schema.FindFieldById(field.source_id()));
+    if (schema_field == std::nullopt) {
+      return InvalidArgument("Cannot find source column for sort field: {}", field);
+    }
+
+    const auto& source_type = schema_field.value().get().type();
+
+    if (!source_type->is_primitive()) {
+      return InvalidArgument("Cannot sort by non-primitive source field: {}",
+                             *source_type);
+    }
+
+    ICEBERG_RETURN_UNEXPECTED(field.transform()->ResultType(source_type));
+  }
+
+  return std::make_unique<SortOrder>(sort_id, std::move(fields));
+}
+
+Result<std::unique_ptr<SortOrder>> SortOrder::Make(int32_t sort_id,
+                                                   std::vector<SortField> fields) {
+  if (!fields.empty() && sort_id == kUnsortedOrderId) [[unlikely]] {
+    return InvalidArgument("{} is reserved for unsorted sort order", kUnsortedOrderId);
+  }
+
+  if (fields.empty() && sort_id != kUnsortedOrderId) [[unlikely]] {
+    return InvalidArgument("Sort order must have at least one sort field");
+  }
+
+  return std::make_unique<SortOrder>(sort_id, std::move(fields));
 }
 
 }  // namespace iceberg

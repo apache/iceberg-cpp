@@ -26,10 +26,39 @@
 
 #include "iceberg/schema.h"
 #include "iceberg/sort_field.h"
+#include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
 namespace iceberg {
+
+class SortOrderMakeTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    field1_ = std::make_unique<SchemaField>(1, "x", int32(), true);
+    field2_ = std::make_unique<SchemaField>(2, "y", string(), true);
+    field3_ = std::make_unique<SchemaField>(3, "time", timestamp(), true);
+
+    schema_ = std::make_unique<Schema>(
+        std::vector<SchemaField>{*field1_, *field2_, *field3_}, 1);
+
+    sort_field1_ = std::make_unique<SortField>(
+        1, Transform::Identity(), SortDirection::kAscending, NullOrder::kFirst);
+    sort_field2_ = std::make_unique<SortField>(
+        2, Transform::Bucket(10), SortDirection::kDescending, NullOrder::kLast);
+    sort_field3_ = std::make_unique<SortField>(
+        3, Transform::Day(), SortDirection::kAscending, NullOrder::kFirst);
+  }
+
+  std::unique_ptr<Schema> schema_;
+  std::unique_ptr<SchemaField> field1_;
+  std::unique_ptr<SchemaField> field2_;
+  std::unique_ptr<SchemaField> field3_;
+
+  std::unique_ptr<SortField> sort_field1_;
+  std::unique_ptr<SortField> sort_field2_;
+  std::unique_ptr<SortField> sort_field3_;
+};
 
 TEST(SortOrderTest, Basics) {
   {
@@ -146,6 +175,83 @@ TEST(SortOrderTest, Satisfies) {
   // A sort order does not satify one with different fields
   EXPECT_FALSE(sort_order4.Satisfies(sort_order2));
   EXPECT_FALSE(sort_order2.Satisfies(sort_order4));
+}
+
+TEST_F(SortOrderMakeTest, MakeValidSortOrder) {
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto sort_order,
+      SortOrder::Make(*schema_, 1, std::vector<SortField>{*sort_field1_, *sort_field2_}));
+  ASSERT_NE(sort_order, nullptr);
+
+  EXPECT_TRUE(sort_order->is_sorted());
+  ASSERT_EQ(sort_order->fields().size(), 2);
+  EXPECT_EQ(sort_order->fields()[0], *sort_field1_);
+  EXPECT_EQ(sort_order->fields()[1], *sort_field2_);
+}
+
+TEST_F(SortOrderMakeTest, MakeInvalidSortOrderEmptyFields) {
+  auto sort_order = SortOrder::Make(*schema_, 1, std::vector<SortField>{});
+  EXPECT_THAT(sort_order, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(sort_order,
+              HasErrorMessage("Sort order must have at least one sort field"));
+}
+
+TEST_F(SortOrderMakeTest, MakeInvalidSortOrderUnsortedId) {
+  auto sort_order = SortOrder::Make(*schema_, SortOrder::kUnsortedOrderId,
+                                    std::vector<SortField>{*sort_field1_});
+  EXPECT_THAT(sort_order, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(sort_order,
+              HasErrorMessage(std::format("{} is reserved for unsorted sort order",
+                                          SortOrder::kUnsortedOrderId)));
+}
+
+TEST_F(SortOrderMakeTest, MakeValidUnsortedSortOrder) {
+  ICEBERG_UNWRAP_OR_FAIL(auto sort_order, SortOrder::Make(SortOrder::kUnsortedOrderId,
+                                                          std::vector<SortField>{}));
+  ASSERT_NE(sort_order, nullptr);
+
+  EXPECT_TRUE(sort_order->is_unsorted());
+  EXPECT_EQ(sort_order->fields().size(), 0);
+}
+
+TEST_F(SortOrderMakeTest, MakeInvalidSortOrderNonPrimitiveField) {
+  auto struct_field = std::make_unique<SchemaField>(
+      4, "struct_field",
+      std::make_shared<StructType>(std::vector<SchemaField>{
+          SchemaField::MakeRequired(41, "inner_field", iceberg::int32()),
+      }),
+      true);
+
+  Schema schema_with_struct(
+      std::vector<SchemaField>{*field1_, *field2_, *field3_, *struct_field}, 1);
+
+  SortField sort_field_invalid(4, Transform::Identity(), SortDirection::kAscending,
+                               NullOrder::kFirst);
+
+  auto sort_order = SortOrder::Make(
+      schema_with_struct, 1, std::vector<SortField>{*sort_field1_, sort_field_invalid});
+  EXPECT_THAT(sort_order, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(sort_order, HasErrorMessage("Cannot sort by non-primitive source field"));
+}
+
+TEST_F(SortOrderMakeTest, MakeInvalidSortOrderFieldNotInSchema) {
+  SortField sort_field_invalid(999, Transform::Identity(), SortDirection::kAscending,
+                               NullOrder::kFirst);
+
+  auto sort_order = SortOrder::Make(
+      *schema_, 1, std::vector<SortField>{*sort_field1_, sort_field_invalid});
+  EXPECT_THAT(sort_order, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(sort_order, HasErrorMessage("Cannot find source column for sort field:"));
+}
+
+TEST_F(SortOrderMakeTest, MakeUnboundSortOrder) {
+  SortField sort_field_invalid(999, Transform::Identity(), SortDirection::kAscending,
+                               NullOrder::kFirst);
+
+  auto sort_order =
+      SortOrder::Make(1, std::vector<SortField>{*sort_field1_, sort_field_invalid});
+  ASSERT_THAT(sort_order, IsOk());
+  ASSERT_EQ(sort_order.value()->IsBoundToSchema(*schema_), false);
 }
 
 }  // namespace iceberg

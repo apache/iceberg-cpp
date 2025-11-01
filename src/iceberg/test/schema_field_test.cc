@@ -63,7 +63,7 @@ TEST(SchemaFieldTest, Equality) {
   iceberg::SchemaField field1(1, "foo", iceberg::int32(), false);
   iceberg::SchemaField field2(2, "foo", iceberg::int32(), false);
   iceberg::SchemaField field3(1, "bar", iceberg::int32(), false);
-  iceberg::SchemaField field4(1, "foo", std::make_shared<iceberg::LongType>(), false);
+  iceberg::SchemaField field4(1, "foo", iceberg::int64(), false);
   iceberg::SchemaField field5(1, "foo", iceberg::int32(), true);
   iceberg::SchemaField field6(1, "foo", iceberg::int32(), false);
 
