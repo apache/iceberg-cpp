@@ -54,7 +54,24 @@ Status AssertLastAssignedFieldId::Validate(const TableMetadata* base) const {
 }
 
 Status AssertCurrentSchemaID::Validate(const TableMetadata* base) const {
-  return NotImplemented("AssertCurrentTableSchemaID::Validate not implemented");
+  // Validate that the current schema ID matches the expected value
+
+  if (base == nullptr) {
+    return CommitFailed("Requirement failed: current table metadata is missing");
+  }
+
+  if (!base->current_schema_id.has_value()) {
+    return CommitFailed(
+        "Requirement failed: current schema ID is not set in table metadata");
+  }
+
+  if (base->current_schema_id.value() != schema_id_) {
+    return CommitFailed(
+        "Requirement failed: current schema ID does not match (expected={}, actual={})",
+        schema_id_, base->current_schema_id.value());
+  }
+
+  return {};
 }
 
 Status AssertLastAssignedPartitionId::Validate(const TableMetadata* base) const {

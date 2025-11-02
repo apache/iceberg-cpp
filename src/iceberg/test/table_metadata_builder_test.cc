@@ -231,6 +231,39 @@ TEST_F(TableMetadataBuilderTest, TableRequirementAssertUUIDCaseInsensitive) {
   ASSERT_THAT(requirement.Validate(base_metadata_.get()), IsOk());
 }
 
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertCurrentSchemaIDSuccess) {
+  base_metadata_->current_schema_id = 5;
+  table::AssertCurrentSchemaID requirement(5);
+
+  ASSERT_THAT(requirement.Validate(base_metadata_.get()), IsOk());
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertCurrentSchemaIDMismatch) {
+  base_metadata_->current_schema_id = 5;
+  table::AssertCurrentSchemaID requirement(10);
+
+  auto status = requirement.Validate(base_metadata_.get());
+  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
+  EXPECT_THAT(status, HasErrorMessage("schema ID does not match"));
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertCurrentSchemaIDNullBase) {
+  table::AssertCurrentSchemaID requirement(5);
+
+  auto status = requirement.Validate(nullptr);
+  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
+  EXPECT_THAT(status, HasErrorMessage("metadata is missing"));
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertCurrentSchemaIDNotSet) {
+  base_metadata_->current_schema_id = std::nullopt;
+  table::AssertCurrentSchemaID requirement(5);
+
+  auto status = requirement.Validate(base_metadata_.get());
+  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
+  EXPECT_THAT(status, HasErrorMessage("schema ID is not set"));
+}
+
 // ============================================================================
 // Integration Tests - End-to-End Workflow
 // ============================================================================
