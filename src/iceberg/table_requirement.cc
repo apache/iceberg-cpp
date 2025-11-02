@@ -54,7 +54,7 @@ Status AssertLastAssignedFieldId::Validate(const TableMetadata* base) const {
 }
 
 Status AssertCurrentSchemaID::Validate(const TableMetadata* base) const {
-  // Validate that the current schema ID matches the expected value
+  // Validate that the current schema ID matches the one used when the metadata was read
 
   if (base == nullptr) {
     return CommitFailed("Requirement failed: current table metadata is missing");
