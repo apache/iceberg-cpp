@@ -24,7 +24,9 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <nlohmann/json.hpp>
 
+#include "iceberg/json_internal.h"
 #include "iceberg/partition_field.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
@@ -106,4 +108,54 @@ TEST(PartitionSpecTest, PartitionSchemaTest) {
   EXPECT_EQ(pt_field2.name(), partition_schema.value()->fields()[1].name());
   EXPECT_EQ(pt_field2.field_id(), partition_schema.value()->fields()[1].field_id());
 }
+
+TEST(PartitionSpecTest, PartitionTypeTest) {
+  nlohmann::json json = R"(
+  {
+  "spec-id": 1,
+  "fields": [ {
+      "source-id": 4,
+      "field-id": 1000,
+      "name": "ts_day",
+      "transform": "day"
+      }, {
+      "source-id": 1,
+      "field-id": 1001,
+      "name": "id_bucket",
+      "transform": "bucket[16]"
+      }, {
+      "source-id": 2,
+      "field-id": 1002,
+      "name": "id_truncate",
+      "transform": "truncate[4]"
+      } ]
+  })"_json;
+
+  SchemaField field1(1, "id", int32(), false);
+  SchemaField field2(2, "name", string(), false);
+  SchemaField field3(3, "ts", timestamp(), false);
+  SchemaField field4(4, "ts_day", timestamp(), false);
+  SchemaField field5(5, "id_bucket", int32(), false);
+  SchemaField field6(6, "id_truncate", int32(), false);
+  auto const schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{field1, field2, field3, field4, field5, field6},
+      Schema::kInitialSchemaId);
+
+  auto parsed_spec_result = PartitionSpecFromJson(schema, json);
+  ASSERT_TRUE(parsed_spec_result.has_value()) << parsed_spec_result.error().message;
+
+  auto partition_schema = parsed_spec_result.value()->PartitionType();
+
+  SchemaField pt_field1(1000, "ts_day", date(), true);
+  SchemaField pt_field2(1001, "id_bucket", int32(), true);
+  SchemaField pt_field3(1002, "id_truncate", string(), true);
+
+  ASSERT_TRUE(partition_schema.has_value());
+  ASSERT_EQ(3, partition_schema.value()->fields().size());
+
+  EXPECT_EQ(pt_field1, partition_schema.value()->fields()[0]);
+  EXPECT_EQ(pt_field2, partition_schema.value()->fields()[1]);
+  EXPECT_EQ(pt_field3, partition_schema.value()->fields()[2]);
+}
+
 }  // namespace iceberg
