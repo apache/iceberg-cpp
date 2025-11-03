@@ -19,7 +19,6 @@
 
 #include "iceberg/catalog/rest/json_internal.h"
 
-#include <ranges>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -29,10 +28,7 @@
 
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/json_internal.h"
-#include "iceberg/partition_spec.h"
-#include "iceberg/schema.h"
-#include "iceberg/sort_order.h"
-#include "iceberg/table_metadata.h"
+#include "iceberg/table_identifier.h"
 #include "iceberg/util/json_util_internal.h"
 #include "iceberg/util/macros.h"
 
@@ -66,7 +62,6 @@ constexpr std::string_view kIdentifiers = "identifiers";
 
 }  // namespace
 
-// CreateNamespaceRequest
 nlohmann::json ToJson(const CreateNamespaceRequest& request) {
   nlohmann::json json;
   json[kNamespace] = request.namespace_.levels;
@@ -83,12 +78,10 @@ Result<CreateNamespaceRequest> CreateNamespaceRequestFromJson(
                           GetJsonValue<std::vector<std::string>>(json, kNamespace));
   ICEBERG_ASSIGN_OR_RAISE(
       request.properties,
-      (GetJsonValueOrDefault<std::unordered_map<std::string, std::string>>(json,
-                                                                           kProperties)));
+      GetJsonValueOrDefault<decltype(request.properties)>(json, kProperties));
   return request;
 }
 
-// UpdateNamespacePropertiesRequest
 nlohmann::json ToJson(const UpdateNamespacePropertiesRequest& request) {
   // Initialize as an empty object so that when all optional fields are absent we return
   // {} instead of null
@@ -108,65 +101,10 @@ Result<UpdateNamespacePropertiesRequest> UpdateNamespacePropertiesRequestFromJso
   ICEBERG_ASSIGN_OR_RAISE(
       request.removals, GetJsonValueOrDefault<std::vector<std::string>>(json, kRemovals));
   ICEBERG_ASSIGN_OR_RAISE(
-      request.updates,
-      (GetJsonValueOrDefault<std::unordered_map<std::string, std::string>>(json,
-                                                                           kUpdates)));
+      request.updates, GetJsonValueOrDefault<decltype(request.updates)>(json, kUpdates));
   return request;
 }
 
-// CreateTableRequest
-nlohmann::json ToJson(const CreateTableRequest& request) {
-  nlohmann::json json;
-  json[kName] = request.name;
-  if (!request.location.empty()) {
-    json[kLocation] = request.location;
-  }
-  json[kSchema] = ToJson(*request.schema);
-  if (request.partition_spec) {
-    json[kPartitionSpec] = ToJson(*request.partition_spec);
-  }
-  if (request.write_order) {
-    json[kWriteOrder] = ToJson(*request.write_order);
-  }
-  SetOptionalField(json, kStageCreate, request.stage_create);
-  if (!request.properties.empty()) {
-    json[kProperties] = request.properties;
-  }
-  return json;
-}
-
-Result<CreateTableRequest> CreateTableRequestFromJson(const nlohmann::json& json) {
-  CreateTableRequest request;
-  ICEBERG_ASSIGN_OR_RAISE(request.name, GetJsonValue<std::string>(json, kName));
-  ICEBERG_ASSIGN_OR_RAISE(request.location,
-                          GetJsonValueOrDefault<std::string>(json, kLocation, ""));
-  ICEBERG_ASSIGN_OR_RAISE(auto schema_json, GetJsonValue<nlohmann::json>(json, kSchema));
-  ICEBERG_ASSIGN_OR_RAISE(request.schema, SchemaFromJson(schema_json));
-  if (json.contains(kPartitionSpec)) {
-    ICEBERG_ASSIGN_OR_RAISE(auto partition_spec_json,
-                            GetJsonValue<nlohmann::json>(json, kPartitionSpec));
-    ICEBERG_ASSIGN_OR_RAISE(request.partition_spec,
-                            PartitionSpecFromJson(request.schema, partition_spec_json));
-  } else {
-    request.partition_spec = nullptr;
-  }
-  if (json.contains(kWriteOrder)) {
-    ICEBERG_ASSIGN_OR_RAISE(auto write_order_json,
-                            GetJsonValue<nlohmann::json>(json, kWriteOrder));
-    ICEBERG_ASSIGN_OR_RAISE(request.write_order, SortOrderFromJson(write_order_json));
-  } else {
-    request.write_order = nullptr;
-  }
-  ICEBERG_ASSIGN_OR_RAISE(request.stage_create,
-                          GetJsonValueOptional<bool>(json, kStageCreate));
-  ICEBERG_ASSIGN_OR_RAISE(
-      request.properties,
-      (GetJsonValueOrDefault<std::unordered_map<std::string, std::string>>(json,
-                                                                           kProperties)));
-  return request;
-}
-
-// RegisterTableRequest
 nlohmann::json ToJson(const RegisterTableRequest& request) {
   nlohmann::json json;
   json[kName] = request.name;
@@ -182,14 +120,11 @@ Result<RegisterTableRequest> RegisterTableRequestFromJson(const nlohmann::json& 
   ICEBERG_ASSIGN_OR_RAISE(request.name, GetJsonValue<std::string>(json, kName));
   ICEBERG_ASSIGN_OR_RAISE(request.metadata_location,
                           GetJsonValue<std::string>(json, kMetadataLocation));
-  // Default to false if not present
-  ICEBERG_ASSIGN_OR_RAISE(auto overwrite_opt,
-                          GetJsonValueOptional<bool>(json, kOverwrite));
-  request.overwrite = overwrite_opt.value_or(false);
+  ICEBERG_ASSIGN_OR_RAISE(request.overwrite,
+                          GetJsonValueOrDefault<bool>(json, kOverwrite, false));
   return request;
 }
 
-// RenameTableRequest
 nlohmann::json ToJson(const RenameTableRequest& request) {
   nlohmann::json json;
   json[kSource] = ToJson(request.source);
@@ -222,8 +157,8 @@ nlohmann::json ToJson(const LoadTableResult& result) {
 
 Result<LoadTableResult> LoadTableResultFromJson(const nlohmann::json& json) {
   LoadTableResult result;
-  ICEBERG_ASSIGN_OR_RAISE(result.metadata_location, GetJsonValueOrDefault<std::string>(
-                                                        json, kMetadataLocation, ""));
+  ICEBERG_ASSIGN_OR_RAISE(result.metadata_location,
+                          GetJsonValueOrDefault<std::string>(json, kMetadataLocation));
   ICEBERG_ASSIGN_OR_RAISE(auto metadata_json,
                           GetJsonValue<nlohmann::json>(json, kMetadata));
   ICEBERG_ASSIGN_OR_RAISE(result.metadata, TableMetadataFromJson(metadata_json));
@@ -233,7 +168,6 @@ Result<LoadTableResult> LoadTableResultFromJson(const nlohmann::json& json) {
   return result;
 }
 
-// ListNamespacesResponse
 nlohmann::json ToJson(const ListNamespacesResponse& response) {
   nlohmann::json json;
   if (!response.next_page_token.empty()) {
@@ -251,7 +185,7 @@ Result<ListNamespacesResponse> ListNamespacesResponseFromJson(
     const nlohmann::json& json) {
   ListNamespacesResponse response;
   ICEBERG_ASSIGN_OR_RAISE(response.next_page_token,
-                          GetJsonValueOrDefault<std::string>(json, kNextPageToken, ""));
+                          GetJsonValueOrDefault<std::string>(json, kNextPageToken));
   ICEBERG_ASSIGN_OR_RAISE(auto namespaces_json,
                           GetJsonValue<nlohmann::json>(json, kNamespaces));
   for (const auto& ns_json : namespaces_json) {
@@ -261,7 +195,6 @@ Result<ListNamespacesResponse> ListNamespacesResponseFromJson(
   return response;
 }
 
-// CreateNamespaceResponse
 nlohmann::json ToJson(const CreateNamespaceResponse& response) {
   nlohmann::json json;
   json[kNamespace] = response.namespace_.levels;
@@ -278,12 +211,10 @@ Result<CreateNamespaceResponse> CreateNamespaceResponseFromJson(
                           GetJsonValue<std::vector<std::string>>(json, kNamespace));
   ICEBERG_ASSIGN_OR_RAISE(
       response.properties,
-      (GetJsonValueOrDefault<std::unordered_map<std::string, std::string>>(json,
-                                                                           kProperties)));
+      GetJsonValueOrDefault<decltype(response.properties)>(json, kProperties));
   return response;
 }
 
-// GetNamespaceResponse
 nlohmann::json ToJson(const GetNamespaceResponse& response) {
   nlohmann::json json;
   json[kNamespace] = response.namespace_.levels;
@@ -299,12 +230,10 @@ Result<GetNamespaceResponse> GetNamespaceResponseFromJson(const nlohmann::json& 
                           GetJsonValue<std::vector<std::string>>(json, kNamespace));
   ICEBERG_ASSIGN_OR_RAISE(
       response.properties,
-      (GetJsonValueOrDefault<std::unordered_map<std::string, std::string>>(json,
-                                                                           kProperties)));
+      GetJsonValueOrDefault<decltype(response.properties)>(json, kProperties));
   return response;
 }
 
-// UpdateNamespacePropertiesResponse
 nlohmann::json ToJson(const UpdateNamespacePropertiesResponse& response) {
   nlohmann::json json;
   json[kUpdated] = response.updated;
@@ -327,7 +256,6 @@ Result<UpdateNamespacePropertiesResponse> UpdateNamespacePropertiesResponseFromJ
   return response;
 }
 
-// ListTablesResponse
 nlohmann::json ToJson(const ListTablesResponse& response) {
   nlohmann::json json;
   if (!response.next_page_token.empty()) {
@@ -344,7 +272,7 @@ nlohmann::json ToJson(const ListTablesResponse& response) {
 Result<ListTablesResponse> ListTablesResponseFromJson(const nlohmann::json& json) {
   ListTablesResponse response;
   ICEBERG_ASSIGN_OR_RAISE(response.next_page_token,
-                          GetJsonValueOrDefault<std::string>(json, kNextPageToken, ""));
+                          GetJsonValueOrDefault<std::string>(json, kNextPageToken));
   ICEBERG_ASSIGN_OR_RAISE(auto identifiers_json,
                           GetJsonValue<nlohmann::json>(json, kIdentifiers));
   for (const auto& id_json : identifiers_json) {

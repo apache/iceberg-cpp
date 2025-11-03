@@ -46,17 +46,6 @@ struct ICEBERG_REST_EXPORT UpdateNamespacePropertiesRequest {
   std::unordered_map<std::string, std::string> updates;
 };
 
-/// \brief Request to create a table.
-struct ICEBERG_REST_EXPORT CreateTableRequest {
-  std::string name;  // required
-  std::string location;
-  std::shared_ptr<Schema> schema;  // required
-  std::shared_ptr<PartitionSpec> partition_spec;
-  std::shared_ptr<SortOrder> write_order;
-  std::optional<bool> stage_create;
-  std::unordered_map<std::string, std::string> properties;
-};
-
 /// \brief Request to register a table.
 struct ICEBERG_REST_EXPORT RegisterTableRequest {
   std::string name;               // required

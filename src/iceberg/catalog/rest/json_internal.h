@@ -77,13 +77,6 @@ ICEBERG_REST_EXPORT nlohmann::json ToJson(const ListTablesResponse& response);
 ICEBERG_REST_EXPORT Result<ListTablesResponse> ListTablesResponseFromJson(
     const nlohmann::json& json);
 
-/// \brief Serializes a `CreateTableRequest` object to JSON.
-ICEBERG_REST_EXPORT nlohmann::json ToJson(const CreateTableRequest& request);
-
-/// \brief Deserializes a JSON object into a `CreateTableRequest` object.
-ICEBERG_REST_EXPORT Result<CreateTableRequest> CreateTableRequestFromJson(
-    const nlohmann::json& json);
-
 /// \brief Serializes a `LoadTableResult` object to JSON.
 ICEBERG_REST_EXPORT nlohmann::json ToJson(const LoadTableResult& result);
 
