@@ -27,6 +27,7 @@
 #include <nlohmann/json.hpp>
 
 #include "iceberg/catalog/rest/types.h"
+#include "iceberg/catalog/rest/validator.h"
 #include "iceberg/json_internal.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/util/json_util_internal.h"
@@ -139,6 +140,7 @@ Result<RenameTableRequest> RenameTableRequestFromJson(const nlohmann::json& json
   ICEBERG_ASSIGN_OR_RAISE(auto dest_json,
                           GetJsonValue<nlohmann::json>(json, kDestination));
   ICEBERG_ASSIGN_OR_RAISE(request.destination, TableIdentifierFromJson(dest_json));
+  ICEBERG_RETURN_UNEXPECTED(Validator::Validate(request));
   return request;
 }
 
@@ -165,6 +167,7 @@ Result<LoadTableResult> LoadTableResultFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(
       result.config, (GetJsonValueOrDefault<std::unordered_map<std::string, std::string>>(
                          json, kConfig)));
+  ICEBERG_RETURN_UNEXPECTED(Validator::Validate(result));
   return result;
 }
 
@@ -192,6 +195,7 @@ Result<ListNamespacesResponse> ListNamespacesResponseFromJson(
     ICEBERG_ASSIGN_OR_RAISE(auto ns, NamespaceFromJson(ns_json));
     response.namespaces.push_back(std::move(ns));
   }
+  ICEBERG_RETURN_UNEXPECTED(Validator::Validate(response));
   return response;
 }
 
@@ -253,6 +257,7 @@ Result<UpdateNamespacePropertiesResponse> UpdateNamespacePropertiesResponseFromJ
                           GetJsonValue<std::vector<std::string>>(json, kRemoved));
   ICEBERG_ASSIGN_OR_RAISE(
       response.missing, GetJsonValueOrDefault<std::vector<std::string>>(json, kMissing));
+  ICEBERG_RETURN_UNEXPECTED(Validator::Validate(response));
   return response;
 }
 
@@ -279,6 +284,7 @@ Result<ListTablesResponse> ListTablesResponseFromJson(const nlohmann::json& json
     ICEBERG_ASSIGN_OR_RAISE(auto identifier, TableIdentifierFromJson(id_json));
     response.identifiers.push_back(std::move(identifier));
   }
+  ICEBERG_RETURN_UNEXPECTED(Validator::Validate(response));
   return response;
 }
 
