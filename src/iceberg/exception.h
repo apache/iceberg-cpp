@@ -38,6 +38,12 @@ class ICEBERG_EXPORT IcebergError : public std::runtime_error {
   explicit IcebergError(const std::string& what) : std::runtime_error(what) {}
 };
 
+/// \brief Exception thrown when expression construction fails.
+class ICEBERG_EXPORT ExpressionError : public IcebergError {
+ public:
+  explicit ExpressionError(const std::string& what) : IcebergError(what) {}
+};
+
 #define ICEBERG_CHECK(condition, ...)                        \
   do {                                                       \
     if (!(condition)) [[unlikely]] {                         \

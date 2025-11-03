@@ -138,7 +138,9 @@ class ICEBERG_EXPORT NamedReference
   /// \brief Create a named reference to a field.
   ///
   /// \param field_name The name of the field to reference
-  explicit NamedReference(std::string field_name);
+  /// \return A Result containing a unique pointer to NamedReference, or an error if
+  /// field_name is empty
+  static Result<std::unique_ptr<NamedReference>> Make(std::string field_name);
 
   ~NamedReference() override;
 
@@ -154,6 +156,8 @@ class ICEBERG_EXPORT NamedReference
   Kind kind() const override { return Kind::kReference; }
 
  private:
+  explicit NamedReference(std::string field_name);
+
   std::string field_name_;
 };
 
@@ -166,7 +170,8 @@ class ICEBERG_EXPORT BoundReference
   /// \brief Create a bound reference.
   ///
   /// \param field The schema field
-  explicit BoundReference(SchemaField field);
+  /// \return A unique pointer to BoundReference (field cannot be null in practice)
+  static Result<std::unique_ptr<BoundReference>> Make(SchemaField field);
 
   ~BoundReference() override;
 
@@ -189,6 +194,8 @@ class ICEBERG_EXPORT BoundReference
   Kind kind() const override { return Kind::kReference; }
 
  private:
+  explicit BoundReference(SchemaField field);
+
   SchemaField field_;
 };
 
@@ -199,8 +206,10 @@ class ICEBERG_EXPORT UnboundTransform : public UnboundTerm<class BoundTransform>
   ///
   /// \param ref The term to apply the transformation to
   /// \param transform The transformation function to apply
-  UnboundTransform(std::shared_ptr<NamedReference> ref,
-                   std::shared_ptr<Transform> transform);
+  /// \return A Result containing a unique pointer to UnboundTransform, or an error if
+  /// parameters are null
+  static Result<std::unique_ptr<UnboundTransform>> Make(
+      std::shared_ptr<NamedReference> ref, std::shared_ptr<Transform> transform);
 
   ~UnboundTransform() override;
 
@@ -216,6 +225,9 @@ class ICEBERG_EXPORT UnboundTransform : public UnboundTerm<class BoundTransform>
   Kind kind() const override { return Kind::kTransform; }
 
  private:
+  UnboundTransform(std::shared_ptr<NamedReference> ref,
+                   std::shared_ptr<Transform> transform);
+
   std::shared_ptr<NamedReference> ref_;
   std::shared_ptr<Transform> transform_;
 };
@@ -228,9 +240,11 @@ class ICEBERG_EXPORT BoundTransform : public BoundTerm {
   /// \param ref The bound term to apply the transformation to
   /// \param transform The transform to apply
   /// \param transform_func The bound transform function to apply
-  BoundTransform(std::shared_ptr<BoundReference> ref,
-                 std::shared_ptr<Transform> transform,
-                 std::shared_ptr<TransformFunction> transform_func);
+  /// \return A Result containing a unique pointer to BoundTransform, or an error if
+  /// parameters are null
+  static Result<std::unique_ptr<BoundTransform>> Make(
+      std::shared_ptr<BoundReference> ref, std::shared_ptr<Transform> transform,
+      std::shared_ptr<TransformFunction> transform_func);
 
   ~BoundTransform() override;
 
@@ -251,6 +265,10 @@ class ICEBERG_EXPORT BoundTransform : public BoundTerm {
   Kind kind() const override { return Kind::kTransform; }
 
  private:
+  BoundTransform(std::shared_ptr<BoundReference> ref,
+                 std::shared_ptr<Transform> transform,
+                 std::shared_ptr<TransformFunction> transform_func);
+
   std::shared_ptr<BoundReference> ref_;
   std::shared_ptr<Transform> transform_;
   std::shared_ptr<TransformFunction> transform_func_;

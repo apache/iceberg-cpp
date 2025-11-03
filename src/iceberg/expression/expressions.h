@@ -27,14 +27,18 @@
 #include <string>
 #include <vector>
 
+#include "iceberg/exception.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/expression/predicate.h"
 #include "iceberg/expression/term.h"
 #include "iceberg/iceberg_export.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
-/// \brief Factory methods for creating expressions.
+/// \brief Fluent APIs to create expressions.
+///
+/// \throw `ExpressionError` for invalid expression.
 class ICEBERG_EXPORT Expressions {
  public:
   // Logical operations
@@ -60,7 +64,9 @@ class ICEBERG_EXPORT Expressions {
         return left;
       }
 
-      return std::make_shared<::iceberg::And>(std::move(left), std::move(right));
+      auto result = ::iceberg::And::Make(std::move(left), std::move(right));
+      ICEBERG_ASSIGN_OR_THROW(auto and_expr, std::move(result));
+      return {std::move(and_expr)};
     } else {
       return And(And(std::move(left), std::move(right)), std::forward<Args>(args)...);
     }
@@ -86,7 +92,9 @@ class ICEBERG_EXPORT Expressions {
         return left;
       }
 
-      return std::make_shared<::iceberg::Or>(std::move(left), std::move(right));
+      auto result = ::iceberg::Or::Make(std::move(left), std::move(right));
+      ICEBERG_ASSIGN_OR_THROW(auto or_expr, std::move(result));
+      return {std::move(or_expr)};
     } else {
       return Or(Or(std::move(left), std::move(right)), std::forward<Args>(args)...);
     }

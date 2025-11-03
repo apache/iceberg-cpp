@@ -42,8 +42,17 @@ Result<std::shared_ptr<B>> Unbound<B>::Bind(const Schema& schema) const {
 }
 
 // NamedReference implementation
+Result<std::unique_ptr<NamedReference>> NamedReference::Make(std::string field_name) {
+  if (field_name.empty()) [[unlikely]] {
+    return InvalidExpression("NamedReference field name cannot be empty");
+  }
+  return std::unique_ptr<NamedReference>(new NamedReference(std::move(field_name)));
+}
+
 NamedReference::NamedReference(std::string field_name)
-    : field_name_(std::move(field_name)) {}
+    : field_name_(std::move(field_name)) {
+  ICEBERG_DCHECK(!field_name_.empty(), "NamedReference field name cannot be empty");
+}
 
 NamedReference::~NamedReference() = default;
 
@@ -51,11 +60,11 @@ Result<std::shared_ptr<BoundReference>> NamedReference::Bind(const Schema& schem
                                                              bool case_sensitive) const {
   ICEBERG_ASSIGN_OR_RAISE(auto field_opt,
                           schema.GetFieldByName(field_name_, case_sensitive));
-  if (!field_opt.has_value()) {
+  if (!field_opt.has_value()) [[unlikely]] {
     return InvalidExpression("Cannot find field '{}' in struct: {}", field_name_,
                              schema.ToString());
   }
-  return std::make_shared<BoundReference>(field_opt.value().get());
+  return BoundReference::Make(field_opt.value().get());
 }
 
 std::string NamedReference::ToString() const {
@@ -63,7 +72,16 @@ std::string NamedReference::ToString() const {
 }
 
 // BoundReference implementation
-BoundReference::BoundReference(SchemaField field) : field_(std::move(field)) {}
+Result<std::unique_ptr<BoundReference>> BoundReference::Make(SchemaField field) {
+  if (!field.type()) [[unlikely]] {
+    return InvalidExpression("BoundReference field type cannot be null");
+  }
+  return std::unique_ptr<BoundReference>(new BoundReference(std::move(field)));
+}
+
+BoundReference::BoundReference(SchemaField field) : field_(std::move(field)) {
+  ICEBERG_DCHECK(field_.type() != nullptr, "BoundReference field type cannot be null");
+}
 
 BoundReference::~BoundReference() = default;
 
@@ -87,9 +105,21 @@ bool BoundReference::Equals(const BoundTerm& other) const {
 }
 
 // UnboundTransform implementation
+Result<std::unique_ptr<UnboundTransform>> UnboundTransform::Make(
+    std::shared_ptr<NamedReference> ref, std::shared_ptr<Transform> transform) {
+  if (!ref || !transform) [[unlikely]] {
+    return InvalidExpression("UnboundTransform cannot have null children");
+  }
+  return std::unique_ptr<UnboundTransform>(
+      new UnboundTransform(std::move(ref), std::move(transform)));
+}
+
 UnboundTransform::UnboundTransform(std::shared_ptr<NamedReference> ref,
                                    std::shared_ptr<Transform> transform)
-    : ref_(std::move(ref)), transform_(std::move(transform)) {}
+    : ref_(std::move(ref)), transform_(std::move(transform)) {
+  ICEBERG_DCHECK(ref_ != nullptr, "UnboundTransform reference cannot be null");
+  ICEBERG_DCHECK(transform_ != nullptr, "UnboundTransform transform cannot be null");
+}
 
 UnboundTransform::~UnboundTransform() = default;
 
@@ -101,17 +131,32 @@ Result<std::shared_ptr<BoundTransform>> UnboundTransform::Bind(
     const Schema& schema, bool case_sensitive) const {
   ICEBERG_ASSIGN_OR_RAISE(auto bound_ref, ref_->Bind(schema, case_sensitive));
   ICEBERG_ASSIGN_OR_RAISE(auto transform_func, transform_->Bind(bound_ref->type()));
-  return std::make_shared<BoundTransform>(std::move(bound_ref), transform_,
-                                          std::move(transform_func));
+  return BoundTransform::Make(std::move(bound_ref), transform_,
+                              std::move(transform_func));
 }
 
 // BoundTransform implementation
+Result<std::unique_ptr<BoundTransform>> BoundTransform::Make(
+    std::shared_ptr<BoundReference> ref, std::shared_ptr<Transform> transform,
+    std::shared_ptr<TransformFunction> transform_func) {
+  if (!ref || !transform || !transform_func) [[unlikely]] {
+    return InvalidExpression("BoundTransform cannot have null children");
+  }
+  return std::unique_ptr<BoundTransform>(new BoundTransform(
+      std::move(ref), std::move(transform), std::move(transform_func)));
+}
+
 BoundTransform::BoundTransform(std::shared_ptr<BoundReference> ref,
                                std::shared_ptr<Transform> transform,
                                std::shared_ptr<TransformFunction> transform_func)
     : ref_(std::move(ref)),
       transform_(std::move(transform)),
-      transform_func_(std::move(transform_func)) {}
+      transform_func_(std::move(transform_func)) {
+  ICEBERG_DCHECK(ref_ != nullptr, "BoundTransform reference cannot be null");
+  ICEBERG_DCHECK(transform_ != nullptr, "BoundTransform transform cannot be null");
+  ICEBERG_DCHECK(transform_func_ != nullptr,
+                 "BoundTransform transform function cannot be null");
+}
 
 BoundTransform::~BoundTransform() = default;
 

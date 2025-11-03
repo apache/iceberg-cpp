@@ -45,8 +45,19 @@ const std::shared_ptr<False>& False::Instance() {
 Result<std::shared_ptr<Expression>> False::Negate() const { return True::Instance(); }
 
 // And implementation
+Result<std::unique_ptr<And>> And::Make(std::shared_ptr<Expression> left,
+                                       std::shared_ptr<Expression> right) {
+  if (!left || !right) [[unlikely]] {
+    return InvalidExpression("And expression cannot have null children");
+  }
+  return std::unique_ptr<And>(new And(std::move(left), std::move(right)));
+}
+
 And::And(std::shared_ptr<Expression> left, std::shared_ptr<Expression> right)
-    : left_(std::move(left)), right_(std::move(right)) {}
+    : left_(std::move(left)), right_(std::move(right)) {
+  ICEBERG_DCHECK(left_ != nullptr, "And left operand cannot be null");
+  ICEBERG_DCHECK(right_ != nullptr, "And right operand cannot be null");
+}
 
 std::string And::ToString() const {
   return std::format("({} and {})", left_->ToString(), right_->ToString());
@@ -56,7 +67,7 @@ Result<std::shared_ptr<Expression>> And::Negate() const {
   // De Morgan's law: not(A and B) = (not A) or (not B)
   ICEBERG_ASSIGN_OR_RAISE(auto left_negated, left_->Negate());
   ICEBERG_ASSIGN_OR_RAISE(auto right_negated, right_->Negate());
-  return std::make_shared<Or>(std::move(left_negated), std::move(right_negated));
+  return Or::Make(std::move(left_negated), std::move(right_negated));
 }
 
 bool And::Equals(const Expression& expr) const {
@@ -69,8 +80,22 @@ bool And::Equals(const Expression& expr) const {
 }
 
 // Or implementation
+Result<std::unique_ptr<Or>> Or::Make(std::shared_ptr<Expression> left,
+                                     std::shared_ptr<Expression> right) {
+  if (!left) {
+    return InvalidArgument("Or expression left operand cannot be null");
+  }
+  if (!right) {
+    return InvalidArgument("Or expression right operand cannot be null");
+  }
+  return std::unique_ptr<Or>(new Or(std::move(left), std::move(right)));
+}
+
 Or::Or(std::shared_ptr<Expression> left, std::shared_ptr<Expression> right)
-    : left_(std::move(left)), right_(std::move(right)) {}
+    : left_(std::move(left)), right_(std::move(right)) {
+  ICEBERG_DCHECK(left_ != nullptr, "Or left operand cannot be null");
+  ICEBERG_DCHECK(right_ != nullptr, "Or right operand cannot be null");
+}
 
 std::string Or::ToString() const {
   return std::format("({} or {})", left_->ToString(), right_->ToString());
@@ -80,7 +105,7 @@ Result<std::shared_ptr<Expression>> Or::Negate() const {
   // De Morgan's law: not(A or B) = (not A) and (not B)
   ICEBERG_ASSIGN_OR_RAISE(auto left_negated, left_->Negate());
   ICEBERG_ASSIGN_OR_RAISE(auto right_negated, right_->Negate());
-  return std::make_shared<And>(std::move(left_negated), std::move(right_negated));
+  return And::Make(std::move(left_negated), std::move(right_negated));
 }
 
 bool Or::Equals(const Expression& expr) const {
@@ -93,7 +118,16 @@ bool Or::Equals(const Expression& expr) const {
 }
 
 // Not implementation
-Not::Not(std::shared_ptr<Expression> child) : child_(std::move(child)) {}
+Result<std::unique_ptr<Not>> Not::Make(std::shared_ptr<Expression> child) {
+  if (!child) {
+    return InvalidExpression("Not expression cannot have null child");
+  }
+  return std::unique_ptr<Not>(new Not(std::move(child)));
+}
+
+Not::Not(std::shared_ptr<Expression> child) : child_(std::move(child)) {
+  ICEBERG_DCHECK(child_ != nullptr, "Not child expression cannot be null");
+}
 
 std::string Not::ToString() const { return std::format("not({})", child_->ToString()); }
 

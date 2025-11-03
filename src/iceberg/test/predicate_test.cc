@@ -218,14 +218,14 @@ TEST_F(PredicateTest, ReferenceFactory) {
 }
 
 TEST_F(PredicateTest, NamedReferenceBasics) {
-  auto ref = std::make_shared<NamedReference>("id");
+  auto ref = Expressions::Ref("id");
   EXPECT_EQ(ref->name(), "id");
   EXPECT_EQ(ref->ToString(), "ref(name=\"id\")");
   EXPECT_EQ(ref->reference(), ref);
 }
 
 TEST_F(PredicateTest, NamedReferenceBind) {
-  auto ref = std::make_shared<NamedReference>("id");
+  auto ref = Expressions::Ref("id");
   auto bound_result = ref->Bind(*schema_, /*case_sensitive=*/true);
   ASSERT_THAT(bound_result, IsOk());
 
@@ -237,15 +237,15 @@ TEST_F(PredicateTest, NamedReferenceBind) {
 }
 
 TEST_F(PredicateTest, NamedReferenceBindNonExistentField) {
-  auto ref = std::make_shared<NamedReference>("non_existent_field");
+  auto ref = Expressions::Ref("non_existent_field");
   auto bound_result = ref->Bind(*schema_, /*case_sensitive=*/true);
   EXPECT_THAT(bound_result, IsError(ErrorKind::kInvalidExpression));
 }
 
 TEST_F(PredicateTest, BoundReferenceEquality) {
-  auto ref1 = std::make_shared<NamedReference>("id");
-  auto ref2 = std::make_shared<NamedReference>("id");
-  auto ref3 = std::make_shared<NamedReference>("name");
+  auto ref1 = Expressions::Ref("id");
+  auto ref2 = Expressions::Ref("id");
+  auto ref3 = Expressions::Ref("name");
 
   auto bound1 = ref1->Bind(*schema_, true).value();
   auto bound2 = ref2->Bind(*schema_, true).value();
