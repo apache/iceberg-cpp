@@ -23,9 +23,9 @@ set(ICEBERG_ARROW_INSTALL_INTERFACE_LIBS)
 # ----------------------------------------------------------------------
 # Versions and URLs for toolchain builds
 
-set(ICEBERG_ARROW_BUILD_VERSION "21.0.0")
+set(ICEBERG_ARROW_BUILD_VERSION "22.0.0")
 set(ICEBERG_ARROW_BUILD_SHA256_CHECKSUM
-    "5d3f8db7e72fb9f65f4785b7a1634522e8d8e9657a445af53d4a34a3849857b5")
+    "131250cd24dec0cddde04e2ad8c9e2bc43edc5e84203a81cf71cf1a33a6e7e0f")
 
 if(DEFINED ENV{ICEBERG_ARROW_URL})
   set(ARROW_SOURCE_URL "$ENV{ICEBERG_ARROW_URL}")
