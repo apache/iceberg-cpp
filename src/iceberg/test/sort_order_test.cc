@@ -86,8 +86,8 @@ TEST(SortOrderTest, Equality) {
 
 TEST(SortOrderTest, IsUnsorted) {
   auto unsorted = SortOrder::Unsorted();
-  EXPECT_TRUE(unsorted->IsUnsorted());
-  EXPECT_FALSE(unsorted->IsSorted());
+  EXPECT_TRUE(unsorted->is_unsorted());
+  EXPECT_FALSE(unsorted->is_sorted());
 }
 
 TEST(SortOrderTest, IsSorted) {
@@ -97,8 +97,8 @@ TEST(SortOrderTest, IsSorted) {
                       NullOrder::kFirst);
   SortOrder sorted_order(100, {st_field1});
 
-  EXPECT_TRUE(sorted_order.IsSorted());
-  EXPECT_FALSE(sorted_order.IsUnsorted());
+  EXPECT_TRUE(sorted_order.is_sorted());
+  EXPECT_FALSE(sorted_order.is_unsorted());
 }
 
 TEST(SortOrderTest, Satisfies) {

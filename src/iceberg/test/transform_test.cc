@@ -767,6 +767,20 @@ TEST(TransformSatisfiesOrderOfTest, SatisfiesOrderOf) {
        .other_transform_str = "bucket[16]",
        .expected = false},
 
+      // Truncate satisfies Truncate with smaller width
+      {.transform_str = "truncate[32]",
+       .other_transform_str = "truncate[16]",
+       .expected = true},
+      {.transform_str = "truncate[16]",
+       .other_transform_str = "truncate[16]",
+       .expected = true},
+      {.transform_str = "truncate[16]",
+       .other_transform_str = "truncate[32]",
+       .expected = false},
+      {.transform_str = "truncate[16]",
+       .other_transform_str = "bucket[32]",
+       .expected = false},
+
       // Hour satisfies hour, day, month, and year
       {.transform_str = "hour", .other_transform_str = "hour", .expected = true},
       {.transform_str = "hour", .other_transform_str = "day", .expected = true},

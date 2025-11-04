@@ -50,11 +50,11 @@ class ICEBERG_EXPORT SortOrder : public util::Formattable {
   std::span<const SortField> fields() const;
 
   /// \brief Returns true if the sort order is sorted
-  bool IsSorted() const { return !fields_.empty(); }
+  bool is_sorted() const { return !fields_.empty(); }
 
   /// \brief Returns true if the sort order is unsorted
   /// A SortOrder is unsorted if it has no sort fields.
-  bool IsUnsorted() const { return fields_.empty(); }
+  bool is_unsorted() const { return fields_.empty(); }
 
   /// \brief Checks whether this order satisfies another order.
   bool Satisfies(const SortOrder& other) const;

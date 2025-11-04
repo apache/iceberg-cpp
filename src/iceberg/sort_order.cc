@@ -41,7 +41,7 @@ std::span<const SortField> SortOrder::fields() const { return fields_; }
 
 bool SortOrder::Satisfies(const SortOrder& other) const {
   // any ordering satisfies an unsorted ordering
-  if (other.IsUnsorted()) {
+  if (other.is_unsorted()) {
     return true;
   }
 
@@ -61,17 +61,7 @@ bool SortOrder::Satisfies(const SortOrder& other) const {
 }
 
 bool SortOrder::SameOrder(const SortOrder& other) const {
-  if (fields_.size() != other.fields().size()) {
-    return false;
-  }
-
-  for (const auto& [field, other_field] : std::views::zip(fields_, other.fields())) {
-    if (!(field == other_field)) {
-      return false;
-    }
-  }
-
-  return true;
+  return fields_ == other.fields_;
 }
 
 std::string SortOrder::ToString() const {
