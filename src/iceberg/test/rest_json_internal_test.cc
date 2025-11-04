@@ -17,7 +17,6 @@
  * under the License.
  */
 
-#include <algorithm>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -90,6 +89,20 @@ bool operator==(const RenameTableRequest& lhs, const RenameTableRequest& rhs) {
          lhs.source.name == rhs.source.name &&
          lhs.destination.ns.levels == rhs.destination.ns.levels &&
          lhs.destination.name == rhs.destination.name;
+}
+
+bool operator==(const CatalogConfig& lhs, const CatalogConfig& rhs) {
+  return lhs.overrides == rhs.overrides && lhs.defaults == rhs.defaults &&
+         lhs.endpoints == rhs.endpoints;
+}
+
+bool operator==(const ErrorModel& lhs, const ErrorModel& rhs) {
+  return lhs.message == rhs.message && lhs.type == rhs.type && lhs.code == rhs.code &&
+         lhs.stack == rhs.stack;
+}
+
+bool operator==(const ErrorResponse& lhs, const ErrorResponse& rhs) {
+  return lhs.error == rhs.error;
 }
 
 // Test parameter structure for roundtrip tests
@@ -744,6 +757,214 @@ INSTANTIATE_TEST_SUITE_P(
                                          .invalid_json_str = R"({})",
                                          .expected_error_message = "Missing 'name'"}),
     [](const ::testing::TestParamInfo<RegisterTableRequestInvalidParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_ROUNDTRIP_TEST(CatalogConfig)
+
+INSTANTIATE_TEST_SUITE_P(
+    CatalogConfigCases, CatalogConfigTest,
+    ::testing::Values(
+        // Full config with both defaults and overrides
+        CatalogConfigParam{
+            .test_name = "FullConfig",
+            .expected_json_str =
+                R"({"defaults":{"warehouse":"s3://bucket/warehouse"},"overrides":{"clients":"5"}})",
+            .model = {.overrides = {{"clients", "5"}},
+                      .defaults = {{"warehouse", "s3://bucket/warehouse"}}}},
+        // Only defaults
+        CatalogConfigParam{
+            .test_name = "OnlyDefaults",
+            .expected_json_str =
+                R"({"defaults":{"warehouse":"s3://bucket/warehouse"},"overrides":{}})",
+            .model = {.defaults = {{"warehouse", "s3://bucket/warehouse"}}}},
+        // Only overrides
+        CatalogConfigParam{
+            .test_name = "OnlyOverrides",
+            .expected_json_str = R"({"defaults":{},"overrides":{"clients":"5"}})",
+            .model = {.overrides = {{"clients", "5"}}}},
+        // Both empty
+        CatalogConfigParam{.test_name = "BothEmpty",
+                           .expected_json_str = R"({"defaults":{},"overrides":{}})",
+                           .model = {}},
+        // With endpoints
+        CatalogConfigParam{
+            .test_name = "WithEndpoints",
+            .expected_json_str =
+                R"({"defaults":{"warehouse":"s3://bucket/warehouse"},"overrides":{"clients":"5"},"endpoints":["GET /v1/config","POST /v1/tables"]})",
+            .model = {.overrides = {{"clients", "5"}},
+                      .defaults = {{"warehouse", "s3://bucket/warehouse"}},
+                      .endpoints = {"GET /v1/config", "POST /v1/tables"}}},
+        // Only endpoints
+        CatalogConfigParam{
+            .test_name = "OnlyEndpoints",
+            .expected_json_str =
+                R"({"defaults":{},"overrides":{},"endpoints":["GET /v1/config"]})",
+            .model = {.endpoints = {"GET /v1/config"}}}),
+    [](const ::testing::TestParamInfo<CatalogConfigParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_DESERIALIZE_TEST(CatalogConfig)
+
+INSTANTIATE_TEST_SUITE_P(
+    CatalogConfigDeserializeCases, CatalogConfigDeserializeTest,
+    ::testing::Values(
+        // Missing overrides field
+        CatalogConfigDeserializeParam{
+            .test_name = "MissingOverrides",
+            .json_str = R"({"defaults":{"warehouse":"s3://bucket/warehouse"}})",
+            .expected_model = {.defaults = {{"warehouse", "s3://bucket/warehouse"}}}},
+        // Null overrides field
+        CatalogConfigDeserializeParam{
+            .test_name = "NullOverrides",
+            .json_str =
+                R"({"defaults":{"warehouse":"s3://bucket/warehouse"},"overrides":null})",
+            .expected_model = {.defaults = {{"warehouse", "s3://bucket/warehouse"}}}},
+        // Missing defaults field
+        CatalogConfigDeserializeParam{
+            .test_name = "MissingDefaults",
+            .json_str = R"({"overrides":{"clients":"5"}})",
+            .expected_model = {.overrides = {{"clients", "5"}}}},
+        // Null defaults field
+        CatalogConfigDeserializeParam{
+            .test_name = "NullDefaults",
+            .json_str = R"({"defaults":null,"overrides":{"clients":"5"}})",
+            .expected_model = {.overrides = {{"clients", "5"}}}},
+        // Empty JSON object
+        CatalogConfigDeserializeParam{
+            .test_name = "EmptyJson", .json_str = R"({})", .expected_model = {}},
+        // Both fields null
+        CatalogConfigDeserializeParam{.test_name = "BothNull",
+                                      .json_str = R"({"defaults":null,"overrides":null})",
+                                      .expected_model = {}}),
+    [](const ::testing::TestParamInfo<CatalogConfigDeserializeParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_INVALID_TEST(CatalogConfig)
+
+INSTANTIATE_TEST_SUITE_P(
+    CatalogConfigInvalidCases, CatalogConfigInvalidTest,
+    ::testing::Values(
+        // Defaults has wrong type (array instead of object)
+        CatalogConfigInvalidParam{
+            .test_name = "WrongDefaultsType",
+            .invalid_json_str =
+                R"({"defaults":["warehouse","s3://bucket/warehouse"],"overrides":{"clients":"5"}})",
+            .expected_error_message = "type must be object, but is array"},
+        // Overrides has wrong type (string instead of object)
+        CatalogConfigInvalidParam{
+            .test_name = "WrongOverridesType",
+            .invalid_json_str =
+                R"({"defaults":{"warehouse":"s3://bucket/warehouse"},"overrides":"clients"})",
+            .expected_error_message = "type must be object, but is string"}),
+    [](const ::testing::TestParamInfo<CatalogConfigInvalidParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_ROUNDTRIP_TEST(ErrorResponse)
+
+INSTANTIATE_TEST_SUITE_P(
+    ErrorResponseCases, ErrorResponseTest,
+    ::testing::Values(
+        // Error without stack trace
+        ErrorResponseParam{
+            .test_name = "WithoutStack",
+            .expected_json_str =
+                R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404}})",
+            .model = {.error = {.message = "The given namespace does not exist",
+                                .type = "NoSuchNamespaceException",
+                                .code = 404}}},
+        // Error with stack trace
+        ErrorResponseParam{
+            .test_name = "WithStack",
+            .expected_json_str =
+                R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404,"stack":["a","b"]}})",
+            .model = {.error = {.message = "The given namespace does not exist",
+                                .type = "NoSuchNamespaceException",
+                                .code = 404,
+                                .stack = {"a", "b"}}}},
+        // Different error type
+        ErrorResponseParam{
+            .test_name = "DifferentError",
+            .expected_json_str =
+                R"({"error":{"message":"Internal server error","type":"InternalServerError","code":500,"stack":["line1","line2","line3"]}})",
+            .model = {.error = {.message = "Internal server error",
+                                .type = "InternalServerError",
+                                .code = 500,
+                                .stack = {"line1", "line2", "line3"}}}}),
+    [](const ::testing::TestParamInfo<ErrorResponseParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_DESERIALIZE_TEST(ErrorResponse)
+
+INSTANTIATE_TEST_SUITE_P(
+    ErrorResponseDeserializeCases, ErrorResponseDeserializeTest,
+    ::testing::Values(
+        // Stack field is null (should deserialize to empty vector)
+        ErrorResponseDeserializeParam{
+            .test_name = "NullStack",
+            .json_str =
+                R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404,"stack":null}})",
+            .expected_model = {.error = {.message = "The given namespace does not exist",
+                                         .type = "NoSuchNamespaceException",
+                                         .code = 404}}},
+        // Stack field is missing (should deserialize to empty vector)
+        ErrorResponseDeserializeParam{
+            .test_name = "MissingStack",
+            .json_str =
+                R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404}})",
+            .expected_model = {.error = {.message = "The given namespace does not exist",
+                                         .type = "NoSuchNamespaceException",
+                                         .code = 404}}}),
+    [](const ::testing::TestParamInfo<ErrorResponseDeserializeParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_INVALID_TEST(ErrorResponse)
+
+INSTANTIATE_TEST_SUITE_P(
+    ErrorResponseInvalidCases, ErrorResponseInvalidTest,
+    ::testing::Values(
+        // Missing error field
+        ErrorResponseInvalidParam{.test_name = "MissingError",
+                                  .invalid_json_str = R"({})",
+                                  .expected_error_message = "Missing 'error'"},
+        // Null error field
+        ErrorResponseInvalidParam{.test_name = "NullError",
+                                  .invalid_json_str = R"({"error":null})",
+                                  .expected_error_message = "Missing 'error'"}),
+    [](const ::testing::TestParamInfo<ErrorResponseInvalidParam>& info) {
+      return info.param.test_name;
+    });
+
+// ErrorModel tests - testing the nested error model structure
+DECLARE_INVALID_TEST(ErrorModel)
+
+INSTANTIATE_TEST_SUITE_P(
+    ErrorModelInvalidCases, ErrorModelInvalidTest,
+    ::testing::Values(
+        // Missing required type field
+        ErrorModelInvalidParam{
+            .test_name = "MissingType",
+            .invalid_json_str =
+                R"({"message":"The given namespace does not exist","code":404})",
+            .expected_error_message = "Missing 'type'"},
+        // Missing required code field
+        ErrorModelInvalidParam{
+            .test_name = "MissingCode",
+            .invalid_json_str =
+                R"({"message":"The given namespace does not exist","type":"NoSuchNamespaceException"})",
+            .expected_error_message = "Missing 'code'"},
+        // Wrong type for message field
+        ErrorModelInvalidParam{
+            .test_name = "WrongMessageType",
+            .invalid_json_str =
+                R"({"message":123,"type":"NoSuchNamespaceException","code":404})",
+            .expected_error_message = "type must be string, but is number"}),
+    [](const ::testing::TestParamInfo<ErrorModelInvalidParam>& info) {
       return info.param.test_name;
     });
 
