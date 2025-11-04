@@ -29,6 +29,7 @@
 #include <string_view>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/formattable.h"
 
@@ -71,6 +72,8 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
   std::string_view doc() const;
 
   [[nodiscard]] std::string ToString() const override;
+
+  Status Validate() const;
 
   friend bool operator==(const SchemaField& lhs, const SchemaField& rhs) {
     return lhs.Equals(rhs);

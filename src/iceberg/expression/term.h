@@ -32,11 +32,6 @@
 
 namespace iceberg {
 
-// TODO(gangwu): add a struct-like interface to wrap a row of data from ArrowArray or
-// structs like ManifestFile and ManifestEntry to facilitate generailization of the
-// evaluation of expressions on top of different data structures.
-class StructLike;
-
 /// \brief A term is an expression node that produces a typed value when evaluated.
 class ICEBERG_EXPORT Term : public util::Formattable {
  public:
@@ -138,8 +133,6 @@ class ICEBERG_EXPORT NamedReference
   /// \brief Create a named reference to a field.
   ///
   /// \param field_name The name of the field to reference
-  /// \return A Result containing a unique pointer to NamedReference, or an error if
-  /// field_name is empty
   static Result<std::unique_ptr<NamedReference>> Make(std::string field_name);
 
   ~NamedReference() override;
@@ -170,7 +163,6 @@ class ICEBERG_EXPORT BoundReference
   /// \brief Create a bound reference.
   ///
   /// \param field The schema field
-  /// \return A unique pointer to BoundReference (field cannot be null in practice)
   static Result<std::unique_ptr<BoundReference>> Make(SchemaField field);
 
   ~BoundReference() override;
@@ -206,8 +198,6 @@ class ICEBERG_EXPORT UnboundTransform : public UnboundTerm<class BoundTransform>
   ///
   /// \param ref The term to apply the transformation to
   /// \param transform The transformation function to apply
-  /// \return A Result containing a unique pointer to UnboundTransform, or an error if
-  /// parameters are null
   static Result<std::unique_ptr<UnboundTransform>> Make(
       std::shared_ptr<NamedReference> ref, std::shared_ptr<Transform> transform);
 
@@ -240,8 +230,6 @@ class ICEBERG_EXPORT BoundTransform : public BoundTerm {
   /// \param ref The bound term to apply the transformation to
   /// \param transform The transform to apply
   /// \param transform_func The bound transform function to apply
-  /// \return A Result containing a unique pointer to BoundTransform, or an error if
-  /// parameters are null
   static Result<std::unique_ptr<BoundTransform>> Make(
       std::shared_ptr<BoundReference> ref, std::shared_ptr<Transform> transform,
       std::shared_ptr<TransformFunction> transform_func);

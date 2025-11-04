@@ -134,8 +134,6 @@ class ICEBERG_EXPORT And : public Expression {
   ///
   /// \param left The left operand of the AND expression
   /// \param right The right operand of the AND expression
-  /// \return A Result containing a unique pointer to And, or an error if either parameter
-  /// is nullptr
   static Result<std::unique_ptr<And>> Make(std::shared_ptr<Expression> left,
                                            std::shared_ptr<Expression> right);
 
@@ -174,8 +172,6 @@ class ICEBERG_EXPORT Or : public Expression {
   ///
   /// \param left The left operand of the OR expression
   /// \param right The right operand of the OR expression
-  /// \return A Result containing a unique pointer to Or, or an error if either parameter
-  /// is nullptr
   static Result<std::unique_ptr<Or>> Make(std::shared_ptr<Expression> left,
                                           std::shared_ptr<Expression> right);
 

@@ -42,9 +42,8 @@ std::shared_ptr<Expression> Expressions::Not(std::shared_ptr<Expression> child) 
     return not_expr.child();
   }
 
-  auto result = ::iceberg::Not::Make(std::move(child));
-  ICEBERG_ASSIGN_OR_THROW(auto not_expr, std::move(result));
-  return {std::move(not_expr)};
+  ICEBERG_ASSIGN_OR_THROW(auto not_expr, iceberg::Not::Make(std::move(child)));
+  return not_expr;
 }
 
 // Transform functions
@@ -54,38 +53,38 @@ std::shared_ptr<UnboundTransform> Expressions::Bucket(std::string name,
   ICEBERG_ASSIGN_OR_THROW(
       auto transform,
       UnboundTransform::Make(Ref(std::move(name)), Transform::Bucket(num_buckets)));
-  return {std::move(transform)};
+  return transform;
 }
 
 std::shared_ptr<UnboundTransform> Expressions::Year(std::string name) {
   ICEBERG_ASSIGN_OR_THROW(
       auto transform, UnboundTransform::Make(Ref(std::move(name)), Transform::Year()));
-  return {std::move(transform)};
+  return transform;
 }
 
 std::shared_ptr<UnboundTransform> Expressions::Month(std::string name) {
   ICEBERG_ASSIGN_OR_THROW(
       auto transform, UnboundTransform::Make(Ref(std::move(name)), Transform::Month()));
-  return {std::move(transform)};
+  return transform;
 }
 
 std::shared_ptr<UnboundTransform> Expressions::Day(std::string name) {
   ICEBERG_ASSIGN_OR_THROW(auto transform,
                           UnboundTransform::Make(Ref(std::move(name)), Transform::Day()));
-  return {std::move(transform)};
+  return transform;
 }
 
 std::shared_ptr<UnboundTransform> Expressions::Hour(std::string name) {
   ICEBERG_ASSIGN_OR_THROW(
       auto transform, UnboundTransform::Make(Ref(std::move(name)), Transform::Hour()));
-  return {std::move(transform)};
+  return transform;
 }
 
 std::shared_ptr<UnboundTransform> Expressions::Truncate(std::string name, int32_t width) {
   ICEBERG_ASSIGN_OR_THROW(
       auto transform,
       UnboundTransform::Make(Ref(std::move(name)), Transform::Truncate(width)));
-  return {std::move(transform)};
+  return transform;
 }
 
 std::shared_ptr<UnboundTransform> Expressions::Transform(
@@ -93,7 +92,7 @@ std::shared_ptr<UnboundTransform> Expressions::Transform(
   ICEBERG_ASSIGN_OR_THROW(
       auto unbound_transform,
       UnboundTransform::Make(Ref(std::move(name)), std::move(transform)));
-  return {std::move(unbound_transform)};
+  return unbound_transform;
 }
 
 // Template implementations for unary predicates
@@ -346,7 +345,7 @@ std::shared_ptr<False> Expressions::AlwaysFalse() { return False::Instance(); }
 
 std::shared_ptr<NamedReference> Expressions::Ref(std::string name) {
   ICEBERG_ASSIGN_OR_THROW(auto ref, NamedReference::Make(std::move(name)));
-  return {std::move(ref)};
+  return ref;
 }
 
 Literal Expressions::Lit(Literal::Value value, std::shared_ptr<PrimitiveType> type) {

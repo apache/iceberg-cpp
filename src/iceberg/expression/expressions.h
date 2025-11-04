@@ -64,9 +64,9 @@ class ICEBERG_EXPORT Expressions {
         return left;
       }
 
-      auto result = ::iceberg::And::Make(std::move(left), std::move(right));
-      ICEBERG_ASSIGN_OR_THROW(auto and_expr, std::move(result));
-      return {std::move(and_expr)};
+      ICEBERG_ASSIGN_OR_THROW(auto and_expr,
+                              iceberg::And::Make(std::move(left), std::move(right)));
+      return and_expr;
     } else {
       return And(And(std::move(left), std::move(right)), std::forward<Args>(args)...);
     }
@@ -92,9 +92,9 @@ class ICEBERG_EXPORT Expressions {
         return left;
       }
 
-      auto result = ::iceberg::Or::Make(std::move(left), std::move(right));
-      ICEBERG_ASSIGN_OR_THROW(auto or_expr, std::move(result));
-      return {std::move(or_expr)};
+      ICEBERG_ASSIGN_OR_THROW(auto or_expr,
+                              iceberg::Or::Make(std::move(left), std::move(right)));
+      return or_expr;
     } else {
       return Or(Or(std::move(left), std::move(right)), std::forward<Args>(args)...);
     }

@@ -54,6 +54,16 @@ bool SchemaField::optional() const { return optional_; }
 
 std::string_view SchemaField::doc() const { return doc_; }
 
+Status SchemaField::Validate() const {
+  if (name_.empty()) [[unlikely]] {
+    return InvalidSchema("SchemaField cannot have empty name");
+  }
+  if (type_ == nullptr) [[unlikely]] {
+    return InvalidSchema("SchemaField cannot have null type");
+  }
+  return {};
+}
+
 std::string SchemaField::ToString() const {
   std::string result = std::format("{} ({}): {} ({}){}", name_, field_id_, *type_,
                                    optional_ ? "optional" : "required",

@@ -42,22 +42,18 @@
   ICEBERG_ASSIGN_OR_RAISE_IMPL(ICEBERG_ASSIGN_OR_RAISE_NAME(result_, __COUNTER__), lhs, \
                                rexpr)
 
-#define ICEBERG_ASSIGN_OR_THROW_IMPL(result_name, lhs, rexpr)    \
-  auto&& result_name = (rexpr);                                  \
-  if (!result_name) [[unlikely]] {                               \
-    throw iceberg::ExpressionError(result_name.error().message); \
-  }                                                              \
-  lhs = std::move(result_name.value());
-
-#define ICEBERG_ASSIGN_OR_THROW(lhs, rexpr)                                             \
-  ICEBERG_ASSIGN_OR_THROW_IMPL(ICEBERG_ASSIGN_OR_RAISE_NAME(result_, __COUNTER__), lhs, \
-                               rexpr)
-
 #define ICEBERG_DCHECK(expr, message) assert((expr) && (message))
+
+#define ERROR_TO_EXCEPTION(error)                             \
+  if (error.kind == iceberg::ErrorKind::kInvalidExpression) { \
+    throw iceberg::ExpressionError(error.message);            \
+  } else {                                                    \
+    throw iceberg::IcebergError(error.message);               \
+  }
 
 #define ICEBERG_THROW_NOT_OK(result)                            \
   if (auto&& result_name = result; !result_name) [[unlikely]] { \
-    throw iceberg::IcebergError(result_name.error().message);   \
+    ERROR_TO_EXCEPTION(result_name.error());                    \
   }
 
 #define ICEBERG_ASSIGN_OR_THROW_IMPL(result_name, lhs, rexpr) \

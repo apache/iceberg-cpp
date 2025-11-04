@@ -55,8 +55,7 @@ Result<std::unique_ptr<And>> And::Make(std::shared_ptr<Expression> left,
 
 And::And(std::shared_ptr<Expression> left, std::shared_ptr<Expression> right)
     : left_(std::move(left)), right_(std::move(right)) {
-  ICEBERG_DCHECK(left_ != nullptr, "And left operand cannot be null");
-  ICEBERG_DCHECK(right_ != nullptr, "And right operand cannot be null");
+  ICEBERG_DCHECK(left_ && right_, "And cannot have null children");
 }
 
 std::string And::ToString() const {
@@ -82,19 +81,15 @@ bool And::Equals(const Expression& expr) const {
 // Or implementation
 Result<std::unique_ptr<Or>> Or::Make(std::shared_ptr<Expression> left,
                                      std::shared_ptr<Expression> right) {
-  if (!left) {
-    return InvalidArgument("Or expression left operand cannot be null");
-  }
-  if (!right) {
-    return InvalidArgument("Or expression right operand cannot be null");
+  if (!left || !right) [[unlikely]] {
+    return InvalidExpression("Or cannot have null children");
   }
   return std::unique_ptr<Or>(new Or(std::move(left), std::move(right)));
 }
 
 Or::Or(std::shared_ptr<Expression> left, std::shared_ptr<Expression> right)
     : left_(std::move(left)), right_(std::move(right)) {
-  ICEBERG_DCHECK(left_ != nullptr, "Or left operand cannot be null");
-  ICEBERG_DCHECK(right_ != nullptr, "Or right operand cannot be null");
+  ICEBERG_DCHECK(left_ && right_, "Or cannot have null children");
 }
 
 std::string Or::ToString() const {
@@ -119,14 +114,14 @@ bool Or::Equals(const Expression& expr) const {
 
 // Not implementation
 Result<std::unique_ptr<Not>> Not::Make(std::shared_ptr<Expression> child) {
-  if (!child) {
+  if (!child) [[unlikely]] {
     return InvalidExpression("Not expression cannot have null child");
   }
   return std::unique_ptr<Not>(new Not(std::move(child)));
 }
 
 Not::Not(std::shared_ptr<Expression> child) : child_(std::move(child)) {
-  ICEBERG_DCHECK(child_ != nullptr, "Not child expression cannot be null");
+  ICEBERG_DCHECK(child_ != nullptr, "Not expression cannot have null child");
 }
 
 std::string Not::ToString() const { return std::format("not({})", child_->ToString()); }
@@ -233,7 +228,7 @@ Result<Expression::Operation> Negate(Expression::Operation op) {
     case Expression::Operation::kMax:
     case Expression::Operation::kMin:
     case Expression::Operation::kCount:
-      return InvalidArgument("No negation for operation: {}", op);
+      return InvalidExpression("No negation for operation: {}", op);
   }
   std::unreachable();
 }
