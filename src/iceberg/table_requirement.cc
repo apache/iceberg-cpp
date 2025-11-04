@@ -72,8 +72,8 @@ Status AssertRefSnapshotID::Validate(const TableMetadata* base) const {
 
   // snapshot_id has a value, so the reference should exist and match
   if (it == base->refs.end()) {
-    return CommitFailed(
-        "Requirement failed: reference '{}' is missing in table metadata", ref_name_);
+    return CommitFailed("Requirement failed: reference '{}' is missing in table metadata",
+                        ref_name_);
   }
 
   if (it->second->snapshot_id != snapshot_id_.value()) {
@@ -95,7 +95,8 @@ Status AssertLastAssignedFieldId::Validate(const TableMetadata* base) const {
 
   if (base->last_column_id != last_assigned_field_id_) {
     return CommitFailed(
-        "Requirement failed: last assigned field ID does not match (expected={}, actual={})",
+        "Requirement failed: last assigned field ID does not match (expected={}, "
+        "actual={})",
         last_assigned_field_id_, base->last_column_id);
   }
 
@@ -165,7 +166,8 @@ Status AssertDefaultSortOrderID::Validate(const TableMetadata* base) const {
 
   if (base->default_sort_order_id != sort_order_id_) {
     return CommitFailed(
-        "Requirement failed: default sort order ID does not match (expected={}, actual={})",
+        "Requirement failed: default sort order ID does not match (expected={}, "
+        "actual={})",
         sort_order_id_, base->default_sort_order_id);
   }
 

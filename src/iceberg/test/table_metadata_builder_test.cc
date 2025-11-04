@@ -264,6 +264,177 @@ TEST_F(TableMetadataBuilderTest, TableRequirementAssertCurrentSchemaIDNotSet) {
   EXPECT_THAT(status, HasErrorMessage("schema ID is not set"));
 }
 
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertDoesNotExistSuccess) {
+  table::AssertDoesNotExist requirement;
+
+  ASSERT_THAT(requirement.Validate(nullptr), IsOk());
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertDoesNotExistTableExists) {
+  table::AssertDoesNotExist requirement;
+
+  auto status = requirement.Validate(base_metadata_.get());
+  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
+  EXPECT_THAT(status, HasErrorMessage("table already exists"));
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertRefSnapshotIDSuccess) {
+  auto ref = std::make_shared<SnapshotRef>();
+  ref->snapshot_id = 100;
+  ref->retention = SnapshotRef::Branch{};
+  base_metadata_->refs["main"] = ref;
+
+  table::AssertRefSnapshotID requirement("main", 100);
+
+  ASSERT_THAT(requirement.Validate(base_metadata_.get()), IsOk());
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertRefSnapshotIDMismatch) {
+  auto ref = std::make_shared<SnapshotRef>();
+  ref->snapshot_id = 100;
+  ref->retention = SnapshotRef::Branch{};
+  base_metadata_->refs["main"] = ref;
+
+  table::AssertRefSnapshotID requirement("main", 200);
+
+  auto status = requirement.Validate(base_metadata_.get());
+  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
+  EXPECT_THAT(status, HasErrorMessage("snapshot ID does not match"));
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertRefSnapshotIDRefMissing) {
+  table::AssertRefSnapshotID requirement("missing-ref", 100);
+
+  auto status = requirement.Validate(base_metadata_.get());
+  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
+  EXPECT_THAT(status, HasErrorMessage("missing in table metadata"));
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertRefSnapshotIDNullBase) {
+  table::AssertRefSnapshotID requirement("main", 100);
+
+  auto status = requirement.Validate(nullptr);
+  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
+  EXPECT_THAT(status, HasErrorMessage("metadata is missing"));
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertRefSnapshotIDNulloptSuccess) {
+  // Ref should not exist, and it doesn't
+  table::AssertRefSnapshotID requirement("nonexistent", std::nullopt);
+
+  ASSERT_THAT(requirement.Validate(base_metadata_.get()), IsOk());
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertRefSnapshotIDNulloptButExists) {
+  auto ref = std::make_shared<SnapshotRef>();
+  ref->snapshot_id = 100;
+  ref->retention = SnapshotRef::Branch{};
+  base_metadata_->refs["main"] = ref;
+
+  // Ref should not exist, but it does
+  table::AssertRefSnapshotID requirement("main", std::nullopt);
+
+  auto status = requirement.Validate(base_metadata_.get());
+  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
+  EXPECT_THAT(status, HasErrorMessage("should not exist"));
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertLastAssignedFieldIdSuccess) {
+  base_metadata_->last_column_id = 10;
+  table::AssertLastAssignedFieldId requirement(10);
+
+  ASSERT_THAT(requirement.Validate(base_metadata_.get()), IsOk());
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertLastAssignedFieldIdMismatch) {
+  base_metadata_->last_column_id = 10;
+  table::AssertLastAssignedFieldId requirement(15);
+
+  auto status = requirement.Validate(base_metadata_.get());
+  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
+  EXPECT_THAT(status, HasErrorMessage("last assigned field ID does not match"));
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertLastAssignedFieldIdNullBase) {
+  table::AssertLastAssignedFieldId requirement(10);
+
+  auto status = requirement.Validate(nullptr);
+  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
+  EXPECT_THAT(status, HasErrorMessage("metadata is missing"));
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertLastAssignedPartitionIdSuccess) {
+  base_metadata_->last_partition_id = 5;
+  table::AssertLastAssignedPartitionId requirement(5);
+
+  ASSERT_THAT(requirement.Validate(base_metadata_.get()), IsOk());
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertLastAssignedPartitionIdMismatch) {
+  base_metadata_->last_partition_id = 5;
+  table::AssertLastAssignedPartitionId requirement(8);
+
+  auto status = requirement.Validate(base_metadata_.get());
+  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
+  EXPECT_THAT(status, HasErrorMessage("last assigned partition ID does not match"));
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertLastAssignedPartitionIdNullBase) {
+  table::AssertLastAssignedPartitionId requirement(5);
+
+  auto status = requirement.Validate(nullptr);
+  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
+  EXPECT_THAT(status, HasErrorMessage("metadata is missing"));
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertDefaultSpecIDSuccess) {
+  base_metadata_->default_spec_id = 3;
+  table::AssertDefaultSpecID requirement(3);
+
+  ASSERT_THAT(requirement.Validate(base_metadata_.get()), IsOk());
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertDefaultSpecIDMismatch) {
+  base_metadata_->default_spec_id = 3;
+  table::AssertDefaultSpecID requirement(7);
+
+  auto status = requirement.Validate(base_metadata_.get());
+  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
+  EXPECT_THAT(status, HasErrorMessage("default spec ID does not match"));
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertDefaultSpecIDNullBase) {
+  table::AssertDefaultSpecID requirement(3);
+
+  auto status = requirement.Validate(nullptr);
+  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
+  EXPECT_THAT(status, HasErrorMessage("metadata is missing"));
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertDefaultSortOrderIDSuccess) {
+  base_metadata_->default_sort_order_id = 2;
+  table::AssertDefaultSortOrderID requirement(2);
+
+  ASSERT_THAT(requirement.Validate(base_metadata_.get()), IsOk());
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertDefaultSortOrderIDMismatch) {
+  base_metadata_->default_sort_order_id = 2;
+  table::AssertDefaultSortOrderID requirement(4);
+
+  auto status = requirement.Validate(base_metadata_.get());
+  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
+  EXPECT_THAT(status, HasErrorMessage("default sort order ID does not match"));
+}
+
+TEST_F(TableMetadataBuilderTest, TableRequirementAssertDefaultSortOrderIDNullBase) {
+  table::AssertDefaultSortOrderID requirement(2);
+
+  auto status = requirement.Validate(nullptr);
+  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
+  EXPECT_THAT(status, HasErrorMessage("metadata is missing"));
+}
+
 // ============================================================================
 // Integration Tests - End-to-End Workflow
 // ============================================================================
