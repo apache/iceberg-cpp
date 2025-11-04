@@ -17,7 +17,6 @@
  * under the License.
  */
 
-#include <algorithm>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -89,6 +88,20 @@ bool operator==(const RenameTableRequest& lhs, const RenameTableRequest& rhs) {
          lhs.source.name == rhs.source.name &&
          lhs.destination.ns.levels == rhs.destination.ns.levels &&
          lhs.destination.name == rhs.destination.name;
+}
+
+bool operator==(const CatalogConfig& lhs, const CatalogConfig& rhs) {
+  return lhs.overrides == rhs.overrides && lhs.defaults == rhs.defaults &&
+         lhs.endpoints == rhs.endpoints;
+}
+
+bool operator==(const ErrorModel& lhs, const ErrorModel& rhs) {
+  return lhs.message == rhs.message && lhs.type == rhs.type && lhs.code == rhs.code &&
+         lhs.stack == rhs.stack;
+}
+
+bool operator==(const ErrorResponse& lhs, const ErrorResponse& rhs) {
+  return lhs.error == rhs.error;
 }
 
 struct CreateNamespaceRequestParam {
@@ -914,6 +927,303 @@ TEST(RegisterTableRequestTest, InvalidRequests) {
   EXPECT_FALSE(result3.has_value());
   EXPECT_THAT(result3, IsError(ErrorKind::kJsonParseError));
   EXPECT_EQ(result3.error().message, "Missing 'name' in {}");
+}
+
+struct CatalogConfigParam {
+  std::string test_name;
+  std::string expected_json_str;
+  std::unordered_map<std::string, std::string> overrides;
+  std::unordered_map<std::string, std::string> defaults;
+  std::vector<std::string> endpoints;
+};
+
+class CatalogConfigTest : public ::testing::TestWithParam<CatalogConfigParam> {
+ protected:
+  void TestRoundTrip() {
+    const auto& param = GetParam();
+
+    CatalogConfig original;
+    original.overrides = param.overrides;
+    original.defaults = param.defaults;
+    original.endpoints = param.endpoints;
+
+    auto json = ToJson(original);
+    auto expected_json = nlohmann::json::parse(param.expected_json_str);
+    EXPECT_EQ(json, expected_json);
+
+    auto result = CatalogConfigFromJson(expected_json);
+    ASSERT_TRUE(result.has_value()) << result.error().message;
+    auto& parsed = result.value();
+
+    EXPECT_EQ(parsed, original);
+  }
+};
+
+TEST_P(CatalogConfigTest, RoundTrip) { TestRoundTrip(); }
+
+INSTANTIATE_TEST_SUITE_P(
+    CatalogConfigCases, CatalogConfigTest,
+    ::testing::Values(
+        // Full config with both defaults and overrides
+        CatalogConfigParam{
+            .test_name = "FullConfig",
+            .expected_json_str =
+                R"({"defaults":{"warehouse":"s3://bucket/warehouse"},"overrides":{"clients":"5"}})",
+            .overrides = {{"clients", "5"}},
+            .defaults = {{"warehouse", "s3://bucket/warehouse"}},
+            .endpoints = {}},
+        // Only defaults
+        CatalogConfigParam{
+            .test_name = "OnlyDefaults",
+            .expected_json_str =
+                R"({"defaults":{"warehouse":"s3://bucket/warehouse"},"overrides":{}})",
+            .overrides = {},
+            .defaults = {{"warehouse", "s3://bucket/warehouse"}},
+            .endpoints = {}},
+        // Only overrides
+        CatalogConfigParam{
+            .test_name = "OnlyOverrides",
+            .expected_json_str = R"({"defaults":{},"overrides":{"clients":"5"}})",
+            .overrides = {{"clients", "5"}},
+            .defaults = {},
+            .endpoints = {}},
+        // Both empty
+        CatalogConfigParam{.test_name = "BothEmpty",
+                           .expected_json_str = R"({"defaults":{},"overrides":{}})",
+                           .overrides = {},
+                           .defaults = {},
+                           .endpoints = {}},
+        // With endpoints
+        CatalogConfigParam{
+            .test_name = "WithEndpoints",
+            .expected_json_str =
+                R"({"defaults":{"warehouse":"s3://bucket/warehouse"},"overrides":{"clients":"5"},"endpoints":["GET /v1/config","POST /v1/tables"]})",
+            .overrides = {{"clients", "5"}},
+            .defaults = {{"warehouse", "s3://bucket/warehouse"}},
+            .endpoints = {"GET /v1/config", "POST /v1/tables"}},
+        // Only endpoints
+        CatalogConfigParam{
+            .test_name = "OnlyEndpoints",
+            .expected_json_str =
+                R"({"defaults":{},"overrides":{},"endpoints":["GET /v1/config"]})",
+            .overrides = {},
+            .defaults = {},
+            .endpoints = {"GET /v1/config"}}),
+    [](const ::testing::TestParamInfo<CatalogConfigParam>& info) {
+      return info.param.test_name;
+    });
+
+TEST(CatalogConfigTest, DeserializeWithoutDefaults) {
+  // Missing overrides field
+  std::string json_missing_overrides =
+      R"({"defaults":{"warehouse":"s3://bucket/warehouse"}})";
+  auto result1 = CatalogConfigFromJson(nlohmann::json::parse(json_missing_overrides));
+  ASSERT_TRUE(result1.has_value());
+  std::unordered_map<std::string, std::string> expected_defaults = {
+      {"warehouse", "s3://bucket/warehouse"}};
+  EXPECT_EQ(result1.value().defaults, expected_defaults);
+  EXPECT_TRUE(result1.value().overrides.empty());
+
+  // Null overrides field
+  std::string json_null_overrides =
+      R"({"defaults":{"warehouse":"s3://bucket/warehouse"},"overrides":null})";
+  auto result2 = CatalogConfigFromJson(nlohmann::json::parse(json_null_overrides));
+  ASSERT_TRUE(result2.has_value());
+  EXPECT_TRUE(result2.value().overrides.empty());
+
+  // Missing defaults field
+  std::string json_missing_defaults = R"({"overrides":{"clients":"5"}})";
+  auto result3 = CatalogConfigFromJson(nlohmann::json::parse(json_missing_defaults));
+  ASSERT_TRUE(result3.has_value());
+  std::unordered_map<std::string, std::string> expected_overrides = {{"clients", "5"}};
+  EXPECT_EQ(result3.value().overrides, expected_overrides);
+  EXPECT_TRUE(result3.value().defaults.empty());
+
+  // Null defaults field
+  std::string json_null_defaults = R"({"defaults":null,"overrides":{"clients":"5"}})";
+  auto result4 = CatalogConfigFromJson(nlohmann::json::parse(json_null_defaults));
+  ASSERT_TRUE(result4.has_value());
+  EXPECT_TRUE(result4.value().defaults.empty());
+
+  // Empty JSON object
+  std::string json_empty = R"({})";
+  auto result5 = CatalogConfigFromJson(nlohmann::json::parse(json_empty));
+  ASSERT_TRUE(result5.has_value());
+  EXPECT_TRUE(result5.value().defaults.empty());
+  EXPECT_TRUE(result5.value().overrides.empty());
+
+  // Both fields null
+  std::string json_both_null = R"({"defaults":null,"overrides":null})";
+  auto result6 = CatalogConfigFromJson(nlohmann::json::parse(json_both_null));
+  ASSERT_TRUE(result6.has_value());
+  EXPECT_TRUE(result6.value().defaults.empty());
+  EXPECT_TRUE(result6.value().overrides.empty());
+}
+
+TEST(CatalogConfigTest, InvalidConfig) {
+  // Defaults has wrong type (array instead of object)
+  std::string json_wrong_defaults_type =
+      R"({"defaults":["warehouse","s3://bucket/warehouse"],"overrides":{"clients":"5"}})";
+  auto result1 = CatalogConfigFromJson(nlohmann::json::parse(json_wrong_defaults_type));
+  EXPECT_FALSE(result1.has_value());
+  EXPECT_THAT(result1, IsError(ErrorKind::kJsonParseError));
+  EXPECT_EQ(result1.error().message,
+            "Failed to parse 'defaults' from "
+            "{\"defaults\":[\"warehouse\",\"s3://bucket/"
+            "warehouse\"],\"overrides\":{\"clients\":\"5\"}}: "
+            "[json.exception.type_error.302] type must be object, but is array");
+
+  // Overrides has wrong type (string instead of object)
+  std::string json_wrong_overrides_type =
+      R"({"defaults":{"warehouse":"s3://bucket/warehouse"},"overrides":"clients"})";
+  auto result2 = CatalogConfigFromJson(nlohmann::json::parse(json_wrong_overrides_type));
+  EXPECT_FALSE(result2.has_value());
+  EXPECT_THAT(result2, IsError(ErrorKind::kJsonParseError));
+  EXPECT_EQ(result2.error().message,
+            "Failed to parse 'overrides' from "
+            "{\"defaults\":{\"warehouse\":\"s3://bucket/"
+            "warehouse\"},\"overrides\":\"clients\"}: "
+            "[json.exception.type_error.302] type must be object, but is string");
+}
+
+struct ErrorResponseParam {
+  std::string test_name;
+  std::string expected_json_str;
+  std::string message;
+  std::string type;
+  uint16_t code;
+  std::vector<std::string> stack;
+};
+
+class ErrorResponseTest : public ::testing::TestWithParam<ErrorResponseParam> {
+ protected:
+  void TestRoundTrip() {
+    const auto& param = GetParam();
+
+    ErrorModel error_model;
+    error_model.message = param.message;
+    error_model.type = param.type;
+    error_model.code = param.code;
+    error_model.stack = param.stack;
+
+    ErrorResponse original;
+    original.error = error_model;
+
+    auto json = ToJson(original);
+    auto expected_json = nlohmann::json::parse(param.expected_json_str);
+    EXPECT_EQ(json, expected_json);
+
+    auto result = ErrorResponseFromJson(expected_json);
+    ASSERT_TRUE(result.has_value()) << result.error().message;
+    auto& parsed = result.value();
+
+    EXPECT_EQ(parsed, original);
+  }
+};
+
+TEST_P(ErrorResponseTest, RoundTrip) { TestRoundTrip(); }
+
+INSTANTIATE_TEST_SUITE_P(
+    ErrorResponseCases, ErrorResponseTest,
+    ::testing::Values(
+        // Error without stack trace
+        ErrorResponseParam{
+            .test_name = "WithoutStack",
+            .expected_json_str =
+                R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404}})",
+            .message = "The given namespace does not exist",
+            .type = "NoSuchNamespaceException",
+            .code = 404,
+            .stack = {}},
+        // Error with stack trace
+        ErrorResponseParam{
+            .test_name = "WithStack",
+            .expected_json_str =
+                R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404,"stack":["a","b"]}})",
+            .message = "The given namespace does not exist",
+            .type = "NoSuchNamespaceException",
+            .code = 404,
+            .stack = {"a", "b"}},
+        // Different error type
+        ErrorResponseParam{
+            .test_name = "DifferentError",
+            .expected_json_str =
+                R"({"error":{"message":"Internal server error","type":"InternalServerError","code":500,"stack":["line1","line2","line3"]}})",
+            .message = "Internal server error",
+            .type = "InternalServerError",
+            .code = 500,
+            .stack = {"line1", "line2", "line3"}}),
+    [](const ::testing::TestParamInfo<ErrorResponseParam>& info) {
+      return info.param.test_name;
+    });
+
+TEST(ErrorResponseTest, DeserializeWithExplicitNullStack) {
+  std::string json_null_stack =
+      R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404,"stack":null}})";
+  auto result = ErrorResponseFromJson(nlohmann::json::parse(json_null_stack));
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value().error.message, "The given namespace does not exist");
+  EXPECT_EQ(result.value().error.type, "NoSuchNamespaceException");
+  EXPECT_EQ(result.value().error.code, 404);
+  EXPECT_TRUE(result.value().error.stack.empty());
+}
+
+TEST(ErrorResponseTest, DeserializeWithMissingStack) {
+  std::string json_missing_stack =
+      R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404}})";
+  auto result = ErrorResponseFromJson(nlohmann::json::parse(json_missing_stack));
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result.value().error.message, "The given namespace does not exist");
+  EXPECT_EQ(result.value().error.type, "NoSuchNamespaceException");
+  EXPECT_EQ(result.value().error.code, 404);
+  EXPECT_TRUE(result.value().error.stack.empty());
+}
+
+TEST(ErrorResponseTest, InvalidErrorResponse) {
+  // Missing error field
+  std::string json_missing_error = R"({})";
+  auto result1 = ErrorResponseFromJson(nlohmann::json::parse(json_missing_error));
+  EXPECT_FALSE(result1.has_value());
+  EXPECT_THAT(result1, IsError(ErrorKind::kJsonParseError));
+  EXPECT_EQ(result1.error().message, "Missing 'error' in {}");
+
+  // Null error field
+  std::string json_null_error = R"({"error":null})";
+  auto result2 = ErrorResponseFromJson(nlohmann::json::parse(json_null_error));
+  EXPECT_FALSE(result2.has_value());
+  EXPECT_THAT(result2, IsError(ErrorKind::kJsonParseError));
+  EXPECT_EQ(result2.error().message, "Missing 'error' in {\"error\":null}");
+
+  // Missing required type field
+  std::string json_missing_type =
+      R"({"message":"The given namespace does not exist","code":404})";
+  auto result3 = ErrorModelFromJson(nlohmann::json::parse(json_missing_type));
+  EXPECT_FALSE(result3.has_value());
+  EXPECT_THAT(result3, IsError(ErrorKind::kJsonParseError));
+  EXPECT_EQ(result3.error().message,
+            "Missing 'type' in {\"code\":404,\"message\":\"The given namespace does not "
+            "exist\"}");
+
+  // Missing required code field
+  std::string json_missing_code =
+      R"({"message":"The given namespace does not exist","type":"NoSuchNamespaceException"})";
+  auto result4 = ErrorModelFromJson(nlohmann::json::parse(json_missing_code));
+  EXPECT_FALSE(result4.has_value());
+  EXPECT_THAT(result4, IsError(ErrorKind::kJsonParseError));
+  EXPECT_EQ(result4.error().message,
+            "Missing 'code' in {\"message\":\"The given namespace does not "
+            "exist\",\"type\":\"NoSuchNamespaceException\"}");
+
+  // Wrong type for message field
+  std::string json_wrong_message_type =
+      R"({"message":123,"type":"NoSuchNamespaceException","code":404})";
+  auto result5 = ErrorModelFromJson(nlohmann::json::parse(json_wrong_message_type));
+  EXPECT_FALSE(result5.has_value());
+  EXPECT_THAT(result5, IsError(ErrorKind::kJsonParseError));
+  EXPECT_EQ(result5.error().message,
+            "Failed to parse 'message' from "
+            "{\"code\":404,\"message\":123,\"type\":\"NoSuchNamespaceException\"}: "
+            "[json.exception.type_error.302] type must be string, but is number");
 }
 
 }  // namespace iceberg::rest

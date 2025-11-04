@@ -20,7 +20,6 @@
 #pragma once
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -33,6 +32,26 @@
 /// Request and response types for Iceberg REST Catalog API.
 
 namespace iceberg::rest {
+
+/// \brief Server-provided configuration for the catalog.
+struct ICEBERG_REST_EXPORT CatalogConfig {
+  std::unordered_map<std::string, std::string> overrides;  // required
+  std::unordered_map<std::string, std::string> defaults;   // required
+  std::vector<std::string> endpoints;
+};
+
+/// \brief JSON error payload returned in a response with further details on the error.
+struct ICEBERG_REST_EXPORT ErrorModel {
+  std::string message;  // required
+  std::string type;     // required
+  uint16_t code;        // required
+  std::vector<std::string> stack;
+};
+
+/// \brief Error response body returned in a response.
+struct ICEBERG_REST_EXPORT ErrorResponse {
+  ErrorModel error;  // required
+};
 
 /// \brief Request to create a namespace.
 struct ICEBERG_REST_EXPORT CreateNamespaceRequest {

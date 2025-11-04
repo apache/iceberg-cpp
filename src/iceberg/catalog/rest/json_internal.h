@@ -24,7 +24,30 @@
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/result.h"
 
+/// \file iceberg/catalog/rest/json_internal.h
+/// JSON serialization and deserialization for Iceberg REST Catalog API types.
+
 namespace iceberg::rest {
+
+/// \brief Serializes a `CatalogConfig` object to JSON.
+ICEBERG_REST_EXPORT nlohmann::json ToJson(const CatalogConfig& config);
+
+/// \brief Deserializes a JSON object into a `CatalogConfig` object.
+ICEBERG_REST_EXPORT Result<CatalogConfig> CatalogConfigFromJson(
+    const nlohmann::json& json);
+
+/// \brief Serializes a `ErrorModel` object to JSON.
+ICEBERG_REST_EXPORT nlohmann::json ToJson(const ErrorModel& error);
+
+/// \brief Deserializes a JSON object into a `ErrorModel` object.
+ICEBERG_REST_EXPORT Result<ErrorModel> ErrorModelFromJson(const nlohmann::json& json);
+
+/// \brief Serializes a `ErrorResponse` object to JSON.
+ICEBERG_REST_EXPORT nlohmann::json ToJson(const ErrorResponse& response);
+
+/// \brief Deserializes a JSON object into a `ErrorResponse` object.
+ICEBERG_REST_EXPORT Result<ErrorResponse> ErrorResponseFromJson(
+    const nlohmann::json& json);
 
 /// \brief Serializes a `ListNamespacesResponse` object to JSON.
 ICEBERG_REST_EXPORT nlohmann::json ToJson(const ListNamespacesResponse& response);

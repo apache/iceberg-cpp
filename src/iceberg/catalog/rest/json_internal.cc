@@ -27,6 +27,7 @@
 #include <nlohmann/json.hpp>
 
 #include "iceberg/catalog/rest/types.h"
+#include "iceberg/catalog/rest/validator.h"
 #include "iceberg/json_internal.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/util/json_util_internal.h"
@@ -59,8 +60,76 @@ constexpr std::string_view kDestination = "destination";
 constexpr std::string_view kMetadata = "metadata";
 constexpr std::string_view kConfig = "config";
 constexpr std::string_view kIdentifiers = "identifiers";
+constexpr std::string_view kOverrides = "overrides";
+constexpr std::string_view kDefaults = "defaults";
+constexpr std::string_view kEndpoints = "endpoints";
+constexpr std::string_view kMessage = "message";
+constexpr std::string_view kType = "type";
+constexpr std::string_view kCode = "code";
+constexpr std::string_view kStack = "stack";
+constexpr std::string_view kError = "error";
 
 }  // namespace
+
+nlohmann::json ToJson(const CatalogConfig& config) {
+  nlohmann::json json;
+  json[kOverrides] = config.overrides;
+  json[kDefaults] = config.defaults;
+  if (!config.endpoints.empty()) {
+    json[kEndpoints] = config.endpoints;
+  }
+  return json;
+}
+
+Result<CatalogConfig> CatalogConfigFromJson(const nlohmann::json& json) {
+  CatalogConfig config;
+  ICEBERG_ASSIGN_OR_RAISE(
+      config.overrides,
+      GetJsonValueOrDefault<decltype(config.overrides)>(json, kOverrides));
+  ICEBERG_ASSIGN_OR_RAISE(
+      config.defaults, GetJsonValueOrDefault<decltype(config.defaults)>(json, kDefaults));
+  ICEBERG_ASSIGN_OR_RAISE(
+      config.endpoints,
+      GetJsonValueOrDefault<std::vector<std::string>>(json, kEndpoints));
+  ICEBERG_RETURN_UNEXPECTED(Validator::Validate(config));
+  return config;
+}
+
+nlohmann::json ToJson(const ErrorModel& error) {
+  nlohmann::json json;
+  json[kMessage] = error.message;
+  json[kType] = error.type;
+  json[kCode] = error.code;
+  if (!error.stack.empty()) {
+    json[kStack] = error.stack;
+  }
+  return json;
+}
+
+Result<ErrorModel> ErrorModelFromJson(const nlohmann::json& json) {
+  ErrorModel error;
+  ICEBERG_ASSIGN_OR_RAISE(error.message, GetJsonValue<std::string>(json, kMessage));
+  ICEBERG_ASSIGN_OR_RAISE(error.type, GetJsonValue<std::string>(json, kType));
+  ICEBERG_ASSIGN_OR_RAISE(error.code, GetJsonValue<uint16_t>(json, kCode));
+  ICEBERG_ASSIGN_OR_RAISE(error.stack,
+                          GetJsonValueOrDefault<std::vector<std::string>>(json, kStack));
+  ICEBERG_RETURN_UNEXPECTED(Validator::Validate(error));
+  return error;
+}
+
+nlohmann::json ToJson(const ErrorResponse& response) {
+  nlohmann::json json;
+  json[kError] = ToJson(response.error);
+  return json;
+}
+
+Result<ErrorResponse> ErrorResponseFromJson(const nlohmann::json& json) {
+  ErrorResponse response;
+  ICEBERG_ASSIGN_OR_RAISE(auto error_json, GetJsonValue<nlohmann::json>(json, kError));
+  ICEBERG_ASSIGN_OR_RAISE(response.error, ErrorModelFromJson(error_json));
+  ICEBERG_RETURN_UNEXPECTED(Validator::Validate(response));
+  return response;
+}
 
 nlohmann::json ToJson(const CreateNamespaceRequest& request) {
   nlohmann::json json;
@@ -79,6 +148,7 @@ Result<CreateNamespaceRequest> CreateNamespaceRequestFromJson(
   ICEBERG_ASSIGN_OR_RAISE(
       request.properties,
       GetJsonValueOrDefault<decltype(request.properties)>(json, kProperties));
+  ICEBERG_RETURN_UNEXPECTED(Validator::Validate(request));
   return request;
 }
 
@@ -102,6 +172,7 @@ Result<UpdateNamespacePropertiesRequest> UpdateNamespacePropertiesRequestFromJso
       request.removals, GetJsonValueOrDefault<std::vector<std::string>>(json, kRemovals));
   ICEBERG_ASSIGN_OR_RAISE(
       request.updates, GetJsonValueOrDefault<decltype(request.updates)>(json, kUpdates));
+  ICEBERG_RETURN_UNEXPECTED(Validator::Validate(request));
   return request;
 }
 
@@ -122,6 +193,7 @@ Result<RegisterTableRequest> RegisterTableRequestFromJson(const nlohmann::json& 
                           GetJsonValue<std::string>(json, kMetadataLocation));
   ICEBERG_ASSIGN_OR_RAISE(request.overwrite,
                           GetJsonValueOrDefault<bool>(json, kOverwrite, false));
+  ICEBERG_RETURN_UNEXPECTED(Validator::Validate(request));
   return request;
 }
 
@@ -139,6 +211,7 @@ Result<RenameTableRequest> RenameTableRequestFromJson(const nlohmann::json& json
   ICEBERG_ASSIGN_OR_RAISE(auto dest_json,
                           GetJsonValue<nlohmann::json>(json, kDestination));
   ICEBERG_ASSIGN_OR_RAISE(request.destination, TableIdentifierFromJson(dest_json));
+  ICEBERG_RETURN_UNEXPECTED(Validator::Validate(request));
   return request;
 }
 
@@ -165,6 +238,7 @@ Result<LoadTableResult> LoadTableResultFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(
       result.config, (GetJsonValueOrDefault<std::unordered_map<std::string, std::string>>(
                          json, kConfig)));
+  ICEBERG_RETURN_UNEXPECTED(Validator::Validate(result));
   return result;
 }
 
@@ -192,6 +266,7 @@ Result<ListNamespacesResponse> ListNamespacesResponseFromJson(
     ICEBERG_ASSIGN_OR_RAISE(auto ns, NamespaceFromJson(ns_json));
     response.namespaces.push_back(std::move(ns));
   }
+  ICEBERG_RETURN_UNEXPECTED(Validator::Validate(response));
   return response;
 }
 
@@ -253,6 +328,7 @@ Result<UpdateNamespacePropertiesResponse> UpdateNamespacePropertiesResponseFromJ
                           GetJsonValue<std::vector<std::string>>(json, kRemoved));
   ICEBERG_ASSIGN_OR_RAISE(
       response.missing, GetJsonValueOrDefault<std::vector<std::string>>(json, kMissing));
+  ICEBERG_RETURN_UNEXPECTED(Validator::Validate(response));
   return response;
 }
 
@@ -279,6 +355,7 @@ Result<ListTablesResponse> ListTablesResponseFromJson(const nlohmann::json& json
     ICEBERG_ASSIGN_OR_RAISE(auto identifier, TableIdentifierFromJson(id_json));
     response.identifiers.push_back(std::move(identifier));
   }
+  ICEBERG_RETURN_UNEXPECTED(Validator::Validate(response));
   return response;
 }
 
