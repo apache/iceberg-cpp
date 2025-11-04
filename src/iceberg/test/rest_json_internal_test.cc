@@ -34,6 +34,7 @@
 
 namespace iceberg::rest {
 
+// TODO(gangwu): perhaps add these equality operators to the types themselves?
 bool operator==(const CreateNamespaceRequest& lhs, const CreateNamespaceRequest& rhs) {
   return lhs.namespace_.levels == rhs.namespace_.levels &&
          lhs.properties == rhs.properties;
@@ -91,39 +92,100 @@ bool operator==(const RenameTableRequest& lhs, const RenameTableRequest& rhs) {
          lhs.destination.name == rhs.destination.name;
 }
 
-struct CreateNamespaceRequestParam {
+// Test parameter structure for roundtrip tests
+template <typename Model>
+struct JsonRoundTripParam {
   std::string test_name;
   std::string expected_json_str;
-  Namespace namespace_;
-  std::unordered_map<std::string, std::string> properties;
+  Model model;
 };
 
-class CreateNamespaceRequestTest
-    : public ::testing::TestWithParam<CreateNamespaceRequestParam> {
+// Generic test class for roundtrip tests
+template <typename Model>
+class JsonRoundTripTest : public ::testing::TestWithParam<JsonRoundTripParam<Model>> {
+  using Base = ::testing::TestWithParam<JsonRoundTripParam<Model>>;
+
  protected:
   void TestRoundTrip() {
-    const auto& param = GetParam();
+    const auto& param = Base::GetParam();
 
-    // Build original object
-    CreateNamespaceRequest original;
-    original.namespace_ = param.namespace_;
-    original.properties = param.properties;
-
-    // ToJson and verify JSON string
-    auto json = ToJson(original);
+    // ToJson
+    auto json = ToJson(param.model);
     auto expected_json = nlohmann::json::parse(param.expected_json_str);
-    EXPECT_EQ(json, expected_json) << "ToJson mismatch";
+    ASSERT_EQ(json, expected_json) << "ToJson mismatch";
 
-    // FromJson and verify object equality
-    auto result = CreateNamespaceRequestFromJson(expected_json);
-    ASSERT_TRUE(result.has_value()) << result.error().message;
-    auto& parsed = result.value();
-
-    EXPECT_EQ(parsed, original);
+    // FromJson
+    auto result = FromJson<Model>(expected_json);
+    ASSERT_THAT(result, IsOk()) << result.error().message;
+    auto parsed = std::move(result.value());
+    ASSERT_EQ(parsed, param.model);
   }
 };
 
-TEST_P(CreateNamespaceRequestTest, RoundTrip) { TestRoundTrip(); }
+#define DECLARE_ROUNDTRIP_TEST(Model)             \
+  using Model##Test = JsonRoundTripTest<Model>;   \
+  using Model##Param = JsonRoundTripParam<Model>; \
+  TEST_P(Model##Test, RoundTrip) { TestRoundTrip(); }
+
+// Invalid JSON test parameter structure
+template <typename Model>
+struct JsonInvalidParam {
+  std::string test_name;
+  std::string invalid_json_str;
+  std::string expected_error_message;
+};
+
+// Generic test class for invalid JSON deserialization
+template <typename Model>
+class JsonInvalidTest : public ::testing::TestWithParam<JsonInvalidParam<Model>> {
+  using Base = ::testing::TestWithParam<JsonInvalidParam<Model>>;
+
+ protected:
+  void TestInvalidJson() {
+    const auto& param = Base::GetParam();
+
+    auto result = FromJson<Model>(nlohmann::json::parse(param.invalid_json_str));
+    ASSERT_THAT(result, IsError(ErrorKind::kJsonParseError));
+    ASSERT_THAT(result, HasErrorMessage(param.expected_error_message))
+        << result.error().message;
+  }
+};
+
+#define DECLARE_INVALID_TEST(Model)                    \
+  using Model##InvalidTest = JsonInvalidTest<Model>;   \
+  using Model##InvalidParam = JsonInvalidParam<Model>; \
+  TEST_P(Model##InvalidTest, InvalidJson) { TestInvalidJson(); }
+
+// Deserialization test parameter structure
+template <typename Model>
+struct JsonDeserParam {
+  std::string test_name;
+  std::string json_str;
+  Model expected_model;
+};
+
+// Generic test class for deserialization tests (FromJson only)
+template <typename Model>
+class JsonDeserTest : public ::testing::TestWithParam<JsonDeserParam<Model>> {
+  using Base = ::testing::TestWithParam<JsonDeserParam<Model>>;
+
+ protected:
+  void TestDeserialize() {
+    const auto& param = Base::GetParam();
+
+    auto result = FromJson<Model>(nlohmann::json::parse(param.json_str));
+    ASSERT_THAT(result, IsOk()) << result.error().message;
+    auto parsed = std::move(result.value());
+    ASSERT_EQ(parsed, param.expected_model);
+  }
+};
+
+#define DECLARE_DESERIALIZE_TEST(Model)                  \
+  using Model##DeserializeTest = JsonDeserTest<Model>;   \
+  using Model##DeserializeParam = JsonDeserParam<Model>; \
+  TEST_P(Model##DeserializeTest, Deserialize) { TestDeserialize(); }
+
+DECLARE_ROUNDTRIP_TEST(CreateNamespaceRequest)
 
 INSTANTIATE_TEST_SUITE_P(
     CreateNamespaceRequestCases, CreateNamespaceRequestTest,
@@ -133,787 +195,556 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "FullRequest",
             .expected_json_str =
                 R"({"namespace":["accounting","tax"],"properties":{"owner":"Hank"}})",
-            .namespace_ = Namespace{{"accounting", "tax"}},
-            .properties = {{"owner", "Hank"}},
-        },
+            .model = {.namespace_ = Namespace{{"accounting", "tax"}},
+                      .properties = {{"owner", "Hank"}}}},
         // Request with empty properties (omit properties field when empty)
         CreateNamespaceRequestParam{
             .test_name = "EmptyProperties",
             .expected_json_str = R"({"namespace":["accounting","tax"]})",
-            .namespace_ = Namespace{{"accounting", "tax"}},
-            .properties = {},
+            .model = {.namespace_ = Namespace{{"accounting", "tax"}}},
         },
         // Request with empty namespace
         CreateNamespaceRequestParam{
             .test_name = "EmptyNamespace",
             .expected_json_str = R"({"namespace":[]})",
-            .namespace_ = Namespace{},
-            .properties = {},
+            .model = {.namespace_ = Namespace{}, .properties = {}},
         }),
     [](const ::testing::TestParamInfo<CreateNamespaceRequestParam>& info) {
       return info.param.test_name;
     });
 
-TEST(CreateNamespaceRequestTest, DeserializeWithoutDefaults) {
-  // Properties is null
-  std::string json_null_props = R"({"namespace":["accounting","tax"],"properties":null})";
-  auto result1 = CreateNamespaceRequestFromJson(nlohmann::json::parse(json_null_props));
-  ASSERT_TRUE(result1.has_value());
-  EXPECT_EQ(result1.value().namespace_.levels,
-            std::vector<std::string>({"accounting", "tax"}));
-  EXPECT_TRUE(result1.value().properties.empty());
+DECLARE_INVALID_TEST(CreateNamespaceRequest)
 
-  // Properties is missing
-  std::string json_missing_props = R"({"namespace":["accounting","tax"]})";
-  auto result2 =
-      CreateNamespaceRequestFromJson(nlohmann::json::parse(json_missing_props));
-  ASSERT_TRUE(result2.has_value());
-  EXPECT_EQ(result2.value().namespace_.levels,
-            std::vector<std::string>({"accounting", "tax"}));
-  EXPECT_TRUE(result2.value().properties.empty());
-}
+INSTANTIATE_TEST_SUITE_P(
+    CreateNamespaceRequestInvalidCases, CreateNamespaceRequestInvalidTest,
+    ::testing::Values(
+        // Incorrect type for namespace field
+        CreateNamespaceRequestInvalidParam{
+            .test_name = "WrongNamespaceType",
+            .invalid_json_str = R"({"namespace":"accounting%1Ftax","properties":null})",
+            .expected_error_message = "type must be array, but is string"},
+        // Incorrect type for properties field
+        CreateNamespaceRequestInvalidParam{
+            .test_name = "WrongPropertiesType",
+            .invalid_json_str = R"({"namespace":["accounting","tax"],"properties":[]})",
+            .expected_error_message = "type must be object, but is array"},
+        // Misspelled required field
+        CreateNamespaceRequestInvalidParam{
+            .test_name = "MisspelledKeys",
+            .invalid_json_str =
+                R"({"namepsace":["accounting","tax"],"propertiezzzz":{"owner":"Hank"}})",
+            .expected_error_message = "Missing 'namespace'"},
+        // Empty JSON object
+        CreateNamespaceRequestInvalidParam{
+            .test_name = "EmptyJson",
+            .invalid_json_str = R"({})",
+            .expected_error_message = "Missing 'namespace'"}),
+    [](const ::testing::TestParamInfo<CreateNamespaceRequestInvalidParam>& info) {
+      return info.param.test_name;
+    });
 
-TEST(CreateNamespaceRequestTest, InvalidRequests) {
-  // Incorrect type for namespace
-  std::string json_wrong_ns_type =
-      R"({"namespace":"accounting%1Ftax","properties":null})";
-  auto result1 =
-      CreateNamespaceRequestFromJson(nlohmann::json::parse(json_wrong_ns_type));
-  EXPECT_FALSE(result1.has_value());
-  EXPECT_THAT(result1, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result1.error().message,
-            "Failed to parse 'namespace' from "
-            "{\"namespace\":\"accounting%1Ftax\",\"properties\":null}: "
-            "[json.exception.type_error.302] type must be array, but is string");
+DECLARE_DESERIALIZE_TEST(CreateNamespaceRequest)
 
-  // Incorrect type for properties
-  std::string json_wrong_props_type =
-      R"({"namespace":["accounting","tax"],"properties":[]})";
-  auto result2 =
-      CreateNamespaceRequestFromJson(nlohmann::json::parse(json_wrong_props_type));
-  EXPECT_FALSE(result2.has_value());
-  EXPECT_THAT(result2, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result2.error().message,
-            "Failed to parse 'properties' from "
-            "{\"namespace\":[\"accounting\",\"tax\"],\"properties\":[]}: "
-            "[json.exception.type_error.302] type must be object, but is array");
+INSTANTIATE_TEST_SUITE_P(
+    CreateNamespaceRequestDeserializeCases, CreateNamespaceRequestDeserializeTest,
+    ::testing::Values(
+        // Properties field is null (should deserialize to empty map)
+        CreateNamespaceRequestDeserializeParam{
+            .test_name = "NullProperties",
+            .json_str = R"({"namespace":["accounting","tax"],"properties":null})",
+            .expected_model = {.namespace_ = Namespace{{"accounting", "tax"}}}},
+        // Properties field is missing (should deserialize to empty map)
+        CreateNamespaceRequestDeserializeParam{
+            .test_name = "MissingProperties",
+            .json_str = R"({"namespace":["accounting","tax"]})",
+            .expected_model = {.namespace_ = Namespace{{"accounting", "tax"}}}}),
+    [](const ::testing::TestParamInfo<CreateNamespaceRequestDeserializeParam>& info) {
+      return info.param.test_name;
+    });
 
-  // Misspelled keys
-  std::string json_misspelled =
-      R"({"namepsace":["accounting","tax"],"propertiezzzz":{"owner":"Hank"}})";
-  auto result3 = CreateNamespaceRequestFromJson(nlohmann::json::parse(json_misspelled));
-  EXPECT_FALSE(result3.has_value());
-  EXPECT_THAT(result3, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(
-      result3.error().message,
-      "Missing 'namespace' in "
-      "{\"namepsace\":[\"accounting\",\"tax\"],\"propertiezzzz\":{\"owner\":\"Hank\"}}");
-
-  // Empty JSON
-  std::string json_empty = R"({})";
-  auto result4 = CreateNamespaceRequestFromJson(nlohmann::json::parse(json_empty));
-  EXPECT_FALSE(result4.has_value());
-  EXPECT_THAT(result4, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result4.error().message, "Missing 'namespace' in {}");
-}
-
-struct CreateNamespaceResponseParam {
-  std::string test_name;
-  std::string expected_json_str;
-  Namespace namespace_;
-  std::unordered_map<std::string, std::string> properties;
-};
-
-class CreateNamespaceResponseTest
-    : public ::testing::TestWithParam<CreateNamespaceResponseParam> {
- protected:
-  void TestRoundTrip() {
-    const auto& param = GetParam();
-
-    CreateNamespaceResponse original;
-    original.namespace_ = param.namespace_;
-    original.properties = param.properties;
-
-    auto json = ToJson(original);
-    auto expected_json = nlohmann::json::parse(param.expected_json_str);
-    EXPECT_EQ(json, expected_json);
-
-    auto result = CreateNamespaceResponseFromJson(expected_json);
-    ASSERT_TRUE(result.has_value()) << result.error().message;
-    auto& parsed = result.value();
-
-    EXPECT_EQ(parsed, original);
-  }
-};
-
-TEST_P(CreateNamespaceResponseTest, RoundTrip) { TestRoundTrip(); }
+DECLARE_ROUNDTRIP_TEST(CreateNamespaceResponse)
 
 INSTANTIATE_TEST_SUITE_P(
     CreateNamespaceResponseCases, CreateNamespaceResponseTest,
     ::testing::Values(
+        // Full response with namespace and properties
         CreateNamespaceResponseParam{
             .test_name = "FullResponse",
             .expected_json_str =
                 R"({"namespace":["accounting","tax"],"properties":{"owner":"Hank"}})",
-            .namespace_ = Namespace{{"accounting", "tax"}},
-            .properties = {{"owner", "Hank"}},
-        },
+            .model = {.namespace_ = Namespace{{"accounting", "tax"}},
+                      .properties = {{"owner", "Hank"}}}},
+        // Response with empty properties (omit properties field when empty)
         CreateNamespaceResponseParam{
             .test_name = "EmptyProperties",
             .expected_json_str = R"({"namespace":["accounting","tax"]})",
-            .namespace_ = Namespace{{"accounting", "tax"}},
-            .properties = {},
-        },
+            .model = {.namespace_ = Namespace{{"accounting", "tax"}}}},
+        // Response with empty namespace
         CreateNamespaceResponseParam{.test_name = "EmptyNamespace",
                                      .expected_json_str = R"({"namespace":[]})",
-                                     .namespace_ = Namespace{},
-                                     .properties = {}}),
+                                     .model = {.namespace_ = Namespace{}}}),
     [](const ::testing::TestParamInfo<CreateNamespaceResponseParam>& info) {
       return info.param.test_name;
     });
 
-TEST(CreateNamespaceResponseTest, DeserializeWithoutDefaults) {
-  std::string json_missing_props = R"({"namespace":["accounting","tax"]})";
-  auto result1 =
-      CreateNamespaceResponseFromJson(nlohmann::json::parse(json_missing_props));
-  ASSERT_TRUE(result1.has_value());
-  EXPECT_TRUE(result1.value().properties.empty());
+DECLARE_DESERIALIZE_TEST(CreateNamespaceResponse)
 
-  std::string json_null_props = R"({"namespace":["accounting","tax"],"properties":null})";
-  auto result2 = CreateNamespaceResponseFromJson(nlohmann::json::parse(json_null_props));
-  ASSERT_TRUE(result2.has_value());
-  EXPECT_TRUE(result2.value().properties.empty());
-}
+INSTANTIATE_TEST_SUITE_P(
+    CreateNamespaceResponseDeserializeCases, CreateNamespaceResponseDeserializeTest,
+    ::testing::Values(
+        // Properties field is missing (should deserialize to empty map)
+        CreateNamespaceResponseDeserializeParam{
+            .test_name = "MissingProperties",
+            .json_str = R"({"namespace":["accounting","tax"]})",
+            .expected_model = {.namespace_ = Namespace{{"accounting", "tax"}}}},
+        // Properties field is null (should deserialize to empty map)
+        CreateNamespaceResponseDeserializeParam{
+            .test_name = "NullProperties",
+            .json_str = R"({"namespace":["accounting","tax"],"properties":null})",
+            .expected_model = {.namespace_ = Namespace{{"accounting", "tax"}}}}),
+    [](const ::testing::TestParamInfo<CreateNamespaceResponseDeserializeParam>& info) {
+      return info.param.test_name;
+    });
 
-TEST(CreateNamespaceResponseTest, InvalidResponses) {
-  std::string json_wrong_ns_type =
-      R"({"namespace":"accounting%1Ftax","properties":null})";
-  auto result1 =
-      CreateNamespaceResponseFromJson(nlohmann::json::parse(json_wrong_ns_type));
-  EXPECT_FALSE(result1.has_value());
-  EXPECT_THAT(result1, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result1.error().message,
-            "Failed to parse 'namespace' from "
-            "{\"namespace\":\"accounting%1Ftax\",\"properties\":null}: "
-            "[json.exception.type_error.302] type must be array, but is string");
+DECLARE_INVALID_TEST(CreateNamespaceResponse)
 
-  std::string json_wrong_props_type =
-      R"({"namespace":["accounting","tax"],"properties":[]})";
-  auto result2 =
-      CreateNamespaceResponseFromJson(nlohmann::json::parse(json_wrong_props_type));
-  EXPECT_FALSE(result2.has_value());
-  EXPECT_THAT(result2, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result2.error().message,
-            "Failed to parse 'properties' from "
-            "{\"namespace\":[\"accounting\",\"tax\"],\"properties\":[]}: "
-            "[json.exception.type_error.302] type must be object, but is array");
+INSTANTIATE_TEST_SUITE_P(
+    CreateNamespaceResponseInvalidCases, CreateNamespaceResponseInvalidTest,
+    ::testing::Values(
+        // Incorrect type for namespace field
+        CreateNamespaceResponseInvalidParam{
+            .test_name = "WrongNamespaceType",
+            .invalid_json_str = R"({"namespace":"accounting%1Ftax","properties":null})",
+            .expected_error_message = "type must be array, but is string"},
+        // Incorrect type for properties field
+        CreateNamespaceResponseInvalidParam{
+            .test_name = "WrongPropertiesType",
+            .invalid_json_str = R"({"namespace":["accounting","tax"],"properties":[]})",
+            .expected_error_message = "type must be object, but is array"},
+        // Empty JSON object
+        CreateNamespaceResponseInvalidParam{
+            .test_name = "EmptyJson",
+            .invalid_json_str = R"({})",
+            .expected_error_message = "Missing 'namespace'"}),
+    [](const ::testing::TestParamInfo<CreateNamespaceResponseInvalidParam>& info) {
+      return info.param.test_name;
+    });
 
-  std::string json_empty = R"({})";
-  auto result3 = CreateNamespaceResponseFromJson(nlohmann::json::parse(json_empty));
-  EXPECT_FALSE(result3.has_value());
-  EXPECT_THAT(result3, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result3.error().message, "Missing 'namespace' in {}");
-}
-
-struct GetNamespaceResponseParam {
-  std::string test_name;
-  std::string expected_json_str;
-  Namespace namespace_;
-  std::unordered_map<std::string, std::string> properties;
-};
-
-class GetNamespaceResponseTest
-    : public ::testing::TestWithParam<GetNamespaceResponseParam> {
- protected:
-  void TestRoundTrip() {
-    const auto& param = GetParam();
-
-    GetNamespaceResponse original;
-    original.namespace_ = param.namespace_;
-    original.properties = param.properties;
-
-    auto json = ToJson(original);
-    auto expected_json = nlohmann::json::parse(param.expected_json_str);
-    EXPECT_EQ(json, expected_json);
-
-    auto result = GetNamespaceResponseFromJson(expected_json);
-    ASSERT_TRUE(result.has_value()) << result.error().message;
-    auto& parsed = result.value();
-
-    EXPECT_EQ(parsed, original);
-  }
-};
-
-TEST_P(GetNamespaceResponseTest, RoundTrip) { TestRoundTrip(); }
+DECLARE_ROUNDTRIP_TEST(GetNamespaceResponse)
 
 INSTANTIATE_TEST_SUITE_P(
     GetNamespaceResponseCases, GetNamespaceResponseTest,
     ::testing::Values(
+        // Full response with namespace and properties
         GetNamespaceResponseParam{
             .test_name = "FullResponse",
             .expected_json_str =
                 R"({"namespace":["accounting","tax"],"properties":{"owner":"Hank"}})",
-            .namespace_ = Namespace{{"accounting", "tax"}},
-            .properties = {{"owner", "Hank"}}},
+            .model = {.namespace_ = Namespace{{"accounting", "tax"}},
+                      .properties = {{"owner", "Hank"}}}},
+        // Response with empty properties (omit properties field when empty)
         GetNamespaceResponseParam{
             .test_name = "EmptyProperties",
             .expected_json_str = R"({"namespace":["accounting","tax"]})",
-            .namespace_ = Namespace{{"accounting", "tax"}},
-            .properties = {}}),
+            .model = {.namespace_ = Namespace{{"accounting", "tax"}}}}),
     [](const ::testing::TestParamInfo<GetNamespaceResponseParam>& info) {
       return info.param.test_name;
     });
 
-TEST(GetNamespaceResponseTest, DeserializeWithoutDefaults) {
-  std::string json_null_props = R"({"namespace":["accounting","tax"],"properties":null})";
-  auto result = GetNamespaceResponseFromJson(nlohmann::json::parse(json_null_props));
-  ASSERT_TRUE(result.has_value());
-  EXPECT_TRUE(result.value().properties.empty());
-}
+DECLARE_DESERIALIZE_TEST(GetNamespaceResponse)
 
-TEST(GetNamespaceResponseTest, InvalidResponses) {
-  std::string json_wrong_ns_type =
-      R"({"namespace":"accounting%1Ftax","properties":null})";
-  auto result1 = GetNamespaceResponseFromJson(nlohmann::json::parse(json_wrong_ns_type));
-  EXPECT_FALSE(result1.has_value());
-  EXPECT_THAT(result1, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result1.error().message,
-            "Failed to parse 'namespace' from "
-            "{\"namespace\":\"accounting%1Ftax\",\"properties\":null}: "
-            "[json.exception.type_error.302] type must be array, but is string");
+INSTANTIATE_TEST_SUITE_P(
+    GetNamespaceResponseDeserializeCases, GetNamespaceResponseDeserializeTest,
+    ::testing::Values(
+        // Properties field is null (should deserialize to empty map)
+        GetNamespaceResponseDeserializeParam{
+            .test_name = "NullProperties",
+            .json_str = R"({"namespace":["accounting","tax"],"properties":null})",
+            .expected_model = {.namespace_ = Namespace{{"accounting", "tax"}}}}),
+    [](const ::testing::TestParamInfo<GetNamespaceResponseDeserializeParam>& info) {
+      return info.param.test_name;
+    });
 
-  std::string json_wrong_props_type =
-      R"({"namespace":["accounting","tax"],"properties":[]})";
-  auto result2 =
-      GetNamespaceResponseFromJson(nlohmann::json::parse(json_wrong_props_type));
-  EXPECT_FALSE(result2.has_value());
-  EXPECT_THAT(result2, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result2.error().message,
-            "Failed to parse 'properties' from "
-            "{\"namespace\":[\"accounting\",\"tax\"],\"properties\":[]}: "
-            "[json.exception.type_error.302] type must be object, but is array");
+DECLARE_INVALID_TEST(GetNamespaceResponse)
 
-  std::string json_empty = R"({})";
-  auto result3 = GetNamespaceResponseFromJson(nlohmann::json::parse(json_empty));
-  EXPECT_FALSE(result3.has_value());
-  EXPECT_THAT(result3, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result3.error().message, "Missing 'namespace' in {}");
-}
+INSTANTIATE_TEST_SUITE_P(
+    GetNamespaceResponseInvalidCases, GetNamespaceResponseInvalidTest,
+    ::testing::Values(
+        // Incorrect type for namespace field
+        GetNamespaceResponseInvalidParam{
+            .test_name = "WrongNamespaceType",
+            .invalid_json_str = R"({"namespace":"accounting%1Ftax","properties":null})",
+            .expected_error_message = "type must be array, but is string"},
+        // Incorrect type for properties field
+        GetNamespaceResponseInvalidParam{
+            .test_name = "WrongPropertiesType",
+            .invalid_json_str = R"({"namespace":["accounting","tax"],"properties":[]})",
+            .expected_error_message = "type must be object, but is array"},
+        // Empty JSON object
+        GetNamespaceResponseInvalidParam{
+            .test_name = "EmptyJson",
+            .invalid_json_str = R"({})",
+            .expected_error_message = "Missing 'namespace'"}),
+    [](const ::testing::TestParamInfo<GetNamespaceResponseInvalidParam>& info) {
+      return info.param.test_name;
+    });
 
-struct ListNamespacesResponseParam {
-  std::string test_name;
-  std::string expected_json_str;
-  std::vector<Namespace> namespaces;
-  std::string next_page_token;
-};
-
-class ListNamespacesResponseTest
-    : public ::testing::TestWithParam<ListNamespacesResponseParam> {
- protected:
-  void TestRoundTrip() {
-    const auto& param = GetParam();
-
-    ListNamespacesResponse original;
-    original.namespaces = param.namespaces;
-    original.next_page_token = param.next_page_token;
-
-    auto json = ToJson(original);
-    auto expected_json = nlohmann::json::parse(param.expected_json_str);
-    EXPECT_EQ(json, expected_json);
-
-    auto result = ListNamespacesResponseFromJson(expected_json);
-    ASSERT_TRUE(result.has_value()) << result.error().message;
-    auto& parsed = result.value();
-
-    EXPECT_EQ(parsed, original);
-  }
-};
-
-TEST_P(ListNamespacesResponseTest, RoundTrip) { TestRoundTrip(); }
+DECLARE_ROUNDTRIP_TEST(ListNamespacesResponse)
 
 INSTANTIATE_TEST_SUITE_P(
     ListNamespacesResponseCases, ListNamespacesResponseTest,
     ::testing::Values(
+        // Full response with multiple namespaces
         ListNamespacesResponseParam{
             .test_name = "FullResponse",
             .expected_json_str = R"({"namespaces":[["accounting"],["tax"]]})",
-            .namespaces = {Namespace{{"accounting"}}, Namespace{{"tax"}}},
-            .next_page_token = ""},
+            .model = {.next_page_token = "",
+                      .namespaces = {Namespace{{"accounting"}}, Namespace{{"tax"}}}}},
+        // Response with empty namespaces
         ListNamespacesResponseParam{.test_name = "EmptyNamespaces",
                                     .expected_json_str = R"({"namespaces":[]})",
-                                    .namespaces = {},
-                                    .next_page_token = ""},
+                                    .model = {.next_page_token = ""}},
+        // Response with page token
         ListNamespacesResponseParam{
             .test_name = "WithPageToken",
             .expected_json_str =
                 R"({"namespaces":[["accounting"],["tax"]],"next-page-token":"token"})",
-            .namespaces = {Namespace{{"accounting"}}, Namespace{{"tax"}}},
-            .next_page_token = "token"}),
+            .model = {.next_page_token = "token",
+                      .namespaces = {Namespace{{"accounting"}}, Namespace{{"tax"}}}}}),
     [](const ::testing::TestParamInfo<ListNamespacesResponseParam>& info) {
       return info.param.test_name;
     });
 
-TEST(ListNamespacesResponseTest, InvalidResponses) {
-  std::string json_wrong_type = R"({"namespaces":"accounting"})";
-  auto result1 = ListNamespacesResponseFromJson(nlohmann::json::parse(json_wrong_type));
-  EXPECT_FALSE(result1.has_value());
-  EXPECT_THAT(result1, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result1.error().message,
-            "Cannot parse namespace from non-array:\"accounting\"");
+DECLARE_INVALID_TEST(ListNamespacesResponse)
 
-  std::string json_empty = R"({})";
-  auto result2 = ListNamespacesResponseFromJson(nlohmann::json::parse(json_empty));
-  EXPECT_FALSE(result2.has_value());
-  EXPECT_THAT(result2, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result2.error().message, "Missing 'namespaces' in {}");
-}
+INSTANTIATE_TEST_SUITE_P(
+    ListNamespacesResponseInvalidCases, ListNamespacesResponseInvalidTest,
+    ::testing::Values(
+        // Incorrect type for namespaces field
+        ListNamespacesResponseInvalidParam{
+            .test_name = "WrongNamespacesType",
+            .invalid_json_str = R"({"namespaces":"accounting"})",
+            .expected_error_message = "Cannot parse namespace from non-array"},
+        // Empty JSON object
+        ListNamespacesResponseInvalidParam{
+            .test_name = "EmptyJson",
+            .invalid_json_str = R"({})",
+            .expected_error_message = "Missing 'namespaces'"}),
+    [](const ::testing::TestParamInfo<ListNamespacesResponseInvalidParam>& info) {
+      return info.param.test_name;
+    });
 
-struct UpdateNamespacePropertiesRequestParam {
-  std::string test_name;
-  std::string expected_json_str;
-  std::vector<std::string> removals;
-  std::unordered_map<std::string, std::string> updates;
-};
-
-class UpdateNamespacePropertiesRequestTest
-    : public ::testing::TestWithParam<UpdateNamespacePropertiesRequestParam> {
- protected:
-  void TestRoundTrip() {
-    const auto& param = GetParam();
-
-    UpdateNamespacePropertiesRequest original;
-    original.removals = param.removals;
-    original.updates = param.updates;
-
-    auto json = ToJson(original);
-    auto expected_json = nlohmann::json::parse(param.expected_json_str);
-    EXPECT_EQ(json, expected_json);
-
-    auto result = UpdateNamespacePropertiesRequestFromJson(expected_json);
-    ASSERT_TRUE(result.has_value()) << result.error().message;
-    auto& parsed = result.value();
-
-    EXPECT_EQ(parsed, original);
-  }
-};
-
-TEST_P(UpdateNamespacePropertiesRequestTest, RoundTrip) { TestRoundTrip(); }
+DECLARE_ROUNDTRIP_TEST(UpdateNamespacePropertiesRequest)
 
 INSTANTIATE_TEST_SUITE_P(
     UpdateNamespacePropertiesRequestCases, UpdateNamespacePropertiesRequestTest,
     ::testing::Values(
+        // Full request with both removals and updates
         UpdateNamespacePropertiesRequestParam{
             .test_name = "FullRequest",
             .expected_json_str =
                 R"({"removals":["foo","bar"],"updates":{"owner":"Hank"}})",
-            .removals = {"foo", "bar"},
-            .updates = {{"owner", "Hank"}}},
+            .model = {.removals = {"foo", "bar"}, .updates = {{"owner", "Hank"}}}},
+        // Request with only updates
         UpdateNamespacePropertiesRequestParam{
             .test_name = "OnlyUpdates",
             .expected_json_str = R"({"updates":{"owner":"Hank"}})",
-            .removals = {},
-            .updates = {{"owner", "Hank"}}},
+            .model = {.updates = {{"owner", "Hank"}}}},
+        // Request with only removals
         UpdateNamespacePropertiesRequestParam{
             .test_name = "OnlyRemovals",
             .expected_json_str = R"({"removals":["foo","bar"]})",
-            .removals = {"foo", "bar"},
-            .updates = {}},
-        UpdateNamespacePropertiesRequestParam{.test_name = "AllEmpty",
-                                              .expected_json_str = R"({})",
-                                              .removals = {},
-                                              .updates = {}}),
+            .model = {.removals = {"foo", "bar"}}},
+        // Request with all empty fields
+        UpdateNamespacePropertiesRequestParam{
+            .test_name = "AllEmpty", .expected_json_str = R"({})", .model = {}}),
     [](const ::testing::TestParamInfo<UpdateNamespacePropertiesRequestParam>& info) {
       return info.param.test_name;
     });
 
-TEST(UpdateNamespacePropertiesRequestTest, DeserializeWithoutDefaults) {
-  // Removals is null
-  std::string json1 = R"({"removals":null,"updates":{"owner":"Hank"}})";
-  auto result1 = UpdateNamespacePropertiesRequestFromJson(nlohmann::json::parse(json1));
-  ASSERT_TRUE(result1.has_value());
-  EXPECT_TRUE(result1.value().removals.empty());
+DECLARE_DESERIALIZE_TEST(UpdateNamespacePropertiesRequest)
 
-  // Removals is missing
-  std::string json2 = R"({"updates":{"owner":"Hank"}})";
-  auto result2 = UpdateNamespacePropertiesRequestFromJson(nlohmann::json::parse(json2));
-  ASSERT_TRUE(result2.has_value());
-  EXPECT_TRUE(result2.value().removals.empty());
+INSTANTIATE_TEST_SUITE_P(
+    UpdateNamespacePropertiesRequestDeserializeCases,
+    UpdateNamespacePropertiesRequestDeserializeTest,
+    ::testing::Values(
+        // Removals is null (should deserialize to empty vector)
+        UpdateNamespacePropertiesRequestDeserializeParam{
+            .test_name = "NullRemovals",
+            .json_str = R"({"removals":null,"updates":{"owner":"Hank"}})",
+            .expected_model = {.updates = {{"owner", "Hank"}}}},
+        // Removals is missing (should deserialize to empty vector)
+        UpdateNamespacePropertiesRequestDeserializeParam{
+            .test_name = "MissingRemovals",
+            .json_str = R"({"updates":{"owner":"Hank"}})",
+            .expected_model = {.updates = {{"owner", "Hank"}}}},
+        // Updates is null (should deserialize to empty map)
+        UpdateNamespacePropertiesRequestDeserializeParam{
+            .test_name = "NullUpdates",
+            .json_str = R"({"removals":["foo","bar"],"updates":null})",
+            .expected_model = {.removals = {"foo", "bar"}}},
+        // All fields missing (should deserialize to empty)
+        UpdateNamespacePropertiesRequestDeserializeParam{
+            .test_name = "AllMissing", .json_str = R"({})", .expected_model = {}}),
+    [](const ::testing::TestParamInfo<UpdateNamespacePropertiesRequestDeserializeParam>&
+           info) { return info.param.test_name; });
 
-  // Updates is null
-  std::string json3 = R"({"removals":["foo","bar"],"updates":null})";
-  auto result3 = UpdateNamespacePropertiesRequestFromJson(nlohmann::json::parse(json3));
-  ASSERT_TRUE(result3.has_value());
-  EXPECT_TRUE(result3.value().updates.empty());
+DECLARE_INVALID_TEST(UpdateNamespacePropertiesRequest)
 
-  // All missing
-  std::string json4 = R"({})";
-  auto result4 = UpdateNamespacePropertiesRequestFromJson(nlohmann::json::parse(json4));
-  ASSERT_TRUE(result4.has_value());
-  EXPECT_TRUE(result4.value().removals.empty());
-  EXPECT_TRUE(result4.value().updates.empty());
-}
+INSTANTIATE_TEST_SUITE_P(
+    UpdateNamespacePropertiesRequestInvalidCases,
+    UpdateNamespacePropertiesRequestInvalidTest,
+    ::testing::Values(
+        // Incorrect type for removals field
+        UpdateNamespacePropertiesRequestInvalidParam{
+            .test_name = "WrongRemovalsType",
+            .invalid_json_str =
+                R"({"removals":{"foo":"bar"},"updates":{"owner":"Hank"}})",
+            .expected_error_message = "type must be array, but is object"},
+        // Incorrect type for updates field
+        UpdateNamespacePropertiesRequestInvalidParam{
+            .test_name = "WrongUpdatesType",
+            .invalid_json_str = R"({"removals":["foo","bar"],"updates":["owner"]})",
+            .expected_error_message = "type must be object, but is array"}),
+    [](const ::testing::TestParamInfo<UpdateNamespacePropertiesRequestInvalidParam>&
+           info) { return info.param.test_name; });
 
-TEST(UpdateNamespacePropertiesRequestTest, InvalidRequests) {
-  std::string json_wrong_removals_type =
-      R"({"removals":{"foo":"bar"},"updates":{"owner":"Hank"}})";
-  auto result1 = UpdateNamespacePropertiesRequestFromJson(
-      nlohmann::json::parse(json_wrong_removals_type));
-  EXPECT_FALSE(result1.has_value());
-  EXPECT_THAT(result1, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result1.error().message,
-            "Failed to parse 'removals' from "
-            "{\"removals\":{\"foo\":\"bar\"},\"updates\":{\"owner\":\"Hank\"}}: "
-            "[json.exception.type_error.302] type must be array, but is object");
-
-  std::string json_wrong_updates_type =
-      R"({"removals":["foo","bar"],"updates":["owner"]})";
-  auto result2 = UpdateNamespacePropertiesRequestFromJson(
-      nlohmann::json::parse(json_wrong_updates_type));
-  EXPECT_FALSE(result2.has_value());
-  EXPECT_THAT(result2, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result2.error().message,
-            "Failed to parse 'updates' from "
-            "{\"removals\":[\"foo\",\"bar\"],\"updates\":[\"owner\"]}: "
-            "[json.exception.type_error.302] type must be object, but is array");
-}
-
-struct UpdateNamespacePropertiesResponseParam {
-  std::string test_name;
-  std::string expected_json_str;
-  std::vector<std::string> updated;
-  std::vector<std::string> removed;
-  std::vector<std::string> missing;
-};
-
-class UpdateNamespacePropertiesResponseTest
-    : public ::testing::TestWithParam<UpdateNamespacePropertiesResponseParam> {
- protected:
-  void TestRoundTrip() {
-    const auto& param = GetParam();
-
-    UpdateNamespacePropertiesResponse original;
-    original.updated = param.updated;
-    original.removed = param.removed;
-    original.missing = param.missing;
-
-    auto json = ToJson(original);
-    auto expected_json = nlohmann::json::parse(param.expected_json_str);
-    EXPECT_EQ(json, expected_json);
-
-    auto result = UpdateNamespacePropertiesResponseFromJson(expected_json);
-    ASSERT_TRUE(result.has_value()) << result.error().message;
-    auto& parsed = result.value();
-
-    EXPECT_EQ(parsed, original);
-  }
-};
-
-TEST_P(UpdateNamespacePropertiesResponseTest, RoundTrip) { TestRoundTrip(); }
+DECLARE_ROUNDTRIP_TEST(UpdateNamespacePropertiesResponse)
 
 INSTANTIATE_TEST_SUITE_P(
     UpdateNamespacePropertiesResponseCases, UpdateNamespacePropertiesResponseTest,
     ::testing::Values(
+        // Full response with updated, removed, and missing fields
         UpdateNamespacePropertiesResponseParam{
             .test_name = "FullResponse",
             .expected_json_str =
                 R"({"removed":["foo"],"updated":["owner"],"missing":["bar"]})",
-            .updated = {"owner"},
-            .removed = {"foo"},
-            .missing = {"bar"}},
+            .model = {.updated = {"owner"}, .removed = {"foo"}, .missing = {"bar"}}},
+        // Response with only updated field
         UpdateNamespacePropertiesResponseParam{
             .test_name = "OnlyUpdated",
             .expected_json_str = R"({"removed":[],"updated":["owner"]})",
-            .updated = {"owner"},
-            .removed = {},
-            .missing = {}},
+            .model = {.updated = {"owner"}}},
+        // Response with only removed field
         UpdateNamespacePropertiesResponseParam{
             .test_name = "OnlyRemoved",
             .expected_json_str = R"({"removed":["foo"],"updated":[]})",
-            .updated = {},
-            .removed = {"foo"},
-            .missing = {}},
+            .model = {.removed = {"foo"}}},
+        // Response with only missing field
         UpdateNamespacePropertiesResponseParam{
             .test_name = "OnlyMissing",
             .expected_json_str = R"({"removed":[],"updated":[],"missing":["bar"]})",
-            .updated = {},
-            .removed = {},
-            .missing = {"bar"}},
+            .model = {.missing = {"bar"}}},
+        // Response with all empty fields
         UpdateNamespacePropertiesResponseParam{
             .test_name = "AllEmpty",
             .expected_json_str = R"({"removed":[],"updated":[]})",
-            .updated = {},
-            .removed = {},
-            .missing = {}}),
+            .model = {}}),
     [](const ::testing::TestParamInfo<UpdateNamespacePropertiesResponseParam>& info) {
       return info.param.test_name;
     });
 
-TEST(UpdateNamespacePropertiesResponseTest, DeserializeWithoutDefaults) {
-  // Only updated, others missing
-  std::string json2 = R"({"updated":["owner"],"removed":[]})";
-  auto result2 = UpdateNamespacePropertiesResponseFromJson(nlohmann::json::parse(json2));
-  ASSERT_TRUE(result2.has_value());
-  EXPECT_EQ(result2.value().updated, std::vector<std::string>({"owner"}));
-  EXPECT_TRUE(result2.value().removed.empty());
-  EXPECT_TRUE(result2.value().missing.empty());
+DECLARE_DESERIALIZE_TEST(UpdateNamespacePropertiesResponse)
 
-  // All missing
-  std::string json3 = R"({})";
-  auto result3 = UpdateNamespacePropertiesResponseFromJson(nlohmann::json::parse(json3));
-  EXPECT_FALSE(result3.has_value());  // updated and removed are required
-}
+INSTANTIATE_TEST_SUITE_P(
+    UpdateNamespacePropertiesResponseDeserializeCases,
+    UpdateNamespacePropertiesResponseDeserializeTest,
+    ::testing::Values(
+        // Only updated and removed present, missing is optional
+        UpdateNamespacePropertiesResponseDeserializeParam{
+            .test_name = "MissingOptional",
+            .json_str = R"({"updated":["owner"],"removed":[]})",
+            .expected_model = {.updated = {"owner"}}},
+        // All fields are missing
+        UpdateNamespacePropertiesResponseDeserializeParam{
+            .test_name = "AllMissing", .json_str = R"({})", .expected_model = {}}),
+    [](const ::testing::TestParamInfo<UpdateNamespacePropertiesResponseDeserializeParam>&
+           info) { return info.param.test_name; });
 
-TEST(UpdateNamespacePropertiesResponseTest, InvalidResponses) {
-  std::string json_wrong_removed_type =
-      R"({"removed":{"foo":true},"updated":["owner"],"missing":["bar"]})";
-  auto result1 = UpdateNamespacePropertiesResponseFromJson(
-      nlohmann::json::parse(json_wrong_removed_type));
-  EXPECT_FALSE(result1.has_value());
-  EXPECT_THAT(result1, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result1.error().message,
-            "Failed to parse 'removed' from "
-            "{\"missing\":[\"bar\"],\"removed\":{\"foo\":true},\"updated\":[\"owner\"]}: "
-            "[json.exception.type_error.302] type must be array, but is object");
+DECLARE_INVALID_TEST(UpdateNamespacePropertiesResponse)
 
-  std::string json_wrong_updated_type = R"({"updated":"owner","missing":["bar"]})";
-  auto result2 = UpdateNamespacePropertiesResponseFromJson(
-      nlohmann::json::parse(json_wrong_updated_type));
-  EXPECT_FALSE(result2.has_value());
-  EXPECT_THAT(result2, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(
-      result2.error().message,
-      "Failed to parse 'updated' from {\"missing\":[\"bar\"],\"updated\":\"owner\"}: "
-      "[json.exception.type_error.302] type must be array, but is string");
-}
+INSTANTIATE_TEST_SUITE_P(
+    UpdateNamespacePropertiesResponseInvalidCases,
+    UpdateNamespacePropertiesResponseInvalidTest,
+    ::testing::Values(
+        // Incorrect type for removed field
+        UpdateNamespacePropertiesResponseInvalidParam{
+            .test_name = "WrongRemovedType",
+            .invalid_json_str =
+                R"({"removed":{"foo":true},"updated":["owner"],"missing":["bar"]})",
+            .expected_error_message = "type must be array, but is object"},
+        // Incorrect type for updated field
+        UpdateNamespacePropertiesResponseInvalidParam{
+            .test_name = "WrongUpdatedType",
+            .invalid_json_str = R"({"updated":"owner","missing":["bar"]})",
+            .expected_error_message = "type must be array, but is string"},
+        // Valid top-level (array) types, but at least one entry in the list is not the
+        // expected type
+        UpdateNamespacePropertiesResponseInvalidParam{
+            .test_name = "InvalidArrayEntryType",
+            .invalid_json_str =
+                R"({"removed":["foo", "bar", 123456],"updated":["owner"],"missing":["bar"]})",
+            .expected_error_message = " type must be string, but is number"}),
+    [](const ::testing::TestParamInfo<UpdateNamespacePropertiesResponseInvalidParam>&
+           info) { return info.param.test_name; });
 
-struct ListTablesResponseParam {
-  std::string test_name;
-  std::string expected_json_str;
-  std::vector<TableIdentifier> identifiers;
-  std::string next_page_token;
-};
-
-class ListTablesResponseTest : public ::testing::TestWithParam<ListTablesResponseParam> {
- protected:
-  void TestRoundTrip() {
-    const auto& param = GetParam();
-
-    ListTablesResponse original;
-    original.identifiers = param.identifiers;
-    original.next_page_token = param.next_page_token;
-
-    auto json = ToJson(original);
-    auto expected_json = nlohmann::json::parse(param.expected_json_str);
-    EXPECT_EQ(json, expected_json);
-
-    auto result = ListTablesResponseFromJson(expected_json);
-    ASSERT_TRUE(result.has_value()) << result.error().message;
-    auto& parsed = result.value();
-
-    EXPECT_EQ(parsed, original);
-  }
-};
-
-TEST_P(ListTablesResponseTest, RoundTrip) { TestRoundTrip(); }
+DECLARE_ROUNDTRIP_TEST(ListTablesResponse)
 
 INSTANTIATE_TEST_SUITE_P(
     ListTablesResponseCases, ListTablesResponseTest,
     ::testing::Values(
+        // Full response with table identifiers
         ListTablesResponseParam{
             .test_name = "FullResponse",
             .expected_json_str =
                 R"({"identifiers":[{"namespace":["accounting","tax"],"name":"paid"}]})",
-            .identifiers = {TableIdentifier{Namespace{{"accounting", "tax"}}, "paid"}},
-            .next_page_token = ""},
+            .model = {.next_page_token = "",
+                      .identifiers = {TableIdentifier{Namespace{{"accounting", "tax"}},
+                                                      "paid"}}}},
+        // Response with empty identifiers
         ListTablesResponseParam{.test_name = "EmptyIdentifiers",
                                 .expected_json_str = R"({"identifiers":[]})",
-                                .identifiers = {},
-                                .next_page_token = ""},
+                                .model = {.next_page_token = ""}},
+        // Response with page token
         ListTablesResponseParam{
             .test_name = "WithPageToken",
             .expected_json_str =
                 R"({"identifiers":[{"namespace":["accounting","tax"],"name":"paid"}],"next-page-token":"token"})",
-            .identifiers = {TableIdentifier{Namespace{{"accounting", "tax"}}, "paid"}},
-            .next_page_token = "token"}),
+            .model = {.next_page_token = "token",
+                      .identifiers = {TableIdentifier{Namespace{{"accounting", "tax"}},
+                                                      "paid"}}}}),
     [](const ::testing::TestParamInfo<ListTablesResponseParam>& info) {
       return info.param.test_name;
     });
 
-TEST(ListTablesResponseTest, InvalidResponses) {
-  std::string json_wrong_type = R"({"identifiers":"accounting%1Ftax"})";
-  auto result1 = ListTablesResponseFromJson(nlohmann::json::parse(json_wrong_type));
-  EXPECT_FALSE(result1.has_value());
-  EXPECT_THAT(result1, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result1.error().message, "Missing 'name' in \"accounting%1Ftax\"");
+DECLARE_INVALID_TEST(ListTablesResponse)
 
-  std::string json_empty = R"({})";
-  auto result2 = ListTablesResponseFromJson(nlohmann::json::parse(json_empty));
-  EXPECT_FALSE(result2.has_value());
-  EXPECT_THAT(result2, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result2.error().message, "Missing 'identifiers' in {}");
+INSTANTIATE_TEST_SUITE_P(
+    ListTablesResponseInvalidCases, ListTablesResponseInvalidTest,
+    ::testing::Values(
+        // Incorrect type for identifiers field (string instead of array)
+        ListTablesResponseInvalidParam{
+            .test_name = "WrongIdentifiersType",
+            .invalid_json_str = R"({"identifiers":"accounting%1Ftax"})",
+            .expected_error_message = "Missing 'name'"},
+        // Empty JSON object
+        ListTablesResponseInvalidParam{.test_name = "EmptyJson",
+                                       .invalid_json_str = R"({})",
+                                       .expected_error_message = "Missing 'identifiers'"},
+        // Invalid identifier with wrong namespace type
+        ListTablesResponseInvalidParam{
+            .test_name = "InvalidIdentifierNamespaceType",
+            .invalid_json_str =
+                R"({"identifiers":[{"namespace":"accounting.tax","name":"paid"}]})",
+            .expected_error_message = "type must be array, but is string"}),
+    [](const ::testing::TestParamInfo<ListTablesResponseInvalidParam>& info) {
+      return info.param.test_name;
+    });
 
-  std::string json_invalid_identifier =
-      R"({"identifiers":[{"namespace":"accounting.tax","name":"paid"}]})";
-  auto result3 =
-      ListTablesResponseFromJson(nlohmann::json::parse(json_invalid_identifier));
-  EXPECT_FALSE(result3.has_value());
-  EXPECT_THAT(result3, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result3.error().message,
-            "Failed to parse 'namespace' from "
-            "{\"name\":\"paid\",\"namespace\":\"accounting.tax\"}: "
-            "[json.exception.type_error.302] type must be array, but is string");
-}
-
-struct RenameTableRequestParam {
-  std::string test_name;
-  std::string expected_json_str;
-  TableIdentifier source;
-  TableIdentifier destination;
-};
-
-class RenameTableRequestTest : public ::testing::TestWithParam<RenameTableRequestParam> {
- protected:
-  void TestRoundTrip() {
-    const auto& param = GetParam();
-
-    RenameTableRequest original;
-    original.source = param.source;
-    original.destination = param.destination;
-
-    auto json = ToJson(original);
-    auto expected_json = nlohmann::json::parse(param.expected_json_str);
-    EXPECT_EQ(json, expected_json);
-
-    auto result = RenameTableRequestFromJson(expected_json);
-    ASSERT_TRUE(result.has_value()) << result.error().message;
-    auto& parsed = result.value();
-
-    EXPECT_EQ(parsed, original);
-  }
-};
-
-TEST_P(RenameTableRequestTest, RoundTrip) { TestRoundTrip(); }
+DECLARE_ROUNDTRIP_TEST(RenameTableRequest)
 
 INSTANTIATE_TEST_SUITE_P(
     RenameTableRequestCases, RenameTableRequestTest,
-    ::testing::Values(RenameTableRequestParam{
-        .test_name = "FullRequest",
-        .expected_json_str =
-            R"({"source":{"namespace":["accounting","tax"],"name":"paid"},"destination":{"namespace":["accounting","tax"],"name":"paid_2022"}})",
-        .source = TableIdentifier{Namespace{{"accounting", "tax"}}, "paid"},
-        .destination = TableIdentifier{Namespace{{"accounting", "tax"}}, "paid_2022"}}),
+    ::testing::Values(
+        // Full request with source and destination table identifiers
+        RenameTableRequestParam{
+            .test_name = "FullRequest",
+            .expected_json_str =
+                R"({"source":{"namespace":["accounting","tax"],"name":"paid"},"destination":{"namespace":["accounting","tax"],"name":"paid_2022"}})",
+            .model = {.source = TableIdentifier{Namespace{{"accounting", "tax"}}, "paid"},
+                      .destination = TableIdentifier{Namespace{{"accounting", "tax"}},
+                                                     "paid_2022"}}}),
     [](const ::testing::TestParamInfo<RenameTableRequestParam>& info) {
       return info.param.test_name;
     });
 
-TEST(RenameTableRequestTest, InvalidRequests) {
-  std::string json_source_null_name =
-      R"({"source":{"namespace":["accounting","tax"],"name":null},"destination":{"namespace":["accounting","tax"],"name":"paid_2022"}})";
-  auto result1 = RenameTableRequestFromJson(nlohmann::json::parse(json_source_null_name));
-  EXPECT_FALSE(result1.has_value());
-  EXPECT_THAT(result1, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result1.error().message,
-            "Missing 'name' in {\"name\":null,\"namespace\":[\"accounting\",\"tax\"]}");
+DECLARE_INVALID_TEST(RenameTableRequest)
 
-  std::string json_dest_null_name =
-      R"({"source":{"namespace":["accounting","tax"],"name":"paid"},"destination":{"namespace":["accounting","tax"],"name":null}})";
-  auto result2 = RenameTableRequestFromJson(nlohmann::json::parse(json_dest_null_name));
-  EXPECT_FALSE(result2.has_value());
-  EXPECT_THAT(result2, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result2.error().message,
-            "Missing 'name' in {\"name\":null,\"namespace\":[\"accounting\",\"tax\"]}");
+INSTANTIATE_TEST_SUITE_P(
+    RenameTableRequestInvalidCases, RenameTableRequestInvalidTest,
+    ::testing::Values(
+        // Source table name is null
+        RenameTableRequestInvalidParam{
+            .test_name = "SourceNameNull",
+            .invalid_json_str =
+                R"({"source":{"namespace":["accounting","tax"],"name":null},"destination":{"namespace":["accounting","tax"],"name":"paid_2022"}})",
+            .expected_error_message = "Missing 'name'"},
+        // Destination table name is null
+        RenameTableRequestInvalidParam{
+            .test_name = "DestinationNameNull",
+            .invalid_json_str =
+                R"({"source":{"namespace":["accounting","tax"],"name":"paid"},"destination":{"namespace":["accounting","tax"],"name":null}})",
+            .expected_error_message = "Missing 'name'"},
+        // Empty JSON object
+        RenameTableRequestInvalidParam{.test_name = "EmptyJson",
+                                       .invalid_json_str = R"({})",
+                                       .expected_error_message = "Missing 'source'"}),
+    [](const ::testing::TestParamInfo<RenameTableRequestInvalidParam>& info) {
+      return info.param.test_name;
+    });
 
-  std::string json_empty = R"({})";
-  auto result3 = RenameTableRequestFromJson(nlohmann::json::parse(json_empty));
-  EXPECT_FALSE(result3.has_value());
-  EXPECT_THAT(result3, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result3.error().message, "Missing 'source' in {}");
-}
-
-struct RegisterTableRequestParam {
-  std::string test_name;
-  std::string expected_json_str;
-  std::string name;
-  std::string metadata_location;
-  bool overwrite;
-};
-
-class RegisterTableRequestTest
-    : public ::testing::TestWithParam<RegisterTableRequestParam> {
- protected:
-  void TestRoundTrip() {
-    const auto& param = GetParam();
-
-    RegisterTableRequest original;
-    original.name = param.name;
-    original.metadata_location = param.metadata_location;
-    original.overwrite = param.overwrite;
-
-    auto json = ToJson(original);
-    auto expected_json = nlohmann::json::parse(param.expected_json_str);
-    EXPECT_EQ(json, expected_json);
-
-    auto result = RegisterTableRequestFromJson(expected_json);
-    ASSERT_TRUE(result.has_value()) << result.error().message;
-    auto& parsed = result.value();
-
-    EXPECT_EQ(parsed, original);
-  }
-};
-
-TEST_P(RegisterTableRequestTest, RoundTrip) { TestRoundTrip(); }
+DECLARE_ROUNDTRIP_TEST(RegisterTableRequest)
 
 INSTANTIATE_TEST_SUITE_P(
     RegisterTableRequestCases, RegisterTableRequestTest,
     ::testing::Values(
+        // Request with overwrite set to true
         RegisterTableRequestParam{
             .test_name = "WithOverwriteTrue",
             .expected_json_str =
                 R"({"name":"table1","metadata-location":"s3://bucket/metadata.json","overwrite":true})",
-            .name = "table1",
-            .metadata_location = "s3://bucket/metadata.json",
-            .overwrite = true},
+            .model = {.name = "table1",
+                      .metadata_location = "s3://bucket/metadata.json",
+                      .overwrite = true}},
+        // Request without overwrite field (defaults to false, omitted in serialization)
         RegisterTableRequestParam{
             .test_name = "WithoutOverwrite",
             .expected_json_str =
                 R"({"name":"table1","metadata-location":"s3://bucket/metadata.json"})",
-            .name = "table1",
-            .metadata_location = "s3://bucket/metadata.json",
-            .overwrite = false}),
+            .model = {.name = "table1",
+                      .metadata_location = "s3://bucket/metadata.json"}}),
     [](const ::testing::TestParamInfo<RegisterTableRequestParam>& info) {
       return info.param.test_name;
     });
 
-TEST(RegisterTableRequestTest, DeserializeWithoutDefaults) {
-  // Overwrite missing (defaults to false)
-  std::string json1 =
-      R"({"name":"table1","metadata-location":"s3://bucket/metadata.json"})";
-  auto result1 = RegisterTableRequestFromJson(nlohmann::json::parse(json1));
-  ASSERT_TRUE(result1.has_value());
-  EXPECT_FALSE(result1.value().overwrite);
-}
+DECLARE_DESERIALIZE_TEST(RegisterTableRequest)
 
-TEST(RegisterTableRequestTest, InvalidRequests) {
-  std::string json_missing_name = R"({"metadata-location":"s3://bucket/metadata.json"})";
-  auto result1 = RegisterTableRequestFromJson(nlohmann::json::parse(json_missing_name));
-  EXPECT_FALSE(result1.has_value());
-  EXPECT_THAT(result1, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result1.error().message,
-            "Missing 'name' in {\"metadata-location\":\"s3://bucket/metadata.json\"}");
+INSTANTIATE_TEST_SUITE_P(
+    RegisterTableRequestDeserializeCases, RegisterTableRequestDeserializeTest,
+    ::testing::Values(
+        // Overwrite missing (should default to false)
+        RegisterTableRequestDeserializeParam{
+            .test_name = "MissingOverwrite",
+            .json_str =
+                R"({"name":"table1","metadata-location":"s3://bucket/metadata.json"})",
+            .expected_model = {.name = "table1",
+                               .metadata_location = "s3://bucket/metadata.json",
+                               .overwrite = false}}),
+    [](const ::testing::TestParamInfo<RegisterTableRequestDeserializeParam>& info) {
+      return info.param.test_name;
+    });
 
-  std::string json_missing_location = R"({"name":"table1"})";
-  auto result2 =
-      RegisterTableRequestFromJson(nlohmann::json::parse(json_missing_location));
-  EXPECT_FALSE(result2.has_value());
-  EXPECT_THAT(result2, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result2.error().message,
-            "Missing 'metadata-location' in {\"name\":\"table1\"}");
+DECLARE_INVALID_TEST(RegisterTableRequest)
 
-  std::string json_empty = R"({})";
-  auto result3 = RegisterTableRequestFromJson(nlohmann::json::parse(json_empty));
-  EXPECT_FALSE(result3.has_value());
-  EXPECT_THAT(result3, IsError(ErrorKind::kJsonParseError));
-  EXPECT_EQ(result3.error().message, "Missing 'name' in {}");
-}
+INSTANTIATE_TEST_SUITE_P(
+    RegisterTableRequestInvalidCases, RegisterTableRequestInvalidTest,
+    ::testing::Values(
+        // Missing required name field
+        RegisterTableRequestInvalidParam{
+            .test_name = "MissingName",
+            .invalid_json_str = R"({"metadata-location":"s3://bucket/metadata.json"})",
+            .expected_error_message = "Missing 'name' in"},
+        // Missing required metadata-location field
+        RegisterTableRequestInvalidParam{
+            .test_name = "MissingMetadataLocation",
+            .invalid_json_str = R"({"name":"table1"})",
+            .expected_error_message = "Missing 'metadata-location'"},
+        // Empty JSON object
+        RegisterTableRequestInvalidParam{.test_name = "EmptyJson",
+                                         .invalid_json_str = R"({})",
+                                         .expected_error_message = "Missing 'name'"}),
+    [](const ::testing::TestParamInfo<RegisterTableRequestInvalidParam>& info) {
+      return info.param.test_name;
+    });
 
 }  // namespace iceberg::rest

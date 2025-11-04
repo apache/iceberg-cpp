@@ -39,6 +39,21 @@ void SetOptionalField(nlohmann::json& json, std::string_view key,
   }
 }
 
+template <typename T>
+  requires requires(const T& t) { t.empty(); }
+void SetContainerField(nlohmann::json& json, std::string_view key, const T& value) {
+  if (!value.empty()) {
+    json[key] = value;
+  }
+}
+
+inline void SetOptionalStringField(nlohmann::json& json, std::string_view key,
+                                   const std::string& value) {
+  if (!value.empty()) {
+    json[key] = value;
+  }
+}
+
 inline std::string SafeDumpJson(const nlohmann::json& json) {
   return json.dump(/*indent=*/-1, /*indent_char=*/' ', /*ensure_ascii=*/false,
                    nlohmann::detail::error_handler_t::ignore);

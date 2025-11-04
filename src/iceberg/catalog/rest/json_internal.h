@@ -21,81 +21,36 @@
 
 #include <nlohmann/json_fwd.hpp>
 
+#include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/result.h"
 
 namespace iceberg::rest {
 
-/// \brief Serializes a `ListNamespacesResponse` object to JSON.
-ICEBERG_REST_EXPORT nlohmann::json ToJson(const ListNamespacesResponse& response);
+template <typename Model>
+Result<Model> FromJson(const nlohmann::json& json);
 
-/// \brief Deserializes a JSON object into a `ListNamespacesResponse` object.
-ICEBERG_REST_EXPORT Result<ListNamespacesResponse> ListNamespacesResponseFromJson(
-    const nlohmann::json& json);
+#define ICEBERG_DECLARE_JSON_SERDE(Model)                                        \
+  ICEBERG_REST_EXPORT Result<Model> Model##FromJson(const nlohmann::json& json); \
+                                                                                 \
+  template <>                                                                    \
+  ICEBERG_REST_EXPORT Result<Model> FromJson(const nlohmann::json& json);        \
+                                                                                 \
+  ICEBERG_REST_EXPORT nlohmann::json ToJson(const Model& model);
 
-/// \brief Serializes a `CreateNamespaceRequest` object to JSON.
-ICEBERG_REST_EXPORT nlohmann::json ToJson(const CreateNamespaceRequest& request);
+/// \note Don't forget to add `ICEBERG_DEFINE_FROM_JSON` to the end of
+/// `json_internal.cc` to define the `FromJson` function for the model.
+ICEBERG_DECLARE_JSON_SERDE(ListNamespacesResponse)
+ICEBERG_DECLARE_JSON_SERDE(CreateNamespaceRequest)
+ICEBERG_DECLARE_JSON_SERDE(CreateNamespaceResponse)
+ICEBERG_DECLARE_JSON_SERDE(GetNamespaceResponse)
+ICEBERG_DECLARE_JSON_SERDE(UpdateNamespacePropertiesRequest)
+ICEBERG_DECLARE_JSON_SERDE(UpdateNamespacePropertiesResponse)
+ICEBERG_DECLARE_JSON_SERDE(ListTablesResponse)
+ICEBERG_DECLARE_JSON_SERDE(LoadTableResult)
+ICEBERG_DECLARE_JSON_SERDE(RegisterTableRequest)
+ICEBERG_DECLARE_JSON_SERDE(RenameTableRequest)
 
-/// \brief Deserializes a JSON object into a `CreateNamespaceRequest` object.
-ICEBERG_REST_EXPORT Result<CreateNamespaceRequest> CreateNamespaceRequestFromJson(
-    const nlohmann::json& json);
-
-/// \brief Serializes a `CreateNamespaceResponse` object to JSON.
-ICEBERG_REST_EXPORT nlohmann::json ToJson(const CreateNamespaceResponse& response);
-
-/// \brief Deserializes a JSON object into a `CreateNamespaceResponse` object.
-ICEBERG_REST_EXPORT Result<CreateNamespaceResponse> CreateNamespaceResponseFromJson(
-    const nlohmann::json& json);
-
-/// \brief Serializes a `GetNamespaceResponse` object to JSON.
-ICEBERG_REST_EXPORT nlohmann::json ToJson(const GetNamespaceResponse& response);
-
-/// \brief Deserializes a JSON object into a `GetNamespaceResponse` object.
-ICEBERG_REST_EXPORT Result<GetNamespaceResponse> GetNamespaceResponseFromJson(
-    const nlohmann::json& json);
-
-/// \brief Serializes an `UpdateNamespacePropertiesRequest` object to JSON.
-ICEBERG_REST_EXPORT nlohmann::json ToJson(
-    const UpdateNamespacePropertiesRequest& request);
-
-/// \brief Deserializes a JSON object into an `UpdateNamespacePropertiesRequest` object.
-ICEBERG_REST_EXPORT Result<UpdateNamespacePropertiesRequest>
-UpdateNamespacePropertiesRequestFromJson(const nlohmann::json& json);
-
-/// \brief Serializes an `UpdateNamespacePropertiesResponse` object to JSON.
-ICEBERG_REST_EXPORT nlohmann::json ToJson(
-    const UpdateNamespacePropertiesResponse& response);
-
-/// \brief Deserializes a JSON object into an `UpdateNamespacePropertiesResponse` object.
-ICEBERG_REST_EXPORT Result<UpdateNamespacePropertiesResponse>
-UpdateNamespacePropertiesResponseFromJson(const nlohmann::json& json);
-
-/// \brief Serializes a `ListTablesResponse` object to JSON.
-ICEBERG_REST_EXPORT nlohmann::json ToJson(const ListTablesResponse& response);
-
-/// \brief Deserializes a JSON object into a `ListTablesResponse` object.
-ICEBERG_REST_EXPORT Result<ListTablesResponse> ListTablesResponseFromJson(
-    const nlohmann::json& json);
-
-/// \brief Serializes a `LoadTableResult` object to JSON.
-ICEBERG_REST_EXPORT nlohmann::json ToJson(const LoadTableResult& result);
-
-/// \brief Deserializes a JSON object into a `LoadTableResult` object.
-ICEBERG_REST_EXPORT Result<LoadTableResult> LoadTableResultFromJson(
-    const nlohmann::json& json);
-
-/// \brief Serializes a `RegisterTableRequest` object to JSON.
-ICEBERG_REST_EXPORT nlohmann::json ToJson(const RegisterTableRequest& request);
-
-/// \brief Deserializes a JSON object into a `RegisterTableRequest` object.
-ICEBERG_REST_EXPORT Result<RegisterTableRequest> RegisterTableRequestFromJson(
-    const nlohmann::json& json);
-
-/// \brief Serializes a `RenameTableRequest` object to JSON.
-ICEBERG_REST_EXPORT nlohmann::json ToJson(const RenameTableRequest& request);
-
-/// \brief Deserializes a JSON object into a `RenameTableRequest` object.
-ICEBERG_REST_EXPORT Result<RenameTableRequest> RenameTableRequestFromJson(
-    const nlohmann::json& json);
+#undef ICEBERG_DECLARE_JSON_SERDE
 
 }  // namespace iceberg::rest

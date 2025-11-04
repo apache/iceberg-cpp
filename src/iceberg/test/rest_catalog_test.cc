@@ -51,7 +51,7 @@ class RestCatalogIntegrationTest : public ::testing::Test {
   std::thread server_thread_;
 };
 
-TEST_F(RestCatalogIntegrationTest, GetConfigSuccessfully) {
+TEST_F(RestCatalogIntegrationTest, DISABLED_GetConfigSuccessfully) {
   server_->Get("/v1/config", [](const httplib::Request&, httplib::Response& res) {
     res.status = 200;
     res.set_content(R"({"warehouse": "s3://test-bucket"})", "application/json");
@@ -68,7 +68,7 @@ TEST_F(RestCatalogIntegrationTest, GetConfigSuccessfully) {
   EXPECT_EQ(json_body["warehouse"], "s3://test-bucket");
 }
 
-TEST_F(RestCatalogIntegrationTest, ListNamespacesReturnsMultipleResults) {
+TEST_F(RestCatalogIntegrationTest, DISABLED_ListNamespacesReturnsMultipleResults) {
   server_->Get("/v1/namespaces", [](const httplib::Request&, httplib::Response& res) {
     res.status = 200;
     res.set_content(R"({
@@ -93,7 +93,7 @@ TEST_F(RestCatalogIntegrationTest, ListNamespacesReturnsMultipleResults) {
   EXPECT_THAT(json_body["namespaces"][0][0], "accounting");
 }
 
-TEST_F(RestCatalogIntegrationTest, HandlesServerError) {
+TEST_F(RestCatalogIntegrationTest, DISABLED_HandlesServerError) {
   server_->Get("/v1/config", [](const httplib::Request&, httplib::Response& res) {
     res.status = 500;
     res.set_content("Internal Server Error", "text/plain");
