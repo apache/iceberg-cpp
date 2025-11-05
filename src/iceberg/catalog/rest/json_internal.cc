@@ -20,7 +20,6 @@
 #include "iceberg/catalog/rest/json_internal.h"
 
 #include <string>
-#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -75,9 +74,7 @@ nlohmann::json ToJson(const CatalogConfig& config) {
   nlohmann::json json;
   json[kOverrides] = config.overrides;
   json[kDefaults] = config.defaults;
-  if (!config.endpoints.empty()) {
-    json[kEndpoints] = config.endpoints;
-  }
+  SetContainerField(json, kEndpoints, config.endpoints);
   return json;
 }
 
@@ -100,17 +97,18 @@ nlohmann::json ToJson(const ErrorModel& error) {
   json[kMessage] = error.message;
   json[kType] = error.type;
   json[kCode] = error.code;
-  if (!error.stack.empty()) {
-    json[kStack] = error.stack;
-  }
+  SetContainerField(json, kStack, error.stack);
   return json;
 }
 
 Result<ErrorModel> ErrorModelFromJson(const nlohmann::json& json) {
   ErrorModel error;
+  // NOTE: Iceberg's Java implementation allows missing required fields (message, type,
+  // code) during deserialization, which deviates from the REST spec. We enforce strict
+  // validation here.
   ICEBERG_ASSIGN_OR_RAISE(error.message, GetJsonValue<std::string>(json, kMessage));
   ICEBERG_ASSIGN_OR_RAISE(error.type, GetJsonValue<std::string>(json, kType));
-  ICEBERG_ASSIGN_OR_RAISE(error.code, GetJsonValue<uint16_t>(json, kCode));
+  ICEBERG_ASSIGN_OR_RAISE(error.code, GetJsonValue<uint32_t>(json, kCode));
   ICEBERG_ASSIGN_OR_RAISE(error.stack,
                           GetJsonValueOrDefault<std::vector<std::string>>(json, kStack));
   ICEBERG_RETURN_UNEXPECTED(Validator::Validate(error));

@@ -35,8 +35,8 @@ namespace iceberg::rest {
 
 /// \brief Server-provided configuration for the catalog.
 struct ICEBERG_REST_EXPORT CatalogConfig {
-  std::unordered_map<std::string, std::string> overrides;  // required
   std::unordered_map<std::string, std::string> defaults;   // required
+  std::unordered_map<std::string, std::string> overrides;  // required
   std::vector<std::string> endpoints;
 };
 
@@ -44,7 +44,7 @@ struct ICEBERG_REST_EXPORT CatalogConfig {
 struct ICEBERG_REST_EXPORT ErrorModel {
   std::string message;  // required
   std::string type;     // required
-  uint16_t code;        // required
+  uint32_t code;        // required
   std::vector<std::string> stack;
 };
 

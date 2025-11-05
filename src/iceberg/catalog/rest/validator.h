@@ -77,6 +77,11 @@ class ICEBERG_REST_EXPORT Validator {
 
   /// \brief Validates a RenameTableRequest object.
   static Status Validate(const RenameTableRequest& request);
+
+  // Other types
+
+  /// \brief Validates a TableIdentifier object.
+  static Status Validate(const TableIdentifier& identifier);
 };
 
 }  // namespace iceberg::rest

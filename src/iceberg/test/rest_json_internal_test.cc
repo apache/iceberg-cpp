@@ -940,7 +940,6 @@ INSTANTIATE_TEST_SUITE_P(
       return info.param.test_name;
     });
 
-// ErrorModel tests - testing the nested error model structure
 DECLARE_INVALID_TEST(ErrorModel)
 
 INSTANTIATE_TEST_SUITE_P(
