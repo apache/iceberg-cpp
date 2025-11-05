@@ -15,6 +15,12 @@
 # specific language governing permissions and limitations
 # under the License.
 
+cpp = meson.get_compiler('cpp')
+iceberg_common_cpp_args = []
+if cpp.get_id() == 'msvc'
+    iceberg_common_cpp_args += cpp.get_supported_arguments(['/bigobj'])
+endif
+
 conf_data = configuration_data()
 version = meson.project_version()
 components = version.split('.')
@@ -121,6 +127,7 @@ iceberg_lib = library(
     dependencies: iceberg_deps,
     include_directories: iceberg_include_dir,
     install: true,
+    cpp_args: iceberg_common_cpp_args,
     gnu_symbol_visibility: 'inlineshidden',
     cpp_shared_args: ['-DICEBERG_EXPORTING'],
     cpp_static_args: ['-DICEBERG_STATIC'],

@@ -104,6 +104,7 @@ foreach test_name, values : iceberg_tests
             'dependencies',
             [],
         ),
+        cpp_args: iceberg_common_cpp_args,
     )
     test(test_name, exc)
 endforeach

@@ -33,6 +33,7 @@ iceberg_rest_lib = library(
     'iceberg_rest',
     sources: iceberg_rest_sources,
     dependencies: iceberg_rest_build_deps,
+    cpp_args: iceberg_common_cpp_args,
     gnu_symbol_visibility: 'hidden',
     cpp_shared_args: ['-DICEBERG_REST_EXPORTING'],
     cpp_static_args: ['-DICEBERG_REST_STATIC'],
