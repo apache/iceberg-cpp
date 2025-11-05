@@ -16,8 +16,10 @@
 # under the License.
 
 iceberg_rest_sources = files(
+    'catalog.cc',
+    'config.cc',
+    'http_client_internal.cc',
     'json_internal.cc',
-    'rest_catalog.cc',
     'validator.cc',
 )
 # cpr does not export symbols, so on Windows it must
@@ -52,6 +54,15 @@ meson.override_dependency('iceberg-rest', iceberg_rest_dep)
 pkg.generate(iceberg_rest_lib)
 
 install_headers(
-    ['rest_catalog.h', 'types.h', 'json_internal.h', 'validator.h'],
+    [
+        'catalog.h',
+        'config.h',
+        'constant.h',
+        'http_client_interal.h',
+        'json_internal.h',
+        'types.h',
+        'util.h',
+        'validator.h',
+    ],
     subdir: 'iceberg/catalog/rest',
 )

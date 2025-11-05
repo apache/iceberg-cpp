@@ -33,22 +33,33 @@ enum class ErrorKind {
   kCommitFailed,
   kCommitStateUnknown,
   kDecompressError,
+  kIOError,
   kInvalid,  // For general invalid errors
   kInvalidArgument,
   kInvalidArrowData,
   kInvalidExpression,
-  kInvalidSchema,
   kInvalidManifest,
   kInvalidManifestList,
-  kIOError,
+  kInvalidSchema,
   kJsonParseError,
+  kNamespaceNotEmpty,
   kNoSuchNamespace,
+  kNoSuchPlanId,
+  kNoSuchPlanTask,
   kNoSuchTable,
+  kNoSuchView,
   kNotAllowed,
   kNotFound,
   kNotImplemented,
   kNotSupported,
   kUnknownError,
+
+  // Below: errors specific to Iceberg REST catalog
+  kAuthenticationTimeout,
+  kBadRequest,
+  kNotAuthorized,
+  kSlowDown,
+  kUnprocessableEntity,
 };
 
 /// \brief Error with a kind and a message.
@@ -91,13 +102,24 @@ DEFINE_ERROR_FUNCTION(InvalidManifest)
 DEFINE_ERROR_FUNCTION(InvalidManifestList)
 DEFINE_ERROR_FUNCTION(IOError)
 DEFINE_ERROR_FUNCTION(JsonParseError)
+DEFINE_ERROR_FUNCTION(NamespaceNotEmpty)
 DEFINE_ERROR_FUNCTION(NoSuchNamespace)
+DEFINE_ERROR_FUNCTION(NoSuchPlanId)
+DEFINE_ERROR_FUNCTION(NoSuchPlanTask)
 DEFINE_ERROR_FUNCTION(NoSuchTable)
+DEFINE_ERROR_FUNCTION(NoSuchView)
 DEFINE_ERROR_FUNCTION(NotAllowed)
 DEFINE_ERROR_FUNCTION(NotFound)
 DEFINE_ERROR_FUNCTION(NotImplemented)
 DEFINE_ERROR_FUNCTION(NotSupported)
 DEFINE_ERROR_FUNCTION(UnknownError)
+
+// REST catalog specific errors
+DEFINE_ERROR_FUNCTION(AuthenticationTimeout)
+DEFINE_ERROR_FUNCTION(BadRequest)
+DEFINE_ERROR_FUNCTION(NotAuthorized)
+DEFINE_ERROR_FUNCTION(SlowDown)
+DEFINE_ERROR_FUNCTION(UnprocessableEntity)
 
 #undef DEFINE_ERROR_FUNCTION
 

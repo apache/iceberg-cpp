@@ -15,7 +15,12 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set(ICEBERG_REST_SOURCES rest_catalog.cc json_internal.cc validator.cc)
+set(ICEBERG_REST_SOURCES
+    catalog.cc
+    json_internal.cc
+    validator.cc
+    config.cc
+    http_client_internal.cc)
 
 set(ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS)

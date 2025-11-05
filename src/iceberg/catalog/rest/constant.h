@@ -17,28 +17,27 @@
  * under the License.
  */
 
-#include "iceberg/catalog/rest/rest_catalog.h"
+#pragma once
 
-#include <utility>
+#include <string_view>
 
-#include <cpr/cpr.h>
+#include "iceberg/version.h"
 
-#include "iceberg/catalog/rest/types.h"
+/// \file iceberg/catalog/rest/constant.h
+/// Constant values for Iceberg REST API.
 
-namespace iceberg::catalog::rest {
+namespace iceberg::rest {
 
-RestCatalog::RestCatalog(const std::string& base_url) : base_url_(std::move(base_url)) {}
+constexpr std::string_view kHeaderContentType = "Content-Type";
+constexpr std::string_view kHeaderAccept = "Accept";
+constexpr std::string_view kHeaderXClientVersion = "X-Client-Version";
+constexpr std::string_view kHeaderUserAgent = "User-Agent";
 
-cpr::Response RestCatalog::GetConfig() {
-  cpr::Url url = cpr::Url{base_url_ + "/v1/config"};
-  cpr::Response r = cpr::Get(url);
-  return r;
-}
+constexpr std::string_view kMimeTypeApplicationJson = "application/json";
+constexpr std::string_view kClientVersion = "0.14.1";
+constexpr std::string_view kUserAgentPrefix = "iceberg-cpp/";
+constexpr std::string_view kUserAgent = "iceberg-cpp/" ICEBERG_VERSION_STRING;
 
-cpr::Response RestCatalog::ListNamespaces() {
-  cpr::Url url = cpr::Url{base_url_ + "/v1/namespaces"};
-  cpr::Response r = cpr::Get(url);
-  return r;
-}
+constexpr std::string_view kPathV1 = "v1";
 
-}  // namespace iceberg::catalog::rest
+}  // namespace iceberg::rest
