@@ -96,12 +96,6 @@ if get_option('rest').enabled()
     }
 endif
 
-cpp = meson.get_compiler('cpp')
-cpp_bigobj_args = []
-if cpp.get_id() == 'msvc'
-    cpp_bigobj_args += cpp.get_supported_arguments(['/bigobj'])
-endif
-
 foreach test_name, values : iceberg_tests
     exc = executable(
         test_name,
@@ -110,7 +104,6 @@ foreach test_name, values : iceberg_tests
             'dependencies',
             [],
         ),
-        cpp_args: cpp_bigobj_args,
     )
     test(test_name, exc)
 endforeach

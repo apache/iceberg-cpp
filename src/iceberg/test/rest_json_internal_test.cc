@@ -770,8 +770,8 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "FullConfig",
             .expected_json_str =
                 R"({"defaults":{"warehouse":"s3://bucket/warehouse"},"overrides":{"clients":"5"}})",
-            .model = {.overrides = {{"clients", "5"}},
-                      .defaults = {{"warehouse", "s3://bucket/warehouse"}}}},
+            .model = {.defaults = {{"warehouse", "s3://bucket/warehouse"}},
+                      .overrides = {{"clients", "5"}}}},
         // Only defaults
         CatalogConfigParam{
             .test_name = "OnlyDefaults",
@@ -792,8 +792,9 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "WithEndpoints",
             .expected_json_str =
                 R"({"defaults":{"warehouse":"s3://bucket/warehouse"},"overrides":{"clients":"5"},"endpoints":["GET /v1/config","POST /v1/tables"]})",
-            .model = {.overrides = {{"clients", "5"}},
-                      .defaults = {{"warehouse", "s3://bucket/warehouse"}},
+            .model = {.defaults = {{"warehouse", "s3://bucket/warehouse"}},
+                      .overrides = {{"clients", "5"}},
+
                       .endpoints = {"GET /v1/config", "POST /v1/tables"}}},
         // Only endpoints
         CatalogConfigParam{

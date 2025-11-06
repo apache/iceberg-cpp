@@ -30,6 +30,10 @@ project(
     ],
 )
 
+cpp = meson.get_compiler('cpp')
+args = cpp.get_supported_arguments(['/bigobj'])
+add_project_arguments(args, language: 'cpp')
+
 subdir('src')
 
 install_data(
