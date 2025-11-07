@@ -33,12 +33,25 @@ const StructType& PartitionFieldSummary::Type() {
   return kInstance;
 }
 
-const StructType& ManifestFile::Type() {
-  static const StructType kInstance(
-      {kManifestPath, kManifestLength, kPartitionSpecId, kContent, kSequenceNumber,
-       kMinSequenceNumber, kAddedSnapshotId, kAddedFilesCount, kExistingFilesCount,
-       kDeletedFilesCount, kAddedRowsCount, kExistingRowsCount, kDeletedRowsCount,
-       kPartitions, kKeyMetadata, kFirstRowId});
+const std::shared_ptr<Schema>& ManifestFile::Type() {
+  static const auto kInstance = std::make_shared<Schema>(std::vector<SchemaField>{
+      kManifestPath,
+      kManifestLength,
+      kPartitionSpecId,
+      kContent,
+      kSequenceNumber,
+      kMinSequenceNumber,
+      kAddedSnapshotId,
+      kAddedFilesCount,
+      kExistingFilesCount,
+      kDeletedFilesCount,
+      kAddedRowsCount,
+      kExistingRowsCount,
+      kDeletedRowsCount,
+      kPartitions,
+      kKeyMetadata,
+      kFirstRowId,
+  });
   return kInstance;
 }
 

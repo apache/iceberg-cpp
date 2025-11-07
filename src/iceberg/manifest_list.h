@@ -197,7 +197,7 @@ struct ICEBERG_EXPORT ManifestFile {
 
   bool operator==(const ManifestFile& other) const = default;
 
-  static const StructType& Type();
+  static const std::shared_ptr<Schema>& Type();
 };
 
 /// Snapshots are embedded in table metadata, but the list of manifests for a snapshot are

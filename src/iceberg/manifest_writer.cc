@@ -53,6 +53,8 @@ Status ManifestWriter::Close() {
   return writer_->Close();
 }
 
+ManifestContent ManifestWriter::content() const { return adapter_->content(); }
+
 Result<std::unique_ptr<Writer>> OpenFileWriter(
     std::string_view location, std::shared_ptr<Schema> schema,
     std::shared_ptr<FileIO> file_io,
@@ -83,9 +85,10 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV1Writer(
 
 Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV2Writer(
     std::optional<int64_t> snapshot_id, std::string_view manifest_location,
-    std::shared_ptr<FileIO> file_io, std::shared_ptr<PartitionSpec> partition_spec) {
-  auto adapter =
-      std::make_unique<ManifestEntryAdapterV2>(snapshot_id, std::move(partition_spec));
+    std::shared_ptr<FileIO> file_io, std::shared_ptr<PartitionSpec> partition_spec,
+    ManifestContent content) {
+  auto adapter = std::make_unique<ManifestEntryAdapterV2>(
+      snapshot_id, std::move(partition_spec), content);
   ICEBERG_RETURN_UNEXPECTED(adapter->Init());
   ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
 
@@ -99,9 +102,9 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV2Writer(
 Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV3Writer(
     std::optional<int64_t> snapshot_id, std::optional<int64_t> first_row_id,
     std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
-    std::shared_ptr<PartitionSpec> partition_spec) {
-  auto adapter = std::make_unique<ManifestEntryAdapterV3>(snapshot_id, first_row_id,
-                                                          std::move(partition_spec));
+    std::shared_ptr<PartitionSpec> partition_spec, ManifestContent content) {
+  auto adapter = std::make_unique<ManifestEntryAdapterV3>(
+      snapshot_id, first_row_id, std::move(partition_spec), content);
   ICEBERG_RETURN_UNEXPECTED(adapter->Init());
   ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
 
@@ -134,6 +137,10 @@ Status ManifestListWriter::Close() {
     ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
   }
   return writer_->Close();
+}
+
+std::optional<int64_t> ManifestListWriter::next_row_id() const {
+  return adapter_->next_row_id();
 }
 
 Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV1Writer(
@@ -169,7 +176,7 @@ Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV2Writer(
 
 Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV3Writer(
     int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
-    int64_t sequence_number, std::optional<int64_t> first_row_id,
+    int64_t sequence_number, int64_t first_row_id,
     std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io) {
   auto adapter = std::make_unique<ManifestFileAdapterV3>(snapshot_id, parent_snapshot_id,
                                                          sequence_number, first_row_id);

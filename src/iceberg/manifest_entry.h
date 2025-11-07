@@ -57,6 +57,15 @@ ICEBERG_EXPORT constexpr Result<ManifestStatus> ManifestStatusFromInt(
   }
 }
 
+enum class ManifestContent {
+  kData = 0,
+  kDeletes = 1,
+};
+
+ICEBERG_EXPORT constexpr std::string_view ToString(ManifestContent content) noexcept;
+ICEBERG_EXPORT constexpr Result<ManifestContent> ManifestContentFromString(
+    std::string_view str) noexcept;
+
 /// \brief DataFile carries data file path, partition tuple, metrics, ...
 struct ICEBERG_EXPORT DataFile {
   /// \brief Content of a data file
@@ -185,6 +194,8 @@ struct ICEBERG_EXPORT DataFile {
       101, "file_format", iceberg::string(), "File format name: avro, orc, or parquet");
   inline static const int32_t kPartitionFieldId = 102;
   inline static const std::string kPartitionField = "partition";
+  inline static const std::string kPartitionDoc =
+      "Partition data tuple, schema based on the partition spec";
   inline static const SchemaField kRecordCount = SchemaField::MakeRequired(
       103, "record_count", iceberg::int64(), "Number of records in the file");
   inline static const SchemaField kFileSize = SchemaField::MakeRequired(

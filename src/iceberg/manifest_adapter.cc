@@ -139,6 +139,14 @@ Result<ArrowArray*> ManifestAdapter::FinishAppending() {
   return &array_;
 }
 
+ManifestEntryAdapter::ManifestEntryAdapter(std::shared_ptr<PartitionSpec> partition_spec,
+                                           ManifestContent content)
+    : partition_spec_(std::move(partition_spec)), content_(content) {
+  if (!partition_spec_) {
+    partition_spec_ = PartitionSpec::Unpartitioned();
+  }
+}
+
 ManifestEntryAdapter::~ManifestEntryAdapter() {
   if (array_.release != nullptr) {
     ArrowArrayRelease(&array_);
@@ -146,14 +154,6 @@ ManifestEntryAdapter::~ManifestEntryAdapter() {
   if (schema_.release != nullptr) {
     ArrowSchemaRelease(&schema_);
   }
-}
-
-Result<std::shared_ptr<StructType>> ManifestEntryAdapter::GetManifestEntryType() {
-  if (partition_spec_ == nullptr) [[unlikely]] {
-    return ManifestEntry::TypeFromPartitionType(nullptr);
-  }
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_type, partition_spec_->PartitionType());
-  return ManifestEntry::TypeFromPartitionType(std::move(partition_type));
 }
 
 Status ManifestEntryAdapter::AppendPartitionValues(
@@ -436,37 +436,6 @@ Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
   return {};
 }
 
-Status ManifestEntryAdapter::InitSchema(const std::unordered_set<int32_t>& fields_ids) {
-  ICEBERG_ASSIGN_OR_RAISE(auto manifest_entry_type, GetManifestEntryType())
-  auto fields_span = manifest_entry_type->fields();
-  std::vector<SchemaField> fields;
-  // TODO(xiao.dong) Make this a common function to recursively handle
-  // all nested fields in the schema
-  for (const auto& field : fields_span) {
-    if (field.field_id() == 2) {
-      // handle data_file field
-      auto data_file_struct = internal::checked_pointer_cast<StructType>(field.type());
-      std::vector<SchemaField> data_file_fields;
-      for (const auto& data_file_field : data_file_struct->fields()) {
-        if (fields_ids.contains(data_file_field.field_id())) {
-          data_file_fields.emplace_back(data_file_field);
-        }
-      }
-      auto type = std::make_shared<StructType>(data_file_fields);
-      auto data_file_field = SchemaField::MakeRequired(
-          field.field_id(), std::string(field.name()), std::move(type));
-      fields.emplace_back(std::move(data_file_field));
-    } else {
-      if (fields_ids.contains(field.field_id())) {
-        fields.emplace_back(field);
-      }
-    }
-  }
-  manifest_schema_ = std::make_shared<Schema>(fields);
-  ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*manifest_schema_, &schema_));
-  return {};
-}
-
 ManifestFileAdapter::~ManifestFileAdapter() {
   if (array_.release != nullptr) {
     ArrowArrayRelease(&array_);
@@ -668,18 +637,6 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
   }
   ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayFinishElement(&array_));
   size_++;
-  return {};
-}
-
-Status ManifestFileAdapter::InitSchema(const std::unordered_set<int32_t>& fields_ids) {
-  std::vector<SchemaField> fields;
-  for (const auto& field : ManifestFile::Type().fields()) {
-    if (fields_ids.contains(field.field_id())) {
-      fields.emplace_back(field);
-    }
-  }
-  manifest_list_schema_ = std::make_shared<Schema>(fields);
-  ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*manifest_list_schema_, &schema_));
   return {};
 }
 

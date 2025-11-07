@@ -28,13 +28,14 @@ namespace iceberg {
 class ManifestEntryAdapterV1 : public ManifestEntryAdapter {
  public:
   ManifestEntryAdapterV1(std::optional<int64_t> snapshot_id,
-                         std::shared_ptr<PartitionSpec> partition_spec)
-      : ManifestEntryAdapter(std::move(partition_spec)), snapshot_id_(snapshot_id) {}
+                         std::shared_ptr<PartitionSpec> partition_spec);
   Status Init() override;
   Status Append(const ManifestEntry& entry) override;
 
- protected:
-  Result<std::shared_ptr<StructType>> GetManifestEntryType() override;
+  static std::shared_ptr<Schema> EntrySchema(std::shared_ptr<StructType> partition_type);
+  static std::shared_ptr<Schema> WrapFileSchema(std::shared_ptr<StructType> file_schema);
+  static std::shared_ptr<StructType> DataFileSchema(
+      std::shared_ptr<StructType> partition_type);
 
  private:
   std::optional<int64_t> snapshot_id_;
@@ -47,6 +48,8 @@ class ManifestFileAdapterV1 : public ManifestFileAdapter {
       : snapshot_id_(snapshot_id), parent_snapshot_id_(parent_snapshot_id) {}
   Status Init() override;
   Status Append(const ManifestFile& file) override;
+
+  static const std::shared_ptr<Schema> kManifestListSchema;
 
  private:
   int64_t snapshot_id_;

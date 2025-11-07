@@ -79,6 +79,18 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
     return lhs.Equals(rhs);
   }
 
+  SchemaField AsRequired() const {
+    auto copy = *this;
+    copy.optional_ = false;
+    return copy;
+  }
+
+  SchemaField AsOptional() const {
+    auto copy = *this;
+    copy.optional_ = true;
+    return copy;
+  }
+
  private:
   /// \brief Compare two fields for equality.
   [[nodiscard]] bool Equals(const SchemaField& other) const;

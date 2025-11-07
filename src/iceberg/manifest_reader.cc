@@ -71,14 +71,15 @@ Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
 
 Result<std::unique_ptr<ManifestListReader>> ManifestListReader::Make(
     std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io) {
-  std::vector<SchemaField> fields(ManifestFile::Type().fields().begin(),
-                                  ManifestFile::Type().fields().end());
-  auto schema = std::make_shared<Schema>(fields);
-  ICEBERG_ASSIGN_OR_RAISE(auto reader, ReaderFactoryRegistry::Open(
-                                           FileFormatType::kAvro,
-                                           {.path = std::string(manifest_list_location),
-                                            .io = std::move(file_io),
-                                            .projection = schema}));
+  std::shared_ptr<Schema> schema = ManifestFile::Type();
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto reader,
+      ReaderFactoryRegistry::Open(FileFormatType::kAvro,
+                                  {
+                                      .path = std::string(manifest_list_location),
+                                      .io = std::move(file_io),
+                                      .projection = schema,
+                                  }));
   return std::make_unique<ManifestListReaderImpl>(std::move(reader), std::move(schema));
 }
 

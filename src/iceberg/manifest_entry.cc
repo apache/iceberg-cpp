@@ -38,7 +38,7 @@ bool ManifestEntry::operator==(const ManifestEntry& other) const {
 
 std::shared_ptr<StructType> DataFile::Type(std::shared_ptr<StructType> partition_type) {
   if (!partition_type) {
-    partition_type = PartitionSpec::Unpartitioned()->schema();
+    partition_type = std::make_shared<StructType>(std::vector<SchemaField>{});
   }
   return std::make_shared<StructType>(std::vector<SchemaField>{
       kContent,

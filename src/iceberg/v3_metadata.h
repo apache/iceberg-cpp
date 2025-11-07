@@ -30,12 +30,14 @@ class ManifestEntryAdapterV3 : public ManifestEntryAdapter {
  public:
   ManifestEntryAdapterV3(std::optional<int64_t> snapshot_id,
                          std::optional<int64_t> first_row_id,
-                         std::shared_ptr<PartitionSpec> partition_spec)
-      : ManifestEntryAdapter(std::move(partition_spec)),
-        snapshot_id_(snapshot_id),
-        first_row_id_(first_row_id) {}
+                         std::shared_ptr<PartitionSpec> partition_spec,
+                         ManifestContent content);
   Status Init() override;
   Status Append(const ManifestEntry& entry) override;
+
+  static std::shared_ptr<Schema> EntrySchema(std::shared_ptr<StructType> partition_type);
+  static std::shared_ptr<Schema> WrapFileSchema(std::shared_ptr<StructType> file_schema);
+  static std::shared_ptr<StructType> FileType(std::shared_ptr<StructType> partition_type);
 
  protected:
   Result<std::optional<int64_t>> GetSequenceNumber(
@@ -56,13 +58,16 @@ class ManifestEntryAdapterV3 : public ManifestEntryAdapter {
 class ManifestFileAdapterV3 : public ManifestFileAdapter {
  public:
   ManifestFileAdapterV3(int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
-                        int64_t sequence_number, std::optional<int64_t> first_row_id)
+                        int64_t sequence_number, int64_t first_row_id)
       : snapshot_id_(snapshot_id),
         parent_snapshot_id_(parent_snapshot_id),
         sequence_number_(sequence_number),
         next_row_id_(first_row_id) {}
   Status Init() override;
   Status Append(const ManifestFile& file) override;
+  std::optional<int64_t> next_row_id() const override { return next_row_id_; }
+
+  static const std::shared_ptr<Schema> kManifestListSchema;
 
  protected:
   Result<int64_t> GetSequenceNumber(const ManifestFile& file) const override;
@@ -70,7 +75,7 @@ class ManifestFileAdapterV3 : public ManifestFileAdapter {
   Result<std::optional<int64_t>> GetFirstRowId(const ManifestFile& file) const override;
 
  private:
-  bool WrappedFirstRowId(const ManifestFile& file) const;
+  bool WrapFirstRowId(const ManifestFile& file) const;
 
  private:
   int64_t snapshot_id_;

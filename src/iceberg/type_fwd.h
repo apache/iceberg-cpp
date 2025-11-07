@@ -114,6 +114,7 @@ class NameMapping;
 
 enum class SnapshotRefType;
 enum class TransformType;
+enum class ManifestContent;
 
 class Decimal;
 class Uuid;

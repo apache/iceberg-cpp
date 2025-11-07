@@ -61,22 +61,18 @@ class ICEBERG_EXPORT ManifestAdapter {
 /// Implemented by different versions with version-specific schemas.
 class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
  public:
-  explicit ManifestEntryAdapter(std::shared_ptr<PartitionSpec> partition_spec)
-      : partition_spec_(std::move(partition_spec)) {}
+  ManifestEntryAdapter(std::shared_ptr<PartitionSpec> partition_spec,
+                       ManifestContent content);
+
   ~ManifestEntryAdapter() override;
 
   virtual Status Append(const ManifestEntry& entry) = 0;
 
   const std::shared_ptr<Schema>& schema() const { return manifest_schema_; }
 
- protected:
-  virtual Result<std::shared_ptr<StructType>> GetManifestEntryType();
+  ManifestContent content() const { return content_; }
 
-  /// \brief Initialize version-specific schema.
-  ///
-  /// \param fields_ids Field IDs to include in the manifest schema. The schema will be
-  /// initialized to include only the fields with these IDs.
-  Status InitSchema(const std::unordered_set<int32_t>& fields_ids);
+ protected:
   Status AppendInternal(const ManifestEntry& entry);
   Status AppendDataFile(ArrowArray* array,
                         const std::shared_ptr<StructType>& data_file_type,
@@ -97,6 +93,7 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
  protected:
   std::shared_ptr<PartitionSpec> partition_spec_;
   std::shared_ptr<Schema> manifest_schema_;
+  const ManifestContent content_;
 };
 
 /// \brief Adapter for appending a list of `ManifestFile`s to an `ArrowArray`.
@@ -110,12 +107,9 @@ class ICEBERG_EXPORT ManifestFileAdapter : public ManifestAdapter {
 
   const std::shared_ptr<Schema>& schema() const { return manifest_list_schema_; }
 
+  virtual std::optional<int64_t> next_row_id() const { return std::nullopt; }
+
  protected:
-  /// \brief Initialize version-specific schema.
-  ///
-  /// \param fields_ids Field IDs to include in the manifest list schema. The schema will
-  /// be initialized to include only the fields with these IDs.
-  Status InitSchema(const std::unordered_set<int32_t>& fields_ids);
   Status AppendInternal(const ManifestFile& file);
   static Status AppendPartitionSummary(
       ArrowArray* array, const std::shared_ptr<ListType>& summary_type,

@@ -23,47 +23,75 @@
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/schema.h"
+#include "iceberg/schema_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
 
+ManifestEntryAdapterV3::ManifestEntryAdapterV3(
+    std::optional<int64_t> snapshot_id, std::optional<int64_t> first_row_id,
+    std::shared_ptr<PartitionSpec> partition_spec, ManifestContent content)
+    : ManifestEntryAdapter(std::move(partition_spec), content),
+      snapshot_id_(snapshot_id),
+      first_row_id_(first_row_id) {}
+
+std::shared_ptr<Schema> ManifestEntryAdapterV3::EntrySchema(
+    std::shared_ptr<StructType> partition_type) {
+  return WrapFileSchema(FileType(std::move(partition_type)));
+}
+
+std::shared_ptr<Schema> ManifestEntryAdapterV3::WrapFileSchema(
+    std::shared_ptr<StructType> file_schema) {
+  return std::make_shared<Schema>(std::vector<SchemaField>{
+      ManifestEntry::kStatus,
+      ManifestEntry::kSnapshotId,
+      ManifestEntry::kSequenceNumber,
+      ManifestEntry::kFileSequenceNumber,
+      SchemaField::MakeRequired(ManifestEntry::kDataFileFieldId,
+                                ManifestEntry::kDataFileField, std::move(file_schema)),
+  });
+}
+
+std::shared_ptr<StructType> ManifestEntryAdapterV3::FileType(
+    std::shared_ptr<StructType> partition_type) {
+  return std::make_shared<StructType>(std::vector<SchemaField>{
+      DataFile::kContent.AsRequired(),
+      DataFile::kFilePath,
+      DataFile::kFileFormat,
+      SchemaField::MakeRequired(DataFile::kPartitionFieldId, DataFile::kPartitionField,
+                                std::move(partition_type), DataFile::kPartitionDoc),
+      DataFile::kRecordCount,
+      DataFile::kFileSize,
+      DataFile::kColumnSizes,
+      DataFile::kValueCounts,
+      DataFile::kNullValueCounts,
+      DataFile::kNanValueCounts,
+      DataFile::kLowerBounds,
+      DataFile::kUpperBounds,
+      DataFile::kKeyMetadata,
+      DataFile::kSplitOffsets,
+      DataFile::kEqualityIds,
+      DataFile::kSortOrderId,
+      DataFile::kFirstRowId,
+      DataFile::kReferencedDataFile,
+      DataFile::kContentOffset,
+      DataFile::kContentSize,
+  });
+}
+
 Status ManifestEntryAdapterV3::Init() {
-  static std::unordered_set<int32_t> kManifestEntryFieldIds{
-      ManifestEntry::kStatus.field_id(),
-      ManifestEntry::kSnapshotId.field_id(),
-      ManifestEntry::kDataFileFieldId,
-      ManifestEntry::kSequenceNumber.field_id(),
-      ManifestEntry::kFileSequenceNumber.field_id(),
-      DataFile::kContent.field_id(),
-      DataFile::kFilePath.field_id(),
-      DataFile::kFileFormat.field_id(),
-      DataFile::kPartitionFieldId,
-      DataFile::kRecordCount.field_id(),
-      DataFile::kFileSize.field_id(),
-      DataFile::kColumnSizes.field_id(),
-      DataFile::kValueCounts.field_id(),
-      DataFile::kNullValueCounts.field_id(),
-      DataFile::kNanValueCounts.field_id(),
-      DataFile::kLowerBounds.field_id(),
-      DataFile::kUpperBounds.field_id(),
-      DataFile::kKeyMetadata.field_id(),
-      DataFile::kSplitOffsets.field_id(),
-      DataFile::kEqualityIds.field_id(),
-      DataFile::kSortOrderId.field_id(),
-      DataFile::kFirstRowId.field_id(),
-      DataFile::kReferencedDataFile.field_id(),
-      DataFile::kContentOffset.field_id(),
-      DataFile::kContentSize.field_id(),
-  };
-  ICEBERG_RETURN_UNEXPECTED(InitSchema(kManifestEntryFieldIds));
-  ICEBERG_ASSIGN_OR_RAISE(metadata_["schema"], ToJsonString(*manifest_schema_))
-  if (partition_spec_ != nullptr) {
-    ICEBERG_ASSIGN_OR_RAISE(metadata_["partition-spec"], ToJsonString(*partition_spec_));
-    metadata_["partition-spec-id"] = std::to_string(partition_spec_->spec_id());
-  }
+  // ICEBERG_ASSIGN_OR_RAISE(metadata_["schema"], ToJsonString(*manifest_schema_))
+  ICEBERG_ASSIGN_OR_RAISE(metadata_["partition-spec"], ToJsonString(*partition_spec_));
+  metadata_["partition-spec-id"] = std::to_string(partition_spec_->spec_id());
   metadata_["format-version"] = "3";
-  metadata_["content"] = "data";
-  return {};
+  metadata_["content"] = content_ == ManifestContent::kData ? "data" : "delete";
+
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_type, partition_spec_->PartitionType());
+  if (!partition_type) {
+    partition_type = std::make_shared<StructType>(std::vector<SchemaField>{});
+  }
+  manifest_schema_ = EntrySchema(std::move(partition_type));
+  return ToArrowSchema(*manifest_schema_, &schema_);
 }
 
 Status ManifestEntryAdapterV3::Append(const ManifestEntry& entry) {
@@ -126,25 +154,26 @@ Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetContentSizeInBytes(
   return std::nullopt;
 }
 
+const std::shared_ptr<Schema> ManifestFileAdapterV3::kManifestListSchema =
+    std::make_shared<Schema>(std::vector<SchemaField>{
+        ManifestFile::kManifestPath,
+        ManifestFile::kManifestLength,
+        ManifestFile::kPartitionSpecId,
+        ManifestFile::kContent.AsRequired(),
+        ManifestFile::kSequenceNumber.AsRequired(),
+        ManifestFile::kMinSequenceNumber.AsRequired(),
+        ManifestFile::kAddedSnapshotId,
+        ManifestFile::kAddedFilesCount.AsRequired(),
+        ManifestFile::kExistingFilesCount.AsRequired(),
+        ManifestFile::kDeletedFilesCount.AsRequired(),
+        ManifestFile::kAddedRowsCount.AsRequired(),
+        ManifestFile::kExistingRowsCount.AsRequired(),
+        ManifestFile::kDeletedRowsCount.AsRequired(),
+        ManifestFile::kPartitions,
+        ManifestFile::kKeyMetadata,
+        ManifestFile::kFirstRowId,
+    });
 Status ManifestFileAdapterV3::Init() {
-  static std::unordered_set<int32_t> kManifestFileFieldIds{
-      ManifestFile::kManifestPath.field_id(),
-      ManifestFile::kManifestLength.field_id(),
-      ManifestFile::kPartitionSpecId.field_id(),
-      ManifestFile::kContent.field_id(),
-      ManifestFile::kSequenceNumber.field_id(),
-      ManifestFile::kMinSequenceNumber.field_id(),
-      ManifestFile::kAddedSnapshotId.field_id(),
-      ManifestFile::kAddedFilesCount.field_id(),
-      ManifestFile::kExistingFilesCount.field_id(),
-      ManifestFile::kDeletedFilesCount.field_id(),
-      ManifestFile::kAddedRowsCount.field_id(),
-      ManifestFile::kExistingRowsCount.field_id(),
-      ManifestFile::kDeletedRowsCount.field_id(),
-      ManifestFile::kPartitions.field_id(),
-      ManifestFile::kKeyMetadata.field_id(),
-      ManifestFile::kFirstRowId.field_id(),
-  };
   metadata_["snapshot-id"] = std::to_string(snapshot_id_);
   metadata_["parent-snapshot-id"] = parent_snapshot_id_.has_value()
                                         ? std::to_string(parent_snapshot_id_.value())
@@ -153,24 +182,28 @@ Status ManifestFileAdapterV3::Init() {
   metadata_["first-row-id"] =
       next_row_id_.has_value() ? std::to_string(next_row_id_.value()) : "null";
   metadata_["format-version"] = "3";
-  return InitSchema(kManifestFileFieldIds);
+
+  manifest_list_schema_ = kManifestListSchema;
+  return ToArrowSchema(*manifest_list_schema_, &schema_);
 }
 
 Status ManifestFileAdapterV3::Append(const ManifestFile& file) {
-  auto status = AppendInternal(file);
-  ICEBERG_RETURN_UNEXPECTED(status);
-  if (WrappedFirstRowId(file) && next_row_id_.has_value()) {
+  ICEBERG_RETURN_UNEXPECTED(AppendInternal(file));
+  if (WrapFirstRowId(file) && next_row_id_.has_value()) {
     next_row_id_ = next_row_id_.value() + file.existing_rows_count.value_or(0) +
                    file.added_rows_count.value_or(0);
   }
-  return status;
+  return {};
 }
 
 Result<int64_t> ManifestFileAdapterV3::GetSequenceNumber(const ManifestFile& file) const {
   if (file.sequence_number == TableMetadata::kInvalidSequenceNumber) {
+    // if the sequence number is being assigned here, then the manifest must be created by
+    // the current operation. to validate this, check that the snapshot id matches the
+    // current commit
     if (snapshot_id_ != file.added_snapshot_id) {
       return InvalidManifestList(
-          "Found unassigned sequence number for a manifest from snapshot: %s",
+          "Found unassigned sequence number for a manifest from snapshot: {}",
           file.added_snapshot_id);
     }
     return sequence_number_;
@@ -181,11 +214,15 @@ Result<int64_t> ManifestFileAdapterV3::GetSequenceNumber(const ManifestFile& fil
 Result<int64_t> ManifestFileAdapterV3::GetMinSequenceNumber(
     const ManifestFile& file) const {
   if (file.min_sequence_number == TableMetadata::kInvalidSequenceNumber) {
+    // same sanity check as above
     if (snapshot_id_ != file.added_snapshot_id) {
       return InvalidManifestList(
-          "Found unassigned sequence number for a manifest from snapshot: %s",
+          "Found unassigned sequence number for a manifest from snapshot: {}",
           file.added_snapshot_id);
     }
+    // if the min sequence number is not determined, then there was no assigned sequence
+    // number for any file written to the wrapped manifest. replace the unassigned
+    // sequence number with the one for this commit
     return sequence_number_;
   }
   return file.min_sequence_number;
@@ -193,20 +230,26 @@ Result<int64_t> ManifestFileAdapterV3::GetMinSequenceNumber(
 
 Result<std::optional<int64_t>> ManifestFileAdapterV3::GetFirstRowId(
     const ManifestFile& file) const {
-  if (WrappedFirstRowId(file)) {
+  if (WrapFirstRowId(file)) {
+    // if first-row-id is assigned, ensure that it is valid
+    if (!next_row_id_.has_value()) {
+      // TODO(gangwu): add ToString for ManifestFile
+      return InvalidManifestList("Found invalid first-row-id assignment: {}",
+                                 file.manifest_path);
+    }
     return next_row_id_;
   } else if (file.content != ManifestFile::Content::kData) {
     return std::nullopt;
   } else {
     if (!file.first_row_id.has_value()) {
-      return InvalidManifestList("Found unassigned first-row-id for file:{}",
+      return InvalidManifestList("Found unassigned first-row-id for file: {}",
                                  file.manifest_path);
     }
-    return file.first_row_id.value();
+    return file.first_row_id;
   }
 }
 
-bool ManifestFileAdapterV3::WrappedFirstRowId(const ManifestFile& file) const {
+bool ManifestFileAdapterV3::WrapFirstRowId(const ManifestFile& file) const {
   return file.content == ManifestFile::Content::kData && !file.first_row_id.has_value();
 }
 

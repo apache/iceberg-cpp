@@ -55,6 +55,12 @@ Result<std::unique_ptr<AvroOutputStream>> CreateOutputStream(const WriterOptions
 
 class AvroWriter::Impl {
  public:
+  ~Impl() {
+    if (arrow_schema_.release != nullptr) {
+      ArrowSchemaRelease(&arrow_schema_);
+    }
+  }
+
   Status Open(const WriterOptions& options) {
     write_schema_ = options.schema;
 

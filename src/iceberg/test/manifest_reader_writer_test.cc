@@ -260,8 +260,9 @@ class ManifestReaderV2Test : public ManifestReaderTestBase {
   void TestWriteManifest(int64_t snapshot_id, const std::string& manifest_list_path,
                          std::shared_ptr<PartitionSpec> partition_spec,
                          const std::vector<ManifestEntry>& manifest_entries) {
-    auto result = ManifestWriter::MakeV2Writer(snapshot_id, manifest_list_path, file_io_,
-                                               std::move(partition_spec));
+    auto result =
+        ManifestWriter::MakeV2Writer(snapshot_id, manifest_list_path, file_io_,
+                                     std::move(partition_spec), ManifestContent::kData);
     ASSERT_TRUE(result.has_value()) << result.error().message;
     auto writer = std::move(result.value());
     auto status = writer->AddAll(manifest_entries);
