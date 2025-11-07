@@ -15,4 +15,16 @@
 # specific language governing permissions and limitations
 # under the License.
 
-install_headers(['expression.h', 'literal.h'], subdir: 'iceberg/expression')
+install_headers(
+    [
+        'binder.h',
+        'expression.h',
+        'expression_visitor.h',
+        'expressions.h',
+        'literal.h',
+        'predicate.h',
+        'rewrite_not.h',
+        'term.h',
+    ],
+    subdir: 'iceberg/expression',
+)

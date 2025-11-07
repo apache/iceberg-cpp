@@ -38,7 +38,7 @@ concept TermType = std::derived_from<T, Term>;
 ///
 /// \tparam TermType The type of the term being tested
 template <TermType T>
-class ICEBERG_EXPORT Predicate : public Expression {
+class ICEBERG_EXPORT Predicate : public virtual Expression {
  public:
   ~Predicate() override;
 
@@ -58,13 +58,38 @@ class ICEBERG_EXPORT Predicate : public Expression {
   std::shared_ptr<T> term_;
 };
 
+/// \brief Non-template base class for all UnboundPredicate instances.
+///
+/// This class enables type erasure for template-based UnboundPredicate classes,
+/// allowing them to be used in non-template visitor interfaces.
+class ICEBERG_EXPORT UnboundPredicate : public virtual Expression,
+                                        public Unbound<Expression> {
+ public:
+  ~UnboundPredicate() override = default;
+
+  /// \brief Returns the reference of this UnboundPredicate.
+  std::shared_ptr<NamedReference> reference() override = 0;
+
+  /// \brief Bind this UnboundPredicate.
+  Result<std::shared_ptr<Expression>> Bind(const Schema& schema,
+                                           bool case_sensitive) const override = 0;
+
+  /// \brief Negate this UnboundPredicate.
+  Result<std::shared_ptr<Expression>> Negate() const override = 0;
+
+  bool is_unbound_predicate() const override { return true; }
+
+ protected:
+  UnboundPredicate() = default;
+};
+
 /// \brief Unbound predicates contain unbound terms and must be bound to a concrete schema
 /// before they can be evaluated.
 ///
 /// \tparam B The bound type this predicate produces when binding is successful
 template <typename B>
-class ICEBERG_EXPORT UnboundPredicate : public Predicate<UnboundTerm<B>>,
-                                        public Unbound<Expression> {
+class ICEBERG_EXPORT UnboundPredicateImpl : public UnboundPredicate,
+                                            public Predicate<UnboundTerm<B>> {
   using BASE = Predicate<UnboundTerm<B>>;
 
  public:
@@ -73,7 +98,7 @@ class ICEBERG_EXPORT UnboundPredicate : public Predicate<UnboundTerm<B>>,
   /// \param op The operation (kIsNull, kNotNull, kIsNan, kNotNan)
   /// \param term The unbound term
   /// \return Result containing the unbound predicate or an error
-  static Result<std::unique_ptr<UnboundPredicate>> Make(
+  static Result<std::unique_ptr<UnboundPredicateImpl<B>>> Make(
       Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term);
 
   /// \brief Create an unbound predicate with a single value.
@@ -82,7 +107,7 @@ class ICEBERG_EXPORT UnboundPredicate : public Predicate<UnboundTerm<B>>,
   /// \param term The unbound term
   /// \param value The literal value
   /// \return Result containing the unbound predicate or an error
-  static Result<std::unique_ptr<UnboundPredicate>> Make(
+  static Result<std::unique_ptr<UnboundPredicateImpl<B>>> Make(
       Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term, Literal value);
 
   /// \brief Create an unbound predicate with multiple values.
@@ -91,11 +116,11 @@ class ICEBERG_EXPORT UnboundPredicate : public Predicate<UnboundTerm<B>>,
   /// \param term The unbound term
   /// \param values Vector of literal values
   /// \return Result containing the unbound predicate or an error
-  static Result<std::unique_ptr<UnboundPredicate>> Make(
+  static Result<std::unique_ptr<UnboundPredicateImpl<B>>> Make(
       Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term,
       std::vector<Literal> values);
 
-  ~UnboundPredicate() override;
+  ~UnboundPredicateImpl() override;
 
   std::shared_ptr<NamedReference> reference() override {
     return BASE::term()->reference();
@@ -103,18 +128,17 @@ class ICEBERG_EXPORT UnboundPredicate : public Predicate<UnboundTerm<B>>,
 
   std::string ToString() const override;
 
-  /// \brief Bind this UnboundPredicate.
   Result<std::shared_ptr<Expression>> Bind(const Schema& schema,
                                            bool case_sensitive) const override;
 
   Result<std::shared_ptr<Expression>> Negate() const override;
 
  private:
-  UnboundPredicate(Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term);
-  UnboundPredicate(Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term,
-                   Literal value);
-  UnboundPredicate(Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term,
-                   std::vector<Literal> values);
+  UnboundPredicateImpl(Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term);
+  UnboundPredicateImpl(Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term,
+                       Literal value);
+  UnboundPredicateImpl(Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term,
+                       std::vector<Literal> values);
 
   Result<std::shared_ptr<Expression>> BindUnaryOperation(
       std::shared_ptr<B> bound_term) const;
@@ -139,6 +163,8 @@ class ICEBERG_EXPORT BoundPredicate : public Predicate<BoundTerm>, public Bound 
   std::shared_ptr<BoundReference> reference() override { return term_->reference(); }
 
   Result<Literal> Evaluate(const StructLike& data) const override;
+
+  bool is_bound_predicate() const override { return true; }
 
   /// \brief Test a value against this predicate.
   ///

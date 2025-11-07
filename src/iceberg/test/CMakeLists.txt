@@ -88,6 +88,7 @@ add_iceberg_test(table_test
 add_iceberg_test(expression_test
                  SOURCES
                  expression_test.cc
+                 expression_visitor_test.cc
                  literal_test.cc
                  predicate_test.cc)
 

@@ -45,67 +45,68 @@ Predicate<T>::~Predicate() = default;
 
 // UnboundPredicate template implementations
 template <typename B>
-Result<std::unique_ptr<UnboundPredicate<B>>> UnboundPredicate<B>::Make(
+Result<std::unique_ptr<UnboundPredicateImpl<B>>> UnboundPredicateImpl<B>::Make(
     Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term) {
   if (!term) [[unlikely]] {
     return InvalidExpression("UnboundPredicate cannot have null term");
   }
-  return std::unique_ptr<UnboundPredicate<B>>(
-      new UnboundPredicate<B>(op, std::move(term)));
+  return std::unique_ptr<UnboundPredicateImpl<B>>(
+      new UnboundPredicateImpl<B>(op, std::move(term)));
 }
 
 template <typename B>
-Result<std::unique_ptr<UnboundPredicate<B>>> UnboundPredicate<B>::Make(
+Result<std::unique_ptr<UnboundPredicateImpl<B>>> UnboundPredicateImpl<B>::Make(
     Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term, Literal value) {
   if (!term) [[unlikely]] {
     return InvalidExpression("UnboundPredicate cannot have null term");
   }
-  return std::unique_ptr<UnboundPredicate<B>>(
-      new UnboundPredicate<B>(op, std::move(term), std::move(value)));
+  return std::unique_ptr<UnboundPredicateImpl<B>>(
+      new UnboundPredicateImpl<B>(op, std::move(term), std::move(value)));
 }
 
 template <typename B>
-Result<std::unique_ptr<UnboundPredicate<B>>> UnboundPredicate<B>::Make(
+Result<std::unique_ptr<UnboundPredicateImpl<B>>> UnboundPredicateImpl<B>::Make(
     Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term,
     std::vector<Literal> values) {
   if (!term) [[unlikely]] {
     return InvalidExpression("UnboundPredicate cannot have null term");
   }
-  return std::unique_ptr<UnboundPredicate<B>>(
-      new UnboundPredicate<B>(op, std::move(term), std::move(values)));
+  return std::unique_ptr<UnboundPredicateImpl<B>>(
+      new UnboundPredicateImpl<B>(op, std::move(term), std::move(values)));
 }
 
 template <typename B>
-UnboundPredicate<B>::UnboundPredicate(Expression::Operation op,
-                                      std::shared_ptr<UnboundTerm<B>> term)
+UnboundPredicateImpl<B>::UnboundPredicateImpl(Expression::Operation op,
+                                              std::shared_ptr<UnboundTerm<B>> term)
     : BASE(op, std::move(term)) {
   ICEBERG_DCHECK(BASE::term() != nullptr, "UnboundPredicate cannot have null term");
 }
 
 template <typename B>
-UnboundPredicate<B>::UnboundPredicate(Expression::Operation op,
-                                      std::shared_ptr<UnboundTerm<B>> term, Literal value)
+UnboundPredicateImpl<B>::UnboundPredicateImpl(Expression::Operation op,
+                                              std::shared_ptr<UnboundTerm<B>> term,
+                                              Literal value)
     : BASE(op, std::move(term)), values_{std::move(value)} {
   ICEBERG_DCHECK(BASE::term() != nullptr, "UnboundPredicate cannot have null term");
 }
 
 template <typename B>
-UnboundPredicate<B>::UnboundPredicate(Expression::Operation op,
-                                      std::shared_ptr<UnboundTerm<B>> term,
-                                      std::vector<Literal> values)
+UnboundPredicateImpl<B>::UnboundPredicateImpl(Expression::Operation op,
+                                              std::shared_ptr<UnboundTerm<B>> term,
+                                              std::vector<Literal> values)
     : BASE(op, std::move(term)), values_(std::move(values)) {
   ICEBERG_DCHECK(BASE::term() != nullptr, "UnboundPredicate cannot have null term");
 }
 
 template <typename B>
-UnboundPredicate<B>::~UnboundPredicate() = default;
+UnboundPredicateImpl<B>::~UnboundPredicateImpl() = default;
 
 namespace {}
 
 template <typename B>
-std::string UnboundPredicate<B>::ToString() const {
+std::string UnboundPredicateImpl<B>::ToString() const {
   auto invalid_predicate_string = [](Expression::Operation op) {
-    return std::format("Invalid predicate: operation = {}", op);
+    return std::format("Invalid predicate: operation = {}", ::iceberg::ToString(op));
   };
 
   const auto& term = *BASE::term();
@@ -154,14 +155,14 @@ std::string UnboundPredicate<B>::ToString() const {
 }
 
 template <typename B>
-Result<std::shared_ptr<Expression>> UnboundPredicate<B>::Negate() const {
+Result<std::shared_ptr<Expression>> UnboundPredicateImpl<B>::Negate() const {
   ICEBERG_ASSIGN_OR_RAISE(auto negated_op, ::iceberg::Negate(BASE::op()));
-  return UnboundPredicate::Make(negated_op, BASE::term(), values_);
+  return UnboundPredicateImpl::Make(negated_op, BASE::term(), values_);
 }
 
 template <typename B>
-Result<std::shared_ptr<Expression>> UnboundPredicate<B>::Bind(const Schema& schema,
-                                                              bool case_sensitive) const {
+Result<std::shared_ptr<Expression>> UnboundPredicateImpl<B>::Bind(
+    const Schema& schema, bool case_sensitive) const {
   ICEBERG_ASSIGN_OR_RAISE(auto bound_term, BASE::term()->Bind(schema, case_sensitive));
 
   if (values_.empty()) {
@@ -205,7 +206,7 @@ bool StartsWith(const Literal& lhs, const Literal& rhs) {
 }  // namespace
 
 template <typename B>
-Result<std::shared_ptr<Expression>> UnboundPredicate<B>::BindUnaryOperation(
+Result<std::shared_ptr<Expression>> UnboundPredicateImpl<B>::BindUnaryOperation(
     std::shared_ptr<B> bound_term) const {
   switch (BASE::op()) {
     case Expression::Operation::kIsNull:
@@ -235,7 +236,7 @@ Result<std::shared_ptr<Expression>> UnboundPredicate<B>::BindUnaryOperation(
 }
 
 template <typename B>
-Result<std::shared_ptr<Expression>> UnboundPredicate<B>::BindLiteralOperation(
+Result<std::shared_ptr<Expression>> UnboundPredicateImpl<B>::BindLiteralOperation(
     std::shared_ptr<B> bound_term) const {
   if (BASE::op() == Expression::Operation::kStartsWith ||
       BASE::op() == Expression::Operation::kNotStartsWith) {
@@ -292,7 +293,7 @@ Result<std::shared_ptr<Expression>> UnboundPredicate<B>::BindLiteralOperation(
 }
 
 template <typename B>
-Result<std::shared_ptr<Expression>> UnboundPredicate<B>::BindInOperation(
+Result<std::shared_ptr<Expression>> UnboundPredicateImpl<B>::BindInOperation(
     std::shared_ptr<B> bound_term) const {
   std::vector<Literal> converted_literals;
   for (const auto& literal : values_) {
@@ -638,7 +639,7 @@ template class Predicate<UnboundTerm<BoundReference>>;
 template class Predicate<UnboundTerm<BoundTransform>>;
 template class Predicate<BoundTerm>;
 
-template class UnboundPredicate<BoundReference>;
-template class UnboundPredicate<BoundTransform>;
+template class UnboundPredicateImpl<BoundReference>;
+template class UnboundPredicateImpl<BoundTransform>;
 
 }  // namespace iceberg
