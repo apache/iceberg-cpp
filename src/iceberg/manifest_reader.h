@@ -27,6 +27,7 @@
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
+#include "iceberg/type.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -44,7 +45,7 @@ class ICEBERG_EXPORT ManifestReader {
   /// \return A Result containing the reader or an error.
   static Result<std::unique_ptr<ManifestReader>> Make(
       const ManifestFile& manifest, std::shared_ptr<FileIO> file_io,
-      std::shared_ptr<Schema> partition_schema);
+      std::shared_ptr<StructType> partition_schema);
 
   /// \brief Creates a reader for a manifest file.
   /// \param manifest_location Path to the manifest file.
@@ -53,7 +54,7 @@ class ICEBERG_EXPORT ManifestReader {
   /// \return A Result containing the reader or an error.
   static Result<std::unique_ptr<ManifestReader>> Make(
       std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
-      std::shared_ptr<Schema> partition_schema);
+      std::shared_ptr<StructType> partition_schema);
 };
 
 /// \brief Read manifest files from a manifest list file.
