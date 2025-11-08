@@ -27,6 +27,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/expression/literal.h"
+#include "iceberg/schema_field.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/temporal_test_helper.h"
 #include "iceberg/type.h"
@@ -838,6 +839,78 @@ TEST(TransformSatisfiesOrderOfTest, SatisfiesOrderOf) {
     EXPECT_EQ(transform.value()->SatisfiesOrderOf(*other_transform.value()), c.expected)
         << "Unexpected result for transform: " << c.transform_str
         << " and other transform: " << c.other_transform_str;
+  }
+}
+
+TEST(TransformCanTransformTest, CanTransform) {
+  struct Case {
+    std::string transform_str;
+    std::shared_ptr<Type> source_type;
+    bool expected;
+  };
+
+  const std::vector<Case> cases = {
+      // Identity can transform all primitive types
+      {.transform_str = "identity", .source_type = int32(), .expected = true},
+      {.transform_str = "identity", .source_type = string(), .expected = true},
+      {.transform_str = "identity", .source_type = boolean(), .expected = true},
+      {.transform_str = "identity",
+       .source_type = list(SchemaField(123, "element", int32(), false)),
+       .expected = false},
+
+      // Void can transform any type
+      {.transform_str = "void", .source_type = iceberg::int32(), .expected = true},
+      {.transform_str = "void",
+       .source_type = iceberg::map(SchemaField(123, "key", iceberg::string(), false),
+                                   SchemaField(124, "value", iceberg::int32(), true)),
+       .expected = true},
+
+      // Bucket can transform specific types
+      {.transform_str = "bucket[16]", .source_type = iceberg::int32(), .expected = true},
+      {.transform_str = "bucket[16]", .source_type = iceberg::string(), .expected = true},
+      {.transform_str = "bucket[16]",
+       .source_type = iceberg::float32(),
+       .expected = false},
+
+      // Truncate can transform specific types
+      {.transform_str = "truncate[32]",
+       .source_type = iceberg::int32(),
+       .expected = true},
+      {.transform_str = "truncate[32]",
+       .source_type = iceberg::string(),
+       .expected = true},
+      {.transform_str = "truncate[32]",
+       .source_type = iceberg::boolean(),
+       .expected = false},
+
+      // Year can transform date and timestamp types
+      {.transform_str = "year", .source_type = iceberg::date(), .expected = true},
+      {.transform_str = "year", .source_type = iceberg::timestamp(), .expected = true},
+      {.transform_str = "year", .source_type = iceberg::string(), .expected = false},
+
+      // Month can transform date and timestamp types
+      {.transform_str = "month", .source_type = iceberg::date(), .expected = true},
+      {.transform_str = "month", .source_type = iceberg::timestamp(), .expected = true},
+      {.transform_str = "month", .source_type = iceberg::binary(), .expected = false},
+
+      // Day can transform date and timestamp types
+      {.transform_str = "day", .source_type = iceberg::date(), .expected = true},
+      {.transform_str = "day", .source_type = iceberg::timestamp(), .expected = true},
+      {.transform_str = "day", .source_type = iceberg::uuid(), .expected = false},
+
+      // Hour can transform timestamp types
+      {.transform_str = "hour", .source_type = iceberg::timestamp(), .expected = true},
+      {.transform_str = "hour", .source_type = iceberg::timestamp_tz(), .expected = true},
+      {.transform_str = "hour", .source_type = iceberg::int32(), .expected = false},
+  };
+
+  for (const auto& c : cases) {
+    auto transform = TransformFromString(c.transform_str);
+    ASSERT_TRUE(transform.has_value()) << "Failed to parse: " << c.transform_str;
+
+    EXPECT_EQ(transform.value()->CanTransform(*c.source_type), c.expected)
+        << "Unexpected result for transform: " << c.transform_str
+        << " and source type: " << c.source_type->ToString();
   }
 }
 

@@ -231,7 +231,7 @@ TEST_F(SortOrderMakeTest, MakeInvalidSortOrderNonPrimitiveField) {
   auto sort_order = SortOrder::Make(
       schema_with_struct, 1, std::vector<SortField>{*sort_field1_, sort_field_invalid});
   EXPECT_THAT(sort_order, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(sort_order, HasErrorMessage("Cannot sort by non-primitive source field"));
+  EXPECT_THAT(sort_order, HasErrorMessage("Cannot transform schema field type"));
 }
 
 TEST_F(SortOrderMakeTest, MakeInvalidSortOrderFieldNotInSchema) {
@@ -251,7 +251,10 @@ TEST_F(SortOrderMakeTest, MakeUnboundSortOrder) {
   auto sort_order =
       SortOrder::Make(1, std::vector<SortField>{*sort_field1_, sort_field_invalid});
   ASSERT_THAT(sort_order, IsOk());
-  ASSERT_EQ(sort_order.value()->IsBoundToSchema(*schema_), false);
+  auto validate_status = sort_order.value()->Validate(*schema_);
+  EXPECT_THAT(validate_status, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(validate_status,
+              HasErrorMessage("Cannot find source column for sort field:"));
 }
 
 }  // namespace iceberg

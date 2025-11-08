@@ -150,9 +150,10 @@ class ICEBERG_EXPORT Transform : public util::Formattable {
   Result<std::shared_ptr<TransformFunction>> Bind(
       const std::shared_ptr<Type>& source_type) const;
 
-  /// \brief Returns the Type produced by this transform given a source type.
-  Result<std::shared_ptr<Type>> ResultType(
-      const std::shared_ptr<Type>& source_type) const;
+  /// \brief Checks whether this function can be applied to the given Type.
+  /// \param source_type The source type to check.
+  /// \return true if this transform can be applied to the type, false otherwise
+  bool CanTransform(const Type& source_type) const;
 
   /// \brief Whether the transform preserves the order of values (is monotonic).
   bool PreservesOrder() const;

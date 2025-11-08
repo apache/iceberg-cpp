@@ -86,24 +86,21 @@ bool SortOrder::Equals(const SortOrder& other) const {
   return order_id_ == other.order_id_ && fields_ == other.fields_;
 }
 
-bool SortOrder::IsBoundToSchema(const Schema& schema) const {
+Status SortOrder::Validate(const Schema& schema) const {
   for (const auto& field : fields_) {
     auto schema_field = schema.FindFieldById(field.source_id());
     if (!schema_field.has_value() || schema_field.value() == std::nullopt) {
-      return false;
+      return InvalidArgument("Cannot find schema field for sort field: {}", field);
     }
 
     const auto& source_type = schema_field.value().value().get().type();
-    if (!source_type->is_primitive()) {
-      return false;
-    }
 
-    auto result = field.transform()->ResultType(source_type);
-    if (!result) {
-      return false;
+    if (!field.transform()->CanTransform(*source_type)) {
+      return InvalidArgument("Cannot transform schema field type {} with transform {}",
+                             source_type->ToString(), field.transform()->ToString());
     }
   }
-  return true;
+  return {};
 }
 
 Result<std::unique_ptr<SortOrder>> SortOrder::Make(const Schema& schema, int32_t sort_id,
@@ -123,13 +120,10 @@ Result<std::unique_ptr<SortOrder>> SortOrder::Make(const Schema& schema, int32_t
     }
 
     const auto& source_type = schema_field.value().get().type();
-
-    if (!source_type->is_primitive()) {
-      return InvalidArgument("Cannot sort by non-primitive source field: {}",
-                             *source_type);
+    if (field.transform()->CanTransform(*source_type) == false) {
+      return InvalidArgument("Cannot transform schema field type {} with transform {}",
+                             source_type->ToString(), field.transform()->ToString());
     }
-
-    ICEBERG_RETURN_UNEXPECTED(field.transform()->ResultType(source_type));
   }
 
   return std::make_unique<SortOrder>(sort_id, std::move(fields));

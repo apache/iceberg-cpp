@@ -72,10 +72,10 @@ class ICEBERG_EXPORT SortOrder : public util::Formattable {
     return lhs.Equals(rhs);
   }
 
-  /// \brief Checks whether the sort order is bound to the given schema.
-  /// \param schema The schema to check against.
-  /// \return true if the sort order is valid for the given schema.
-  bool IsBoundToSchema(const Schema& schema) const;
+  /// \brief Validates the sort order against a schema.
+  /// \param schema The schema to validate against.
+  /// \return Error status if the sort order is not bound to the schema.
+  Status Validate(const Schema& schema) const;
 
   /// \brief Create a SortOrder.
   /// \param schema The schema to bind the sort order to.
