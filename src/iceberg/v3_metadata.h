@@ -37,7 +37,8 @@ class ManifestEntryAdapterV3 : public ManifestEntryAdapter {
 
   static std::shared_ptr<Schema> EntrySchema(std::shared_ptr<StructType> partition_type);
   static std::shared_ptr<Schema> WrapFileSchema(std::shared_ptr<StructType> file_schema);
-  static std::shared_ptr<StructType> FileType(std::shared_ptr<StructType> partition_type);
+  static std::shared_ptr<StructType> DataFileType(
+      std::shared_ptr<StructType> partition_type);
 
  protected:
   Result<std::optional<int64_t>> GetSequenceNumber(

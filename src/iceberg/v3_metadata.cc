@@ -37,7 +37,7 @@ ManifestEntryAdapterV3::ManifestEntryAdapterV3(
 
 std::shared_ptr<Schema> ManifestEntryAdapterV3::EntrySchema(
     std::shared_ptr<StructType> partition_type) {
-  return WrapFileSchema(FileType(std::move(partition_type)));
+  return WrapFileSchema(DataFileType(std::move(partition_type)));
 }
 
 std::shared_ptr<Schema> ManifestEntryAdapterV3::WrapFileSchema(
@@ -52,7 +52,7 @@ std::shared_ptr<Schema> ManifestEntryAdapterV3::WrapFileSchema(
   });
 }
 
-std::shared_ptr<StructType> ManifestEntryAdapterV3::FileType(
+std::shared_ptr<StructType> ManifestEntryAdapterV3::DataFileType(
     std::shared_ptr<StructType> partition_type) {
   return std::make_shared<StructType>(std::vector<SchemaField>{
       DataFile::kContent.AsRequired(),
