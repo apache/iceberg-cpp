@@ -255,7 +255,7 @@ class ICEBERG_EXPORT Catalog {
 
     /// \brief Starts a transaction to create or replace the table
     ///
-    /// \breturn the Transaction to create or replace the table
+    /// \return the Transaction to create or replace the table
     virtual std::unique_ptr<Transaction> StageCreateOrReplace() = 0;
   };
 
