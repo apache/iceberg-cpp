@@ -23,7 +23,6 @@
 #include <regex>
 #include <utility>
 
-#include "iceberg/result.h"
 #include "iceberg/transform_function.h"
 #include "iceberg/type.h"
 
