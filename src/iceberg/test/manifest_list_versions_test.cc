@@ -214,7 +214,7 @@ TEST_F(TestManifestListVersions, TestV1WriteDeleteManifest) {
 }
 
 TEST_F(TestManifestListVersions, TestV1Write) {
-  auto manifest = WriteAndReadManifestList(1);
+  auto manifest = WriteAndReadManifestList(/*format_version=*/1);
 
   // V3 fields are not written and are defaulted
   EXPECT_FALSE(manifest.first_row_id.has_value());
