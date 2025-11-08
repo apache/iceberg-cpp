@@ -260,7 +260,7 @@ TEST_F(TestManifestListVersions, TestV2Write) {
 }
 
 TEST_F(TestManifestListVersions, TestV3Write) {
-  auto manifest = WriteAndReadManifestList(3);
+  auto manifest = WriteAndReadManifestList(/*format_version=*/3);
 
   // All V3 fields should be read correctly
   EXPECT_EQ(manifest.manifest_path, kPath);
