@@ -90,13 +90,13 @@ Status SortOrder::Validate(const Schema& schema) const {
   for (const auto& field : fields_) {
     auto schema_field = schema.FindFieldById(field.source_id());
     if (!schema_field.has_value() || schema_field.value() == std::nullopt) {
-      return InvalidArgument("Cannot find schema field for sort field: {}", field);
+      return InvalidArgument("Cannot find source column for sort field: {}", field);
     }
 
     const auto& source_type = schema_field.value().value().get().type();
 
     if (!field.transform()->CanTransform(*source_type)) {
-      return InvalidArgument("Cannot transform schema field type {} with transform {}",
+      return InvalidArgument("Invalid source type {} for transform {}",
                              source_type->ToString(), field.transform()->ToString());
     }
   }
@@ -116,12 +116,12 @@ Result<std::unique_ptr<SortOrder>> SortOrder::Make(const Schema& schema, int32_t
   for (const auto& field : fields) {
     ICEBERG_ASSIGN_OR_RAISE(auto schema_field, schema.FindFieldById(field.source_id()));
     if (schema_field == std::nullopt) {
-      return InvalidArgument("Cannot find schema field for sort field: {}", field);
+      return InvalidArgument("Cannot find source column for sort field: {}", field);
     }
 
     const auto& source_type = schema_field.value().get().type();
     if (field.transform()->CanTransform(*source_type) == false) {
-      return InvalidArgument("Cannot transform schema field type {} with transform {}",
+      return InvalidArgument("Invalid source type {} for transform {}",
                              source_type->ToString(), field.transform()->ToString());
     }
   }

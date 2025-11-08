@@ -74,7 +74,7 @@ class ICEBERG_EXPORT SortOrder : public util::Formattable {
 
   /// \brief Validates the sort order against a schema.
   /// \param schema The schema to validate against.
-  /// \return Error status if the sort order is not bound to the schema.
+  /// \return Error status if the sort order has any invalid transform.
   Status Validate(const Schema& schema) const;
 
   /// \brief Create a SortOrder.
