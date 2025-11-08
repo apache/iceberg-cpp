@@ -116,7 +116,7 @@ Result<std::unique_ptr<SortOrder>> SortOrder::Make(const Schema& schema, int32_t
   for (const auto& field : fields) {
     ICEBERG_ASSIGN_OR_RAISE(auto schema_field, schema.FindFieldById(field.source_id()));
     if (schema_field == std::nullopt) {
-      return InvalidArgument("Cannot find source column for sort field: {}", field);
+      return InvalidArgument("Cannot find schema field for sort field: {}", field);
     }
 
     const auto& source_type = schema_field.value().get().type();
