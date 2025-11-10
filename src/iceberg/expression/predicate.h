@@ -40,12 +40,6 @@ concept TermType = std::derived_from<T, Term>;
 template <TermType T>
 class ICEBERG_EXPORT Predicate : public Expression {
  public:
-  /// \brief Create a predicate with an operation and term.
-  ///
-  /// \param op The operation this predicate performs
-  /// \param term The term this predicate tests
-  Predicate(Expression::Operation op, std::shared_ptr<T> term);
-
   ~Predicate() override;
 
   Expression::Operation op() const override { return operation_; }
@@ -54,6 +48,12 @@ class ICEBERG_EXPORT Predicate : public Expression {
   const std::shared_ptr<T>& term() const { return term_; }
 
  protected:
+  /// \brief Create a predicate with an operation and term.
+  ///
+  /// \param op The operation this predicate performs
+  /// \param term The term this predicate tests
+  Predicate(Expression::Operation op, std::shared_ptr<T> term);
+
   Expression::Operation operation_;
   std::shared_ptr<T> term_;
 };
@@ -68,11 +68,32 @@ class ICEBERG_EXPORT UnboundPredicate : public Predicate<UnboundTerm<B>>,
   using BASE = Predicate<UnboundTerm<B>>;
 
  public:
-  UnboundPredicate(Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term);
-  UnboundPredicate(Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term,
-                   Literal value);
-  UnboundPredicate(Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term,
-                   std::vector<Literal> values);
+  /// \brief Create an unbound predicate (unary operation).
+  ///
+  /// \param op The operation (kIsNull, kNotNull, kIsNan, kNotNan)
+  /// \param term The unbound term
+  /// \return Result containing the unbound predicate or an error
+  static Result<std::unique_ptr<UnboundPredicate>> Make(
+      Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term);
+
+  /// \brief Create an unbound predicate with a single value.
+  ///
+  /// \param op The operation
+  /// \param term The unbound term
+  /// \param value The literal value
+  /// \return Result containing the unbound predicate or an error
+  static Result<std::unique_ptr<UnboundPredicate>> Make(
+      Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term, Literal value);
+
+  /// \brief Create an unbound predicate with multiple values.
+  ///
+  /// \param op The operation (typically kIn or kNotIn)
+  /// \param term The unbound term
+  /// \param values Vector of literal values
+  /// \return Result containing the unbound predicate or an error
+  static Result<std::unique_ptr<UnboundPredicate>> Make(
+      Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term,
+      std::vector<Literal> values);
 
   ~UnboundPredicate() override;
 
@@ -89,6 +110,12 @@ class ICEBERG_EXPORT UnboundPredicate : public Predicate<UnboundTerm<B>>,
   Result<std::shared_ptr<Expression>> Negate() const override;
 
  private:
+  UnboundPredicate(Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term);
+  UnboundPredicate(Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term,
+                   Literal value);
+  UnboundPredicate(Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term,
+                   std::vector<Literal> values);
+
   Result<std::shared_ptr<Expression>> BindUnaryOperation(
       std::shared_ptr<B> bound_term) const;
   Result<std::shared_ptr<Expression>> BindLiteralOperation(
@@ -103,8 +130,6 @@ class ICEBERG_EXPORT UnboundPredicate : public Predicate<UnboundTerm<B>>,
 /// \brief Bound predicates contain bound terms and can be evaluated.
 class ICEBERG_EXPORT BoundPredicate : public Predicate<BoundTerm>, public Bound {
  public:
-  BoundPredicate(Expression::Operation op, std::shared_ptr<BoundTerm> term);
-
   ~BoundPredicate() override;
 
   using Predicate<BoundTerm>::op;
@@ -132,6 +157,9 @@ class ICEBERG_EXPORT BoundPredicate : public Predicate<BoundTerm>, public Bound 
 
   /// \brief Returns the kind of this bound predicate.
   virtual Kind kind() const = 0;
+
+ protected:
+  BoundPredicate(Expression::Operation op, std::shared_ptr<BoundTerm> term);
 };
 
 /// \brief Bound unary predicate (null, not-null, etc.).
@@ -141,7 +169,9 @@ class ICEBERG_EXPORT BoundUnaryPredicate : public BoundPredicate {
   ///
   /// \param op The unary operation (kIsNull, kNotNull, kIsNan, kNotNan)
   /// \param term The bound term to test
-  BoundUnaryPredicate(Expression::Operation op, std::shared_ptr<BoundTerm> term);
+  /// \return Result containing the bound unary predicate or an error
+  static Result<std::unique_ptr<BoundUnaryPredicate>> Make(
+      Expression::Operation op, std::shared_ptr<BoundTerm> term);
 
   ~BoundUnaryPredicate() override;
 
@@ -154,6 +184,9 @@ class ICEBERG_EXPORT BoundUnaryPredicate : public BoundPredicate {
   Result<std::shared_ptr<Expression>> Negate() const override;
 
   bool Equals(const Expression& other) const override;
+
+ private:
+  BoundUnaryPredicate(Expression::Operation op, std::shared_ptr<BoundTerm> term);
 };
 
 /// \brief Bound literal predicate (comparison against a single value).
@@ -164,8 +197,9 @@ class ICEBERG_EXPORT BoundLiteralPredicate : public BoundPredicate {
   /// \param op The comparison operation (kLt, kLtEq, kGt, kGtEq, kEq, kNotEq)
   /// \param term The bound term to compare
   /// \param literal The literal value to compare against
-  BoundLiteralPredicate(Expression::Operation op, std::shared_ptr<BoundTerm> term,
-                        Literal literal);
+  /// \return Result containing the bound literal predicate or an error
+  static Result<std::unique_ptr<BoundLiteralPredicate>> Make(
+      Expression::Operation op, std::shared_ptr<BoundTerm> term, Literal literal);
 
   ~BoundLiteralPredicate() override;
 
@@ -183,6 +217,9 @@ class ICEBERG_EXPORT BoundLiteralPredicate : public BoundPredicate {
   bool Equals(const Expression& other) const override;
 
  private:
+  BoundLiteralPredicate(Expression::Operation op, std::shared_ptr<BoundTerm> term,
+                        Literal literal);
+
   Literal literal_;
 };
 
@@ -196,12 +233,20 @@ class ICEBERG_EXPORT BoundSetPredicate : public BoundPredicate {
   /// \param op The set operation (kIn, kNotIn)
   /// \param term The bound term to test for membership
   /// \param literals The set of literal values to test against
-  BoundSetPredicate(Expression::Operation op, std::shared_ptr<BoundTerm> term,
-                    std::span<const Literal> literals);
+  /// \return Result containing the bound set predicate or an error
+  static Result<std::unique_ptr<BoundSetPredicate>> Make(
+      Expression::Operation op, std::shared_ptr<BoundTerm> term,
+      std::span<const Literal> literals);
 
   /// \brief Create a bound set predicate using a set of literals.
-  BoundSetPredicate(Expression::Operation op, std::shared_ptr<BoundTerm> term,
-                    LiteralSet value_set);
+  ///
+  /// \param op The set operation (kIn, kNotIn)
+  /// \param term The bound term to test for membership
+  /// \param value_set The set of literal values to test against
+  /// \return Result containing the bound set predicate or an error
+  static Result<std::unique_ptr<BoundSetPredicate>> Make(Expression::Operation op,
+                                                         std::shared_ptr<BoundTerm> term,
+                                                         LiteralSet value_set);
 
   ~BoundSetPredicate() override;
 
@@ -219,6 +264,12 @@ class ICEBERG_EXPORT BoundSetPredicate : public BoundPredicate {
   bool Equals(const Expression& other) const override;
 
  private:
+  BoundSetPredicate(Expression::Operation op, std::shared_ptr<BoundTerm> term,
+                    std::span<const Literal> literals);
+
+  BoundSetPredicate(Expression::Operation op, std::shared_ptr<BoundTerm> term,
+                    LiteralSet value_set);
+
   LiteralSet value_set_;
 };
 

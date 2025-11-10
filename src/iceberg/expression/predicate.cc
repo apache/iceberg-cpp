@@ -36,27 +36,66 @@ namespace iceberg {
 // Predicate template implementations
 template <TermType T>
 Predicate<T>::Predicate(Expression::Operation op, std::shared_ptr<T> term)
-    : operation_(op), term_(std::move(term)) {}
+    : operation_(op), term_(std::move(term)) {
+  ICEBERG_DCHECK(term_ != nullptr, "Predicate cannot have null term");
+}
 
 template <TermType T>
 Predicate<T>::~Predicate() = default;
 
 // UnboundPredicate template implementations
 template <typename B>
+Result<std::unique_ptr<UnboundPredicate<B>>> UnboundPredicate<B>::Make(
+    Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term) {
+  if (!term) [[unlikely]] {
+    return InvalidExpression("UnboundPredicate cannot have null term");
+  }
+  return std::unique_ptr<UnboundPredicate<B>>(
+      new UnboundPredicate<B>(op, std::move(term)));
+}
+
+template <typename B>
+Result<std::unique_ptr<UnboundPredicate<B>>> UnboundPredicate<B>::Make(
+    Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term, Literal value) {
+  if (!term) [[unlikely]] {
+    return InvalidExpression("UnboundPredicate cannot have null term");
+  }
+  return std::unique_ptr<UnboundPredicate<B>>(
+      new UnboundPredicate<B>(op, std::move(term), std::move(value)));
+}
+
+template <typename B>
+Result<std::unique_ptr<UnboundPredicate<B>>> UnboundPredicate<B>::Make(
+    Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term,
+    std::vector<Literal> values) {
+  if (!term) [[unlikely]] {
+    return InvalidExpression("UnboundPredicate cannot have null term");
+  }
+  return std::unique_ptr<UnboundPredicate<B>>(
+      new UnboundPredicate<B>(op, std::move(term), std::move(values)));
+}
+
+template <typename B>
 UnboundPredicate<B>::UnboundPredicate(Expression::Operation op,
                                       std::shared_ptr<UnboundTerm<B>> term)
-    : BASE(op, std::move(term)) {}
+    : BASE(op, std::move(term)) {
+  ICEBERG_DCHECK(BASE::term() != nullptr, "UnboundPredicate cannot have null term");
+}
 
 template <typename B>
 UnboundPredicate<B>::UnboundPredicate(Expression::Operation op,
                                       std::shared_ptr<UnboundTerm<B>> term, Literal value)
-    : BASE(op, std::move(term)), values_{std::move(value)} {}
+    : BASE(op, std::move(term)), values_{std::move(value)} {
+  ICEBERG_DCHECK(BASE::term() != nullptr, "UnboundPredicate cannot have null term");
+}
 
 template <typename B>
 UnboundPredicate<B>::UnboundPredicate(Expression::Operation op,
                                       std::shared_ptr<UnboundTerm<B>> term,
                                       std::vector<Literal> values)
-    : BASE(op, std::move(term)), values_(std::move(values)) {}
+    : BASE(op, std::move(term)), values_(std::move(values)) {
+  ICEBERG_DCHECK(BASE::term() != nullptr, "UnboundPredicate cannot have null term");
+}
 
 template <typename B>
 UnboundPredicate<B>::~UnboundPredicate() = default;
@@ -117,7 +156,9 @@ std::string UnboundPredicate<B>::ToString() const {
 template <typename B>
 Result<std::shared_ptr<Expression>> UnboundPredicate<B>::Negate() const {
   ICEBERG_ASSIGN_OR_RAISE(auto negated_op, ::iceberg::Negate(BASE::op()));
-  return std::make_shared<UnboundPredicate>(negated_op, BASE::term(), values_);
+  ICEBERG_ASSIGN_OR_RAISE(auto negated_pred,
+                          UnboundPredicate::Make(negated_op, BASE::term(), values_));
+  return std::shared_ptr<Expression>(std::move(negated_pred));
 }
 
 template <typename B>
@@ -169,26 +210,35 @@ template <typename B>
 Result<std::shared_ptr<Expression>> UnboundPredicate<B>::BindUnaryOperation(
     std::shared_ptr<B> bound_term) const {
   switch (BASE::op()) {
-    case Expression::Operation::kIsNull:
+    case Expression::Operation::kIsNull: {
       if (!bound_term->MayProduceNull()) {
         return Expressions::AlwaysFalse();
       }
       // TODO(gangwu): deal with UnknownType
-      return std::make_shared<BoundUnaryPredicate>(Expression::Operation::kIsNull,
-                                                   std::move(bound_term));
-    case Expression::Operation::kNotNull:
+      ICEBERG_ASSIGN_OR_RAISE(auto pred,
+                              BoundUnaryPredicate::Make(Expression::Operation::kIsNull,
+                                                        std::move(bound_term)));
+      return std::shared_ptr<Expression>(std::move(pred));
+    }
+    case Expression::Operation::kNotNull: {
       if (!bound_term->MayProduceNull()) {
         return Expressions::AlwaysTrue();
       }
-      return std::make_shared<BoundUnaryPredicate>(Expression::Operation::kNotNull,
-                                                   std::move(bound_term));
+      ICEBERG_ASSIGN_OR_RAISE(auto pred,
+                              BoundUnaryPredicate::Make(Expression::Operation::kNotNull,
+                                                        std::move(bound_term)));
+      return std::shared_ptr<Expression>(std::move(pred));
+    }
     case Expression::Operation::kIsNan:
-    case Expression::Operation::kNotNan:
+    case Expression::Operation::kNotNan: {
       if (!IsFloatingType(bound_term->type()->type_id())) {
         return InvalidExpression("{} cannot be used with a non-floating-point column",
                                  BASE::op());
       }
-      return std::make_shared<BoundUnaryPredicate>(BASE::op(), std::move(bound_term));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto pred, BoundUnaryPredicate::Make(BASE::op(), std::move(bound_term)));
+      return std::shared_ptr<Expression>(std::move(pred));
+    }
     default:
       return InvalidExpression("Operation must be IS_NULL, NOT_NULL, IS_NAN, or NOT_NAN");
   }
@@ -247,8 +297,10 @@ Result<std::shared_ptr<Expression>> UnboundPredicate<B>::BindLiteralOperation(
   }
 
   // TODO(gangwu): translate truncate(col) == value to startsWith(value)
-  return std::make_shared<BoundLiteralPredicate>(BASE::op(), std::move(bound_term),
-                                                 std::move(literal));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto pred,
+      BoundLiteralPredicate::Make(BASE::op(), std::move(bound_term), std::move(literal)));
+  return std::shared_ptr<Expression>(std::move(pred));
 }
 
 template <typename B>
@@ -285,25 +337,35 @@ Result<std::shared_ptr<Expression>> UnboundPredicate<B>::BindInOperation(
   if (converted_literals.size() == 1) {
     const auto& single_literal = converted_literals[0];
     switch (BASE::op()) {
-      case Expression::Operation::kIn:
-        return std::make_shared<BoundLiteralPredicate>(
-            Expression::Operation::kEq, std::move(bound_term), single_literal);
-      case Expression::Operation::kNotIn:
-        return std::make_shared<BoundLiteralPredicate>(
-            Expression::Operation::kNotEq, std::move(bound_term), single_literal);
+      case Expression::Operation::kIn: {
+        ICEBERG_ASSIGN_OR_RAISE(auto pred, BoundLiteralPredicate::Make(
+                                               Expression::Operation::kEq,
+                                               std::move(bound_term), single_literal));
+        return std::shared_ptr<Expression>(std::move(pred));
+      }
+      case Expression::Operation::kNotIn: {
+        ICEBERG_ASSIGN_OR_RAISE(auto pred, BoundLiteralPredicate::Make(
+                                               Expression::Operation::kNotEq,
+                                               std::move(bound_term), single_literal));
+        return std::shared_ptr<Expression>(std::move(pred));
+      }
       default:
         return InvalidExpression("Operation must be IN or NOT_IN");
     }
   }
 
   // Multiple literals - create a set predicate
-  return std::make_shared<BoundSetPredicate>(
-      BASE::op(), std::move(bound_term), std::span<const Literal>(converted_literals));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto pred, BoundSetPredicate::Make(BASE::op(), std::move(bound_term),
+                                         std::span<const Literal>(converted_literals)));
+  return std::shared_ptr<Expression>(std::move(pred));
 }
 
 // BoundPredicate implementation
 BoundPredicate::BoundPredicate(Expression::Operation op, std::shared_ptr<BoundTerm> term)
-    : Predicate<BoundTerm>(op, std::move(term)) {}
+    : Predicate<BoundTerm>(op, std::move(term)) {
+  ICEBERG_DCHECK(term_ != nullptr, "BoundPredicate cannot have null term");
+}
 
 BoundPredicate::~BoundPredicate() = default;
 
@@ -314,9 +376,20 @@ Result<Literal> BoundPredicate::Evaluate(const StructLike& data) const {
 }
 
 // BoundUnaryPredicate implementation
+Result<std::unique_ptr<BoundUnaryPredicate>> BoundUnaryPredicate::Make(
+    Expression::Operation op, std::shared_ptr<BoundTerm> term) {
+  if (!term) [[unlikely]] {
+    return InvalidExpression("BoundUnaryPredicate cannot have null term");
+  }
+  return std::unique_ptr<BoundUnaryPredicate>(
+      new BoundUnaryPredicate(op, std::move(term)));
+}
+
 BoundUnaryPredicate::BoundUnaryPredicate(Expression::Operation op,
                                          std::shared_ptr<BoundTerm> term)
-    : BoundPredicate(op, std::move(term)) {}
+    : BoundPredicate(op, std::move(term)) {
+  ICEBERG_DCHECK(term_ != nullptr, "BoundUnaryPredicate cannot have null term");
+}
 
 BoundUnaryPredicate::~BoundUnaryPredicate() = default;
 
@@ -337,7 +410,9 @@ Result<bool> BoundUnaryPredicate::Test(const Literal& literal) const {
 
 Result<std::shared_ptr<Expression>> BoundUnaryPredicate::Negate() const {
   ICEBERG_ASSIGN_OR_RAISE(auto negated_op, ::iceberg::Negate(op()));
-  return std::make_shared<BoundUnaryPredicate>(negated_op, term_);
+  ICEBERG_ASSIGN_OR_RAISE(auto negated_pred,
+                          BoundUnaryPredicate::Make(negated_op, term_));
+  return std::shared_ptr<Expression>(std::move(negated_pred));
 }
 
 bool BoundUnaryPredicate::Equals(const Expression& other) const {
@@ -369,10 +444,21 @@ std::string BoundUnaryPredicate::ToString() const {
 }
 
 // BoundLiteralPredicate implementation
+Result<std::unique_ptr<BoundLiteralPredicate>> BoundLiteralPredicate::Make(
+    Expression::Operation op, std::shared_ptr<BoundTerm> term, Literal literal) {
+  if (!term) [[unlikely]] {
+    return InvalidExpression("BoundLiteralPredicate cannot have null term");
+  }
+  return std::unique_ptr<BoundLiteralPredicate>(
+      new BoundLiteralPredicate(op, std::move(term), std::move(literal)));
+}
+
 BoundLiteralPredicate::BoundLiteralPredicate(Expression::Operation op,
                                              std::shared_ptr<BoundTerm> term,
                                              Literal literal)
-    : BoundPredicate(op, std::move(term)), literal_(std::move(literal)) {}
+    : BoundPredicate(op, std::move(term)), literal_(std::move(literal)) {
+  ICEBERG_DCHECK(term_ != nullptr, "BoundLiteralPredicate cannot have null term");
+}
 
 BoundLiteralPredicate::~BoundLiteralPredicate() = default;
 
@@ -401,7 +487,9 @@ Result<bool> BoundLiteralPredicate::Test(const Literal& value) const {
 
 Result<std::shared_ptr<Expression>> BoundLiteralPredicate::Negate() const {
   ICEBERG_ASSIGN_OR_RAISE(auto negated_op, ::iceberg::Negate(op()));
-  return std::make_shared<BoundLiteralPredicate>(negated_op, term_, literal_);
+  ICEBERG_ASSIGN_OR_RAISE(auto negated_pred,
+                          BoundLiteralPredicate::Make(negated_op, term_, literal_));
+  return std::shared_ptr<Expression>(std::move(negated_pred));
 }
 
 bool BoundLiteralPredicate::Equals(const Expression& other) const {
@@ -491,15 +579,38 @@ std::string BoundLiteralPredicate::ToString() const {
 }
 
 // BoundSetPredicate implementation
+Result<std::unique_ptr<BoundSetPredicate>> BoundSetPredicate::Make(
+    Expression::Operation op, std::shared_ptr<BoundTerm> term,
+    std::span<const Literal> literals) {
+  if (!term) [[unlikely]] {
+    return InvalidExpression("BoundSetPredicate cannot have null term");
+  }
+  return std::unique_ptr<BoundSetPredicate>(
+      new BoundSetPredicate(op, std::move(term), literals));
+}
+
+Result<std::unique_ptr<BoundSetPredicate>> BoundSetPredicate::Make(
+    Expression::Operation op, std::shared_ptr<BoundTerm> term, LiteralSet value_set) {
+  if (!term) [[unlikely]] {
+    return InvalidExpression("BoundSetPredicate cannot have null term");
+  }
+  return std::unique_ptr<BoundSetPredicate>(
+      new BoundSetPredicate(op, std::move(term), std::move(value_set)));
+}
+
 BoundSetPredicate::BoundSetPredicate(Expression::Operation op,
                                      std::shared_ptr<BoundTerm> term,
                                      std::span<const Literal> literals)
-    : BoundPredicate(op, std::move(term)), value_set_(literals.begin(), literals.end()) {}
+    : BoundPredicate(op, std::move(term)), value_set_(literals.begin(), literals.end()) {
+  ICEBERG_DCHECK(term_ != nullptr, "BoundSetPredicate cannot have null term");
+}
 
 BoundSetPredicate::BoundSetPredicate(Expression::Operation op,
                                      std::shared_ptr<BoundTerm> term,
                                      LiteralSet value_set)
-    : BoundPredicate(op, std::move(term)), value_set_(std::move(value_set)) {}
+    : BoundPredicate(op, std::move(term)), value_set_(std::move(value_set)) {
+  ICEBERG_DCHECK(term_ != nullptr, "BoundSetPredicate cannot have null term");
+}
 
 BoundSetPredicate::~BoundSetPredicate() = default;
 
@@ -516,7 +627,9 @@ Result<bool> BoundSetPredicate::Test(const Literal& value) const {
 
 Result<std::shared_ptr<Expression>> BoundSetPredicate::Negate() const {
   ICEBERG_ASSIGN_OR_RAISE(auto negated_op, ::iceberg::Negate(op()));
-  return std::make_shared<BoundSetPredicate>(negated_op, term_, value_set_);
+  ICEBERG_ASSIGN_OR_RAISE(auto negated_pred,
+                          BoundSetPredicate::Make(negated_op, term_, value_set_));
+  return std::shared_ptr<Expression>(std::move(negated_pred));
 }
 
 bool BoundSetPredicate::Equals(const Expression& other) const {
