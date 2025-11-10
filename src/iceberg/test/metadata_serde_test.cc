@@ -148,12 +148,17 @@ TEST(MetadataSerdeTest, DeserializeV2Valid) {
       std::vector<PartitionField>{PartitionField(/*source_id=*/1, /*field_id=*/1000, "x",
                                                  Transform::Identity())});
 
-  auto expected_sort_order = std::make_shared<SortOrder>(
-      /*order_id=*/3,
-      std::vector<SortField>{SortField(/*source_id=*/2, Transform::Identity(),
-                                       SortDirection::kAscending, NullOrder::kFirst),
-                             SortField(/*source_id=*/3, Transform::Bucket(4),
-                                       SortDirection::kDescending, NullOrder::kLast)});
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto sort_order,
+      SortOrder::Make(*expected_schema_2,
+                      /*order_id=*/3,
+                      std::vector<SortField>{
+                          SortField(/*source_id=*/2, Transform::Identity(),
+                                    SortDirection::kAscending, NullOrder::kFirst),
+                          SortField(/*source_id=*/3, Transform::Bucket(4),
+                                    SortDirection::kDescending, NullOrder::kLast)}));
+
+  auto expected_sort_order = std::shared_ptr<SortOrder>(std::move(sort_order));
 
   auto expected_snapshot_1 = std::make_shared<Snapshot>(Snapshot{
       .snapshot_id = 3051729675574597004,
@@ -228,13 +233,18 @@ TEST(MetadataSerdeTest, DeserializeV2ValidMinimal) {
       std::vector<PartitionField>{PartitionField(/*source_id=*/1, /*field_id=*/1000, "x",
                                                  Transform::Identity())});
 
-  auto expected_sort_order = std::make_shared<SortOrder>(
-      /*order_id=*/3, std::vector<SortField>{
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto sort_order,
+      SortOrder::Make(*expected_schema,
+                      /*order_id=*/3,
+                      std::vector<SortField>{
                           SortField(/*source_id=*/2, Transform::Identity(),
                                     SortDirection::kAscending, NullOrder::kFirst),
                           SortField(/*source_id=*/3, Transform::Bucket(4),
                                     SortDirection::kDescending, NullOrder::kLast),
-                      });
+                      }));
+
+  auto expected_sort_order = std::shared_ptr<SortOrder>(std::move(sort_order));
 
   TableMetadata expected{
       .format_version = 2,

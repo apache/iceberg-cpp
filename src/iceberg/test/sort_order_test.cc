@@ -70,9 +70,9 @@ TEST(SortOrderTest, Basics) {
                         NullOrder::kFirst);
     SortField st_field2(7, identity_transform, SortDirection::kDescending,
                         NullOrder::kFirst);
-    SortOrder sort_order(100, {st_field1, st_field2});
-    ASSERT_EQ(sort_order, sort_order);
-    std::span<const SortField> fields = sort_order.fields();
+    ICEBERG_UNWRAP_OR_FAIL(auto sort_order, SortOrder::Make(100, {st_field1, st_field2}));
+    ASSERT_EQ(*sort_order, *sort_order);
+    std::span<const SortField> fields = sort_order->fields();
     ASSERT_EQ(2, fields.size());
     ASSERT_EQ(st_field1, fields[0]);
     ASSERT_EQ(st_field2, fields[1]);
@@ -81,8 +81,8 @@ TEST(SortOrderTest, Basics) {
         "  identity(5) asc nulls-first\n"
         "  identity(7) desc nulls-first\n"
         "]";
-    EXPECT_EQ(sort_order.ToString(), sort_order_str);
-    EXPECT_EQ(std::format("{}", sort_order), sort_order_str);
+    EXPECT_EQ(sort_order->ToString(), sort_order_str);
+    EXPECT_EQ(std::format("{}", *sort_order), sort_order_str);
   }
 }
 
@@ -96,21 +96,21 @@ TEST(SortOrderTest, Equality) {
   SortField st_field2(7, identity_transform, SortDirection::kDescending,
                       NullOrder::kFirst);
   SortField st_field3(7, bucket_transform, SortDirection::kAscending, NullOrder::kFirst);
-  SortOrder sort_order1(100, {st_field1, st_field2});
-  SortOrder sort_order2(100, {st_field2, st_field3});
-  SortOrder sort_order3(100, {st_field1, st_field3});
-  SortOrder sort_order4(101, {st_field1, st_field2});
-  SortOrder sort_order5(100, {st_field2, st_field1});
+  ICEBERG_UNWRAP_OR_FAIL(auto sort_order1, SortOrder::Make(100, {st_field1, st_field2}));
+  ICEBERG_UNWRAP_OR_FAIL(auto sort_order2, SortOrder::Make(100, {st_field2, st_field3}));
+  ICEBERG_UNWRAP_OR_FAIL(auto sort_order3, SortOrder::Make(100, {st_field1, st_field3}));
+  ICEBERG_UNWRAP_OR_FAIL(auto sort_order4, SortOrder::Make(101, {st_field1, st_field2}));
+  ICEBERG_UNWRAP_OR_FAIL(auto sort_order5, SortOrder::Make(100, {st_field2, st_field1}));
 
-  ASSERT_EQ(sort_order1, sort_order1);
-  ASSERT_NE(sort_order1, sort_order2);
-  ASSERT_NE(sort_order2, sort_order1);
-  ASSERT_NE(sort_order1, sort_order3);
-  ASSERT_NE(sort_order3, sort_order1);
-  ASSERT_NE(sort_order1, sort_order4);
-  ASSERT_NE(sort_order4, sort_order1);
-  ASSERT_NE(sort_order1, sort_order5);
-  ASSERT_NE(sort_order5, sort_order1);
+  ASSERT_EQ(*sort_order1, *sort_order1);
+  ASSERT_NE(*sort_order1, *sort_order2);
+  ASSERT_NE(*sort_order2, *sort_order1);
+  ASSERT_NE(*sort_order1, *sort_order3);
+  ASSERT_NE(*sort_order3, *sort_order1);
+  ASSERT_NE(*sort_order1, *sort_order4);
+  ASSERT_NE(*sort_order4, *sort_order1);
+  ASSERT_NE(*sort_order1, *sort_order5);
+  ASSERT_NE(*sort_order5, *sort_order1);
 }
 
 TEST(SortOrderTest, IsUnsorted) {
@@ -124,10 +124,10 @@ TEST(SortOrderTest, IsSorted) {
   auto identity_transform = Transform::Identity();
   SortField st_field1(5, identity_transform, SortDirection::kAscending,
                       NullOrder::kFirst);
-  SortOrder sorted_order(100, {st_field1});
+  ICEBERG_UNWRAP_OR_FAIL(auto sorted_order, SortOrder::Make(100, {st_field1}));
 
-  EXPECT_TRUE(sorted_order.is_sorted());
-  EXPECT_FALSE(sorted_order.is_unsorted());
+  EXPECT_TRUE(sorted_order->is_sorted());
+  EXPECT_FALSE(sorted_order->is_unsorted());
 }
 
 TEST(SortOrderTest, Satisfies) {
@@ -142,39 +142,39 @@ TEST(SortOrderTest, Satisfies) {
                       NullOrder::kFirst);
   SortField st_field3(7, bucket_transform, SortDirection::kAscending, NullOrder::kFirst);
 
-  SortOrder sort_order1(100, {st_field1, st_field2});
-  SortOrder sort_order2(101, {st_field1});
-  SortOrder sort_order3(102, {st_field1, st_field3});
-  SortOrder sort_order4(104, {st_field2});
+  ICEBERG_UNWRAP_OR_FAIL(auto sort_order1, SortOrder::Make(100, {st_field1, st_field2}));
+  ICEBERG_UNWRAP_OR_FAIL(auto sort_order2, SortOrder::Make(101, {st_field1}));
+  ICEBERG_UNWRAP_OR_FAIL(auto sort_order3, SortOrder::Make(102, {st_field1, st_field3}));
+  ICEBERG_UNWRAP_OR_FAIL(auto sort_order4, SortOrder::Make(104, {st_field2}));
   auto unsorted = SortOrder::Unsorted();
 
   // Any order satisfies an unsorted order, including unsorted itself
   EXPECT_TRUE(unsorted->Satisfies(*unsorted));
-  EXPECT_TRUE(sort_order1.Satisfies(*unsorted));
-  EXPECT_TRUE(sort_order2.Satisfies(*unsorted));
-  EXPECT_TRUE(sort_order3.Satisfies(*unsorted));
+  EXPECT_TRUE(sort_order1->Satisfies(*unsorted));
+  EXPECT_TRUE(sort_order2->Satisfies(*unsorted));
+  EXPECT_TRUE(sort_order3->Satisfies(*unsorted));
 
   // Unsorted does not satisfy any sorted order
-  EXPECT_FALSE(unsorted->Satisfies(sort_order1));
-  EXPECT_FALSE(unsorted->Satisfies(sort_order2));
-  EXPECT_FALSE(unsorted->Satisfies(sort_order3));
+  EXPECT_FALSE(unsorted->Satisfies(*sort_order1));
+  EXPECT_FALSE(unsorted->Satisfies(*sort_order2));
+  EXPECT_FALSE(unsorted->Satisfies(*sort_order3));
 
   // A sort order satisfies itself
-  EXPECT_TRUE(sort_order1.Satisfies(sort_order1));
-  EXPECT_TRUE(sort_order2.Satisfies(sort_order2));
-  EXPECT_TRUE(sort_order3.Satisfies(sort_order3));
+  EXPECT_TRUE(sort_order1->Satisfies(*sort_order1));
+  EXPECT_TRUE(sort_order2->Satisfies(*sort_order2));
+  EXPECT_TRUE(sort_order3->Satisfies(*sort_order3));
 
   // A sort order with more fields satisfy one with fewer fields
-  EXPECT_TRUE(sort_order1.Satisfies(sort_order2));
-  EXPECT_TRUE(sort_order3.Satisfies(sort_order2));
+  EXPECT_TRUE(sort_order1->Satisfies(*sort_order2));
+  EXPECT_TRUE(sort_order3->Satisfies(*sort_order2));
 
   // A sort order does not satisfy one with more fields
-  EXPECT_FALSE(sort_order2.Satisfies(sort_order1));
-  EXPECT_FALSE(sort_order2.Satisfies(sort_order3));
+  EXPECT_FALSE(sort_order2->Satisfies(*sort_order1));
+  EXPECT_FALSE(sort_order2->Satisfies(*sort_order3));
 
-  // A sort order does not satify one with different fields
-  EXPECT_FALSE(sort_order4.Satisfies(sort_order2));
-  EXPECT_FALSE(sort_order2.Satisfies(sort_order4));
+  // A sort order does not satisfy one with different fields
+  EXPECT_FALSE(sort_order4->Satisfies(*sort_order2));
+  EXPECT_FALSE(sort_order2->Satisfies(*sort_order4));
 }
 
 TEST_F(SortOrderMakeTest, MakeValidSortOrder) {

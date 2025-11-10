@@ -69,8 +69,15 @@ ICEBERG_EXPORT nlohmann::json ToJson(const SortOrder& sort_order);
 /// Each `SortField` will be parsed using the `SortFieldFromJson` function.
 ///
 /// \param json The JSON object representing a `SortOrder`.
+/// \param current_schema The current schema associated with the sort order.
 /// \return An `expected` value containing either a `SortOrder` object or an error. If the
 /// JSON is malformed or missing expected fields, an error will be returned.
+ICEBERG_EXPORT Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
+    const nlohmann::json& json, const std::shared_ptr<Schema>& current_schema);
+
+/// \brief Deserializes a JSON object into a `SortOrder` object.
+///
+/// Same as above but the returned SortOrder will not be validated against any schema.
 ICEBERG_EXPORT Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
     const nlohmann::json& json);
 

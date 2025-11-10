@@ -110,14 +110,13 @@ TEST(JsonInternalTest, SortOrder) {
   auto identity_transform = Transform::Identity();
   SortField st_ts(5, identity_transform, SortDirection::kAscending, NullOrder::kFirst);
   SortField st_bar(7, identity_transform, SortDirection::kDescending, NullOrder::kLast);
-  SortOrder sort_order(100, {st_ts, st_bar});
-
+  ICEBERG_UNWRAP_OR_FAIL(auto sort_order, SortOrder::Make(100, {st_ts, st_bar}));
   nlohmann::json expected_sort_order =
       R"({"order-id":100,"fields":[
           {"transform":"identity","source-id":5,"direction":"asc","null-order":"nulls-first"},
           {"transform":"identity","source-id":7,"direction":"desc","null-order":"nulls-last"}]})"_json;
 
-  TestJsonConversion(sort_order, expected_sort_order);
+  TestJsonConversion(*sort_order, expected_sort_order);
 }
 
 TEST(JsonInternalTest, PartitionField) {

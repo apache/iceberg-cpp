@@ -41,8 +41,6 @@ class ICEBERG_EXPORT SortOrder : public util::Formattable {
   static constexpr int32_t kUnsortedOrderId = 0;
   static constexpr int32_t kInitialSortOrderId = 1;
 
-  SortOrder(int32_t order_id, std::vector<SortField> fields);
-
   /// \brief Get an unsorted sort order singleton.
   static const std::shared_ptr<SortOrder>& Unsorted();
 
@@ -95,6 +93,12 @@ class ICEBERG_EXPORT SortOrder : public util::Formattable {
                                                  std::vector<SortField> fields);
 
  private:
+  /// \brief Constructs a SortOrder instance.
+  /// \param order_id The sort order id.
+  /// \param fields The sort fields.
+  /// \note Use the static Make methods to create SortOrder instances.
+  SortOrder(int32_t order_id, std::vector<SortField> fields);
+
   /// \brief Compare two sort orders for equality.
   bool Equals(const SortOrder& other) const;
 

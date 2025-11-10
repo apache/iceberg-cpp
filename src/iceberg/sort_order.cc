@@ -20,6 +20,7 @@
 #include "iceberg/sort_order.h"
 
 #include <format>
+#include <memory>
 #include <optional>
 #include <ranges>
 
@@ -36,8 +37,8 @@ SortOrder::SortOrder(int32_t order_id, std::vector<SortField> fields)
     : order_id_(order_id), fields_(std::move(fields)) {}
 
 const std::shared_ptr<SortOrder>& SortOrder::Unsorted() {
-  static const std::shared_ptr<SortOrder> unsorted =
-      std::make_shared<SortOrder>(kUnsortedOrderId, std::vector<SortField>{});
+  static const std::shared_ptr<SortOrder> unsorted = std::shared_ptr<SortOrder>(
+      new SortOrder(kUnsortedOrderId, std::vector<SortField>{}));
   return unsorted;
 }
 
@@ -113,7 +114,7 @@ Result<std::unique_ptr<SortOrder>> SortOrder::Make(const Schema& schema, int32_t
     return InvalidArgument("Sort order must have at least one sort field");
   }
 
-  auto sort_order = std::make_unique<SortOrder>(sort_id, std::move(fields));
+  auto sort_order = std::unique_ptr<SortOrder>(new SortOrder(sort_id, std::move(fields)));
   ICEBERG_RETURN_UNEXPECTED(sort_order->Validate(schema));
   return sort_order;
 }
@@ -128,7 +129,7 @@ Result<std::unique_ptr<SortOrder>> SortOrder::Make(int32_t sort_id,
     return InvalidArgument("Sort order must have at least one sort field");
   }
 
-  return std::make_unique<SortOrder>(sort_id, std::move(fields));
+  return std::unique_ptr<SortOrder>(new SortOrder(sort_id, std::move(fields)));
 }
 
 }  // namespace iceberg
