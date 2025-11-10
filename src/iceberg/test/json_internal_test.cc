@@ -144,11 +144,9 @@ TEST(JsonPartitionTest, PartitionSpec) {
       std::vector<SchemaField>{SchemaField(3, "region", iceberg::string(), false),
                                SchemaField(5, "ts", iceberg::int64(), false)},
       /*schema_id=*/100);
-
   auto identity_transform = Transform::Identity();
-  PartitionSpec spec(schema, 1,
-                     {PartitionField(3, 101, "region", identity_transform),
-                      PartitionField(5, 102, "ts", identity_transform)});
+  PartitionSpec spec(1, {PartitionField(3, 101, "region", identity_transform),
+                         PartitionField(5, 102, "ts", identity_transform)});
   auto json = ToJson(spec);
   nlohmann::json expected_json = R"({"spec-id": 1,
                                      "fields": [

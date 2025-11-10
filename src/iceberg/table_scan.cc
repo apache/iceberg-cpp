@@ -31,6 +31,7 @@
 #include "iceberg/schema_field.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/type.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -269,7 +270,12 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
 
   std::vector<std::shared_ptr<FileScanTask>> tasks;
   ICEBERG_ASSIGN_OR_RAISE(auto partition_spec, context_.table_metadata->PartitionSpec());
-  auto partition_schema = partition_spec->schema();
+  // auto partition_schema = context_.table_metadata->Schema().value();
+
+  // Get the table schema and partition type
+  ICEBERG_ASSIGN_OR_RAISE(auto current_schema, context_.table_metadata->Schema());
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<StructType> partition_schema,
+                          partition_spec->PartitionType(*current_schema));
 
   for (const auto& manifest_file : manifest_files) {
     ICEBERG_ASSIGN_OR_RAISE(

@@ -23,7 +23,7 @@
 /// Partition specs for Iceberg tables.
 
 #include <cstdint>
-#include <mutex>
+#include <memory>
 #include <optional>
 #include <span>
 #include <string>
@@ -32,6 +32,7 @@
 #include "iceberg/iceberg_export.h"
 #include "iceberg/partition_field.h"
 #include "iceberg/result.h"
+#include "iceberg/type_fwd.h"
 #include "iceberg/util/formattable.h"
 
 namespace iceberg {
@@ -56,15 +57,11 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \param fields The partition fields.
   /// \param last_assigned_field_id The last assigned field ID. If not provided, it will
   /// be calculated from the fields.
-  PartitionSpec(std::shared_ptr<Schema> schema, int32_t spec_id,
-                std::vector<PartitionField> fields,
+  PartitionSpec(int32_t spec_id, std::vector<PartitionField> fields,
                 std::optional<int32_t> last_assigned_field_id = std::nullopt);
 
   /// \brief Get an unsorted partition spec singleton.
   static const std::shared_ptr<PartitionSpec>& Unpartitioned();
-
-  /// \brief Get the table schema
-  const std::shared_ptr<Schema>& schema() const;
 
   /// \brief Get the spec ID.
   int32_t spec_id() const;
@@ -72,8 +69,8 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \brief Get a list view of the partition fields.
   std::span<const PartitionField> fields() const;
 
-  /// \brief Get the partition type.
-  Result<std::shared_ptr<StructType>> PartitionType();
+  /// \brief Get the partition type binding to the input schema.
+  Result<std::unique_ptr<StructType>> PartitionType(const Schema&);
 
   std::string ToString() const override;
 
@@ -87,14 +84,9 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \brief Compare two partition specs for equality.
   bool Equals(const PartitionSpec& other) const;
 
-  std::shared_ptr<Schema> schema_;
   const int32_t spec_id_;
   std::vector<PartitionField> fields_;
   int32_t last_assigned_field_id_;
-
-  // FIXME: use similar lazy initialization pattern as in StructType
-  std::mutex mutex_;
-  std::shared_ptr<StructType> partition_type_;
 };
 
 }  // namespace iceberg

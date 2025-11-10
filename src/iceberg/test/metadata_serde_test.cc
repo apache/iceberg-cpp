@@ -100,7 +100,7 @@ TEST(MetadataSerdeTest, DeserializeV1Valid) {
       /*schema_id=*/std::nullopt);
 
   auto expected_spec = std::make_shared<PartitionSpec>(
-      expected_schema, /*spec_id=*/0,
+      /*spec_id=*/0,
       std::vector<PartitionField>{PartitionField(/*source_id=*/1, /*field_id=*/1000, "x",
                                                  Transform::Identity())});
 
@@ -144,7 +144,7 @@ TEST(MetadataSerdeTest, DeserializeV2Valid) {
       /*schema_id=*/1);
 
   auto expected_spec = std::make_shared<PartitionSpec>(
-      expected_schema_2, /*spec_id=*/0,
+      /*spec_id=*/0,
       std::vector<PartitionField>{PartitionField(/*source_id=*/1, /*field_id=*/1000, "x",
                                                  Transform::Identity())});
 
@@ -224,7 +224,7 @@ TEST(MetadataSerdeTest, DeserializeV2ValidMinimal) {
       /*schema_id=*/0);
 
   auto expected_spec = std::make_shared<PartitionSpec>(
-      expected_schema, /*spec_id=*/0,
+      /*spec_id=*/0,
       std::vector<PartitionField>{PartitionField(/*source_id=*/1, /*field_id=*/1000, "x",
                                                  Transform::Identity())});
 
@@ -271,8 +271,8 @@ TEST(MetadataSerdeTest, DeserializeStatisticsFiles) {
                                            /*optional=*/false)},
       /*schema_id=*/0);
 
-  auto expected_spec = std::make_shared<PartitionSpec>(expected_schema, /*spec_id=*/0,
-                                                       std::vector<PartitionField>{});
+  auto expected_spec =
+      std::make_shared<PartitionSpec>(/*spec_id=*/0, std::vector<PartitionField>{});
 
   auto expected_snapshot = std::make_shared<Snapshot>(Snapshot{
       .snapshot_id = 3055729675574597004,

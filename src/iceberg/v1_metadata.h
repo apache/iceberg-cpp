@@ -19,8 +19,9 @@
 
 #pragma once
 
-/// \file iceberg/v1_metadata.h
 #include "iceberg/manifest_adapter.h"
+
+/// \file iceberg/v1_metadata.h
 
 namespace iceberg {
 
@@ -28,7 +29,9 @@ namespace iceberg {
 class ManifestEntryAdapterV1 : public ManifestEntryAdapter {
  public:
   ManifestEntryAdapterV1(std::optional<int64_t> snapshot_id,
-                         std::shared_ptr<PartitionSpec> partition_spec);
+                         std::shared_ptr<PartitionSpec> partition_spec,
+                         std::shared_ptr<Schema> current_schema);
+
   Status Init() override;
   Status Append(const ManifestEntry& entry) override;
 

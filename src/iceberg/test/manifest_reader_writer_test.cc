@@ -28,6 +28,7 @@
 #include "iceberg/manifest_list.h"
 #include "iceberg/manifest_reader.h"
 #include "iceberg/manifest_writer.h"
+#include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/temp_file_test_base.h"
@@ -152,9 +153,11 @@ class ManifestReaderV1Test : public ManifestReaderTestBase {
 
   void TestWriteManifest(const std::string& manifest_list_path,
                          std::shared_ptr<PartitionSpec> partition_spec,
-                         const std::vector<ManifestEntry>& manifest_entries) {
-    auto result = ManifestWriter::MakeV1Writer(1, manifest_list_path, file_io_,
-                                               std::move(partition_spec));
+                         const std::vector<ManifestEntry>& manifest_entries,
+                         std::shared_ptr<Schema> table_schema) {
+    auto result =
+        ManifestWriter::MakeV1Writer(1, manifest_list_path, file_io_,
+                                     std::move(partition_spec), std::move(table_schema));
     ASSERT_TRUE(result.has_value()) << result.error().message;
     auto writer = std::move(result.value());
     auto status = writer->AddAll(manifest_entries);
@@ -183,11 +186,11 @@ TEST_F(ManifestReaderV1Test, WritePartitionedTest) {
   auto identity_transform = Transform::Identity();
   std::vector<PartitionField> fields{
       PartitionField(1, 1000, "order_ts_hour", identity_transform)};
-  auto partition_spec = std::make_shared<PartitionSpec>(table_schema, 1, fields);
+  auto partition_spec = std::make_shared<PartitionSpec>(1, fields);
 
   auto expected_entries = PreparePartitionedTestData();
   auto write_manifest_path = CreateNewTempFilePath();
-  TestWriteManifest(write_manifest_path, partition_spec, expected_entries);
+  TestWriteManifest(write_manifest_path, partition_spec, expected_entries, table_schema);
   TestManifestReadingByPath(write_manifest_path, expected_entries, partition_schema);
 }
 
@@ -259,10 +262,11 @@ class ManifestReaderV2Test : public ManifestReaderTestBase {
 
   void TestWriteManifest(int64_t snapshot_id, const std::string& manifest_list_path,
                          std::shared_ptr<PartitionSpec> partition_spec,
-                         const std::vector<ManifestEntry>& manifest_entries) {
-    auto result =
-        ManifestWriter::MakeV2Writer(snapshot_id, manifest_list_path, file_io_,
-                                     std::move(partition_spec), ManifestContent::kData);
+                         const std::vector<ManifestEntry>& manifest_entries,
+                         std::shared_ptr<Schema> table_schema) {
+    auto result = ManifestWriter::MakeV2Writer(
+        snapshot_id, manifest_list_path, file_io_, std::move(partition_spec),
+        std::move(table_schema), ManifestContent::kData);
     ASSERT_TRUE(result.has_value()) << result.error().message;
     auto writer = std::move(result.value());
     auto status = writer->AddAll(manifest_entries);
@@ -292,16 +296,24 @@ TEST_F(ManifestReaderV2Test, MetadataInheritanceTest) {
 }
 
 TEST_F(ManifestReaderV2Test, WriteNonPartitionedTest) {
+  iceberg::SchemaField table_field(1, "order_ts_hour_source", int32(), true);
+  iceberg::SchemaField partition_field(1000, "order_ts_hour", int32(), true);
+  auto table_schema = std::make_shared<Schema>(std::vector<SchemaField>({table_field}));
   auto expected_entries = PrepareNonPartitionedTestData();
   auto write_manifest_path = CreateNewTempFilePath();
-  TestWriteManifest(679879563479918846LL, write_manifest_path, nullptr, expected_entries);
+  TestWriteManifest(679879563479918846LL, write_manifest_path,
+                    PartitionSpec::Unpartitioned(), expected_entries, table_schema);
   TestManifestReadingByPath(write_manifest_path, expected_entries);
 }
 
 TEST_F(ManifestReaderV2Test, WriteInheritancePartitionedTest) {
+  iceberg::SchemaField table_field(1, "order_ts_hour_source", int32(), true);
+  iceberg::SchemaField partition_field(1000, "order_ts_hour", int32(), true);
+  auto table_schema = std::make_shared<Schema>(std::vector<SchemaField>({table_field}));
   auto expected_entries = PrepareMetadataInheritanceTestData();
   auto write_manifest_path = CreateNewTempFilePath();
-  TestWriteManifest(679879563479918846LL, write_manifest_path, nullptr, expected_entries);
+  TestWriteManifest(679879563479918846LL, write_manifest_path,
+                    PartitionSpec::Unpartitioned(), expected_entries, table_schema);
   ManifestFile manifest_file{
       .manifest_path = write_manifest_path,
       .manifest_length = 100,

@@ -30,7 +30,8 @@ class ManifestEntryAdapterV2 : public ManifestEntryAdapter {
  public:
   ManifestEntryAdapterV2(std::optional<int64_t> snapshot_id,
                          std::shared_ptr<PartitionSpec> partition_spec,
-                         ManifestContent content);
+                         std::shared_ptr<Schema> current_schema, ManifestContent content);
+
   Status Init() override;
   Status Append(const ManifestEntry& entry) override;
 

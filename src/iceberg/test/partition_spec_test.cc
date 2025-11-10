@@ -39,20 +39,17 @@ TEST(PartitionSpecTest, Basics) {
   {
     SchemaField field1(5, "ts", iceberg::timestamp(), true);
     SchemaField field2(7, "bar", iceberg::string(), true);
-    auto const schema =
-        std::make_shared<Schema>(std::vector<SchemaField>{field1, field2}, 100);
 
     auto identity_transform = Transform::Identity();
     PartitionField pt_field1(5, 1000, "day", identity_transform);
     PartitionField pt_field2(5, 1001, "hour", identity_transform);
-    PartitionSpec spec(schema, 100, {pt_field1, pt_field2});
+    PartitionSpec spec(100, {pt_field1, pt_field2});
     ASSERT_EQ(spec, spec);
     ASSERT_EQ(100, spec.spec_id());
     std::span<const PartitionField> fields = spec.fields();
     ASSERT_EQ(2, fields.size());
     ASSERT_EQ(pt_field1, fields[0]);
     ASSERT_EQ(pt_field2, fields[1]);
-    ASSERT_EQ(*schema, *spec.schema());
     auto spec_str =
         "partition_spec[spec_id<100>,\n  day (1000 identity(5))\n  hour (1001 "
         "identity(5))\n]";
@@ -64,18 +61,16 @@ TEST(PartitionSpecTest, Basics) {
 TEST(PartitionSpecTest, Equality) {
   SchemaField field1(5, "ts", iceberg::timestamp(), true);
   SchemaField field2(7, "bar", iceberg::string(), true);
-  auto const schema =
-      std::make_shared<Schema>(std::vector<SchemaField>{field1, field2}, 100);
   auto identity_transform = Transform::Identity();
   PartitionField pt_field1(5, 1000, "day", identity_transform);
   PartitionField pt_field2(7, 1001, "hour", identity_transform);
   PartitionField pt_field3(7, 1001, "hour", identity_transform);
-  PartitionSpec schema1(schema, 100, {pt_field1, pt_field2});
-  PartitionSpec schema2(schema, 101, {pt_field1, pt_field2});
-  PartitionSpec schema3(schema, 101, {pt_field1});
-  PartitionSpec schema4(schema, 101, {pt_field3, pt_field1});
-  PartitionSpec schema5(schema, 100, {pt_field1, pt_field2});
-  PartitionSpec schema6(schema, 100, {pt_field2, pt_field1});
+  PartitionSpec schema1(100, {pt_field1, pt_field2});
+  PartitionSpec schema2(101, {pt_field1, pt_field2});
+  PartitionSpec schema3(101, {pt_field1});
+  PartitionSpec schema4(101, {pt_field3, pt_field1});
+  PartitionSpec schema5(100, {pt_field1, pt_field2});
+  PartitionSpec schema6(100, {pt_field2, pt_field1});
 
   ASSERT_EQ(schema1, schema1);
   ASSERT_NE(schema1, schema2);
@@ -93,14 +88,13 @@ TEST(PartitionSpecTest, Equality) {
 TEST(PartitionSpecTest, PartitionSchemaTest) {
   SchemaField field1(5, "ts", iceberg::timestamp(), true);
   SchemaField field2(7, "bar", iceberg::string(), true);
-  auto const schema =
-      std::make_shared<Schema>(std::vector<SchemaField>{field1, field2}, 100);
+  Schema schema({field1, field2}, 100);
   auto identity_transform = Transform::Identity();
   PartitionField pt_field1(5, 1000, "day", identity_transform);
   PartitionField pt_field2(7, 1001, "hour", identity_transform);
-  PartitionSpec spec(schema, 100, {pt_field1, pt_field2});
+  PartitionSpec spec(100, {pt_field1, pt_field2});
 
-  auto partition_schema = spec.PartitionType();
+  auto partition_schema = spec.PartitionType(schema);
   ASSERT_TRUE(partition_schema.has_value());
   ASSERT_EQ(2, partition_schema.value()->fields().size());
   EXPECT_EQ(pt_field1.name(), partition_schema.value()->fields()[0].name());
@@ -144,7 +138,7 @@ TEST(PartitionSpecTest, PartitionTypeTest) {
   auto parsed_spec_result = PartitionSpecFromJson(schema, json);
   ASSERT_TRUE(parsed_spec_result.has_value()) << parsed_spec_result.error().message;
 
-  auto partition_schema = parsed_spec_result.value()->PartitionType();
+  auto partition_schema = parsed_spec_result.value()->PartitionType(*schema);
 
   SchemaField pt_field1(1000, "ts_day", date(), true);
   SchemaField pt_field2(1001, "id_bucket", int32(), true);

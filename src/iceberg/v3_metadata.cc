@@ -19,6 +19,8 @@
 
 #include "iceberg/v3_metadata.h"
 
+#include <memory>
+
 #include "iceberg/json_internal.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
@@ -30,8 +32,10 @@ namespace iceberg {
 
 ManifestEntryAdapterV3::ManifestEntryAdapterV3(
     std::optional<int64_t> snapshot_id, std::optional<int64_t> first_row_id,
-    std::shared_ptr<PartitionSpec> partition_spec, ManifestContent content)
-    : ManifestEntryAdapter(std::move(partition_spec), content),
+    std::shared_ptr<PartitionSpec> partition_spec, std::shared_ptr<Schema> current_schema,
+    ManifestContent content)
+    : ManifestEntryAdapter(std::move(partition_spec), std::move(current_schema),
+                           std::move(content)),
       snapshot_id_(snapshot_id),
       first_row_id_(first_row_id) {}
 
@@ -80,16 +84,14 @@ std::shared_ptr<StructType> ManifestEntryAdapterV3::DataFileType(
 }
 
 Status ManifestEntryAdapterV3::Init() {
-  // ICEBERG_ASSIGN_OR_RAISE(metadata_["schema"], ToJsonString(*manifest_schema_))
+  ICEBERG_ASSIGN_OR_RAISE(metadata_["schema"], ToJsonString(*current_schema_))
   ICEBERG_ASSIGN_OR_RAISE(metadata_["partition-spec"], ToJsonString(*partition_spec_));
   metadata_["partition-spec-id"] = std::to_string(partition_spec_->spec_id());
   metadata_["format-version"] = "3";
   metadata_["content"] = content_ == ManifestContent::kData ? "data" : "delete";
 
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_type, partition_spec_->PartitionType());
-  if (!partition_type) {
-    partition_type = std::make_shared<StructType>(std::vector<SchemaField>{});
-  }
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_type,
+                          partition_spec_->PartitionType(*current_schema_));
   manifest_schema_ = EntrySchema(std::move(partition_type));
   return ToArrowSchema(*manifest_schema_, &schema_);
 }

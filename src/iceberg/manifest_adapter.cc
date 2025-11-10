@@ -19,6 +19,8 @@
 
 #include "iceberg/manifest_adapter.h"
 
+#include <utility>
+
 #include <nanoarrow/nanoarrow.h>
 
 #include "iceberg/arrow/nanoarrow_status_internal.h"
@@ -140,8 +142,11 @@ Result<ArrowArray*> ManifestAdapter::FinishAppending() {
 }
 
 ManifestEntryAdapter::ManifestEntryAdapter(std::shared_ptr<PartitionSpec> partition_spec,
+                                           std::shared_ptr<Schema> current_schema,
                                            ManifestContent content)
-    : partition_spec_(std::move(partition_spec)), content_(content) {
+    : partition_spec_(std::move(partition_spec)),
+      current_schema_(std::move(current_schema)),
+      content_(content) {
   if (!partition_spec_) {
     partition_spec_ = PartitionSpec::Unpartitioned();
   }

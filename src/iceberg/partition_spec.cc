@@ -21,6 +21,7 @@
 
 #include <algorithm>
 #include <format>
+#include <memory>
 #include <ranges>
 
 #include "iceberg/schema.h"
@@ -31,10 +32,9 @@
 
 namespace iceberg {
 
-PartitionSpec::PartitionSpec(std::shared_ptr<Schema> schema, int32_t spec_id,
-                             std::vector<PartitionField> fields,
+PartitionSpec::PartitionSpec(int32_t spec_id, std::vector<PartitionField> fields,
                              std::optional<int32_t> last_assigned_field_id)
-    : schema_(std::move(schema)), spec_id_(spec_id), fields_(std::move(fields)) {
+    : spec_id_(spec_id), fields_(std::move(fields)) {
   if (last_assigned_field_id) {
     last_assigned_field_id_ = last_assigned_field_id.value();
   } else if (fields_.empty()) {
@@ -48,34 +48,25 @@ PartitionSpec::PartitionSpec(std::shared_ptr<Schema> schema, int32_t spec_id,
 
 const std::shared_ptr<PartitionSpec>& PartitionSpec::Unpartitioned() {
   static const std::shared_ptr<PartitionSpec> unpartitioned =
-      std::make_shared<PartitionSpec>(
-          /*schema=*/std::make_shared<Schema>(std::vector<SchemaField>{}), kInitialSpecId,
-          std::vector<PartitionField>{}, kLegacyPartitionDataIdStart - 1);
+      std::make_shared<PartitionSpec>(kInitialSpecId, std::vector<PartitionField>{},
+                                      kLegacyPartitionDataIdStart - 1);
   return unpartitioned;
 }
-
-const std::shared_ptr<Schema>& PartitionSpec::schema() const { return schema_; }
 
 int32_t PartitionSpec::spec_id() const { return spec_id_; }
 
 std::span<const PartitionField> PartitionSpec::fields() const { return fields_; }
 
-Result<std::shared_ptr<StructType>> PartitionSpec::PartitionType() {
+Result<std::unique_ptr<StructType>> PartitionSpec::PartitionType(const Schema& schema) {
   if (fields_.empty()) {
-    return nullptr;
-  }
-  {
-    std::scoped_lock<std::mutex> lock(mutex_);
-    if (partition_type_ != nullptr) {
-      return partition_type_;
-    }
+    return std::make_unique<StructType>(std::vector<SchemaField>{});
   }
 
   std::vector<SchemaField> partition_fields;
   for (const auto& partition_field : fields_) {
     // Get the source field from the original schema by source_id
     ICEBERG_ASSIGN_OR_RAISE(auto source_field,
-                            schema_->FindFieldById(partition_field.source_id()));
+                            schema.FindFieldById(partition_field.source_id()));
     if (!source_field.has_value()) {
       // TODO(xiao.dong) when source field is missing,
       // should return an error or just use UNKNOWN type
@@ -97,11 +88,7 @@ Result<std::shared_ptr<StructType>> PartitionSpec::PartitionType() {
                                   /*optional=*/true);
   }
 
-  std::scoped_lock<std::mutex> lock(mutex_);
-  if (partition_type_ == nullptr) {
-    partition_type_ = std::make_shared<StructType>(std::move(partition_fields));
-  }
-  return partition_type_;
+  return std::make_unique<StructType>(std::move(partition_fields));
 }
 
 std::string PartitionSpec::ToString() const {

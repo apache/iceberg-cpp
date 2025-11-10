@@ -62,7 +62,7 @@ class ICEBERG_EXPORT ManifestAdapter {
 class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
  public:
   ManifestEntryAdapter(std::shared_ptr<PartitionSpec> partition_spec,
-                       ManifestContent content);
+                       std::shared_ptr<Schema> current_schema, ManifestContent content);
 
   ~ManifestEntryAdapter() override;
 
@@ -92,6 +92,7 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
 
  protected:
   std::shared_ptr<PartitionSpec> partition_spec_;
+  std::shared_ptr<Schema> current_schema_;
   std::shared_ptr<Schema> manifest_schema_;
   const ManifestContent content_;
 };

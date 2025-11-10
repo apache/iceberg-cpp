@@ -19,18 +19,23 @@
 
 #include "iceberg/v1_metadata.h"
 
+#include <memory>
+
 #include "iceberg/json_internal.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
+#include "iceberg/type.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
 
 ManifestEntryAdapterV1::ManifestEntryAdapterV1(
-    std::optional<int64_t> snapshot_id, std::shared_ptr<PartitionSpec> partition_spec)
-    : ManifestEntryAdapter(std::move(partition_spec), ManifestContent::kData),
+    std::optional<int64_t> snapshot_id, std::shared_ptr<PartitionSpec> partition_spec,
+    std::shared_ptr<Schema> current_schema)
+    : ManifestEntryAdapter(std::move(partition_spec), std::move(current_schema),
+                           ManifestContent::kData),
       snapshot_id_(snapshot_id) {}
 
 std::shared_ptr<Schema> ManifestEntryAdapterV1::EntrySchema(
@@ -72,16 +77,14 @@ std::shared_ptr<StructType> ManifestEntryAdapterV1::DataFileSchema(
 }
 
 Status ManifestEntryAdapterV1::Init() {
-  // TODO(gangwu): fix the schema to use current table schema.
-  // ICEBERG_ASSIGN_OR_RAISE(metadata_["schema"], ToJsonString(*manifest_schema_))
+  ICEBERG_ASSIGN_OR_RAISE(metadata_["schema"], ToJsonString(*current_schema_))
   ICEBERG_ASSIGN_OR_RAISE(metadata_["partition-spec"], ToJsonString(*partition_spec_));
   metadata_["partition-spec-id"] = std::to_string(partition_spec_->spec_id());
   metadata_["format-version"] = "1";
 
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_type, partition_spec_->PartitionType());
-  if (!partition_type) {
-    partition_type = std::make_shared<StructType>(std::vector<SchemaField>{});
-  }
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_type,
+                          partition_spec_->PartitionType(*current_schema_));
+
   manifest_schema_ = EntrySchema(std::move(partition_type));
   return ToArrowSchema(*manifest_schema_, &schema_);
 }

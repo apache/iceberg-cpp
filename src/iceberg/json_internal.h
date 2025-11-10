@@ -173,6 +173,7 @@ ICEBERG_EXPORT Result<std::string> ToJsonString(const PartitionSpec& partition_s
 /// objects. Each `PartitionField` will be parsed using the `PartitionFieldFromJson`
 /// function.
 ///
+/// \param schema The current schema.
 /// \param json The JSON object representing a `PartitionSpec`.
 /// \return An `expected` value containing either a `PartitionSpec` object or an error. If
 /// the JSON is malformed or missing expected fields, an error will be returned.

@@ -62,22 +62,26 @@ class ICEBERG_EXPORT ManifestWriter {
   /// \param manifest_location Path to the manifest file.
   /// \param file_io File IO implementation to use.
   /// \param partition_spec Partition spec for the manifest.
+  /// \param current_schema Current table schema.
   /// \return A Result containing the writer or an error.
   static Result<std::unique_ptr<ManifestWriter>> MakeV1Writer(
       std::optional<int64_t> snapshot_id, std::string_view manifest_location,
-      std::shared_ptr<FileIO> file_io, std::shared_ptr<PartitionSpec> partition_spec);
+      std::shared_ptr<FileIO> file_io, std::shared_ptr<PartitionSpec> partition_spec,
+      std::shared_ptr<Schema> current_schema);
 
   /// \brief Creates a writer for a manifest file.
   /// \param snapshot_id ID of the snapshot.
   /// \param manifest_location Path to the manifest file.
   /// \param file_io File IO implementation to use.
   /// \param partition_spec Partition spec for the manifest.
+  /// \param current_schema Schema containing the source fields referenced by partition
+  /// spec.
   /// \param content Content of the manifest.
   /// \return A Result containing the writer or an error.
   static Result<std::unique_ptr<ManifestWriter>> MakeV2Writer(
       std::optional<int64_t> snapshot_id, std::string_view manifest_location,
       std::shared_ptr<FileIO> file_io, std::shared_ptr<PartitionSpec> partition_spec,
-      ManifestContent content);
+      std::shared_ptr<Schema> current_schema, ManifestContent content);
 
   /// \brief Creates a writer for a manifest file.
   /// \param snapshot_id ID of the snapshot.
@@ -85,12 +89,15 @@ class ICEBERG_EXPORT ManifestWriter {
   /// \param manifest_location Path to the manifest file.
   /// \param file_io File IO implementation to use.
   /// \param partition_spec Partition spec for the manifest.
+  /// \param current_schema Schema containing the source fields referenced by partition
+  /// spec.
   /// \param content Content of the manifest.
   /// \return A Result containing the writer or an error.
   static Result<std::unique_ptr<ManifestWriter>> MakeV3Writer(
       std::optional<int64_t> snapshot_id, std::optional<int64_t> first_row_id,
       std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
-      std::shared_ptr<PartitionSpec> partition_spec, ManifestContent content);
+      std::shared_ptr<PartitionSpec> partition_spec,
+      std::shared_ptr<Schema> current_schema, ManifestContent content);
 
  private:
   static constexpr int64_t kBatchSize = 1024;
