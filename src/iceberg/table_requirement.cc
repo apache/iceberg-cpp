@@ -53,34 +53,24 @@ Status AssertUUID::Validate(const TableMetadata* base) const {
 
 Status AssertRefSnapshotID::Validate(const TableMetadata* base) const {
   // Validate that a reference (branch or tag) points to the expected snapshot ID
-
-  if (base == nullptr) {
-    return CommitFailed("Requirement failed: current table metadata is missing");
-  }
+  // Matches Java implementation logic
 
   auto it = base->refs.find(ref_name_);
-
-  // If snapshot_id is nullopt, the reference should not exist
-  if (!snapshot_id_.has_value()) {
-    if (it != base->refs.end()) {
+  if (it != base->refs.end()) {
+    // Reference exists
+    if (!snapshot_id_.has_value()) {
+      // A null snapshot ID means the ref should not exist already
+      return CommitFailed("Requirement failed: reference '{}' was created concurrently",
+                          ref_name_);
+    } else if (snapshot_id_.value() != it->second->snapshot_id) {
       return CommitFailed(
-          "Requirement failed: reference '{}' should not exist but found snapshot ID {}",
-          ref_name_, it->second->snapshot_id);
+          "Requirement failed: reference '{}' has changed: expected id {} != {}",
+          ref_name_, snapshot_id_.value(), it->second->snapshot_id);
     }
-    return {};
-  }
-
-  // snapshot_id has a value, so the reference should exist and match
-  if (it == base->refs.end()) {
-    return CommitFailed("Requirement failed: reference '{}' is missing in table metadata",
-                        ref_name_);
-  }
-
-  if (it->second->snapshot_id != snapshot_id_.value()) {
-    return CommitFailed(
-        "Requirement failed: reference '{}' snapshot ID does not match (expected={}, "
-        "actual={})",
-        ref_name_, snapshot_id_.value(), it->second->snapshot_id);
+  } else if (snapshot_id_.has_value()) {
+    // Reference does not exist but snapshot_id is specified
+    return CommitFailed("Requirement failed: branch or tag '{}' is missing, expected {}",
+                        ref_name_, snapshot_id_.value());
   }
 
   return {};
@@ -88,12 +78,9 @@ Status AssertRefSnapshotID::Validate(const TableMetadata* base) const {
 
 Status AssertLastAssignedFieldId::Validate(const TableMetadata* base) const {
   // Validate that the last assigned field ID matches the expected value
+  // Allows base to be null for new tables
 
-  if (base == nullptr) {
-    return CommitFailed("Requirement failed: current table metadata is missing");
-  }
-
-  if (base->last_column_id != last_assigned_field_id_) {
+  if (base && base->last_column_id != last_assigned_field_id_) {
     return CommitFailed(
         "Requirement failed: last assigned field ID does not match (expected={}, "
         "actual={})",
@@ -126,12 +113,9 @@ Status AssertCurrentSchemaID::Validate(const TableMetadata* base) const {
 
 Status AssertLastAssignedPartitionId::Validate(const TableMetadata* base) const {
   // Validate that the last assigned partition ID matches the expected value
+  // Allows base to be null for new tables
 
-  if (base == nullptr) {
-    return CommitFailed("Requirement failed: current table metadata is missing");
-  }
-
-  if (base->last_partition_id != last_assigned_partition_id_) {
+  if (base && base->last_partition_id != last_assigned_partition_id_) {
     return CommitFailed(
         "Requirement failed: last assigned partition ID does not match (expected={}, "
         "actual={})",
@@ -143,14 +127,11 @@ Status AssertLastAssignedPartitionId::Validate(const TableMetadata* base) const 
 
 Status AssertDefaultSpecID::Validate(const TableMetadata* base) const {
   // Validate that the default partition spec ID matches the expected value
-
-  if (base == nullptr) {
-    return CommitFailed("Requirement failed: current table metadata is missing");
-  }
+  // Matches Java implementation - assumes base is never null
 
   if (base->default_spec_id != spec_id_) {
     return CommitFailed(
-        "Requirement failed: default spec ID does not match (expected={}, actual={})",
+        "Requirement failed: default partition spec changed: expected id {} != {}",
         spec_id_, base->default_spec_id);
   }
 
@@ -159,15 +140,11 @@ Status AssertDefaultSpecID::Validate(const TableMetadata* base) const {
 
 Status AssertDefaultSortOrderID::Validate(const TableMetadata* base) const {
   // Validate that the default sort order ID matches the expected value
-
-  if (base == nullptr) {
-    return CommitFailed("Requirement failed: current table metadata is missing");
-  }
+  // Matches Java implementation - assumes base is never null
 
   if (base->default_sort_order_id != sort_order_id_) {
     return CommitFailed(
-        "Requirement failed: default sort order ID does not match (expected={}, "
-        "actual={})",
+        "Requirement failed: default sort order changed: expected id {} != {}",
         sort_order_id_, base->default_sort_order_id);
   }
 
