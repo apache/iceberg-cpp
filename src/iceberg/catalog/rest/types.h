@@ -25,6 +25,7 @@
 #include <vector>
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
+#include "iceberg/result.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/type_fwd.h"
 
@@ -38,6 +39,9 @@ struct ICEBERG_REST_EXPORT CatalogConfig {
   std::unordered_map<std::string, std::string> defaults;   // required
   std::unordered_map<std::string, std::string> overrides;  // required
   std::vector<std::string> endpoints;
+
+  /// \brief Validates the CatalogConfig.
+  Status Validate() const;
 };
 
 /// \brief JSON error payload returned in a response with further details on the error.
@@ -46,23 +50,35 @@ struct ICEBERG_REST_EXPORT ErrorModel {
   std::string type;     // required
   uint32_t code;        // required
   std::vector<std::string> stack;
+
+  /// \brief Validates the ErrorModel.
+  Status Validate() const;
 };
 
 /// \brief Error response body returned in a response.
 struct ICEBERG_REST_EXPORT ErrorResponse {
   ErrorModel error;  // required
+
+  /// \brief Validates the ErrorResponse.
+  Status Validate() const;
 };
 
 /// \brief Request to create a namespace.
 struct ICEBERG_REST_EXPORT CreateNamespaceRequest {
   Namespace namespace_;  // required
   std::unordered_map<std::string, std::string> properties;
+
+  /// \brief Validates the CreateNamespaceRequest.
+  Status Validate() const;
 };
 
 /// \brief Update or delete namespace properties request.
 struct ICEBERG_REST_EXPORT UpdateNamespacePropertiesRequest {
   std::vector<std::string> removals;
   std::unordered_map<std::string, std::string> updates;
+
+  /// \brief Validates the UpdateNamespacePropertiesRequest.
+  Status Validate() const;
 };
 
 /// \brief Request to register a table.
@@ -70,12 +86,18 @@ struct ICEBERG_REST_EXPORT RegisterTableRequest {
   std::string name;               // required
   std::string metadata_location;  // required
   bool overwrite = false;
+
+  /// \brief Validates the RegisterTableRequest.
+  Status Validate() const;
 };
 
 /// \brief Request to rename a table.
 struct ICEBERG_REST_EXPORT RenameTableRequest {
   TableIdentifier source;       // required
   TableIdentifier destination;  // required
+
+  /// \brief Validates the RenameTableRequest.
+  Status Validate() const;
 };
 
 /// \brief An opaque token that allows clients to make use of pagination for list APIs.
@@ -87,6 +109,9 @@ struct ICEBERG_REST_EXPORT LoadTableResult {
   std::shared_ptr<TableMetadata> metadata;  // required
   std::unordered_map<std::string, std::string> config;
   // TODO(Li Feiyang): Add std::shared_ptr<StorageCredential> storage_credential;
+
+  /// \brief Validates the LoadTableResult.
+  Status Validate() const;
 };
 
 /// \brief Alias of LoadTableResult used as the body of CreateTableResponse
@@ -99,18 +124,27 @@ using LoadTableResponse = LoadTableResult;
 struct ICEBERG_REST_EXPORT ListNamespacesResponse {
   PageToken next_page_token;
   std::vector<Namespace> namespaces;
+
+  /// \brief Validates the ListNamespacesResponse.
+  Status Validate() const;
 };
 
 /// \brief Response body after creating a namespace.
 struct ICEBERG_REST_EXPORT CreateNamespaceResponse {
   Namespace namespace_;  // required
   std::unordered_map<std::string, std::string> properties;
+
+  /// \brief Validates the CreateNamespaceResponse.
+  Status Validate() const;
 };
 
 /// \brief Response body for loading namespace properties.
 struct ICEBERG_REST_EXPORT GetNamespaceResponse {
   Namespace namespace_;  // required
   std::unordered_map<std::string, std::string> properties;
+
+  /// \brief Validates the GetNamespaceResponse.
+  Status Validate() const;
 };
 
 /// \brief Response body after updating namespace properties.
@@ -118,12 +152,18 @@ struct ICEBERG_REST_EXPORT UpdateNamespacePropertiesResponse {
   std::vector<std::string> updated;  // required
   std::vector<std::string> removed;  // required
   std::vector<std::string> missing;
+
+  /// \brief Validates the UpdateNamespacePropertiesResponse.
+  Status Validate() const;
 };
 
 /// \brief Response body for listing tables in a namespace.
 struct ICEBERG_REST_EXPORT ListTablesResponse {
   PageToken next_page_token;
   std::vector<TableIdentifier> identifiers;
+
+  /// \brief Validates the ListTablesResponse.
+  Status Validate() const;
 };
 
 }  // namespace iceberg::rest

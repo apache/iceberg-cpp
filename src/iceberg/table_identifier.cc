@@ -17,31 +17,17 @@
  * under the License.
  */
 
-#pragma once
+#include "iceberg/table_identifier.h"
 
-/// \file iceberg/table_identifier.h
-/// A TableIdentifier is a unique identifier for a table
-
-#include <string>
-#include <vector>
-
-#include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 
 namespace iceberg {
 
-/// \brief A namespace in a catalog.
-struct ICEBERG_EXPORT Namespace {
-  std::vector<std::string> levels;
-};
-
-/// \brief Identifies a table in iceberg catalog.
-struct ICEBERG_EXPORT TableIdentifier {
-  Namespace ns;
-  std::string name;
-
-  /// \brief Validates the TableIdentifier.
-  Status Validate() const;
-};
+Status TableIdentifier::Validate() const {
+  if (name.empty()) {
+    return Invalid("Invalid table identifier: missing table name");
+  }
+  return {};
+}
 
 }  // namespace iceberg

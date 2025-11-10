@@ -50,6 +50,7 @@ set(ICEBERG_SOURCES
     sort_order.cc
     statistics_file.cc
     table.cc
+    table_identifier.cc
     table_metadata.cc
     table_properties.cc
     table_requirement.cc

@@ -17,13 +17,13 @@
  * under the License.
  */
 
-#include "iceberg/catalog/rest/validator.h"
+#include "iceberg/catalog/rest/types.h"
 
 #include <algorithm>
 #include <format>
 
-#include "iceberg/catalog/rest/types.h"
 #include "iceberg/result.h"
+#include "iceberg/table_identifier.h"
 #include "iceberg/util/formatter_internal.h"
 #include "iceberg/util/macros.h"
 
@@ -31,7 +31,7 @@ namespace iceberg::rest {
 
 // Configuration and Error types
 
-Status Validator::Validate(const CatalogConfig& config) {
+Status CatalogConfig::Validate() const {
   // TODO(Li Feiyang): Add an invalidEndpoint test that validates endpoint format.
   // See:
   // https://github.com/apache/iceberg/blob/main/core/src/test/java/org/apache/iceberg/rest/responses/TestConfigResponseParser.java#L164
@@ -39,13 +39,13 @@ Status Validator::Validate(const CatalogConfig& config) {
   return {};
 }
 
-Status Validator::Validate(const ErrorModel& error) {
-  if (error.message.empty() || error.type.empty()) {
+Status ErrorModel::Validate() const {
+  if (message.empty() || type.empty()) {
     return Invalid("Invalid error model: missing required fields");
   }
 
-  if (error.code < 400 || error.code > 600) {
-    return Invalid("Invalid error model: code {} is out of range [400, 600]", error.code);
+  if (code < 400 || code > 600) {
+    return Invalid("Invalid error model: code {} is out of range [400, 600]", code);
   }
 
   // stack is optional, no validation needed
@@ -54,21 +54,21 @@ Status Validator::Validate(const ErrorModel& error) {
 
 // We don't validate the error field because ErrorModel::Validate has been called in the
 // FromJson.
-Status Validator::Validate(const ErrorResponse& response) { return {}; }
+Status ErrorResponse::Validate() const { return {}; }
 
 // Namespace operations
 
-Status Validator::Validate(const ListNamespacesResponse& response) { return {}; }
+Status ListNamespacesResponse::Validate() const { return {}; }
 
-Status Validator::Validate(const CreateNamespaceRequest& request) { return {}; }
+Status CreateNamespaceRequest::Validate() const { return {}; }
 
-Status Validator::Validate(const CreateNamespaceResponse& response) { return {}; }
+Status CreateNamespaceResponse::Validate() const { return {}; }
 
-Status Validator::Validate(const GetNamespaceResponse& response) { return {}; }
+Status GetNamespaceResponse::Validate() const { return {}; }
 
-Status Validator::Validate(const UpdateNamespacePropertiesRequest& request) {
+Status UpdateNamespacePropertiesRequest::Validate() const {
   // keys in updates and removals must not overlap
-  if (request.removals.empty() || request.updates.empty()) {
+  if (removals.empty() || updates.empty()) {
     return {};
   }
 
@@ -83,9 +83,9 @@ Status Validator::Validate(const UpdateNamespacePropertiesRequest& request) {
   };
 
   auto sorted_removals =
-      extract_and_sort(request.removals, [](const auto& s) -> const auto& { return s; });
+      extract_and_sort(removals, [](const auto& s) -> const auto& { return s; });
   auto sorted_update_keys = extract_and_sort(
-      request.updates, [](const auto& pair) -> const auto& { return pair.first; });
+      updates, [](const auto& pair) -> const auto& { return pair.first; });
 
   std::vector<std::string_view> common;
   std::ranges::set_intersection(sorted_removals, sorted_update_keys,
@@ -99,43 +99,34 @@ Status Validator::Validate(const UpdateNamespacePropertiesRequest& request) {
   return {};
 }
 
-Status Validator::Validate(const UpdateNamespacePropertiesResponse& response) {
-  return {};
-}
+Status UpdateNamespacePropertiesResponse::Validate() const { return {}; }
 
 // Table operations
 
-Status Validator::Validate(const ListTablesResponse& response) { return {}; }
+Status ListTablesResponse::Validate() const { return {}; }
 
-Status Validator::Validate(const LoadTableResult& result) {
-  if (!result.metadata) {
+Status LoadTableResult::Validate() const {
+  if (!metadata) {
     return Invalid("Invalid metadata: null");
   }
   return {};
 }
 
-Status Validator::Validate(const RegisterTableRequest& request) {
-  if (request.name.empty()) {
+Status RegisterTableRequest::Validate() const {
+  if (name.empty()) {
     return Invalid("Missing table name");
   }
 
-  if (request.metadata_location.empty()) {
+  if (metadata_location.empty()) {
     return Invalid("Empty metadata location");
   }
 
   return {};
 }
 
-Status Validator::Validate(const RenameTableRequest& request) {
-  ICEBERG_RETURN_UNEXPECTED(Validate(request.source));
-  ICEBERG_RETURN_UNEXPECTED(Validate(request.destination));
-  return {};
-}
-
-Status Validator::Validate(const TableIdentifier& identifier) {
-  if (identifier.name.empty()) {
-    return Invalid("Invalid table identifier: missing table name");
-  }
+Status RenameTableRequest::Validate() const {
+  ICEBERG_RETURN_UNEXPECTED(source.Validate());
+  ICEBERG_RETURN_UNEXPECTED(destination.Validate());
   return {};
 }
 
