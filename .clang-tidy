@@ -39,4 +39,4 @@ CheckOptions:
   - key:    readability-identifier-naming.ProtectedMemberSuffix
     value:  '_'
 
-HeaderFilterRegex: '(?!_deps)(src|test|example)'
+HeaderFilterRegex: 'src/iceberg|example'
