@@ -72,8 +72,17 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV1Writer(
     std::optional<int64_t> snapshot_id, std::string_view manifest_location,
     std::shared_ptr<FileIO> file_io, std::shared_ptr<PartitionSpec> partition_spec,
     std::shared_ptr<Schema> current_schema) {
-  if (manifest_location.empty() || !file_io || !partition_spec || !current_schema) {
-    return InvalidArgument("Invalid arguments to create V1 ManifestWriter");
+  if (manifest_location.empty()) {
+    return InvalidArgument("Manifest location cannot be empty");
+  }
+  if (!file_io) {
+    return InvalidArgument("FileIO cannot be null");
+  }
+  if (!partition_spec) {
+    return InvalidArgument("PartitionSpec cannot be null");
+  }
+  if (!current_schema) {
+    return InvalidArgument("Current schema cannot be null");
   }
 
   auto adapter = std::make_unique<ManifestEntryAdapterV1>(
@@ -92,8 +101,17 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV2Writer(
     std::optional<int64_t> snapshot_id, std::string_view manifest_location,
     std::shared_ptr<FileIO> file_io, std::shared_ptr<PartitionSpec> partition_spec,
     std::shared_ptr<Schema> current_schema, ManifestContent content) {
-  if (manifest_location.empty() || !file_io || !partition_spec || !current_schema) {
-    return InvalidArgument("Invalid arguments to create V2 ManifestWriter");
+  if (manifest_location.empty()) {
+    return InvalidArgument("Manifest location cannot be empty");
+  }
+  if (!file_io) {
+    return InvalidArgument("FileIO cannot be null");
+  }
+  if (!partition_spec) {
+    return InvalidArgument("PartitionSpec cannot be null");
+  }
+  if (!current_schema) {
+    return InvalidArgument("Current schema cannot be null");
   }
   auto adapter = std::make_unique<ManifestEntryAdapterV2>(
       snapshot_id, std::move(partition_spec), std::move(current_schema), content);
@@ -114,10 +132,18 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV3Writer(
     ManifestContent content) {
   auto adapter = std::make_unique<ManifestEntryAdapterV3>(
       snapshot_id, first_row_id, std::move(partition_spec), current_schema, content);
-  if (manifest_location.empty() || !file_io || !partition_spec || !current_schema) {
-    return InvalidArgument("Invalid arguments to create V3 ManifestWriter");
+  if (manifest_location.empty()) {
+    return InvalidArgument("Manifest location cannot be empty");
   }
-
+  if (!file_io) {
+    return InvalidArgument("FileIO cannot be null");
+  }
+  if (!partition_spec) {
+    return InvalidArgument("PartitionSpec cannot be null");
+  }
+  if (!current_schema) {
+    return InvalidArgument("Current schema cannot be null");
+  }
   ICEBERG_RETURN_UNEXPECTED(adapter->Init());
   ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
 

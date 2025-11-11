@@ -270,7 +270,6 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
 
   std::vector<std::shared_ptr<FileScanTask>> tasks;
   ICEBERG_ASSIGN_OR_RAISE(auto partition_spec, context_.table_metadata->PartitionSpec());
-  // auto partition_schema = context_.table_metadata->Schema().value();
 
   // Get the table schema and partition type
   ICEBERG_ASSIGN_OR_RAISE(auto current_schema, context_.table_metadata->Schema());
