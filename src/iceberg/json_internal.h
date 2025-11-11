@@ -75,12 +75,6 @@ ICEBERG_EXPORT nlohmann::json ToJson(const SortOrder& sort_order);
 ICEBERG_EXPORT Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
     const nlohmann::json& json, const std::shared_ptr<Schema>& current_schema);
 
-/// \brief Deserializes a JSON object into a `SortOrder` object.
-///
-/// Same as above but the returned SortOrder will not be validated against any schema.
-ICEBERG_EXPORT Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
-    const nlohmann::json& json);
-
 /// \brief Convert an Iceberg Schema to JSON.
 ///
 /// \param[in] schema The Iceberg schema to convert.

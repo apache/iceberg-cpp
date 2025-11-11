@@ -50,11 +50,6 @@ Result<std::unique_ptr<SortField>> FromJsonHelper(const nlohmann::json& json) {
 }
 
 template <>
-Result<std::unique_ptr<SortOrder>> FromJsonHelper(const nlohmann::json& json) {
-  return SortOrderFromJson(json);
-}
-
-template <>
 Result<std::unique_ptr<PartitionField>> FromJsonHelper(const nlohmann::json& json) {
   return PartitionFieldFromJson(json);
 }
@@ -107,6 +102,10 @@ TEST(JsonInternalTest, SortField) {
 }
 
 TEST(JsonInternalTest, SortOrder) {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField(5, "region", iceberg::string(), false),
+                               SchemaField(7, "ts", iceberg::int64(), false)},
+      /*schema_id=*/100);
   auto identity_transform = Transform::Identity();
   SortField st_ts(5, identity_transform, SortDirection::kAscending, NullOrder::kFirst);
   SortField st_bar(7, identity_transform, SortDirection::kDescending, NullOrder::kLast);
@@ -116,7 +115,12 @@ TEST(JsonInternalTest, SortOrder) {
           {"transform":"identity","source-id":5,"direction":"asc","null-order":"nulls-first"},
           {"transform":"identity","source-id":7,"direction":"desc","null-order":"nulls-last"}]})"_json;
 
-  TestJsonConversion(*sort_order, expected_sort_order);
+  auto json = ToJson(*sort_order);
+  EXPECT_EQ(expected_sort_order, json) << "JSON conversion mismatch.";
+
+  // Specialize FromJson based on type (T)
+  ICEBERG_UNWRAP_OR_FAIL(auto obj_ex, SortOrderFromJson(expected_sort_order, schema));
+  EXPECT_EQ(*sort_order, *obj_ex) << "Deserialized object mismatch.";
 }
 
 TEST(JsonInternalTest, PartitionField) {
