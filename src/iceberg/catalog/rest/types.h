@@ -19,6 +19,8 @@
 
 #pragma once
 
+#include <algorithm>
+#include <format>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -28,6 +30,8 @@
 #include "iceberg/result.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/formatter_internal.h"
+#include "iceberg/util/macros.h"
 
 /// \file iceberg/catalog/rest/types.h
 /// Request and response types for Iceberg REST Catalog API.
@@ -41,7 +45,13 @@ struct ICEBERG_REST_EXPORT CatalogConfig {
   std::vector<std::string> endpoints;
 
   /// \brief Validates the CatalogConfig.
-  Status Validate() const;
+  Status Validate() const {
+    // TODO(Li Feiyang): Add an invalidEndpoint test that validates endpoint format.
+    // See:
+    // https://github.com/apache/iceberg/blob/main/core/src/test/java/org/apache/iceberg/rest/responses/TestConfigResponseParser.java#L164
+    // for reference.
+    return {};
+  }
 };
 
 /// \brief JSON error payload returned in a response with further details on the error.
@@ -52,7 +62,18 @@ struct ICEBERG_REST_EXPORT ErrorModel {
   std::vector<std::string> stack;
 
   /// \brief Validates the ErrorModel.
-  Status Validate() const;
+  Status Validate() const {
+    if (message.empty() || type.empty()) {
+      return Invalid("Invalid error model: missing required fields");
+    }
+
+    if (code < 400 || code > 600) {
+      return Invalid("Invalid error model: code {} is out of range [400, 600]", code);
+    }
+
+    // stack is optional, no validation needed
+    return {};
+  }
 };
 
 /// \brief Error response body returned in a response.
@@ -60,7 +81,9 @@ struct ICEBERG_REST_EXPORT ErrorResponse {
   ErrorModel error;  // required
 
   /// \brief Validates the ErrorResponse.
-  Status Validate() const;
+  // We don't validate the error field because ErrorModel::Validate has been called in the
+  // FromJson.
+  Status Validate() const { return {}; }
 };
 
 /// \brief Request to create a namespace.
@@ -69,7 +92,7 @@ struct ICEBERG_REST_EXPORT CreateNamespaceRequest {
   std::unordered_map<std::string, std::string> properties;
 
   /// \brief Validates the CreateNamespaceRequest.
-  Status Validate() const;
+  Status Validate() const { return {}; }
 };
 
 /// \brief Update or delete namespace properties request.
@@ -78,7 +101,38 @@ struct ICEBERG_REST_EXPORT UpdateNamespacePropertiesRequest {
   std::unordered_map<std::string, std::string> updates;
 
   /// \brief Validates the UpdateNamespacePropertiesRequest.
-  Status Validate() const;
+  Status Validate() const {
+    // keys in updates and removals must not overlap
+    if (removals.empty() || updates.empty()) {
+      return {};
+    }
+
+    auto extract_and_sort = [](const auto& container, auto key_extractor) {
+      std::vector<std::string_view> result;
+      result.reserve(container.size());
+      for (const auto& item : container) {
+        result.push_back(std::string_view{key_extractor(item)});
+      }
+      std::ranges::sort(result);
+      return result;
+    };
+
+    auto sorted_removals =
+        extract_and_sort(removals, [](const auto& s) -> const auto& { return s; });
+    auto sorted_update_keys = extract_and_sort(
+        updates, [](const auto& pair) -> const auto& { return pair.first; });
+
+    std::vector<std::string_view> common;
+    std::ranges::set_intersection(sorted_removals, sorted_update_keys,
+                                  std::back_inserter(common));
+
+    if (!common.empty()) {
+      return Invalid(
+          "Invalid namespace update: cannot simultaneously set and remove keys: {}",
+          common);
+    }
+    return {};
+  }
 };
 
 /// \brief Request to register a table.
@@ -88,7 +142,17 @@ struct ICEBERG_REST_EXPORT RegisterTableRequest {
   bool overwrite = false;
 
   /// \brief Validates the RegisterTableRequest.
-  Status Validate() const;
+  Status Validate() const {
+    if (name.empty()) {
+      return Invalid("Missing table name");
+    }
+
+    if (metadata_location.empty()) {
+      return Invalid("Empty metadata location");
+    }
+
+    return {};
+  }
 };
 
 /// \brief Request to rename a table.
@@ -97,7 +161,11 @@ struct ICEBERG_REST_EXPORT RenameTableRequest {
   TableIdentifier destination;  // required
 
   /// \brief Validates the RenameTableRequest.
-  Status Validate() const;
+  Status Validate() const {
+    ICEBERG_RETURN_UNEXPECTED(source.Validate());
+    ICEBERG_RETURN_UNEXPECTED(destination.Validate());
+    return {};
+  }
 };
 
 /// \brief An opaque token that allows clients to make use of pagination for list APIs.
@@ -111,7 +179,12 @@ struct ICEBERG_REST_EXPORT LoadTableResult {
   // TODO(Li Feiyang): Add std::shared_ptr<StorageCredential> storage_credential;
 
   /// \brief Validates the LoadTableResult.
-  Status Validate() const;
+  Status Validate() const {
+    if (!metadata) {
+      return Invalid("Invalid metadata: null");
+    }
+    return {};
+  }
 };
 
 /// \brief Alias of LoadTableResult used as the body of CreateTableResponse
@@ -126,7 +199,7 @@ struct ICEBERG_REST_EXPORT ListNamespacesResponse {
   std::vector<Namespace> namespaces;
 
   /// \brief Validates the ListNamespacesResponse.
-  Status Validate() const;
+  Status Validate() const { return {}; }
 };
 
 /// \brief Response body after creating a namespace.
@@ -135,7 +208,7 @@ struct ICEBERG_REST_EXPORT CreateNamespaceResponse {
   std::unordered_map<std::string, std::string> properties;
 
   /// \brief Validates the CreateNamespaceResponse.
-  Status Validate() const;
+  Status Validate() const { return {}; }
 };
 
 /// \brief Response body for loading namespace properties.
@@ -144,7 +217,7 @@ struct ICEBERG_REST_EXPORT GetNamespaceResponse {
   std::unordered_map<std::string, std::string> properties;
 
   /// \brief Validates the GetNamespaceResponse.
-  Status Validate() const;
+  Status Validate() const { return {}; }
 };
 
 /// \brief Response body after updating namespace properties.
@@ -154,7 +227,7 @@ struct ICEBERG_REST_EXPORT UpdateNamespacePropertiesResponse {
   std::vector<std::string> missing;
 
   /// \brief Validates the UpdateNamespacePropertiesResponse.
-  Status Validate() const;
+  Status Validate() const { return {}; }
 };
 
 /// \brief Response body for listing tables in a namespace.
@@ -163,7 +236,7 @@ struct ICEBERG_REST_EXPORT ListTablesResponse {
   std::vector<TableIdentifier> identifiers;
 
   /// \brief Validates the ListTablesResponse.
-  Status Validate() const;
+  Status Validate() const { return {}; }
 };
 
 }  // namespace iceberg::rest

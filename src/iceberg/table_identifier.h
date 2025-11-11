@@ -41,7 +41,12 @@ struct ICEBERG_EXPORT TableIdentifier {
   std::string name;
 
   /// \brief Validates the TableIdentifier.
-  Status Validate() const;
+  Status Validate() const {
+    if (name.empty()) {
+      return Invalid("Invalid table identifier: missing table name");
+    }
+    return {};
+  }
 };
 
 }  // namespace iceberg
