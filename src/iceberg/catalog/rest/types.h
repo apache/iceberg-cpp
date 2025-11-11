@@ -30,7 +30,6 @@
 #include "iceberg/result.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/type_fwd.h"
-#include "iceberg/util/formatter_internal.h"
 #include "iceberg/util/macros.h"
 
 /// \file iceberg/catalog/rest/types.h
@@ -102,34 +101,10 @@ struct ICEBERG_REST_EXPORT UpdateNamespacePropertiesRequest {
 
   /// \brief Validates the UpdateNamespacePropertiesRequest.
   Status Validate() const {
-    // keys in updates and removals must not overlap
-    if (removals.empty() || updates.empty()) {
-      return {};
-    }
-
-    auto extract_and_sort = [](const auto& container, auto key_extractor) {
-      std::vector<std::string_view> result;
-      result.reserve(container.size());
-      for (const auto& item : container) {
-        result.push_back(std::string_view{key_extractor(item)});
+    for (const auto& key : removals) {
+      if (updates.contains(key)) {
+        return Invalid("Duplicate key to update and remove: {}", key);
       }
-      std::ranges::sort(result);
-      return result;
-    };
-
-    auto sorted_removals =
-        extract_and_sort(removals, [](const auto& s) -> const auto& { return s; });
-    auto sorted_update_keys = extract_and_sort(
-        updates, [](const auto& pair) -> const auto& { return pair.first; });
-
-    std::vector<std::string_view> common;
-    std::ranges::set_intersection(sorted_removals, sorted_update_keys,
-                                  std::back_inserter(common));
-
-    if (!common.empty()) {
-      return Invalid(
-          "Invalid namespace update: cannot simultaneously set and remove keys: {}",
-          common);
     }
     return {};
   }
