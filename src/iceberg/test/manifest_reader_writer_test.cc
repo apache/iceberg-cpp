@@ -37,7 +37,7 @@
 
 namespace iceberg {
 
-class ManifestReaderTestBase : public TempFileTestBase {
+class ManifestReaderWriterTestBase : public TempFileTestBase {
  protected:
   static void SetUpTestSuite() { avro::RegisterAll(); }
 
@@ -88,7 +88,7 @@ class ManifestReaderTestBase : public TempFileTestBase {
   std::shared_ptr<FileIO> file_io_;
 };
 
-class ManifestReaderV1Test : public ManifestReaderTestBase {
+class ManifestV1Test : public ManifestReaderWriterTestBase {
  protected:
   std::vector<ManifestEntry> PreparePartitionedTestData() {
     std::vector<ManifestEntry> manifest_entries;
@@ -167,9 +167,9 @@ class ManifestReaderV1Test : public ManifestReaderTestBase {
   }
 };
 
-TEST_F(ManifestReaderV1Test, PartitionedTest) {
+TEST_F(ManifestV1Test, ReadPartitionedTest) {
   // TODO(xiao.dong) we need to add more cases for different partition types
-  iceberg::SchemaField partition_field(1000, "order_ts_hour", iceberg::int32(), true);
+  SchemaField partition_field(1000, "order_ts_hour", int32(), true);
   auto partition_schema =
       std::make_shared<Schema>(std::vector<SchemaField>({partition_field}));
   auto expected_entries = PreparePartitionedTestData();
@@ -177,9 +177,9 @@ TEST_F(ManifestReaderV1Test, PartitionedTest) {
                       partition_schema);
 }
 
-TEST_F(ManifestReaderV1Test, WritePartitionedTest) {
-  iceberg::SchemaField table_field(1, "order_ts_hour_source", iceberg::int32(), true);
-  iceberg::SchemaField partition_field(1000, "order_ts_hour", iceberg::int32(), true);
+TEST_F(ManifestV1Test, WritePartitionedTest) {
+  SchemaField table_field(1, "order_ts_hour_source", int32(), true);
+  SchemaField partition_field(1000, "order_ts_hour", int32(), true);
   auto table_schema = std::make_shared<Schema>(std::vector<SchemaField>({table_field}));
   auto partition_schema =
       std::make_shared<Schema>(std::vector<SchemaField>({partition_field}));
@@ -194,7 +194,7 @@ TEST_F(ManifestReaderV1Test, WritePartitionedTest) {
   TestManifestReadingByPath(write_manifest_path, expected_entries, partition_schema);
 }
 
-class ManifestReaderV2Test : public ManifestReaderTestBase {
+class ManifestV2Test : public ManifestReaderWriterTestBase {
  protected:
   std::vector<ManifestEntry> CreateV2TestData(
       std::optional<int64_t> sequence_number = std::nullopt,
@@ -276,12 +276,12 @@ class ManifestReaderV2Test : public ManifestReaderTestBase {
   }
 };
 
-TEST_F(ManifestReaderV2Test, NonPartitionedTest) {
+TEST_F(ManifestV2Test, ReadNonPartitionedTest) {
   auto expected_entries = PrepareNonPartitionedTestData();
   TestManifestReading("2ddf1bc9-830b-4015-aced-c060df36f150-m0.avro", expected_entries);
 }
 
-TEST_F(ManifestReaderV2Test, MetadataInheritanceTest) {
+TEST_F(ManifestV2Test, ReadMetadataInheritanceTest) {
   std::string path = GetResourcePath("2ddf1bc9-830b-4015-aced-c060df36f150-m0.avro");
   ManifestFile manifest_file{
       .manifest_path = path,
@@ -295,9 +295,9 @@ TEST_F(ManifestReaderV2Test, MetadataInheritanceTest) {
   TestManifestReadingWithManifestFile(manifest_file, expected_entries);
 }
 
-TEST_F(ManifestReaderV2Test, WriteNonPartitionedTest) {
-  iceberg::SchemaField table_field(1, "order_ts_hour_source", int32(), true);
-  iceberg::SchemaField partition_field(1000, "order_ts_hour", int32(), true);
+TEST_F(ManifestV2Test, WriteNonPartitionedTest) {
+  SchemaField table_field(1, "order_ts_hour_source", int32(), true);
+  SchemaField partition_field(1000, "order_ts_hour", int32(), true);
   auto table_schema = std::make_shared<Schema>(std::vector<SchemaField>({table_field}));
   auto expected_entries = PrepareNonPartitionedTestData();
   auto write_manifest_path = CreateNewTempFilePath();
@@ -306,9 +306,9 @@ TEST_F(ManifestReaderV2Test, WriteNonPartitionedTest) {
   TestManifestReadingByPath(write_manifest_path, expected_entries);
 }
 
-TEST_F(ManifestReaderV2Test, WriteInheritancePartitionedTest) {
-  iceberg::SchemaField table_field(1, "order_ts_hour_source", int32(), true);
-  iceberg::SchemaField partition_field(1000, "order_ts_hour", int32(), true);
+TEST_F(ManifestV2Test, WriteInheritancePartitionedTest) {
+  SchemaField table_field(1, "order_ts_hour_source", int32(), true);
+  SchemaField partition_field(1000, "order_ts_hour", int32(), true);
   auto table_schema = std::make_shared<Schema>(std::vector<SchemaField>({table_field}));
   auto expected_entries = PrepareMetadataInheritanceTestData();
   auto write_manifest_path = CreateNewTempFilePath();

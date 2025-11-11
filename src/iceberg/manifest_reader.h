@@ -41,20 +41,20 @@ class ICEBERG_EXPORT ManifestReader {
   /// \brief Creates a reader for a manifest file.
   /// \param manifest A ManifestFile object containing metadata about the manifest.
   /// \param file_io File IO implementation to use.
-  /// \param partition_schema Schema for the partition.
+  /// \param partition_type Schema for the partition.
   /// \return A Result containing the reader or an error.
   static Result<std::unique_ptr<ManifestReader>> Make(
       const ManifestFile& manifest, std::shared_ptr<FileIO> file_io,
-      std::shared_ptr<StructType> partition_schema);
+      std::shared_ptr<StructType> partition_type);
 
   /// \brief Creates a reader for a manifest file.
   /// \param manifest_location Path to the manifest file.
   /// \param file_io File IO implementation to use.
-  /// \param partition_schema Schema for the partition.
+  /// \param partition_type Schema for the partition.
   /// \return A Result containing the reader or an error.
   static Result<std::unique_ptr<ManifestReader>> Make(
       std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
-      std::shared_ptr<StructType> partition_schema);
+      std::shared_ptr<StructType> partition_type);
 };
 
 /// \brief Read manifest files from a manifest list file.

@@ -94,13 +94,13 @@ TEST(PartitionSpecTest, PartitionSchemaTest) {
   PartitionField pt_field2(7, 1001, "hour", identity_transform);
   PartitionSpec spec(100, {pt_field1, pt_field2});
 
-  auto partition_schema = spec.PartitionType(schema);
-  ASSERT_TRUE(partition_schema.has_value());
-  ASSERT_EQ(2, partition_schema.value()->fields().size());
-  EXPECT_EQ(pt_field1.name(), partition_schema.value()->fields()[0].name());
-  EXPECT_EQ(pt_field1.field_id(), partition_schema.value()->fields()[0].field_id());
-  EXPECT_EQ(pt_field2.name(), partition_schema.value()->fields()[1].name());
-  EXPECT_EQ(pt_field2.field_id(), partition_schema.value()->fields()[1].field_id());
+  auto partition_type = spec.PartitionType(schema);
+  ASSERT_TRUE(partition_type.has_value());
+  ASSERT_EQ(2, partition_type.value()->fields().size());
+  EXPECT_EQ(pt_field1.name(), partition_type.value()->fields()[0].name());
+  EXPECT_EQ(pt_field1.field_id(), partition_type.value()->fields()[0].field_id());
+  EXPECT_EQ(pt_field2.name(), partition_type.value()->fields()[1].name());
+  EXPECT_EQ(pt_field2.field_id(), partition_type.value()->fields()[1].field_id());
 }
 
 TEST(PartitionSpecTest, PartitionTypeTest) {
@@ -138,18 +138,18 @@ TEST(PartitionSpecTest, PartitionTypeTest) {
   auto parsed_spec_result = PartitionSpecFromJson(schema, json);
   ASSERT_TRUE(parsed_spec_result.has_value()) << parsed_spec_result.error().message;
 
-  auto partition_schema = parsed_spec_result.value()->PartitionType(*schema);
+  auto partition_type = parsed_spec_result.value()->PartitionType(*schema);
 
   SchemaField pt_field1(1000, "ts_day", date(), true);
   SchemaField pt_field2(1001, "id_bucket", int32(), true);
   SchemaField pt_field3(1002, "id_truncate", string(), true);
 
-  ASSERT_TRUE(partition_schema.has_value());
-  ASSERT_EQ(3, partition_schema.value()->fields().size());
+  ASSERT_TRUE(partition_type.has_value());
+  ASSERT_EQ(3, partition_type.value()->fields().size());
 
-  EXPECT_EQ(pt_field1, partition_schema.value()->fields()[0]);
-  EXPECT_EQ(pt_field2, partition_schema.value()->fields()[1]);
-  EXPECT_EQ(pt_field3, partition_schema.value()->fields()[2]);
+  EXPECT_EQ(pt_field1, partition_type.value()->fields()[0]);
+  EXPECT_EQ(pt_field2, partition_type.value()->fields()[1]);
+  EXPECT_EQ(pt_field3, partition_type.value()->fields()[2]);
 }
 
 }  // namespace iceberg

@@ -27,32 +27,34 @@
 #include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
+namespace iceberg {
+
 TEST(SchemaFieldTest, Basics) {
   {
-    iceberg::SchemaField field(1, "foo", iceberg::int32(), false);
+    SchemaField field(1, "foo", int32(), false);
     EXPECT_EQ(1, field.field_id());
     EXPECT_EQ("foo", field.name());
-    EXPECT_EQ(iceberg::TypeId::kInt, field.type()->type_id());
+    EXPECT_EQ(TypeId::kInt, field.type()->type_id());
     EXPECT_FALSE(field.optional());
     EXPECT_EQ("foo (1): int (required)", field.ToString());
     EXPECT_EQ("foo (1): int (required)", std::format("{}", field));
   }
   {
-    iceberg::SchemaField field = iceberg::SchemaField::MakeOptional(
-        2, "foo bar", std::make_shared<iceberg::FixedType>(10));
+    SchemaField field =
+        SchemaField::MakeOptional(2, "foo bar", std::make_shared<FixedType>(10));
     EXPECT_EQ(2, field.field_id());
     EXPECT_EQ("foo bar", field.name());
-    EXPECT_EQ(iceberg::FixedType(10), *field.type());
+    EXPECT_EQ(FixedType(10), *field.type());
     EXPECT_TRUE(field.optional());
     EXPECT_EQ("foo bar (2): fixed(10) (optional)", field.ToString());
     EXPECT_EQ("foo bar (2): fixed(10) (optional)", std::format("{}", field));
   }
   {
-    iceberg::SchemaField field = iceberg::SchemaField::MakeRequired(
-        2, "foo bar", std::make_shared<iceberg::FixedType>(10));
+    SchemaField field =
+        SchemaField::MakeRequired(2, "foo bar", std::make_shared<FixedType>(10));
     EXPECT_EQ(2, field.field_id());
     EXPECT_EQ("foo bar", field.name());
-    EXPECT_EQ(iceberg::FixedType(10), *field.type());
+    EXPECT_EQ(FixedType(10), *field.type());
     EXPECT_FALSE(field.optional());
     EXPECT_EQ("foo bar (2): fixed(10) (required)", field.ToString());
     EXPECT_EQ("foo bar (2): fixed(10) (required)", std::format("{}", field));
@@ -60,12 +62,12 @@ TEST(SchemaFieldTest, Basics) {
 }
 
 TEST(SchemaFieldTest, Equality) {
-  iceberg::SchemaField field1(1, "foo", iceberg::int32(), false);
-  iceberg::SchemaField field2(2, "foo", iceberg::int32(), false);
-  iceberg::SchemaField field3(1, "bar", iceberg::int32(), false);
-  iceberg::SchemaField field4(1, "foo", iceberg::int64(), false);
-  iceberg::SchemaField field5(1, "foo", iceberg::int32(), true);
-  iceberg::SchemaField field6(1, "foo", iceberg::int32(), false);
+  SchemaField field1(1, "foo", int32(), false);
+  SchemaField field2(2, "foo", int32(), false);
+  SchemaField field3(1, "bar", int32(), false);
+  SchemaField field4(1, "foo", int64(), false);
+  SchemaField field5(1, "foo", int32(), true);
+  SchemaField field6(1, "foo", int32(), false);
 
   ASSERT_EQ(field1, field1);
   ASSERT_NE(field1, field2);
@@ -82,25 +84,27 @@ TEST(SchemaFieldTest, Equality) {
 
 TEST(SchemaFieldTest, WithDoc) {
   {
-    iceberg::SchemaField field(/*field_id=*/1, /*name=*/"foo", iceberg::int32(),
-                               /*optional=*/false, /*doc=*/"Field documentation");
+    SchemaField field(/*field_id=*/1, /*name=*/"foo", int32(),
+                      /*optional=*/false, /*doc=*/"Field documentation");
     EXPECT_EQ(1, field.field_id());
     EXPECT_EQ("foo", field.name());
-    EXPECT_EQ(iceberg::TypeId::kInt, field.type()->type_id());
+    EXPECT_EQ(TypeId::kInt, field.type()->type_id());
     EXPECT_FALSE(field.optional());
     EXPECT_EQ("Field documentation", field.doc());
     EXPECT_EQ("foo (1): int (required) - Field documentation", field.ToString());
   }
   {
-    iceberg::SchemaField field = iceberg::SchemaField::MakeOptional(
+    SchemaField field = SchemaField::MakeOptional(
         /*field_id=*/2, /*name=*/"bar",
-        /*type=*/std::make_shared<iceberg::FixedType>(10),
+        /*type=*/std::make_shared<FixedType>(10),
         /*doc=*/"Field with 10 bytes");
     EXPECT_EQ(2, field.field_id());
     EXPECT_EQ("bar", field.name());
-    EXPECT_EQ(iceberg::FixedType(10), *field.type());
+    EXPECT_EQ(FixedType(10), *field.type());
     EXPECT_TRUE(field.optional());
     EXPECT_EQ("Field with 10 bytes", field.doc());
     EXPECT_EQ("bar (2): fixed(10) (optional) - Field with 10 bytes", field.ToString());
   }
 }
+
+}  // namespace iceberg
