@@ -110,6 +110,7 @@ TEST(JsonInternalTest, SortOrder) {
   SortField st_ts(5, identity_transform, SortDirection::kAscending, NullOrder::kFirst);
   SortField st_bar(7, identity_transform, SortDirection::kDescending, NullOrder::kLast);
   ICEBERG_UNWRAP_OR_FAIL(auto sort_order, SortOrder::Make(100, {st_ts, st_bar}));
+  EXPECT_TRUE(sort_order->Validate(*schema));
   nlohmann::json expected_sort_order =
       R"({"order-id":100,"fields":[
           {"transform":"identity","source-id":5,"direction":"asc","null-order":"nulls-first"},

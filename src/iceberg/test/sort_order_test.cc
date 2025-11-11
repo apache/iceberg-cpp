@@ -259,10 +259,10 @@ TEST_F(SortOrderTest, MakeUnboundSortOrder) {
   SortField sort_field_invalid(999, Transform::Identity(), SortDirection::kAscending,
                                NullOrder::kFirst);
 
-  auto sort_order =
-      SortOrder::Make(1, std::vector<SortField>{*sort_field1_, sort_field_invalid});
-  ASSERT_THAT(sort_order, IsOk());
-  auto validate_status = sort_order.value()->Validate(*schema_);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto sort_order,
+      SortOrder::Make(1, std::vector<SortField>{*sort_field1_, sort_field_invalid}));
+  auto validate_status = sort_order->Validate(*schema_);
   EXPECT_THAT(validate_status, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(validate_status,
               HasErrorMessage("Cannot find source column for sort field"));
