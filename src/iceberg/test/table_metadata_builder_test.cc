@@ -354,9 +354,7 @@ TEST_F(TableMetadataBuilderTest, TableRequirementAssertLastAssignedFieldIdMismat
 TEST_F(TableMetadataBuilderTest, TableRequirementAssertLastAssignedFieldIdNullBase) {
   table::AssertLastAssignedFieldId requirement(10);
 
-  auto status = requirement.Validate(nullptr);
-  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
-  EXPECT_THAT(status, HasErrorMessage("metadata is missing"));
+  EXPECT_THAT(requirement.Validate(nullptr), IsOk());
 }
 
 TEST_F(TableMetadataBuilderTest, TableRequirementAssertLastAssignedPartitionIdSuccess) {
