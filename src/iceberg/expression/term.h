@@ -250,6 +250,10 @@ class ICEBERG_EXPORT BoundTransform : public BoundTerm {
 
   const std::shared_ptr<Transform>& transform() const { return transform_; }
 
+  const std::shared_ptr<TransformFunction>& transform_func() const {
+    return transform_func_;
+  }
+
   Kind kind() const override { return Kind::kTransform; }
 
  private:
