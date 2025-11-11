@@ -130,8 +130,6 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV3Writer(
     std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
     std::shared_ptr<PartitionSpec> partition_spec, std::shared_ptr<Schema> current_schema,
     ManifestContent content) {
-  auto adapter = std::make_unique<ManifestEntryAdapterV3>(
-      snapshot_id, first_row_id, std::move(partition_spec), current_schema, content);
   if (manifest_location.empty()) {
     return InvalidArgument("Manifest location cannot be empty");
   }
@@ -144,6 +142,9 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV3Writer(
   if (!current_schema) {
     return InvalidArgument("Current schema cannot be null");
   }
+  auto adapter = std::make_unique<ManifestEntryAdapterV3>(
+      snapshot_id, first_row_id, std::move(partition_spec), std::move(current_schema),
+      content);
   ICEBERG_RETURN_UNEXPECTED(adapter->Init());
   ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
 
