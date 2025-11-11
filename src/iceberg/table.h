@@ -112,7 +112,7 @@ class ICEBERG_EXPORT Table {
   /// \brief Create a new transaction for this table
   ///
   /// \return a shared pointer to the new Transaction
-  virtual std::shared_ptr<Transaction> NewTransaction() const;
+  virtual std::unique_ptr<Transaction> NewTransaction() const;
 
   /// \brief Returns a FileIO to read and write table data and metadata files
   const std::shared_ptr<FileIO>& io() const;

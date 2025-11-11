@@ -404,13 +404,6 @@ Result<std::shared_ptr<Transaction>> InMemoryCatalog::StageCreateTable(
   return NotImplemented("stage create table");
 }
 
-Result<std::shared_ptr<Transaction>> InMemoryCatalog::StageReplaceTable(
-    const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
-    const std::string& location,
-    const std::unordered_map<std::string, std::string>& properties, bool orCreate) {
-  return NotImplemented("stage replace table");
-}
-
 Result<bool> InMemoryCatalog::TableExists(const TableIdentifier& identifier) const {
   std::unique_lock lock(mutex_);
   return root_namespace_->TableExists(identifier);

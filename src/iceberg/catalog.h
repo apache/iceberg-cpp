@@ -140,21 +140,6 @@ class ICEBERG_EXPORT Catalog {
       const std::string& location,
       const std::unordered_map<std::string, std::string>& properties) = 0;
 
-  /// \brief Start a transaction to replace a table
-  ///
-  /// \param identifier a table identifier
-  /// \param schema a schema
-  /// \param spec a partition spec
-  /// \param location a location for the table; leave empty if unspecified
-  /// \param properties a string map of table properties
-  /// \param orCreate whether to create the table if not exists
-  /// \return a Transaction to replace the table or ErrorKind::kNotFound if the table
-  /// doesn't exist and orCreate is false
-  virtual Result<std::shared_ptr<Transaction>> StageReplaceTable(
-      const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
-      const std::string& location,
-      const std::unordered_map<std::string, std::string>& properties, bool orCreate) = 0;
-
   /// \brief Check whether table exists
   ///
   /// \param identifier a table identifier
@@ -247,16 +232,6 @@ class ICEBERG_EXPORT Catalog {
     ///
     /// \return the Transaction to create the table
     virtual std::unique_ptr<Transaction> StageCreate() = 0;
-
-    /// \brief Starts a transaction to replace the table
-    ///
-    /// \return the Transaction to replace the table
-    virtual std::unique_ptr<Transaction> StageReplace() = 0;
-
-    /// \brief Starts a transaction to create or replace the table
-    ///
-    /// \return the Transaction to create or replace the table
-    virtual std::unique_ptr<Transaction> StageCreateOrReplace() = 0;
   };
 
   /// \brief Instantiate a builder to either create a table or start a create/replace

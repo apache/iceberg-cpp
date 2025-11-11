@@ -51,7 +51,7 @@ class ICEBERG_EXPORT Transaction {
   /// \return Status::OK if all updates were queued successfully
   virtual Status UpdateTable(
       const std::vector<std::unique_ptr<TableRequirement>>& requirements,
-      std::vector<std::unique_ptr<TableUpdate>> updates) = 0;
+      const std::vector<std::unique_ptr<TableUpdate>>& updates) = 0;
 
   /// \brief Apply the pending changes from all actions and commit
   ///

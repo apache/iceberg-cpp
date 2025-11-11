@@ -71,12 +71,6 @@ class MockCatalog : public Catalog {
                const std::string&, (const std::unordered_map<std::string, std::string>&)),
               (override));
 
-  MOCK_METHOD((Result<std::shared_ptr<Transaction>>), StageReplaceTable,
-              (const TableIdentifier&, const Schema&, const PartitionSpec&,
-               const std::string&, (const std::unordered_map<std::string, std::string>&),
-               bool),
-              (override));
-
   MOCK_METHOD(Result<bool>, TableExists, (const TableIdentifier&), (const, override));
 
   MOCK_METHOD(Status, DropTable, (const TableIdentifier&, bool), (override));
