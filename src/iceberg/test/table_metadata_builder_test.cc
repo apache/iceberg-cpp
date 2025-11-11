@@ -328,7 +328,6 @@ TEST_F(TableMetadataBuilderTest, TableRequirementAssertRefSnapshotIDNulloptButEx
   ref->retention = SnapshotRef::Branch{};
   base_metadata_->refs["main"] = ref;
 
-  // Ref should not exist, but it does
   table::AssertRefSnapshotID requirement("main", std::nullopt);
 
   auto status = requirement.Validate(base_metadata_.get());
@@ -355,8 +354,9 @@ TEST_F(TableMetadataBuilderTest, TableRequirementAssertLastAssignedFieldIdMismat
 TEST_F(TableMetadataBuilderTest, TableRequirementAssertLastAssignedFieldIdNullBase) {
   table::AssertLastAssignedFieldId requirement(10);
 
-  // Null base is now allowed (for new tables) - should succeed
-  ASSERT_THAT(requirement.Validate(nullptr), IsOk());
+  auto status = requirement.Validate(nullptr);
+  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
+  EXPECT_THAT(status, HasErrorMessage("metadata is missing"));
 }
 
 TEST_F(TableMetadataBuilderTest, TableRequirementAssertLastAssignedPartitionIdSuccess) {
@@ -378,8 +378,9 @@ TEST_F(TableMetadataBuilderTest, TableRequirementAssertLastAssignedPartitionIdMi
 TEST_F(TableMetadataBuilderTest, TableRequirementAssertLastAssignedPartitionIdNullBase) {
   table::AssertLastAssignedPartitionId requirement(5);
 
-  // Null base is now allowed (for new tables) - should succeed
-  ASSERT_THAT(requirement.Validate(nullptr), IsOk());
+  auto status = requirement.Validate(nullptr);
+  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
+  EXPECT_THAT(status, HasErrorMessage("metadata is missing"));
 }
 
 TEST_F(TableMetadataBuilderTest, TableRequirementAssertDefaultSpecIDSuccess) {
@@ -398,11 +399,6 @@ TEST_F(TableMetadataBuilderTest, TableRequirementAssertDefaultSpecIDMismatch) {
   EXPECT_THAT(status, HasErrorMessage("spec changed"));
 }
 
-// Removed TableRequirementAssertDefaultSpecIDNullBase test
-// Java implementation doesn't check for null base, so passing nullptr would cause
-// undefined behavior This matches Java's assumption that base is never null when Validate
-// is called
-
 TEST_F(TableMetadataBuilderTest, TableRequirementAssertDefaultSortOrderIDSuccess) {
   base_metadata_->default_sort_order_id = 2;
   table::AssertDefaultSortOrderID requirement(2);
@@ -418,11 +414,6 @@ TEST_F(TableMetadataBuilderTest, TableRequirementAssertDefaultSortOrderIDMismatc
   EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
   EXPECT_THAT(status, HasErrorMessage("sort order changed"));
 }
-
-// Removed TableRequirementAssertDefaultSortOrderIDNullBase test
-// Java implementation doesn't check for null base, so passing nullptr would cause
-// undefined behavior This matches Java's assumption that base is never null when Validate
-// is called
 
 // ============================================================================
 // Integration Tests - End-to-End Workflow
