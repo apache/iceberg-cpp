@@ -76,10 +76,6 @@ Status AssertRefSnapshotID::Validate(const TableMetadata* base) const {
 }
 
 Status AssertLastAssignedFieldId::Validate(const TableMetadata* base) const {
-  if (base == nullptr) {
-    return CommitFailed("Requirement failed: current table metadata is missing");
-  }
-
   if (base && base->last_column_id != last_assigned_field_id_) {
     return CommitFailed(
         "Requirement failed: last assigned field ID does not match, expected {} != {}",
