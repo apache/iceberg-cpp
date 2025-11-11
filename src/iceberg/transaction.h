@@ -44,15 +44,6 @@ class ICEBERG_EXPORT Transaction {
   /// \return a new AppendFiles
   virtual std::shared_ptr<AppendFiles> NewAppend() = 0;
 
-  /// \brief Apply multiple metadata updates to this transaction
-  ///
-  /// \param requirements the table requirements to validate
-  /// \param updates the table updates to apply
-  /// \return Status::OK if all updates were queued successfully
-  virtual Status UpdateTable(
-      const std::vector<std::unique_ptr<TableRequirement>>& requirements,
-      const std::vector<std::unique_ptr<TableUpdate>>& updates) = 0;
-
   /// \brief Apply the pending changes from all actions and commit
   ///
   /// This method applies all pending data operations and metadata updates in the
