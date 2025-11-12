@@ -57,15 +57,6 @@ ICEBERG_EXPORT constexpr Result<ManifestStatus> ManifestStatusFromInt(
   }
 }
 
-enum class ManifestContent {
-  kData = 0,
-  kDeletes = 1,
-};
-
-ICEBERG_EXPORT constexpr std::string_view ToString(ManifestContent content) noexcept;
-ICEBERG_EXPORT constexpr Result<ManifestContent> ManifestContentFromString(
-    std::string_view str) noexcept;
-
 /// \brief DataFile carries data file path, partition tuple, metrics, ...
 struct ICEBERG_EXPORT DataFile {
   /// \brief Content of a data file
@@ -314,6 +305,17 @@ struct ICEBERG_EXPORT ManifestEntry {
       SchemaField::MakeOptional(3, "sequence_number", iceberg::int64());
   inline static const SchemaField kFileSequenceNumber =
       SchemaField::MakeOptional(4, "file_sequence_number", iceberg::int64());
+
+  /// \brief Check if this manifest entry is deleted.
+  constexpr bool IsAlive() const {
+    return status == ManifestStatus::kAdded || status == ManifestStatus::kExisting;
+  }
+
+  /// \brief Create a copy of this manifest entry.
+  ManifestEntry Copy() const {
+    ManifestEntry copy = *this;
+    return copy;
+  }
 
   bool operator==(const ManifestEntry& other) const;
 
