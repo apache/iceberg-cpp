@@ -24,6 +24,7 @@
 #include "iceberg/json_internal.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
+#include "iceberg/partition_summary_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/type.h"
@@ -34,9 +35,8 @@ namespace iceberg {
 ManifestEntryAdapterV1::ManifestEntryAdapterV1(
     std::optional<int64_t> snapshot_id, std::shared_ptr<PartitionSpec> partition_spec,
     std::shared_ptr<Schema> current_schema)
-    : ManifestEntryAdapter(std::move(partition_spec), std::move(current_schema),
-                           ManifestContent::kData),
-      snapshot_id_(snapshot_id) {}
+    : ManifestEntryAdapter(snapshot_id, std::move(partition_spec),
+                           std::move(current_schema), ManifestContent::kData) {}
 
 std::shared_ptr<Schema> ManifestEntryAdapterV1::EntrySchema(
     std::shared_ptr<StructType> partition_type) {
@@ -84,13 +84,10 @@ Status ManifestEntryAdapterV1::Init() {
 
   ICEBERG_ASSIGN_OR_RAISE(auto partition_type,
                           partition_spec_->PartitionType(*current_schema_));
+  ICEBERG_ASSIGN_OR_RAISE(partition_summary_, PartitionSummary::Make(*partition_type));
 
   manifest_schema_ = EntrySchema(std::move(partition_type));
   return ToArrowSchema(*manifest_schema_, &schema_);
-}
-
-Status ManifestEntryAdapterV1::Append(const ManifestEntry& entry) {
-  return AppendInternal(entry);
 }
 
 const std::shared_ptr<Schema> ManifestFileAdapterV1::kManifestListSchema =
@@ -120,8 +117,8 @@ Status ManifestFileAdapterV1::Init() {
   return ToArrowSchema(*manifest_list_schema_, &schema_);
 }
 
-Status ManifestFileAdapterV1::Append(const ManifestFile& file) {
-  if (file.content != ManifestFile::Content::kData) {
+Status ManifestFileAdapterV1::Append(ManifestFile& file) {
+  if (file.content != ManifestContent::kData) {
     return InvalidManifestList("Cannot store delete manifests in a v1 table");
   }
   return AppendInternal(file);

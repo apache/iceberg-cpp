@@ -23,11 +23,13 @@
 /// Data writer interface for manifest files and manifest list files.
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "iceberg/file_writer.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/manifest_adapter.h"
+#include "iceberg/metrics.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -36,15 +38,28 @@ namespace iceberg {
 class ICEBERG_EXPORT ManifestWriter {
  public:
   ManifestWriter(std::unique_ptr<Writer> writer,
-                 std::unique_ptr<ManifestEntryAdapter> adapter)
-      : writer_(std::move(writer)), adapter_(std::move(adapter)) {}
+                 std::unique_ptr<ManifestEntryAdapter> adapter,
+                 std::string_view manifest_location)
+      : writer_(std::move(writer)),
+        adapter_(std::move(adapter)),
+        manifest_location_(manifest_location) {}
 
   ~ManifestWriter() = default;
 
-  /// \brief Write manifest entry to file.
+  /// \brief Add a new Manifest entry.
   /// \param entry Manifest entry to write.
   /// \return Status::OK() if entry was written successfully
-  Status Add(const ManifestEntry& entry);
+  Status AddEntry(const ManifestEntry& entry);
+
+  /// \brief Add an existing Manifest entry.
+  /// \param entry Manifest entry to write.
+  /// \return Status::OK() if entry was written successfully
+  Status AddExisting(const ManifestEntry& entry);
+
+  /// \brief Add a delete Manifest entry.
+  /// \param entry Manifest entry to write.
+  /// \return Status::OK() if entry was written successfully
+  Status AddDelete(const ManifestEntry& entry);
 
   /// \brief Write manifest entries to file.
   /// \param entries Manifest entries to write.
@@ -54,8 +69,14 @@ class ICEBERG_EXPORT ManifestWriter {
   /// \brief Close writer and flush to storage.
   Status Close();
 
+  /// \brief Get the metrics of written manifest file.
+  std::optional<Metrics> metrics() const;
+
   /// \brief Get the content of the manifest.
   ManifestContent content() const;
+
+  /// \brief Get the ManifestFile object.
+  Result<ManifestFile> ToManifestFile() const;
 
   /// \brief Creates a writer for a manifest file.
   /// \param snapshot_id ID of the snapshot.
@@ -103,6 +124,10 @@ class ICEBERG_EXPORT ManifestWriter {
   static constexpr int64_t kBatchSize = 1024;
   std::unique_ptr<Writer> writer_;
   std::unique_ptr<ManifestEntryAdapter> adapter_;
+  bool closed_{false};
+  std::string manifest_location_;
+  // TODO(zhjwpku): consider passing key metadata when makeing ManifestWriter.
+  std::vector<uint8_t> key_metadata_;
 };
 
 /// \brief Write manifest files to a manifest list file.

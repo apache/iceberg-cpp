@@ -25,7 +25,6 @@
 #include <memory>
 #include <optional>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
@@ -61,18 +60,45 @@ class ICEBERG_EXPORT ManifestAdapter {
 /// Implemented by different versions with version-specific schemas.
 class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
  public:
-  ManifestEntryAdapter(std::shared_ptr<PartitionSpec> partition_spec,
+  ManifestEntryAdapter(std::optional<int64_t> snapshot_id_,
+                       std::shared_ptr<PartitionSpec> partition_spec,
                        std::shared_ptr<Schema> current_schema, ManifestContent content);
 
   ~ManifestEntryAdapter() override;
 
-  virtual Status Append(const ManifestEntry& entry) = 0;
+  /// \brief Add a new entry to the manifest.
+  ///
+  /// This method will update following status of the entry:
+  /// - Update the entry status to `Added`
+  /// - Set the snapshot id to the current snapshot id
+  /// - Set the sequence number to nullopt if it is invalid(smaller than 0)
+  /// - Set the file sequence number to nullopt
+  virtual Status AddEntry(ManifestEntry& entry);
+
+  /// \brief Add a delete entry to the manifest.
+  ///
+  /// This method will update following status of the entry:
+  /// - Update the entry status to `Deleted`
+  /// - Set the snapshot id to the current snapshot id
+  virtual Status AddDeleteEntry(ManifestEntry& entry);
+
+  /// \brief Add an existing entry to the manifest.
+  ///
+  /// This method will update following status of the entry:
+  /// - Update the entry status to `Existing`
+  virtual Status AddExistingEntry(ManifestEntry& entry);
 
   const std::shared_ptr<Schema>& schema() const { return manifest_schema_; }
 
   ManifestContent content() const { return content_; }
 
+  /// \brief Create a ManifestFile object without setting file metadata, such as
+  /// location, file size, key metadata, etc.
+  ManifestFile ToManifestFile() const;
+
  protected:
+  Status CheckDataFile(const DataFile& file) const;
+  Status AddEntryInternal(const ManifestEntry& entry);
   Status AppendInternal(const ManifestEntry& entry);
   Status AppendDataFile(ArrowArray* array,
                         const std::shared_ptr<StructType>& data_file_type,
@@ -91,10 +117,19 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
       const DataFile& file) const;
 
  protected:
+  std::optional<int64_t> snapshot_id_;
   std::shared_ptr<PartitionSpec> partition_spec_;
   std::shared_ptr<Schema> current_schema_;
   std::shared_ptr<Schema> manifest_schema_;
   const ManifestContent content_;
+  int32_t add_files_count_{0};
+  int32_t existing_files_count_{0};
+  int32_t delete_files_count_{0};
+  int64_t add_rows_count_{0L};
+  int64_t existing_rows_count_{0L};
+  int64_t delete_rows_count_{0L};
+  std::optional<int64_t> min_sequence_number_{std::nullopt};
+  std::unique_ptr<PartitionSummary> partition_summary_;
 };
 
 /// \brief Adapter for appending a list of `ManifestFile`s to an `ArrowArray`.
@@ -104,7 +139,7 @@ class ICEBERG_EXPORT ManifestFileAdapter : public ManifestAdapter {
   ManifestFileAdapter() = default;
   ~ManifestFileAdapter() override;
 
-  virtual Status Append(const ManifestFile& file) = 0;
+  virtual Status Append(ManifestFile& file) = 0;
 
   const std::shared_ptr<Schema>& schema() const { return manifest_list_schema_; }
 

@@ -33,7 +33,6 @@ class ManifestEntryAdapterV2 : public ManifestEntryAdapter {
                          std::shared_ptr<Schema> current_schema, ManifestContent content);
 
   Status Init() override;
-  Status Append(const ManifestEntry& entry) override;
 
   static std::shared_ptr<Schema> EntrySchema(std::shared_ptr<StructType> partition_type);
   static std::shared_ptr<Schema> WrapFileSchema(std::shared_ptr<StructType> file_schema);
@@ -45,9 +44,6 @@ class ManifestEntryAdapterV2 : public ManifestEntryAdapter {
       const ManifestEntry& entry) const override;
   Result<std::optional<std::string>> GetReferenceDataFile(
       const DataFile& file) const override;
-
- private:
-  std::optional<int64_t> snapshot_id_;
 };
 
 /// \brief Adapter to convert V2 ManifestFile to `ArrowArray`.
@@ -59,7 +55,7 @@ class ManifestFileAdapterV2 : public ManifestFileAdapter {
         parent_snapshot_id_(parent_snapshot_id),
         sequence_number_(sequence_number) {}
   Status Init() override;
-  Status Append(const ManifestFile& file) override;
+  Status Append(ManifestFile& file) override;
 
   static const std::shared_ptr<Schema> kManifestListSchema;
 

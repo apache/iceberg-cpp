@@ -20,10 +20,13 @@
 #include "iceberg/v3_metadata.h"
 
 #include <memory>
+#include <optional>
 
 #include "iceberg/json_internal.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
+#include "iceberg/partition_summary_internal.h"
+#include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/util/macros.h"
@@ -34,9 +37,8 @@ ManifestEntryAdapterV3::ManifestEntryAdapterV3(
     std::optional<int64_t> snapshot_id, std::optional<int64_t> first_row_id,
     std::shared_ptr<PartitionSpec> partition_spec, std::shared_ptr<Schema> current_schema,
     ManifestContent content)
-    : ManifestEntryAdapter(std::move(partition_spec), std::move(current_schema),
-                           std::move(content)),
-      snapshot_id_(snapshot_id),
+    : ManifestEntryAdapter(snapshot_id, std::move(partition_spec),
+                           std::move(current_schema), std::move(content)),
       first_row_id_(first_row_id) {}
 
 std::shared_ptr<Schema> ManifestEntryAdapterV3::EntrySchema(
@@ -92,12 +94,9 @@ Status ManifestEntryAdapterV3::Init() {
 
   ICEBERG_ASSIGN_OR_RAISE(auto partition_type,
                           partition_spec_->PartitionType(*current_schema_));
+  ICEBERG_ASSIGN_OR_RAISE(partition_summary_, PartitionSummary::Make(*partition_type));
   manifest_schema_ = EntrySchema(std::move(partition_type));
   return ToArrowSchema(*manifest_schema_, &schema_);
-}
-
-Status ManifestEntryAdapterV3::Append(const ManifestEntry& entry) {
-  return AppendInternal(entry);
 }
 
 Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetSequenceNumber(
@@ -189,7 +188,12 @@ Status ManifestFileAdapterV3::Init() {
   return ToArrowSchema(*manifest_list_schema_, &schema_);
 }
 
-Status ManifestFileAdapterV3::Append(const ManifestFile& file) {
+Status ManifestFileAdapterV3::Append(ManifestFile& file) {
+  // TODO(zhjwpku): Should we set sequence_number/first_row_id here?
+  // file.sequence_number = sequence_number_;
+  // if (WrapFirstRowId(file) && next_row_id_.has_value()) {
+  //   file.first_row_id = next_row_id_;
+  // }
   ICEBERG_RETURN_UNEXPECTED(AppendInternal(file));
   if (WrapFirstRowId(file) && next_row_id_.has_value()) {
     next_row_id_ = next_row_id_.value() + file.existing_rows_count.value_or(0) +
@@ -240,7 +244,7 @@ Result<std::optional<int64_t>> ManifestFileAdapterV3::GetFirstRowId(
                                  file.manifest_path);
     }
     return next_row_id_;
-  } else if (file.content != ManifestFile::Content::kData) {
+  } else if (file.content != ManifestContent::kData) {
     return std::nullopt;
   } else {
     if (!file.first_row_id.has_value()) {
@@ -252,7 +256,7 @@ Result<std::optional<int64_t>> ManifestFileAdapterV3::GetFirstRowId(
 }
 
 bool ManifestFileAdapterV3::WrapFirstRowId(const ManifestFile& file) const {
-  return file.content == ManifestFile::Content::kData && !file.first_row_id.has_value();
+  return file.content == ManifestContent::kData && !file.first_row_id.has_value();
 }
 
 }  // namespace iceberg

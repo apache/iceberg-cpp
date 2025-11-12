@@ -72,17 +72,17 @@ struct ICEBERG_EXPORT PartitionFieldSummary {
   static const StructType& Type();
 };
 
+/// \brief The type of files tracked by the manifest, either data or delete files; 0 for
+/// all v1 manifests
+enum class ManifestContent {
+  /// The manifest content is data.
+  kData = 0,
+  /// The manifest content is deletes.
+  kDeletes = 1,
+};
+
 /// \brief Entry in a manifest list.
 struct ICEBERG_EXPORT ManifestFile {
-  /// \brief The type of files tracked by the manifest, either data or delete files; 0 for
-  /// all v1 manifests
-  enum class Content {
-    /// The manifest content is data.
-    kData = 0,
-    /// The manifest content is deletes.
-    kDeletes = 1,
-  };
-
   /// Field id: 500
   /// Location of the manifest file
   std::string manifest_path;
@@ -96,7 +96,7 @@ struct ICEBERG_EXPORT ManifestFile {
   /// Field id: 517
   /// The type of files tracked by the manifest, either data or delete files; 0 for all v1
   /// manifests
-  Content content = Content::kData;
+  ManifestContent content = ManifestContent::kData;
   /// Field id: 515
   /// The sequence number when the manifest was added to the table; use 0 when reading v1
   /// manifest lists
@@ -198,6 +198,12 @@ struct ICEBERG_EXPORT ManifestFile {
   bool operator==(const ManifestFile& other) const = default;
 
   static const std::shared_ptr<Schema>& Type();
+
+  /// \brief Create a copy of this manifest file.
+  ManifestFile Copy() const {
+    ManifestFile copy = *this;
+    return copy;
+  }
 };
 
 /// Snapshots are embedded in table metadata, but the list of manifests for a snapshot are
@@ -218,21 +224,21 @@ struct ICEBERG_EXPORT ManifestList {
 };
 
 /// \brief Get the relative manifest content type name
-ICEBERG_EXPORT constexpr std::string_view ToString(ManifestFile::Content type) noexcept {
+ICEBERG_EXPORT constexpr std::string_view ToString(ManifestContent type) noexcept {
   switch (type) {
-    case ManifestFile::Content::kData:
+    case ManifestContent::kData:
       return "data";
-    case ManifestFile::Content::kDeletes:
+    case ManifestContent::kDeletes:
       return "deletes";
   }
   std::unreachable();
 }
 
 /// \brief Get the relative manifest content type from name
-ICEBERG_EXPORT constexpr Result<ManifestFile::Content> ManifestFileContentFromString(
+ICEBERG_EXPORT constexpr Result<ManifestContent> ManifestContentFromString(
     std::string_view str) noexcept {
-  if (str == "data") return ManifestFile::Content::kData;
-  if (str == "deletes") return ManifestFile::Content::kDeletes;
+  if (str == "data") return ManifestContent::kData;
+  if (str == "deletes") return ManifestContent::kDeletes;
   return InvalidArgument("Invalid manifest content type: {}", str);
 }
 

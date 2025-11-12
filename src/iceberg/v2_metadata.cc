@@ -22,6 +22,7 @@
 #include "iceberg/json_internal.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
+#include "iceberg/partition_summary_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/util/macros.h"
@@ -31,9 +32,8 @@ namespace iceberg {
 ManifestEntryAdapterV2::ManifestEntryAdapterV2(
     std::optional<int64_t> snapshot_id, std::shared_ptr<PartitionSpec> partition_spec,
     std::shared_ptr<Schema> current_schema, ManifestContent content)
-    : ManifestEntryAdapter(std::move(partition_spec), std::move(current_schema),
-                           std::move(content)),
-      snapshot_id_(snapshot_id) {}
+    : ManifestEntryAdapter(snapshot_id, std::move(partition_spec),
+                           std::move(current_schema), std::move(content)) {}
 
 std::shared_ptr<Schema> ManifestEntryAdapterV2::EntrySchema(
     std::shared_ptr<StructType> partition_type) {
@@ -83,12 +83,9 @@ Status ManifestEntryAdapterV2::Init() {
 
   ICEBERG_ASSIGN_OR_RAISE(auto partition_type,
                           partition_spec_->PartitionType(*current_schema_));
+  ICEBERG_ASSIGN_OR_RAISE(partition_summary_, PartitionSummary::Make(*partition_type));
   manifest_schema_ = EntrySchema(std::move(partition_type));
   return ToArrowSchema(*manifest_schema_, &schema_);
-}
-
-Status ManifestEntryAdapterV2::Append(const ManifestEntry& entry) {
-  return AppendInternal(entry);
 }
 
 Result<std::optional<int64_t>> ManifestEntryAdapterV2::GetSequenceNumber(
@@ -154,7 +151,9 @@ Status ManifestFileAdapterV2::Init() {
   return ToArrowSchema(*manifest_list_schema_, &schema_);
 }
 
-Status ManifestFileAdapterV2::Append(const ManifestFile& file) {
+Status ManifestFileAdapterV2::Append(ManifestFile& file) {
+  // TODO(zhjwpku): Should we set sequence_number here?
+  // file.sequence_number = sequence_number_;
   return AppendInternal(file);
 }
 

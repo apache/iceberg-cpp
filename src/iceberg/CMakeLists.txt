@@ -42,6 +42,7 @@ set(ICEBERG_SOURCES
     name_mapping.cc
     partition_field.cc
     partition_spec.cc
+    partition_summary_internal.cc
     row/arrow_array_wrapper.cc
     row/manifest_wrapper.cc
     row/struct_like.cc

@@ -124,6 +124,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    manifest_list_reader_writer_test.cc
                    manifest_list_versions_test.cc
                    manifest_reader_writer_test.cc
+                   manifest_writer_versions_test.cc
                    test_common.cc)
 
   add_iceberg_test(arrow_test

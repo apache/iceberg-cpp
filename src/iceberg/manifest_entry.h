@@ -57,15 +57,6 @@ ICEBERG_EXPORT constexpr Result<ManifestStatus> ManifestStatusFromInt(
   }
 }
 
-enum class ManifestContent {
-  kData = 0,
-  kDeletes = 1,
-};
-
-ICEBERG_EXPORT constexpr std::string_view ToString(ManifestContent content) noexcept;
-ICEBERG_EXPORT constexpr Result<ManifestContent> ManifestContentFromString(
-    std::string_view str) noexcept;
-
 /// \brief DataFile carries data file path, partition tuple, metrics, ...
 struct ICEBERG_EXPORT DataFile {
   /// \brief Content of a data file
@@ -315,6 +306,17 @@ struct ICEBERG_EXPORT ManifestEntry {
   inline static const SchemaField kFileSequenceNumber =
       SchemaField::MakeOptional(4, "file_sequence_number", iceberg::int64());
 
+  /// \brief Check if this manifest entry is deleted.
+  constexpr bool IsAlive() const {
+    return status == ManifestStatus::kAdded || status == ManifestStatus::kExisting;
+  }
+
+  /// \brief Create a copy of this manifest entry.
+  ManifestEntry Copy() const {
+    ManifestEntry copy = *this;
+    return copy;
+  }
+
   bool operator==(const ManifestEntry& other) const;
 
   static std::shared_ptr<StructType> TypeFromPartitionType(
@@ -322,6 +324,19 @@ struct ICEBERG_EXPORT ManifestEntry {
   static std::shared_ptr<StructType> TypeFromDataFileType(
       std::shared_ptr<StructType> datafile_type);
 };
+
+/// \brief Get the relative datafile content type name
+ICEBERG_EXPORT constexpr std::string_view ToString(DataFile::Content type) noexcept {
+  switch (type) {
+    case DataFile::Content::kData:
+      return "data";
+    case DataFile::Content::kPositionDeletes:
+      return "position_deletes";
+    case DataFile::Content::kEqualityDeletes:
+      return "equality_deletes";
+  }
+  std::unreachable();
+}
 
 /// \brief Get the relative data file content type from int
 ICEBERG_EXPORT constexpr Result<DataFile::Content> DataFileContentFromInt(
