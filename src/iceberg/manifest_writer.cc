@@ -58,13 +58,20 @@ ManifestContent ManifestWriter::content() const { return adapter_->content(); }
 Result<std::unique_ptr<Writer>> OpenFileWriter(
     std::string_view location, std::shared_ptr<Schema> schema,
     std::shared_ptr<FileIO> file_io,
-    std::unordered_map<std::string, std::string> properties) {
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto writer, WriterFactoryRegistry::Open(FileFormatType::kAvro,
-                                               {.path = std::string(location),
-                                                .schema = std::move(schema),
-                                                .io = std::move(file_io),
-                                                .properties = std::move(properties)}));
+    std::unordered_map<std::string, std::string> metadata, std::string_view schema_name) {
+  auto writer_properties = WriterProperties::default_properties();
+  if (!schema_name.empty()) {
+    writer_properties->Set(WriterProperties::kAvroSchemaName, std::string(schema_name));
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto writer, WriterFactoryRegistry::Open(
+                                           FileFormatType::kAvro,
+                                           {
+                                               .path = std::string(location),
+                                               .schema = std::move(schema),
+                                               .io = std::move(file_io),
+                                               .metadata = std::move(metadata),
+                                               .properties = std::move(writer_properties),
+                                           }));
   return writer;
 }
 
@@ -91,9 +98,10 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV1Writer(
   ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
 
   auto schema = adapter->schema();
-  ICEBERG_ASSIGN_OR_RAISE(auto writer,
-                          OpenFileWriter(manifest_location, std::move(schema),
-                                         std::move(file_io), adapter->metadata()));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto writer,
+      OpenFileWriter(manifest_location, std::move(schema), std::move(file_io),
+                     adapter->metadata(), "manifest_entry"));
   return std::make_unique<ManifestWriter>(std::move(writer), std::move(adapter));
 }
 
@@ -119,9 +127,10 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV2Writer(
   ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
 
   auto schema = adapter->schema();
-  ICEBERG_ASSIGN_OR_RAISE(auto writer,
-                          OpenFileWriter(manifest_location, std::move(schema),
-                                         std::move(file_io), adapter->metadata()));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto writer,
+      OpenFileWriter(manifest_location, std::move(schema), std::move(file_io),
+                     adapter->metadata(), "manifest_entry"));
   return std::make_unique<ManifestWriter>(std::move(writer), std::move(adapter));
 }
 
@@ -149,9 +158,10 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV3Writer(
   ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
 
   auto schema = adapter->schema();
-  ICEBERG_ASSIGN_OR_RAISE(auto writer,
-                          OpenFileWriter(manifest_location, std::move(schema),
-                                         std::move(file_io), adapter->metadata()));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto writer,
+      OpenFileWriter(manifest_location, std::move(schema), std::move(file_io),
+                     adapter->metadata(), "manifest_entry"));
   return std::make_unique<ManifestWriter>(std::move(writer), std::move(adapter));
 }
 
@@ -191,9 +201,10 @@ Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV1Writer(
   ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
 
   auto schema = adapter->schema();
-  ICEBERG_ASSIGN_OR_RAISE(auto writer,
-                          OpenFileWriter(manifest_list_location, std::move(schema),
-                                         std::move(file_io), adapter->metadata()));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto writer,
+      OpenFileWriter(manifest_list_location, std::move(schema), std::move(file_io),
+                     adapter->metadata(), "manifest_file"));
   return std::make_unique<ManifestListWriter>(std::move(writer), std::move(adapter));
 }
 
@@ -207,9 +218,10 @@ Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV2Writer(
   ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
 
   auto schema = adapter->schema();
-  ICEBERG_ASSIGN_OR_RAISE(auto writer,
-                          OpenFileWriter(manifest_list_location, std::move(schema),
-                                         std::move(file_io), adapter->metadata()));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto writer,
+      OpenFileWriter(manifest_list_location, std::move(schema), std::move(file_io),
+                     adapter->metadata(), "manifest_file"));
 
   return std::make_unique<ManifestListWriter>(std::move(writer), std::move(adapter));
 }
@@ -224,9 +236,10 @@ Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV3Writer(
   ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
 
   auto schema = adapter->schema();
-  ICEBERG_ASSIGN_OR_RAISE(auto writer,
-                          OpenFileWriter(manifest_list_location, std::move(schema),
-                                         std::move(file_io), adapter->metadata()));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto writer,
+      OpenFileWriter(manifest_list_location, std::move(schema), std::move(file_io),
+                     adapter->metadata(), "manifest_file"));
   return std::make_unique<ManifestListWriter>(std::move(writer), std::move(adapter));
 }
 

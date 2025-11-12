@@ -31,8 +31,33 @@
 #include "iceberg/metrics.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/config.h"
 
 namespace iceberg {
+
+class WriterProperties : public ConfigBase<WriterProperties> {
+ public:
+  template <typename T>
+  using Entry = const ConfigBase<WriterProperties>::Entry<T>;
+
+  /// \brief The name of the Avro root node schema to write.
+  inline static Entry<std::string> kAvroSchemaName{"write.avro.schema-name", ""};
+
+  /// \brief The buffer size used by Avro output stream.
+  inline static Entry<int64_t> kAvroBufferSize{"write.avro.buffer-size", 1024 * 1024};
+
+  /// \brief The sync interval used by Avro writer.
+  inline static Entry<int64_t> kAvroSyncInterval{"write.avro.sync-interval", 16 * 1024};
+
+  /// TODO(gangwu): add more properties, like compression codec, compression level, etc.
+
+  /// \brief Create a default WriterProperties instance.
+  static std::unique_ptr<WriterProperties> default_properties();
+
+  /// \brief Create a WriterProperties instance from a map of key-value pairs.
+  static std::unique_ptr<WriterProperties> FromMap(
+      const std::unordered_map<std::string, std::string>& properties);
+};
 
 /// \brief Options for creating a writer.
 struct ICEBERG_EXPORT WriterOptions {
@@ -44,8 +69,10 @@ struct ICEBERG_EXPORT WriterOptions {
   /// to the specific FileIO implementation. By default, the `iceberg-bundle` library uses
   /// `ArrowFileSystemFileIO` as the default implementation.
   std::shared_ptr<class FileIO> io;
+  /// \brief Metadata to write to the file.
+  std::unordered_map<std::string, std::string> metadata;
   /// \brief Format-specific or implementation-specific properties.
-  std::unordered_map<std::string, std::string> properties;
+  std::shared_ptr<WriterProperties> properties = WriterProperties::default_properties();
 };
 
 /// \brief Base writer class to write data from different file formats.
@@ -57,7 +84,7 @@ class ICEBERG_EXPORT Writer {
   Writer& operator=(const Writer&) = delete;
 
   /// \brief Open the writer.
-  virtual Status Open(const struct WriterOptions& options) = 0;
+  virtual Status Open(const WriterOptions& options) = 0;
 
   /// \brief Close the writer.
   virtual Status Close() = 0;

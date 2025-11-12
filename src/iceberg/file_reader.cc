@@ -59,4 +59,15 @@ Result<std::unique_ptr<Reader>> ReaderFactoryRegistry::Open(
   return reader;
 }
 
+std::unique_ptr<ReaderProperties> ReaderProperties::default_properties() {
+  return std::make_unique<ReaderProperties>();
+}
+
+std::unique_ptr<ReaderProperties> ReaderProperties::FromMap(
+    const std::unordered_map<std::string, std::string>& properties) {
+  auto reader_properties = std::make_unique<ReaderProperties>();
+  reader_properties->configs_ = properties;
+  return reader_properties;
+}
+
 }  // namespace iceberg

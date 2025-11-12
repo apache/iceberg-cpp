@@ -40,6 +40,8 @@ class ManifestReaderImpl : public ManifestReader {
 
   Result<std::vector<ManifestEntry>> Entries() const override;
 
+  Result<std::unordered_map<std::string, std::string>> Metadata() const override;
+
  private:
   std::shared_ptr<Schema> schema_;
   std::unique_ptr<Reader> reader_;
@@ -54,6 +56,8 @@ class ManifestListReaderImpl : public ManifestListReader {
       : schema_(std::move(schema)), reader_(std::move(reader)) {}
 
   Result<std::vector<ManifestFile>> Files() const override;
+
+  Result<std::unordered_map<std::string, std::string>> Metadata() const override;
 
  private:
   std::shared_ptr<Schema> schema_;

@@ -139,6 +139,8 @@ class ManifestListWriter;
 class ManifestReader;
 class ManifestWriter;
 
+struct ReaderOptions;
+struct WriterOptions;
 class Reader;
 class Writer;
 

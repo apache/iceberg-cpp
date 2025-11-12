@@ -123,9 +123,13 @@ class AvroReaderTest : public TempFileTestBase {
     auto export_result = ::arrow::ExportArray(*array, &arrow_array);
     ASSERT_TRUE(export_result.ok());
 
-    auto writer_result = WriterFactoryRegistry::Open(
-        FileFormatType::kAvro,
-        {.path = temp_avro_file_, .schema = schema, .io = file_io_});
+    std::unordered_map<std::string, std::string> metadata = {{"k1", "v1"}, {"k2", "v2"}};
+
+    auto writer_result =
+        WriterFactoryRegistry::Open(FileFormatType::kAvro, {.path = temp_avro_file_,
+                                                            .schema = schema,
+                                                            .io = file_io_,
+                                                            .metadata = metadata});
     ASSERT_TRUE(writer_result.has_value());
     auto writer = std::move(writer_result.value());
     ASSERT_THAT(writer->Write(&arrow_array), IsOk());
@@ -144,6 +148,15 @@ class AvroReaderTest : public TempFileTestBase {
     auto reader = std::move(reader_result.value());
     ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, expected_string));
     ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+
+    auto metadata_result = reader->Metadata();
+    ASSERT_THAT(metadata_result, IsOk());
+    auto read_metadata = std::move(metadata_result.value());
+    for (const auto& [key, value] : metadata) {
+      auto it = read_metadata.find(key);
+      ASSERT_NE(it, read_metadata.end());
+      ASSERT_EQ(it->second, value);
+    }
   }
 
   std::shared_ptr<::arrow::fs::LocalFileSystem> local_fs_;
@@ -191,9 +204,14 @@ TEST_F(AvroReaderTest, ReadWithBatchSize) {
   auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "id", std::make_shared<IntType>())});
 
+  auto reader_properties = ReaderProperties::default_properties();
+  reader_properties->Set(ReaderProperties::kBatchSize, int64_t{2});
+
   auto reader_result = ReaderFactoryRegistry::Open(
-      FileFormatType::kAvro,
-      {.path = temp_avro_file_, .batch_size = 2, .io = file_io_, .projection = schema});
+      FileFormatType::kAvro, {.path = temp_avro_file_,
+                              .io = file_io_,
+                              .projection = schema,
+                              .properties = std::move(reader_properties)});
   ASSERT_THAT(reader_result, IsOk());
   auto reader = std::move(reader_result.value());
 

@@ -36,7 +36,12 @@ namespace iceberg {
 class ICEBERG_EXPORT ManifestReader {
  public:
   virtual ~ManifestReader() = default;
+
+  /// \brief Read all manifest entries in the manifest file.
   virtual Result<std::vector<ManifestEntry>> Entries() const = 0;
+
+  /// \brief Get the metadata of the manifest file.
+  virtual Result<std::unordered_map<std::string, std::string>> Metadata() const = 0;
 
   /// \brief Creates a reader for a manifest file.
   /// \param manifest A ManifestFile object containing metadata about the manifest.
@@ -61,7 +66,12 @@ class ICEBERG_EXPORT ManifestReader {
 class ICEBERG_EXPORT ManifestListReader {
  public:
   virtual ~ManifestListReader() = default;
+
+  /// \brief Read all manifest files in the manifest list file.
   virtual Result<std::vector<ManifestFile>> Files() const = 0;
+
+  /// \brief Get the metadata of the manifest list file.
+  virtual Result<std::unordered_map<std::string, std::string>> Metadata() const = 0;
 
   /// \brief Creates a reader for the manifest list.
   /// \param manifest_list_location Path to the manifest list file.

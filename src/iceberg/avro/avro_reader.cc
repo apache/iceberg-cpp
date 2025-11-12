@@ -82,7 +82,7 @@ class AvroReader::Impl {
       return InvalidArgument("Projected schema is required by Avro reader");
     }
 
-    batch_size_ = options.batch_size;
+    batch_size_ = options.properties->Get(ReaderProperties::kBatchSize);
     read_schema_ = options.projection;
 
     // Open the input stream and adapt to the avro interface.

@@ -30,6 +30,7 @@
 #include "iceberg/file_format.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/config.h"
 
 namespace iceberg {
 
@@ -42,7 +43,7 @@ class ICEBERG_EXPORT Reader {
   Reader& operator=(const Reader&) = delete;
 
   /// \brief Open the reader.
-  virtual Status Open(const struct ReaderOptions& options) = 0;
+  virtual Status Open(const ReaderOptions& options) = 0;
 
   /// \brief Close the reader.
   virtual Status Close() = 0;
@@ -67,19 +68,30 @@ struct ICEBERG_EXPORT Split {
   size_t length;
 };
 
+class ReaderProperties : public ConfigBase<ReaderProperties> {
+ public:
+  template <typename T>
+  using Entry = const ConfigBase<ReaderProperties>::Entry<T>;
+
+  /// \brief The batch size to read.
+  inline static Entry<int64_t> kBatchSize{"read.batch-size", 4096};
+
+  /// \brief Create a default ReaderProperties instance.
+  static std::unique_ptr<ReaderProperties> default_properties();
+
+  /// \brief Create a ReaderProperties instance from a map of key-value pairs.
+  static std::unique_ptr<ReaderProperties> FromMap(
+      const std::unordered_map<std::string, std::string>& properties);
+};
+
 /// \brief Options for creating a reader.
 struct ICEBERG_EXPORT ReaderOptions {
-  static constexpr int64_t kDefaultBatchSize = 4096;
-
   /// \brief The path to the file to read.
   std::string path;
   /// \brief The total length of the file.
   std::optional<size_t> length;
   /// \brief The split to read.
   std::optional<Split> split;
-  /// \brief The batch size to read. Only applies to implementations that support
-  /// batching.
-  int64_t batch_size = kDefaultBatchSize;
   /// \brief FileIO instance to open the file. Reader implementations should down cast it
   /// to the specific FileIO implementation. By default, the `iceberg-bundle` library uses
   /// `ArrowFileSystemFileIO` as the default implementation.
@@ -93,7 +105,7 @@ struct ICEBERG_EXPORT ReaderOptions {
   /// that may have different field names than the current schema.
   std::shared_ptr<class NameMapping> name_mapping;
   /// \brief Format-specific or implementation-specific properties.
-  std::unordered_map<std::string, std::string> properties;
+  std::shared_ptr<ReaderProperties> properties = ReaderProperties::default_properties();
 };
 
 /// \brief Factory function to create a reader of a specific file format.

@@ -59,4 +59,15 @@ Result<std::unique_ptr<Writer>> WriterFactoryRegistry::Open(
   return writer;
 }
 
+std::unique_ptr<WriterProperties> WriterProperties::default_properties() {
+  return std::make_unique<WriterProperties>();
+}
+
+std::unique_ptr<WriterProperties> WriterProperties::FromMap(
+    const std::unordered_map<std::string, std::string>& properties) {
+  auto writer_properties = std::make_unique<WriterProperties>();
+  writer_properties->configs_ = properties;
+  return writer_properties;
+}
+
 }  // namespace iceberg

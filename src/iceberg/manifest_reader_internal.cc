@@ -548,6 +548,11 @@ Result<std::vector<ManifestEntry>> ManifestReaderImpl::Entries() const {
   return manifest_entries;
 }
 
+Result<std::unordered_map<std::string, std::string>> ManifestReaderImpl::Metadata()
+    const {
+  return reader_->Metadata();
+}
+
 Result<std::vector<ManifestFile>> ManifestListReaderImpl::Files() const {
   std::vector<ManifestFile> manifest_files;
   ICEBERG_ASSIGN_OR_RAISE(auto arrow_schema, reader_->Schema());
@@ -567,6 +572,11 @@ Result<std::vector<ManifestFile>> ManifestListReaderImpl::Files() const {
     }
   }
   return manifest_files;
+}
+
+Result<std::unordered_map<std::string, std::string>> ManifestListReaderImpl::Metadata()
+    const {
+  return reader_->Metadata();
 }
 
 Result<ManifestFileField> ManifestFileFieldFromIndex(int32_t index) {

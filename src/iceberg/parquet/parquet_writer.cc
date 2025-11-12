@@ -68,7 +68,8 @@ class ParquetWriter::Impl {
 
     ICEBERG_ASSIGN_OR_RAISE(output_stream_, OpenOutputStream(options));
     auto file_writer = ::parquet::ParquetFileWriter::Open(
-        output_stream_, std::move(schema_node), std::move(writer_properties));
+        output_stream_, std::move(schema_node), std::move(writer_properties),
+        std::make_shared<::arrow::KeyValueMetadata>(options.metadata));
     ICEBERG_ARROW_RETURN_NOT_OK(
         ::parquet::arrow::FileWriter::Make(pool_, std::move(file_writer), arrow_schema_,
                                            std::move(arrow_writer_properties), &writer_));

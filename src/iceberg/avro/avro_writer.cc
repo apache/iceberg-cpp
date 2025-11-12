@@ -66,23 +66,30 @@ class AvroWriter::Impl {
 
     ::avro::NodePtr root;
     ICEBERG_RETURN_UNEXPECTED(ToAvroNodeVisitor{}.Visit(*write_schema_, &root));
+    if (const auto& schema_name =
+            options.properties->Get(WriterProperties::kAvroSchemaName);
+        !schema_name.empty()) {
+      root->setName(::avro::Name(schema_name));
+    }
 
     avro_schema_ = std::make_shared<::avro::ValidSchema>(root);
 
     // Open the output stream and adapt to the avro interface.
-    constexpr int64_t kDefaultBufferSize = 1024 * 1024;
-    ICEBERG_ASSIGN_OR_RAISE(auto output_stream,
-                            CreateOutputStream(options, kDefaultBufferSize));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto output_stream,
+        CreateOutputStream(options,
+                           options.properties->Get(WriterProperties::kAvroBufferSize)));
     arrow_output_stream_ = output_stream->arrow_output_stream();
     std::map<std::string, std::vector<uint8_t>> metadata;
-    for (const auto& [key, value] : options.properties) {
+    for (const auto& [key, value] : options.metadata) {
       std::vector<uint8_t> vec;
       vec.reserve(value.size());
       vec.assign(value.begin(), value.end());
       metadata.emplace(key, std::move(vec));
     }
     writer_ = std::make_unique<::avro::DataFileWriter<::avro::GenericDatum>>(
-        std::move(output_stream), *avro_schema_, 16 * 1024 /*syncInterval*/,
+        std::move(output_stream), *avro_schema_,
+        options.properties->Get(WriterProperties::kAvroSyncInterval),
         ::avro::NULL_CODEC /*codec*/, metadata);
     datum_ = std::make_unique<::avro::GenericDatum>(*avro_schema_);
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*write_schema_, &arrow_schema_));

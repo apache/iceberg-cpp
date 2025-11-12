@@ -63,7 +63,8 @@ Status WriteArray(std::shared_ptr<::arrow::Array> data,
 }
 
 Status ReadArray(std::shared_ptr<::arrow::Array>& out,
-                 const ReaderOptions& reader_options) {
+                 const ReaderOptions& reader_options,
+                 std::unordered_map<std::string, std::string>* metadata) {
   ICEBERG_ASSIGN_OR_RAISE(
       auto reader, ReaderFactoryRegistry::Open(FileFormatType::kParquet, reader_options));
   ICEBERG_ASSIGN_OR_RAISE(auto read_data, reader->Next());
@@ -77,6 +78,11 @@ Status ReadArray(std::shared_ptr<::arrow::Array>& out,
   ICEBERG_ASSIGN_OR_RAISE(ArrowSchema arrow_schema, reader->Schema());
   ICEBERG_ARROW_ASSIGN_OR_RETURN(out,
                                  ::arrow::ImportArray(&arrow_c_array, &arrow_schema));
+
+  if (metadata) {
+    ICEBERG_ASSIGN_OR_RAISE(*metadata, reader->Metadata());
+  }
+
   return {};
 }
 
@@ -85,18 +91,25 @@ void DoRoundtrip(std::shared_ptr<::arrow::Array> data, std::shared_ptr<Schema> s
   std::shared_ptr<FileIO> file_io = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
   const std::string basePath = "base.parquet";
 
+  std::unordered_map<std::string, std::string> metadata = {{"k1", "v1"}, {"k2", "v2"}};
+
   auto writer_data = WriterFactoryRegistry::Open(
-      FileFormatType::kParquet, {.path = basePath, .schema = schema, .io = file_io});
+      FileFormatType::kParquet,
+      {.path = basePath, .schema = schema, .io = file_io, .metadata = metadata});
   ASSERT_THAT(writer_data, IsOk())
       << "Failed to create writer: " << writer_data.error().message;
   auto writer = std::move(writer_data.value());
   ASSERT_THAT(WriteArray(data, *writer), IsOk());
 
-  ASSERT_THAT(ReadArray(out, {.path = basePath,
-                              .length = writer->length(),
-                              .io = file_io,
-                              .projection = schema}),
+  std::unordered_map<std::string, std::string> read_metadata;
+  ASSERT_THAT(ReadArray(out,
+                        {.path = basePath,
+                         .length = writer->length(),
+                         .io = file_io,
+                         .projection = schema},
+                        &read_metadata),
               IsOk());
+  ASSERT_EQ(read_metadata, metadata);
 
   ASSERT_TRUE(out != nullptr) << "Reader.Next() returned no data";
 }
@@ -231,11 +244,14 @@ TEST_F(ParquetReaderTest, ReadWithBatchSize) {
   auto schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())});
 
-  auto reader_result =
-      ReaderFactoryRegistry::Open(FileFormatType::kParquet, {.path = temp_parquet_file_,
-                                                             .batch_size = 2,
-                                                             .io = file_io_,
-                                                             .projection = schema});
+  auto reader_properties = ReaderProperties::default_properties();
+  reader_properties->Set(ReaderProperties::kBatchSize, int64_t{2});
+
+  auto reader_result = ReaderFactoryRegistry::Open(
+      FileFormatType::kParquet, {.path = temp_parquet_file_,
+                                 .io = file_io_,
+                                 .projection = schema,
+                                 .properties = std::move(reader_properties)});
   ASSERT_THAT(reader_result, IsOk());
   auto reader = std::move(reader_result.value());
 
@@ -271,13 +287,19 @@ TEST_F(ParquetReaderTest, ReadSplit) {
       R"([[1], [2], [3]])", R"([[1], [2]])", R"([[3]])", "", "",
   };
 
+  std::shared_ptr<ReaderProperties> reader_properties =
+      ReaderProperties::default_properties();
+  reader_properties->Set(ReaderProperties::kBatchSize, int64_t{100});
+
   for (size_t i = 0; i < splits.size(); ++i) {
-    auto reader_result =
-        ReaderFactoryRegistry::Open(FileFormatType::kParquet, {.path = temp_parquet_file_,
-                                                               .split = splits[i],
-                                                               .batch_size = 100,
-                                                               .io = file_io_,
-                                                               .projection = schema});
+    auto reader_result = ReaderFactoryRegistry::Open(FileFormatType::kParquet,
+                                                     {
+                                                         .path = temp_parquet_file_,
+                                                         .split = splits[i],
+                                                         .io = file_io_,
+                                                         .projection = schema,
+                                                         .properties = reader_properties,
+                                                     });
     ASSERT_THAT(reader_result, IsOk());
     auto reader = std::move(reader_result.value());
     if (!expected_json[i].empty()) {
