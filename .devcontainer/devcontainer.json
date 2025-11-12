@@ -20,7 +20,7 @@
 {
 	"name": "Iceberg CPP Dev Container",
 	"build": {
-		"dockerfile": "../Dockerfile"
+		"dockerfile": "Dockerfile"
 	},
 	"runArgs": [
 		"--ulimit=core=-1",

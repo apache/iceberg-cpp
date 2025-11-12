@@ -21,8 +21,8 @@
 FROM ubuntu:24.04
 
 # Install necessary packages
-RUN apt-get update && \
-    apt-get install -y \
+RUN apt update && \
+    apt install -y \
     bash-completion \
     build-essential \
     ccache \
@@ -36,6 +36,7 @@ RUN apt-get update && \
     libcurl4-openssl-dev \
     libssl-dev \
     libxml2-dev \
+    lsb-release \
     meson \
     ninja-build \
     pkg-config \
