@@ -45,7 +45,7 @@ namespace iceberg {
 /// \tparam R The return type produced by visitor methods
 template <typename R>
 class ICEBERG_EXPORT ExpressionVisitor {
-  using ParamType = typename std::conditional_t<std::is_fundamental_v<R>, R, const R&>;
+  using ParamType = std::conditional_t<std::is_fundamental_v<R>, R, const R&>;
 
  public:
   virtual ~ExpressionVisitor() = default;
