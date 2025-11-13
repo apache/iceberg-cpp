@@ -138,7 +138,7 @@ TEST(PartitionSpecTest, PartitionTypeTest) {
       std::vector<SchemaField>{field1, field2, field3, field4, field5, field6},
       Schema::kInitialSchemaId);
 
-  auto parsed_spec_result = PartitionSpecFromJson(schema, json);
+  auto parsed_spec_result = PartitionSpecFromJson(schema, json, 1);
   ASSERT_TRUE(parsed_spec_result.has_value()) << parsed_spec_result.error().message;
 
   auto partition_type = parsed_spec_result.value()->PartitionType(*schema);

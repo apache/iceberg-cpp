@@ -176,10 +176,12 @@ ICEBERG_EXPORT Result<std::string> ToJsonString(const PartitionSpec& partition_s
 ///
 /// \param schema The current schema.
 /// \param json The JSON object representing a `PartitionSpec`.
+/// \param default_spec_id The default spec ID from the table metadata.
 /// \return An `expected` value containing either a `PartitionSpec` object or an error. If
 /// the JSON is malformed or missing expected fields, an error will be returned.
 ICEBERG_EXPORT Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
-    const std::shared_ptr<Schema>& schema, const nlohmann::json& json);
+    const std::shared_ptr<Schema>& schema, const nlohmann::json& json,
+    int32_t default_spec_id);
 
 /// \brief Serializes a `SnapshotRef` object to JSON.
 ///

@@ -168,7 +168,7 @@ TEST(JsonInternalTest, PartitionSpec) {
 
   EXPECT_EQ(json, expected_json);
 
-  auto parsed_spec_result = PartitionSpecFromJson(schema, json);
+  auto parsed_spec_result = PartitionSpecFromJson(schema, json, 1);
   ASSERT_TRUE(parsed_spec_result.has_value()) << parsed_spec_result.error().message;
   EXPECT_EQ(*spec, *parsed_spec_result.value());
 }

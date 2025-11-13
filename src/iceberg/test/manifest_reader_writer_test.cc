@@ -186,10 +186,8 @@ TEST_F(ManifestV1Test, WritePartitionedTest) {
   auto identity_transform = Transform::Identity();
   std::vector<PartitionField> fields{
       PartitionField(1, 1000, "order_ts_hour", identity_transform)};
-  auto partition_spec_result = PartitionSpec::Make(1, fields);
-  ASSERT_TRUE(partition_spec_result.has_value());
-  auto partition_spec =
-      std::shared_ptr<PartitionSpec>(std::move(partition_spec_result.value()));
+  ICEBERG_UNWRAP_OR_FAIL(std::shared_ptr<PartitionSpec> partition_spec,
+                         PartitionSpec::Make(*table_schema, 1, fields, false));
 
   auto expected_entries = PreparePartitionedTestData();
   auto write_manifest_path = CreateNewTempFilePath();
