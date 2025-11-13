@@ -37,8 +37,7 @@ namespace iceberg {
 ///       - All field IDs must be unique across the entire schema hierarchy
 ///       If the struct is part of a Schema, these invariants are enforced by
 ///       StructType::InitFieldById which checks for duplicate field IDs.
-ICEBERG_EXPORT static std::unordered_map<int32_t, int32_t> indexParents(
-    const StructType& root_struct) {
+static std::unordered_map<int32_t, int32_t> indexParents(const StructType& root_struct) {
   std::unordered_map<int32_t, int32_t> id_to_parent;
   std::stack<int32_t> parent_id_stack;
 
