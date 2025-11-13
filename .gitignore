@@ -27,6 +27,10 @@ cmake-build-release/
 .vscode
 .cache
 
+# devcontainer
+.devcontainer/*
+!.devcontainer/*.sample
+
 # meson subprojects - wrap files need to be kept to let meson download
 # dependencies as needed, but dependencies themselves should not be versioned
 /subprojects/*

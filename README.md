@@ -100,6 +100,20 @@ pre-commit install
 
 This will setup a git pre-commit-hook that is executed on each commit and will report the linting problems. To run all hooks on all files use `pre-commit run -a`.
 
+### Dev Containers
+
+We provide sample Dev Container configuration files.
+
+To use a Dev Container as your development environment, follow the steps below, then select `Dev Containers: Reopen in Container` from VS Code's Command Palette.
+
+```
+cd .devcontainer
+cp Dockerfile.sample Dockerfile
+cp devcontainer.json.sample devcontainer.json
+```
+
+If you make improvements that could benefit all developers, please update the sample files and submit a pull request.
+
 ## License
 
 Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
