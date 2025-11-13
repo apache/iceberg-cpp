@@ -253,9 +253,9 @@ class ICEBERG_EXPORT BoundVisitor : public ExpressionVisitor<R> {
 
 /// \brief Traverse an expression tree with a visitor.
 ///
-/// This function traverses the given expression tree in postfix order (children
-/// before parents) and calls appropriate visitor methods for each node. Results
-/// from child nodes are passed to parent nodes.
+/// This function traverses the given expression tree in postorder traversal and calls
+/// appropriate visitor methods for each node. Results from child nodes are passed to
+/// parent nodes.
 ///
 /// \tparam R The return type produced by the visitor
 /// \tparam V The visitor type (must derive from ExpressionVisitor<R>)
