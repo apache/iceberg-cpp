@@ -99,10 +99,13 @@ TEST(MetadataSerdeTest, DeserializeV1Valid) {
                                SchemaField::MakeRequired(3, "z", int64())},
       /*schema_id=*/std::nullopt);
 
-  auto expected_spec = std::make_shared<PartitionSpec>(
+  auto expected_spec_result = PartitionSpec::Make(
       /*spec_id=*/0,
       std::vector<PartitionField>{PartitionField(/*source_id=*/1, /*field_id=*/1000, "x",
                                                  Transform::Identity())});
+  ASSERT_TRUE(expected_spec_result.has_value());
+  auto expected_spec =
+      std::shared_ptr<PartitionSpec>(std::move(expected_spec_result.value()));
 
   TableMetadata expected{
       .format_version = 1,
@@ -133,7 +136,7 @@ TEST(MetadataSerdeTest, DeserializeV2Valid) {
   ASSERT_NO_FATAL_FAILURE(ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
 
   auto expected_schema_1 = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField(/*field_id=*/1, "x", iceberg::int64(),
+      std::vector<SchemaField>{SchemaField(/*field_id=*/1, "x", int64(),
                                            /*optional=*/false)},
       /*schema_id=*/0);
 
@@ -143,10 +146,13 @@ TEST(MetadataSerdeTest, DeserializeV2Valid) {
                                SchemaField::MakeRequired(3, "z", int64())},
       /*schema_id=*/1);
 
-  auto expected_spec = std::make_shared<PartitionSpec>(
+  auto expected_spec_result = PartitionSpec::Make(
       /*spec_id=*/0,
       std::vector<PartitionField>{PartitionField(/*source_id=*/1, /*field_id=*/1000, "x",
                                                  Transform::Identity())});
+  ASSERT_TRUE(expected_spec_result.has_value());
+  auto expected_spec =
+      std::shared_ptr<PartitionSpec>(std::move(expected_spec_result.value()));
 
   ICEBERG_UNWRAP_OR_FAIL(
       auto sort_order,
@@ -228,10 +234,13 @@ TEST(MetadataSerdeTest, DeserializeV2ValidMinimal) {
                                SchemaField::MakeRequired(3, "z", int64())},
       /*schema_id=*/0);
 
-  auto expected_spec = std::make_shared<PartitionSpec>(
+  auto expected_spec_result = PartitionSpec::Make(
       /*spec_id=*/0,
       std::vector<PartitionField>{PartitionField(/*source_id=*/1, /*field_id=*/1000, "x",
                                                  Transform::Identity())});
+  ASSERT_TRUE(expected_spec_result.has_value());
+  auto expected_spec =
+      std::shared_ptr<PartitionSpec>(std::move(expected_spec_result.value()));
 
   ICEBERG_UNWRAP_OR_FAIL(
       auto sort_order,
@@ -277,12 +286,15 @@ TEST(MetadataSerdeTest, DeserializeStatisticsFiles) {
       ReadTableMetadata("TableMetadataStatisticsFiles.json", &metadata));
 
   auto expected_schema = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField(/*field_id=*/1, "x", iceberg::int64(),
+      std::vector<SchemaField>{SchemaField(/*field_id=*/1, "x", int64(),
                                            /*optional=*/false)},
       /*schema_id=*/0);
 
+  auto expected_spec_result =
+      PartitionSpec::Make(/*spec_id=*/0, std::vector<PartitionField>{});
+  ASSERT_TRUE(expected_spec_result.has_value());
   auto expected_spec =
-      std::make_shared<PartitionSpec>(/*spec_id=*/0, std::vector<PartitionField>{});
+      std::shared_ptr<PartitionSpec>(std::move(expected_spec_result.value()));
 
   auto expected_snapshot = std::make_shared<Snapshot>(Snapshot{
       .snapshot_id = 3055729675574597004,
@@ -353,7 +365,7 @@ TEST(MetadataSerdeTest, DeserializePartitionStatisticsFiles) {
       .last_updated_ms = TimePointMsFromUnixMs(1602638573590).value(),
       .last_column_id = 3,
       .schemas = {std::make_shared<Schema>(
-          std::vector<SchemaField>{SchemaField(/*field_id=*/1, "x", iceberg::int64(),
+          std::vector<SchemaField>{SchemaField(/*field_id=*/1, "x", int64(),
                                                /*optional=*/false)},
           /*schema_id=*/0)},
       .current_schema_id = 0,

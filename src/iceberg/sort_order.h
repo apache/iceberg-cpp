@@ -88,7 +88,6 @@ class ICEBERG_EXPORT SortOrder : public util::Formattable {
   /// \param fields The sort fields.
   /// \return A Result containing the SortOrder or an error.
   /// \note This method does not check whether the sort fields are valid for any schema.
-  /// Use IsBoundToSchema to check if the sort order is valid for a given schema.
   static Result<std::unique_ptr<SortOrder>> Make(int32_t sort_id,
                                                  std::vector<SortField> fields);
 

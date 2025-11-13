@@ -103,14 +103,13 @@ TEST(JsonInternalTest, SortField) {
 
 TEST(JsonInternalTest, SortOrder) {
   auto schema = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField(5, "region", iceberg::string(), false),
-                               SchemaField(7, "ts", iceberg::int64(), false)},
+      std::vector<SchemaField>{SchemaField(5, "region", string(), false),
+                               SchemaField(7, "ts", int64(), false)},
       /*schema_id=*/100);
   auto identity_transform = Transform::Identity();
   SortField st_ts(5, identity_transform, SortDirection::kAscending, NullOrder::kFirst);
   SortField st_bar(7, identity_transform, SortDirection::kDescending, NullOrder::kLast);
-  ICEBERG_UNWRAP_OR_FAIL(auto sort_order, SortOrder::Make(100, {st_ts, st_bar}));
-  EXPECT_TRUE(sort_order->Validate(*schema));
+  ICEBERG_UNWRAP_OR_FAIL(auto sort_order, SortOrder::Make(*schema, 100, {st_ts, st_bar}));
   nlohmann::json expected_sort_order =
       R"({"order-id":100,"fields":[
           {"transform":"identity","source-id":5,"direction":"asc","null-order":"nulls-first"},
@@ -132,7 +131,7 @@ TEST(JsonInternalTest, PartitionField) {
   TestJsonConversion(field, expected_json);
 }
 
-TEST(JsonPartitionTest, PartitionFieldFromJsonMissingField) {
+TEST(JsonInternalTest, PartitionFieldFromJsonMissingField) {
   nlohmann::json invalid_json =
       R"({"field-id":101,"transform":"identity","name":"region"})"_json;
   // missing source-id
@@ -143,15 +142,19 @@ TEST(JsonPartitionTest, PartitionFieldFromJsonMissingField) {
   EXPECT_THAT(result, HasErrorMessage("Missing 'source-id'"));
 }
 
-TEST(JsonPartitionTest, PartitionSpec) {
+TEST(JsonInternalTest, PartitionSpec) {
   auto schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField(3, "region", string(), false),
                                SchemaField(5, "ts", int64(), false)},
       /*schema_id=*/100);
   auto identity_transform = Transform::Identity();
-  PartitionSpec spec(1, {PartitionField(3, 101, "region", identity_transform),
-                         PartitionField(5, 102, "ts", identity_transform)});
-  auto json = ToJson(spec);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec,
+      PartitionSpec::Make(*schema, 1,
+                          {PartitionField(3, 101, "region", identity_transform),
+                           PartitionField(5, 102, "ts", identity_transform)},
+                          false));
+  auto json = ToJson(*spec);
   nlohmann::json expected_json = R"({"spec-id": 1,
                                      "fields": [
                                        {"source-id": 3,
@@ -167,7 +170,7 @@ TEST(JsonPartitionTest, PartitionSpec) {
 
   auto parsed_spec_result = PartitionSpecFromJson(schema, json);
   ASSERT_TRUE(parsed_spec_result.has_value()) << parsed_spec_result.error().message;
-  EXPECT_EQ(spec, *parsed_spec_result.value());
+  EXPECT_EQ(*spec, *parsed_spec_result.value());
 }
 
 TEST(JsonInternalTest, SnapshotRefBranch) {

@@ -28,6 +28,7 @@ install_headers(
         'string_util.h',
         'timepoint.h',
         'truncate_util.h',
+        'type_util.h',
         'visitor_generate.h',
         'visit_type.h',
     ],

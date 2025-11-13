@@ -20,15 +20,19 @@
 #include "iceberg/partition_spec.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <format>
 #include <memory>
 #include <ranges>
+#include <unordered_map>
 
+#include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/transform.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
+#include "iceberg/util/type_util.h"
 
 namespace iceberg {
 
@@ -47,9 +51,8 @@ PartitionSpec::PartitionSpec(int32_t spec_id, std::vector<PartitionField> fields
 }
 
 const std::shared_ptr<PartitionSpec>& PartitionSpec::Unpartitioned() {
-  static const std::shared_ptr<PartitionSpec> unpartitioned =
-      std::make_shared<PartitionSpec>(kInitialSpecId, std::vector<PartitionField>{},
-                                      kLegacyPartitionDataIdStart - 1);
+  static const std::shared_ptr<PartitionSpec> unpartitioned(new PartitionSpec(
+      kInitialSpecId, std::vector<PartitionField>{}, kLegacyPartitionDataIdStart - 1));
   return unpartitioned;
 }
 
@@ -102,6 +105,69 @@ std::string PartitionSpec::ToString() const {
 
 bool PartitionSpec::Equals(const PartitionSpec& other) const {
   return spec_id_ == other.spec_id_ && fields_ == other.fields_;
+}
+
+Status PartitionSpec::Validate(const Schema& schema, bool allow_missing_fields) const {
+  std::unordered_map<int32_t, int32_t> parents = indexParents(schema);
+  for (const auto& partition_field : fields_) {
+    ICEBERG_ASSIGN_OR_RAISE(auto source_field,
+                            schema.FindFieldById(partition_field.source_id()));
+    // In the case the underlying field is dropped, we cannot check if they are compatible
+    if (allow_missing_fields && !source_field.has_value()) {
+      continue;
+    }
+    const auto& field_transform = partition_field.transform();
+
+    // In the case of a Version 1 partition-spec field gets deleted, it is replaced with a
+    // void transform, see: https://iceberg.apache.org/spec/#partition-transforms. We
+    // don't care about the source type since a VoidTransform is always compatible and
+    // skip the checks
+    if (field_transform->transform_type() != TransformType::kVoid) {
+      if (!source_field.has_value()) {
+        return InvalidArgument("Cannot find source column for partition field: {}",
+                               partition_field);
+      }
+      const auto& source_type = source_field.value().get().type();
+      if (!field_transform->CanTransform(*source_type)) {
+        return InvalidArgument("Invalid source type {} for transform {}",
+                               source_type->ToString(), field_transform->ToString());
+      }
+
+      // The only valid parent types for a PartitionField are StructTypes. This must be
+      // checked recursively.
+      auto parent_id_iter = parents.find(partition_field.source_id());
+      while (parent_id_iter != parents.end()) {
+        int32_t parent_id = parent_id_iter->second;
+        ICEBERG_ASSIGN_OR_RAISE(auto parent_field, schema.FindFieldById(parent_id));
+        if (!parent_field.has_value()) {
+          return InvalidArgument("Cannot find parent field with ID: {}", parent_id);
+        }
+        const auto& parent_type = parent_field.value().get().type();
+        if (parent_type->type_id() != TypeId::kStruct) {
+          return InvalidArgument("Invalid partition field parent type: {}",
+                                 parent_type->ToString());
+        }
+        parent_id_iter = parents.find(parent_id);
+      }
+    }
+  }
+  return {};
+}
+
+Result<std::unique_ptr<PartitionSpec>> PartitionSpec::Make(
+    const Schema& schema, int32_t spec_id, std::vector<PartitionField> fields,
+    bool allow_missing_fields, std::optional<int32_t> last_assigned_field_id) {
+  auto partition_spec = std::unique_ptr<PartitionSpec>(
+      new PartitionSpec(spec_id, std::move(fields), last_assigned_field_id));
+  ICEBERG_RETURN_UNEXPECTED(partition_spec->Validate(schema, allow_missing_fields));
+  return partition_spec;
+}
+
+Result<std::unique_ptr<PartitionSpec>> PartitionSpec::Make(
+    int32_t spec_id, std::vector<PartitionField> fields,
+    std::optional<int32_t> last_assigned_field_id) {
+  return std::unique_ptr<PartitionSpec>(
+      new PartitionSpec(spec_id, std::move(fields), last_assigned_field_id));
 }
 
 }  // namespace iceberg

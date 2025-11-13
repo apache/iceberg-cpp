@@ -90,7 +90,7 @@ bool SortOrder::Equals(const SortOrder& other) const {
 Status SortOrder::Validate(const Schema& schema) const {
   for (const auto& field : fields_) {
     ICEBERG_ASSIGN_OR_RAISE(auto schema_field, schema.FindFieldById(field.source_id()));
-    if (!schema_field.has_value() || schema_field == std::nullopt) {
+    if (!schema_field.has_value()) {
       return InvalidArgument("Cannot find source column for sort field: {}", field);
     }
 

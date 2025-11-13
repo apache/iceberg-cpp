@@ -542,9 +542,10 @@ Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
     ICEBERG_ASSIGN_OR_RAISE(auto partition_field, PartitionFieldFromJson(field_json));
     partition_fields.push_back(std::move(*partition_field));
   }
-  // TODO(Li Feiyang):use a new PartitionSpec::Make to find the source field of each
-  // partition field from schema and then verify it
-  return std::make_unique<PartitionSpec>(spec_id, std::move(partition_fields));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto spec, PartitionSpec::Make(*schema, spec_id, std::move(partition_fields),
+                                     true /*allow_missing_fields*/));
+  return spec;
 }
 
 Result<std::unique_ptr<SnapshotRef>> SnapshotRefFromJson(const nlohmann::json& json) {
@@ -917,10 +918,10 @@ Status ParsePartitionSpecs(const nlohmann::json& json, int8_t format_version,
                           std::move(field->transform()));
     }
 
-    // TODO(Li Feiyang):use a new PartitionSpec::Make to find the source field of each
-    // partition field from schema and then verify it
-    auto spec =
-        std::make_unique<PartitionSpec>(PartitionSpec::kInitialSpecId, std::move(fields));
+    // Create partition spec with schema validation
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto spec, PartitionSpec::Make(*current_schema, PartitionSpec::kInitialSpecId,
+                                       std::move(fields), true /*allow_missing_fields*/));
     default_spec_id = spec->spec_id();
     partition_specs.push_back(std::move(spec));
   }

@@ -30,6 +30,7 @@
 #include "iceberg/exception.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
+#include "iceberg/util/type_util.h"
 
 struct TypeTestCase {
   /// Test case name, must be safe for Googletest (alphanumeric + underscore)
@@ -603,4 +604,91 @@ TEST_F(StructTypeThreadSafetyTest, MixedConcurrentOperations) {
   for (auto& thread : threads) {
     thread.join();
   }
+}
+
+TEST(TypeTest, IndexParents) {
+  auto inner_preferences =
+      std::make_shared<iceberg::StructType>(std::vector<iceberg::SchemaField>{
+          iceberg::SchemaField::MakeRequired(12, "feature3", iceberg::boolean()),
+          iceberg::SchemaField::MakeOptional(13, "feature4", iceberg::boolean()),
+      });
+
+  auto preferences =
+      std::make_shared<iceberg::StructType>(std::vector<iceberg::SchemaField>{
+          iceberg::SchemaField::MakeRequired(6, "feature1", iceberg::boolean()),
+          iceberg::SchemaField::MakeOptional(7, "feature2", iceberg::boolean()),
+          iceberg::SchemaField::MakeOptional(8, "inner_preferences", inner_preferences),
+      });
+
+  auto locations_key_struct =
+      std::make_shared<iceberg::StructType>(std::vector<iceberg::SchemaField>{
+          iceberg::SchemaField::MakeRequired(20, "address", iceberg::string()),
+          iceberg::SchemaField::MakeRequired(21, "city", iceberg::string()),
+          iceberg::SchemaField::MakeRequired(22, "state", iceberg::string()),
+          iceberg::SchemaField::MakeRequired(23, "zip", iceberg::int32()),
+      });
+
+  auto locations_value_struct =
+      std::make_shared<iceberg::StructType>(std::vector<iceberg::SchemaField>{
+          iceberg::SchemaField::MakeRequired(14, "lat", iceberg::float32()),
+          iceberg::SchemaField::MakeRequired(15, "long", iceberg::float32()),
+      });
+
+  auto locations = iceberg::SchemaField::MakeRequired(
+      4, "locations",
+      std::make_shared<iceberg::MapType>(
+          iceberg::SchemaField::MakeRequired(9, "key", locations_key_struct),
+          iceberg::SchemaField::MakeRequired(10, "value", locations_value_struct)));
+
+  auto points_struct =
+      std::make_shared<iceberg::StructType>(std::vector<iceberg::SchemaField>{
+          iceberg::SchemaField::MakeRequired(16, "x", iceberg::int64()),
+          iceberg::SchemaField::MakeRequired(17, "y", iceberg::int64()),
+      });
+
+  auto points = iceberg::SchemaField::MakeOptional(
+      5, "points",
+      std::make_shared<iceberg::ListType>(
+          iceberg::SchemaField::MakeOptional(11, "element", points_struct)));
+
+  auto root_struct = iceberg::StructType(std::vector<iceberg::SchemaField>{
+      iceberg::SchemaField::MakeRequired(1, "id", iceberg::int32()),
+      iceberg::SchemaField::MakeOptional(2, "data", iceberg::string()),
+      iceberg::SchemaField::MakeOptional(3, "preferences", preferences),
+      locations,
+      points,
+  });
+
+  std::unordered_map<int32_t, int32_t> parent_index = iceberg::indexParents(root_struct);
+
+  // Verify top-level fields have no parent
+  ASSERT_EQ(parent_index.find(1), parent_index.end());
+  ASSERT_EQ(parent_index.find(2), parent_index.end());
+  ASSERT_EQ(parent_index.find(3), parent_index.end());
+  ASSERT_EQ(parent_index.find(4), parent_index.end());
+  ASSERT_EQ(parent_index.find(5), parent_index.end());
+
+  // Verify struct field parents
+  ASSERT_EQ(parent_index[6], 3);
+  ASSERT_EQ(parent_index[7], 3);
+  ASSERT_EQ(parent_index[8], 3);
+  ASSERT_EQ(parent_index[12], 8);
+  ASSERT_EQ(parent_index[13], 8);
+
+  // Verify map field parents
+  ASSERT_EQ(parent_index[9], 4);
+  ASSERT_EQ(parent_index[10], 4);
+  ASSERT_EQ(parent_index[20], 9);
+  ASSERT_EQ(parent_index[21], 9);
+  ASSERT_EQ(parent_index[22], 9);
+  ASSERT_EQ(parent_index[23], 9);
+  ASSERT_EQ(parent_index[14], 10);
+  ASSERT_EQ(parent_index[15], 10);
+
+  // Verify list field parents
+  ASSERT_EQ(parent_index[11], 5);
+  ASSERT_EQ(parent_index[16], 11);
+  ASSERT_EQ(parent_index[17], 11);
+
+  ASSERT_EQ(parent_index.size(), 16);
 }

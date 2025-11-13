@@ -50,16 +50,6 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   static constexpr int32_t kLegacyPartitionDataIdStart = 1000;
   static constexpr int32_t kInvalidPartitionFieldId = -1;
 
-  /// \brief Create a new partition spec.
-  ///
-  /// \param schema The table schema.
-  /// \param spec_id The spec ID.
-  /// \param fields The partition fields.
-  /// \param last_assigned_field_id The last assigned field ID. If not provided, it will
-  /// be calculated from the fields.
-  PartitionSpec(int32_t spec_id, std::vector<PartitionField> fields,
-                std::optional<int32_t> last_assigned_field_id = std::nullopt);
-
   /// \brief Get an unsorted partition spec singleton.
   static const std::shared_ptr<PartitionSpec>& Unpartitioned();
 
@@ -80,7 +70,49 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
     return lhs.Equals(rhs);
   }
 
+  /// \brief Validates the partition spec against a schema.
+  /// \param schema The schema to validate against.
+  /// \param allowMissingFields Whether to skip validation for partition fields whose
+  /// source columns have been dropped from the schema.
+  /// \return Error status if the partition spec is invalid.
+  Status Validate(const Schema& schema, bool allow_missing_fields) const;
+
+  /// \brief Create a PartitionSpec binding to a schema.
+  /// \param schema The schema to bind the partition spec to.
+  /// \param spec_id The spec ID.
+  /// \param fields The partition fields.
+  /// \param allowMissingFields Whether to skip validation for partition fields whose
+  /// source columns have been dropped from the schema.
+  /// \param last_assigned_field_id The last assigned field ID assigned to ensure new
+  /// fields get unique IDs.
+  /// \return A Result containing the partition spec or an error.
+  static Result<std::unique_ptr<PartitionSpec>> Make(
+      const Schema& schema, int32_t spec_id, std::vector<PartitionField> fields,
+      bool allow_missing_fields,
+      std::optional<int32_t> last_assigned_field_id = std::nullopt);
+
+  /// \brief Create a PartitionSpec without binding to a schema.
+  /// \param spec_id The spec ID.
+  /// \param fields The partition fields.
+  /// \param last_assigned_field_id The last assigned field ID assigned to ensure new
+  /// fields get unique IDs.
+  /// \return A Result containing the partition spec or an error.
+  /// \note This method does not check whether the sort fields are valid for any schema.
+  static Result<std::unique_ptr<PartitionSpec>> Make(
+      int32_t spec_id, std::vector<PartitionField> fields,
+      std::optional<int32_t> last_assigned_field_id = std::nullopt);
+
  private:
+  /// \brief Create a new partition spec.
+  ///
+  /// \param schema The table schema.
+  /// \param spec_id The spec ID.
+  /// \param fields The partition fields.
+  /// \param last_assigned_field_id The last assigned field ID. If not provided, it will
+  /// be calculated from the fields.
+  PartitionSpec(int32_t spec_id, std::vector<PartitionField> fields,
+                std::optional<int32_t> last_assigned_field_id = std::nullopt);
+
   /// \brief Compare two partition specs for equality.
   bool Equals(const PartitionSpec& other) const;
 
