@@ -38,9 +38,9 @@ namespace iceberg {
 
 /// \brief Base visitor for traversing expression trees.
 ///
-/// This visitor traverses expression trees in postfix order (children before parents)
-/// and calls appropriate visitor methods for each node. Subclasses can override
-/// specific methods to implement custom behavior.
+/// This visitor traverses expression trees in postorder traversal and calls appropriate
+/// visitor methods for each node. Subclasses can override specific methods to implement
+/// custom behavior.
 ///
 /// \tparam R The return type produced by visitor methods
 template <typename R>
