@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1DateParts" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::DateParts</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1DateParts_1a570721205309132424ffaa8df505e6fb" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::DateParts::year</definition>
+        <argsstring></argsstring>
+        <name>year</name>
+        <qualifiedname>iceberg::DateParts::year</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="30" column="11" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="30" bodyend="30"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DateParts_1a46528a23ce1ac9e7c29caf90bb82eb5a" prot="public" static="no" mutable="no">
+        <type>uint8_t</type>
+        <definition>uint8_t iceberg::DateParts::month</definition>
+        <argsstring></argsstring>
+        <name>month</name>
+        <qualifiedname>iceberg::DateParts::month</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="31" column="11" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="31" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DateParts_1a11d507cd6308e13ff74eb8189273ba45" prot="public" static="no" mutable="no">
+        <type>uint8_t</type>
+        <definition>uint8_t iceberg::DateParts::day</definition>
+        <argsstring></argsstring>
+        <name>day</name>
+        <qualifiedname>iceberg::DateParts::day</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/temporal_test_helper.h" line="32" column="11" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="32" bodyend="32"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/test/temporal_test_helper.h" line="29" column="1" bodyfile="iceberg/test/temporal_test_helper.h" bodystart="29" bodyend="33"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1DateParts_1a11d507cd6308e13ff74eb8189273ba45" prot="public" virt="non-virtual"><scope>iceberg::DateParts</scope><name>day</name></member>
+      <member refid="structiceberg_1_1DateParts_1a46528a23ce1ac9e7c29caf90bb82eb5a" prot="public" virt="non-virtual"><scope>iceberg::DateParts</scope><name>month</name></member>
+      <member refid="structiceberg_1_1DateParts_1a570721205309132424ffaa8df505e6fb" prot="public" virt="non-virtual"><scope>iceberg::DateParts</scope><name>year</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

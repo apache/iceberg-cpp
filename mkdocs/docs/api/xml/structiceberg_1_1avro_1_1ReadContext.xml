@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1avro_1_1ReadContext" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::avro::ReadContext</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1ReadContext_1a8b28408299a13f035631605756a329cf" prot="public" static="no" mutable="no">
+        <type>std::unique_ptr&lt;::avro::GenericDatum &gt;</type>
+        <definition>std::unique_ptr&lt;::avro::GenericDatum&gt; iceberg::avro::ReadContext::datum_</definition>
+        <argsstring></argsstring>
+        <name>datum_</name>
+        <qualifiedname>iceberg::avro::ReadContext::datum_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="66" column="19" bodyfile="iceberg/avro/avro_reader.cc" bodystart="66" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1ReadContext_1ac32073a1acf95a4158cbe677ccee4cc6" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt;::arrow::Schema &gt;</type>
+        <definition>std::shared_ptr&lt;::arrow::Schema&gt; iceberg::avro::ReadContext::arrow_schema_</definition>
+        <argsstring></argsstring>
+        <name>arrow_schema_</name>
+        <qualifiedname>iceberg::avro::ReadContext::arrow_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="68" column="19" bodyfile="iceberg/avro/avro_reader.cc" bodystart="68" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1ReadContext_1a31bb12f3128e0f059028567740b404f6" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt;::arrow::ArrayBuilder &gt;</type>
+        <definition>std::shared_ptr&lt;::arrow::ArrayBuilder&gt; iceberg::avro::ReadContext::builder_</definition>
+        <argsstring></argsstring>
+        <name>builder_</name>
+        <qualifiedname>iceberg::avro::ReadContext::builder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="70" column="19" bodyfile="iceberg/avro/avro_reader.cc" bodystart="70" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::avro::ReadContext</label>
+        <link refid="structiceberg_1_1avro_1_1ReadContext"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>datum_</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>arrow_schema_</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>builder_</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt;::arrow::ArrayBuilder &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt;::arrow::Schema &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::unique_ptr&lt;::avro::GenericDatum &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/avro/avro_reader.cc" line="64" column="1" bodyfile="iceberg/avro/avro_reader.cc" bodystart="64" bodyend="71"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1avro_1_1ReadContext_1ac32073a1acf95a4158cbe677ccee4cc6" prot="public" virt="non-virtual"><scope>iceberg::avro::ReadContext</scope><name>arrow_schema_</name></member>
+      <member refid="structiceberg_1_1avro_1_1ReadContext_1a31bb12f3128e0f059028567740b404f6" prot="public" virt="non-virtual"><scope>iceberg::avro::ReadContext</scope><name>builder_</name></member>
+      <member refid="structiceberg_1_1avro_1_1ReadContext_1a8b28408299a13f035631605756a329cf" prot="public" virt="non-virtual"><scope>iceberg::avro::ReadContext</scope><name>datum_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

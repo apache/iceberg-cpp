@@ -1,0 +1,122 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1ErrorModel" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::ErrorModel</compoundname>
+    <includes refid="types_8h" local="no">types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1ErrorModel_1a92fe9f7bd7b80ab32925e6213a0bd8e3" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::ErrorModel::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>iceberg::rest::ErrorModel::message</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="58" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1ErrorModel_1abd4c4c0d68b4db41d9c5fd8fd7fb1f88" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::ErrorModel::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>iceberg::rest::ErrorModel::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="59" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1ErrorModel_1a74d642ccbe484479d15b34a70ef629b1" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t iceberg::rest::ErrorModel::code</definition>
+        <argsstring></argsstring>
+        <name>code</name>
+        <qualifiedname>iceberg::rest::ErrorModel::code</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="60" column="12" bodyfile="iceberg/catalog/rest/types.h" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1ErrorModel_1a85c7a59f15ae34c3a90312368569069c" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::rest::ErrorModel::stack</definition>
+        <argsstring></argsstring>
+        <name>stack</name>
+        <qualifiedname>iceberg::rest::ErrorModel::stack</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="61" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="61" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1ErrorModel_1a8d73c2b6f8082c0c0a142a3be550d18b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::ErrorModel::Validate</definition>
+        <argsstring>() const</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::rest::ErrorModel::Validate</qualifiedname>
+        <briefdescription>
+<para>Validates the <ref refid="structiceberg_1_1rest_1_1ErrorModel" kindref="compound">ErrorModel</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="64" column="10" bodyfile="iceberg/catalog/rest/types.h" bodystart="64" bodyend="75"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>JSON error payload returned in a response with further details on the error. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::ErrorModel</label>
+        <link refid="structiceberg_1_1rest_1_1ErrorModel"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>stack</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/types.h" line="57" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="57" bodyend="76"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1ErrorModel_1a74d642ccbe484479d15b34a70ef629b1" prot="public" virt="non-virtual"><scope>iceberg::rest::ErrorModel</scope><name>code</name></member>
+      <member refid="structiceberg_1_1rest_1_1ErrorModel_1a92fe9f7bd7b80ab32925e6213a0bd8e3" prot="public" virt="non-virtual"><scope>iceberg::rest::ErrorModel</scope><name>message</name></member>
+      <member refid="structiceberg_1_1rest_1_1ErrorModel_1a85c7a59f15ae34c3a90312368569069c" prot="public" virt="non-virtual"><scope>iceberg::rest::ErrorModel</scope><name>stack</name></member>
+      <member refid="structiceberg_1_1rest_1_1ErrorModel_1abd4c4c0d68b4db41d9c5fd8fd7fb1f88" prot="public" virt="non-virtual"><scope>iceberg::rest::ErrorModel</scope><name>type</name></member>
+      <member refid="structiceberg_1_1rest_1_1ErrorModel_1a8d73c2b6f8082c0c0a142a3be550d18b" prot="public" virt="non-virtual"><scope>iceberg::rest::ErrorModel</scope><name>Validate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

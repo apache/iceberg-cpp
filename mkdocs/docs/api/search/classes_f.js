@@ -1,0 +1,20 @@
+var searchData=
+[
+  ['readcontext_0',['readcontext',['../structiceberg_1_1parquet_1_1ReadContext.html',1,'iceberg::parquet::ReadContext'],['../structiceberg_1_1avro_1_1ReadContext.html',1,'iceberg::avro::ReadContext']]],
+  ['reader_1',['Reader',['../classiceberg_1_1Reader.html',1,'iceberg']]],
+  ['readerfactoryregistry_2',['ReaderFactoryRegistry',['../structiceberg_1_1ReaderFactoryRegistry.html',1,'iceberg']]],
+  ['readeroptions_3',['ReaderOptions',['../structiceberg_1_1ReaderOptions.html',1,'iceberg']]],
+  ['readerproperties_4',['ReaderProperties',['../classiceberg_1_1ReaderProperties.html',1,'iceberg']]],
+  ['reference_5',['Reference',['../classiceberg_1_1Reference.html',1,'iceberg']]],
+  ['registertablerequest_6',['RegisterTableRequest',['../structiceberg_1_1rest_1_1RegisterTableRequest.html',1,'iceberg::rest']]],
+  ['removepartitionspecs_7',['RemovePartitionSpecs',['../classiceberg_1_1table_1_1RemovePartitionSpecs.html',1,'iceberg::table']]],
+  ['removeproperties_8',['RemoveProperties',['../classiceberg_1_1table_1_1RemoveProperties.html',1,'iceberg::table']]],
+  ['removeschemas_9',['RemoveSchemas',['../classiceberg_1_1table_1_1RemoveSchemas.html',1,'iceberg::table']]],
+  ['removesnapshotref_10',['RemoveSnapshotRef',['../classiceberg_1_1table_1_1RemoveSnapshotRef.html',1,'iceberg::table']]],
+  ['removesnapshots_11',['RemoveSnapshots',['../classiceberg_1_1table_1_1RemoveSnapshots.html',1,'iceberg::table']]],
+  ['renametablerequest_12',['RenameTableRequest',['../structiceberg_1_1rest_1_1RenameTableRequest.html',1,'iceberg::rest']]],
+  ['restcatalog_13',['RestCatalog',['../classiceberg_1_1catalog_1_1rest_1_1RestCatalog.html',1,'iceberg::catalog::rest']]],
+  ['restcatalogintegrationtest_14',['RestCatalogIntegrationTest',['../classiceberg_1_1catalog_1_1rest_1_1RestCatalogIntegrationTest.html',1,'iceberg::catalog::rest']]],
+  ['resultmatcher_15',['ResultMatcher',['../classiceberg_1_1ResultMatcher.html',1,'iceberg']]],
+  ['roundtripparam_16',['RoundTripParam',['../structiceberg_1_1avro_1_1RoundTripParam.html',1,'iceberg::avro']]]
+];

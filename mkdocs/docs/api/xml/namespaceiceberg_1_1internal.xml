@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1internal" kind="namespace" language="C++">
+    <compoundname>iceberg::internal</compoundname>
+    <innerclass refid="classiceberg_1_1internal_1_1ArrowArrayBufferGuard" prot="public">iceberg::internal::ArrowArrayBufferGuard</innerclass>
+    <innerclass refid="classiceberg_1_1internal_1_1ArrowArrayGuard" prot="public">iceberg::internal::ArrowArrayGuard</innerclass>
+    <innerclass refid="classiceberg_1_1internal_1_1ArrowArrayViewGuard" prot="public">iceberg::internal::ArrowArrayViewGuard</innerclass>
+    <innerclass refid="classiceberg_1_1internal_1_1ArrowSchemaGuard" prot="public">iceberg::internal::ArrowSchemaGuard</innerclass>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="checked__cast_8h_1a609a5e20bce1b6cdadaf3507c57f452b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename OutputType</type>
+          </param>
+          <param>
+            <type>typename InputType</type>
+          </param>
+        </templateparamlist>
+        <type>OutputType</type>
+        <definition>OutputType iceberg::internal::checked_cast</definition>
+        <argsstring>(InputType &amp;&amp;value)</argsstring>
+        <name>checked_cast</name>
+        <qualifiedname>iceberg::internal::checked_cast</qualifiedname>
+        <param>
+          <type>InputType &amp;&amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/checked_cast.h" line="34" column="19" bodyfile="iceberg/util/checked_cast.h" bodystart="34" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="function" id="checked__cast_8h_1aae3fa786333b3046bb388f7acb6ba17e" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>class U</type>
+          </param>
+        </templateparamlist>
+        <type>std::shared_ptr&lt; T &gt;</type>
+        <definition>std::shared_ptr&lt; T &gt; iceberg::internal::checked_pointer_cast</definition>
+        <argsstring>(std::shared_ptr&lt; U &gt; r) noexcept</argsstring>
+        <name>checked_pointer_cast</name>
+        <qualifiedname>iceberg::internal::checked_pointer_cast</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; U &gt;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/checked_cast.h" line="49" column="17" bodyfile="iceberg/util/checked_cast.h" bodystart="49" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="checked__cast_8h_1a68ee8fe19b20782c8140151ede05598b" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>class U</type>
+          </param>
+        </templateparamlist>
+        <type>std::unique_ptr&lt; T &gt;</type>
+        <definition>std::unique_ptr&lt; T &gt; iceberg::internal::checked_pointer_cast</definition>
+        <argsstring>(std::unique_ptr&lt; U &gt; r) noexcept</argsstring>
+        <name>checked_pointer_cast</name>
+        <qualifiedname>iceberg::internal::checked_pointer_cast</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; U &gt;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/checked_cast.h" line="58" column="17" bodyfile="iceberg/util/checked_cast.h" bodystart="58" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="config_8h_1a725ca91b7ee015cb95c3f5575133f295" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename U</type>
+          </param>
+        </templateparamlist>
+        <type>std::string</type>
+        <definition>std::string iceberg::internal::DefaultToString</definition>
+        <argsstring>(const U &amp;val)</argsstring>
+        <name>DefaultToString</name>
+        <qualifiedname>iceberg::internal::DefaultToString</qualifiedname>
+        <param>
+          <type>const U &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/config.h" line="32" column="13" bodyfile="iceberg/util/config.h" bodystart="32" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="config_8h_1a3c336af2b3f606b07c50c22b2f85b63d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename U</type>
+          </param>
+        </templateparamlist>
+        <type>U</type>
+        <definition>U iceberg::internal::DefaultFromString</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>DefaultFromString</name>
+        <qualifiedname>iceberg::internal::DefaultFromString</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/config.h" line="48" column="3" bodyfile="iceberg/util/config.h" bodystart="48" bodyend="61"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/arrow_c_data_guard_internal.cc" line="22" column="1"/>
+  </compounddef>
+</doxygen>

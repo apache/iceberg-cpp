@@ -1,0 +1,160 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1TableMetadataUtil" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::TableMetadataUtil</compoundname>
+    <includes refid="table__metadata_8h" local="no">table_metadata.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1TableMetadataUtil_1a3977cd24f629d57d138f1ca644e60500" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; MetadataFileCodecType &gt;</type>
+        <definition>Result&lt; MetadataFileCodecType &gt; iceberg::TableMetadataUtil::CodecFromFileName</definition>
+        <argsstring>(std::string_view file_name)</argsstring>
+        <name>CodecFromFileName</name>
+        <qualifiedname>iceberg::TableMetadataUtil::CodecFromFileName</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>file_name</declname>
+        </param>
+        <briefdescription>
+<para>Get the codec type from the table metadata file name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>file_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the table metadata file. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The codec type of the table metadata file. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="420" column="17" bodyfile="iceberg/table_metadata.cc" bodystart="165" bodyend="182"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1TableMetadataUtil_1abb843dbd12997d229100f74924a9c8e1" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; TableMetadata &gt; &gt; iceberg::TableMetadataUtil::Read</definition>
+        <argsstring>(class FileIO &amp;io, const std::string &amp;location, std::optional&lt; size_t &gt; length=std::nullopt)</argsstring>
+        <name>Read</name>
+        <qualifiedname>iceberg::TableMetadataUtil::Read</qualifiedname>
+        <param>
+          <type>class <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &amp;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; size_t &gt;</type>
+          <declname>length</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+<para>Read the table metadata file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The file IO to use to read the table metadata. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The location of the table metadata file. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>length</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The optional length of the table metadata file. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The table metadata. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="428" column="17" bodyfile="iceberg/table_metadata.cc" bodystart="184" bodyend="199"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1TableMetadataUtil_1a0fc746f383f30260753e3e5834fcf42a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::TableMetadataUtil::Write</definition>
+        <argsstring>(FileIO &amp;io, const std::string &amp;location, const TableMetadata &amp;metadata)</argsstring>
+        <name>Write</name>
+        <qualifiedname>iceberg::TableMetadataUtil::Write</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &amp;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>metadata</declname>
+        </param>
+        <briefdescription>
+<para>Write the table metadata to a file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The file IO to use to write the table metadata. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>location</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The location of the table metadata file. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>metadata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The table metadata to write. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_metadata.h" line="437" column="17" bodyfile="iceberg/table_metadata.cc" bodystart="201" bodyend="206"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Utility class for table metadata. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/table_metadata.h" line="415" column="1" bodyfile="iceberg/table_metadata.h" bodystart="415" bodyend="439"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1TableMetadataUtil_1a3977cd24f629d57d138f1ca644e60500" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataUtil</scope><name>CodecFromFileName</name></member>
+      <member refid="structiceberg_1_1TableMetadataUtil_1abb843dbd12997d229100f74924a9c8e1" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataUtil</scope><name>Read</name></member>
+      <member refid="structiceberg_1_1TableMetadataUtil_1a0fc746f383f30260753e3e5834fcf42a" prot="public" virt="non-virtual"><scope>iceberg::TableMetadataUtil</scope><name>Write</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

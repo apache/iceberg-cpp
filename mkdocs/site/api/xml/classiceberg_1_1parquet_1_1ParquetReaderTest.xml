@@ -1,0 +1,198 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1parquet_1_1ParquetReaderTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::parquet::ParquetReaderTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1parquet_1_1ParquetReaderTest_1a9651a3e386cc15999b711565a621a93e" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::parquet::ParquetReaderTest::file_io_</definition>
+        <argsstring></argsstring>
+        <name>file_io_</name>
+        <qualifiedname>iceberg::parquet::ParquetReaderTest::file_io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="199" column="19" bodyfile="iceberg/test/parquet_test.cc" bodystart="199" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1parquet_1_1ParquetReaderTest_1ad22a17ea4d0e1247004703eef202119c" prot="protected" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::parquet::ParquetReaderTest::temp_parquet_file_</definition>
+        <argsstring></argsstring>
+        <name>temp_parquet_file_</name>
+        <qualifiedname>iceberg::parquet::ParquetReaderTest::temp_parquet_file_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="200" column="15" bodyfile="iceberg/test/parquet_test.cc" bodystart="200" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-static-func">
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetReaderTest_1a94d35a267af44df406fe9139c6a5aac3" prot="protected" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void iceberg::parquet::ParquetReaderTest::SetUpTestSuite</definition>
+        <argsstring>()</argsstring>
+        <name>SetUpTestSuite</name>
+        <qualifiedname>iceberg::parquet::ParquetReaderTest::SetUpTestSuite</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="121" column="15" bodyfile="iceberg/test/parquet_test.cc" bodystart="121" bodyend="121"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetReaderTest_1a761fcb8f90bdb78b0ceb6be48c21a20c" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::parquet::ParquetReaderTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::parquet::ParquetReaderTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="123" column="8" bodyfile="iceberg/test/parquet_test.cc" bodystart="123" bodyend="126"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetReaderTest_1a47a3ff3015b32a97f43e52c08f7a475b" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::parquet::ParquetReaderTest::CreateSimpleParquetFile</definition>
+        <argsstring>()</argsstring>
+        <name>CreateSimpleParquetFile</name>
+        <qualifiedname>iceberg::parquet::ParquetReaderTest::CreateSimpleParquetFile</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="128" column="8" bodyfile="iceberg/test/parquet_test.cc" bodystart="128" bodyend="144"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetReaderTest_1abcea501965aa4fe11a553d929c1196af" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::parquet::ParquetReaderTest::CreateSplitParquetFile</definition>
+        <argsstring>()</argsstring>
+        <name>CreateSplitParquetFile</name>
+        <qualifiedname>iceberg::parquet::ParquetReaderTest::CreateSplitParquetFile</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="146" column="8" bodyfile="iceberg/test/parquet_test.cc" bodystart="146" bodyend="169"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetReaderTest_1a1859c7937c92067fdc3faefd24298589" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::parquet::ParquetReaderTest::VerifyNextBatch</definition>
+        <argsstring>(Reader &amp;reader, std::string_view expected_json)</argsstring>
+        <name>VerifyNextBatch</name>
+        <qualifiedname>iceberg::parquet::ParquetReaderTest::VerifyNextBatch</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref> &amp;</type>
+          <declname>reader</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>expected_json</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="171" column="8" bodyfile="iceberg/test/parquet_test.cc" bodystart="171" bodyend="191"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1parquet_1_1ParquetReaderTest_1ae5ca3445426096465d2b4a17bf400a3f" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::parquet::ParquetReaderTest::VerifyExhausted</definition>
+        <argsstring>(Reader &amp;reader)</argsstring>
+        <name>VerifyExhausted</name>
+        <qualifiedname>iceberg::parquet::ParquetReaderTest::VerifyExhausted</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref> &amp;</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_test.cc" line="193" column="8" bodyfile="iceberg/test/parquet_test.cc" bodystart="193" bodyend="197"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::parquet::ParquetReaderTest</label>
+        <link refid="classiceberg_1_1parquet_1_1ParquetReaderTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="1">
+        <label>iceberg::parquet::ParquetReaderTest</label>
+        <link refid="classiceberg_1_1parquet_1_1ParquetReaderTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>file_io_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>temp_parquet_file_</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/parquet_test.cc" line="119" column="1" bodyfile="iceberg/test/parquet_test.cc" bodystart="119" bodyend="201"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReaderTest_1a47a3ff3015b32a97f43e52c08f7a475b" prot="protected" virt="non-virtual"><scope>iceberg::parquet::ParquetReaderTest</scope><name>CreateSimpleParquetFile</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReaderTest_1abcea501965aa4fe11a553d929c1196af" prot="protected" virt="non-virtual"><scope>iceberg::parquet::ParquetReaderTest</scope><name>CreateSplitParquetFile</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReaderTest_1a9651a3e386cc15999b711565a621a93e" prot="protected" virt="non-virtual"><scope>iceberg::parquet::ParquetReaderTest</scope><name>file_io_</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReaderTest_1a761fcb8f90bdb78b0ceb6be48c21a20c" prot="protected" virt="non-virtual"><scope>iceberg::parquet::ParquetReaderTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReaderTest_1a94d35a267af44df406fe9139c6a5aac3" prot="protected" virt="non-virtual"><scope>iceberg::parquet::ParquetReaderTest</scope><name>SetUpTestSuite</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReaderTest_1ad22a17ea4d0e1247004703eef202119c" prot="protected" virt="non-virtual"><scope>iceberg::parquet::ParquetReaderTest</scope><name>temp_parquet_file_</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReaderTest_1ae5ca3445426096465d2b4a17bf400a3f" prot="protected" virt="non-virtual"><scope>iceberg::parquet::ParquetReaderTest</scope><name>VerifyExhausted</name></member>
+      <member refid="classiceberg_1_1parquet_1_1ParquetReaderTest_1a1859c7937c92067fdc3faefd24298589" prot="protected" virt="non-virtual"><scope>iceberg::parquet::ParquetReaderTest</scope><name>VerifyNextBatch</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

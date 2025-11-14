@@ -1,0 +1,330 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1avro_1_1HasIdVisitor" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::avro::HasIdVisitor</compoundname>
+    <includes refid="avro__schema__util__internal_8h" local="no">avro_schema_util_internal.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1HasIdVisitor_1afa4abd48cccd76d4903ad3c248807dab" prot="private" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t iceberg::avro::HasIdVisitor::total_fields_</definition>
+        <argsstring></argsstring>
+        <name>total_fields_</name>
+        <qualifiedname>iceberg::avro::HasIdVisitor::total_fields_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="125" column="10" bodyfile="iceberg/avro/avro_schema_util_internal.h" bodystart="125" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1HasIdVisitor_1a55fd34c1f311d9f5b2d02420dc1d7878" prot="private" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t iceberg::avro::HasIdVisitor::fields_with_id_</definition>
+        <argsstring></argsstring>
+        <name>fields_with_id_</name>
+        <qualifiedname>iceberg::avro::HasIdVisitor::fields_with_id_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="127" column="10" bodyfile="iceberg/avro/avro_schema_util_internal.h" bodystart="127" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1HasIdVisitor_1acb3585d0abf8f2587bf539b62e966880" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::HasIdVisitor::HasIdVisitor</definition>
+        <argsstring>()=default</argsstring>
+        <name>HasIdVisitor</name>
+        <qualifiedname>iceberg::avro::HasIdVisitor::HasIdVisitor</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="72" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1HasIdVisitor_1a4c0309e5edafca0324e393e56b688681" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::HasIdVisitor::Visit</definition>
+        <argsstring>(const ::avro::NodePtr &amp;node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::HasIdVisitor::Visit</qualifiedname>
+        <param>
+          <type>const ::avro::NodePtr &amp;</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+<para>Visit an Avro node to check for field IDs. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>node</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Avro node to visit. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or an error if unsupported Avro types are encountered. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="78" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="348" bodyend="376"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1HasIdVisitor_1a363b02dad1a6981d4ce62905a441e0d5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::HasIdVisitor::Visit</definition>
+        <argsstring>(const ::avro::ValidSchema &amp;schema)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::HasIdVisitor::Visit</qualifiedname>
+        <param>
+          <type>const ::avro::ValidSchema &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+<para>Visit an Avro schema to check for field IDs. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Avro schema to visit. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or an error if unsupported Avro types are encountered. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="84" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="442" bodyend="444"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1HasIdVisitor_1a8c8f82dcc174acfaa24578f09aa24329" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::HasIdVisitor::Visit</definition>
+        <argsstring>(const ::avro::Schema &amp;node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::HasIdVisitor::Visit</qualifiedname>
+        <param>
+          <type>const ::avro::Schema &amp;</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+<para>Visit an Avro schema to check for field IDs. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The Avro schema to visit. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or an error if unsupported Avro types are encountered. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="90" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="446" bodyend="446"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1HasIdVisitor_1a5bbf5d3157b559ebd1985927d828513c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::avro::HasIdVisitor::AllHaveIds</definition>
+        <argsstring>() const</argsstring>
+        <name>AllHaveIds</name>
+        <qualifiedname>iceberg::avro::HasIdVisitor::AllHaveIds</qualifiedname>
+        <briefdescription>
+<para>Check if all fields in the visited schema have field IDs. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para><ref refid="classiceberg_1_1True" kindref="compound">True</ref> if all fields have IDs, false otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="94" column="8" bodyfile="iceberg/avro/avro_schema_util_internal.h" bodystart="94" bodyend="96"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1HasIdVisitor_1abff99eb2bed0babdbe49891ba0a453c7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::avro::HasIdVisitor::HasNoIds</definition>
+        <argsstring>() const</argsstring>
+        <name>HasNoIds</name>
+        <qualifiedname>iceberg::avro::HasIdVisitor::HasNoIds</qualifiedname>
+        <briefdescription>
+<para>Check if all fields in the visited schema have field IDs. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para><ref refid="classiceberg_1_1True" kindref="compound">True</ref> if all fields have IDs, false otherwise. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="100" column="8" bodyfile="iceberg/avro/avro_schema_util_internal.h" bodystart="100" bodyend="100"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1HasIdVisitor_1a52ff2c6bd692228f45a652945884e7c5" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::HasIdVisitor::VisitRecord</definition>
+        <argsstring>(const ::avro::NodePtr &amp;node)</argsstring>
+        <name>VisitRecord</name>
+        <qualifiedname>iceberg::avro::HasIdVisitor::VisitRecord</qualifiedname>
+        <param>
+          <type>const ::avro::NodePtr &amp;</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+<para>Visit a record node to check for field IDs. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>node</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The record node to visit. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="106" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="378" bodyend="388"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1HasIdVisitor_1aeb5d69c47c2dfb899ab2f8f9df6739e5" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::HasIdVisitor::VisitArray</definition>
+        <argsstring>(const ::avro::NodePtr &amp;node)</argsstring>
+        <name>VisitArray</name>
+        <qualifiedname>iceberg::avro::HasIdVisitor::VisitArray</qualifiedname>
+        <param>
+          <type>const ::avro::NodePtr &amp;</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+<para>Visit an array node to check for element IDs. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>node</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The array node to visit. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="111" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="390" bodyend="407"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1HasIdVisitor_1aef71f6398bd0752289baa50a1df60531" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::HasIdVisitor::VisitMap</definition>
+        <argsstring>(const ::avro::NodePtr &amp;node)</argsstring>
+        <name>VisitMap</name>
+        <qualifiedname>iceberg::avro::HasIdVisitor::VisitMap</qualifiedname>
+        <param>
+          <type>const ::avro::NodePtr &amp;</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+<para>Visit a map node to check for key and value IDs. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>node</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The map node to visit. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="116" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="409" bodyend="423"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1HasIdVisitor_1ad385f4217e0020aac6bbbc43625fc543" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::HasIdVisitor::VisitUnion</definition>
+        <argsstring>(const ::avro::NodePtr &amp;node)</argsstring>
+        <name>VisitUnion</name>
+        <qualifiedname>iceberg::avro::HasIdVisitor::VisitUnion</qualifiedname>
+        <param>
+          <type>const ::avro::NodePtr &amp;</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+<para>Visit a union node to check for field IDs in each branch. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>node</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The union node to visit. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="121" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="425" bodyend="440"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A visitor that checks the presence of field IDs in an Avro schema. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/avro/avro_schema_util_internal.h" line="70" column="1" bodyfile="iceberg/avro/avro_schema_util_internal.h" bodystart="70" bodyend="128"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1avro_1_1HasIdVisitor_1a5bbf5d3157b559ebd1985927d828513c" prot="public" virt="non-virtual"><scope>iceberg::avro::HasIdVisitor</scope><name>AllHaveIds</name></member>
+      <member refid="classiceberg_1_1avro_1_1HasIdVisitor_1a55fd34c1f311d9f5b2d02420dc1d7878" prot="private" virt="non-virtual"><scope>iceberg::avro::HasIdVisitor</scope><name>fields_with_id_</name></member>
+      <member refid="classiceberg_1_1avro_1_1HasIdVisitor_1acb3585d0abf8f2587bf539b62e966880" prot="public" virt="non-virtual"><scope>iceberg::avro::HasIdVisitor</scope><name>HasIdVisitor</name></member>
+      <member refid="classiceberg_1_1avro_1_1HasIdVisitor_1abff99eb2bed0babdbe49891ba0a453c7" prot="public" virt="non-virtual"><scope>iceberg::avro::HasIdVisitor</scope><name>HasNoIds</name></member>
+      <member refid="classiceberg_1_1avro_1_1HasIdVisitor_1afa4abd48cccd76d4903ad3c248807dab" prot="private" virt="non-virtual"><scope>iceberg::avro::HasIdVisitor</scope><name>total_fields_</name></member>
+      <member refid="classiceberg_1_1avro_1_1HasIdVisitor_1a4c0309e5edafca0324e393e56b688681" prot="public" virt="non-virtual"><scope>iceberg::avro::HasIdVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1HasIdVisitor_1a363b02dad1a6981d4ce62905a441e0d5" prot="public" virt="non-virtual"><scope>iceberg::avro::HasIdVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1HasIdVisitor_1a8c8f82dcc174acfaa24578f09aa24329" prot="public" virt="non-virtual"><scope>iceberg::avro::HasIdVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1HasIdVisitor_1aeb5d69c47c2dfb899ab2f8f9df6739e5" prot="private" virt="non-virtual"><scope>iceberg::avro::HasIdVisitor</scope><name>VisitArray</name></member>
+      <member refid="classiceberg_1_1avro_1_1HasIdVisitor_1aef71f6398bd0752289baa50a1df60531" prot="private" virt="non-virtual"><scope>iceberg::avro::HasIdVisitor</scope><name>VisitMap</name></member>
+      <member refid="classiceberg_1_1avro_1_1HasIdVisitor_1a52ff2c6bd692228f45a652945884e7c5" prot="private" virt="non-virtual"><scope>iceberg::avro::HasIdVisitor</scope><name>VisitRecord</name></member>
+      <member refid="classiceberg_1_1avro_1_1HasIdVisitor_1ad385f4217e0020aac6bbbc43625fc543" prot="private" virt="non-virtual"><scope>iceberg::avro::HasIdVisitor</scope><name>VisitUnion</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

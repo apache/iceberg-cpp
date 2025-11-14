@@ -1,0 +1,157 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1BucketUtils" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::BucketUtils</compoundname>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1BucketUtils_1a962814a130e993b6261b66baf567a108" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>static int32_t iceberg::BucketUtils::HashInt</definition>
+        <argsstring>(int32_t value)</argsstring>
+        <name>HashInt</name>
+        <qualifiedname>iceberg::BucketUtils::HashInt</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Hash a 32-bit integer using MurmurHash3 and return a 32-bit hash value. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input integer to hash. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="note"><para>Integer and long hash results must be identical for all integer values. This ensures that schema evolution does not change bucket partition values if integer types are promoted. </para>
+</simplesect>
+<simplesect kind="return"><para>A 32-bit hash value. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/bucket_util.h" line="39" column="25" bodyfile="iceberg/util/bucket_util.h" bodystart="39" bodyend="41"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BucketUtils_1a3758950de65efeca87341467d70d23d4" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::BucketUtils::HashLong</definition>
+        <argsstring>(int64_t value)</argsstring>
+        <name>HashLong</name>
+        <qualifiedname>iceberg::BucketUtils::HashLong</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Hash a 64-bit integer using MurmurHash3 and return a 32-bit hash value. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input long to hash. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A 32-bit hash value. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/bucket_util.h" line="46" column="18" bodyfile="iceberg/util/bucket_util.cc" bodystart="105" bodyend="110"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BucketUtils_1ab795f70e2af267ac89b0d42f313028c0" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::BucketUtils::HashBytes</definition>
+        <argsstring>(std::span&lt; const uint8_t &gt; bytes)</argsstring>
+        <name>HashBytes</name>
+        <qualifiedname>iceberg::BucketUtils::HashBytes</qualifiedname>
+        <param>
+          <type>std::span&lt; const uint8_t &gt;</type>
+          <declname>bytes</declname>
+        </param>
+        <briefdescription>
+<para>Hash a byte array using MurmurHash3 and return a 32-bit hash value. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>bytes</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input byte array to hash. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A 32-bit hash value. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/bucket_util.h" line="51" column="18" bodyfile="iceberg/util/bucket_util.cc" bodystart="99" bodyend="103"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BucketUtils_1a870e1bdf607990bebf4732eded33adab" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; int32_t &gt;</type>
+        <definition>Result&lt; int32_t &gt; iceberg::BucketUtils::BucketIndex</definition>
+        <argsstring>(const Literal &amp;literal, int32_t num_buckets)</argsstring>
+        <name>BucketIndex</name>
+        <qualifiedname>iceberg::BucketUtils::BucketIndex</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>num_buckets</declname>
+        </param>
+        <briefdescription>
+<para>Compute the bucket index for a given literal and number of buckets. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>literal</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The input literal to hash. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>num_buckets</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of buckets to hash into. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>(murmur3_x86_32_hash(literal) &amp; Integer.MAX_VALUE) % num_buckets </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/bucket_util.h" line="57" column="17" bodyfile="iceberg/util/bucket_util.cc" bodystart="117" bodyend="145"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/bucket_util.h" line="31" column="1" bodyfile="iceberg/util/bucket_util.h" bodystart="31" bodyend="58"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1BucketUtils_1a870e1bdf607990bebf4732eded33adab" prot="public" virt="non-virtual"><scope>iceberg::BucketUtils</scope><name>BucketIndex</name></member>
+      <member refid="classiceberg_1_1BucketUtils_1ab795f70e2af267ac89b0d42f313028c0" prot="public" virt="non-virtual"><scope>iceberg::BucketUtils</scope><name>HashBytes</name></member>
+      <member refid="classiceberg_1_1BucketUtils_1a962814a130e993b6261b66baf567a108" prot="public" virt="non-virtual"><scope>iceberg::BucketUtils</scope><name>HashInt</name></member>
+      <member refid="classiceberg_1_1BucketUtils_1a3758950de65efeca87341467d70d23d4" prot="public" virt="non-virtual"><scope>iceberg::BucketUtils</scope><name>HashLong</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
