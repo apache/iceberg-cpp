@@ -135,7 +135,7 @@ Result<std::shared_ptr<Expression>> Not::MakeFolded(std::shared_ptr<Expression> 
     return not_expr.child();
   }
 
-  return ::iceberg::Not::Make(std::move(child));
+  return Not::Make(std::move(child));
 }
 
 Not::Not(std::shared_ptr<Expression> child) : child_(std::move(child)) {
