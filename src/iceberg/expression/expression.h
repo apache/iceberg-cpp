@@ -227,8 +227,7 @@ class ICEBERG_EXPORT Or : public Expression {
   /// \return A Result containing a shared pointer to the folded Or expression, or an
   /// error if left or right is nullptr
   /// \note A folded Or expression is an expression that is equivalent to the original
-  /// that is equivalent to the original expression, but with the Or operation removed.
-  /// For example, (false or x) = x.
+  /// expression, but with the Or operation removed. For example, (false or x) = x.
   template <typename... Args>
   static Result<std::shared_ptr<Expression>> MakeFolded(std::shared_ptr<Expression> left,
                                                         std::shared_ptr<Expression> right,
