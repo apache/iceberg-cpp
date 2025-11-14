@@ -296,9 +296,9 @@ class ICEBERG_EXPORT Not : public Expression {
   ///
   /// \param child The expression to negate
   /// \return A Result containing a shared pointer to the folded Not expression, or an
-  /// error if child is nullptr \note A folded Not expression is an expression that is
-  /// equivalent to the original expression, but with the Not operation removed. For
-  /// example, not(not(x)) = x.
+  /// error if child is nullptr
+  /// \note A folded Not expression is an expression that is equivalent to the original
+  /// expression, but with the Not operation removed. For example, not(not(x)) = x.
   static Result<std::shared_ptr<Expression>> MakeFolded(
       std::shared_ptr<Expression> child);
 
