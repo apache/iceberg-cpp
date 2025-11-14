@@ -25,7 +25,10 @@
 
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/literal.h"
+#include "iceberg/expression/term.h"
 #include "iceberg/result.h"
+#include "iceberg/transform.h"
+#include "iceberg/transform_function.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter_internal.h"
@@ -286,7 +289,52 @@ Result<std::shared_ptr<Expression>> UnboundPredicate<B>::BindLiteralOperation(
     }
   }
 
-  // TODO(gangwu): translate truncate(col) == value to startsWith(value)
+  if (BASE::op() == Expression::Operation::kEq &&
+      bound_term->kind() == Term::Kind::kTransform) {
+    // Safe to cast after kind check confirms it's a transform
+    auto* transform_term = dynamic_cast<BoundTransform*>(bound_term.get());
+    if (!transform_term) {
+      return BoundLiteralPredicate::Make(BASE::op(), std::move(bound_term),
+                                         std::move(literal));
+    }
+
+    if (transform_term->transform()->transform_type() == TransformType::kTruncate &&
+        literal.type()->type_id() == TypeId::kString &&
+        !literal.IsNull()) {  // Null safety: skip null literals
+
+      // Apply truncate transform to the literal and check if result matches
+      // This verifies the literal is compatible with the truncate operation
+      auto transformed_result = transform_term->transform_func()->Transform(literal);
+      if (!transformed_result.has_value() || transformed_result.value() != literal) {
+        // Transform failed or modified the literal - can't optimize
+        return BoundLiteralPredicate::Make(BASE::op(), std::move(bound_term),
+                                           std::move(literal));
+      }
+
+      // Literal passed truncate unchanged. Now check if adding one more character
+      // would cause truncation. If yes, then the literal has EXACTLY the width.
+      // Example:
+      // - "Alice" with width=5: adding "x" makes "Alicex", truncate to "Alice" (can
+      // optimize)
+      // - "abc" with width=10: adding "x" makes "abcx", truncate to "abcx" != "abc"
+      // (cannot optimize)
+
+      auto& string_value = std::get<std::string>(literal.value());
+      auto extended_literal = Literal::String(string_value + "x");
+      auto extended_result =
+          transform_term->transform_func()->Transform(extended_literal);
+
+      if (extended_result.has_value() && extended_result.value() == literal) {
+        // Adding a character gets truncated back to original - literal has exact width!
+        // Rewrite: truncate(col, width) == "value" → col STARTS_WITH "value"
+        return BoundLiteralPredicate::Make(Expression::Operation::kStartsWith,
+                                           transform_term->reference(),
+                                           std::move(literal));
+      }
+      // Literal is shorter than width - can't optimize
+    }
+  }
+
   return BoundLiteralPredicate::Make(BASE::op(), std::move(bound_term),
                                      std::move(literal));
 }
