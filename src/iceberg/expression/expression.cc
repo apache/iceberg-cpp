@@ -120,6 +120,24 @@ Result<std::unique_ptr<Not>> Not::Make(std::shared_ptr<Expression> child) {
   return std::unique_ptr<Not>(new Not(std::move(child)));
 }
 
+Result<std::shared_ptr<Expression>> Not::MakeFolded(std::shared_ptr<Expression> child) {
+  if (child->op() == Expression::Operation::kTrue) {
+    return False::Instance();
+  }
+
+  if (child->op() == Expression::Operation::kFalse) {
+    return True::Instance();
+  }
+
+  // not(not(x)) = x
+  if (child->op() == Expression::Operation::kNot) {
+    const auto& not_expr = internal::checked_cast<const ::iceberg::Not&>(*child);
+    return not_expr.child();
+  }
+
+  return Not::Make(std::move(child));
+}
+
 Not::Not(std::shared_ptr<Expression> child) : child_(std::move(child)) {
   ICEBERG_DCHECK(child_ != nullptr, "Not expression cannot have null child");
 }

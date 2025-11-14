@@ -55,6 +55,7 @@ iceberg_tests = {
     'expression_test': {
         'sources': files(
             'expression_test.cc',
+            'expression_visitor_test.cc',
             'literal_test.cc',
             'predicate_test.cc',
         ),

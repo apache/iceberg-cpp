@@ -28,6 +28,7 @@
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/util/formattable.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -80,6 +81,11 @@ class ICEBERG_EXPORT Expression : public util::Formattable {
   }
 
   std::string ToString() const override { return "Expression"; }
+
+  virtual bool is_unbound_predicate() const { return false; }
+  virtual bool is_bound_predicate() const { return false; }
+  virtual bool is_unbound_aggregate() const { return false; }
+  virtual bool is_bound_aggregate() const { return false; }
 };
 
 /// \brief An Expression that is always true.
@@ -137,6 +143,44 @@ class ICEBERG_EXPORT And : public Expression {
   static Result<std::unique_ptr<And>> Make(std::shared_ptr<Expression> left,
                                            std::shared_ptr<Expression> right);
 
+  /// \brief Creates a folded And expression from two sub-expressions.
+  ///
+  /// \param left The left operand of the AND expression
+  /// \param right The right operand of the AND expression
+  /// \param args Additional operands of the AND expression
+  /// \return A Result containing a shared pointer to the folded And expression, or an
+  /// error if left or right is nullptr
+  /// \note A folded And expression is an expression that is equivalent to the original
+  /// expression, but with the And operation removed. For example, (true and x) = x.
+  template <typename... Args>
+  static Result<std::shared_ptr<Expression>> MakeFolded(std::shared_ptr<Expression> left,
+                                                        std::shared_ptr<Expression> right,
+                                                        Args&&... args)
+    requires std::conjunction_v<std::is_same<Args, std::shared_ptr<Expression>>...>
+  {
+    if constexpr (sizeof...(args) == 0) {
+      if (left->op() == Expression::Operation::kFalse ||
+          right->op() == Expression::Operation::kFalse) {
+        return False::Instance();
+      }
+
+      if (left->op() == Expression::Operation::kTrue) {
+        return right;
+      }
+
+      if (right->op() == Expression::Operation::kTrue) {
+        return left;
+      }
+
+      return And::Make(std::move(left), std::move(right));
+    } else {
+      ICEBERG_ASSIGN_OR_THROW(auto and_expr,
+                              And::Make(std::move(left), std::move(right)));
+
+      return And::MakeFolded(std::move(and_expr), std::forward<Args>(args)...);
+    }
+  }
+
   /// \brief Returns the left operand of the AND expression.
   ///
   /// \return The left operand of the AND expression
@@ -175,6 +219,43 @@ class ICEBERG_EXPORT Or : public Expression {
   static Result<std::unique_ptr<Or>> Make(std::shared_ptr<Expression> left,
                                           std::shared_ptr<Expression> right);
 
+  /// \brief Creates a folded Or expression from two sub-expressions.
+  ///
+  /// \param left The left operand of the OR expression
+  /// \param right The right operand of the OR expression
+  /// \param args Additional operands of the OR expression
+  /// \return A Result containing a shared pointer to the folded Or expression, or an
+  /// error if left or right is nullptr
+  /// \note A folded Or expression is an expression that is equivalent to the original
+  /// expression, but with the Or operation removed. For example, (false or x) = x.
+  template <typename... Args>
+  static Result<std::shared_ptr<Expression>> MakeFolded(std::shared_ptr<Expression> left,
+                                                        std::shared_ptr<Expression> right,
+                                                        Args&&... args)
+    requires std::conjunction_v<std::is_same<Args, std::shared_ptr<Expression>>...>
+  {
+    if constexpr (sizeof...(args) == 0) {
+      if (left->op() == Expression::Operation::kTrue ||
+          right->op() == Expression::Operation::kTrue) {
+        return True::Instance();
+      }
+
+      if (left->op() == Expression::Operation::kFalse) {
+        return right;
+      }
+
+      if (right->op() == Expression::Operation::kFalse) {
+        return left;
+      }
+
+      return Or::Make(std::move(left), std::move(right));
+    } else {
+      ICEBERG_ASSIGN_OR_THROW(auto or_expr, Or::Make(std::move(left), std::move(right)));
+
+      return Or::MakeFolded(std::move(or_expr), std::forward<Args>(args)...);
+    }
+  }
+
   /// \brief Returns the left operand of the OR expression.
   ///
   /// \return The left operand of the OR expression
@@ -210,6 +291,16 @@ class ICEBERG_EXPORT Not : public Expression {
   /// \param child The expression to negate
   /// \return A Result containing a unique pointer to Not, or an error if child is nullptr
   static Result<std::unique_ptr<Not>> Make(std::shared_ptr<Expression> child);
+
+  /// \brief Creates a folded Not expression from a child expression.
+  ///
+  /// \param child The expression to negate
+  /// \return A Result containing a shared pointer to the folded Not expression, or an
+  /// error if child is nullptr
+  /// \note A folded Not expression is an expression that is equivalent to the original
+  /// expression, but with the Not operation removed. For example, not(not(x)) = x.
+  static Result<std::shared_ptr<Expression>> MakeFolded(
+      std::shared_ptr<Expression> child);
 
   /// \brief Returns the child expression.
   ///

@@ -50,26 +50,10 @@ class ICEBERG_EXPORT Expressions {
                                          Args&&... args)
     requires std::conjunction_v<std::is_same<Args, std::shared_ptr<Expression>>...>
   {
-    if constexpr (sizeof...(args) == 0) {
-      if (left->op() == Expression::Operation::kFalse ||
-          right->op() == Expression::Operation::kFalse) {
-        return AlwaysFalse();
-      }
-
-      if (left->op() == Expression::Operation::kTrue) {
-        return right;
-      }
-
-      if (right->op() == Expression::Operation::kTrue) {
-        return left;
-      }
-
-      ICEBERG_ASSIGN_OR_THROW(auto and_expr,
-                              iceberg::And::Make(std::move(left), std::move(right)));
-      return and_expr;
-    } else {
-      return And(And(std::move(left), std::move(right)), std::forward<Args>(args)...);
-    }
+    ICEBERG_ASSIGN_OR_THROW(auto and_expr,
+                            iceberg::And::MakeFolded(std::move(left), std::move(right),
+                                                     std::forward<Args>(args)...));
+    return and_expr;
   }
 
   /// \brief Create an OR expression.
@@ -78,26 +62,10 @@ class ICEBERG_EXPORT Expressions {
                                         std::shared_ptr<Expression> right, Args&&... args)
     requires std::conjunction_v<std::is_same<Args, std::shared_ptr<Expression>>...>
   {
-    if constexpr (sizeof...(args) == 0) {
-      if (left->op() == Expression::Operation::kTrue ||
-          right->op() == Expression::Operation::kTrue) {
-        return AlwaysTrue();
-      }
-
-      if (left->op() == Expression::Operation::kFalse) {
-        return right;
-      }
-
-      if (right->op() == Expression::Operation::kFalse) {
-        return left;
-      }
-
-      ICEBERG_ASSIGN_OR_THROW(auto or_expr,
-                              iceberg::Or::Make(std::move(left), std::move(right)));
-      return or_expr;
-    } else {
-      return Or(Or(std::move(left), std::move(right)), std::forward<Args>(args)...);
-    }
+    ICEBERG_ASSIGN_OR_THROW(auto or_expr,
+                            iceberg::Or::MakeFolded(std::move(left), std::move(right),
+                                                    std::forward<Args>(args)...));
+    return or_expr;
   }
 
   /// \brief Create a NOT expression.
@@ -136,183 +104,184 @@ class ICEBERG_EXPORT Expressions {
   // Unary predicates
 
   /// \brief Create an IS NULL predicate for a field name.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> IsNull(std::string name);
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> IsNull(std::string name);
 
   /// \brief Create an IS NULL predicate for an unbound term.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> IsNull(
+  static std::shared_ptr<UnboundPredicateImpl<B>> IsNull(
       std::shared_ptr<UnboundTerm<B>> expr);
 
   /// \brief Create a NOT NULL predicate for a field name.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> NotNull(std::string name);
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> NotNull(std::string name);
 
   /// \brief Create a NOT NULL predicate for an unbound term.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> NotNull(
+  static std::shared_ptr<UnboundPredicateImpl<B>> NotNull(
       std::shared_ptr<UnboundTerm<B>> expr);
 
   /// \brief Create an IS NaN predicate for a field name.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> IsNaN(std::string name);
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> IsNaN(std::string name);
 
   /// \brief Create an IS NaN predicate for an unbound term.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> IsNaN(std::shared_ptr<UnboundTerm<B>> expr);
+  static std::shared_ptr<UnboundPredicateImpl<B>> IsNaN(
+      std::shared_ptr<UnboundTerm<B>> expr);
 
   /// \brief Create a NOT NaN predicate for a field name.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> NotNaN(std::string name);
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> NotNaN(std::string name);
 
   /// \brief Create a NOT NaN predicate for an unbound term.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> NotNaN(
+  static std::shared_ptr<UnboundPredicateImpl<B>> NotNaN(
       std::shared_ptr<UnboundTerm<B>> expr);
 
   // Comparison predicates
 
   /// \brief Create a less than predicate for a field name.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> LessThan(std::string name,
-                                                                    Literal value);
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> LessThan(std::string name,
+                                                                        Literal value);
 
   /// \brief Create a less than predicate for an unbound term.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> LessThan(
+  static std::shared_ptr<UnboundPredicateImpl<B>> LessThan(
       std::shared_ptr<UnboundTerm<B>> expr, Literal value);
 
   /// \brief Create a less than or equal predicate for a field name.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> LessThanOrEqual(
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> LessThanOrEqual(
       std::string name, Literal value);
 
   /// \brief Create a less than or equal predicate for an unbound term.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> LessThanOrEqual(
+  static std::shared_ptr<UnboundPredicateImpl<B>> LessThanOrEqual(
       std::shared_ptr<UnboundTerm<B>> expr, Literal value);
 
   /// \brief Create a greater than predicate for a field name.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> GreaterThan(std::string name,
-                                                                       Literal value);
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> GreaterThan(
+      std::string name, Literal value);
 
   /// \brief Create a greater than predicate for an unbound term.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> GreaterThan(
+  static std::shared_ptr<UnboundPredicateImpl<B>> GreaterThan(
       std::shared_ptr<UnboundTerm<B>> expr, Literal value);
 
   /// \brief Create a greater than or equal predicate for a field name.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> GreaterThanOrEqual(
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> GreaterThanOrEqual(
       std::string name, Literal value);
 
   /// \brief Create a greater than or equal predicate for an unbound term.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> GreaterThanOrEqual(
+  static std::shared_ptr<UnboundPredicateImpl<B>> GreaterThanOrEqual(
       std::shared_ptr<UnboundTerm<B>> expr, Literal value);
 
   /// \brief Create an equal predicate for a field name.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> Equal(std::string name,
-                                                                 Literal value);
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> Equal(std::string name,
+                                                                     Literal value);
 
   /// \brief Create an equal predicate for an unbound term.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> Equal(std::shared_ptr<UnboundTerm<B>> expr,
-                                                    Literal value);
+  static std::shared_ptr<UnboundPredicateImpl<B>> Equal(
+      std::shared_ptr<UnboundTerm<B>> expr, Literal value);
 
   /// \brief Create a not equal predicate for a field name.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> NotEqual(std::string name,
-                                                                    Literal value);
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> NotEqual(std::string name,
+                                                                        Literal value);
 
   /// \brief Create a not equal predicate for an unbound term.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> NotEqual(
+  static std::shared_ptr<UnboundPredicateImpl<B>> NotEqual(
       std::shared_ptr<UnboundTerm<B>> expr, Literal value);
 
   // String predicates
 
   /// \brief Create a starts with predicate for a field name.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> StartsWith(std::string name,
-                                                                      std::string value);
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> StartsWith(
+      std::string name, std::string value);
 
   /// \brief Create a starts with predicate for an unbound term.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> StartsWith(
+  static std::shared_ptr<UnboundPredicateImpl<B>> StartsWith(
       std::shared_ptr<UnboundTerm<B>> expr, std::string value);
 
   /// \brief Create a not starts with predicate for a field name.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> NotStartsWith(
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> NotStartsWith(
       std::string name, std::string value);
 
   /// \brief Create a not starts with predicate for an unbound term.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> NotStartsWith(
+  static std::shared_ptr<UnboundPredicateImpl<B>> NotStartsWith(
       std::shared_ptr<UnboundTerm<B>> expr, std::string value);
 
   // Set predicates
 
   /// \brief Create an IN predicate for a field name.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> In(
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> In(
       std::string name, std::vector<Literal> values);
 
   /// \brief Create an IN predicate for an unbound term.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> In(std::shared_ptr<UnboundTerm<B>> expr,
-                                                 std::vector<Literal> values);
+  static std::shared_ptr<UnboundPredicateImpl<B>> In(std::shared_ptr<UnboundTerm<B>> expr,
+                                                     std::vector<Literal> values);
 
   /// \brief Create an IN predicate for a field name with initializer list.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> In(
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> In(
       std::string name, std::initializer_list<Literal> values);
 
   /// \brief Create an IN predicate for an unbound term with initializer list.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> In(std::shared_ptr<UnboundTerm<B>> expr,
-                                                 std::initializer_list<Literal> values);
+  static std::shared_ptr<UnboundPredicateImpl<B>> In(
+      std::shared_ptr<UnboundTerm<B>> expr, std::initializer_list<Literal> values);
 
   /// \brief Create a NOT IN predicate for a field name.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> NotIn(
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> NotIn(
       std::string name, std::vector<Literal> values);
 
   /// \brief Create a NOT IN predicate for an unbound term.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> NotIn(std::shared_ptr<UnboundTerm<B>> expr,
-                                                    std::vector<Literal> values);
+  static std::shared_ptr<UnboundPredicateImpl<B>> NotIn(
+      std::shared_ptr<UnboundTerm<B>> expr, std::vector<Literal> values);
 
   /// \brief Create a NOT IN predicate for a field name with initializer list.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> NotIn(
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> NotIn(
       std::string name, std::initializer_list<Literal> values);
 
   /// \brief Create a NOT IN predicate for an unbound term with initializer list.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> NotIn(
+  static std::shared_ptr<UnboundPredicateImpl<B>> NotIn(
       std::shared_ptr<UnboundTerm<B>> expr, std::initializer_list<Literal> values);
 
   // Generic predicate factory
 
   /// \brief Create a predicate with operation and single value.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> Predicate(
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> Predicate(
       Expression::Operation op, std::string name, Literal value);
 
   /// \brief Create a predicate with operation and multiple values.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> Predicate(
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> Predicate(
       Expression::Operation op, std::string name, std::vector<Literal> values);
 
   /// \brief Create a predicate with operation and multiple values.
-  static std::shared_ptr<UnboundPredicate<BoundReference>> Predicate(
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> Predicate(
       Expression::Operation op, std::string name, std::initializer_list<Literal> values);
 
   /// \brief Create a unary predicate (no values).
-  static std::shared_ptr<UnboundPredicate<BoundReference>> Predicate(
+  static std::shared_ptr<UnboundPredicateImpl<BoundReference>> Predicate(
       Expression::Operation op, std::string name);
 
   /// \brief Create a predicate for unbound term with multiple values.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> Predicate(
+  static std::shared_ptr<UnboundPredicateImpl<B>> Predicate(
       Expression::Operation op, std::shared_ptr<UnboundTerm<B>> expr,
       std::vector<Literal> values);
 
   /// \brief Create a predicate with operation and multiple values.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> Predicate(
+  static std::shared_ptr<UnboundPredicateImpl<B>> Predicate(
       Expression::Operation op, std::shared_ptr<UnboundTerm<B>> expr,
       std::initializer_list<Literal> values);
 
   /// \brief Create a unary predicate for unbound term.
   template <typename B>
-  static std::shared_ptr<UnboundPredicate<B>> Predicate(
+  static std::shared_ptr<UnboundPredicateImpl<B>> Predicate(
       Expression::Operation op, std::shared_ptr<UnboundTerm<B>> expr);
 
   // Constants
