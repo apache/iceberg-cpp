@@ -29,7 +29,7 @@ cmake-build-release/
 
 # devcontainer
 .devcontainer/*
-!.devcontainer/*.sample
+!.devcontainer/*.template
 
 # meson subprojects - wrap files need to be kept to let meson download
 # dependencies as needed, but dependencies themselves should not be versioned
