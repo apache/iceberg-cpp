@@ -31,6 +31,8 @@ C++ implementation of [Apache Iceberg™](https://iceberg.apache.org/).
 - CMake 3.25 or higher
 - C++23 compliant compiler
 
+> **Note**: For developers in China experiencing network issues when downloading dependencies, see [BUILD_CHINA.md](BUILD_CHINA.md) for mirror configuration.
+
 ## Build
 
 ### Build, Run Test and Install Core Libraries

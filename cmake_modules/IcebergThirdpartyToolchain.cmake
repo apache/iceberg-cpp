@@ -33,6 +33,8 @@ else()
   set(ARROW_SOURCE_URL
       "https://www.apache.org/dyn/closer.lua?action=download&filename=/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
       "https://downloads.apache.org/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
+      "https://mirrors.tuna.tsinghua.edu.cn/apache/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
+      "https://mirrors.ustc.edu.cn/apache/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
   )
 endif()
 
@@ -164,17 +166,42 @@ function(resolve_avro_dependency)
       OFF
       CACHE BOOL "" FORCE)
 
-  fetchcontent_declare(avro-cpp
-                       ${FC_DECLARE_COMMON_OPTIONS}
-                       # TODO: switch to Apache Avro 1.13.0 once released.
-                       GIT_REPOSITORY https://github.com/apache/avro.git
-                       GIT_TAG e6c308780e876b4c11a470b9900995947f7b0fb5
-                       SOURCE_SUBDIR
-                       lang/c++
-                       FIND_PACKAGE_ARGS
-                       NAMES
-                       avro-cpp
-                       CONFIG)
+  if(DEFINED ENV{ICEBERG_AVRO_URL})
+    # Support custom tarball URL
+    fetchcontent_declare(avro-cpp
+                         ${FC_DECLARE_COMMON_OPTIONS}
+                         URL $ENV{ICEBERG_AVRO_URL}
+                         SOURCE_SUBDIR
+                         lang/c++
+                         FIND_PACKAGE_ARGS
+                         NAMES
+                         avro-cpp
+                         CONFIG)
+  elseif(DEFINED ENV{ICEBERG_AVRO_GIT_URL})
+    # Support custom git URL for mirrors
+    fetchcontent_declare(avro-cpp
+                         ${FC_DECLARE_COMMON_OPTIONS}
+                         GIT_REPOSITORY $ENV{ICEBERG_AVRO_GIT_URL}
+                         GIT_TAG e6c308780e876b4c11a470b9900995947f7b0fb5
+                         SOURCE_SUBDIR
+                         lang/c++
+                         FIND_PACKAGE_ARGS
+                         NAMES
+                         avro-cpp
+                         CONFIG)
+  else()
+    # Default to GitHub - uses unreleased version
+    fetchcontent_declare(avro-cpp
+                         ${FC_DECLARE_COMMON_OPTIONS}
+                         GIT_REPOSITORY https://github.com/apache/avro.git
+                         GIT_TAG e6c308780e876b4c11a470b9900995947f7b0fb5
+                         SOURCE_SUBDIR
+                         lang/c++
+                         FIND_PACKAGE_ARGS
+                         NAMES
+                         avro-cpp
+                         CONFIG)
+  endif()
 
   fetchcontent_makeavailable(avro-cpp)
 
@@ -221,9 +248,20 @@ endfunction()
 function(resolve_nanoarrow_dependency)
   prepare_fetchcontent()
 
+  if(DEFINED ENV{ICEBERG_NANOARROW_URL})
+    set(NANOARROW_URL "$ENV{ICEBERG_NANOARROW_URL}")
+  else()
+    set(NANOARROW_URL
+        "https://dlcdn.apache.org/arrow/apache-arrow-nanoarrow-0.7.0/apache-arrow-nanoarrow-0.7.0.tar.gz"
+        "https://downloads.apache.org/arrow/apache-arrow-nanoarrow-0.7.0/apache-arrow-nanoarrow-0.7.0.tar.gz"
+        "https://mirrors.tuna.tsinghua.edu.cn/apache/arrow/apache-arrow-nanoarrow-0.7.0/apache-arrow-nanoarrow-0.7.0.tar.gz"
+        "https://mirrors.ustc.edu.cn/apache/arrow/apache-arrow-nanoarrow-0.7.0/apache-arrow-nanoarrow-0.7.0.tar.gz"
+    )
+  endif()
+
   fetchcontent_declare(nanoarrow
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       URL "https://dlcdn.apache.org/arrow/apache-arrow-nanoarrow-0.7.0/apache-arrow-nanoarrow-0.7.0.tar.gz"
+                       URL ${NANOARROW_URL}
                            FIND_PACKAGE_ARGS
                            NAMES
                            nanoarrow
@@ -270,9 +308,19 @@ function(resolve_croaring_dependency)
   set(ENABLE_ROARING_TESTS OFF)
   set(ENABLE_ROARING_MICROBENCHMARKS OFF)
 
+  if(DEFINED ENV{ICEBERG_CROARING_URL})
+    set(CROARING_URL "$ENV{ICEBERG_CROARING_URL}")
+  else()
+    set(CROARING_URL
+        "https://github.com/RoaringBitmap/CRoaring/archive/refs/tags/v4.3.11.tar.gz"
+        "https://gitee.com/mirrors/CRoaring/repository/archive/v4.3.11.tar.gz"
+        "https://hub.fastgit.xyz/RoaringBitmap/CRoaring/archive/refs/tags/v4.3.11.tar.gz"
+    )
+  endif()
+
   fetchcontent_declare(croaring
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       URL "https://github.com/RoaringBitmap/CRoaring/archive/refs/tags/v4.3.11.tar.gz"
+                       URL ${CROARING_URL}
                            FIND_PACKAGE_ARGS
                            NAMES
                            roaring
@@ -318,9 +366,19 @@ function(resolve_nlohmann_json_dependency)
       OFF
       CACHE BOOL "" FORCE)
 
+  if(DEFINED ENV{ICEBERG_NLOHMANN_JSON_URL})
+    set(NLOHMANN_JSON_URL "$ENV{ICEBERG_NLOHMANN_JSON_URL}")
+  else()
+    set(NLOHMANN_JSON_URL
+        "https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz"
+        "https://gitee.com/mirrors/JSON-for-Modern-CPP/releases/download/v3.11.3/json.tar.xz"
+        "https://hub.fastgit.xyz/nlohmann/json/releases/download/v3.11.3/json.tar.xz"
+    )
+  endif()
+
   fetchcontent_declare(nlohmann_json
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       URL "https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz"
+                       URL ${NLOHMANN_JSON_URL}
                            FIND_PACKAGE_ARGS
                            NAMES
                            nlohmann_json
@@ -378,9 +436,19 @@ function(resolve_spdlog_dependency)
       ON
       CACHE BOOL "" FORCE)
 
+  if(DEFINED ENV{ICEBERG_SPDLOG_URL})
+    set(SPDLOG_URL "$ENV{ICEBERG_SPDLOG_URL}")
+  else()
+    set(SPDLOG_URL
+        "https://github.com/gabime/spdlog/archive/refs/tags/v1.15.3.tar.gz"
+        "https://gitee.com/mirrors/spdlog/repository/archive/v1.15.3.tar.gz"
+        "https://hub.fastgit.xyz/gabime/spdlog/archive/refs/tags/v1.15.3.tar.gz"
+    )
+  endif()
+
   fetchcontent_declare(spdlog
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       URL "https://github.com/gabime/spdlog/archive/refs/tags/v1.15.3.tar.gz"
+                       URL ${SPDLOG_URL}
                            FIND_PACKAGE_ARGS
                            NAMES
                            spdlog
@@ -440,9 +508,19 @@ function(resolve_cpr_dependency)
   set(CPR_ENABLE_SSL ON)
   set(CPR_USE_SYSTEM_CURL ON)
 
+  if(DEFINED ENV{ICEBERG_CPR_URL})
+    set(CPR_URL "$ENV{ICEBERG_CPR_URL}")
+  else()
+    set(CPR_URL
+        "https://github.com/libcpr/cpr/archive/refs/tags/1.12.0.tar.gz"
+        "https://gitee.com/mirrors/cpr/repository/archive/1.12.0.tar.gz"
+        "https://hub.fastgit.xyz/libcpr/cpr/archive/refs/tags/1.12.0.tar.gz"
+    )
+  endif()
+
   fetchcontent_declare(cpr
                        ${FC_DECLARE_COMMON_OPTIONS}
-                       URL https://github.com/libcpr/cpr/archive/refs/tags/1.12.0.tar.gz
+                       URL ${CPR_URL}
                            FIND_PACKAGE_ARGS
                            NAMES
                            cpr
