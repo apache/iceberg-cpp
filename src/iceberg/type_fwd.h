@@ -144,9 +144,10 @@ struct WriterOptions;
 class Reader;
 class Writer;
 
-class StructLike;
 class ArrayLike;
 class MapLike;
+class StructLike;
+class StructLikeAccessor;
 
 class TableUpdate;
 class TableRequirement;

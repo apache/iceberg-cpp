@@ -163,7 +163,8 @@ class ICEBERG_EXPORT BoundReference
   /// \brief Create a bound reference.
   ///
   /// \param field The schema field
-  static Result<std::unique_ptr<BoundReference>> Make(SchemaField field);
+  static Result<std::unique_ptr<BoundReference>> Make(
+      SchemaField field, std::unique_ptr<StructLikeAccessor> accessor);
 
   ~BoundReference() override;
 
@@ -186,9 +187,10 @@ class ICEBERG_EXPORT BoundReference
   Kind kind() const override { return Kind::kReference; }
 
  private:
-  explicit BoundReference(SchemaField field);
+  BoundReference(SchemaField field, std::unique_ptr<StructLikeAccessor> accessor);
 
   SchemaField field_;
+  std::unique_ptr<StructLikeAccessor> accessor_;
 };
 
 /// \brief An unbound transform expression.

@@ -140,6 +140,12 @@ if(ICEBERG_BUILD_BUNDLE)
                    test_common.cc
                    in_memory_catalog_test.cc)
 
+  add_iceberg_test(eval_expr_test
+                   USE_BUNDLE
+                   SOURCES
+                   eval_expr_test.cc
+                   test_common.cc)
+
   add_iceberg_test(parquet_test
                    USE_BUNDLE
                    SOURCES

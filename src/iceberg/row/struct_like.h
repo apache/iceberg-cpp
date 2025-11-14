@@ -26,11 +26,13 @@
 /// ManifestEntry.  Note that they do not carry type information and should be
 /// used in conjunction with the schema to get the type information.
 
+#include <functional>
 #include <memory>
+#include <span>
 #include <string_view>
 #include <variant>
-#include <vector>
 
+#include "iceberg/expression/literal.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/decimal.h"
@@ -94,6 +96,31 @@ class ICEBERG_EXPORT MapLike {
 
   /// \brief Get the number of entries in the map.
   virtual size_t size() const = 0;
+};
+
+/// \brief An accessor for a struct-like object.
+class ICEBERG_EXPORT StructLikeAccessor {
+ public:
+  explicit StructLikeAccessor(std::shared_ptr<Type> type,
+                              std::span<const size_t> position_path);
+
+  /// \brief Get the scalar value at the given position.
+  Result<Scalar> Get(const StructLike& struct_like) const {
+    return accessor_(struct_like);
+  }
+
+  /// \brief Get the literal value at the given position.
+  ///
+  /// \return The literal value at the given position, or an error if it is
+  /// not a primitive type.
+  Result<Literal> GetLiteral(const StructLike& struct_like) const;
+
+  /// \brief Get the type of the value that this accessor is bound to.
+  const Type& type() const { return *type_; }
+
+ private:
+  std::shared_ptr<Type> type_;
+  std::function<Result<Scalar>(const StructLike&)> accessor_;
 };
 
 }  // namespace iceberg

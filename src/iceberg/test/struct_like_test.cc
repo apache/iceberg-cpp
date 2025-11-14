@@ -20,6 +20,7 @@
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
 #include <arrow/type.h>
+#include <arrow/type_fwd.h>
 #include <arrow/util/decimal.h>
 
 #include "iceberg/arrow_c_data_guard_internal.h"
@@ -27,8 +28,10 @@
 #include "iceberg/manifest_reader_internal.h"
 #include "iceberg/row/arrow_array_wrapper.h"
 #include "iceberg/row/manifest_wrapper.h"
+#include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/type.h"
 
 namespace iceberg {
 
@@ -383,6 +386,54 @@ TEST(ArrowArrayStructLike, PrimitiveMap) {
       EXPECT_SCALAR_EQ(map_like->GetKey(j), std::string_view, expected_map[j].first);
       EXPECT_SCALAR_EQ(map_like->GetValue(j), int32_t, expected_map[j].second);
     }
+  }
+}
+
+TEST(ArrowArrayStructLike, Accessor) {
+  Schema schema{std::vector<SchemaField>{
+      SchemaField::MakeOptional(1, "c1", int32()),
+      SchemaField::MakeOptional(
+          2, "c2",
+          struct_({
+              SchemaField::MakeOptional(3, "c3", int32()),
+              SchemaField::MakeOptional(4, "c4",
+                                        struct_({
+                                            SchemaField::MakeOptional(5, "c5", int32()),
+                                        })),
+          })),
+  }};
+
+  auto arrow_schema = ::arrow::struct_({
+      ::arrow::field("c1", ::arrow::int32()),
+      ::arrow::field("c2",
+                     ::arrow::struct_({
+                         ::arrow::field("c3", ::arrow::int32()),
+                         ::arrow::field("c4", ::arrow::struct_({
+                                                  ::arrow::field("c5", ::arrow::int32()),
+                                              })),
+                     })),
+  });
+
+  auto arrow_array =
+      ::arrow::json::ArrayFromJSONString(
+          arrow_schema, R"([ {"c1": 1, "c2": {"c3": 3, "c4": {"c5": 5}}} ])")
+          .ValueOrDie();
+
+  ArrowSchema c_schema;
+  ArrowArray c_array;
+  internal::ArrowSchemaGuard schema_guard(&c_schema);
+  internal::ArrowArrayGuard array_guard(&c_array);
+  ASSERT_TRUE(::arrow::ExportType(*arrow_schema, &c_schema).ok());
+  ASSERT_TRUE(::arrow::ExportArray(*arrow_array, &c_array).ok());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto struct_like, ArrowArrayStructLike::Make(c_schema, c_array));
+
+  // Test nested accessors from 1 to 3 levels deep
+  for (int32_t field_id : {1, 3, 5}) {
+    ICEBERG_UNWRAP_OR_FAIL(auto accessor, schema.GetAccessorById(field_id));
+    ICEBERG_UNWRAP_OR_FAIL(auto scalar, accessor->Get(*struct_like));
+    ASSERT_TRUE(std::holds_alternative<int32_t>(scalar));
+    EXPECT_EQ(std::get<int32_t>(scalar), field_id);
   }
 }
 
