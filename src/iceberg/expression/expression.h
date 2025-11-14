@@ -151,8 +151,7 @@ class ICEBERG_EXPORT And : public Expression {
   /// \return A Result containing a shared pointer to the folded And expression, or an
   /// error if left or right is nullptr
   /// \note A folded And expression is an expression that is equivalent to the original
-  /// that is equivalent to the original expression, but with the And operation removed.
-  /// For example, (true and x) = x.
+  /// expression, but with the And operation removed. For example, (true and x) = x.
   template <typename... Args>
   static Result<std::shared_ptr<Expression>> MakeFolded(std::shared_ptr<Expression> left,
                                                         std::shared_ptr<Expression> right,
