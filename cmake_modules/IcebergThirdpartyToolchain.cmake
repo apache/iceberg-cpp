@@ -171,12 +171,12 @@ function(resolve_avro_dependency)
     fetchcontent_declare(avro-cpp
                          ${FC_DECLARE_COMMON_OPTIONS}
                          URL $ENV{ICEBERG_AVRO_URL}
-                         SOURCE_SUBDIR
-                         lang/c++
-                         FIND_PACKAGE_ARGS
-                         NAMES
-                         avro-cpp
-                         CONFIG)
+                             SOURCE_SUBDIR
+                             lang/c++
+                             FIND_PACKAGE_ARGS
+                             NAMES
+                             avro-cpp
+                             CONFIG)
   elseif(DEFINED ENV{ICEBERG_AVRO_GIT_URL})
     # Support custom git URL for mirrors
     fetchcontent_declare(avro-cpp
@@ -314,8 +314,7 @@ function(resolve_croaring_dependency)
     set(CROARING_URL
         "https://github.com/RoaringBitmap/CRoaring/archive/refs/tags/v4.3.11.tar.gz"
         "https://gitee.com/mirrors/CRoaring/repository/archive/v4.3.11.tar.gz"
-        "https://hub.fastgit.xyz/RoaringBitmap/CRoaring/archive/refs/tags/v4.3.11.tar.gz"
-    )
+        "https://hub.fastgit.xyz/RoaringBitmap/CRoaring/archive/refs/tags/v4.3.11.tar.gz")
   endif()
 
   fetchcontent_declare(croaring
@@ -372,8 +371,7 @@ function(resolve_nlohmann_json_dependency)
     set(NLOHMANN_JSON_URL
         "https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz"
         "https://gitee.com/mirrors/JSON-for-Modern-CPP/releases/download/v3.11.3/json.tar.xz"
-        "https://hub.fastgit.xyz/nlohmann/json/releases/download/v3.11.3/json.tar.xz"
-    )
+        "https://hub.fastgit.xyz/nlohmann/json/releases/download/v3.11.3/json.tar.xz")
   endif()
 
   fetchcontent_declare(nlohmann_json
@@ -442,8 +440,7 @@ function(resolve_spdlog_dependency)
     set(SPDLOG_URL
         "https://github.com/gabime/spdlog/archive/refs/tags/v1.15.3.tar.gz"
         "https://gitee.com/mirrors/spdlog/repository/archive/v1.15.3.tar.gz"
-        "https://hub.fastgit.xyz/gabime/spdlog/archive/refs/tags/v1.15.3.tar.gz"
-    )
+        "https://hub.fastgit.xyz/gabime/spdlog/archive/refs/tags/v1.15.3.tar.gz")
   endif()
 
   fetchcontent_declare(spdlog
@@ -514,8 +511,7 @@ function(resolve_cpr_dependency)
     set(CPR_URL
         "https://github.com/libcpr/cpr/archive/refs/tags/1.12.0.tar.gz"
         "https://gitee.com/mirrors/cpr/repository/archive/1.12.0.tar.gz"
-        "https://hub.fastgit.xyz/libcpr/cpr/archive/refs/tags/1.12.0.tar.gz"
-    )
+        "https://hub.fastgit.xyz/libcpr/cpr/archive/refs/tags/1.12.0.tar.gz")
   endif()
 
   fetchcontent_declare(cpr
