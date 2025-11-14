@@ -34,6 +34,7 @@
 #include "iceberg/test/temp_file_test_base.h"
 #include "iceberg/test/test_common.h"
 #include "iceberg/transform.h"
+#include "iceberg/type.h"
 
 namespace iceberg {
 

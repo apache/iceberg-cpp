@@ -548,10 +548,11 @@ Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
   if (default_spec_id == spec_id) {
     ICEBERG_ASSIGN_OR_RAISE(
         spec, PartitionSpec::Make(*schema, spec_id, std::move(partition_fields),
-                                  true /*allow_missing_fields*/));
+                                  /*allow_missing_fields=*/false));
   } else {
-    ICEBERG_ASSIGN_OR_RAISE(spec,
-                            PartitionSpec::Make(spec_id, std::move(partition_fields)));
+    ICEBERG_ASSIGN_OR_RAISE(
+        spec, PartitionSpec::Make(*schema, spec_id, std::move(partition_fields),
+                                  /*allow_missing_fields=*/true));
   }
   return spec;
 }
@@ -928,8 +929,9 @@ Status ParsePartitionSpecs(const nlohmann::json& json, int8_t format_version,
 
     // Create partition spec with schema validation
     ICEBERG_ASSIGN_OR_RAISE(
-        auto spec, PartitionSpec::Make(*current_schema, PartitionSpec::kInitialSpecId,
-                                       std::move(fields), true /*allow_missing_fields*/));
+        auto spec,
+        PartitionSpec::Make(*current_schema, PartitionSpec::kInitialSpecId,
+                            std::move(fields), /*allow_missing_fields=*/false));
     default_spec_id = spec->spec_id();
     partition_specs.push_back(std::move(spec));
   }
