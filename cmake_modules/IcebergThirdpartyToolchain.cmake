@@ -33,8 +33,6 @@ else()
   set(ARROW_SOURCE_URL
       "https://www.apache.org/dyn/closer.lua?action=download&filename=/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
       "https://downloads.apache.org/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
-      "https://mirrors.tuna.tsinghua.edu.cn/apache/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
-      "https://mirrors.ustc.edu.cn/apache/arrow/arrow-${ICEBERG_ARROW_BUILD_VERSION}/apache-arrow-${ICEBERG_ARROW_BUILD_VERSION}.tar.gz"
   )
 endif()
 
@@ -253,9 +251,6 @@ function(resolve_nanoarrow_dependency)
   else()
     set(NANOARROW_URL
         "https://dlcdn.apache.org/arrow/apache-arrow-nanoarrow-0.7.0/apache-arrow-nanoarrow-0.7.0.tar.gz"
-        "https://downloads.apache.org/arrow/apache-arrow-nanoarrow-0.7.0/apache-arrow-nanoarrow-0.7.0.tar.gz"
-        "https://mirrors.tuna.tsinghua.edu.cn/apache/arrow/apache-arrow-nanoarrow-0.7.0/apache-arrow-nanoarrow-0.7.0.tar.gz"
-        "https://mirrors.ustc.edu.cn/apache/arrow/apache-arrow-nanoarrow-0.7.0/apache-arrow-nanoarrow-0.7.0.tar.gz"
     )
   endif()
 
@@ -312,9 +307,7 @@ function(resolve_croaring_dependency)
     set(CROARING_URL "$ENV{ICEBERG_CROARING_URL}")
   else()
     set(CROARING_URL
-        "https://github.com/RoaringBitmap/CRoaring/archive/refs/tags/v4.3.11.tar.gz"
-        "https://gitee.com/mirrors/CRoaring/repository/archive/v4.3.11.tar.gz"
-        "https://hub.fastgit.xyz/RoaringBitmap/CRoaring/archive/refs/tags/v4.3.11.tar.gz")
+        "https://github.com/RoaringBitmap/CRoaring/archive/refs/tags/v4.3.11.tar.gz")
   endif()
 
   fetchcontent_declare(croaring
@@ -369,9 +362,7 @@ function(resolve_nlohmann_json_dependency)
     set(NLOHMANN_JSON_URL "$ENV{ICEBERG_NLOHMANN_JSON_URL}")
   else()
     set(NLOHMANN_JSON_URL
-        "https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz"
-        "https://gitee.com/mirrors/JSON-for-Modern-CPP/releases/download/v3.11.3/json.tar.xz"
-        "https://hub.fastgit.xyz/nlohmann/json/releases/download/v3.11.3/json.tar.xz")
+        "https://github.com/nlohmann/json/releases/download/v3.11.3/json.tar.xz")
   endif()
 
   fetchcontent_declare(nlohmann_json
@@ -437,10 +428,7 @@ function(resolve_spdlog_dependency)
   if(DEFINED ENV{ICEBERG_SPDLOG_URL})
     set(SPDLOG_URL "$ENV{ICEBERG_SPDLOG_URL}")
   else()
-    set(SPDLOG_URL
-        "https://github.com/gabime/spdlog/archive/refs/tags/v1.15.3.tar.gz"
-        "https://gitee.com/mirrors/spdlog/repository/archive/v1.15.3.tar.gz"
-        "https://hub.fastgit.xyz/gabime/spdlog/archive/refs/tags/v1.15.3.tar.gz")
+    set(SPDLOG_URL "https://github.com/gabime/spdlog/archive/refs/tags/v1.15.3.tar.gz")
   endif()
 
   fetchcontent_declare(spdlog
@@ -508,10 +496,7 @@ function(resolve_cpr_dependency)
   if(DEFINED ENV{ICEBERG_CPR_URL})
     set(CPR_URL "$ENV{ICEBERG_CPR_URL}")
   else()
-    set(CPR_URL
-        "https://github.com/libcpr/cpr/archive/refs/tags/1.12.0.tar.gz"
-        "https://gitee.com/mirrors/cpr/repository/archive/1.12.0.tar.gz"
-        "https://hub.fastgit.xyz/libcpr/cpr/archive/refs/tags/1.12.0.tar.gz")
+    set(CPR_URL "https://github.com/libcpr/cpr/archive/refs/tags/1.12.0.tar.gz")
   endif()
 
   fetchcontent_declare(cpr

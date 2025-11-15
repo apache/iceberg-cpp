@@ -19,6 +19,45 @@
 
 # Building in China
 
+This guide helps developers in China who may experience network issues when downloading dependencies from GitHub or international mirrors.
+
+## Using Custom Mirror URLs
+
+If you experience download timeouts, you can override the default dependency URLs using environment variables:
+
+```bash
+export ICEBERG_ARROW_URL="<your-mirror-url>/apache-arrow-22.0.0.tar.gz"
+export ICEBERG_NANOARROW_URL="<your-mirror-url>/apache-arrow-nanoarrow-0.7.0.tar.gz"
+export ICEBERG_CROARING_URL="<your-mirror-url>/CRoaring-v4.3.11.tar.gz"
+export ICEBERG_NLOHMANN_JSON_URL="<your-mirror-url>/json-v3.11.3.tar.xz"
+export ICEBERG_SPDLOG_URL="<your-mirror-url>/spdlog-v1.15.3.tar.gz"
+export ICEBERG_CPR_URL="<your-mirror-url>/cpr-1.12.0.tar.gz"
+
+# For Avro (git repository):
+export ICEBERG_AVRO_GIT_URL="<your-git-mirror>/avro.git"
+# Or if you have a tarball:
+export ICEBERG_AVRO_URL="<your-mirror-url>/avro.tar.gz"
+```
+
+Then build as usual:
+
+```bash
+cmake -S . -B build
+cmake --build build
+```
+
+## Alternative Solutions
+
+1. **Use system packages**: Install dependencies via your system package manager
+2. **Use a proxy**: Set `https_proxy` environment variable
+3. **Pre-download**: Manually download tarballs to `~/.cmake/Downloads/`
+
+## Getting Help
+
+If you continue experiencing build issues, please open an issue at https://github.com/apache/iceberg-cpp/issues with details about which dependency failed.
+
+# Building in China
+
 This guide helps developers in China build iceberg-cpp when network access to GitHub and other international sites is limited.
 
 ## Mirror Support
