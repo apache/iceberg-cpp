@@ -150,9 +150,13 @@ class ICEBERG_EXPORT Literal : public util::Formattable {
   /// \return true if this literal represents a BelowMin value, false otherwise
   bool IsBelowMin() const;
 
-  /// Check if this literal is null.
+  /// \brief Check if this literal is null.
   /// \return true if this literal is null, false otherwise
   bool IsNull() const;
+
+  /// \brief Check if this literal is NaN (Not a Number).
+  /// \return true if this literal is NaN, false otherwise
+  bool IsNan() const;
 
   std::string ToString() const override;
 

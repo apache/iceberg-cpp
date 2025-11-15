@@ -33,15 +33,11 @@ class ManifestEntryAdapterV1 : public ManifestEntryAdapter {
                          std::shared_ptr<Schema> current_schema);
 
   Status Init() override;
-  Status Append(const ManifestEntry& entry) override;
 
   static std::shared_ptr<Schema> EntrySchema(std::shared_ptr<StructType> partition_type);
   static std::shared_ptr<Schema> WrapFileSchema(std::shared_ptr<StructType> file_schema);
   static std::shared_ptr<StructType> DataFileSchema(
       std::shared_ptr<StructType> partition_type);
-
- private:
-  std::optional<int64_t> snapshot_id_;
 };
 
 /// \brief Adapter to convert V1 ManifestFile to `ArrowArray`.

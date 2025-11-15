@@ -237,7 +237,7 @@ Result<std::vector<ManifestFile>> ParseManifestList(ArrowSchema* schema,
         break;
       case ManifestFileField::kContent:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].content, view_of_column,
-                              ManifestFile::Content);
+                              ManifestContent);
         break;
       case ManifestFileField::kSequenceNumber:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].sequence_number, view_of_column,
