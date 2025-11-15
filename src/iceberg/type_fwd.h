@@ -155,6 +155,25 @@ class StructLike;
 class StructLikeAccessor;
 
 class TableUpdate;
+class AssignUUID;
+class UpgradeFormatVersion;
+class AddSchema;
+class SetCurrentSchema;
+class RemoveSchemas;
+class AddPartitionSpec;
+class SetDefaultPartitionSpec;
+class RemovePartitionSpecs;
+class AddSortOrder;
+class SetDefaultSortOrder;
+class RemoveSortOrders;
+class AddSnapshot;
+class RemoveSnapshots;
+class RemoveSnapshotRef;
+class SetSnapshotRef;
+class SetProperties;
+class RemoveProperties;
+class SetLocation;
+
 class TableRequirement;
 class TableMetadataBuilder;
 class TableUpdateContext;

@@ -38,6 +38,76 @@ class ICEBERG_EXPORT Transaction {
   /// \return this transaction's table
   virtual const std::shared_ptr<Table>& table() const = 0;
 
+  /// \brief Create a new schema addition operation
+  ///
+  /// \return a new AddSchema
+  virtual std::shared_ptr<AddSchema> AddSchema() = 0;
+
+  /// \brief Create a new set current schema operation
+  ///
+  /// \param schema_id the schema id to set as current
+  /// \return a new SetCurrentSchema
+  virtual std::shared_ptr<SetCurrentSchema> SetCurrentSchema(int32_t schema_id) = 0;
+
+  /// \brief Create a new remove schemas operation
+  ///
+  /// \param schema_ids the schema ids to remove
+  /// \return a new RemoveSchemas
+  virtual std::shared_ptr<RemoveSchemas> RemoveSchemas(
+      const std::vector<int32_t>& schema_ids) = 0;
+
+  /// \brief Create a new partition spec addition operation
+  ///
+  /// \return a new AddPartitionSpec
+  virtual std::shared_ptr<AddPartitionSpec> AddPartitionSpec() = 0;
+
+  /// \brief Create a new set default partition spec operation
+  ///
+  /// \param spec_id the partition spec id to set as default
+  /// \return a new SetDefaultPartitionSpec
+  virtual std::shared_ptr<SetDefaultPartitionSpec> SetDefaultPartitionSpec(
+      int32_t spec_id) = 0;
+
+  /// \brief Create a new remove partition specs operation
+  ///
+  /// \param spec_ids the partition spec ids to remove
+  /// \return a new RemovePartitionSpecs
+  virtual std::shared_ptr<RemovePartitionSpecs> RemovePartitionSpecs(
+      const std::vector<int32_t>& spec_ids) = 0;
+
+  /// \brief Create a new sort order addition operation
+  ///
+  /// \return a new AddSortOrder
+  virtual std::shared_ptr<AddSortOrder> AddSortOrder() = 0;
+
+  /// \brief Create a new set default sort order operation
+  ///
+  /// \param order_id the sort order id to set as default
+  /// \return a new SetDefaultSortOrder
+  virtual std::shared_ptr<SetDefaultSortOrder> SetDefaultSortOrder(int32_t order_id) = 0;
+
+  /// \brief Create a new remove sort orders operation
+  ///
+  /// \param order_ids the sort order ids to remove
+  /// \return a new RemoveSortOrders
+  virtual std::shared_ptr<RemoveSortOrders> RemoveSortOrders(
+      const std::vector<int32_t>& order_ids) = 0;
+
+  /// \brief Create a new set properties operation
+  ///
+  /// \return a new SetProperties
+  virtual std::shared_ptr<SetProperties> SetProperties() = 0;
+
+  /// \brief Create a new remove properties operation
+  ///
+  /// \return a new RemoveProperties
+  virtual std::shared_ptr<RemoveProperties> RemoveProperties() = 0;
+
+  /// \brief Create a new set location operation
+  ///
+  /// \return a new SetLocation
+  virtual std::shared_ptr<SetLocation> SetLocation() = 0;
+
   /// \brief Create a new append API to add files to this table
   ///
   /// \return a new AppendFiles
