@@ -75,6 +75,12 @@ class ICEBERG_EXPORT Schema : public StructType {
   Result<std::optional<std::reference_wrapper<const SchemaField>>> FindFieldById(
       int32_t field_id) const;
 
+  /// \brief Get the accessor to access the field by field id.
+  ///
+  /// \param field_id The id of the field to get the accessor for.
+  /// \return The accessor to access the field, or NotFound if the field is not found.
+  Result<std::unique_ptr<StructLikeAccessor>> GetAccessorById(int32_t field_id) const;
+
   /// \brief Creates a projected schema from selected field names.
   ///
   /// \param names Selected field names and nested names are dot-concatenated.
@@ -106,6 +112,8 @@ class ICEBERG_EXPORT Schema : public StructType {
   InitNameToIdMap(const Schema&);
   static Result<std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>>
   InitLowerCaseNameToIdMap(const Schema&);
+  static Result<std::unordered_map<int32_t, std::vector<size_t>>> InitIdToPositionPath(
+      const Schema&);
 
   const std::optional<int32_t> schema_id_;
   /// Mapping from field id to field.
@@ -114,6 +122,8 @@ class ICEBERG_EXPORT Schema : public StructType {
   Lazy<InitNameToIdMap> name_to_id_;
   /// Mapping from lowercased field name to field id
   Lazy<InitLowerCaseNameToIdMap> lowercase_name_to_id_;
+  /// Mapping from field id to (nested) position path to access the field.
+  Lazy<InitIdToPositionPath> id_to_position_path_;
 };
 
 }  // namespace iceberg

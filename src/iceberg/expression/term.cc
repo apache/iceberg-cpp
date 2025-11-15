@@ -21,8 +21,8 @@
 
 #include <format>
 
-#include "iceberg/exception.h"
 #include "iceberg/result.h"
+#include "iceberg/row/struct_like.h"
 #include "iceberg/schema.h"
 #include "iceberg/transform.h"
 #include "iceberg/util/checked_cast.h"
@@ -64,7 +64,11 @@ Result<std::shared_ptr<BoundReference>> NamedReference::Bind(const Schema& schem
     return InvalidExpression("Cannot find field '{}' in struct: {}", field_name_,
                              schema.ToString());
   }
-  return BoundReference::Make(field_opt.value().get());
+
+  int32_t field_id = field_opt.value().get().field_id();
+  ICEBERG_ASSIGN_OR_RAISE(auto accessor, schema.GetAccessorById(field_id));
+
+  return BoundReference::Make(field_opt.value().get(), std::move(accessor));
 }
 
 std::string NamedReference::ToString() const {
@@ -72,17 +76,25 @@ std::string NamedReference::ToString() const {
 }
 
 // BoundReference implementation
-Result<std::unique_ptr<BoundReference>> BoundReference::Make(SchemaField field) {
+Result<std::unique_ptr<BoundReference>> BoundReference::Make(
+    SchemaField field, std::unique_ptr<StructLikeAccessor> accessor) {
   if (auto status = field.Validate(); !status.has_value()) [[unlikely]] {
     return InvalidExpression("Cannot create BoundReference with invalid field: {}",
                              status.error().message);
   }
-  return std::unique_ptr<BoundReference>(new BoundReference(std::move(field)));
+  if (!accessor) [[unlikely]] {
+    return InvalidExpression("Cannot create BoundReference without accessor");
+  }
+  return std::unique_ptr<BoundReference>(
+      new BoundReference(std::move(field), std::move(accessor)));
 }
 
-BoundReference::BoundReference(SchemaField field) : field_(std::move(field)) {
+BoundReference::BoundReference(SchemaField field,
+                               std::unique_ptr<StructLikeAccessor> accessor)
+    : field_(std::move(field)), accessor_(std::move(accessor)) {
   ICEBERG_DCHECK(field_.Validate().has_value(),
                  "Cannot create BoundReference with invalid field");
+  ICEBERG_DCHECK(accessor_ != nullptr, "Cannot create BoundReference without accessor");
 }
 
 BoundReference::~BoundReference() = default;
@@ -92,7 +104,7 @@ std::string BoundReference::ToString() const {
 }
 
 Result<Literal> BoundReference::Evaluate(const StructLike& data) const {
-  return NotImplemented("BoundReference::Evaluate(StructLike) not implemented");
+  return accessor_->GetLiteral(data);
 }
 
 bool BoundReference::Equals(const BoundTerm& other) const {
@@ -167,14 +179,14 @@ std::string BoundTransform::ToString() const {
 }
 
 Result<Literal> BoundTransform::Evaluate(const StructLike& data) const {
-  throw IcebergError("BoundTransform::Evaluate(StructLike) not implemented");
+  ICEBERG_ASSIGN_OR_RAISE(auto literal, ref_->Evaluate(data));
+  return transform_func_->Transform(literal);
 }
 
 bool BoundTransform::MayProduceNull() const {
   // transforms must produce null for null input values
   // transforms may produce null for non-null inputs when not order-preserving
-  // FIXME: add Transform::is_order_preserving()
-  return ref_->MayProduceNull();  // || !transform_->is_order_preserving();
+  return ref_->MayProduceNull() || !transform_->PreservesOrder();
 }
 
 std::shared_ptr<Type> BoundTransform::type() const {

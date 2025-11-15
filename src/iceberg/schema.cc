@@ -22,9 +22,12 @@
 #include <format>
 #include <functional>
 
+#include "iceberg/result.h"
+#include "iceberg/row/struct_like.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
+#include "iceberg/util/formatter_internal.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/visit_type.h"
 
@@ -67,6 +70,48 @@ class NameToIdVisitor {
   std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>& name_to_id_;
   std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>> short_name_to_id_;
   std::function<std::string(std::string_view)> quoting_func_;
+};
+
+class PositionPathVisitor {
+ public:
+  Status Visit(const PrimitiveType& type) {
+    if (current_field_id_ == kUnassignedFieldId) {
+      return InvalidSchema("Current field id is not assigned, type: {}", type.ToString());
+    }
+
+    if (auto ret = position_path_.try_emplace(current_field_id_, current_path_);
+        !ret.second) {
+      return InvalidSchema("Duplicate field id found: {}, prev path: {}, curr path: {}",
+                           current_field_id_, ret.first->second, current_path_);
+    }
+
+    return {};
+  }
+
+  Status Visit(const StructType& type) {
+    for (size_t i = 0; i < type.fields().size(); ++i) {
+      const auto& field = type.fields()[i];
+      current_field_id_ = field.field_id();
+      current_path_.push_back(i);
+      ICEBERG_RETURN_UNEXPECTED(VisitTypeInline(*field.type(), this));
+      current_path_.pop_back();
+    }
+    return {};
+  }
+
+  // Non-struct types are not supported yet, but it is not an error.
+  Status Visit(const ListType& type) { return {}; }
+  Status Visit(const MapType& type) { return {}; }
+
+  std::unordered_map<int32_t, std::vector<size_t>> Finish() {
+    return std::move(position_path_);
+  }
+
+ private:
+  constexpr static int32_t kUnassignedFieldId = -1;
+  int32_t current_field_id_ = kUnassignedFieldId;
+  std::vector<size_t> current_path_;
+  std::unordered_map<int32_t, std::vector<size_t>> position_path_;
 };
 
 Schema::Schema(std::vector<SchemaField> fields, std::optional<int32_t> schema_id)
@@ -142,6 +187,27 @@ Result<std::optional<std::reference_wrapper<const SchemaField>>> Schema::FindFie
     return std::nullopt;
   }
   return it->second;
+}
+
+Result<std::unordered_map<int32_t, std::vector<size_t>>> Schema::InitIdToPositionPath(
+    const Schema& self) {
+  PositionPathVisitor visitor;
+  ICEBERG_RETURN_UNEXPECTED(VisitTypeInline(self, &visitor));
+  return visitor.Finish();
+}
+
+Result<std::unique_ptr<StructLikeAccessor>> Schema::GetAccessorById(
+    int32_t field_id) const {
+  ICEBERG_ASSIGN_OR_RAISE(auto id_to_position_path, id_to_position_path_.Get(*this));
+  if (auto it = id_to_position_path.get().find(field_id);
+      it != id_to_position_path.get().cend()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto field, FindFieldById(field_id));
+    if (!field.has_value()) {
+      return NotFound("Cannot get accessor for field id: {}", field_id);
+    }
+    return std::make_unique<StructLikeAccessor>(field.value().get().type(), it->second);
+  }
+  return NotFound("Cannot get accessor for field id: {}", field_id);
 }
 
 IdToFieldVisitor::IdToFieldVisitor(
