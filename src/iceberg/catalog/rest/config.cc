@@ -34,26 +34,19 @@ std::unique_ptr<RestCatalogConfig> RestCatalogConfig::FromMap(
   return rest_catalog_config;
 }
 
-Result<cpr::Header> RestCatalogConfig::GetExtraHeaders() const {
-  cpr::Header headers;
-
-  headers[std::string(kHeaderContentType)] = std::string(kMimeTypeApplicationJson);
-  headers[std::string(kHeaderUserAgent)] = std::string(kUserAgent);
-  headers[std::string(kHeaderXClientVersion)] = std::string(kClientVersion);
+std::unordered_map<std::string, std::string> RestCatalogConfig::GetExtraHeaders() const {
+  std::unordered_map<std::string, std::string> headers;
+  headers[kHeaderContentType] = kMimeTypeApplicationJson;
+  headers[kHeaderUserAgent] = kUserAgent;
 
   constexpr std::string_view prefix = "header.";
   for (const auto& [key, value] : configs_) {
     if (key.starts_with(prefix)) {
-      std::string_view header_name = std::string_view(key).substr(prefix.length());
-
-      if (header_name.empty()) {
-        return InvalidArgument("Header name cannot be empty after '{}' prefix", prefix);
+      std::string header_name = key.substr(prefix.length());
+      if (header_name.empty() || value.empty()) {
+        continue;
       }
-
-      if (value.empty()) {
-        return InvalidArgument("Header value for '{}' cannot be empty", header_name);
-      }
-      headers[std::string(header_name)] = value;
+      headers[header_name] = value;
     }
   }
   return headers;

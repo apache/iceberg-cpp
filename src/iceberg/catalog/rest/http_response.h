@@ -21,23 +21,26 @@
 
 #include <string>
 
-#include "iceberg/version.h"
+#include "cpr/response.h"
+#include "iceberg/catalog/rest/iceberg_rest_export.h"
 
-/// \file iceberg/catalog/rest/constant.h
-/// Constant values for Iceberg REST API.
+/// \file iceberg/catalog/rest/http_response.h
+/// \brief A simple wrapper for cpr::Response. This class encapsulates the details of the
+/// underlying cpr library's response, providing a consistent interface that is
+/// independent of the specific network library used.
 
-namespace iceberg::rest {
+class ICEBERG_REST_EXPORT HttpResponse {
+ public:
+  explicit HttpResponse(cpr::Response response) : response_(std::move(response)) {}
 
-inline const std::string kHeaderContentType = "Content-Type";
-inline const std::string kHeaderAccept = "Accept";
-inline const std::string kHeaderXClientVersion = "X-Client-Version";
-inline const std::string kHeaderUserAgent = "User-Agent";
+  /// \brief Get the HTTP status code of the response.
+  /// \return The HTTP status code.
+  int32_t status_code() const { return response_.status_code; }
 
-inline const std::string kMimeTypeApplicationJson = "application/json";
-inline const std::string kUserAgentPrefix = "iceberg-cpp/";
-inline const std::string kUserAgent = "iceberg-cpp/" ICEBERG_VERSION_STRING;
+  /// \brief Get the body of the response as a string.
+  /// \return The response body.
+  const std::string& body() const { return response_.text; }
 
-inline const std::string kQueryParamParent = "parent";
-inline const std::string kQueryParamPageToken = "page_token";
-
-}  // namespace iceberg::rest
+ private:
+  cpr::Response response_;
+};
