@@ -21,12 +21,12 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include <cpr/cprtypes.h>
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
-#include "iceberg/result.h"
 #include "iceberg/util/config.h"
 
 /// \file iceberg/catalog/rest/config.h
@@ -61,9 +61,8 @@ class ICEBERG_REST_EXPORT RestCatalogConfig : public ConfigBase<RestCatalogConfi
   ///
   /// This includes default headers like Content-Type, User-Agent, X-Client-Version and
   /// any custom headers prefixed with "header." in the properties.
-  /// \return A Result containing cpr::Header object, or an error if names/values are
-  /// invalid.
-  Result<cpr::Header> GetExtraHeaders() const;
+  /// \return A map of header names to values.
+  std::unordered_map<std::string, std::string> GetExtraHeaders() const;
 };
 
 }  // namespace iceberg::rest

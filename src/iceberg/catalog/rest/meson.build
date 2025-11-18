@@ -61,7 +61,7 @@ install_headers(
         'json_internal.h',
         'types.h',
         'util.h',
-        'resource_path.h',
+        'resource_paths.h',
     ],
     subdir: 'iceberg/catalog/rest',
 )

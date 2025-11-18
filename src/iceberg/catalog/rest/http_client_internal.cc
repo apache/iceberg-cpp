@@ -20,65 +20,44 @@
 #include <nlohmann/json.hpp>
 
 #include "cpr/body.h"
+#include "cpr/cprtypes.h"
 #include "iceberg/catalog/rest/config.h"
 #include "iceberg/catalog/rest/http_client_interal.h"
-#include "iceberg/util/macros.h"
 
 namespace iceberg::rest {
 
-Result<std::unique_ptr<HttpClient>> HttpClient::Make(const RestCatalogConfig& config) {
-  ICEBERG_ASSIGN_OR_RAISE(auto session_headers, config.GetExtraHeaders());
-  return std::unique_ptr<HttpClient>(new HttpClient(std::move(session_headers)));
-}
+HttpClient::HttpClient(const RestCatalogConfig& config)
+    : default_headers_{config.GetExtraHeaders().begin(), config.GetExtraHeaders().end()},
+      session_{std::make_unique<cpr::Session>()} {}
 
-HttpClient::HttpClient(cpr::Header session_headers)
-    : default_headers_(std::move(session_headers)),
-      session_(std::make_unique<cpr::Session>()) {}
-
-Result<cpr::Response> HttpClient::Get(const std::string& target,
-                                      const cpr::Parameters& params,
-                                      const cpr::Header& headers) {
+Result<HttpResponse> HttpClient::Get(const std::string& target,
+                                     const cpr::Parameters& params,
+                                     const cpr::Header& headers) {
   return Execute(target, params, headers,
                  [&](cpr::Session& session) { return session.Get(); });
 }
 
-Result<cpr::Response> HttpClient::Post(const std::string& target, const cpr::Body& body,
-                                       const cpr::Parameters& params,
-                                       const cpr::Header& headers) {
+Result<HttpResponse> HttpClient::Post(const std::string& target, const cpr::Body& body,
+                                      const cpr::Parameters& params,
+                                      const cpr::Header& headers) {
   return Execute(target, params, headers, [&](cpr::Session& session) {
     session.SetBody(body);
     return session.Post();
   });
 }
 
-Result<cpr::Response> HttpClient::Head(const std::string& target,
-                                       const cpr::Parameters& params,
-                                       const cpr::Header& headers) {
+Result<HttpResponse> HttpClient::Head(const std::string& target,
+                                      const cpr::Parameters& params,
+                                      const cpr::Header& headers) {
   return Execute(target, params, headers,
                  [&](cpr::Session& session) { return session.Head(); });
 }
 
-Result<cpr::Response> HttpClient::Delete(const std::string& target,
-                                         const cpr::Parameters& params,
-                                         const cpr::Header& headers) {
+Result<HttpResponse> HttpClient::Delete(const std::string& target,
+                                        const cpr::Parameters& params,
+                                        const cpr::Header& headers) {
   return Execute(target, params, headers,
                  [&](cpr::Session& session) { return session.Delete(); });
-}
-
-template <typename Func>
-Result<cpr::Response> HttpClient::Execute(const std::string& target,
-                                          const cpr::Parameters& params,
-                                          const cpr::Header& request_headers,
-                                          Func&& perform_request) {
-  cpr::Header combined_headers = default_headers_;
-  combined_headers.insert(request_headers.begin(), request_headers.end());
-
-  session_->SetUrl(cpr::Url{target});
-  session_->SetParameters(params);
-  session_->SetHeader(combined_headers);
-
-  cpr::Response response = perform_request(*session_);
-  return response;
 }
 
 }  // namespace iceberg::rest
