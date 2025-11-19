@@ -50,7 +50,7 @@ class ICEBERG_REST_EXPORT RestCatalogConfig : public ConfigBase<RestCatalogConfi
   inline static std::string_view kWarehouse{"warehouse"};
 
   /// \brief Create a default RestCatalogConfig instance.
-  static std::unique_ptr<RestCatalogConfig> default_properties();
+  static std::unique_ptr<RestCatalogConfig> DefaultProperties();
 
   /// \brief Create a RestCatalogConfig instance from a map of key-value pairs.
   static std::unique_ptr<RestCatalogConfig> FromMap(

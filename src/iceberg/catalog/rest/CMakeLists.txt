@@ -19,7 +19,7 @@ set(ICEBERG_REST_SOURCES
     catalog.cc
     json_internal.cc
     config.cc
-    http_client_internal.cc
+    http_client.cc
     resource_paths.cc)
 
 set(ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS)

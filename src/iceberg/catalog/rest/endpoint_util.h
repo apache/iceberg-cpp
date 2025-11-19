@@ -31,11 +31,11 @@ namespace iceberg::rest {
 /// \brief Trim a single trailing slash from a URI string_view.
 /// \details If \p uri_sv ends with '/', remove that last character; otherwise the input
 /// is returned unchanged.
-/// \param uri_sv The URI string view to trim.
-/// \return The (possibly) trimmed URI string view.
-inline std::string_view TrimTrailingSlash(std::string_view uri_sv) {
-  if (uri_sv.ends_with('/')) {
-    uri_sv.remove_suffix(1);
+/// \param uri_sv The URI string to trim.
+/// \return The (possibly) trimmed URI string.
+inline std::string TrimTrailingSlash(std::string uri_sv) {
+  if (!uri_sv.empty() && uri_sv.back() == '/') {
+    uri_sv.pop_back();
   }
   return uri_sv;
 }

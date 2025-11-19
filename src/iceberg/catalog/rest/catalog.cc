@@ -20,14 +20,18 @@
 #include "iceberg/catalog/rest/catalog.h"
 
 #include <memory>
+#include <unordered_map>
 #include <utility>
 
 #include <cpr/cpr.h>
 
+#include "iceberg/catalog/rest/catalog.h"
 #include "iceberg/catalog/rest/config.h"
 #include "iceberg/catalog/rest/constant.h"
 #include "iceberg/catalog/rest/endpoint_util.h"
-#include "iceberg/catalog/rest/http_client_interal.h"
+#include "iceberg/catalog/rest/error_handlers.h"
+#include "iceberg/catalog/rest/http_client.h"
+#include "iceberg/catalog/rest/http_response.h"
 #include "iceberg/catalog/rest/json_internal.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/json_internal.h"
@@ -41,37 +45,27 @@ Result<std::unique_ptr<RestCatalog>> RestCatalog::Make(const RestCatalogConfig& 
   // Create ResourcePaths and validate URI
   ICEBERG_ASSIGN_OR_RAISE(auto paths, ResourcePaths::Make(config));
 
-  ICEBERG_ASSIGN_OR_RAISE(auto tmp_client, HttpClient::Make(config));
-
+  auto tmp_client = std::make_unique<HttpClient>(config);
   const std::string endpoint = paths->V1Config();
-  cpr::Parameters params;
-  ICEBERG_ASSIGN_OR_RAISE(const auto& response, tmp_client->Get(endpoint, params));
-  switch (response.status_code) {
-    case cpr::status::HTTP_OK: {
-      ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.text));
-      ICEBERG_ASSIGN_OR_RAISE(auto server_config, CatalogConfigFromJson(json));
-      // Merge server config into client config, server config overrides > client config
-      // properties > server config defaults
-      auto final_props = std::move(server_config.defaults);
-      for (const auto& kv : config.configs()) {
-        final_props.insert_or_assign(kv.first, kv.second);
-      }
-
-      for (const auto& kv : server_config.overrides) {
-        final_props.insert_or_assign(kv.first, kv.second);
-      }
-      auto final_config = RestCatalogConfig::FromMap(final_props);
-      ICEBERG_ASSIGN_OR_RAISE(auto client, HttpClient::Make(*final_config));
-      ICEBERG_ASSIGN_OR_RAISE(auto final_paths, ResourcePaths::Make(*final_config));
-      return std::unique_ptr<RestCatalog>(new RestCatalog(
-          std::move(final_config), std::move(client), std::move(*final_paths)));
-    };
-    default: {
-      ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.text));
-      ICEBERG_ASSIGN_OR_RAISE(auto list_response, ErrorResponseFromJson(json));
-      return UnknownError("Error listing namespaces: {}", list_response.error.message);
-    }
+  ICEBERG_ASSIGN_OR_RAISE(const HttpResponse& response,
+                          tmp_client->Get(endpoint, {}, {}, DefaultErrorHandler()));
+  ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
+  ICEBERG_ASSIGN_OR_RAISE(auto server_config, CatalogConfigFromJson(json));
+  // Merge server config into client config, server config overrides > client config
+  // properties > server config defaults
+  auto final_props = std::move(server_config.defaults);
+  for (const auto& kv : config.configs()) {
+    final_props.insert_or_assign(kv.first, kv.second);
   }
+
+  for (const auto& kv : server_config.overrides) {
+    final_props.insert_or_assign(kv.first, kv.second);
+  }
+  auto final_config = RestCatalogConfig::FromMap(final_props);
+  auto client = std::make_unique<HttpClient>(*final_config);
+  ICEBERG_ASSIGN_OR_RAISE(auto final_paths, ResourcePaths::Make(*final_config));
+  return std::unique_ptr<RestCatalog>(new RestCatalog(
+      std::move(final_config), std::move(client), std::move(*final_paths)));
 }
 
 RestCatalog::RestCatalog(std::unique_ptr<RestCatalogConfig> config,
@@ -91,35 +85,26 @@ Result<std::vector<Namespace>> RestCatalog::ListNamespaces(const Namespace& ns) 
   std::vector<Namespace> result;
   std::string next_token;
   while (true) {
-    cpr::Parameters params;
+    std::unordered_map<std::string, std::string> params;
     if (!ns.levels.empty()) {
-      params.Add({std::string(kQueryParamParent), EncodeNamespaceForUrl(ns)});
+      params[kQueryParamParent] = EncodeNamespaceForUrl(ns);
     }
     if (!next_token.empty()) {
-      params.Add({std::string(kQueryParamPageToken), next_token});
+      params[kQueryParamPageToken] = next_token;
     }
-    ICEBERG_ASSIGN_OR_RAISE(const auto& response, client_->Get(endpoint, params));
-    switch (response.status_code) {
-      case cpr::status::HTTP_OK: {
-        ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.text));
-        ICEBERG_ASSIGN_OR_RAISE(auto list_response, ListNamespacesResponseFromJson(json));
-        result.insert(result.end(), list_response.namespaces.begin(),
-                      list_response.namespaces.end());
-        if (list_response.next_page_token.empty()) {
-          return result;
-        }
-        next_token = list_response.next_page_token;
-        continue;
-      }
-      case cpr::status::HTTP_NOT_FOUND: {
-        return NoSuchNamespace("Namespace not found");
-      }
-      default:
-        ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.text));
-        ICEBERG_ASSIGN_OR_RAISE(auto list_response, ErrorResponseFromJson(json));
-        return UnknownError("Error listing namespaces: {}", list_response.error.message);
+    ICEBERG_ASSIGN_OR_RAISE(const auto& response,
+                            client_->Get(endpoint, params, {}, NamespaceErrorHandler()));
+    ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
+    ICEBERG_ASSIGN_OR_RAISE(auto list_response, ListNamespacesResponseFromJson(json));
+    result.insert(result.end(), list_response.namespaces.begin(),
+                  list_response.namespaces.end());
+    if (list_response.next_page_token.empty()) {
+      return result;
     }
+    next_token = list_response.next_page_token;
+    continue;
   }
+  return result;
 }
 
 Status RestCatalog::CreateNamespace(

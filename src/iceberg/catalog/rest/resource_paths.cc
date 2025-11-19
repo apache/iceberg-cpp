@@ -22,10 +22,8 @@
 #include <format>
 
 #include "iceberg/catalog/rest/config.h"
-#include "iceberg/catalog/rest/constant.h"
 #include "iceberg/catalog/rest/endpoint_util.h"
 #include "iceberg/result.h"
-#include "iceberg/util/macros.h"
 
 namespace iceberg::rest {
 
