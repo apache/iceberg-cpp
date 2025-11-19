@@ -44,7 +44,7 @@ struct ICEBERG_EXPORT MappedField {
   std::optional<int32_t> field_id;
   /// \brief An optional list of field mappings for child field of structs, maps, and
   /// lists.
-  std::shared_ptr<class MappedFields> nested_mapping;
+  std::shared_ptr<class MappedFields> nested_mapping{};
 
   friend bool operator==(const MappedField& lhs, const MappedField& rhs);
 };

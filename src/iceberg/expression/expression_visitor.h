@@ -99,13 +99,13 @@ class ICEBERG_EXPORT BoundVisitor : public ExpressionVisitor<R> {
 
   /// \brief Visit an IS_NAN unary predicate.
   /// \param term The bound term being tested
-  virtual Result<R> IsNaN(const std::shared_ptr<BoundTerm>& term) {
+  virtual Result<R> IsNaN([[maybe_unused]] const std::shared_ptr<BoundTerm>& term) {
     return NotSupported("IsNaN operation is not supported by this visitor");
   }
 
   /// \brief Visit a NOT_NAN unary predicate.
   /// \param term The bound term being tested
-  virtual Result<R> NotNaN(const std::shared_ptr<BoundTerm>& term) {
+  virtual Result<R> NotNaN([[maybe_unused]] const std::shared_ptr<BoundTerm>& term) {
     return NotSupported("NotNaN operation is not supported by this visitor");
   }
 

@@ -84,11 +84,13 @@ Result<bool> IsBoundVisitor::Or(bool left_result, bool right_result) {
   return left_result && right_result;
 }
 
-Result<bool> IsBoundVisitor::Predicate(const std::shared_ptr<BoundPredicate>& pred) {
+Result<bool> IsBoundVisitor::Predicate(
+    [[maybe_unused]] const std::shared_ptr<BoundPredicate>& pred) {
   return true;
 }
 
-Result<bool> IsBoundVisitor::Predicate(const std::shared_ptr<UnboundPredicate>& pred) {
+Result<bool> IsBoundVisitor::Predicate(
+    [[maybe_unused]] const std::shared_ptr<UnboundPredicate>& pred) {
   return false;
 }
 

@@ -39,9 +39,9 @@ namespace iceberg::rest {
 
 /// \brief Server-provided configuration for the catalog.
 struct ICEBERG_REST_EXPORT CatalogConfig {
-  std::unordered_map<std::string, std::string> defaults;   // required
-  std::unordered_map<std::string, std::string> overrides;  // required
-  std::vector<std::string> endpoints;
+  std::unordered_map<std::string, std::string> defaults{};   // required
+  std::unordered_map<std::string, std::string> overrides{};  // required
+  std::vector<std::string> endpoints{};
 
   /// \brief Validates the CatalogConfig.
   Status Validate() const {
@@ -58,7 +58,7 @@ struct ICEBERG_REST_EXPORT ErrorModel {
   std::string message;  // required
   std::string type;     // required
   uint32_t code;        // required
-  std::vector<std::string> stack;
+  std::vector<std::string> stack{};
 
   /// \brief Validates the ErrorModel.
   Status Validate() const {
@@ -88,7 +88,7 @@ struct ICEBERG_REST_EXPORT ErrorResponse {
 /// \brief Request to create a namespace.
 struct ICEBERG_REST_EXPORT CreateNamespaceRequest {
   Namespace namespace_;  // required
-  std::unordered_map<std::string, std::string> properties;
+  std::unordered_map<std::string, std::string> properties{};
 
   /// \brief Validates the CreateNamespaceRequest.
   Status Validate() const { return {}; }
@@ -96,8 +96,8 @@ struct ICEBERG_REST_EXPORT CreateNamespaceRequest {
 
 /// \brief Update or delete namespace properties request.
 struct ICEBERG_REST_EXPORT UpdateNamespacePropertiesRequest {
-  std::vector<std::string> removals;
-  std::unordered_map<std::string, std::string> updates;
+  std::vector<std::string> removals{};
+  std::unordered_map<std::string, std::string> updates{};
 
   /// \brief Validates the UpdateNamespacePropertiesRequest.
   Status Validate() const {
@@ -171,7 +171,7 @@ using LoadTableResponse = LoadTableResult;
 /// \brief Response body for listing namespaces.
 struct ICEBERG_REST_EXPORT ListNamespacesResponse {
   PageToken next_page_token;
-  std::vector<Namespace> namespaces;
+  std::vector<Namespace> namespaces{};
 
   /// \brief Validates the ListNamespacesResponse.
   Status Validate() const { return {}; }
@@ -180,7 +180,7 @@ struct ICEBERG_REST_EXPORT ListNamespacesResponse {
 /// \brief Response body after creating a namespace.
 struct ICEBERG_REST_EXPORT CreateNamespaceResponse {
   Namespace namespace_;  // required
-  std::unordered_map<std::string, std::string> properties;
+  std::unordered_map<std::string, std::string> properties{};
 
   /// \brief Validates the CreateNamespaceResponse.
   Status Validate() const { return {}; }
@@ -189,7 +189,7 @@ struct ICEBERG_REST_EXPORT CreateNamespaceResponse {
 /// \brief Response body for loading namespace properties.
 struct ICEBERG_REST_EXPORT GetNamespaceResponse {
   Namespace namespace_;  // required
-  std::unordered_map<std::string, std::string> properties;
+  std::unordered_map<std::string, std::string> properties{};
 
   /// \brief Validates the GetNamespaceResponse.
   Status Validate() const { return {}; }
@@ -197,9 +197,9 @@ struct ICEBERG_REST_EXPORT GetNamespaceResponse {
 
 /// \brief Response body after updating namespace properties.
 struct ICEBERG_REST_EXPORT UpdateNamespacePropertiesResponse {
-  std::vector<std::string> updated;  // required
-  std::vector<std::string> removed;  // required
-  std::vector<std::string> missing;
+  std::vector<std::string> updated{};  // required
+  std::vector<std::string> removed{};  // required
+  std::vector<std::string> missing{};
 
   /// \brief Validates the UpdateNamespacePropertiesResponse.
   Status Validate() const { return {}; }
@@ -208,7 +208,7 @@ struct ICEBERG_REST_EXPORT UpdateNamespacePropertiesResponse {
 /// \brief Response body for listing tables in a namespace.
 struct ICEBERG_REST_EXPORT ListTablesResponse {
   PageToken next_page_token;
-  std::vector<TableIdentifier> identifiers;
+  std::vector<TableIdentifier> identifiers{};
 
   /// \brief Validates the ListTablesResponse.
   Status Validate() const { return {}; }

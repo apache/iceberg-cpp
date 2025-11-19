@@ -303,7 +303,7 @@ class CreateMappingVisitor {
   }
 
   template <typename T>
-  Result<std::unique_ptr<MappedFields>> Visit(const T& type) const {
+  Result<std::unique_ptr<MappedFields>> Visit([[maybe_unused]] const T& type) const {
     return nullptr;
   }
 
