@@ -42,81 +42,63 @@ class ICEBERG_REST_EXPORT ResourcePaths {
   static Result<std::unique_ptr<ResourcePaths>> Make(const RestCatalogConfig& config);
 
   /// \brief Get the /v1/{prefix}/config endpoint path.
-  /// \return The endpoint URL
   std::string V1Config() const;
 
   /// \brief Get the /v1/{prefix}/oauth/tokens endpoint path.
-  /// \return The endpoint URL
   std::string V1OAuth2Tokens() const;
 
   /// \brief Get the /v1/{prefix}/namespaces endpoint path.
-  /// \return The endpoint URL
   std::string V1Namespaces() const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace} endpoint path.
-  /// \return The endpoint URL
   std::string V1Namespace(const Namespace& ns) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/properties endpoint path.
-  /// \return The endpoint URL
   std::string V1NamespaceProperties(const Namespace& ns) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables endpoint path.
-  /// \return The endpoint URL
   std::string V1Tables(const Namespace& ns) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table} endpoint path.
-  /// \return The endpoint URL
   std::string V1Table(const TableIdentifier& table) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/register endpoint path.
-  /// \return The endpoint URL
   std::string V1RegisterTable(const Namespace& ns) const;
 
   /// \brief Get the /v1/{prefix}/tables/rename endpoint path.
-  /// \return The endpoint URL
   std::string V1RenameTable() const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/metrics endpoint
   /// path.
-  /// \return The endpoint URL
   std::string V1TableMetrics(const TableIdentifier& table) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/credentials
   /// endpoint path.
-  /// \return The endpoint URL
   std::string V1TableCredentials(const TableIdentifier& table) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/plan endpoint
   /// path.
-  /// \return The endpoint URL
   std::string V1TableScanPlan(const TableIdentifier& table) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/plan/{planId}
   /// endpoint path.
-  /// \return The endpoint URL
   std::string V1TableScanPlanResult(const TableIdentifier& table,
                                     const std::string& plan_id) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/tasks endpoint
   /// path.
-  /// \return The endpoint URL
   std::string V1TableTasks(const TableIdentifier& table) const;
 
   /// \brief Get the /v1/{prefix}/transactions/commit endpoint path.
-  /// \return The endpoint URL
   std::string V1TransactionCommit() const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/views endpoint path.
-  /// \return The endpoint URL
   std::string V1Views(const Namespace& ns) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/views/{view} endpoint path.
-  /// \return The endpoint URL
   std::string V1View(const TableIdentifier& view) const;
 
   /// \brief Get the /v1/{prefix}/views/rename endpoint path.
-  /// \return The endpoint URL
   std::string V1RenameView() const;
 
  private:
@@ -125,8 +107,8 @@ class ICEBERG_REST_EXPORT ResourcePaths {
   // Helper to build path with optional prefix: {base_uri_}/{prefix_?}/{path}
   std::string BuildPath(std::string_view path) const;
 
-  std::string base_uri_;  // URI with /v1, e.g., "http://localhost:8181/v1"
-  std::string prefix_;    // Optional prefix from config
+  std::string base_uri_;
+  std::string prefix_;  // Optional prefix from config
 };
 
 }  // namespace iceberg::rest

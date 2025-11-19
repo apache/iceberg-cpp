@@ -61,7 +61,7 @@ class RestCatalogTest : public ::testing::Test {
   RestCatalogConfig config_;
 };
 
-TEST_F(RestCatalogTest, DISABLED_MakeCatalogSuccess) {
+TEST_F(RestCatalogTest, MakeCatalogSuccess) {
   auto catalog_result = RestCatalog::Make(config_);
   EXPECT_THAT(catalog_result, IsOk());
 
@@ -82,7 +82,7 @@ TEST_F(RestCatalogTest, DISABLED_MakeCatalogEmptyUri) {
   EXPECT_THAT(catalog_result, HasErrorMessage("uri"));
 }
 
-TEST_F(RestCatalogTest, DISABLED_MakeCatalogWithCustomProperties) {
+TEST_F(RestCatalogTest, MakeCatalogWithCustomProperties) {
   RestCatalogConfig custom_config = config_;
   custom_config
       .Set(RestCatalogConfig::Entry<std::string>{"custom_prop", ""},
@@ -93,7 +93,7 @@ TEST_F(RestCatalogTest, DISABLED_MakeCatalogWithCustomProperties) {
   EXPECT_THAT(catalog_result, IsOk());
 }
 
-TEST_F(RestCatalogTest, DISABLED_ListNamespaces) {
+TEST_F(RestCatalogTest, ListNamespaces) {
   auto catalog_result = RestCatalog::Make(config_);
   ASSERT_THAT(catalog_result, IsOk());
   auto& catalog = catalog_result.value();

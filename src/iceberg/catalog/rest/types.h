@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include <algorithm>
 #include <format>
 #include <memory>
 #include <string>

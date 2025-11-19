@@ -20,6 +20,7 @@
 #pragma once
 
 #include <string>
+#include <unordered_map>
 
 #include "cpr/response.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
@@ -34,12 +35,15 @@ class ICEBERG_REST_EXPORT HttpResponse {
   explicit HttpResponse(cpr::Response response) : response_(std::move(response)) {}
 
   /// \brief Get the HTTP status code of the response.
-  /// \return The HTTP status code.
   int32_t status_code() const { return response_.status_code; }
 
   /// \brief Get the body of the response as a string.
-  /// \return The response body.
   const std::string& body() const { return response_.text; }
+
+  /// \brief Get the headers of the response as a map.
+  const std::unordered_map<std::string, std::string> headers() const {
+    return {response_.header.begin(), response_.header.end()};
+  }
 
  private:
   cpr::Response response_;

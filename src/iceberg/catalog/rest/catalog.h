@@ -24,7 +24,7 @@
 
 #include "iceberg/catalog.h"
 #include "iceberg/catalog/rest/config.h"
-#include "iceberg/catalog/rest/http_client_interal.h"
+#include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/resource_paths.h"
 #include "iceberg/result.h"

@@ -23,7 +23,7 @@
 
 namespace iceberg::rest {
 
-std::unique_ptr<RestCatalogConfig> RestCatalogConfig::default_properties() {
+std::unique_ptr<RestCatalogConfig> RestCatalogConfig::DefaultProperties() {
   return std::make_unique<RestCatalogConfig>();
 }
 
