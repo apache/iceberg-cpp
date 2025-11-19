@@ -50,6 +50,10 @@ Result<std::unique_ptr<UnboundPredicateImpl<B>>> UnboundPredicateImpl<B>::Make(
   if (!term) [[unlikely]] {
     return InvalidExpression("UnboundPredicate cannot have null term");
   }
+  if (op == Expression::Operation::kIn || op == Expression::Operation::kNotIn) {
+    return InvalidExpression("Cannot create {} predicate without a value",
+                             ::iceberg::ToString(op));
+  }
   return std::unique_ptr<UnboundPredicateImpl<B>>(
       new UnboundPredicateImpl<B>(op, std::move(term)));
 }
@@ -70,6 +74,11 @@ Result<std::unique_ptr<UnboundPredicateImpl<B>>> UnboundPredicateImpl<B>::Make(
     std::vector<Literal> values) {
   if (!term) [[unlikely]] {
     return InvalidExpression("UnboundPredicate cannot have null term");
+  }
+  if (values.empty() &&
+      (op == Expression::Operation::kIn || op == Expression::Operation::kNotIn)) {
+    return InvalidExpression("Cannot create {} predicate without a value",
+                             ::iceberg::ToString(op));
   }
   return std::unique_ptr<UnboundPredicateImpl<B>>(
       new UnboundPredicateImpl<B>(op, std::move(term), std::move(values)));
@@ -181,16 +190,6 @@ namespace {
 
 bool IsFloatingType(TypeId type) {
   return type == TypeId::kFloat || type == TypeId::kDouble;
-}
-
-bool IsNan(const Literal& literal) {
-  const auto& value = literal.value();
-  if (std::holds_alternative<float>(value)) {
-    return std::isnan(std::get<float>(value));
-  } else if (std::holds_alternative<double>(value)) {
-    return std::isnan(std::get<double>(value));
-  }
-  return false;
 }
 
 bool StartsWith(const Literal& lhs, const Literal& rhs) {
@@ -383,9 +382,9 @@ Result<bool> BoundUnaryPredicate::Test(const Literal& literal) const {
     case Expression::Operation::kNotNull:
       return !literal.IsNull();
     case Expression::Operation::kIsNan:
-      return IsNan(literal);
+      return literal.IsNaN();
     case Expression::Operation::kNotNan:
-      return !IsNan(literal);
+      return !literal.IsNaN();
     default:
       return InvalidExpression("Invalid operation for BoundUnaryPredicate: {}", op());
   }

@@ -59,7 +59,7 @@ NamedReference::~NamedReference() = default;
 Result<std::shared_ptr<BoundReference>> NamedReference::Bind(const Schema& schema,
                                                              bool case_sensitive) const {
   ICEBERG_ASSIGN_OR_RAISE(auto field_opt,
-                          schema.GetFieldByName(field_name_, case_sensitive));
+                          schema.FindFieldByName(field_name_, case_sensitive));
   if (!field_opt.has_value()) [[unlikely]] {
     return InvalidExpression("Cannot find field '{}' in struct: {}", field_name_,
                              schema.ToString());

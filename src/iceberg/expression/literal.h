@@ -154,6 +154,10 @@ class ICEBERG_EXPORT Literal : public util::Formattable {
   /// \return true if this literal is null, false otherwise
   bool IsNull() const;
 
+  /// Check if this literal is NaN.
+  /// \return true if this literal is NaN, false otherwise
+  bool IsNaN() const;
+
   std::string ToString() const override;
 
  private:

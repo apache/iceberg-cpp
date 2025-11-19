@@ -145,6 +145,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    USE_BUNDLE
                    SOURCES
                    eval_expr_test.cc
+                   evaluator_test.cc
                    test_common.cc)
 
   add_iceberg_test(parquet_test

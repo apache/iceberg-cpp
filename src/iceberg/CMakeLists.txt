@@ -21,6 +21,7 @@ set(ICEBERG_SOURCES
     arrow_c_data_guard_internal.cc
     catalog/memory/in_memory_catalog.cc
     expression/binder.cc
+    expression/evaluator.cc
     expression/expression.cc
     expression/expressions.cc
     expression/literal.cc
