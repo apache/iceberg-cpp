@@ -95,7 +95,7 @@ Result<HttpResponse> HttpClient::Get(
     const std::string& path, const std::unordered_map<std::string, std::string>& params,
     const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler) {
-  std::lock_guard<std::mutex> lock(session_mutex_);
+  std::scoped_lock<std::mutex> lock(session_mutex_);
 
   PrepareSession(path, headers, params);
   cpr::Response response = session_->Get();
@@ -107,7 +107,7 @@ Result<HttpResponse> HttpClient::Post(
     const std::string& path, const std::string& body,
     const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler) {
-  std::lock_guard<std::mutex> lock(session_mutex_);
+  std::scoped_lock<std::mutex> lock(session_mutex_);
 
   PrepareSession(path, headers);
   session_->SetBody(cpr::Body{body});
@@ -121,7 +121,7 @@ Result<HttpResponse> HttpClient::PostForm(
     const std::unordered_map<std::string, std::string>& form_data,
     const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler) {
-  std::lock_guard<std::mutex> lock(session_mutex_);
+  std::scoped_lock<std::mutex> lock(session_mutex_);
 
   PrepareSession(path, headers);
   std::vector<cpr::Pair> pair_list;
@@ -138,7 +138,7 @@ Result<HttpResponse> HttpClient::PostForm(
 Result<HttpResponse> HttpClient::Head(
     const std::string& path, const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler) {
-  std::lock_guard<std::mutex> lock(session_mutex_);
+  std::scoped_lock<std::mutex> lock(session_mutex_);
 
   PrepareSession(path, headers);
   cpr::Response response = session_->Head();
@@ -149,7 +149,7 @@ Result<HttpResponse> HttpClient::Head(
 Result<HttpResponse> HttpClient::Delete(
     const std::string& path, const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler) {
-  std::lock_guard<std::mutex> lock(session_mutex_);
+  std::scoped_lock<std::mutex> lock(session_mutex_);
 
   PrepareSession(path, headers);
   cpr::Response response = session_->Delete();
