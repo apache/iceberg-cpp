@@ -17,13 +17,13 @@
  * under the License.
  */
 
-#include "iceberg/catalog/rest/config.h"
+#include "iceberg/catalog/rest/catalog_properties.h"
 
 #include "iceberg/catalog/rest/constant.h"
 
 namespace iceberg::rest {
 
-std::unique_ptr<RestCatalogConfig> RestCatalogConfig::DefaultProperties() {
+std::unique_ptr<RestCatalogConfig> RestCatalogConfig::default_properties() {
   return std::make_unique<RestCatalogConfig>();
 }
 

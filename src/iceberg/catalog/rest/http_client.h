@@ -27,7 +27,7 @@
 #include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
 
-#include "iceberg/catalog/rest/config.h"
+#include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/error_handlers.h"
 #include "iceberg/catalog/rest/http_response.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"

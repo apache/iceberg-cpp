@@ -16,10 +16,10 @@
 # under the License.
 
 set(ICEBERG_REST_SOURCES
-    catalog.cc
-    json_internal.cc
-    config.cc
+    rest_catalog.cc
+    catalog_properties.cc
     http_client.cc
+    json_internal.cc
     resource_paths.cc)
 
 set(ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS)

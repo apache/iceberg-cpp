@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/catalog/rest/catalog.h"
+#include "iceberg/catalog/rest/rest_catalog.h"
 
 #include <memory>
 #include <unordered_map>
@@ -25,14 +25,14 @@
 
 #include <cpr/cpr.h>
 
-#include "iceberg/catalog/rest/catalog.h"
-#include "iceberg/catalog/rest/config.h"
+#include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/constant.h"
-#include "iceberg/catalog/rest/endpoint_util.h"
 #include "iceberg/catalog/rest/error_handlers.h"
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/catalog/rest/http_response.h"
 #include "iceberg/catalog/rest/json_internal.h"
+#include "iceberg/catalog/rest/rest_catalog.h"
+#include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/json_internal.h"
 #include "iceberg/result.h"
@@ -46,7 +46,7 @@ Result<std::unique_ptr<RestCatalog>> RestCatalog::Make(const RestCatalogConfig& 
   ICEBERG_ASSIGN_OR_RAISE(auto paths, ResourcePaths::Make(config));
 
   auto tmp_client = std::make_unique<HttpClient>(config);
-  const std::string endpoint = paths->V1Config();
+  const std::string endpoint = paths->Config();
   ICEBERG_ASSIGN_OR_RAISE(const HttpResponse& response,
                           tmp_client->Get(endpoint, {}, {}, DefaultErrorHandler()));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
@@ -81,7 +81,7 @@ std::string_view RestCatalog::name() const {
 }
 
 Result<std::vector<Namespace>> RestCatalog::ListNamespaces(const Namespace& ns) const {
-  const std::string endpoint = paths_.V1Namespaces();
+  const std::string endpoint = paths_.Namespaces();
   std::vector<Namespace> result;
   std::string next_token;
   while (true) {

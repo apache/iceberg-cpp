@@ -54,27 +54,22 @@ class ICEBERG_REST_EXPORT DefaultErrorHandler : public ErrorHandler {
           return InvalidArgument("{}", error.message);
         }
         return BadRequest("Malformed request: {}", error.message);
-
       case 401:
         return NotAuthorized("Not authorized: {}", error.message);
-
       case 403:
         return Forbidden("Forbidden: {}", error.message);
-
       case 405:
       case 406:
         break;
-
       case 500:
-        return ServiceFailure("Server error: {}: {}", error.type, error.message);
-
+        return InternalServerError("Server error: {}: {}", error.type, error.message);
       case 501:
         return NotSupported("{}", error.message);
-
       case 503:
         return ServiceUnavailable("Service unavailable: {}", error.message);
     }
-    return RESTError("Unable to process: {}", error.message);
+
+    return RestError("Unable to process: {}", error.message);
   }
 };
 
@@ -88,15 +83,12 @@ class ICEBERG_REST_EXPORT NamespaceErrorHandler : public DefaultErrorHandler {
           return NamespaceNotEmpty("{}", error.message);
         }
         return BadRequest("Malformed request: {}", error.message);
-
       case 404:
         return NoSuchNamespace("{}", error.message);
-
       case 409:
         return AlreadyExists("{}", error.message);
-
       case 422:
-        return RESTError("Unable to process: {}", error.message);
+        return RestError("Unable to process: {}", error.message);
     }
 
     return DefaultErrorHandler::Accept(error);
@@ -111,7 +103,6 @@ class ICEBERG_REST_EXPORT DropNamespaceErrorHandler : public NamespaceErrorHandl
       return NamespaceNotEmpty("{}", error.message);
     }
 
-    // Delegate to parent handler
     return NamespaceErrorHandler::Accept(error);
   }
 };
@@ -126,7 +117,6 @@ class ICEBERG_REST_EXPORT TableErrorHandler : public DefaultErrorHandler {
           return NoSuchNamespace("{}", error.message);
         }
         return NoSuchTable("{}", error.message);
-
       case 409:
         return AlreadyExists("{}", error.message);
     }
@@ -136,9 +126,6 @@ class ICEBERG_REST_EXPORT TableErrorHandler : public DefaultErrorHandler {
 };
 
 /// \brief View-level error handler.
-///
-/// Handles view-specific errors including NoSuchView, NoSuchNamespace,
-/// and AlreadyExists scenarios.
 class ICEBERG_REST_EXPORT ViewErrorHandler : public DefaultErrorHandler {
  public:
   Status Accept(const ErrorModel& error) const override {
@@ -148,7 +135,6 @@ class ICEBERG_REST_EXPORT ViewErrorHandler : public DefaultErrorHandler {
           return NoSuchNamespace("{}", error.message);
         }
         return NoSuchView("{}", error.message);
-
       case 409:
         return AlreadyExists("{}", error.message);
     }
@@ -164,10 +150,8 @@ class ICEBERG_REST_EXPORT TableCommitErrorHandler : public DefaultErrorHandler {
     switch (error.code) {
       case 404:
         return NoSuchTable("{}", error.message);
-
       case 409:
         return CommitFailed("Commit failed: {}", error.message);
-
       case 500:
       case 502:
       case 503:
@@ -186,10 +170,8 @@ class ICEBERG_REST_EXPORT ViewCommitErrorHandler : public DefaultErrorHandler {
     switch (error.code) {
       case 404:
         return NoSuchView("{}", error.message);
-
       case 409:
         return CommitFailed("Commit failed: {}", error.message);
-
       case 500:
       case 502:
       case 503:

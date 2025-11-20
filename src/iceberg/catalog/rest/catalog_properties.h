@@ -29,7 +29,7 @@
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/util/config.h"
 
-/// \file iceberg/catalog/rest/config.h
+/// \file iceberg/catalog/rest/catalog_properties.h
 /// \brief RestCatalogConfig implementation for Iceberg REST API.
 
 namespace iceberg::rest {
@@ -50,7 +50,7 @@ class ICEBERG_REST_EXPORT RestCatalogConfig : public ConfigBase<RestCatalogConfi
   inline static std::string_view kWarehouse{"warehouse"};
 
   /// \brief Create a default RestCatalogConfig instance.
-  static std::unique_ptr<RestCatalogConfig> DefaultProperties();
+  static std::unique_ptr<RestCatalogConfig> default_properties();
 
   /// \brief Create a RestCatalogConfig instance from a map of key-value pairs.
   static std::unique_ptr<RestCatalogConfig> FromMap(

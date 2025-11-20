@@ -17,14 +17,15 @@
  * under the License.
  */
 
+#include "iceberg/catalog/rest/rest_catalog.h"
+
 #include <string>
 #include <unordered_map>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "iceberg/catalog/rest/catalog.h"
-#include "iceberg/catalog/rest/config.h"
+#include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/test/matchers.h"
 

@@ -22,7 +22,7 @@
 #include <string>
 #include <string_view>
 
-#include "iceberg/catalog/rest/config.h"
+#include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/result.h"
 #include "iceberg/table_identifier.h"
@@ -42,64 +42,64 @@ class ICEBERG_REST_EXPORT ResourcePaths {
   static Result<std::unique_ptr<ResourcePaths>> Make(const RestCatalogConfig& config);
 
   /// \brief Get the /v1/{prefix}/config endpoint path.
-  std::string V1Config() const;
+  std::string Config() const;
 
   /// \brief Get the /v1/{prefix}/oauth/tokens endpoint path.
-  std::string V1OAuth2Tokens() const;
+  std::string OAuth2Tokens() const;
 
   /// \brief Get the /v1/{prefix}/namespaces endpoint path.
-  std::string V1Namespaces() const;
+  std::string Namespaces() const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace} endpoint path.
-  std::string V1Namespace(const Namespace& ns) const;
+  std::string Namespace_(const Namespace& ns) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/properties endpoint path.
-  std::string V1NamespaceProperties(const Namespace& ns) const;
+  std::string NamespaceProperties(const Namespace& ns) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables endpoint path.
-  std::string V1Tables(const Namespace& ns) const;
+  std::string Tables(const Namespace& ns) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table} endpoint path.
-  std::string V1Table(const TableIdentifier& table) const;
+  std::string Table(const TableIdentifier& ident) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/register endpoint path.
-  std::string V1RegisterTable(const Namespace& ns) const;
+  std::string Register(const Namespace& ns) const;
 
   /// \brief Get the /v1/{prefix}/tables/rename endpoint path.
-  std::string V1RenameTable() const;
+  std::string Rename() const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/metrics endpoint
   /// path.
-  std::string V1TableMetrics(const TableIdentifier& table) const;
+  std::string Metrics(const TableIdentifier& ident) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/credentials
   /// endpoint path.
-  std::string V1TableCredentials(const TableIdentifier& table) const;
+  std::string Credentials(const TableIdentifier& ident) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/plan endpoint
   /// path.
-  std::string V1TableScanPlan(const TableIdentifier& table) const;
+  std::string ScanPlan(const TableIdentifier& ident) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/plan/{planId}
   /// endpoint path.
-  std::string V1TableScanPlanResult(const TableIdentifier& table,
-                                    const std::string& plan_id) const;
+  std::string ScanPlanResult(const TableIdentifier& ident,
+                             const std::string& plan_id) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/tasks endpoint
   /// path.
-  std::string V1TableTasks(const TableIdentifier& table) const;
+  std::string Tasks(const TableIdentifier& ident) const;
 
   /// \brief Get the /v1/{prefix}/transactions/commit endpoint path.
-  std::string V1TransactionCommit() const;
+  std::string CommitTransaction() const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/views endpoint path.
-  std::string V1Views(const Namespace& ns) const;
+  std::string Views(const Namespace& ns) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/views/{view} endpoint path.
-  std::string V1View(const TableIdentifier& view) const;
+  std::string View(const TableIdentifier& ident) const;
 
   /// \brief Get the /v1/{prefix}/views/rename endpoint path.
-  std::string V1RenameView() const;
+  std::string RenameView() const;
 
  private:
   explicit ResourcePaths(std::string base_uri, std::string prefix);

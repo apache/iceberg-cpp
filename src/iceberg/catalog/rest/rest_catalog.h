@@ -23,13 +23,13 @@
 #include <string>
 
 #include "iceberg/catalog.h"
-#include "iceberg/catalog/rest/config.h"
+#include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/resource_paths.h"
 #include "iceberg/result.h"
 
-/// \file iceberg/catalog/rest/catalog.h
+/// \file iceberg/catalog/rest/rest_catalog.h
 /// RestCatalog implementation for Iceberg REST API.
 
 namespace iceberg::rest {

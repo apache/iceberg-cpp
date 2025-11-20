@@ -23,7 +23,7 @@
 
 #include "cpr/body.h"
 #include "cpr/cprtypes.h"
-#include "iceberg/catalog/rest/config.h"
+#include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/json_internal.h"
 #include "iceberg/json_internal.h"
 #include "iceberg/util/macros.h"

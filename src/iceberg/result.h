@@ -53,10 +53,10 @@ enum class ErrorKind {
   kNotFound,
   kNotImplemented,
   kNotSupported,
-  kServiceFailure,
+  kInternalServerError,
   kServiceUnavailable,
   kUnknownError,
-  kRESTError,
+  kRestError,
 };
 
 /// \brief Error with a kind and a message.
@@ -110,10 +110,10 @@ DEFINE_ERROR_FUNCTION(NotAuthorized)
 DEFINE_ERROR_FUNCTION(NotFound)
 DEFINE_ERROR_FUNCTION(NotImplemented)
 DEFINE_ERROR_FUNCTION(NotSupported)
-DEFINE_ERROR_FUNCTION(ServiceFailure)
+DEFINE_ERROR_FUNCTION(InternalServerError)
 DEFINE_ERROR_FUNCTION(ServiceUnavailable)
 DEFINE_ERROR_FUNCTION(UnknownError)
-DEFINE_ERROR_FUNCTION(RESTError)
+DEFINE_ERROR_FUNCTION(RestError)
 
 #undef DEFINE_ERROR_FUNCTION
 
