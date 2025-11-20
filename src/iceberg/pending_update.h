@@ -28,29 +28,17 @@
 
 namespace iceberg {
 
-/// \brief Base class for table metadata changes using builder pattern
+/// \brief Non-template base class for table metadata changes
 ///
-/// PendingUpdate represents an API for building and committing changes to an
-/// Iceberg table. Subclasses implement specific types of table updates such as
-/// schema changes, property updates, or snapshot-producing operations like
-/// appends and deletes.
+/// This base class allows storing different types of PendingUpdate operations
+/// in the same collection (e.g., in Transaction). It provides the common Commit()
+/// interface that all updates share.
 ///
-/// Apply() can be used to validate and inspect the uncommitted changes before
-/// committing. Commit() applies the changes and commits them to the table.
-///
-/// \tparam T The type of result returned by Apply()
-template <typename T>
-class ICEBERG_EXPORT PendingUpdate {
+/// This matches the Java Iceberg pattern where BaseTransaction stores a
+/// List<PendingUpdate> without type parameters.
+class ICEBERG_EXPORT PendingUpdateBase {
  public:
-  virtual ~PendingUpdate() = default;
-
-  /// \brief Apply the pending changes and return the uncommitted result
-  ///
-  /// This does not result in a permanent update.
-  ///
-  /// \return the uncommitted changes that would be committed, or an error if
-  ///         the pending changes cannot be applied to the current table metadata
-  virtual Result<T> Apply() = 0;
+  virtual ~PendingUpdateBase() = default;
 
   /// \brief Apply and commit the pending changes to the table
   ///
@@ -58,18 +46,49 @@ class ICEBERG_EXPORT PendingUpdate {
   ///
   /// Once the commit is successful, the updated table will be refreshed.
   ///
-  /// \return Status::OK if the commit was successful, or an error status if
-  ///         validation failed or the commit encountered conflicts
+  /// \return Status::OK if the commit was successful, or an error:
+  ///         - ValidationFailed: if update cannot be applied to current metadata
+  ///         - CommitFailed: if update cannot be committed due to conflicts
+  ///         - CommitStateUnknown: if commit success state is unknown
   virtual Status Commit() = 0;
+
+  // Non-copyable, movable
+  PendingUpdateBase(const PendingUpdateBase&) = delete;
+  PendingUpdateBase& operator=(const PendingUpdateBase&) = delete;
+  PendingUpdateBase(PendingUpdateBase&&) noexcept = default;
+  PendingUpdateBase& operator=(PendingUpdateBase&&) noexcept = default;
+
+ protected:
+  PendingUpdateBase() = default;
+};
+
+/// \brief Template class for type-safe table metadata changes
+///
+/// PendingUpdate extends PendingUpdateBase with a type-safe Apply() method that
+/// returns the specific result type for each operation. Subclasses implement
+/// specific types of table updates such as schema changes, property updates, or
+/// snapshot-producing operations like appends and deletes.
+///
+/// Apply() can be used to validate and inspect the uncommitted changes before
+/// committing. Commit() applies the changes and commits them to the table.
+///
+/// \tparam T The type of result returned by Apply()
+template <typename T>
+class ICEBERG_EXPORT PendingUpdate : public PendingUpdateBase {
+ public:
+  ~PendingUpdate() override = default;
+
+  /// \brief Apply the pending changes and return the uncommitted result
+  ///
+  /// This does not result in a permanent update.
+  ///
+  /// \return the uncommitted changes that would be committed, or an error:
+  ///         - ValidationFailed: if pending changes cannot be applied
+  ///         - InvalidArgument: if pending changes are conflicting
+  virtual Result<T> Apply() = 0;
 
  protected:
   PendingUpdate() = default;
-
-  // Non-copyable, movable
-  PendingUpdate(const PendingUpdate&) = delete;
-  PendingUpdate& operator=(const PendingUpdate&) = delete;
-  PendingUpdate(PendingUpdate&&) noexcept = default;
-  PendingUpdate& operator=(PendingUpdate&&) noexcept = default;
 };
 
 }  // namespace iceberg
