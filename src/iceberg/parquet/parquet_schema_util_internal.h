@@ -23,6 +23,7 @@
 
 #include <parquet/arrow/schema.h>
 
+#include "iceberg/iceberg_bundle_export.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_util.h"
 
@@ -47,19 +48,21 @@ struct ParquetExtraAttributes : public FieldProjection::ExtraAttributes {
 /// \param parquet_schema The Parquet schema to read data from.
 /// \return The schema projection result with column indices of projected Parquet columns
 /// specified via ParquetExtraAttributes.
-Result<SchemaProjection> Project(const Schema& expected_schema,
-                                 const ::parquet::arrow::SchemaManifest& parquet_schema);
+ICEBERG_BUNDLE_EXPORT Result<SchemaProjection> Project(
+    const Schema& expected_schema,
+    const ::parquet::arrow::SchemaManifest& parquet_schema);
 
 /// \brief Get the selected column indices by walking through the projection result.
 ///
 /// \param projection The schema projection result.
 /// \return The selected column indices.
-std::vector<int32_t> SelectedColumnIndices(const SchemaProjection& projection);
+ICEBERG_BUNDLE_EXPORT std::vector<int32_t> SelectedColumnIndices(
+    const SchemaProjection& projection);
 
 /// \brief Check whether the Parquet schema has field IDs.
 ///
 /// \param root_node The root node of the Parquet schema.
 /// \return True if the Parquet schema has field IDs, false otherwise.
-bool HasFieldIds(const ::parquet::schema::NodePtr& root_node);
+ICEBERG_BUNDLE_EXPORT bool HasFieldIds(const ::parquet::schema::NodePtr& root_node);
 
 }  // namespace iceberg::parquet

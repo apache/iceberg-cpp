@@ -23,6 +23,7 @@
 
 #include <avro/Node.hh>
 
+#include "iceberg/iceberg_bundle_export.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/result.h"
 #include "iceberg/schema_util.h"
@@ -40,7 +41,7 @@ struct MapLogicalType : public ::avro::CustomLogicalType {
 };
 
 /// \brief A visitor that converts an Iceberg type to an Avro node.
-class ToAvroNodeVisitor {
+class ICEBERG_BUNDLE_EXPORT ToAvroNodeVisitor {
  public:
   Status Visit(const BooleanType& type, ::avro::NodePtr* node);
   Status Visit(const IntType& type, ::avro::NodePtr* node);
@@ -67,7 +68,7 @@ class ToAvroNodeVisitor {
 };
 
 /// \brief A visitor that checks the presence of field IDs in an Avro schema.
-class HasIdVisitor {
+class ICEBERG_BUNDLE_EXPORT HasIdVisitor {
  public:
   HasIdVisitor() = default;
 
@@ -137,8 +138,9 @@ class HasIdVisitor {
 /// \param avro_node The Avro node to read data from.
 /// \param prune_source Whether the source schema can be pruned.
 /// \return The schema projection result.
-Result<SchemaProjection> Project(const Schema& expected_schema,
-                                 const ::avro::NodePtr& avro_node, bool prune_source);
+ICEBERG_BUNDLE_EXPORT Result<SchemaProjection> Project(const Schema& expected_schema,
+                                                       const ::avro::NodePtr& avro_node,
+                                                       bool prune_source);
 
 std::string ToString(const ::avro::NodePtr& node);
 std::string ToString(const ::avro::LogicalType& logical_type);
@@ -157,14 +159,14 @@ bool HasMapLogicalType(const ::avro::NodePtr& node);
 ///
 /// \param name The name to check.
 /// \return True if the name is valid, false otherwise.
-bool ValidAvroName(std::string_view name);
+ICEBERG_BUNDLE_EXPORT bool ValidAvroName(std::string_view name);
 
 /// \brief Create a new Avro node with field IDs from name mapping.
 /// \param original_node The original Avro node to copy.
 /// \param mapping The name mapping to apply field IDs from.
 /// \return A new Avro node with field IDs applied, or an error.
-Result<::avro::NodePtr> MakeAvroNodeWithFieldIds(const ::avro::NodePtr& original_node,
-                                                 const NameMapping& mapping);
+ICEBERG_BUNDLE_EXPORT Result<::avro::NodePtr> MakeAvroNodeWithFieldIds(
+    const ::avro::NodePtr& original_node, const NameMapping& mapping);
 
 /// \brief Sanitize a field name to make it compatible with Avro field name requirements.
 ///
@@ -187,6 +189,6 @@ Result<::avro::NodePtr> MakeAvroNodeWithFieldIds(const ::avro::NodePtr& original
 ///
 /// \param field_name The original field name to sanitize.
 /// \return A sanitized field name that follows Avro naming conventions.
-std::string SanitizeFieldName(std::string_view field_name);
+ICEBERG_BUNDLE_EXPORT std::string SanitizeFieldName(std::string_view field_name);
 
 }  // namespace iceberg::avro

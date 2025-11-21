@@ -15,10 +15,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
-fetchcontent_declare(cpp-httplib
-                     GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
-                     GIT_TAG 89c932f313c6437c38f2982869beacc89c2f2246 #release-0.26.0
-)
+if(ICEBERG_BUILD_REST)
+  fetchcontent_declare(cpp-httplib
+                       GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
+                       GIT_TAG 89c932f313c6437c38f2982869beacc89c2f2246 #release-0.26.0
+  )
+  fetchcontent_makeavailable(cpp-httplib)
+endif()
 
 fetchcontent_declare(googletest
                      GIT_REPOSITORY https://github.com/google/googletest.git
@@ -26,12 +29,7 @@ fetchcontent_declare(googletest
                      FIND_PACKAGE_ARGS
                      NAMES
                      GTest)
-
-if(ICEBERG_BUILD_REST)
-  fetchcontent_makeavailable(cpp-httplib googletest)
-else()
-  fetchcontent_makeavailable(googletest)
-endif()
+fetchcontent_makeavailable(googletest)
 
 set(ICEBERG_TEST_RESOURCES "${CMAKE_SOURCE_DIR}/src/iceberg/test/resources")
 
