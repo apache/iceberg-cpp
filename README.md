@@ -33,7 +33,25 @@ C++ implementation of [Apache Iceberg™](https://iceberg.apache.org/).
 
 ## Customizing Dependency URLs
 
-If you experience network issues when downloading dependencies, you can customize the download URLs using environment variables. See the available options documented in [`cmake_modules/IcebergThirdpartyToolchain.cmake`](cmake_modules/IcebergThirdpartyToolchain.cmake#L24-L40).
+If you experience network issues when downloading dependencies, you can customize the download URLs using environment variables.
+
+The following environment variables can be set to customize dependency URLs:
+
+- `ICEBERG_ARROW_URL`: Apache Arrow tarball URL
+- `ICEBERG_AVRO_URL`: Apache Avro tarball URL
+- `ICEBERG_AVRO_GIT_URL`: Apache Avro git repository URL
+- `ICEBERG_NANOARROW_URL`: Nanoarrow tarball URL
+- `ICEBERG_CROARING_URL`: CRoaring tarball URL
+- `ICEBERG_NLOHMANN_JSON_URL`: nlohmann-json tarball URL
+- `ICEBERG_SPDLOG_URL`: spdlog tarball URL
+- `ICEBERG_CPR_URL`: cpr tarball URL
+
+Example usage:
+
+```bash
+export ICEBERG_ARROW_URL="https://your-mirror.com/apache-arrow-22.0.0.tar.gz"
+cmake -S . -B build
+```
 
 ## Build
 
