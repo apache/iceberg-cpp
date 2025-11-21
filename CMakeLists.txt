@@ -50,13 +50,17 @@ if(ICEBERG_BUILD_SHARED)
 else()
   set(ICEBERG_TEST_LINKAGE_DEFAULT "static")
 endif()
-set(ICEBERG_TEST_LINKAGE ${ICEBERG_TEST_LINKAGE_DEFAULT} CACHE STRING "Linkage of Iceberg libraries with unit tests executables")
+set(ICEBERG_TEST_LINKAGE
+    ${ICEBERG_TEST_LINKAGE_DEFAULT}
+    CACHE STRING "Linkage of Iceberg libraries with unit tests executables")
 if(ICEBERG_BUILD_TESTS)
   if(ICEBERG_TEST_LINKAGE STREQUAL "shared" AND NOT ICEBERG_BUILD_SHARED)
-    message(FATAL_ERROR "If using ICEBERG_TEST_LINKAGE=shared, must also pass ICEBERG_BUILD_SHARED=ON")
+    message(FATAL_ERROR "If using ICEBERG_TEST_LINKAGE=shared, must also pass ICEBERG_BUILD_SHARED=ON"
+    )
   endif()
   if(ICEBERG_TEST_LINKAGE STREQUAL "static" AND NOT ICEBERG_BUILD_STATIC)
-    message(FATAL_ERROR "If using ICEBERG_TEST_LINKAGE=static, must also pass ICEBERG_BUILD_STATIC=ON")
+    message(FATAL_ERROR "If using ICEBERG_TEST_LINKAGE=static, must also pass ICEBERG_BUILD_STATIC=ON"
+    )
   endif()
 endif()
 
