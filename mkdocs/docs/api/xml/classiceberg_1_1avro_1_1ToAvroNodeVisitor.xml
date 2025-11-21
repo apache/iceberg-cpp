@@ -1,0 +1,448 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1avro_1_1ToAvroNodeVisitor" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::avro::ToAvroNodeVisitor</compoundname>
+    <includes refid="avro__schema__util__internal_8h" local="no">avro_schema_util_internal.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1aa8dc9cfd3027777c93bdeee07b83bf7e" prot="private" static="no" mutable="no">
+        <type>std::stack&lt; int32_t &gt;</type>
+        <definition>std::stack&lt;int32_t&gt; iceberg::avro::ToAvroNodeVisitor::field_ids_</definition>
+        <argsstring></argsstring>
+        <name>field_ids_</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::field_ids_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="66" column="14" bodyfile="iceberg/avro/avro_schema_util_internal.h" bodystart="66" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a6f252ae023e1d961b5defbb04fd9b6ec" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ToAvroNodeVisitor::Visit</definition>
+        <argsstring>(const BooleanType &amp;type, ::avro::NodePtr *node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1BooleanType" kindref="compound">BooleanType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>::avro::NodePtr *</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="45" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="130" bodyend="133"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1aa56cd64bed94a2daebcc3ad8381e8c98" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ToAvroNodeVisitor::Visit</definition>
+        <argsstring>(const IntType &amp;type, ::avro::NodePtr *node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1IntType" kindref="compound">IntType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>::avro::NodePtr *</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="46" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="135" bodyend="138"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a9eb933b2783d65742338668d7f520327" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ToAvroNodeVisitor::Visit</definition>
+        <argsstring>(const LongType &amp;type, ::avro::NodePtr *node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1LongType" kindref="compound">LongType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>::avro::NodePtr *</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="47" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="140" bodyend="143"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a114d0576883356b47bf282ebb7dbd10f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ToAvroNodeVisitor::Visit</definition>
+        <argsstring>(const FloatType &amp;type, ::avro::NodePtr *node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1FloatType" kindref="compound">FloatType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>::avro::NodePtr *</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="48" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="145" bodyend="148"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a7aec958be4d48362ee18c855acaeb580" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ToAvroNodeVisitor::Visit</definition>
+        <argsstring>(const DoubleType &amp;type, ::avro::NodePtr *node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1DoubleType" kindref="compound">DoubleType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>::avro::NodePtr *</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="49" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="150" bodyend="153"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1aaf95163eff63e80b9e1324190194cd19" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ToAvroNodeVisitor::Visit</definition>
+        <argsstring>(const DecimalType &amp;type, ::avro::NodePtr *node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1DecimalType" kindref="compound">DecimalType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>::avro::NodePtr *</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="50" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="155" bodyend="167"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a9c44a47778481d498f2ea130b8f532ad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ToAvroNodeVisitor::Visit</definition>
+        <argsstring>(const DateType &amp;type, ::avro::NodePtr *node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1DateType" kindref="compound">DateType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>::avro::NodePtr *</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="51" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="169" bodyend="173"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1ad4bbe5b1b733d607f4ea500e5f84c75c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ToAvroNodeVisitor::Visit</definition>
+        <argsstring>(const TimeType &amp;type, ::avro::NodePtr *node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TimeType" kindref="compound">TimeType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>::avro::NodePtr *</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="52" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="175" bodyend="179"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a3803ff325ad6164db0eadbd49d6dc287" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ToAvroNodeVisitor::Visit</definition>
+        <argsstring>(const TimestampType &amp;type, ::avro::NodePtr *node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TimestampType" kindref="compound">TimestampType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>::avro::NodePtr *</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="53" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="181" bodyend="188"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1ac9a9fa8619d1998c0f48cba0c0c3b784" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ToAvroNodeVisitor::Visit</definition>
+        <argsstring>(const TimestampTzType &amp;type, ::avro::NodePtr *node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TimestampTzType" kindref="compound">TimestampTzType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>::avro::NodePtr *</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="54" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="190" bodyend="197"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a4196543f35f0b601f83ba438b87387fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ToAvroNodeVisitor::Visit</definition>
+        <argsstring>(const StringType &amp;type, ::avro::NodePtr *node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StringType" kindref="compound">StringType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>::avro::NodePtr *</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="55" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="199" bodyend="202"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a861700278a872e3dcb2d857cc03e8310" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ToAvroNodeVisitor::Visit</definition>
+        <argsstring>(const UuidType &amp;type, ::avro::NodePtr *node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1UuidType" kindref="compound">UuidType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>::avro::NodePtr *</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="56" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="204" bodyend="210"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a25dd438c442d7fbf03d798bafa864ccb" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ToAvroNodeVisitor::Visit</definition>
+        <argsstring>(const FixedType &amp;type, ::avro::NodePtr *node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1FixedType" kindref="compound">FixedType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>::avro::NodePtr *</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="57" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="212" bodyend="217"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a9c7fce299a4523286fdec9696801cd35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ToAvroNodeVisitor::Visit</definition>
+        <argsstring>(const BinaryType &amp;type, ::avro::NodePtr *node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1BinaryType" kindref="compound">BinaryType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>::avro::NodePtr *</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="58" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="219" bodyend="222"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1aa40330b93ab6fbf7b34ad269da1246b5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ToAvroNodeVisitor::Visit</definition>
+        <argsstring>(const StructType &amp;type, ::avro::NodePtr *node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>::avro::NodePtr *</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="59" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="224" bodyend="253"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1ad2f1f38d0df0743ea6d9622207857502" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ToAvroNodeVisitor::Visit</definition>
+        <argsstring>(const ListType &amp;type, ::avro::NodePtr *node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ListType" kindref="compound">ListType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>::avro::NodePtr *</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="60" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="255" bodyend="270"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a0ddedb9c24737b7b42adddec25eb200a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ToAvroNodeVisitor::Visit</definition>
+        <argsstring>(const MapType &amp;type, ::avro::NodePtr *node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1MapType" kindref="compound">MapType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <param>
+          <type>::avro::NodePtr *</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="61" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="272" bodyend="319"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a8cb89c8165950cd25a31aa45034d3f6e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::ToAvroNodeVisitor::Visit</definition>
+        <argsstring>(const SchemaField &amp;field, ::avro::NodePtr *node)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::avro::ToAvroNodeVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> &amp;</type>
+          <declname>field</declname>
+        </param>
+        <param>
+          <type>::avro::NodePtr *</type>
+          <declname>node</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="62" column="10" bodyfile="iceberg/avro/avro_schema_util.cc" bodystart="321" bodyend="334"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A visitor that converts an Iceberg type to an Avro node. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/avro/avro_schema_util_internal.h" line="43" column="1" bodyfile="iceberg/avro/avro_schema_util_internal.h" bodystart="43" bodyend="67"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1aa8dc9cfd3027777c93bdeee07b83bf7e" prot="private" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>field_ids_</name></member>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a6f252ae023e1d961b5defbb04fd9b6ec" prot="public" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1aa56cd64bed94a2daebcc3ad8381e8c98" prot="public" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a9eb933b2783d65742338668d7f520327" prot="public" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a114d0576883356b47bf282ebb7dbd10f" prot="public" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a7aec958be4d48362ee18c855acaeb580" prot="public" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1aaf95163eff63e80b9e1324190194cd19" prot="public" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a9c44a47778481d498f2ea130b8f532ad" prot="public" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1ad4bbe5b1b733d607f4ea500e5f84c75c" prot="public" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a3803ff325ad6164db0eadbd49d6dc287" prot="public" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1ac9a9fa8619d1998c0f48cba0c0c3b784" prot="public" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a4196543f35f0b601f83ba438b87387fc" prot="public" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a861700278a872e3dcb2d857cc03e8310" prot="public" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a25dd438c442d7fbf03d798bafa864ccb" prot="public" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a9c7fce299a4523286fdec9696801cd35" prot="public" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1aa40330b93ab6fbf7b34ad269da1246b5" prot="public" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1ad2f1f38d0df0743ea6d9622207857502" prot="public" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a0ddedb9c24737b7b42adddec25eb200a" prot="public" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1avro_1_1ToAvroNodeVisitor_1a8cb89c8165950cd25a31aa45034d3f6e" prot="public" virt="non-virtual"><scope>iceberg::avro::ToAvroNodeVisitor</scope><name>Visit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1InheritableMetadataFactory" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::InheritableMetadataFactory</compoundname>
+    <includes refid="inheritable__metadata_8h" local="no">inheritable_metadata.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1InheritableMetadataFactory_1ab2e66f0d56ee88c5c5be93d850a7619c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1InheritableMetadata" kindref="compound">InheritableMetadata</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; InheritableMetadata &gt; &gt; iceberg::InheritableMetadataFactory::Empty</definition>
+        <argsstring>()</argsstring>
+        <name>Empty</name>
+        <qualifiedname>iceberg::InheritableMetadataFactory::Empty</qualifiedname>
+        <briefdescription>
+<para>Create an empty metadata instance that applies no inheritance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inheritable_metadata.h" line="94" column="17" bodyfile="iceberg/inheritable_metadata.cc" bodystart="88" bodyend="90"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InheritableMetadataFactory_1a43c9ace6eff5289d10fe791cd942a2be" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1InheritableMetadata" kindref="compound">InheritableMetadata</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; InheritableMetadata &gt; &gt; iceberg::InheritableMetadataFactory::FromManifest</definition>
+        <argsstring>(const ManifestFile &amp;manifest)</argsstring>
+        <name>FromManifest</name>
+        <qualifiedname>iceberg::InheritableMetadataFactory::FromManifest</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest</declname>
+        </param>
+        <briefdescription>
+<para>Create metadata instance from a manifest file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>manifest</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The manifest file to extract metadata from. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Inheritable metadata based on the manifest. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inheritable_metadata.h" line="99" column="17" bodyfile="iceberg/inheritable_metadata.cc" bodystart="92" bodyend="102"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1InheritableMetadataFactory_1a1bd33a8d9058f4c955928ae627f3842c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1InheritableMetadata" kindref="compound">InheritableMetadata</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; InheritableMetadata &gt; &gt; iceberg::InheritableMetadataFactory::ForCopy</definition>
+        <argsstring>(int64_t snapshot_id)</argsstring>
+        <name>ForCopy</name>
+        <qualifiedname>iceberg::InheritableMetadataFactory::ForCopy</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Create metadata instance for rewriting a manifest before commit. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshot ID for the copy operation. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Inheritable metadata for copying. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inheritable_metadata.h" line="105" column="17" bodyfile="iceberg/inheritable_metadata.cc" bodystart="104" bodyend="107"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1InheritableMetadataFactory_1a48b42a3516070563d441ce2817c0484b" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::InheritableMetadataFactory::InheritableMetadataFactory</definition>
+        <argsstring>()=default</argsstring>
+        <name>InheritableMetadataFactory</name>
+        <qualifiedname>iceberg::InheritableMetadataFactory::InheritableMetadataFactory</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inheritable_metadata.h" line="108" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Factory for creating <ref refid="classiceberg_1_1InheritableMetadata" kindref="compound">InheritableMetadata</ref> instances. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/inheritable_metadata.h" line="91" column="1" bodyfile="iceberg/inheritable_metadata.h" bodystart="91" bodyend="109"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1InheritableMetadataFactory_1ab2e66f0d56ee88c5c5be93d850a7619c" prot="public" virt="non-virtual"><scope>iceberg::InheritableMetadataFactory</scope><name>Empty</name></member>
+      <member refid="classiceberg_1_1InheritableMetadataFactory_1a1bd33a8d9058f4c955928ae627f3842c" prot="public" virt="non-virtual"><scope>iceberg::InheritableMetadataFactory</scope><name>ForCopy</name></member>
+      <member refid="classiceberg_1_1InheritableMetadataFactory_1a43c9ace6eff5289d10fe791cd942a2be" prot="public" virt="non-virtual"><scope>iceberg::InheritableMetadataFactory</scope><name>FromManifest</name></member>
+      <member refid="classiceberg_1_1InheritableMetadataFactory_1a48b42a3516070563d441ce2817c0484b" prot="private" virt="non-virtual"><scope>iceberg::InheritableMetadataFactory</scope><name>InheritableMetadataFactory</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
