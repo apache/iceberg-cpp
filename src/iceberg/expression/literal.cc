@@ -245,7 +245,7 @@ Result<Literal> LiteralCaster::CastFromBinary(
   switch (target_type->type_id()) {
     case TypeId::kFixed: {
       auto target_fixed_type = internal::checked_pointer_cast<FixedType>(target_type);
-      if (binary_val.size() == target_fixed_type->length()) {
+      if (static_cast<int32_t>(binary_val.size()) == target_fixed_type->length()) {
         return Literal::Fixed(std::move(binary_val));
       }
       return InvalidArgument("Failed to cast Binary with length {} to Fixed({})",

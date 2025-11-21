@@ -200,7 +200,7 @@ Result<Literal::Value> Conversions::FromBytes(const PrimitiveType& type,
       return Literal::Value{std::vector<uint8_t>(data.begin(), data.end())};
     case TypeId::kFixed: {
       const auto& fixed_type = static_cast<const FixedType&>(type);
-      if (data.size() != fixed_type.length()) {
+      if (static_cast<int32_t>(data.size()) != fixed_type.length()) {
         return InvalidArgument("Invalid data size for Fixed literal, got size: {}",
                                data.size());
       }

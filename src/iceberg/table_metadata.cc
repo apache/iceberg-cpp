@@ -267,12 +267,12 @@ std::unique_ptr<TableMetadataBuilder> TableMetadataBuilder::BuildFrom(
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetMetadataLocation(
-    std::string_view metadata_location) {
+    [[maybe_unused]] std::string_view metadata_location) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetPreviousMetadataLocation(
-    std::string_view previous_metadata_location) {
+    [[maybe_unused]] std::string_view previous_metadata_location) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
@@ -309,87 +309,94 @@ TableMetadataBuilder& TableMetadataBuilder::AssignUUID(std::string_view uuid) {
 }
 
 TableMetadataBuilder& TableMetadataBuilder::UpgradeFormatVersion(
-    int8_t new_format_version) {
+    [[maybe_unused]] int8_t new_format_version) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetCurrentSchema(
-    std::shared_ptr<Schema> schema, int32_t new_last_column_id) {
+    [[maybe_unused]] std::shared_ptr<Schema> schema,
+    [[maybe_unused]] int32_t new_last_column_id) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-TableMetadataBuilder& TableMetadataBuilder::SetCurrentSchema(int32_t schema_id) {
+TableMetadataBuilder& TableMetadataBuilder::SetCurrentSchema(
+    [[maybe_unused]] int32_t schema_id) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-TableMetadataBuilder& TableMetadataBuilder::AddSchema(std::shared_ptr<Schema> schema) {
+TableMetadataBuilder& TableMetadataBuilder::AddSchema(
+    [[maybe_unused]] std::shared_ptr<Schema> schema) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetDefaultPartitionSpec(
-    std::shared_ptr<PartitionSpec> spec) {
+    [[maybe_unused]] std::shared_ptr<PartitionSpec> spec) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-TableMetadataBuilder& TableMetadataBuilder::SetDefaultPartitionSpec(int32_t spec_id) {
+TableMetadataBuilder& TableMetadataBuilder::SetDefaultPartitionSpec(
+    [[maybe_unused]] int32_t spec_id) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::AddPartitionSpec(
-    std::shared_ptr<PartitionSpec> spec) {
+    [[maybe_unused]] std::shared_ptr<PartitionSpec> spec) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemovePartitionSpecs(
-    const std::vector<int32_t>& spec_ids) {
+    [[maybe_unused]] const std::vector<int32_t>& spec_ids) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveSchemas(
-    const std::vector<int32_t>& schema_ids) {
+    [[maybe_unused]] const std::vector<int32_t>& schema_ids) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetDefaultSortOrder(
-    std::shared_ptr<SortOrder> order) {
+    [[maybe_unused]] std::shared_ptr<SortOrder> order) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-TableMetadataBuilder& TableMetadataBuilder::SetDefaultSortOrder(int32_t order_id) {
+TableMetadataBuilder& TableMetadataBuilder::SetDefaultSortOrder(
+    [[maybe_unused]] int32_t order_id) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::AddSortOrder(
-    std::shared_ptr<SortOrder> order) {
+    [[maybe_unused]] std::shared_ptr<SortOrder> order) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::AddSnapshot(
-    std::shared_ptr<Snapshot> snapshot) {
+    [[maybe_unused]] std::shared_ptr<Snapshot> snapshot) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-TableMetadataBuilder& TableMetadataBuilder::SetBranchSnapshot(int64_t snapshot_id,
-                                                              const std::string& branch) {
+TableMetadataBuilder& TableMetadataBuilder::SetBranchSnapshot(
+    [[maybe_unused]] int64_t snapshot_id, [[maybe_unused]] const std::string& branch) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-TableMetadataBuilder& TableMetadataBuilder::SetRef(const std::string& name,
-                                                   std::shared_ptr<SnapshotRef> ref) {
+TableMetadataBuilder& TableMetadataBuilder::SetRef(
+    [[maybe_unused]] const std::string& name,
+    [[maybe_unused]] std::shared_ptr<SnapshotRef> ref) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-TableMetadataBuilder& TableMetadataBuilder::RemoveRef(const std::string& name) {
+TableMetadataBuilder& TableMetadataBuilder::RemoveRef(
+    [[maybe_unused]] const std::string& name) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveSnapshots(
-    const std::vector<std::shared_ptr<Snapshot>>& snapshots_to_remove) {
+    [[maybe_unused]] const std::vector<std::shared_ptr<Snapshot>>& snapshots_to_remove) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveSnapshots(
-    const std::vector<int64_t>& snapshot_ids) {
+    [[maybe_unused]] const std::vector<int64_t>& snapshot_ids) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
@@ -398,44 +405,48 @@ TableMetadataBuilder& TableMetadataBuilder::suppressHistoricalSnapshots() {
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetStatistics(
-    const std::shared_ptr<StatisticsFile>& statistics_file) {
+    [[maybe_unused]] const std::shared_ptr<StatisticsFile>& statistics_file) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-TableMetadataBuilder& TableMetadataBuilder::RemoveStatistics(int64_t snapshot_id) {
+TableMetadataBuilder& TableMetadataBuilder::RemoveStatistics(
+    [[maybe_unused]] int64_t snapshot_id) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetPartitionStatistics(
-    const std::shared_ptr<PartitionStatisticsFile>& partition_statistics_file) {
+    [[maybe_unused]] const std::shared_ptr<PartitionStatisticsFile>&
+        partition_statistics_file) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemovePartitionStatistics(
-    int64_t snapshot_id) {
+    [[maybe_unused]] int64_t snapshot_id) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetProperties(
-    const std::unordered_map<std::string, std::string>& updated) {
+    [[maybe_unused]] const std::unordered_map<std::string, std::string>& updated) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveProperties(
-    const std::vector<std::string>& removed) {
+    [[maybe_unused]] const std::vector<std::string>& removed) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-TableMetadataBuilder& TableMetadataBuilder::SetLocation(std::string_view location) {
+TableMetadataBuilder& TableMetadataBuilder::SetLocation(
+    [[maybe_unused]] std::string_view location) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
 TableMetadataBuilder& TableMetadataBuilder::AddEncryptionKey(
-    std::shared_ptr<EncryptedKey> key) {
+    [[maybe_unused]] std::shared_ptr<EncryptedKey> key) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-TableMetadataBuilder& TableMetadataBuilder::RemoveEncryptionKey(std::string_view key_id) {
+TableMetadataBuilder& TableMetadataBuilder::RemoveEncryptionKey(
+    [[maybe_unused]] std::string_view key_id) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 

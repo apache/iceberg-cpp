@@ -75,7 +75,7 @@ class ICEBERG_EXPORT Expression : public util::Formattable {
   /// \brief Returns whether this expression will accept the same values as another.
   /// \param other another expression
   /// \return true if the expressions are equivalent
-  virtual bool Equals(const Expression& other) const {
+  virtual bool Equals([[maybe_unused]] const Expression& other) const {
     // only bound predicates can be equivalent
     return false;
   }

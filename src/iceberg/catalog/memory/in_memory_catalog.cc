@@ -384,23 +384,25 @@ Result<std::vector<TableIdentifier>> InMemoryCatalog::ListTables(
 }
 
 Result<std::unique_ptr<Table>> InMemoryCatalog::CreateTable(
-    const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
-    const std::string& location,
-    const std::unordered_map<std::string, std::string>& properties) {
+    [[maybe_unused]] const TableIdentifier& identifier,
+    [[maybe_unused]] const Schema& schema, [[maybe_unused]] const PartitionSpec& spec,
+    [[maybe_unused]] const std::string& location,
+    [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties) {
   return NotImplemented("create table");
 }
 
 Result<std::unique_ptr<Table>> InMemoryCatalog::UpdateTable(
-    const TableIdentifier& identifier,
-    const std::vector<std::unique_ptr<TableRequirement>>& requirements,
-    const std::vector<std::unique_ptr<TableUpdate>>& updates) {
+    [[maybe_unused]] const TableIdentifier& identifier,
+    [[maybe_unused]] const std::vector<std::unique_ptr<TableRequirement>>& requirements,
+    [[maybe_unused]] const std::vector<std::unique_ptr<TableUpdate>>& updates) {
   return NotImplemented("update table");
 }
 
 Result<std::shared_ptr<Transaction>> InMemoryCatalog::StageCreateTable(
-    const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
-    const std::string& location,
-    const std::unordered_map<std::string, std::string>& properties) {
+    [[maybe_unused]] const TableIdentifier& identifier,
+    [[maybe_unused]] const Schema& schema, [[maybe_unused]] const PartitionSpec& spec,
+    [[maybe_unused]] const std::string& location,
+    [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties) {
   return NotImplemented("stage create table");
 }
 
@@ -409,14 +411,15 @@ Result<bool> InMemoryCatalog::TableExists(const TableIdentifier& identifier) con
   return root_namespace_->TableExists(identifier);
 }
 
-Status InMemoryCatalog::DropTable(const TableIdentifier& identifier, bool purge) {
+Status InMemoryCatalog::DropTable(const TableIdentifier& identifier,
+                                  [[maybe_unused]] bool purge) {
   std::unique_lock lock(mutex_);
   // TODO(Guotao): Delete all metadata files if purge is true.
   return root_namespace_->UnregisterTable(identifier);
 }
 
-Status InMemoryCatalog::RenameTable(const TableIdentifier& from,
-                                    const TableIdentifier& to) {
+Status InMemoryCatalog::RenameTable([[maybe_unused]] const TableIdentifier& from,
+                                    [[maybe_unused]] const TableIdentifier& to) {
   std::unique_lock lock(mutex_);
   return NotImplemented("rename table");
 }
@@ -455,7 +458,8 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::RegisterTable(
 }
 
 std::unique_ptr<Catalog::TableBuilder> InMemoryCatalog::BuildTable(
-    const TableIdentifier& identifier, const Schema& schema) const {
+    [[maybe_unused]] const TableIdentifier& identifier,
+    [[maybe_unused]] const Schema& schema) const {
   throw IcebergError("not implemented");
 }
 

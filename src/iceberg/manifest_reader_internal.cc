@@ -196,7 +196,7 @@ Result<std::vector<ManifestFile>> ParseManifestList(ArrowSchema* schema,
     return InvalidManifestList("Columns size not match between schema:{} and array:{}",
                                schema->n_children, array_in->n_children);
   }
-  if (iceberg_schema.fields().size() != array_in->n_children) {
+  if (static_cast<int64_t>(iceberg_schema.fields().size()) != array_in->n_children) {
     return InvalidManifestList("Columns size not match between schema:{} and array:{}",
                                iceberg_schema.fields().size(), array_in->n_children);
   }
@@ -333,7 +333,8 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
   if (view_of_column->storage_type != ArrowType::NANOARROW_TYPE_STRUCT) {
     return InvalidManifest("DataFile field should be a struct.");
   }
-  if (view_of_column->n_children != data_file_schema->fields().size()) {
+  if (view_of_column->n_children !=
+      static_cast<int64_t>(data_file_schema->fields().size())) {
     return InvalidManifest("DataFile schema size:{} not match with ArrayArray columns:{}",
                            data_file_schema->fields().size(), view_of_column->n_children);
   }
@@ -459,7 +460,7 @@ Result<std::vector<ManifestEntry>> ParseManifestEntry(ArrowSchema* schema,
     return InvalidManifest("Columns size not match between schema:{} and array:{}",
                            schema->n_children, array_in->n_children);
   }
-  if (iceberg_schema.fields().size() != array_in->n_children) {
+  if (static_cast<int64_t>(iceberg_schema.fields().size()) != array_in->n_children) {
     return InvalidManifest("Columns size not match between schema:{} and array:{}",
                            iceberg_schema.fields().size(), array_in->n_children);
   }

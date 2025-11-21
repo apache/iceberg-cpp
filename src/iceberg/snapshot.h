@@ -225,21 +225,21 @@ struct ICEBERG_EXPORT Snapshot {
   static constexpr int64_t kInvalidSnapshotId = -1;
 
   /// A unique long ID.
-  int64_t snapshot_id;
+  int64_t snapshot_id{};
   /// The snapshot ID of the snapshot's parent. Omitted for any snapshot with no parent.
-  std::optional<int64_t> parent_snapshot_id;
+  std::optional<int64_t> parent_snapshot_id{};
   /// A monotonically increasing long that tracks the order of changes to a table.
-  int64_t sequence_number;
+  int64_t sequence_number{};
   /// A timestamp when the snapshot was created, used for garbage collection and table
   /// inspection.
-  TimePointMs timestamp_ms;
+  TimePointMs timestamp_ms{};
   /// The location of a manifest list for this snapshot that tracks manifest files with
   /// additional metadata.
-  std::string manifest_list;
+  std::string manifest_list{};
   /// A string map that summaries the snapshot changes, including operation.
-  std::unordered_map<std::string, std::string> summary;
+  std::unordered_map<std::string, std::string> summary{};
   /// ID of the table's current schema when the snapshot was created.
-  std::optional<int32_t> schema_id;
+  std::optional<int32_t> schema_id{};
 
   /// \brief Return the name of the DataOperations data operation that produced this
   /// snapshot.

@@ -34,19 +34,19 @@ Result<std::vector<std::unique_ptr<TableRequirement>>> TableUpdateContext::Build
 }
 
 Result<std::vector<std::unique_ptr<TableRequirement>>> TableRequirements::ForCreateTable(
-    const std::vector<std::unique_ptr<TableUpdate>>& table_updates) {
+    [[maybe_unused]] const std::vector<std::unique_ptr<TableUpdate>>& table_updates) {
   return NotImplemented("TableRequirements::ForCreateTable not implemented");
 }
 
 Result<std::vector<std::unique_ptr<TableRequirement>>> TableRequirements::ForReplaceTable(
-    const TableMetadata& base,
-    const std::vector<std::unique_ptr<TableUpdate>>& table_updates) {
+    [[maybe_unused]] const TableMetadata& base,
+    [[maybe_unused]] const std::vector<std::unique_ptr<TableUpdate>>& table_updates) {
   return NotImplemented("TableRequirements::ForReplaceTable not implemented");
 }
 
 Result<std::vector<std::unique_ptr<TableRequirement>>> TableRequirements::ForUpdateTable(
-    const TableMetadata& base,
-    const std::vector<std::unique_ptr<TableUpdate>>& table_updates) {
+    [[maybe_unused]] const TableMetadata& base,
+    [[maybe_unused]] const std::vector<std::unique_ptr<TableUpdate>>& table_updates) {
   return NotImplemented("TableRequirements::ForUpdateTable not implemented");
 }
 

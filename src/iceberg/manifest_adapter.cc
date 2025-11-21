@@ -164,13 +164,14 @@ ManifestEntryAdapter::~ManifestEntryAdapter() {
 Status ManifestEntryAdapter::AppendPartitionValues(
     ArrowArray* array, const std::shared_ptr<StructType>& partition_type,
     const std::vector<Literal>& partition_values) {
-  if (array->n_children != partition_type->fields().size()) [[unlikely]] {
+  auto fields = partition_type->fields();
+  auto num_fields = static_cast<int64_t>(fields.size());
+  if (array->n_children != num_fields) [[unlikely]] {
     return InvalidArrowData("Arrow array of partition does not match partition type.");
   }
-  if (partition_values.size() != partition_type->fields().size()) [[unlikely]] {
+  if (partition_values.size() != fields.size()) [[unlikely]] {
     return InvalidArrowData("Literal list of partition does not match partition type.");
   }
-  auto fields = partition_type->fields();
 
   for (size_t i = 0; i < fields.size(); i++) {
     const auto& partition_value = partition_values[i];
