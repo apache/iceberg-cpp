@@ -30,9 +30,11 @@ namespace iceberg {
 /// \brief Error types for iceberg.
 enum class ErrorKind {
   kAlreadyExists,
+  kBadRequest,
   kCommitFailed,
   kCommitStateUnknown,
   kDecompressError,
+  kForbidden,
   kInvalid,  // For general invalid errors
   kInvalidArgument,
   kInvalidArrowData,
@@ -42,13 +44,19 @@ enum class ErrorKind {
   kInvalidManifestList,
   kIOError,
   kJsonParseError,
+  kNamespaceNotEmpty,
   kNoSuchNamespace,
   kNoSuchTable,
+  kNoSuchView,
   kNotAllowed,
+  kNotAuthorized,
   kNotFound,
   kNotImplemented,
   kNotSupported,
+  kServiceFailure,
+  kServiceUnavailable,
   kUnknownError,
+  kRESTError,
 };
 
 /// \brief Error with a kind and a message.
@@ -79,9 +87,11 @@ using Status = Result<void>;
   }
 
 DEFINE_ERROR_FUNCTION(AlreadyExists)
+DEFINE_ERROR_FUNCTION(BadRequest)
 DEFINE_ERROR_FUNCTION(CommitFailed)
 DEFINE_ERROR_FUNCTION(CommitStateUnknown)
 DEFINE_ERROR_FUNCTION(DecompressError)
+DEFINE_ERROR_FUNCTION(Forbidden)
 DEFINE_ERROR_FUNCTION(Invalid)
 DEFINE_ERROR_FUNCTION(InvalidArgument)
 DEFINE_ERROR_FUNCTION(InvalidArrowData)
@@ -91,13 +101,19 @@ DEFINE_ERROR_FUNCTION(InvalidManifest)
 DEFINE_ERROR_FUNCTION(InvalidManifestList)
 DEFINE_ERROR_FUNCTION(IOError)
 DEFINE_ERROR_FUNCTION(JsonParseError)
+DEFINE_ERROR_FUNCTION(NamespaceNotEmpty)
 DEFINE_ERROR_FUNCTION(NoSuchNamespace)
 DEFINE_ERROR_FUNCTION(NoSuchTable)
+DEFINE_ERROR_FUNCTION(NoSuchView)
 DEFINE_ERROR_FUNCTION(NotAllowed)
+DEFINE_ERROR_FUNCTION(NotAuthorized)
 DEFINE_ERROR_FUNCTION(NotFound)
 DEFINE_ERROR_FUNCTION(NotImplemented)
 DEFINE_ERROR_FUNCTION(NotSupported)
+DEFINE_ERROR_FUNCTION(ServiceFailure)
+DEFINE_ERROR_FUNCTION(ServiceUnavailable)
 DEFINE_ERROR_FUNCTION(UnknownError)
+DEFINE_ERROR_FUNCTION(RESTError)
 
 #undef DEFINE_ERROR_FUNCTION
 

@@ -17,28 +17,27 @@
  * under the License.
  */
 
-#include "iceberg/catalog/rest/rest_catalog.h"
+#pragma once
 
-#include <utility>
+#include <string>
 
-#include <cpr/cpr.h>
+#include "iceberg/version.h"
 
-#include "iceberg/catalog/rest/types.h"
+/// \file iceberg/catalog/rest/constant.h
+/// Constant values for Iceberg REST API.
 
-namespace iceberg::catalog::rest {
+namespace iceberg::rest {
 
-RestCatalog::RestCatalog(const std::string& base_url) : base_url_(std::move(base_url)) {}
+inline const std::string kHeaderContentType = "Content-Type";
+inline const std::string kHeaderAccept = "Accept";
+inline const std::string kHeaderXClientVersion = "X-Client-Version";
+inline const std::string kHeaderUserAgent = "User-Agent";
 
-cpr::Response RestCatalog::GetConfig() {
-  cpr::Url url = cpr::Url{base_url_ + "/v1/config"};
-  cpr::Response r = cpr::Get(url);
-  return r;
-}
+inline const std::string kMimeTypeApplicationJson = "application/json";
+inline const std::string kUserAgentPrefix = "iceberg-cpp/";
+inline const std::string kUserAgent = "iceberg-cpp/" ICEBERG_VERSION_STRING;
 
-cpr::Response RestCatalog::ListNamespaces() {
-  cpr::Url url = cpr::Url{base_url_ + "/v1/namespaces"};
-  cpr::Response r = cpr::Get(url);
-  return r;
-}
+inline const std::string kQueryParamParent = "parent";
+inline const std::string kQueryParamPageToken = "page_token";
 
-}  // namespace iceberg::catalog::rest
+}  // namespace iceberg::rest

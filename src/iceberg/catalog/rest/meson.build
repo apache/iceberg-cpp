@@ -15,7 +15,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
-iceberg_rest_sources = files('json_internal.cc', 'rest_catalog.cc')
+iceberg_rest_sources = files(
+    'catalog.cc',
+    'config.cc',
+    'http_client.cc',
+    'json_internal.cc',
+    'resource_paths.cc',
+)
 # cpr does not export symbols, so on Windows it must
 # be used as a static lib
 cpr_needs_static = (
@@ -46,4 +52,19 @@ iceberg_rest_dep = declare_dependency(
 meson.override_dependency('iceberg-rest', iceberg_rest_dep)
 pkg.generate(iceberg_rest_lib)
 
-install_headers(['rest_catalog.h', 'types.h'], subdir: 'iceberg/catalog/rest')
+install_headers(
+    [
+        'catalog.h',
+        'config.h',
+        'constant.h',
+        'http_client.h',
+        'http_response.h',
+        'json_internal.h',
+        'iceberg_rest_export.h',
+        'types.h',
+        'resource_paths.h',
+        'endpoint_util.h',
+        'error_handlers.h',
+    ],
+    subdir: 'iceberg/catalog/rest',
+)
