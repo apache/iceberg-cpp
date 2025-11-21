@@ -39,7 +39,7 @@ Status PartitionFieldStats::Update(const Literal& value) {
     return {};
   }
 
-  if (value.IsNan()) {
+  if (value.IsNaN()) {
     contains_nan_ = true;
     return {};
   }
