@@ -20,6 +20,7 @@
 #include "iceberg/expression/expressions.h"
 
 #include "iceberg/exception.h"
+#include "iceberg/expression/aggregate.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
 #include "iceberg/util/macros.h"
@@ -79,6 +80,63 @@ std::shared_ptr<UnboundTransform> Expressions::Transform(
       auto unbound_transform,
       UnboundTransform::Make(Ref(std::move(name)), std::move(transform)));
   return unbound_transform;
+}
+
+// Aggregates
+
+std::shared_ptr<CountAggregate> Expressions::Count(std::string name) {
+  return Count(Ref(std::move(name)));
+}
+
+std::shared_ptr<CountAggregate> Expressions::Count(
+    std::shared_ptr<UnboundTerm<BoundReference>> expr) {
+  ICEBERG_ASSIGN_OR_THROW(auto agg, CountAggregate::Count(std::move(expr)));
+  return std::shared_ptr<CountAggregate>(std::move(agg));
+}
+
+std::shared_ptr<CountAggregate> Expressions::CountNull(std::string name) {
+  return CountNull(Ref(std::move(name)));
+}
+
+std::shared_ptr<CountAggregate> Expressions::CountNull(
+    std::shared_ptr<UnboundTerm<BoundReference>> expr) {
+  ICEBERG_ASSIGN_OR_THROW(auto agg, CountAggregate::CountNull(std::move(expr)));
+  return std::shared_ptr<CountAggregate>(std::move(agg));
+}
+
+std::shared_ptr<CountAggregate> Expressions::CountNotNull(std::string name) {
+  return CountNotNull(Ref(std::move(name)));
+}
+
+std::shared_ptr<CountAggregate> Expressions::CountNotNull(
+    std::shared_ptr<UnboundTerm<BoundReference>> expr) {
+  ICEBERG_ASSIGN_OR_THROW(auto agg, CountAggregate::Count(std::move(expr)));
+  return std::shared_ptr<CountAggregate>(std::move(agg));
+}
+
+std::shared_ptr<CountAggregate> Expressions::CountStar() {
+  auto agg = CountAggregate::CountStar();
+  return std::shared_ptr<CountAggregate>(std::move(agg));
+}
+
+std::shared_ptr<ValueAggregate> Expressions::Max(std::string name) {
+  return Max(Ref(std::move(name)));
+}
+
+std::shared_ptr<ValueAggregate> Expressions::Max(
+    std::shared_ptr<UnboundTerm<BoundReference>> expr) {
+  ICEBERG_ASSIGN_OR_THROW(auto agg, ValueAggregate::Max(std::move(expr)));
+  return std::shared_ptr<ValueAggregate>(std::move(agg));
+}
+
+std::shared_ptr<ValueAggregate> Expressions::Min(std::string name) {
+  return Min(Ref(std::move(name)));
+}
+
+std::shared_ptr<ValueAggregate> Expressions::Min(
+    std::shared_ptr<UnboundTerm<BoundReference>> expr) {
+  ICEBERG_ASSIGN_OR_THROW(auto agg, ValueAggregate::Min(std::move(expr)));
+  return std::shared_ptr<ValueAggregate>(std::move(agg));
 }
 
 // Template implementations for unary predicates

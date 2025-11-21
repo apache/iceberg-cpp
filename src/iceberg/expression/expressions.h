@@ -28,6 +28,7 @@
 #include <vector>
 
 #include "iceberg/exception.h"
+#include "iceberg/expression/aggregate.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/expression/predicate.h"
 #include "iceberg/expression/term.h"
@@ -100,6 +101,46 @@ class ICEBERG_EXPORT Expressions {
   /// \brief Create a transform expression.
   static std::shared_ptr<UnboundTransform> Transform(
       std::string name, std::shared_ptr<Transform> transform);
+
+  // Aggregates
+
+  /// \brief Create COUNT(col) aggregate.
+  static std::shared_ptr<CountAggregate> Count(std::string name);
+
+  /// \brief Create COUNT(unbound term) aggregate.
+  static std::shared_ptr<CountAggregate> Count(
+      std::shared_ptr<UnboundTerm<BoundReference>> expr);
+
+  /// \brief Create COUNT_NULL(col) aggregate.
+  static std::shared_ptr<CountAggregate> CountNull(std::string name);
+
+  /// \brief Create COUNT_NULL(unbound term) aggregate.
+  static std::shared_ptr<CountAggregate> CountNull(
+      std::shared_ptr<UnboundTerm<BoundReference>> expr);
+
+  /// \brief Create COUNT_NOT_NULL(col) aggregate.
+  static std::shared_ptr<CountAggregate> CountNotNull(std::string name);
+
+  /// \brief Create COUNT_NOT_NULL(unbound term) aggregate.
+  static std::shared_ptr<CountAggregate> CountNotNull(
+      std::shared_ptr<UnboundTerm<BoundReference>> expr);
+
+  /// \brief Create COUNT(*) aggregate.
+  static std::shared_ptr<CountAggregate> CountStar();
+
+  /// \brief Create MAX(col) aggregate.
+  static std::shared_ptr<ValueAggregate> Max(std::string name);
+
+  /// \brief Create MAX(unbound term) aggregate.
+  static std::shared_ptr<ValueAggregate> Max(
+      std::shared_ptr<UnboundTerm<BoundReference>> expr);
+
+  /// \brief Create MIN(col) aggregate.
+  static std::shared_ptr<ValueAggregate> Min(std::string name);
+
+  /// \brief Create MIN(unbound term) aggregate.
+  static std::shared_ptr<ValueAggregate> Min(
+      std::shared_ptr<UnboundTerm<BoundReference>> expr);
 
   // Unary predicates
 
