@@ -55,13 +55,13 @@ function(add_iceberg_test test_name)
   target_link_libraries(${test_name} PRIVATE GTest::gtest_main GTest::gmock)
 
   if("${ICEBERG_TEST_LINKAGE}" STREQUAL "shared")
-    if (ARG_USE_BUNDLE)
+    if(ARG_USE_BUNDLE)
       target_link_libraries(${test_name} PRIVATE iceberg_bundle_shared)
     else()
       target_link_libraries(${test_name} PRIVATE iceberg_shared)
     endif()
   else()
-    if (ARG_USE_BUNDLE)
+    if(ARG_USE_BUNDLE)
       target_link_libraries(${test_name} PRIVATE iceberg_bundle_static)
     else()
       target_link_libraries(${test_name} PRIVATE iceberg_static)
@@ -168,9 +168,7 @@ if(ICEBERG_BUILD_BUNDLE)
 endif()
 
 if(ICEBERG_BUILD_REST)
-  add_iceberg_test(rest_catalog_test 
-                   SOURCES 
-                   rest_catalog_test.cc
+  add_iceberg_test(rest_catalog_test SOURCES rest_catalog_test.cc
                    rest_json_internal_test.cc)
   if("${ICEBERG_TEST_LINKAGE}" STREQUAL "shared")
     target_link_libraries(rest_catalog_test PRIVATE iceberg_rest_shared)
