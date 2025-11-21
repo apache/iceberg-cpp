@@ -56,7 +56,7 @@ if(ICEBERG_BUILD_TESTS)
     message(FATAL_ERROR "If using ICEBERG_TEST_LINKAGE=shared, must also pass ICEBERG_BUILD_SHARED=ON")
   endif()
   if(ICEBERG_TEST_LINKAGE STREQUAL "static" AND NOT ICEBERG_BUILD_STATIC)
-    message(FATAL_ERROR "If using ICEBERG_TEST_LINKAGE=static, must also pass ICEBERG_BUILD_STATIC=on")
+    message(FATAL_ERROR "If using ICEBERG_TEST_LINKAGE=static, must also pass ICEBERG_BUILD_STATIC=ON")
   endif()
 endif()
 
