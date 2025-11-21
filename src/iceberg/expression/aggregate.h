@@ -57,7 +57,7 @@ class ICEBERG_EXPORT UnboundAggregate : public Aggregate, public Unbound<Express
   bool is_unbound_aggregate() const override { return true; }
 
   /// \brief Returns the unbound reference if the aggregate has a term.
-  virtual std::shared_ptr<NamedReference> reference() override = 0;
+  std::shared_ptr<NamedReference> reference() override = 0;
 
  protected:
   explicit UnboundAggregate(Expression::Operation op) : Aggregate(op) {}
