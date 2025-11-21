@@ -129,4 +129,32 @@ TEST(AggregateTest, MaxMinAggregates) {
   EXPECT_EQ(std::get<int32_t>(min_result.value()), 2);
 }
 
+TEST(AggregateTest, MultipleAggregatesInEvaluator) {
+  Schema schema({SchemaField::MakeOptional(1, "id", int32()),
+                 SchemaField::MakeOptional(2, "value", int32())});
+
+  auto count_expr = Expressions::Count("id");
+  auto max_expr = Expressions::Max("value");
+
+  auto count_bound = BindAggregate(schema, count_expr);
+  auto max_bound = BindAggregate(schema, max_expr);
+
+  std::vector<std::shared_ptr<BoundAggregate>> aggregates{count_bound, max_bound};
+  ICEBERG_UNWRAP_OR_FAIL(auto evaluator, AggregateEvaluator::MakeList(aggregates));
+
+  std::vector<VectorStructLike> rows{
+      VectorStructLike({Scalar{int32_t{1}}, Scalar{int32_t{10}}}),
+      VectorStructLike({Scalar{int32_t{2}}, Scalar{std::monostate{}}}),
+      VectorStructLike({Scalar{std::monostate{}}, Scalar{int32_t{30}}})};
+
+  for (const auto& row : rows) {
+    ASSERT_TRUE(evaluator->Add(row).has_value());
+  }
+
+  ICEBERG_UNWRAP_OR_FAIL(auto results, evaluator->Results());
+  ASSERT_EQ(results.size(), 2);
+  EXPECT_EQ(std::get<int64_t>(results[0].value()), 2);
+  EXPECT_EQ(std::get<int32_t>(results[1].value()), 30);
+}
+
 }  // namespace iceberg

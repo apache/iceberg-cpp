@@ -105,41 +105,43 @@ class ICEBERG_EXPORT Expressions {
   // Aggregates
 
   /// \brief Create COUNT(col) aggregate.
-  static std::shared_ptr<CountAggregate> Count(std::string name);
+  static std::shared_ptr<UnboundAggregateImpl<BoundReference>> Count(std::string name);
 
   /// \brief Create COUNT(unbound term) aggregate.
-  static std::shared_ptr<CountAggregate> Count(
+  static std::shared_ptr<UnboundAggregateImpl<BoundReference>> Count(
       std::shared_ptr<UnboundTerm<BoundReference>> expr);
 
   /// \brief Create COUNT_NULL(col) aggregate.
-  static std::shared_ptr<CountAggregate> CountNull(std::string name);
+  static std::shared_ptr<UnboundAggregateImpl<BoundReference>> CountNull(
+      std::string name);
 
   /// \brief Create COUNT_NULL(unbound term) aggregate.
-  static std::shared_ptr<CountAggregate> CountNull(
+  static std::shared_ptr<UnboundAggregateImpl<BoundReference>> CountNull(
       std::shared_ptr<UnboundTerm<BoundReference>> expr);
 
   /// \brief Create COUNT_NOT_NULL(col) aggregate.
-  static std::shared_ptr<CountAggregate> CountNotNull(std::string name);
+  static std::shared_ptr<UnboundAggregateImpl<BoundReference>> CountNotNull(
+      std::string name);
 
   /// \brief Create COUNT_NOT_NULL(unbound term) aggregate.
-  static std::shared_ptr<CountAggregate> CountNotNull(
+  static std::shared_ptr<UnboundAggregateImpl<BoundReference>> CountNotNull(
       std::shared_ptr<UnboundTerm<BoundReference>> expr);
 
   /// \brief Create COUNT(*) aggregate.
-  static std::shared_ptr<CountAggregate> CountStar();
+  static std::shared_ptr<UnboundAggregateImpl<BoundReference>> CountStar();
 
   /// \brief Create MAX(col) aggregate.
-  static std::shared_ptr<ValueAggregate> Max(std::string name);
+  static std::shared_ptr<UnboundAggregateImpl<BoundReference>> Max(std::string name);
 
   /// \brief Create MAX(unbound term) aggregate.
-  static std::shared_ptr<ValueAggregate> Max(
+  static std::shared_ptr<UnboundAggregateImpl<BoundReference>> Max(
       std::shared_ptr<UnboundTerm<BoundReference>> expr);
 
   /// \brief Create MIN(col) aggregate.
-  static std::shared_ptr<ValueAggregate> Min(std::string name);
+  static std::shared_ptr<UnboundAggregateImpl<BoundReference>> Min(std::string name);
 
   /// \brief Create MIN(unbound term) aggregate.
-  static std::shared_ptr<ValueAggregate> Min(
+  static std::shared_ptr<UnboundAggregateImpl<BoundReference>> Min(
       std::shared_ptr<UnboundTerm<BoundReference>> expr);
 
   // Unary predicates
