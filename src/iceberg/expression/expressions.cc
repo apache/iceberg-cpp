@@ -20,6 +20,7 @@
 #include "iceberg/expression/expressions.h"
 
 #include "iceberg/exception.h"
+#include "iceberg/expression/aggregate.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
 #include "iceberg/util/macros.h"
@@ -79,6 +80,76 @@ std::shared_ptr<UnboundTransform> Expressions::Transform(
       auto unbound_transform,
       UnboundTransform::Make(Ref(std::move(name)), std::move(transform)));
   return unbound_transform;
+}
+
+// Aggregates
+
+std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Count(
+    std::string name) {
+  return Count(Ref(std::move(name)));
+}
+
+std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Count(
+    std::shared_ptr<UnboundTerm<BoundReference>> expr) {
+  auto agg = std::make_shared<UnboundAggregateImpl<BoundReference>>(
+      Expression::Operation::kCount, std::move(expr),
+      UnboundAggregateImpl<BoundReference>::CountMode::kNonNull);
+  return agg;
+}
+
+std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::CountNull(
+    std::string name) {
+  return CountNull(Ref(std::move(name)));
+}
+
+std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::CountNull(
+    std::shared_ptr<UnboundTerm<BoundReference>> expr) {
+  auto agg = std::make_shared<UnboundAggregateImpl<BoundReference>>(
+      Expression::Operation::kCount, std::move(expr),
+      UnboundAggregateImpl<BoundReference>::CountMode::kNull);
+  return agg;
+}
+
+std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::CountNotNull(
+    std::string name) {
+  return CountNotNull(Ref(std::move(name)));
+}
+
+std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::CountNotNull(
+    std::shared_ptr<UnboundTerm<BoundReference>> expr) {
+  auto agg = std::make_shared<UnboundAggregateImpl<BoundReference>>(
+      Expression::Operation::kCount, std::move(expr),
+      UnboundAggregateImpl<BoundReference>::CountMode::kNonNull);
+  return agg;
+}
+
+std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::CountStar() {
+  auto agg = std::make_shared<UnboundAggregateImpl<BoundReference>>(
+      Expression::Operation::kCountStar, nullptr,
+      UnboundAggregateImpl<BoundReference>::CountMode::kStar);
+  return agg;
+}
+
+std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Max(std::string name) {
+  return Max(Ref(std::move(name)));
+}
+
+std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Max(
+    std::shared_ptr<UnboundTerm<BoundReference>> expr) {
+  auto agg = std::make_shared<UnboundAggregateImpl<BoundReference>>(
+      Expression::Operation::kMax, std::move(expr));
+  return agg;
+}
+
+std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Min(std::string name) {
+  return Min(Ref(std::move(name)));
+}
+
+std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Min(
+    std::shared_ptr<UnboundTerm<BoundReference>> expr) {
+  auto agg = std::make_shared<UnboundAggregateImpl<BoundReference>>(
+      Expression::Operation::kMin, std::move(expr));
+  return agg;
 }
 
 // Template implementations for unary predicates

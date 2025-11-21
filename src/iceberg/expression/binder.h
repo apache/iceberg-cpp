@@ -48,6 +48,10 @@ class ICEBERG_EXPORT Binder : public ExpressionVisitor<std::shared_ptr<Expressio
       const std::shared_ptr<BoundPredicate>& pred) override;
   Result<std::shared_ptr<Expression>> Predicate(
       const std::shared_ptr<UnboundPredicate>& pred) override;
+  Result<std::shared_ptr<Expression>> Aggregate(
+      const std::shared_ptr<BoundAggregate>& aggregate) override;
+  Result<std::shared_ptr<Expression>> Aggregate(
+      const std::shared_ptr<UnboundAggregate>& aggregate) override;
 
  private:
   const Schema& schema_;
@@ -65,6 +69,8 @@ class ICEBERG_EXPORT IsBoundVisitor : public ExpressionVisitor<bool> {
   Result<bool> Or(bool left_result, bool right_result) override;
   Result<bool> Predicate(const std::shared_ptr<BoundPredicate>& pred) override;
   Result<bool> Predicate(const std::shared_ptr<UnboundPredicate>& pred) override;
+  Result<bool> Aggregate(const std::shared_ptr<BoundAggregate>& aggregate) override;
+  Result<bool> Aggregate(const std::shared_ptr<UnboundAggregate>& aggregate) override;
 };
 
 // TODO(gangwu): add the Java parity `ReferenceVisitor`

@@ -25,6 +25,7 @@
 #include <concepts>
 #include <memory>
 
+#include "iceberg/expression/aggregate.h"
 #include "iceberg/expression/expression.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/expression/predicate.h"
@@ -77,6 +78,22 @@ class ICEBERG_EXPORT ExpressionVisitor {
   /// \brief Visit an unbound predicate.
   /// \param pred The unbound predicate to visit
   virtual Result<R> Predicate(const std::shared_ptr<UnboundPredicate>& pred) = 0;
+
+  /// \brief Visit a bound aggregate.
+  /// \param aggregate The bound aggregate to visit.
+  virtual Result<R> Aggregate(const std::shared_ptr<BoundAggregate>& aggregate) {
+    ICEBERG_DCHECK(aggregate != nullptr, "Bound aggregate cannot be null");
+    return NotSupported("Bound aggregate is not supported by this visitor: {}",
+                        aggregate->ToString());
+  }
+
+  /// \brief Visit an unbound aggregate.
+  /// \param aggregate The unbound aggregate to visit.
+  virtual Result<R> Aggregate(const std::shared_ptr<UnboundAggregate>& aggregate) {
+    ICEBERG_DCHECK(aggregate != nullptr, "Unbound aggregate cannot be null");
+    return NotSupported("Unbound aggregate is not supported by this visitor: {}",
+                        aggregate->ToString());
+  }
 };
 
 /// \brief Visitor for bound expressions.
@@ -275,7 +292,13 @@ Result<R> Visit(const std::shared_ptr<Expression>& expr, V& visitor) {
     return visitor.Predicate(std::dynamic_pointer_cast<UnboundPredicate>(expr));
   }
 
-  // TODO(gangwu): handle aggregate expression
+  if (expr->is_bound_aggregate()) {
+    return visitor.Aggregate(std::dynamic_pointer_cast<BoundAggregate>(expr));
+  }
+
+  if (expr->is_unbound_aggregate()) {
+    return visitor.Aggregate(std::dynamic_pointer_cast<UnboundAggregate>(expr));
+  }
 
   switch (expr->op()) {
     case Expression::Operation::kTrue:

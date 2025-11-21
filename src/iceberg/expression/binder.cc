@@ -64,6 +64,18 @@ Result<std::shared_ptr<Expression>> Binder::Predicate(
   return InvalidExpression("Found already bound predicate: {}", pred->ToString());
 }
 
+Result<std::shared_ptr<Expression>> Binder::Aggregate(
+    const std::shared_ptr<BoundAggregate>& aggregate) {
+  ICEBERG_DCHECK(aggregate != nullptr, "Aggregate cannot be null");
+  return InvalidExpression("Found already bound aggregate: {}", aggregate->ToString());
+}
+
+Result<std::shared_ptr<Expression>> Binder::Aggregate(
+    const std::shared_ptr<UnboundAggregate>& aggregate) {
+  ICEBERG_DCHECK(aggregate != nullptr, "Aggregate cannot be null");
+  return aggregate->Bind(schema_, case_sensitive_);
+}
+
 Result<bool> IsBoundVisitor::IsBound(const std::shared_ptr<Expression>& expr) {
   ICEBERG_DCHECK(expr != nullptr, "Expression cannot be null");
   IsBoundVisitor visitor;
@@ -89,6 +101,15 @@ Result<bool> IsBoundVisitor::Predicate(const std::shared_ptr<BoundPredicate>& pr
 }
 
 Result<bool> IsBoundVisitor::Predicate(const std::shared_ptr<UnboundPredicate>& pred) {
+  return false;
+}
+
+Result<bool> IsBoundVisitor::Aggregate(const std::shared_ptr<BoundAggregate>& aggregate) {
+  return true;
+}
+
+Result<bool> IsBoundVisitor::Aggregate(
+    const std::shared_ptr<UnboundAggregate>& aggregate) {
   return false;
 }
 
