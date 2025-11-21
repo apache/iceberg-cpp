@@ -98,7 +98,7 @@ class ICEBERG_EXPORT BoundAggregate : public Aggregate<BoundTerm>, public Bound 
     return term_ ? term_->reference() : nullptr;
   }
 
-  virtual Result<Literal> Evaluate(const StructLike& data) const override = 0;
+  Result<Literal> Evaluate(const StructLike& data) const override = 0;
 
   bool is_bound_aggregate() const override { return true; }
 
