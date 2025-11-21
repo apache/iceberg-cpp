@@ -36,7 +36,7 @@ namespace iceberg {
 /// if the row matches the expression criteria. The evaluator binds unbound expressions
 /// to a schema on construction and then can be used to evaluate multiple data rows.
 ///
-/// \note: The evaluator is not thread-safe.
+/// \note: The evaluator is thread-safe.
 class ICEBERG_EXPORT Evaluator {
  public:
   /// \brief Make an evaluator for an unbound expression.
@@ -59,9 +59,7 @@ class ICEBERG_EXPORT Evaluator {
  private:
   explicit Evaluator(std::shared_ptr<Expression> bound_expr);
 
-  class EvalVisitor;
   std::shared_ptr<Expression> bound_expr_;
-  std::unique_ptr<EvalVisitor> visitor_;
 };
 
 }  // namespace iceberg

@@ -26,9 +26,9 @@
 
 namespace iceberg {
 
-class Evaluator::EvalVisitor : public BoundVisitor<bool> {
+class EvalVisitor : public BoundVisitor<bool> {
  public:
-  void UpdateRow(const StructLike* row) { row_ = row; }
+  explicit EvalVisitor(const StructLike& row) : row_(row) {}
 
   Result<bool> AlwaysTrue() override { return true; }
 
@@ -45,56 +45,47 @@ class Evaluator::EvalVisitor : public BoundVisitor<bool> {
   }
 
   Result<bool> IsNull(const std::shared_ptr<BoundTerm>& term) override {
-    ICEBERG_DCHECK(row_, "Row is not set");
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(*row_));
+    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(row_));
     return value.IsNull();
   }
 
   Result<bool> NotNull(const std::shared_ptr<BoundTerm>& term) override {
-    ICEBERG_DCHECK(row_, "Row is not set");
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(*row_));
-    return !value.IsNull();
+    ICEBERG_ASSIGN_OR_RAISE(auto value, IsNull(term));
+    return !value;
   }
 
   Result<bool> IsNaN(const std::shared_ptr<BoundTerm>& term) override {
-    ICEBERG_DCHECK(row_, "Row is not set");
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(*row_));
+    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(row_));
     return value.IsNaN();
   }
 
   Result<bool> NotNaN(const std::shared_ptr<BoundTerm>& term) override {
-    ICEBERG_DCHECK(row_, "Row is not set");
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(*row_));
-    return !value.IsNaN();
+    ICEBERG_ASSIGN_OR_RAISE(auto value, IsNaN(term));
+    return !value;
   }
 
   Result<bool> Lt(const std::shared_ptr<BoundTerm>& term, const Literal& lit) override {
-    ICEBERG_DCHECK(row_, "Row is not set");
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(*row_));
+    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(row_));
     return value < lit;
   }
 
   Result<bool> LtEq(const std::shared_ptr<BoundTerm>& term, const Literal& lit) override {
-    ICEBERG_DCHECK(row_, "Row is not set");
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(*row_));
+    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(row_));
     return value <= lit;
   }
 
   Result<bool> Gt(const std::shared_ptr<BoundTerm>& term, const Literal& lit) override {
-    ICEBERG_DCHECK(row_, "Row is not set");
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(*row_));
+    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(row_));
     return value > lit;
   }
 
   Result<bool> GtEq(const std::shared_ptr<BoundTerm>& term, const Literal& lit) override {
-    ICEBERG_DCHECK(row_, "Row is not set");
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(*row_));
+    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(row_));
     return value >= lit;
   }
 
   Result<bool> Eq(const std::shared_ptr<BoundTerm>& term, const Literal& lit) override {
-    ICEBERG_DCHECK(row_, "Row is not set");
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(*row_));
+    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(row_));
     return value == lit;
   }
 
@@ -106,8 +97,7 @@ class Evaluator::EvalVisitor : public BoundVisitor<bool> {
 
   Result<bool> In(const std::shared_ptr<BoundTerm>& term,
                   const BoundSetPredicate::LiteralSet& literal_set) override {
-    ICEBERG_DCHECK(row_, "Row is not set");
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(*row_));
+    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(row_));
     return literal_set.contains(value);
   }
 
@@ -119,8 +109,7 @@ class Evaluator::EvalVisitor : public BoundVisitor<bool> {
 
   Result<bool> StartsWith(const std::shared_ptr<BoundTerm>& term,
                           const Literal& lit) override {
-    ICEBERG_DCHECK(row_, "Row is not set");
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(*row_));
+    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(row_));
 
     // Both value and literal should be strings
     if (!std::holds_alternative<std::string>(value.value()) ||
@@ -140,11 +129,11 @@ class Evaluator::EvalVisitor : public BoundVisitor<bool> {
   }
 
  private:
-  const StructLike* row_{nullptr};
+  const StructLike& row_;
 };
 
 Evaluator::Evaluator(std::shared_ptr<Expression> bound_expr)
-    : bound_expr_(std::move(bound_expr)), visitor_(std::make_unique<EvalVisitor>()) {}
+    : bound_expr_(std::move(bound_expr)) {}
 
 Evaluator::~Evaluator() = default;
 
@@ -156,8 +145,8 @@ Result<std::unique_ptr<Evaluator>> Evaluator::Make(const Schema& schema,
 }
 
 Result<bool> Evaluator::Eval(const StructLike& row) const {
-  visitor_->UpdateRow(&row);
-  return Visit<bool, EvalVisitor>(bound_expr_, *visitor_);
+  EvalVisitor visitor(row);
+  return Visit<bool, EvalVisitor>(bound_expr_, visitor);
 }
 
 }  // namespace iceberg
