@@ -22,9 +22,11 @@
 #include <arrow/io/interfaces.h>
 #include <avro/Stream.hh>
 
+#include "iceberg/iceberg_bundle_export.h"
+
 namespace iceberg::avro {
 
-class AvroInputStream : public ::avro::SeekableInputStream {
+class ICEBERG_BUNDLE_EXPORT AvroInputStream : public ::avro::SeekableInputStream {
  public:
   explicit AvroInputStream(std::shared_ptr<::arrow::io::RandomAccessFile> input_stream,
                            int64_t buffer_size);
@@ -62,7 +64,7 @@ class AvroInputStream : public ::avro::SeekableInputStream {
   size_t available_bytes_ = 0;  // bytes available in the buffer
 };
 
-class AvroOutputStream : public ::avro::OutputStream {
+class ICEBERG_BUNDLE_EXPORT AvroOutputStream : public ::avro::OutputStream {
  public:
   explicit AvroOutputStream(std::shared_ptr<::arrow::io::OutputStream> output_stream,
                             int64_t buffer_size);
