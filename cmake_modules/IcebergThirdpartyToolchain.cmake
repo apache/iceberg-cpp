@@ -22,6 +22,22 @@ set(ICEBERG_ARROW_INSTALL_INTERFACE_LIBS)
 
 # ----------------------------------------------------------------------
 # Versions and URLs for toolchain builds
+#
+# The following environment variables can be set to customize dependency URLs:
+#
+# ICEBERG_ARROW_URL          - Apache Arrow tarball URL
+# ICEBERG_AVRO_URL           - Apache Avro tarball URL
+# ICEBERG_AVRO_GIT_URL       - Apache Avro git repository URL
+# ICEBERG_NANOARROW_URL      - Nanoarrow tarball URL
+# ICEBERG_CROARING_URL       - CRoaring tarball URL
+# ICEBERG_NLOHMANN_JSON_URL  - nlohmann-json tarball URL
+# ICEBERG_SPDLOG_URL         - spdlog tarball URL
+# ICEBERG_CPR_URL            - cpr tarball URL
+#
+# Example usage:
+#   export ICEBERG_ARROW_URL="https://your-mirror.com/apache-arrow-22.0.0.tar.gz"
+#   cmake -S . -B build
+#
 
 set(ICEBERG_ARROW_BUILD_VERSION "22.0.0")
 set(ICEBERG_ARROW_BUILD_SHA256_CHECKSUM

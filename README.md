@@ -31,7 +31,9 @@ C++ implementation of [Apache Iceberg™](https://iceberg.apache.org/).
 - CMake 3.25 or higher
 - C++23 compliant compiler
 
-> **Note**: For developers in China experiencing network issues when downloading dependencies, see [BUILD_CHINA.md](BUILD_CHINA.md) for mirror configuration.
+## Customizing Dependency URLs
+
+If you experience network issues when downloading dependencies, you can customize the download URLs using environment variables. See the available options documented in [`cmake_modules/IcebergThirdpartyToolchain.cmake`](cmake_modules/IcebergThirdpartyToolchain.cmake#L24-L40).
 
 ## Build
 
