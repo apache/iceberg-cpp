@@ -39,9 +39,6 @@ class ICEBERG_EXPORT Aggregate : public Expression {
 
   Expression::Operation op() const override { return operation_; }
 
-  bool is_unbound_aggregate() const override { return false; }
-  bool is_bound_aggregate() const override { return false; }
-
  protected:
   explicit Aggregate(Expression::Operation op) : operation_(op) {}
 
