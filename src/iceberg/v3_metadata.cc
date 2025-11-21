@@ -94,9 +94,25 @@ Status ManifestEntryAdapterV3::Init() {
 
   ICEBERG_ASSIGN_OR_RAISE(auto partition_type,
                           partition_spec_->PartitionType(*current_schema_));
-  ICEBERG_ASSIGN_OR_RAISE(partition_summary_, PartitionSummary::Make(*partition_type));
+  partition_summary_ = std::make_unique<PartitionSummary>(*partition_type);
   manifest_schema_ = EntrySchema(std::move(partition_type));
   return ToArrowSchema(*manifest_schema_, &schema_);
+}
+
+Status ManifestEntryAdapterV3::Append(const ManifestEntry& entry) {
+  if (entry.IsAlive() && entry.sequence_number.has_value()) {
+    if (!min_sequence_number_.has_value() ||
+        entry.sequence_number.value() < min_sequence_number_.value()) {
+      min_sequence_number_ = entry.sequence_number.value();
+    }
+  }
+  ICEBERG_RETURN_UNEXPECTED(AppendInternal(entry));
+  // TODO(zhjwpku): review the logic of first_row_id update
+  if (entry.data_file->content == DataFile::Content::kData &&
+      entry.status == ManifestStatus::kAdded && first_row_id_.has_value()) {
+    first_row_id_ = first_row_id_.value() + entry.data_file->record_count;
+  }
+  return {};
 }
 
 Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetSequenceNumber(
@@ -133,10 +149,13 @@ Result<std::optional<std::string>> ManifestEntryAdapterV3::GetReferenceDataFile(
 
 Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetFirstRowId(
     const DataFile& file) const {
-  if (file.content == DataFile::Content::kData) {
+  if (file.content != DataFile::Content::kData) {
+    return std::nullopt;
+  }
+  if (file.first_row_id.has_value()) {
     return file.first_row_id;
   }
-  return std::nullopt;
+  return first_row_id_;
 }
 
 Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetContentOffset(
@@ -188,12 +207,7 @@ Status ManifestFileAdapterV3::Init() {
   return ToArrowSchema(*manifest_list_schema_, &schema_);
 }
 
-Status ManifestFileAdapterV3::Append(ManifestFile& file) {
-  // TODO(zhjwpku): Should we set sequence_number/first_row_id here?
-  // file.sequence_number = sequence_number_;
-  // if (WrapFirstRowId(file) && next_row_id_.has_value()) {
-  //   file.first_row_id = next_row_id_;
-  // }
+Status ManifestFileAdapterV3::Append(const ManifestFile& file) {
   ICEBERG_RETURN_UNEXPECTED(AppendInternal(file));
   if (WrapFirstRowId(file) && next_row_id_.has_value()) {
     next_row_id_ = next_row_id_.value() + file.existing_rows_count.value_or(0) +

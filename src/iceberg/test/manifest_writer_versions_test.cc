@@ -37,6 +37,7 @@
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
+#include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
@@ -228,10 +229,7 @@ class ManifestWriterVersionsTest : public ::testing::Test {
     auto writer = std::move(writer_result.value());
 
     for (auto& data_file : data_files) {
-      ManifestEntry entry;
-      entry.snapshot_id = kSnapshotId;
-      entry.data_file = std::move(data_file);
-      EXPECT_THAT(writer->AddEntry(entry), IsOk());
+      EXPECT_THAT(writer->WriteAddedEntry(data_file, kSequenceNumber), IsOk());
     }
 
     EXPECT_THAT(writer->Close(), IsOk());
@@ -259,7 +257,7 @@ class ManifestWriterVersionsTest : public ::testing::Test {
   }
 
   ManifestFile WriteDeleteManifest(int format_version,
-                                   std::shared_ptr<DataFile> delete_file_) {
+                                   std::shared_ptr<DataFile> delete_file) {
     const std::string manifest_path = CreateManifestPath();
 
     Result<std::unique_ptr<ManifestWriter>> writer_result =
@@ -278,12 +276,8 @@ class ManifestWriterVersionsTest : public ::testing::Test {
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
 
-    ManifestEntry entry;
-    entry.sequence_number = kSequenceNumber;
-    entry.snapshot_id = kSnapshotId;
-    entry.data_file = std::move(delete_file_);
-
-    EXPECT_THAT(writer->AddDelete(entry), IsOk());
+    EXPECT_THAT(writer->WriteDeletedEntry(delete_file, kSequenceNumber, std::nullopt),
+                IsOk());
     EXPECT_THAT(writer->Close(), IsOk());
 
     auto manifest_result = writer->ToManifestFile();
@@ -316,8 +310,12 @@ class ManifestWriterVersionsTest : public ::testing::Test {
     auto writer = std::move(writer_result.value());
 
     for (auto& entry : entries) {
-      entry.sequence_number = TableMetadata::kInitialSequenceNumber;
-      EXPECT_THAT(writer->AddExisting(entry), IsOk());
+      EXPECT_THAT(
+          writer->WriteExistingEntry(
+              entry.data_file, entry.snapshot_id.value_or(kSnapshotId),
+              entry.sequence_number.value_or(TableMetadata::kInitialSequenceNumber),
+              entry.file_sequence_number),
+          IsOk());
     }
     EXPECT_THAT(writer->Close(), IsOk());
 
@@ -327,10 +325,11 @@ class ManifestWriterVersionsTest : public ::testing::Test {
     return std::move(manifest_result.value());
   }
 
-  void CheckManifest(const ManifestFile& manifest, int64_t expected_sequence_number) {
+  void CheckManifest(const ManifestFile& manifest, int64_t expected_sequence_number,
+                     int64_t expected_min_sequence_number) {
     ASSERT_EQ(manifest.added_snapshot_id, kSnapshotId);
     ASSERT_EQ(manifest.sequence_number, expected_sequence_number);
-    ASSERT_EQ(manifest.min_sequence_number, expected_sequence_number);
+    ASSERT_EQ(manifest.min_sequence_number, expected_min_sequence_number);
     switch (manifest.content) {
       case ManifestContent::kData:
         ASSERT_EQ(manifest.added_files_count, 1L);
@@ -406,20 +405,16 @@ class ManifestWriterVersionsTest : public ::testing::Test {
     }
   }
 
-  void CheckEntry(const ManifestEntry& entry, int64_t expected_data_sequence_number,
-                  int64_t expected_file_sequence_number,
+  void CheckEntry(const ManifestEntry& entry,
+                  std::optional<int64_t> expected_data_sequence_number,
+                  std::optional<int64_t> expected_file_sequence_number,
                   DataFile::Content expected_content,
                   ManifestStatus expected_status = ManifestStatus::kAdded,
                   std::optional<int64_t> expected_first_row_id = std::nullopt) {
     ASSERT_EQ(entry.status, expected_status);
     ASSERT_EQ(entry.snapshot_id, kSnapshotId);
-    // TODO(zhjwpku): Check the sequence_number and file_sequence_number of V1 manifest
-    if (entry.sequence_number.has_value()) {
-      ASSERT_EQ(entry.sequence_number.value(), expected_data_sequence_number);
-    }
-    if (entry.file_sequence_number.has_value()) {
-      ASSERT_EQ(entry.file_sequence_number.value(), expected_file_sequence_number);
-    }
+    ASSERT_EQ(entry.sequence_number, expected_data_sequence_number);
+    ASSERT_EQ(entry.file_sequence_number, expected_file_sequence_number);
     if (entry.status == ManifestStatus::kAdded) {
       CheckDataFile(*entry.data_file, expected_content, expected_first_row_id);
     }
@@ -466,11 +461,11 @@ class ManifestWriterVersionsTest : public ::testing::Test {
 
 TEST_F(ManifestWriterVersionsTest, TestV1Write) {
   auto manifest = WriteManifest(/*format_version=*/1, {data_file_});
-  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber);
+  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber,
+                TableMetadata::kInvalidSequenceNumber);
   auto entries = ReadManifest(manifest);
   ASSERT_EQ(entries.size(), 1);
-  CheckEntry(entries[0], TableMetadata::kInvalidSequenceNumber,
-             TableMetadata::kInvalidSequenceNumber, DataFile::Content::kData);
+  CheckEntry(entries[0], std::nullopt, std::nullopt, DataFile::Content::kData);
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV1WriteDelete) {
@@ -485,7 +480,7 @@ TEST_F(ManifestWriterVersionsTest, TestV1WriteDelete) {
   entry.snapshot_id = kSnapshotId;
   entry.data_file = std::move(delete_file_);
 
-  auto status = writer->AddDelete(entry);
+  auto status = writer->WriteDeletedEntry(entry);
   EXPECT_THAT(status, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(
       status,
@@ -497,40 +492,40 @@ TEST_F(ManifestWriterVersionsTest, TestV1WriteWithInheritance) {
   auto manifests =
       WriteAndReadManifests({WriteManifest(/*format_version=*/1, {data_file_})}, 1);
   ASSERT_EQ(manifests.size(), 1);
-  CheckManifest(manifests[0], TableMetadata::kInitialSequenceNumber);
+  CheckManifest(manifests[0], TableMetadata::kInitialSequenceNumber,
+                TableMetadata::kInitialSequenceNumber);
   auto entries = ReadManifest(manifests[0]);
   ASSERT_EQ(entries.size(), 1);
-  CheckEntry(entries[0], TableMetadata::kInitialSequenceNumber,
-             TableMetadata::kInitialSequenceNumber, DataFile::Content::kData);
+  CheckEntry(entries[0], std::nullopt, std::nullopt, DataFile::Content::kData);
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV2Write) {
   auto manifest = WriteManifest(/*format_version=*/2, {data_file_});
-  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber);
+  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber, kSequenceNumber);
   auto entries = ReadManifest(manifest);
   ASSERT_EQ(entries.size(), 1);
   ASSERT_EQ(manifest.content, ManifestContent::kData);
-  CheckEntry(entries[0], TableMetadata::kInvalidSequenceNumber,
-             TableMetadata::kInvalidSequenceNumber, DataFile::Content::kData);
+  CheckEntry(entries[0], kSequenceNumber, std::nullopt, DataFile::Content::kData);
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV2WriteWithInheritance) {
   auto manifests =
       WriteAndReadManifests({WriteManifest(/*format_version=*/2, {data_file_})}, 2);
-  CheckManifest(manifests[0], kSequenceNumber);
+  CheckManifest(manifests[0], kSequenceNumber, kSequenceNumber);
   auto entries = ReadManifest(manifests[0]);
   ASSERT_EQ(entries.size(), 1);
   ASSERT_EQ(manifests[0].content, ManifestContent::kData);
-  CheckEntry(entries[0], kSequenceNumber, kSequenceNumber, DataFile::Content::kData);
+  CheckEntry(entries[0], kSequenceNumber, std::nullopt, DataFile::Content::kData);
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV2PlusWriteDeleteV2) {
   auto manifest = WriteDeleteManifest(/*format_version=*/2, delete_file_);
-  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber);
+  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber,
+                TableMetadata::kInvalidSequenceNumber);
   auto entries = ReadManifest(manifest);
   ASSERT_EQ(entries.size(), 1);
   ASSERT_EQ(manifest.content, ManifestContent::kDeletes);
-  CheckEntry(entries[0], kSequenceNumber, kSequenceNumber,
+  CheckEntry(entries[0], kSequenceNumber, std::nullopt,
              DataFile::Content::kEqualityDeletes, ManifestStatus::kDeleted);
 }
 
@@ -538,24 +533,26 @@ TEST_F(ManifestWriterVersionsTest, TestV2ManifestListRewriteWithInheritance) {
   // write with v1
   auto manifests =
       WriteAndReadManifests({WriteManifest(/*format_version=*/1, {data_file_})}, 1);
-  CheckManifest(manifests[0], TableMetadata::kInitialSequenceNumber);
+  CheckManifest(manifests[0], TableMetadata::kInitialSequenceNumber,
+                TableMetadata::kInitialSequenceNumber);
 
   // rewrite existing metadata with v2 manifest list
   auto manifests2 = WriteAndReadManifests(manifests, 2);
   // the ManifestFile did not change and should still have its original sequence number, 0
-  CheckManifest(manifests2[0], TableMetadata::kInitialSequenceNumber);
+  CheckManifest(manifests2[0], TableMetadata::kInitialSequenceNumber,
+                TableMetadata::kInitialSequenceNumber);
 
   // should not inherit the v2 sequence number because it was a rewrite
   auto entries = ReadManifest(manifests2[0]);
-  CheckEntry(entries[0], TableMetadata::kInitialSequenceNumber,
-             TableMetadata::kInitialSequenceNumber, DataFile::Content::kData);
+  CheckEntry(entries[0], std::nullopt, std::nullopt, DataFile::Content::kData);
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV2ManifestRewriteWithInheritance) {
   // write with v1
   auto manifests =
       WriteAndReadManifests({WriteManifest(/*format_version=*/1, {data_file_})}, 1);
-  CheckManifest(manifests[0], TableMetadata::kInitialSequenceNumber);
+  CheckManifest(manifests[0], TableMetadata::kInitialSequenceNumber,
+                TableMetadata::kInitialSequenceNumber);
 
   // rewrite the manifest file using a v2 manifest
   auto rewritten_manifest = RewriteManifest(manifests[0], 2);
@@ -577,19 +574,18 @@ TEST_F(ManifestWriterVersionsTest, TestV2ManifestRewriteWithInheritance) {
 
 TEST_F(ManifestWriterVersionsTest, TestV3Write) {
   auto manifest = WriteManifest(/*format_version=*/3, {data_file_});
-  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber);
+  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber, kSequenceNumber);
   auto entries = ReadManifest(manifest);
   ASSERT_EQ(entries.size(), 1);
   ASSERT_EQ(manifest.content, ManifestContent::kData);
-  CheckEntry(entries[0], TableMetadata::kInvalidSequenceNumber,
-             TableMetadata::kInvalidSequenceNumber, DataFile::Content::kData,
+  CheckEntry(entries[0], kSequenceNumber, std::nullopt, DataFile::Content::kData,
              ManifestStatus::kAdded, kFirstRowId);
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV3WriteWithInheritance) {
   auto manifests = WriteAndReadManifests(
       {WriteManifest(/*format_version=*/3, {data_file_without_first_row_id_})}, 3);
-  CheckManifest(manifests[0], kSequenceNumber);
+  CheckManifest(manifests[0], kSequenceNumber, kSequenceNumber);
   ASSERT_EQ(manifests[0].content, ManifestContent::kData);
 
   // v2+ should use the correct sequence number by inheriting it
@@ -597,8 +593,8 @@ TEST_F(ManifestWriterVersionsTest, TestV3WriteWithInheritance) {
   auto entries = ReadManifest(manifests[0]);
   ASSERT_EQ(entries.size(), 1);
   // first_row_id should be inherited
-  //   CheckEntry(entries[0], kSequenceNumber, kSequenceNumber, DataFile::Content::kData,
-  //              ManifestStatus::kAdded, kFirstRowId);
+  CheckEntry(entries[0], kSequenceNumber, std::nullopt, DataFile::Content::kData,
+             ManifestStatus::kAdded, kFirstRowId);
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV3WriteFirstRowIdAssignment) {
@@ -614,8 +610,8 @@ TEST_F(ManifestWriterVersionsTest, TestV3WriteFirstRowIdAssignment) {
   ASSERT_EQ(entries.size(), 2);
   int64_t expected_first_row_id = kFirstRowId;
   for (const auto& entry : entries) {
-    // CheckEntry(entry, kSequenceNumber, kSequenceNumber, DataFile::Content::kData,
-    //            ManifestStatus::kAdded, expected_first_row_id);
+    CheckEntry(entry, kSequenceNumber, std::nullopt, DataFile::Content::kData,
+               ManifestStatus::kAdded, expected_first_row_id);
     expected_first_row_id += kMetrics.row_count;
   }
 }
@@ -624,25 +620,27 @@ TEST_F(ManifestWriterVersionsTest, TestV3ManifestListRewriteWithInheritance) {
   // write with v1
   auto manifests =
       WriteAndReadManifests({WriteManifest(/*format_version=*/1, {data_file_})}, 1);
-  CheckManifest(manifests[0], TableMetadata::kInitialSequenceNumber);
+  CheckManifest(manifests[0], TableMetadata::kInitialSequenceNumber,
+                TableMetadata::kInitialSequenceNumber);
 
   // rewrite existing metadata with a manifest list
   auto manifests3 = WriteAndReadManifests(manifests, 3);
   // the ManifestFile did not change and should still have its original sequence number, 0
-  CheckManifest(manifests3[0], TableMetadata::kInitialSequenceNumber);
+  CheckManifest(manifests3[0], TableMetadata::kInitialSequenceNumber,
+                TableMetadata::kInitialSequenceNumber);
 
   // should not inherit the sequence number because it was a rewrite
   auto entries = ReadManifest(manifests3[0]);
-  //   CheckEntry(entries[0], TableMetadata::kInitialSequenceNumber,
-  //              TableMetadata::kInitialSequenceNumber, DataFile::Content::kData,
-  //              ManifestStatus::kAdded, kFirstRowId);
+  CheckEntry(entries[0], std::nullopt, std::nullopt, DataFile::Content::kData,
+             ManifestStatus::kAdded);
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV3ManifestRewriteWithInheritance) {
   // write with v1
   auto manifests =
       WriteAndReadManifests({WriteManifest(/*format_version=*/1, {data_file_})}, 1);
-  CheckManifest(manifests[0], TableMetadata::kInitialSequenceNumber);
+  CheckManifest(manifests[0], TableMetadata::kInitialSequenceNumber,
+                TableMetadata::kInitialSequenceNumber);
 
   // rewrite the manifest file using a v3 manifest
   auto rewritten_manifest = RewriteManifest(manifests[0], 3);
@@ -658,8 +656,8 @@ TEST_F(ManifestWriterVersionsTest, TestV3ManifestRewriteWithInheritance) {
 
   // should not inherit the v3 sequence number because it was written into the v3 manifest
   auto entries = ReadManifest(manifests3[0]);
-  //   CheckRewrittenEntry(entries[0], TableMetadata::kInitialSequenceNumber,
-  //                       DataFile::Content::kData, kFirstRowId);
+  CheckRewrittenEntry(entries[0], TableMetadata::kInitialSequenceNumber,
+                      DataFile::Content::kData, kFirstRowId);
 }
 
 }  // namespace iceberg

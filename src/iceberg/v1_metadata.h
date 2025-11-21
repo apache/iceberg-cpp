@@ -33,6 +33,7 @@ class ManifestEntryAdapterV1 : public ManifestEntryAdapter {
                          std::shared_ptr<Schema> current_schema);
 
   Status Init() override;
+  Status Append(const ManifestEntry& entry) override;
 
   static std::shared_ptr<Schema> EntrySchema(std::shared_ptr<StructType> partition_type);
   static std::shared_ptr<Schema> WrapFileSchema(std::shared_ptr<StructType> file_schema);
@@ -46,7 +47,7 @@ class ManifestFileAdapterV1 : public ManifestFileAdapter {
   ManifestFileAdapterV1(int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id)
       : snapshot_id_(snapshot_id), parent_snapshot_id_(parent_snapshot_id) {}
   Status Init() override;
-  Status Append(ManifestFile& file) override;
+  Status Append(const ManifestFile& file) override;
 
   static const std::shared_ptr<Schema> kManifestListSchema;
 

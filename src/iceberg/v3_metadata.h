@@ -22,6 +22,7 @@
 /// \file iceberg/v3_metadata.h
 
 #include "iceberg/manifest_adapter.h"
+#include "iceberg/result.h"
 
 namespace iceberg {
 
@@ -34,6 +35,7 @@ class ManifestEntryAdapterV3 : public ManifestEntryAdapter {
                          std::shared_ptr<Schema> current_schema, ManifestContent content);
 
   Status Init() override;
+  Status Append(const ManifestEntry& entry) override;
 
   static std::shared_ptr<Schema> EntrySchema(std::shared_ptr<StructType> partition_type);
   static std::shared_ptr<Schema> WrapFileSchema(std::shared_ptr<StructType> file_schema);
@@ -64,7 +66,7 @@ class ManifestFileAdapterV3 : public ManifestFileAdapter {
         sequence_number_(sequence_number),
         next_row_id_(first_row_id) {}
   Status Init() override;
-  Status Append(ManifestFile& file) override;
+  Status Append(const ManifestFile& file) override;
   std::optional<int64_t> next_row_id() const override { return next_row_id_; }
 
   static const std::shared_ptr<Schema> kManifestListSchema;

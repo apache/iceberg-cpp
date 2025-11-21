@@ -198,12 +198,6 @@ struct ICEBERG_EXPORT ManifestFile {
   bool operator==(const ManifestFile& other) const = default;
 
   static const std::shared_ptr<Schema>& Type();
-
-  /// \brief Create a copy of this manifest file.
-  ManifestFile Copy() const {
-    ManifestFile copy = *this;
-    return copy;
-  }
 };
 
 /// Snapshots are embedded in table metadata, but the list of manifests for a snapshot are

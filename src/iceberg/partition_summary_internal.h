@@ -31,7 +31,9 @@ class PartitionFieldStats {
 
   Status Update(const Literal& value);
 
-  PartitionFieldSummary Finish() const;
+  Result<PartitionFieldSummary> Finish() const;
+
+  const std::shared_ptr<Type>& type() const { return type_; }
 
  private:
   std::shared_ptr<Type> type_{nullptr};
@@ -43,22 +45,20 @@ class PartitionFieldStats {
 
 class PartitionSummary {
  public:
-  /// \brief Update the partition summary with partition.
-  Status Update(const std::vector<Literal>& partition);
-
-  /// \brief Get the list of partition field summaries.
-  std::vector<PartitionFieldSummary> Summaries() const;
-
-  /// \brief Create a PartitionSummary from the partition type.
-  /// \param partition_type The partition type.
-  /// \return A Result containing a unique pointer to the PartitionSummary.
-  static Result<std::unique_ptr<PartitionSummary>> Make(const StructType& partition_type);
-
- private:
   /// \brief Create a PartitionSummary with the given field stats.
   explicit PartitionSummary(std::vector<PartitionFieldStats> field_stats)
       : field_stats_(std::move(field_stats)) {}
 
+  /// \brief Create a PartitionSummary for the given partition type.
+  explicit PartitionSummary(const StructType& partition_type);
+
+  /// \brief Update the partition summary with partition values.
+  Status Update(const std::vector<Literal>& partition_values);
+
+  /// \brief Get the list of partition field summaries.
+  Result<std::vector<PartitionFieldSummary>> Summaries() const;
+
+ private:
   std::vector<PartitionFieldStats> field_stats_;
 };
 

@@ -83,9 +83,19 @@ Status ManifestEntryAdapterV2::Init() {
 
   ICEBERG_ASSIGN_OR_RAISE(auto partition_type,
                           partition_spec_->PartitionType(*current_schema_));
-  ICEBERG_ASSIGN_OR_RAISE(partition_summary_, PartitionSummary::Make(*partition_type));
+  partition_summary_ = std::make_unique<PartitionSummary>(*partition_type);
   manifest_schema_ = EntrySchema(std::move(partition_type));
   return ToArrowSchema(*manifest_schema_, &schema_);
+}
+
+Status ManifestEntryAdapterV2::Append(const ManifestEntry& entry) {
+  if (entry.IsAlive() && entry.sequence_number.has_value()) {
+    if (!min_sequence_number_.has_value() ||
+        entry.sequence_number.value() < min_sequence_number_.value()) {
+      min_sequence_number_ = entry.sequence_number.value();
+    }
+  }
+  return AppendInternal(entry);
 }
 
 Result<std::optional<int64_t>> ManifestEntryAdapterV2::GetSequenceNumber(
@@ -151,9 +161,7 @@ Status ManifestFileAdapterV2::Init() {
   return ToArrowSchema(*manifest_list_schema_, &schema_);
 }
 
-Status ManifestFileAdapterV2::Append(ManifestFile& file) {
-  // TODO(zhjwpku): Should we set sequence_number here?
-  // file.sequence_number = sequence_number_;
+Status ManifestFileAdapterV2::Append(const ManifestFile& file) {
   return AppendInternal(file);
 }
 

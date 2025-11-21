@@ -164,32 +164,7 @@ ManifestEntryAdapter::~ManifestEntryAdapter() {
   }
 }
 
-Status ManifestEntryAdapter::AddEntry(ManifestEntry& entry) {
-  ICEBERG_RETURN_UNEXPECTED(CheckDataFile(*entry.data_file));
-  entry.status = ManifestStatus::kAdded;
-  entry.snapshot_id = snapshot_id_;
-  if (entry.sequence_number.has_value() &&
-      entry.sequence_number.value() < TableMetadata::kInitialSequenceNumber) {
-    entry.sequence_number = std::nullopt;
-  }
-  entry.file_sequence_number = std::nullopt;
-  return AddEntryInternal(entry);
-}
-
-Status ManifestEntryAdapter::AddDeleteEntry(ManifestEntry& entry) {
-  ICEBERG_RETURN_UNEXPECTED(CheckDataFile(*entry.data_file));
-  entry.status = ManifestStatus::kDeleted;
-  entry.snapshot_id = snapshot_id_;
-  return AddEntryInternal(entry);
-}
-
-Status ManifestEntryAdapter::AddExistingEntry(ManifestEntry& entry) {
-  ICEBERG_RETURN_UNEXPECTED(CheckDataFile(*entry.data_file));
-  entry.status = ManifestStatus::kExisting;
-  return AddEntryInternal(entry);
-}
-
-ManifestFile ManifestEntryAdapter::ToManifestFile() const {
+Result<ManifestFile> ManifestEntryAdapter::ToManifestFile() const {
   ManifestFile manifest_file;
   manifest_file.partition_spec_id = partition_spec_->spec_id();
   manifest_file.content = content_;
@@ -199,73 +174,15 @@ ManifestFile ManifestEntryAdapter::ToManifestFile() const {
   manifest_file.min_sequence_number =
       min_sequence_number_.value_or(TableMetadata::kInvalidSequenceNumber);
   manifest_file.existing_files_count = existing_files_count_;
-  manifest_file.added_snapshot_id = snapshot_id_.value_or(Snapshot::kInvalidSnapshotId);
   manifest_file.added_files_count = add_files_count_;
   manifest_file.existing_files_count = existing_files_count_;
   manifest_file.deleted_files_count = delete_files_count_;
   manifest_file.added_rows_count = add_rows_count_;
   manifest_file.existing_rows_count = existing_rows_count_;
   manifest_file.deleted_rows_count = delete_rows_count_;
-  manifest_file.partitions = std::move(partition_summary_->Summaries());
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_summary, partition_summary_->Summaries());
+  manifest_file.partitions = std::move(partition_summary);
   return manifest_file;
-}
-
-Status ManifestEntryAdapter::CheckDataFile(const DataFile& file) const {
-  switch (content_) {
-    case ManifestContent::kData:
-      if (file.content != DataFile::Content::kData) {
-        return InvalidArgument(
-            "Manifest content type: data, data file content should be: data, but got: {}",
-            ToString(file.content));
-      }
-      break;
-    case ManifestContent::kDeletes:
-      if (file.content != DataFile::Content::kPositionDeletes &&
-          file.content != DataFile::Content::kEqualityDeletes) {
-        return InvalidArgument(
-            "Manifest content type: deletes, data file content should be: "
-            "position_deletes or equality_deletes, but got: {}",
-            ToString(file.content));
-      }
-      break;
-    default:
-      std::unreachable();
-  }
-  return {};
-}
-
-Status ManifestEntryAdapter::AddEntryInternal(const ManifestEntry& entry) {
-  if (entry.data_file == nullptr) [[unlikely]] {
-    return InvalidManifest("Missing required data_file field from manifest entry.");
-  }
-
-  switch (entry.status) {
-    case ManifestStatus::kAdded:
-      add_files_count_++;
-      add_rows_count_ += entry.data_file->record_count;
-      break;
-    case ManifestStatus::kExisting:
-      existing_files_count_++;
-      existing_rows_count_ += entry.data_file->record_count;
-      break;
-    case ManifestStatus::kDeleted:
-      delete_files_count_++;
-      delete_rows_count_ += entry.data_file->record_count;
-      break;
-    default:
-      std::unreachable();
-  }
-
-  ICEBERG_RETURN_UNEXPECTED(partition_summary_->Update(entry.data_file->partition));
-
-  if (entry.IsAlive() && entry.sequence_number.has_value()) {
-    if (!min_sequence_number_.has_value() ||
-        entry.sequence_number.value() < min_sequence_number_.value()) {
-      min_sequence_number_ = entry.sequence_number.value();
-    }
-  }
-
-  return AppendInternal(entry);
 }
 
 Status ManifestEntryAdapter::AppendPartitionValues(
@@ -425,13 +342,16 @@ Status ManifestEntryAdapter::AppendDataFile(
           ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(child_array, 1));
         }
         break;
-      case 142:  // first_row_id (optional int64)
-        if (file.first_row_id.has_value()) {
-          ICEBERG_RETURN_UNEXPECTED(AppendField(child_array, file.first_row_id.value()));
+      case 142: {
+        // first_row_id (optional int64)
+        ICEBERG_ASSIGN_OR_RAISE(auto first_row_id, GetFirstRowId(file));
+        if (first_row_id.has_value()) {
+          ICEBERG_RETURN_UNEXPECTED(AppendField(child_array, first_row_id.value()));
         } else {
           ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(child_array, 1));
         }
         break;
+      }
       case 143: {
         // referenced_data_file (optional string)
         ICEBERG_ASSIGN_OR_RAISE(auto referenced_data_file, GetReferenceDataFile(file));
@@ -493,6 +413,29 @@ Result<std::optional<int64_t>> ManifestEntryAdapter::GetContentSizeInBytes(
 }
 
 Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
+  if (entry.data_file == nullptr) [[unlikely]] {
+    return InvalidManifest("Missing required data_file field from manifest entry.");
+  }
+
+  switch (entry.status) {
+    case ManifestStatus::kAdded:
+      add_files_count_++;
+      add_rows_count_ += entry.data_file->record_count;
+      break;
+    case ManifestStatus::kExisting:
+      existing_files_count_++;
+      existing_rows_count_ += entry.data_file->record_count;
+      break;
+    case ManifestStatus::kDeleted:
+      delete_files_count_++;
+      delete_rows_count_ += entry.data_file->record_count;
+      break;
+    default:
+      std::unreachable();
+  }
+
+  ICEBERG_RETURN_UNEXPECTED(partition_summary_->Update(entry.data_file->partition));
+
   const auto& fields = manifest_schema_->fields();
   for (size_t i = 0; i < fields.size(); i++) {
     const auto& field = fields[i];

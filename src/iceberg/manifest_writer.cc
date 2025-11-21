@@ -21,7 +21,9 @@
 
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
+#include "iceberg/result.h"
 #include "iceberg/schema.h"
+#include "iceberg/table_metadata.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/v1_metadata.h"
 #include "iceberg/v2_metadata.h"
@@ -29,39 +31,113 @@
 
 namespace iceberg {
 
-Status ManifestWriter::AddEntry(const ManifestEntry& entry) {
-  if (adapter_->size() >= kBatchSize) {
-    ICEBERG_ASSIGN_OR_RAISE(auto array, adapter_->FinishAppending());
-    ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
-    ICEBERG_RETURN_UNEXPECTED(adapter_->StartAppending());
-  }
-  auto copy = entry.Copy();
-  return adapter_->AddEntry(copy);
+Status ManifestWriter::WriteAddedEntry(std::shared_ptr<DataFile> file,
+                                       std::optional<int64_t> data_sequence_number) {
+  ManifestEntry added;
+  added.status = ManifestStatus::kAdded;
+  added.snapshot_id = adapter_->snapshot_id();
+  added.data_file = std::move(file);
+  added.sequence_number = data_sequence_number;
+  added.file_sequence_number = std::nullopt;
+
+  return WriteEntry(added);
 }
 
-Status ManifestWriter::AddDelete(const ManifestEntry& entry) {
-  if (adapter_->size() >= kBatchSize) {
-    ICEBERG_ASSIGN_OR_RAISE(auto array, adapter_->FinishAppending());
-    ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
-    ICEBERG_RETURN_UNEXPECTED(adapter_->StartAppending());
+Status ManifestWriter::WriteAddedEntry(const ManifestEntry& entry) {
+  // Update the entry status to `Added`
+  auto added = entry.AsAdded();
+  // Set the snapshot id to the current snapshot id
+  added.snapshot_id = adapter_->snapshot_id();
+  // Set the sequence number to nullopt if it is invalid(smaller than 0)
+  if (added.sequence_number.has_value() &&
+      added.sequence_number.value() < TableMetadata::kInitialSequenceNumber) {
+    added.sequence_number = std::nullopt;
   }
-  auto copy = entry.Copy();
-  return adapter_->AddDeleteEntry(copy);
+  // Set the file sequence number to nullopt
+  added.file_sequence_number = std::nullopt;
+
+  return WriteEntry(added);
 }
 
-Status ManifestWriter::AddExisting(const ManifestEntry& entry) {
+Status ManifestWriter::WriteExistingEntry(std::shared_ptr<DataFile> file,
+                                          int64_t file_snapshot_id,
+                                          int64_t data_sequence_number,
+                                          std::optional<int64_t> file_sequence_number) {
+  ManifestEntry existing;
+  existing.status = ManifestStatus::kExisting;
+  existing.snapshot_id = file_snapshot_id;
+  existing.data_file = std::move(file);
+  existing.sequence_number = data_sequence_number;
+  existing.file_sequence_number = file_sequence_number;
+
+  return WriteEntry(existing);
+}
+
+Status ManifestWriter::WriteExistingEntry(const ManifestEntry& entry) {
+  // Update the entry status to `Existing`
+  auto existing = entry.AsExisting();
+  return WriteEntry(existing);
+}
+
+Status ManifestWriter::WriteDeletedEntry(std::shared_ptr<DataFile> file,
+                                         int64_t data_sequence_number,
+                                         std::optional<int64_t> file_sequence_number) {
+  ManifestEntry deleted;
+  deleted.status = ManifestStatus::kDeleted;
+  deleted.snapshot_id = adapter_->snapshot_id();
+  deleted.data_file = std::move(file);
+  deleted.sequence_number = data_sequence_number;
+  deleted.file_sequence_number = file_sequence_number;
+
+  return WriteEntry(deleted);
+}
+
+Status ManifestWriter::WriteDeletedEntry(const ManifestEntry& entry) {
+  // Update the entry status to `Deleted`
+  auto deleted = entry.AsDeleted();
+  // Set the snapshot id to the current snapshot id
+  deleted.snapshot_id = adapter_->snapshot_id();
+
+  return WriteEntry(deleted);
+}
+
+Status ManifestWriter::WriteEntry(const ManifestEntry& entry) {
+  ICEBERG_RETURN_UNEXPECTED(CheckDataFile(*entry.data_file));
   if (adapter_->size() >= kBatchSize) {
     ICEBERG_ASSIGN_OR_RAISE(auto array, adapter_->FinishAppending());
     ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
     ICEBERG_RETURN_UNEXPECTED(adapter_->StartAppending());
   }
-  auto copy = entry.Copy();
-  return adapter_->AddExistingEntry(copy);
+  return adapter_->Append(entry);
+}
+
+Status ManifestWriter::CheckDataFile(const DataFile& file) const {
+  switch (adapter_->content()) {
+    case ManifestContent::kData:
+      if (file.content != DataFile::Content::kData) {
+        return InvalidArgument(
+            "Manifest content type: data, data file content should be: data, but got: {}",
+            ToString(file.content));
+      }
+      break;
+    case ManifestContent::kDeletes:
+      if (file.content != DataFile::Content::kPositionDeletes &&
+          file.content != DataFile::Content::kEqualityDeletes) {
+        return InvalidArgument(
+            "Manifest content type: deletes, data file content should be: "
+            "position_deletes or equality_deletes, but got: {}",
+            ToString(file.content));
+      }
+      break;
+    default:
+      std::unreachable();
+  }
+  return {};
 }
 
 Status ManifestWriter::AddAll(const std::vector<ManifestEntry>& entries) {
   for (const auto& entry : entries) {
-    ICEBERG_RETURN_UNEXPECTED(AddEntry(entry));
+    ICEBERG_RETURN_UNEXPECTED(WriteEntry(entry));
   }
   return {};
 }
@@ -76,19 +152,20 @@ Status ManifestWriter::Close() {
   return {};
 }
 
-std::optional<Metrics> ManifestWriter::metrics() const { return writer_->metrics(); }
-
 ManifestContent ManifestWriter::content() const { return adapter_->content(); }
+
+Result<Metrics> ManifestWriter::metrics() const { return writer_->metrics(); }
 
 Result<ManifestFile> ManifestWriter::ToManifestFile() const {
   if (!closed_) [[unlikely]] {
-    return InvalidArgument("Cannot get ManifestFile before closing the writer.");
+    return Invalid("Cannot get ManifestFile before closing the writer.");
   }
 
-  auto manifest_file = adapter_->ToManifestFile();
+  ICEBERG_ASSIGN_OR_RAISE(auto manifest_file, adapter_->ToManifestFile());
   manifest_file.manifest_path = manifest_location_;
   manifest_file.manifest_length = writer_->length().value_or(0);
-  manifest_file.key_metadata = key_metadata_;
+  manifest_file.added_snapshot_id =
+      adapter_->snapshot_id().value_or(Snapshot::kInvalidSnapshotId);
   return manifest_file;
 }
 
@@ -211,8 +288,7 @@ Status ManifestListWriter::Add(const ManifestFile& file) {
     ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
     ICEBERG_RETURN_UNEXPECTED(adapter_->StartAppending());
   }
-  auto copy = file.Copy();
-  return adapter_->Append(copy);
+  return adapter_->Append(file);
 }
 
 Status ManifestListWriter::AddAll(const std::vector<ManifestFile>& files) {

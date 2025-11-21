@@ -24,6 +24,8 @@
 #include "iceberg/expression/literal.h"
 #include "iceberg/manifest_list.h"
 #include "iceberg/result.h"
+#include "iceberg/util/checked_cast.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -51,45 +53,53 @@ Status PartitionFieldStats::Update(const Literal& value) {
   return {};
 }
 
-PartitionFieldSummary PartitionFieldStats::Finish() const {
+Result<PartitionFieldSummary> PartitionFieldStats::Finish() const {
   PartitionFieldSummary summary;
   summary.contains_null = contains_null_;
   summary.contains_nan = contains_nan_;
   if (lower_bound_) {
-    summary.lower_bound = lower_bound_->Serialize().value();
+    ICEBERG_ASSIGN_OR_RAISE(auto serialized_lower, lower_bound_->Serialize())
+    summary.lower_bound = std::move(serialized_lower);
   }
   if (upper_bound_) {
-    summary.upper_bound = upper_bound_->Serialize().value();
+    ICEBERG_ASSIGN_OR_RAISE(auto serialized_upper, upper_bound_->Serialize())
+    summary.upper_bound = std::move(serialized_upper);
   }
   return summary;
 }
 
-Status PartitionSummary::Update(const std::vector<Literal>& partition) {
-  if (partition.size() != field_stats_.size()) {
-    return InvalidArgument("partition size does not match field stats size");
-  }
-
-  for (size_t i = 0; i < partition.size(); i++) {
-    ICEBERG_RETURN_UNEXPECTED(field_stats_[i].Update(partition[i]));
-  }
-  return {};
-}
-
-std::vector<PartitionFieldSummary> PartitionSummary::Summaries() const {
-  std::vector<PartitionFieldSummary> summaries;
-  for (const auto& field_stat : field_stats_) {
-    summaries.push_back(field_stat.Finish());
-  }
-  return summaries;
-}
-
-Result<std::unique_ptr<PartitionSummary>> PartitionSummary::Make(
-    const StructType& partition_type) {
+PartitionSummary::PartitionSummary(const StructType& partition_type) {
   std::vector<PartitionFieldStats> field_stats;
   for (const auto& field : partition_type.fields()) {
     field_stats.emplace_back(field.type());
   }
-  return std::unique_ptr<PartitionSummary>(new PartitionSummary(std::move(field_stats)));
+  field_stats_ = std::move(field_stats);
+}
+
+Status PartitionSummary::Update(const std::vector<Literal>& partition_values) {
+  if (partition_values.size() != field_stats_.size()) {
+    return InvalidArgument("partition values size {} does not match field stats size {}",
+                           partition_values.size(), field_stats_.size());
+  }
+
+  for (size_t i = 0; i < partition_values.size(); i++) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto literal,
+        partition_values[i].CastTo(
+            internal::checked_pointer_cast<PrimitiveType>(field_stats_[i].type())));
+    ICEBERG_RETURN_UNEXPECTED(field_stats_[i].Update(literal));
+  }
+  return {};
+}
+
+Result<std::vector<PartitionFieldSummary>> PartitionSummary::Summaries() const {
+  std::vector<PartitionFieldSummary> summaries;
+  summaries.reserve(field_stats_.size());
+  for (const auto& field_stat : field_stats_) {
+    ICEBERG_ASSIGN_OR_RAISE(auto summary, field_stat.Finish());
+    summaries.push_back(std::move(summary));
+  }
+  return summaries;
 }
 
 }  // namespace iceberg

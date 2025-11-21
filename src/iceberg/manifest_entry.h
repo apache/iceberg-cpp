@@ -311,9 +311,21 @@ struct ICEBERG_EXPORT ManifestEntry {
     return status == ManifestStatus::kAdded || status == ManifestStatus::kExisting;
   }
 
-  /// \brief Create a copy of this manifest entry.
-  ManifestEntry Copy() const {
+  ManifestEntry AsAdded() const {
     ManifestEntry copy = *this;
+    copy.status = ManifestStatus::kAdded;
+    return copy;
+  }
+
+  ManifestEntry AsExisting() const {
+    ManifestEntry copy = *this;
+    copy.status = ManifestStatus::kExisting;
+    return copy;
+  }
+
+  ManifestEntry AsDeleted() const {
+    ManifestEntry copy = *this;
+    copy.status = ManifestStatus::kDeleted;
     return copy;
   }
 

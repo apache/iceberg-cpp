@@ -68,20 +68,7 @@ class ManifestReaderWriterTestBase : public TempFileTestBase {
     auto read_result = manifest_reader->Entries();
     ASSERT_TRUE(read_result.has_value()) << read_result.error().message;
     ASSERT_EQ(read_result.value().size(), expected_entries.size());
-
-    // Make a copy of expected_entries but set snapshot_id if provided
-    if (snapshot_id.has_value()) {
-      std::vector<ManifestEntry> adjusted_expected_entries;
-      for (const auto& entry : expected_entries) {
-        ManifestEntry copy = entry;
-        copy.snapshot_id = snapshot_id;
-        adjusted_expected_entries.push_back(copy);
-      }
-      ASSERT_EQ(read_result.value(), adjusted_expected_entries);
-      return;
-    } else {
-      ASSERT_EQ(read_result.value(), expected_entries);
-    }
+    ASSERT_EQ(read_result.value(), expected_entries);
   }
 
   void TestManifestReadingWithManifestFile(

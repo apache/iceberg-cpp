@@ -84,10 +84,14 @@ Status ManifestEntryAdapterV1::Init() {
 
   ICEBERG_ASSIGN_OR_RAISE(auto partition_type,
                           partition_spec_->PartitionType(*current_schema_));
-  ICEBERG_ASSIGN_OR_RAISE(partition_summary_, PartitionSummary::Make(*partition_type));
+  partition_summary_ = std::make_unique<PartitionSummary>(*partition_type);
 
   manifest_schema_ = EntrySchema(std::move(partition_type));
   return ToArrowSchema(*manifest_schema_, &schema_);
+}
+
+Status ManifestEntryAdapterV1::Append(const ManifestEntry& entry) {
+  return AppendInternal(entry);
 }
 
 const std::shared_ptr<Schema> ManifestFileAdapterV1::kManifestListSchema =
@@ -117,7 +121,7 @@ Status ManifestFileAdapterV1::Init() {
   return ToArrowSchema(*manifest_list_schema_, &schema_);
 }
 
-Status ManifestFileAdapterV1::Append(ManifestFile& file) {
+Status ManifestFileAdapterV1::Append(const ManifestFile& file) {
   if (file.content != ManifestContent::kData) {
     return InvalidManifestList("Cannot store delete manifests in a v1 table");
   }

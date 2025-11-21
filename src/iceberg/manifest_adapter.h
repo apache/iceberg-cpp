@@ -66,39 +66,19 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
 
   ~ManifestEntryAdapter() override;
 
-  /// \brief Add a new entry to the manifest.
-  ///
-  /// This method will update following status of the entry:
-  /// - Update the entry status to `Added`
-  /// - Set the snapshot id to the current snapshot id
-  /// - Set the sequence number to nullopt if it is invalid(smaller than 0)
-  /// - Set the file sequence number to nullopt
-  virtual Status AddEntry(ManifestEntry& entry);
-
-  /// \brief Add a delete entry to the manifest.
-  ///
-  /// This method will update following status of the entry:
-  /// - Update the entry status to `Deleted`
-  /// - Set the snapshot id to the current snapshot id
-  virtual Status AddDeleteEntry(ManifestEntry& entry);
-
-  /// \brief Add an existing entry to the manifest.
-  ///
-  /// This method will update following status of the entry:
-  /// - Update the entry status to `Existing`
-  virtual Status AddExistingEntry(ManifestEntry& entry);
+  virtual Status Append(const ManifestEntry& entry) = 0;
 
   const std::shared_ptr<Schema>& schema() const { return manifest_schema_; }
 
   ManifestContent content() const { return content_; }
 
+  std::optional<int64_t> snapshot_id() const { return snapshot_id_; }
+
   /// \brief Create a ManifestFile object without setting file metadata, such as
   /// location, file size, key metadata, etc.
-  ManifestFile ToManifestFile() const;
+  Result<ManifestFile> ToManifestFile() const;
 
  protected:
-  Status CheckDataFile(const DataFile& file) const;
-  Status AddEntryInternal(const ManifestEntry& entry);
   Status AppendInternal(const ManifestEntry& entry);
   Status AppendDataFile(ArrowArray* array,
                         const std::shared_ptr<StructType>& data_file_type,
@@ -139,7 +119,7 @@ class ICEBERG_EXPORT ManifestFileAdapter : public ManifestAdapter {
   ManifestFileAdapter() = default;
   ~ManifestFileAdapter() override;
 
-  virtual Status Append(ManifestFile& file) = 0;
+  virtual Status Append(const ManifestFile& file) = 0;
 
   const std::shared_ptr<Schema>& schema() const { return manifest_list_schema_; }
 
