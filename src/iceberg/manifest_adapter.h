@@ -25,7 +25,6 @@
 #include <memory>
 #include <optional>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
@@ -61,7 +60,8 @@ class ICEBERG_EXPORT ManifestAdapter {
 /// Implemented by different versions with version-specific schemas.
 class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
  public:
-  ManifestEntryAdapter(std::shared_ptr<PartitionSpec> partition_spec,
+  ManifestEntryAdapter(std::optional<int64_t> snapshot_id_,
+                       std::shared_ptr<PartitionSpec> partition_spec,
                        std::shared_ptr<Schema> current_schema, ManifestContent content);
 
   ~ManifestEntryAdapter() override;
@@ -71,6 +71,12 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
   const std::shared_ptr<Schema>& schema() const { return manifest_schema_; }
 
   ManifestContent content() const { return content_; }
+
+  std::optional<int64_t> snapshot_id() const { return snapshot_id_; }
+
+  /// \brief Create a ManifestFile object without setting file metadata, such as
+  /// location, file size, key metadata, etc.
+  Result<ManifestFile> ToManifestFile() const;
 
  protected:
   Status AppendInternal(const ManifestEntry& entry);
@@ -91,10 +97,19 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
       const DataFile& file) const;
 
  protected:
+  std::optional<int64_t> snapshot_id_;
   std::shared_ptr<PartitionSpec> partition_spec_;
   std::shared_ptr<Schema> current_schema_;
   std::shared_ptr<Schema> manifest_schema_;
   const ManifestContent content_;
+  int32_t add_files_count_{0};
+  int32_t existing_files_count_{0};
+  int32_t delete_files_count_{0};
+  int64_t add_rows_count_{0L};
+  int64_t existing_rows_count_{0L};
+  int64_t delete_rows_count_{0L};
+  std::optional<int64_t> min_sequence_number_{std::nullopt};
+  std::unique_ptr<PartitionSummary> partition_summary_;
 };
 
 /// \brief Adapter for appending a list of `ManifestFile`s to an `ArrowArray`.

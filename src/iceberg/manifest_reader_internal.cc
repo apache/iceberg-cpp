@@ -237,7 +237,7 @@ Result<std::vector<ManifestFile>> ParseManifestList(ArrowSchema* schema,
         break;
       case ManifestFileField::kContent:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].content, view_of_column,
-                              ManifestFile::Content);
+                              ManifestContent);
         break;
       case ManifestFileField::kSequenceNumber:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].sequence_number, view_of_column,
@@ -367,13 +367,16 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
           return InvalidManifest("Field:{} should be a struct.", field_name);
         }
         if (view_of_file_field->n_children > 0) {
-          auto view_of_partition = view_of_file_field->children[0];
-          for (int64_t row_idx = 0; row_idx < view_of_partition->length; row_idx++) {
-            if (ArrowArrayViewIsNull(view_of_partition, row_idx)) {
-              break;
+          for (int64_t partition_idx = 0; partition_idx < view_of_file_field->n_children;
+               partition_idx++) {
+            auto view_of_partition = view_of_file_field->children[partition_idx];
+            for (int64_t row_idx = 0; row_idx < view_of_partition->length; row_idx++) {
+              if (ArrowArrayViewIsNull(view_of_partition, row_idx)) {
+                break;
+              }
+              ICEBERG_RETURN_UNEXPECTED(
+                  ParseLiteral(view_of_partition, row_idx, manifest_entries));
             }
-            ICEBERG_RETURN_UNEXPECTED(
-                ParseLiteral(view_of_partition, row_idx, manifest_entries));
           }
         }
       } break;

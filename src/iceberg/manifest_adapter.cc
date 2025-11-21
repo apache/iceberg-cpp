@@ -19,6 +19,7 @@
 
 #include "iceberg/manifest_adapter.h"
 
+#include <memory>
 #include <utility>
 
 #include <nanoarrow/nanoarrow.h>
@@ -26,9 +27,9 @@
 #include "iceberg/arrow/nanoarrow_status_internal.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
+#include "iceberg/partition_summary_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
-#include "iceberg/schema_internal.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
@@ -141,10 +142,12 @@ Result<ArrowArray*> ManifestAdapter::FinishAppending() {
   return &array_;
 }
 
-ManifestEntryAdapter::ManifestEntryAdapter(std::shared_ptr<PartitionSpec> partition_spec,
+ManifestEntryAdapter::ManifestEntryAdapter(std::optional<int64_t> snapshot_id_,
+                                           std::shared_ptr<PartitionSpec> partition_spec,
                                            std::shared_ptr<Schema> current_schema,
                                            ManifestContent content)
-    : partition_spec_(std::move(partition_spec)),
+    : snapshot_id_(snapshot_id_),
+      partition_spec_(std::move(partition_spec)),
       current_schema_(std::move(current_schema)),
       content_(content) {
   if (!partition_spec_) {
@@ -159,6 +162,27 @@ ManifestEntryAdapter::~ManifestEntryAdapter() {
   if (schema_.release != nullptr) {
     ArrowSchemaRelease(&schema_);
   }
+}
+
+Result<ManifestFile> ManifestEntryAdapter::ToManifestFile() const {
+  ManifestFile manifest_file;
+  manifest_file.partition_spec_id = partition_spec_->spec_id();
+  manifest_file.content = content_;
+  // sequence_number and min_sequence_number with kInvalidSequenceNumber will be
+  // replace with real sequence number in `ManifestListWriter`.
+  manifest_file.sequence_number = TableMetadata::kInvalidSequenceNumber;
+  manifest_file.min_sequence_number =
+      min_sequence_number_.value_or(TableMetadata::kInvalidSequenceNumber);
+  manifest_file.existing_files_count = existing_files_count_;
+  manifest_file.added_files_count = add_files_count_;
+  manifest_file.existing_files_count = existing_files_count_;
+  manifest_file.deleted_files_count = delete_files_count_;
+  manifest_file.added_rows_count = add_rows_count_;
+  manifest_file.existing_rows_count = existing_rows_count_;
+  manifest_file.deleted_rows_count = delete_rows_count_;
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_summary, partition_summary_->Summaries());
+  manifest_file.partitions = std::move(partition_summary);
+  return manifest_file;
 }
 
 Status ManifestEntryAdapter::AppendPartitionValues(
@@ -318,13 +342,16 @@ Status ManifestEntryAdapter::AppendDataFile(
           ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(child_array, 1));
         }
         break;
-      case 142:  // first_row_id (optional int64)
-        if (file.first_row_id.has_value()) {
-          ICEBERG_RETURN_UNEXPECTED(AppendField(child_array, file.first_row_id.value()));
+      case 142: {
+        // first_row_id (optional int64)
+        ICEBERG_ASSIGN_OR_RAISE(auto first_row_id, GetFirstRowId(file));
+        if (first_row_id.has_value()) {
+          ICEBERG_RETURN_UNEXPECTED(AppendField(child_array, first_row_id.value()));
         } else {
           ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(child_array, 1));
         }
         break;
+      }
       case 143: {
         // referenced_data_file (optional string)
         ICEBERG_ASSIGN_OR_RAISE(auto referenced_data_file, GetReferenceDataFile(file));
@@ -386,6 +413,29 @@ Result<std::optional<int64_t>> ManifestEntryAdapter::GetContentSizeInBytes(
 }
 
 Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
+  if (entry.data_file == nullptr) [[unlikely]] {
+    return InvalidManifest("Missing required data_file field from manifest entry.");
+  }
+
+  switch (entry.status) {
+    case ManifestStatus::kAdded:
+      add_files_count_++;
+      add_rows_count_ += entry.data_file->record_count;
+      break;
+    case ManifestStatus::kExisting:
+      existing_files_count_++;
+      existing_rows_count_ += entry.data_file->record_count;
+      break;
+    case ManifestStatus::kDeleted:
+      delete_files_count_++;
+      delete_rows_count_ += entry.data_file->record_count;
+      break;
+    default:
+      std::unreachable();
+  }
+
+  ICEBERG_RETURN_UNEXPECTED(partition_summary_->Update(entry.data_file->partition));
+
   const auto& fields = manifest_schema_->fields();
   for (size_t i = 0; i < fields.size(); i++) {
     const auto& field = fields[i];

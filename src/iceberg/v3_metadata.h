@@ -22,6 +22,7 @@
 /// \file iceberg/v3_metadata.h
 
 #include "iceberg/manifest_adapter.h"
+#include "iceberg/result.h"
 
 namespace iceberg {
 
@@ -52,7 +53,6 @@ class ManifestEntryAdapterV3 : public ManifestEntryAdapter {
       const DataFile& file) const override;
 
  private:
-  std::optional<int64_t> snapshot_id_;
   std::optional<int64_t> first_row_id_;
 };
 

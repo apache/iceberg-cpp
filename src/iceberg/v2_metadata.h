@@ -45,9 +45,6 @@ class ManifestEntryAdapterV2 : public ManifestEntryAdapter {
       const ManifestEntry& entry) const override;
   Result<std::optional<std::string>> GetReferenceDataFile(
       const DataFile& file) const override;
-
- private:
-  std::optional<int64_t> snapshot_id_;
 };
 
 /// \brief Adapter to convert V2 ManifestFile to `ArrowArray`.

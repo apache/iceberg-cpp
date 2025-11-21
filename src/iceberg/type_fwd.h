@@ -134,6 +134,8 @@ struct ManifestFile;
 struct ManifestList;
 struct PartitionFieldSummary;
 
+class PartitionSummary;
+
 class ManifestListReader;
 class ManifestListWriter;
 class ManifestReader;

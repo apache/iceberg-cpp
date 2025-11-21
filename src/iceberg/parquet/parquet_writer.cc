@@ -137,16 +137,16 @@ Status ParquetWriter::Write(ArrowArray* array) { return impl_->Write(array); }
 
 Status ParquetWriter::Close() { return impl_->Close(); }
 
-std::optional<Metrics> ParquetWriter::metrics() {
+Result<Metrics> ParquetWriter::metrics() {
   if (!impl_->Closed()) {
-    return std::nullopt;
+    return Invalid("ParquetWriter is not closed");
   }
   return {};
 }
 
-std::optional<int64_t> ParquetWriter::length() {
+Result<int64_t> ParquetWriter::length() {
   if (!impl_->Closed()) {
-    return std::nullopt;
+    return Invalid("ParquetWriter is not closed");
   }
   return impl_->length();
 }
