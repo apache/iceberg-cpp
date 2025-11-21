@@ -100,11 +100,20 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog {
 
  private:
   RestCatalog(std::unique_ptr<RestCatalogConfig> config,
-              std::unique_ptr<HttpClient> client, ResourcePaths paths);
+              std::unique_ptr<HttpClient> client, ResourcePaths paths, std::string name);
+
+  /// \brief Fetch server configuration and merge with client config
+  ///
+  /// \param config the initial client configuration
+  /// \param paths the resource paths for REST endpoints
+  /// \return the final merged configuration
+  static Result<std::unique_ptr<RestCatalogConfig>> FetchAndMergeConfig(
+      const RestCatalogConfig& config, const ResourcePaths& paths);
 
   std::unique_ptr<RestCatalogConfig> config_;
   std::unique_ptr<HttpClient> client_;
   ResourcePaths paths_;
+  std::string name_;  // Cached catalog name
 };
 
 }  // namespace iceberg::rest

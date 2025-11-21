@@ -41,13 +41,13 @@ class ICEBERG_REST_EXPORT RestCatalogConfig : public ConfigBase<RestCatalogConfi
   using Entry = const ConfigBase<RestCatalogConfig>::Entry<T>;
 
   /// \brief The URI of the REST catalog server.
-  inline static std::string_view kUri{"uri"};
+  inline static Entry<std::string> kUri{"uri", ""};
 
   /// \brief The name of the catalog.
-  inline static std::string_view kName{"name"};
+  inline static Entry<std::string> kName{"name", ""};
 
   /// \brief The warehouse path.
-  inline static std::string_view kWarehouse{"warehouse"};
+  inline static Entry<std::string> kWarehouse{"warehouse", ""};
 
   /// \brief Create a default RestCatalogConfig instance.
   static std::unique_ptr<RestCatalogConfig> default_properties();
@@ -56,13 +56,11 @@ class ICEBERG_REST_EXPORT RestCatalogConfig : public ConfigBase<RestCatalogConfi
   static std::unique_ptr<RestCatalogConfig> FromMap(
       const std::unordered_map<std::string, std::string>& properties);
 
-  /// \brief Generates extra HTTP headers to be added to every request from the
-  /// configuration.
+  /// \brief Returns HTTP headers to be added to every request.
   ///
-  /// This includes default headers like Content-Type, User-Agent, X-Client-Version and
-  /// any custom headers prefixed with "header." in the properties.
-  /// \return A map of header names to values.
-  std::unordered_map<std::string, std::string> GetExtraHeaders() const;
+  /// This includes any key prefixed with "header." in the properties.
+  /// \return A map of headers with the prefix removed from the keys.
+  std::unordered_map<std::string, std::string> ExtractHeaders() const;
 };
 
 }  // namespace iceberg::rest

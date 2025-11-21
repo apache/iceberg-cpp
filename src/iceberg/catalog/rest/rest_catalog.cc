@@ -41,44 +41,46 @@
 
 namespace iceberg::rest {
 
-Result<std::unique_ptr<RestCatalog>> RestCatalog::Make(const RestCatalogConfig& config) {
-  // Create ResourcePaths and validate URI
-  ICEBERG_ASSIGN_OR_RAISE(auto paths, ResourcePaths::Make(config));
-
+Result<std::unique_ptr<RestCatalogConfig>> RestCatalog::FetchAndMergeConfig(
+    const RestCatalogConfig& config, const ResourcePaths& paths) {
+  // Fetch server configuration
   auto tmp_client = std::make_unique<HttpClient>(config);
-  const std::string endpoint = paths->Config();
-  ICEBERG_ASSIGN_OR_RAISE(const HttpResponse& response,
+  const std::string endpoint = paths.Config();
+  ICEBERG_ASSIGN_OR_RAISE(const auto response,
                           tmp_client->Get(endpoint, {}, {}, DefaultErrorHandler()));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   ICEBERG_ASSIGN_OR_RAISE(auto server_config, CatalogConfigFromJson(json));
+
   // Merge server config into client config, server config overrides > client config
   // properties > server config defaults
-  auto final_props = std::move(server_config.defaults);
-  for (const auto& kv : config.configs()) {
-    final_props.insert_or_assign(kv.first, kv.second);
-  }
+  auto final_props =
+      MergeConfigs(server_config.defaults, config.configs(), server_config.overrides);
+  return RestCatalogConfig::FromMap(final_props);
+}
 
-  for (const auto& kv : server_config.overrides) {
-    final_props.insert_or_assign(kv.first, kv.second);
-  }
-  auto final_config = RestCatalogConfig::FromMap(final_props);
+Result<std::unique_ptr<RestCatalog>> RestCatalog::Make(const RestCatalogConfig& config) {
+  ICEBERG_ASSIGN_OR_RAISE(auto paths, ResourcePaths::Make(config));
+  // Fetch and merge server configuration
+  ICEBERG_ASSIGN_OR_RAISE(auto final_config, FetchAndMergeConfig(config, *paths));
+
   auto client = std::make_unique<HttpClient>(*final_config);
   ICEBERG_ASSIGN_OR_RAISE(auto final_paths, ResourcePaths::Make(*final_config));
-  return std::unique_ptr<RestCatalog>(new RestCatalog(
-      std::move(final_config), std::move(client), std::move(*final_paths)));
+
+  std::string catalog_name = final_config->Get(RestCatalogConfig::kName);
+  return std::unique_ptr<RestCatalog>(
+      new RestCatalog(std::move(final_config), std::move(client), std::move(*final_paths),
+                      std::move(catalog_name)));
 }
 
 RestCatalog::RestCatalog(std::unique_ptr<RestCatalogConfig> config,
-                         std::unique_ptr<HttpClient> client, ResourcePaths paths)
-    : config_(std::move(config)), client_(std::move(client)), paths_(std::move(paths)) {}
+                         std::unique_ptr<HttpClient> client, ResourcePaths paths,
+                         std::string name)
+    : config_(std::move(config)),
+      client_(std::move(client)),
+      paths_(std::move(paths)),
+      name_(std::move(name)) {}
 
-std::string_view RestCatalog::name() const {
-  auto it = config_->configs().find(std::string(RestCatalogConfig::kName));
-  if (it == config_->configs().end() || it->second.empty()) {
-    return {""};
-  }
-  return std::string_view(it->second);
-}
+std::string_view RestCatalog::name() const { return name_; }
 
 Result<std::vector<Namespace>> RestCatalog::ListNamespaces(const Namespace& ns) const {
   const std::string endpoint = paths_.Namespaces();

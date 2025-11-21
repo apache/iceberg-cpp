@@ -92,15 +92,6 @@ class ICEBERG_REST_EXPORT ResourcePaths {
   /// \brief Get the /v1/{prefix}/transactions/commit endpoint path.
   std::string CommitTransaction() const;
 
-  /// \brief Get the /v1/{prefix}/namespaces/{namespace}/views endpoint path.
-  std::string Views(const Namespace& ns) const;
-
-  /// \brief Get the /v1/{prefix}/namespaces/{namespace}/views/{view} endpoint path.
-  std::string View(const TableIdentifier& ident) const;
-
-  /// \brief Get the /v1/{prefix}/views/rename endpoint path.
-  std::string RenameView() const;
-
  private:
   explicit ResourcePaths(std::string base_uri, std::string prefix);
 

@@ -24,6 +24,7 @@
 #include "cpr/body.h"
 #include "cpr/cprtypes.h"
 #include "iceberg/catalog/rest/catalog_properties.h"
+#include "iceberg/catalog/rest/constant.h"
 #include "iceberg/catalog/rest/json_internal.h"
 #include "iceberg/json_internal.h"
 #include "iceberg/util/macros.h"
@@ -88,8 +89,11 @@ void HttpClient::PrepareSession(
 }
 
 HttpClient::HttpClient(const RestCatalogConfig& config)
-    : default_headers_{config.GetExtraHeaders()},
-      session_{std::make_unique<cpr::Session>()} {}
+    : default_headers_{config.ExtractHeaders()},
+      session_{std::make_unique<cpr::Session>()} {
+  default_headers_[kHeaderContentType] = kMimeTypeApplicationJson;
+  default_headers_[kHeaderUserAgent] = kUserAgent;
+}
 
 Result<HttpResponse> HttpClient::Get(
     const std::string& path, const std::unordered_map<std::string, std::string>& params,

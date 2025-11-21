@@ -30,7 +30,7 @@ namespace iceberg::rest {
 Result<std::unique_ptr<ResourcePaths>> ResourcePaths::Make(
     const RestCatalogConfig& config) {
   // Validate and extract URI
-  auto it = config.configs().find(std::string(RestCatalogConfig::kUri));
+  auto it = config.configs().find(RestCatalogConfig::kUri.key());
   if (it == config.configs().end() || it->second.empty()) {
     return InvalidArgument("Rest catalog configuration property 'uri' is required.");
   }
@@ -116,16 +116,5 @@ std::string ResourcePaths::Tasks(const TableIdentifier& ident) const {
 std::string ResourcePaths::CommitTransaction() const {
   return BuildPath("transactions/commit");
 }
-
-std::string ResourcePaths::Views(const Namespace& ns) const {
-  return BuildPath(std::format("namespaces/{}/views", EncodeNamespaceForUrl(ns)));
-}
-
-std::string ResourcePaths::View(const TableIdentifier& ident) const {
-  return BuildPath(
-      std::format("namespaces/{}/views/{}", EncodeNamespaceForUrl(ident.ns), ident.name));
-}
-
-std::string ResourcePaths::RenameView() const { return BuildPath("views/rename"); }
 
 }  // namespace iceberg::rest

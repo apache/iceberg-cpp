@@ -44,17 +44,9 @@ class RestCatalogTest : public ::testing::Test {
     std::string uri = uri_env ? uri_env : "http://localhost:8181";
     std::string warehouse = warehouse_env ? warehouse_env : "default";
 
-    config_
-        .Set(RestCatalogConfig::Entry<std::string>{std::string(RestCatalogConfig::kUri),
-                                                   ""},
-             uri)
-        .Set(RestCatalogConfig::Entry<std::string>{std::string(RestCatalogConfig::kName),
-                                                   ""},
-             std::string("test_catalog"))
-        .Set(
-            RestCatalogConfig::Entry<std::string>{
-                std::string(RestCatalogConfig::kWarehouse), ""},
-            warehouse);
+    config_.Set(RestCatalogConfig::kUri, uri)
+        .Set(RestCatalogConfig::kName, std::string("test_catalog"))
+        .Set(RestCatalogConfig::kWarehouse, warehouse);
   }
 
   void TearDown() override {}
@@ -62,7 +54,7 @@ class RestCatalogTest : public ::testing::Test {
   RestCatalogConfig config_;
 };
 
-TEST_F(RestCatalogTest, DISABLED_MakeCatalogSuccess) {
+TEST_F(RestCatalogTest, MakeCatalogSuccess) {
   auto catalog_result = RestCatalog::Make(config_);
   EXPECT_THAT(catalog_result, IsOk());
 
@@ -74,16 +66,14 @@ TEST_F(RestCatalogTest, DISABLED_MakeCatalogSuccess) {
 
 TEST_F(RestCatalogTest, DISABLED_MakeCatalogEmptyUri) {
   RestCatalogConfig invalid_config = config_;
-  invalid_config.Set(
-      RestCatalogConfig::Entry<std::string>{std::string(RestCatalogConfig::kUri), ""},
-      std::string(""));
+  invalid_config.Set(RestCatalogConfig::kUri, std::string(""));
 
   auto catalog_result = RestCatalog::Make(invalid_config);
   EXPECT_THAT(catalog_result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(catalog_result, HasErrorMessage("uri"));
 }
 
-TEST_F(RestCatalogTest, DISABLED_MakeCatalogWithCustomProperties) {
+TEST_F(RestCatalogTest, MakeCatalogWithCustomProperties) {
   RestCatalogConfig custom_config = config_;
   custom_config
       .Set(RestCatalogConfig::Entry<std::string>{"custom_prop", ""},
@@ -94,7 +84,7 @@ TEST_F(RestCatalogTest, DISABLED_MakeCatalogWithCustomProperties) {
   EXPECT_THAT(catalog_result, IsOk());
 }
 
-TEST_F(RestCatalogTest, DISABLED_ListNamespaces) {
+TEST_F(RestCatalogTest, ListNamespaces) {
   auto catalog_result = RestCatalog::Make(config_);
   ASSERT_THAT(catalog_result, IsOk());
   auto& catalog = catalog_result.value();

@@ -19,8 +19,6 @@
 
 #include "iceberg/catalog/rest/catalog_properties.h"
 
-#include "iceberg/catalog/rest/constant.h"
-
 namespace iceberg::rest {
 
 std::unique_ptr<RestCatalogConfig> RestCatalogConfig::default_properties() {
@@ -34,11 +32,8 @@ std::unique_ptr<RestCatalogConfig> RestCatalogConfig::FromMap(
   return rest_catalog_config;
 }
 
-std::unordered_map<std::string, std::string> RestCatalogConfig::GetExtraHeaders() const {
+std::unordered_map<std::string, std::string> RestCatalogConfig::ExtractHeaders() const {
   std::unordered_map<std::string, std::string> headers;
-  headers[kHeaderContentType] = kMimeTypeApplicationJson;
-  headers[kHeaderUserAgent] = kUserAgent;
-
   constexpr std::string_view prefix = "header.";
   for (const auto& [key, value] : configs_) {
     if (key.starts_with(prefix)) {

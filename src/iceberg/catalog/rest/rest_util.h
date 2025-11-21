@@ -23,6 +23,7 @@
 #include <format>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 
 #include "iceberg/table_identifier.h"
 
@@ -76,6 +77,27 @@ inline std::string EncodeNamespaceForUrl(const Namespace& ns) {
   }
 
   return EncodeUriComponent(joined_string);
+}
+
+/// \brief Merge catalog configuration properties.
+/// \details Merges three sets of configuration properties following the precedence order:
+/// server overrides > client configs > server defaults.
+/// \param server_defaults Default properties provided by the server.
+/// \param client_configs Configuration properties from the client.
+/// \param server_overrides Override properties enforced by the server.
+/// \return A merged map containing all properties with correct precedence.
+inline std::unordered_map<std::string, std::string> MergeConfigs(
+    const std::unordered_map<std::string, std::string>& server_defaults,
+    const std::unordered_map<std::string, std::string>& client_configs,
+    const std::unordered_map<std::string, std::string>& server_overrides) {
+  auto merged = server_defaults;
+  for (const auto& kv : client_configs) {
+    merged.insert_or_assign(kv.first, kv.second);
+  }
+  for (const auto& kv : server_overrides) {
+    merged.insert_or_assign(kv.first, kv.second);
+  }
+  return merged;
 }
 
 }  // namespace iceberg::rest
