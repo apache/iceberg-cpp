@@ -35,6 +35,7 @@ enum class ErrorKind {
   kDecompressError,
   kInvalid,  // For general invalid errors
   kInvalidArgument,
+  kValidationFailed,
   kInvalidArrowData,
   kInvalidExpression,
   kInvalidSchema,
@@ -84,6 +85,7 @@ DEFINE_ERROR_FUNCTION(CommitStateUnknown)
 DEFINE_ERROR_FUNCTION(DecompressError)
 DEFINE_ERROR_FUNCTION(Invalid)
 DEFINE_ERROR_FUNCTION(InvalidArgument)
+DEFINE_ERROR_FUNCTION(ValidationFailed)
 DEFINE_ERROR_FUNCTION(InvalidArrowData)
 DEFINE_ERROR_FUNCTION(InvalidExpression)
 DEFINE_ERROR_FUNCTION(InvalidSchema)
