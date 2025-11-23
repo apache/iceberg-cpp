@@ -21,12 +21,13 @@
 
 /// \file iceberg/v3_metadata.h
 
+#include "iceberg/iceberg_export.h"
 #include "iceberg/manifest_adapter.h"
 
 namespace iceberg {
 
 /// \brief Adapter to convert V3 ManifestEntry to `ArrowArray`.
-class ManifestEntryAdapterV3 : public ManifestEntryAdapter {
+class ICEBERG_EXPORT ManifestEntryAdapterV3 : public ManifestEntryAdapter {
  public:
   ManifestEntryAdapterV3(std::optional<int64_t> snapshot_id,
                          std::optional<int64_t> first_row_id,
@@ -57,7 +58,7 @@ class ManifestEntryAdapterV3 : public ManifestEntryAdapter {
 };
 
 /// \brief Adapter to convert V3 ManifestFile to `ArrowArray`.
-class ManifestFileAdapterV3 : public ManifestFileAdapter {
+class ICEBERG_EXPORT ManifestFileAdapterV3 : public ManifestFileAdapter {
  public:
   ManifestFileAdapterV3(int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
                         int64_t sequence_number, int64_t first_row_id)

@@ -22,13 +22,14 @@
 #include <memory>
 #include <string>
 
+#include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 
 namespace iceberg {
 
 class ZlibImpl;
 
-class GZipDecompressor {
+class ICEBERG_EXPORT GZipDecompressor {
  public:
   GZipDecompressor();
 
