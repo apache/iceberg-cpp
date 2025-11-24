@@ -35,12 +35,11 @@ namespace iceberg {
 namespace {
 
 Result<std::shared_ptr<PrimitiveType>> GetPrimitiveType(const BoundTerm& term) {
-  auto primitive = std::dynamic_pointer_cast<PrimitiveType>(term.type());
-  if (primitive == nullptr) {
+  if (!term.type().is_primitive()) {
     return InvalidExpression("Aggregate requires primitive type, got {}",
                              term.type()->ToString());
   }
-  return primitive;
+  return internal::checked_pointer_cast<PrimitiveType>(term.type());
 }
 
 }  // namespace
