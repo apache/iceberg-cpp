@@ -26,7 +26,7 @@
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
-class ArrowSchema;
+struct ArrowSchema;
 
 namespace iceberg {
 
