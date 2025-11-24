@@ -77,7 +77,7 @@ std::unique_ptr<DataFile> CreateDataFile(
   data_file->file_format = kFormat;
   data_file->partition = kPartition;
   data_file->file_size_in_bytes = 150972L;
-  data_file->record_count = kMetrics.row_count;
+  data_file->record_count = kMetrics.row_count.value();
   data_file->split_offsets = kOffsets;
   data_file->sort_order_id = kSortOrderId;
   data_file->first_row_id = first_row_id;
@@ -461,8 +461,7 @@ class ManifestWriterVersionsTest : public ::testing::Test {
 
 TEST_F(ManifestWriterVersionsTest, TestV1Write) {
   auto manifest = WriteManifest(/*format_version=*/1, {data_file_});
-  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber,
-                TableMetadata::kInvalidSequenceNumber);
+  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber, kSequenceNumber);
   auto entries = ReadManifest(manifest);
   ASSERT_EQ(entries.size(), 1);
   CheckEntry(entries[0], std::nullopt, std::nullopt, DataFile::Content::kData);
@@ -482,10 +481,8 @@ TEST_F(ManifestWriterVersionsTest, TestV1WriteDelete) {
 
   auto status = writer->WriteDeletedEntry(entry);
   EXPECT_THAT(status, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(
-      status,
-      HasErrorMessage("Manifest content type: data, data file content should be: data, "
-                      "but got: equality_deletes"));
+  EXPECT_THAT(status, HasErrorMessage(
+                          "Cannot write equality_deletes file to data manifest file"));
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV1WriteWithInheritance) {
@@ -612,7 +609,7 @@ TEST_F(ManifestWriterVersionsTest, TestV3WriteFirstRowIdAssignment) {
   for (const auto& entry : entries) {
     CheckEntry(entry, kSequenceNumber, std::nullopt, DataFile::Content::kData,
                ManifestStatus::kAdded, expected_first_row_id);
-    expected_first_row_id += kMetrics.row_count;
+    expected_first_row_id += kMetrics.row_count.value();
   }
 }
 

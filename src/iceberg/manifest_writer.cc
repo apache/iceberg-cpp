@@ -19,8 +19,11 @@
 
 #include "iceberg/manifest_writer.h"
 
+#include <optional>
+
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
+#include "iceberg/partition_summary_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_metadata.h"
@@ -36,7 +39,13 @@ Status ManifestWriter::WriteAddedEntry(std::shared_ptr<DataFile> file,
   ManifestEntry added;
   added.status = ManifestStatus::kAdded;
   added.snapshot_id = adapter_->snapshot_id();
-  added.data_file = std::move(file);
+  if (file->first_row_id.has_value()) {
+    // suppress first_row_id if set
+    added.data_file = file->Clone();
+    added.data_file->first_row_id = std::nullopt;
+  } else {
+    added.data_file = std::move(file);
+  }
   added.sequence_number = data_sequence_number;
   added.file_sequence_number = std::nullopt;
 
@@ -48,6 +57,11 @@ Status ManifestWriter::WriteAddedEntry(const ManifestEntry& entry) {
   auto added = entry.AsAdded();
   // Set the snapshot id to the current snapshot id
   added.snapshot_id = adapter_->snapshot_id();
+  if (added.data_file->first_row_id.has_value()) {
+    // suppress first_row_id if set
+    added.data_file = added.data_file->Clone();
+    added.data_file->first_row_id = std::nullopt;
+  }
   // Set the sequence number to nullopt if it is invalid(smaller than 0)
   if (added.sequence_number.has_value() &&
       added.sequence_number.value() < TableMetadata::kInitialSequenceNumber) {
@@ -108,6 +122,32 @@ Status ManifestWriter::WriteEntry(const ManifestEntry& entry) {
     ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
     ICEBERG_RETURN_UNEXPECTED(adapter_->StartAppending());
   }
+
+  // update statistics
+  switch (entry.status) {
+    case ManifestStatus::kAdded:
+      add_files_count_++;
+      add_rows_count_ += entry.data_file->record_count;
+      break;
+    case ManifestStatus::kExisting:
+      existing_files_count_++;
+      existing_rows_count_ += entry.data_file->record_count;
+      break;
+    case ManifestStatus::kDeleted:
+      delete_files_count_++;
+      delete_rows_count_ += entry.data_file->record_count;
+      break;
+    default:
+      std::unreachable();
+  }
+
+  if (entry.IsAlive() && entry.sequence_number.has_value()) {
+    if (!min_sequence_number_.has_value() ||
+        entry.sequence_number.value() < min_sequence_number_.value()) {
+      min_sequence_number_ = entry.sequence_number.value();
+    }
+  }
+
   return adapter_->Append(entry);
 }
 
@@ -115,18 +155,15 @@ Status ManifestWriter::CheckDataFile(const DataFile& file) const {
   switch (adapter_->content()) {
     case ManifestContent::kData:
       if (file.content != DataFile::Content::kData) {
-        return InvalidArgument(
-            "Manifest content type: data, data file content should be: data, but got: {}",
-            ToString(file.content));
+        return InvalidArgument("Cannot write {} file to data manifest file",
+                               ToString(file.content));
       }
       break;
     case ManifestContent::kDeletes:
       if (file.content != DataFile::Content::kPositionDeletes &&
           file.content != DataFile::Content::kEqualityDeletes) {
-        return InvalidArgument(
-            "Manifest content type: deletes, data file content should be: "
-            "position_deletes or equality_deletes, but got: {}",
-            ToString(file.content));
+        return InvalidArgument("Cannot write {} file to delete manifest file",
+                               ToString(file.content));
       }
       break;
     default:
@@ -161,9 +198,26 @@ Result<ManifestFile> ManifestWriter::ToManifestFile() const {
     return Invalid("Cannot get ManifestFile before closing the writer.");
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto manifest_file, adapter_->ToManifestFile());
+  ManifestFile manifest_file;
+  manifest_file.partition_spec_id = adapter_->partition_spec()->spec_id();
+  manifest_file.content = adapter_->content();
+  // sequence_number and min_sequence_number with kInvalidSequenceNumber will be
+  // replace with real sequence number in `ManifestListWriter`.
+  manifest_file.sequence_number = TableMetadata::kInvalidSequenceNumber;
+  manifest_file.min_sequence_number =
+      min_sequence_number_.value_or(TableMetadata::kInvalidSequenceNumber);
+
+  manifest_file.existing_files_count = existing_files_count_;
+  manifest_file.added_files_count = add_files_count_;
+  manifest_file.existing_files_count = existing_files_count_;
+  manifest_file.deleted_files_count = delete_files_count_;
+  manifest_file.added_rows_count = add_rows_count_;
+  manifest_file.existing_rows_count = existing_rows_count_;
+  manifest_file.deleted_rows_count = delete_rows_count_;
+  ICEBERG_ASSIGN_OR_RAISE(manifest_file.partitions,
+                          adapter_->partition_summary()->Summaries());
   manifest_file.manifest_path = manifest_location_;
-  manifest_file.manifest_length = writer_->length().value_or(0);
+  ICEBERG_ASSIGN_OR_RAISE(manifest_file.manifest_length, writer_->length());
   manifest_file.added_snapshot_id =
       adapter_->snapshot_id().value_or(Snapshot::kInvalidSnapshotId);
   return manifest_file;

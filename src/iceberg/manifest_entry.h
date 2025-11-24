@@ -268,6 +268,8 @@ struct ICEBERG_EXPORT DataFile {
 
   bool operator==(const DataFile& other) const = default;
 
+  std::shared_ptr<DataFile> Clone() const;
+
   static std::shared_ptr<StructType> Type(std::shared_ptr<StructType> partition_type);
 };
 

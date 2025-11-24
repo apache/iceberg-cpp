@@ -218,7 +218,7 @@ struct ICEBERG_EXPORT ManifestList {
 };
 
 /// \brief Get the relative manifest content type name
-ICEBERG_EXPORT constexpr std::string_view ToString(ManifestContent type) noexcept {
+ICEBERG_EXPORT inline constexpr std::string_view ToString(ManifestContent type) noexcept {
   switch (type) {
     case ManifestContent::kData:
       return "data";
@@ -229,7 +229,7 @@ ICEBERG_EXPORT constexpr std::string_view ToString(ManifestContent type) noexcep
 }
 
 /// \brief Get the relative manifest content type from name
-ICEBERG_EXPORT constexpr Result<ManifestContent> ManifestContentFromString(
+ICEBERG_EXPORT inline constexpr Result<ManifestContent> ManifestContentFromString(
     std::string_view str) noexcept {
   if (str == "data") return ManifestContent::kData;
   if (str == "deletes") return ManifestContent::kDeletes;

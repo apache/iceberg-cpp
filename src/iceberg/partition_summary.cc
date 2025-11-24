@@ -17,21 +17,22 @@
  * under the License.
  */
 
-#include "iceberg/partition_summary_internal.h"
-
 #include <memory>
 
 #include "iceberg/expression/literal.h"
 #include "iceberg/manifest_list.h"
+#include "iceberg/partition_summary_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/util/checked_cast.h"
+#include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
 
 Status PartitionFieldStats::Update(const Literal& value) {
-  if (type_->type_id() != value.type()->type_id()) {
-    return InvalidArgument("value is not compatible with type");
+  if (type_->type_id() != value.type()->type_id()) [[unlikely]] {
+    return InvalidArgument("value type {} is not compatible with expected type {}.",
+                           *value.type(), *type_);
   }
 
   if (value.IsNull()) {
@@ -58,18 +59,17 @@ Result<PartitionFieldSummary> PartitionFieldStats::Finish() const {
   summary.contains_null = contains_null_;
   summary.contains_nan = contains_nan_;
   if (lower_bound_) {
-    ICEBERG_ASSIGN_OR_RAISE(auto serialized_lower, lower_bound_->Serialize())
-    summary.lower_bound = std::move(serialized_lower);
+    ICEBERG_ASSIGN_OR_RAISE(summary.lower_bound, lower_bound_->Serialize());
   }
   if (upper_bound_) {
-    ICEBERG_ASSIGN_OR_RAISE(auto serialized_upper, upper_bound_->Serialize())
-    summary.upper_bound = std::move(serialized_upper);
+    ICEBERG_ASSIGN_OR_RAISE(summary.upper_bound, upper_bound_->Serialize());
   }
   return summary;
 }
 
 PartitionSummary::PartitionSummary(const StructType& partition_type) {
   std::vector<PartitionFieldStats> field_stats;
+  field_stats.reserve(partition_type.fields().size());
   for (const auto& field : partition_type.fields()) {
     field_stats.emplace_back(field.type());
   }
@@ -77,7 +77,7 @@ PartitionSummary::PartitionSummary(const StructType& partition_type) {
 }
 
 Status PartitionSummary::Update(const std::vector<Literal>& partition_values) {
-  if (partition_values.size() != field_stats_.size()) {
+  if (partition_values.size() != field_stats_.size()) [[unlikely]] {
     return InvalidArgument("partition values size {} does not match field stats size {}",
                            partition_values.size(), field_stats_.size());
   }

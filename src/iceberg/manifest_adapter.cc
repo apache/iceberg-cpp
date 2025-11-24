@@ -164,27 +164,6 @@ ManifestEntryAdapter::~ManifestEntryAdapter() {
   }
 }
 
-Result<ManifestFile> ManifestEntryAdapter::ToManifestFile() const {
-  ManifestFile manifest_file;
-  manifest_file.partition_spec_id = partition_spec_->spec_id();
-  manifest_file.content = content_;
-  // sequence_number and min_sequence_number with kInvalidSequenceNumber will be
-  // replace with real sequence number in `ManifestListWriter`.
-  manifest_file.sequence_number = TableMetadata::kInvalidSequenceNumber;
-  manifest_file.min_sequence_number =
-      min_sequence_number_.value_or(TableMetadata::kInvalidSequenceNumber);
-  manifest_file.existing_files_count = existing_files_count_;
-  manifest_file.added_files_count = add_files_count_;
-  manifest_file.existing_files_count = existing_files_count_;
-  manifest_file.deleted_files_count = delete_files_count_;
-  manifest_file.added_rows_count = add_rows_count_;
-  manifest_file.existing_rows_count = existing_rows_count_;
-  manifest_file.deleted_rows_count = delete_rows_count_;
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_summary, partition_summary_->Summaries());
-  manifest_file.partitions = std::move(partition_summary);
-  return manifest_file;
-}
-
 Status ManifestEntryAdapter::AppendPartitionValues(
     ArrowArray* array, const std::shared_ptr<StructType>& partition_type,
     const std::vector<Literal>& partition_values) {
@@ -415,23 +394,6 @@ Result<std::optional<int64_t>> ManifestEntryAdapter::GetContentSizeInBytes(
 Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
   if (entry.data_file == nullptr) [[unlikely]] {
     return InvalidManifest("Missing required data_file field from manifest entry.");
-  }
-
-  switch (entry.status) {
-    case ManifestStatus::kAdded:
-      add_files_count_++;
-      add_rows_count_ += entry.data_file->record_count;
-      break;
-    case ManifestStatus::kExisting:
-      existing_files_count_++;
-      existing_rows_count_ += entry.data_file->record_count;
-      break;
-    case ManifestStatus::kDeleted:
-      delete_files_count_++;
-      delete_rows_count_ += entry.data_file->record_count;
-      break;
-    default:
-      std::unreachable();
   }
 
   ICEBERG_RETURN_UNEXPECTED(partition_summary_->Update(entry.data_file->partition));

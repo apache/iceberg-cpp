@@ -74,6 +74,12 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
 
   std::optional<int64_t> snapshot_id() const { return snapshot_id_; }
 
+  const std::shared_ptr<PartitionSpec>& partition_spec() const { return partition_spec_; }
+
+  const std::unique_ptr<PartitionSummary>& partition_summary() const {
+    return partition_summary_;
+  }
+
   /// \brief Create a ManifestFile object without setting file metadata, such as
   /// location, file size, key metadata, etc.
   Result<ManifestFile> ToManifestFile() const;
@@ -102,13 +108,6 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
   std::shared_ptr<Schema> current_schema_;
   std::shared_ptr<Schema> manifest_schema_;
   const ManifestContent content_;
-  int32_t add_files_count_{0};
-  int32_t existing_files_count_{0};
-  int32_t delete_files_count_{0};
-  int64_t add_rows_count_{0L};
-  int64_t existing_rows_count_{0L};
-  int64_t delete_rows_count_{0L};
-  std::optional<int64_t> min_sequence_number_{std::nullopt};
   std::unique_ptr<PartitionSummary> partition_summary_;
 };
 

@@ -47,6 +47,13 @@ class ICEBERG_EXPORT ManifestWriter {
 
   ~ManifestWriter() = default;
 
+  /// \brief Write the entry that all its fields are populated correctly.
+  /// \param entry Manifest entry to write.
+  /// \return Status::OK() if entry was written successfully
+  /// \note All other write entry variants delegate to this method after populating
+  /// the necessary fields.
+  Status WriteEntry(const ManifestEntry& entry);
+
   /// \brief Add an added entry for a file with a specific sequence number.
   ///
   /// \param file an added data file
@@ -156,13 +163,6 @@ class ICEBERG_EXPORT ManifestWriter {
       std::shared_ptr<Schema> current_schema, ManifestContent content);
 
  private:
-  /// \brief Write the entry that all its fields are populated correctly.
-  /// \param entry Manifest entry to write.
-  /// \return Status::OK() if entry was written successfully
-  /// \note All other write entry variants delegate to this method after populating
-  /// the necessary fields.
-  Status WriteEntry(const ManifestEntry& entry);
-
   Status CheckDataFile(const DataFile& file) const;
 
   static constexpr int64_t kBatchSize = 1024;
@@ -170,6 +170,14 @@ class ICEBERG_EXPORT ManifestWriter {
   std::unique_ptr<ManifestEntryAdapter> adapter_;
   bool closed_{false};
   std::string manifest_location_;
+
+  int32_t add_files_count_{0};
+  int32_t existing_files_count_{0};
+  int32_t delete_files_count_{0};
+  int64_t add_rows_count_{0L};
+  int64_t existing_rows_count_{0L};
+  int64_t delete_rows_count_{0L};
+  std::optional<int64_t> min_sequence_number_{std::nullopt};
 };
 
 /// \brief Write manifest files to a manifest list file.

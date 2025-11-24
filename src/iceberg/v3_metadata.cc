@@ -100,12 +100,6 @@ Status ManifestEntryAdapterV3::Init() {
 }
 
 Status ManifestEntryAdapterV3::Append(const ManifestEntry& entry) {
-  if (entry.IsAlive() && entry.sequence_number.has_value()) {
-    if (!min_sequence_number_.has_value() ||
-        entry.sequence_number.value() < min_sequence_number_.value()) {
-      min_sequence_number_ = entry.sequence_number.value();
-    }
-  }
   ICEBERG_RETURN_UNEXPECTED(AppendInternal(entry));
   // TODO(zhjwpku): review the logic of first_row_id update
   if (entry.data_file->content == DataFile::Content::kData &&

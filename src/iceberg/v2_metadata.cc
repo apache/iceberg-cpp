@@ -89,12 +89,6 @@ Status ManifestEntryAdapterV2::Init() {
 }
 
 Status ManifestEntryAdapterV2::Append(const ManifestEntry& entry) {
-  if (entry.IsAlive() && entry.sequence_number.has_value()) {
-    if (!min_sequence_number_.has_value() ||
-        entry.sequence_number.value() < min_sequence_number_.value()) {
-      min_sequence_number_ = entry.sequence_number.value();
-    }
-  }
   return AppendInternal(entry);
 }
 

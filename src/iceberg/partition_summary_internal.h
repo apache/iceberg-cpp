@@ -25,24 +25,29 @@
 
 namespace iceberg {
 
+/// \brief Statistics for a partition field.
 class PartitionFieldStats {
  public:
   explicit PartitionFieldStats(const std::shared_ptr<Type>& type) : type_(type) {}
 
+  /// \brief Update the partition field stats with a new partition value.
   Status Update(const Literal& value);
 
+  /// \brief Finish the partition field stats and produce the partition field summary.
   Result<PartitionFieldSummary> Finish() const;
 
   const std::shared_ptr<Type>& type() const { return type_; }
 
  private:
-  std::shared_ptr<Type> type_{nullptr};
+  const std::shared_ptr<Type>& type_{nullptr};
   bool contains_null_{false};
   bool contains_nan_{false};
   std::optional<Literal> lower_bound_;
   std::optional<Literal> upper_bound_;
 };
 
+/// \brief Maintains statistics for each partition field and produces the partition field
+/// summaries.
 class PartitionSummary {
  public:
   /// \brief Create a PartitionSummary with the given field stats.
