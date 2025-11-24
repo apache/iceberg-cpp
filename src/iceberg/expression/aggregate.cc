@@ -35,7 +35,7 @@ namespace iceberg {
 namespace {
 
 Result<std::shared_ptr<PrimitiveType>> GetPrimitiveType(const BoundTerm& term) {
-  if (!term.type().is_primitive()) {
+  if (!term.type()->is_primitive()) {
     return InvalidExpression("Aggregate requires primitive type, got {}",
                              term.type()->ToString());
   }
@@ -52,7 +52,7 @@ class CountNonNullAggregator : public BoundAggregate::Aggregator {
     if (!literal.IsNull()) {
       ++count_;
     }
-    return Status::OK();
+    return {};
   }
 
   Result<Literal> ResultLiteral() const override { return Literal::Long(count_); }
@@ -72,7 +72,7 @@ class CountNullAggregator : public BoundAggregate::Aggregator {
     if (literal.IsNull()) {
       ++count_;
     }
-    return Status::OK();
+    return {};
   }
 
   Result<Literal> ResultLiteral() const override { return Literal::Long(count_); }
@@ -86,7 +86,7 @@ class CountStarAggregator : public BoundAggregate::Aggregator {
  public:
   Status Update(const StructLike& /*row*/) override {
     ++count_;
-    return Status::OK();
+    return {};
   }
 
   Result<Literal> ResultLiteral() const override { return Literal::Long(count_); }
@@ -103,11 +103,11 @@ class ValueAggregatorImpl : public BoundAggregate::Aggregator {
   Status Update(const StructLike& row) override {
     ICEBERG_ASSIGN_OR_RAISE(auto val_literal, term_->Evaluate(row));
     if (val_literal.IsNull()) {
-      return Status::OK();
+      return {};
     }
     if (!current_) {
       current_ = std::move(val_literal);
-      return Status::OK();
+      return {};
     }
 
     auto ordering = val_literal <=> *current_;
@@ -125,7 +125,7 @@ class ValueAggregatorImpl : public BoundAggregate::Aggregator {
         current_ = std::move(val_literal);
       }
     }
-    return Status::OK();
+    return {};
   }
 
   Result<Literal> ResultLiteral() const override {
@@ -340,7 +340,7 @@ class AggregateEvaluatorImpl : public AggregateEvaluator {
 
   Status Update(const StructLike& row) override {
     for (auto& aggregator : aggregators_) {
-      ICEBERG_RETURN_NOT_OK(aggregator->Update(row));
+      ICEBERG_RETURN_UNEXPECTED(aggregator->Update(row));
     }
     return {};
   }
