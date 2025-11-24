@@ -117,7 +117,7 @@ class ICEBERG_EXPORT BoundAggregate : public Aggregate<BoundTerm>, public Bound 
 };
 
 /// \brief Bound COUNT aggregate.
-class ICEBERG_EXPORT BoundCountAggregate : public BoundAggregate {
+class ICEBERG_EXPORT CountAggregate : public BoundAggregate {
  public:
   enum class Mode { kNonNull, kNull, kStar };
 
