@@ -29,7 +29,7 @@ namespace iceberg {
 // Mock implementation for testing the interface
 class MockSnapshot {};
 
-class MockPendingUpdate : public PendingUpdate<MockSnapshot> {
+class MockPendingUpdate : public PendingUpdateTyped<MockSnapshot> {
  public:
   MockPendingUpdate() = default;
 
@@ -91,7 +91,7 @@ TEST(PendingUpdateTest, CommitFailed) {
 }
 
 TEST(PendingUpdateTest, BaseClassPolymorphism) {
-  std::unique_ptr<PendingUpdateBase> base_ptr = std::make_unique<MockPendingUpdate>();
+  std::unique_ptr<PendingUpdate> base_ptr = std::make_unique<MockPendingUpdate>();
   auto status = base_ptr->Commit();
   EXPECT_THAT(status, IsOk());
 }

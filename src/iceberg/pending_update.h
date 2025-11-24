@@ -28,7 +28,7 @@
 
 namespace iceberg {
 
-/// \brief Non-template base class for table metadata changes using builder pattern
+/// \brief Base class for table metadata changes using builder pattern
 ///
 /// This base class allows storing different types of PendingUpdate operations
 /// in the same collection (e.g., in Transaction). It provides the common Commit()
@@ -36,9 +36,9 @@ namespace iceberg {
 ///
 /// This matches the Java Iceberg pattern where BaseTransaction stores a
 /// List<PendingUpdate> without type parameters.
-class ICEBERG_EXPORT PendingUpdateBase {
+class ICEBERG_EXPORT PendingUpdate {
  public:
-  virtual ~PendingUpdateBase() = default;
+  virtual ~PendingUpdate() = default;
 
   /// \brief Apply and commit the pending changes to the table
   ///
@@ -53,18 +53,18 @@ class ICEBERG_EXPORT PendingUpdateBase {
   virtual Status Commit() = 0;
 
   // Non-copyable, movable
-  PendingUpdateBase(const PendingUpdateBase&) = delete;
-  PendingUpdateBase& operator=(const PendingUpdateBase&) = delete;
-  PendingUpdateBase(PendingUpdateBase&&) noexcept = default;
-  PendingUpdateBase& operator=(PendingUpdateBase&&) noexcept = default;
+  PendingUpdate(const PendingUpdate&) = delete;
+  PendingUpdate& operator=(const PendingUpdate&) = delete;
+  PendingUpdate(PendingUpdate&&) noexcept = default;
+  PendingUpdate& operator=(PendingUpdate&&) noexcept = default;
 
  protected:
-  PendingUpdateBase() = default;
+  PendingUpdate() = default;
 };
 
 /// \brief Template class for type-safe table metadata changes using builder pattern
 ///
-/// PendingUpdate extends PendingUpdateBase with a type-safe Apply() method that
+/// PendingUpdateTyped extends PendingUpdate with a type-safe Apply() method that
 /// returns the specific result type for each operation. Subclasses implement
 /// specific types of table updates such as schema changes, property updates, or
 /// snapshot-producing operations like appends and deletes.
@@ -74,9 +74,9 @@ class ICEBERG_EXPORT PendingUpdateBase {
 ///
 /// \tparam T The type of result returned by Apply()
 template <typename T>
-class ICEBERG_EXPORT PendingUpdate : public PendingUpdateBase {
+class ICEBERG_EXPORT PendingUpdateTyped : public PendingUpdate {
  public:
-  ~PendingUpdate() override = default;
+  ~PendingUpdateTyped() override = default;
 
   /// \brief Apply the pending changes and return the uncommitted result
   ///
@@ -88,7 +88,7 @@ class ICEBERG_EXPORT PendingUpdate : public PendingUpdateBase {
   virtual Result<T> Apply() = 0;
 
  protected:
-  PendingUpdate() = default;
+  PendingUpdateTyped() = default;
 };
 
 }  // namespace iceberg
