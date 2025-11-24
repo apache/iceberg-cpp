@@ -28,7 +28,7 @@
 
 namespace iceberg {
 
-/// \brief Non-template base class for table metadata changes
+/// \brief Non-template base class for table metadata changes using builder pattern
 ///
 /// This base class allows storing different types of PendingUpdate operations
 /// in the same collection (e.g., in Transaction). It provides the common Commit()
@@ -62,7 +62,7 @@ class ICEBERG_EXPORT PendingUpdateBase {
   PendingUpdateBase() = default;
 };
 
-/// \brief Template class for type-safe table metadata changes
+/// \brief Template class for type-safe table metadata changes using builder pattern
 ///
 /// PendingUpdate extends PendingUpdateBase with a type-safe Apply() method that
 /// returns the specific result type for each operation. Subclasses implement
