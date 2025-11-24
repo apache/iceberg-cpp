@@ -28,6 +28,7 @@
 #include <arrow/array.h>
 #include <arrow/array/builder_primitive.h>
 #include <arrow/c/bridge.h>
+#include <arrow/c/helpers.h>
 #include <arrow/json/from_string.h>
 #include <arrow/testing/gtest_util.h>
 #include <arrow/type.h>

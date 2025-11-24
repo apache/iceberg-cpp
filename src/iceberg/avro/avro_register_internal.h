@@ -19,27 +19,12 @@
 
 #pragma once
 
-#include <memory>
-#include <string>
+#include <avro/LogicalType.hh>
 
-#include "iceberg/iceberg_export.h"
-#include "iceberg/result.h"
+namespace iceberg::avro {
 
-namespace iceberg {
-
-class ICEBERG_EXPORT GZipDecompressor {
- public:
-  GZipDecompressor();
-
-  ~GZipDecompressor();
-
-  Status Init();
-
-  Result<std::string> Decompress(const std::string& compressed_data);
-
- private:
-  class ZlibImpl;
-  std::unique_ptr<ZlibImpl> zlib_impl_;
+struct MapLogicalType : public ::avro::CustomLogicalType {
+  MapLogicalType() : ::avro::CustomLogicalType("map") {}
 };
 
-}  // namespace iceberg
+}  // namespace iceberg::avro

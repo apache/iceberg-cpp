@@ -19,7 +19,7 @@
 
 #include "iceberg/avro/avro_register.h"
 
-#include "iceberg/avro/avro_schema_util_internal.h"
+#include "iceberg/avro/avro_register_internal.h"
 
 namespace iceberg::avro {
 

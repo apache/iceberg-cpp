@@ -21,10 +21,12 @@
 
 #include <memory>
 
-#include <arrow/filesystem/filesystem.h>
-
 #include "iceberg/file_io.h"
 #include "iceberg/iceberg_bundle_export.h"
+
+namespace arrow::fs {
+class FileSystem;
+}
 
 namespace iceberg::arrow {
 

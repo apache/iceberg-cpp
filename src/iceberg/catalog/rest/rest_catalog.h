@@ -30,6 +30,7 @@ class ICEBERG_REST_EXPORT RestCatalog {
   explicit RestCatalog(const std::string& base_url);
   ~RestCatalog() = default;
 
+  // TODO(zehua.zou): cpr should be wrapped.
   cpr::Response GetConfig();
 
   cpr::Response ListNamespaces();

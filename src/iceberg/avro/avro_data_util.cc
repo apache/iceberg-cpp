@@ -17,8 +17,6 @@
  * under the License.
  */
 
-#include <ranges>
-
 #include <arrow/array/builder_binary.h>
 #include <arrow/array/builder_decimal.h>
 #include <arrow/array/builder_nested.h>
@@ -41,8 +39,6 @@
 #include "iceberg/util/macros.h"
 
 namespace iceberg::avro {
-
-using ::iceberg::arrow::ToErrorKind;
 
 namespace {
 

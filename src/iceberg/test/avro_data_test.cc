@@ -19,8 +19,10 @@
 
 #include <ranges>
 
+#include <arrow/array/builder_base.h>
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
+#include <arrow/type_fwd.h>
 #include <arrow/util/decimal.h>
 #include <avro/Compiler.hh>
 #include <avro/Generic.hh>

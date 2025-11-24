@@ -19,6 +19,7 @@
 
 #include <arrow/array.h>
 #include <arrow/c/bridge.h>
+#include <arrow/filesystem/filesystem.h>
 #include <arrow/json/from_string.h>
 #include <arrow/record_batch.h>
 #include <arrow/table.h>
