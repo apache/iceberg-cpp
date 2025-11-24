@@ -91,9 +91,8 @@ std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Count(
 
 std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Count(
     std::shared_ptr<UnboundTerm<BoundReference>> expr) {
-  auto agg = std::make_shared<UnboundAggregateImpl<BoundReference>>(
-      Expression::Operation::kCount, std::move(expr),
-      UnboundAggregateImpl<BoundReference>::CountMode::kNonNull);
+  ICEBERG_ASSIGN_OR_THROW(auto agg, UnboundAggregateImpl<BoundReference>::Make(
+                                        Expression::Operation::kCount, std::move(expr)));
   return agg;
 }
 
@@ -104,9 +103,9 @@ std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::CountNull(
 
 std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::CountNull(
     std::shared_ptr<UnboundTerm<BoundReference>> expr) {
-  auto agg = std::make_shared<UnboundAggregateImpl<BoundReference>>(
-      Expression::Operation::kCount, std::move(expr),
-      UnboundAggregateImpl<BoundReference>::CountMode::kNull);
+  ICEBERG_ASSIGN_OR_THROW(auto agg,
+                          UnboundAggregateImpl<BoundReference>::Make(
+                              Expression::Operation::kCountNull, std::move(expr)));
   return agg;
 }
 
@@ -117,16 +116,14 @@ std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::CountNotNull(
 
 std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::CountNotNull(
     std::shared_ptr<UnboundTerm<BoundReference>> expr) {
-  auto agg = std::make_shared<UnboundAggregateImpl<BoundReference>>(
-      Expression::Operation::kCount, std::move(expr),
-      UnboundAggregateImpl<BoundReference>::CountMode::kNonNull);
+  ICEBERG_ASSIGN_OR_THROW(auto agg, UnboundAggregateImpl<BoundReference>::Make(
+                                        Expression::Operation::kCount, std::move(expr)));
   return agg;
 }
 
 std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::CountStar() {
-  auto agg = std::make_shared<UnboundAggregateImpl<BoundReference>>(
-      Expression::Operation::kCountStar, nullptr,
-      UnboundAggregateImpl<BoundReference>::CountMode::kStar);
+  ICEBERG_ASSIGN_OR_THROW(auto agg, UnboundAggregateImpl<BoundReference>::Make(
+                                        Expression::Operation::kCountStar, nullptr));
   return agg;
 }
 
@@ -136,8 +133,8 @@ std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Max(std::stri
 
 std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Max(
     std::shared_ptr<UnboundTerm<BoundReference>> expr) {
-  auto agg = std::make_shared<UnboundAggregateImpl<BoundReference>>(
-      Expression::Operation::kMax, std::move(expr));
+  ICEBERG_ASSIGN_OR_THROW(auto agg, UnboundAggregateImpl<BoundReference>::Make(
+                                        Expression::Operation::kMax, std::move(expr)));
   return agg;
 }
 
@@ -147,8 +144,8 @@ std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Min(std::stri
 
 std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Min(
     std::shared_ptr<UnboundTerm<BoundReference>> expr) {
-  auto agg = std::make_shared<UnboundAggregateImpl<BoundReference>>(
-      Expression::Operation::kMin, std::move(expr));
+  ICEBERG_ASSIGN_OR_THROW(auto agg, UnboundAggregateImpl<BoundReference>::Make(
+                                        Expression::Operation::kMin, std::move(expr)));
   return agg;
 }
 

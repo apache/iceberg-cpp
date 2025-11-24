@@ -85,9 +85,9 @@ TEST(AggregateTest, CountVariants) {
       VectorStructLike({Scalar{std::monostate{}}, Scalar{int32_t{30}}})};
 
   for (const auto& row : rows) {
-    ASSERT_TRUE(count_evaluator->Add(row).has_value());
-    ASSERT_TRUE(count_null_evaluator->Add(row).has_value());
-    ASSERT_TRUE(count_star_evaluator->Add(row).has_value());
+    ASSERT_TRUE(count_evaluator->Update(row).has_value());
+    ASSERT_TRUE(count_null_evaluator->Update(row).has_value());
+    ASSERT_TRUE(count_star_evaluator->Update(row).has_value());
   }
 
   ICEBERG_UNWRAP_OR_FAIL(auto count_result, count_evaluator->ResultLiteral());
@@ -118,8 +118,8 @@ TEST(AggregateTest, MaxMinAggregates) {
                                      VectorStructLike({Scalar{int32_t{12}}})};
 
   for (const auto& row : rows) {
-    ASSERT_TRUE(max_eval->Add(row).has_value());
-    ASSERT_TRUE(min_eval->Add(row).has_value());
+    ASSERT_TRUE(max_eval->Update(row).has_value());
+    ASSERT_TRUE(min_eval->Update(row).has_value());
   }
 
   ICEBERG_UNWRAP_OR_FAIL(auto max_result, max_eval->ResultLiteral());
@@ -148,7 +148,7 @@ TEST(AggregateTest, MultipleAggregatesInEvaluator) {
       VectorStructLike({Scalar{std::monostate{}}, Scalar{int32_t{30}}})};
 
   for (const auto& row : rows) {
-    ASSERT_TRUE(evaluator->Add(row).has_value());
+    ASSERT_TRUE(evaluator->Update(row).has_value());
   }
 
   ICEBERG_UNWRAP_OR_FAIL(auto results, evaluator->Results());

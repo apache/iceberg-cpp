@@ -57,6 +57,7 @@ class ICEBERG_EXPORT Expression : public util::Formattable {
     kStartsWith,
     kNotStartsWith,
     kCount,
+    kCountNull,
     kCountStar,
     kMax,
     kMin

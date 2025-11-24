@@ -22,7 +22,6 @@
 /// \file iceberg/expression/predicate.h
 /// Predicate interface for boolean expressions that test terms.
 
-#include <concepts>
 #include <unordered_set>
 
 #include "iceberg/expression/expression.h"
@@ -30,9 +29,6 @@
 #include "iceberg/expression/term.h"
 
 namespace iceberg {
-
-template <typename T>
-concept TermType = std::derived_from<T, Term>;
 
 /// \brief A predicate is a boolean expression that tests a term against some criteria.
 ///

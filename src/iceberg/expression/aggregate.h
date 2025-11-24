@@ -22,21 +22,20 @@
 /// \file iceberg/expression/aggregate.h
 /// Aggregate expression definitions.
 
-#include <concepts>
 #include <memory>
+#include <optional>
+#include <string>
 #include <vector>
 
 #include "iceberg/expression/expression.h"
 #include "iceberg/expression/term.h"
 #include "iceberg/result.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
-template <typename T>
-concept AggregateTermType = std::derived_from<T, Term>;
-
 /// \brief Base aggregate holding an operation and a term.
-template <AggregateTermType T>
+template <TermType T>
 class ICEBERG_EXPORT Aggregate : public virtual Expression {
  public:
   ~Aggregate() override = default;
@@ -69,11 +68,8 @@ class ICEBERG_EXPORT UnboundAggregateImpl : public UnboundAggregate,
   using BASE = Aggregate<UnboundTerm<B>>;
 
  public:
-  enum class CountMode { kNonNull, kNull, kStar, kNone };
-
-  UnboundAggregateImpl(Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term,
-                       CountMode count_mode = CountMode::kNone)
-      : BASE(op, std::move(term)), count_mode_(count_mode) {}
+  static Result<std::shared_ptr<UnboundAggregateImpl<B>>> Make(
+      Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term);
 
   std::shared_ptr<NamedReference> reference() override {
     return BASE::term() ? BASE::term()->reference() : nullptr;
@@ -82,10 +78,22 @@ class ICEBERG_EXPORT UnboundAggregateImpl : public UnboundAggregate,
   Result<std::shared_ptr<Expression>> Bind(const Schema& schema,
                                            bool case_sensitive) const override;
 
-  CountMode count_mode() const { return count_mode_; }
+  std::string ToString() const override;
 
  private:
-  CountMode count_mode_;
+  static constexpr bool IsSupportedOp(Expression::Operation op) {
+    return op == Expression::Operation::kCount ||
+           op == Expression::Operation::kCountNull ||
+           op == Expression::Operation::kCountStar || op == Expression::Operation::kMax ||
+           op == Expression::Operation::kMin;
+  }
+
+  UnboundAggregateImpl(Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term)
+      : BASE(op, std::move(term)) {
+    ICEBERG_DCHECK(IsSupportedOp(op), "Unexpected aggregate operation");
+    ICEBERG_DCHECK(op == Expression::Operation::kCountStar || BASE::term() != nullptr,
+                   "Aggregate term cannot be null unless COUNT(*)");
+  }
 };
 
 /// \brief Base class for bound aggregates.
@@ -94,7 +102,20 @@ class ICEBERG_EXPORT BoundAggregate : public Aggregate<BoundTerm>, public Bound 
   using Aggregate<BoundTerm>::op;
   using Aggregate<BoundTerm>::term;
 
+  class ICEBERG_EXPORT Aggregator {
+   public:
+    virtual ~Aggregator() = default;
+
+    virtual Status Update(const StructLike& row) = 0;
+    virtual Status Update(const DataFile& file) {
+      return NotSupported("Aggregating DataFile not supported");
+    }
+    virtual Result<Literal> ResultLiteral() const = 0;
+  };
+
   std::shared_ptr<BoundReference> reference() override {
+    ICEBERG_DCHECK(term_ != nullptr || op() == Expression::Operation::kCountStar,
+                   "Bound aggregate term should not be null unless COUNT(*)");
     return term_ ? term_->reference() : nullptr;
   }
 
@@ -110,40 +131,74 @@ class ICEBERG_EXPORT BoundAggregate : public Aggregate<BoundTerm>, public Bound 
   };
 
   virtual Kind kind() const = 0;
+  virtual Result<std::unique_ptr<Aggregator>> NewAggregator() const = 0;
 
  protected:
   BoundAggregate(Expression::Operation op, std::shared_ptr<BoundTerm> term)
       : Aggregate<BoundTerm>(op, std::move(term)) {}
 };
 
-/// \brief Bound COUNT aggregate.
+/// \brief Base class for COUNT aggregates.
 class ICEBERG_EXPORT CountAggregate : public BoundAggregate {
  public:
-  enum class Mode { kNonNull, kNull, kStar };
-
-  BoundCountAggregate(Expression::Operation op, Mode mode,
-                      std::shared_ptr<BoundTerm> term);
-
-  Mode mode() const { return mode_; }
-
   Kind kind() const override { return Kind::kCount; }
+
+ protected:
+  CountAggregate(Expression::Operation op, std::shared_ptr<BoundTerm> term)
+      : BoundAggregate(op, std::move(term)) {}
+};
+
+/// \brief COUNT(term) aggregate.
+class ICEBERG_EXPORT CountNonNullAggregate : public CountAggregate {
+ public:
+  static Result<std::shared_ptr<CountNonNullAggregate>> Make(
+      std::shared_ptr<BoundTerm> term);
 
   std::string ToString() const override;
   Result<Literal> Evaluate(const StructLike& data) const override;
+  Result<std::unique_ptr<Aggregator>> NewAggregator() const override;
 
  private:
-  Mode mode_;
+  explicit CountNonNullAggregate(std::shared_ptr<BoundTerm> term);
+};
+
+/// \brief COUNT_NULL(term) aggregate.
+class ICEBERG_EXPORT CountNullAggregate : public CountAggregate {
+ public:
+  static Result<std::shared_ptr<CountNullAggregate>> Make(
+      std::shared_ptr<BoundTerm> term);
+
+  std::string ToString() const override;
+  Result<Literal> Evaluate(const StructLike& data) const override;
+  Result<std::unique_ptr<Aggregator>> NewAggregator() const override;
+
+ private:
+  explicit CountNullAggregate(std::shared_ptr<BoundTerm> term);
+};
+
+/// \brief COUNT(*) aggregate.
+class ICEBERG_EXPORT CountStarAggregate : public CountAggregate {
+ public:
+  static Result<std::shared_ptr<CountStarAggregate>> Make();
+
+  std::string ToString() const override;
+  Result<Literal> Evaluate(const StructLike& data) const override;
+  Result<std::unique_ptr<Aggregator>> NewAggregator() const override;
+
+ private:
+  CountStarAggregate();
 };
 
 /// \brief Bound MAX/MIN aggregate.
-class ICEBERG_EXPORT BoundValueAggregate : public BoundAggregate {
+class ICEBERG_EXPORT ValueAggregate : public BoundAggregate {
  public:
-  BoundValueAggregate(Expression::Operation op, std::shared_ptr<BoundTerm> term);
+  ValueAggregate(Expression::Operation op, std::shared_ptr<BoundTerm> term);
 
   Kind kind() const override { return Kind::kValue; }
 
   std::string ToString() const override;
   Result<Literal> Evaluate(const StructLike& data) const override;
+  Result<std::unique_ptr<Aggregator>> NewAggregator() const override;
 };
 
 /// \brief Evaluates bound aggregates over StructLike rows.
@@ -162,8 +217,8 @@ class ICEBERG_EXPORT AggregateEvaluator {
   static Result<std::unique_ptr<AggregateEvaluator>> MakeList(
       std::vector<std::shared_ptr<BoundAggregate>> aggregates);
 
-  /// \brief Add a row to the aggregate.
-  virtual Status Add(const StructLike& row) = 0;
+  /// \brief Update aggregates with a row.
+  virtual Status Update(const StructLike& row) = 0;
 
   /// \brief Final aggregated value.
   virtual Result<std::vector<Literal>> Results() const = 0;

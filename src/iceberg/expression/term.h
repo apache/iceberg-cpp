@@ -22,6 +22,7 @@
 /// \file iceberg/expression/term.h
 /// Term interface for Iceberg expressions - represents values that can be evaluated.
 
+#include <concepts>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -40,6 +41,9 @@ class ICEBERG_EXPORT Term : public util::Formattable {
   /// \brief Returns the kind of this term.
   virtual Kind kind() const = 0;
 };
+
+template <typename T>
+concept TermType = std::derived_from<T, Term>;
 
 /// \brief Interface for unbound expressions that need schema binding.
 ///

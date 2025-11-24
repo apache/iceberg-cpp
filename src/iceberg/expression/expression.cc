@@ -191,6 +191,8 @@ std::string_view ToString(Expression::Operation op) {
       return "NOT_STARTS_WITH";
     case Expression::Operation::kCount:
       return "COUNT";
+    case Expression::Operation::kCountNull:
+      return "COUNT_NULL";
     case Expression::Operation::kNot:
       return "NOT";
     case Expression::Operation::kCountStar:
@@ -246,6 +248,7 @@ Result<Expression::Operation> Negate(Expression::Operation op) {
     case Expression::Operation::kMax:
     case Expression::Operation::kMin:
     case Expression::Operation::kCount:
+    case Expression::Operation::kCountNull:
       return InvalidExpression("No negation for operation: {}", op);
   }
   std::unreachable();
