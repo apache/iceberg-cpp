@@ -19,65 +19,53 @@
 
 #pragma once
 
-#include <cctype>
-#include <format>
 #include <string>
 #include <string_view>
 #include <unordered_map>
 
+#include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/table_identifier.h"
 
 namespace iceberg::rest {
 
-/// \brief Trim a single trailing slash from a URI string_view.
-/// \details If \p uri_sv ends with '/', remove that last character; otherwise the input
-/// is returned unchanged.
-/// \param uri_sv The URI string to trim.
-/// \return The (possibly) trimmed URI string.
-inline std::string TrimTrailingSlash(std::string uri_sv) {
-  if (!uri_sv.empty() && uri_sv.back() == '/') {
-    uri_sv.pop_back();
-  }
-  return uri_sv;
-}
+/// \brief Trim trailing slashes from a URI string.
+/// \details Removes all trailing '/' characters from the URI.
+/// \param str A string to trim.
+/// \return The trimmed URI string with all trailing slashes removed.
+ICEBERG_REST_EXPORT std::string_view TrimTrailingSlash(std::string_view str);
 
-/// \brief Percent-encode a string as a URI component (RFC 3986).
-/// \details Leaves unreserved characters [A–Z a–z 0–9 - _ . ~] as-is; all others are
-/// percent-encoded using uppercase hexadecimal (e.g., space -> "%20").
-/// \param value The string to encode.
-/// \return The encoded string.
-inline std::string EncodeUriComponent(std::string_view value) {
-  std::string escaped;
-  escaped.reserve(value.length());
-  for (const unsigned char c : value) {
-    if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
-      escaped += c;
-    } else {
-      std::format_to(std::back_inserter(escaped), "%{:02X}", c);
-    }
-  }
-  return escaped;
-}
+/// \brief URL-encode a string (RFC 3986).
+/// \details This implementation uses libcurl (via CPR), which follows RFC 3986 strictly:
+/// - Unreserved characters: [A-Z], [a-z], [0-9], "-", "_", ".", "~"
+/// - Space is encoded as "%20" (unlike Java's URLEncoder which uses "+").
+/// - All other characters are percent-encoded (%XX).
+/// \param toEncode The string to encode.
+/// \return The URL-encoded string.
+/// \note Iceberg's Java client uses `java.net.URLEncoder`, which follows the
+/// `application/x-www-form-urlencoded` standard (HTML Forms). We strictly adhere to RFC
+/// 3986 to ensure correct URI path semantics (encoding spaces as %20 rather than +) for
+/// maximum cross-platform interoperability.
+ICEBERG_REST_EXPORT std::string EncodeString(std::string_view toEncode);
+
+/// \brief URL-decode a string.
+/// \details Decodes percent-encoded characters (e.g., "%20" -> space). Uses libcurl's URL
+/// decoding via the CPR library.
+/// \param encoded The encoded string to decode.
+/// \return The decoded string.
+ICEBERG_REST_EXPORT std::string DecodeString(std::string_view encoded);
 
 /// \brief Encode a Namespace into a URL-safe component.
-/// \details Joins \p ns.levels with the ASCII Unit Separator (0x1F), then percent-encodes
-/// the result via EncodeUriComponent. Returns an empty string if there are no levels.
+/// \details Encodes each level separately using EncodeString, then joins them with "%1F".
 /// \param ns The namespace (sequence of path-like levels) to encode.
 /// \return The percent-encoded namespace string suitable for URLs.
-inline std::string EncodeNamespaceForUrl(const Namespace& ns) {
-  if (ns.levels.empty()) {
-    return "";
-  }
+ICEBERG_REST_EXPORT std::string EncodeNamespaceForUrl(const Namespace& ns);
 
-  std::string joined_string;
-  joined_string.append(ns.levels.front());
-  for (size_t i = 1; i < ns.levels.size(); ++i) {
-    joined_string.append("\x1F");
-    joined_string.append(ns.levels[i]);
-  }
-
-  return EncodeUriComponent(joined_string);
-}
+/// \brief Decode a URL-encoded namespace string back to a Namespace.
+/// \details Splits by "%1F" (the URL-encoded form of ASCII Unit Separator), then decodes
+/// each level separately using DecodeString.
+/// \param encoded The percent-encoded namespace string.
+/// \return The decoded Namespace.
+ICEBERG_REST_EXPORT Namespace DecodeNamespaceFromUrl(std::string_view encoded);
 
 /// \brief Merge catalog configuration properties.
 /// \details Merges three sets of configuration properties following the precedence order:
@@ -86,18 +74,9 @@ inline std::string EncodeNamespaceForUrl(const Namespace& ns) {
 /// \param client_configs Configuration properties from the client.
 /// \param server_overrides Override properties enforced by the server.
 /// \return A merged map containing all properties with correct precedence.
-inline std::unordered_map<std::string, std::string> MergeConfigs(
+ICEBERG_REST_EXPORT std::unordered_map<std::string, std::string> MergeConfigs(
     const std::unordered_map<std::string, std::string>& server_defaults,
     const std::unordered_map<std::string, std::string>& client_configs,
-    const std::unordered_map<std::string, std::string>& server_overrides) {
-  auto merged = server_defaults;
-  for (const auto& kv : client_configs) {
-    merged.insert_or_assign(kv.first, kv.second);
-  }
-  for (const auto& kv : server_overrides) {
-    merged.insert_or_assign(kv.first, kv.second);
-  }
-  return merged;
-}
+    const std::unordered_map<std::string, std::string>& server_overrides);
 
 }  // namespace iceberg::rest

@@ -21,38 +21,12 @@
 
 #include <format>
 
-#include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/rest_util.h"
-#include "iceberg/result.h"
 
 namespace iceberg::rest {
 
-Result<std::unique_ptr<ResourcePaths>> ResourcePaths::Make(
-    const RestCatalogConfig& config) {
-  // Validate and extract URI
-  auto it = config.configs().find(RestCatalogConfig::kUri.key());
-  if (it == config.configs().end() || it->second.empty()) {
-    return InvalidArgument("Rest catalog configuration property 'uri' is required.");
-  }
-
-  std::string base_uri = std::string(TrimTrailingSlash(it->second));
-  std::string prefix;
-  auto prefix_it = config.configs().find("prefix");
-  if (prefix_it != config.configs().end() && !prefix_it->second.empty()) {
-    prefix = prefix_it->second;
-  }
-
-  return std::unique_ptr<ResourcePaths>(
-      new ResourcePaths(std::move(base_uri), std::move(prefix)));
-}
-
 ResourcePaths::ResourcePaths(std::string base_uri, std::string prefix)
     : base_uri_(std::move(base_uri)), prefix_(std::move(prefix)) {}
-
-std::string ResourcePaths::BuildPath(std::string_view path) const {
-  return std::format("{}/v1/{}{}", base_uri_, (prefix_.empty() ? "" : (prefix_ + "/")),
-                     path);
-}
 
 std::string ResourcePaths::Config() const {
   return std::format("{}/v1/config", base_uri_);
@@ -62,59 +36,76 @@ std::string ResourcePaths::OAuth2Tokens() const {
   return std::format("{}/v1/oauth/tokens", base_uri_);
 }
 
-std::string ResourcePaths::Namespaces() const { return BuildPath("namespaces"); }
+std::string ResourcePaths::Namespaces() const {
+  return std::format("{}/v1/{}namespaces", base_uri_,
+                     (prefix_.empty() ? "" : (prefix_ + "/")));
+}
 
 std::string ResourcePaths::Namespace_(const Namespace& ns) const {
-  return BuildPath(std::format("namespaces/{}", EncodeNamespaceForUrl(ns)));
+  return std::format("{}/v1/{}namespaces/{}", base_uri_,
+                     (prefix_.empty() ? "" : (prefix_ + "/")), EncodeNamespaceForUrl(ns));
 }
 
 std::string ResourcePaths::NamespaceProperties(const Namespace& ns) const {
-  return BuildPath(std::format("namespaces/{}/properties", EncodeNamespaceForUrl(ns)));
+  return std::format("{}/v1/{}namespaces/{}/properties", base_uri_,
+                     (prefix_.empty() ? "" : (prefix_ + "/")), EncodeNamespaceForUrl(ns));
 }
 
 std::string ResourcePaths::Tables(const Namespace& ns) const {
-  return BuildPath(std::format("namespaces/{}/tables", EncodeNamespaceForUrl(ns)));
+  return std::format("{}/v1/{}namespaces/{}/tables", base_uri_,
+                     (prefix_.empty() ? "" : (prefix_ + "/")), EncodeNamespaceForUrl(ns));
 }
 
 std::string ResourcePaths::Table(const TableIdentifier& ident) const {
-  return BuildPath(std::format("namespaces/{}/tables/{}", EncodeNamespaceForUrl(ident.ns),
-                               ident.name));
+  return std::format("{}/v1/{}namespaces/{}/tables/{}", base_uri_,
+                     (prefix_.empty() ? "" : (prefix_ + "/")),
+                     EncodeNamespaceForUrl(ident.ns), ident.name);
 }
 
 std::string ResourcePaths::Register(const Namespace& ns) const {
-  return BuildPath(std::format("namespaces/{}/register", EncodeNamespaceForUrl(ns)));
+  return std::format("{}/v1/{}namespaces/{}/register", base_uri_,
+                     (prefix_.empty() ? "" : (prefix_ + "/")), EncodeNamespaceForUrl(ns));
 }
 
-std::string ResourcePaths::Rename() const { return BuildPath("tables/rename"); }
+std::string ResourcePaths::Rename() const {
+  return std::format("{}/v1/{}tables/rename", base_uri_,
+                     (prefix_.empty() ? "" : (prefix_ + "/")));
+}
 
 std::string ResourcePaths::Metrics(const TableIdentifier& ident) const {
-  return BuildPath(std::format("namespaces/{}/tables/{}/metrics",
-                               EncodeNamespaceForUrl(ident.ns), ident.name));
+  return std::format("{}/v1/{}namespaces/{}/tables/{}/metrics", base_uri_,
+                     (prefix_.empty() ? "" : (prefix_ + "/")),
+                     EncodeNamespaceForUrl(ident.ns), ident.name);
 }
 
 std::string ResourcePaths::Credentials(const TableIdentifier& ident) const {
-  return BuildPath(std::format("namespaces/{}/tables/{}/credentials",
-                               EncodeNamespaceForUrl(ident.ns), ident.name));
+  return std::format("{}/v1/{}namespaces/{}/tables/{}/credentials", base_uri_,
+                     (prefix_.empty() ? "" : (prefix_ + "/")),
+                     EncodeNamespaceForUrl(ident.ns), ident.name);
 }
 
 std::string ResourcePaths::ScanPlan(const TableIdentifier& ident) const {
-  return BuildPath(std::format("namespaces/{}/tables/{}/plan",
-                               EncodeNamespaceForUrl(ident.ns), ident.name));
+  return std::format("{}/v1/{}namespaces/{}/tables/{}/plan", base_uri_,
+                     (prefix_.empty() ? "" : (prefix_ + "/")),
+                     EncodeNamespaceForUrl(ident.ns), ident.name);
 }
 
 std::string ResourcePaths::ScanPlanResult(const TableIdentifier& ident,
                                           const std::string& plan_id) const {
-  return BuildPath(std::format("namespaces/{}/tables/{}/plan/{}",
-                               EncodeNamespaceForUrl(ident.ns), ident.name, plan_id));
+  return std::format("{}/v1/{}namespaces/{}/tables/{}/plan/{}", base_uri_,
+                     (prefix_.empty() ? "" : (prefix_ + "/")),
+                     EncodeNamespaceForUrl(ident.ns), ident.name, plan_id);
 }
 
 std::string ResourcePaths::Tasks(const TableIdentifier& ident) const {
-  return BuildPath(std::format("namespaces/{}/tables/{}/tasks",
-                               EncodeNamespaceForUrl(ident.ns), ident.name));
+  return std::format("{}/v1/{}namespaces/{}/tables/{}/tasks", base_uri_,
+                     (prefix_.empty() ? "" : (prefix_ + "/")),
+                     EncodeNamespaceForUrl(ident.ns), ident.name);
 }
 
 std::string ResourcePaths::CommitTransaction() const {
-  return BuildPath("transactions/commit");
+  return std::format("{}/v1/{}transactions/commit", base_uri_,
+                     (prefix_.empty() ? "" : (prefix_ + "/")));
 }
 
 }  // namespace iceberg::rest

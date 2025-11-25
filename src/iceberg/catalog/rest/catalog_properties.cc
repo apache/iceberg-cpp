@@ -19,20 +19,24 @@
 
 #include "iceberg/catalog/rest/catalog_properties.h"
 
+#include <string_view>
+
 namespace iceberg::rest {
 
-std::unique_ptr<RestCatalogConfig> RestCatalogConfig::default_properties() {
-  return std::make_unique<RestCatalogConfig>();
+std::unique_ptr<RestCatalogProperties> RestCatalogProperties::default_properties() {
+  return std::unique_ptr<RestCatalogProperties>(new RestCatalogProperties());
 }
 
-std::unique_ptr<RestCatalogConfig> RestCatalogConfig::FromMap(
+std::unique_ptr<RestCatalogProperties> RestCatalogProperties::FromMap(
     const std::unordered_map<std::string, std::string>& properties) {
-  auto rest_catalog_config = std::make_unique<RestCatalogConfig>();
+  auto rest_catalog_config =
+      std::unique_ptr<RestCatalogProperties>(new RestCatalogProperties());
   rest_catalog_config->configs_ = properties;
   return rest_catalog_config;
 }
 
-std::unordered_map<std::string, std::string> RestCatalogConfig::ExtractHeaders() const {
+std::unordered_map<std::string, std::string> RestCatalogProperties::ExtractHeaders()
+    const {
   std::unordered_map<std::string, std::string> headers;
   constexpr std::string_view prefix = "header.";
   for (const auto& [key, value] : configs_) {
@@ -45,6 +49,14 @@ std::unordered_map<std::string, std::string> RestCatalogConfig::ExtractHeaders()
     }
   }
   return headers;
+}
+
+Result<std::string_view> RestCatalogProperties::Uri() const {
+  auto it = configs_.find(kUri.key());
+  if (it == configs_.end() || it->second.empty()) {
+    return InvalidArgument("Rest catalog configuration property 'uri' is required.");
+  }
+  return it->second;
 }
 
 }  // namespace iceberg::rest

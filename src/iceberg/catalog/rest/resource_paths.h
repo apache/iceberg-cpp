@@ -20,11 +20,8 @@
 #pragma once
 
 #include <string>
-#include <string_view>
 
-#include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
-#include "iceberg/result.h"
 #include "iceberg/table_identifier.h"
 
 /// \file iceberg/catalog/rest/resource_paths.h
@@ -37,9 +34,10 @@ namespace iceberg::rest {
 /// This class constructs REST API endpoint URLs for various catalog operations.
 class ICEBERG_REST_EXPORT ResourcePaths {
  public:
-  /// \brief Construct a ResourcePaths with REST catalog configuration.
-  /// \param config The REST catalog configuration containing the base URI
-  static Result<std::unique_ptr<ResourcePaths>> Make(const RestCatalogConfig& config);
+  /// \brief Construct a ResourcePaths with base URI and optional prefix.
+  /// \param base_uri The base URI of the REST catalog server (without trailing slash)
+  /// \param prefix Optional prefix for REST API paths (default: empty)
+  explicit ResourcePaths(std::string base_uri, std::string prefix = "");
 
   /// \brief Get the /v1/{prefix}/config endpoint path.
   std::string Config() const;
@@ -93,13 +91,11 @@ class ICEBERG_REST_EXPORT ResourcePaths {
   std::string CommitTransaction() const;
 
  private:
-  explicit ResourcePaths(std::string base_uri, std::string prefix);
-
-  // Helper to build path with optional prefix: {base_uri_}/{prefix_?}/{path}
-  std::string BuildPath(std::string_view path) const;
-
+  /// \brief Base URI of the REST catalog server.
   std::string base_uri_;
-  std::string prefix_;  // Optional prefix from config
+
+  /// \brief Optional prefix for REST API paths from configuration.
+  std::string prefix_;
 };
 
 }  // namespace iceberg::rest

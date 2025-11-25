@@ -34,6 +34,7 @@ inline const std::string kHeaderXClientVersion = "X-Client-Version";
 inline const std::string kHeaderUserAgent = "User-Agent";
 
 inline const std::string kMimeTypeApplicationJson = "application/json";
+inline const std::string kMimeTypeFormUrlEncoded = "application/x-www-form-urlencoded";
 inline const std::string kUserAgentPrefix = "iceberg-cpp/";
 inline const std::string kUserAgent = "iceberg-cpp/" ICEBERG_VERSION_STRING;
 

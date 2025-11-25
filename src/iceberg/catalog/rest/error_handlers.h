@@ -19,8 +19,7 @@
 
 #pragma once
 
-#include <format>
-#include <string>
+#include <memory>
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/types.h"
@@ -37,6 +36,9 @@ class ICEBERG_REST_EXPORT ErrorHandler {
  public:
   virtual ~ErrorHandler() = default;
 
+  // TODO(Li Feiyang):removing ErrorModel as the inner layer and directly using
+  // ErrorResponse
+
   /// \brief Process an error response and return an appropriate Error.
   ///
   /// \param error The error model parsed from the HTTP response body
@@ -47,140 +49,85 @@ class ICEBERG_REST_EXPORT ErrorHandler {
 /// \brief Default error handler for REST API responses.
 class ICEBERG_REST_EXPORT DefaultErrorHandler : public ErrorHandler {
  public:
-  Status Accept(const ErrorModel& error) const override {
-    switch (error.code) {
-      case 400:
-        if (error.type == "IllegalArgumentException") {
-          return InvalidArgument("{}", error.message);
-        }
-        return BadRequest("Malformed request: {}", error.message);
-      case 401:
-        return NotAuthorized("Not authorized: {}", error.message);
-      case 403:
-        return Forbidden("Forbidden: {}", error.message);
-      case 405:
-      case 406:
-        break;
-      case 500:
-        return InternalServerError("Server error: {}: {}", error.type, error.message);
-      case 501:
-        return NotSupported("{}", error.message);
-      case 503:
-        return ServiceUnavailable("Service unavailable: {}", error.message);
-    }
+  /// \brief Returns the singleton instance
+  static const std::shared_ptr<DefaultErrorHandler>& Instance();
 
-    return RestError("Unable to process: {}", error.message);
-  }
+  Status Accept(const ErrorModel& error) const override;
+
+ protected:
+  constexpr DefaultErrorHandler() = default;
 };
 
 /// \brief Namespace-specific error handler for create/read/update operations.
 class ICEBERG_REST_EXPORT NamespaceErrorHandler : public DefaultErrorHandler {
  public:
-  Status Accept(const ErrorModel& error) const override {
-    switch (error.code) {
-      case 400:
-        if (error.type == "NamespaceNotEmptyException") {
-          return NamespaceNotEmpty("{}", error.message);
-        }
-        return BadRequest("Malformed request: {}", error.message);
-      case 404:
-        return NoSuchNamespace("{}", error.message);
-      case 409:
-        return AlreadyExists("{}", error.message);
-      case 422:
-        return RestError("Unable to process: {}", error.message);
-    }
+  /// \brief Returns the singleton instance
+  static const std::shared_ptr<NamespaceErrorHandler>& Instance();
 
-    return DefaultErrorHandler::Accept(error);
-  }
+  Status Accept(const ErrorModel& error) const override;
+
+ protected:
+  constexpr NamespaceErrorHandler() = default;
 };
 
 /// \brief Error handler for drop namespace operations.
 class ICEBERG_REST_EXPORT DropNamespaceErrorHandler : public NamespaceErrorHandler {
  public:
-  Status Accept(const ErrorModel& error) const override {
-    if (error.code == 409) {
-      return NamespaceNotEmpty("{}", error.message);
-    }
+  /// \brief Returns the singleton instance
+  static const std::shared_ptr<DropNamespaceErrorHandler>& Instance();
 
-    return NamespaceErrorHandler::Accept(error);
-  }
+  Status Accept(const ErrorModel& error) const override;
+
+ private:
+  constexpr DropNamespaceErrorHandler() = default;
 };
 
 /// \brief Table-level error handler.
 class ICEBERG_REST_EXPORT TableErrorHandler : public DefaultErrorHandler {
  public:
-  Status Accept(const ErrorModel& error) const override {
-    switch (error.code) {
-      case 404:
-        if (error.type == "NoSuchNamespaceException") {
-          return NoSuchNamespace("{}", error.message);
-        }
-        return NoSuchTable("{}", error.message);
-      case 409:
-        return AlreadyExists("{}", error.message);
-    }
+  /// \brief Returns the singleton instance
+  static const std::shared_ptr<TableErrorHandler>& Instance();
 
-    return DefaultErrorHandler::Accept(error);
-  }
+  Status Accept(const ErrorModel& error) const override;
+
+ private:
+  constexpr TableErrorHandler() = default;
 };
 
 /// \brief View-level error handler.
 class ICEBERG_REST_EXPORT ViewErrorHandler : public DefaultErrorHandler {
  public:
-  Status Accept(const ErrorModel& error) const override {
-    switch (error.code) {
-      case 404:
-        if (error.type == "NoSuchNamespaceException") {
-          return NoSuchNamespace("{}", error.message);
-        }
-        return NoSuchView("{}", error.message);
-      case 409:
-        return AlreadyExists("{}", error.message);
-    }
+  /// \brief Returns the singleton instance
+  static const std::shared_ptr<ViewErrorHandler>& Instance();
 
-    return DefaultErrorHandler::Accept(error);
-  }
+  Status Accept(const ErrorModel& error) const override;
+
+ private:
+  constexpr ViewErrorHandler() = default;
 };
 
 /// \brief Table commit operation error handler.
 class ICEBERG_REST_EXPORT TableCommitErrorHandler : public DefaultErrorHandler {
  public:
-  Status Accept(const ErrorModel& error) const override {
-    switch (error.code) {
-      case 404:
-        return NoSuchTable("{}", error.message);
-      case 409:
-        return CommitFailed("Commit failed: {}", error.message);
-      case 500:
-      case 502:
-      case 503:
-      case 504:
-        return CommitStateUnknown("Service failed: {}: {}", error.code, error.message);
-    }
+  /// \brief Returns the singleton instance
+  static const std::shared_ptr<TableCommitErrorHandler>& Instance();
 
-    return DefaultErrorHandler::Accept(error);
-  }
+  Status Accept(const ErrorModel& error) const override;
+
+ private:
+  constexpr TableCommitErrorHandler() = default;
 };
 
 /// \brief View commit operation error handler.
 class ICEBERG_REST_EXPORT ViewCommitErrorHandler : public DefaultErrorHandler {
  public:
-  Status Accept(const ErrorModel& error) const override {
-    switch (error.code) {
-      case 404:
-        return NoSuchView("{}", error.message);
-      case 409:
-        return CommitFailed("Commit failed: {}", error.message);
-      case 500:
-      case 502:
-      case 503:
-      case 504:
-        return CommitStateUnknown("Service failed: {}: {}", error.code, error.message);
-    }
+  /// \brief Returns the singleton instance
+  static const std::shared_ptr<ViewCommitErrorHandler>& Instance();
 
-    return DefaultErrorHandler::Accept(error);
-  }
+  Status Accept(const ErrorModel& error) const override;
+
+ private:
+  constexpr ViewCommitErrorHandler() = default;
 };
 
 }  // namespace iceberg::rest

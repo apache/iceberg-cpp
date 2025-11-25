@@ -34,6 +34,7 @@
 
 namespace iceberg::rest {
 
+/// \brief Rest catalog implementation.
 class ICEBERG_REST_EXPORT RestCatalog : public Catalog {
  public:
   RestCatalog(const RestCatalog&) = delete;
@@ -45,7 +46,7 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog {
   ///
   /// \param config the configuration for the RestCatalog
   /// \return a unique_ptr to RestCatalog instance
-  static Result<std::unique_ptr<RestCatalog>> Make(const RestCatalogConfig& config);
+  static Result<std::unique_ptr<RestCatalog>> Make(const RestCatalogProperties& config);
 
   std::string_view name() const override;
 
@@ -99,21 +100,20 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog {
       const TableIdentifier& identifier, const Schema& schema) const override;
 
  private:
-  RestCatalog(std::unique_ptr<RestCatalogConfig> config,
-              std::unique_ptr<HttpClient> client, ResourcePaths paths, std::string name);
+  RestCatalog(std::unique_ptr<RestCatalogProperties> config, std::string base_uri);
 
   /// \brief Fetch server configuration and merge with client config
   ///
   /// \param config the initial client configuration
   /// \param paths the resource paths for REST endpoints
   /// \return the final merged configuration
-  static Result<std::unique_ptr<RestCatalogConfig>> FetchAndMergeConfig(
-      const RestCatalogConfig& config, const ResourcePaths& paths);
+  static Result<std::unique_ptr<RestCatalogProperties>> FetchAndMergeConfig(
+      const RestCatalogProperties& config, const ResourcePaths& paths);
 
-  std::unique_ptr<RestCatalogConfig> config_;
-  std::unique_ptr<HttpClient> client_;
+  std::unique_ptr<RestCatalogProperties> config_;
+  std::shared_ptr<HttpClient> client_;
   ResourcePaths paths_;
-  std::string name_;  // Cached catalog name
+  std::string name_;
 };
 
 }  // namespace iceberg::rest

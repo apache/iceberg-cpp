@@ -19,11 +19,9 @@
 
 #include "iceberg/catalog/rest/http_client.h"
 
+#include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
 
-#include "cpr/body.h"
-#include "cpr/cprtypes.h"
-#include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/constant.h"
 #include "iceberg/catalog/rest/json_internal.h"
 #include "iceberg/json_internal.h"
@@ -31,11 +29,44 @@
 
 namespace iceberg::rest {
 
+class HttpResponse::Impl {
+ public:
+  explicit Impl(cpr::Response&& response) : response_(std::move(response)) {}
+  ~Impl() = default;
+
+  int32_t status_code() const { return static_cast<int32_t>(response_.status_code); }
+
+  std::string body() const { return response_.text; }
+
+  std::unordered_map<std::string, std::string> headers() const {
+    return {response_.header.begin(), response_.header.end()};
+  }
+
+ private:
+  cpr::Response response_;
+};
+
+HttpResponse::HttpResponse(HttpResponse&&) noexcept = default;
+
+HttpResponse& HttpResponse::operator=(HttpResponse&&) noexcept = default;
+
+HttpResponse::HttpResponse() = default;
+
+HttpResponse::~HttpResponse() = default;
+
+int32_t HttpResponse::status_code() const { return impl_->status_code(); }
+
+std::string HttpResponse::body() const { return impl_->body(); }
+
+std::unordered_map<std::string, std::string> HttpResponse::headers() const {
+  return impl_->headers();
+}
+
 namespace {
 
 /// \brief Merges global default headers with request-specific headers.
 ///
-/// Combines the global headers derived from RestCatalogConfig with the headers
+/// Combines the global headers derived from RestCatalogProperties with the headers
 /// passed in the specific request. Request-specific headers have higher priority
 /// and will override global defaults if the keys conflict (e.g., overriding
 /// the default "Content-Type").
@@ -58,6 +89,7 @@ cpr::Parameters GetParameters(
   return cpr_params;
 }
 
+/// \brief Checks if the HTTP status code indicates a successful response.
 bool IsSuccessful(int32_t status_code) {
   return status_code == 200      // OK
          || status_code == 202   // Accepted
@@ -65,6 +97,7 @@ bool IsSuccessful(int32_t status_code) {
          || status_code == 304;  // Not Modified
 }
 
+/// \brief Handles failure responses by invoking the provided error handler.
 Status HandleFailureResponse(const cpr::Response& response,
                              const ErrorHandler& error_handler) {
   if (!IsSuccessful(response.status_code)) {
@@ -88,12 +121,17 @@ void HttpClient::PrepareSession(
   session_->SetHeader(final_headers);
 }
 
-HttpClient::HttpClient(const RestCatalogConfig& config)
-    : default_headers_{config.ExtractHeaders()},
+HttpClient::HttpClient(std::unordered_map<std::string, std::string> default_headers)
+    : default_headers_{std::move(default_headers)},
       session_{std::make_unique<cpr::Session>()} {
+  // Set default Content-Type for all requests (including GET/HEAD/DELETE).
+  // Many systems require that content type is set regardless and will fail,
+  // even on an empty bodied request.
   default_headers_[kHeaderContentType] = kMimeTypeApplicationJson;
   default_headers_[kHeaderUserAgent] = kUserAgent;
 }
+
+HttpClient::~HttpClient() = default;
 
 Result<HttpResponse> HttpClient::Get(
     const std::string& path, const std::unordered_map<std::string, std::string>& params,
@@ -104,7 +142,10 @@ Result<HttpResponse> HttpClient::Get(
   PrepareSession(path, headers, params);
   cpr::Response response = session_->Get();
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
-  return HttpResponse(std::move(response));
+  auto impl = std::make_unique<HttpResponse::Impl>(std::move(response));
+  HttpResponse http_response;
+  http_response.impl_ = std::move(impl);
+  return http_response;
 }
 
 Result<HttpResponse> HttpClient::Post(
@@ -117,7 +158,10 @@ Result<HttpResponse> HttpClient::Post(
   session_->SetBody(cpr::Body{body});
   cpr::Response response = session_->Post();
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
-  return HttpResponse(std::move(response));
+  auto impl = std::make_unique<HttpResponse::Impl>(std::move(response));
+  HttpResponse http_response;
+  http_response.impl_ = std::move(impl);
+  return http_response;
 }
 
 Result<HttpResponse> HttpClient::PostForm(
@@ -127,7 +171,11 @@ Result<HttpResponse> HttpClient::PostForm(
     const ErrorHandler& error_handler) {
   std::scoped_lock<std::mutex> lock(session_mutex_);
 
-  PrepareSession(path, headers);
+  // Override default Content-Type (application/json) with form-urlencoded
+  auto form_headers = headers;
+  form_headers[kHeaderContentType] = kMimeTypeFormUrlEncoded;
+
+  PrepareSession(path, form_headers);
   std::vector<cpr::Pair> pair_list;
   pair_list.reserve(form_data.size());
   for (const auto& [key, val] : form_data) {
@@ -136,7 +184,10 @@ Result<HttpResponse> HttpClient::PostForm(
   session_->SetPayload(cpr::Payload(pair_list.begin(), pair_list.end()));
   cpr::Response response = session_->Post();
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
-  return HttpResponse(std::move(response));
+  auto impl = std::make_unique<HttpResponse::Impl>(std::move(response));
+  HttpResponse http_response;
+  http_response.impl_ = std::move(impl);
+  return http_response;
 }
 
 Result<HttpResponse> HttpClient::Head(
@@ -147,7 +198,10 @@ Result<HttpResponse> HttpClient::Head(
   PrepareSession(path, headers);
   cpr::Response response = session_->Head();
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
-  return HttpResponse(std::move(response));
+  auto impl = std::make_unique<HttpResponse::Impl>(std::move(response));
+  HttpResponse http_response;
+  http_response.impl_ = std::move(impl);
+  return http_response;
 }
 
 Result<HttpResponse> HttpClient::Delete(
@@ -158,7 +212,10 @@ Result<HttpResponse> HttpClient::Delete(
   PrepareSession(path, headers);
   cpr::Response response = session_->Delete();
   ICEBERG_RETURN_UNEXPECTED(HandleFailureResponse(response, error_handler));
-  return HttpResponse(std::move(response));
+  auto impl = std::make_unique<HttpResponse::Impl>(std::move(response));
+  HttpResponse http_response;
+  http_response.impl_ = std::move(impl);
+  return http_response;
 }
 
 }  // namespace iceberg::rest

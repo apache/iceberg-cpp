@@ -91,6 +91,7 @@ if get_option('rest').enabled()
             'sources': files(
                 'rest_catalog_test.cc',
                 'rest_json_internal_test.cc',
+                'rest_util_test.cc',
             ),
             'dependencies': [iceberg_rest_dep, cpp_httplib_dep],
         },

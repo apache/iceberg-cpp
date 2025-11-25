@@ -19,29 +19,60 @@
 
 #pragma once
 
+#include <cstdint>
 #include <memory>
 #include <mutex>
 #include <string>
 #include <unordered_map>
 
-#include <cpr/cpr.h>
-#include <nlohmann/json.hpp>
-
-#include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/error_handlers.h"
-#include "iceberg/catalog/rest/http_response.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/result.h"
 
 /// \file iceberg/catalog/rest/http_client.h
 /// \brief Http client for Iceberg REST API.
 
+namespace cpr {
+class Session;
+}  // namespace cpr
+
 namespace iceberg::rest {
+
+/// \brief A simple wrapper for cpr::Response.
+///
+/// This class encapsulates the details of the underlying cpr library's response,
+/// providing a consistent interface that is independent of the specific network
+/// library used.
+class ICEBERG_REST_EXPORT HttpResponse {
+ public:
+  HttpResponse();
+  ~HttpResponse();
+
+  HttpResponse(const HttpResponse&) = delete;
+  HttpResponse& operator=(const HttpResponse&) = delete;
+  HttpResponse(HttpResponse&&) noexcept;
+  HttpResponse& operator=(HttpResponse&&) noexcept;
+
+  /// \brief Get the HTTP status code of the response.
+  int32_t status_code() const;
+
+  /// \brief Get the body of the response as a string.
+  std::string body() const;
+
+  /// \brief Get the headers of the response as a map.
+  std::unordered_map<std::string, std::string> headers() const;
+
+ private:
+  friend class HttpClient;
+  class Impl;
+  std::unique_ptr<Impl> impl_;
+};
 
 /// \brief HTTP client for making requests to Iceberg REST Catalog API.
 class ICEBERG_REST_EXPORT HttpClient {
  public:
-  explicit HttpClient(const RestCatalogConfig&);
+  explicit HttpClient(std::unordered_map<std::string, std::string> default_headers = {});
+  ~HttpClient();
 
   HttpClient(const HttpClient&) = delete;
   HttpClient& operator=(const HttpClient&) = delete;

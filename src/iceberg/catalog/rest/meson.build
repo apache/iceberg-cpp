@@ -17,10 +17,12 @@
 
 iceberg_rest_sources = files(
     'catalog_properties.cc',
+    'error_handlers.cc',
     'http_client.cc',
     'json_internal.cc',
     'resource_paths.cc',
     'rest_catalog.cc',
+    'rest_util.cc',
 )
 # cpr does not export symbols, so on Windows it must
 # be used as a static lib
@@ -54,17 +56,16 @@ pkg.generate(iceberg_rest_lib)
 
 install_headers(
     [
-        'rest_catalog.h',
         'catalog_properties.h',
         'constant.h',
-        'http_client.h',
-        'http_response.h',
-        'json_internal.h',
-        'iceberg_rest_export.h',
-        'types.h',
-        'resource_paths.h',
-        'rest_util.h',
         'error_handlers.h',
+        'http_client.h',
+        'iceberg_rest_export.h',
+        'json_internal.h',
+        'resource_paths.h',
+        'rest_catalog.h',
+        'rest_util.h',
+        'types.h',
     ],
     subdir: 'iceberg/catalog/rest',
 )

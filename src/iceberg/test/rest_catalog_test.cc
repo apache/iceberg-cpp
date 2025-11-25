@@ -32,7 +32,7 @@
 namespace iceberg::rest {
 
 // Test fixture for REST catalog tests, This assumes you have a local REST catalog service
-// running Default configuration: http://localhost:8181
+// running Default configuration: http://localhost:8181.
 class RestCatalogTest : public ::testing::Test {
  protected:
   void SetUp() override {
@@ -44,18 +44,19 @@ class RestCatalogTest : public ::testing::Test {
     std::string uri = uri_env ? uri_env : "http://localhost:8181";
     std::string warehouse = warehouse_env ? warehouse_env : "default";
 
-    config_.Set(RestCatalogConfig::kUri, uri)
-        .Set(RestCatalogConfig::kName, std::string("test_catalog"))
-        .Set(RestCatalogConfig::kWarehouse, warehouse);
+    config_ = RestCatalogProperties::default_properties();
+    config_->Set(RestCatalogProperties::kUri, uri)
+        .Set(RestCatalogProperties::kName, std::string("test_catalog"))
+        .Set(RestCatalogProperties::kWarehouse, warehouse);
   }
 
   void TearDown() override {}
 
-  RestCatalogConfig config_;
+  std::unique_ptr<RestCatalogProperties> config_;
 };
 
-TEST_F(RestCatalogTest, MakeCatalogSuccess) {
-  auto catalog_result = RestCatalog::Make(config_);
+TEST_F(RestCatalogTest, DISABLED_MakeCatalogSuccess) {
+  auto catalog_result = RestCatalog::Make(*config_);
   EXPECT_THAT(catalog_result, IsOk());
 
   if (catalog_result.has_value()) {
@@ -65,27 +66,32 @@ TEST_F(RestCatalogTest, MakeCatalogSuccess) {
 }
 
 TEST_F(RestCatalogTest, DISABLED_MakeCatalogEmptyUri) {
-  RestCatalogConfig invalid_config = config_;
-  invalid_config.Set(RestCatalogConfig::kUri, std::string(""));
+  auto invalid_config = RestCatalogProperties::default_properties();
+  invalid_config->Set(RestCatalogProperties::kUri, std::string(""));
 
-  auto catalog_result = RestCatalog::Make(invalid_config);
+  auto catalog_result = RestCatalog::Make(*invalid_config);
   EXPECT_THAT(catalog_result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(catalog_result, HasErrorMessage("uri"));
 }
 
-TEST_F(RestCatalogTest, MakeCatalogWithCustomProperties) {
-  RestCatalogConfig custom_config = config_;
+TEST_F(RestCatalogTest, DISABLED_MakeCatalogWithCustomProperties) {
+  auto custom_config = RestCatalogProperties::default_properties();
   custom_config
-      .Set(RestCatalogConfig::Entry<std::string>{"custom_prop", ""},
+      ->Set(RestCatalogProperties::kUri, config_->Get(RestCatalogProperties::kUri))
+      .Set(RestCatalogProperties::kName, config_->Get(RestCatalogProperties::kName))
+      .Set(RestCatalogProperties::kWarehouse,
+           config_->Get(RestCatalogProperties::kWarehouse))
+      .Set(RestCatalogProperties::Entry<std::string>{"custom_prop", ""},
            std::string("custom_value"))
-      .Set(RestCatalogConfig::Entry<std::string>{"timeout", ""}, std::string("30000"));
+      .Set(RestCatalogProperties::Entry<std::string>{"timeout", ""},
+           std::string("30000"));
 
-  auto catalog_result = RestCatalog::Make(custom_config);
+  auto catalog_result = RestCatalog::Make(*custom_config);
   EXPECT_THAT(catalog_result, IsOk());
 }
 
-TEST_F(RestCatalogTest, ListNamespaces) {
-  auto catalog_result = RestCatalog::Make(config_);
+TEST_F(RestCatalogTest, DISABLED_ListNamespaces) {
+  auto catalog_result = RestCatalog::Make(*config_);
   ASSERT_THAT(catalog_result, IsOk());
   auto& catalog = catalog_result.value();
 
@@ -97,7 +103,7 @@ TEST_F(RestCatalogTest, ListNamespaces) {
 }
 
 TEST_F(RestCatalogTest, DISABLED_CreateNamespaceNotImplemented) {
-  auto catalog_result = RestCatalog::Make(config_);
+  auto catalog_result = RestCatalog::Make(*config_);
   ASSERT_THAT(catalog_result, IsOk());
   auto catalog = std::move(catalog_result.value());
 
@@ -109,7 +115,7 @@ TEST_F(RestCatalogTest, DISABLED_CreateNamespaceNotImplemented) {
 }
 
 TEST_F(RestCatalogTest, DISABLED_IntegrationTestFullNamespaceWorkflow) {
-  auto catalog_result = RestCatalog::Make(config_);
+  auto catalog_result = RestCatalog::Make(*config_);
   ASSERT_THAT(catalog_result, IsOk());
   auto catalog = std::move(catalog_result.value());
 

@@ -21,24 +21,23 @@
 
 #include <memory>
 #include <string>
-#include <string_view>
 #include <unordered_map>
 
-#include <cpr/cprtypes.h>
-
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
+#include "iceberg/result.h"
 #include "iceberg/util/config.h"
 
 /// \file iceberg/catalog/rest/catalog_properties.h
-/// \brief RestCatalogConfig implementation for Iceberg REST API.
+/// \brief RestCatalogProperties implementation for Iceberg REST API.
 
 namespace iceberg::rest {
 
 /// \brief Configuration class for a REST Catalog.
-class ICEBERG_REST_EXPORT RestCatalogConfig : public ConfigBase<RestCatalogConfig> {
+class ICEBERG_REST_EXPORT RestCatalogProperties
+    : public ConfigBase<RestCatalogProperties> {
  public:
   template <typename T>
-  using Entry = const ConfigBase<RestCatalogConfig>::Entry<T>;
+  using Entry = const ConfigBase<RestCatalogProperties>::Entry<T>;
 
   /// \brief The URI of the REST catalog server.
   inline static Entry<std::string> kUri{"uri", ""};
@@ -49,11 +48,14 @@ class ICEBERG_REST_EXPORT RestCatalogConfig : public ConfigBase<RestCatalogConfi
   /// \brief The warehouse path.
   inline static Entry<std::string> kWarehouse{"warehouse", ""};
 
-  /// \brief Create a default RestCatalogConfig instance.
-  static std::unique_ptr<RestCatalogConfig> default_properties();
+  /// \brief The optional prefix for REST API paths.
+  inline static Entry<std::string> kPrefix{"prefix", ""};
 
-  /// \brief Create a RestCatalogConfig instance from a map of key-value pairs.
-  static std::unique_ptr<RestCatalogConfig> FromMap(
+  /// \brief Create a default RestCatalogProperties instance.
+  static std::unique_ptr<RestCatalogProperties> default_properties();
+
+  /// \brief Create a RestCatalogProperties instance from a map of key-value pairs.
+  static std::unique_ptr<RestCatalogProperties> FromMap(
       const std::unordered_map<std::string, std::string>& properties);
 
   /// \brief Returns HTTP headers to be added to every request.
@@ -61,6 +63,13 @@ class ICEBERG_REST_EXPORT RestCatalogConfig : public ConfigBase<RestCatalogConfi
   /// This includes any key prefixed with "header." in the properties.
   /// \return A map of headers with the prefix removed from the keys.
   std::unordered_map<std::string, std::string> ExtractHeaders() const;
+
+  /// \brief Get the URI of the REST catalog server.
+  /// \return The URI if configured, or an error if not set or empty.
+  Result<std::string_view> Uri() const;
+
+ private:
+  RestCatalogProperties() = default;
 };
 
 }  // namespace iceberg::rest

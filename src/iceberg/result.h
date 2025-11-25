@@ -35,6 +35,7 @@ enum class ErrorKind {
   kCommitStateUnknown,
   kDecompressError,
   kForbidden,
+  kInternalServerError,
   kInvalid,  // For general invalid errors
   kInvalidArgument,
   kInvalidArrowData,
@@ -53,10 +54,9 @@ enum class ErrorKind {
   kNotFound,
   kNotImplemented,
   kNotSupported,
-  kInternalServerError,
+  kRestError,
   kServiceUnavailable,
   kUnknownError,
-  kRestError,
 };
 
 /// \brief Error with a kind and a message.
@@ -84,6 +84,9 @@ using Status = Result<void>;
       -> std::unexpected<Error> {                                             \
     return std::unexpected<Error>(                                            \
         {ErrorKind::k##name, std::format(fmt, std::forward<Args>(args)...)}); \
+  }                                                                           \
+  inline auto name(const std::string& message) -> std::unexpected<Error> {    \
+    return std::unexpected<Error>({ErrorKind::k##name, message});             \
   }
 
 DEFINE_ERROR_FUNCTION(AlreadyExists)
@@ -92,6 +95,7 @@ DEFINE_ERROR_FUNCTION(CommitFailed)
 DEFINE_ERROR_FUNCTION(CommitStateUnknown)
 DEFINE_ERROR_FUNCTION(DecompressError)
 DEFINE_ERROR_FUNCTION(Forbidden)
+DEFINE_ERROR_FUNCTION(InternalServerError)
 DEFINE_ERROR_FUNCTION(Invalid)
 DEFINE_ERROR_FUNCTION(InvalidArgument)
 DEFINE_ERROR_FUNCTION(InvalidArrowData)
@@ -110,10 +114,9 @@ DEFINE_ERROR_FUNCTION(NotAuthorized)
 DEFINE_ERROR_FUNCTION(NotFound)
 DEFINE_ERROR_FUNCTION(NotImplemented)
 DEFINE_ERROR_FUNCTION(NotSupported)
-DEFINE_ERROR_FUNCTION(InternalServerError)
+DEFINE_ERROR_FUNCTION(RestError)
 DEFINE_ERROR_FUNCTION(ServiceUnavailable)
 DEFINE_ERROR_FUNCTION(UnknownError)
-DEFINE_ERROR_FUNCTION(RestError)
 
 #undef DEFINE_ERROR_FUNCTION
 

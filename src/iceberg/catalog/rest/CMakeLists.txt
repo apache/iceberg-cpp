@@ -18,9 +18,11 @@
 set(ICEBERG_REST_SOURCES
     rest_catalog.cc
     catalog_properties.cc
+    error_handlers.cc
     http_client.cc
     json_internal.cc
-    resource_paths.cc)
+    resource_paths.cc
+    rest_util.cc)
 
 set(ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS)
