@@ -19,7 +19,6 @@
 
 #include "iceberg/table_requirements.h"
 
-#include "iceberg/exception.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_update.h"
 
