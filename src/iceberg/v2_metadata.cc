@@ -22,7 +22,6 @@
 #include "iceberg/json_internal.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
-#include "iceberg/partition_summary_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/util/macros.h"
@@ -81,10 +80,9 @@ Status ManifestEntryAdapterV2::Init() {
   metadata_["format-version"] = "2";
   metadata_["content"] = content_ == ManifestContent::kData ? "data" : "delete";
 
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_type,
+  ICEBERG_ASSIGN_OR_RAISE(partition_type_,
                           partition_spec_->PartitionType(*current_schema_));
-  partition_summary_ = std::make_unique<PartitionSummary>(*partition_type);
-  manifest_schema_ = EntrySchema(std::move(partition_type));
+  manifest_schema_ = EntrySchema(partition_type_);
   return ToArrowSchema(*manifest_schema_, &schema_);
 }
 

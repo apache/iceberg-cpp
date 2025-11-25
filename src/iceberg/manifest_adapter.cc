@@ -27,7 +27,6 @@
 #include "iceberg/arrow/nanoarrow_status_internal.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
-#include "iceberg/partition_summary_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/util/checked_cast.h"
@@ -321,16 +320,13 @@ Status ManifestEntryAdapter::AppendDataFile(
           ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(child_array, 1));
         }
         break;
-      case 142: {
-        // first_row_id (optional int64)
-        ICEBERG_ASSIGN_OR_RAISE(auto first_row_id, GetFirstRowId(file));
-        if (first_row_id.has_value()) {
-          ICEBERG_RETURN_UNEXPECTED(AppendField(child_array, first_row_id.value()));
+      case 142:  // first_row_id (optional int64)
+        if (file.first_row_id.has_value()) {
+          ICEBERG_RETURN_UNEXPECTED(AppendField(child_array, file.first_row_id.value()));
         } else {
           ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(child_array, 1));
         }
         break;
-      }
       case 143: {
         // referenced_data_file (optional string)
         ICEBERG_ASSIGN_OR_RAISE(auto referenced_data_file, GetReferenceDataFile(file));
@@ -395,8 +391,6 @@ Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
   if (entry.data_file == nullptr) [[unlikely]] {
     return InvalidManifest("Missing required data_file field from manifest entry.");
   }
-
-  ICEBERG_RETURN_UNEXPECTED(partition_summary_->Update(entry.data_file->partition));
 
   const auto& fields = manifest_schema_->fields();
   for (size_t i = 0; i < fields.size(); i++) {

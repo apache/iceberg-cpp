@@ -22,36 +22,10 @@
 #include <memory>
 #include <vector>
 
-#include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/type.h"
 
 namespace iceberg {
-
-std::shared_ptr<DataFile> DataFile::Clone() const {
-  auto copy = std::make_shared<DataFile>();
-  copy->content = content;
-  copy->file_path = file_path;
-  copy->file_format = file_format;
-  copy->partition = partition;
-  copy->record_count = record_count;
-  copy->file_size_in_bytes = file_size_in_bytes;
-  copy->column_sizes = column_sizes;
-  copy->value_counts = value_counts;
-  copy->null_value_counts = null_value_counts;
-  copy->nan_value_counts = nan_value_counts;
-  copy->lower_bounds = lower_bounds;
-  copy->upper_bounds = upper_bounds;
-  copy->key_metadata = key_metadata;
-  copy->split_offsets = split_offsets;
-  copy->equality_ids = equality_ids;
-  copy->sort_order_id = sort_order_id;
-  copy->first_row_id = first_row_id;
-  copy->referenced_data_file = referenced_data_file;
-  copy->content_offset = content_offset;
-  copy->content_size_in_bytes = content_size_in_bytes;
-  return copy;
-}
 
 bool ManifestEntry::operator==(const ManifestEntry& other) const {
   return status == other.status && snapshot_id == other.snapshot_id &&

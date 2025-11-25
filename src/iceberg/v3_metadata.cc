@@ -25,7 +25,6 @@
 #include "iceberg/json_internal.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
-#include "iceberg/partition_summary_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
@@ -92,21 +91,14 @@ Status ManifestEntryAdapterV3::Init() {
   metadata_["format-version"] = "3";
   metadata_["content"] = content_ == ManifestContent::kData ? "data" : "delete";
 
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_type,
+  ICEBERG_ASSIGN_OR_RAISE(partition_type_,
                           partition_spec_->PartitionType(*current_schema_));
-  partition_summary_ = std::make_unique<PartitionSummary>(*partition_type);
-  manifest_schema_ = EntrySchema(std::move(partition_type));
+  manifest_schema_ = EntrySchema(partition_type_);
   return ToArrowSchema(*manifest_schema_, &schema_);
 }
 
 Status ManifestEntryAdapterV3::Append(const ManifestEntry& entry) {
-  ICEBERG_RETURN_UNEXPECTED(AppendInternal(entry));
-  // TODO(zhjwpku): review the logic of first_row_id update
-  if (entry.data_file->content == DataFile::Content::kData &&
-      entry.status == ManifestStatus::kAdded && first_row_id_.has_value()) {
-    first_row_id_ = first_row_id_.value() + entry.data_file->record_count;
-  }
-  return {};
+  return AppendInternal(entry);
 }
 
 Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetSequenceNumber(
@@ -203,7 +195,10 @@ Status ManifestFileAdapterV3::Init() {
 
 Status ManifestFileAdapterV3::Append(const ManifestFile& file) {
   ICEBERG_RETURN_UNEXPECTED(AppendInternal(file));
-  if (WrapFirstRowId(file) && next_row_id_.has_value()) {
+  if (WrapFirstRowId(file)) {
+    if (!next_row_id_.has_value()) {
+      return InvalidManifestList("Missing next-row-id for file: {}", file.manifest_path);
+    }
     next_row_id_ = next_row_id_.value() + file.existing_rows_count.value_or(0) +
                    file.added_rows_count.value_or(0);
   }
@@ -246,7 +241,7 @@ Result<std::optional<int64_t>> ManifestFileAdapterV3::GetFirstRowId(
     const ManifestFile& file) const {
   if (WrapFirstRowId(file)) {
     // if first-row-id is assigned, ensure that it is valid
-    if (!next_row_id_.has_value()) {
+    if (file.first_row_id.has_value()) {
       // TODO(gangwu): add ToString for ManifestFile
       return InvalidManifestList("Found invalid first-row-id assignment: {}",
                                  file.manifest_path);

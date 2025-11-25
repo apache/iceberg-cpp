@@ -268,8 +268,7 @@ struct ICEBERG_EXPORT DataFile {
 
   bool operator==(const DataFile& other) const = default;
 
-  std::shared_ptr<DataFile> Clone() const;
-
+  /// \brief Get the schema of the data file with the given partition type.
   static std::shared_ptr<StructType> Type(std::shared_ptr<StructType> partition_type);
 };
 
@@ -316,6 +315,10 @@ struct ICEBERG_EXPORT ManifestEntry {
   ManifestEntry AsAdded() const {
     ManifestEntry copy = *this;
     copy.status = ManifestStatus::kAdded;
+    if (copy.data_file->first_row_id.has_value()) {
+      copy.data_file = std::make_unique<DataFile>(*copy.data_file);
+      copy.data_file->first_row_id = std::nullopt;
+    }
     return copy;
   }
 

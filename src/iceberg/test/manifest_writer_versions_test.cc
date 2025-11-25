@@ -229,7 +229,7 @@ class ManifestWriterVersionsTest : public ::testing::Test {
     auto writer = std::move(writer_result.value());
 
     for (auto& data_file : data_files) {
-      EXPECT_THAT(writer->WriteAddedEntry(data_file, kSequenceNumber), IsOk());
+      EXPECT_THAT(writer->WriteAddedEntry(data_file), IsOk());
     }
 
     EXPECT_THAT(writer->Close(), IsOk());
@@ -245,8 +245,7 @@ class ManifestWriterVersionsTest : public ::testing::Test {
     EXPECT_THAT(partition_schema_result, IsOk());
     std::shared_ptr<StructType> partition_type =
         std::move(partition_schema_result.value());
-    auto reader_result =
-        ManifestReader::Make(manifest_file.manifest_path, file_io_, partition_type);
+    auto reader_result = ManifestReader::Make(manifest_file, file_io_, partition_type);
     EXPECT_THAT(reader_result, IsOk());
 
     auto reader = std::move(reader_result.value());
@@ -461,10 +460,12 @@ class ManifestWriterVersionsTest : public ::testing::Test {
 
 TEST_F(ManifestWriterVersionsTest, TestV1Write) {
   auto manifest = WriteManifest(/*format_version=*/1, {data_file_});
-  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber, kSequenceNumber);
+  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber,
+                TableMetadata::kInvalidSequenceNumber);
   auto entries = ReadManifest(manifest);
   ASSERT_EQ(entries.size(), 1);
-  CheckEntry(entries[0], std::nullopt, std::nullopt, DataFile::Content::kData);
+  CheckEntry(entries[0], TableMetadata::kInvalidSequenceNumber,
+             TableMetadata::kInvalidSequenceNumber, DataFile::Content::kData);
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV1WriteDelete) {
@@ -493,16 +494,19 @@ TEST_F(ManifestWriterVersionsTest, TestV1WriteWithInheritance) {
                 TableMetadata::kInitialSequenceNumber);
   auto entries = ReadManifest(manifests[0]);
   ASSERT_EQ(entries.size(), 1);
-  CheckEntry(entries[0], std::nullopt, std::nullopt, DataFile::Content::kData);
+  CheckEntry(entries[0], TableMetadata::kInitialSequenceNumber,
+             TableMetadata::kInitialSequenceNumber, DataFile::Content::kData);
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV2Write) {
   auto manifest = WriteManifest(/*format_version=*/2, {data_file_});
-  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber, kSequenceNumber);
+  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber,
+                TableMetadata::kInvalidSequenceNumber);
   auto entries = ReadManifest(manifest);
   ASSERT_EQ(entries.size(), 1);
   ASSERT_EQ(manifest.content, ManifestContent::kData);
-  CheckEntry(entries[0], kSequenceNumber, std::nullopt, DataFile::Content::kData);
+  CheckEntry(entries[0], TableMetadata::kInvalidSequenceNumber,
+             TableMetadata::kInvalidSequenceNumber, DataFile::Content::kData);
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV2WriteWithInheritance) {
@@ -512,7 +516,7 @@ TEST_F(ManifestWriterVersionsTest, TestV2WriteWithInheritance) {
   auto entries = ReadManifest(manifests[0]);
   ASSERT_EQ(entries.size(), 1);
   ASSERT_EQ(manifests[0].content, ManifestContent::kData);
-  CheckEntry(entries[0], kSequenceNumber, std::nullopt, DataFile::Content::kData);
+  CheckEntry(entries[0], kSequenceNumber, kSequenceNumber, DataFile::Content::kData);
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV2PlusWriteDeleteV2) {
@@ -541,7 +545,8 @@ TEST_F(ManifestWriterVersionsTest, TestV2ManifestListRewriteWithInheritance) {
 
   // should not inherit the v2 sequence number because it was a rewrite
   auto entries = ReadManifest(manifests2[0]);
-  CheckEntry(entries[0], std::nullopt, std::nullopt, DataFile::Content::kData);
+  CheckEntry(entries[0], TableMetadata::kInitialSequenceNumber,
+             TableMetadata::kInitialSequenceNumber, DataFile::Content::kData);
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV2ManifestRewriteWithInheritance) {
@@ -571,11 +576,13 @@ TEST_F(ManifestWriterVersionsTest, TestV2ManifestRewriteWithInheritance) {
 
 TEST_F(ManifestWriterVersionsTest, TestV3Write) {
   auto manifest = WriteManifest(/*format_version=*/3, {data_file_});
-  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber, kSequenceNumber);
+  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber,
+                TableMetadata::kInvalidSequenceNumber);
   auto entries = ReadManifest(manifest);
   ASSERT_EQ(entries.size(), 1);
   ASSERT_EQ(manifest.content, ManifestContent::kData);
-  CheckEntry(entries[0], kSequenceNumber, std::nullopt, DataFile::Content::kData,
+  CheckEntry(entries[0], TableMetadata::kInvalidSequenceNumber,
+             TableMetadata::kInvalidSequenceNumber, DataFile::Content::kData,
              ManifestStatus::kAdded, kFirstRowId);
 }
 
@@ -590,7 +597,7 @@ TEST_F(ManifestWriterVersionsTest, TestV3WriteWithInheritance) {
   auto entries = ReadManifest(manifests[0]);
   ASSERT_EQ(entries.size(), 1);
   // first_row_id should be inherited
-  CheckEntry(entries[0], kSequenceNumber, std::nullopt, DataFile::Content::kData,
+  CheckEntry(entries[0], kSequenceNumber, kSequenceNumber, DataFile::Content::kData,
              ManifestStatus::kAdded, kFirstRowId);
 }
 
@@ -607,7 +614,7 @@ TEST_F(ManifestWriterVersionsTest, TestV3WriteFirstRowIdAssignment) {
   ASSERT_EQ(entries.size(), 2);
   int64_t expected_first_row_id = kFirstRowId;
   for (const auto& entry : entries) {
-    CheckEntry(entry, kSequenceNumber, std::nullopt, DataFile::Content::kData,
+    CheckEntry(entry, kSequenceNumber, kSequenceNumber, DataFile::Content::kData,
                ManifestStatus::kAdded, expected_first_row_id);
     expected_first_row_id += kMetrics.row_count.value();
   }
@@ -628,8 +635,9 @@ TEST_F(ManifestWriterVersionsTest, TestV3ManifestListRewriteWithInheritance) {
 
   // should not inherit the sequence number because it was a rewrite
   auto entries = ReadManifest(manifests3[0]);
-  CheckEntry(entries[0], std::nullopt, std::nullopt, DataFile::Content::kData,
-             ManifestStatus::kAdded);
+  CheckEntry(entries[0], TableMetadata::kInitialSequenceNumber,
+             TableMetadata::kInitialSequenceNumber, DataFile::Content::kData,
+             ManifestStatus::kAdded, kFirstRowId);
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV3ManifestRewriteWithInheritance) {

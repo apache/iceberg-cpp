@@ -68,12 +68,10 @@ Result<PartitionFieldSummary> PartitionFieldStats::Finish() const {
 }
 
 PartitionSummary::PartitionSummary(const StructType& partition_type) {
-  std::vector<PartitionFieldStats> field_stats;
-  field_stats.reserve(partition_type.fields().size());
+  field_stats_.reserve(partition_type.fields().size());
   for (const auto& field : partition_type.fields()) {
-    field_stats.emplace_back(field.type());
+    field_stats_.emplace_back(field.type());
   }
-  field_stats_ = std::move(field_stats);
 }
 
 Status PartitionSummary::Update(const std::vector<Literal>& partition_values) {

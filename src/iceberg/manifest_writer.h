@@ -40,12 +40,9 @@ class ICEBERG_EXPORT ManifestWriter {
  public:
   ManifestWriter(std::unique_ptr<Writer> writer,
                  std::unique_ptr<ManifestEntryAdapter> adapter,
-                 std::string_view manifest_location)
-      : writer_(std::move(writer)),
-        adapter_(std::move(adapter)),
-        manifest_location_(manifest_location) {}
+                 std::string_view manifest_location, std::optional<int64_t> first_row_id);
 
-  ~ManifestWriter() = default;
+  ~ManifestWriter();
 
   /// \brief Write the entry that all its fields are populated correctly.
   /// \param entry Manifest entry to write.
@@ -63,7 +60,7 @@ class ICEBERG_EXPORT ManifestWriter {
   /// sequence number will be the provided data sequence number. The entry's file sequence
   /// number will be assigned at commit.
   Status WriteAddedEntry(std::shared_ptr<DataFile> file,
-                         std::optional<int64_t> data_sequence_number);
+                         std::optional<int64_t> data_sequence_number = std::nullopt);
   /// \brief Add a new entry to the manifest.
   /// The method populates the snapshot id and status fields of the entry.
   Status WriteAddedEntry(const ManifestEntry& entry);
@@ -80,7 +77,7 @@ class ICEBERG_EXPORT ManifestWriter {
   /// at commit, must be preserved when adding an existing entry.
   Status WriteExistingEntry(std::shared_ptr<DataFile> file, int64_t file_snapshot_id,
                             int64_t data_sequence_number,
-                            std::optional<int64_t> file_sequence_number);
+                            std::optional<int64_t> file_sequence_number = std::nullopt);
   /// \brief Add an existing entry to the manifest.
   /// The method populates the status field of the entry.
   Status WriteExistingEntry(const ManifestEntry& entry);
@@ -96,7 +93,7 @@ class ICEBERG_EXPORT ManifestWriter {
   /// original data and file sequence numbers of the file must be preserved when the file
   /// is marked as deleted.
   Status WriteDeletedEntry(std::shared_ptr<DataFile> file, int64_t data_sequence_number,
-                           std::optional<int64_t> file_sequence_number);
+                           std::optional<int64_t> file_sequence_number = std::nullopt);
   /// \brief Add a deleted entry to the manifest.
   /// The method populates the snapshot id and status fields of the entry.
   Status WriteDeletedEntry(const ManifestEntry& entry);
@@ -170,6 +167,7 @@ class ICEBERG_EXPORT ManifestWriter {
   std::unique_ptr<ManifestEntryAdapter> adapter_;
   bool closed_{false};
   std::string manifest_location_;
+  std::optional<int64_t> first_row_id_;
 
   int32_t add_files_count_{0};
   int32_t existing_files_count_{0};
@@ -178,6 +176,7 @@ class ICEBERG_EXPORT ManifestWriter {
   int64_t existing_rows_count_{0L};
   int64_t delete_rows_count_{0L};
   std::optional<int64_t> min_sequence_number_{std::nullopt};
+  std::unique_ptr<PartitionSummary> partition_summary_;
 };
 
 /// \brief Write manifest files to a manifest list file.

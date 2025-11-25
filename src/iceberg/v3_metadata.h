@@ -60,7 +60,7 @@ class ManifestEntryAdapterV3 : public ManifestEntryAdapter {
 class ManifestFileAdapterV3 : public ManifestFileAdapter {
  public:
   ManifestFileAdapterV3(int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
-                        int64_t sequence_number, int64_t first_row_id)
+                        int64_t sequence_number, std::optional<int64_t> first_row_id)
       : snapshot_id_(snapshot_id),
         parent_snapshot_id_(parent_snapshot_id),
         sequence_number_(sequence_number),

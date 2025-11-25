@@ -30,7 +30,7 @@ class PartitionFieldStats {
  public:
   explicit PartitionFieldStats(const std::shared_ptr<Type>& type) : type_(type) {}
 
-  /// \brief Update the partition field stats with a new partition value.
+  /// \brief Update the partition field stats with a new partition field value.
   Status Update(const Literal& value);
 
   /// \brief Finish the partition field stats and produce the partition field summary.

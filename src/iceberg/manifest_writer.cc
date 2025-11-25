@@ -34,20 +34,38 @@
 
 namespace iceberg {
 
+ManifestWriter::ManifestWriter(std::unique_ptr<Writer> writer,
+                               std::unique_ptr<ManifestEntryAdapter> adapter,
+                               std::string_view manifest_location,
+                               std::optional<int64_t> first_row_id)
+    : writer_(std::move(writer)),
+      adapter_(std::move(adapter)),
+      manifest_location_(manifest_location),
+      first_row_id_(first_row_id),
+      partition_summary_(
+          std::make_unique<PartitionSummary>(*adapter_->partition_type())) {}
+
+ManifestWriter::~ManifestWriter() = default;
+
 Status ManifestWriter::WriteAddedEntry(std::shared_ptr<DataFile> file,
                                        std::optional<int64_t> data_sequence_number) {
-  ManifestEntry added;
-  added.status = ManifestStatus::kAdded;
-  added.snapshot_id = adapter_->snapshot_id();
-  if (file->first_row_id.has_value()) {
-    // suppress first_row_id if set
-    added.data_file = file->Clone();
-    added.data_file->first_row_id = std::nullopt;
-  } else {
-    added.data_file = std::move(file);
+  if (!file) [[unlikely]] {
+    return InvalidArgument("Data file cannot be null");
   }
-  added.sequence_number = data_sequence_number;
-  added.file_sequence_number = std::nullopt;
+
+  ManifestEntry added{
+      .status = ManifestStatus::kAdded,
+      .snapshot_id = adapter_->snapshot_id(),
+      .sequence_number = data_sequence_number,
+      .file_sequence_number = std::nullopt,
+      .data_file = std::move(file),
+  };
+
+  // Suppress first_row_id for added entries
+  if (added.data_file->first_row_id.has_value()) {
+    added.data_file = std::make_unique<DataFile>(*added.data_file);
+    added.data_file->first_row_id = std::nullopt;
+  }
 
   return WriteEntry(added);
 }
@@ -55,19 +73,12 @@ Status ManifestWriter::WriteAddedEntry(std::shared_ptr<DataFile> file,
 Status ManifestWriter::WriteAddedEntry(const ManifestEntry& entry) {
   // Update the entry status to `Added`
   auto added = entry.AsAdded();
-  // Set the snapshot id to the current snapshot id
   added.snapshot_id = adapter_->snapshot_id();
-  if (added.data_file->first_row_id.has_value()) {
-    // suppress first_row_id if set
-    added.data_file = added.data_file->Clone();
-    added.data_file->first_row_id = std::nullopt;
-  }
-  // Set the sequence number to nullopt if it is invalid(smaller than 0)
+  // Set the sequence number to nullopt if it is invalid (smaller than 0)
   if (added.sequence_number.has_value() &&
       added.sequence_number.value() < TableMetadata::kInitialSequenceNumber) {
     added.sequence_number = std::nullopt;
   }
-  // Set the file sequence number to nullopt
   added.file_sequence_number = std::nullopt;
 
   return WriteEntry(added);
@@ -77,6 +88,10 @@ Status ManifestWriter::WriteExistingEntry(std::shared_ptr<DataFile> file,
                                           int64_t file_snapshot_id,
                                           int64_t data_sequence_number,
                                           std::optional<int64_t> file_sequence_number) {
+  if (!file) [[unlikely]] {
+    return InvalidArgument("Data file cannot be null");
+  }
+
   ManifestEntry existing;
   existing.status = ManifestStatus::kExisting;
   existing.snapshot_id = file_snapshot_id;
@@ -89,13 +104,16 @@ Status ManifestWriter::WriteExistingEntry(std::shared_ptr<DataFile> file,
 
 Status ManifestWriter::WriteExistingEntry(const ManifestEntry& entry) {
   // Update the entry status to `Existing`
-  auto existing = entry.AsExisting();
-  return WriteEntry(existing);
+  return WriteEntry(entry.AsExisting());
 }
 
 Status ManifestWriter::WriteDeletedEntry(std::shared_ptr<DataFile> file,
                                          int64_t data_sequence_number,
                                          std::optional<int64_t> file_sequence_number) {
+  if (!file) [[unlikely]] {
+    return InvalidArgument("Data file cannot be null");
+  }
+
   ManifestEntry deleted;
   deleted.status = ManifestStatus::kDeleted;
   deleted.snapshot_id = adapter_->snapshot_id();
@@ -116,12 +134,18 @@ Status ManifestWriter::WriteDeletedEntry(const ManifestEntry& entry) {
 }
 
 Status ManifestWriter::WriteEntry(const ManifestEntry& entry) {
+  if (!entry.data_file) [[unlikely]] {
+    return InvalidArgument("Data file cannot be null");
+  }
+
   ICEBERG_RETURN_UNEXPECTED(CheckDataFile(*entry.data_file));
   if (adapter_->size() >= kBatchSize) {
     ICEBERG_ASSIGN_OR_RAISE(auto array, adapter_->FinishAppending());
     ICEBERG_RETURN_UNEXPECTED(writer_->Write(array));
     ICEBERG_RETURN_UNEXPECTED(adapter_->StartAppending());
   }
+
+  ICEBERG_RETURN_UNEXPECTED(partition_summary_->Update(entry.data_file->partition));
 
   // update statistics
   switch (entry.status) {
@@ -198,29 +222,29 @@ Result<ManifestFile> ManifestWriter::ToManifestFile() const {
     return Invalid("Cannot get ManifestFile before closing the writer.");
   }
 
-  ManifestFile manifest_file;
-  manifest_file.partition_spec_id = adapter_->partition_spec()->spec_id();
-  manifest_file.content = adapter_->content();
-  // sequence_number and min_sequence_number with kInvalidSequenceNumber will be
-  // replace with real sequence number in `ManifestListWriter`.
-  manifest_file.sequence_number = TableMetadata::kInvalidSequenceNumber;
-  manifest_file.min_sequence_number =
-      min_sequence_number_.value_or(TableMetadata::kInvalidSequenceNumber);
+  ICEBERG_ASSIGN_OR_RAISE(auto partitions, partition_summary_->Summaries());
+  ICEBERG_ASSIGN_OR_RAISE(auto manifest_length, writer_->length());
 
-  manifest_file.existing_files_count = existing_files_count_;
-  manifest_file.added_files_count = add_files_count_;
-  manifest_file.existing_files_count = existing_files_count_;
-  manifest_file.deleted_files_count = delete_files_count_;
-  manifest_file.added_rows_count = add_rows_count_;
-  manifest_file.existing_rows_count = existing_rows_count_;
-  manifest_file.deleted_rows_count = delete_rows_count_;
-  ICEBERG_ASSIGN_OR_RAISE(manifest_file.partitions,
-                          adapter_->partition_summary()->Summaries());
-  manifest_file.manifest_path = manifest_location_;
-  ICEBERG_ASSIGN_OR_RAISE(manifest_file.manifest_length, writer_->length());
-  manifest_file.added_snapshot_id =
-      adapter_->snapshot_id().value_or(Snapshot::kInvalidSnapshotId);
-  return manifest_file;
+  return ManifestFile{
+      .manifest_path = manifest_location_,
+      .manifest_length = manifest_length,
+      .partition_spec_id = adapter_->partition_spec()->spec_id(),
+      .content = adapter_->content(),
+      // sequence_number and min_sequence_number with kInvalidSequenceNumber will be
+      // replace with real sequence number in `ManifestListWriter`.
+      .sequence_number = TableMetadata::kInvalidSequenceNumber,
+      .min_sequence_number =
+          min_sequence_number_.value_or(TableMetadata::kInvalidSequenceNumber),
+      .added_snapshot_id = adapter_->snapshot_id().value_or(Snapshot::kInvalidSnapshotId),
+      .added_files_count = add_files_count_,
+      .existing_files_count = existing_files_count_,
+      .deleted_files_count = delete_files_count_,
+      .added_rows_count = add_rows_count_,
+      .existing_rows_count = existing_rows_count_,
+      .deleted_rows_count = delete_rows_count_,
+      .partitions = std::move(partitions),
+      .first_row_id = first_row_id_,
+  };
 }
 
 Result<std::unique_ptr<Writer>> OpenFileWriter(
@@ -271,7 +295,7 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV1Writer(
       OpenFileWriter(manifest_location, std::move(schema), std::move(file_io),
                      adapter->metadata(), "manifest_entry"));
   return std::make_unique<ManifestWriter>(std::move(writer), std::move(adapter),
-                                          manifest_location);
+                                          manifest_location, std::nullopt);
 }
 
 Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV2Writer(
@@ -301,7 +325,7 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV2Writer(
       OpenFileWriter(manifest_location, std::move(schema), std::move(file_io),
                      adapter->metadata(), "manifest_entry"));
   return std::make_unique<ManifestWriter>(std::move(writer), std::move(adapter),
-                                          manifest_location);
+                                          manifest_location, std::nullopt);
 }
 
 Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV3Writer(
@@ -333,7 +357,7 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV3Writer(
       OpenFileWriter(manifest_location, std::move(schema), std::move(file_io),
                      adapter->metadata(), "manifest_entry"));
   return std::make_unique<ManifestWriter>(std::move(writer), std::move(adapter),
-                                          manifest_location);
+                                          manifest_location, first_row_id);
 }
 
 Status ManifestListWriter::Add(const ManifestFile& file) {

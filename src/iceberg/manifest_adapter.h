@@ -76,13 +76,7 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
 
   const std::shared_ptr<PartitionSpec>& partition_spec() const { return partition_spec_; }
 
-  const std::unique_ptr<PartitionSummary>& partition_summary() const {
-    return partition_summary_;
-  }
-
-  /// \brief Create a ManifestFile object without setting file metadata, such as
-  /// location, file size, key metadata, etc.
-  Result<ManifestFile> ToManifestFile() const;
+  const std::shared_ptr<StructType>& partition_type() const { return partition_type_; }
 
  protected:
   Status AppendInternal(const ManifestEntry& entry);
@@ -106,9 +100,9 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
   std::optional<int64_t> snapshot_id_;
   std::shared_ptr<PartitionSpec> partition_spec_;
   std::shared_ptr<Schema> current_schema_;
+  std::shared_ptr<StructType> partition_type_;
   std::shared_ptr<Schema> manifest_schema_;
   const ManifestContent content_;
-  std::unique_ptr<PartitionSummary> partition_summary_;
 };
 
 /// \brief Adapter for appending a list of `ManifestFile`s to an `ArrowArray`.
