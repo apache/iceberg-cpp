@@ -82,8 +82,10 @@ add_iceberg_test(table_test
                  json_internal_test.cc
                  pending_update_test.cc
                  schema_json_test.cc
-                 table_metadata_builder_test.cc
                  table_test.cc
+                 table_metadata_builder_test.cc
+                 table_requirement_test.cc
+                 table_update_test.cc
                  test_common.cc)
 
 add_iceberg_test(expression_test
