@@ -79,12 +79,12 @@ add_iceberg_test(schema_test
 
 add_iceberg_test(table_test
                  SOURCES
-                 test_common.cc
                  json_internal_test.cc
-                 table_test.cc
+                 pending_update_test.cc
                  schema_json_test.cc
                  table_metadata_builder_test.cc
-                 pending_update_test.cc)
+                 table_test.cc
+                 test_common.cc)
 
 add_iceberg_test(expression_test
                  SOURCES

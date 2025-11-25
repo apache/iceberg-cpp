@@ -35,12 +35,11 @@ enum class ErrorKind {
   kDecompressError,
   kInvalid,  // For general invalid errors
   kInvalidArgument,
-  kValidationFailed,
   kInvalidArrowData,
   kInvalidExpression,
-  kInvalidSchema,
   kInvalidManifest,
   kInvalidManifestList,
+  kInvalidSchema,
   kIOError,
   kJsonParseError,
   kNoSuchNamespace,
@@ -50,6 +49,7 @@ enum class ErrorKind {
   kNotImplemented,
   kNotSupported,
   kUnknownError,
+  kValidationFailed,
 };
 
 /// \brief Error with a kind and a message.
@@ -85,12 +85,11 @@ DEFINE_ERROR_FUNCTION(CommitStateUnknown)
 DEFINE_ERROR_FUNCTION(DecompressError)
 DEFINE_ERROR_FUNCTION(Invalid)
 DEFINE_ERROR_FUNCTION(InvalidArgument)
-DEFINE_ERROR_FUNCTION(ValidationFailed)
 DEFINE_ERROR_FUNCTION(InvalidArrowData)
 DEFINE_ERROR_FUNCTION(InvalidExpression)
-DEFINE_ERROR_FUNCTION(InvalidSchema)
 DEFINE_ERROR_FUNCTION(InvalidManifest)
 DEFINE_ERROR_FUNCTION(InvalidManifestList)
+DEFINE_ERROR_FUNCTION(InvalidSchema)
 DEFINE_ERROR_FUNCTION(IOError)
 DEFINE_ERROR_FUNCTION(JsonParseError)
 DEFINE_ERROR_FUNCTION(NoSuchNamespace)
@@ -100,6 +99,7 @@ DEFINE_ERROR_FUNCTION(NotFound)
 DEFINE_ERROR_FUNCTION(NotImplemented)
 DEFINE_ERROR_FUNCTION(NotSupported)
 DEFINE_ERROR_FUNCTION(UnknownError)
+DEFINE_ERROR_FUNCTION(ValidationFailed)
 
 #undef DEFINE_ERROR_FUNCTION
 

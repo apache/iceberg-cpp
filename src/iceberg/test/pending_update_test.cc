@@ -37,6 +37,7 @@ class MockPendingUpdate : public PendingUpdateTyped<MockSnapshot> {
     if (should_fail_) {
       return ValidationFailed("Mock validation failed");
     }
+    apply_called_ = true;
     return MockSnapshot{};
   }
 
@@ -44,7 +45,6 @@ class MockPendingUpdate : public PendingUpdateTyped<MockSnapshot> {
     if (should_fail_commit_) {
       return CommitFailed("Mock commit failed");
     }
-    apply_called_ = true;
     commit_called_ = true;
     return {};
   }
