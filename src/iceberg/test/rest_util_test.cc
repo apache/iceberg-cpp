@@ -31,7 +31,6 @@ TEST(RestUtilTest, TrimTrailingSlash) {
   EXPECT_EQ(TrimTrailingSlash("https://foo////"), "https://foo");
 }
 
-// Ported from Java TestRESTUtil.testRoundTripUrlEncodeDecodeNamespace
 TEST(RestUtilTest, RoundTripUrlEncodeDecodeNamespace) {
   // {"dogs"}
   EXPECT_EQ(EncodeNamespaceForUrl(Namespace{.levels = {"dogs"}}), "dogs");
@@ -79,8 +78,6 @@ TEST(RestUtilTest, EncodeString) {
   EXPECT_EQ(EncodeString("path/to/file"), "path%2Fto%2Ffile");
   EXPECT_EQ(EncodeString("key=value&foo=bar"), "key%3Dvalue%26foo%3Dbar");
   EXPECT_EQ(EncodeString("100%"), "100%25");
-
-  // ASCII Unit Separator (0x1F) - important for Iceberg namespaces
   EXPECT_EQ(EncodeString("hello\x1Fworld"), "hello%1Fworld");
   EXPECT_EQ(EncodeString(""), "");
 }
