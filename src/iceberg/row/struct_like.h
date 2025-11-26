@@ -121,9 +121,13 @@ class ICEBERG_EXPORT StructLikeAccessor {
   /// \brief Get the type of the value that this accessor is bound to.
   const Type& type() const { return *type_; }
 
+  /// \brief Get the position path of the value that this accessor bounded to.
+  const std::vector<size_t>& position_path() const { return position_path_; }
+
  private:
   std::shared_ptr<Type> type_;
   std::function<Result<Scalar>(const StructLike&)> accessor_;
+  std::vector<size_t> position_path_;
 };
 
 }  // namespace iceberg

@@ -70,7 +70,7 @@ Result<Scalar> LiteralToScalar(const Literal& literal) {
 
 StructLikeAccessor::StructLikeAccessor(std::shared_ptr<Type> type,
                                        std::span<const size_t> position_path)
-    : type_(std::move(type)) {
+    : type_(std::move(type)), position_path_(position_path.begin(), position_path.end()) {
   if (position_path.size() == 1) {
     accessor_ = [pos =
                      position_path[0]](const StructLike& struct_like) -> Result<Scalar> {

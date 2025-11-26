@@ -157,6 +157,8 @@ class ICEBERG_EXPORT BoundReference
 
   Kind kind() const override { return Kind::kReference; }
 
+  const StructLikeAccessor& accessor() const { return *accessor_; }
+
  private:
   BoundReference(SchemaField field, std::unique_ptr<StructLikeAccessor> accessor);
 
