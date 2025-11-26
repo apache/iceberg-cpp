@@ -113,7 +113,7 @@ TEST(SnapshotUpdateTest, DeleteWith) {
 
   // Set up callback to track deleted files
   update.DeleteWith([&deleted_files](std::string_view path) {
-    deleted_files.push_back(std::string(path));
+    deleted_files.emplace_back(path);
   });
 
   // Verify through public API: calling Commit() should invoke the callback
@@ -153,7 +153,7 @@ TEST(SnapshotUpdateTest, MethodChainingWithAllMethods) {
   update.Set("operation", "append")
       .Set("added-files-count", "5")
       .DeleteWith([&deleted_files](std::string_view path) {
-        deleted_files.push_back(std::string(path));
+        deleted_files.emplace_back(path);
       })
       .ToBranch("wap-branch")
       .StageOnly();
