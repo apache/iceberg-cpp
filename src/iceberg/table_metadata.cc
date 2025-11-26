@@ -162,6 +162,70 @@ bool operator==(const TableMetadata& lhs, const TableMetadata& rhs) {
          lhs.next_row_id == rhs.next_row_id;
 }
 
+// TableMetadataCache implementation
+
+Result<TableMetadataCache::SchemasMapRef> TableMetadataCache::GetSchemasById() const {
+  return schemas_map_.Get(metadata_);
+}
+
+Result<TableMetadataCache::PartitionSpecsMapRef>
+TableMetadataCache::GetPartitionSpecsById() const {
+  return partition_specs_map_.Get(metadata_);
+}
+
+Result<TableMetadataCache::SortOrdersMapRef> TableMetadataCache::GetSortOrdersById()
+    const {
+  return sort_orders_map_.Get(metadata_);
+}
+
+Result<TableMetadataCache::SnapshotsMapRef> TableMetadataCache::GetSnapshotsById() const {
+  return snapshot_map_.Get(metadata_);
+}
+
+Result<TableMetadataCache::SchemasMap> TableMetadataCache::InitSchemasMap(
+    const TableMetadata* metadata) {
+  SchemasMap schemas_map;
+  schemas_map.reserve(metadata->schemas.size());
+  for (const auto& schema : metadata->schemas) {
+    if (schema->schema_id()) {
+      schemas_map.emplace(schema->schema_id().value(), schema);
+    }
+  }
+  return schemas_map;
+}
+
+Result<TableMetadataCache::PartitionSpecsMap> TableMetadataCache::InitPartitionSpecsMap(
+    const TableMetadata* metadata) {
+  PartitionSpecsMap partition_specs_map;
+  partition_specs_map.reserve(metadata->partition_specs.size());
+  for (const auto& spec : metadata->partition_specs) {
+    partition_specs_map.emplace(spec->spec_id(), spec);
+  }
+  return partition_specs_map;
+}
+
+Result<TableMetadataCache::SortOrdersMap> TableMetadataCache::InitSortOrdersMap(
+    const TableMetadata* metadata) {
+  SortOrdersMap sort_orders_map;
+  sort_orders_map.reserve(metadata->sort_orders.size());
+  for (const auto& order : metadata->sort_orders) {
+    sort_orders_map.emplace(order->order_id(), order);
+  }
+  return sort_orders_map;
+}
+
+Result<TableMetadataCache::SnapshotsMap> TableMetadataCache::InitSnapshotMap(
+    const TableMetadata* metadata) {
+  SnapshotsMap snapshots_map;
+  snapshots_map.reserve(metadata->snapshots.size());
+  for (const auto& snapshot : metadata->snapshots) {
+    snapshots_map.emplace(snapshot->snapshot_id, snapshot);
+  }
+  return snapshots_map;
+}
+
+// TableMetadataUtil implementation
+
 Result<MetadataFileCodecType> TableMetadataUtil::CodecFromFileName(
     std::string_view file_name) {
   if (file_name.find(".metadata.json") == std::string::npos) {

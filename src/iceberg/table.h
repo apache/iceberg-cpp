@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -60,24 +61,24 @@ class ICEBERG_EXPORT Table {
   Result<std::shared_ptr<Schema>> schema() const;
 
   /// \brief Return a map of schema for this table
-  /// \note This method is **not** thread-safe in the current implementation.
-  const std::shared_ptr<std::unordered_map<int32_t, std::shared_ptr<Schema>>>& schemas()
-      const;
+  Result<
+      std::reference_wrapper<const std::unordered_map<int32_t, std::shared_ptr<Schema>>>>
+  schemas() const;
 
   /// \brief Return the partition spec for this table, return NotFoundError if not found
   Result<std::shared_ptr<PartitionSpec>> spec() const;
 
   /// \brief Return a map of partition specs for this table
-  /// \note This method is **not** thread-safe in the current implementation.
-  const std::shared_ptr<std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>>&
+  Result<std::reference_wrapper<
+      const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>>>
   specs() const;
 
   /// \brief Return the sort order for this table, return NotFoundError if not found
   Result<std::shared_ptr<SortOrder>> sort_order() const;
 
   /// \brief Return a map of sort order IDs to sort orders for this table
-  /// \note This method is **not** thread-safe in the current implementation.
-  const std::shared_ptr<std::unordered_map<int32_t, std::shared_ptr<SortOrder>>>&
+  Result<std::reference_wrapper<
+      const std::unordered_map<int32_t, std::shared_ptr<SortOrder>>>>
   sort_orders() const;
 
   /// \brief Return a map of string properties for this table
@@ -124,14 +125,7 @@ class ICEBERG_EXPORT Table {
   std::shared_ptr<FileIO> io_;
   std::shared_ptr<Catalog> catalog_;
   std::unique_ptr<TableProperties> properties_;
-
-  // Cache lazy-initialized maps.
-  mutable std::shared_ptr<std::unordered_map<int32_t, std::shared_ptr<Schema>>>
-      schemas_map_;
-  mutable std::shared_ptr<std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>>
-      partition_spec_map_;
-  mutable std::shared_ptr<std::unordered_map<int32_t, std::shared_ptr<SortOrder>>>
-      sort_orders_map_;
+  std::unique_ptr<class TableMetadataCache> metadata_cache_;
 };
 
 }  // namespace iceberg
