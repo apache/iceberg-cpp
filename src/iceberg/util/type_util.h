@@ -33,6 +33,7 @@
 #include "iceberg/schema_field.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
+#include "iceberg/util/formatter_internal.h"
 #include "iceberg/util/string_util.h"
 #include "iceberg/util/visit_type.h"
 
