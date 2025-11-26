@@ -21,8 +21,11 @@
 
 #include <algorithm>
 #include <chrono>
+#include <cstdint>
 #include <format>
+#include <optional>
 #include <string>
+#include <unordered_map>
 
 #include <nlohmann/json.hpp>
 
@@ -216,6 +219,9 @@ struct TableMetadataBuilder::Impl {
 
   // Change tracking
   std::vector<std::unique_ptr<TableUpdate>> changes;
+  std::optional<int32_t> last_added_schema_id;
+  std::optional<int32_t> last_added_order_id;
+  std::optional<int32_t> last_added_spec_id;
 
   // Error collection (since methods return *this and cannot throw)
   std::vector<Error> errors;
@@ -223,6 +229,11 @@ struct TableMetadataBuilder::Impl {
   // Metadata location tracking
   std::optional<std::string> metadata_location;
   std::optional<std::string> previous_metadata_location;
+
+  // indexes for convenience
+  std::unordered_map<int32_t, std::shared_ptr<Schema>> schemas_by_id;
+  std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id;
+  std::unordered_map<int32_t, std::shared_ptr<SortOrder>> sort_orders_by_id;
 
   // Constructor for new table
   explicit Impl(int8_t format_version) : base(nullptr), metadata{} {
@@ -239,7 +250,38 @@ struct TableMetadataBuilder::Impl {
 
   // Constructor from existing metadata
   explicit Impl(const TableMetadata* base_metadata)
-      : base(base_metadata), metadata(*base_metadata) {}
+      : base(base_metadata), metadata(*base_metadata) {
+    // Initialize index maps from base metadata
+    for (const auto& schema : metadata.schemas) {
+      if (schema->schema_id().has_value()) {
+        schemas_by_id.emplace(schema->schema_id().value(), schema);
+      }
+    }
+
+    for (const auto& spec : metadata.partition_specs) {
+      specs_by_id.emplace(spec->spec_id(), spec);
+    }
+
+    for (const auto& order : metadata.sort_orders) {
+      sort_orders_by_id.emplace(order->order_id(), order);
+    }
+  }
+
+  int32_t reuseOrCreateNewSortOrderId(const SortOrder& new_order) {
+    if (new_order.is_unsorted()) {
+      return SortOrder::kUnsortedOrderId;
+    }
+    // determine the next order id
+    int32_t new_order_id = SortOrder::kInitialSortOrderId;
+    for (const auto& order : metadata.sort_orders) {
+      if (order->SameOrder(new_order)) {
+        return order->order_id();
+      } else if (new_order_id <= order->order_id()) {
+        new_order_id = order->order_id() + 1;
+      }
+    }
+    return new_order_id;
+  }
 };
 
 TableMetadataBuilder::TableMetadataBuilder(int8_t format_version)
@@ -361,7 +403,68 @@ TableMetadataBuilder& TableMetadataBuilder::SetDefaultSortOrder(int32_t order_id
 
 TableMetadataBuilder& TableMetadataBuilder::AddSortOrder(
     std::shared_ptr<SortOrder> order) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  int32_t new_order_id = impl_->reuseOrCreateNewSortOrderId(*order);
+
+  if (impl_->sort_orders_by_id.find(new_order_id) != impl_->sort_orders_by_id.end()) {
+    // update last_added_order_id if the order was added in this set of changes (since it
+    // is now the last)
+    bool is_new_order = false;
+    for (const auto& change : impl_->changes) {
+      auto* add_sort_order = dynamic_cast<table::AddSortOrder*>(change.get());
+      if (add_sort_order && add_sort_order->sort_order()->order_id() == new_order_id) {
+        is_new_order = true;
+        break;
+      }
+    }
+    impl_->last_added_order_id =
+        is_new_order ? std::make_optional(new_order_id) : std::nullopt;
+    return *this;
+  }
+
+  // Get current schema for validation
+  auto schema_result = impl_->metadata.Schema();
+  if (!schema_result) {
+    impl_->errors.emplace_back(
+        ErrorKind::kInvalidArgument,
+        std::format("Cannot find current schema: {}", schema_result.error().message));
+    return *this;
+  }
+
+  auto schema = schema_result.value();
+
+  // Validate the sort order against the schema
+  auto validate_status = order->Validate(*schema);
+  if (!validate_status) {
+    impl_->errors.emplace_back(
+        ErrorKind::kInvalidArgument,
+        std::format("Sort order validation failed: {}", validate_status.error().message));
+    return *this;
+  }
+
+  std::shared_ptr<SortOrder> new_order;
+  if (order->is_unsorted()) {
+    new_order = SortOrder::Unsorted();
+  } else {
+    // TODO(Li Feiyang): rebuild the sort order using new column ids (freshSortOrder)
+    // For now, create a new sort order with the provided fields
+    auto sort_order_result = SortOrder::Make(
+        *schema, new_order_id,
+        std::vector<SortField>(order->fields().begin(), order->fields().end()));
+    if (!sort_order_result) {
+      impl_->errors.emplace_back(ErrorKind::kInvalidArgument,
+                                 std::format("Failed to create sort order: {}",
+                                             sort_order_result.error().message));
+      return *this;
+    }
+    new_order = std::move(sort_order_result.value());
+  }
+
+  impl_->metadata.sort_orders.push_back(new_order);
+  impl_->sort_orders_by_id.emplace(new_order_id, new_order);
+
+  impl_->changes.push_back(std::make_unique<table::AddSortOrder>(new_order));
+  impl_->last_added_order_id = new_order_id;
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::AddSnapshot(
