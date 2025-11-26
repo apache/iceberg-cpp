@@ -77,6 +77,7 @@ set(ICEBERG_SOURCES
     util/temporal_util.cc
     util/timepoint.cc
     util/truncate_util.cc
+    util/type_util.cc
     util/uuid.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
