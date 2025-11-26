@@ -72,7 +72,7 @@ Result<std::unique_ptr<RestCatalog>> RestCatalog::Make(
 
   // Update resource paths based on the final config
   ICEBERG_ASSIGN_OR_RAISE(auto final_uri, final_config->Uri());
-  paths->SetBaseUri(std::string(TrimTrailingSlash(final_uri)));
+  ICEBERG_RETURN_UNEXPECTED(paths->SetBaseUri(std::string(TrimTrailingSlash(final_uri))));
 
   return std::unique_ptr<RestCatalog>(
       new RestCatalog(std::move(final_config), std::move(paths)));
