@@ -63,6 +63,7 @@ iceberg_tests = {
             'inclusive_metrics_evaluator_with_transform_test.cc',
             'literal_test.cc',
             'predicate_test.cc',
+            'strict_metrics_evaluator_test.cc',
         ),
     },
     'json_serde_test': {
