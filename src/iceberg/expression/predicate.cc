@@ -20,7 +20,6 @@
 #include "iceberg/expression/predicate.h"
 
 #include <algorithm>
-#include <cmath>
 #include <format>
 
 #include "iceberg/expression/expressions.h"
@@ -50,7 +49,9 @@ Result<std::unique_ptr<UnboundPredicateImpl<B>>> UnboundPredicateImpl<B>::Make(
   if (!term) [[unlikely]] {
     return InvalidExpression("UnboundPredicate cannot have null term");
   }
-  if (op == Expression::Operation::kIn || op == Expression::Operation::kNotIn) {
+  if (op != Expression::Operation::kIsNull && op != Expression::Operation::kNotNull &&
+      op != Expression::Operation::kIsNan && op != Expression::Operation::kNotNan)
+      [[unlikely]] {
     return InvalidExpression("Cannot create {} predicate without a value",
                              ::iceberg::ToString(op));
   }
@@ -63,6 +64,12 @@ Result<std::unique_ptr<UnboundPredicateImpl<B>>> UnboundPredicateImpl<B>::Make(
     Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term, Literal value) {
   if (!term) [[unlikely]] {
     return InvalidExpression("UnboundPredicate cannot have null term");
+  }
+  if (op == Expression::Operation::kIsNull || op == Expression::Operation::kNotNull ||
+      op == Expression::Operation::kIsNan || op == Expression::Operation::kNotNan)
+      [[unlikely]] {
+    return InvalidExpression("Cannot create {} predicate inclusive a value",
+                             ::iceberg::ToString(op));
   }
   return std::unique_ptr<UnboundPredicateImpl<B>>(
       new UnboundPredicateImpl<B>(op, std::move(term), std::move(value)));

@@ -27,7 +27,6 @@
 #include <string>
 #include <vector>
 
-#include "iceberg/exception.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/expression/predicate.h"
 #include "iceberg/expression/term.h"
