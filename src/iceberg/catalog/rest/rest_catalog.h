@@ -23,10 +23,8 @@
 #include <string>
 
 #include "iceberg/catalog.h"
-#include "iceberg/catalog/rest/catalog_properties.h"
-#include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
-#include "iceberg/catalog/rest/resource_paths.h"
+#include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/result.h"
 
 /// \file iceberg/catalog/rest/rest_catalog.h
@@ -37,6 +35,8 @@ namespace iceberg::rest {
 /// \brief Rest catalog implementation.
 class ICEBERG_REST_EXPORT RestCatalog : public Catalog {
  public:
+  ~RestCatalog() override;
+
   RestCatalog(const RestCatalog&) = delete;
   RestCatalog& operator=(const RestCatalog&) = delete;
   RestCatalog(RestCatalog&&) = delete;
@@ -100,19 +100,12 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog {
       const TableIdentifier& identifier, const Schema& schema) const override;
 
  private:
-  RestCatalog(std::unique_ptr<RestCatalogProperties> config, std::string base_uri);
-
-  /// \brief Fetch server configuration and merge with client config
-  ///
-  /// \param config the initial client configuration
-  /// \param paths the resource paths for REST endpoints
-  /// \return the final merged configuration
-  static Result<std::unique_ptr<RestCatalogProperties>> FetchAndMergeConfig(
-      const RestCatalogProperties& config, const ResourcePaths& paths);
+  RestCatalog(std::unique_ptr<RestCatalogProperties> config,
+              std::unique_ptr<ResourcePaths> paths);
 
   std::unique_ptr<RestCatalogProperties> config_;
-  std::shared_ptr<HttpClient> client_;
-  ResourcePaths paths_;
+  std::unique_ptr<HttpClient> client_;
+  std::unique_ptr<ResourcePaths> paths_;
   std::string name_;
 };
 

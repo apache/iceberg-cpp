@@ -22,7 +22,7 @@
 #include <memory>
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
-#include "iceberg/catalog/rest/types.h"
+#include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/result.h"
 
 /// \file iceberg/catalog/rest/error_handlers.h

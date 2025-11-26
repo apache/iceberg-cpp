@@ -19,10 +19,13 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
-#include "iceberg/table_identifier.h"
+#include "iceberg/catalog/rest/type_fwd.h"
+#include "iceberg/result.h"
+#include "iceberg/type_fwd.h"
 
 /// \file iceberg/catalog/rest/resource_paths.h
 /// \brief Resource path construction for Iceberg REST API endpoints.
@@ -37,65 +40,56 @@ class ICEBERG_REST_EXPORT ResourcePaths {
   /// \brief Construct a ResourcePaths with base URI and optional prefix.
   /// \param base_uri The base URI of the REST catalog server (without trailing slash)
   /// \param prefix Optional prefix for REST API paths (default: empty)
-  explicit ResourcePaths(std::string base_uri, std::string prefix = "");
+  /// \return A unique_ptr to ResourcePaths instance
+  static Result<std::unique_ptr<ResourcePaths>> Make(std::string base_uri,
+                                                     const std::string& prefix);
+
+  /// \brief Set the base URI of the REST catalog server.
+  Status SetBaseUri(const std::string& base_uri);
 
   /// \brief Get the /v1/{prefix}/config endpoint path.
-  std::string Config() const;
+  Result<std::string> Config() const;
 
   /// \brief Get the /v1/{prefix}/oauth/tokens endpoint path.
-  std::string OAuth2Tokens() const;
+  Result<std::string> OAuth2Tokens() const;
 
   /// \brief Get the /v1/{prefix}/namespaces endpoint path.
-  std::string Namespaces() const;
+  Result<std::string> Namespaces() const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace} endpoint path.
-  std::string Namespace_(const Namespace& ns) const;
+  Result<std::string> Namespace_(const Namespace& ns) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/properties endpoint path.
-  std::string NamespaceProperties(const Namespace& ns) const;
+  Result<std::string> NamespaceProperties(const Namespace& ns) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables endpoint path.
-  std::string Tables(const Namespace& ns) const;
+  Result<std::string> Tables(const Namespace& ns) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table} endpoint path.
-  std::string Table(const TableIdentifier& ident) const;
+  Result<std::string> Table(const TableIdentifier& ident) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/register endpoint path.
-  std::string Register(const Namespace& ns) const;
+  Result<std::string> Register(const Namespace& ns) const;
 
   /// \brief Get the /v1/{prefix}/tables/rename endpoint path.
-  std::string Rename() const;
+  Result<std::string> Rename() const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/metrics endpoint
   /// path.
-  std::string Metrics(const TableIdentifier& ident) const;
+  Result<std::string> Metrics(const TableIdentifier& ident) const;
 
   /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/credentials
   /// endpoint path.
-  std::string Credentials(const TableIdentifier& ident) const;
-
-  /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/plan endpoint
-  /// path.
-  std::string ScanPlan(const TableIdentifier& ident) const;
-
-  /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/plan/{planId}
-  /// endpoint path.
-  std::string ScanPlanResult(const TableIdentifier& ident,
-                             const std::string& plan_id) const;
-
-  /// \brief Get the /v1/{prefix}/namespaces/{namespace}/tables/{table}/tasks endpoint
-  /// path.
-  std::string Tasks(const TableIdentifier& ident) const;
+  Result<std::string> Credentials(const TableIdentifier& ident) const;
 
   /// \brief Get the /v1/{prefix}/transactions/commit endpoint path.
-  std::string CommitTransaction() const;
+  Result<std::string> CommitTransaction() const;
 
  private:
-  /// \brief Base URI of the REST catalog server.
-  std::string base_uri_;
+  ResourcePaths(std::string base_uri, const std::string& prefix);
 
-  /// \brief Optional prefix for REST API paths from configuration.
-  std::string prefix_;
+  std::string base_uri_;      // required
+  const std::string prefix_;  // optional
 };
 
 }  // namespace iceberg::rest

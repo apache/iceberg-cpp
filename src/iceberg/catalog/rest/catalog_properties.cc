@@ -37,18 +37,7 @@ std::unique_ptr<RestCatalogProperties> RestCatalogProperties::FromMap(
 
 std::unordered_map<std::string, std::string> RestCatalogProperties::ExtractHeaders()
     const {
-  std::unordered_map<std::string, std::string> headers;
-  constexpr std::string_view prefix = "header.";
-  for (const auto& [key, value] : configs_) {
-    if (key.starts_with(prefix)) {
-      std::string header_name = key.substr(prefix.length());
-      if (header_name.empty() || value.empty()) {
-        continue;
-      }
-      headers[header_name] = value;
-    }
-  }
-  return headers;
+  return Extract(kHeaderPrefix);
 }
 
 Result<std::string_view> RestCatalogProperties::Uri() const {

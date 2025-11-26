@@ -19,13 +19,15 @@
 
 #include "iceberg/catalog/rest/rest_util.h"
 
-#include <string>
-#include <string_view>
-#include <unordered_map>
-
 #include <cpr/util.h>
 
+#include "iceberg/table_identifier.h"
+#include "iceberg/util/macros.h"
 namespace iceberg::rest {
+
+namespace {
+const std::string kNamespaceEscapeSeparator = "%1F";
+}
 
 std::string_view TrimTrailingSlash(std::string_view str) {
   while (!str.empty() && str.back() == '/') {
@@ -34,50 +36,71 @@ std::string_view TrimTrailingSlash(std::string_view str) {
   return str;
 }
 
-std::string EncodeString(std::string_view toEncode) {
-  // Use CPR's urlEncode which internally calls libcurl's curl_easy_escape()
-  cpr::util::SecureString encoded = cpr::util::urlEncode(toEncode);
-  return {encoded.data(), encoded.size()};
-}
-
-std::string DecodeString(std::string_view encoded) {
-  // Use CPR's urlDecode which internally calls libcurl's curl_easy_unescape()
-  cpr::util::SecureString decoded = cpr::util::urlDecode(encoded);
-  return {decoded.data(), decoded.size()};
-}
-
-std::string EncodeNamespaceForUrl(const Namespace& ns) {
-  if (ns.levels.empty()) {
+Result<std::string> EncodeString(std::string_view str_to_encode) {
+  if (str_to_encode.empty()) {
     return "";
   }
-  std::string result = EncodeString(ns.levels.front());
 
-  // Join encoded levels with "%1F"
-  for (size_t i = 1; i < ns.levels.size(); ++i) {
-    result.append("%1F");
-    result.append(EncodeString(ns.levels[i]));
+  // Use CPR's urlEncode which internally calls libcurl's curl_easy_escape()
+  cpr::util::SecureString encoded = cpr::util::urlEncode(str_to_encode);
+  if (encoded.empty()) {
+    return InvalidArgument("Failed to encode string '{}'", str_to_encode);
+  }
+
+  return std::string{encoded.data(), encoded.size()};
+}
+
+Result<std::string> DecodeString(std::string_view str_to_decode) {
+  if (str_to_decode.empty()) {
+    return "";
+  }
+
+  // Use CPR's urlDecode which internally calls libcurl's curl_easy_unescape()
+  cpr::util::SecureString decoded = cpr::util::urlDecode(str_to_decode);
+  if (decoded.empty()) {
+    return InvalidArgument("Failed to decode string '{}'", str_to_decode);
+  }
+
+  return std::string{decoded.data(), decoded.size()};
+}
+
+Result<std::string> EncodeNamespace(const Namespace& ns_to_encode) {
+  if (ns_to_encode.levels.empty()) {
+    return "";
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(std::string result, EncodeString(ns_to_encode.levels.front()));
+
+  for (size_t i = 1; i < ns_to_encode.levels.size(); ++i) {
+    ICEBERG_ASSIGN_OR_RAISE(std::string encoded_level,
+                            EncodeString(ns_to_encode.levels[i]));
+    result.append(kNamespaceEscapeSeparator);
+    result.append(std::move(encoded_level));
   }
 
   return result;
 }
 
-Namespace DecodeNamespaceFromUrl(std::string_view encoded) {
-  if (encoded.empty()) {
+Result<Namespace> DecodeNamespace(std::string_view str_to_decode) {
+  if (str_to_decode.empty()) {
     return Namespace{.levels = {}};
   }
 
-  // Split by "%1F" first
-  Namespace ns;
+  Namespace ns{};
   std::string::size_type start = 0;
-  std::string::size_type end = encoded.find("%1F");
+  std::string::size_type end = str_to_decode.find(kNamespaceEscapeSeparator);
 
   while (end != std::string::npos) {
-    ns.levels.push_back(DecodeString(encoded.substr(start, end - start)));
-    // Skip the 3-character "%1F" separator
-    start = end + 3;
-    end = encoded.find("%1F", start);
+    ICEBERG_ASSIGN_OR_RAISE(std::string decoded_level,
+                            DecodeString(str_to_decode.substr(start, end - start)));
+    ns.levels.push_back(std::move(decoded_level));
+    start = end + kNamespaceEscapeSeparator.size();
+    end = str_to_decode.find(kNamespaceEscapeSeparator, start);
   }
-  ns.levels.push_back(DecodeString(encoded.substr(start)));
+
+  ICEBERG_ASSIGN_OR_RAISE(std::string decoded_level,
+                          DecodeString(str_to_decode.substr(start)));
+  ns.levels.push_back(std::move(decoded_level));
   return ns;
 }
 

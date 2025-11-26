@@ -33,12 +33,18 @@ namespace iceberg {
 /// \brief A namespace in a catalog.
 struct ICEBERG_EXPORT Namespace {
   std::vector<std::string> levels;
+
+  bool operator==(const Namespace& other) const { return levels == other.levels; }
 };
 
 /// \brief Identifies a table in iceberg catalog.
 struct ICEBERG_EXPORT TableIdentifier {
   Namespace ns;
   std::string name;
+
+  bool operator==(const TableIdentifier& other) const {
+    return ns == other.ns && name == other.name;
+  }
 
   /// \brief Validates the TableIdentifier.
   Status Validate() const {

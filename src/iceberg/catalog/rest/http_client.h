@@ -25,8 +25,8 @@
 #include <string>
 #include <unordered_map>
 
-#include "iceberg/catalog/rest/error_handlers.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
+#include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/result.h"
 
 /// \file iceberg/catalog/rest/http_client.h
@@ -114,12 +114,10 @@ class ICEBERG_REST_EXPORT HttpClient {
 
   std::unordered_map<std::string, std::string> default_headers_;
 
-  // Mutex to protect the non-thread-safe cpr::Session.
-  mutable std::mutex session_mutex_;
-
   // TODO(Li Feiyang): use connection pool to support external multi-threaded concurrent
   // calls
   std::unique_ptr<cpr::Session> session_;
+  mutable std::mutex session_mutex_;
 };
 
 }  // namespace iceberg::rest

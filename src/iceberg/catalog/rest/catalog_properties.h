@@ -41,15 +41,14 @@ class ICEBERG_REST_EXPORT RestCatalogProperties
 
   /// \brief The URI of the REST catalog server.
   inline static Entry<std::string> kUri{"uri", ""};
-
   /// \brief The name of the catalog.
   inline static Entry<std::string> kName{"name", ""};
-
   /// \brief The warehouse path.
   inline static Entry<std::string> kWarehouse{"warehouse", ""};
-
   /// \brief The optional prefix for REST API paths.
   inline static Entry<std::string> kPrefix{"prefix", ""};
+  /// \brief The prefix for HTTP headers.
+  inline static constexpr std::string_view kHeaderPrefix = "header.";
 
   /// \brief Create a default RestCatalogProperties instance.
   static std::unique_ptr<RestCatalogProperties> default_properties();
@@ -59,9 +58,6 @@ class ICEBERG_REST_EXPORT RestCatalogProperties
       const std::unordered_map<std::string, std::string>& properties);
 
   /// \brief Returns HTTP headers to be added to every request.
-  ///
-  /// This includes any key prefixed with "header." in the properties.
-  /// \return A map of headers with the prefix removed from the keys.
   std::unordered_map<std::string, std::string> ExtractHeaders() const;
 
   /// \brief Get the URI of the REST catalog server.

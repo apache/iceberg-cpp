@@ -21,6 +21,8 @@
 
 #include <string_view>
 
+#include "iceberg/catalog/rest/types.h"
+
 namespace iceberg::rest {
 
 namespace {
@@ -58,7 +60,7 @@ Status DefaultErrorHandler::Accept(const ErrorModel& error) const {
       return ServiceUnavailable("Service unavailable: {}", error.message);
   }
 
-  return RestError("Unable to process: {}", error.message);
+  return RestError("Code: {}, message: {}", error.code, error.message);
 }
 
 const std::shared_ptr<NamespaceErrorHandler>& NamespaceErrorHandler::Instance() {

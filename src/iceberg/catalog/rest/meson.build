@@ -65,6 +65,7 @@ install_headers(
         'resource_paths.h',
         'rest_catalog.h',
         'rest_util.h',
+        'type_fwd.h',
         'types.h',
     ],
     subdir: 'iceberg/catalog/rest',

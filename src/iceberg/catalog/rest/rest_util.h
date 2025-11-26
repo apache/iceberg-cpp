@@ -24,50 +24,53 @@
 #include <unordered_map>
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
-#include "iceberg/table_identifier.h"
+#include "iceberg/catalog/rest/type_fwd.h"
+#include "iceberg/result.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg::rest {
 
-/// \brief Trim trailing slashes from a URI string.
-/// \details Removes all trailing '/' characters from the URI.
+/// \brief Trim trailing slashes from a string.
+///
 /// \param str A string to trim.
-/// \return The trimmed URI string with all trailing slashes removed.
+/// \return The trimmed string with all trailing slashes removed.
 ICEBERG_REST_EXPORT std::string_view TrimTrailingSlash(std::string_view str);
 
 /// \brief URL-encode a string (RFC 3986).
+///
 /// \details This implementation uses libcurl (via CPR), which follows RFC 3986 strictly:
 /// - Unreserved characters: [A-Z], [a-z], [0-9], "-", "_", ".", "~"
 /// - Space is encoded as "%20" (unlike Java's URLEncoder which uses "+").
 /// - All other characters are percent-encoded (%XX).
-/// \param toEncode The string to encode.
-/// \return The URL-encoded string.
-/// \note Iceberg's Java client uses `java.net.URLEncoder`, which follows the
-/// `application/x-www-form-urlencoded` standard (HTML Forms). We strictly adhere to RFC
-/// 3986 to ensure correct URI path semantics (encoding spaces as %20 rather than +) for
-/// maximum cross-platform interoperability.
-ICEBERG_REST_EXPORT std::string EncodeString(std::string_view toEncode);
+/// \param str_to_encode The string to encode.
+/// \return The URL-encoded string or InvalidArgument if the string is invalid.
+ICEBERG_REST_EXPORT Result<std::string> EncodeString(std::string_view str_to_encode);
 
 /// \brief URL-decode a string.
+///
 /// \details Decodes percent-encoded characters (e.g., "%20" -> space). Uses libcurl's URL
 /// decoding via the CPR library.
-/// \param encoded The encoded string to decode.
-/// \return The decoded string.
-ICEBERG_REST_EXPORT std::string DecodeString(std::string_view encoded);
+/// \param str_to_decode The encoded string to decode.
+/// \return The decoded string or InvalidArgument if the string is invalid.
+ICEBERG_REST_EXPORT Result<std::string> DecodeString(std::string_view str_to_decode);
 
 /// \brief Encode a Namespace into a URL-safe component.
+///
 /// \details Encodes each level separately using EncodeString, then joins them with "%1F".
-/// \param ns The namespace (sequence of path-like levels) to encode.
+/// \param ns_to_encode The namespace to encode.
 /// \return The percent-encoded namespace string suitable for URLs.
-ICEBERG_REST_EXPORT std::string EncodeNamespaceForUrl(const Namespace& ns);
+ICEBERG_REST_EXPORT Result<std::string> EncodeNamespace(const Namespace& ns_to_encode);
 
 /// \brief Decode a URL-encoded namespace string back to a Namespace.
+///
 /// \details Splits by "%1F" (the URL-encoded form of ASCII Unit Separator), then decodes
 /// each level separately using DecodeString.
-/// \param encoded The percent-encoded namespace string.
+/// \param str_to_decode The percent-encoded namespace string.
 /// \return The decoded Namespace.
-ICEBERG_REST_EXPORT Namespace DecodeNamespaceFromUrl(std::string_view encoded);
+ICEBERG_REST_EXPORT Result<Namespace> DecodeNamespace(std::string_view str_to_decode);
 
 /// \brief Merge catalog configuration properties.
+///
 /// \details Merges three sets of configuration properties following the precedence order:
 /// server overrides > client configs > server defaults.
 /// \param server_defaults Default properties provided by the server.
