@@ -159,6 +159,8 @@ class TableUpdateContext;
 class PendingUpdate;
 template <typename T>
 class PendingUpdateTyped;
+template <typename Derived>
+class SnapshotUpdate;
 
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.
