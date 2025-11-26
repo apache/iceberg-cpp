@@ -161,6 +161,9 @@ class PendingUpdate;
 template <typename T>
 class PendingUpdateTyped;
 
+class BoundPredicate;
+class UnboundPredicate;
+
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.
 /// ----------------------------------------------------------------------------

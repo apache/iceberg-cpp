@@ -23,8 +23,14 @@
 #include <regex>
 #include <utility>
 
+#include "iceberg/expression/predicate.h"
+#include "iceberg/expression/term.h"
+#include "iceberg/result.h"
 #include "iceberg/transform_function.h"
 #include "iceberg/type.h"
+#include "iceberg/util/checked_cast.h"
+#include "iceberg/util/macros.h"
+#include "iceberg/util/projection_util_internal.h"
 
 namespace iceberg {
 namespace {
@@ -236,6 +242,66 @@ bool Transform::SatisfiesOrderOf(const Transform& other) const {
     case TransformType::kUnknown:
     case TransformType::kVoid:
       return *this == other;
+  }
+  std::unreachable();
+}
+
+Result<std::shared_ptr<UnboundPredicate>> Transform::Project(
+    std::string_view name, const std::shared_ptr<BoundPredicate>& predicate) {
+  switch (transform_type_) {
+    case TransformType::kIdentity:
+      return ProjectionUtil::IdentityProject(name, predicate);
+    case TransformType::kBucket: {
+      // If the predicate has a transformed child that matches the given transform, return
+      // a predicate.
+      if (predicate->term()->kind() == Term::Kind::kTransform) {
+        const auto boundTransform =
+            internal::checked_pointer_cast<BoundTransform>(predicate->term());
+        if (*this == *boundTransform->transform()) {
+          return ProjectionUtil::RemoveTransform(name, predicate);
+        } else {
+          return nullptr;
+        }
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto func, Bind(predicate->term()->type()));
+      return ProjectionUtil::BucketProject(name, predicate, func);
+    }
+    case TransformType::kTruncate: {
+      // If the predicate has a transformed child that matches the given transform, return
+      // a predicate.
+      if (predicate->term()->kind() == Term::Kind::kTransform) {
+        const auto boundTransform =
+            internal::checked_pointer_cast<BoundTransform>(predicate->term());
+        if (*this == *boundTransform->transform()) {
+          return ProjectionUtil::RemoveTransform(name, predicate);
+        } else {
+          return nullptr;
+        }
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto func, Bind(predicate->term()->type()));
+      return ProjectionUtil::TruncateProject(name, predicate, func);
+    }
+    case TransformType::kYear:
+    case TransformType::kMonth:
+    case TransformType::kDay:
+    case TransformType::kHour: {
+      // If the predicate has a transformed child that matches the given transform, return
+      // a predicate.
+      if (predicate->term()->kind() == Term::Kind::kTransform) {
+        const auto boundTransform =
+            internal::checked_pointer_cast<BoundTransform>(predicate->term());
+        if (*this == *boundTransform->transform()) {
+          return ProjectionUtil::RemoveTransform(name, predicate);
+        } else {
+          return nullptr;
+        }
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto func, Bind(predicate->term()->type()));
+      return ProjectionUtil::TemporalProject(name, predicate, func);
+    }
+    case TransformType::kUnknown:
+    case TransformType::kVoid:
+      return nullptr;
   }
   std::unreachable();
 }

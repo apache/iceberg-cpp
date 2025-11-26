@@ -26,12 +26,17 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "iceberg/expression/expressions.h"
 #include "iceberg/expression/literal.h"
+#include "iceberg/expression/predicate.h"
+#include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/temporal_test_helper.h"
 #include "iceberg/type.h"
+#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -912,6 +917,478 @@ TEST(TransformCanTransformTest, CanTransform) {
         << "Unexpected result for transform: " << c.transform_str
         << " and source type: " << c.source_type->ToString();
   }
+}
+
+// Test fixture for Transform::Project tests
+class TransformProjectTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    // Create test schemas for different source types
+    int_schema_ = std::make_shared<Schema>(
+        std::vector<SchemaField>{SchemaField::MakeRequired(1, "key", int32()),
+                                 SchemaField::MakeOptional(2, "value", int32())},
+        /*schema_id=*/0);
+    long_schema_ = std::make_shared<Schema>(
+        std::vector<SchemaField>{SchemaField::MakeRequired(1, "value", int64())},
+        /*schema_id=*/0);
+    string_schema_ = std::make_shared<Schema>(
+        std::vector<SchemaField>{SchemaField::MakeRequired(1, "value", string())},
+        /*schema_id=*/0);
+    date_schema_ = std::make_shared<Schema>(
+        std::vector<SchemaField>{SchemaField::MakeRequired(1, "value", date())},
+        /*schema_id=*/0);
+    timestamp_schema_ = std::make_shared<Schema>(
+        std::vector<SchemaField>{SchemaField::MakeRequired(1, "value", timestamp())},
+        /*schema_id=*/0);
+  }
+
+  std::shared_ptr<Schema> int_schema_;
+  std::shared_ptr<Schema> long_schema_;
+  std::shared_ptr<Schema> string_schema_;
+  std::shared_ptr<Schema> date_schema_;
+  std::shared_ptr<Schema> timestamp_schema_;
+};
+
+TEST_F(TransformProjectTest, IdentityProjectEquality) {
+  auto transform = Transform::Identity();
+
+  // Test equality predicate
+  auto unbound = Expressions::Equal("value", Literal::Int(100));
+  ICEBERG_ASSIGN_OR_THROW(auto bound,
+                          unbound->Bind(*int_schema_, /*case_sensitive=*/true));
+  auto bound_pred = std::dynamic_pointer_cast<BoundPredicate>(bound);
+  ASSERT_NE(bound_pred, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected, transform->Project("part", bound_pred));
+  ASSERT_NE(projected, nullptr);
+  EXPECT_EQ(projected->op(), Expression::Operation::kEq);
+
+  auto unbound_projected =
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(projected);
+  ASSERT_NE(unbound_projected, nullptr);
+  EXPECT_EQ(unbound_projected->op(), Expression::Operation::kEq);
+  EXPECT_EQ(unbound_projected->literals().size(), 1);
+  EXPECT_EQ(std::get<int32_t>(unbound_projected->literals().front().value()), 100);
+}
+
+TEST_F(TransformProjectTest, IdentityProjectComparison) {
+  auto transform = Transform::Identity();
+
+  // Test less than predicate
+  auto unbound_lt = Expressions::LessThan("value", Literal::Int(50));
+  ICEBERG_ASSIGN_OR_THROW(auto bound_lt,
+                          unbound_lt->Bind(*int_schema_, /*case_sensitive=*/true));
+  auto bound_pred_lt = std::dynamic_pointer_cast<BoundPredicate>(bound_lt);
+  ASSERT_NE(bound_pred_lt, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_lt, transform->Project("part", bound_pred_lt));
+  ASSERT_NE(projected_lt, nullptr);
+  EXPECT_EQ(projected_lt->op(), Expression::Operation::kLt);
+
+  // Test greater than or equal predicate
+  auto unbound_gte = Expressions::GreaterThanOrEqual("value", Literal::Int(100));
+  ICEBERG_ASSIGN_OR_THROW(auto bound_gte,
+                          unbound_gte->Bind(*int_schema_, /*case_sensitive=*/true));
+  auto bound_pred_gte = std::dynamic_pointer_cast<BoundPredicate>(bound_gte);
+  ASSERT_NE(bound_pred_gte, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_gte, transform->Project("part", bound_pred_gte));
+  ASSERT_NE(projected_gte, nullptr);
+  EXPECT_EQ(projected_gte->op(), Expression::Operation::kGtEq);
+}
+
+TEST_F(TransformProjectTest, IdentityProjectUnary) {
+  auto transform = Transform::Identity();
+
+  // Test IsNull predicate
+  auto unbound_null = Expressions::IsNull("value");
+  ICEBERG_ASSIGN_OR_THROW(auto bound_null,
+                          unbound_null->Bind(*int_schema_, /*case_sensitive=*/true));
+  auto bound_pred_null = std::dynamic_pointer_cast<BoundPredicate>(bound_null);
+  ASSERT_NE(bound_pred_null, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_null,
+                          transform->Project("part", bound_pred_null));
+  ASSERT_NE(projected_null, nullptr);
+  EXPECT_EQ(projected_null->op(), Expression::Operation::kIsNull);
+}
+
+TEST_F(TransformProjectTest, IdentityProjectSet) {
+  auto transform = Transform::Identity();
+
+  // Test IN predicate
+  auto unbound_in =
+      Expressions::In("value", {Literal::Int(1), Literal::Int(2), Literal::Int(3)});
+  ICEBERG_ASSIGN_OR_THROW(auto bound_in,
+                          unbound_in->Bind(*int_schema_, /*case_sensitive=*/true));
+  auto bound_pred_in = std::dynamic_pointer_cast<BoundPredicate>(bound_in);
+  ASSERT_NE(bound_pred_in, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_in, transform->Project("part", bound_pred_in));
+  ASSERT_NE(projected_in, nullptr);
+  EXPECT_EQ(projected_in->op(), Expression::Operation::kIn);
+  auto unbound_projected =
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(projected_in);
+  ASSERT_NE(unbound_projected, nullptr);
+  EXPECT_EQ(unbound_projected->op(), Expression::Operation::kIn);
+  EXPECT_EQ(unbound_projected->literals().size(), 3);
+  std::vector<int32_t> values;
+  for (const auto& lit : unbound_projected->literals()) {
+    values.push_back(std::get<int32_t>(lit.value()));
+  }
+  EXPECT_THAT(values, testing::UnorderedElementsAre(1, 2, 3));
+}
+
+TEST_F(TransformProjectTest, BucketProjectEquality) {
+  auto transform = Transform::Bucket(4);
+
+  // Bucket can project equality predicates
+  auto unbound = Expressions::Equal("value", Literal::Int(34));
+  ICEBERG_ASSIGN_OR_THROW(auto bound,
+                          unbound->Bind(*int_schema_, /*case_sensitive=*/true));
+  auto bound_pred = std::dynamic_pointer_cast<BoundPredicate>(bound);
+  ASSERT_NE(bound_pred, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected, transform->Project("part", bound_pred));
+  ASSERT_NE(projected, nullptr);
+  EXPECT_EQ(projected->op(), Expression::Operation::kEq);
+
+  auto unbound_projected =
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(projected);
+  ASSERT_NE(unbound_projected, nullptr);
+  EXPECT_EQ(unbound_projected->op(), Expression::Operation::kEq);
+  EXPECT_EQ(unbound_projected->literals().size(), 1);
+  EXPECT_EQ(std::get<int32_t>(unbound_projected->literals().front().value()), 3);
+}
+
+TEST_F(TransformProjectTest, BucketProjectWithMatchingTransformedChild) {
+  auto partition_transform = Transform::Bucket(16);
+
+  // Create a predicate like: bucket(value, 16) = 5
+  auto bucket_term = Expressions::Bucket("value", 16);
+  auto unbound = Expressions::Equal<BoundTransform>(bucket_term, Literal::Int(5));
+  ICEBERG_ASSIGN_OR_THROW(auto bound,
+                          unbound->Bind(*int_schema_, /*case_sensitive=*/true));
+  auto bound_pred = std::dynamic_pointer_cast<BoundPredicate>(bound);
+  ASSERT_NE(bound_pred, nullptr);
+
+  // The predicate's term should be a transform
+  EXPECT_EQ(bound_pred->term()->kind(), Term::Kind::kTransform);
+
+  auto dummy = Expressions::NotEqual<BoundTransform>(bucket_term, Literal::Int(5));
+
+  // When the transform matches, Project should use RemoveTransform and return the
+  // predicate
+  ICEBERG_ASSIGN_OR_THROW(auto projected,
+                          partition_transform->Project("part", bound_pred));
+  ASSERT_NE(projected, nullptr);
+  EXPECT_EQ(projected->op(), Expression::Operation::kEq);
+  auto unbound_projected =
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(projected);
+  ASSERT_NE(unbound_projected, nullptr);
+  EXPECT_EQ(unbound_projected->op(), Expression::Operation::kEq);
+  EXPECT_EQ(unbound_projected->literals().size(), 1);
+  EXPECT_EQ(std::get<int32_t>(unbound_projected->literals().front().value()), 5);
+}
+
+TEST_F(TransformProjectTest, BucketProjectComparisonReturnsNull) {
+  auto transform = Transform::Bucket(16);
+
+  // Bucket cannot project comparison predicates (they return null)
+  auto unbound_lt = Expressions::LessThan("value", Literal::Int(50));
+  ICEBERG_ASSIGN_OR_THROW(auto bound_lt,
+                          unbound_lt->Bind(*int_schema_, /*case_sensitive=*/true));
+  auto bound_pred_lt = std::dynamic_pointer_cast<BoundPredicate>(bound_lt);
+  ASSERT_NE(bound_pred_lt, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_lt, transform->Project("part", bound_pred_lt));
+  EXPECT_EQ(projected_lt, nullptr);
+}
+
+TEST_F(TransformProjectTest, BucketProjectInSet) {
+  auto transform = Transform::Bucket(16);
+
+  // Bucket can project IN predicates
+  auto unbound_in =
+      Expressions::In("value", {Literal::Int(1), Literal::Int(2), Literal::Int(3)});
+  ICEBERG_ASSIGN_OR_THROW(auto bound_in,
+                          unbound_in->Bind(*int_schema_, /*case_sensitive=*/true));
+  auto bound_pred_in = std::dynamic_pointer_cast<BoundPredicate>(bound_in);
+  ASSERT_NE(bound_pred_in, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_in, transform->Project("part", bound_pred_in));
+  ASSERT_NE(projected_in, nullptr);
+  EXPECT_EQ(projected_in->op(), Expression::Operation::kIn);
+}
+
+TEST_F(TransformProjectTest, BucketProjectNotInReturnsNull) {
+  auto transform = Transform::Bucket(16);
+
+  // Bucket cannot project NOT IN predicates
+  auto unbound_not_in =
+      Expressions::NotIn("value", {Literal::Int(1), Literal::Int(2), Literal::Int(3)});
+  ICEBERG_ASSIGN_OR_THROW(auto bound_not_in,
+                          unbound_not_in->Bind(*int_schema_, /*case_sensitive=*/true));
+  auto bound_pred_not_in = std::dynamic_pointer_cast<BoundPredicate>(bound_not_in);
+  ASSERT_NE(bound_pred_not_in, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_not_in,
+                          transform->Project("part", bound_pred_not_in));
+  EXPECT_EQ(projected_not_in, nullptr);
+}
+
+TEST_F(TransformProjectTest, TruncateProjectIntEquality) {
+  auto transform = Transform::Truncate(10);
+
+  // Truncate can project equality predicates
+  auto unbound = Expressions::Equal("value", Literal::Int(123));
+  ICEBERG_ASSIGN_OR_THROW(auto bound,
+                          unbound->Bind(*int_schema_, /*case_sensitive=*/true));
+  auto bound_pred = std::dynamic_pointer_cast<BoundPredicate>(bound);
+  ASSERT_NE(bound_pred, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected, transform->Project("part", bound_pred));
+  ASSERT_NE(projected, nullptr);
+  EXPECT_EQ(projected->op(), Expression::Operation::kEq);
+
+  auto unbound_projected =
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(projected);
+  ASSERT_NE(unbound_projected, nullptr);
+  EXPECT_EQ(unbound_projected->op(), Expression::Operation::kEq);
+  EXPECT_EQ(unbound_projected->literals().size(), 1);
+  EXPECT_EQ(std::get<int32_t>(unbound_projected->literals().front().value()), 120);
+}
+
+TEST_F(TransformProjectTest, TruncateProjectIntLessThan) {
+  auto transform = Transform::Truncate(10);
+
+  // Truncate projects LT as LTE
+  auto unbound = Expressions::LessThan("value", Literal::Int(25));
+  ICEBERG_ASSIGN_OR_THROW(auto bound,
+                          unbound->Bind(*int_schema_, /*case_sensitive=*/true));
+  auto bound_pred = std::dynamic_pointer_cast<BoundPredicate>(bound);
+  ASSERT_NE(bound_pred, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected, transform->Project("part", bound_pred));
+  ASSERT_NE(projected, nullptr);
+  EXPECT_EQ(projected->op(), Expression::Operation::kLtEq);
+}
+
+TEST_F(TransformProjectTest, TruncateProjectIntGreaterThan) {
+  auto transform = Transform::Truncate(10);
+
+  // Truncate projects GT as GTE
+  auto unbound = Expressions::GreaterThan("value", Literal::Int(25));
+  ICEBERG_ASSIGN_OR_THROW(auto bound,
+                          unbound->Bind(*int_schema_, /*case_sensitive=*/true));
+  auto bound_pred = std::dynamic_pointer_cast<BoundPredicate>(bound);
+  ASSERT_NE(bound_pred, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected, transform->Project("part", bound_pred));
+  ASSERT_NE(projected, nullptr);
+  EXPECT_EQ(projected->op(), Expression::Operation::kGtEq);
+
+  auto unbound_projected =
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(projected);
+  ASSERT_NE(unbound_projected, nullptr);
+  EXPECT_EQ(unbound_projected->op(), Expression::Operation::kGtEq);
+  EXPECT_EQ(unbound_projected->literals().size(), 1);
+  EXPECT_EQ(std::get<int32_t>(unbound_projected->literals().front().value()), 20);
+}
+
+TEST_F(TransformProjectTest, TruncateProjectStringEquality) {
+  auto transform = Transform::Truncate(5);
+
+  auto unbound = Expressions::Equal("value", Literal::String("Hello, World!"));
+  ICEBERG_ASSIGN_OR_THROW(auto bound,
+                          unbound->Bind(*string_schema_, /*case_sensitive=*/true));
+  auto bound_pred = std::dynamic_pointer_cast<BoundPredicate>(bound);
+  ASSERT_NE(bound_pred, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected, transform->Project("part", bound_pred));
+  ASSERT_NE(projected, nullptr);
+  EXPECT_EQ(projected->op(), Expression::Operation::kEq);
+
+  auto unbound_projected =
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(projected);
+  ASSERT_NE(unbound_projected, nullptr);
+  EXPECT_EQ(unbound_projected->op(), Expression::Operation::kEq);
+  EXPECT_EQ(unbound_projected->literals().size(), 1);
+  EXPECT_EQ(std::get<std::string>(unbound_projected->literals().front().value()),
+            "Hello");
+}
+
+TEST_F(TransformProjectTest, TruncateProjectStringStartsWith) {
+  auto transform = Transform::Truncate(5);
+
+  // StartsWith with shorter string than width
+  auto unbound_short = Expressions::StartsWith("value", "Hi");
+  ICEBERG_ASSIGN_OR_THROW(auto bound_short,
+                          unbound_short->Bind(*string_schema_, /*case_sensitive=*/true));
+  auto bound_pred_short = std::dynamic_pointer_cast<BoundPredicate>(bound_short);
+  ASSERT_NE(bound_pred_short, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_short,
+                          transform->Project("part", bound_pred_short));
+  ASSERT_NE(projected_short, nullptr);
+  EXPECT_EQ(projected_short->op(), Expression::Operation::kStartsWith);
+
+  auto unbound_projected_short =
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+          projected_short);
+  ASSERT_NE(unbound_projected_short, nullptr);
+  EXPECT_EQ(unbound_projected_short->op(), Expression::Operation::kStartsWith);
+  EXPECT_EQ(unbound_projected_short->literals().size(), 1);
+  EXPECT_EQ(std::get<std::string>(unbound_projected_short->literals().front().value()),
+            "Hi");
+
+  // StartsWith with string equal to width
+  auto unbound_equal = Expressions::StartsWith("value", "Hello");
+  ICEBERG_ASSIGN_OR_THROW(auto bound_equal,
+                          unbound_equal->Bind(*string_schema_, /*case_sensitive=*/true));
+  auto bound_pred_equal = std::dynamic_pointer_cast<BoundPredicate>(bound_equal);
+  ASSERT_NE(bound_pred_equal, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_equal,
+                          transform->Project("part", bound_pred_equal));
+  ASSERT_NE(projected_equal, nullptr);
+  EXPECT_EQ(projected_equal->op(), Expression::Operation::kEq);
+
+  auto unbound_projected_equal =
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+          projected_equal);
+  ASSERT_NE(unbound_projected_equal, nullptr);
+  EXPECT_EQ(unbound_projected_equal->op(), Expression::Operation::kEq);
+  EXPECT_EQ(unbound_projected_equal->literals().size(), 1);
+  EXPECT_EQ(std::get<std::string>(unbound_projected_equal->literals().front().value()),
+            "Hello");
+}
+
+TEST_F(TransformProjectTest, YearProjectEquality) {
+  auto transform = Transform::Year();
+
+  // 2021-06-01 as days from epoch
+  int32_t date_value =
+      TemporalTestHelper::CreateDate({.year = 2021, .month = 6, .day = 1});
+  auto unbound = Expressions::Equal("value", Literal::Date(date_value));
+  ICEBERG_ASSIGN_OR_THROW(auto bound,
+                          unbound->Bind(*date_schema_, /*case_sensitive=*/true));
+  auto bound_pred = std::dynamic_pointer_cast<BoundPredicate>(bound);
+  ASSERT_NE(bound_pred, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected, transform->Project("part", bound_pred));
+  ASSERT_NE(projected, nullptr);
+  EXPECT_EQ(projected->op(), Expression::Operation::kEq);
+}
+
+TEST_F(TransformProjectTest, YearProjectComparison) {
+  auto transform = Transform::Year();
+
+  int32_t date_value =
+      TemporalTestHelper::CreateDate({.year = 2021, .month = 6, .day = 1});
+
+  // LT projects to LTE
+  auto unbound_lt = Expressions::LessThan("value", Literal::Date(date_value));
+  ICEBERG_ASSIGN_OR_THROW(auto bound_lt,
+                          unbound_lt->Bind(*date_schema_, /*case_sensitive=*/true));
+  auto bound_pred_lt = std::dynamic_pointer_cast<BoundPredicate>(bound_lt);
+  ASSERT_NE(bound_pred_lt, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_lt, transform->Project("part", bound_pred_lt));
+  ASSERT_NE(projected_lt, nullptr);
+  EXPECT_EQ(projected_lt->op(), Expression::Operation::kLtEq);
+
+  // GT projects to GTE
+  auto unbound_gt = Expressions::GreaterThan("value", Literal::Date(date_value));
+  ICEBERG_ASSIGN_OR_THROW(auto bound_gt,
+                          unbound_gt->Bind(*date_schema_, /*case_sensitive=*/true));
+  auto bound_pred_gt = std::dynamic_pointer_cast<BoundPredicate>(bound_gt);
+  ASSERT_NE(bound_pred_gt, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_gt, transform->Project("part", bound_pred_gt));
+  ASSERT_NE(projected_gt, nullptr);
+  EXPECT_EQ(projected_gt->op(), Expression::Operation::kGtEq);
+}
+
+TEST_F(TransformProjectTest, MonthProjectEquality) {
+  auto transform = Transform::Month();
+
+  int64_t ts_value =
+      TemporalTestHelper::CreateTimestamp({.year = 2021, .month = 6, .day = 1});
+  auto unbound = Expressions::Equal("value", Literal::Timestamp(ts_value));
+  ICEBERG_ASSIGN_OR_THROW(auto bound,
+                          unbound->Bind(*timestamp_schema_, /*case_sensitive=*/true));
+  auto bound_pred = std::dynamic_pointer_cast<BoundPredicate>(bound);
+  ASSERT_NE(bound_pred, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected, transform->Project("part", bound_pred));
+  ASSERT_NE(projected, nullptr);
+  EXPECT_EQ(projected->op(), Expression::Operation::kEq);
+}
+
+TEST_F(TransformProjectTest, DayProjectEquality) {
+  auto transform = Transform::Day();
+
+  int32_t date_value =
+      TemporalTestHelper::CreateDate({.year = 2021, .month = 6, .day = 15});
+  auto unbound = Expressions::Equal("value", Literal::Date(date_value));
+  ICEBERG_ASSIGN_OR_THROW(auto bound,
+                          unbound->Bind(*date_schema_, /*case_sensitive=*/true));
+  auto bound_pred = std::dynamic_pointer_cast<BoundPredicate>(bound);
+  ASSERT_NE(bound_pred, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected, transform->Project("part", bound_pred));
+  ASSERT_NE(projected, nullptr);
+  EXPECT_EQ(projected->op(), Expression::Operation::kEq);
+}
+
+TEST_F(TransformProjectTest, HourProjectEquality) {
+  auto transform = Transform::Hour();
+
+  int64_t ts_value = TemporalTestHelper::CreateTimestamp(
+      {.year = 2021, .month = 6, .day = 1, .hour = 14, .minute = 30});
+  auto unbound = Expressions::Equal("value", Literal::Timestamp(ts_value));
+  ICEBERG_ASSIGN_OR_THROW(auto bound,
+                          unbound->Bind(*timestamp_schema_, /*case_sensitive=*/true));
+  auto bound_pred = std::dynamic_pointer_cast<BoundPredicate>(bound);
+  ASSERT_NE(bound_pred, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected, transform->Project("part", bound_pred));
+  ASSERT_NE(projected, nullptr);
+  EXPECT_EQ(projected->op(), Expression::Operation::kEq);
+}
+
+TEST_F(TransformProjectTest, VoidProjectReturnsNull) {
+  auto transform = Transform::Void();
+
+  auto unbound = Expressions::Equal("value", Literal::Int(100));
+  ICEBERG_ASSIGN_OR_THROW(auto bound,
+                          unbound->Bind(*int_schema_, /*case_sensitive=*/true));
+  auto bound_pred = std::dynamic_pointer_cast<BoundPredicate>(bound);
+  ASSERT_NE(bound_pred, nullptr);
+
+  // Void transform always returns null (no projection possible)
+  ICEBERG_ASSIGN_OR_THROW(auto projected, transform->Project("part", bound_pred));
+  EXPECT_EQ(projected, nullptr);
+}
+
+TEST_F(TransformProjectTest, TemporalProjectInSet) {
+  auto transform = Transform::Year();
+
+  int32_t date1 = TemporalTestHelper::CreateDate({.year = 2020, .month = 1, .day = 1});
+  int32_t date2 = TemporalTestHelper::CreateDate({.year = 2021, .month = 6, .day = 15});
+  int32_t date3 = TemporalTestHelper::CreateDate({.year = 2022, .month = 12, .day = 31});
+
+  auto unbound_in = Expressions::In(
+      "value", {Literal::Date(date1), Literal::Date(date2), Literal::Date(date3)});
+  ICEBERG_ASSIGN_OR_THROW(auto bound_in,
+                          unbound_in->Bind(*date_schema_, /*case_sensitive=*/true));
+  auto bound_pred_in = std::dynamic_pointer_cast<BoundPredicate>(bound_in);
+  ASSERT_NE(bound_pred_in, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_in, transform->Project("part", bound_pred_in));
+  ASSERT_NE(projected_in, nullptr);
+  EXPECT_EQ(projected_in->op(), Expression::Operation::kIn);
 }
 
 }  // namespace iceberg
