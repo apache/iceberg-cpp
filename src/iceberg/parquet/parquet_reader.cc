@@ -22,6 +22,8 @@
 #include <numeric>
 
 #include <arrow/c/bridge.h>
+#include <arrow/filesystem/filesystem.h>
+#include <arrow/filesystem/type_fwd.h>
 #include <arrow/memory_pool.h>
 #include <arrow/record_batch.h>
 #include <arrow/result.h>

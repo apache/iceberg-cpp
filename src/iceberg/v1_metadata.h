@@ -19,6 +19,7 @@
 
 #pragma once
 
+#include "iceberg/iceberg_export.h"
 #include "iceberg/manifest_adapter.h"
 
 /// \file iceberg/v1_metadata.h
@@ -26,7 +27,7 @@
 namespace iceberg {
 
 /// \brief Adapter to convert V1 ManifestEntry to `ArrowArray`.
-class ManifestEntryAdapterV1 : public ManifestEntryAdapter {
+class ICEBERG_EXPORT ManifestEntryAdapterV1 : public ManifestEntryAdapter {
  public:
   ManifestEntryAdapterV1(std::optional<int64_t> snapshot_id,
                          std::shared_ptr<PartitionSpec> partition_spec,
@@ -42,7 +43,7 @@ class ManifestEntryAdapterV1 : public ManifestEntryAdapter {
 };
 
 /// \brief Adapter to convert V1 ManifestFile to `ArrowArray`.
-class ManifestFileAdapterV1 : public ManifestFileAdapter {
+class ICEBERG_EXPORT ManifestFileAdapterV1 : public ManifestFileAdapter {
  public:
   ManifestFileAdapterV1(int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id)
       : snapshot_id_(snapshot_id), parent_snapshot_id_(parent_snapshot_id) {}

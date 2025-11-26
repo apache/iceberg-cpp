@@ -22,6 +22,7 @@
 #include <memory>
 
 #include <arrow/c/bridge.h>
+#include <arrow/filesystem/filesystem.h>
 #include <arrow/record_batch.h>
 #include <arrow/util/key_value_metadata.h>
 #include <parquet/arrow/schema.h>

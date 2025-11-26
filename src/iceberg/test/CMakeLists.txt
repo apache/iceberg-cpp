@@ -15,10 +15,13 @@
 # specific language governing permissions and limitations
 # under the License.
 
-fetchcontent_declare(cpp-httplib
-                     GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
-                     GIT_TAG 89c932f313c6437c38f2982869beacc89c2f2246 #release-0.26.0
-)
+if(ICEBERG_BUILD_REST)
+  fetchcontent_declare(cpp-httplib
+                       GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
+                       GIT_TAG 89c932f313c6437c38f2982869beacc89c2f2246 #release-0.26.0
+  )
+  fetchcontent_makeavailable(cpp-httplib)
+endif()
 
 fetchcontent_declare(googletest
                      GIT_REPOSITORY https://github.com/google/googletest.git
@@ -26,12 +29,7 @@ fetchcontent_declare(googletest
                      FIND_PACKAGE_ARGS
                      NAMES
                      GTest)
-
-if(ICEBERG_BUILD_REST)
-  fetchcontent_makeavailable(cpp-httplib googletest)
-else()
-  fetchcontent_makeavailable(googletest)
-endif()
+fetchcontent_makeavailable(googletest)
 
 set(ICEBERG_TEST_RESOURCES "${CMAKE_SOURCE_DIR}/src/iceberg/test/resources")
 
@@ -52,12 +50,24 @@ function(add_iceberg_test test_name)
 
   target_sources(${test_name} PRIVATE ${ARG_SOURCES})
 
-  if(ARG_USE_BUNDLE)
-    target_link_libraries(${test_name} PRIVATE iceberg_bundle_static GTest::gtest_main
-                                               GTest::gmock)
+  target_link_libraries(${test_name} PRIVATE GTest::gtest_main GTest::gmock)
+
+  if("${ICEBERG_TEST_LINKAGE}" STREQUAL "shared")
+    target_link_libraries(${test_name} PRIVATE nlohmann_json::nlohmann_json
+                                               roaring::roaring)
+    if(ARG_USE_BUNDLE)
+      target_link_libraries(${test_name}
+                            PRIVATE iceberg_bundle_shared Arrow::arrow_static
+                                    Parquet::parquet_static avro-cpp::avrocpp_static)
+    else()
+      target_link_libraries(${test_name} PRIVATE iceberg_shared)
+    endif()
   else()
-    target_link_libraries(${test_name} PRIVATE iceberg_static GTest::gtest_main
-                                               GTest::gmock)
+    if(ARG_USE_BUNDLE)
+      target_link_libraries(${test_name} PRIVATE iceberg_bundle_static)
+    else()
+      target_link_libraries(${test_name} PRIVATE iceberg_static)
+    endif()
   endif()
 
   add_test(NAME ${test_name} COMMAND ${test_name})
@@ -164,8 +174,36 @@ if(ICEBERG_BUILD_BUNDLE)
 endif()
 
 if(ICEBERG_BUILD_REST)
-  add_iceberg_test(rest_catalog_test SOURCES rest_catalog_test.cc
-                   rest_json_internal_test.cc)
-  target_link_libraries(rest_catalog_test PRIVATE iceberg_rest_static)
+  function(add_rest_iceberg_test test_name)
+    set(options USE_BUNDLE)
+    set(oneValueArgs)
+    set(multiValueArgs SOURCES)
+    cmake_parse_arguments(ARG
+                          "${options}"
+                          "${oneValueArgs}"
+                          "${multiValueArgs}"
+                          ${ARGN})
+
+    add_executable(${test_name})
+    target_include_directories(${test_name} PRIVATE "${CMAKE_BINARY_DIR}/iceberg/test/")
+
+    target_sources(${test_name} PRIVATE ${ARG_SOURCES})
+
+    target_link_libraries(${test_name} PRIVATE GTest::gtest_main GTest::gmock)
+
+    if("${ICEBERG_TEST_LINKAGE}" STREQUAL "shared")
+      target_link_libraries(${test_name}
+                            PRIVATE iceberg_rest_shared
+                                    cpr::cpr # remove cpr::cpr after wrapping it
+                                    nlohmann_json::nlohmann_json)
+    else()
+      target_link_libraries(${test_name} PRIVATE iceberg_rest_static)
+    endif()
+
+    add_test(NAME ${test_name} COMMAND ${test_name})
+  endfunction()
+
+  add_rest_iceberg_test(rest_catalog_test SOURCES rest_catalog_test.cc
+                        rest_json_internal_test.cc)
   target_include_directories(rest_catalog_test PRIVATE ${cpp-httplib_SOURCE_DIR})
 endif()

@@ -32,7 +32,7 @@
 #include <avro/ValidSchema.hh>
 
 #include "iceberg/avro/avro_constants.h"
-#include "iceberg/avro/avro_register.h"
+#include "iceberg/avro/avro_register_internal.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/name_mapping.h"
@@ -121,10 +121,6 @@ std::string ToString(const ::avro::LogicalType& logical_type) {
   std::stringstream ss;
   logical_type.printJson(ss);
   return ss.str();
-}
-
-std::string ToString(const ::avro::LogicalType::Type& logical_type) {
-  return ToString(::avro::LogicalType(logical_type));
 }
 
 Status ToAvroNodeVisitor::Visit(const BooleanType& type, ::avro::NodePtr* node) {

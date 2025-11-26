@@ -18,14 +18,13 @@
  */
 
 #include <arrow/c/bridge.h>
+#include <arrow/c/helpers.h>
 #include <arrow/json/from_string.h>
 #include <arrow/type.h>
 #include <arrow/type_fwd.h>
 #include <gtest/gtest.h>
 
-#include "iceberg/arrow_c_data.h"
 #include "iceberg/arrow_c_data_guard_internal.h"
-#include "iceberg/expression/expression.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/expression/term.h"
 #include "iceberg/row/arrow_array_wrapper.h"

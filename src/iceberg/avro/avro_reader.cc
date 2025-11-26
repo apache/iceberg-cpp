@@ -37,7 +37,6 @@
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/avro/avro_stream_internal.h"
-#include "iceberg/name_mapping.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
