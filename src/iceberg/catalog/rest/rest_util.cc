@@ -23,6 +23,7 @@
 
 #include "iceberg/table_identifier.h"
 #include "iceberg/util/macros.h"
+
 namespace iceberg::rest {
 
 namespace {

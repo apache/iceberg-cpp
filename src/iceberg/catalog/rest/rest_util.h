@@ -24,7 +24,6 @@
 #include <unordered_map>
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
-#include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 

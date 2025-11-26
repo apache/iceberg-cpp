@@ -48,10 +48,10 @@ class HttpResponse::Impl {
   cpr::Response response_;
 };
 
-HttpResponse::HttpResponse(HttpResponse&&) noexcept = default;
-HttpResponse& HttpResponse::operator=(HttpResponse&&) noexcept = default;
 HttpResponse::HttpResponse() = default;
 HttpResponse::~HttpResponse() = default;
+HttpResponse::HttpResponse(HttpResponse&&) noexcept = default;
+HttpResponse& HttpResponse::operator=(HttpResponse&&) noexcept = default;
 
 int32_t HttpResponse::status_code() const { return impl_->status_code(); }
 
