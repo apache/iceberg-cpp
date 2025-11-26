@@ -44,15 +44,19 @@ namespace iceberg {
 /// fluent API method chaining in derived classes, matching the Java pattern
 /// where SnapshotUpdate<ThisT> allows methods to return the actual derived type.
 ///
-/// Methods included from Java API:
+/// Methods included from Java API (4/6):
 /// - Set(): Set summary properties
 /// - StageOnly(): Stage without updating current snapshot
 /// - DeleteWith(): Custom file deletion callback
 /// - ToBranch(): Commit to a specific branch
 ///
-/// Methods deferred (will be added when infrastructure is available):
+/// Methods not yet implemented (2/6):
 /// - ScanManifestsWith(): Custom executor for parallel manifest scanning
-///   (requires executor/thread pool infrastructure)
+///   (deferred: requires executor/thread pool infrastructure)
+/// - ValidateWith(): Custom snapshot ancestry validation
+///   (deferred: requires SnapshotAncestryValidator infrastructure)
+///
+/// See SNAPSHOT_UPDATE_API_COVERAGE.md for detailed comparison with Java API
 ///
 /// \tparam Derived The actual implementation class (e.g., AppendFiles)
 template <typename Derived>
