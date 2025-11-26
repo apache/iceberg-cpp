@@ -71,6 +71,10 @@ Result<std::unique_ptr<UnboundPredicateImpl<B>>> UnboundPredicateImpl<B>::Make(
     return InvalidExpression("Cannot create {} predicate inclusive a value",
                              ::iceberg::ToString(op));
   }
+  if (value.IsNaN()) [[unlikely]] {
+    return InvalidExpression(
+        "Invalid expression literal: NaN, use isNaN or notNaN instead");
+  }
   return std::unique_ptr<UnboundPredicateImpl<B>>(
       new UnboundPredicateImpl<B>(op, std::move(term), std::move(value)));
 }
