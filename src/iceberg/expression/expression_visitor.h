@@ -84,16 +84,16 @@ class ICEBERG_EXPORT ExpressionVisitor {
   /// \param aggregate The bound aggregate to visit.
   virtual Result<R> Aggregate(const std::shared_ptr<BoundAggregate>& aggregate) {
     ICEBERG_DCHECK(aggregate != nullptr, "Bound aggregate cannot be null");
-    return NotSupported("Visitor {} does not support bound aggregate: {}",
-                        typeid(*this).name(), aggregate->ToString());
+    return NotSupported("Visitor {} does not support bound aggregate",
+                        typeid(*this).name());
   }
 
   /// \brief Visit an unbound aggregate.
   /// \param aggregate The unbound aggregate to visit.
   virtual Result<R> Aggregate(const std::shared_ptr<UnboundAggregate>& aggregate) {
     ICEBERG_DCHECK(aggregate != nullptr, "Unbound aggregate cannot be null");
-    return NotSupported("Visitor {} does not support unbound aggregate: {}",
-                        typeid(*this).name(), aggregate->ToString());
+    return NotSupported("Visitor {} does not support unbound aggregate",
+                        typeid(*this).name());
   }
 };
 

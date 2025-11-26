@@ -34,11 +34,8 @@ namespace iceberg {
 
 namespace {
 
-Result<std::shared_ptr<PrimitiveType>> GetPrimitiveType(const BoundTerm& term) {
-  if (!term.type()->is_primitive()) {
-    return InvalidExpression("Aggregate requires primitive type, got {}",
-                             term.type()->ToString());
-  }
+std::shared_ptr<PrimitiveType> GetPrimitiveType(const BoundTerm& term) {
+  ICEBERG_DCHECK(term.type()->is_primitive(), "Value aggregate term should be primitive");
   return internal::checked_pointer_cast<PrimitiveType>(term.type());
 }
 
@@ -55,7 +52,7 @@ class CountNonNullAggregator : public BoundAggregate::Aggregator {
     return {};
   }
 
-  Result<Literal> ResultLiteral() const override { return Literal::Long(count_); }
+  Literal GetResult() const override { return Literal::Long(count_); }
 
  private:
   std::shared_ptr<BoundTerm> term_;
@@ -75,7 +72,7 @@ class CountNullAggregator : public BoundAggregate::Aggregator {
     return {};
   }
 
-  Result<Literal> ResultLiteral() const override { return Literal::Long(count_); }
+  Literal GetResult() const override { return Literal::Long(count_); }
 
  private:
   std::shared_ptr<BoundTerm> term_;
@@ -89,16 +86,15 @@ class CountStarAggregator : public BoundAggregate::Aggregator {
     return {};
   }
 
-  Result<Literal> ResultLiteral() const override { return Literal::Long(count_); }
+  Literal GetResult() const override { return Literal::Long(count_); }
 
  private:
   int64_t count_ = 0;
 };
 
-class ValueAggregatorImpl : public BoundAggregate::Aggregator {
+class MaxAggregator : public BoundAggregate::Aggregator {
  public:
-  ValueAggregatorImpl(bool is_max, std::shared_ptr<BoundTerm> term)
-      : is_max_(is_max), term_(std::move(term)) {}
+  explicit MaxAggregator(std::shared_ptr<BoundTerm> term) : term_(std::move(term)) {}
 
   Status Update(const StructLike& row) override {
     ICEBERG_ASSIGN_OR_RAISE(auto val_literal, term_->Evaluate(row));
@@ -116,28 +112,52 @@ class ValueAggregatorImpl : public BoundAggregate::Aggregator {
                                val_literal.type()->ToString());
     }
 
-    if (is_max_) {
-      if (ordering == std::partial_ordering::greater) {
-        current_ = std::move(val_literal);
-      }
-    } else {
-      if (ordering == std::partial_ordering::less) {
-        current_ = std::move(val_literal);
-      }
+    if (ordering == std::partial_ordering::greater) {
+      current_ = std::move(val_literal);
     }
     return {};
   }
 
-  Result<Literal> ResultLiteral() const override {
-    if (current_) {
-      return *current_;
-    }
-    ICEBERG_ASSIGN_OR_RAISE(auto type, GetPrimitiveType(*term_));
-    return Literal::Null(type);
+  Literal GetResult() const override {
+    return current_.value_or(Literal::Null(GetPrimitiveType(*term_)));
   }
 
  private:
-  bool is_max_;
+  std::shared_ptr<BoundTerm> term_;
+  std::optional<Literal> current_;
+};
+
+class MinAggregator : public BoundAggregate::Aggregator {
+ public:
+  explicit MinAggregator(std::shared_ptr<BoundTerm> term) : term_(std::move(term)) {}
+
+  Status Update(const StructLike& row) override {
+    ICEBERG_ASSIGN_OR_RAISE(auto val_literal, term_->Evaluate(row));
+    if (val_literal.IsNull()) {
+      return {};
+    }
+    if (!current_) {
+      current_ = std::move(val_literal);
+      return {};
+    }
+
+    auto ordering = val_literal <=> *current_;
+    if (ordering == std::partial_ordering::unordered) {
+      return InvalidExpression("Cannot compare literals of type {}",
+                               val_literal.type()->ToString());
+    }
+
+    if (ordering == std::partial_ordering::less) {
+      current_ = std::move(val_literal);
+    }
+    return {};
+  }
+
+  Literal GetResult() const override {
+    return current_.value_or(Literal::Null(GetPrimitiveType(*term_)));
+  }
+
+ private:
   std::shared_ptr<BoundTerm> term_;
   std::optional<Literal> current_;
 };
@@ -146,21 +166,39 @@ class ValueAggregatorImpl : public BoundAggregate::Aggregator {
 
 // -------------------- Bound aggregates --------------------
 
+std::string BoundAggregate::ToString() const {
+  std::string term_name;
+  if (op() != Expression::Operation::kCountStar) {
+    ICEBERG_DCHECK(term() != nullptr, "Bound aggregate should have term unless COUNT(*)");
+    term_name = term()->reference()->name();
+  }
+
+  switch (op()) {
+    case Expression::Operation::kCount:
+      return std::format("count({})", term_name);
+    case Expression::Operation::kCountNull:
+      return std::format("count_null({})", term_name);
+    case Expression::Operation::kCountStar:
+      return "count(*)";
+    case Expression::Operation::kMax:
+      return std::format("max({})", term_name);
+    case Expression::Operation::kMin:
+      return std::format("min({})", term_name);
+    default:
+      return "Aggregate";
+  }
+}
+
 CountNonNullAggregate::CountNonNullAggregate(std::shared_ptr<BoundTerm> term)
     : CountAggregate(Expression::Operation::kCount, std::move(term)) {}
 
-Result<std::shared_ptr<CountNonNullAggregate>> CountNonNullAggregate::Make(
+Result<std::unique_ptr<CountNonNullAggregate>> CountNonNullAggregate::Make(
     std::shared_ptr<BoundTerm> term) {
   if (!term) {
     return InvalidExpression("Bound count aggregate requires non-null term");
   }
-  return std::shared_ptr<CountNonNullAggregate>(
+  return std::unique_ptr<CountNonNullAggregate>(
       new CountNonNullAggregate(std::move(term)));
-}
-
-std::string CountNonNullAggregate::ToString() const {
-  ICEBERG_DCHECK(term() != nullptr, "Bound count aggregate should have term");
-  return std::format("count({})", term()->reference()->name());
 }
 
 Result<Literal> CountNonNullAggregate::Evaluate(const StructLike& data) const {
@@ -168,25 +206,19 @@ Result<Literal> CountNonNullAggregate::Evaluate(const StructLike& data) const {
   return Literal::Long(literal.IsNull() ? 0 : 1);
 }
 
-Result<std::unique_ptr<BoundAggregate::Aggregator>> CountNonNullAggregate::NewAggregator()
-    const {
+std::unique_ptr<BoundAggregate::Aggregator> CountNonNullAggregate::NewAggregator() const {
   return std::unique_ptr<BoundAggregate::Aggregator>(new CountNonNullAggregator(term()));
 }
 
 CountNullAggregate::CountNullAggregate(std::shared_ptr<BoundTerm> term)
     : CountAggregate(Expression::Operation::kCountNull, std::move(term)) {}
 
-Result<std::shared_ptr<CountNullAggregate>> CountNullAggregate::Make(
+Result<std::unique_ptr<CountNullAggregate>> CountNullAggregate::Make(
     std::shared_ptr<BoundTerm> term) {
   if (!term) {
     return InvalidExpression("Bound count aggregate requires non-null term");
   }
-  return std::shared_ptr<CountNullAggregate>(new CountNullAggregate(std::move(term)));
-}
-
-std::string CountNullAggregate::ToString() const {
-  ICEBERG_DCHECK(term() != nullptr, "Bound count aggregate should have term");
-  return std::format("count_null({})", term()->reference()->name());
+  return std::unique_ptr<CountNullAggregate>(new CountNullAggregate(std::move(term)));
 }
 
 Result<Literal> CountNullAggregate::Evaluate(const StructLike& data) const {
@@ -194,48 +226,55 @@ Result<Literal> CountNullAggregate::Evaluate(const StructLike& data) const {
   return Literal::Long(literal.IsNull() ? 1 : 0);
 }
 
-Result<std::unique_ptr<BoundAggregate::Aggregator>> CountNullAggregate::NewAggregator()
-    const {
+std::unique_ptr<BoundAggregate::Aggregator> CountNullAggregate::NewAggregator() const {
   return std::unique_ptr<BoundAggregate::Aggregator>(new CountNullAggregator(term()));
 }
 
 CountStarAggregate::CountStarAggregate()
     : CountAggregate(Expression::Operation::kCountStar, nullptr) {}
 
-Result<std::shared_ptr<CountStarAggregate>> CountStarAggregate::Make() {
-  return std::shared_ptr<CountStarAggregate>(new CountStarAggregate());
+Result<std::unique_ptr<CountStarAggregate>> CountStarAggregate::Make() {
+  return std::unique_ptr<CountStarAggregate>(new CountStarAggregate());
 }
-
-std::string CountStarAggregate::ToString() const { return "count(*)"; }
 
 Result<Literal> CountStarAggregate::Evaluate(const StructLike& data) const {
   return Literal::Long(1);
 }
 
-Result<std::unique_ptr<BoundAggregate::Aggregator>> CountStarAggregate::NewAggregator()
-    const {
+std::unique_ptr<BoundAggregate::Aggregator> CountStarAggregate::NewAggregator() const {
   return std::unique_ptr<BoundAggregate::Aggregator>(new CountStarAggregator());
 }
 
-ValueAggregate::ValueAggregate(Expression::Operation op, std::shared_ptr<BoundTerm> term)
-    : BoundAggregate(op, std::move(term)) {}
+MaxAggregate::MaxAggregate(std::shared_ptr<BoundTerm> term)
+    : BoundAggregate(Expression::Operation::kMax, std::move(term)) {}
 
-std::string ValueAggregate::ToString() const {
-  ICEBERG_DCHECK(term() != nullptr, "Bound value aggregate should have term");
-  auto prefix = op() == Expression::Operation::kMax ? "max" : "min";
-  return std::format("{}({})", prefix, term()->reference()->name());
+std::shared_ptr<MaxAggregate> MaxAggregate::Make(std::shared_ptr<BoundTerm> term) {
+  return std::shared_ptr<MaxAggregate>(new MaxAggregate(std::move(term)));
 }
 
-Result<Literal> ValueAggregate::Evaluate(const StructLike& data) const {
+Result<Literal> MaxAggregate::Evaluate(const StructLike& data) const {
   ICEBERG_ASSIGN_OR_RAISE(auto literal, term()->Evaluate(data));
   return literal;
 }
 
-Result<std::unique_ptr<BoundAggregate::Aggregator>> ValueAggregate::NewAggregator()
-    const {
-  bool is_max = op() == Expression::Operation::kMax;
-  return std::unique_ptr<BoundAggregate::Aggregator>(
-      new ValueAggregatorImpl(is_max, term()));
+std::unique_ptr<BoundAggregate::Aggregator> MaxAggregate::NewAggregator() const {
+  return std::unique_ptr<BoundAggregate::Aggregator>(new MaxAggregator(term()));
+}
+
+MinAggregate::MinAggregate(std::shared_ptr<BoundTerm> term)
+    : BoundAggregate(Expression::Operation::kMin, std::move(term)) {}
+
+std::shared_ptr<MinAggregate> MinAggregate::Make(std::shared_ptr<BoundTerm> term) {
+  return std::shared_ptr<MinAggregate>(new MinAggregate(std::move(term)));
+}
+
+Result<Literal> MinAggregate::Evaluate(const StructLike& data) const {
+  ICEBERG_ASSIGN_OR_RAISE(auto literal, term()->Evaluate(data));
+  return literal;
+}
+
+std::unique_ptr<BoundAggregate::Aggregator> MinAggregate::NewAggregator() const {
+  return std::unique_ptr<BoundAggregate::Aggregator>(new MinAggregator(term()));
 }
 
 // -------------------- Unbound binding --------------------
@@ -248,38 +287,37 @@ Result<std::shared_ptr<Expression>> UnboundAggregateImpl<B>::Bind(
 
   std::shared_ptr<B> bound_term;
   if (this->term()) {
-    ICEBERG_ASSIGN_OR_THROW(bound_term, this->term()->Bind(schema, case_sensitive));
+    ICEBERG_ASSIGN_OR_RAISE(bound_term, this->term()->Bind(schema, case_sensitive));
   }
 
   switch (this->op()) {
-    case Expression::Operation::kCountStar: {
-      ICEBERG_ASSIGN_OR_THROW(auto aggregate, CountStarAggregate::Make());
-      return aggregate;
-    }
-    case Expression::Operation::kCount: {
-      if (!bound_term) {
-        return InvalidExpression("Aggregate requires a term");
-      }
-      ICEBERG_ASSIGN_OR_THROW(auto aggregate,
-                              CountNonNullAggregate::Make(std::move(bound_term)));
-      return aggregate;
-    }
-    case Expression::Operation::kCountNull: {
-      if (!bound_term) {
-        return InvalidExpression("Aggregate requires a term");
-      }
-      ICEBERG_ASSIGN_OR_THROW(auto aggregate,
-                              CountNullAggregate::Make(std::move(bound_term)));
-      return aggregate;
-    }
+    case Expression::Operation::kCountStar:
+      return CountStarAggregate::Make().transform([](auto aggregate) {
+        return std::shared_ptr<CountStarAggregate>(std::move(aggregate));
+      });
+    case Expression::Operation::kCount:
+      return CountNonNullAggregate::Make(std::move(bound_term))
+          .transform([](auto aggregate) {
+            return std::shared_ptr<CountNonNullAggregate>(std::move(aggregate));
+          });
+    case Expression::Operation::kCountNull:
+      return CountNullAggregate::Make(std::move(bound_term))
+          .transform([](auto aggregate) {
+            return std::shared_ptr<CountNullAggregate>(std::move(aggregate));
+          });
     case Expression::Operation::kMax:
     case Expression::Operation::kMin: {
       if (!bound_term) {
         return InvalidExpression("Aggregate requires a term");
       }
-      auto aggregate =
-          std::make_shared<ValueAggregate>(this->op(), std::move(bound_term));
-      return aggregate;
+      if (!bound_term->type()->is_primitive()) {
+        return InvalidExpression("Aggregate requires primitive type, got {}",
+                                 bound_term->type()->ToString());
+      }
+      if (this->op() == Expression::Operation::kMax) {
+        return MaxAggregate::Make(std::move(bound_term));
+      }
+      return MinAggregate::Make(std::move(bound_term));
     }
     default:
       return NotSupported("Unsupported aggregate operation");
@@ -345,29 +383,29 @@ class AggregateEvaluatorImpl : public AggregateEvaluator {
     return {};
   }
 
-  Result<std::vector<Literal>> Results() const override {
-    std::vector<Literal> out;
-    out.reserve(aggregates_.size());
+  Result<std::span<const Literal>> GetResults() const override {
+    results_.clear();
+    results_.reserve(aggregates_.size());
     for (const auto& aggregator : aggregators_) {
-      ICEBERG_ASSIGN_OR_RAISE(auto literal, aggregator->ResultLiteral());
-      out.emplace_back(std::move(literal));
+      results_.emplace_back(aggregator->GetResult());
     }
-    return out;
+    return std::span<const Literal>(results_);
   }
 
-  Result<Literal> ResultLiteral() const override {
+  Result<Literal> GetResult() const override {
     if (aggregates_.size() != 1) {
       return InvalidArgument(
-          "ResultLiteral() is only valid when evaluating a single aggregate");
+          "GetResult() is only valid when evaluating a single aggregate");
     }
 
-    ICEBERG_ASSIGN_OR_RAISE(auto all, Results());
+    ICEBERG_ASSIGN_OR_RAISE(auto all, GetResults());
     return all.front();
   }
 
  private:
   std::vector<std::shared_ptr<BoundAggregate>> aggregates_;
   std::vector<std::unique_ptr<BoundAggregate::Aggregator>> aggregators_;
+  mutable std::vector<Literal> results_;
 };
 
 }  // namespace
@@ -376,10 +414,10 @@ Result<std::unique_ptr<AggregateEvaluator>> AggregateEvaluator::Make(
     std::shared_ptr<BoundAggregate> aggregate) {
   std::vector<std::shared_ptr<BoundAggregate>> aggs;
   aggs.push_back(std::move(aggregate));
-  return MakeList(std::move(aggs));
+  return Make(std::move(aggs));
 }
 
-Result<std::unique_ptr<AggregateEvaluator>> AggregateEvaluator::MakeList(
+Result<std::unique_ptr<AggregateEvaluator>> AggregateEvaluator::Make(
     std::vector<std::shared_ptr<BoundAggregate>> aggregates) {
   if (aggregates.empty()) {
     return InvalidArgument("AggregateEvaluator requires at least one aggregate");
@@ -387,8 +425,7 @@ Result<std::unique_ptr<AggregateEvaluator>> AggregateEvaluator::MakeList(
   std::vector<std::unique_ptr<BoundAggregate::Aggregator>> aggregators;
   aggregators.reserve(aggregates.size());
   for (const auto& agg : aggregates) {
-    ICEBERG_ASSIGN_OR_RAISE(auto aggregator, agg->NewAggregator());
-    aggregators.push_back(std::move(aggregator));
+    aggregators.push_back(agg->NewAggregator());
   }
 
   return std::unique_ptr<AggregateEvaluator>(
