@@ -26,8 +26,6 @@
 
 namespace iceberg {
 
-// IdToFieldVisitor implementation
-
 IdToFieldVisitor::IdToFieldVisitor(
     std::unordered_map<int32_t, std::reference_wrapper<const SchemaField>>& id_to_field)
     : id_to_field_(id_to_field) {}
@@ -46,8 +44,6 @@ Status IdToFieldVisitor::Visit(const NestedType& type) {
   }
   return {};
 }
-
-// NameToIdVisitor implementation
 
 NameToIdVisitor::NameToIdVisitor(
     std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>& name_to_id,

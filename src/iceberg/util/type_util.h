@@ -42,7 +42,6 @@
 namespace iceberg {
 
 /// \brief Visitor for building a map from field ID to SchemaField reference.
-/// Corresponds to Java's IndexById visitor.
 class IdToFieldVisitor {
  public:
   explicit IdToFieldVisitor(
@@ -56,7 +55,6 @@ class IdToFieldVisitor {
 };
 
 /// \brief Visitor for building a map from field name to field ID.
-/// Corresponds to Java's IndexByName visitor.
 class NameToIdVisitor {
  public:
   explicit NameToIdVisitor(
@@ -85,7 +83,6 @@ class NameToIdVisitor {
 };
 
 /// \brief Visitor for building a map from field ID to position path.
-/// Used for efficient field access in StructLike.
 class PositionPathVisitor {
  public:
   Status Visit(const PrimitiveType& type) {
@@ -129,7 +126,6 @@ class PositionPathVisitor {
 };
 
 /// \brief Visitor for pruning columns based on selected field IDs.
-/// Corresponds to Java's PruneColumns visitor.
 ///
 /// This visitor traverses a schema and creates a projected version containing only
 /// the specified fields. When `select_full_types` is true, a field with all its
