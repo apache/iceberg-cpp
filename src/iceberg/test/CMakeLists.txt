@@ -164,8 +164,28 @@ if(ICEBERG_BUILD_BUNDLE)
 endif()
 
 if(ICEBERG_BUILD_REST)
-  add_iceberg_test(rest_catalog_test SOURCES rest_catalog_test.cc
-                   rest_json_internal_test.cc)
-  target_link_libraries(rest_catalog_test PRIVATE iceberg_rest_static)
+  function(add_rest_iceberg_test test_name)
+    set(options USE_BUNDLE)
+    set(oneValueArgs)
+    set(multiValueArgs SOURCES)
+    cmake_parse_arguments(ARG
+                          "${options}"
+                          "${oneValueArgs}"
+                          "${multiValueArgs}"
+                          ${ARGN})
+
+    add_executable(${test_name})
+    target_include_directories(${test_name} PRIVATE "${CMAKE_BINARY_DIR}/iceberg/test/")
+
+    target_sources(${test_name} PRIVATE ${ARG_SOURCES})
+
+    target_link_libraries(${test_name} PRIVATE GTest::gtest_main GTest::gmock
+                                               iceberg_rest_static)
+
+    add_test(NAME ${test_name} COMMAND ${test_name})
+  endfunction()
+
+  add_rest_iceberg_test(rest_catalog_test SOURCES rest_catalog_test.cc
+                        rest_json_internal_test.cc)
   target_include_directories(rest_catalog_test PRIVATE ${cpp-httplib_SOURCE_DIR})
 endif()
