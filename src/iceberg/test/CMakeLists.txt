@@ -80,6 +80,7 @@ add_iceberg_test(schema_test
 add_iceberg_test(table_test
                  SOURCES
                  json_internal_test.cc
+                 manage_snapshots_test.cc
                  pending_update_test.cc
                  schema_json_test.cc
                  table_test.cc

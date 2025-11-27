@@ -160,6 +160,8 @@ class PendingUpdate;
 template <typename T>
 class PendingUpdateTyped;
 
+class ManageSnapshots;
+
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.
 /// ----------------------------------------------------------------------------
