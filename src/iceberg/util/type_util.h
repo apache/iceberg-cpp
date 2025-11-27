@@ -27,6 +27,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/type_fwd.h"
@@ -129,6 +130,7 @@ class PruneColumnVisitor {
 ///       - All field IDs must be unique across the entire schema hierarchy
 ///       If the struct is part of a Schema, these invariants are enforced by
 ///       StructType::InitFieldById which checks for duplicate field IDs.
-std::unordered_map<int32_t, int32_t> indexParents(const StructType& root_struct);
+ICEBERG_EXPORT std::unordered_map<int32_t, int32_t> indexParents(
+    const StructType& root_struct);
 
 }  // namespace iceberg
