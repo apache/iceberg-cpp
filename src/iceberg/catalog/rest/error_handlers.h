@@ -71,7 +71,7 @@ class ICEBERG_REST_EXPORT NamespaceErrorHandler : public DefaultErrorHandler {
 };
 
 /// \brief Error handler for drop namespace operations.
-class ICEBERG_REST_EXPORT DropNamespaceErrorHandler : public NamespaceErrorHandler {
+class ICEBERG_REST_EXPORT DropNamespaceErrorHandler final : public NamespaceErrorHandler {
  public:
   /// \brief Returns the singleton instance
   static const std::shared_ptr<DropNamespaceErrorHandler>& Instance();
@@ -83,7 +83,7 @@ class ICEBERG_REST_EXPORT DropNamespaceErrorHandler : public NamespaceErrorHandl
 };
 
 /// \brief Table-level error handler.
-class ICEBERG_REST_EXPORT TableErrorHandler : public DefaultErrorHandler {
+class ICEBERG_REST_EXPORT TableErrorHandler final : public DefaultErrorHandler {
  public:
   /// \brief Returns the singleton instance
   static const std::shared_ptr<TableErrorHandler>& Instance();
@@ -95,7 +95,7 @@ class ICEBERG_REST_EXPORT TableErrorHandler : public DefaultErrorHandler {
 };
 
 /// \brief View-level error handler.
-class ICEBERG_REST_EXPORT ViewErrorHandler : public DefaultErrorHandler {
+class ICEBERG_REST_EXPORT ViewErrorHandler final : public DefaultErrorHandler {
  public:
   /// \brief Returns the singleton instance
   static const std::shared_ptr<ViewErrorHandler>& Instance();
@@ -107,7 +107,7 @@ class ICEBERG_REST_EXPORT ViewErrorHandler : public DefaultErrorHandler {
 };
 
 /// \brief Table commit operation error handler.
-class ICEBERG_REST_EXPORT TableCommitErrorHandler : public DefaultErrorHandler {
+class ICEBERG_REST_EXPORT TableCommitErrorHandler final : public DefaultErrorHandler {
  public:
   /// \brief Returns the singleton instance
   static const std::shared_ptr<TableCommitErrorHandler>& Instance();
@@ -119,7 +119,7 @@ class ICEBERG_REST_EXPORT TableCommitErrorHandler : public DefaultErrorHandler {
 };
 
 /// \brief View commit operation error handler.
-class ICEBERG_REST_EXPORT ViewCommitErrorHandler : public DefaultErrorHandler {
+class ICEBERG_REST_EXPORT ViewCommitErrorHandler final : public DefaultErrorHandler {
  public:
   /// \brief Returns the singleton instance
   static const std::shared_ptr<ViewCommitErrorHandler>& Instance();
