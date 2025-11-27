@@ -160,6 +160,9 @@ class PendingUpdate;
 template <typename T>
 class PendingUpdateTyped;
 
+enum class CleanupLevel;
+class ExpireSnapshots;
+
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.
 /// ----------------------------------------------------------------------------

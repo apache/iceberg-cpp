@@ -79,6 +79,7 @@ add_iceberg_test(schema_test
 
 add_iceberg_test(table_test
                  SOURCES
+                 expire_snapshots_test.cc
                  json_internal_test.cc
                  pending_update_test.cc
                  schema_json_test.cc
