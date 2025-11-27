@@ -57,7 +57,8 @@ jobs:
           thread-comments: true
           ignore: 'build|cmake_modules|ci'
           database: build
-          extra-args: '-I$PWD/src -I$PWD/build/src'
+          # need '-fno-builtin-std-forward_like', see https://github.com/llvm/llvm-project/issues/101614
+          extra-args: '-I$PWD/src -I$PWD/build/src -fno-builtin-std-forward_like'
       - name: Fail fast?!
         if: steps.linter.outputs.checks-failed != 0
         run: |
