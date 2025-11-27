@@ -154,19 +154,19 @@ Status AvroWriter::Close() {
   return {};
 }
 
-std::optional<Metrics> AvroWriter::metrics() {
+Result<Metrics> AvroWriter::metrics() {
   if (impl_->Closed()) {
     // TODO(xiao.dong) implement metrics
     return {};
   }
-  return std::nullopt;
+  return Invalid("AvroWriter is not closed");
 }
 
-std::optional<int64_t> AvroWriter::length() {
+Result<int64_t> AvroWriter::length() {
   if (impl_->Closed()) {
     return impl_->length();
   }
-  return std::nullopt;
+  return Invalid("AvroWriter is not closed");
 }
 
 std::vector<int64_t> AvroWriter::split_offsets() { return {}; }

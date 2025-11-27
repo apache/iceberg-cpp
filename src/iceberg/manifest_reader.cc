@@ -48,7 +48,8 @@ Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
                           InheritableMetadataFactory::FromManifest(manifest));
 
   return std::make_unique<ManifestReaderImpl>(std::move(reader), std::move(schema),
-                                              std::move(inheritable_metadata));
+                                              std::move(inheritable_metadata),
+                                              manifest.first_row_id);
 }
 
 Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
@@ -66,7 +67,8 @@ Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
                                                 .projection = schema}));
   ICEBERG_ASSIGN_OR_RAISE(auto inheritable_metadata, InheritableMetadataFactory::Empty());
   return std::make_unique<ManifestReaderImpl>(std::move(reader), std::move(schema),
-                                              std::move(inheritable_metadata));
+                                              std::move(inheritable_metadata),
+                                              std::nullopt);
 }
 
 Result<std::unique_ptr<ManifestListReader>> ManifestListReader::Make(

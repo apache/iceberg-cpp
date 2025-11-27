@@ -49,19 +49,19 @@ TEST(Table, TableV1) {
   ASSERT_TRUE(schema.has_value());
   ASSERT_EQ(schema.value()->fields().size(), 3);
   auto schemas = table.schemas();
-  ASSERT_TRUE(schemas->empty());
+  ASSERT_TRUE(schemas->get().empty());
 
   // Check table spec
   auto spec = table.spec();
   ASSERT_TRUE(spec.has_value());
   auto specs = table.specs();
-  ASSERT_EQ(1UL, specs->size());
+  ASSERT_EQ(1UL, specs->get().size());
 
   // Check table sort_order
   auto sort_order = table.sort_order();
   ASSERT_TRUE(sort_order.has_value());
   auto sort_orders = table.sort_orders();
-  ASSERT_EQ(1UL, sort_orders->size());
+  ASSERT_EQ(1UL, sort_orders->get().size());
 
   // Check table location
   auto location = table.location();
@@ -89,19 +89,19 @@ TEST(Table, TableV2) {
   ASSERT_TRUE(schema.has_value());
   ASSERT_EQ(schema.value()->fields().size(), 3);
   auto schemas = table.schemas();
-  ASSERT_FALSE(schemas->empty());
+  ASSERT_FALSE(schemas->get().empty());
 
   // Check partition spec
   auto spec = table.spec();
   ASSERT_TRUE(spec.has_value());
   auto specs = table.specs();
-  ASSERT_EQ(1UL, specs->size());
+  ASSERT_EQ(1UL, specs->get().size());
 
   // Check sort order
   auto sort_order = table.sort_order();
   ASSERT_TRUE(sort_order.has_value());
   auto sort_orders = table.sort_orders();
-  ASSERT_EQ(1UL, sort_orders->size());
+  ASSERT_EQ(1UL, sort_orders->get().size());
 
   // Check table location
   auto location = table.location();

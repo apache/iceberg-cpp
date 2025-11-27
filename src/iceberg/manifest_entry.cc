@@ -22,7 +22,6 @@
 #include <memory>
 #include <vector>
 
-#include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/type.h"
 

@@ -134,6 +134,8 @@ struct ManifestFile;
 struct ManifestList;
 struct PartitionFieldSummary;
 
+class PartitionSummary;
+
 class ManifestListReader;
 class ManifestListWriter;
 class ManifestReader;
@@ -153,6 +155,10 @@ class TableUpdate;
 class TableRequirement;
 class TableMetadataBuilder;
 class TableUpdateContext;
+
+class PendingUpdate;
+template <typename T>
+class PendingUpdateTyped;
 
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.

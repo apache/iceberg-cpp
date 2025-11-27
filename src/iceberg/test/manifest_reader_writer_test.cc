@@ -50,14 +50,16 @@ class ManifestReaderWriterTestBase : public TempFileTestBase {
 
   void TestManifestReading(const std::string& resource_name,
                            const std::vector<ManifestEntry>& expected_entries,
-                           std::shared_ptr<Schema> partition_schema = nullptr) {
+                           std::shared_ptr<Schema> partition_schema = nullptr,
+                           std::optional<int64_t> snapshot_id = std::nullopt) {
     std::string path = GetResourcePath(resource_name);
-    TestManifestReadingByPath(path, expected_entries, partition_schema);
+    TestManifestReadingByPath(path, expected_entries, partition_schema, snapshot_id);
   }
 
   void TestManifestReadingByPath(const std::string& path,
                                  const std::vector<ManifestEntry>& expected_entries,
-                                 std::shared_ptr<Schema> partition_schema = nullptr) {
+                                 std::shared_ptr<Schema> partition_schema = nullptr,
+                                 std::optional<int64_t> snapshot_id = std::nullopt) {
     auto manifest_reader_result = ManifestReader::Make(path, file_io_, partition_schema);
     ASSERT_TRUE(manifest_reader_result.has_value())
         << manifest_reader_result.error().message;
@@ -152,12 +154,12 @@ class ManifestV1Test : public ManifestReaderWriterTestBase {
     return manifest_entries;
   }
 
-  void TestWriteManifest(const std::string& manifest_list_path,
+  void TestWriteManifest(int64_t snapshot_id, const std::string& manifest_list_path,
                          std::shared_ptr<PartitionSpec> partition_spec,
                          const std::vector<ManifestEntry>& manifest_entries,
                          std::shared_ptr<Schema> table_schema) {
     auto result =
-        ManifestWriter::MakeV1Writer(1, manifest_list_path, file_io_,
+        ManifestWriter::MakeV1Writer(snapshot_id, manifest_list_path, file_io_,
                                      std::move(partition_spec), std::move(table_schema));
     ASSERT_TRUE(result.has_value()) << result.error().message;
     auto writer = std::move(result.value());
@@ -192,8 +194,9 @@ TEST_F(ManifestV1Test, WritePartitionedTest) {
 
   auto expected_entries = PreparePartitionedTestData();
   auto write_manifest_path = CreateNewTempFilePath();
-  TestWriteManifest(write_manifest_path, partition_spec, expected_entries, table_schema);
-  TestManifestReadingByPath(write_manifest_path, expected_entries, partition_schema);
+  TestWriteManifest(1, write_manifest_path, partition_spec, expected_entries,
+                    table_schema);
+  TestManifestReadingByPath(write_manifest_path, expected_entries, partition_schema, 1);
 }
 
 class ManifestV2Test : public ManifestReaderWriterTestBase {
@@ -289,7 +292,7 @@ TEST_F(ManifestV2Test, ReadMetadataInheritanceTest) {
       .manifest_path = path,
       .manifest_length = 100,
       .partition_spec_id = 12,
-      .content = ManifestFile::Content::kData,
+      .content = ManifestContent::kData,
       .sequence_number = 15,
       .added_snapshot_id = 679879563479918846LL,
   };
@@ -320,7 +323,7 @@ TEST_F(ManifestV2Test, WriteInheritancePartitionedTest) {
       .manifest_path = write_manifest_path,
       .manifest_length = 100,
       .partition_spec_id = 12,
-      .content = ManifestFile::Content::kData,
+      .content = ManifestContent::kData,
       .sequence_number = 15,
       .added_snapshot_id = 679879563479918846LL,
   };

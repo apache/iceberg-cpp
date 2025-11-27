@@ -40,9 +40,9 @@ enum class ErrorKind {
   kInvalidArgument,
   kInvalidArrowData,
   kInvalidExpression,
-  kInvalidSchema,
   kInvalidManifest,
   kInvalidManifestList,
+  kInvalidSchema,
   kIOError,
   kJsonParseError,
   kNamespaceNotEmpty,
@@ -57,6 +57,7 @@ enum class ErrorKind {
   kRestError,
   kServiceUnavailable,
   kUnknownError,
+  kValidationFailed,
 };
 
 /// \brief Error with a kind and a message.
@@ -100,9 +101,9 @@ DEFINE_ERROR_FUNCTION(Invalid)
 DEFINE_ERROR_FUNCTION(InvalidArgument)
 DEFINE_ERROR_FUNCTION(InvalidArrowData)
 DEFINE_ERROR_FUNCTION(InvalidExpression)
-DEFINE_ERROR_FUNCTION(InvalidSchema)
 DEFINE_ERROR_FUNCTION(InvalidManifest)
 DEFINE_ERROR_FUNCTION(InvalidManifestList)
+DEFINE_ERROR_FUNCTION(InvalidSchema)
 DEFINE_ERROR_FUNCTION(IOError)
 DEFINE_ERROR_FUNCTION(JsonParseError)
 DEFINE_ERROR_FUNCTION(NamespaceNotEmpty)
@@ -117,6 +118,7 @@ DEFINE_ERROR_FUNCTION(NotSupported)
 DEFINE_ERROR_FUNCTION(RestError)
 DEFINE_ERROR_FUNCTION(ServiceUnavailable)
 DEFINE_ERROR_FUNCTION(UnknownError)
+DEFINE_ERROR_FUNCTION(ValidationFailed)
 
 #undef DEFINE_ERROR_FUNCTION
 

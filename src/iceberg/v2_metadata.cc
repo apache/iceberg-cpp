@@ -31,9 +31,8 @@ namespace iceberg {
 ManifestEntryAdapterV2::ManifestEntryAdapterV2(
     std::optional<int64_t> snapshot_id, std::shared_ptr<PartitionSpec> partition_spec,
     std::shared_ptr<Schema> current_schema, ManifestContent content)
-    : ManifestEntryAdapter(std::move(partition_spec), std::move(current_schema),
-                           std::move(content)),
-      snapshot_id_(snapshot_id) {}
+    : ManifestEntryAdapter(snapshot_id, std::move(partition_spec),
+                           std::move(current_schema), std::move(content)) {}
 
 std::shared_ptr<Schema> ManifestEntryAdapterV2::EntrySchema(
     std::shared_ptr<StructType> partition_type) {
@@ -81,9 +80,9 @@ Status ManifestEntryAdapterV2::Init() {
   metadata_["format-version"] = "2";
   metadata_["content"] = content_ == ManifestContent::kData ? "data" : "delete";
 
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_type,
+  ICEBERG_ASSIGN_OR_RAISE(partition_type_,
                           partition_spec_->PartitionType(*current_schema_));
-  manifest_schema_ = EntrySchema(std::move(partition_type));
+  manifest_schema_ = EntrySchema(partition_type_);
   return ToArrowSchema(*manifest_schema_, &schema_);
 }
 

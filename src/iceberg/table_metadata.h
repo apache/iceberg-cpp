@@ -30,6 +30,7 @@
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/lazy.h"
 #include "iceberg/util/timepoint.h"
 
 namespace iceberg {
@@ -137,6 +138,40 @@ struct ICEBERG_EXPORT TableMetadata {
 
   ICEBERG_EXPORT friend bool operator==(const TableMetadata& lhs,
                                         const TableMetadata& rhs);
+};
+
+// Cache for table metadata mappings to facilitate fast lookups.
+class ICEBERG_EXPORT TableMetadataCache {
+ public:
+  explicit TableMetadataCache(const TableMetadata* metadata) : metadata_(metadata) {}
+
+  template <typename T>
+  using ByIdMap = std::unordered_map<int32_t, std::shared_ptr<T>>;
+  using SchemasMap = ByIdMap<Schema>;
+  using PartitionSpecsMap = ByIdMap<PartitionSpec>;
+  using SortOrdersMap = ByIdMap<SortOrder>;
+  using SnapshotsMap = std::unordered_map<int64_t, std::shared_ptr<Snapshot>>;
+  using SchemasMapRef = std::reference_wrapper<const SchemasMap>;
+  using PartitionSpecsMapRef = std::reference_wrapper<const PartitionSpecsMap>;
+  using SortOrdersMapRef = std::reference_wrapper<const SortOrdersMap>;
+  using SnapshotsMapRef = std::reference_wrapper<const SnapshotsMap>;
+
+  Result<SchemasMapRef> GetSchemasById() const;
+  Result<PartitionSpecsMapRef> GetPartitionSpecsById() const;
+  Result<SortOrdersMapRef> GetSortOrdersById() const;
+  Result<SnapshotsMapRef> GetSnapshotsById() const;
+
+ private:
+  static Result<SchemasMap> InitSchemasMap(const TableMetadata* metadata);
+  static Result<PartitionSpecsMap> InitPartitionSpecsMap(const TableMetadata* metadata);
+  static Result<SortOrdersMap> InitSortOrdersMap(const TableMetadata* metadata);
+  static Result<SnapshotsMap> InitSnapshotMap(const TableMetadata* metadata);
+
+  const TableMetadata* metadata_;
+  Lazy<InitSchemasMap> schemas_map_;
+  Lazy<InitPartitionSpecsMap> partition_specs_map_;
+  Lazy<InitSortOrdersMap> sort_orders_map_;
+  Lazy<InitSnapshotMap> snapshot_map_;
 };
 
 /// \brief Returns a string representation of a SnapshotLogEntry

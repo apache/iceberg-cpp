@@ -133,6 +133,8 @@ class ICEBERG_EXPORT UnboundPredicateImpl : public UnboundPredicate,
 
   Result<std::shared_ptr<Expression>> Negate() const override;
 
+  std::span<const Literal> literals() const { return values_; }
+
  private:
   UnboundPredicateImpl(Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term);
   UnboundPredicateImpl(Expression::Operation op, std::shared_ptr<UnboundTerm<B>> term,

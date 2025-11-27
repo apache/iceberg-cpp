@@ -22,6 +22,7 @@
 /// \file iceberg/metrics.h
 /// Iceberg file format metrics
 
+#include <optional>
 #include <unordered_map>
 
 #include "iceberg/expression/literal.h"
@@ -31,13 +32,13 @@ namespace iceberg {
 
 /// \brief Iceberg file format metrics
 struct ICEBERG_EXPORT Metrics {
-  int64_t row_count = 0;
-  std::unordered_map<int64_t, int64_t> column_sizes;
-  std::unordered_map<int64_t, int64_t> value_counts;
-  std::unordered_map<int64_t, int64_t> null_value_counts;
-  std::unordered_map<int64_t, int64_t> nan_value_counts;
-  std::unordered_map<int64_t, Literal> lower_bounds;
-  std::unordered_map<int64_t, Literal> upper_bounds;
+  std::optional<int64_t> row_count;
+  std::unordered_map<int32_t, int64_t> column_sizes;
+  std::unordered_map<int32_t, int64_t> value_counts;
+  std::unordered_map<int32_t, int64_t> null_value_counts;
+  std::unordered_map<int32_t, int64_t> nan_value_counts;
+  std::unordered_map<int32_t, Literal> lower_bounds;
+  std::unordered_map<int32_t, Literal> upper_bounds;
 };
 
 }  // namespace iceberg

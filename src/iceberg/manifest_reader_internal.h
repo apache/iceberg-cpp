@@ -33,10 +33,12 @@ class ManifestReaderImpl : public ManifestReader {
  public:
   explicit ManifestReaderImpl(std::unique_ptr<Reader> reader,
                               std::shared_ptr<Schema> schema,
-                              std::unique_ptr<InheritableMetadata> inheritable_metadata)
+                              std::unique_ptr<InheritableMetadata> inheritable_metadata,
+                              std::optional<int64_t> first_row_id)
       : schema_(std::move(schema)),
         reader_(std::move(reader)),
-        inheritable_metadata_(std::move(inheritable_metadata)) {}
+        inheritable_metadata_(std::move(inheritable_metadata)),
+        first_row_id_(first_row_id) {}
 
   Result<std::vector<ManifestEntry>> Entries() const override;
 
@@ -46,6 +48,7 @@ class ManifestReaderImpl : public ManifestReader {
   std::shared_ptr<Schema> schema_;
   std::unique_ptr<Reader> reader_;
   std::unique_ptr<InheritableMetadata> inheritable_metadata_;
+  mutable std::optional<int64_t> first_row_id_;
 };
 
 /// \brief Read manifest files from a manifest list file.
