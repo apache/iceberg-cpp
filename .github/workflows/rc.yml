@@ -81,9 +81,6 @@ jobs:
           - os: ubuntu-24.04
             CC: gcc-14
             CXX: g++-14
-    env:
-      CC: ${{ matrix.CC || 'cc' }}
-      CXX: ${{ matrix.CXX || 'c++' }}
     steps:
       - name: Checkout
         uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
@@ -91,6 +88,12 @@ jobs:
       - uses: actions/download-artifact@v6
         with:
           name: archive
+
+      - name: Set Ubuntu Compilers
+        if: ${{ startsWith(matrix.runs-on, 'ubuntu') }}
+        run: |
+          echo "CC=${{ matrix.CC }}" >> $GITHUB_ENV
+          echo "CXX=${{ matrix.CXX }}" >> $GITHUB_ENV
 
       - name: Verify
         run: |

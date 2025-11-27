@@ -115,9 +115,6 @@ jobs:
             meson-setup-args: --vsenv
           - title: AArch64 macOS 26
             runs-on: macos-26
-    env:
-      CC: ${{ matrix.CC || 'cc' }}
-      CXX: ${{ matrix.CXX || 'c++' }}
     steps:
       - uses: actions/setup-python@v6
         with:
@@ -128,6 +125,11 @@ jobs:
         run: |
           python3 -m pip install --upgrade pip
           python3 -m pip install -r requirements.txt
+      - name: Set Ubuntu Compilers
+        if: ${{ startsWith(matrix.runs-on, 'ubuntu') }}
+        run: |
+          echo "CC=${{ matrix.CC }}" >> $GITHUB_ENV
+          echo "CXX=${{ matrix.CXX }}" >> $GITHUB_ENV
       - name: Build Iceberg
         run: |
           meson setup builddir ${{ matrix.meson-setup-args || '' }}

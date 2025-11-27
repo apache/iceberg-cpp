@@ -48,8 +48,6 @@ jobs:
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          CC: gcc-14
-          CXX: g++-14
         with:
           style: file
           tidy-checks: ''

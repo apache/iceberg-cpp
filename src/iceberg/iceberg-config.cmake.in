@@ -72,19 +72,6 @@ endmacro()
 # Find system dependencies
 iceberg_find_dependencies("${ICEBERG_SYSTEM_DEPENDENCIES}")
 
-# Create missing CRoaring targets if they don't exist
-if(NOT TARGET roaring::roaring-headers)
-  add_library(roaring::roaring-headers INTERFACE IMPORTED)
-endif()
-
-if(NOT TARGET roaring::roaring-headers-cpp)
-  add_library(roaring::roaring-headers-cpp INTERFACE IMPORTED)
-endif()
-
-if(NOT TARGET CURL::libcurl)
-  add_library(CURL::libcurl INTERFACE IMPORTED)
-endif()
-
 include("${CMAKE_CURRENT_LIST_DIR}/iceberg-targets.cmake")
 
 if(TARGET iceberg::arrow_static)
