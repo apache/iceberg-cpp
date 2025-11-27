@@ -102,13 +102,12 @@ void DoRoundtrip(std::shared_ptr<::arrow::Array> data, std::shared_ptr<Schema> s
   ASSERT_THAT(WriteArray(data, *writer), IsOk());
 
   std::unordered_map<std::string, std::string> read_metadata;
-  ASSERT_THAT(ReadArray(out,
-                        {.path = basePath,
-                         .length = writer->length(),
-                         .io = file_io,
-                         .projection = schema},
-                        &read_metadata),
-              IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto length, writer->length());
+  ASSERT_THAT(
+      ReadArray(out,
+                {.path = basePath, .length = length, .io = file_io, .projection = schema},
+                &read_metadata),
+      IsOk());
   ASSERT_EQ(read_metadata, metadata);
 
   ASSERT_TRUE(out != nullptr) << "Reader.Next() returned no data";

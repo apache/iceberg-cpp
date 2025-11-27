@@ -34,9 +34,8 @@ namespace iceberg {
 ManifestEntryAdapterV1::ManifestEntryAdapterV1(
     std::optional<int64_t> snapshot_id, std::shared_ptr<PartitionSpec> partition_spec,
     std::shared_ptr<Schema> current_schema)
-    : ManifestEntryAdapter(std::move(partition_spec), std::move(current_schema),
-                           ManifestContent::kData),
-      snapshot_id_(snapshot_id) {}
+    : ManifestEntryAdapter(snapshot_id, std::move(partition_spec),
+                           std::move(current_schema), ManifestContent::kData) {}
 
 std::shared_ptr<Schema> ManifestEntryAdapterV1::EntrySchema(
     std::shared_ptr<StructType> partition_type) {
@@ -82,10 +81,9 @@ Status ManifestEntryAdapterV1::Init() {
   metadata_["partition-spec-id"] = std::to_string(partition_spec_->spec_id());
   metadata_["format-version"] = "1";
 
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_type,
+  ICEBERG_ASSIGN_OR_RAISE(partition_type_,
                           partition_spec_->PartitionType(*current_schema_));
-
-  manifest_schema_ = EntrySchema(std::move(partition_type));
+  manifest_schema_ = EntrySchema(partition_type_);
   return ToArrowSchema(*manifest_schema_, &schema_);
 }
 
@@ -121,7 +119,7 @@ Status ManifestFileAdapterV1::Init() {
 }
 
 Status ManifestFileAdapterV1::Append(const ManifestFile& file) {
-  if (file.content != ManifestFile::Content::kData) {
+  if (file.content != ManifestContent::kData) {
     return InvalidManifestList("Cannot store delete manifests in a v1 table");
   }
   return AppendInternal(file);

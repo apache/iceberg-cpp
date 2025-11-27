@@ -22,6 +22,7 @@ set(ICEBERG_SOURCES
     catalog/memory/in_memory_catalog.cc
     expression/aggregate.cc
     expression/binder.cc
+    expression/evaluator.cc
     expression/expression.cc
     expression/expressions.cc
     expression/literal.cc
@@ -42,6 +43,7 @@ set(ICEBERG_SOURCES
     name_mapping.cc
     partition_field.cc
     partition_spec.cc
+    partition_summary.cc
     row/arrow_array_wrapper.cc
     row/manifest_wrapper.cc
     row/struct_like.cc

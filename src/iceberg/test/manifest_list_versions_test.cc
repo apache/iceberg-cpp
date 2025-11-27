@@ -59,7 +59,7 @@ const static auto kTestManifest = ManifestFile{
     .manifest_path = kPath,
     .manifest_length = kLength,
     .partition_spec_id = kSpecId,
-    .content = ManifestFile::Content::kData,
+    .content = ManifestContent::kData,
     .sequence_number = kSeqNum,
     .min_sequence_number = kMinSeqNum,
     .added_snapshot_id = kSnapshotId,
@@ -78,7 +78,7 @@ const static auto kDeleteManifest = ManifestFile{
     .manifest_path = kPath,
     .manifest_length = kLength,
     .partition_spec_id = kSpecId,
-    .content = ManifestFile::Content::kDeletes,
+    .content = ManifestContent::kDeletes,
     .sequence_number = kSeqNum,
     .min_sequence_number = kMinSeqNum,
     .added_snapshot_id = kSnapshotId,
@@ -227,7 +227,7 @@ TEST_F(TestManifestListVersions, TestV1Write) {
   EXPECT_EQ(manifest.manifest_path, kPath);
   EXPECT_EQ(manifest.manifest_length, kLength);
   EXPECT_EQ(manifest.partition_spec_id, kSpecId);
-  EXPECT_EQ(manifest.content, ManifestFile::Content::kData);
+  EXPECT_EQ(manifest.content, ManifestContent::kData);
   EXPECT_EQ(manifest.added_snapshot_id, kSnapshotId);
   EXPECT_EQ(manifest.added_files_count, kAddedFiles);
   EXPECT_EQ(manifest.existing_files_count, kExistingFiles);
@@ -247,7 +247,7 @@ TEST_F(TestManifestListVersions, TestV2Write) {
   EXPECT_EQ(manifest.manifest_path, kPath);
   EXPECT_EQ(manifest.manifest_length, kLength);
   EXPECT_EQ(manifest.partition_spec_id, kSpecId);
-  EXPECT_EQ(manifest.content, ManifestFile::Content::kData);
+  EXPECT_EQ(manifest.content, ManifestContent::kData);
   EXPECT_EQ(manifest.sequence_number, kSeqNum);
   EXPECT_EQ(manifest.min_sequence_number, kMinSeqNum);
   EXPECT_EQ(manifest.added_snapshot_id, kSnapshotId);
@@ -266,7 +266,7 @@ TEST_F(TestManifestListVersions, TestV3Write) {
   EXPECT_EQ(manifest.manifest_path, kPath);
   EXPECT_EQ(manifest.manifest_length, kLength);
   EXPECT_EQ(manifest.partition_spec_id, kSpecId);
-  EXPECT_EQ(manifest.content, ManifestFile::Content::kData);
+  EXPECT_EQ(manifest.content, ManifestContent::kData);
   EXPECT_EQ(manifest.sequence_number, kSeqNum);
   EXPECT_EQ(manifest.min_sequence_number, kMinSeqNum);
   EXPECT_EQ(manifest.added_snapshot_id, kSnapshotId);
@@ -292,7 +292,7 @@ TEST_F(TestManifestListVersions, TestV3WriteFirstRowIdAssignment) {
   EXPECT_EQ(manifest.manifest_path, kPath);
   EXPECT_EQ(manifest.manifest_length, kLength);
   EXPECT_EQ(manifest.partition_spec_id, kSpecId);
-  EXPECT_EQ(manifest.content, ManifestFile::Content::kData);
+  EXPECT_EQ(manifest.content, ManifestContent::kData);
   EXPECT_EQ(manifest.sequence_number, kSeqNum);
   EXPECT_EQ(manifest.min_sequence_number, kMinSeqNum);
   EXPECT_EQ(manifest.added_snapshot_id, kSnapshotId);
@@ -323,7 +323,7 @@ TEST_F(TestManifestListVersions, TestV3WriteMixedRowIdAssignment) {
     EXPECT_EQ(manifest.manifest_path, kPath);
     EXPECT_EQ(manifest.manifest_length, kLength);
     EXPECT_EQ(manifest.partition_spec_id, kSpecId);
-    EXPECT_EQ(manifest.content, ManifestFile::Content::kData);
+    EXPECT_EQ(manifest.content, ManifestContent::kData);
     EXPECT_EQ(manifest.sequence_number, kSeqNum);
     EXPECT_EQ(manifest.min_sequence_number, kMinSeqNum);
     EXPECT_EQ(manifest.added_snapshot_id, kSnapshotId);
@@ -442,7 +442,7 @@ TEST_F(TestManifestListVersions, TestManifestsPartitionSummary) {
       .manifest_path = kPath,
       .manifest_length = kLength,
       .partition_spec_id = kSpecId,
-      .content = ManifestFile::Content::kData,
+      .content = ManifestContent::kData,
       .sequence_number = kSeqNum,
       .min_sequence_number = kMinSeqNum,
       .added_snapshot_id = kSnapshotId,

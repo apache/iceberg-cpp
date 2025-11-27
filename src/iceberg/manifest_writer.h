@@ -23,11 +23,14 @@
 /// Data writer interface for manifest files and manifest list files.
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "iceberg/file_writer.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/manifest_adapter.h"
+#include "iceberg/metrics.h"
+#include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -36,18 +39,67 @@ namespace iceberg {
 class ICEBERG_EXPORT ManifestWriter {
  public:
   ManifestWriter(std::unique_ptr<Writer> writer,
-                 std::unique_ptr<ManifestEntryAdapter> adapter)
-      : writer_(std::move(writer)), adapter_(std::move(adapter)) {}
+                 std::unique_ptr<ManifestEntryAdapter> adapter,
+                 std::string_view manifest_location, std::optional<int64_t> first_row_id);
 
-  ~ManifestWriter() = default;
+  ~ManifestWriter();
 
-  /// \brief Write manifest entry to file.
+  /// \brief Write the entry that all its fields are populated correctly.
   /// \param entry Manifest entry to write.
   /// \return Status::OK() if entry was written successfully
-  Status Add(const ManifestEntry& entry);
+  /// \note All other write entry variants delegate to this method after populating
+  /// the necessary fields.
+  Status WriteEntry(const ManifestEntry& entry);
+
+  /// \brief Add an added entry for a file with a specific sequence number.
+  ///
+  /// \param file an added data file
+  /// \param data_sequence_number a data sequence number for the file
+  /// \return Status::OK() if the entry was written successfully
+  /// \note The entry's snapshot ID will be this manifest's snapshot ID. The entry's data
+  /// sequence number will be the provided data sequence number. The entry's file sequence
+  /// number will be assigned at commit.
+  Status WriteAddedEntry(std::shared_ptr<DataFile> file,
+                         std::optional<int64_t> data_sequence_number = std::nullopt);
+  /// \brief Add a new entry to the manifest.
+  /// The method populates the snapshot id and status fields of the entry.
+  Status WriteAddedEntry(const ManifestEntry& entry);
+
+  /// \brief Add an existing entry for a file.
+  /// \param file an existing data file
+  /// \param file_snapshot_id snapshot ID when the data file was added to the table
+  /// \param data_sequence_number a data sequence number of the file (assigned when the
+  /// file was added)
+  /// \param file_sequence_number a file sequence number (assigned when the file was
+  /// added)
+  /// \return Status::OK() if the entry was written successfully
+  /// \note The original data and file sequence numbers, snapshot ID, which were assigned
+  /// at commit, must be preserved when adding an existing entry.
+  Status WriteExistingEntry(std::shared_ptr<DataFile> file, int64_t file_snapshot_id,
+                            int64_t data_sequence_number,
+                            std::optional<int64_t> file_sequence_number = std::nullopt);
+  /// \brief Add an existing entry to the manifest.
+  /// The method populates the status field of the entry.
+  Status WriteExistingEntry(const ManifestEntry& entry);
+
+  /// \brief Add a delete entry for a file.
+  /// \param file a deleted data file
+  /// \param data_sequence_number a data sequence number of the file (assigned when the
+  /// file was added)
+  /// \param file_sequence_number a file sequence number (assigned when the file was
+  /// added)
+  /// \return Status::OK() if the entry was written successfully
+  /// \note The entry's snapshot ID will be this manifest's snapshot ID. However, the
+  /// original data and file sequence numbers of the file must be preserved when the file
+  /// is marked as deleted.
+  Status WriteDeletedEntry(std::shared_ptr<DataFile> file, int64_t data_sequence_number,
+                           std::optional<int64_t> file_sequence_number = std::nullopt);
+  /// \brief Add a deleted entry to the manifest.
+  /// The method populates the snapshot id and status fields of the entry.
+  Status WriteDeletedEntry(const ManifestEntry& entry);
 
   /// \brief Write manifest entries to file.
-  /// \param entries Manifest entries to write.
+  /// \param entries Already populated manifest entries to write.
   /// \return Status::OK() if all entries were written successfully
   Status AddAll(const std::vector<ManifestEntry>& entries);
 
@@ -56,6 +108,14 @@ class ICEBERG_EXPORT ManifestWriter {
 
   /// \brief Get the content of the manifest.
   ManifestContent content() const;
+
+  /// \brief Get the metrics of written manifest file.
+  /// \note Only valid after the file is closed.
+  Result<Metrics> metrics() const;
+
+  /// \brief Get the ManifestFile object.
+  /// \note Only valid after the file is closed.
+  Result<ManifestFile> ToManifestFile() const;
 
   /// \brief Creates a writer for a manifest file.
   /// \param snapshot_id ID of the snapshot.
@@ -100,9 +160,23 @@ class ICEBERG_EXPORT ManifestWriter {
       std::shared_ptr<Schema> current_schema, ManifestContent content);
 
  private:
+  Status CheckDataFile(const DataFile& file) const;
+
   static constexpr int64_t kBatchSize = 1024;
   std::unique_ptr<Writer> writer_;
   std::unique_ptr<ManifestEntryAdapter> adapter_;
+  bool closed_{false};
+  std::string manifest_location_;
+  std::optional<int64_t> first_row_id_;
+
+  int32_t add_files_count_{0};
+  int32_t existing_files_count_{0};
+  int32_t delete_files_count_{0};
+  int64_t add_rows_count_{0L};
+  int64_t existing_rows_count_{0L};
+  int64_t delete_rows_count_{0L};
+  std::optional<int64_t> min_sequence_number_{std::nullopt};
+  std::unique_ptr<PartitionSummary> partition_summary_;
 };
 
 /// \brief Write manifest files to a manifest list file.

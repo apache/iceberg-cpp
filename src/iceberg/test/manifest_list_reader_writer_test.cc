@@ -64,7 +64,7 @@ class ManifestListReaderWriterTestBase : public TempFileTestBase {
     for (const auto& manifest : manifest_files) {
       ASSERT_EQ(manifest.partition_spec_id, 0);
       ASSERT_TRUE(manifest.partitions.empty());
-      ASSERT_EQ(manifest.content, ManifestFile::Content::kData);
+      ASSERT_EQ(manifest.content, ManifestContent::kData);
     }
   }
 
@@ -242,7 +242,7 @@ class ManifestListReaderWriterV2Test : public ManifestListReaderWriterTestBase {
       manifest_file.manifest_path = test_dir_prefix + paths[i];
       manifest_file.manifest_length = file_size[i];
       manifest_file.partition_spec_id = 0;
-      manifest_file.content = ManifestFile::Content::kData;
+      manifest_file.content = ManifestContent::kData;
       manifest_file.sequence_number = 4 - i;
       manifest_file.min_sequence_number = 4 - i;
       manifest_file.added_snapshot_id = snapshot_id[i];
@@ -282,7 +282,7 @@ class ManifestListReaderWriterV2Test : public ManifestListReaderWriterTestBase {
       manifest_file.manifest_path = test_dir_prefix + paths[i];
       manifest_file.manifest_length = file_size[i];
       manifest_file.partition_spec_id = 0;
-      manifest_file.content = ManifestFile::Content::kData;
+      manifest_file.content = ManifestContent::kData;
       manifest_file.sequence_number = 4 - i;
       manifest_file.min_sequence_number = 4 - i;
       manifest_file.added_snapshot_id = snapshot_id[i];

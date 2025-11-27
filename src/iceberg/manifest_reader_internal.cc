@@ -237,7 +237,7 @@ Result<std::vector<ManifestFile>> ParseManifestList(ArrowSchema* schema,
         break;
       case ManifestFileField::kContent:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].content, view_of_column,
-                              ManifestFile::Content);
+                              ManifestContent);
         break;
       case ManifestFileField::kSequenceNumber:
         PARSE_PRIMITIVE_FIELD(manifest_files[row_idx].sequence_number, view_of_column,
@@ -328,7 +328,7 @@ Status ParseLiteral(ArrowArrayView* view_of_partition, int64_t row_idx,
 }
 
 Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
-                     ArrowArrayView* view_of_column,
+                     ArrowArrayView* view_of_column, std::optional<int64_t>& first_row_id,
                      std::vector<ManifestEntry>& manifest_entries) {
   if (view_of_column->storage_type != ArrowType::NANOARROW_TYPE_STRUCT) {
     return InvalidManifest("DataFile field should be a struct.");
@@ -367,13 +367,16 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
           return InvalidManifest("Field:{} should be a struct.", field_name);
         }
         if (view_of_file_field->n_children > 0) {
-          auto view_of_partition = view_of_file_field->children[0];
-          for (int64_t row_idx = 0; row_idx < view_of_partition->length; row_idx++) {
-            if (ArrowArrayViewIsNull(view_of_partition, row_idx)) {
-              break;
+          for (int64_t partition_idx = 0; partition_idx < view_of_file_field->n_children;
+               partition_idx++) {
+            auto view_of_partition = view_of_file_field->children[partition_idx];
+            for (int64_t row_idx = 0; row_idx < view_of_partition->length; row_idx++) {
+              if (ArrowArrayViewIsNull(view_of_partition, row_idx)) {
+                break;
+              }
+              ICEBERG_RETURN_UNEXPECTED(
+                  ParseLiteral(view_of_partition, row_idx, manifest_entries));
             }
-            ICEBERG_RETURN_UNEXPECTED(
-                ParseLiteral(view_of_partition, row_idx, manifest_entries));
           }
         }
       } break;
@@ -429,10 +432,25 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
         PARSE_PRIMITIVE_FIELD(manifest_entries[row_idx].data_file->sort_order_id,
                               view_of_file_field, int32_t);
         break;
-      case 16:
+      case 16: {
         PARSE_PRIMITIVE_FIELD(manifest_entries[row_idx].data_file->first_row_id,
                               view_of_file_field, int64_t);
+        if (first_row_id.has_value()) {
+          std::ranges::for_each(manifest_entries, [&first_row_id](ManifestEntry& entry) {
+            if (entry.status != ManifestStatus::kDeleted &&
+                !entry.data_file->first_row_id.has_value()) {
+              entry.data_file->first_row_id = first_row_id.value();
+              first_row_id = first_row_id.value() + entry.data_file->record_count;
+            }
+          });
+        } else {
+          // data file's first_row_id is null when the manifest's first_row_id is null
+          std::ranges::for_each(manifest_entries, [](ManifestEntry& entry) {
+            entry.data_file->first_row_id = std::nullopt;
+          });
+        }
         break;
+      }
       case 17:
         PARSE_STRING_FIELD(manifest_entries[row_idx].data_file->referenced_data_file,
                            view_of_file_field);
@@ -452,9 +470,9 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
   return {};
 }
 
-Result<std::vector<ManifestEntry>> ParseManifestEntry(ArrowSchema* schema,
-                                                      ArrowArray* array_in,
-                                                      const Schema& iceberg_schema) {
+Result<std::vector<ManifestEntry>> ParseManifestEntry(
+    ArrowSchema* schema, ArrowArray* array_in, const Schema& iceberg_schema,
+    std::optional<int64_t>& first_row_id) {
   if (schema->n_children != array_in->n_children) {
     return InvalidManifest("Columns size not match between schema:{} and array:{}",
                            schema->n_children, array_in->n_children);
@@ -509,8 +527,8 @@ Result<std::vector<ManifestEntry>> ParseManifestEntry(ArrowSchema* schema,
       case 4: {
         auto data_file_schema =
             internal::checked_pointer_cast<StructType>(field.value()->get().type());
-        ICEBERG_RETURN_UNEXPECTED(
-            ParseDataFile(data_file_schema, view_of_column, manifest_entries));
+        ICEBERG_RETURN_UNEXPECTED(ParseDataFile(data_file_schema, view_of_column,
+                                                first_row_id, manifest_entries));
         break;
       }
       default:
@@ -530,7 +548,7 @@ Result<std::vector<ManifestEntry>> ManifestReaderImpl::Entries() const {
       internal::ArrowArrayGuard array_guard(&result.value());
       ICEBERG_ASSIGN_OR_RAISE(
           auto parse_result,
-          ParseManifestEntry(&arrow_schema, &result.value(), *schema_));
+          ParseManifestEntry(&arrow_schema, &result.value(), *schema_, first_row_id_));
       manifest_entries.insert(manifest_entries.end(),
                               std::make_move_iterator(parse_result.begin()),
                               std::make_move_iterator(parse_result.end()));

@@ -19,93 +19,152 @@
 
 #include "iceberg/catalog/rest/rest_catalog.h"
 
-#include <httplib.h>
-
-#include <memory>
-#include <thread>
+#include <string>
+#include <unordered_map>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <nlohmann/json.hpp>
 
-namespace iceberg::catalog::rest {
+#include "iceberg/catalog/rest/catalog_properties.h"
+#include "iceberg/table_identifier.h"
+#include "iceberg/test/matchers.h"
 
-class RestCatalogIntegrationTest : public ::testing::Test {
+namespace iceberg::rest {
+
+// Test fixture for REST catalog tests, This assumes you have a local REST catalog service
+// running Default configuration: http://localhost:8181.
+class RestCatalogTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    server_ = std::make_unique<httplib::Server>();
-    port_ = server_->bind_to_any_port("127.0.0.1");
+    // Default configuration for local testing
+    // You can override this with environment variables if needed
+    const char* uri_env = std::getenv("ICEBERG_REST_URI");
+    const char* warehouse_env = std::getenv("ICEBERG_REST_WAREHOUSE");
 
-    server_thread_ = std::thread([this]() { server_->listen_after_bind(); });
+    std::string uri = uri_env ? uri_env : "http://localhost:8181";
+    std::string warehouse = warehouse_env ? warehouse_env : "default";
+
+    config_ = RestCatalogProperties::default_properties();
+    config_->Set(RestCatalogProperties::kUri, uri)
+        .Set(RestCatalogProperties::kName, std::string("test_catalog"))
+        .Set(RestCatalogProperties::kWarehouse, warehouse);
   }
 
-  void TearDown() override {
-    server_->stop();
-    if (server_thread_.joinable()) {
-      server_thread_.join();
-    }
-  }
+  void TearDown() override {}
 
-  std::unique_ptr<httplib::Server> server_;
-  int port_ = -1;
-  std::thread server_thread_;
+  std::unique_ptr<RestCatalogProperties> config_;
 };
 
-TEST_F(RestCatalogIntegrationTest, DISABLED_GetConfigSuccessfully) {
-  server_->Get("/v1/config", [](const httplib::Request&, httplib::Response& res) {
-    res.status = 200;
-    res.set_content(R"({"warehouse": "s3://test-bucket"})", "application/json");
-  });
+TEST_F(RestCatalogTest, DISABLED_MakeCatalogSuccess) {
+  auto catalog_result = RestCatalog::Make(*config_);
+  EXPECT_THAT(catalog_result, IsOk());
 
-  std::string base_uri = "http://127.0.0.1:" + std::to_string(port_);
-  RestCatalog catalog(base_uri);
-  cpr::Response response = catalog.GetConfig();
-
-  ASSERT_EQ(response.error.code, cpr::ErrorCode::OK);
-  ASSERT_EQ(response.status_code, 200);
-
-  auto json_body = nlohmann::json::parse(response.text);
-  EXPECT_EQ(json_body["warehouse"], "s3://test-bucket");
+  if (catalog_result.has_value()) {
+    auto& catalog = catalog_result.value();
+    EXPECT_EQ(catalog->name(), "test_catalog");
+  }
 }
 
-TEST_F(RestCatalogIntegrationTest, DISABLED_ListNamespacesReturnsMultipleResults) {
-  server_->Get("/v1/namespaces", [](const httplib::Request&, httplib::Response& res) {
-    res.status = 200;
-    res.set_content(R"({
-         "namespaces": [
-             ["accounting", "db"],
-             ["production", "db"]
-         ]
-     })",
-                    "application/json");
-  });
+TEST_F(RestCatalogTest, DISABLED_MakeCatalogEmptyUri) {
+  auto invalid_config = RestCatalogProperties::default_properties();
+  invalid_config->Set(RestCatalogProperties::kUri, std::string(""));
 
-  std::string base_uri = "http://127.0.0.1:" + std::to_string(port_);
-  RestCatalog catalog(base_uri);
-  cpr::Response response = catalog.ListNamespaces();
-
-  ASSERT_EQ(response.error.code, cpr::ErrorCode::OK);
-  ASSERT_EQ(response.status_code, 200);
-
-  auto json_body = nlohmann::json::parse(response.text);
-  ASSERT_TRUE(json_body.contains("namespaces"));
-  EXPECT_EQ(json_body["namespaces"].size(), 2);
-  EXPECT_THAT(json_body["namespaces"][0][0], "accounting");
+  auto catalog_result = RestCatalog::Make(*invalid_config);
+  EXPECT_THAT(catalog_result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(catalog_result, HasErrorMessage("uri"));
 }
 
-TEST_F(RestCatalogIntegrationTest, DISABLED_HandlesServerError) {
-  server_->Get("/v1/config", [](const httplib::Request&, httplib::Response& res) {
-    res.status = 500;
-    res.set_content("Internal Server Error", "text/plain");
-  });
+TEST_F(RestCatalogTest, DISABLED_MakeCatalogWithCustomProperties) {
+  auto custom_config = RestCatalogProperties::default_properties();
+  custom_config
+      ->Set(RestCatalogProperties::kUri, config_->Get(RestCatalogProperties::kUri))
+      .Set(RestCatalogProperties::kName, config_->Get(RestCatalogProperties::kName))
+      .Set(RestCatalogProperties::kWarehouse,
+           config_->Get(RestCatalogProperties::kWarehouse))
+      .Set(RestCatalogProperties::Entry<std::string>{"custom_prop", ""},
+           std::string("custom_value"))
+      .Set(RestCatalogProperties::Entry<std::string>{"timeout", ""},
+           std::string("30000"));
 
-  std::string base_uri = "http://127.0.0.1:" + std::to_string(port_);
-  RestCatalog catalog(base_uri);
-  cpr::Response response = catalog.GetConfig();
-
-  ASSERT_EQ(response.error.code, cpr::ErrorCode::OK);
-  ASSERT_EQ(response.status_code, 500);
-  ASSERT_EQ(response.text, "Internal Server Error");
+  auto catalog_result = RestCatalog::Make(*custom_config);
+  EXPECT_THAT(catalog_result, IsOk());
 }
 
-}  // namespace iceberg::catalog::rest
+TEST_F(RestCatalogTest, DISABLED_ListNamespaces) {
+  auto catalog_result = RestCatalog::Make(*config_);
+  ASSERT_THAT(catalog_result, IsOk());
+  auto& catalog = catalog_result.value();
+
+  Namespace ns{.levels = {}};
+  auto result = catalog->ListNamespaces(ns);
+  EXPECT_THAT(result, IsOk());
+  EXPECT_FALSE(result->empty());
+  EXPECT_EQ(result->front().levels, (std::vector<std::string>{"my_namespace_test2"}));
+}
+
+TEST_F(RestCatalogTest, DISABLED_CreateNamespaceNotImplemented) {
+  auto catalog_result = RestCatalog::Make(*config_);
+  ASSERT_THAT(catalog_result, IsOk());
+  auto catalog = std::move(catalog_result.value());
+
+  Namespace ns{.levels = {"test_namespace"}};
+  std::unordered_map<std::string, std::string> props = {{"owner", "test"}};
+
+  auto result = catalog->CreateNamespace(ns, props);
+  EXPECT_THAT(result, IsError(ErrorKind::kNotImplemented));
+}
+
+TEST_F(RestCatalogTest, DISABLED_IntegrationTestFullNamespaceWorkflow) {
+  auto catalog_result = RestCatalog::Make(*config_);
+  ASSERT_THAT(catalog_result, IsOk());
+  auto catalog = std::move(catalog_result.value());
+
+  // 1. List initial namespaces
+  Namespace root{.levels = {}};
+  auto list_result1 = catalog->ListNamespaces(root);
+  ASSERT_THAT(list_result1, IsOk());
+  size_t initial_count = list_result1->size();
+
+  // 2. Create a new namespace
+  Namespace test_ns{.levels = {"integration_test_ns"}};
+  std::unordered_map<std::string, std::string> props = {
+      {"owner", "test"}, {"created_by", "rest_catalog_test"}};
+  auto create_result = catalog->CreateNamespace(test_ns, props);
+  EXPECT_THAT(create_result, IsOk());
+
+  // 3. Verify namespace exists
+  auto exists_result = catalog->NamespaceExists(test_ns);
+  EXPECT_THAT(exists_result, HasValue(::testing::Eq(true)));
+
+  // 4. List namespaces again (should have one more)
+  auto list_result2 = catalog->ListNamespaces(root);
+  ASSERT_THAT(list_result2, IsOk());
+  EXPECT_EQ(list_result2->size(), initial_count + 1);
+
+  // 5. Get namespace properties
+  auto props_result = catalog->GetNamespaceProperties(test_ns);
+  ASSERT_THAT(props_result, IsOk());
+  EXPECT_EQ((*props_result)["owner"], "test");
+
+  // 6. Update properties
+  std::unordered_map<std::string, std::string> updates = {
+      {"description", "test namespace"}};
+  std::unordered_set<std::string> removals = {};
+  auto update_result = catalog->UpdateNamespaceProperties(test_ns, updates, removals);
+  EXPECT_THAT(update_result, IsOk());
+
+  // 7. Verify updated properties
+  auto props_result2 = catalog->GetNamespaceProperties(test_ns);
+  ASSERT_THAT(props_result2, IsOk());
+  EXPECT_EQ((*props_result2)["description"], "test namespace");
+
+  // 8. Drop the namespace (cleanup)
+  auto drop_result = catalog->DropNamespace(test_ns);
+  EXPECT_THAT(drop_result, IsOk());
+
+  // 9. Verify namespace no longer exists
+  auto exists_result2 = catalog->NamespaceExists(test_ns);
+  EXPECT_THAT(exists_result2, HasValue(::testing::Eq(false)));
+}
+
+}  // namespace iceberg::rest

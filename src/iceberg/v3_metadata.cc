@@ -20,10 +20,12 @@
 #include "iceberg/v3_metadata.h"
 
 #include <memory>
+#include <optional>
 
 #include "iceberg/json_internal.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
+#include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/util/macros.h"
@@ -34,9 +36,8 @@ ManifestEntryAdapterV3::ManifestEntryAdapterV3(
     std::optional<int64_t> snapshot_id, std::optional<int64_t> first_row_id,
     std::shared_ptr<PartitionSpec> partition_spec, std::shared_ptr<Schema> current_schema,
     ManifestContent content)
-    : ManifestEntryAdapter(std::move(partition_spec), std::move(current_schema),
-                           std::move(content)),
-      snapshot_id_(snapshot_id),
+    : ManifestEntryAdapter(snapshot_id, std::move(partition_spec),
+                           std::move(current_schema), std::move(content)),
       first_row_id_(first_row_id) {}
 
 std::shared_ptr<Schema> ManifestEntryAdapterV3::EntrySchema(
@@ -90,9 +91,9 @@ Status ManifestEntryAdapterV3::Init() {
   metadata_["format-version"] = "3";
   metadata_["content"] = content_ == ManifestContent::kData ? "data" : "delete";
 
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_type,
+  ICEBERG_ASSIGN_OR_RAISE(partition_type_,
                           partition_spec_->PartitionType(*current_schema_));
-  manifest_schema_ = EntrySchema(std::move(partition_type));
+  manifest_schema_ = EntrySchema(partition_type_);
   return ToArrowSchema(*manifest_schema_, &schema_);
 }
 
@@ -134,10 +135,13 @@ Result<std::optional<std::string>> ManifestEntryAdapterV3::GetReferenceDataFile(
 
 Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetFirstRowId(
     const DataFile& file) const {
-  if (file.content == DataFile::Content::kData) {
+  if (file.content != DataFile::Content::kData) {
+    return std::nullopt;
+  }
+  if (file.first_row_id.has_value()) {
     return file.first_row_id;
   }
-  return std::nullopt;
+  return first_row_id_;
 }
 
 Result<std::optional<int64_t>> ManifestEntryAdapterV3::GetContentOffset(
@@ -191,7 +195,10 @@ Status ManifestFileAdapterV3::Init() {
 
 Status ManifestFileAdapterV3::Append(const ManifestFile& file) {
   ICEBERG_RETURN_UNEXPECTED(AppendInternal(file));
-  if (WrapFirstRowId(file) && next_row_id_.has_value()) {
+  if (WrapFirstRowId(file)) {
+    if (!next_row_id_.has_value()) {
+      return InvalidManifestList("Missing next-row-id for file: {}", file.manifest_path);
+    }
     next_row_id_ = next_row_id_.value() + file.existing_rows_count.value_or(0) +
                    file.added_rows_count.value_or(0);
   }
@@ -234,13 +241,13 @@ Result<std::optional<int64_t>> ManifestFileAdapterV3::GetFirstRowId(
     const ManifestFile& file) const {
   if (WrapFirstRowId(file)) {
     // if first-row-id is assigned, ensure that it is valid
-    if (!next_row_id_.has_value()) {
+    if (file.first_row_id.has_value()) {
       // TODO(gangwu): add ToString for ManifestFile
       return InvalidManifestList("Found invalid first-row-id assignment: {}",
                                  file.manifest_path);
     }
     return next_row_id_;
-  } else if (file.content != ManifestFile::Content::kData) {
+  } else if (file.content != ManifestContent::kData) {
     return std::nullopt;
   } else {
     if (!file.first_row_id.has_value()) {
@@ -252,7 +259,7 @@ Result<std::optional<int64_t>> ManifestFileAdapterV3::GetFirstRowId(
 }
 
 bool ManifestFileAdapterV3::WrapFirstRowId(const ManifestFile& file) const {
-  return file.content == ManifestFile::Content::kData && !file.first_row_id.has_value();
+  return file.content == ManifestContent::kData && !file.first_row_id.has_value();
 }
 
 }  // namespace iceberg

@@ -19,6 +19,7 @@
 
 #include "iceberg/manifest_adapter.h"
 
+#include <memory>
 #include <utility>
 
 #include <nanoarrow/nanoarrow.h>
@@ -28,7 +29,6 @@
 #include "iceberg/manifest_list.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
-#include "iceberg/schema_internal.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
@@ -141,10 +141,12 @@ Result<ArrowArray*> ManifestAdapter::FinishAppending() {
   return &array_;
 }
 
-ManifestEntryAdapter::ManifestEntryAdapter(std::shared_ptr<PartitionSpec> partition_spec,
+ManifestEntryAdapter::ManifestEntryAdapter(std::optional<int64_t> snapshot_id_,
+                                           std::shared_ptr<PartitionSpec> partition_spec,
                                            std::shared_ptr<Schema> current_schema,
                                            ManifestContent content)
-    : partition_spec_(std::move(partition_spec)),
+    : snapshot_id_(snapshot_id_),
+      partition_spec_(std::move(partition_spec)),
       current_schema_(std::move(current_schema)),
       content_(content) {
   if (!partition_spec_) {
@@ -386,6 +388,10 @@ Result<std::optional<int64_t>> ManifestEntryAdapter::GetContentSizeInBytes(
 }
 
 Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
+  if (entry.data_file == nullptr) [[unlikely]] {
+    return InvalidManifest("Missing required data_file field from manifest entry.");
+  }
+
   const auto& fields = manifest_schema_->fields();
   for (size_t i = 0; i < fields.size(); i++) {
     const auto& field = fields[i];

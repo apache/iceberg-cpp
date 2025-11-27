@@ -44,20 +44,18 @@ TEST(PartitionSpecTest, Basics) {
     auto identity_transform = Transform::Identity();
     PartitionField pt_field1(5, 1000, "day", identity_transform);
     PartitionField pt_field2(5, 1001, "hour", identity_transform);
-    auto spec_result = PartitionSpec::Make(100, {pt_field1, pt_field2});
-    ASSERT_TRUE(spec_result.has_value());
-    auto& spec = *spec_result.value();
-    ASSERT_EQ(spec, spec);
-    ASSERT_EQ(100, spec.spec_id());
-    std::span<const PartitionField> fields = spec.fields();
+    ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(100, {pt_field1, pt_field2}));
+    ASSERT_EQ(*spec, *spec);
+    ASSERT_EQ(100, spec->spec_id());
+    std::span<const PartitionField> fields = spec->fields();
     ASSERT_EQ(2, fields.size());
     ASSERT_EQ(pt_field1, fields[0]);
     ASSERT_EQ(pt_field2, fields[1]);
     auto spec_str =
         "partition_spec[spec_id<100>,\n  day (1000 identity(5))\n  hour (1001 "
         "identity(5))\n]";
-    EXPECT_EQ(spec_str, spec.ToString());
-    EXPECT_EQ(spec_str, std::format("{}", spec));
+    EXPECT_EQ(spec_str, spec->ToString());
+    EXPECT_EQ(spec_str, std::format("{}", *spec));
   }
 }
 
@@ -68,24 +66,24 @@ TEST(PartitionSpecTest, Equality) {
   PartitionField pt_field1(5, 1000, "day", identity_transform);
   PartitionField pt_field2(7, 1001, "hour", identity_transform);
   PartitionField pt_field3(7, 1001, "hour", identity_transform);
-  auto schema1 = PartitionSpec::Make(100, {pt_field1, pt_field2}).value();
-  auto schema2 = PartitionSpec::Make(101, {pt_field1, pt_field2}).value();
-  auto schema3 = PartitionSpec::Make(101, {pt_field1}).value();
-  auto schema4 = PartitionSpec::Make(101, {pt_field3, pt_field1}).value();
-  auto schema5 = PartitionSpec::Make(100, {pt_field1, pt_field2}).value();
-  auto schema6 = PartitionSpec::Make(100, {pt_field2, pt_field1}).value();
+  ICEBERG_UNWRAP_OR_FAIL(auto spec1, PartitionSpec::Make(100, {pt_field1, pt_field2}));
+  ICEBERG_UNWRAP_OR_FAIL(auto spec2, PartitionSpec::Make(101, {pt_field1, pt_field2}));
+  ICEBERG_UNWRAP_OR_FAIL(auto spec3, PartitionSpec::Make(101, {pt_field1}));
+  ICEBERG_UNWRAP_OR_FAIL(auto spec4, PartitionSpec::Make(101, {pt_field3, pt_field1}));
+  ICEBERG_UNWRAP_OR_FAIL(auto spec5, PartitionSpec::Make(100, {pt_field1, pt_field2}));
+  ICEBERG_UNWRAP_OR_FAIL(auto spec6, PartitionSpec::Make(100, {pt_field2, pt_field1}));
 
-  ASSERT_EQ(*schema1, *schema1);
-  ASSERT_NE(*schema1, *schema2);
-  ASSERT_NE(*schema2, *schema1);
-  ASSERT_NE(*schema1, *schema3);
-  ASSERT_NE(*schema3, *schema1);
-  ASSERT_NE(*schema1, *schema4);
-  ASSERT_NE(*schema4, *schema1);
-  ASSERT_EQ(*schema1, *schema5);
-  ASSERT_EQ(*schema5, *schema1);
-  ASSERT_NE(*schema1, *schema6);
-  ASSERT_NE(*schema6, *schema1);
+  ASSERT_EQ(*spec1, *spec1);
+  ASSERT_NE(*spec1, *spec2);
+  ASSERT_NE(*spec2, *spec1);
+  ASSERT_NE(*spec1, *spec3);
+  ASSERT_NE(*spec3, *spec1);
+  ASSERT_NE(*spec1, *spec4);
+  ASSERT_NE(*spec4, *spec1);
+  ASSERT_EQ(*spec1, *spec5);
+  ASSERT_EQ(*spec5, *spec1);
+  ASSERT_NE(*spec1, *spec6);
+  ASSERT_NE(*spec6, *spec1);
 }
 
 TEST(PartitionSpecTest, PartitionSchemaTest) {
@@ -95,15 +93,13 @@ TEST(PartitionSpecTest, PartitionSchemaTest) {
   auto identity_transform = Transform::Identity();
   PartitionField pt_field1(5, 1000, "day", identity_transform);
   PartitionField pt_field2(7, 1001, "hour", identity_transform);
-  auto spec = PartitionSpec::Make(100, {pt_field1, pt_field2}).value();
-
-  auto partition_type = spec->PartitionType(schema);
-  ASSERT_TRUE(partition_type.has_value());
-  ASSERT_EQ(2, partition_type.value()->fields().size());
-  EXPECT_EQ(pt_field1.name(), partition_type.value()->fields()[0].name());
-  EXPECT_EQ(pt_field1.field_id(), partition_type.value()->fields()[0].field_id());
-  EXPECT_EQ(pt_field2.name(), partition_type.value()->fields()[1].name());
-  EXPECT_EQ(pt_field2.field_id(), partition_type.value()->fields()[1].field_id());
+  ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(100, {pt_field1, pt_field2}));
+  ICEBERG_UNWRAP_OR_FAIL(auto partition_type, spec->PartitionType(schema));
+  ASSERT_EQ(2, partition_type->fields().size());
+  EXPECT_EQ(pt_field1.name(), partition_type->fields()[0].name());
+  EXPECT_EQ(pt_field1.field_id(), partition_type->fields()[0].field_id());
+  EXPECT_EQ(pt_field2.name(), partition_type->fields()[1].name());
+  EXPECT_EQ(pt_field2.field_id(), partition_type->fields()[1].field_id());
 }
 
 TEST(PartitionSpecTest, PartitionTypeTest) {
@@ -138,21 +134,18 @@ TEST(PartitionSpecTest, PartitionTypeTest) {
       std::vector<SchemaField>{field1, field2, field3, field4, field5, field6},
       Schema::kInitialSchemaId);
 
-  auto parsed_spec_result = PartitionSpecFromJson(schema, json, 1);
-  ASSERT_TRUE(parsed_spec_result.has_value()) << parsed_spec_result.error().message;
-
-  auto partition_type = parsed_spec_result.value()->PartitionType(*schema);
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed_spec, PartitionSpecFromJson(schema, json, 1));
+  ICEBERG_UNWRAP_OR_FAIL(auto partition_type, parsed_spec->PartitionType(*schema));
 
   SchemaField pt_field1(1000, "ts_day", date(), true);
   SchemaField pt_field2(1001, "id_bucket", int32(), true);
   SchemaField pt_field3(1002, "id_truncate", string(), true);
 
-  ASSERT_TRUE(partition_type.has_value());
-  ASSERT_EQ(3, partition_type.value()->fields().size());
+  ASSERT_EQ(3, partition_type->fields().size());
 
-  EXPECT_EQ(pt_field1, partition_type.value()->fields()[0]);
-  EXPECT_EQ(pt_field2, partition_type.value()->fields()[1]);
-  EXPECT_EQ(pt_field3, partition_type.value()->fields()[2]);
+  EXPECT_EQ(pt_field1, partition_type->fields()[0]);
+  EXPECT_EQ(pt_field2, partition_type->fields()[1]);
+  EXPECT_EQ(pt_field3, partition_type->fields()[2]);
 }
 
 TEST(PartitionSpecTest, InvalidTransformForType) {
@@ -219,8 +212,7 @@ TEST(PartitionSpecTest, PartitionFieldInStruct) {
   Schema schema({outer_struct}, Schema::kInitialSchemaId);
   PartitionField pt_field(1, 1000, "id_partition", Transform::Identity());
 
-  auto result = PartitionSpec::Make(schema, 1, {pt_field}, false);
-  EXPECT_THAT(result, IsOk());
+  EXPECT_THAT(PartitionSpec::Make(schema, 1, {pt_field}, false), IsOk());
 }
 
 TEST(PartitionSpecTest, PartitionFieldInStructInStruct) {
@@ -235,8 +227,7 @@ TEST(PartitionSpecTest, PartitionFieldInStructInStruct) {
 
   Schema schema({outer_field}, Schema::kInitialSchemaId);
   PartitionField pt_field(1, 1000, "id_partition", Transform::Identity());
-  auto result = PartitionSpec::Make(schema, 1, {pt_field}, false);
-  EXPECT_THAT(result, IsOk());
+  EXPECT_THAT(PartitionSpec::Make(schema, 1, {pt_field}, false), IsOk());
 }
 
 TEST(PartitionSpecTest, PartitionFieldInList) {

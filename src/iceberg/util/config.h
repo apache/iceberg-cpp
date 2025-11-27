@@ -112,6 +112,19 @@ class ConfigBase {
 
   const std::unordered_map<std::string, std::string>& configs() const { return configs_; }
 
+  /// \brief Extracts the prefix from the configuration.
+  /// \param prefix The prefix to extract.
+  /// \return A map of entries that match the prefix with prefix removed.
+  std::unordered_map<std::string, std::string> Extract(std::string_view prefix) const {
+    std::unordered_map<std::string, std::string> extracted;
+    for (const auto& [key, value] : configs_) {
+      if (key.starts_with(prefix)) {
+        extracted[key.substr(prefix.length())] = value;
+      }
+    }
+    return extracted;
+  }
+
  protected:
   std::unordered_map<std::string, std::string> configs_;
 };

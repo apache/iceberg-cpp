@@ -25,7 +25,6 @@
 #include <memory>
 #include <optional>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
@@ -61,7 +60,8 @@ class ICEBERG_EXPORT ManifestAdapter {
 /// Implemented by different versions with version-specific schemas.
 class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
  public:
-  ManifestEntryAdapter(std::shared_ptr<PartitionSpec> partition_spec,
+  ManifestEntryAdapter(std::optional<int64_t> snapshot_id_,
+                       std::shared_ptr<PartitionSpec> partition_spec,
                        std::shared_ptr<Schema> current_schema, ManifestContent content);
 
   ~ManifestEntryAdapter() override;
@@ -71,6 +71,12 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
   const std::shared_ptr<Schema>& schema() const { return manifest_schema_; }
 
   ManifestContent content() const { return content_; }
+
+  std::optional<int64_t> snapshot_id() const { return snapshot_id_; }
+
+  const std::shared_ptr<PartitionSpec>& partition_spec() const { return partition_spec_; }
+
+  const std::shared_ptr<StructType>& partition_type() const { return partition_type_; }
 
  protected:
   Status AppendInternal(const ManifestEntry& entry);
@@ -91,8 +97,10 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
       const DataFile& file) const;
 
  protected:
+  std::optional<int64_t> snapshot_id_;
   std::shared_ptr<PartitionSpec> partition_spec_;
   std::shared_ptr<Schema> current_schema_;
+  std::shared_ptr<StructType> partition_type_;
   std::shared_ptr<Schema> manifest_schema_;
   const ManifestContent content_;
 };

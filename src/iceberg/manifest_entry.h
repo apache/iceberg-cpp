@@ -57,15 +57,6 @@ ICEBERG_EXPORT constexpr Result<ManifestStatus> ManifestStatusFromInt(
   }
 }
 
-enum class ManifestContent {
-  kData = 0,
-  kDeletes = 1,
-};
-
-ICEBERG_EXPORT constexpr std::string_view ToString(ManifestContent content) noexcept;
-ICEBERG_EXPORT constexpr Result<ManifestContent> ManifestContentFromString(
-    std::string_view str) noexcept;
-
 /// \brief DataFile carries data file path, partition tuple, metrics, ...
 struct ICEBERG_EXPORT DataFile {
   /// \brief Content of a data file
@@ -277,6 +268,7 @@ struct ICEBERG_EXPORT DataFile {
 
   bool operator==(const DataFile& other) const = default;
 
+  /// \brief Get the schema of the data file with the given partition type.
   static std::shared_ptr<StructType> Type(std::shared_ptr<StructType> partition_type);
 };
 
@@ -315,6 +307,33 @@ struct ICEBERG_EXPORT ManifestEntry {
   inline static const SchemaField kFileSequenceNumber =
       SchemaField::MakeOptional(4, "file_sequence_number", iceberg::int64());
 
+  /// \brief Check if this manifest entry is deleted.
+  constexpr bool IsAlive() const {
+    return status == ManifestStatus::kAdded || status == ManifestStatus::kExisting;
+  }
+
+  ManifestEntry AsAdded() const {
+    ManifestEntry copy = *this;
+    copy.status = ManifestStatus::kAdded;
+    if (copy.data_file->first_row_id.has_value()) {
+      copy.data_file = std::make_unique<DataFile>(*copy.data_file);
+      copy.data_file->first_row_id = std::nullopt;
+    }
+    return copy;
+  }
+
+  ManifestEntry AsExisting() const {
+    ManifestEntry copy = *this;
+    copy.status = ManifestStatus::kExisting;
+    return copy;
+  }
+
+  ManifestEntry AsDeleted() const {
+    ManifestEntry copy = *this;
+    copy.status = ManifestStatus::kDeleted;
+    return copy;
+  }
+
   bool operator==(const ManifestEntry& other) const;
 
   static std::shared_ptr<StructType> TypeFromPartitionType(
@@ -322,6 +341,19 @@ struct ICEBERG_EXPORT ManifestEntry {
   static std::shared_ptr<StructType> TypeFromDataFileType(
       std::shared_ptr<StructType> datafile_type);
 };
+
+/// \brief Get the relative datafile content type name
+ICEBERG_EXPORT constexpr std::string_view ToString(DataFile::Content type) noexcept {
+  switch (type) {
+    case DataFile::Content::kData:
+      return "data";
+    case DataFile::Content::kPositionDeletes:
+      return "position_deletes";
+    case DataFile::Content::kEqualityDeletes:
+      return "equality_deletes";
+  }
+  std::unreachable();
+}
 
 /// \brief Get the relative data file content type from int
 ICEBERG_EXPORT constexpr Result<DataFile::Content> DataFileContentFromInt(

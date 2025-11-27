@@ -64,7 +64,7 @@ TEST(ManifestFileStructLike, BasicFields) {
       .manifest_path = "/path/to/manifest.avro",
       .manifest_length = 12345,
       .partition_spec_id = 1,
-      .content = ManifestFile::Content::kData,
+      .content = ManifestContent::kData,
       .sequence_number = 100,
       .min_sequence_number = 90,
       .added_snapshot_id = 1001,
@@ -89,7 +89,7 @@ TEST(ManifestFileStructLike, BasicFields) {
       struct_like.GetField(static_cast<size_t>(ManifestFileField::kPartitionSpecId)),
       int32_t, 1);
   EXPECT_SCALAR_EQ(struct_like.GetField(static_cast<size_t>(ManifestFileField::kContent)),
-                   int32_t, static_cast<int32_t>(ManifestFile::Content::kData));
+                   int32_t, static_cast<int32_t>(ManifestContent::kData));
   EXPECT_SCALAR_EQ(
       struct_like.GetField(static_cast<size_t>(ManifestFileField::kSequenceNumber)),
       int64_t, 100);
@@ -103,7 +103,7 @@ TEST(ManifestFileStructLike, OptionalFields) {
   ManifestFile manifest_file{.manifest_path = "/path/to/manifest2.avro",
                              .manifest_length = 54321,
                              .partition_spec_id = 2,
-                             .content = ManifestFile::Content::kDeletes,
+                             .content = ManifestContent::kDeletes,
                              .sequence_number = 200,
                              .min_sequence_number = 180,
                              .added_snapshot_id = 2001,
@@ -127,7 +127,7 @@ TEST(ManifestFileStructLike, OptionalFields) {
       struct_like.GetField(static_cast<size_t>(ManifestFileField::kFirstRowId)), int64_t,
       12345);
   EXPECT_SCALAR_EQ(struct_like.GetField(static_cast<size_t>(ManifestFileField::kContent)),
-                   int32_t, static_cast<int32_t>(ManifestFile::Content::kDeletes));
+                   int32_t, static_cast<int32_t>(ManifestContent::kDeletes));
 }
 
 TEST(ManifestFileStructLike, WithPartitions) {
@@ -135,7 +135,7 @@ TEST(ManifestFileStructLike, WithPartitions) {
       .manifest_path = "/path/to/manifest3.avro",
       .manifest_length = 98765,
       .partition_spec_id = 3,
-      .content = ManifestFile::Content::kData,
+      .content = ManifestContent::kData,
       .sequence_number = 300,
       .min_sequence_number = 290,
       .added_snapshot_id = 3001,

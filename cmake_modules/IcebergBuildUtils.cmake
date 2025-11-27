@@ -152,6 +152,10 @@ function(add_iceberg_lib LIB_NAME)
 
     string(TOUPPER ${LIB_NAME} VISIBILITY_NAME)
     target_compile_definitions(${LIB_NAME}_shared PRIVATE ${VISIBILITY_NAME}_EXPORTING)
+    set_target_properties(${LIB_NAME}_shared
+                          PROPERTIES C_VISIBILITY_PRESET hidden CXX_VISIBILITY_PRESET
+                                                                hidden
+                                     VISIBILITY_INLINES_HIDDEN 1)
 
     install(TARGETS ${LIB_NAME}_shared
             EXPORT iceberg_targets
@@ -211,8 +215,10 @@ function(add_iceberg_lib LIB_NAME)
     target_link_libraries(${LIB_NAME}_static
                           PUBLIC "$<BUILD_INTERFACE:iceberg_sanitizer_flags>")
 
-    string(TOUPPER ${LIB_NAME} VISIBILITY_NAME)
-    target_compile_definitions(${LIB_NAME}_static PUBLIC ${VISIBILITY_NAME}_STATIC)
+    if(WIN32)
+      string(TOUPPER ${LIB_NAME} VISIBILITY_NAME)
+      target_compile_definitions(${LIB_NAME}_static PUBLIC ${VISIBILITY_NAME}_STATIC)
+    endif()
 
     install(TARGETS ${LIB_NAME}_static
             EXPORT iceberg_targets

@@ -504,6 +504,11 @@ bool Literal::IsAboveMax() const { return std::holds_alternative<AboveMax>(value
 
 bool Literal::IsNull() const { return std::holds_alternative<std::monostate>(value_); }
 
+bool Literal::IsNaN() const {
+  return std::holds_alternative<float>(value_) && std::isnan(std::get<float>(value_)) ||
+         std::holds_alternative<double>(value_) && std::isnan(std::get<double>(value_));
+}
+
 // LiteralCaster implementation
 
 Result<Literal> LiteralCaster::CastTo(const Literal& literal,
