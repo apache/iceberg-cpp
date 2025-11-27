@@ -369,12 +369,12 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
       return ROWS_MIGHT_MATCH;
     }
 
-    if (prefix == lower_str.substr(0, prefix.size())) {
+    if (lower_str.starts_with(prefix)) {
       // if upper is shorter than the prefix then upper can't start with the prefix
       if (upper_str.size() < prefix.size()) {
         return ROWS_MIGHT_MATCH;
       }
-      if (upper_str.substr(0, prefix.size()) == prefix) {
+      if (upper_str.starts_with(prefix)) {
         // both bounds match the prefix, so all rows must match the prefix and therefore
         // do not satisfy the predicate
         return ROWS_CANNOT_MATCH;
