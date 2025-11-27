@@ -71,6 +71,7 @@ class MapType;
 class NestedType;
 class PartitionField;
 class PartitionSpec;
+class PartitionValues;
 class PrimitiveType;
 class Schema;
 class SchemaField;

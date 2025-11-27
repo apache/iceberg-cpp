@@ -16,6 +16,11 @@
 # under the License.
 
 install_headers(
-    ['arrow_array_wrapper.h', 'manifest_wrapper.h', 'struct_like.h'],
+    [
+        'arrow_array_wrapper.h',
+        'manifest_wrapper.h',
+        'partition_values.h',
+        'struct_like.h',
+    ],
     subdir: 'iceberg/row',
 )

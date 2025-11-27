@@ -58,7 +58,7 @@ class PartitionSummary {
   explicit PartitionSummary(const StructType& partition_type);
 
   /// \brief Update the partition summary with partition values.
-  Status Update(const std::vector<Literal>& partition_values);
+  Status Update(const PartitionValues& partition_values);
 
   /// \brief Get the list of partition field summaries.
   Result<std::vector<PartitionFieldSummary>> Summaries() const;

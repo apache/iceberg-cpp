@@ -72,6 +72,7 @@ add_iceberg_test(schema_test
                  transform_test.cc
                  partition_field_test.cc
                  partition_spec_test.cc
+                 partition_value_test.cc
                  sort_field_test.cc
                  sort_order_test.cc
                  snapshot_test.cc

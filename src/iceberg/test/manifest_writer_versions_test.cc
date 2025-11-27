@@ -27,7 +27,6 @@
 
 #include "iceberg/arrow/arrow_file_io.h"
 #include "iceberg/avro/avro_register.h"
-#include "iceberg/expression/literal.h"
 #include "iceberg/file_format.h"
 #include "iceberg/manifest_entry.h"
 #include "iceberg/manifest_list.h"
@@ -35,6 +34,7 @@
 #include "iceberg/manifest_writer.h"
 #include "iceberg/metrics.h"
 #include "iceberg/partition_spec.h"
+#include "iceberg/row/partition_values.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/table_metadata.h"
@@ -54,8 +54,8 @@ constexpr FileFormatType kFormat = FileFormatType::kAvro;
 constexpr int32_t kSortOrderId = 2;
 constexpr int64_t kFirstRowId = 100L;
 
-const std::vector<Literal> kPartition = {Literal::String("cheesy"), Literal::Int(10),
-                                         Literal::Int(3)};
+const PartitionValues kPartition =
+    PartitionValues({Literal::String("cheesy"), Literal::Int(10), Literal::Int(3)});
 const std::vector<int32_t> kEqualityIds = {1};
 
 const auto kMetrics = Metrics{

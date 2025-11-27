@@ -26,11 +26,11 @@
 #include <string>
 #include <vector>
 
-#include "iceberg/expression/literal.h"
 #include "iceberg/file_format.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
+#include "iceberg/row/partition_values.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/type.h"
 
@@ -79,7 +79,7 @@ struct ICEBERG_EXPORT DataFile {
   /// Field id: 102
   /// Partition data tuple, schema based on the partition spec output using partition
   /// field ids
-  std::vector<Literal> partition;
+  PartitionValues partition;
   /// Field id: 103
   /// Number of records in this file, or the cardinality of a deletion vector
   int64_t record_count = 0;

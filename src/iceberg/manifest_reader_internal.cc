@@ -297,27 +297,26 @@ Status ParseLiteral(ArrowArrayView* view_of_partition, int64_t row_idx,
                     std::vector<ManifestEntry>& manifest_entries) {
   if (view_of_partition->storage_type == ArrowType::NANOARROW_TYPE_BOOL) {
     auto value = ArrowArrayViewGetUIntUnsafe(view_of_partition, row_idx);
-    manifest_entries[row_idx].data_file->partition.emplace_back(
-        Literal::Boolean(value != 0));
+    manifest_entries[row_idx].data_file->partition.AddValue(Literal::Boolean(value != 0));
   } else if (view_of_partition->storage_type == ArrowType::NANOARROW_TYPE_INT32) {
     auto value = ArrowArrayViewGetIntUnsafe(view_of_partition, row_idx);
-    manifest_entries[row_idx].data_file->partition.emplace_back(Literal::Int(value));
+    manifest_entries[row_idx].data_file->partition.AddValue(Literal::Int(value));
   } else if (view_of_partition->storage_type == ArrowType::NANOARROW_TYPE_INT64) {
     auto value = ArrowArrayViewGetIntUnsafe(view_of_partition, row_idx);
-    manifest_entries[row_idx].data_file->partition.emplace_back(Literal::Long(value));
+    manifest_entries[row_idx].data_file->partition.AddValue(Literal::Long(value));
   } else if (view_of_partition->storage_type == ArrowType::NANOARROW_TYPE_FLOAT) {
     auto value = ArrowArrayViewGetDoubleUnsafe(view_of_partition, row_idx);
-    manifest_entries[row_idx].data_file->partition.emplace_back(Literal::Float(value));
+    manifest_entries[row_idx].data_file->partition.AddValue(Literal::Float(value));
   } else if (view_of_partition->storage_type == ArrowType::NANOARROW_TYPE_DOUBLE) {
     auto value = ArrowArrayViewGetDoubleUnsafe(view_of_partition, row_idx);
-    manifest_entries[row_idx].data_file->partition.emplace_back(Literal::Double(value));
+    manifest_entries[row_idx].data_file->partition.AddValue(Literal::Double(value));
   } else if (view_of_partition->storage_type == ArrowType::NANOARROW_TYPE_STRING) {
     auto value = ArrowArrayViewGetStringUnsafe(view_of_partition, row_idx);
-    manifest_entries[row_idx].data_file->partition.emplace_back(
+    manifest_entries[row_idx].data_file->partition.AddValue(
         Literal::String(std::string(value.data, value.size_bytes)));
   } else if (view_of_partition->storage_type == ArrowType::NANOARROW_TYPE_BINARY) {
     auto buffer = ArrowArrayViewGetBytesUnsafe(view_of_partition, row_idx);
-    manifest_entries[row_idx].data_file->partition.emplace_back(
+    manifest_entries[row_idx].data_file->partition.AddValue(
         Literal::Binary(std::vector<uint8_t>(buffer.data.as_char,
                                              buffer.data.as_char + buffer.size_bytes)));
   } else {

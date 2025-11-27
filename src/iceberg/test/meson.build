@@ -33,6 +33,7 @@ iceberg_tests = {
             'name_mapping_test.cc',
             'partition_field_test.cc',
             'partition_spec_test.cc',
+            'partition_value_test.cc',
             'schema_field_test.cc',
             'schema_test.cc',
             'schema_util_test.cc',

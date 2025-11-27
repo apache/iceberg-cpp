@@ -139,7 +139,7 @@ class ManifestV1Test : public ManifestReaderWriterTestBase {
       entry.data_file = std::make_shared<DataFile>();
       entry.data_file->file_path = test_dir_prefix + paths[i];
       entry.data_file->file_format = FileFormatType::kParquet;
-      entry.data_file->partition.emplace_back(Literal::Int(partitions[i]));
+      entry.data_file->partition.AddValue(Literal::Int(partitions[i]));
       entry.data_file->record_count = 1;
       entry.data_file->file_size_in_bytes = 1375;
       entry.data_file->column_sizes = {{1, 49}, {2, 49}, {3, 49}, {4, 49}};

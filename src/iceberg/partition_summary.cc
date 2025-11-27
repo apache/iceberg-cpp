@@ -23,6 +23,7 @@
 #include "iceberg/manifest_list.h"
 #include "iceberg/partition_summary_internal.h"
 #include "iceberg/result.h"
+#include "iceberg/row/partition_values.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
@@ -74,16 +75,16 @@ PartitionSummary::PartitionSummary(const StructType& partition_type) {
   }
 }
 
-Status PartitionSummary::Update(const std::vector<Literal>& partition_values) {
-  if (partition_values.size() != field_stats_.size()) [[unlikely]] {
+Status PartitionSummary::Update(const PartitionValues& partition_values) {
+  if (partition_values.num_fields() != field_stats_.size()) [[unlikely]] {
     return InvalidArgument("partition values size {} does not match field stats size {}",
-                           partition_values.size(), field_stats_.size());
+                           partition_values.num_fields(), field_stats_.size());
   }
 
-  for (size_t i = 0; i < partition_values.size(); i++) {
+  for (size_t i = 0; i < partition_values.num_fields(); i++) {
     ICEBERG_ASSIGN_OR_RAISE(
         auto literal,
-        partition_values[i].CastTo(
+        partition_values.ValueAt(i)->get().CastTo(
             internal::checked_pointer_cast<PrimitiveType>(field_stats_[i].type())));
     ICEBERG_RETURN_UNEXPECTED(field_stats_[i].Update(literal));
   }

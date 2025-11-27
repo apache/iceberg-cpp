@@ -25,6 +25,7 @@ install_headers(
         'formatter.h',
         'int128.h',
         'macros.h',
+        'partition_value_util.h',
         'string_util.h',
         'timepoint.h',
         'truncate_util.h',

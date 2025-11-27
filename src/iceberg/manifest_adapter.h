@@ -85,7 +85,7 @@ class ICEBERG_EXPORT ManifestEntryAdapter : public ManifestAdapter {
                         const DataFile& file);
   static Status AppendPartitionValues(ArrowArray* array,
                                       const std::shared_ptr<StructType>& partition_type,
-                                      const std::vector<Literal>& partition_values);
+                                      const PartitionValues& partition_values);
 
   virtual Result<std::optional<int64_t>> GetSequenceNumber(
       const ManifestEntry& entry) const;
