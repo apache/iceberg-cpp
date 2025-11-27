@@ -97,6 +97,7 @@ function(resolve_arrow_dependency)
   set(ARROW_WITH_ZLIB ON)
   set(ZLIB_SOURCE "SYSTEM")
   set(ARROW_VERBOSE_THIRDPARTY_BUILD OFF)
+  set(CMAKE_CXX_STANDARD 17)
 
   fetchcontent_declare(VendoredArrow
                        ${FC_DECLARE_COMMON_OPTIONS}

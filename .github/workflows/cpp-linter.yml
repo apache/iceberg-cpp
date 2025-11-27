@@ -36,6 +36,9 @@ jobs:
         shell: bash
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
       - name: Run build
+        env:
+          CC: gcc-14
+          CXX: g++-14
         run: |
           mkdir build && cd build
           cmake .. -G Ninja -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
@@ -45,6 +48,8 @@ jobs:
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CC: gcc-14
+          CXX: g++-14
         with:
           style: file
           tidy-checks: ''

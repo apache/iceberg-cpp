@@ -51,9 +51,15 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
       - name: Build Iceberg
         shell: bash
+        env:
+          CC: gcc-14
+          CXX: g++-14
         run: ci/scripts/build_iceberg.sh $(pwd)
       - name: Build Example
         shell: bash
+        env:
+          CC: gcc-14
+          CXX: g++-14
         run: ci/scripts/build_example.sh $(pwd)/example
   macos:
     name: AArch64 macOS 26
@@ -102,11 +108,16 @@ jobs:
         include:
           - title: AMD64 Ubuntu 24.04
             runs-on: ubuntu-24.04
+            CC: gcc-14
+            CXX: g++-14
           - title: AMD64 Windows 2025
             runs-on: windows-2025
             meson-setup-args: --vsenv
           - title: AArch64 macOS 26
             runs-on: macos-26
+    env:
+      CC: ${{ matrix.CC || 'cc' }}
+      CXX: ${{ matrix.CXX || 'c++' }}
     steps:
       - uses: actions/setup-python@v6
         with:

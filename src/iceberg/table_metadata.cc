@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <chrono>
 #include <format>
+#include <ranges>
 #include <string>
 
 #include <nlohmann/json.hpp>
@@ -184,51 +185,45 @@ Result<TableMetadataCache::SnapshotsMapRef> TableMetadataCache::GetSnapshotsById
 
 Result<TableMetadataCache::SchemasMap> TableMetadataCache::InitSchemasMap(
     const TableMetadata* metadata) {
-  SchemasMap schemas_map;
-  schemas_map.reserve(metadata->schemas.size());
-  for (const auto& schema : metadata->schemas) {
-    if (schema->schema_id()) {
-      schemas_map.emplace(schema->schema_id().value(), schema);
-    }
-  }
-  return schemas_map;
+  return metadata->schemas | std::views::filter([](const auto& schema) {
+           return schema->schema_id().has_value();
+         }) |
+         std::views::transform([](const auto& schema) {
+           return std::make_pair(schema->schema_id().value(), schema);
+         }) |
+         std::ranges::to<SchemasMap>();
 }
 
 Result<TableMetadataCache::PartitionSpecsMap> TableMetadataCache::InitPartitionSpecsMap(
     const TableMetadata* metadata) {
-  PartitionSpecsMap partition_specs_map;
-  partition_specs_map.reserve(metadata->partition_specs.size());
-  for (const auto& spec : metadata->partition_specs) {
-    partition_specs_map.emplace(spec->spec_id(), spec);
-  }
-  return partition_specs_map;
+  return metadata->partition_specs | std::views::transform([](const auto& spec) {
+           return std::make_pair(spec->spec_id(), spec);
+         }) |
+         std::ranges::to<PartitionSpecsMap>();
 }
 
 Result<TableMetadataCache::SortOrdersMap> TableMetadataCache::InitSortOrdersMap(
     const TableMetadata* metadata) {
-  SortOrdersMap sort_orders_map;
-  sort_orders_map.reserve(metadata->sort_orders.size());
-  for (const auto& order : metadata->sort_orders) {
-    sort_orders_map.emplace(order->order_id(), order);
-  }
-  return sort_orders_map;
+  return metadata->sort_orders | std::views::transform([](const auto& order) {
+           return std::make_pair(order->order_id(), order);
+         }) |
+         std::ranges::to<SortOrdersMap>();
 }
 
 Result<TableMetadataCache::SnapshotsMap> TableMetadataCache::InitSnapshotMap(
     const TableMetadata* metadata) {
-  SnapshotsMap snapshots_map;
-  snapshots_map.reserve(metadata->snapshots.size());
-  for (const auto& snapshot : metadata->snapshots) {
-    snapshots_map.emplace(snapshot->snapshot_id, snapshot);
-  }
-  return snapshots_map;
+  return metadata->snapshots | std::views::transform([](const auto& snapshot) {
+           return std::make_pair(snapshot->snapshot_id, snapshot);
+         }) |
+         std::ranges::to<SnapshotsMap>();
 }
 
 // TableMetadataUtil implementation
 
 Result<MetadataFileCodecType> TableMetadataUtil::CodecFromFileName(
     std::string_view file_name) {
-  if (file_name.find(".metadata.json") == std::string::npos) {
+  auto pos = file_name.find_last_of(".metadata.json");
+  if (pos == std::string::npos) {
     return InvalidArgument("{} is not a valid metadata file", file_name);
   }
 
@@ -237,8 +232,7 @@ Result<MetadataFileCodecType> TableMetadataUtil::CodecFromFileName(
     return MetadataFileCodecType::kGzip;
   }
 
-  std::string_view file_name_without_suffix =
-      file_name.substr(0, file_name.find_last_of(".metadata.json"));
+  std::string_view file_name_without_suffix = file_name.substr(0, pos);
   if (file_name_without_suffix.ends_with(".gz")) {
     return MetadataFileCodecType::kGzip;
   }

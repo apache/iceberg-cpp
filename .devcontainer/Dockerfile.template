@@ -26,10 +26,11 @@ RUN apt update && \
     bash-completion \
     build-essential \
     ccache \
+    clangd \
     cmake \
     curl \
-    gcc \
-    g++ \
+    gcc-14 \
+    g++-14 \
     git \
     htop \
     libboost-all-dev \
