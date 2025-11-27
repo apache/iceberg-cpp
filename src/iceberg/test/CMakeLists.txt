@@ -86,7 +86,8 @@ add_iceberg_test(table_test
                  table_metadata_builder_test.cc
                  table_requirement_test.cc
                  table_update_test.cc
-                 test_common.cc)
+                 test_common.cc
+                 update_statistics_test.cc)
 
 add_iceberg_test(expression_test
                  SOURCES

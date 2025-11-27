@@ -160,6 +160,8 @@ class PendingUpdate;
 template <typename T>
 class PendingUpdateTyped;
 
+class UpdateStatistics;
+
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.
 /// ----------------------------------------------------------------------------
