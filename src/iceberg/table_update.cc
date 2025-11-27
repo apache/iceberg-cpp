@@ -124,11 +124,12 @@ Status RemoveSchemas::GenerateRequirements(TableUpdateContext& context) const {
 // AddSortOrder
 
 void AddSortOrder::ApplyTo(TableMetadataBuilder& builder) const {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  builder.AddSortOrder(sort_order_);
 }
 
 Status AddSortOrder::GenerateRequirements(TableUpdateContext& context) const {
-  return NotImplemented("AddTableSortOrder::GenerateRequirements not implemented");
+  // AddSortOrder doesn't generate any requirements
+  return {};
 }
 
 // SetDefaultSortOrder
