@@ -30,6 +30,7 @@
 #include "iceberg/result.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/formatter_internal.h"
 #include "iceberg/util/string_util.h"
 
 /// \file iceberg/util/type_util.h
