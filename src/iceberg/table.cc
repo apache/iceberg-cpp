@@ -23,6 +23,7 @@
 
 #include "iceberg/catalog.h"
 #include "iceberg/partition_spec.h"
+#include "iceberg/properties_update.h"
 #include "iceberg/schema.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_metadata.h"
@@ -108,6 +109,10 @@ const std::vector<std::shared_ptr<Snapshot>>& Table::snapshots() const {
 
 const std::vector<SnapshotLogEntry>& Table::history() const {
   return metadata_->snapshot_log;
+}
+
+std::unique_ptr<PropertiesUpdate> Table::UpdateProperties() const {
+  return std::make_unique<PropertiesUpdate>(identifier_, catalog_, metadata_);
 }
 
 std::unique_ptr<Transaction> Table::NewTransaction() const {

@@ -368,7 +368,38 @@ TableMetadataBuilder& TableMetadataBuilder::AssignUUID(std::string_view uuid) {
 
 TableMetadataBuilder& TableMetadataBuilder::UpgradeFormatVersion(
     int8_t new_format_version) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  // Check that the new format version is supported
+  if (new_format_version > TableMetadata::kSupportedTableFormatVersion) {
+    impl_->errors.emplace_back(
+        ErrorKind::kInvalidArgument,
+        std::format(
+            "Cannot upgrade table to unsupported format version: v{} (supported: v{})",
+            new_format_version, TableMetadata::kSupportedTableFormatVersion));
+    return *this;
+  }
+
+  // Check that we're not downgrading
+  if (new_format_version < impl_->metadata.format_version) {
+    impl_->errors.emplace_back(
+        ErrorKind::kInvalidArgument,
+        std::format("Cannot downgrade v{} table to v{}", impl_->metadata.format_version,
+                    new_format_version));
+    return *this;
+  }
+
+  // No-op if the version is the same
+  if (new_format_version == impl_->metadata.format_version) {
+    return *this;
+  }
+
+  // Update the format version
+  impl_->metadata.format_version = new_format_version;
+
+  // Record the change
+  impl_->changes.push_back(
+      std::make_unique<table::UpgradeFormatVersion>(new_format_version));
+
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetCurrentSchema(
@@ -476,12 +507,38 @@ TableMetadataBuilder& TableMetadataBuilder::RemovePartitionStatistics(
 
 TableMetadataBuilder& TableMetadataBuilder::SetProperties(
     const std::unordered_map<std::string, std::string>& updated) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  // If updated is empty, return early (no-op)
+  if (updated.empty()) {
+    return *this;
+  }
+
+  // Add all updated properties to the metadata properties
+  for (const auto& [key, value] : updated) {
+    impl_->metadata.properties[key] = value;
+  }
+
+  // Record the change
+  impl_->changes.push_back(std::make_unique<table::SetProperties>(updated));
+
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveProperties(
     const std::vector<std::string>& removed) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  // If removed is empty, return early (no-op)
+  if (removed.empty()) {
+    return *this;
+  }
+
+  // Remove each property from the metadata properties
+  for (const auto& key : removed) {
+    impl_->metadata.properties.erase(key);
+  }
+
+  // Record the change
+  impl_->changes.push_back(std::make_unique<table::RemoveProperties>(removed));
+
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetLocation(std::string_view location) {
