@@ -21,6 +21,7 @@ set -eux
 
 source_dir=${1}
 build_dir=${1}/build
+build_rest_integration_test=${2:-OFF}
 
 mkdir ${build_dir}
 pushd ${build_dir}
@@ -34,6 +35,7 @@ CMAKE_ARGS=(
     "-DCMAKE_INSTALL_PREFIX=${CMAKE_INSTALL_PREFIX:-${ICEBERG_HOME}}"
     "-DICEBERG_BUILD_STATIC=ON"
     "-DICEBERG_BUILD_SHARED=ON"
+    "-DICEBERG_BUILD_REST_INTEGRATION_TESTS=${build_rest_integration_test}"
 )
 
 if is_windows; then

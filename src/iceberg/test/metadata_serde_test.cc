@@ -32,7 +32,7 @@
 #include "iceberg/statistics_file.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
-#include "iceberg/test/test_common.h"
+#include "iceberg/test/util/common_util.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
 

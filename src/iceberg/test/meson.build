@@ -27,6 +27,8 @@ configure_file(
     install_dir: get_option('includedir') / 'iceberg/test',
 )
 
+subdir('util')
+
 iceberg_tests = {
     'schema_test': {
         'sources': files(
@@ -52,7 +54,6 @@ iceberg_tests = {
             'table_requirement_test.cc',
             'table_test.cc',
             'table_update_test.cc',
-            'test_common.cc',
         ),
     },
     'expression_test': {
@@ -69,7 +70,6 @@ iceberg_tests = {
             'json_internal_test.cc',
             'metadata_serde_test.cc',
             'schema_json_test.cc',
-            'test_common.cc',
         ),
     },
     'util_test': {
@@ -89,24 +89,27 @@ iceberg_tests = {
 }
 
 if get_option('rest').enabled()
-    cpp_httplib_dep = dependency('cpp-httplib')
     iceberg_tests += {
         'rest_catalog_test': {
-            'sources': files(
-                'rest_catalog_test.cc',
-                'rest_json_internal_test.cc',
-                'rest_util_test.cc',
-            ),
-            'dependencies': [iceberg_rest_dep, cpp_httplib_dep],
+            'sources': files('rest_json_internal_test.cc', 'rest_util_test.cc'),
+            'dependencies': [iceberg_rest_dep],
         },
     }
+    if get_option('rest_integration_test').enabled()
+        iceberg_tests += {
+            'rest_integration_test': {
+                'sources': files('rest_catalog_test.cc'),
+                'dependencies': [iceberg_rest_dep],
+            },
+        }
+    endif
 endif
 
 foreach test_name, values : iceberg_tests
     exc = executable(
         test_name,
         sources: values['sources'],
-        dependencies: [iceberg_dep, gmock_main_dep] + values.get(
+        dependencies: [iceberg_dep, gmock_main_dep, iceberg_test_util_dep] + values.get(
             'dependencies',
             [],
         ),

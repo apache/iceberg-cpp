@@ -31,7 +31,7 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
-#include "iceberg/test/test_common.h"
+#include "iceberg/test/util/common_util.h"
 
 namespace iceberg {
 
