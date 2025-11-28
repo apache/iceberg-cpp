@@ -21,19 +21,18 @@
 
 #include <gtest/gtest.h>
 
-#include "iceberg/exception.h"
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/row/struct_like.h"
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
-#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
 namespace {
 
+/// XXX: `Scalar` carries view semantics, so it is unsafe to use std::string_view variant.
 class VectorStructLike : public StructLike {
  public:
   explicit VectorStructLike(std::vector<Scalar> fields) : fields_(std::move(fields)) {}
