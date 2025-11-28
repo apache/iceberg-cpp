@@ -130,7 +130,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     // because lower <= a for all values of a in the file, f(lower) <= f(a).
     // when f(lower) >= X then f(a) >= f(lower) >= X, so there is no a such that f(a) < X
     // f(lower) >= X means rows cannot match
-    if (lit >= lower) {
+    if (lower >= lit) {
       return ROWS_CANNOT_MATCH;
     }
 
@@ -156,7 +156,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     // because lower <= a for all values of a in the file, f(lower) <= f(a).
     // when f(lower) > X then f(a) >= f(lower) > X, so there is no a such that f(a) <= X
     // f(lower) > X means rows cannot match
-    if (lit > lower) {
+    if (lower > lit) {
       return ROWS_CANNOT_MATCH;
     }
 
@@ -176,7 +176,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     }
     const auto& upper = upper_result.value();
 
-    if (lit <= upper) {
+    if (upper <= lit) {
       return ROWS_CANNOT_MATCH;
     }
 
@@ -195,7 +195,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
       return ROWS_MIGHT_MATCH;
     }
     const auto& upper = upper_result.value();
-    if (lit < upper) {
+    if (upper < lit) {
       return ROWS_CANNOT_MATCH;
     }
 
@@ -222,7 +222,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
       return ROWS_MIGHT_MATCH;
     }
     const auto& upper = upper_result.value();
-    if (upper != lit) {
+    if (upper < lit) {
       return ROWS_CANNOT_MATCH;
     }
 
@@ -257,7 +257,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     const auto& lower = lower_result.value();
     std::vector<Literal> literals;
     for (const auto& lit : literal_set) {
-      if (lit >= lower) {
+      if (lower <= lit) {
         literals.emplace_back(lit);
       }
     }
@@ -317,7 +317,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     // prefix
     int length = std::min(prefix.size(), lower_str.size());
     // if prefix of lower bound is greater than prefix, rows cannot match
-    if (lower_str.substr(0, length) > prefix.substr(0, length)) {
+    if (lower_str.substr(0, length) > prefix) {
       return ROWS_CANNOT_MATCH;
     }
 
@@ -331,7 +331,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     // prefix
     length = std::min(prefix.size(), upper_str.size());
     // if prefix of upper bound is less than prefix, rows cannot match
-    if (upper_str.substr(0, length) < prefix.substr(0, length)) {
+    if (upper_str.substr(0, length) < prefix) {
       return ROWS_CANNOT_MATCH;
     }
 
@@ -524,10 +524,11 @@ InclusiveMetricsEvaluator::InclusiveMetricsEvaluator(
 InclusiveMetricsEvaluator::~InclusiveMetricsEvaluator() = default;
 
 Result<std::unique_ptr<InclusiveMetricsEvaluator>> InclusiveMetricsEvaluator::Make(
-    std::shared_ptr<Expression> expr, const Schema& schema, bool case_sensitive) {
+    std::shared_ptr<Expression> expr, const std::shared_ptr<Schema>& schema,
+    bool case_sensitive) {
   ICEBERG_ASSIGN_OR_RAISE(auto rewrite_expr, RewriteNot::Visit(std::move(expr)));
   ICEBERG_ASSIGN_OR_RAISE(auto bound_expr,
-                          Binder::Bind(schema, rewrite_expr, case_sensitive));
+                          Binder::Bind(*schema, rewrite_expr, case_sensitive));
   return std::unique_ptr<InclusiveMetricsEvaluator>(
       new InclusiveMetricsEvaluator(std::move(bound_expr)));
 }
