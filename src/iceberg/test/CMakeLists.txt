@@ -95,6 +95,7 @@ add_iceberg_test(expression_test
                  expression_test.cc
                  expression_visitor_test.cc
                  literal_test.cc
+                 inclusive_metrics_evaluator_test.cc
                  predicate_test.cc)
 
 add_iceberg_test(json_serde_test
