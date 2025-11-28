@@ -82,6 +82,9 @@ class ReaderProperties : public ConfigBase<ReaderProperties> {
   /// \brief Create a ReaderProperties instance from a map of key-value pairs.
   static std::unique_ptr<ReaderProperties> FromMap(
       const std::unordered_map<std::string, std::string>& properties);
+
+ private:
+  ReaderProperties() = default;
 };
 
 /// \brief Options for creating a reader.
