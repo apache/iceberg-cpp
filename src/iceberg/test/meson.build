@@ -47,11 +47,13 @@ iceberg_tests = {
     'table_test': {
         'sources': files(
             'json_internal_test.cc',
+            'metrics_config_test.cc',
             'schema_json_test.cc',
             'table_metadata_builder_test.cc',
             'table_requirement_test.cc',
             'table_test.cc',
             'table_update_test.cc',
+            'update_properties_test.cc',
         ),
     },
     'expression_test': {

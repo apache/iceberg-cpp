@@ -81,12 +81,14 @@ add_iceberg_test(schema_test
 add_iceberg_test(table_test
                  SOURCES
                  json_internal_test.cc
+                 metrics_config_test.cc
                  schema_json_test.cc
                  table_test.cc
                  table_metadata_builder_test.cc
                  table_requirement_test.cc
                  table_requirements_test.cc
-                 table_update_test.cc)
+                 table_update_test.cc
+                 update_properties_test.cc)
 
 add_iceberg_test(expression_test
                  SOURCES
