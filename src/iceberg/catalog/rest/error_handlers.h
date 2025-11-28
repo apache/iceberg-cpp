@@ -36,14 +36,11 @@ class ICEBERG_REST_EXPORT ErrorHandler {
  public:
   virtual ~ErrorHandler() = default;
 
-  // TODO(Li Feiyang):removing ErrorModel as the inner layer and directly using
-  // ErrorResponse
-
   /// \brief Process an error response and return an appropriate Error.
   ///
-  /// \param error The error model parsed from the HTTP response body
+  /// \param error The error response parsed from the HTTP response body
   /// \return An Error object with appropriate ErrorKind and message
-  virtual Status Accept(const ErrorModel& error) const = 0;
+  virtual Status Accept(const ErrorResponse& error) const = 0;
 };
 
 /// \brief Default error handler for REST API responses.
@@ -52,7 +49,7 @@ class ICEBERG_REST_EXPORT DefaultErrorHandler : public ErrorHandler {
   /// \brief Returns the singleton instance
   static const std::shared_ptr<DefaultErrorHandler>& Instance();
 
-  Status Accept(const ErrorModel& error) const override;
+  Status Accept(const ErrorResponse& error) const override;
 
  protected:
   constexpr DefaultErrorHandler() = default;
@@ -64,7 +61,7 @@ class ICEBERG_REST_EXPORT NamespaceErrorHandler : public DefaultErrorHandler {
   /// \brief Returns the singleton instance
   static const std::shared_ptr<NamespaceErrorHandler>& Instance();
 
-  Status Accept(const ErrorModel& error) const override;
+  Status Accept(const ErrorResponse& error) const override;
 
  protected:
   constexpr NamespaceErrorHandler() = default;
@@ -76,7 +73,7 @@ class ICEBERG_REST_EXPORT DropNamespaceErrorHandler final : public NamespaceErro
   /// \brief Returns the singleton instance
   static const std::shared_ptr<DropNamespaceErrorHandler>& Instance();
 
-  Status Accept(const ErrorModel& error) const override;
+  Status Accept(const ErrorResponse& error) const override;
 
  private:
   constexpr DropNamespaceErrorHandler() = default;
@@ -88,7 +85,7 @@ class ICEBERG_REST_EXPORT TableErrorHandler final : public DefaultErrorHandler {
   /// \brief Returns the singleton instance
   static const std::shared_ptr<TableErrorHandler>& Instance();
 
-  Status Accept(const ErrorModel& error) const override;
+  Status Accept(const ErrorResponse& error) const override;
 
  private:
   constexpr TableErrorHandler() = default;
@@ -100,7 +97,7 @@ class ICEBERG_REST_EXPORT ViewErrorHandler final : public DefaultErrorHandler {
   /// \brief Returns the singleton instance
   static const std::shared_ptr<ViewErrorHandler>& Instance();
 
-  Status Accept(const ErrorModel& error) const override;
+  Status Accept(const ErrorResponse& error) const override;
 
  private:
   constexpr ViewErrorHandler() = default;
@@ -112,7 +109,7 @@ class ICEBERG_REST_EXPORT TableCommitErrorHandler final : public DefaultErrorHan
   /// \brief Returns the singleton instance
   static const std::shared_ptr<TableCommitErrorHandler>& Instance();
 
-  Status Accept(const ErrorModel& error) const override;
+  Status Accept(const ErrorResponse& error) const override;
 
  private:
   constexpr TableCommitErrorHandler() = default;
@@ -124,7 +121,7 @@ class ICEBERG_REST_EXPORT ViewCommitErrorHandler final : public DefaultErrorHand
   /// \brief Returns the singleton instance
   static const std::shared_ptr<ViewCommitErrorHandler>& Instance();
 
-  Status Accept(const ErrorModel& error) const override;
+  Status Accept(const ErrorResponse& error) const override;
 
  private:
   constexpr ViewCommitErrorHandler() = default;

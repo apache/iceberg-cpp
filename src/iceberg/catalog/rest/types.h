@@ -52,35 +52,25 @@ struct ICEBERG_REST_EXPORT CatalogConfig {
 };
 
 /// \brief JSON error payload returned in a response with further details on the error.
-struct ICEBERG_REST_EXPORT ErrorModel {
+struct ICEBERG_REST_EXPORT ErrorResponse {
   std::string message;  // required
   std::string type;     // required
   uint32_t code;        // required
   std::vector<std::string> stack;
 
-  /// \brief Validates the ErrorModel.
+  /// \brief Validates the ErrorResponse.
   Status Validate() const {
     if (message.empty() || type.empty()) {
-      return Invalid("Invalid error model: missing required fields");
+      return Invalid("Invalid error response: missing required fields");
     }
 
     if (code < 400 || code > 600) {
-      return Invalid("Invalid error model: code {} is out of range [400, 600]", code);
+      return Invalid("Invalid error response: code {} is out of range [400, 600]", code);
     }
 
     // stack is optional, no validation needed
     return {};
   }
-};
-
-/// \brief Error response body returned in a response.
-struct ICEBERG_REST_EXPORT ErrorResponse {
-  ErrorModel error;  // required
-
-  /// \brief Validates the ErrorResponse.
-  // We don't validate the error field because ErrorModel::Validate has been called in the
-  // FromJson.
-  Status Validate() const { return {}; }
 };
 
 /// \brief Request to create a namespace.

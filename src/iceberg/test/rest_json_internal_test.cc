@@ -96,13 +96,9 @@ bool operator==(const CatalogConfig& lhs, const CatalogConfig& rhs) {
          lhs.endpoints == rhs.endpoints;
 }
 
-bool operator==(const ErrorModel& lhs, const ErrorModel& rhs) {
+bool operator==(const ErrorResponse& lhs, const ErrorResponse& rhs) {
   return lhs.message == rhs.message && lhs.type == rhs.type && lhs.code == rhs.code &&
          lhs.stack == rhs.stack;
-}
-
-bool operator==(const ErrorResponse& lhs, const ErrorResponse& rhs) {
-  return lhs.error == rhs.error;
 }
 
 // Test parameter structure for roundtrip tests
@@ -874,27 +870,27 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "WithoutStack",
             .expected_json_str =
                 R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404}})",
-            .model = {.error = {.message = "The given namespace does not exist",
-                                .type = "NoSuchNamespaceException",
-                                .code = 404}}},
+            .model = {.message = "The given namespace does not exist",
+                      .type = "NoSuchNamespaceException",
+                      .code = 404}},
         // Error with stack trace
         ErrorResponseParam{
             .test_name = "WithStack",
             .expected_json_str =
                 R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404,"stack":["a","b"]}})",
-            .model = {.error = {.message = "The given namespace does not exist",
-                                .type = "NoSuchNamespaceException",
-                                .code = 404,
-                                .stack = {"a", "b"}}}},
+            .model = {.message = "The given namespace does not exist",
+                      .type = "NoSuchNamespaceException",
+                      .code = 404,
+                      .stack = {"a", "b"}}},
         // Different error type
         ErrorResponseParam{
             .test_name = "DifferentError",
             .expected_json_str =
                 R"({"error":{"message":"Internal server error","type":"InternalServerError","code":500,"stack":["line1","line2","line3"]}})",
-            .model = {.error = {.message = "Internal server error",
-                                .type = "InternalServerError",
-                                .code = 500,
-                                .stack = {"line1", "line2", "line3"}}}}),
+            .model = {.message = "Internal server error",
+                      .type = "InternalServerError",
+                      .code = 500,
+                      .stack = {"line1", "line2", "line3"}}}),
     [](const ::testing::TestParamInfo<ErrorResponseParam>& info) {
       return info.param.test_name;
     });
@@ -909,17 +905,17 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "NullStack",
             .json_str =
                 R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404,"stack":null}})",
-            .expected_model = {.error = {.message = "The given namespace does not exist",
-                                         .type = "NoSuchNamespaceException",
-                                         .code = 404}}},
+            .expected_model = {.message = "The given namespace does not exist",
+                               .type = "NoSuchNamespaceException",
+                               .code = 404}},
         // Stack field is missing (should deserialize to empty vector)
         ErrorResponseDeserializeParam{
             .test_name = "MissingStack",
             .json_str =
                 R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404}})",
-            .expected_model = {.error = {.message = "The given namespace does not exist",
-                                         .type = "NoSuchNamespaceException",
-                                         .code = 404}}}),
+            .expected_model = {.message = "The given namespace does not exist",
+                               .type = "NoSuchNamespaceException",
+                               .code = 404}}),
     [](const ::testing::TestParamInfo<ErrorResponseDeserializeParam>& info) {
       return info.param.test_name;
     });
@@ -936,35 +932,26 @@ INSTANTIATE_TEST_SUITE_P(
         // Null error field
         ErrorResponseInvalidParam{.test_name = "NullError",
                                   .invalid_json_str = R"({"error":null})",
-                                  .expected_error_message = "Missing 'error'"}),
-    [](const ::testing::TestParamInfo<ErrorResponseInvalidParam>& info) {
-      return info.param.test_name;
-    });
-
-DECLARE_INVALID_TEST(ErrorModel)
-
-INSTANTIATE_TEST_SUITE_P(
-    ErrorModelInvalidCases, ErrorModelInvalidTest,
-    ::testing::Values(
+                                  .expected_error_message = "Missing 'error'"},
         // Missing required type field
-        ErrorModelInvalidParam{
+        ErrorResponseInvalidParam{
             .test_name = "MissingType",
             .invalid_json_str =
-                R"({"message":"The given namespace does not exist","code":404})",
+                R"({"error":{"message":"The given namespace does not exist","code":404}})",
             .expected_error_message = "Missing 'type'"},
         // Missing required code field
-        ErrorModelInvalidParam{
+        ErrorResponseInvalidParam{
             .test_name = "MissingCode",
             .invalid_json_str =
-                R"({"message":"The given namespace does not exist","type":"NoSuchNamespaceException"})",
+                R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException"}})",
             .expected_error_message = "Missing 'code'"},
         // Wrong type for message field
-        ErrorModelInvalidParam{
+        ErrorResponseInvalidParam{
             .test_name = "WrongMessageType",
             .invalid_json_str =
-                R"({"message":123,"type":"NoSuchNamespaceException","code":404})",
+                R"({"error":{"message":123,"type":"NoSuchNamespaceException","code":404}})",
             .expected_error_message = "type must be string, but is number"}),
-    [](const ::testing::TestParamInfo<ErrorModelInvalidParam>& info) {
+    [](const ::testing::TestParamInfo<ErrorResponseInvalidParam>& info) {
       return info.param.test_name;
     });
 

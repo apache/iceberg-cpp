@@ -44,7 +44,6 @@ Result<Model> FromJson(const nlohmann::json& json);
 /// \note Don't forget to add `ICEBERG_DEFINE_FROM_JSON` to the end of
 /// `json_internal.cc` to define the `FromJson` function for the model.
 ICEBERG_DECLARE_JSON_SERDE(CatalogConfig)
-ICEBERG_DECLARE_JSON_SERDE(ErrorModel)
 ICEBERG_DECLARE_JSON_SERDE(ErrorResponse)
 ICEBERG_DECLARE_JSON_SERDE(ListNamespacesResponse)
 ICEBERG_DECLARE_JSON_SERDE(CreateNamespaceRequest)

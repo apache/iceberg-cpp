@@ -91,41 +91,32 @@ Result<CatalogConfig> CatalogConfigFromJson(const nlohmann::json& json) {
   return config;
 }
 
-nlohmann::json ToJson(const ErrorModel& error) {
-  nlohmann::json json;
-  json[kMessage] = error.message;
-  json[kType] = error.type;
-  json[kCode] = error.code;
-  SetContainerField(json, kStack, error.stack);
-  return json;
-}
+nlohmann::json ToJson(const ErrorResponse& error) {
+  nlohmann::json error_json;
+  error_json[kMessage] = error.message;
+  error_json[kType] = error.type;
+  error_json[kCode] = error.code;
+  SetContainerField(error_json, kStack, error.stack);
 
-Result<ErrorModel> ErrorModelFromJson(const nlohmann::json& json) {
-  ErrorModel error;
-  // NOTE: Iceberg's Java implementation allows missing required fields (message, type,
-  // code) during deserialization, which deviates from the REST spec. We enforce strict
-  // validation here.
-  ICEBERG_ASSIGN_OR_RAISE(error.message, GetJsonValue<std::string>(json, kMessage));
-  ICEBERG_ASSIGN_OR_RAISE(error.type, GetJsonValue<std::string>(json, kType));
-  ICEBERG_ASSIGN_OR_RAISE(error.code, GetJsonValue<uint32_t>(json, kCode));
-  ICEBERG_ASSIGN_OR_RAISE(error.stack,
-                          GetJsonValueOrDefault<std::vector<std::string>>(json, kStack));
-  ICEBERG_RETURN_UNEXPECTED(error.Validate());
-  return error;
-}
-
-nlohmann::json ToJson(const ErrorResponse& response) {
   nlohmann::json json;
-  json[kError] = ToJson(response.error);
+  json[kError] = std::move(error_json);
   return json;
 }
 
 Result<ErrorResponse> ErrorResponseFromJson(const nlohmann::json& json) {
-  ErrorResponse response;
   ICEBERG_ASSIGN_OR_RAISE(auto error_json, GetJsonValue<nlohmann::json>(json, kError));
-  ICEBERG_ASSIGN_OR_RAISE(response.error, ErrorModelFromJson(error_json));
-  ICEBERG_RETURN_UNEXPECTED(response.Validate());
-  return response;
+
+  ErrorResponse error;
+  // NOTE: Iceberg's Java implementation allows missing required fields (message, type,
+  // code) during deserialization, which deviates from the REST spec. We enforce strict
+  // validation here.
+  ICEBERG_ASSIGN_OR_RAISE(error.message, GetJsonValue<std::string>(error_json, kMessage));
+  ICEBERG_ASSIGN_OR_RAISE(error.type, GetJsonValue<std::string>(error_json, kType));
+  ICEBERG_ASSIGN_OR_RAISE(error.code, GetJsonValue<uint32_t>(error_json, kCode));
+  ICEBERG_ASSIGN_OR_RAISE(
+      error.stack, GetJsonValueOrDefault<std::vector<std::string>>(error_json, kStack));
+  ICEBERG_RETURN_UNEXPECTED(error.Validate());
+  return error;
 }
 
 nlohmann::json ToJson(const CreateNamespaceRequest& request) {
@@ -339,7 +330,6 @@ Result<ListTablesResponse> ListTablesResponseFromJson(const nlohmann::json& json
   }
 
 ICEBERG_DEFINE_FROM_JSON(CatalogConfig)
-ICEBERG_DEFINE_FROM_JSON(ErrorModel)
 ICEBERG_DEFINE_FROM_JSON(ErrorResponse)
 ICEBERG_DEFINE_FROM_JSON(ListNamespacesResponse)
 ICEBERG_DEFINE_FROM_JSON(CreateNamespaceRequest)

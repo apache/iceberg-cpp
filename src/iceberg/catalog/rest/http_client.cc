@@ -103,7 +103,7 @@ Status HandleFailureResponse(const cpr::Response& response,
     // TODO(gangwu): response status code is lost, wrap it with RestError.
     ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.text));
     ICEBERG_ASSIGN_OR_RAISE(auto error_response, ErrorResponseFromJson(json));
-    return error_handler.Accept(error_response.error);
+    return error_handler.Accept(error_response);
   }
   return {};
 }

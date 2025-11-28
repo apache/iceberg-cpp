@@ -38,7 +38,7 @@ const std::shared_ptr<DefaultErrorHandler>& DefaultErrorHandler::Instance() {
   return instance;
 }
 
-Status DefaultErrorHandler::Accept(const ErrorModel& error) const {
+Status DefaultErrorHandler::Accept(const ErrorResponse& error) const {
   switch (error.code) {
     case 400:
       if (error.type == kIllegalArgumentException) {
@@ -69,7 +69,7 @@ const std::shared_ptr<NamespaceErrorHandler>& NamespaceErrorHandler::Instance() 
   return instance;
 }
 
-Status NamespaceErrorHandler::Accept(const ErrorModel& error) const {
+Status NamespaceErrorHandler::Accept(const ErrorResponse& error) const {
   switch (error.code) {
     case 400:
       if (error.type == kNamespaceNotEmptyException) {
@@ -93,7 +93,7 @@ const std::shared_ptr<DropNamespaceErrorHandler>& DropNamespaceErrorHandler::Ins
   return instance;
 }
 
-Status DropNamespaceErrorHandler::Accept(const ErrorModel& error) const {
+Status DropNamespaceErrorHandler::Accept(const ErrorResponse& error) const {
   if (error.code == 409) {
     return NamespaceNotEmpty(error.message);
   }
@@ -106,7 +106,7 @@ const std::shared_ptr<TableErrorHandler>& TableErrorHandler::Instance() {
   return instance;
 }
 
-Status TableErrorHandler::Accept(const ErrorModel& error) const {
+Status TableErrorHandler::Accept(const ErrorResponse& error) const {
   switch (error.code) {
     case 404:
       if (error.type == kNoSuchNamespaceException) {
@@ -125,7 +125,7 @@ const std::shared_ptr<ViewErrorHandler>& ViewErrorHandler::Instance() {
   return instance;
 }
 
-Status ViewErrorHandler::Accept(const ErrorModel& error) const {
+Status ViewErrorHandler::Accept(const ErrorResponse& error) const {
   switch (error.code) {
     case 404:
       if (error.type == kNoSuchNamespaceException) {
@@ -145,7 +145,7 @@ const std::shared_ptr<TableCommitErrorHandler>& TableCommitErrorHandler::Instanc
   return instance;
 }
 
-Status TableCommitErrorHandler::Accept(const ErrorModel& error) const {
+Status TableCommitErrorHandler::Accept(const ErrorResponse& error) const {
   switch (error.code) {
     case 404:
       return NoSuchTable(error.message);
@@ -167,7 +167,7 @@ const std::shared_ptr<ViewCommitErrorHandler>& ViewCommitErrorHandler::Instance(
   return instance;
 }
 
-Status ViewCommitErrorHandler::Accept(const ErrorModel& error) const {
+Status ViewCommitErrorHandler::Accept(const ErrorResponse& error) const {
   switch (error.code) {
     case 404:
       return NoSuchView(error.message);
