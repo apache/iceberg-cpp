@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1PendingUpdateTyped" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::PendingUpdateTyped</compoundname>
+    <basecompoundref refid="classiceberg_1_1PendingUpdate" prot="public" virt="non-virtual">iceberg::PendingUpdate</basecompoundref>
+    <includes refid="pending__update_8h" local="no">pending_update.h</includes>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1PendingUpdateTyped_1ae3d587d169413f500671ee677e3ddf6a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PendingUpdateTyped&lt; T &gt;::~PendingUpdateTyped</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~PendingUpdateTyped</name>
+        <qualifiedname>iceberg::PendingUpdateTyped::~PendingUpdateTyped</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/pending_update.h" line="79" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PendingUpdateTyped_1afbee40c70e2b878b49a2794388ce8290" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; T &gt;</type>
+        <definition>virtual Result&lt; T &gt; iceberg::PendingUpdateTyped&lt; T &gt;::Apply</definition>
+        <argsstring>()=0</argsstring>
+        <name>Apply</name>
+        <qualifiedname>iceberg::PendingUpdateTyped::Apply</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1MockPendingUpdate_1a85ffedd356e7613c05ab8980d919f212">Apply</reimplementedby>
+        <briefdescription>
+<para>Apply the pending changes and return the uncommitted result. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This does not result in a permanent update.</para>
+<para><simplesect kind="return"><para>the uncommitted changes that would be committed, or an error:<itemizedlist>
+<listitem><para>ValidationFailed: if pending changes cannot be applied</para>
+</listitem><listitem><para>InvalidArgument: if pending changes are conflicting </para>
+</listitem></itemizedlist>
+</para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/pending_update.h" line="88" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1PendingUpdateTyped_1a50be9c30318ac0a828fe9233dd548b00" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PendingUpdateTyped&lt; T &gt;::PendingUpdateTyped</definition>
+        <argsstring>()=default</argsstring>
+        <name>PendingUpdateTyped</name>
+        <qualifiedname>iceberg::PendingUpdateTyped::PendingUpdateTyped</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/pending_update.h" line="91" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Template class for type-safe table metadata changes using builder pattern. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><ref refid="classiceberg_1_1PendingUpdateTyped" kindref="compound">PendingUpdateTyped</ref> extends <ref refid="classiceberg_1_1PendingUpdate" kindref="compound">PendingUpdate</ref> with a type-safe <ref refid="classiceberg_1_1PendingUpdateTyped_1afbee40c70e2b878b49a2794388ce8290" kindref="member">Apply()</ref> method that returns the specific result type for each operation. Subclasses implement specific types of table updates such as schema changes, property updates, or snapshot-producing operations like appends and deletes.</para>
+<para><ref refid="classiceberg_1_1PendingUpdateTyped_1afbee40c70e2b878b49a2794388ce8290" kindref="member">Apply()</ref> can be used to validate and inspect the uncommitted changes before committing. <ref refid="classiceberg_1_1PendingUpdate_1a0643491619bb8e88a60943e5546adcb6" kindref="member">Commit()</ref> applies the changes and commits them to the table.</para>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>T</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The type of result returned by <ref refid="classiceberg_1_1PendingUpdateTyped_1afbee40c70e2b878b49a2794388ce8290" kindref="member">Apply()</ref> </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::PendingUpdateTyped&lt; T &gt;</label>
+        <link refid="classiceberg_1_1PendingUpdateTyped"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::PendingUpdateTyped&lt; T &gt;</label>
+        <link refid="classiceberg_1_1PendingUpdateTyped"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/pending_update.h" line="77" column="1" bodyfile="iceberg/pending_update.h" bodystart="77" bodyend="92"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1PendingUpdateTyped_1afbee40c70e2b878b49a2794388ce8290" prot="public" virt="pure-virtual"><scope>iceberg::PendingUpdateTyped</scope><name>Apply</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a0643491619bb8e88a60943e5546adcb6" prot="public" virt="pure-virtual"><scope>iceberg::PendingUpdateTyped</scope><name>Commit</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a3314053bba6a86931feb39c1487e2c8b" prot="public" virt="non-virtual"><scope>iceberg::PendingUpdateTyped</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a9e71d56c145591059c7e2f6ee0305295" prot="public" virt="non-virtual"><scope>iceberg::PendingUpdateTyped</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ac5c3549e22869ad7f6abd417ffcabbe2" prot="public" virt="non-virtual"><scope>iceberg::PendingUpdateTyped</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a18521611dee09ce7f85477f38d85e75d" prot="public" virt="non-virtual"><scope>iceberg::PendingUpdateTyped</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a6d566bf1df600b2f3ed846891424b3b8" prot="protected" virt="non-virtual"><scope>iceberg::PendingUpdateTyped</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdateTyped_1a50be9c30318ac0a828fe9233dd548b00" prot="protected" virt="non-virtual"><scope>iceberg::PendingUpdateTyped</scope><name>PendingUpdateTyped</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ac4beafb0e3cb9999043d0a8ae6ce21a5" prot="public" virt="virtual"><scope>iceberg::PendingUpdateTyped</scope><name>~PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdateTyped_1ae3d587d169413f500671ee677e3ddf6a" prot="public" virt="non-virtual"><scope>iceberg::PendingUpdateTyped</scope><name>~PendingUpdateTyped</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

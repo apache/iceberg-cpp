@@ -1,0 +1,110 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1PartitionKeyRef" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::PartitionKeyRef</compoundname>
+    <includes refid="partition__value__util_8h" local="no">partition_value_util.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1PartitionKeyRef_1aea0bfe00a781879adce60b22f7c41d89" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::PartitionKeyRef::spec_id</definition>
+        <argsstring></argsstring>
+        <name>spec_id</name>
+        <qualifiedname>iceberg::PartitionKeyRef::spec_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="40" column="11" bodyfile="iceberg/util/partition_value_util.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1PartitionKeyRef_1a412852b7d9d22f3a70b22ad774fd3f32" prot="public" static="no" mutable="no">
+        <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+        <definition>const PartitionValues&amp; iceberg::PartitionKeyRef::values</definition>
+        <argsstring></argsstring>
+        <name>values</name>
+        <qualifiedname>iceberg::PartitionKeyRef::values</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="41" column="25" bodyfile="iceberg/util/partition_value_util.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1PartitionKeyRef_1ab931eed63f158679b8927a9065ff9e85" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PartitionKeyRef::PartitionKeyRef</definition>
+        <argsstring>(int32_t id, const PartitionValues &amp;vals)</argsstring>
+        <name>PartitionKeyRef</name>
+        <qualifiedname>iceberg::PartitionKeyRef::PartitionKeyRef</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>id</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+          <declname>vals</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="43" column="3" bodyfile="iceberg/util/partition_value_util.h" bodystart="43" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1PartitionKeyRef_1ae4d5207c9f33f3457798fd4ce8f572f3" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PartitionKeyRef::PartitionKeyRef</definition>
+        <argsstring>(const PartitionKey &amp;key)</argsstring>
+        <name>PartitionKeyRef</name>
+        <qualifiedname>iceberg::PartitionKeyRef::PartitionKeyRef</qualifiedname>
+        <param>
+          <type>const PartitionKey &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="45" column="12" bodyfile="iceberg/util/partition_value_util.h" bodystart="45" bodyend="46"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Lightweight lookup key for heterogeneous lookup without copying <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::PartitionKeyRef</label>
+        <link refid="structiceberg_1_1PartitionKeyRef"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>values</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PartitionValues</label>
+        <link refid="classiceberg_1_1PartitionValues"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/util/partition_value_util.h" line="39" column="1" bodyfile="iceberg/util/partition_value_util.h" bodystart="39" bodyend="47"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1PartitionKeyRef_1ab931eed63f158679b8927a9065ff9e85" prot="public" virt="non-virtual"><scope>iceberg::PartitionKeyRef</scope><name>PartitionKeyRef</name></member>
+      <member refid="structiceberg_1_1PartitionKeyRef_1ae4d5207c9f33f3457798fd4ce8f572f3" prot="public" virt="non-virtual"><scope>iceberg::PartitionKeyRef</scope><name>PartitionKeyRef</name></member>
+      <member refid="structiceberg_1_1PartitionKeyRef_1aea0bfe00a781879adce60b22f7c41d89" prot="public" virt="non-virtual"><scope>iceberg::PartitionKeyRef</scope><name>spec_id</name></member>
+      <member refid="structiceberg_1_1PartitionKeyRef_1a412852b7d9d22f3a70b22ad774fd3f32" prot="public" virt="non-virtual"><scope>iceberg::PartitionKeyRef</scope><name>values</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,393 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="rest__catalog__test_8cc" kind="file" language="C++">
+    <compoundname>rest_catalog_test.cc</compoundname>
+    <includes refid="rest__catalog_8h" local="yes">iceberg/catalog/rest/rest_catalog.h</includes>
+    <includes local="no">string</includes>
+    <includes local="no">unordered_map</includes>
+    <includes local="no">gmock/gmock.h</includes>
+    <includes local="no">gtest/gtest.h</includes>
+    <includes refid="catalog__properties_8h" local="yes">iceberg/catalog/rest/catalog_properties.h</includes>
+    <includes refid="table__identifier_8h" local="yes">iceberg/table_identifier.h</includes>
+    <includes refid="matchers_8h" local="yes">iceberg/test/matchers.h</includes>
+    <incdepgraph>
+      <node id="5">
+        <label>iceberg/catalog.h</label>
+        <link refid="catalog_8h_source"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>iceberg/catalog/rest/catalog_properties.h</label>
+        <link refid="catalog__properties_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>iceberg/catalog/rest/iceberg_rest_export.h</label>
+        <link refid="iceberg__rest__export_8h_source"/>
+      </node>
+      <node id="2">
+        <label>iceberg/catalog/rest/rest_catalog.h</label>
+        <link refid="rest__catalog_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>iceberg/catalog/rest/type_fwd.h</label>
+        <link refid="catalog_2rest_2type__fwd_8h"/>
+      </node>
+      <node id="23">
+        <label>iceberg/exception.h</label>
+        <link refid="exception_8h"/>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="10">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg/table_identifier.h</label>
+        <link refid="table__identifier_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="25">
+        <label>iceberg/test/matchers.h</label>
+        <link refid="matchers_8h_source"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/test/rest_catalog_test.cc</label>
+        <link refid="rest__catalog__test_8cc"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="21">
+        <label>iceberg/util/config.h</label>
+        <link refid="config_8h_source"/>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h_source"/>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>cassert</label>
+      </node>
+      <node id="11">
+        <label>expected</label>
+      </node>
+      <node id="12">
+        <label>format</label>
+      </node>
+      <node id="22">
+        <label>functional</label>
+      </node>
+      <node id="18">
+        <label>gmock/gmock.h</label>
+      </node>
+      <node id="19">
+        <label>gtest/gtest.h</label>
+      </node>
+      <node id="3">
+        <label>memory</label>
+      </node>
+      <node id="24">
+        <label>stdexcept</label>
+      </node>
+      <node id="4">
+        <label>string</label>
+      </node>
+      <node id="6">
+        <label>string_view</label>
+      </node>
+      <node id="7">
+        <label>unordered_map</label>
+      </node>
+      <node id="8">
+        <label>unordered_set</label>
+      </node>
+      <node id="9">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innerclass refid="classiceberg_1_1rest_1_1RestCatalogTest" prot="public">iceberg::rest::RestCatalogTest</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1rest">iceberg::rest</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="rest__catalog_8h" kindref="compound">iceberg/catalog/rest/rest_catalog.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;unordered_map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;gmock/gmock.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;gtest/gtest.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="catalog__properties_8h" kindref="compound">iceberg/catalog/rest/catalog_properties.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="table__identifier_8h" kindref="compound">iceberg/table_identifier.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/test/matchers.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg::rest<sp/>{</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Test<sp/>fixture<sp/>for<sp/>REST<sp/>catalog<sp/>tests,<sp/>This<sp/>assumes<sp/>you<sp/>have<sp/>a<sp/>local<sp/>REST<sp/>catalog<sp/>service</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="comment">//<sp/>running<sp/>Default<sp/>configuration:<sp/>http://localhost:8181.</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36" refid="classiceberg_1_1rest_1_1RestCatalogTest" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal"><ref refid="classiceberg_1_1rest_1_1RestCatalogTest" kindref="compound">RestCatalogTest</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>::testing::Test<sp/>{</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>SetUp()</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>Default<sp/>configuration<sp/>for<sp/>local<sp/>testing</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>You<sp/>can<sp/>override<sp/>this<sp/>with<sp/>environment<sp/>variables<sp/>if<sp/>needed</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>uri_env<sp/>=<sp/>std::getenv(</highlight><highlight class="stringliteral">&quot;ICEBERG_REST_URI&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">char</highlight><highlight class="normal">*<sp/>warehouse_env<sp/>=<sp/>std::getenv(</highlight><highlight class="stringliteral">&quot;ICEBERG_REST_WAREHOUSE&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>uri<sp/>=<sp/>uri_env<sp/>?<sp/>uri_env<sp/>:<sp/></highlight><highlight class="stringliteral">&quot;http://localhost:8181&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/><sp/><sp/><sp/>std::string<sp/>warehouse<sp/>=<sp/>warehouse_env<sp/>?<sp/>warehouse_env<sp/>:<sp/></highlight><highlight class="stringliteral">&quot;default&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>config_<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1RestCatalogProperties_1a224705a5ec06c3f7a552e2baf33e62ce" kindref="member">RestCatalogProperties::default_properties</ref>();</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>config_-&gt;Set(<ref refid="classiceberg_1_1rest_1_1RestCatalogProperties_1a0e288b6726c58bd66383a0197d7a26cc" kindref="member">RestCatalogProperties::kUri</ref>,<sp/>uri)</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.Set(<ref refid="classiceberg_1_1rest_1_1RestCatalogProperties_1a0898b360f586f6dcfedb4e93eb372a83" kindref="member">RestCatalogProperties::kName</ref>,<sp/>std::string(</highlight><highlight class="stringliteral">&quot;test_catalog&quot;</highlight><highlight class="normal">))</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.Set(<ref refid="classiceberg_1_1rest_1_1RestCatalogProperties_1ae93f95be25b0252da11fa2e1f78a46f2" kindref="member">RestCatalogProperties::kWarehouse</ref>,<sp/>warehouse);</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"></highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>TearDown()</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{}</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/>std::unique_ptr&lt;RestCatalogProperties&gt;<sp/>config_;</highlight></codeline>
+<codeline lineno="56"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="58"><highlight class="normal">TEST_F(<ref refid="classiceberg_1_1rest_1_1RestCatalogTest" kindref="compound">RestCatalogTest</ref>,<sp/>DISABLED_MakeCatalogSuccess)<sp/>{</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>catalog_result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1RestCatalog_1aca52c1558c48a6536fbc46d063c00e1d" kindref="member">RestCatalog::Make</ref>(*config_);</highlight></codeline>
+<codeline lineno="60"><highlight class="normal"><sp/><sp/>EXPECT_THAT(catalog_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(catalog_result.has_value())<sp/>{</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>catalog<sp/>=<sp/>catalog_result.value();</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/><sp/><sp/>EXPECT_EQ(catalog-&gt;name(),<sp/></highlight><highlight class="stringliteral">&quot;test_catalog&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="66"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68"><highlight class="normal">TEST_F(RestCatalogTest,<sp/>DISABLED_MakeCatalogEmptyUri)<sp/>{</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>invalid_config<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1RestCatalogProperties_1a224705a5ec06c3f7a552e2baf33e62ce" kindref="member">RestCatalogProperties::default_properties</ref>();</highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/>invalid_config-&gt;Set(<ref refid="classiceberg_1_1rest_1_1RestCatalogProperties_1a0e288b6726c58bd66383a0197d7a26cc" kindref="member">RestCatalogProperties::kUri</ref>,<sp/>std::string(</highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>catalog_result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1RestCatalog_1aca52c1558c48a6536fbc46d063c00e1d" kindref="member">RestCatalog::Make</ref>(*invalid_config);</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/>EXPECT_THAT(catalog_result,<sp/>IsError(ErrorKind::kInvalidArgument));</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/>EXPECT_THAT(catalog_result,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;uri&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="75"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal">TEST_F(RestCatalogTest,<sp/>DISABLED_MakeCatalogWithCustomProperties)<sp/>{</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>custom_config<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1RestCatalogProperties_1a224705a5ec06c3f7a552e2baf33e62ce" kindref="member">RestCatalogProperties::default_properties</ref>();</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/>custom_config</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>-&gt;Set(<ref refid="classiceberg_1_1rest_1_1RestCatalogProperties_1a0e288b6726c58bd66383a0197d7a26cc" kindref="member">RestCatalogProperties::kUri</ref>,<sp/>config_-&gt;Get(<ref refid="classiceberg_1_1rest_1_1RestCatalogProperties_1a0e288b6726c58bd66383a0197d7a26cc" kindref="member">RestCatalogProperties::kUri</ref>))</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>.Set(<ref refid="classiceberg_1_1rest_1_1RestCatalogProperties_1a0898b360f586f6dcfedb4e93eb372a83" kindref="member">RestCatalogProperties::kName</ref>,<sp/>config_-&gt;Get(<ref refid="classiceberg_1_1rest_1_1RestCatalogProperties_1a0898b360f586f6dcfedb4e93eb372a83" kindref="member">RestCatalogProperties::kName</ref>))</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>.Set(<ref refid="classiceberg_1_1rest_1_1RestCatalogProperties_1ae93f95be25b0252da11fa2e1f78a46f2" kindref="member">RestCatalogProperties::kWarehouse</ref>,</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>config_-&gt;Get(<ref refid="classiceberg_1_1rest_1_1RestCatalogProperties_1ae93f95be25b0252da11fa2e1f78a46f2" kindref="member">RestCatalogProperties::kWarehouse</ref>))</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>.Set(RestCatalogProperties::Entry&lt;std::string&gt;{</highlight><highlight class="stringliteral">&quot;custom_prop&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string(</highlight><highlight class="stringliteral">&quot;custom_value&quot;</highlight><highlight class="normal">))</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>.Set(RestCatalogProperties::Entry&lt;std::string&gt;{</highlight><highlight class="stringliteral">&quot;timeout&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;&quot;</highlight><highlight class="normal">},</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::string(</highlight><highlight class="stringliteral">&quot;30000&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>catalog_result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1RestCatalog_1aca52c1558c48a6536fbc46d063c00e1d" kindref="member">RestCatalog::Make</ref>(*custom_config);</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/>EXPECT_THAT(catalog_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="91"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight></codeline>
+<codeline lineno="93"><highlight class="normal">TEST_F(RestCatalogTest,<sp/>DISABLED_ListNamespaces)<sp/>{</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>catalog_result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1RestCatalog_1aca52c1558c48a6536fbc46d063c00e1d" kindref="member">RestCatalog::Make</ref>(*config_);</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/>ASSERT_THAT(catalog_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>catalog<sp/>=<sp/>catalog_result.value();</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"></highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/>Namespace<sp/>ns{.levels<sp/>=<sp/>{}};</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result<sp/>=<sp/>catalog-&gt;ListNamespaces(ns);</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/>EXPECT_THAT(result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/>EXPECT_FALSE(result-&gt;empty());</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/>EXPECT_EQ(result-&gt;front().levels,<sp/>(std::vector&lt;std::string&gt;{</highlight><highlight class="stringliteral">&quot;my_namespace_test2&quot;</highlight><highlight class="normal">}));</highlight></codeline>
+<codeline lineno="103"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"></highlight></codeline>
+<codeline lineno="105"><highlight class="normal">TEST_F(RestCatalogTest,<sp/>DISABLED_CreateNamespaceNotImplemented)<sp/>{</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>catalog_result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1RestCatalog_1aca52c1558c48a6536fbc46d063c00e1d" kindref="member">RestCatalog::Make</ref>(*config_);</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/>ASSERT_THAT(catalog_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>catalog<sp/>=<sp/>std::move(catalog_result.value());</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/>Namespace<sp/>ns{.levels<sp/>=<sp/>{</highlight><highlight class="stringliteral">&quot;test_namespace&quot;</highlight><highlight class="normal">}};</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>props<sp/>=<sp/>{{</highlight><highlight class="stringliteral">&quot;owner&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;test&quot;</highlight><highlight class="normal">}};</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>result<sp/>=<sp/>catalog-&gt;CreateNamespace(ns,<sp/>props);</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/>EXPECT_THAT(result,<sp/>IsError(ErrorKind::kNotImplemented));</highlight></codeline>
+<codeline lineno="115"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"></highlight></codeline>
+<codeline lineno="117"><highlight class="normal">TEST_F(RestCatalogTest,<sp/>DISABLED_IntegrationTestFullNamespaceWorkflow)<sp/>{</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>catalog_result<sp/>=<sp/><ref refid="classiceberg_1_1rest_1_1RestCatalog_1aca52c1558c48a6536fbc46d063c00e1d" kindref="member">RestCatalog::Make</ref>(*config_);</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/>ASSERT_THAT(catalog_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>catalog<sp/>=<sp/>std::move(catalog_result.value());</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>1.<sp/>List<sp/>initial<sp/>namespaces</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/>Namespace<sp/>root{.levels<sp/>=<sp/>{}};</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>list_result1<sp/>=<sp/>catalog-&gt;ListNamespaces(root);</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/>ASSERT_THAT(list_result1,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>initial_count<sp/>=<sp/>list_result1-&gt;size();</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>2.<sp/>Create<sp/>a<sp/>new<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/>Namespace<sp/>test_ns{.levels<sp/>=<sp/>{</highlight><highlight class="stringliteral">&quot;integration_test_ns&quot;</highlight><highlight class="normal">}};</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>props<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight><highlight class="stringliteral">&quot;owner&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;test&quot;</highlight><highlight class="normal">},<sp/>{</highlight><highlight class="stringliteral">&quot;created_by&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;rest_catalog_test&quot;</highlight><highlight class="normal">}};</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>create_result<sp/>=<sp/>catalog-&gt;CreateNamespace(test_ns,<sp/>props);</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/>EXPECT_THAT(create_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>3.<sp/>Verify<sp/>namespace<sp/>exists</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>exists_result<sp/>=<sp/>catalog-&gt;NamespaceExists(test_ns);</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/>EXPECT_THAT(exists_result,<sp/>HasValue(::testing::Eq(</highlight><highlight class="keyword">true</highlight><highlight class="normal">)));</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"></highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>4.<sp/>List<sp/>namespaces<sp/>again<sp/>(should<sp/>have<sp/>one<sp/>more)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>list_result2<sp/>=<sp/>catalog-&gt;ListNamespaces(root);</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"><sp/><sp/>ASSERT_THAT(list_result2,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/>EXPECT_EQ(list_result2-&gt;size(),<sp/>initial_count<sp/>+<sp/>1);</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"></highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>5.<sp/>Get<sp/>namespace<sp/>properties</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>props_result<sp/>=<sp/>catalog-&gt;GetNamespaceProperties(test_ns);</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/>ASSERT_THAT(props_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/>EXPECT_EQ((*props_result)[</highlight><highlight class="stringliteral">&quot;owner&quot;</highlight><highlight class="normal">],<sp/></highlight><highlight class="stringliteral">&quot;test&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>6.<sp/>Update<sp/>properties</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>updates<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight><highlight class="stringliteral">&quot;description&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="stringliteral">&quot;test<sp/>namespace&quot;</highlight><highlight class="normal">}};</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/>std::unordered_set&lt;std::string&gt;<sp/>removals<sp/>=<sp/>{};</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>update_result<sp/>=<sp/>catalog-&gt;UpdateNamespaceProperties(test_ns,<sp/>updates,<sp/>removals);</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/>EXPECT_THAT(update_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>7.<sp/>Verify<sp/>updated<sp/>properties</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>props_result2<sp/>=<sp/>catalog-&gt;GetNamespaceProperties(test_ns);</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/>ASSERT_THAT(props_result2,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/>EXPECT_EQ((*props_result2)[</highlight><highlight class="stringliteral">&quot;description&quot;</highlight><highlight class="normal">],<sp/></highlight><highlight class="stringliteral">&quot;test<sp/>namespace&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>8.<sp/>Drop<sp/>the<sp/>namespace<sp/>(cleanup)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>drop_result<sp/>=<sp/>catalog-&gt;DropNamespace(test_ns);</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/>EXPECT_THAT(drop_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"></highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>9.<sp/>Verify<sp/>namespace<sp/>no<sp/>longer<sp/>exists</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>exists_result2<sp/>=<sp/>catalog-&gt;NamespaceExists(test_ns);</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/>EXPECT_THAT(exists_result2,<sp/>HasValue(::testing::Eq(</highlight><highlight class="keyword">false</highlight><highlight class="normal">)));</highlight></codeline>
+<codeline lineno="168"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight></codeline>
+<codeline lineno="170"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg::rest</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/test/rest_catalog_test.cc"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1PartitionKeyHash" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::PartitionKeyHash</compoundname>
+    <includes refid="partition__value__util_8h" local="no">partition_value_util.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structiceberg_1_1PartitionKeyHash_1a368af6f44e1681e5a23b1753458ef5f7" prot="public" static="no">
+        <type>void</type>
+        <definition>using iceberg::PartitionKeyHash::is_transparent =  void</definition>
+        <argsstring></argsstring>
+        <name>is_transparent</name>
+        <qualifiedname>iceberg::PartitionKeyHash::is_transparent</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="70" column="3" bodyfile="iceberg/util/partition_value_util.h" bodystart="70" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1PartitionKeyHash_1a95e34093cb825d1134121afeca6a3be7" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type>std::size_t</type>
+        <definition>std::size_t iceberg::PartitionKeyHash::operator()</definition>
+        <argsstring>(const PartitionKey &amp;key) const noexcept</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::PartitionKeyHash::operator()</qualifiedname>
+        <param>
+          <type>const PartitionKey &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="72" column="15" bodyfile="iceberg/util/partition_value_util.h" bodystart="72" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1PartitionKeyHash_1aace6ad785d595a2bfbc879f412223c41" prot="public" static="no" const="yes" explicit="no" inline="yes" noexcept="yes" virt="non-virtual">
+        <type>std::size_t</type>
+        <definition>std::size_t iceberg::PartitionKeyHash::operator()</definition>
+        <argsstring>(const PartitionKeyRef &amp;key) const noexcept</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::PartitionKeyHash::operator()</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1PartitionKeyRef" kindref="compound">PartitionKeyRef</ref> &amp;</type>
+          <declname>key</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="78" column="15" bodyfile="iceberg/util/partition_value_util.h" bodystart="78" bodyend="82"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Transparent hash functor for PartitionKey with heterogeneous lookup support. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/partition_value_util.h" line="69" column="1" bodyfile="iceberg/util/partition_value_util.h" bodystart="69" bodyend="83"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1PartitionKeyHash_1a368af6f44e1681e5a23b1753458ef5f7" prot="public" virt="non-virtual"><scope>iceberg::PartitionKeyHash</scope><name>is_transparent</name></member>
+      <member refid="structiceberg_1_1PartitionKeyHash_1a95e34093cb825d1134121afeca6a3be7" prot="public" virt="non-virtual"><scope>iceberg::PartitionKeyHash</scope><name>operator()</name></member>
+      <member refid="structiceberg_1_1PartitionKeyHash_1aace6ad785d595a2bfbc879f412223c41" prot="public" virt="non-virtual"><scope>iceberg::PartitionKeyHash</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

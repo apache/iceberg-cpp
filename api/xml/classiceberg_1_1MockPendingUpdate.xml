@@ -1,0 +1,261 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1MockPendingUpdate" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::MockPendingUpdate</compoundname>
+    <basecompoundref refid="classiceberg_1_1PendingUpdateTyped" prot="public" virt="non-virtual">iceberg::PendingUpdateTyped&lt; MockSnapshot &gt;</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1MockPendingUpdate_1a0f1cef1e9f806dcd91c7602f1ce6b16a" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::MockPendingUpdate::should_fail_</definition>
+        <argsstring></argsstring>
+        <name>should_fail_</name>
+        <qualifiedname>iceberg::MockPendingUpdate::should_fail_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/pending_update_test.cc" line="58" column="8" bodyfile="iceberg/test/pending_update_test.cc" bodystart="58" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1MockPendingUpdate_1af196024dcb566f518a3aec314e6996fa" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::MockPendingUpdate::should_fail_commit_</definition>
+        <argsstring></argsstring>
+        <name>should_fail_commit_</name>
+        <qualifiedname>iceberg::MockPendingUpdate::should_fail_commit_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/pending_update_test.cc" line="59" column="8" bodyfile="iceberg/test/pending_update_test.cc" bodystart="59" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1MockPendingUpdate_1a705c449488f829414c44c1f075123cc1" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::MockPendingUpdate::apply_called_</definition>
+        <argsstring></argsstring>
+        <name>apply_called_</name>
+        <qualifiedname>iceberg::MockPendingUpdate::apply_called_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/pending_update_test.cc" line="60" column="8" bodyfile="iceberg/test/pending_update_test.cc" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1MockPendingUpdate_1ab2ae2466c015b44a7e173e7e61578c61" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::MockPendingUpdate::commit_called_</definition>
+        <argsstring></argsstring>
+        <name>commit_called_</name>
+        <qualifiedname>iceberg::MockPendingUpdate::commit_called_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/pending_update_test.cc" line="61" column="8" bodyfile="iceberg/test/pending_update_test.cc" bodystart="61" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1MockPendingUpdate_1a603db6b638c7199ac87e5c742935c725" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockPendingUpdate::MockPendingUpdate</definition>
+        <argsstring>()=default</argsstring>
+        <name>MockPendingUpdate</name>
+        <qualifiedname>iceberg::MockPendingUpdate::MockPendingUpdate</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/pending_update_test.cc" line="34" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockPendingUpdate_1a85ffedd356e7613c05ab8980d919f212" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1MockSnapshot" kindref="compound">MockSnapshot</ref> &gt;</type>
+        <definition>Result&lt; MockSnapshot &gt; iceberg::MockPendingUpdate::Apply</definition>
+        <argsstring>() override</argsstring>
+        <name>Apply</name>
+        <qualifiedname>iceberg::MockPendingUpdate::Apply</qualifiedname>
+        <reimplements refid="classiceberg_1_1PendingUpdateTyped_1afbee40c70e2b878b49a2794388ce8290">Apply</reimplements>
+        <briefdescription>
+<para>Apply the pending changes and return the uncommitted result. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This does not result in a permanent update.</para>
+<para><simplesect kind="return"><para>the uncommitted changes that would be committed, or an error:<itemizedlist>
+<listitem><para>ValidationFailed: if pending changes cannot be applied</para>
+</listitem><listitem><para>InvalidArgument: if pending changes are conflicting </para>
+</listitem></itemizedlist>
+</para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/pending_update_test.cc" line="36" column="10" bodyfile="iceberg/test/pending_update_test.cc" bodystart="36" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockPendingUpdate_1acf5b3805c1bd81521d5b4ce2ed90c940" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::MockPendingUpdate::Commit</definition>
+        <argsstring>() override</argsstring>
+        <name>Commit</name>
+        <qualifiedname>iceberg::MockPendingUpdate::Commit</qualifiedname>
+        <reimplements refid="classiceberg_1_1PendingUpdate_1a0643491619bb8e88a60943e5546adcb6">Commit</reimplements>
+        <briefdescription>
+<para>Apply and commit the pending changes to the table. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Changes are committed by calling the underlying table&apos;s commit operation.</para>
+<para>Once the commit is successful, the updated table will be refreshed.</para>
+<para><simplesect kind="return"><para>Status::OK if the commit was successful, or an error:<itemizedlist>
+<listitem><para>ValidationFailed: if update cannot be applied to current metadata</para>
+</listitem><listitem><para>CommitFailed: if update cannot be committed due to conflicts</para>
+</listitem><listitem><para>CommitStateUnknown: if commit success state is unknown </para>
+</listitem></itemizedlist>
+</para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/pending_update_test.cc" line="44" column="10" bodyfile="iceberg/test/pending_update_test.cc" bodystart="44" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockPendingUpdate_1ace693f3317a96e0c053de968decf615c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::MockPendingUpdate::SetShouldFail</definition>
+        <argsstring>(bool fail)</argsstring>
+        <name>SetShouldFail</name>
+        <qualifiedname>iceberg::MockPendingUpdate::SetShouldFail</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>fail</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/pending_update_test.cc" line="52" column="8" bodyfile="iceberg/test/pending_update_test.cc" bodystart="52" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockPendingUpdate_1a3f4609be7f549a1c185ae3b483e6ce28" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::MockPendingUpdate::SetShouldFailCommit</definition>
+        <argsstring>(bool fail)</argsstring>
+        <name>SetShouldFailCommit</name>
+        <qualifiedname>iceberg::MockPendingUpdate::SetShouldFailCommit</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>fail</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/pending_update_test.cc" line="53" column="8" bodyfile="iceberg/test/pending_update_test.cc" bodystart="53" bodyend="53"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockPendingUpdate_1a2b9fb5dd7908b19f27bcc9cafec7959d" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::MockPendingUpdate::ApplyCalled</definition>
+        <argsstring>() const</argsstring>
+        <name>ApplyCalled</name>
+        <qualifiedname>iceberg::MockPendingUpdate::ApplyCalled</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/pending_update_test.cc" line="54" column="8" bodyfile="iceberg/test/pending_update_test.cc" bodystart="54" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockPendingUpdate_1a41eb0585f0415bdbbf0c816c52f4fb4c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::MockPendingUpdate::CommitCalled</definition>
+        <argsstring>() const</argsstring>
+        <name>CommitCalled</name>
+        <qualifiedname>iceberg::MockPendingUpdate::CommitCalled</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/pending_update_test.cc" line="55" column="8" bodyfile="iceberg/test/pending_update_test.cc" bodystart="55" bodyend="55"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::PendingUpdateTyped&lt; MockSnapshot &gt;</label>
+        <link refid="classiceberg_1_1PendingUpdateTyped"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::MockPendingUpdate</label>
+        <link refid="classiceberg_1_1MockPendingUpdate"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::PendingUpdateTyped&lt; MockSnapshot &gt;</label>
+        <link refid="classiceberg_1_1PendingUpdateTyped"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::MockPendingUpdate</label>
+        <link refid="classiceberg_1_1MockPendingUpdate"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/pending_update_test.cc" line="32" column="1" bodyfile="iceberg/test/pending_update_test.cc" bodystart="32" bodyend="62"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1MockPendingUpdate_1a85ffedd356e7613c05ab8980d919f212" prot="public" virt="virtual"><scope>iceberg::MockPendingUpdate</scope><name>Apply</name></member>
+      <member refid="classiceberg_1_1MockPendingUpdate_1a705c449488f829414c44c1f075123cc1" prot="private" virt="non-virtual"><scope>iceberg::MockPendingUpdate</scope><name>apply_called_</name></member>
+      <member refid="classiceberg_1_1MockPendingUpdate_1a2b9fb5dd7908b19f27bcc9cafec7959d" prot="public" virt="non-virtual"><scope>iceberg::MockPendingUpdate</scope><name>ApplyCalled</name></member>
+      <member refid="classiceberg_1_1MockPendingUpdate_1acf5b3805c1bd81521d5b4ce2ed90c940" prot="public" virt="virtual"><scope>iceberg::MockPendingUpdate</scope><name>Commit</name></member>
+      <member refid="classiceberg_1_1MockPendingUpdate_1ab2ae2466c015b44a7e173e7e61578c61" prot="private" virt="non-virtual"><scope>iceberg::MockPendingUpdate</scope><name>commit_called_</name></member>
+      <member refid="classiceberg_1_1MockPendingUpdate_1a41eb0585f0415bdbbf0c816c52f4fb4c" prot="public" virt="non-virtual"><scope>iceberg::MockPendingUpdate</scope><name>CommitCalled</name></member>
+      <member refid="classiceberg_1_1MockPendingUpdate_1a603db6b638c7199ac87e5c742935c725" prot="public" virt="non-virtual"><scope>iceberg::MockPendingUpdate</scope><name>MockPendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a3314053bba6a86931feb39c1487e2c8b" prot="public" virt="non-virtual"><scope>iceberg::MockPendingUpdate</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a9e71d56c145591059c7e2f6ee0305295" prot="public" virt="non-virtual"><scope>iceberg::MockPendingUpdate</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ac5c3549e22869ad7f6abd417ffcabbe2" prot="public" virt="non-virtual"><scope>iceberg::MockPendingUpdate</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a18521611dee09ce7f85477f38d85e75d" prot="public" virt="non-virtual"><scope>iceberg::MockPendingUpdate</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a6d566bf1df600b2f3ed846891424b3b8" prot="protected" virt="non-virtual"><scope>iceberg::MockPendingUpdate</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdateTyped_1a50be9c30318ac0a828fe9233dd548b00" prot="protected" virt="non-virtual"><scope>iceberg::MockPendingUpdate</scope><name>PendingUpdateTyped</name></member>
+      <member refid="classiceberg_1_1MockPendingUpdate_1ace693f3317a96e0c053de968decf615c" prot="public" virt="non-virtual"><scope>iceberg::MockPendingUpdate</scope><name>SetShouldFail</name></member>
+      <member refid="classiceberg_1_1MockPendingUpdate_1a3f4609be7f549a1c185ae3b483e6ce28" prot="public" virt="non-virtual"><scope>iceberg::MockPendingUpdate</scope><name>SetShouldFailCommit</name></member>
+      <member refid="classiceberg_1_1MockPendingUpdate_1a0f1cef1e9f806dcd91c7602f1ce6b16a" prot="private" virt="non-virtual"><scope>iceberg::MockPendingUpdate</scope><name>should_fail_</name></member>
+      <member refid="classiceberg_1_1MockPendingUpdate_1af196024dcb566f518a3aec314e6996fa" prot="private" virt="non-virtual"><scope>iceberg::MockPendingUpdate</scope><name>should_fail_commit_</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ac4beafb0e3cb9999043d0a8ae6ce21a5" prot="public" virt="virtual"><scope>iceberg::MockPendingUpdate</scope><name>~PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdateTyped_1ae3d587d169413f500671ee677e3ddf6a" prot="public" virt="non-virtual"><scope>iceberg::MockPendingUpdate</scope><name>~PendingUpdateTyped</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

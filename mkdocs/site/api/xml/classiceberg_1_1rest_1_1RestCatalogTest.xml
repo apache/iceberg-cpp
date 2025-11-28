@@ -1,0 +1,133 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1RestCatalogTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::rest::RestCatalogTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1RestCatalogTest_1ac33628093b9a5b6349b2adf889c1b8ef" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1rest_1_1RestCatalogProperties" kindref="compound">RestCatalogProperties</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;RestCatalogProperties&gt; iceberg::rest::RestCatalogTest::config_</definition>
+        <argsstring></argsstring>
+        <name>config_</name>
+        <qualifiedname>iceberg::rest::RestCatalogTest::config_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_catalog_test.cc" line="55" column="19" bodyfile="iceberg/test/rest_catalog_test.cc" bodystart="55" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1RestCatalogTest_1af571e3caab2d98bec07dacf3b76e55e2" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::rest::RestCatalogTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::rest::RestCatalogTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_catalog_test.cc" line="38" column="8" bodyfile="iceberg/test/rest_catalog_test.cc" bodystart="38" bodyend="51"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1RestCatalogTest_1a9de9bd984c32e11b74eb1dc25dd914ae" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::rest::RestCatalogTest::TearDown</definition>
+        <argsstring>() override</argsstring>
+        <name>TearDown</name>
+        <qualifiedname>iceberg::rest::RestCatalogTest::TearDown</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_catalog_test.cc" line="53" column="8" bodyfile="iceberg/test/rest_catalog_test.cc" bodystart="53" bodyend="53"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::rest::RestCatalogTest</label>
+        <link refid="classiceberg_1_1rest_1_1RestCatalogTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="5">
+        <label>iceberg::ConfigBase&lt; RestCatalogProperties &gt;</label>
+        <link refid="classiceberg_1_1ConfigBase"/>
+        <childnode refid="6" relation="usage">
+          <edgelabel>configs_</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::rest::RestCatalogProperties</label>
+        <link refid="classiceberg_1_1rest_1_1RestCatalogProperties"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>kHeaderPrefix</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::RestCatalogTest</label>
+        <link refid="classiceberg_1_1rest_1_1RestCatalogTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>config_</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="10">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="7">
+        <label>std::string</label>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>std::string_view</label>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="3">
+        <label>std::unique_ptr&lt; iceberg::rest::RestCatalogProperties &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/rest_catalog_test.cc" line="36" column="1" bodyfile="iceberg/test/rest_catalog_test.cc" bodystart="36" bodyend="56"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1RestCatalogTest_1ac33628093b9a5b6349b2adf889c1b8ef" prot="protected" virt="non-virtual"><scope>iceberg::rest::RestCatalogTest</scope><name>config_</name></member>
+      <member refid="classiceberg_1_1rest_1_1RestCatalogTest_1af571e3caab2d98bec07dacf3b76e55e2" prot="protected" virt="non-virtual"><scope>iceberg::rest::RestCatalogTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1rest_1_1RestCatalogTest_1a9de9bd984c32e11b74eb1dc25dd914ae" prot="protected" virt="non-virtual"><scope>iceberg::rest::RestCatalogTest</scope><name>TearDown</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

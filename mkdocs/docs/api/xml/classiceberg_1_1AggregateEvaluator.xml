@@ -1,0 +1,146 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1AggregateEvaluator" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::AggregateEvaluator</compoundname>
+    <includes refid="aggregate_8h" local="no">aggregate.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1AggregateEvaluator_1a1147316aad8399131436f489efe03193" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::AggregateEvaluator::~AggregateEvaluator</definition>
+        <argsstring>()=default</argsstring>
+        <name>~AggregateEvaluator</name>
+        <qualifiedname>iceberg::AggregateEvaluator::~AggregateEvaluator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="221" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1AggregateEvaluator_1a89241d85a97d0d3639c07af91256840a" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::AggregateEvaluator::Update</definition>
+        <argsstring>(const StructLike &amp;data)=0</argsstring>
+        <name>Update</name>
+        <qualifiedname>iceberg::AggregateEvaluator::Update</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+<para>Update aggregates with a row. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="235" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1AggregateEvaluator_1ad6a502060a69fb02fe1d7aad7aa22568" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; std::span&lt; const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt; &gt;</type>
+        <definition>virtual Result&lt; std::span&lt; const Literal &gt; &gt; iceberg::AggregateEvaluator::GetResults</definition>
+        <argsstring>() const =0</argsstring>
+        <name>GetResults</name>
+        <qualifiedname>iceberg::AggregateEvaluator::GetResults</qualifiedname>
+        <briefdescription>
+<para>Final aggregated value. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="238" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1AggregateEvaluator_1a7bae540347188dc0a8bf9aa6cc86ac73" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>virtual Result&lt; Literal &gt; iceberg::AggregateEvaluator::GetResult</definition>
+        <argsstring>() const =0</argsstring>
+        <name>GetResult</name>
+        <qualifiedname>iceberg::AggregateEvaluator::GetResult</qualifiedname>
+        <briefdescription>
+<para>Convenience accessor when only one aggregate is evaluated. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="241" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1AggregateEvaluator_1a0f2e0949789fd83a6823915050f1bfe6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1AggregateEvaluator" kindref="compound">AggregateEvaluator</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; AggregateEvaluator &gt; &gt; iceberg::AggregateEvaluator::Make</definition>
+        <argsstring>(std::shared_ptr&lt; BoundAggregate &gt; aggregate)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::AggregateEvaluator::Make</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundAggregate" kindref="compound">BoundAggregate</ref> &gt;</type>
+          <declname>aggregate</declname>
+        </param>
+        <briefdescription>
+<para>Create an evaluator for a single bound aggregate. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>aggregate</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound aggregate to evaluate across rows. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="225" column="17" bodyfile="iceberg/expression/aggregate.cc" bodystart="326" bodyend="331"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1AggregateEvaluator_1a02aa9b79982bd1220db863d49269da7c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1AggregateEvaluator" kindref="compound">AggregateEvaluator</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; AggregateEvaluator &gt; &gt; iceberg::AggregateEvaluator::Make</definition>
+        <argsstring>(std::vector&lt; std::shared_ptr&lt; BoundAggregate &gt; &gt; aggregates)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::AggregateEvaluator::Make</qualifiedname>
+        <param>
+          <type>std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundAggregate" kindref="compound">BoundAggregate</ref> &gt; &gt;</type>
+          <declname>aggregates</declname>
+        </param>
+        <briefdescription>
+<para>Create an evaluator for multiple bound aggregates. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>aggregates</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Aggregates to evaluate in one pass; order is preserved in Results(). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="231" column="17" bodyfile="iceberg/expression/aggregate.cc" bodystart="333" bodyend="346"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Evaluates bound aggregates over <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> data. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/expression/aggregate.h" line="219" column="1" bodyfile="iceberg/expression/aggregate.h" bodystart="219" bodyend="242"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1AggregateEvaluator_1a7bae540347188dc0a8bf9aa6cc86ac73" prot="public" virt="pure-virtual"><scope>iceberg::AggregateEvaluator</scope><name>GetResult</name></member>
+      <member refid="classiceberg_1_1AggregateEvaluator_1ad6a502060a69fb02fe1d7aad7aa22568" prot="public" virt="pure-virtual"><scope>iceberg::AggregateEvaluator</scope><name>GetResults</name></member>
+      <member refid="classiceberg_1_1AggregateEvaluator_1a0f2e0949789fd83a6823915050f1bfe6" prot="public" virt="non-virtual"><scope>iceberg::AggregateEvaluator</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1AggregateEvaluator_1a02aa9b79982bd1220db863d49269da7c" prot="public" virt="non-virtual"><scope>iceberg::AggregateEvaluator</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1AggregateEvaluator_1a89241d85a97d0d3639c07af91256840a" prot="public" virt="pure-virtual"><scope>iceberg::AggregateEvaluator</scope><name>Update</name></member>
+      <member refid="classiceberg_1_1AggregateEvaluator_1a1147316aad8399131436f489efe03193" prot="public" virt="virtual"><scope>iceberg::AggregateEvaluator</scope><name>~AggregateEvaluator</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,112 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ZlibImpl" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ZlibImpl</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ZlibImpl_1a1d784500ecaa7b920cdb8d9f07561003" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::ZlibImpl::initialized_</definition>
+        <argsstring></argsstring>
+        <name>initialized_</name>
+        <qualifiedname>iceberg::ZlibImpl::initialized_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/gzip_internal.cc" line="81" column="8" bodyfile="iceberg/util/gzip_internal.cc" bodystart="81" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ZlibImpl_1a0028574ea3c303b113990b66530906f3" prot="private" static="no" mutable="no">
+        <type>z_stream</type>
+        <definition>z_stream iceberg::ZlibImpl::stream_</definition>
+        <argsstring></argsstring>
+        <name>stream_</name>
+        <qualifiedname>iceberg::ZlibImpl::stream_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/gzip_internal.cc" line="82" column="12" bodyfile="iceberg/util/gzip_internal.cc" bodystart="82" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ZlibImpl_1a5fafb4d2b8c5674539c089383d08b905" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ZlibImpl::ZlibImpl</definition>
+        <argsstring>()</argsstring>
+        <name>ZlibImpl</name>
+        <qualifiedname>iceberg::ZlibImpl::ZlibImpl</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/gzip_internal.cc" line="33" column="3" bodyfile="iceberg/util/gzip_internal.cc" bodystart="33" bodyend="33"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ZlibImpl_1ae6e3169d24d9d0a1b64a96f80c33b6c1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ZlibImpl::~ZlibImpl</definition>
+        <argsstring>()</argsstring>
+        <name>~ZlibImpl</name>
+        <qualifiedname>iceberg::ZlibImpl::~ZlibImpl</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/gzip_internal.cc" line="35" column="3" bodyfile="iceberg/util/gzip_internal.cc" bodystart="35" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ZlibImpl_1a9bc07784201df846b2859591a298fbfd" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ZlibImpl::Init</definition>
+        <argsstring>()</argsstring>
+        <name>Init</name>
+        <qualifiedname>iceberg::ZlibImpl::Init</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/gzip_internal.cc" line="41" column="10" bodyfile="iceberg/util/gzip_internal.cc" bodystart="41" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ZlibImpl_1a2b4f337790b9d23df1cc081e5c58cafe" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::ZlibImpl::Decompress</definition>
+        <argsstring>(const std::string &amp;compressed_data)</argsstring>
+        <name>Decompress</name>
+        <qualifiedname>iceberg::ZlibImpl::Decompress</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>compressed_data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/gzip_internal.cc" line="54" column="10" bodyfile="iceberg/util/gzip_internal.cc" bodystart="54" bodyend="78"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/gzip_internal.cc" line="31" column="1" bodyfile="iceberg/util/gzip_internal.cc" bodystart="31" bodyend="83"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ZlibImpl_1a2b4f337790b9d23df1cc081e5c58cafe" prot="public" virt="non-virtual"><scope>iceberg::ZlibImpl</scope><name>Decompress</name></member>
+      <member refid="classiceberg_1_1ZlibImpl_1a9bc07784201df846b2859591a298fbfd" prot="public" virt="non-virtual"><scope>iceberg::ZlibImpl</scope><name>Init</name></member>
+      <member refid="classiceberg_1_1ZlibImpl_1a1d784500ecaa7b920cdb8d9f07561003" prot="private" virt="non-virtual"><scope>iceberg::ZlibImpl</scope><name>initialized_</name></member>
+      <member refid="classiceberg_1_1ZlibImpl_1a0028574ea3c303b113990b66530906f3" prot="private" virt="non-virtual"><scope>iceberg::ZlibImpl</scope><name>stream_</name></member>
+      <member refid="classiceberg_1_1ZlibImpl_1a5fafb4d2b8c5674539c089383d08b905" prot="public" virt="non-virtual"><scope>iceberg::ZlibImpl</scope><name>ZlibImpl</name></member>
+      <member refid="classiceberg_1_1ZlibImpl_1ae6e3169d24d9d0a1b64a96f80c33b6c1" prot="public" virt="non-virtual"><scope>iceberg::ZlibImpl</scope><name>~ZlibImpl</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
