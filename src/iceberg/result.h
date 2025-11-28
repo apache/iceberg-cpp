@@ -43,6 +43,7 @@ enum class ErrorKind {
   kInvalidManifest,
   kInvalidManifestList,
   kInvalidSchema,
+  kInvalidStatistics,
   kIOError,
   kJsonParseError,
   kNamespaceNotEmpty,
@@ -104,6 +105,7 @@ DEFINE_ERROR_FUNCTION(InvalidExpression)
 DEFINE_ERROR_FUNCTION(InvalidManifest)
 DEFINE_ERROR_FUNCTION(InvalidManifestList)
 DEFINE_ERROR_FUNCTION(InvalidSchema)
+DEFINE_ERROR_FUNCTION(InvalidStatistics)
 DEFINE_ERROR_FUNCTION(IOError)
 DEFINE_ERROR_FUNCTION(JsonParseError)
 DEFINE_ERROR_FUNCTION(NamespaceNotEmpty)
