@@ -22,12 +22,10 @@
 /// \file iceberg/pending_update.h
 /// API for table changes using builder pattern
 
-#include <string>
-#include <vector>
-
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/error_collector.h"
 
 namespace iceberg {
 
@@ -126,13 +124,20 @@ class ICEBERG_EXPORT PendingUpdateTyped : public PendingUpdate {
   /// \param kind The kind of error
   /// \param message The error message
   void AddError(ErrorKind kind, std::string message) {
-    errors_.emplace_back(kind, std::move(message));
+    error_collector_.AddError(kind, std::move(message));
   }
+
+  /// \brief Add an existing error object to be returned later
+  ///
+  /// Useful when propagating errors from other components.
+  ///
+  /// \param err The error to add
+  void AddError(Error err) { error_collector_.AddError(std::move(err)); }
 
   /// \brief Check if any errors have been collected
   ///
   /// \return true if there are accumulated errors
-  bool HasErrors() const { return !errors_.empty(); }
+  bool HasErrors() const { return error_collector_.HasErrors(); }
 
   /// \brief Check for accumulated errors and return them if any exist
   ///
@@ -141,26 +146,17 @@ class ICEBERG_EXPORT PendingUpdateTyped : public PendingUpdate {
   ///
   /// \return Status::OK if no errors, or a ValidationFailed error with
   ///         all accumulated error messages
-  Status CheckErrors() const {
-    if (!errors_.empty()) {
-      std::string error_msg = "Validation failed due to the following errors:\n";
-      for (const auto& [kind, message] : errors_) {
-        error_msg += "  - " + message + "\n";
-      }
-      return ValidationFailed("{}", error_msg);
-    }
-    return {};
-  }
+  Status CheckErrors() const { return error_collector_.CheckErrors(); }
 
   /// \brief Clear all accumulated errors
   ///
   /// This can be useful for resetting the error state in tests or
   /// when reusing a builder instance.
-  void ClearErrors() { errors_.clear(); }
+  void ClearErrors() { error_collector_.ClearErrors(); }
 
  private:
   // Error collection (since builder methods return *this and cannot throw)
-  std::vector<Error> errors_;
+  ErrorCollector error_collector_;
 };
 
 }  // namespace iceberg
