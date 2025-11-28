@@ -434,7 +434,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     int id = ref.field().field_id();
     auto type = ref.type();
     if (!type->is_primitive()) {
-      return InvalidStats("Lower bound of non-primitive type is not supported.");
+      return Invalid("Lower bound of non-primitive type is not supported.");
     }
     auto primitive_type = std::dynamic_pointer_cast<PrimitiveType>(type);
     if (!data_file_.lower_bounds.empty() && data_file_.lower_bounds.contains(id)) {
@@ -451,7 +451,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     int id = ref.field().field_id();
     auto type = ref.type();
     if (!type->is_primitive()) {
-      return InvalidStats("Upper bound of non-primitive type is not supported.");
+      return Invalid("Upper bound of non-primitive type is not supported.");
     }
     auto primitive_type = std::dynamic_pointer_cast<PrimitiveType>(type);
     if (!data_file_.upper_bounds.empty() && data_file_.upper_bounds.contains(id)) {
