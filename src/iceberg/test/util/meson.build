@@ -32,7 +32,11 @@ nlohmann_json_dep = dependency('nlohmann_json')
 iceberg_test_util_lib = static_library(
     'iceberg_test_util',
     sources: iceberg_test_util_sources,
-    dependencies: [iceberg_dep, gtest_dep, nlohmann_json_dep],
+    dependencies: [
+        iceberg_dep,
+        gtest_dep.partial_dependency(compile_args: true, includes: true),
+        nlohmann_json_dep,
+    ],
     include_directories: include_directories('../..'),
 )
 
