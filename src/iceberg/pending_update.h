@@ -22,6 +22,9 @@
 /// \file iceberg/pending_update.h
 /// API for table changes using builder pattern
 
+#include <string>
+#include <vector>
+
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -72,6 +75,30 @@ class ICEBERG_EXPORT PendingUpdate {
 /// Apply() can be used to validate and inspect the uncommitted changes before
 /// committing. Commit() applies the changes and commits them to the table.
 ///
+/// Error Collection Pattern:
+/// Builder methods in subclasses should use AddError() to collect validation
+/// errors instead of returning immediately. The accumulated errors will be
+/// returned by Apply() or Commit() when they are called. This allows users
+/// to see all validation errors at once rather than fixing them one by one.
+///
+/// Example usage in a subclass:
+/// \code
+///   MyUpdate& SetProperty(std::string_view key, std::string_view value) {
+///     if (key.empty()) {
+///       AddError(ErrorKind::kInvalidArgument, "Property key cannot be empty");
+///       return *this;
+///     }
+///     // ... continue with normal logic
+///     return *this;
+///   }
+///
+///   Result<T> Apply() override {
+///     // Check for accumulated errors first
+///     ICEBERG_RETURN_IF_ERROR(CheckErrors());
+///     // ... proceed with apply logic
+///   }
+/// \endcode
+///
 /// \tparam T The type of result returned by Apply()
 template <typename T>
 class ICEBERG_EXPORT PendingUpdateTyped : public PendingUpdate {
@@ -89,6 +116,51 @@ class ICEBERG_EXPORT PendingUpdateTyped : public PendingUpdate {
 
  protected:
   PendingUpdateTyped() = default;
+
+  /// \brief Add a validation error to be returned later
+  ///
+  /// Errors are accumulated and will be returned by Apply() or Commit().
+  /// This allows builder methods to continue and collect all errors rather
+  /// than failing fast on the first error.
+  ///
+  /// \param kind The kind of error
+  /// \param message The error message
+  void AddError(ErrorKind kind, std::string message) {
+    errors_.emplace_back(kind, std::move(message));
+  }
+
+  /// \brief Check if any errors have been collected
+  ///
+  /// \return true if there are accumulated errors
+  bool HasErrors() const { return !errors_.empty(); }
+
+  /// \brief Check for accumulated errors and return them if any exist
+  ///
+  /// This should be called at the beginning of Apply() or Commit() to
+  /// return all accumulated validation errors.
+  ///
+  /// \return Status::OK if no errors, or a ValidationFailed error with
+  ///         all accumulated error messages
+  Status CheckErrors() const {
+    if (!errors_.empty()) {
+      std::string error_msg = "Validation failed due to the following errors:\n";
+      for (const auto& [kind, message] : errors_) {
+        error_msg += "  - " + message + "\n";
+      }
+      return ValidationFailed("{}", error_msg);
+    }
+    return {};
+  }
+
+  /// \brief Clear all accumulated errors
+  ///
+  /// This can be useful for resetting the error state in tests or
+  /// when reusing a builder instance.
+  void ClearErrors() { errors_.clear(); }
+
+ private:
+  // Error collection (since builder methods return *this and cannot throw)
+  std::vector<Error> errors_;
 };
 
 }  // namespace iceberg
