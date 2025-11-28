@@ -97,9 +97,6 @@ class ICEBERG_EXPORT InMemoryCatalog
       const TableIdentifier& identifier,
       const std::string& metadata_file_location) override;
 
-  std::unique_ptr<TableBuilder> BuildTable(const TableIdentifier& identifier,
-                                           const Schema& schema) const override;
-
  private:
   std::string catalog_name_;
   std::unordered_map<std::string, std::string> properties_;

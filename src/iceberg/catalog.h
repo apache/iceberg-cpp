@@ -184,64 +184,6 @@ class ICEBERG_EXPORT Catalog {
   /// \return a Table instance or ErrorKind::kAlreadyExists if the table already exists
   virtual Result<std::shared_ptr<Table>> RegisterTable(
       const TableIdentifier& identifier, const std::string& metadata_file_location) = 0;
-
-  /// \brief A builder used to create valid tables or start create/replace transactions
-  class TableBuilder {
-   public:
-    virtual ~TableBuilder() = default;
-
-    /// \brief Sets a partition spec for the table
-    ///
-    /// \param spec a partition spec
-    /// \return this for method chaining
-    virtual TableBuilder& WithPartitionSpec(const PartitionSpec& spec) = 0;
-
-    /// \brief Sets a sort order for the table
-    ///
-    /// \param sort_order a sort order
-    /// \return this for method chaining
-    virtual TableBuilder& WithSortOrder(const SortOrder& sort_order) = 0;
-
-    /// \brief Sets a location for the table
-    ///
-    /// \param location a location
-    /// \return this for method chaining
-    virtual TableBuilder& WithLocation(const std::string& location) = 0;
-
-    /// \brief Adds key/value properties to the table
-    ///
-    /// \param properties key/value properties
-    /// \return this for method chaining
-    virtual TableBuilder& WithProperties(
-        const std::unordered_map<std::string, std::string>& properties) = 0;
-
-    /// \brief Adds a key/value property to the table
-    ///
-    /// \param key a key
-    /// \param value a value
-    /// \return this for method chaining
-    virtual TableBuilder& WithProperty(const std::string& key,
-                                       const std::string& value) = 0;
-
-    /// \brief Creates the table
-    ///
-    /// \return the created table
-    virtual std::unique_ptr<Table> Create() = 0;
-
-    /// \brief Starts a transaction to create the table
-    ///
-    /// \return the Transaction to create the table
-    virtual std::unique_ptr<Transaction> StageCreate() = 0;
-  };
-
-  /// \brief Instantiate a builder to either create a table or start a create/replace
-  /// transaction
-  ///
-  /// \param identifier a table identifier
-  /// \param schema a schema
-  /// \return the builder to create a table or start a create/replace transaction
-  virtual std::unique_ptr<TableBuilder> BuildTable(const TableIdentifier& identifier,
-                                                   const Schema& schema) const = 0;
 };
 
 }  // namespace iceberg

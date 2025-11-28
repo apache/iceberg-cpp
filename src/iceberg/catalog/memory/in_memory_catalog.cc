@@ -417,7 +417,6 @@ Status InMemoryCatalog::DropTable(const TableIdentifier& identifier, bool purge)
 
 Status InMemoryCatalog::RenameTable(const TableIdentifier& from,
                                     const TableIdentifier& to) {
-  std::unique_lock lock(mutex_);
   return NotImplemented("rename table");
 }
 
@@ -452,11 +451,6 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::RegisterTable(
     return UnknownError("The registry failed.");
   }
   return LoadTable(identifier);
-}
-
-std::unique_ptr<Catalog::TableBuilder> InMemoryCatalog::BuildTable(
-    const TableIdentifier& identifier, const Schema& schema) const {
-  throw IcebergError("not implemented");
 }
 
 }  // namespace iceberg

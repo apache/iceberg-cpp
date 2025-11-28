@@ -194,10 +194,4 @@ Result<std::shared_ptr<Table>> RestCatalog::RegisterTable(
   return NotImplemented("Not implemented");
 }
 
-std::unique_ptr<RestCatalog::TableBuilder> RestCatalog::BuildTable(
-    [[maybe_unused]] const TableIdentifier& identifier,
-    [[maybe_unused]] const Schema& schema) const {
-  return nullptr;
-}
-
 }  // namespace iceberg::rest

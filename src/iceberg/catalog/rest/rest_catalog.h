@@ -96,9 +96,6 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog {
       const TableIdentifier& identifier,
       const std::string& metadata_file_location) override;
 
-  std::unique_ptr<RestCatalog::TableBuilder> BuildTable(
-      const TableIdentifier& identifier, const Schema& schema) const override;
-
  private:
   RestCatalog(std::unique_ptr<RestCatalogProperties> config,
               std::unique_ptr<ResourcePaths> paths);
