@@ -21,6 +21,7 @@
 
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_update.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -46,7 +47,12 @@ Result<std::vector<std::unique_ptr<TableRequirement>>> TableRequirements::ForRep
 Result<std::vector<std::unique_ptr<TableRequirement>>> TableRequirements::ForUpdateTable(
     const TableMetadata& base,
     const std::vector<std::unique_ptr<TableUpdate>>& table_updates) {
-  return NotImplemented("TableRequirements::ForUpdateTable not implemented");
+  TableUpdateContext context(&base, false);
+  context.AddRequirement(std::make_unique<table::AssertUUID>(base.table_uuid));
+  for (const auto& update : table_updates) {
+    ICEBERG_RETURN_UNEXPECTED(update->GenerateRequirements(context));
+  }
+  return context.Build();
 }
 
 }  // namespace iceberg

@@ -39,10 +39,12 @@ set(ICEBERG_SOURCES
     manifest_reader_internal.cc
     manifest_writer.cc
     metadata_columns.cc
+    metrics_config.cc
     name_mapping.cc
     partition_field.cc
     partition_spec.cc
     partition_summary.cc
+    properties_update.cc
     row/arrow_array_wrapper.cc
     row/manifest_wrapper.cc
     row/struct_like.cc

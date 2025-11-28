@@ -81,6 +81,7 @@ add_iceberg_test(table_test
                  SOURCES
                  json_internal_test.cc
                  pending_update_test.cc
+                 properties_update_test.cc
                  schema_json_test.cc
                  table_test.cc
                  table_metadata_builder_test.cc
@@ -161,6 +162,7 @@ if(ICEBERG_BUILD_BUNDLE)
 
   add_iceberg_test(scan_test USE_BUNDLE SOURCES file_scan_task_test.cc)
 
+  add_iceberg_test(metrics_test USE_BUNDLE SOURCES metrics_config_test.cc)
 endif()
 
 if(ICEBERG_BUILD_REST)
