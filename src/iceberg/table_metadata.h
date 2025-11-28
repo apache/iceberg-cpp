@@ -98,27 +98,27 @@ struct ICEBERG_EXPORT TableMetadata {
   /// The highest assigned partition field ID across all partition specs for the table
   int32_t last_partition_id;
   /// A string to string map of table properties
-  std::unordered_map<std::string, std::string> properties;
+  std::unordered_map<std::string, std::string> properties{};
   /// ID of the current table snapshot
   int64_t current_snapshot_id;
   /// A list of valid snapshots
-  std::vector<std::shared_ptr<iceberg::Snapshot>> snapshots;
+  std::vector<std::shared_ptr<iceberg::Snapshot>> snapshots{};
   /// A list of timestamp and snapshot ID pairs that encodes changes to the current
   /// snapshot for the table
-  std::vector<SnapshotLogEntry> snapshot_log;
+  std::vector<SnapshotLogEntry> snapshot_log{};
   /// A list of timestamp and metadata file location pairs that encodes changes to the
   /// previous metadata files for the table
-  std::vector<MetadataLogEntry> metadata_log;
+  std::vector<MetadataLogEntry> metadata_log{};
   /// A list of sort orders
   std::vector<std::shared_ptr<iceberg::SortOrder>> sort_orders;
   /// Default sort order id of the table
   int32_t default_sort_order_id;
   /// A map of snapshot references
-  std::unordered_map<std::string, std::shared_ptr<SnapshotRef>> refs;
+  std::unordered_map<std::string, std::shared_ptr<SnapshotRef>> refs{};
   /// A list of table statistics
-  std::vector<std::shared_ptr<struct StatisticsFile>> statistics;
+  std::vector<std::shared_ptr<struct StatisticsFile>> statistics{};
   /// A list of partition statistics
-  std::vector<std::shared_ptr<struct PartitionStatisticsFile>> partition_statistics;
+  std::vector<std::shared_ptr<struct PartitionStatisticsFile>> partition_statistics{};
   /// A `long` higher than all assigned row IDs
   int64_t next_row_id;
 

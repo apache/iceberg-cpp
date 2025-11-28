@@ -100,8 +100,8 @@ class PositionPathVisitor {
   }
 
   // Non-struct types are not supported yet, but it is not an error.
-  Status Visit(const ListType& type) { return {}; }
-  Status Visit(const MapType& type) { return {}; }
+  Status Visit([[maybe_unused]] const ListType& type) { return {}; }
+  Status Visit([[maybe_unused]] const MapType& type) { return {}; }
 
   std::unordered_map<int32_t, std::vector<size_t>> Finish() {
     return std::move(position_path_);
@@ -214,7 +214,7 @@ IdToFieldVisitor::IdToFieldVisitor(
     std::unordered_map<int32_t, std::reference_wrapper<const SchemaField>>& id_to_field)
     : id_to_field_(id_to_field) {}
 
-Status IdToFieldVisitor::Visit(const PrimitiveType& type) { return {}; }
+Status IdToFieldVisitor::Visit([[maybe_unused]] const PrimitiveType& type) { return {}; }
 
 Status IdToFieldVisitor::Visit(const NestedType& type) {
   const auto& nested = internal::checked_cast<const NestedType&>(type);
@@ -300,8 +300,9 @@ Status NameToIdVisitor::Visit(const StructType& type, const std::string& path,
   return {};
 }
 
-Status NameToIdVisitor::Visit(const PrimitiveType& type, const std::string& path,
-                              const std::string& short_path) {
+Status NameToIdVisitor::Visit([[maybe_unused]] const PrimitiveType& type,
+                              [[maybe_unused]] const std::string& path,
+                              [[maybe_unused]] const std::string& short_path) {
   return {};
 }
 
