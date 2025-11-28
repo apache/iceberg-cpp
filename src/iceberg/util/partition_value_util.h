@@ -26,7 +26,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "iceberg/iceberg_export.h"
 #include "iceberg/row/partition_values.h"
 
 namespace iceberg {
@@ -34,6 +33,18 @@ namespace iceberg {
 constexpr size_t kHashPrime = 0x9e3779b9;
 
 using PartitionKey = std::pair<int32_t, PartitionValues>;
+
+/// \brief Lightweight lookup key for heterogeneous lookup without copying
+/// PartitionValues.
+struct PartitionKeyRef {
+  int32_t spec_id;
+  const PartitionValues& values;
+
+  PartitionKeyRef(int32_t id, const PartitionValues& vals) : spec_id(id), values(vals) {}
+
+  explicit PartitionKeyRef(const PartitionKey& key)
+      : spec_id(key.first), values(key.second) {}
+};
 
 /// \brief Hash functor for PartitionValues.
 struct PartitionValuesHash {
@@ -54,19 +65,46 @@ struct PartitionValuesEqual {
   }
 };
 
-/// \brief Hash functor for std::pair<int32_t, PartitionValues>.
+/// \brief Transparent hash functor for PartitionKey with heterogeneous lookup support.
 struct PartitionKeyHash {
+  using is_transparent = void;
+
   std::size_t operator()(const PartitionKey& key) const noexcept {
     std::size_t hash = std::hash<int32_t>{}(key.first);
     hash ^= PartitionValuesHash{}(key.second) + kHashPrime + (hash << 6) + (hash >> 2);
     return hash;
   }
+
+  std::size_t operator()(const PartitionKeyRef& key) const noexcept {
+    std::size_t hash = std::hash<int32_t>{}(key.spec_id);
+    hash ^= PartitionValuesHash{}(key.values) + kHashPrime + (hash << 6) + (hash >> 2);
+    return hash;
+  }
 };
 
-/// \brief Equality functor for std::pair<int32_t, PartitionValues>.
+/// \brief Transparent equality functor for PartitionKey with heterogeneous lookup
+/// support.
 struct PartitionKeyEqual {
+  using is_transparent = void;
+
+  // Equality for PartitionKey vs PartitionKey
   bool operator()(const PartitionKey& lhs, const PartitionKey& rhs) const {
-    return lhs == rhs;
+    return lhs.first == rhs.first && lhs.second == rhs.second;
+  }
+
+  // Equality for PartitionKey vs PartitionKeyRef (heterogeneous lookup)
+  bool operator()(const PartitionKey& lhs, const PartitionKeyRef& rhs) const {
+    return lhs.first == rhs.spec_id && lhs.second == rhs.values;
+  }
+
+  // Equality for PartitionKeyRef vs PartitionKey (heterogeneous lookup)
+  bool operator()(const PartitionKeyRef& lhs, const PartitionKey& rhs) const {
+    return lhs.spec_id == rhs.first && lhs.values == rhs.second;
+  }
+
+  // Equality for PartitionKeyRef vs PartitionKeyRef (heterogeneous lookup)
+  bool operator()(const PartitionKeyRef& lhs, const PartitionKeyRef& rhs) const {
+    return lhs.spec_id == rhs.spec_id && lhs.values == rhs.values;
   }
 };
 
@@ -97,7 +135,7 @@ class PartitionMap {
   /// \param values The partition values.
   /// \return true if the key exists, false otherwise.
   bool contains(int32_t spec_id, const PartitionValues& values) const {
-    return map_.contains(PartitionKey{spec_id, values});
+    return map_.contains(PartitionKeyRef{spec_id, values});
   }
 
   /// \brief Get the value associated with a key.
@@ -106,7 +144,7 @@ class PartitionMap {
   /// \return Reference to the value if found, std::nullopt otherwise.
   std::optional<std::reference_wrapper<V>> get(int32_t spec_id,
                                                const PartitionValues& values) {
-    auto it = map_.find(PartitionKey{spec_id, values});
+    auto it = map_.find(PartitionKeyRef{spec_id, values});
     return it != map_.end() ? std::make_optional(std::ref(it->second)) : std::nullopt;
   }
 
@@ -116,7 +154,7 @@ class PartitionMap {
   /// \return Reference to the value if found, std::nullopt otherwise.
   std::optional<std::reference_wrapper<const V>> get(
       int32_t spec_id, const PartitionValues& values) const {
-    auto it = map_.find(PartitionKey{spec_id, values});
+    auto it = map_.find(PartitionKeyRef{spec_id, values});
     return it != map_.end() ? std::make_optional(std::cref(it->second)) : std::nullopt;
   }
 
@@ -126,13 +164,12 @@ class PartitionMap {
   /// \param value The value to insert.
   /// \return true if the entry was updated, false if it was inserted.
   bool put(int32_t spec_id, PartitionValues values, V value) {
-    auto key = PartitionKey{spec_id, std::move(values)};
-    auto it = map_.find(key);
+    auto it = map_.find(PartitionKeyRef{spec_id, values});
     if (it != map_.end()) {
       it->second = std::move(value);
       return true;
     }
-    map_.emplace(std::move(key), std::move(value));
+    map_.emplace(PartitionKey{spec_id, std::move(values)}, std::move(value));
     return false;
   }
 
@@ -141,7 +178,12 @@ class PartitionMap {
   /// \param values The partition values.
   /// \return true if the entry was removed, false if it didn't exist.
   bool remove(int32_t spec_id, const PartitionValues& values) {
-    return map_.erase(PartitionKey{spec_id, values}) > 0;
+    auto it = map_.find(PartitionKeyRef{spec_id, values});
+    if (it != map_.end()) {
+      map_.erase(it);
+      return true;
+    }
+    return false;
   }
 
   /// \brief Get iterator to the beginning.
@@ -181,7 +223,7 @@ class PartitionSet {
   /// \param values The partition values.
   /// \return true if the element exists, false otherwise.
   bool contains(int32_t spec_id, const PartitionValues& values) const {
-    return set_.contains(PartitionKey{spec_id, values});
+    return set_.contains(PartitionKeyRef{spec_id, values});
   }
 
   /// \brief Add an element to the set.
@@ -198,7 +240,12 @@ class PartitionSet {
   /// \param values The partition values.
   /// \return true if the element was removed, false if it didn't exist.
   bool remove(int32_t spec_id, const PartitionValues& values) {
-    return set_.erase(PartitionKey{spec_id, values}) > 0;
+    auto it = set_.find(PartitionKeyRef{spec_id, values});
+    if (it != set_.end()) {
+      set_.erase(it);
+      return true;
+    }
+    return false;
   }
 
   /// \brief Get iterator to the beginning.
