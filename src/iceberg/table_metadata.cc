@@ -44,7 +44,9 @@ namespace iceberg {
 
 namespace {
 const TimePointMs kInvalidLastUpdatedMs = TimePointMs::min();
-}
+
+Result<void> foo() { return {}; }
+}  // namespace
 
 std::string ToString(const SnapshotLogEntry& entry) {
   return std::format("SnapshotLogEntry[timestampMillis={},snapshotId={}]",

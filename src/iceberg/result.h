@@ -58,6 +58,7 @@ enum class ErrorKind {
   kServiceUnavailable,
   kUnknownError,
   kValidationFailed,
+  kTest,
 };
 
 /// \brief Error with a kind and a message.
