@@ -19,20 +19,14 @@
 
 #include "iceberg/table.h"
 
-#include <filesystem>
-#include <fstream>
-#include <optional>
-#include <sstream>
 #include <string>
 
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-#include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
-#include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
-#include "iceberg/test/test_common.h"
+#include "iceberg/test/util/common_util.h"
 
 namespace iceberg {
 

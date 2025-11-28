@@ -54,7 +54,7 @@ jobs:
         env:
           CC: gcc-14
           CXX: g++-14
-        run: ci/scripts/build_iceberg.sh $(pwd)
+        run: ci/scripts/build_iceberg.sh $(pwd) ON
       - name: Build Example
         shell: bash
         env:
@@ -110,6 +110,7 @@ jobs:
             runs-on: ubuntu-24.04
             CC: gcc-14
             CXX: g++-14
+            meson-setup-args: -Drest_integration_test=enabled
           - title: AMD64 Windows 2025
             runs-on: windows-2025
             meson-setup-args: --vsenv

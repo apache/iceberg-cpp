@@ -15,11 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-fetchcontent_declare(cpp-httplib
-                     GIT_REPOSITORY https://github.com/yhirose/cpp-httplib.git
-                     GIT_TAG 89c932f313c6437c38f2982869beacc89c2f2246 #release-0.26.0
-)
-
 fetchcontent_declare(googletest
                      GIT_REPOSITORY https://github.com/google/googletest.git
                      GIT_TAG b514bdc898e2951020cbdca1304b75f5950d1f59 # release-1.15.2
@@ -27,15 +22,13 @@ fetchcontent_declare(googletest
                      NAMES
                      GTest)
 
-if(ICEBERG_BUILD_REST)
-  fetchcontent_makeavailable(cpp-httplib googletest)
-else()
-  fetchcontent_makeavailable(googletest)
-endif()
+fetchcontent_makeavailable(googletest)
 
 set(ICEBERG_TEST_RESOURCES "${CMAKE_SOURCE_DIR}/src/iceberg/test/resources")
 
 configure_file("test_config.h.in" "test_config.h")
+
+add_subdirectory(util)
 
 function(add_iceberg_test test_name)
   set(options USE_BUNDLE)
@@ -53,11 +46,11 @@ function(add_iceberg_test test_name)
   target_sources(${test_name} PRIVATE ${ARG_SOURCES})
 
   if(ARG_USE_BUNDLE)
-    target_link_libraries(${test_name} PRIVATE iceberg_bundle_static GTest::gtest_main
-                                               GTest::gmock)
+    target_link_libraries(${test_name} PRIVATE iceberg_bundle_static GTest::gmock_main
+                                               iceberg_test_util)
   else()
-    target_link_libraries(${test_name} PRIVATE iceberg_static GTest::gtest_main
-                                               GTest::gmock)
+    target_link_libraries(${test_name} PRIVATE iceberg_static GTest::gmock_main
+                                               iceberg_test_util)
   endif()
 
   add_test(NAME ${test_name} COMMAND ${test_name})
@@ -85,8 +78,7 @@ add_iceberg_test(table_test
                  table_test.cc
                  table_metadata_builder_test.cc
                  table_requirement_test.cc
-                 table_update_test.cc
-                 test_common.cc)
+                 table_update_test.cc)
 
 add_iceberg_test(expression_test
                  SOURCES
@@ -98,7 +90,6 @@ add_iceberg_test(expression_test
 
 add_iceberg_test(json_serde_test
                  SOURCES
-                 test_common.cc
                  json_internal_test.cc
                  metadata_serde_test.cc
                  schema_json_test.cc)
@@ -128,8 +119,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    manifest_list_reader_writer_test.cc
                    manifest_list_versions_test.cc
                    manifest_reader_writer_test.cc
-                   manifest_writer_versions_test.cc
-                   test_common.cc)
+                   manifest_writer_versions_test.cc)
 
   add_iceberg_test(arrow_test
                    USE_BUNDLE
@@ -140,18 +130,13 @@ if(ICEBERG_BUILD_BUNDLE)
                    metadata_io_test.cc
                    struct_like_test.cc)
 
-  add_iceberg_test(catalog_test
-                   USE_BUNDLE
-                   SOURCES
-                   test_common.cc
-                   in_memory_catalog_test.cc)
+  add_iceberg_test(catalog_test USE_BUNDLE SOURCES in_memory_catalog_test.cc)
 
   add_iceberg_test(eval_expr_test
                    USE_BUNDLE
                    SOURCES
                    eval_expr_test.cc
-                   evaluator_test.cc
-                   test_common.cc)
+                   evaluator_test.cc)
 
   add_iceberg_test(parquet_test
                    USE_BUNDLE
@@ -178,16 +163,15 @@ if(ICEBERG_BUILD_REST)
     add_executable(${test_name})
     target_include_directories(${test_name} PRIVATE "${CMAKE_BINARY_DIR}/iceberg/test/")
     target_sources(${test_name} PRIVATE ${ARG_SOURCES})
-    target_link_libraries(${test_name} PRIVATE GTest::gtest_main GTest::gmock
-                                               iceberg_rest_static)
+    target_link_libraries(${test_name} PRIVATE GTest::gmock_main iceberg_rest_static
+                                               iceberg_test_util)
     add_test(NAME ${test_name} COMMAND ${test_name})
   endfunction()
 
-  add_rest_iceberg_test(rest_catalog_test
-                        SOURCES
-                        rest_catalog_test.cc
-                        rest_json_internal_test.cc
+  add_rest_iceberg_test(rest_catalog_test SOURCES rest_json_internal_test.cc
                         rest_util_test.cc)
 
-  target_include_directories(rest_catalog_test PRIVATE ${cpp-httplib_SOURCE_DIR})
+  if(ICEBERG_BUILD_REST_INTEGRATION_TESTS)
+    add_rest_iceberg_test(rest_catalog_integration_test SOURCES rest_catalog_test.cc)
+  endif()
 endif()
