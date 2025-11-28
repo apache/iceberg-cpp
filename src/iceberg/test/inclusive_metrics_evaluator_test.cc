@@ -101,8 +101,8 @@ class InclusiveMetricsEvaluatorTest : public ::testing::Test {
   void TestCase(const std::shared_ptr<Expression>& unbound, bool expected_result) {
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
                            InclusiveMetricsEvaluator::Make(unbound, schema_, true));
-    auto file = PrepareDataFile("20251128", 10, 1024, {{"id", int64_t(100)}},
-                                {{"id", int64_t(200)}});
+    auto file = PrepareDataFile("20251128", 10, 1024, {{"id", static_cast<int64_t>(100)}},
+                                {{"id", static_cast<int64_t>(200)}});
     auto result = evaluator->Eval(*file);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result.value(), expected_result) << unbound->ToString();
