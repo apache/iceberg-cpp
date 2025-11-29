@@ -53,6 +53,7 @@ iceberg_tests = {
             'table_requirement_test.cc',
             'table_test.cc',
             'table_update_test.cc',
+            'update_partition_spec_test.cc',
             'update_properties_test.cc',
         ),
     },

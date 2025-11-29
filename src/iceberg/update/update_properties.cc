@@ -42,6 +42,8 @@ UpdateProperties::UpdateProperties(TableIdentifier identifier,
       catalog_(std::move(catalog)),
       base_metadata_(std::move(base)) {}
 
+UpdateProperties::~UpdateProperties() = default;
+
 UpdateProperties& UpdateProperties::Set(const std::string& key,
                                         const std::string& value) {
   if (removals_.contains(key)) {

@@ -26,6 +26,7 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/table_scan.h"
+#include "iceberg/update/update_partition_spec.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/util/macros.h"
 
@@ -111,6 +112,10 @@ const std::vector<SnapshotLogEntry>& Table::history() const {
 
 std::unique_ptr<UpdateProperties> Table::UpdateProperties() const {
   return std::make_unique<iceberg::UpdateProperties>(identifier_, catalog_, metadata_);
+}
+
+std::unique_ptr<UpdatePartitionSpec> Table::UpdateSpec() {
+  return std::make_unique<UpdatePartitionSpec>(identifier_, catalog_, metadata_);
 }
 
 std::unique_ptr<Transaction> Table::NewTransaction() const {

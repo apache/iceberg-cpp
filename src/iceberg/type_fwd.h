@@ -124,6 +124,10 @@ class Literal;
 
 class BoundPredicate;
 class UnboundPredicate;
+class BoundReference;
+class BoundTransform;
+template <typename B>
+class UnboundTerm;
 
 class DataTableScan;
 class FileScanTask;
@@ -160,9 +164,8 @@ class TableMetadataBuilder;
 class TableUpdateContext;
 
 class PendingUpdate;
-template <typename T>
-class PendingUpdateTyped;
 class UpdateProperties;
+class UpdatePartitionSpec;
 
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.

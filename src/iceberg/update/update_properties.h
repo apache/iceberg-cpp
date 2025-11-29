@@ -43,6 +43,8 @@ class ICEBERG_EXPORT UpdateProperties : public PendingUpdate {
   UpdateProperties(TableIdentifier identifier, std::shared_ptr<Catalog> catalog,
                    std::shared_ptr<TableMetadata> base);
 
+  ~UpdateProperties() override;
+
   /// \brief Sets a property key to a specified value.
   ///
   /// The key can not be marked for previous removal and reserved property keys will be
