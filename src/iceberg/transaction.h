@@ -44,6 +44,11 @@ class ICEBERG_EXPORT Transaction {
   /// \return a new AppendFiles
   virtual std::shared_ptr<AppendFiles> NewAppend() = 0;
 
+  /// \brief Create a new expire snapshots operation for this transaction
+  ///
+  /// \return a shared pointer to the new ExpireSnapshots operation
+  virtual std::shared_ptr<ExpireSnapshots> NewExpireSnapshots() = 0;
+
   /// \brief Apply the pending changes from all actions and commit
   ///
   /// This method applies all pending data operations and metadata updates in the
