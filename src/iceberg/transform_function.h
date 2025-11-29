@@ -59,6 +59,9 @@ class ICEBERG_EXPORT BucketTransform : public TransformFunction {
   /// \brief Returns INT32 as the output type.
   std::shared_ptr<Type> ResultType() const override;
 
+  /// \brief Returns the number of buckets.
+  int32_t num_buckets() const { return num_buckets_; }
+
   /// \brief Create a BucketTransform.
   /// \param source_type Type of the input data.
   /// \param num_buckets Number of buckets to hash into.

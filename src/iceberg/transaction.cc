@@ -28,6 +28,7 @@
 #include "iceberg/table_requirements.h"
 #include "iceberg/table_update.h"
 #include "iceberg/update/pending_update.h"
+#include "iceberg/update/update_partition_spec.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/update/update_sort_order.h"
 #include "iceberg/util/checked_cast.h"
@@ -85,6 +86,17 @@ Status Transaction::Apply(PendingUpdate& update) {
       ICEBERG_ASSIGN_OR_RAISE(auto result, update_sort_order.Apply());
       metadata_builder_->SetDefaultSortOrder(result.sort_order);
     } break;
+    case PendingUpdate::Kind::kUpdatePartitionSpec: {
+      auto& update_partition_spec = internal::checked_cast<UpdatePartitionSpec&>(update);
+      ICEBERG_ASSIGN_OR_RAISE(auto result, update_partition_spec.Apply());
+
+      metadata_builder_->SetDefaultPartitionSpec(result.spec);
+      if (result.set_as_default) {
+        metadata_builder_->SetDefaultPartitionSpec(result.spec);
+      } else {
+        metadata_builder_->AddPartitionSpec(result.spec);
+      }
+    } break;
     default:
       return NotSupported("Unsupported pending update: {}",
                           static_cast<int>(update.kind()));
@@ -135,6 +147,13 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   table_ = std::move(updated_table);
 
   return table_;
+}
+
+Result<std::shared_ptr<UpdatePartitionSpec>> Transaction::NewUpdatePartitionSpec() {
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<UpdatePartitionSpec> update_spec,
+                          UpdatePartitionSpec::Make(shared_from_this()));
+  ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_spec));
+  return update_spec;
 }
 
 Result<std::shared_ptr<UpdateProperties>> Transaction::NewUpdateProperties() {

@@ -197,6 +197,11 @@ class ICEBERG_EXPORT Transform : public util::Formattable {
   /// \brief Returns a string representation of this transform (e.g., "bucket[16]").
   std::string ToString() const override;
 
+  /// \brief Generates a partition name for the transform.
+  /// \param source_name The name of the source column.
+  /// \return A string representation of the partition name.
+  Result<std::string> GeneratePartitionName(std::string_view source_name) const;
+
   /// \brief Equality comparison.
   friend bool operator==(const Transform& lhs, const Transform& rhs) {
     return lhs.Equals(rhs);

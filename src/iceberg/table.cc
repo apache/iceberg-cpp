@@ -19,6 +19,8 @@
 
 #include "iceberg/table.h"
 
+#include <memory>
+
 #include "iceberg/catalog.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -28,6 +30,7 @@
 #include "iceberg/table_properties.h"
 #include "iceberg/table_scan.h"
 #include "iceberg/transaction.h"
+#include "iceberg/update/update_partition_spec.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/util/macros.h"
 
@@ -145,6 +148,13 @@ Result<std::shared_ptr<Transaction>> Table::NewTransaction() {
   // transaction manually.
   return Transaction::Make(shared_from_this(), Transaction::Kind::kUpdate,
                            /*auto_commit=*/false);
+}
+
+Result<std::shared_ptr<UpdatePartitionSpec>> Table::NewUpdatePartitionSpec() {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto transaction, Transaction::Make(shared_from_this(), Transaction::Kind::kUpdate,
+                                          /*auto_commit=*/true));
+  return transaction->NewUpdatePartitionSpec();
 }
 
 Result<std::shared_ptr<UpdateProperties>> Table::NewUpdateProperties() {

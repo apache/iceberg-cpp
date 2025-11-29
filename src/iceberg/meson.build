@@ -99,6 +99,7 @@ iceberg_sources = files(
     'transform_function.cc',
     'type.cc',
     'update/pending_update.cc',
+    'update/update_partition_spec.cc',
     'update/update_properties.cc',
     'update/update_sort_order.cc',
     'util/bucket_util.cc',

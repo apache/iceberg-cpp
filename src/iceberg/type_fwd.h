@@ -126,6 +126,12 @@ class BoundPredicate;
 class Expression;
 class Literal;
 class UnboundPredicate;
+class BoundReference;
+class BoundTransform;
+template <typename B>
+class UnboundTerm;
+class NamedReference;
+class UnboundTransform;
 
 /// \brief Scan.
 class DataTableScan;
@@ -177,6 +183,7 @@ class Transaction;
 
 /// \brief Update family.
 class PendingUpdate;
+class UpdatePartitionSpec;
 class UpdateProperties;
 class UpdateSortOrder;
 

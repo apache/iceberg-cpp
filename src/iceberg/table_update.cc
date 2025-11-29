@@ -72,7 +72,7 @@ void SetCurrentSchema::GenerateRequirements(TableUpdateContext& context) const {
 // AddPartitionSpec
 
 void AddPartitionSpec::ApplyTo(TableMetadataBuilder& builder) const {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  builder.AddPartitionSpec(spec_);
 }
 
 void AddPartitionSpec::GenerateRequirements(TableUpdateContext& context) const {
@@ -82,7 +82,7 @@ void AddPartitionSpec::GenerateRequirements(TableUpdateContext& context) const {
 // SetDefaultPartitionSpec
 
 void SetDefaultPartitionSpec::ApplyTo(TableMetadataBuilder& builder) const {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  builder.SetDefaultPartitionSpec(spec_id_);
 }
 
 void SetDefaultPartitionSpec::GenerateRequirements(TableUpdateContext& context) const {

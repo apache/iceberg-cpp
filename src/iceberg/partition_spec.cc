@@ -95,6 +95,11 @@ Result<std::unique_ptr<StructType>> PartitionSpec::PartitionType(
   return std::make_unique<StructType>(std::move(partition_fields));
 }
 
+bool PartitionSpec::SameSpec(const PartitionSpec& other) const {
+  return fields_ == other.fields_ &&
+         last_assigned_field_id_ == other.last_assigned_field_id_;
+}
+
 std::string PartitionSpec::ToString() const {
   std::string repr = std::format("partition_spec[spec_id<{}>,\n", spec_id_);
   for (const auto& field : fields_) {

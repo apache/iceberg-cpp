@@ -128,6 +128,10 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// \brief Create a new Transaction to commit multiple table operations at once.
   virtual Result<std::shared_ptr<Transaction>> NewTransaction();
 
+  /// \brief Create a new UpdatePartitionSpec to update the partition spec of this table
+  /// and commit the changes.
+  virtual Result<std::shared_ptr<UpdatePartitionSpec>> NewUpdatePartitionSpec();
+
   /// \brief Create a new UpdateProperties to update table properties and commit the
   /// changes.
   virtual Result<std::shared_ptr<UpdateProperties>> NewUpdateProperties();

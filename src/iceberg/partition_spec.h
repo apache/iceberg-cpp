@@ -64,6 +64,10 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \brief Get the partition type binding to the input schema.
   Result<std::unique_ptr<StructType>> PartitionType(const Schema& schema) const;
 
+  /// \brief Checks whether this partition spec is equivalent to another partition spec
+  /// while ignoring the spec id.
+  bool SameSpec(const PartitionSpec& other) const;
+
   std::string ToString() const override;
 
   int32_t last_assigned_field_id() const { return last_assigned_field_id_; }

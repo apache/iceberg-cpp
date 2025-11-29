@@ -388,6 +388,29 @@ std::string Transform::ToString() const {
   std::unreachable();
 }
 
+Result<std::string> Transform::GeneratePartitionName(std::string_view source_name) const {
+  switch (transform_type_) {
+    case TransformType::kIdentity:
+      return std::string(source_name);
+    case TransformType::kBucket:
+      // Format: sourceName_bucket_N (matching Java: sourceName + "_bucket_" + numBuckets)
+      return std::format("{}_bucket_{}", source_name, std::get<int32_t>(param_));
+    case TransformType::kTruncate:
+      // Format: sourceName_trunc_N (matching Java: sourceName + "_trunc_" + width)
+      return std::format("{}_trunc_{}", source_name, std::get<int32_t>(param_));
+    case TransformType::kYear:
+    case TransformType::kMonth:
+    case TransformType::kDay:
+    case TransformType::kHour:
+      return std::format("{}_{}", source_name, TransformTypeToString(transform_type_));
+    case TransformType::kVoid:
+      return std::format("{}_null", source_name);
+    case TransformType::kUnknown:
+      return Invalid("Cannot generate partition name for unknown transform");
+  }
+  std::unreachable();
+}
+
 TransformFunction::TransformFunction(TransformType transform_type,
                                      std::shared_ptr<Type> source_type)
     : transform_type_(transform_type), source_type_(std::move(source_type)) {}

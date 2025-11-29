@@ -56,6 +56,10 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// - CommitFailed: if the updates cannot be committed due to conflicts.
   Result<std::shared_ptr<Table>> Commit();
 
+  /// \brief Create a new UpdatePartitionSpec to update the partition spec of this table
+  /// and commit the changes.
+  Result<std::shared_ptr<UpdatePartitionSpec>> NewUpdatePartitionSpec();
+
   /// \brief Create a new UpdateProperties to update table properties and commit the
   /// changes.
   Result<std::shared_ptr<UpdateProperties>> NewUpdateProperties();

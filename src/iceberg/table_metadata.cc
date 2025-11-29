@@ -428,7 +428,8 @@ class TableMetadataBuilder::Impl {
   Result<int32_t> AddSortOrder(const SortOrder& order);
   Status SetProperties(const std::unordered_map<std::string, std::string>& updated);
   Status RemoveProperties(const std::unordered_set<std::string>& removed);
-
+  Status SetDefaultPartitionSpec(int32_t spec_id);
+  Result<int32_t> AddPartitionSpec(const PartitionSpec& spec);
   std::unique_ptr<TableMetadata> Build();
 
  private:
@@ -437,6 +438,12 @@ class TableMetadataBuilder::Impl {
   /// \param new_order The sort order to check
   /// \return The ID to use for this sort order (reused if exists, new otherwise)
   int32_t ReuseOrCreateNewSortOrderId(const SortOrder& new_order);
+
+  /// \brief Internal method to check for existing partition spec and reuse its ID or
+  /// create a new one
+  /// \param new_spec The partition spec to check
+  /// \return The ID to use for this partition spec (reused if exists, new otherwise)
+  int32_t ReuseOrCreateNewPartitionSpecId(const PartitionSpec& new_spec);
 
  private:
   // Base metadata (nullptr for new tables)
@@ -572,6 +579,58 @@ Result<int32_t> TableMetadataBuilder::Impl::AddSortOrder(const SortOrder& order)
   return new_order_id;
 }
 
+Status TableMetadataBuilder::Impl::SetDefaultPartitionSpec(int32_t spec_id) {
+  if (spec_id == -1) {
+    if (!last_added_spec_id_.has_value()) {
+      return InvalidArgument(
+          "Cannot set last added partition spec: no partition spec has been added");
+    }
+    return SetDefaultPartitionSpec(last_added_spec_id_.value());
+  }
+
+  if (spec_id == metadata_.default_spec_id) {
+    return {};
+  }
+
+  metadata_.default_spec_id = spec_id;
+
+  changes_.push_back(std::make_unique<table::SetDefaultPartitionSpec>(spec_id));
+  return {};
+}
+
+Result<int32_t> TableMetadataBuilder::Impl::AddPartitionSpec(const PartitionSpec& spec) {
+  int32_t new_spec_id = ReuseOrCreateNewPartitionSpecId(spec);
+
+  if (specs_by_id_.find(new_spec_id) != specs_by_id_.end()) {
+    // update last_added_spec_id if the spec was added in this set of changes (since it
+    // is now the last)
+    bool is_new_spec = last_added_spec_id_.has_value() &&
+                       std::ranges::find_if(changes_, [new_spec_id](const auto& change) {
+                         auto* add_spec =
+                             dynamic_cast<table::AddPartitionSpec*>(change.get());
+                         return add_spec && add_spec->spec()->spec_id() == new_spec_id;
+                       }) != changes_.cend();
+    last_added_spec_id_ = is_new_spec ? std::make_optional(new_spec_id) : std::nullopt;
+    return new_spec_id;
+  }
+
+  // Get current schema and validate the partition spec against it
+  ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata_.Schema());
+  ICEBERG_RETURN_UNEXPECTED(spec.Validate(*schema, /*allow_missing_fields=*/false));
+
+  std::shared_ptr<PartitionSpec> new_spec;
+  ICEBERG_ASSIGN_OR_RAISE(
+      new_spec,
+      PartitionSpec::Make(new_spec_id, std::vector<PartitionField>(spec.fields().begin(),
+                                                                   spec.fields().end())));
+  metadata_.partition_specs.push_back(new_spec);
+  specs_by_id_.emplace(new_spec_id, new_spec);
+
+  changes_.push_back(std::make_unique<table::AddPartitionSpec>(new_spec));
+  last_added_spec_id_ = new_spec_id;
+  return new_spec_id;
+}
+
 Status TableMetadataBuilder::Impl::SetProperties(
     const std::unordered_map<std::string, std::string>& updated) {
   // If updated is empty, return early (no-op)
@@ -653,6 +712,20 @@ int32_t TableMetadataBuilder::Impl::ReuseOrCreateNewSortOrderId(
   return new_order_id;
 }
 
+int32_t TableMetadataBuilder::Impl::ReuseOrCreateNewPartitionSpecId(
+    const PartitionSpec& new_spec) {
+  // determine the next spec id
+  int32_t new_spec_id = PartitionSpec::kInitialSpecId;
+  for (const auto& spec : metadata_.partition_specs) {
+    if (spec->SameSpec(new_spec)) {
+      return spec->spec_id();
+    } else if (new_spec_id <= spec->spec_id()) {
+      new_spec_id = spec->spec_id() + 1;
+    }
+  }
+  return new_spec_id;
+}
+
 TableMetadataBuilder::TableMetadataBuilder(int8_t format_version)
     : impl_(std::make_unique<Impl>(format_version)) {}
 
@@ -723,16 +796,19 @@ TableMetadataBuilder& TableMetadataBuilder::AddSchema(std::shared_ptr<Schema> sc
 
 TableMetadataBuilder& TableMetadataBuilder::SetDefaultPartitionSpec(
     std::shared_ptr<PartitionSpec> spec) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto spec_id, impl_->AddPartitionSpec(*spec));
+  return SetDefaultPartitionSpec(spec_id);
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetDefaultPartitionSpec(int32_t spec_id) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  ICEBERG_BUILDER_RETURN_IF_ERROR(impl_->SetDefaultPartitionSpec(spec_id));
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::AddPartitionSpec(
     std::shared_ptr<PartitionSpec> spec) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto spec_id, impl_->AddPartitionSpec(*spec));
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemovePartitionSpecs(
