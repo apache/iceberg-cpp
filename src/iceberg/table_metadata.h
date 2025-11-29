@@ -421,6 +421,23 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   /// \brief Destructor
   ~TableMetadataBuilder() override;
 
+  /// \brief Get all recorded TableUpdate changes
+  ///
+  /// This method extracts all TableUpdate objects that were automatically
+  /// recorded when modification methods were called. The changes are moved
+  /// out of the builder, so this method should only be called once.
+  ///
+  /// \return A vector of TableUpdate objects representing all changes
+  std::vector<std::unique_ptr<TableUpdate>> GetChanges();
+
+  /// \brief Get all recorded TableUpdate changes (const version for inspection)
+  ///
+  /// This method returns a view of all TableUpdate objects without moving them.
+  /// Useful for inspection before committing.
+  ///
+  /// \return A vector of const pointers to TableUpdate objects
+  std::vector<const TableUpdate*> GetChangesView() const;
+
   // Delete copy operations (use BuildFrom to create a new builder)
   TableMetadataBuilder(const TableMetadataBuilder&) = delete;
   TableMetadataBuilder& operator=(const TableMetadataBuilder&) = delete;

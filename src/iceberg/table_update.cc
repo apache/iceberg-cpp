@@ -180,8 +180,9 @@ void SetProperties::ApplyTo(TableMetadataBuilder& builder) const {
   builder.SetProperties(updated_);
 }
 
-void SetProperties::GenerateRequirements(TableUpdateContext& context) const {
-  // SetProperties doesn't generate any requirements
+Status SetProperties::GenerateRequirements(TableUpdateContext& context) const {
+  // No requirements
+  return {};
 }
 
 // RemoveProperties
@@ -190,8 +191,9 @@ void RemoveProperties::ApplyTo(TableMetadataBuilder& builder) const {
   builder.RemoveProperties(removed_);
 }
 
-void RemoveProperties::GenerateRequirements(TableUpdateContext& context) const {
-  // RemoveProperties doesn't generate any requirements
+Status RemoveProperties::GenerateRequirements(TableUpdateContext& context) const {
+  // No requirements
+  return {};
 }
 
 // SetLocation

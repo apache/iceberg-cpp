@@ -124,6 +124,9 @@ class ICEBERG_EXPORT Table {
   /// \brief Returns a FileIO to read and write table data and metadata files
   const std::shared_ptr<FileIO>& io() const;
 
+  /// \brief Return the underlying table metadata
+  const std::shared_ptr<TableMetadata>& metadata() const { return metadata_; }
+
  private:
   const TableIdentifier identifier_;
   std::shared_ptr<TableMetadata> metadata_;

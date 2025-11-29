@@ -19,6 +19,7 @@ set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
                      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>")
 set(ICEBERG_SOURCES
     arrow_c_data_guard_internal.cc
+    base_transaction.cc
     catalog/memory/in_memory_catalog.cc
     expression/aggregate.cc
     expression/binder.cc
@@ -53,6 +54,7 @@ set(ICEBERG_SOURCES
     partition_field.cc
     partition_spec.cc
     partition_summary.cc
+    pending_update.cc
     row/arrow_array_wrapper.cc
     row/manifest_wrapper.cc
     row/partition_values.cc

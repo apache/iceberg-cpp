@@ -670,4 +670,17 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Build() {
   return result;
 }
 
+std::vector<std::unique_ptr<TableUpdate>> TableMetadataBuilder::GetChanges() {
+  return std::move(impl_->changes);
+}
+
+std::vector<const TableUpdate*> TableMetadataBuilder::GetChangesView() const {
+  std::vector<const TableUpdate*> result;
+  result.reserve(impl_->changes.size());
+  for (const auto& change : impl_->changes) {
+    result.push_back(change.get());
+  }
+  return result;
+}
+
 }  // namespace iceberg
