@@ -115,6 +115,11 @@ class ICEBERG_EXPORT Table {
   /// \return a pointer to the new Transaction
   virtual std::unique_ptr<Transaction> NewTransaction() const;
 
+  /// \brief Create a new expire snapshots operation for this table
+  ///
+  /// \return a shared pointer to the new ExpireSnapshots operation
+  virtual std::shared_ptr<ExpireSnapshots> NewExpireSnapshots();
+
   /// \brief Returns a FileIO to read and write table data and metadata files
   const std::shared_ptr<FileIO>& io() const;
 

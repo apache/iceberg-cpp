@@ -88,6 +88,7 @@ iceberg_sources = files(
     'transform.cc',
     'transform_function.cc',
     'type.cc',
+    'update/expire_snapshots.cc',
     'util/bucket_util.cc',
     'util/conversions.cc',
     'util/decimal.cc',
@@ -201,6 +202,7 @@ install_headers(
 subdir('catalog')
 subdir('expression')
 subdir('row')
+subdir('update')
 subdir('util')
 
 if get_option('tests').enabled()
