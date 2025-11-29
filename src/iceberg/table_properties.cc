@@ -32,12 +32,12 @@ const std::unordered_set<std::string>& TableProperties::reserved_properties() {
 }
 
 std::unique_ptr<TableProperties> TableProperties::default_properties() {
-  return std::make_unique<TableProperties>();
+  return std::unique_ptr<TableProperties>(new TableProperties());
 }
 
 std::unique_ptr<TableProperties> TableProperties::FromMap(
     const std::unordered_map<std::string, std::string>& properties) {
-  auto table_properties = std::make_unique<TableProperties>();
+  auto table_properties = std::unique_ptr<TableProperties>(new TableProperties());
   for (const auto& [key, value] : properties) {  // NOLINT(modernize-type-traits)
     table_properties->configs_[key] = value;
   }

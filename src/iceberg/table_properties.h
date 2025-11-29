@@ -295,6 +295,9 @@ class ICEBERG_EXPORT TableProperties : public ConfigBase<TableProperties> {
   /// \return A unique pointer to a TableProperties instance
   static std::unique_ptr<TableProperties> FromMap(
       const std::unordered_map<std::string, std::string>& properties);
+
+ private:
+  TableProperties() = default;
 };
 
 }  // namespace iceberg
