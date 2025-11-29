@@ -19,7 +19,7 @@
 
 #pragma once
 
-/// \file iceberg/manifest_writer.h
+/// \file iceberg/manifest/manifest_writer.h
 /// Data writer interface for manifest files and manifest list files.
 
 #include <memory>
@@ -28,7 +28,6 @@
 
 #include "iceberg/file_writer.h"
 #include "iceberg/iceberg_export.h"
-#include "iceberg/manifest_adapter.h"
 #include "iceberg/metrics.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -183,10 +182,9 @@ class ICEBERG_EXPORT ManifestWriter {
 class ICEBERG_EXPORT ManifestListWriter {
  public:
   ManifestListWriter(std::unique_ptr<Writer> writer,
-                     std::unique_ptr<ManifestFileAdapter> adapter)
-      : writer_(std::move(writer)), adapter_(std::move(adapter)) {}
+                     std::unique_ptr<ManifestFileAdapter> adapter);
 
-  ~ManifestListWriter() = default;
+  ~ManifestListWriter();
 
   /// \brief Write manifest file to manifest list file.
   /// \param file Manifest file to write.

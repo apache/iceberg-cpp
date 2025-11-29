@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/manifest_list.h"
+#include "iceberg/manifest/manifest_list.h"
 
 #include "iceberg/schema.h"
 

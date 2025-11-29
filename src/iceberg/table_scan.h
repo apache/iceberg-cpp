@@ -23,7 +23,7 @@
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
-#include "iceberg/manifest_entry.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {

@@ -23,8 +23,8 @@
 
 #include <iceberg/result.h>
 
-#include "iceberg/manifest_entry.h"
-#include "iceberg/manifest_list.h"
+#include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/manifest/manifest_list.h"
 #include "iceberg/snapshot.h"
 
 namespace iceberg {

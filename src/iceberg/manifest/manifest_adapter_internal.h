@@ -19,7 +19,7 @@
 
 #pragma once
 
-/// \file iceberg/manifest_adapter.h
+/// \file iceberg/manifest/manifest_adapter_internal.h
 /// Base class for adapters handling v1/v2/v3/v4 manifest metadata.
 
 #include <memory>

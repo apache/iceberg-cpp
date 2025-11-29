@@ -19,7 +19,7 @@
 
 #pragma once
 
-/// \file iceberg/manifest_reader.h
+/// \file iceberg/manifest/manifest_reader.h
 /// Data reader interface for manifest files.
 
 #include <memory>

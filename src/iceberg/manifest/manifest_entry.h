@@ -19,6 +19,8 @@
 
 #pragma once
 
+/// \file iceberg/manifest/manifest_entry.h
+
 #include <cstdint>
 #include <map>
 #include <memory>

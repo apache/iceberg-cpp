@@ -17,20 +17,20 @@
  * under the License.
  */
 
-#include "iceberg/manifest_writer.h"
+#include "iceberg/manifest/manifest_writer.h"
 
 #include <optional>
 
-#include "iceberg/manifest_entry.h"
-#include "iceberg/manifest_list.h"
+#include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/manifest/manifest_list.h"
+#include "iceberg/manifest/v1_metadata_internal.h"
+#include "iceberg/manifest/v2_metadata_internal.h"
+#include "iceberg/manifest/v3_metadata_internal.h"
 #include "iceberg/partition_summary_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/util/macros.h"
-#include "iceberg/v1_metadata.h"
-#include "iceberg/v2_metadata.h"
-#include "iceberg/v3_metadata.h"
 
 namespace iceberg {
 
@@ -359,6 +359,12 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV3Writer(
   return std::make_unique<ManifestWriter>(std::move(writer), std::move(adapter),
                                           manifest_location, first_row_id);
 }
+
+ManifestListWriter::ManifestListWriter(std::unique_ptr<Writer> writer,
+                                       std::unique_ptr<ManifestFileAdapter> adapter)
+    : writer_(std::move(writer)), adapter_(std::move(adapter)) {}
+
+ManifestListWriter::~ManifestListWriter() = default;
 
 Status ManifestListWriter::Add(const ManifestFile& file) {
   if (adapter_->size() >= kBatchSize) {

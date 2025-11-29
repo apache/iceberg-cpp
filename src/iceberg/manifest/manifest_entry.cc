@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/manifest_entry.h"
+#include "iceberg/manifest/manifest_entry.h"
 
 #include <memory>
 #include <vector>

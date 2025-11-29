@@ -55,12 +55,15 @@ iceberg_sources = files(
     'file_writer.cc',
     'inheritable_metadata.cc',
     'json_internal.cc',
-    'manifest_adapter.cc',
-    'manifest_entry.cc',
-    'manifest_list.cc',
-    'manifest_reader.cc',
-    'manifest_reader_internal.cc',
-    'manifest_writer.cc',
+    'manifest/manifest_adapter.cc',
+    'manifest/manifest_entry.cc',
+    'manifest/manifest_list.cc',
+    'manifest/manifest_reader.cc',
+    'manifest/manifest_reader_internal.cc',
+    'manifest/manifest_writer.cc',
+    'manifest/v1_metadata.cc',
+    'manifest/v2_metadata.cc',
+    'manifest/v3_metadata.cc',
     'metadata_columns.cc',
     'name_mapping.cc',
     'partition_field.cc',
@@ -97,9 +100,6 @@ iceberg_sources = files(
     'util/timepoint.cc',
     'util/truncate_util.cc',
     'util/uuid.cc',
-    'v1_metadata.cc',
-    'v2_metadata.cc',
-    'v3_metadata.cc',
 )
 
 # CRoaring does not export symbols, so on Windows it must
@@ -161,11 +161,6 @@ install_headers(
         'iceberg_export.h',
         'inheritable_metadata.h',
         'location_provider.h',
-        'manifest_adapter.h',
-        'manifest_entry.h',
-        'manifest_list.h',
-        'manifest_reader.h',
-        'manifest_writer.h',
         'metadata_columns.h',
         'metrics.h',
         'name_mapping.h',
@@ -191,15 +186,13 @@ install_headers(
         'transform.h',
         'type_fwd.h',
         'type.h',
-        'v1_metadata.h',
-        'v2_metadata.h',
-        'v3_metadata.h',
     ],
     subdir: 'iceberg',
 )
 
 subdir('catalog')
 subdir('expression')
+subdir('manifest')
 subdir('row')
 subdir('util')
 

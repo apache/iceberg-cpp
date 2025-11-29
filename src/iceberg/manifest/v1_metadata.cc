@@ -17,13 +17,12 @@
  * under the License.
  */
 
-#include "iceberg/v1_metadata.h"
-
 #include <memory>
 
 #include "iceberg/json_internal.h"
-#include "iceberg/manifest_entry.h"
-#include "iceberg/manifest_list.h"
+#include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/manifest/manifest_list.h"
+#include "iceberg/manifest/v1_metadata_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/type.h"
