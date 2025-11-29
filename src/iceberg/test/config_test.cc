@@ -65,12 +65,16 @@ class TestConfig : public ConfigBase<TestConfig> {
                                                   EnumToString, StringToEnum};
   inline static const Entry<double> kDoubleConfig{"double_config", 3.14};
 
+  static std::unique_ptr<TestConfig> default_properties() {
+    return std::unique_ptr<TestConfig>(new TestConfig());
+  }
+
  private:
   TestConfig() = default;
 };
 
 TEST(ConfigTest, BasicOperations) {
-  auto config = std::unique_ptr<TestConfig>(new TestConfig());
+  auto config = TestConfig::default_properties();
 
   // Test default values
   ASSERT_EQ(config->Get(TestConfig::kStringConfig), std::string("default_value"));
