@@ -182,21 +182,21 @@ Status SetSnapshotRef::GenerateRequirements(TableUpdateContext& context) const {
 // SetProperties
 
 void SetProperties::ApplyTo(TableMetadataBuilder& builder) const {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  builder.SetProperties(updated_);
 }
 
 Status SetProperties::GenerateRequirements(TableUpdateContext& context) const {
-  return NotImplemented("SetTableProperties::GenerateRequirements not implemented");
+  return {};
 }
 
 // RemoveProperties
 
 void RemoveProperties::ApplyTo(TableMetadataBuilder& builder) const {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  builder.RemoveProperties(removed_);
 }
 
 Status RemoveProperties::GenerateRequirements(TableUpdateContext& context) const {
-  return NotImplemented("RemoveTableProperties::GenerateRequirements not implemented");
+  return {};
 }
 
 // SetLocation

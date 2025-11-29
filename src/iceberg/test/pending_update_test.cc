@@ -41,6 +41,10 @@ class MockPendingUpdate : public PendingUpdateTyped<MockSnapshot> {
     return MockSnapshot{};
   }
 
+  Status ApplyResult(TableMetadataBuilder& builder, MockSnapshot result) override {
+    return {};
+  }
+
   Status Commit() override {
     if (should_fail_commit_) {
       return CommitFailed("Mock commit failed");

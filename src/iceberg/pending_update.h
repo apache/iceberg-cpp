@@ -22,9 +22,14 @@
 /// \file iceberg/pending_update.h
 /// API for table changes using builder pattern
 
+#include <string>
+#include <unordered_map>
+#include <vector>
+
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -60,6 +65,17 @@ class ICEBERG_EXPORT PendingUpdate {
 
  protected:
   PendingUpdate() = default;
+
+  /// \brief Apply the pending changes to a TableMetadataBuilder
+  ///
+  /// This method applies the changes by calling builder's specific methods.
+  /// The builder will automatically record corresponding TableUpdate objects.
+  ///
+  /// \param builder The TableMetadataBuilder to apply changes to
+  /// \return Status::OK if the changes were applied successfully, or an error
+  virtual Status Apply(TableMetadataBuilder& builder) = 0;
+
+  friend class BaseTransaction;
 };
 
 /// \brief Template class for type-safe table metadata changes using builder pattern
@@ -89,6 +105,80 @@ class ICEBERG_EXPORT PendingUpdateTyped : public PendingUpdate {
 
  protected:
   PendingUpdateTyped() = default;
+
+  /// \brief Apply the pending changes to a TableMetadataBuilder
+  ///
+  /// Default implementation: calls Apply() to get the result, then applies it
+  /// to the builder using ApplyResult().
+  ///
+  /// \param builder The TableMetadataBuilder to apply changes to
+  /// \return Status::OK if the changes were applied successfully, or an error
+  Status Apply(TableMetadataBuilder& builder) override {
+    auto result = Apply();
+    ICEBERG_RETURN_UNEXPECTED(result);
+
+    return ApplyResult(builder, std::move(result.value()));
+  }
+
+  /// \brief Apply the result to a TableMetadataBuilder
+  ///
+  /// Subclasses must implement this method to apply the result of Apply()
+  /// to the builder.
+  ///
+  /// \param builder The TableMetadataBuilder to apply the result to
+  /// \param result The result from Apply()
+  /// \return Status::OK if the result was applied successfully, or an error
+  virtual Status ApplyResult(TableMetadataBuilder& builder, T result) = 0;
+};
+
+/// \brief Builder for updating (set/remove) table properties
+///
+/// This class provides a fluent API for setting or removing table properties within a
+/// transaction. Mutations are accumulated and applied atomically when the transaction
+/// is committed.
+struct ICEBERG_EXPORT PropertiesUpdateChanges {
+  std::unordered_map<std::string, std::string> updates;
+  std::vector<std::string> removals;
+};
+
+class ICEBERG_EXPORT PropertiesUpdate
+    : public PendingUpdateTyped<PropertiesUpdateChanges> {
+ public:
+  PropertiesUpdate() = default;
+  ~PropertiesUpdate() override = default;
+
+  PropertiesUpdate(const PropertiesUpdate&) = delete;
+  PropertiesUpdate& operator=(const PropertiesUpdate&) = delete;
+
+  /// \brief Set a property key-value pair
+  ///
+  /// \param key The property key
+  /// \param value The property value
+  /// \return Reference to this builder for method chaining
+  PropertiesUpdate& Set(std::string const& key, std::string const& value);
+
+  /// \brief Remove a property key
+  ///
+  /// \param key The property key to remove
+  /// \return Reference to this builder for method chaining
+  PropertiesUpdate& Remove(std::string const& key);
+
+  /// \brief Apply the pending changes and return the uncommitted result
+  ///
+  /// \return The pending property updates/removals, or an error
+  Result<PropertiesUpdateChanges> Apply() override;
+
+  /// \brief Apply and commit the pending changes to the table
+  ///
+  /// \return Status::OK if the commit was successful, or an error
+  Status Commit() override;
+
+ private:
+  Status ApplyResult(TableMetadataBuilder& builder,
+                     PropertiesUpdateChanges result) override;
+
+  std::unordered_map<std::string, std::string> updates_;
+  std::vector<std::string> removals_;
 };
 
 }  // namespace iceberg
