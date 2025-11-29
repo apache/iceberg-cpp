@@ -22,7 +22,6 @@
 /// \file iceberg/pending_update.h
 /// API for table changes using builder pattern
 
-#include <string>
 #include <unordered_map>
 #include <vector>
 
