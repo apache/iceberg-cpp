@@ -179,7 +179,6 @@ class PendingUpdate;
 template <typename T>
 class PendingUpdateTyped;
 class PropertiesUpdate;
-
 struct PropertiesUpdateChanges;
 
 /// ----------------------------------------------------------------------------

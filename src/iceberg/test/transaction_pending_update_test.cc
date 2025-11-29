@@ -17,34 +17,20 @@
  * under the License.
  */
 
-#include <chrono>
-#include <memory>
-#include <string>
-#include <utility>
-#include <vector>
-
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "iceberg/base_transaction.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/pending_update.h"
-#include "iceberg/snapshot.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table.h"
-#include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
-#include "iceberg/table_requirement.h"
-#include "iceberg/table_requirements.h"
 #include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
-#include "iceberg/transaction.h"
-#include "iceberg/util/macros.h"
 
 namespace iceberg {
 namespace {
-
 using ::testing::ElementsAre;
 using ::testing::NiceMock;
 
@@ -80,6 +66,7 @@ std::shared_ptr<Table> CreateTestTable(const TableIdentifier& identifier,
   return std::make_shared<Table>(identifier, metadata, "s3://bucket/table/metadata.json",
                                  nullptr, catalog);
 }
+}  // namespace
 
 TEST(TransactionPendingUpdateTest, CommitSetPropertiesUsesCatalog) {
   auto metadata = CreateBaseMetadata();
@@ -87,10 +74,9 @@ TEST(TransactionPendingUpdateTest, CommitSetPropertiesUsesCatalog) {
   auto catalog = std::make_shared<NiceMock<MockCatalog>>();
   auto table =
       CreateTestTable(identifier, std::make_shared<TableMetadata>(*metadata), catalog);
-  BaseTransaction transaction(table, catalog);
-
-  auto update_properties = transaction.UpdateProperties();
-  update_properties->Set("write.metadata.delete-after-commit.enabled", "true");
+  auto transaction = table->NewTransaction();
+  auto update_properties = transaction->UpdateProperties();
+  update_properties->Set("new-key", "new-value");
 
   EXPECT_CALL(*catalog,
               UpdateTable(::testing::Eq(identifier), ::testing::_, ::testing::_))
@@ -104,13 +90,13 @@ TEST(TransactionPendingUpdateTest, CommitSetPropertiesUsesCatalog) {
             dynamic_cast<const table::SetProperties*>(updates.front().get());
         EXPECT_NE(set_update, nullptr);
         const auto& updated = set_update->updated();
-        auto it = updated.find("write.metadata.delete-after-commit.enabled");
+        auto it = updated.find("new-key");
         EXPECT_NE(it, updated.end());
-        EXPECT_EQ("true", it->second);
+        EXPECT_EQ("new-value", it->second);
         return Result<std::unique_ptr<Table>>(std::unique_ptr<Table>());
       });
 
-  EXPECT_THAT(transaction.CommitTransaction(), IsOk());
+  EXPECT_THAT(transaction->CommitTransaction(), IsOk());
 }
 
 TEST(TransactionPendingUpdateTest, RemovePropertiesSkipsMissingKeys) {
@@ -119,9 +105,9 @@ TEST(TransactionPendingUpdateTest, RemovePropertiesSkipsMissingKeys) {
   auto catalog = std::make_shared<NiceMock<MockCatalog>>();
   auto table =
       CreateTestTable(identifier, std::make_shared<TableMetadata>(*metadata), catalog);
-  BaseTransaction transaction(table, catalog);
+  auto transaction = table->NewTransaction();
 
-  auto update_properties = transaction.UpdateProperties();
+  auto update_properties = transaction->UpdateProperties();
   update_properties->Remove("missing").Remove("existing");
 
   EXPECT_CALL(*catalog,
@@ -138,7 +124,7 @@ TEST(TransactionPendingUpdateTest, RemovePropertiesSkipsMissingKeys) {
         return Result<std::unique_ptr<Table>>(std::unique_ptr<Table>());
       });
 
-  EXPECT_THAT(transaction.CommitTransaction(), IsOk());
+  EXPECT_THAT(transaction->CommitTransaction(), IsOk());
 }
 
 TEST(TransactionPendingUpdateTest, AggregatesMultiplePendingUpdates) {
@@ -147,9 +133,9 @@ TEST(TransactionPendingUpdateTest, AggregatesMultiplePendingUpdates) {
   auto catalog = std::make_shared<NiceMock<MockCatalog>>();
   auto table =
       CreateTestTable(identifier, std::make_shared<TableMetadata>(*metadata), catalog);
-  BaseTransaction transaction(table, catalog);
+  auto transaction = table->NewTransaction();
 
-  auto update_properties = transaction.UpdateProperties();
+  auto update_properties = transaction->UpdateProperties();
   update_properties->Set("new-key", "new-value").Remove("existing");
 
   EXPECT_CALL(*catalog,
@@ -176,8 +162,7 @@ TEST(TransactionPendingUpdateTest, AggregatesMultiplePendingUpdates) {
         return Result<std::unique_ptr<Table>>(std::unique_ptr<Table>());
       });
 
-  EXPECT_THAT(transaction.CommitTransaction(), IsOk());
+  EXPECT_THAT(transaction->CommitTransaction(), IsOk());
 }
 
-}  // namespace
 }  // namespace iceberg
