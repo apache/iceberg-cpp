@@ -476,12 +476,50 @@ TableMetadataBuilder& TableMetadataBuilder::RemovePartitionStatistics(
 
 TableMetadataBuilder& TableMetadataBuilder::SetProperties(
     const std::unordered_map<std::string, std::string>& updated) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  bool has_changes = false;
+  for (const auto& [key, value] : updated) {
+    auto it = impl_->metadata.properties.find(key);
+    if (it == impl_->metadata.properties.end() || it->second != value) {
+      has_changes = true;
+      break;
+    }
+  }
+
+  if (!has_changes) {
+    return *this;
+  }
+
+  for (const auto& [key, value] : updated) {
+    impl_->metadata.properties[key] = value;
+  }
+
+  impl_->changes.push_back(std::make_unique<table::SetProperties>(
+      std::unordered_map<std::string, std::string>(updated)));
+
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveProperties(
     const std::vector<std::string>& removed) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  std::vector<std::string> actually_removed;
+  for (const auto& key : removed) {
+    if (impl_->metadata.properties.find(key) != impl_->metadata.properties.end()) {
+      actually_removed.push_back(key);
+    }
+  }
+
+  if (actually_removed.empty()) {
+    return *this;
+  }
+
+  for (const auto& key : actually_removed) {
+    impl_->metadata.properties.erase(key);
+  }
+
+  impl_->changes.push_back(
+      std::make_unique<table::RemoveProperties>(std::move(actually_removed)));
+
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetLocation(std::string_view location) {
@@ -519,6 +557,19 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Build() {
   // 4. Create and return the TableMetadata
   auto result = std::make_unique<TableMetadata>(std::move(impl_->metadata));
 
+  return result;
+}
+
+std::vector<std::unique_ptr<TableUpdate>> TableMetadataBuilder::GetChanges() {
+  return std::move(impl_->changes);
+}
+
+std::vector<const TableUpdate*> TableMetadataBuilder::GetChangesView() const {
+  std::vector<const TableUpdate*> result;
+  result.reserve(impl_->changes.size());
+  for (const auto& change : impl_->changes) {
+    result.push_back(change.get());
+  }
   return result;
 }
 

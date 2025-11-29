@@ -21,7 +21,6 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
@@ -37,7 +36,12 @@ class ICEBERG_EXPORT Transaction {
   /// \brief Return the Table that this transaction will update
   ///
   /// \return this transaction's table
-  virtual const std::shared_ptr<Table>& table() const = 0;
+  virtual const std::shared_ptr<const Table>& table() const = 0;
+
+  /// \brief Create a new update properties operation
+  ///
+  /// \return a new UpdateProperties
+  virtual std::shared_ptr<PropertiesUpdate> UpdateProperties() = 0;
 
   /// \brief Create a new append API to add files to this table
   ///
