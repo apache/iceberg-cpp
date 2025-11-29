@@ -77,6 +77,7 @@ add_iceberg_test(table_test
                  table_requirement_test.cc
                  table_requirements_test.cc
                  table_update_test.cc
+                 transaction_pending_update_test.cc
                  update_properties_test.cc)
 
 add_iceberg_test(expression_test

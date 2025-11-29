@@ -155,24 +155,24 @@ class StructLike;
 class StructLikeAccessor;
 
 class TableUpdate;
-class AssignUUID;
-class UpgradeFormatVersion;
-class AddSchema;
-class SetCurrentSchema;
-class RemoveSchemas;
 class AddPartitionSpec;
-class SetDefaultPartitionSpec;
-class RemovePartitionSpecs;
-class AddSortOrder;
-class SetDefaultSortOrder;
-class RemoveSortOrders;
+class AddSchema;
 class AddSnapshot;
+class AddSortOrder;
+class AssignUUID;
+class RemovePartitionSpecs;
+class RemoveProperties;
+class RemoveSchemas;
 class RemoveSnapshots;
 class RemoveSnapshotRef;
-class SetSnapshotRef;
-class SetProperties;
-class RemoveProperties;
+class RemoveSortOrders;
+class SetCurrentSchema;
+class SetDefaultPartitionSpec;
+class SetDefaultSortOrder;
 class SetLocation;
+class SetProperties;
+class SetSnapshotRef;
+class UpgradeFormatVersion;
 
 class TableRequirement;
 class TableMetadataBuilder;
@@ -182,6 +182,8 @@ class PendingUpdate;
 template <typename T>
 class PendingUpdateTyped;
 class UpdateProperties;
+
+struct PropertiesUpdateChanges;
 
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.

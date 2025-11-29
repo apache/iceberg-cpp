@@ -22,10 +22,15 @@
 /// \file iceberg/pending_update.h
 /// API for table changes using builder pattern
 
+#include <string>
+#include <unordered_map>
+#include <vector>
+
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/error_collector.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -67,6 +72,17 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
 
  protected:
   PendingUpdate() = default;
+
+  /// \brief Apply the pending changes to a TableMetadataBuilder
+  ///
+  /// This method applies the changes by calling builder's specific methods.
+  /// The builder will automatically record corresponding TableUpdate objects.
+  ///
+  /// \param builder The TableMetadataBuilder to apply changes to
+  /// \return Status::OK if the changes were applied successfully, or an error
+  virtual Status Apply(TableMetadataBuilder& builder) = 0;
+
+  friend class BaseTransaction;
 };
 
 }  // namespace iceberg
