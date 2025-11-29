@@ -19,6 +19,9 @@
 
 #include "iceberg/table.h"
 
+#include <algorithm>
+
+#include "iceberg/base_transaction.h"
 #include "iceberg/catalog.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
@@ -114,7 +117,7 @@ std::unique_ptr<UpdateProperties> Table::UpdateProperties() const {
 }
 
 std::unique_ptr<Transaction> Table::NewTransaction() const {
-  throw NotImplemented("Table::NewTransaction is not implemented");
+  return std::make_unique<BaseTransaction>(shared_from_this(), catalog_);
 }
 
 const std::shared_ptr<FileIO>& Table::io() const { return io_; }

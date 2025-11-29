@@ -19,8 +19,6 @@
 
 #include "iceberg/base_transaction.h"
 
-#include <utility>
-
 #include "iceberg/catalog.h"
 #include "iceberg/pending_update.h"
 #include "iceberg/table.h"
@@ -30,14 +28,14 @@
 
 namespace iceberg {
 
-BaseTransaction::BaseTransaction(std::shared_ptr<Table> table,
+BaseTransaction::BaseTransaction(std::shared_ptr<const Table> table,
                                  std::shared_ptr<Catalog> catalog)
     : table_(std::move(table)), catalog_(std::move(catalog)) {
   ICEBERG_DCHECK(table_ != nullptr, "table must not be null");
   ICEBERG_DCHECK(catalog_ != nullptr, "catalog must not be null");
 }
 
-const std::shared_ptr<Table>& BaseTransaction::table() const { return table_; }
+const std::shared_ptr<const Table>& BaseTransaction::table() const { return table_; }
 
 std::shared_ptr<PropertiesUpdate> BaseTransaction::UpdateProperties() {
   return RegisterUpdate<PropertiesUpdate>();

@@ -33,7 +33,7 @@
 namespace iceberg {
 
 /// \brief Represents an Iceberg table
-class ICEBERG_EXPORT Table {
+class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
  public:
   ~Table();
 
