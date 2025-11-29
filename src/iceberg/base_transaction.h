@@ -29,10 +29,10 @@ namespace iceberg {
 /// \brief Base class for transaction implementations
 class BaseTransaction : public Transaction {
  public:
-  BaseTransaction(std::shared_ptr<Table> table, std::shared_ptr<Catalog> catalog);
+  BaseTransaction(std::shared_ptr<const Table> table, std::shared_ptr<Catalog> catalog);
   ~BaseTransaction() override = default;
 
-  const std::shared_ptr<Table>& table() const override;
+  const std::shared_ptr<const Table>& table() const override;
 
   std::shared_ptr<PropertiesUpdate> UpdateProperties() override;
 
@@ -48,7 +48,7 @@ class BaseTransaction : public Transaction {
     return update;
   }
 
-  std::shared_ptr<Table> table_;
+  std::shared_ptr<const Table> table_;
   std::shared_ptr<Catalog> catalog_;
   std::vector<std::shared_ptr<PendingUpdate>> pending_updates_;
 };

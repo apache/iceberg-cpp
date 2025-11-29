@@ -27,10 +27,6 @@
 
 namespace iceberg {
 
-// ============================================================================
-// UpdateProperties implementation
-// ============================================================================
-
 PropertiesUpdate& PropertiesUpdate::Set(std::string const& key,
                                         std::string const& value) {
   updates_[key] = value;
