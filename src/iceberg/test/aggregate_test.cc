@@ -299,6 +299,35 @@ TEST(AggregateTest, AggregatesFromDataFileMissingMetricsReturnNull) {
   }
 }
 
+TEST(AggregateTest, AggregatesFromDataFileWithTransform) {
+  Schema schema({SchemaField::MakeOptional(1, "id", int32())});
+
+  auto truncate_id = Expressions::Truncate("id", 10);
+  auto max_bound = BindAggregate(schema, Expressions::Max(truncate_id));
+  auto min_bound = BindAggregate(schema, Expressions::Min(truncate_id));
+
+  std::vector<std::shared_ptr<BoundAggregate>> aggregates{max_bound, min_bound};
+  ICEBERG_UNWRAP_OR_FAIL(auto evaluator, AggregateEvaluator::Make(aggregates));
+
+  DataFile file;
+  file.record_count = 5;
+  file.value_counts.emplace(1, 5);
+  file.null_value_counts.emplace(1, 0);
+  ICEBERG_UNWRAP_OR_FAIL(auto lower, Literal::Int(5).Serialize());
+  ICEBERG_UNWRAP_OR_FAIL(auto upper, Literal::Int(23).Serialize());
+  file.lower_bounds.emplace(1, lower);
+  file.upper_bounds.emplace(1, upper);
+
+  ASSERT_TRUE(evaluator->Update(file).has_value());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto results, evaluator->GetResults());
+  ASSERT_EQ(results.size(), aggregates.size());
+  // Truncate width 10: max(truncate(23)) -> 20, min(truncate(5)) -> 0
+  EXPECT_EQ(std::get<int32_t>(results[0].value()), 20);
+  EXPECT_EQ(std::get<int32_t>(results[1].value()), 0);
+  EXPECT_TRUE(evaluator->AllAggregatorsValid());
+}
+
 TEST(AggregateTest, DataFileAggregatorParityWithJava) {
   Schema schema({SchemaField::MakeRequired(1, "id", int32()),
                  SchemaField::MakeOptional(2, "no_stats", int32()),

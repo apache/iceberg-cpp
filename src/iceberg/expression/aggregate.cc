@@ -21,6 +21,7 @@
 
 #include <format>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "iceberg/expression/literal.h"
@@ -38,6 +39,56 @@ std::shared_ptr<PrimitiveType> GetPrimitiveType(const BoundTerm& term) {
   ICEBERG_DCHECK(term.type()->is_primitive(), "Value aggregate term should be primitive");
   return internal::checked_pointer_cast<PrimitiveType>(term.type());
 }
+
+Result<Scalar> LiteralToScalar(const Literal& literal) {
+  if (literal.IsNull()) {
+    return Scalar{std::monostate{}};
+  }
+
+  switch (literal.type()->type_id()) {
+    case TypeId::kBoolean:
+      return Scalar{std::get<bool>(literal.value())};
+    case TypeId::kInt:
+    case TypeId::kDate:
+      return Scalar{std::get<int32_t>(literal.value())};
+    case TypeId::kLong:
+    case TypeId::kTime:
+    case TypeId::kTimestamp:
+    case TypeId::kTimestampTz:
+      return Scalar{std::get<int64_t>(literal.value())};
+    case TypeId::kFloat:
+      return Scalar{std::get<float>(literal.value())};
+    case TypeId::kDouble:
+      return Scalar{std::get<double>(literal.value())};
+    case TypeId::kString: {
+      const auto& str = std::get<std::string>(literal.value());
+      return Scalar{std::string_view(str)};
+    }
+    case TypeId::kBinary:
+    case TypeId::kFixed: {
+      const auto& bytes = std::get<std::vector<uint8_t>>(literal.value());
+      return Scalar{
+          std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size())};
+    }
+    case TypeId::kDecimal:
+      return Scalar{std::get<Decimal>(literal.value())};
+    default:
+      return NotSupported("Cannot convert literal of type {} to Scalar",
+                          literal.type()->ToString());
+  }
+}
+
+class SingleValueStructLike : public StructLike {
+ public:
+  explicit SingleValueStructLike(Literal literal) : literal_(std::move(literal)) {}
+
+  Result<Scalar> GetField(size_t /*pos*/) const override { return LiteralToScalar(literal_); }
+
+  size_t num_fields() const override { return 1; }
+
+ private:
+  Literal literal_;
+};
 
 class CountAggregator : public BoundAggregate::Aggregator {
  public:
@@ -396,9 +447,13 @@ Result<Literal> MaxAggregate::Evaluate(const DataFile& file) const {
   auto upper = GetMapValue(file.upper_bounds, field_id);
   auto ptype = GetPrimitiveType(*term());
   if (!upper.has_value()) {
-    return Literal::Null(ptype);
+    SingleValueStructLike data(Literal::Null(ptype));
+    return term()->Evaluate(data);
   }
-  return Literal::Deserialize(*upper, std::move(ptype));
+
+  ICEBERG_ASSIGN_OR_RAISE(auto literal, Literal::Deserialize(*upper, ptype));
+  SingleValueStructLike data(std::move(literal));
+  return term()->Evaluate(data);
 }
 
 std::unique_ptr<BoundAggregate::Aggregator> MaxAggregate::NewAggregator() const {
@@ -432,9 +487,13 @@ Result<Literal> MinAggregate::Evaluate(const DataFile& file) const {
   auto lower = GetMapValue(file.lower_bounds, field_id);
   auto ptype = GetPrimitiveType(*term());
   if (!lower.has_value()) {
-    return Literal::Null(ptype);
+    SingleValueStructLike data(Literal::Null(ptype));
+    return term()->Evaluate(data);
   }
-  return Literal::Deserialize(*lower, std::move(ptype));
+
+  ICEBERG_ASSIGN_OR_RAISE(auto literal, Literal::Deserialize(*lower, ptype));
+  SingleValueStructLike data(std::move(literal));
+  return term()->Evaluate(data);
 }
 
 std::unique_ptr<BoundAggregate::Aggregator> MinAggregate::NewAggregator() const {
@@ -497,8 +556,10 @@ Result<std::shared_ptr<UnboundAggregateImpl<B>>> UnboundAggregateImpl<B>::Make(
 }
 
 template class Aggregate<UnboundTerm<BoundReference>>;
+template class Aggregate<UnboundTerm<BoundTransform>>;
 template class Aggregate<BoundTerm>;
 template class UnboundAggregateImpl<BoundReference>;
+template class UnboundAggregateImpl<BoundTransform>;
 
 // -------------------- AggregateEvaluator --------------------
 
