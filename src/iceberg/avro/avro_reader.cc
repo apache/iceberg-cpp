@@ -34,6 +34,7 @@
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/avro/avro_data_util_internal.h"
+#include "iceberg/avro/avro_direct_decoder_internal.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/avro/avro_stream_internal.h"
@@ -62,8 +63,6 @@ Result<std::unique_ptr<AvroInputStream>> CreateInputStream(const ReaderOptions& 
 
 // A stateful context to keep track of the reading progress.
 struct ReadContext {
-  // The datum to reuse for reading the data.
-  std::unique_ptr<::avro::GenericDatum> datum_;
   // The arrow schema to build the record batch.
   std::shared_ptr<::arrow::Schema> arrow_schema_;
   // The builder to build the record batch.
@@ -121,8 +120,10 @@ class AvroReader::Impl {
     // TODO(gangwu): support pruning source fields
     ICEBERG_ASSIGN_OR_RAISE(projection_, Project(*read_schema_, file_schema.root(),
                                                  /*prune_source=*/false));
-    reader_ = std::make_unique<::avro::DataFileReader<::avro::GenericDatum>>(
-        std::move(base_reader), file_schema);
+
+    // Initialize the base reader with the file schema
+    base_reader->init(file_schema);
+    reader_ = std::move(base_reader);
 
     if (options.split) {
       reader_->sync(options.split->offset);
@@ -140,12 +141,15 @@ class AvroReader::Impl {
       if (split_end_ && reader_->pastSync(split_end_.value())) {
         break;
       }
-      if (!reader_->read(*context_->datum_)) {
+      if (!reader_->hasMore()) {
         break;
       }
+      reader_->decr();
+
+      // Use direct decoder instead of GenericDatum
       ICEBERG_RETURN_UNEXPECTED(
-          AppendDatumToBuilder(reader_->readerSchema().root(), *context_->datum_,
-                               projection_, *read_schema_, context_->builder_.get()));
+          DecodeAvroToBuilder(reader_->readerSchema().root(), reader_->decoder(),
+                              projection_, *read_schema_, context_->builder_.get()));
     }
 
     return ConvertBuilderToArrowArray();
@@ -194,7 +198,6 @@ class AvroReader::Impl {
  private:
   Status InitReadContext() {
     context_ = std::make_unique<ReadContext>();
-    context_->datum_ = std::make_unique<::avro::GenericDatum>(reader_->readerSchema());
 
     ArrowSchema arrow_schema;
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*read_schema_, &arrow_schema));
@@ -247,8 +250,8 @@ class AvroReader::Impl {
   std::shared_ptr<::iceberg::Schema> read_schema_;
   // The projection result to apply to the read schema.
   SchemaProjection projection_;
-  // The avro reader to read the data into a datum.
-  std::unique_ptr<::avro::DataFileReader<::avro::GenericDatum>> reader_;
+  // The avro reader base - provides direct access to decoder.
+  std::unique_ptr<::avro::DataFileReaderBase> reader_;
   // The context to keep track of the reading progress.
   std::unique_ptr<ReadContext> context_;
 };
