@@ -29,7 +29,7 @@
 
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/file_format.h"
-#include "iceberg/manifest_entry.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_scan.h"

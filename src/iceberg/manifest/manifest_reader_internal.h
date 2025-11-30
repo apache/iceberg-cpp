@@ -19,12 +19,12 @@
 
 #pragma once
 
-/// \file iceberg/internal/manifest_reader_internal.h
+/// \file iceberg/manifest/manifest_reader_internal.h
 /// Reader implementation for manifest list files and manifest files.
 
 #include "iceberg/file_reader.h"
 #include "iceberg/inheritable_metadata.h"
-#include "iceberg/manifest_reader.h"
+#include "iceberg/manifest/manifest_reader.h"
 
 namespace iceberg {
 

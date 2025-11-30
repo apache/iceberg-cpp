@@ -17,20 +17,20 @@
  * under the License.
  */
 
-#include "iceberg/manifest_writer.h"
+#include "iceberg/manifest/manifest_writer.h"
 
 #include <optional>
 
-#include "iceberg/manifest_entry.h"
-#include "iceberg/manifest_list.h"
+#include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/manifest/manifest_list.h"
+#include "iceberg/manifest/v1_metadata_internal.h"
+#include "iceberg/manifest/v2_metadata_internal.h"
+#include "iceberg/manifest/v3_metadata_internal.h"
 #include "iceberg/partition_summary_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/util/macros.h"
-#include "iceberg/v1_metadata.h"
-#include "iceberg/v2_metadata.h"
-#include "iceberg/v3_metadata.h"
 
 namespace iceberg {
 
@@ -294,8 +294,8 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV1Writer(
       auto writer,
       OpenFileWriter(manifest_location, std::move(schema), std::move(file_io),
                      adapter->metadata(), "manifest_entry"));
-  return std::make_unique<ManifestWriter>(std::move(writer), std::move(adapter),
-                                          manifest_location, std::nullopt);
+  return std::unique_ptr<ManifestWriter>(new ManifestWriter(
+      std::move(writer), std::move(adapter), manifest_location, std::nullopt));
 }
 
 Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV2Writer(
@@ -324,8 +324,8 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV2Writer(
       auto writer,
       OpenFileWriter(manifest_location, std::move(schema), std::move(file_io),
                      adapter->metadata(), "manifest_entry"));
-  return std::make_unique<ManifestWriter>(std::move(writer), std::move(adapter),
-                                          manifest_location, std::nullopt);
+  return std::unique_ptr<ManifestWriter>(new ManifestWriter(
+      std::move(writer), std::move(adapter), manifest_location, std::nullopt));
 }
 
 Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV3Writer(
@@ -356,9 +356,15 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV3Writer(
       auto writer,
       OpenFileWriter(manifest_location, std::move(schema), std::move(file_io),
                      adapter->metadata(), "manifest_entry"));
-  return std::make_unique<ManifestWriter>(std::move(writer), std::move(adapter),
-                                          manifest_location, first_row_id);
+  return std::unique_ptr<ManifestWriter>(new ManifestWriter(
+      std::move(writer), std::move(adapter), manifest_location, first_row_id));
 }
+
+ManifestListWriter::ManifestListWriter(std::unique_ptr<Writer> writer,
+                                       std::unique_ptr<ManifestFileAdapter> adapter)
+    : writer_(std::move(writer)), adapter_(std::move(adapter)) {}
+
+ManifestListWriter::~ManifestListWriter() = default;
 
 Status ManifestListWriter::Add(const ManifestFile& file) {
   if (adapter_->size() >= kBatchSize) {
@@ -400,7 +406,8 @@ Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV1Writer(
       auto writer,
       OpenFileWriter(manifest_list_location, std::move(schema), std::move(file_io),
                      adapter->metadata(), "manifest_file"));
-  return std::make_unique<ManifestListWriter>(std::move(writer), std::move(adapter));
+  return std::unique_ptr<ManifestListWriter>(
+      new ManifestListWriter(std::move(writer), std::move(adapter)));
 }
 
 Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV2Writer(
@@ -418,7 +425,8 @@ Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV2Writer(
       OpenFileWriter(manifest_list_location, std::move(schema), std::move(file_io),
                      adapter->metadata(), "manifest_file"));
 
-  return std::make_unique<ManifestListWriter>(std::move(writer), std::move(adapter));
+  return std::unique_ptr<ManifestListWriter>(
+      new ManifestListWriter(std::move(writer), std::move(adapter)));
 }
 
 Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV3Writer(
@@ -435,7 +443,8 @@ Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV3Writer(
       auto writer,
       OpenFileWriter(manifest_list_location, std::move(schema), std::move(file_io),
                      adapter->metadata(), "manifest_file"));
-  return std::make_unique<ManifestListWriter>(std::move(writer), std::move(adapter));
+  return std::unique_ptr<ManifestListWriter>(
+      new ManifestListWriter(std::move(writer), std::move(adapter)));
 }
 
 }  // namespace iceberg

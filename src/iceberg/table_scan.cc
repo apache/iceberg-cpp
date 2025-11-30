@@ -24,9 +24,9 @@
 
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/file_reader.h"
-#include "iceberg/manifest_entry.h"
-#include "iceberg/manifest_list.h"
-#include "iceberg/manifest_reader.h"
+#include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/manifest/manifest_list.h"
+#include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/snapshot.h"

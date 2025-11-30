@@ -17,11 +17,11 @@
  * under the License.
  */
 
-#include "iceberg/manifest_reader.h"
+#include "iceberg/manifest/manifest_reader.h"
 
-#include "iceberg/manifest_entry.h"
-#include "iceberg/manifest_list.h"
-#include "iceberg/manifest_reader_internal.h"
+#include "iceberg/manifest/manifest_entry.h"
+#include "iceberg/manifest/manifest_list.h"
+#include "iceberg/manifest/manifest_reader_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/type.h"

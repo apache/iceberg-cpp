@@ -20,7 +20,7 @@
 #include <memory>
 
 #include "iceberg/expression/literal.h"
-#include "iceberg/manifest_list.h"
+#include "iceberg/manifest/manifest_list.h"
 #include "iceberg/partition_summary_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/row/partition_values.h"

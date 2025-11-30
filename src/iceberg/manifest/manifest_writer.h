@@ -19,7 +19,7 @@
 
 #pragma once
 
-/// \file iceberg/manifest_writer.h
+/// \file iceberg/manifest/manifest_writer.h
 /// Data writer interface for manifest files and manifest list files.
 
 #include <memory>
@@ -28,7 +28,6 @@
 
 #include "iceberg/file_writer.h"
 #include "iceberg/iceberg_export.h"
-#include "iceberg/manifest_adapter.h"
 #include "iceberg/metrics.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -38,10 +37,6 @@ namespace iceberg {
 /// \brief Write manifest entries to a manifest file.
 class ICEBERG_EXPORT ManifestWriter {
  public:
-  ManifestWriter(std::unique_ptr<Writer> writer,
-                 std::unique_ptr<ManifestEntryAdapter> adapter,
-                 std::string_view manifest_location, std::optional<int64_t> first_row_id);
-
   ~ManifestWriter();
 
   /// \brief Write the entry that all its fields are populated correctly.
@@ -160,11 +155,17 @@ class ICEBERG_EXPORT ManifestWriter {
       std::shared_ptr<Schema> current_schema, ManifestContent content);
 
  private:
+  // Private constructor for internal use only, use the static Make*Writer methods
+  // instead.
+  ManifestWriter(std::unique_ptr<Writer> writer,
+                 std::unique_ptr<class ManifestEntryAdapter> adapter,
+                 std::string_view manifest_location, std::optional<int64_t> first_row_id);
+
   Status CheckDataFile(const DataFile& file) const;
 
   static constexpr int64_t kBatchSize = 1024;
   std::unique_ptr<Writer> writer_;
-  std::unique_ptr<ManifestEntryAdapter> adapter_;
+  std::unique_ptr<class ManifestEntryAdapter> adapter_;
   bool closed_{false};
   std::string manifest_location_;
   std::optional<int64_t> first_row_id_;
@@ -182,11 +183,7 @@ class ICEBERG_EXPORT ManifestWriter {
 /// \brief Write manifest files to a manifest list file.
 class ICEBERG_EXPORT ManifestListWriter {
  public:
-  ManifestListWriter(std::unique_ptr<Writer> writer,
-                     std::unique_ptr<ManifestFileAdapter> adapter)
-      : writer_(std::move(writer)), adapter_(std::move(adapter)) {}
-
-  ~ManifestListWriter() = default;
+  ~ManifestListWriter();
 
   /// \brief Write manifest file to manifest list file.
   /// \param file Manifest file to write.
@@ -240,9 +237,14 @@ class ICEBERG_EXPORT ManifestListWriter {
       std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io);
 
  private:
+  // Private constructor for internal use only, use the static Make*Writer methods
+  // instead.
+  ManifestListWriter(std::unique_ptr<Writer> writer,
+                     std::unique_ptr<class ManifestFileAdapter> adapter);
+
   static constexpr int64_t kBatchSize = 1024;
   std::unique_ptr<Writer> writer_;
-  std::unique_ptr<ManifestFileAdapter> adapter_;
+  std::unique_ptr<class ManifestFileAdapter> adapter_;
 };
 
 }  // namespace iceberg

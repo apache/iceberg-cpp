@@ -24,8 +24,8 @@
 #include <arrow/util/decimal.h>
 
 #include "iceberg/arrow_c_data_guard_internal.h"
-#include "iceberg/manifest_list.h"
-#include "iceberg/manifest_reader_internal.h"
+#include "iceberg/manifest/manifest_list.h"
+#include "iceberg/manifest/manifest_reader_internal.h"
 #include "iceberg/row/arrow_array_wrapper.h"
 #include "iceberg/row/manifest_wrapper.h"
 #include "iceberg/schema.h"

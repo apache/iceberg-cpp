@@ -19,7 +19,7 @@
 
 #pragma once
 
-/// \file iceberg/manifest_list.h
+/// \file iceberg/manifest/manifest_list.h
 
 #include <cstdint>
 #include <optional>

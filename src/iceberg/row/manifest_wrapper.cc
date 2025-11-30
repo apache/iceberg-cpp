@@ -19,7 +19,7 @@
 
 #include "iceberg/row/manifest_wrapper.h"
 
-#include "iceberg/manifest_reader_internal.h"
+#include "iceberg/manifest/manifest_reader_internal.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {

@@ -26,7 +26,7 @@
 #include <functional>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/manifest_list.h"
+#include "iceberg/manifest/manifest_list.h"
 #include "iceberg/row/struct_like.h"
 
 namespace iceberg {

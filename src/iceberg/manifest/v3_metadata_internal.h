@@ -19,9 +19,9 @@
 
 #pragma once
 
-/// \file iceberg/v3_metadata.h
+/// \file iceberg/manifest/v3_metadata_internal.h
 
-#include "iceberg/manifest_adapter.h"
+#include "iceberg/manifest/manifest_adapter_internal.h"
 #include "iceberg/result.h"
 
 namespace iceberg {
