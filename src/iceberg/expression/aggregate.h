@@ -157,7 +157,7 @@ class ICEBERG_EXPORT CountAggregate : public BoundAggregate {
   /// \brief Count using metrics from a data file. Nullopt if not available.
   virtual Result<std::optional<int64_t>> CountFor(const DataFile& file) const;
 
-  virtual bool HasValue(const DataFile& file) const;
+  bool HasValue(const DataFile& file) const override;
 
  protected:
   CountAggregate(Expression::Operation op, std::shared_ptr<BoundTerm> term)
