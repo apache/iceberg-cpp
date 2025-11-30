@@ -141,8 +141,6 @@ class ManifestListReader;
 class ManifestListWriter;
 class ManifestReader;
 class ManifestWriter;
-class ManifestEntryAdapter;
-class ManifestFileAdapter;
 
 struct ReaderOptions;
 struct WriterOptions;
