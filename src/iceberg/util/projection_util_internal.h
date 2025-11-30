@@ -87,18 +87,29 @@ class ProjectionUtil {
       std::string_view name, const std::shared_ptr<BoundLiteralPredicate>& predicate,
       const std::shared_ptr<TransformFunction>& func) {
     const Literal& literal = predicate->literal();
-    bool is_source_date_type = func->source_type()->type_id() == TypeId::kDate;
 
     switch (predicate->op()) {
       case Expression::Operation::kLt: {
         // adjust closed and then transform ltEq
-        ICEBERG_ASSIGN_OR_RAISE(
-            auto transformed,
-            func->Transform(is_source_date_type
-                                ? Literal::Date(std::get<T>(literal.value()) - 1)
-                                : Literal::Int(std::get<T>(literal.value()) - 1)));
-        return Expressions::Predicate(Expression::Operation::kLtEq, std::string(name),
-                                      transformed);
+        if constexpr (std::is_same_v<T, int32_t>) {
+          ICEBERG_ASSIGN_OR_RAISE(
+              auto transformed,
+              func->Transform(literal.type()->type_id() == TypeId::kDate
+                                  ? Literal::Date(std::get<T>(literal.value()) - 1)
+                                  : Literal::Int(std::get<T>(literal.value()) - 1)));
+          return Expressions::Predicate(Expression::Operation::kLtEq, std::string(name),
+                                        transformed);
+        } else {
+          ICEBERG_ASSIGN_OR_RAISE(
+              auto transformed,
+              func->Transform(
+                  literal.type()->type_id() == TypeId::kTimestamp ||
+                          literal.type()->type_id() == TypeId::kTimestampTz
+                      ? Literal::Timestamp(std::get<int64_t>(literal.value()) - 1)
+                      : Literal::Long(std::get<int64_t>(literal.value()) - 1)));
+          return Expressions::Predicate(Expression::Operation::kLtEq, std::string(name),
+                                        transformed);
+        }
       }
       case Expression::Operation::kLtEq: {
         ICEBERG_ASSIGN_OR_RAISE(auto transformed, func->Transform(literal));
@@ -107,13 +118,25 @@ class ProjectionUtil {
       }
       case Expression::Operation::kGt: {
         // adjust closed and then transform gtEq
-        ICEBERG_ASSIGN_OR_RAISE(
-            auto transformed,
-            func->Transform(is_source_date_type
-                                ? Literal::Date(std::get<T>(literal.value()) + 1)
-                                : Literal::Int(std::get<T>(literal.value()) + 1)));
-        return Expressions::Predicate(Expression::Operation::kGtEq, std::string(name),
-                                      transformed);
+        if constexpr (std::is_same_v<T, int32_t>) {
+          ICEBERG_ASSIGN_OR_RAISE(
+              auto transformed,
+              func->Transform(literal.type()->type_id() == TypeId::kDate
+                                  ? Literal::Date(std::get<T>(literal.value()) + 1)
+                                  : Literal::Int(std::get<T>(literal.value()) + 1)));
+          return Expressions::Predicate(Expression::Operation::kGtEq, std::string(name),
+                                        transformed);
+        } else {
+          ICEBERG_ASSIGN_OR_RAISE(
+              auto transformed,
+              func->Transform(
+                  literal.type()->type_id() == TypeId::kTimestamp ||
+                          literal.type()->type_id() == TypeId::kTimestampTz
+                      ? Literal::Timestamp(std::get<int64_t>(literal.value()) + 1)
+                      : Literal::Long(std::get<int64_t>(literal.value()) + 1)));
+          return Expressions::Predicate(Expression::Operation::kGtEq, std::string(name),
+                                        transformed);
+        }
       }
       case Expression::Operation::kGtEq: {
         ICEBERG_ASSIGN_OR_RAISE(auto transformed, func->Transform(literal));
