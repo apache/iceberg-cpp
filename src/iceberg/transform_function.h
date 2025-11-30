@@ -83,6 +83,9 @@ class ICEBERG_EXPORT TruncateTransform : public TransformFunction {
   /// \brief Returns the same type as source_type.
   std::shared_ptr<Type> ResultType() const override;
 
+  /// \brief Returns the width to truncate to.
+  int32_t width() const { return width_; }
+
   /// \brief Create a TruncateTransform.
   /// \param source_type Type of the input data.
   /// \param width The width to truncate to.

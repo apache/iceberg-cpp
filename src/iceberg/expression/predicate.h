@@ -27,6 +27,7 @@
 #include "iceberg/expression/expression.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/expression/term.h"
+#include "iceberg/iceberg_export.h"
 
 namespace iceberg {
 
