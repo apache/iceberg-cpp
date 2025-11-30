@@ -46,8 +46,8 @@ class ICEBERG_EXPORT Transaction {
 
   /// \brief Create a new expire snapshots operation for this transaction
   ///
-  /// \return a shared pointer to the new ExpireSnapshots operation
-  virtual std::shared_ptr<ExpireSnapshots> NewExpireSnapshots() = 0;
+  /// \return a unique pointer to the new ExpireSnapshots operation
+  virtual std::unique_ptr<ExpireSnapshots> NewExpireSnapshots() = 0;
 
   /// \brief Apply the pending changes from all actions and commit
   ///

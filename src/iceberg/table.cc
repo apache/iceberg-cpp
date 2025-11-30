@@ -115,8 +115,8 @@ std::unique_ptr<Transaction> Table::NewTransaction() const {
   throw NotImplemented("Table::NewTransaction is not implemented");
 }
 
-std::shared_ptr<iceberg::ExpireSnapshots> Table::NewExpireSnapshots() {
-  return std::make_shared<iceberg::ExpireSnapshots>(this);
+std::unique_ptr<iceberg::ExpireSnapshots> Table::NewExpireSnapshots() {
+  return std::make_unique<iceberg::ExpireSnapshots>(this);
 }
 
 const std::shared_ptr<FileIO>& Table::io() const { return io_; }
