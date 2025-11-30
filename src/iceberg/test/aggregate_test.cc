@@ -383,38 +383,38 @@ TEST(AggregateTest, DataFileAggregatorParityWithJava) {
   missing_all_optional_stats.file_path = "file_null_stats.avro";
   missing_all_optional_stats.record_count = 20;
 
-  auto run_case =
-      [&](const std::vector<std::shared_ptr<Expression>>& exprs,
-          const std::vector<DataFile>& files,
-          const std::vector<std::optional<Scalar>>& expected, bool expect_all_valid) {
-        std::vector<std::shared_ptr<BoundAggregate>> aggregates;
-        aggregates.reserve(exprs.size());
-        for (const auto& e : exprs) {
-          aggregates.emplace_back(BindAggregate(schema, e));
+  auto run_case = [&](const std::vector<std::shared_ptr<Expression>>& exprs,
+                      const std::vector<DataFile>& files,
+                      const std::vector<std::optional<Scalar>>& expected,
+                      bool expect_all_valid) {
+    std::vector<std::shared_ptr<BoundAggregate>> aggregates;
+    aggregates.reserve(exprs.size());
+    for (const auto& e : exprs) {
+      aggregates.emplace_back(BindAggregate(schema, e));
+    }
+    ICEBERG_UNWRAP_OR_FAIL(auto evaluator, AggregateEvaluator::Make(aggregates));
+    for (const auto& f : files) {
+      ASSERT_TRUE(evaluator->Update(f).has_value());
+    }
+    EXPECT_EQ(evaluator->AllAggregatorsValid(), expect_all_valid);
+    ICEBERG_UNWRAP_OR_FAIL(auto results, evaluator->GetResults());
+    ASSERT_EQ(results.size(), expected.size());
+    for (size_t i = 0; i < expected.size(); ++i) {
+      if (!expected[i].has_value()) {
+        EXPECT_TRUE(results[i].IsNull());
+      } else {
+        const auto& exp = *expected[i];
+        const auto& res = results[i].value();
+        if (std::holds_alternative<int32_t>(exp)) {
+          EXPECT_EQ(std::get<int32_t>(res), std::get<int32_t>(exp));
+        } else if (std::holds_alternative<int64_t>(exp)) {
+          EXPECT_EQ(std::get<int64_t>(res), std::get<int64_t>(exp));
+        } else {
+          FAIL() << "Unexpected expected type";
         }
-        ICEBERG_UNWRAP_OR_FAIL(auto evaluator, AggregateEvaluator::Make(aggregates));
-        for (const auto& f : files) {
-          ASSERT_TRUE(evaluator->Update(f).has_value());
-        }
-        EXPECT_EQ(evaluator->AllAggregatorsValid(), expect_all_valid);
-        ICEBERG_UNWRAP_OR_FAIL(auto results, evaluator->GetResults());
-        ASSERT_EQ(results.size(), expected.size());
-        for (size_t i = 0; i < expected.size(); ++i) {
-          if (!expected[i].has_value()) {
-            EXPECT_TRUE(results[i].IsNull());
-          } else {
-            const auto& exp = *expected[i];
-            const auto& res = results[i].value();
-            if (std::holds_alternative<int32_t>(exp)) {
-              EXPECT_EQ(std::get<int32_t>(res), std::get<int32_t>(exp));
-            } else if (std::holds_alternative<int64_t>(exp)) {
-              EXPECT_EQ(std::get<int64_t>(res), std::get<int64_t>(exp));
-            } else {
-              FAIL() << "Unexpected expected type";
-            }
-          }
-        }
-      };
+      }
+    }
+  };
 
   // testIntAggregate
   run_case({Expressions::CountStar(), Expressions::Count("id"),
@@ -450,8 +450,8 @@ TEST(AggregateTest, DataFileAggregatorParityWithJava) {
            /*expect_all_valid=*/false);
 
   // testIntAggregateAllMissingStats -> id missing optional stats
-  run_case({Expressions::CountStar(), Expressions::Count("id"), Expressions::CountNull("id"),
-            Expressions::Max("id"), Expressions::Min("id")},
+  run_case({Expressions::CountStar(), Expressions::Count("id"),
+            Expressions::CountNull("id"), Expressions::Max("id"), Expressions::Min("id")},
            {missing_all_optional_stats},
            {Scalar{int64_t{20}}, std::nullopt, std::nullopt, std::nullopt, std::nullopt},
            /*expect_all_valid=*/false);

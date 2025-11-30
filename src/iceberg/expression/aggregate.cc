@@ -67,8 +67,8 @@ Result<Scalar> LiteralToScalar(const Literal& literal) {
     case TypeId::kBinary:
     case TypeId::kFixed: {
       const auto& bytes = std::get<std::vector<uint8_t>>(literal.value());
-      return Scalar{std::string_view(reinterpret_cast<const char*>(bytes.data()),
-                                     bytes.size())};
+      return Scalar{
+          std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size())};
     }
     case TypeId::kDecimal:
       return Scalar{std::get<Decimal>(literal.value())};
@@ -399,8 +399,7 @@ Result<int64_t> CountNullAggregate::CountFor(const StructLike& data) const {
       [](const auto& val) { return val.IsNull() ? 1 : 0; });
 }
 
-Result<std::optional<int64_t>> CountNullAggregate::CountFor(
-    const DataFile& file) const {
+Result<std::optional<int64_t>> CountNullAggregate::CountFor(const DataFile& file) const {
   auto field_id = GetFieldId(term());
   auto null_count = GetMapValue(file.null_value_counts, field_id);
   if (!null_count.has_value()) {
@@ -469,8 +468,7 @@ bool MaxAggregate::HasValue(const DataFile& file) const {
   bool has_bound = HasMapKey(file.upper_bounds, field_id);
   auto value_count = GetMapValue(file.value_counts, field_id);
   auto null_count = GetMapValue(file.null_value_counts, field_id);
-  bool all_null = value_count.has_value() && *value_count > 0 &&
-                  null_count.has_value() &&
+  bool all_null = value_count.has_value() && *value_count > 0 && null_count.has_value() &&
                   null_count.value() == value_count.value();
   return has_bound || all_null;
 }
@@ -509,8 +507,7 @@ bool MinAggregate::HasValue(const DataFile& file) const {
   bool has_bound = HasMapKey(file.lower_bounds, field_id);
   auto value_count = GetMapValue(file.value_counts, field_id);
   auto null_count = GetMapValue(file.null_value_counts, field_id);
-  bool all_null = value_count.has_value() && *value_count > 0 &&
-                  null_count.has_value() &&
+  bool all_null = value_count.has_value() && *value_count > 0 && null_count.has_value() &&
                   null_count.value() == value_count.value();
   return has_bound || all_null;
 }
