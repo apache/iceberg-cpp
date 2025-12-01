@@ -123,6 +123,9 @@ class Uuid;
 class Expression;
 class Literal;
 
+class BoundPredicate;
+class UnboundPredicate;
+
 class DataTableScan;
 class FileScanTask;
 class ScanTask;
@@ -160,9 +163,6 @@ class TableUpdateContext;
 class PendingUpdate;
 template <typename T>
 class PendingUpdateTyped;
-
-class BoundPredicate;
-class UnboundPredicate;
 
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.
