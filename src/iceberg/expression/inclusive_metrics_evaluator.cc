@@ -313,7 +313,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
       return kRowsMightMatch;
     }
     const auto& lower = lower_result.value();
-    auto lower_str = get<std::string>(lower.value());
+    const auto& lower_str = get<std::string>(lower.value());
     // truncate lower bound so that its length in bytes is not greater than the length of
     // prefix
     int length = std::min(prefix.size(), lower_str.size());
@@ -327,7 +327,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
       return kRowsMightMatch;
     }
     const auto& upper = upper_result.value();
-    auto upper_str = get<std::string>(upper.value());
+    const auto& upper_str = get<std::string>(upper.value());
     // truncate upper bound so that its length in bytes is not greater than the length of
     // prefix
     length = std::min(prefix.size(), upper_str.size());
@@ -363,8 +363,8 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     }
     const auto& lower = lower_result.value();
     const auto& upper = upper_result.value();
-    auto lower_str = get<std::string>(lower.value());
-    auto upper_str = get<std::string>(upper.value());
+    const auto& lower_str = get<std::string>(lower.value());
+    const auto& upper_str = get<std::string>(upper.value());
 
     // if lower is shorter than the prefix then lower doesn't start with the prefix
     if (lower_str.size() < prefix.size()) {
