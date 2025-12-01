@@ -73,33 +73,9 @@ class ICEBERG_EXPORT PendingUpdate {
 /// Apply() can be used to validate and inspect the uncommitted changes before
 /// committing. Commit() applies the changes and commits them to the table.
 ///
-/// Error Collection Pattern:
-/// Builder methods in subclasses should use AddError() to collect validation
-/// errors instead of returning immediately. The accumulated errors will be
-/// returned by Apply() or Commit() when they are called. This allows users
-/// to see all validation errors at once rather than fixing them one by one.
-///
-/// Example usage in a subclass:
-/// \code
-///   MyUpdate& SetProperty(std::string_view key, std::string_view value) {
-///     if (key.empty()) {
-///       AddError(ErrorKind::kInvalidArgument, "Property key cannot be empty");
-///       return *this;
-///     }
-///     // ... continue with normal logic
-///     return *this;
-///   }
-///
-///   Result<T> Apply() override {
-///     // Check for accumulated errors first
-///     ICEBERG_RETURN_IF_ERROR(CheckErrors());
-///     // ... proceed with apply logic
-///   }
-/// \endcode
-///
 /// \tparam T The type of result returned by Apply()
 template <typename T>
-class ICEBERG_EXPORT PendingUpdateTyped : public PendingUpdate {
+class ICEBERG_EXPORT PendingUpdateTyped : public PendingUpdate, public ErrorCollector {
  public:
   ~PendingUpdateTyped() override = default;
 
@@ -114,49 +90,6 @@ class ICEBERG_EXPORT PendingUpdateTyped : public PendingUpdate {
 
  protected:
   PendingUpdateTyped() = default;
-
-  /// \brief Add a validation error to be returned later
-  ///
-  /// Errors are accumulated and will be returned by Apply() or Commit().
-  /// This allows builder methods to continue and collect all errors rather
-  /// than failing fast on the first error.
-  ///
-  /// \param kind The kind of error
-  /// \param message The error message
-  void AddError(ErrorKind kind, std::string message) {
-    error_collector_.AddError(kind, std::move(message));
-  }
-
-  /// \brief Add an existing error object to be returned later
-  ///
-  /// Useful when propagating errors from other components.
-  ///
-  /// \param err The error to add
-  void AddError(Error err) { error_collector_.AddError(std::move(err)); }
-
-  /// \brief Check if any errors have been collected
-  ///
-  /// \return true if there are accumulated errors
-  bool HasErrors() const { return error_collector_.HasErrors(); }
-
-  /// \brief Check for accumulated errors and return them if any exist
-  ///
-  /// This should be called at the beginning of Apply() or Commit() to
-  /// return all accumulated validation errors.
-  ///
-  /// \return Status::OK if no errors, or a ValidationFailed error with
-  ///         all accumulated error messages
-  Status CheckErrors() const { return error_collector_.CheckErrors(); }
-
-  /// \brief Clear all accumulated errors
-  ///
-  /// This can be useful for resetting the error state in tests or
-  /// when reusing a builder instance.
-  void ClearErrors() { error_collector_.ClearErrors(); }
-
- private:
-  // Error collection (since builder methods return *this and cannot throw)
-  ErrorCollector error_collector_;
 };
 
 }  // namespace iceberg

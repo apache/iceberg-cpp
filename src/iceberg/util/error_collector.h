@@ -20,74 +20,87 @@
 #pragma once
 
 /// \file iceberg/util/error_collector.h
-/// Utility for collecting validation errors in builder patterns
+/// Base class for collecting validation errors in builder patterns
 
 #include <string>
 #include <vector>
 
+#include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 
 namespace iceberg {
 
-/// \brief Utility class for collecting validation errors in builder patterns
+/// \brief Base class for collecting validation errors in builder patterns
 ///
 /// This class provides error accumulation functionality for builders that
 /// cannot throw exceptions. Builder methods can call AddError() to accumulate
 /// validation errors, and CheckErrors() returns all errors at once.
 ///
-/// This allows users to see all validation errors at once rather than fixing
-/// them one by one (fail-slow instead of fail-fast).
-///
 /// Example usage:
 /// \code
-///   class MyBuilder {
-///    protected:
-///     ErrorCollector errors_;
-///
+///   class MyBuilder : public ErrorCollectorBase {
+///    public:
 ///     MyBuilder& SetValue(int val) {
 ///       if (val < 0) {
-///         errors_.AddError(ErrorKind::kInvalidArgument, "Value must be non-negative");
-///         return *this;
+///         return AddError(ErrorKind::kInvalidArgument, "Value must be non-negative");
 ///       }
 ///       value_ = val;
 ///       return *this;
 ///     }
 ///
 ///     Result<MyObject> Build() {
-///       ICEBERG_RETURN_UNEXPECTED(errors_.CheckErrors());
+///       ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 ///       return MyObject{value_};
 ///     }
+///
+///    private:
+///     int value_ = 0;
 ///   };
 /// \endcode
-class ErrorCollector {
+class ICEBERG_EXPORT ErrorCollector {
  public:
   ErrorCollector() = default;
+  virtual ~ErrorCollector() = default;
 
-  /// \brief Add a validation error
+  ErrorCollector(ErrorCollector&&) = default;
+  ErrorCollector& operator=(ErrorCollector&&) = default;
+
+  ErrorCollector(const ErrorCollector&) = default;
+  ErrorCollector& operator=(const ErrorCollector&) = default;
+
+  /// \brief Add a specific error and return reference to derived class
   ///
+  /// \param self Deduced reference to the derived class instance
   /// \param kind The kind of error
   /// \param message The error message
-  void AddError(ErrorKind kind, std::string message) {
-    errors_.emplace_back(kind, std::move(message));
+  /// \return Reference to the derived class for method chaining
+  auto& AddError(this auto& self, ErrorKind kind, std::string message) {
+    self.errors_.emplace_back(kind, std::move(message));
+    return self;
   }
 
-  /// \brief Add an existing error object
+  /// \brief Add an existing error object and return reference to derived class
   ///
   /// Useful when propagating errors from other components or reusing
   /// error objects without deconstructing and reconstructing them.
   ///
+  /// \param self Deduced reference to the derived class instance
   /// \param err The error to add
-  void AddError(Error err) { errors_.push_back(std::move(err)); }
+  /// \return Reference to the derived class for method chaining
+  auto& AddError(this auto& self, Error err) {
+    self.errors_.push_back(std::move(err));
+    return self;
+  }
 
   /// \brief Check if any errors have been collected
   ///
   /// \return true if there are accumulated errors
-  bool HasErrors() const { return !errors_.empty(); }
+  [[nodiscard]] bool HasErrors() const { return !errors_.empty(); }
 
   /// \brief Get the number of errors collected
   ///
   /// \return The count of accumulated errors
-  size_t ErrorCount() const { return errors_.size(); }
+  [[nodiscard]] size_t ErrorCount() const { return errors_.size(); }
 
   /// \brief Check for accumulated errors and return them if any exist
   ///
@@ -97,7 +110,7 @@ class ErrorCollector {
   ///
   /// \return Status::OK if no errors, or a ValidationFailed error with
   ///         all accumulated error messages
-  Status CheckErrors() const {
+  [[nodiscard]] Status CheckErrors() const {
     if (!errors_.empty()) {
       std::string error_msg = "Validation failed due to the following errors:\n";
       for (const auto& [kind, message] : errors_) {
@@ -117,9 +130,9 @@ class ErrorCollector {
   /// \brief Get read-only access to all collected errors
   ///
   /// \return A const reference to the vector of errors
-  const std::vector<Error>& Errors() const { return errors_; }
+  [[nodiscard]] const std::vector<Error>& Errors() const { return errors_; }
 
- private:
+ protected:
   std::vector<Error> errors_;
 };
 

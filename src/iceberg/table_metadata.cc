@@ -36,7 +36,6 @@
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_update.h"
-#include "iceberg/util/error_collector.h"
 #include "iceberg/util/gzip_internal.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/uuid.h"
@@ -276,9 +275,6 @@ struct TableMetadataBuilder::Impl {
   // Change tracking
   std::vector<std::unique_ptr<TableUpdate>> changes;
 
-  // Error collection (since methods return *this and cannot throw)
-  ErrorCollector error_collector;
-
   // Metadata location tracking
   std::optional<std::string> metadata_location;
   std::optional<std::string> previous_metadata_location;
@@ -349,9 +345,7 @@ TableMetadataBuilder& TableMetadataBuilder::AssignUUID(std::string_view uuid) {
 
   // Validation: UUID cannot be empty
   if (uuid_str.empty()) {
-    impl_->error_collector.AddError(ErrorKind::kInvalidArgument,
-                                    "Cannot assign empty UUID");
-    return *this;
+    return AddError(ErrorKind::kInvalidArgument, "Cannot assign empty UUID");
   }
 
   // Check if UUID is already set to the same value (no-op)
@@ -453,7 +447,7 @@ TableMetadataBuilder& TableMetadataBuilder::RemoveSnapshots(
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-TableMetadataBuilder& TableMetadataBuilder::suppressHistoricalSnapshots() {
+TableMetadataBuilder& TableMetadataBuilder::SuppressHistoricalSnapshots() {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
@@ -501,7 +495,7 @@ TableMetadataBuilder& TableMetadataBuilder::RemoveEncryptionKey(std::string_view
 
 Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Build() {
   // 1. Check for accumulated errors
-  ICEBERG_RETURN_UNEXPECTED(impl_->error_collector.CheckErrors());
+  ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
   // 2. Validate metadata consistency through TableMetadata#Validate
 

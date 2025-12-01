@@ -23,6 +23,7 @@ install_headers(
         'conversions.h',
         'decimal.h',
         'endian.h',
+        'error_collector.h',
         'formattable.h',
         'formatter.h',
         'int128.h',
