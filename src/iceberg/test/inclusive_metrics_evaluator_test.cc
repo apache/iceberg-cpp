@@ -84,7 +84,7 @@ class InclusiveMetricsEvaluatorTest : public ::testing::Test {
     auto data_file = std::make_shared<DataFile>();
     data_file->file_path = "test_path";
     data_file->file_format = FileFormatType::kParquet;
-    data_file->partition.emplace_back(Literal::String(partition));
+    data_file->partition.AddValue(Literal::String(partition));
     data_file->record_count = record_count;
     data_file->file_size_in_bytes = file_size_in_bytes;
     data_file->column_sizes = {};
