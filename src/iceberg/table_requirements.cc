@@ -19,7 +19,10 @@
 
 #include "iceberg/table_requirements.h"
 
+#include <memory>
+
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_requirement.h"
 #include "iceberg/table_update.h"
 
 namespace iceberg {
@@ -34,19 +37,34 @@ Result<std::vector<std::unique_ptr<TableRequirement>>> TableUpdateContext::Build
 
 Result<std::vector<std::unique_ptr<TableRequirement>>> TableRequirements::ForCreateTable(
     const std::vector<std::unique_ptr<TableUpdate>>& table_updates) {
-  return NotImplemented("TableRequirements::ForCreateTable not implemented");
+  TableUpdateContext context(nullptr, false);
+  context.AddRequirement(std::make_unique<table::AssertDoesNotExist>());
+  for (const auto& update : table_updates) {
+    ICEBERG_RETURN_UNEXPECTED(update->GenerateRequirements(context));
+  }
+  return context.Build();
 }
 
 Result<std::vector<std::unique_ptr<TableRequirement>>> TableRequirements::ForReplaceTable(
     const TableMetadata& base,
     const std::vector<std::unique_ptr<TableUpdate>>& table_updates) {
-  return NotImplemented("TableRequirements::ForReplaceTable not implemented");
+  TableUpdateContext context(&base, true);
+  context.AddRequirement(std::make_unique<table::AssertUUID>(base.table_uuid));
+  for (const auto& update : table_updates) {
+    ICEBERG_RETURN_UNEXPECTED(update->GenerateRequirements(context));
+  }
+  return context.Build();
 }
 
 Result<std::vector<std::unique_ptr<TableRequirement>>> TableRequirements::ForUpdateTable(
     const TableMetadata& base,
     const std::vector<std::unique_ptr<TableUpdate>>& table_updates) {
-  return NotImplemented("TableRequirements::ForUpdateTable not implemented");
+  TableUpdateContext context(&base, false);
+  context.AddRequirement(std::make_unique<table::AssertUUID>(base.table_uuid));
+  for (const auto& update : table_updates) {
+    ICEBERG_RETURN_UNEXPECTED(update->GenerateRequirements(context));
+  }
+  return context.Build();
 }
 
 }  // namespace iceberg
