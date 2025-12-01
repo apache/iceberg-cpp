@@ -246,7 +246,7 @@ bool Transform::SatisfiesOrderOf(const Transform& other) const {
   std::unreachable();
 }
 
-Result<std::shared_ptr<UnboundPredicate>> Transform::Project(
+Result<std::unique_ptr<UnboundPredicate>> Transform::Project(
     std::string_view name, const std::shared_ptr<BoundPredicate>& predicate) {
   switch (transform_type_) {
     case TransformType::kIdentity:

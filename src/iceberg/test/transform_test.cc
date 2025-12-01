@@ -964,7 +964,8 @@ TEST_F(TransformProjectTest, IdentityProjectEquality) {
   EXPECT_EQ(projected->op(), Expression::Operation::kEq);
 
   auto unbound_projected =
-      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(projected);
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+          std::move(projected));
   ASSERT_NE(unbound_projected, nullptr);
   EXPECT_EQ(unbound_projected->op(), Expression::Operation::kEq);
   EXPECT_EQ(unbound_projected->literals().size(), 1);
@@ -1028,7 +1029,8 @@ TEST_F(TransformProjectTest, IdentityProjectSet) {
   ASSERT_NE(projected_in, nullptr);
   EXPECT_EQ(projected_in->op(), Expression::Operation::kIn);
   auto unbound_projected =
-      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(projected_in);
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+          std::move(projected_in));
   ASSERT_NE(unbound_projected, nullptr);
   EXPECT_EQ(unbound_projected->op(), Expression::Operation::kIn);
   EXPECT_EQ(unbound_projected->literals().size(), 3);
@@ -1054,7 +1056,8 @@ TEST_F(TransformProjectTest, BucketProjectEquality) {
   EXPECT_EQ(projected->op(), Expression::Operation::kEq);
 
   auto unbound_projected =
-      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(projected);
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+          std::move(projected));
   ASSERT_NE(unbound_projected, nullptr);
   EXPECT_EQ(unbound_projected->op(), Expression::Operation::kEq);
   EXPECT_EQ(unbound_projected->literals().size(), 1);
@@ -1084,7 +1087,8 @@ TEST_F(TransformProjectTest, BucketProjectWithMatchingTransformedChild) {
   ASSERT_NE(projected, nullptr);
   EXPECT_EQ(projected->op(), Expression::Operation::kEq);
   auto unbound_projected =
-      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(projected);
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+          std::move(projected));
   ASSERT_NE(unbound_projected, nullptr);
   EXPECT_EQ(unbound_projected->op(), Expression::Operation::kEq);
   EXPECT_EQ(unbound_projected->literals().size(), 1);
@@ -1152,7 +1156,8 @@ TEST_F(TransformProjectTest, TruncateProjectIntEquality) {
   EXPECT_EQ(projected->op(), Expression::Operation::kEq);
 
   auto unbound_projected =
-      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(projected);
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+          std::move(projected));
   ASSERT_NE(unbound_projected, nullptr);
   EXPECT_EQ(unbound_projected->op(), Expression::Operation::kEq);
   EXPECT_EQ(unbound_projected->literals().size(), 1);
@@ -1189,7 +1194,8 @@ TEST_F(TransformProjectTest, TruncateProjectIntGreaterThan) {
   EXPECT_EQ(projected->op(), Expression::Operation::kGtEq);
 
   auto unbound_projected =
-      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(projected);
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+          std::move(projected));
   ASSERT_NE(unbound_projected, nullptr);
   EXPECT_EQ(unbound_projected->op(), Expression::Operation::kGtEq);
   EXPECT_EQ(unbound_projected->literals().size(), 1);
@@ -1210,7 +1216,8 @@ TEST_F(TransformProjectTest, TruncateProjectStringEquality) {
   EXPECT_EQ(projected->op(), Expression::Operation::kEq);
 
   auto unbound_projected =
-      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(projected);
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+          std::move(projected));
   ASSERT_NE(unbound_projected, nullptr);
   EXPECT_EQ(unbound_projected->op(), Expression::Operation::kEq);
   EXPECT_EQ(unbound_projected->literals().size(), 1);
@@ -1235,7 +1242,7 @@ TEST_F(TransformProjectTest, TruncateProjectStringStartsWith) {
 
   auto unbound_projected_short =
       internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
-          projected_short);
+          std::move(projected_short));
   ASSERT_NE(unbound_projected_short, nullptr);
   EXPECT_EQ(unbound_projected_short->op(), Expression::Operation::kStartsWith);
   EXPECT_EQ(unbound_projected_short->literals().size(), 1);
@@ -1256,7 +1263,7 @@ TEST_F(TransformProjectTest, TruncateProjectStringStartsWith) {
 
   auto unbound_projected_equal =
       internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
-          projected_equal);
+          std::move(projected_equal));
   ASSERT_NE(unbound_projected_equal, nullptr);
   EXPECT_EQ(unbound_projected_equal->op(), Expression::Operation::kEq);
   EXPECT_EQ(unbound_projected_equal->literals().size(), 1);

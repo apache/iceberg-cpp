@@ -39,7 +39,7 @@ namespace iceberg {
 
 class ProjectionUtil {
  private:
-  static Result<std::shared_ptr<UnboundPredicate>> TransformSet(
+  static Result<std::unique_ptr<UnboundPredicate>> TransformSet(
       std::string_view name, const std::shared_ptr<BoundSetPredicate>& predicate,
       const std::shared_ptr<TransformFunction>& func) {
     std::vector<Literal> transformed;
@@ -57,7 +57,7 @@ class ProjectionUtil {
 
   // General transform for all literal predicates.  This is used as a fallback for special
   // cases that are not handled by the other transform functions.
-  static Result<std::shared_ptr<UnboundPredicate>> GenericTransform(
+  static Result<std::unique_ptr<UnboundPredicate>> GenericTransform(
       std::unique_ptr<NamedReference> ref,
       const std::shared_ptr<BoundLiteralPredicate>& predicate,
       const std::shared_ptr<TransformFunction>& func) {
@@ -88,7 +88,7 @@ class ProjectionUtil {
     }
   }
 
-  static Result<std::shared_ptr<UnboundPredicate>> TruncateByteArray(
+  static Result<std::unique_ptr<UnboundPredicate>> TruncateByteArray(
       std::string_view name, const std::shared_ptr<BoundLiteralPredicate>& predicate,
       const std::shared_ptr<TransformFunction>& func) {
     ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
@@ -107,7 +107,7 @@ class ProjectionUtil {
 
   template <typename T>
     requires std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t>
-  static Result<std::shared_ptr<UnboundPredicate>> TruncateInteger(
+  static Result<std::unique_ptr<UnboundPredicate>> TruncateInteger(
       std::string_view name, const std::shared_ptr<BoundLiteralPredicate>& predicate,
       const std::shared_ptr<TransformFunction>& func) {
     const Literal& literal = predicate->literal();
@@ -159,7 +159,7 @@ class ProjectionUtil {
     }
   }
 
-  static Result<std::shared_ptr<UnboundPredicate>> TransformTemporal(
+  static Result<std::unique_ptr<UnboundPredicate>> TransformTemporal(
       std::string_view name, const std::shared_ptr<BoundLiteralPredicate>& predicate,
       const std::shared_ptr<TransformFunction>& func) {
     const Literal& literal = predicate->literal();
@@ -251,7 +251,7 @@ class ProjectionUtil {
     }
   }
 
-  static Result<std::shared_ptr<UnboundPredicate>> TruncateDecimal(
+  static Result<std::unique_ptr<UnboundPredicate>> TruncateDecimal(
       std::string_view name, const std::shared_ptr<BoundLiteralPredicate>& predicate,
       const std::shared_ptr<TransformFunction>& func) {
     const Literal& boundary = predicate->literal();
@@ -288,7 +288,7 @@ class ProjectionUtil {
     }
   }
 
-  static Result<std::shared_ptr<UnboundPredicate>> TruncateStringLiteral(
+  static Result<std::unique_ptr<UnboundPredicate>> TruncateStringLiteral(
       std::string_view name, const std::shared_ptr<BoundLiteralPredicate>& predicate,
       const std::shared_ptr<TransformFunction>& func) {
     const auto op = predicate->op();
@@ -337,8 +337,8 @@ class ProjectionUtil {
   // Fixes an inclusive projection to account for incorrectly transformed values.
   // align with Java implementation:
   // https://github.com/apache/iceberg/blob/main/api/src/main/java/org/apache/iceberg/transforms/ProjectionUtil.java#L275
-  static Result<std::shared_ptr<UnboundPredicate>> FixInclusiveTimeProjection(
-      const std::shared_ptr<UnboundPredicateImpl<BoundReference>>& projected) {
+  static Result<std::unique_ptr<UnboundPredicate>> FixInclusiveTimeProjection(
+      std::unique_ptr<UnboundPredicateImpl<BoundReference>> projected) {
     if (projected == nullptr) {
       return nullptr;
     }
@@ -382,7 +382,7 @@ class ProjectionUtil {
       case Expression::Operation::kGt:
       case Expression::Operation::kGtEq:
         // incorrect projected values are already greater than the bound for GT, GT_EQ
-        return projected;
+        return std::move(projected);
 
       case Expression::Operation::kEq: {
         ICEBERG_DCHECK(!projected->literals().empty(), "Expected at least one literal");
@@ -446,7 +446,7 @@ class ProjectionUtil {
   }
 
  public:
-  static Result<std::shared_ptr<UnboundPredicate>> IdentityProject(
+  static Result<std::unique_ptr<UnboundPredicate>> IdentityProject(
       std::string_view name, const std::shared_ptr<BoundPredicate>& predicate) {
     ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
     switch (predicate->kind()) {
@@ -478,7 +478,7 @@ class ProjectionUtil {
     std::unreachable();
   }
 
-  static Result<std::shared_ptr<UnboundPredicate>> BucketProject(
+  static Result<std::unique_ptr<UnboundPredicate>> BucketProject(
       std::string_view name, const std::shared_ptr<BoundPredicate>& predicate,
       const std::shared_ptr<TransformFunction>& func) {
     ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
@@ -519,7 +519,7 @@ class ProjectionUtil {
     return nullptr;
   }
 
-  static Result<std::shared_ptr<UnboundPredicate>> TruncateProject(
+  static Result<std::unique_ptr<UnboundPredicate>> TruncateProject(
       std::string_view name, const std::shared_ptr<BoundPredicate>& predicate,
       const std::shared_ptr<TransformFunction>& func) {
     ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
@@ -561,7 +561,7 @@ class ProjectionUtil {
     }
   }
 
-  static Result<std::shared_ptr<UnboundPredicate>> TemporalProject(
+  static Result<std::unique_ptr<UnboundPredicate>> TemporalProject(
       std::string_view name, const std::shared_ptr<BoundPredicate>& predicate,
       const std::shared_ptr<TransformFunction>& func) {
     ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
@@ -581,7 +581,7 @@ class ProjectionUtil {
               auto fixed,
               FixInclusiveTimeProjection(
                   internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
-                      projected)));
+                      std::move(projected))));
           return fixed;
         }
         return projected;
@@ -599,13 +599,13 @@ class ProjectionUtil {
           auto fixed,
           FixInclusiveTimeProjection(
               internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
-                  projected)));
+                  std::move(projected))));
       return fixed;
     }
     return projected;
   }
 
-  static Result<std::shared_ptr<UnboundPredicate>> RemoveTransform(
+  static Result<std::unique_ptr<UnboundPredicate>> RemoveTransform(
       std::string_view name, const std::shared_ptr<BoundPredicate>& predicate) {
     ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
     switch (predicate->kind()) {
