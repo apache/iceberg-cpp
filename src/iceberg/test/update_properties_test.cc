@@ -90,6 +90,10 @@ TEST(UpdatePropertiesTest, CommitUsesCatalogAndRefreshesTable) {
 
   auto updated_metadata = MakeBaseMetadata({{"foo", "new"}});  // response metadata
 
+  EXPECT_CALL(*catalog, LoadTable(table.name()))
+      .WillOnce(Return(ByMove(Result<std::unique_ptr<Table>>{std::make_unique<Table>(
+          table.name(), MakeBaseMetadata({{"foo", "bar"}}), "loc", nullptr, catalog)})));
+
   EXPECT_CALL(*catalog, UpdateTable(table.name(), _, _))
       .WillOnce(Return(ByMove(Result<std::unique_ptr<Table>>{std::make_unique<Table>(
           table.name(), updated_metadata, "loc2", nullptr, catalog)})));
