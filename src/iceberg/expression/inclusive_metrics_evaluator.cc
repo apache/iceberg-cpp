@@ -86,7 +86,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     if (ContainsNullsOnly(id)) {
       return kRowCannotMatch;
     }
-    if (expr->reference()->kind() != BoundTerm::Kind::kReference) {
+    if (internal::checked_pointer_cast<BoundReference>(expr) == nullptr) {
       return kRowsMightMatch;
     }
     auto it = data_file_.nan_value_counts.find(id);
@@ -97,7 +97,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
   }
 
   Result<bool> NotNaN(const std::shared_ptr<Bound>& expr) override {
-    if (expr->reference()->kind() != BoundTerm::Kind::kReference) {
+    if (internal::checked_pointer_cast<BoundReference>(expr) == nullptr) {
       // identity transforms are already removed by this time
       return kRowsMightMatch;
     }
@@ -291,10 +291,9 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
 
   Result<bool> StartsWith(const std::shared_ptr<Bound>& expr,
                           const Literal& lit) override {
-    if (expr->reference()->kind() == BoundTerm::Kind::kTransform &&
-        internal::checked_cast<const BoundTransform&>(*expr)
-                .transform()
-                ->transform_type() != TransformType::kIdentity) {
+    auto transform = internal::checked_pointer_cast<BoundTransform>(expr);
+    if (transform != nullptr &&
+        transform->transform()->transform_type() != TransformType::kIdentity) {
       // truncate must be rewritten in binding. the result is either always or never
       // compatible
       return kRowsMightMatch;
@@ -411,33 +410,29 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
   }
 
   Result<std::optional<Literal>> LowerBound(const std::shared_ptr<Bound>& expr) {
-    if (expr->reference()->kind() == BoundTerm::Kind::kReference) {
-      return ParseLowerBound(
-          internal::checked_cast<const BoundReference&>(*expr->reference()));
-    } else if (expr->reference()->kind() == BoundTerm::Kind::kTransform) {
-      return TransformLowerBound(
-          internal::checked_cast<BoundTransform&>(*expr->reference()));
-    } else if (expr->reference()->kind() == BoundTerm::Kind::kExtract) {
-      // TODO(xiao.dong) handle extract lower and upper bounds
-      return NotImplemented("Extract lower bound not implemented.");
+    if (auto reference = internal::checked_pointer_cast<BoundReference>(expr);
+        reference != nullptr) {
+      return ParseLowerBound(*reference);
+    } else if (auto transform = internal::checked_pointer_cast<BoundTransform>(expr);
+               transform != nullptr) {
+      return TransformLowerBound(*transform);
     } else {
       return std::nullopt;
     }
+    // TODO(xiao.dong) handle extract lower and upper bounds
   }
 
   Result<std::optional<Literal>> UpperBound(const std::shared_ptr<Bound>& expr) {
-    if (expr->reference()->kind() == BoundTerm::Kind::kReference) {
-      return ParseUpperBound(
-          internal::checked_cast<const BoundReference&>(*expr->reference()));
-    } else if (expr->reference()->kind() == BoundTerm::Kind::kTransform) {
-      return TransformUpperBound(
-          internal::checked_cast<BoundTransform&>(*expr->reference()));
-    } else if (expr->reference()->kind() == BoundTerm::Kind::kExtract) {
-      // TODO(xiao.dong) handle extract lower and upper bounds
-      return NotImplemented("Extract upper bound not implemented.");
+    if (auto reference = internal::checked_pointer_cast<BoundReference>(expr);
+        reference != nullptr) {
+      return ParseUpperBound(*reference);
+    } else if (auto transform = internal::checked_pointer_cast<BoundTransform>(expr);
+               transform != nullptr) {
+      return TransformUpperBound(*transform);
     } else {
       return std::nullopt;
     }
+    // TODO(xiao.dong) handle extract lower and upper bounds
   }
 
   Result<std::optional<Literal>> ParseLowerBound(const BoundReference& ref) {
@@ -504,12 +499,12 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
 
   /** Returns true if the expression term produces a non-null value for non-null input. */
   bool IsNonNullPreserving(const std::shared_ptr<Bound>& expr) {
-    if (expr->reference()->kind() == BoundTerm::Kind::kReference) {
+    if (auto reference = internal::checked_pointer_cast<BoundReference>(expr);
+        reference != nullptr) {
       return true;
-    } else if (expr->reference()->kind() == BoundTerm::Kind::kTransform) {
-      return internal::checked_cast<const BoundTransform&>(*expr->reference())
-          .transform()
-          ->PreservesOrder();
+    } else if (auto transform = internal::checked_pointer_cast<BoundTransform>(expr);
+               transform != nullptr) {
+      return transform->transform()->PreservesOrder();
     }
     //  a non-null variant does not necessarily contain a specific field
     //  and unknown bound terms are not non-null preserving
