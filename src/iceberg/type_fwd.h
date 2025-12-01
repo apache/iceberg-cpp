@@ -96,6 +96,7 @@ class Table;
 class TableProperties;
 class FileIO;
 class Transaction;
+class PropertiesUpdate;
 class Transform;
 class TransformFunction;
 

@@ -476,12 +476,32 @@ TableMetadataBuilder& TableMetadataBuilder::RemovePartitionStatistics(
 
 TableMetadataBuilder& TableMetadataBuilder::SetProperties(
     const std::unordered_map<std::string, std::string>& updated) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  if (updated.empty()) {
+    return *this;
+  }
+
+  for (const auto& [key, value] : updated) {
+    impl_->metadata.properties[key] = value;
+  }
+
+  impl_->changes.push_back(std::make_unique<table::SetProperties>(updated));
+
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveProperties(
     const std::vector<std::string>& removed) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  if (removed.empty()) {
+    return *this;
+  }
+
+  for (const auto& key : removed) {
+    impl_->metadata.properties.erase(key);
+  }
+
+  impl_->changes.push_back(std::make_unique<table::RemoveProperties>(removed));
+
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetLocation(std::string_view location) {

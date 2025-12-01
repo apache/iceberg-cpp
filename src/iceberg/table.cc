@@ -28,6 +28,7 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/table_scan.h"
+#include "iceberg/update/update_properties.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -112,6 +113,10 @@ const std::vector<SnapshotLogEntry>& Table::history() const {
 
 std::unique_ptr<Transaction> Table::NewTransaction() const {
   throw NotImplemented("Table::NewTransaction is not implemented");
+}
+
+std::unique_ptr<PropertiesUpdate> Table::UpdateProperties() {
+  return std::make_unique<PropertiesUpdate>(this);
 }
 
 const std::shared_ptr<FileIO>& Table::io() const { return io_; }

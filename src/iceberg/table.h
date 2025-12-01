@@ -32,6 +32,8 @@
 
 namespace iceberg {
 
+class PropertiesUpdate;
+
 /// \brief Represents an Iceberg table
 class ICEBERG_EXPORT Table {
  public:
@@ -115,10 +117,15 @@ class ICEBERG_EXPORT Table {
   /// \return a pointer to the new Transaction
   virtual std::unique_ptr<Transaction> NewTransaction() const;
 
+  /// \brief Create a pending update to modify table properties
+  std::unique_ptr<PropertiesUpdate> UpdateProperties();
+
   /// \brief Returns a FileIO to read and write table data and metadata files
   const std::shared_ptr<FileIO>& io() const;
 
  private:
+  friend class PropertiesUpdate;
+
   const TableIdentifier identifier_;
   std::shared_ptr<TableMetadata> metadata_;
   std::string metadata_location_;

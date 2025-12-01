@@ -63,6 +63,7 @@ set(ICEBERG_SOURCES
     table_requirements.cc
     table_scan.cc
     table_update.cc
+    update/update_properties.cc
     transform.cc
     transform_function.cc
     type.cc
