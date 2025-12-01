@@ -121,7 +121,7 @@ class EvaluatorTest : public ::testing::Test {
 
     ICEBERG_UNWRAP_OR_FAIL(auto struct_like,
                            ArrowArrayStructLike::Make(arrow_c_schema_, arrow_c_array, 0));
-    ICEBERG_UNWRAP_OR_FAIL(auto result, evaluator.Eval(*struct_like));
+    ICEBERG_UNWRAP_OR_FAIL(auto result, evaluator.Evaluate(*struct_like));
     ASSERT_EQ(result, expected_result);
   }
 
@@ -357,32 +357,32 @@ TEST_F(EvaluatorTest, StartsWith) {
 
   // abc startsWith abc => true
   ASSERT_THAT(struct_like->Reset(0), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(auto result, evaluator->Eval(*struct_like));
+  ICEBERG_UNWRAP_OR_FAIL(auto result, evaluator->Evaluate(*struct_like));
   EXPECT_TRUE(result);
 
   // xabc startsWith abc => false
   ASSERT_THAT(struct_like->Reset(1), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Eval(*struct_like));
+  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Evaluate(*struct_like));
   EXPECT_FALSE(result);
 
   // Abc startsWith abc => false
   ASSERT_THAT(struct_like->Reset(2), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Eval(*struct_like));
+  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Evaluate(*struct_like));
   EXPECT_FALSE(result);
 
   // a startsWith abc => false
   ASSERT_THAT(struct_like->Reset(3), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Eval(*struct_like));
+  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Evaluate(*struct_like));
   EXPECT_FALSE(result);
 
   // abcd startsWith abc => true
   ASSERT_THAT(struct_like->Reset(4), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Eval(*struct_like));
+  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Evaluate(*struct_like));
   EXPECT_TRUE(result);
 
   // null startsWith abc => false
   ASSERT_THAT(struct_like->Reset(5), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Eval(*struct_like));
+  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Evaluate(*struct_like));
   EXPECT_FALSE(result);
 }
 
@@ -416,32 +416,32 @@ TEST_F(EvaluatorTest, NotStartsWith) {
 
   // abc notStartsWith abc => false
   ASSERT_THAT(struct_like->Reset(0), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(auto result, evaluator->Eval(*struct_like));
+  ICEBERG_UNWRAP_OR_FAIL(auto result, evaluator->Evaluate(*struct_like));
   EXPECT_FALSE(result);
 
   // xabc notStartsWith abc => true
   ASSERT_THAT(struct_like->Reset(1), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Eval(*struct_like));
+  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Evaluate(*struct_like));
   EXPECT_TRUE(result);
 
   // Abc notStartsWith abc => true
   ASSERT_THAT(struct_like->Reset(2), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Eval(*struct_like));
+  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Evaluate(*struct_like));
   EXPECT_TRUE(result);
 
   // a notStartsWith abc => true
   ASSERT_THAT(struct_like->Reset(3), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Eval(*struct_like));
+  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Evaluate(*struct_like));
   EXPECT_TRUE(result);
 
   // abcde notStartsWith abc => false
   ASSERT_THAT(struct_like->Reset(4), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Eval(*struct_like));
+  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Evaluate(*struct_like));
   EXPECT_FALSE(result);
 
   // Abcde notStartsWith abc => true
   ASSERT_THAT(struct_like->Reset(5), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Eval(*struct_like));
+  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Evaluate(*struct_like));
   EXPECT_TRUE(result);
 }
 
@@ -533,17 +533,17 @@ TEST_F(EvaluatorTest, IsNaN) {
 
   // NaN is NaN => true
   ASSERT_THAT(struct_like->Reset(0), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(auto result, evaluator->Eval(*struct_like));
+  ICEBERG_UNWRAP_OR_FAIL(auto result, evaluator->Evaluate(*struct_like));
   EXPECT_TRUE(result);
 
   // 2.0 is not NaN => false
   ASSERT_THAT(struct_like->Reset(1), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Eval(*struct_like));
+  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Evaluate(*struct_like));
   EXPECT_FALSE(result);
 
   // Infinity is not NaN => false
   ASSERT_THAT(struct_like->Reset(2), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Eval(*struct_like));
+  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Evaluate(*struct_like));
   EXPECT_FALSE(result);
 }
 
@@ -578,17 +578,17 @@ TEST_F(EvaluatorTest, NotNaN) {
 
   // NaN is NaN => false
   ASSERT_THAT(struct_like->Reset(0), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(auto result, evaluator->Eval(*struct_like));
+  ICEBERG_UNWRAP_OR_FAIL(auto result, evaluator->Evaluate(*struct_like));
   EXPECT_FALSE(result);
 
   // 2.0 is not NaN => true
   ASSERT_THAT(struct_like->Reset(1), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Eval(*struct_like));
+  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Evaluate(*struct_like));
   EXPECT_TRUE(result);
 
   // Infinity is not NaN => true
   ASSERT_THAT(struct_like->Reset(2), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Eval(*struct_like));
+  ICEBERG_UNWRAP_OR_FAIL(result, evaluator->Evaluate(*struct_like));
   EXPECT_TRUE(result);
 }
 
