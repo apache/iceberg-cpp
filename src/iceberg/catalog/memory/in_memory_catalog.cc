@@ -21,8 +21,8 @@
 
 #include <algorithm>
 #include <iterator>
-#include <mutex>
 #include <memory>
+#include <mutex>
 
 #include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
@@ -430,11 +430,10 @@ Result<std::unique_ptr<Table>> InMemoryCatalog::UpdateTable(
   }
   ICEBERG_ASSIGN_OR_RAISE(auto updated, builder->Build());
 
-  ICEBERG_RETURN_UNEXPECTED(
-      TableMetadataUtil::Write(*file_io_, base.get(), updated.get()));
+  ICEBERG_RETURN_UNEXPECTED(TableMetadataUtil::Write(*file_io_, base.get(), *updated));
   ICEBERG_RETURN_UNEXPECTED(root_namespace_->UpdateTableMetadataLocation(
       identifier, updated->metadata_file_location));
-  TableMetadataUtil::DeleteRemovedMetadataFiles(*file_io_, base.get(), updated.get());
+  TableMetadataUtil::DeleteRemovedMetadataFiles(*file_io_, base.get(), *updated);
 
   return std::make_unique<Table>(identifier, std::move(updated), file_io_,
                                  std::static_pointer_cast<Catalog>(shared_from_this()));
@@ -469,7 +468,7 @@ Result<std::unique_ptr<Table>> InMemoryCatalog::LoadTable(
     return InvalidArgument("file_io is not set for catalog {}", catalog_name_);
   }
 
-  Result<std::string> metadata_location;
+  std::string metadata_location;
   {
     std::lock_guard guard(mutex_);
     ICEBERG_ASSIGN_OR_RAISE(metadata_location,
@@ -477,8 +476,8 @@ Result<std::unique_ptr<Table>> InMemoryCatalog::LoadTable(
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto metadata,
-                          TableMetadataUtil::Read(*file_io_, metadata_location.value()));
-  metadata->metadata_file_location = metadata_location.value();
+                          TableMetadataUtil::Read(*file_io_, metadata_location));
+  metadata->metadata_file_location = std::move(metadata_location);
 
   return std::make_unique<Table>(identifier, std::move(metadata), file_io_,
                                  std::static_pointer_cast<Catalog>(shared_from_this()));

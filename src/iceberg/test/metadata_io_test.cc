@@ -141,7 +141,7 @@ TEST_F(MetadataIOTest, WriteMetadataWithBase) {
     // Invalid base metadata_file_location, set version to 0
     TableMetadata new_metadata = PrepareMetadata();
     base.metadata_file_location = "invalid_location";
-    EXPECT_THAT(TableMetadataUtil::Write(*io_, &base, &new_metadata), IsOk());
+    EXPECT_THAT(TableMetadataUtil::Write(*io_, &base, new_metadata), IsOk());
     EXPECT_THAT(new_metadata.metadata_file_location,
                 testing::HasSubstr("/metadata/00000-"));
   }
@@ -153,7 +153,7 @@ TEST_F(MetadataIOTest, WriteMetadataWithBase) {
     // Invalid codec type property
     TableMetadata new_metadata = PrepareMetadata();
     new_metadata.properties[TableProperties::kMetadataCompression.key()] = "invalid";
-    auto result = TableMetadataUtil::Write(*io_, &base, &new_metadata);
+    auto result = TableMetadataUtil::Write(*io_, &base, new_metadata);
     EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
     EXPECT_THAT(result, HasErrorMessage("Invalid codec name"));
   }
@@ -162,7 +162,7 @@ TEST_F(MetadataIOTest, WriteMetadataWithBase) {
     // Specify write location property
     TableMetadata new_metadata = PrepareMetadata();
     new_metadata.properties[TableProperties::kWriteMetadataLocation.key()] = location_;
-    auto result = TableMetadataUtil::Write(*io_, &base, &new_metadata);
+    auto result = TableMetadataUtil::Write(*io_, &base, new_metadata);
     EXPECT_THAT(result, IsOk());
     EXPECT_THAT(new_metadata.metadata_file_location,
                 testing::HasSubstr(std::format("{}/00001-", location_)));
@@ -171,7 +171,7 @@ TEST_F(MetadataIOTest, WriteMetadataWithBase) {
   {
     // Default write location
     TableMetadata new_metadata = PrepareMetadata();
-    auto result = TableMetadataUtil::Write(*io_, &base, &new_metadata);
+    auto result = TableMetadataUtil::Write(*io_, &base, new_metadata);
     EXPECT_THAT(result, IsOk());
     EXPECT_THAT(new_metadata.metadata_file_location,
                 testing::HasSubstr(std::format("{}/metadata/00001-", location_)));
@@ -181,25 +181,25 @@ TEST_F(MetadataIOTest, WriteMetadataWithBase) {
 TEST_F(MetadataIOTest, RemoveDeletedMetadataFiles) {
   TableMetadata base1 = PrepareMetadata();
   base1.properties[TableProperties::kMetadataPreviousVersionsMax.key()] = "1";
-  EXPECT_THAT(TableMetadataUtil::Write(*io_, nullptr, &base1), IsOk());
+  EXPECT_THAT(TableMetadataUtil::Write(*io_, nullptr, base1), IsOk());
 
   ICEBERG_UNWRAP_OR_FAIL(auto base2, TableMetadataBuilder::BuildFrom(&base1)->Build());
-  EXPECT_THAT(TableMetadataUtil::Write(*io_, &base1, base2.get()), IsOk());
+  EXPECT_THAT(TableMetadataUtil::Write(*io_, &base1, *base2), IsOk());
 
   ICEBERG_UNWRAP_OR_FAIL(auto new_metadata,
                          TableMetadataBuilder::BuildFrom(base2.get())->Build());
-  EXPECT_THAT(TableMetadataUtil::Write(*io_, base2.get(), new_metadata.get()), IsOk());
+  EXPECT_THAT(TableMetadataUtil::Write(*io_, base2.get(), *new_metadata), IsOk());
 
   // The first metadata file should not be deleted
   new_metadata->properties[TableProperties::kMetadataDeleteAfterCommitEnabled.key()] =
       "false";
-  TableMetadataUtil::DeleteRemovedMetadataFiles(*io_, base2.get(), new_metadata.get());
+  TableMetadataUtil::DeleteRemovedMetadataFiles(*io_, base2.get(), *new_metadata);
   EXPECT_TRUE(std::filesystem::exists(base1.metadata_file_location));
 
   // The first metadata file should be deleted
   new_metadata->properties[TableProperties::kMetadataDeleteAfterCommitEnabled.key()] =
       "true";
-  TableMetadataUtil::DeleteRemovedMetadataFiles(*io_, base2.get(), new_metadata.get());
+  TableMetadataUtil::DeleteRemovedMetadataFiles(*io_, base2.get(), *new_metadata);
   EXPECT_FALSE(std::filesystem::exists(base1.metadata_file_location));
 }
 

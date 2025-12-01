@@ -292,9 +292,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataUtil::Read(
 }
 
 Status TableMetadataUtil::Write(FileIO& io, const TableMetadata* base,
-                                TableMetadata* metadata) {
-  ICEBERG_CHECK(metadata != nullptr, "The metadata is nullptr.");
-
+                                TableMetadata& metadata) {
   int version = -1;
   if (base != nullptr && !base->metadata_file_location.empty()) {
     // parse current version from location
@@ -302,9 +300,9 @@ Status TableMetadataUtil::Write(FileIO& io, const TableMetadata* base,
   }
 
   ICEBERG_ASSIGN_OR_RAISE(std::string new_file_location,
-                          NewTableMetadataFilePath(*metadata, version + 1));
-  ICEBERG_RETURN_UNEXPECTED(Write(io, new_file_location, *metadata));
-  metadata->metadata_file_location = std::move(new_file_location);
+                          NewTableMetadataFilePath(metadata, version + 1));
+  ICEBERG_RETURN_UNEXPECTED(Write(io, new_file_location, metadata));
+  metadata.metadata_file_location = std::move(new_file_location);
   return {};
 }
 
@@ -316,22 +314,22 @@ Status TableMetadataUtil::Write(FileIO& io, const std::string& location,
 }
 
 void TableMetadataUtil::DeleteRemovedMetadataFiles(FileIO& io, const TableMetadata* base,
-                                                   const TableMetadata* metadata) {
+                                                   const TableMetadata& metadata) {
   if (!base) {
     return;
   }
 
   bool delete_after_commit = TableProperties::kMetadataDeleteAfterCommitEnabled.value();
-  if (auto it = metadata->properties.find(
+  if (auto it = metadata.properties.find(
           TableProperties::kMetadataDeleteAfterCommitEnabled.key());
-      it != metadata->properties.end()) {
+      it != metadata.properties.end()) {
     delete_after_commit =
         StringUtils::EqualsIgnoreCase(it->second, "true") || it->second == "1";
   }
 
   if (delete_after_commit) {
     auto current_files =
-        metadata->metadata_log |
+        metadata.metadata_log |
         std::ranges::to<std::unordered_set<MetadataLogEntry, MetadataLogEntry::Hasher>>();
     std::ranges::for_each(
         base->metadata_log | std::views::filter([&current_files](const auto& entry) {

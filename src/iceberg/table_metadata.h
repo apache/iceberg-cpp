@@ -490,14 +490,13 @@ struct ICEBERG_EXPORT CodecTypeUtil {
   /// \return The file extension of the codec.
   static std::string CodecTypeToFileExtension(MetadataFileCodecType codec);
 
-  inline static constexpr std::string_view kTableMetadataFileSuffix = ".metadata.json";
-  inline static constexpr std::string_view kCompGzipTableMetadataFileSuffix =
+  static constexpr std::string_view kTableMetadataFileSuffix = ".metadata.json";
+  static constexpr std::string_view kCompGzipTableMetadataFileSuffix =
       ".metadata.json.gz";
-  inline static constexpr std::string_view kGzipTableMetadataFileSuffix =
-      ".gz.metadata.json";
-  inline static constexpr std::string_view kGzipTableMetadataFileExtension = ".gz";
-  inline static constexpr std::string_view kCodecTypeGzip = "GZIP";
-  inline static constexpr std::string_view kCodecTypeNone = "NONE";
+  static constexpr std::string_view kGzipTableMetadataFileSuffix = ".gz.metadata.json";
+  static constexpr std::string_view kGzipTableMetadataFileExtension = ".gz";
+  static constexpr std::string_view kCodecTypeGzip = "GZIP";
+  static constexpr std::string_view kCodecTypeNone = "NONE";
 };
 
 /// \brief Utility class for table metadata
@@ -521,7 +520,7 @@ struct ICEBERG_EXPORT TableMetadataUtil {
   /// \param io The FileIO instance for writing files
   /// \param base The base metadata (can be null for new tables)
   /// \param metadata The metadata to write, which will be updated with the new location
-  static Status Write(FileIO& io, const TableMetadata* base, TableMetadata* metadata);
+  static Status Write(FileIO& io, const TableMetadata* base, TableMetadata& metadata);
 
   /// \brief Delete removed metadata files based on retention policy.
   ///
@@ -533,7 +532,7 @@ struct ICEBERG_EXPORT TableMetadataUtil {
   /// \param base The previous metadata version
   /// \param metadata The current metadata containing the updated log
   static void DeleteRemovedMetadataFiles(FileIO& io, const TableMetadata* base,
-                                         const TableMetadata* metadata);
+                                         const TableMetadata& metadata);
 
   /// \brief Write the table metadata to a file.
   ///
