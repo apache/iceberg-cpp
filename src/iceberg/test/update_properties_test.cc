@@ -58,7 +58,9 @@ std::shared_ptr<TableMetadata> MakeBaseMetadata(
   return metadata;
 }
 
-TableIdentifier MakeIdentifier() { return TableIdentifier{Namespace{{"ns"}}, "tbl"}; }
+TableIdentifier MakeIdentifier() {
+  return TableIdentifier{.ns = Namespace{{"ns"}}, .name = "tbl"};
+}
 
 }  // namespace
 
