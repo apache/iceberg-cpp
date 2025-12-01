@@ -99,6 +99,7 @@ iceberg_sources = files(
     'util/temporal_util.cc',
     'util/timepoint.cc',
     'util/truncate_util.cc',
+    'util/type_util.cc',
     'util/uuid.cc',
 )
 

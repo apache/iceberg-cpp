@@ -27,7 +27,6 @@
 #include "iceberg/schema_internal.h"
 #include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
-#include "iceberg/util/formatter_internal.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/type_util.h"
 #include "iceberg/util/visit_type.h"
