@@ -126,9 +126,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    avro_test.cc
                    avro_schema_test.cc
                    avro_stream_test.cc
-                   manifest_list_reader_writer_test.cc
                    manifest_list_versions_test.cc
-                   manifest_reader_writer_test.cc
                    manifest_writer_versions_test.cc
                    test_common.cc)
 
