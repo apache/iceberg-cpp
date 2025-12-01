@@ -21,10 +21,13 @@
 
 #include <algorithm>
 #include <iterator>  // IWYU pragma: keep
+#include <memory>
 
-#include "iceberg/exception.h"
 #include "iceberg/table.h"
+#include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_requirement.h"
+#include "iceberg/table_update.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -120,6 +123,13 @@ class ICEBERG_EXPORT InMemoryNamespace {
   /// \param table_ident The identifier of the table.
   /// \return The metadata location if the table exists; error otherwise.
   Result<std::string> GetTableMetadataLocation(const TableIdentifier& table_ident) const;
+
+  /// \brief Updates the metadata location for the specified table.
+  ///
+  /// \param table_ident The identifier of the table.
+  /// \param metadata_location The new metadata location.
+  Status UpdateTableMetadataLocation(const TableIdentifier& table_ident,
+                                     const std::string& metadata_location);
 
   /// \brief Internal utility for retrieving a namespace node pointer from the tree.
   ///
@@ -314,6 +324,13 @@ Result<std::string> InMemoryNamespace::GetTableMetadataLocation(
   return it->second;
 }
 
+Status InMemoryNamespace::UpdateTableMetadataLocation(
+    TableIdentifier const& table_ident, std::string const& metadata_location) {
+  ICEBERG_ASSIGN_OR_RAISE(auto ns, GetNamespace(this, table_ident.ns));
+  ns->table_metadata_locations_[table_ident.name] = metadata_location;
+  return {};
+}
+
 std::shared_ptr<InMemoryCatalog> InMemoryCatalog::Make(
     std::string const& name, std::shared_ptr<FileIO> const& file_io,
     std::string const& warehouse_location,
@@ -394,7 +411,32 @@ Result<std::unique_ptr<Table>> InMemoryCatalog::UpdateTable(
     const TableIdentifier& identifier,
     const std::vector<std::unique_ptr<TableRequirement>>& requirements,
     const std::vector<std::unique_ptr<TableUpdate>>& updates) {
-  return NotImplemented("update table");
+  std::unique_lock lock(mutex_);
+  ICEBERG_ASSIGN_OR_RAISE(auto metadata_location,
+                          root_namespace_->GetTableMetadataLocation(identifier));
+
+  ICEBERG_ASSIGN_OR_RAISE(auto base,
+                          TableMetadataUtil::Read(*file_io_, metadata_location));
+  base->metadata_file_location = metadata_location;
+
+  for (const auto& requirement : requirements) {
+    ICEBERG_RETURN_UNEXPECTED(requirement->Validate(base.get()));
+  }
+
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+  for (const auto& update : updates) {
+    update->ApplyTo(*builder);
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto updated, builder->Build());
+
+  ICEBERG_RETURN_UNEXPECTED(
+      TableMetadataUtil::Write(*file_io_, base.get(), updated.get()));
+  ICEBERG_RETURN_UNEXPECTED(root_namespace_->UpdateTableMetadataLocation(
+      identifier, updated->metadata_file_location));
+  TableMetadataUtil::DeleteRemovedMetadataFiles(*file_io_, base.get(), updated.get());
+
+  return std::make_unique<Table>(identifier, std::move(updated), file_io_,
+                                 std::static_pointer_cast<Catalog>(shared_from_this()));
 }
 
 Result<std::shared_ptr<Transaction>> InMemoryCatalog::StageCreateTable(
@@ -435,9 +477,9 @@ Result<std::unique_ptr<Table>> InMemoryCatalog::LoadTable(
 
   ICEBERG_ASSIGN_OR_RAISE(auto metadata,
                           TableMetadataUtil::Read(*file_io_, metadata_location.value()));
+  metadata->metadata_file_location = metadata_location.value();
 
-  return std::make_unique<Table>(identifier, std::move(metadata),
-                                 metadata_location.value(), file_io_,
+  return std::make_unique<Table>(identifier, std::move(metadata), file_io_,
                                  std::static_pointer_cast<Catalog>(shared_from_this()));
 }
 
