@@ -54,8 +54,7 @@ class ICEBERG_EXPORT InclusiveMetricsEvaluator {
   /// \param schema The schema of the table
   /// \param case_sensitive Whether field name matching is case-sensitive
   static Result<std::unique_ptr<InclusiveMetricsEvaluator>> Make(
-      std::shared_ptr<Expression> expr, const std::shared_ptr<Schema>& schema,
-      bool case_sensitive = true);
+      std::shared_ptr<Expression> expr, const Schema& schema, bool case_sensitive = true);
 
   ~InclusiveMetricsEvaluator();
 
@@ -66,7 +65,7 @@ class ICEBERG_EXPORT InclusiveMetricsEvaluator {
   Result<bool> Eval(const DataFile& data_file) const;
 
  private:
-  explicit InclusiveMetricsEvaluator(const std::shared_ptr<Expression>& expr);
+  explicit InclusiveMetricsEvaluator(std::shared_ptr<Expression> expr);
 
  private:
   std::shared_ptr<Expression> expr_;

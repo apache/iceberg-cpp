@@ -25,10 +25,10 @@ set(ICEBERG_SOURCES
     expression/evaluator.cc
     expression/expression.cc
     expression/expressions.cc
+    expression/inclusive_metrics_evaluator.cc
     expression/literal.cc
     expression/predicate.cc
     expression/rewrite_not.cc
-    expression/inclusive_metrics_evaluator.cc
     expression/term.cc
     file_reader.cc
     file_writer.cc

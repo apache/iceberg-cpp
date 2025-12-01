@@ -23,7 +23,7 @@
 
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expressions.h"
-#include "iceberg/manifest_entry.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
@@ -100,7 +100,7 @@ class InclusiveMetricsEvaluatorTest : public ::testing::Test {
 
   void TestCase(const std::shared_ptr<Expression>& unbound, bool expected_result) {
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
-                           InclusiveMetricsEvaluator::Make(unbound, schema_, true));
+                           InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"id", static_cast<int64_t>(100)}},
                                 {{"id", static_cast<int64_t>(200)}});
     auto result = evaluator->Eval(*file);
@@ -110,7 +110,7 @@ class InclusiveMetricsEvaluatorTest : public ::testing::Test {
 
   void TestStringCase(const std::shared_ptr<Expression>& unbound, bool expected_result) {
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
-                           InclusiveMetricsEvaluator::Make(unbound, schema_, true));
+                           InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"name", "123"}},
                                 {{"name", "456"}}, {{2, 10}}, {{2, 0}});
     auto result = evaluator->Eval(*file);
@@ -124,18 +124,18 @@ class InclusiveMetricsEvaluatorTest : public ::testing::Test {
 TEST_F(InclusiveMetricsEvaluatorTest, CaseSensitiveTest) {
   {
     auto unbound = Expressions::Equal("id", Literal::Long(300));
-    auto evaluator = InclusiveMetricsEvaluator::Make(unbound, schema_, true);
+    auto evaluator = InclusiveMetricsEvaluator::Make(unbound, *schema_, true);
     ASSERT_TRUE(evaluator.has_value());
   }
   {
     auto unbound = Expressions::Equal("ID", Literal::Long(300));
-    auto evaluator = InclusiveMetricsEvaluator::Make(unbound, schema_, true);
+    auto evaluator = InclusiveMetricsEvaluator::Make(unbound, *schema_, true);
     ASSERT_FALSE(evaluator.has_value());
     ASSERT_EQ(evaluator.error().kind, ErrorKind::kInvalidExpression);
   }
   {
     auto unbound = Expressions::Equal("ID", Literal::Long(300));
-    auto evaluator = InclusiveMetricsEvaluator::Make(unbound, schema_, false);
+    auto evaluator = InclusiveMetricsEvaluator::Make(unbound, *schema_, false);
     ASSERT_TRUE(evaluator.has_value());
   }
 }
@@ -144,7 +144,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, IsNullTest) {
   {
     auto unbound = Expressions::IsNull("name");
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
-                           InclusiveMetricsEvaluator::Make(unbound, schema_, true));
+                           InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"name", "1"}}, {{"name", "2"}},
                                 {{2, 10}}, {{2, 5}}, {});
     auto result = evaluator->Eval(*file);
@@ -154,7 +154,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, IsNullTest) {
   {
     auto unbound = Expressions::IsNull("name");
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
-                           InclusiveMetricsEvaluator::Make(unbound, schema_, true));
+                           InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"name", "1"}}, {{"name", "2"}},
                                 {{2, 10}}, {{2, 0}}, {});
     auto result = evaluator->Eval(*file);
@@ -167,7 +167,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, NotNullTest) {
   {
     auto unbound = Expressions::NotNull("name");
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
-                           InclusiveMetricsEvaluator::Make(unbound, schema_, true));
+                           InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"name", "1"}}, {{"name", "2"}},
                                 {{2, 10}}, {{2, 5}}, {});
     auto result = evaluator->Eval(*file);
@@ -177,7 +177,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, NotNullTest) {
   {
     auto unbound = Expressions::NotNull("name");
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
-                           InclusiveMetricsEvaluator::Make(unbound, schema_, true));
+                           InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"name", "1"}}, {{"name", "2"}},
                                 {{2, 10}}, {{2, 10}}, {});
     auto result = evaluator->Eval(*file);
@@ -190,7 +190,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, IsNanTest) {
   {
     auto unbound = Expressions::IsNaN("salary");
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
-                           InclusiveMetricsEvaluator::Make(unbound, schema_, true));
+                           InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"salary", 1.0}},
                                 {{"salary", 2.0}}, {{4, 10}}, {{4, 5}}, {{4, 5}});
     auto result = evaluator->Eval(*file);
@@ -200,7 +200,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, IsNanTest) {
   {
     auto unbound = Expressions::IsNaN("salary");
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
-                           InclusiveMetricsEvaluator::Make(unbound, schema_, true));
+                           InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"salary", 1.0}},
                                 {{"salary", 2.0}}, {{4, 10}}, {{4, 10}}, {{4, 5}});
     auto result = evaluator->Eval(*file);
@@ -210,7 +210,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, IsNanTest) {
   {
     auto unbound = Expressions::IsNaN("salary");
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
-                           InclusiveMetricsEvaluator::Make(unbound, schema_, true));
+                           InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"salary", 1.0}},
                                 {{"salary", 2.0}}, {{4, 10}}, {{4, 5}}, {{4, 0}});
     auto result = evaluator->Eval(*file);
@@ -223,7 +223,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, NotNanTest) {
   {
     auto unbound = Expressions::NotNaN("salary");
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
-                           InclusiveMetricsEvaluator::Make(unbound, schema_, true));
+                           InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"salary", 1.0}},
                                 {{"salary", 2.0}}, {{4, 10}}, {}, {{4, 5}});
     auto result = evaluator->Eval(*file);
@@ -233,7 +233,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, NotNanTest) {
   {
     auto unbound = Expressions::NotNaN("salary");
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
-                           InclusiveMetricsEvaluator::Make(unbound, schema_, true));
+                           InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"salary", 1.0}},
                                 {{"salary", 2.0}}, {{4, 10}}, {}, {{4, 10}});
     auto result = evaluator->Eval(*file);
@@ -370,7 +370,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, NotStartsWithTest) {
   auto test_case = [&](const std::string& prefix, bool expected_result) {
     auto unbound = Expressions::NotStartsWith("name", prefix);
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
-                           InclusiveMetricsEvaluator::Make(unbound, schema_, true));
+                           InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"name", "123"}},
                                 {{"name", "123"}}, {{2, 10}}, {{2, 0}});
     auto result = evaluator->Eval(*file);
