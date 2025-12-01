@@ -17,9 +17,10 @@
  * under the License.
  */
 
+#include "iceberg/base_transaction.h"
+
 #include <gtest/gtest.h>
 
-#include "iceberg/base_transaction.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/pending_update.h"
 #include "iceberg/sort_order.h"
@@ -68,7 +69,7 @@ std::shared_ptr<Table> CreateTestTable(const TableIdentifier& identifier,
 }
 }  // namespace
 
-TEST(TransactionPendingUpdateTest, CommitSetPropertiesUsesCatalog) {
+TEST(BaseTransactionTest, CommitSetPropertiesUsesCatalog) {
   auto metadata = CreateBaseMetadata();
   const auto identifier = MakeIdentifier();
   auto catalog = std::make_shared<NiceMock<MockCatalog>>();
@@ -93,13 +94,13 @@ TEST(TransactionPendingUpdateTest, CommitSetPropertiesUsesCatalog) {
         auto it = updated.find("new-key");
         EXPECT_NE(it, updated.end());
         EXPECT_EQ("new-value", it->second);
-        return Result<std::unique_ptr<Table>>(std::unique_ptr<Table>());
+        return {std::unique_ptr<Table>()};
       });
 
   EXPECT_THAT(transaction->CommitTransaction(), IsOk());
 }
 
-TEST(TransactionPendingUpdateTest, RemovePropertiesSkipsMissingKeys) {
+TEST(BaseTransactionTest, RemovePropertiesSkipsMissingKeys) {
   auto metadata = CreateBaseMetadata();
   const auto identifier = MakeIdentifier();
   auto catalog = std::make_shared<NiceMock<MockCatalog>>();
@@ -121,13 +122,13 @@ TEST(TransactionPendingUpdateTest, RemovePropertiesSkipsMissingKeys) {
             dynamic_cast<const table::RemoveProperties*>(updates.front().get());
         EXPECT_NE(remove_update, nullptr);
         EXPECT_THAT(remove_update->removed(), ElementsAre("existing"));
-        return Result<std::unique_ptr<Table>>(std::unique_ptr<Table>());
+        return {std::unique_ptr<Table>()};
       });
 
   EXPECT_THAT(transaction->CommitTransaction(), IsOk());
 }
 
-TEST(TransactionPendingUpdateTest, AggregatesMultiplePendingUpdates) {
+TEST(BaseTransactionTest, AggregatesMultiplePendingUpdates) {
   auto metadata = CreateBaseMetadata();
   const auto identifier = MakeIdentifier();
   auto catalog = std::make_shared<NiceMock<MockCatalog>>();
@@ -159,7 +160,7 @@ TEST(TransactionPendingUpdateTest, AggregatesMultiplePendingUpdates) {
         EXPECT_NE(remove_update, nullptr);
         EXPECT_THAT(remove_update->removed(), ElementsAre("existing"));
 
-        return Result<std::unique_ptr<Table>>(std::unique_ptr<Table>());
+        return {std::unique_ptr<Table>()};
       });
 
   EXPECT_THAT(transaction->CommitTransaction(), IsOk());

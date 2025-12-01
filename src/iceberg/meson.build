@@ -41,6 +41,7 @@ configure_file(
 iceberg_include_dir = include_directories('..')
 iceberg_sources = files(
     'arrow_c_data_guard_internal.cc',
+    'base_transaction.cc',
     'catalog/memory/in_memory_catalog.cc',
     'expression/aggregate.cc',
     'expression/binder.cc',
@@ -75,6 +76,7 @@ iceberg_sources = files(
     'partition_field.cc',
     'partition_spec.cc',
     'partition_summary.cc',
+    'pending_update.cc',
     'row/arrow_array_wrapper.cc',
     'row/manifest_wrapper.cc',
     'row/partition_values.cc',

@@ -39,7 +39,10 @@ PropertiesUpdate& PropertiesUpdate::Remove(std::string const& key) {
 }
 
 Result<PropertiesUpdateChanges> PropertiesUpdate::Apply() {
-  return PropertiesUpdateChanges{updates_, removals_};
+  return PropertiesUpdateChanges{
+      .updates = updates_,
+      .removals = removals_,
+  };
 }
 
 Status PropertiesUpdate::ApplyResult(TableMetadataBuilder& builder,
