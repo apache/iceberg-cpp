@@ -86,7 +86,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     if (ContainsNullsOnly(id)) {
       return kRowCannotMatch;
     }
-    if (internal::checked_pointer_cast<BoundReference>(expr) == nullptr) {
+    if (std::dynamic_pointer_cast<BoundReference>(expr) == nullptr) {
       return kRowsMightMatch;
     }
     auto it = data_file_.nan_value_counts.find(id);
@@ -97,7 +97,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
   }
 
   Result<bool> NotNaN(const std::shared_ptr<Bound>& expr) override {
-    if (internal::checked_pointer_cast<BoundReference>(expr) == nullptr) {
+    if (std::dynamic_pointer_cast<BoundReference>(expr) == nullptr) {
       // identity transforms are already removed by this time
       return kRowsMightMatch;
     }
@@ -291,13 +291,13 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
 
   Result<bool> StartsWith(const std::shared_ptr<Bound>& expr,
                           const Literal& lit) override {
-    //    auto transform = internal::checked_pointer_cast<BoundTransform>(expr);
-    //    if (transform != nullptr &&
-    //        transform->transform()->transform_type() != TransformType::kIdentity) {
-    //      // truncate must be rewritten in binding. the result is either always or never
-    //      // compatible
-    //      return kRowsMightMatch;
-    //    }
+    auto transform = std::dynamic_pointer_cast<BoundTransform>(expr);
+    if (transform != nullptr &&
+        transform->transform()->transform_type() != TransformType::kIdentity) {
+      // truncate must be rewritten in binding. the result is either always or never
+      // compatible
+      return kRowsMightMatch;
+    }
 
     int32_t id = expr->reference()->field().field_id();
     if (ContainsNullsOnly(id)) {
@@ -410,10 +410,10 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
   }
 
   Result<std::optional<Literal>> LowerBound(const std::shared_ptr<Bound>& expr) {
-    if (auto reference = internal::checked_pointer_cast<BoundReference>(expr);
+    if (auto reference = std::dynamic_pointer_cast<BoundReference>(expr);
         reference != nullptr) {
       return ParseLowerBound(*reference);
-    } else if (auto transform = internal::checked_pointer_cast<BoundTransform>(expr);
+    } else if (auto transform = std::dynamic_pointer_cast<BoundTransform>(expr);
                transform != nullptr) {
       return TransformLowerBound(*transform);
     } else {
@@ -423,10 +423,10 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
   }
 
   Result<std::optional<Literal>> UpperBound(const std::shared_ptr<Bound>& expr) {
-    if (auto reference = internal::checked_pointer_cast<BoundReference>(expr);
+    if (auto reference = std::dynamic_pointer_cast<BoundReference>(expr);
         reference != nullptr) {
       return ParseUpperBound(*reference);
-    } else if (auto transform = internal::checked_pointer_cast<BoundTransform>(expr);
+    } else if (auto transform = std::dynamic_pointer_cast<BoundTransform>(expr);
                transform != nullptr) {
       return TransformUpperBound(*transform);
     } else {
@@ -439,7 +439,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     int32_t id = ref.field().field_id();
     auto type = ref.type();
     if (!type->is_primitive()) {
-      return Invalid("Lower bound of non-primitive type is not supported.");
+      return NotSupported("Lower bound of non-primitive type is not supported.");
     }
     auto primitive_type = internal::checked_pointer_cast<PrimitiveType>(type);
     if (!data_file_.lower_bounds.empty() && data_file_.lower_bounds.contains(id)) {
@@ -456,7 +456,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     int32_t id = ref.field().field_id();
     auto type = ref.type();
     if (!type->is_primitive()) {
-      return Invalid("Upper bound of non-primitive type is not supported.");
+      return NotSupported("Upper bound of non-primitive type is not supported.");
     }
     auto primitive_type = internal::checked_pointer_cast<PrimitiveType>(type);
     if (!data_file_.upper_bounds.empty() && data_file_.upper_bounds.contains(id)) {
@@ -499,10 +499,10 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
 
   /** Returns true if the expression term produces a non-null value for non-null input. */
   bool IsNonNullPreserving(const std::shared_ptr<Bound>& expr) {
-    if (auto reference = internal::checked_pointer_cast<BoundReference>(expr);
+    if (auto reference = std::dynamic_pointer_cast<BoundReference>(expr);
         reference != nullptr) {
       return true;
-    } else if (auto transform = internal::checked_pointer_cast<BoundTransform>(expr);
+    } else if (auto transform = std::dynamic_pointer_cast<BoundTransform>(expr);
                transform != nullptr) {
       return transform->transform()->PreservesOrder();
     }
