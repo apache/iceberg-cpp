@@ -69,6 +69,7 @@ set(ICEBERG_SOURCES
     transform.cc
     transform_function.cc
     type.cc
+    update/expire_snapshots.cc
     util/bucket_util.cc
     util/conversions.cc
     util/decimal.cc
@@ -134,6 +135,7 @@ add_subdirectory(catalog)
 add_subdirectory(expression)
 add_subdirectory(manifest)
 add_subdirectory(row)
+add_subdirectory(update)
 add_subdirectory(util)
 
 if(ICEBERG_BUILD_BUNDLE)
