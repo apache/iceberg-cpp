@@ -371,7 +371,7 @@ TEST_F(InclusiveMetricsEvaluatorWithTransformTest, IntegerNotEqRewritten) {
 }
 
 TEST_F(InclusiveMetricsEvaluatorWithTransformTest, CaseInsensitiveIntegerNotEqRewritten) {
-  auto day_ts = ToBoundTransform(Expressions::Day("ts"));
+  auto day_ts = ToBoundTransform(Expressions::Day("TS"));
   ExpectShouldRead(
       Expressions::Not(Expressions::Equal(day_ts, Literal::Long(kIntMinValue - 25))),
       kRowsMightMatch, nullptr, false);

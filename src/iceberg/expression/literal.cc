@@ -343,13 +343,28 @@ std::strong_ordering CompareFloat(T lhs, T rhs) {
   return lhs_is_negative <=> rhs_is_negative;
 }
 
+bool Literal::Comparable(TypeId type_id, TypeId other_type_id) {
+  switch (type_id) {
+    case TypeId::kInt:
+    case TypeId::kDate:
+      return other_type_id == TypeId::kInt || other_type_id == TypeId::kDate;
+    case TypeId::kLong:
+    case TypeId::kTimestamp:
+    case TypeId::kTimestampTz:
+      return other_type_id == TypeId::kLong || other_type_id == TypeId::kTimestamp ||
+             other_type_id == TypeId::kTimestampTz;
+    default:
+      return type_id == other_type_id;
+  }
+}
+
 bool Literal::operator==(const Literal& other) const { return (*this <=> other) == 0; }
 
 // Three-way comparison operator
 std::partial_ordering Literal::operator<=>(const Literal& other) const {
-  // If types are different and value type not the same, comparison is unordered
-  if (value_.index() != other.value_.index() &&
-      type_->type_id() != other.type_->type_id()) {
+  // If types are different, comparison is unordered
+  // (Int & Date) (Timestamp & Long) were excluded from this check to allow comparison
+  if (!Comparable(type_->type_id(), other.type_->type_id())) {
     return std::partial_ordering::unordered;
   }
 
