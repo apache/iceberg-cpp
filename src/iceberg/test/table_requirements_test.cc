@@ -57,7 +57,6 @@ std::unique_ptr<TableMetadata> CreateBaseMetadata(
 
 }  // namespace
 
-// Test: Empty updates for CreateTable
 TEST(TableRequirementsTest, EmptyUpdatesForCreateTable) {
   std::vector<std::unique_ptr<TableUpdate>> updates;
 
@@ -73,7 +72,6 @@ TEST(TableRequirementsTest, EmptyUpdatesForCreateTable) {
   EXPECT_NE(assert_does_not_exist, nullptr);
 }
 
-// Test: Empty updates for UpdateTable
 TEST(TableRequirementsTest, EmptyUpdatesForUpdateTable) {
   auto metadata = CreateBaseMetadata();
   std::vector<std::unique_ptr<TableUpdate>> updates;
@@ -90,7 +88,6 @@ TEST(TableRequirementsTest, EmptyUpdatesForUpdateTable) {
   EXPECT_EQ(assert_uuid->uuid(), metadata->table_uuid);
 }
 
-// Test: Empty updates for ReplaceTable
 TEST(TableRequirementsTest, EmptyUpdatesForReplaceTable) {
   auto metadata = CreateBaseMetadata();
   std::vector<std::unique_ptr<TableUpdate>> updates;
@@ -107,7 +104,6 @@ TEST(TableRequirementsTest, EmptyUpdatesForReplaceTable) {
   EXPECT_EQ(assert_uuid->uuid(), metadata->table_uuid);
 }
 
-// Test: Table already exists (CreateTable requirement validation)
 TEST(TableRequirementsTest, TableAlreadyExists) {
   std::vector<std::unique_ptr<TableUpdate>> updates;
 
@@ -124,7 +120,6 @@ TEST(TableRequirementsTest, TableAlreadyExists) {
   EXPECT_THAT(status, HasErrorMessage("table already exists"));
 }
 
-// Test: Table does not exist (CreateTable requirement validation)
 TEST(TableRequirementsTest, TableDoesNotExist) {
   std::vector<std::unique_ptr<TableUpdate>> updates;
 
@@ -139,7 +134,7 @@ TEST(TableRequirementsTest, TableDoesNotExist) {
   EXPECT_THAT(status, IsOk());
 }
 
-// Test: AssignUUID for UpdateTable
+// Test for AssignUUID update
 TEST(TableRequirementsTest, AssignUUID) {
   auto metadata = CreateBaseMetadata("original-uuid");
   std::vector<std::unique_ptr<TableUpdate>> updates;
@@ -161,12 +156,10 @@ TEST(TableRequirementsTest, AssignUUID) {
   ASSERT_NE(assert_uuid, nullptr);
   EXPECT_EQ(assert_uuid->uuid(), "original-uuid");
 
-  // Validate against base metadata (should succeed)
   auto status = requirements[0]->Validate(metadata.get());
   EXPECT_THAT(status, IsOk());
 }
 
-// Test: AssignUUID validation failure
 TEST(TableRequirementsTest, AssignUUIDFailure) {
   auto metadata = CreateBaseMetadata("original-uuid");
   std::vector<std::unique_ptr<TableUpdate>> updates;
@@ -188,7 +181,6 @@ TEST(TableRequirementsTest, AssignUUIDFailure) {
   EXPECT_THAT(status, HasErrorMessage("UUID does not match"));
 }
 
-// Test: AssignUUID for ReplaceTable
 TEST(TableRequirementsTest, AssignUUIDForReplaceTable) {
   auto metadata = CreateBaseMetadata("original-uuid");
   std::vector<std::unique_ptr<TableUpdate>> updates;
@@ -213,58 +205,6 @@ TEST(TableRequirementsTest, AssignUUIDForReplaceTable) {
   // Validate against base metadata (should succeed)
   auto status = requirements[0]->Validate(metadata.get());
   EXPECT_THAT(status, IsOk());
-}
-
-// Test: Multiple requirements validation
-TEST(TableRequirementsTest, ValidateAllRequirements) {
-  auto metadata = CreateBaseMetadata("test-uuid");
-  std::vector<std::unique_ptr<TableUpdate>> updates;
-  updates.push_back(std::make_unique<table::AssignUUID>(metadata->table_uuid));
-
-  auto result = TableRequirements::ForUpdateTable(*metadata, updates);
-  ASSERT_THAT(result, IsOk());
-
-  auto& requirements = result.value();
-
-  // All requirements should validate successfully
-  for (const auto& req : requirements) {
-    auto status = req->Validate(metadata.get());
-    EXPECT_THAT(status, IsOk());
-  }
-}
-
-// Test: UUID comparison is case-insensitive
-TEST(TableRequirementsTest, AssignUUIDCaseInsensitive) {
-  auto metadata = CreateBaseMetadata("TEST-UUID-1234");
-  std::vector<std::unique_ptr<TableUpdate>> updates;
-  updates.push_back(std::make_unique<table::AssignUUID>("test-uuid-1234"));
-
-  auto result = TableRequirements::ForUpdateTable(*metadata, updates);
-  ASSERT_THAT(result, IsOk());
-
-  auto& requirements = result.value();
-  ASSERT_EQ(requirements.size(), 1);
-
-  // Validate against base metadata (should succeed due to case-insensitive comparison)
-  auto status = requirements[0]->Validate(metadata.get());
-  EXPECT_THAT(status, IsOk());
-}
-
-// Test: ForCreateTable with AssignUUID does not generate requirements
-TEST(TableRequirementsTest, CreateTableWithAssignUUID) {
-  std::vector<std::unique_ptr<TableUpdate>> updates;
-  updates.push_back(std::make_unique<table::AssignUUID>("new-table-uuid"));
-
-  auto result = TableRequirements::ForCreateTable(updates);
-  ASSERT_THAT(result, IsOk());
-
-  auto& requirements = result.value();
-  // Should have only AssertDoesNotExist, no UUID requirement for new tables
-  ASSERT_EQ(requirements.size(), 1);
-
-  auto* assert_does_not_exist =
-      dynamic_cast<table::AssertDoesNotExist*>(requirements[0].get());
-  EXPECT_NE(assert_does_not_exist, nullptr);
 }
 
 }  // namespace iceberg

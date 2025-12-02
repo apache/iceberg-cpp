@@ -44,8 +44,7 @@ void UpgradeFormatVersion::ApplyTo(TableMetadataBuilder& builder) const {
 }
 
 Status UpgradeFormatVersion::GenerateRequirements(TableUpdateContext& context) const {
-  // AssignUUID does not generate additional requirements.
-  return {};
+  return NotImplemented("UpgradeFormatVersion::GenerateRequirements not implemented");
 }
 
 // AddSchema

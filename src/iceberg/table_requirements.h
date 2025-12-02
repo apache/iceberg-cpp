@@ -68,14 +68,35 @@ class ICEBERG_EXPORT TableUpdateContext {
   /// \brief Build and return the list of requirements
   Result<std::vector<std::unique_ptr<TableRequirement>>> Build();
 
+  // Getters for deduplication flags
+  bool added_last_assigned_field_id() const { return added_last_assigned_field_id_; }
+  bool added_current_schema_id() const { return added_current_schema_id_; }
+  bool added_last_assigned_partition_id() const {
+    return added_last_assigned_partition_id_;
+  }
+  bool added_default_spec_id() const { return added_default_spec_id_; }
+  bool added_default_sort_order_id() const { return added_default_sort_order_id_; }
+
+  // Setters for deduplication flags
+  void set_added_last_assigned_field_id(bool value) {
+    added_last_assigned_field_id_ = value;
+  }
+  void set_added_current_schema_id(bool value) { added_current_schema_id_ = value; }
+  void set_added_last_assigned_partition_id(bool value) {
+    added_last_assigned_partition_id_ = value;
+  }
+  void set_added_default_spec_id(bool value) { added_default_spec_id_ = value; }
+  void set_added_default_sort_order_id(bool value) {
+    added_default_sort_order_id_ = value;
+  }
+
  private:
   const TableMetadata* base_;
   const bool is_replace_;
 
   std::vector<std::unique_ptr<TableRequirement>> requirements_;
 
-  // Deduplication flags to avoid adding duplicate requirements
-  // These track whether specific requirement types have already been added
+  // flags to avoid adding duplicate requirements
   bool added_last_assigned_field_id_ = false;
   bool added_current_schema_id_ = false;
   bool added_last_assigned_partition_id_ = false;
