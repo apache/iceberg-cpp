@@ -25,6 +25,7 @@
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/error_collector.h"
 
 namespace iceberg {
 
@@ -74,7 +75,7 @@ class ICEBERG_EXPORT PendingUpdate {
 ///
 /// \tparam T The type of result returned by Apply()
 template <typename T>
-class ICEBERG_EXPORT PendingUpdateTyped : public PendingUpdate {
+class ICEBERG_EXPORT PendingUpdateTyped : public PendingUpdate, public ErrorCollector {
  public:
   ~PendingUpdateTyped() override = default;
 

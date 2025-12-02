@@ -275,9 +275,6 @@ struct TableMetadataBuilder::Impl {
   // Change tracking
   std::vector<std::unique_ptr<TableUpdate>> changes;
 
-  // Error collection (since methods return *this and cannot throw)
-  std::vector<Error> errors;
-
   // Metadata location tracking
   std::optional<std::string> metadata_location;
   std::optional<std::string> previous_metadata_location;
@@ -348,8 +345,7 @@ TableMetadataBuilder& TableMetadataBuilder::AssignUUID(std::string_view uuid) {
 
   // Validation: UUID cannot be empty
   if (uuid_str.empty()) {
-    impl_->errors.emplace_back(ErrorKind::kInvalidArgument, "Cannot assign empty UUID");
-    return *this;
+    return AddError(ErrorKind::kInvalidArgument, "Cannot assign empty UUID");
   }
 
   // Check if UUID is already set to the same value (no-op)
@@ -451,7 +447,7 @@ TableMetadataBuilder& TableMetadataBuilder::RemoveSnapshots(
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
-TableMetadataBuilder& TableMetadataBuilder::suppressHistoricalSnapshots() {
+TableMetadataBuilder& TableMetadataBuilder::SuppressHistoricalSnapshots() {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
 }
 
@@ -499,13 +495,7 @@ TableMetadataBuilder& TableMetadataBuilder::RemoveEncryptionKey(std::string_view
 
 Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Build() {
   // 1. Check for accumulated errors
-  if (!impl_->errors.empty()) {
-    std::string error_msg = "Failed to build TableMetadata due to validation errors:\n";
-    for (const auto& [kind, message] : impl_->errors) {
-      error_msg += "  - " + message + "\n";
-    }
-    return CommitFailed("{}", error_msg);
-  }
+  ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
   // 2. Validate metadata consistency through TableMetadata#Validate
 

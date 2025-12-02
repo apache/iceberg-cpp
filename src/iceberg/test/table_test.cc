@@ -32,13 +32,14 @@
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
-#include "iceberg/test/test_common.h"
+#include "iceberg/test/matchers.h"
+#include "iceberg/test/test_resource.h"
 
 namespace iceberg {
 
 TEST(Table, TableV1) {
-  std::unique_ptr<TableMetadata> metadata;
-  ASSERT_NO_FATAL_FAILURE(ReadTableMetadata("TableMetadataV1Valid.json", &metadata));
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata,
+                         ReadTableMetadataFromResource("TableMetadataV1Valid.json"));
   TableIdentifier tableIdent{.ns = {}, .name = "test_table_v1"};
   Table table(tableIdent, std::move(metadata), "s3://bucket/test/location/meta/", nullptr,
               nullptr);
@@ -76,8 +77,8 @@ TEST(Table, TableV1) {
 }
 
 TEST(Table, TableV2) {
-  std::unique_ptr<TableMetadata> metadata;
-  ASSERT_NO_FATAL_FAILURE(ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata,
+                         ReadTableMetadataFromResource("TableMetadataV2Valid.json"));
   TableIdentifier tableIdent{.ns = {}, .name = "test_table_v2"};
 
   Table table(tableIdent, std::move(metadata), "s3://bucket/test/location/meta/", nullptr,

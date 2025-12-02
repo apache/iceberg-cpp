@@ -30,6 +30,7 @@
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/error_collector.h"
 #include "iceberg/util/lazy.h"
 #include "iceberg/util/timepoint.h"
 
@@ -193,7 +194,7 @@ ICEBERG_EXPORT std::string ToString(const MetadataLogEntry& entry);
 /// If a modification violates Iceberg table constraints (e.g., setting a current
 /// schema ID that does not exist), an error will be recorded and returned when
 /// Build() is called.
-class ICEBERG_EXPORT TableMetadataBuilder {
+class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
  public:
   /// \brief Create a builder for a new table
   ///
@@ -353,7 +354,7 @@ class ICEBERG_EXPORT TableMetadataBuilder {
   /// RemoveSnapshot changes are created. A snapshot is historical if no ref directly
   /// references its ID.
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& suppressHistoricalSnapshots();
+  TableMetadataBuilder& SuppressHistoricalSnapshots();
 
   /// \brief Set table statistics
   ///
