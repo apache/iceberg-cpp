@@ -71,14 +71,15 @@ std::unique_ptr<TableMetadata> CreateBaseMetadata() {
 TEST(TableUpdateTest, AssignUUIDGenerateRequirements) {
   table::AssignUUID update("new-uuid");
 
-  // New table - no requirements
+  // New table - no requirements (AssignUUID doesn't generate requirements)
   auto new_table_reqs = GenerateRequirements(update, nullptr);
   EXPECT_TRUE(new_table_reqs.empty());
 
-  // Existing table - should generate AssertUUID requirement
+  // Existing table - AssignUUID doesn't generate requirements anymore
+  // The UUID assertion is added by ForUpdateTable/ForReplaceTable methods
   auto base = CreateBaseMetadata();
   auto existing_table_reqs = GenerateRequirements(update, base.get());
-  EXPECT_EQ(existing_table_reqs.size(), 1);
+  EXPECT_TRUE(existing_table_reqs.empty());
 
   // Existing table with empty UUID - no requirements
   base->table_uuid = "";

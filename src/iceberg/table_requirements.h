@@ -73,6 +73,14 @@ class ICEBERG_EXPORT TableUpdateContext {
   const bool is_replace_;
 
   std::vector<std::unique_ptr<TableRequirement>> requirements_;
+
+  // Deduplication flags to avoid adding duplicate requirements
+  // These track whether specific requirement types have already been added
+  bool added_last_assigned_field_id_ = false;
+  bool added_current_schema_id_ = false;
+  bool added_last_assigned_partition_id_ = false;
+  bool added_default_spec_id_ = false;
+  bool added_default_sort_order_id_ = false;
 };
 
 /// \brief Factory class for generating table requirements
