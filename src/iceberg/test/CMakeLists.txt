@@ -85,8 +85,7 @@ add_iceberg_test(table_test
                  table_test.cc
                  table_metadata_builder_test.cc
                  table_requirement_test.cc
-                 table_update_test.cc
-                 test_common.cc)
+                 table_update_test.cc)
 
 add_iceberg_test(expression_test
                  SOURCES
@@ -98,7 +97,6 @@ add_iceberg_test(expression_test
 
 add_iceberg_test(json_serde_test
                  SOURCES
-                 test_common.cc
                  json_internal_test.cc
                  metadata_serde_test.cc
                  schema_json_test.cc)
@@ -126,8 +124,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    avro_schema_test.cc
                    avro_stream_test.cc
                    manifest_list_versions_test.cc
-                   manifest_writer_versions_test.cc
-                   test_common.cc)
+                   manifest_writer_versions_test.cc)
 
   add_iceberg_test(arrow_test
                    USE_BUNDLE
@@ -138,18 +135,13 @@ if(ICEBERG_BUILD_BUNDLE)
                    metadata_io_test.cc
                    struct_like_test.cc)
 
-  add_iceberg_test(catalog_test
-                   USE_BUNDLE
-                   SOURCES
-                   test_common.cc
-                   in_memory_catalog_test.cc)
+  add_iceberg_test(catalog_test USE_BUNDLE SOURCES in_memory_catalog_test.cc)
 
   add_iceberg_test(eval_expr_test
                    USE_BUNDLE
                    SOURCES
                    eval_expr_test.cc
-                   evaluator_test.cc
-                   test_common.cc)
+                   evaluator_test.cc)
 
   add_iceberg_test(parquet_test
                    USE_BUNDLE

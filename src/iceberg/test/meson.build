@@ -52,7 +52,6 @@ iceberg_tests = {
             'table_requirement_test.cc',
             'table_test.cc',
             'table_update_test.cc',
-            'test_common.cc',
         ),
     },
     'expression_test': {
@@ -69,7 +68,6 @@ iceberg_tests = {
             'json_internal_test.cc',
             'metadata_serde_test.cc',
             'schema_json_test.cc',
-            'test_common.cc',
         ),
     },
     'util_test': {

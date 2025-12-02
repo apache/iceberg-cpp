@@ -31,15 +31,14 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
-#include "iceberg/test/test_common.h"
+#include "iceberg/test/test_resource.h"
 
 namespace iceberg {
 
 class InMemoryCatalogTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(
-        std::make_shared<::arrow::fs::LocalFileSystem>());
+    file_io_ = arrow::ArrowFileSystemFileIO::MakeLocalFileIO();
     std::unordered_map<std::string, std::string> properties = {{"prop1", "val1"}};
     catalog_ = std::make_shared<InMemoryCatalog>("test_catalog", file_io_,
                                                  "/tmp/warehouse/", properties);
@@ -103,8 +102,8 @@ TEST_F(InMemoryCatalogTest, TableExists) {
 TEST_F(InMemoryCatalogTest, RegisterTable) {
   TableIdentifier tableIdent{.ns = {}, .name = "t1"};
 
-  std::unique_ptr<TableMetadata> metadata;
-  ASSERT_NO_FATAL_FAILURE(ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata,
+                         ReadTableMetadataFromResource("TableMetadataV2Valid.json"));
 
   auto table_location = GenerateTestTableLocation(tableIdent.name);
   auto metadata_location = std::format("{}v1.metadata.json", table_location);

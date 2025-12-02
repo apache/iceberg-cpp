@@ -19,25 +19,39 @@
 
 #pragma once
 
+#include <filesystem>
+#include <fstream>
 #include <memory>
+#include <sstream>
 #include <string>
 
+#include <nlohmann/json.hpp>
+
+#include "iceberg/json_internal.h"
 #include "iceberg/result.h"
-#include "iceberg/type_fwd.h"
+#include "iceberg/table_metadata.h"
+#include "iceberg/test/test_config.h"
 
 namespace iceberg {
 
 /// \brief Get the full path to a resource file in the test resources directory
-std::string GetResourcePath(const std::string& file_name);
-
-/// \brief Read a JSON file from the test resources directory
-void ReadJsonFile(const std::string& file_name, std::string* content);
-
-/// \brief Read table metadata from a JSON file in the test resources directory
-void ReadTableMetadata(const std::string& file_name,
-                       std::unique_ptr<TableMetadata>* metadata);
+static std::string GetResourcePath(const std::string& file_name) {
+  return std::string(ICEBERG_TEST_RESOURCES) + "/" + file_name;
+}
 
 /// \brief Read table metadata from a JSON file and return the Result directly
-Result<std::unique_ptr<TableMetadata>> ReadTableMetadata(const std::string& file_name);
+static Result<std::unique_ptr<TableMetadata>> ReadTableMetadataFromResource(
+    const std::string& file_name) {
+  std::filesystem::path path{GetResourcePath(file_name)};
+  if (!std::filesystem::exists(path)) {
+    return InvalidArgument("File does not exist: {}", path.string());
+  }
+
+  std::ifstream file(path);
+  std::stringstream buffer;
+  buffer << file.rdbuf();
+
+  return TableMetadataFromJson(nlohmann::json::parse(buffer.str()));
+}
 
 }  // namespace iceberg

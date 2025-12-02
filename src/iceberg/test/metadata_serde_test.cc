@@ -32,7 +32,7 @@
 #include "iceberg/statistics_file.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
-#include "iceberg/test/test_common.h"
+#include "iceberg/test/test_resource.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
 
@@ -42,7 +42,7 @@ namespace {
 
 void ReadTableMetadataExpectError(const std::string& file_name,
                                   const std::string& expected_error_substr) {
-  auto result = ReadTableMetadata(file_name);
+  auto result = ReadTableMetadataFromResource(file_name);
   ASSERT_FALSE(result.has_value()) << "Expected parsing to fail for " << file_name;
   EXPECT_THAT(result, HasErrorMessage(expected_error_substr));
 }
@@ -90,8 +90,8 @@ void AssertSnapshotById(const TableMetadata& metadata, int64_t snapshot_id,
 }  // namespace
 
 TEST(MetadataSerdeTest, DeserializeV1Valid) {
-  std::unique_ptr<TableMetadata> metadata;
-  ASSERT_NO_FATAL_FAILURE(ReadTableMetadata("TableMetadataV1Valid.json", &metadata));
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata,
+                         ReadTableMetadataFromResource("TableMetadataV1Valid.json"));
 
   auto expected_schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(1, "x", int64()),
@@ -132,8 +132,8 @@ TEST(MetadataSerdeTest, DeserializeV1Valid) {
 }
 
 TEST(MetadataSerdeTest, DeserializeV2Valid) {
-  std::unique_ptr<TableMetadata> metadata;
-  ASSERT_NO_FATAL_FAILURE(ReadTableMetadata("TableMetadataV2Valid.json", &metadata));
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata,
+                         ReadTableMetadataFromResource("TableMetadataV2Valid.json"));
 
   auto expected_schema_1 = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField(/*field_id=*/1, "x", int64(),
@@ -224,9 +224,8 @@ TEST(MetadataSerdeTest, DeserializeV2Valid) {
 }
 
 TEST(MetadataSerdeTest, DeserializeV2ValidMinimal) {
-  std::unique_ptr<TableMetadata> metadata;
-  ASSERT_NO_FATAL_FAILURE(
-      ReadTableMetadata("TableMetadataV2ValidMinimal.json", &metadata));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto metadata, ReadTableMetadataFromResource("TableMetadataV2ValidMinimal.json"));
 
   auto expected_schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(1, "x", int64()),
@@ -281,9 +280,8 @@ TEST(MetadataSerdeTest, DeserializeV2ValidMinimal) {
 }
 
 TEST(MetadataSerdeTest, DeserializeStatisticsFiles) {
-  std::unique_ptr<TableMetadata> metadata;
-  ASSERT_NO_FATAL_FAILURE(
-      ReadTableMetadata("TableMetadataStatisticsFiles.json", &metadata));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto metadata, ReadTableMetadataFromResource("TableMetadataStatisticsFiles.json"));
 
   auto expected_schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField(/*field_id=*/1, "x", int64(),
@@ -353,9 +351,9 @@ TEST(MetadataSerdeTest, DeserializeStatisticsFiles) {
 }
 
 TEST(MetadataSerdeTest, DeserializePartitionStatisticsFiles) {
-  std::unique_ptr<TableMetadata> metadata;
-  ASSERT_NO_FATAL_FAILURE(
-      ReadTableMetadata("TableMetadataPartitionStatisticsFiles.json", &metadata));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto metadata,
+      ReadTableMetadataFromResource("TableMetadataPartitionStatisticsFiles.json"));
 
   TableMetadata expected{
       .format_version = 2,
