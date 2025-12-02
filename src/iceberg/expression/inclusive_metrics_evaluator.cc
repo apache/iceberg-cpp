@@ -176,7 +176,6 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
       return kRowsMightMatch;
     }
     const auto& upper = upper_result.value();
-
     if (upper <= lit) {
       return kRowCannotMatch;
     }
@@ -486,7 +485,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
   Result<std::optional<Literal>> TransformUpperBound(BoundTransform& boundTransform) {
     auto transform = boundTransform.transform();
     if (transform->PreservesOrder()) {
-      ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseLowerBound(*boundTransform.reference()));
+      ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseUpperBound(*boundTransform.reference()));
       ICEBERG_ASSIGN_OR_RAISE(auto transform_func,
                               transform->Bind(boundTransform.reference()->type()));
       if (upper.has_value()) {
