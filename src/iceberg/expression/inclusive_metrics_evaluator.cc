@@ -291,13 +291,13 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
 
   Result<bool> StartsWith(const std::shared_ptr<Bound>& expr,
                           const Literal& lit) override {
-    auto transform = internal::checked_pointer_cast<BoundTransform>(expr);
-    if (transform != nullptr &&
-        transform->transform()->transform_type() != TransformType::kIdentity) {
-      // truncate must be rewritten in binding. the result is either always or never
-      // compatible
-      return kRowsMightMatch;
-    }
+    //    auto transform = internal::checked_pointer_cast<BoundTransform>(expr);
+    //    if (transform != nullptr &&
+    //        transform->transform()->transform_type() != TransformType::kIdentity) {
+    //      // truncate must be rewritten in binding. the result is either always or never
+    //      // compatible
+    //      return kRowsMightMatch;
+    //    }
 
     int32_t id = expr->reference()->field().field_id();
     if (ContainsNullsOnly(id)) {
