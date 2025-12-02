@@ -43,6 +43,17 @@ class ICEBERG_EXPORT StringUtils {
     return std::ranges::equal(
         lhs, rhs, [](char lc, char rc) { return std::tolower(lc) == std::tolower(rc); });
   }
+
+  /// \brief Count the number of code points in a UTF-8 string.
+  static size_t CodePointCount(std::string_view str) {
+    size_t count = 0;
+    for (char i : str) {
+      if ((i & 0xC0) != 0x80) {
+        count++;
+      }
+    }
+    return count;
+  }
 };
 
 /// \brief Transparent hash function that supports std::string_view as lookup key

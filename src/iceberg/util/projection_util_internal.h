@@ -34,6 +34,7 @@
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/decimal.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
@@ -49,10 +50,8 @@ class ProjectionUtil {
       transformed.push_back(std::move(transformed_lit));
     }
     ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
-    ICEBERG_ASSIGN_OR_RAISE(auto pred,
-                            UnboundPredicateImpl<BoundReference>::Make(
-                                predicate->op(), std::move(ref), std::move(transformed)));
-    return pred;
+    return UnboundPredicateImpl<BoundReference>::Make(predicate->op(), std::move(ref),
+                                                      std::move(transformed));
   }
 
   // General transform for all literal predicates.  This is used as a fallback for special
@@ -65,23 +64,17 @@ class ProjectionUtil {
     switch (predicate->op()) {
       case Expression::Operation::kLt:
       case Expression::Operation::kLtEq: {
-        ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                               Expression::Operation::kLtEq,
-                                               std::move(ref), std::move(transformed)));
-        return pred;
+        return UnboundPredicateImpl<BoundReference>::Make(
+            Expression::Operation::kLtEq, std::move(ref), std::move(transformed));
       }
       case Expression::Operation::kGt:
       case Expression::Operation::kGtEq: {
-        ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                               Expression::Operation::kGtEq,
-                                               std::move(ref), std::move(transformed)));
-        return pred;
+        return UnboundPredicateImpl<BoundReference>::Make(
+            Expression::Operation::kGtEq, std::move(ref), std::move(transformed));
       }
       case Expression::Operation::kEq: {
-        ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                               Expression::Operation::kEq, std::move(ref),
-                                               std::move(transformed)));
-        return pred;
+        return UnboundPredicateImpl<BoundReference>::Make(
+            Expression::Operation::kEq, std::move(ref), std::move(transformed));
       }
       default:
         return nullptr;
@@ -95,10 +88,8 @@ class ProjectionUtil {
     switch (predicate->op()) {
       case Expression::Operation::kStartsWith: {
         ICEBERG_ASSIGN_OR_RAISE(auto transformed, func->Transform(predicate->literal()));
-        ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                               Expression::Operation::kStartsWith,
-                                               std::move(ref), std::move(transformed)));
-        return pred;
+        return UnboundPredicateImpl<BoundReference>::Make(
+            Expression::Operation::kStartsWith, std::move(ref), std::move(transformed));
       }
       default:
         return GenericTransform(std::move(ref), predicate, func);
@@ -120,18 +111,14 @@ class ProjectionUtil {
           ICEBERG_ASSIGN_OR_RAISE(
               auto transformed,
               func->Transform(Literal::Int(std::get<int32_t>(literal.value()) - 1)));
-          ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                                 Expression::Operation::kLtEq,
-                                                 std::move(ref), std::move(transformed)));
-          return pred;
+          return UnboundPredicateImpl<BoundReference>::Make(
+              Expression::Operation::kLtEq, std::move(ref), std::move(transformed));
         } else {
           ICEBERG_ASSIGN_OR_RAISE(
               auto transformed,
               func->Transform(Literal::Long(std::get<int64_t>(literal.value()) - 1)));
-          ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                                 Expression::Operation::kLtEq,
-                                                 std::move(ref), std::move(transformed)));
-          return pred;
+          return UnboundPredicateImpl<BoundReference>::Make(
+              Expression::Operation::kLtEq, std::move(ref), std::move(transformed));
         }
       }
       case Expression::Operation::kGt: {
@@ -140,18 +127,14 @@ class ProjectionUtil {
           ICEBERG_ASSIGN_OR_RAISE(
               auto transformed,
               func->Transform(Literal::Int(std::get<int32_t>(literal.value()) + 1)));
-          ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                                 Expression::Operation::kGtEq,
-                                                 std::move(ref), std::move(transformed)));
-          return pred;
+          return UnboundPredicateImpl<BoundReference>::Make(
+              Expression::Operation::kGtEq, std::move(ref), std::move(transformed));
         } else {
           ICEBERG_ASSIGN_OR_RAISE(
               auto transformed,
               func->Transform(Literal::Long(std::get<int64_t>(literal.value()) + 1)));
-          ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                                 Expression::Operation::kGtEq,
-                                                 std::move(ref), std::move(transformed)));
-          return pred;
+          return UnboundPredicateImpl<BoundReference>::Make(
+              Expression::Operation::kGtEq, std::move(ref), std::move(transformed));
         }
       }
       default:
@@ -172,21 +155,15 @@ class ProjectionUtil {
             ICEBERG_ASSIGN_OR_RAISE(
                 auto transformed,
                 func->Transform(Literal::Date(std::get<int32_t>(literal.value()) - 1)));
-            ICEBERG_ASSIGN_OR_RAISE(auto pred,
-                                    UnboundPredicateImpl<BoundReference>::Make(
-                                        Expression::Operation::kLtEq, std::move(ref),
-                                        std::move(transformed)));
-            return pred;
+            return UnboundPredicateImpl<BoundReference>::Make(
+                Expression::Operation::kLtEq, std::move(ref), std::move(transformed));
           }
           case Expression::Operation::kGt: {
             ICEBERG_ASSIGN_OR_RAISE(
                 auto transformed,
                 func->Transform(Literal::Date(std::get<int32_t>(literal.value()) + 1)));
-            ICEBERG_ASSIGN_OR_RAISE(auto pred,
-                                    UnboundPredicateImpl<BoundReference>::Make(
-                                        Expression::Operation::kGtEq, std::move(ref),
-                                        std::move(transformed)));
-            return pred;
+            return UnboundPredicateImpl<BoundReference>::Make(
+                Expression::Operation::kGtEq, std::move(ref), std::move(transformed));
           }
           default:
             return GenericTransform(std::move(ref), predicate, func);
@@ -198,21 +175,15 @@ class ProjectionUtil {
             ICEBERG_ASSIGN_OR_RAISE(auto transformed,
                                     func->Transform(Literal::Timestamp(
                                         std::get<int64_t>(literal.value()) - 1)));
-            ICEBERG_ASSIGN_OR_RAISE(auto pred,
-                                    UnboundPredicateImpl<BoundReference>::Make(
-                                        Expression::Operation::kLtEq, std::move(ref),
-                                        std::move(transformed)));
-            return pred;
+            return UnboundPredicateImpl<BoundReference>::Make(
+                Expression::Operation::kLtEq, std::move(ref), std::move(transformed));
           }
           case Expression::Operation::kGt: {
             ICEBERG_ASSIGN_OR_RAISE(auto transformed,
                                     func->Transform(Literal::Timestamp(
                                         std::get<int64_t>(literal.value()) + 1)));
-            ICEBERG_ASSIGN_OR_RAISE(auto pred,
-                                    UnboundPredicateImpl<BoundReference>::Make(
-                                        Expression::Operation::kGtEq, std::move(ref),
-                                        std::move(transformed)));
-            return pred;
+            return UnboundPredicateImpl<BoundReference>::Make(
+                Expression::Operation::kGtEq, std::move(ref), std::move(transformed));
           }
           default:
             return GenericTransform(std::move(ref), predicate, func);
@@ -224,26 +195,19 @@ class ProjectionUtil {
             ICEBERG_ASSIGN_OR_RAISE(auto transformed,
                                     func->Transform(Literal::TimestampTz(
                                         std::get<int64_t>(literal.value()) - 1)));
-            ICEBERG_ASSIGN_OR_RAISE(auto pred,
-                                    UnboundPredicateImpl<BoundReference>::Make(
-                                        Expression::Operation::kLtEq, std::move(ref),
-                                        std::move(transformed)));
-            return pred;
+            return UnboundPredicateImpl<BoundReference>::Make(
+                Expression::Operation::kLtEq, std::move(ref), std::move(transformed));
           }
           case Expression::Operation::kGt: {
             ICEBERG_ASSIGN_OR_RAISE(auto transformed,
                                     func->Transform(Literal::TimestampTz(
                                         std::get<int64_t>(literal.value()) + 1)));
-            ICEBERG_ASSIGN_OR_RAISE(auto pred,
-                                    UnboundPredicateImpl<BoundReference>::Make(
-                                        Expression::Operation::kGtEq, std::move(ref),
-                                        std::move(transformed)));
-            return pred;
+            return UnboundPredicateImpl<BoundReference>::Make(
+                Expression::Operation::kGtEq, std::move(ref), std::move(transformed));
           }
           default:
             return GenericTransform(std::move(ref), predicate, func);
         }
-        std::unreachable();
       }
       default:
         return NotSupported("{} is not a valid input type for temporal transform",
@@ -269,19 +233,15 @@ class ProjectionUtil {
         // adjust closed and then transform ltEq
         ICEBERG_ASSIGN_OR_RAISE(auto transformed,
                                 func->Transform(make_adjusted_literal(-1)));
-        ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                               Expression::Operation::kLtEq,
-                                               std::move(ref), std::move(transformed)));
-        return pred;
+        return UnboundPredicateImpl<BoundReference>::Make(
+            Expression::Operation::kLtEq, std::move(ref), std::move(transformed));
       }
       case Expression::Operation::kGt: {
         // adjust closed and then transform gtEq
         ICEBERG_ASSIGN_OR_RAISE(auto transformed,
                                 func->Transform(make_adjusted_literal(1)));
-        ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                               Expression::Operation::kGtEq,
-                                               std::move(ref), std::move(transformed)));
-        return pred;
+        return UnboundPredicateImpl<BoundReference>::Make(
+            Expression::Operation::kGtEq, std::move(ref), std::move(transformed));
       }
       default:
         return GenericTransform(std::move(ref), predicate, func);
@@ -303,32 +263,25 @@ class ProjectionUtil {
     const auto width = truncate_transform->width();
     ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
 
-    if (str_value.length() < width) {
-      ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                             op, std::move(ref), predicate->literal()));
-      return pred;
+    if (StringUtils::CodePointCount(str_value) < width) {
+      return UnboundPredicateImpl<BoundReference>::Make(op, std::move(ref),
+                                                        predicate->literal());
     }
 
-    if (str_value.length() == width) {
+    if (StringUtils::CodePointCount(str_value) == width) {
       if (op == Expression::Operation::kStartsWith) {
-        ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                               Expression::Operation::kEq, std::move(ref),
-                                               predicate->literal()));
-        return pred;
+        return UnboundPredicateImpl<BoundReference>::Make(
+            Expression::Operation::kEq, std::move(ref), predicate->literal());
       } else {
-        ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                               Expression::Operation::kNotEq,
-                                               std::move(ref), predicate->literal()));
-        return pred;
+        return UnboundPredicateImpl<BoundReference>::Make(
+            Expression::Operation::kNotEq, std::move(ref), predicate->literal());
       }
     }
 
     if (op == Expression::Operation::kStartsWith) {
       ICEBERG_ASSIGN_OR_RAISE(auto transformed, func->Transform(predicate->literal()));
-      ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                             Expression::Operation::kStartsWith,
-                                             std::move(ref), std::move(transformed)));
-      return pred;
+      return UnboundPredicateImpl<BoundReference>::Make(
+          Expression::Operation::kStartsWith, std::move(ref), std::move(transformed));
     }
 
     return nullptr;
@@ -353,11 +306,9 @@ class ProjectionUtil {
                        "Expected int32_t");
         auto value = std::get<int32_t>(literal.value());
         if (value < 0) {
-          ICEBERG_ASSIGN_OR_RAISE(
-              auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                             Expression::Operation::kLt, std::move(projected->term()),
-                             Literal::Int(value + 1)));
-          return pred;
+          return UnboundPredicateImpl<BoundReference>::Make(Expression::Operation::kLt,
+                                                            std::move(projected->term()),
+                                                            Literal::Int(value + 1));
         }
 
         return std::move(projected);
@@ -370,11 +321,9 @@ class ProjectionUtil {
                        "Expected int32_t");
         auto value = std::get<int32_t>(literal.value());
         if (value < 0) {
-          ICEBERG_ASSIGN_OR_RAISE(
-              auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                             Expression::Operation::kLtEq, std::move(projected->term()),
-                             Literal::Int(value + 1)));
-          return pred;
+          return UnboundPredicateImpl<BoundReference>::Make(Expression::Operation::kLtEq,
+                                                            std::move(projected->term()),
+                                                            Literal::Int(value + 1));
         }
         return std::move(projected);
       }
@@ -393,11 +342,9 @@ class ProjectionUtil {
         if (value < 0) {
           // match either the incorrect value (projectedValue + 1) or the correct value
           // (projectedValue)
-          ICEBERG_ASSIGN_OR_RAISE(
-              auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                             Expression::Operation::kIn, std::move(projected->term()),
-                             {literal, Literal::Int(value + 1)}));
-          return pred;
+          return UnboundPredicateImpl<BoundReference>::Make(
+              Expression::Operation::kIn, std::move(projected->term()),
+              {literal, Literal::Int(value + 1)});
         }
         return std::move(projected);
       }
@@ -426,11 +373,9 @@ class ProjectionUtil {
               std::views::transform(value_set,
                                     [](int32_t value) { return Literal::Int(value); }) |
               std::ranges::to<std::vector>();
-          ICEBERG_ASSIGN_OR_RAISE(
-              auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                             Expression::Operation::kIn, std::move(projected->term()),
-                             std::move(values)));
-          return pred;
+          return UnboundPredicateImpl<BoundReference>::Make(Expression::Operation::kIn,
+                                                            std::move(projected->term()),
+                                                            std::move(values));
         }
         return std::move(projected);
       }
@@ -451,30 +396,24 @@ class ProjectionUtil {
     ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
     switch (predicate->kind()) {
       case BoundPredicate::Kind::kUnary: {
-        ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                               predicate->op(), std::move(ref)));
-        return pred;
+        return UnboundPredicateImpl<BoundReference>::Make(predicate->op(),
+                                                          std::move(ref));
       }
       case BoundPredicate::Kind::kLiteral: {
         const auto& literalPredicate =
             internal::checked_pointer_cast<BoundLiteralPredicate>(predicate);
-        ICEBERG_ASSIGN_OR_RAISE(
-            auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                           predicate->op(), std::move(ref), literalPredicate->literal()));
-        return pred;
+        return UnboundPredicateImpl<BoundReference>::Make(predicate->op(), std::move(ref),
+                                                          literalPredicate->literal());
       }
       case BoundPredicate::Kind::kSet: {
         const auto& setPredicate =
             internal::checked_pointer_cast<BoundSetPredicate>(predicate);
-        ICEBERG_ASSIGN_OR_RAISE(
-            auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                           predicate->op(), std::move(ref),
-                           std::vector<Literal>(setPredicate->literal_set().begin(),
-                                                setPredicate->literal_set().end())));
-        return pred;
+        return UnboundPredicateImpl<BoundReference>::Make(
+            predicate->op(), std::move(ref),
+            std::vector<Literal>(setPredicate->literal_set().begin(),
+                                 setPredicate->literal_set().end()));
       }
     }
-
     std::unreachable();
   }
 
@@ -484,9 +423,8 @@ class ProjectionUtil {
     ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
     switch (predicate->kind()) {
       case BoundPredicate::Kind::kUnary: {
-        ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                               predicate->op(), std::move(ref)));
-        return pred;
+        return UnboundPredicateImpl<BoundReference>::Make(predicate->op(),
+                                                          std::move(ref));
       }
       case BoundPredicate::Kind::kLiteral: {
         if (predicate->op() == Expression::Operation::kEq) {
@@ -494,10 +432,8 @@ class ProjectionUtil {
               internal::checked_pointer_cast<BoundLiteralPredicate>(predicate);
           ICEBERG_ASSIGN_OR_RAISE(auto transformed,
                                   func->Transform(literalPredicate->literal()));
-          ICEBERG_ASSIGN_OR_RAISE(
-              auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                             predicate->op(), std::move(ref), std::move(transformed)));
-          return pred;
+          return UnboundPredicateImpl<BoundReference>::Make(
+              predicate->op(), std::move(ref), std::move(transformed));
         }
         break;
       }
@@ -506,8 +442,7 @@ class ProjectionUtil {
         if (predicate->op() == Expression::Operation::kIn) {
           const auto& setPredicate =
               internal::checked_pointer_cast<BoundSetPredicate>(predicate);
-          ICEBERG_ASSIGN_OR_RAISE(auto pred, TransformSet(name, setPredicate, func));
-          return pred;
+          return TransformSet(name, setPredicate, func);
         }
         break;
       }
@@ -525,9 +460,7 @@ class ProjectionUtil {
     ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
     // Handle unary predicates uniformly for all types
     if (predicate->kind() == BoundPredicate::Kind::kUnary) {
-      ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                             predicate->op(), std::move(ref)));
-      return pred;
+      return UnboundPredicateImpl<BoundReference>::Make(predicate->op(), std::move(ref));
     }
 
     // Handle set predicates (kIn) uniformly for all types
@@ -566,43 +499,34 @@ class ProjectionUtil {
       const std::shared_ptr<TransformFunction>& func) {
     ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
     if (predicate->kind() == BoundPredicate::Kind::kUnary) {
-      ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                             predicate->op(), std::move(ref)));
-      return pred;
-    }
-
-    if (predicate->kind() == BoundPredicate::Kind::kSet) {
-      if (predicate->op() == Expression::Operation::kIn) {
-        const auto& setPredicate =
-            internal::checked_pointer_cast<BoundSetPredicate>(predicate);
-        ICEBERG_ASSIGN_OR_RAISE(auto projected, TransformSet(name, setPredicate, func));
-        if (func->transform_type() != TransformType::kDay) {
-          ICEBERG_ASSIGN_OR_RAISE(
-              auto fixed,
-              FixInclusiveTimeProjection(
-                  internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
-                      std::move(projected))));
-          return fixed;
-        }
-        return projected;
+      return UnboundPredicateImpl<BoundReference>::Make(predicate->op(), std::move(ref));
+    } else if (predicate->kind() == BoundPredicate::Kind::kLiteral) {
+      const auto& literalPredicate =
+          internal::checked_pointer_cast<BoundLiteralPredicate>(predicate);
+      ICEBERG_ASSIGN_OR_RAISE(auto projected,
+                              TransformTemporal(name, literalPredicate, func));
+      if (func->transform_type() != TransformType::kDay ||
+          func->source_type()->type_id() != TypeId::kDate) {
+        return FixInclusiveTimeProjection(
+            internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+                std::move(projected)));
       }
-      return nullptr;
+      return projected;
+    } else if (predicate->kind() == BoundPredicate::Kind::kSet &&
+               predicate->op() == Expression::Operation::kIn) {
+      const auto& setPredicate =
+          internal::checked_pointer_cast<BoundSetPredicate>(predicate);
+      ICEBERG_ASSIGN_OR_RAISE(auto projected, TransformSet(name, setPredicate, func));
+      if (func->transform_type() != TransformType::kDay ||
+          func->source_type()->type_id() != TypeId::kDate) {
+        return FixInclusiveTimeProjection(
+            internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+                std::move(projected)));
+      }
+      return projected;
     }
 
-    const auto& literalPredicate =
-        internal::checked_pointer_cast<BoundLiteralPredicate>(predicate);
-
-    ICEBERG_ASSIGN_OR_RAISE(auto projected,
-                            TransformTemporal(name, literalPredicate, func));
-    if (func->transform_type() != TransformType::kDay) {
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto fixed,
-          FixInclusiveTimeProjection(
-              internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
-                  std::move(projected))));
-      return fixed;
-    }
-    return projected;
+    return nullptr;
   }
 
   static Result<std::unique_ptr<UnboundPredicate>> RemoveTransform(
@@ -610,27 +534,22 @@ class ProjectionUtil {
     ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
     switch (predicate->kind()) {
       case BoundPredicate::Kind::kUnary: {
-        ICEBERG_ASSIGN_OR_RAISE(auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                                               predicate->op(), std::move(ref)));
-        return pred;
+        return UnboundPredicateImpl<BoundReference>::Make(predicate->op(),
+                                                          std::move(ref));
       }
       case BoundPredicate::Kind::kLiteral: {
         const auto& literalPredicate =
             internal::checked_pointer_cast<BoundLiteralPredicate>(predicate);
-        ICEBERG_ASSIGN_OR_RAISE(
-            auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                           predicate->op(), std::move(ref), literalPredicate->literal()));
-        return pred;
+        return UnboundPredicateImpl<BoundReference>::Make(predicate->op(), std::move(ref),
+                                                          literalPredicate->literal());
       }
       case BoundPredicate::Kind::kSet: {
         const auto& setPredicate =
             internal::checked_pointer_cast<BoundSetPredicate>(predicate);
-        ICEBERG_ASSIGN_OR_RAISE(
-            auto pred, UnboundPredicateImpl<BoundReference>::Make(
-                           predicate->op(), std::move(ref),
-                           std::vector<Literal>(setPredicate->literal_set().begin(),
-                                                setPredicate->literal_set().end())));
-        return pred;
+        return UnboundPredicateImpl<BoundReference>::Make(
+            predicate->op(), std::move(ref),
+            std::vector<Literal>(setPredicate->literal_set().begin(),
+                                 setPredicate->literal_set().end()));
       }
     }
     std::unreachable();

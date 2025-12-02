@@ -1271,6 +1271,263 @@ TEST_F(TransformProjectTest, TruncateProjectStringStartsWith) {
             "Hello");
 }
 
+TEST_F(TransformProjectTest, TruncateProjectStringStartsWithCodePointCountLessThanWidth) {
+  auto transform = Transform::Truncate(5);
+
+  // Code point count < width (multi-byte UTF-8 characters)
+  // "😜🧐" has 2 code points, width is 5
+  auto unbound_emoji_short = Expressions::StartsWith("value", "😜🧐");
+  ICEBERG_ASSIGN_OR_THROW(
+      auto bound_emoji_short,
+      unbound_emoji_short->Bind(*string_schema_, /*case_sensitive=*/true));
+  auto bound_pred_emoji_short =
+      std::dynamic_pointer_cast<BoundPredicate>(bound_emoji_short);
+  ASSERT_NE(bound_pred_emoji_short, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_emoji_short,
+                          transform->Project("part", bound_pred_emoji_short));
+  ASSERT_NE(projected_emoji_short, nullptr);
+  EXPECT_EQ(projected_emoji_short->op(), Expression::Operation::kStartsWith);
+
+  auto unbound_projected_emoji_short =
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+          std::move(projected_emoji_short));
+  ASSERT_NE(unbound_projected_emoji_short, nullptr);
+  EXPECT_EQ(unbound_projected_emoji_short->op(), Expression::Operation::kStartsWith);
+  EXPECT_EQ(unbound_projected_emoji_short->literals().size(), 1);
+  EXPECT_EQ(
+      std::get<std::string>(unbound_projected_emoji_short->literals().front().value()),
+      "😜🧐");
+}
+
+TEST_F(TransformProjectTest, TruncateProjectStringStartsWithCodePointCountEqualToWidth) {
+  auto transform = Transform::Truncate(5);
+
+  // Code point count == width (exactly 5 code points)
+  // "😜🧐🤔🤪🥳" has exactly 5 code points
+  auto unbound_emoji_equal = Expressions::StartsWith("value", "😜🧐🤔🤪🥳");
+  ICEBERG_ASSIGN_OR_THROW(
+      auto bound_emoji_equal,
+      unbound_emoji_equal->Bind(*string_schema_, /*case_sensitive=*/true));
+  auto bound_pred_emoji_equal =
+      std::dynamic_pointer_cast<BoundPredicate>(bound_emoji_equal);
+  ASSERT_NE(bound_pred_emoji_equal, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_emoji_equal,
+                          transform->Project("part", bound_pred_emoji_equal));
+  ASSERT_NE(projected_emoji_equal, nullptr);
+  EXPECT_EQ(projected_emoji_equal->op(), Expression::Operation::kEq);
+
+  auto unbound_projected_emoji_equal =
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+          std::move(projected_emoji_equal));
+  ASSERT_NE(unbound_projected_emoji_equal, nullptr);
+  EXPECT_EQ(unbound_projected_emoji_equal->op(), Expression::Operation::kEq);
+  EXPECT_EQ(unbound_projected_emoji_equal->literals().size(), 1);
+  EXPECT_EQ(
+      std::get<std::string>(unbound_projected_emoji_equal->literals().front().value()),
+      "😜🧐🤔🤪🥳");
+}
+
+TEST_F(TransformProjectTest,
+       TruncateProjectStringStartsWithCodePointCountGreaterThanWidth) {
+  auto transform = Transform::Truncate(5);
+
+  // Code point count > width (truncate to 5 code points)
+  // "😜🧐🤔🤪🥳😵‍💫😂" has 7 code points, should truncate to 5
+  auto unbound_emoji_long =
+      Expressions::StartsWith("value", "😜🧐🤔🤪🥳😵‍💫😂");
+  ICEBERG_ASSIGN_OR_THROW(
+      auto bound_emoji_long,
+      unbound_emoji_long->Bind(*string_schema_, /*case_sensitive=*/true));
+  auto bound_pred_emoji_long =
+      std::dynamic_pointer_cast<BoundPredicate>(bound_emoji_long);
+  ASSERT_NE(bound_pred_emoji_long, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_emoji_long,
+                          transform->Project("part", bound_pred_emoji_long));
+  ASSERT_NE(projected_emoji_long, nullptr);
+  EXPECT_EQ(projected_emoji_long->op(), Expression::Operation::kStartsWith);
+
+  auto unbound_projected_emoji_long =
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+          std::move(projected_emoji_long));
+  ASSERT_NE(unbound_projected_emoji_long, nullptr);
+  EXPECT_EQ(unbound_projected_emoji_long->op(), Expression::Operation::kStartsWith);
+  EXPECT_EQ(unbound_projected_emoji_long->literals().size(), 1);
+  EXPECT_EQ(
+      std::get<std::string>(unbound_projected_emoji_long->literals().front().value()),
+      "😜🧐🤔🤪🥳");
+}
+
+TEST_F(TransformProjectTest, TruncateProjectStringStartsWithMixedAsciiAndMultiByte) {
+  auto transform = Transform::Truncate(5);
+
+  // Mixed ASCII and multi-byte UTF-8 characters
+  // "a😜b🧐c" has 5 code points (3 ASCII + 2 emojis)
+  auto unbound_mixed_equal = Expressions::StartsWith("value", "a😜b🧐c");
+  ICEBERG_ASSIGN_OR_THROW(
+      auto bound_mixed_equal,
+      unbound_mixed_equal->Bind(*string_schema_, /*case_sensitive=*/true));
+  auto bound_pred_mixed_equal =
+      std::dynamic_pointer_cast<BoundPredicate>(bound_mixed_equal);
+  ASSERT_NE(bound_pred_mixed_equal, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_mixed_equal,
+                          transform->Project("part", bound_pred_mixed_equal));
+  ASSERT_NE(projected_mixed_equal, nullptr);
+  EXPECT_EQ(projected_mixed_equal->op(), Expression::Operation::kEq);
+
+  auto unbound_projected_mixed_equal =
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+          std::move(projected_mixed_equal));
+  ASSERT_NE(unbound_projected_mixed_equal, nullptr);
+  EXPECT_EQ(unbound_projected_mixed_equal->op(), Expression::Operation::kEq);
+  EXPECT_EQ(unbound_projected_mixed_equal->literals().size(), 1);
+  EXPECT_EQ(
+      std::get<std::string>(unbound_projected_mixed_equal->literals().front().value()),
+      "a😜b🧐c");
+}
+
+TEST_F(TransformProjectTest, TruncateProjectStringStartsWithChineseCharactersShort) {
+  auto transform = Transform::Truncate(5);
+
+  // Chinese characters (3-byte UTF-8)
+  // "你好世界" has 4 code points, width is 5
+  auto unbound_chinese_short = Expressions::StartsWith("value", "你好世界");
+  ICEBERG_ASSIGN_OR_THROW(
+      auto bound_chinese_short,
+      unbound_chinese_short->Bind(*string_schema_, /*case_sensitive=*/true));
+  auto bound_pred_chinese_short =
+      std::dynamic_pointer_cast<BoundPredicate>(bound_chinese_short);
+  ASSERT_NE(bound_pred_chinese_short, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_chinese_short,
+                          transform->Project("part", bound_pred_chinese_short));
+  ASSERT_NE(projected_chinese_short, nullptr);
+  EXPECT_EQ(projected_chinese_short->op(), Expression::Operation::kStartsWith);
+
+  auto unbound_projected_chinese_short =
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+          std::move(projected_chinese_short));
+  ASSERT_NE(unbound_projected_chinese_short, nullptr);
+  EXPECT_EQ(unbound_projected_chinese_short->op(), Expression::Operation::kStartsWith);
+  EXPECT_EQ(unbound_projected_chinese_short->literals().size(), 1);
+  EXPECT_EQ(
+      std::get<std::string>(unbound_projected_chinese_short->literals().front().value()),
+      "你好世界");
+}
+
+TEST_F(TransformProjectTest, TruncateProjectStringStartsWithChineseCharactersEqualWidth) {
+  auto transform = Transform::Truncate(5);
+
+  // Chinese characters exactly matching width
+  // "你好世界好" has exactly 5 code points
+  auto unbound_chinese_equal = Expressions::StartsWith("value", "你好世界好");
+  ICEBERG_ASSIGN_OR_THROW(
+      auto bound_chinese_equal,
+      unbound_chinese_equal->Bind(*string_schema_, /*case_sensitive=*/true));
+  auto bound_pred_chinese_equal =
+      std::dynamic_pointer_cast<BoundPredicate>(bound_chinese_equal);
+  ASSERT_NE(bound_pred_chinese_equal, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_chinese_equal,
+                          transform->Project("part", bound_pred_chinese_equal));
+  ASSERT_NE(projected_chinese_equal, nullptr);
+  EXPECT_EQ(projected_chinese_equal->op(), Expression::Operation::kEq);
+
+  auto unbound_projected_chinese_equal =
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+          std::move(projected_chinese_equal));
+  ASSERT_NE(unbound_projected_chinese_equal, nullptr);
+  EXPECT_EQ(unbound_projected_chinese_equal->op(), Expression::Operation::kEq);
+  EXPECT_EQ(unbound_projected_chinese_equal->literals().size(), 1);
+  EXPECT_EQ(
+      std::get<std::string>(unbound_projected_chinese_equal->literals().front().value()),
+      "你好世界好");
+}
+
+TEST_F(TransformProjectTest,
+       TruncateProjectStringNotStartsWithCodePointCountEqualToWidth) {
+  auto transform = Transform::Truncate(5);
+
+  // NotStartsWith with code point count == width
+  // Should convert to NotEq
+  auto unbound_not_starts_equal = Expressions::NotStartsWith("value", "😜🧐🤔🤪🥳");
+  ICEBERG_ASSIGN_OR_THROW(
+      auto bound_not_starts_equal,
+      unbound_not_starts_equal->Bind(*string_schema_, /*case_sensitive=*/true));
+  auto bound_pred_not_starts_equal =
+      std::dynamic_pointer_cast<BoundPredicate>(bound_not_starts_equal);
+  ASSERT_NE(bound_pred_not_starts_equal, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_not_starts_equal,
+                          transform->Project("part", bound_pred_not_starts_equal));
+  ASSERT_NE(projected_not_starts_equal, nullptr);
+  EXPECT_EQ(projected_not_starts_equal->op(), Expression::Operation::kNotEq);
+
+  auto unbound_projected_not_starts_equal =
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+          std::move(projected_not_starts_equal));
+  ASSERT_NE(unbound_projected_not_starts_equal, nullptr);
+  EXPECT_EQ(unbound_projected_not_starts_equal->op(), Expression::Operation::kNotEq);
+  EXPECT_EQ(unbound_projected_not_starts_equal->literals().size(), 1);
+  EXPECT_EQ(std::get<std::string>(
+                unbound_projected_not_starts_equal->literals().front().value()),
+            "😜🧐🤔🤪🥳");
+}
+
+TEST_F(TransformProjectTest,
+       TruncateProjectStringNotStartsWithCodePointCountLessThanWidth) {
+  auto transform = Transform::Truncate(5);
+
+  // NotStartsWith with code point count < width
+  // Should remain NotStartsWith
+  auto unbound_not_starts_short = Expressions::NotStartsWith("value", "😜🧐");
+  ICEBERG_ASSIGN_OR_THROW(
+      auto bound_not_starts_short,
+      unbound_not_starts_short->Bind(*string_schema_, /*case_sensitive=*/true));
+  auto bound_pred_not_starts_short =
+      std::dynamic_pointer_cast<BoundPredicate>(bound_not_starts_short);
+  ASSERT_NE(bound_pred_not_starts_short, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_not_starts_short,
+                          transform->Project("part", bound_pred_not_starts_short));
+  ASSERT_NE(projected_not_starts_short, nullptr);
+  EXPECT_EQ(projected_not_starts_short->op(), Expression::Operation::kNotStartsWith);
+
+  auto unbound_projected_not_starts_short =
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+          std::move(projected_not_starts_short));
+  ASSERT_NE(unbound_projected_not_starts_short, nullptr);
+  EXPECT_EQ(unbound_projected_not_starts_short->op(),
+            Expression::Operation::kNotStartsWith);
+  EXPECT_EQ(unbound_projected_not_starts_short->literals().size(), 1);
+  EXPECT_EQ(std::get<std::string>(
+                unbound_projected_not_starts_short->literals().front().value()),
+            "😜🧐");
+}
+
+TEST_F(TransformProjectTest,
+       TruncateProjectStringNotStartsWithCodePointCountGreaterThanWidth) {
+  auto transform = Transform::Truncate(5);
+
+  // NotStartsWith with code point count > width
+  // Should return nullptr (cannot project)
+  auto unbound_not_starts_long =
+      Expressions::NotStartsWith("value", "😜🧐🤔🤪🥳😵‍💫😂");
+  ICEBERG_ASSIGN_OR_THROW(
+      auto bound_not_starts_long,
+      unbound_not_starts_long->Bind(*string_schema_, /*case_sensitive=*/true));
+  auto bound_pred_not_starts_long =
+      std::dynamic_pointer_cast<BoundPredicate>(bound_not_starts_long);
+  ASSERT_NE(bound_pred_not_starts_long, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected_not_starts_long,
+                          transform->Project("part", bound_pred_not_starts_long));
+  EXPECT_EQ(projected_not_starts_long, nullptr);
+}
+
 TEST_F(TransformProjectTest, YearProjectEquality) {
   auto transform = Transform::Year();
 
@@ -1396,6 +1653,33 @@ TEST_F(TransformProjectTest, TemporalProjectInSet) {
   ICEBERG_ASSIGN_OR_THROW(auto projected_in, transform->Project("part", bound_pred_in));
   ASSERT_NE(projected_in, nullptr);
   EXPECT_EQ(projected_in->op(), Expression::Operation::kIn);
+}
+
+TEST_F(TransformProjectTest, DayTimestampProjectionFix) {
+  auto transform = Transform::Day();
+
+  // Predicate: value < 1970-01-01 00:00:00 (0)
+  // This implies value <= -1 micros.
+  // day(-1 micros) = -1 day (1969-12-31).
+  // If we don't fix, we project to day <= -1.
+  // If we fix (for buggy writers), we project to day <= 0.
+  auto unbound = Expressions::LessThan("value", Literal::Timestamp(0));
+
+  ICEBERG_ASSIGN_OR_THROW(auto bound,
+                          unbound->Bind(*timestamp_schema_, /*case_sensitive=*/true));
+  auto bound_pred = std::dynamic_pointer_cast<BoundPredicate>(bound);
+  ASSERT_NE(bound_pred, nullptr);
+
+  ICEBERG_ASSIGN_OR_THROW(auto projected, transform->Project("part", bound_pred));
+  ASSERT_NE(projected, nullptr);
+
+  auto unbound_projected =
+      internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+          std::move(projected));
+  EXPECT_EQ(unbound_projected->op(), Expression::Operation::kLtEq);
+  ASSERT_EQ(unbound_projected->literals().size(), 1);
+  int32_t val = std::get<int32_t>(unbound_projected->literals().front().value());
+  EXPECT_EQ(val, 0) << "Expected projected value to be 0 (fix applied), but got " << val;
 }
 
 }  // namespace iceberg

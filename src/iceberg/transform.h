@@ -177,8 +177,8 @@ class ICEBERG_EXPORT Transform : public util::Formattable {
   /// Projected(transform(value)) is true.
   /// \param name The name of the partition column.
   /// \param predicate The predicate to project.
-  /// \return A Result containing either a unique pointer to the projected predicate or an
-  /// Error if the projection fails.
+  /// \return A Result containing either a unique pointer to the projected predicate,
+  /// nullptr if the projection cannot be performed, or an Error if the projection fails.
   Result<std::unique_ptr<UnboundPredicate>> Project(
       std::string_view name, const std::shared_ptr<BoundPredicate>& predicate);
 
