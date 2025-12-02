@@ -86,7 +86,7 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     if (ContainsNullsOnly(id)) {
       return kRowCannotMatch;
     }
-    if (std::dynamic_pointer_cast<BoundReference>(expr) == nullptr) {
+    if (dynamic_cast<const BoundReference*>(expr.get()) == nullptr) {
       return kRowsMightMatch;
     }
     auto it = data_file_.nan_value_counts.find(id);
@@ -97,13 +97,12 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
   }
 
   Result<bool> NotNaN(const std::shared_ptr<Bound>& expr) override {
-    if (std::dynamic_pointer_cast<BoundReference>(expr) == nullptr) {
+    if (dynamic_cast<const BoundReference*>(expr.get()) == nullptr) {
       // identity transforms are already removed by this time
       return kRowsMightMatch;
     }
 
     int32_t id = expr->reference()->field().field_id();
-
     if (ContainsNaNsOnly(id)) {
       return kRowCannotMatch;
     }
@@ -117,20 +116,18 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     if (ContainsNullsOnly(id) || ContainsNaNsOnly(id)) {
       return kRowCannotMatch;
     }
-    ICEBERG_ASSIGN_OR_RAISE(auto lower_result, LowerBound(expr));
-    if (!lower_result.has_value() || lower_result.value().IsNull() ||
-        lower_result.value().IsNaN()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto lower, LowerBound(expr));
+    if (!lower.has_value() || lower->IsNull() || lower->IsNaN()) {
       // NaN indicates unreliable bounds. See the InclusiveMetricsEvaluator docs for more.
       return kRowsMightMatch;
     }
-    const auto& lower = lower_result.value();
 
     // this also works for transforms that are order preserving:
     // if a transform f is order preserving, a < b means that f(a) <= f(b).
     // because lower <= a for all values of a in the file, f(lower) <= f(a).
     // when f(lower) >= X then f(a) >= f(lower) >= X, so there is no a such that f(a) < X
     // f(lower) >= X means rows cannot match
-    if (lower >= lit) {
+    if (lower.value() >= lit) {
       return kRowCannotMatch;
     }
 
@@ -144,20 +141,18 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
       return kRowCannotMatch;
     }
 
-    ICEBERG_ASSIGN_OR_RAISE(auto lower_result, LowerBound(expr));
-    if (!lower_result.has_value() || lower_result.value().IsNull() ||
-        lower_result.value().IsNaN()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto lower, LowerBound(expr));
+    if (!lower.has_value() || lower->IsNull() || lower->IsNaN()) {
       // NaN indicates unreliable bounds. See the InclusiveMetricsEvaluator docs for more.
       return kRowsMightMatch;
     }
-    const auto& lower = lower_result.value();
 
     // this also works for transforms that are order preserving:
     // if a transform f is order preserving, a < b means that f(a) <= f(b).
     // because lower <= a for all values of a in the file, f(lower) <= f(a).
     // when f(lower) > X then f(a) >= f(lower) > X, so there is no a such that f(a) <= X
     // f(lower) > X means rows cannot match
-    if (lower > lit) {
+    if (lower.value() > lit) {
       return kRowCannotMatch;
     }
 
@@ -171,12 +166,11 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
       return kRowCannotMatch;
     }
 
-    ICEBERG_ASSIGN_OR_RAISE(auto upper_result, UpperBound(expr));
-    if (!upper_result.has_value() || upper_result.value().IsNull()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto upper, UpperBound(expr));
+    if (!upper.has_value() || upper->IsNull()) {
       return kRowsMightMatch;
     }
-    const auto& upper = upper_result.value();
-    if (upper <= lit) {
+    if (upper.value() <= lit) {
       return kRowCannotMatch;
     }
 
@@ -190,12 +184,11 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
       return kRowCannotMatch;
     }
 
-    ICEBERG_ASSIGN_OR_RAISE(auto upper_result, UpperBound(expr));
-    if (!upper_result.has_value() || upper_result.value().IsNull()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto upper, UpperBound(expr));
+    if (!upper.has_value() || upper->IsNull()) {
       return kRowsMightMatch;
     }
-    const auto& upper = upper_result.value();
-    if (upper < lit) {
+    if (upper.value() < lit) {
       return kRowCannotMatch;
     }
 
@@ -209,21 +202,18 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
       return kRowCannotMatch;
     }
 
-    ICEBERG_ASSIGN_OR_RAISE(auto lower_result, LowerBound(expr));
-    if (lower_result.has_value() && !lower_result.value().IsNull() &&
-        !lower_result.value().IsNaN()) {
-      const auto& lower = lower_result.value();
-      if (!lower.IsNaN() && lower > lit) {
+    ICEBERG_ASSIGN_OR_RAISE(auto lower, LowerBound(expr));
+    if (lower.has_value() && !lower->IsNull() && !lower->IsNaN()) {
+      if (lower.value() > lit) {
         return kRowCannotMatch;
       }
     }
 
-    ICEBERG_ASSIGN_OR_RAISE(auto upper_result, UpperBound(expr));
-    if (!upper_result.has_value() || upper_result.value().IsNull()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto upper, UpperBound(expr));
+    if (!upper.has_value() || upper->IsNull()) {
       return kRowsMightMatch;
     }
-    const auto& upper = upper_result.value();
-    if (upper < lit) {
+    if (upper.value() < lit) {
       return kRowCannotMatch;
     }
 
@@ -249,28 +239,25 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
       return kRowsMightMatch;
     }
 
-    ICEBERG_ASSIGN_OR_RAISE(auto lower_result, LowerBound(expr));
-    if (!lower_result.has_value() || lower_result.value().IsNull() ||
-        lower_result.value().IsNaN()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto lower, LowerBound(expr));
+    if (!lower.has_value() || lower->IsNull() || lower->IsNaN()) {
       // NaN indicates unreliable bounds. See the InclusiveMetricsEvaluator docs for more.
       return kRowsMightMatch;
     }
-    const auto& lower = lower_result.value();
     auto literals_view = literal_set | std::views::filter([&](const Literal& lit) {
-                           return lower <= lit;
+                           return lower.value() <= lit;
                          });
     // if all values are less than lower bound, rows cannot match
     if (literals_view.empty()) {
       return kRowCannotMatch;
     }
 
-    ICEBERG_ASSIGN_OR_RAISE(auto upper_result, UpperBound(expr));
-    if (!upper_result.has_value() || upper_result.value().IsNull()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto upper, UpperBound(expr));
+    if (!upper.has_value() || upper->IsNull()) {
       return kRowsMightMatch;
     }
-    const auto& upper = upper_result.value();
     auto filtered_view = literals_view | std::views::filter([&](const Literal& lit) {
-                           return upper >= lit;
+                           return upper.value() >= lit;
                          });
     // if remaining values are greater than upper bound, rows cannot match
     if (filtered_view.empty()) {
@@ -290,8 +277,8 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
 
   Result<bool> StartsWith(const std::shared_ptr<Bound>& expr,
                           const Literal& lit) override {
-    auto transform = std::dynamic_pointer_cast<BoundTransform>(expr);
-    if (transform != nullptr &&
+    if (auto transform = dynamic_cast<const BoundTransform*>(expr.get());
+        transform != nullptr &&
         transform->transform()->transform_type() != TransformType::kIdentity) {
       // truncate must be rewritten in binding. the result is either always or never
       // compatible
@@ -305,28 +292,26 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     if (lit.type()->type_id() != TypeId::kString) {
       return kRowCannotMatch;
     }
-    const auto& prefix = get<std::string>(lit.value());
+    const auto& prefix = std::get<std::string>(lit.value());
 
-    ICEBERG_ASSIGN_OR_RAISE(auto lower_result, LowerBound(expr));
-    if (!lower_result.has_value() || lower_result.value().IsNull()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto lower, LowerBound(expr));
+    if (!lower.has_value() || lower->IsNull()) {
       return kRowsMightMatch;
     }
-    const auto& lower = lower_result.value();
-    const auto& lower_str = get<std::string>(lower.value());
+    const auto& lower_str = std::get<std::string>(lower->value());
     // truncate lower bound so that its length in bytes is not greater than the length of
     // prefix
-    int length = std::min(prefix.size(), lower_str.size());
+    size_t length = std::min(prefix.size(), lower_str.size());
     // if prefix of lower bound is greater than prefix, rows cannot match
     if (lower_str.substr(0, length) > prefix) {
       return kRowCannotMatch;
     }
 
-    ICEBERG_ASSIGN_OR_RAISE(auto upper_result, UpperBound(expr));
-    if (!upper_result.has_value() || upper_result.value().IsNull()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto upper, UpperBound(expr));
+    if (!upper.has_value() || upper->IsNull()) {
       return kRowsMightMatch;
     }
-    const auto& upper = upper_result.value();
-    const auto& upper_str = get<std::string>(upper.value());
+    const auto& upper_str = std::get<std::string>(upper->value());
     // truncate upper bound so that its length in bytes is not greater than the length of
     // prefix
     length = std::min(prefix.size(), upper_str.size());
@@ -350,20 +335,17 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     if (lit.type()->type_id() != TypeId::kString) {
       return kRowCannotMatch;
     }
-    const auto& prefix = get<std::string>(lit.value());
+    const auto& prefix = std::get<std::string>(lit.value());
 
     // notStartsWith will match unless all values must start with the prefix. This happens
     // when the lower and upper bounds both start with the prefix.
-    ICEBERG_ASSIGN_OR_RAISE(auto lower_result, LowerBound(expr));
-    ICEBERG_ASSIGN_OR_RAISE(auto upper_result, UpperBound(expr));
-    if (!lower_result.has_value() || lower_result.value().IsNull() ||
-        !upper_result.has_value() || upper_result.value().IsNull()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto lower, LowerBound(expr));
+    ICEBERG_ASSIGN_OR_RAISE(auto upper, UpperBound(expr));
+    if (!lower.has_value() || lower->IsNull() || !upper.has_value() || upper->IsNull()) {
       return kRowsMightMatch;
     }
-    const auto& lower = lower_result.value();
-    const auto& upper = upper_result.value();
-    const auto& lower_str = get<std::string>(lower.value());
-    const auto& upper_str = get<std::string>(upper.value());
+    const auto& lower_str = std::get<std::string>(lower->value());
+    const auto& upper_str = std::get<std::string>(upper->value());
 
     // if lower is shorter than the prefix then lower doesn't start with the prefix
     if (lower_str.size() < prefix.size()) {
@@ -395,24 +377,24 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
   bool ContainsNullsOnly(int32_t id) {
     auto val_it = data_file_.value_counts.find(id);
     auto null_it = data_file_.null_value_counts.find(id);
-    return val_it != data_file_.value_counts.end() &&
-           null_it != data_file_.null_value_counts.end() &&
-           val_it->second - null_it->second == 0;
+    return val_it != data_file_.value_counts.cend() &&
+           null_it != data_file_.null_value_counts.cend() &&
+           val_it->second == null_it->second;
   }
 
   bool ContainsNaNsOnly(int32_t id) {
     auto val_it = data_file_.value_counts.find(id);
     auto nan_it = data_file_.nan_value_counts.find(id);
-    return val_it != data_file_.value_counts.end() &&
-           nan_it != data_file_.nan_value_counts.end() &&
+    return val_it != data_file_.value_counts.cend() &&
+           nan_it != data_file_.nan_value_counts.cend() &&
            val_it->second == nan_it->second;
   }
 
   Result<std::optional<Literal>> LowerBound(const std::shared_ptr<Bound>& expr) {
-    if (auto reference = std::dynamic_pointer_cast<BoundReference>(expr);
+    if (auto reference = dynamic_cast<const BoundReference*>(expr.get());
         reference != nullptr) {
       return ParseLowerBound(*reference);
-    } else if (auto transform = std::dynamic_pointer_cast<BoundTransform>(expr);
+    } else if (auto transform = dynamic_cast<BoundTransform*>(expr.get());
                transform != nullptr) {
       return TransformLowerBound(*transform);
     } else {
@@ -422,10 +404,10 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
   }
 
   Result<std::optional<Literal>> UpperBound(const std::shared_ptr<Bound>& expr) {
-    if (auto reference = std::dynamic_pointer_cast<BoundReference>(expr);
+    if (auto reference = dynamic_cast<const BoundReference*>(expr.get());
         reference != nullptr) {
       return ParseUpperBound(*reference);
-    } else if (auto transform = std::dynamic_pointer_cast<BoundTransform>(expr);
+    } else if (auto transform = dynamic_cast<BoundTransform*>(expr.get());
                transform != nullptr) {
       return TransformUpperBound(*transform);
     } else {
@@ -441,11 +423,8 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
       return NotSupported("Lower bound of non-primitive type is not supported.");
     }
     auto primitive_type = internal::checked_pointer_cast<PrimitiveType>(type);
-    if (!data_file_.lower_bounds.empty() && data_file_.lower_bounds.contains(id)) {
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto lower,
-          Literal::Deserialize(data_file_.lower_bounds.at(id), primitive_type));
-      return lower;
+    if (data_file_.lower_bounds.contains(id)) {
+      return Literal::Deserialize(data_file_.lower_bounds.at(id), primitive_type);
     }
 
     return std::nullopt;
@@ -458,11 +437,8 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
       return NotSupported("Upper bound of non-primitive type is not supported.");
     }
     auto primitive_type = internal::checked_pointer_cast<PrimitiveType>(type);
-    if (!data_file_.upper_bounds.empty() && data_file_.upper_bounds.contains(id)) {
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto upper,
-          Literal::Deserialize(data_file_.upper_bounds.at(id), primitive_type));
-      return upper;
+    if (data_file_.upper_bounds.contains(id)) {
+      return Literal::Deserialize(data_file_.upper_bounds.at(id), primitive_type);
     }
 
     return std::nullopt;
@@ -472,9 +448,9 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     auto transform = boundTransform.transform();
     if (transform->PreservesOrder()) {
       ICEBERG_ASSIGN_OR_RAISE(auto lower, ParseLowerBound(*boundTransform.reference()));
-      ICEBERG_ASSIGN_OR_RAISE(auto transform_func,
-                              transform->Bind(boundTransform.reference()->type()));
       if (lower.has_value()) {
+        ICEBERG_ASSIGN_OR_RAISE(auto transform_func,
+                                transform->Bind(boundTransform.reference()->type()));
         return transform_func->Transform(lower.value());
       }
     }
@@ -486,9 +462,9 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
     auto transform = boundTransform.transform();
     if (transform->PreservesOrder()) {
       ICEBERG_ASSIGN_OR_RAISE(auto upper, ParseUpperBound(*boundTransform.reference()));
-      ICEBERG_ASSIGN_OR_RAISE(auto transform_func,
-                              transform->Bind(boundTransform.reference()->type()));
       if (upper.has_value()) {
+        ICEBERG_ASSIGN_OR_RAISE(auto transform_func,
+                                transform->Bind(boundTransform.reference()->type()));
         return transform_func->Transform(upper.value());
       }
     }
@@ -498,10 +474,10 @@ class InclusiveMetricsVisitor : public BoundVisitor<bool> {
 
   /** Returns true if the expression term produces a non-null value for non-null input. */
   bool IsNonNullPreserving(const std::shared_ptr<Bound>& expr) {
-    if (auto reference = std::dynamic_pointer_cast<BoundReference>(expr);
+    if (auto reference = dynamic_cast<const BoundReference*>(expr.get());
         reference != nullptr) {
       return true;
-    } else if (auto transform = std::dynamic_pointer_cast<BoundTransform>(expr);
+    } else if (auto transform = dynamic_cast<BoundTransform*>(expr.get());
                transform != nullptr) {
       return transform->transform()->PreservesOrder();
     }
@@ -528,7 +504,7 @@ Result<std::unique_ptr<InclusiveMetricsEvaluator>> InclusiveMetricsEvaluator::Ma
       new InclusiveMetricsEvaluator(std::move(bound_expr)));
 }
 
-Result<bool> InclusiveMetricsEvaluator::Eval(const DataFile& data_file) const {
+Result<bool> InclusiveMetricsEvaluator::Evaluate(const DataFile& data_file) const {
   if (data_file.record_count == 0) {
     return kRowCannotMatch;
   }

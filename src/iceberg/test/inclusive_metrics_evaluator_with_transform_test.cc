@@ -95,7 +95,7 @@ class InclusiveMetricsEvaluatorWithTransformTest : public ::testing::Test {
     auto target_file = file ? file : data_file_;
     ICEBERG_UNWRAP_OR_FAIL(
         auto evaluator, InclusiveMetricsEvaluator::Make(expr, *schema_, case_sensitive));
-    auto eval_result = evaluator->Eval(*target_file);
+    auto eval_result = evaluator->Evaluate(*target_file);
     ASSERT_TRUE(eval_result.has_value());
     ASSERT_EQ(eval_result.value(), expected_result) << expr->ToString();
   }

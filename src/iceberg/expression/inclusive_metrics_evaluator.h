@@ -62,12 +62,11 @@ class ICEBERG_EXPORT InclusiveMetricsEvaluator {
   ///
   /// \param data_file The data file to evaluate
   /// \return true if the file matches the expression, false otherwise, or error
-  Result<bool> Eval(const DataFile& data_file) const;
+  Result<bool> Evaluate(const DataFile& data_file) const;
 
  private:
   explicit InclusiveMetricsEvaluator(std::shared_ptr<Expression> expr);
 
- private:
   std::shared_ptr<Expression> expr_;
 };
 

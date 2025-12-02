@@ -343,20 +343,24 @@ std::strong_ordering CompareFloat(T lhs, T rhs) {
   return lhs_is_negative <=> rhs_is_negative;
 }
 
-bool Literal::Comparable(TypeId type_id, TypeId other_type_id) {
-  switch (type_id) {
+namespace {
+
+bool Comparable(TypeId lhs, TypeId rhs) {
+  switch (lhs) {
     case TypeId::kInt:
     case TypeId::kDate:
-      return other_type_id == TypeId::kInt || other_type_id == TypeId::kDate;
+      return rhs == TypeId::kInt || rhs == TypeId::kDate;
     case TypeId::kLong:
     case TypeId::kTimestamp:
     case TypeId::kTimestampTz:
-      return other_type_id == TypeId::kLong || other_type_id == TypeId::kTimestamp ||
-             other_type_id == TypeId::kTimestampTz;
+      return rhs == TypeId::kLong || rhs == TypeId::kTimestamp ||
+             rhs == TypeId::kTimestampTz;
     default:
-      return type_id == other_type_id;
+      return lhs == rhs;
   }
 }
+
+}  // namespace
 
 bool Literal::operator==(const Literal& other) const { return (*this <=> other) == 0; }
 

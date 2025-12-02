@@ -128,8 +128,6 @@ class ICEBERG_EXPORT Literal : public util::Formattable {
   /// was not valid
   Result<Literal> CastTo(const std::shared_ptr<PrimitiveType>& target_type) const;
 
-  static bool Comparable(TypeId type_id, TypeId other_type_id);
-
   bool operator==(const Literal& other) const;
 
   /// \brief Compare two literals of the same primitive type.

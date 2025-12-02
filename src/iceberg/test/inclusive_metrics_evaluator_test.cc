@@ -108,7 +108,7 @@ class InclusiveMetricsEvaluatorTest : public ::testing::Test {
                            InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"id", static_cast<int64_t>(100)}},
                                 {{"id", static_cast<int64_t>(200)}});
-    auto result = evaluator->Eval(*file);
+    auto result = evaluator->Evaluate(*file);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result.value(), expected_result) << unbound->ToString();
   }
@@ -118,7 +118,7 @@ class InclusiveMetricsEvaluatorTest : public ::testing::Test {
                            InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"name", "123"}},
                                 {{"name", "456"}}, {{2, 10}}, {{2, 0}});
-    auto result = evaluator->Eval(*file);
+    auto result = evaluator->Evaluate(*file);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result.value(), expected_result) << unbound->ToString();
   }
@@ -153,7 +153,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, IsNullTest) {
                            InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"name", "1"}}, {{"name", "2"}},
                                 {{2, 10}}, {{2, 5}}, {});
-    auto result = evaluator->Eval(*file);
+    auto result = evaluator->Evaluate(*file);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result.value(), kRowsMightMatch) << unbound->ToString();
   }
@@ -163,7 +163,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, IsNullTest) {
                            InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"name", "1"}}, {{"name", "2"}},
                                 {{2, 10}}, {{2, 0}}, {});
-    auto result = evaluator->Eval(*file);
+    auto result = evaluator->Evaluate(*file);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result.value(), kRowCannotMatch) << unbound->ToString();
   }
@@ -176,7 +176,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, NotNullTest) {
                            InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"name", "1"}}, {{"name", "2"}},
                                 {{2, 10}}, {{2, 5}}, {});
-    auto result = evaluator->Eval(*file);
+    auto result = evaluator->Evaluate(*file);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result.value(), kRowsMightMatch) << unbound->ToString();
   }
@@ -186,7 +186,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, NotNullTest) {
                            InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"name", "1"}}, {{"name", "2"}},
                                 {{2, 10}}, {{2, 10}}, {});
-    auto result = evaluator->Eval(*file);
+    auto result = evaluator->Evaluate(*file);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result.value(), kRowCannotMatch) << unbound->ToString();
   }
@@ -199,7 +199,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, IsNanTest) {
                            InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"salary", 1.0}},
                                 {{"salary", 2.0}}, {{4, 10}}, {{4, 5}}, {{4, 5}});
-    auto result = evaluator->Eval(*file);
+    auto result = evaluator->Evaluate(*file);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result.value(), kRowsMightMatch) << unbound->ToString();
   }
@@ -209,7 +209,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, IsNanTest) {
                            InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"salary", 1.0}},
                                 {{"salary", 2.0}}, {{4, 10}}, {{4, 10}}, {{4, 5}});
-    auto result = evaluator->Eval(*file);
+    auto result = evaluator->Evaluate(*file);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result.value(), kRowCannotMatch) << unbound->ToString();
   }
@@ -219,7 +219,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, IsNanTest) {
                            InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"salary", 1.0}},
                                 {{"salary", 2.0}}, {{4, 10}}, {{4, 5}}, {{4, 0}});
-    auto result = evaluator->Eval(*file);
+    auto result = evaluator->Evaluate(*file);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result.value(), kRowCannotMatch) << unbound->ToString();
   }
@@ -232,7 +232,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, NotNanTest) {
                            InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"salary", 1.0}},
                                 {{"salary", 2.0}}, {{4, 10}}, {}, {{4, 5}});
-    auto result = evaluator->Eval(*file);
+    auto result = evaluator->Evaluate(*file);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result.value(), kRowsMightMatch) << unbound->ToString();
   }
@@ -242,7 +242,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, NotNanTest) {
                            InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"salary", 1.0}},
                                 {{"salary", 2.0}}, {{4, 10}}, {}, {{4, 10}});
-    auto result = evaluator->Eval(*file);
+    auto result = evaluator->Evaluate(*file);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result.value(), kRowCannotMatch) << unbound->ToString();
   }
@@ -379,7 +379,7 @@ TEST_F(InclusiveMetricsEvaluatorTest, NotStartsWithTest) {
                            InclusiveMetricsEvaluator::Make(unbound, *schema_, true));
     auto file = PrepareDataFile("20251128", 10, 1024, {{"name", "123"}},
                                 {{"name", "123"}}, {{2, 10}}, {{2, 0}});
-    auto result = evaluator->Eval(*file);
+    auto result = evaluator->Evaluate(*file);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result.value(), expected_result) << unbound->ToString();
   };
@@ -536,7 +536,7 @@ class InclusiveMetricsEvaluatorMigratedTest : public InclusiveMetricsEvaluatorTe
                const std::shared_ptr<DataFile>& file, bool case_sensitive = true) {
     ICEBERG_UNWRAP_OR_FAIL(
         auto evaluator, InclusiveMetricsEvaluator::Make(expr, *schema_, case_sensitive));
-    auto result = evaluator->Eval(*file);
+    auto result = evaluator->Evaluate(*file);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result.value(), expected_result) << expr->ToString();
   };
