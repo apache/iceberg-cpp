@@ -289,7 +289,7 @@ class ProjectionUtil {
 
   // Fixes an inclusive projection to account for incorrectly transformed values.
   // align with Java implementation:
-  // https://github.com/apache/iceberg/blob/main/api/src/main/java/org/apache/iceberg/transforms/ProjectionUtil.java#L275
+  // https://github.com/apache/iceberg/blob/1.10.x/api/src/main/java/org/apache/iceberg/transforms/ProjectionUtil.java#L275
   static Result<std::unique_ptr<UnboundPredicate>> FixInclusiveTimeProjection(
       std::unique_ptr<UnboundPredicateImpl<BoundReference>> projected) {
     if (projected == nullptr) {
