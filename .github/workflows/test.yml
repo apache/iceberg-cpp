@@ -45,7 +45,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Install dependencies
         shell: bash
         run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
@@ -69,7 +69,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Build Iceberg
         shell: bash
         run: ci/scripts/build_iceberg.sh $(pwd)
@@ -84,7 +84,7 @@ jobs:
       fail-fast: false
     steps:
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Install dependencies
         shell: cmd
         run: |
@@ -121,7 +121,7 @@ jobs:
         with:
           python-version: '3.x'
       - name: Checkout iceberg-cpp
-        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
       - name: Install build dependencies
         run: |
           python3 -m pip install --upgrade pip
