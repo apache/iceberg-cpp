@@ -36,4 +36,12 @@ option(
     description: 'Build rest catalog client',
     value: 'enabled',
 )
+
+option(
+    'rest_integration_test',
+    type: 'feature',
+    description: 'Build integration test for rest catalog',
+    value: 'disabled',
+)
+
 option('tests', type: 'feature', description: 'Build tests', value: 'enabled')
