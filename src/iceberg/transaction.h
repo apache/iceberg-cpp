@@ -21,7 +21,6 @@
 #pragma once
 
 #include <memory>
-#include <vector>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"

@@ -21,6 +21,7 @@
 
 #include <memory>
 
+#include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_requirement.h"
 #include "iceberg/table_update.h"
@@ -36,12 +37,73 @@ Result<std::vector<std::unique_ptr<TableRequirement>>> TableUpdateContext::Build
   return std::move(requirements_);
 }
 
+void TableUpdateContext::RequireLastAssignedFieldIdUnchanged() {
+  if (!added_last_assigned_field_id_) {
+    if (base_ != nullptr) {
+      AddRequirement(
+          std::make_unique<table::AssertLastAssignedFieldId>(base_->last_column_id));
+    }
+    added_last_assigned_field_id_ = true;
+  }
+}
+
+void TableUpdateContext::RequireCurrentSchemaIdUnchanged() {
+  if (!added_current_schema_id_) {
+    if (base_ != nullptr && !is_replace_) {
+      AddRequirement(std::make_unique<table::AssertCurrentSchemaID>(
+          base_->current_schema_id.value()));
+    }
+    added_current_schema_id_ = true;
+  }
+}
+
+void TableUpdateContext::RequireLastAssignedPartitionIdUnchanged() {
+  if (!added_last_assigned_partition_id_) {
+    if (base_ != nullptr) {
+      AddRequirement(std::make_unique<table::AssertLastAssignedPartitionId>(
+          base_->last_partition_id));
+    }
+    added_last_assigned_partition_id_ = true;
+  }
+}
+
+void TableUpdateContext::RequireDefaultSpecIdUnchanged() {
+  if (!added_default_spec_id_) {
+    if (base_ != nullptr && !is_replace_) {
+      AddRequirement(
+          std::make_unique<table::AssertDefaultSpecID>(base_->default_spec_id));
+    }
+    added_default_spec_id_ = true;
+  }
+}
+
+void TableUpdateContext::RequireDefaultSortOrderIdUnchanged() {
+  if (!added_default_sort_order_id_) {
+    if (base_ != nullptr && !is_replace_) {
+      AddRequirement(std::make_unique<table::AssertDefaultSortOrderID>(
+          base_->default_sort_order_id));
+    }
+    added_default_sort_order_id_ = true;
+  }
+}
+
+void TableUpdateContext::RequireNoBranchesChanged() {
+  if (base_ != nullptr && !is_replace_) {
+    for (const auto& [name, ref] : base_->refs) {
+      if (ref->type() == SnapshotRefType::kBranch && name != SnapshotRef::kMainBranch) {
+        AddRequirement(
+            std::make_unique<table::AssertRefSnapshotID>(name, ref->snapshot_id));
+      }
+    }
+  }
+}
+
 Result<std::vector<std::unique_ptr<TableRequirement>>> TableRequirements::ForCreateTable(
     const std::vector<std::unique_ptr<TableUpdate>>& table_updates) {
   TableUpdateContext context(nullptr, false);
   context.AddRequirement(std::make_unique<table::AssertDoesNotExist>());
   for (const auto& update : table_updates) {
-    ICEBERG_RETURN_UNEXPECTED(update->GenerateRequirements(context));
+    update->GenerateRequirements(context);
   }
   return context.Build();
 }
@@ -52,7 +114,7 @@ Result<std::vector<std::unique_ptr<TableRequirement>>> TableRequirements::ForRep
   TableUpdateContext context(&base, true);
   context.AddRequirement(std::make_unique<table::AssertUUID>(base.table_uuid));
   for (const auto& update : table_updates) {
-    ICEBERG_RETURN_UNEXPECTED(update->GenerateRequirements(context));
+    update->GenerateRequirements(context);
   }
   return context.Build();
 }
@@ -63,7 +125,7 @@ Result<std::vector<std::unique_ptr<TableRequirement>>> TableRequirements::ForUpd
   TableUpdateContext context(&base, false);
   context.AddRequirement(std::make_unique<table::AssertUUID>(base.table_uuid));
   for (const auto& update : table_updates) {
-    ICEBERG_RETURN_UNEXPECTED(update->GenerateRequirements(context));
+    update->GenerateRequirements(context);
   }
   return context.Build();
 }

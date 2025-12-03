@@ -68,27 +68,19 @@ class ICEBERG_EXPORT TableUpdateContext {
   /// \brief Build and return the list of requirements
   Result<std::vector<std::unique_ptr<TableRequirement>>> Build();
 
-  // Getters for deduplication flags
-  bool added_last_assigned_field_id() const { return added_last_assigned_field_id_; }
-  bool added_current_schema_id() const { return added_current_schema_id_; }
-  bool added_last_assigned_partition_id() const {
-    return added_last_assigned_partition_id_;
-  }
-  bool added_default_spec_id() const { return added_default_spec_id_; }
-  bool added_default_sort_order_id() const { return added_default_sort_order_id_; }
-
-  // Setters for deduplication flags
-  void set_added_last_assigned_field_id(bool value) {
-    added_last_assigned_field_id_ = value;
-  }
-  void set_added_current_schema_id(bool value) { added_current_schema_id_ = value; }
-  void set_added_last_assigned_partition_id(bool value) {
-    added_last_assigned_partition_id_ = value;
-  }
-  void set_added_default_spec_id(bool value) { added_default_spec_id_ = value; }
-  void set_added_default_sort_order_id(bool value) {
-    added_default_sort_order_id_ = value;
-  }
+  // Helper methods to deduplicate requirements to add.
+  /// \brief Require that the last assigned field ID remains unchanged
+  void RequireLastAssignedFieldIdUnchanged();
+  /// \brief Require that the current schema ID remains unchanged
+  void RequireCurrentSchemaIdUnchanged();
+  /// \brief Require that the last assigned partition ID remains unchanged
+  void RequireLastAssignedPartitionIdUnchanged();
+  /// \brief Require that the default spec ID remains unchanged
+  void RequireDefaultSpecIdUnchanged();
+  /// \brief Require that the default sort order ID remains unchanged
+  void RequireDefaultSortOrderIdUnchanged();
+  /// \brief Require that no branches have been changed
+  void RequireNoBranchesChanged();
 
  private:
   const TableMetadata* base_;
