@@ -23,7 +23,7 @@
 
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expressions.h"
-#include "iceberg/manifest_entry.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/row/struct_like.h"
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
