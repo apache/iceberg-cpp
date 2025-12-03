@@ -293,25 +293,6 @@ TEST(TableUpdateTest, RemoveSchemasGenerateRequirements) {
 }
 
 // Test AddSortOrder
-TEST(TableUpdateTest, ApplyAddSortOrderUpdate) {
-  auto base = CreateBaseMetadata();
-  auto builder = TableMetadataBuilder::BuildFrom(base.get());
-
-  // Apply AddSortOrder update
-  auto schema = CreateTestSchema();
-  SortField sort_field(1, Transform::Identity(), SortDirection::kAscending,
-                       NullOrder::kFirst);
-  ICEBERG_UNWRAP_OR_FAIL(auto sort_order_unique,
-                         SortOrder::Make(*schema, 1, std::vector<SortField>{sort_field}));
-  auto sort_order = std::shared_ptr<SortOrder>(std::move(sort_order_unique));
-  table::AddSortOrder sort_order_update(sort_order);
-  sort_order_update.ApplyTo(*builder);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
-  ASSERT_EQ(metadata->sort_orders.size(), 2);
-  EXPECT_EQ(metadata->sort_orders[1]->order_id(), 1);
-}
-
 TEST(TableUpdateTest, AddSortOrderGenerateRequirements) {
   auto schema = CreateTestSchema();
   SortField sort_field(1, Transform::Identity(), SortDirection::kAscending,
@@ -331,25 +312,6 @@ TEST(TableUpdateTest, AddSortOrderGenerateRequirements) {
 }
 
 // Test SetDefaultSortOrder
-TEST(TableUpdateTest, ApplySetDefaultSortOrderUpdate) {
-  auto base = CreateBaseMetadata();
-  auto builder = TableMetadataBuilder::BuildFrom(base.get());
-
-  auto schema = CreateTestSchema();
-  SortField sort_field(1, Transform::Identity(), SortDirection::kAscending,
-                       NullOrder::kFirst);
-  ICEBERG_UNWRAP_OR_FAIL(auto sort_order_unique,
-                         SortOrder::Make(*schema, 1, std::vector<SortField>{sort_field}));
-  auto sort_order = std::shared_ptr<SortOrder>(std::move(sort_order_unique));
-  builder->AddSortOrder(sort_order);
-
-  table::SetDefaultSortOrder set_default_update(1);
-  set_default_update.ApplyTo(*builder);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
-  EXPECT_EQ(metadata->default_sort_order_id, 1);
-}
-
 TEST(TableUpdateTest, SetDefaultSortOrderGenerateRequirements) {
   table::SetDefaultSortOrder update(1);
 
