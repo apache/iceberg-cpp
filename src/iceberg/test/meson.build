@@ -89,17 +89,28 @@ iceberg_tests = {
 }
 
 if get_option('rest').enabled()
-    cpp_httplib_dep = dependency('cpp-httplib')
     iceberg_tests += {
         'rest_catalog_test': {
-            'sources': files(
-                'rest_catalog_test.cc',
-                'rest_json_internal_test.cc',
-                'rest_util_test.cc',
-            ),
-            'dependencies': [iceberg_rest_dep, cpp_httplib_dep],
+            'sources': files('rest_json_internal_test.cc', 'rest_util_test.cc'),
+            'dependencies': [iceberg_rest_dep],
         },
     }
+    if get_option('rest_integration_test').enabled()
+        if host_machine.system() == 'windows'
+            warning('Cannot build rest integration test on Windows, skipping.')
+        else
+            iceberg_tests += {
+                'rest_integration_test': {
+                    'sources': files(
+                        'rest_catalog_test.cc',
+                        'util/cmd_util.cc',
+                        'util/docker_compose_util.cc',
+                    ),
+                    'dependencies': [iceberg_rest_dep],
+                },
+            }
+        endif
+    endif
 endif
 
 foreach test_name, values : iceberg_tests
