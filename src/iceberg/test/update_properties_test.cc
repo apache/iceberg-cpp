@@ -26,7 +26,6 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include "gmock/gmock.h"
 #include "iceberg/file_format.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
