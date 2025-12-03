@@ -19,12 +19,6 @@
 
 #include "iceberg/table.h"
 
-#include <filesystem>
-#include <fstream>
-#include <optional>
-#include <sstream>
-#include <string>
-
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 

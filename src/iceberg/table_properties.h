@@ -231,6 +231,8 @@ class ICEBERG_EXPORT TableProperties : public ConfigBase<TableProperties> {
       "write.metadata.delete-after-commit.enabled", false};
   inline static Entry<int32_t> kMetricsMaxInferredColumnDefaults{
       "write.metadata.metrics.max-inferred-column-defaults", 100};
+  inline static constexpr std::string_view kMetricModeColumnConfPrefix =
+      "write.metadata.metrics.column.";
   inline static Entry<std::string> kDefaultWriteMetricsMode{
       "write.metadata.metrics.default", "truncate(16)"};
 

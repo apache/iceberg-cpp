@@ -94,7 +94,6 @@ class SortField;
 class SortOrder;
 class Table;
 class TableProperties;
-class FileIO;
 class Transaction;
 class Transform;
 class TransformFunction;
@@ -163,6 +162,7 @@ class TableUpdateContext;
 class PendingUpdate;
 template <typename T>
 class PendingUpdateTyped;
+class UpdateProperties;
 
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.

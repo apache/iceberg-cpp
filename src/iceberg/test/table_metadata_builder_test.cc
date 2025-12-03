@@ -124,6 +124,56 @@ TEST(TableMetadataBuilderTest, AssignUUID) {
   EXPECT_EQ(metadata->table_uuid, "TEST-UUID-ABCD");  // Original case preserved
 }
 
+TEST(TableMetadataBuilderTest, SetProperties) {
+  auto builder = TableMetadataBuilder::BuildFromEmpty(2);
+  builder->SetProperties({{"key1", "value1"}, {"key2", "value2"}});
+
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+  EXPECT_EQ(metadata->properties.size(), 2);
+  EXPECT_EQ(metadata->properties["key1"], "value1");
+  EXPECT_EQ(metadata->properties["key2"], "value2");
+
+  // Update existing property and add new one
+  builder = TableMetadataBuilder::BuildFromEmpty(2);
+  builder->SetProperties({{"key1", "value1"}});
+  builder->SetProperties({{"key1", "new_value1"}, {"key3", "value3"}});
+
+  ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
+  EXPECT_EQ(metadata->properties.size(), 2);
+  EXPECT_EQ(metadata->properties["key1"], "new_value1");
+  EXPECT_EQ(metadata->properties["key3"], "value3");
+}
+
+TEST(TableMetadataBuilderTest, RemoveProperties) {
+  auto builder = TableMetadataBuilder::BuildFromEmpty(2);
+  builder->SetProperties({{"key1", "value1"}, {"key2", "value2"}, {"key3", "value3"}});
+  builder->RemoveProperties({"key2", "key4"});  // key4 does not exist
+
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+  EXPECT_EQ(metadata->properties.size(), 2);
+  EXPECT_EQ(metadata->properties["key1"], "value1");
+  EXPECT_EQ(metadata->properties["key3"], "value3");
+}
+
+TEST(TableMetadataBuilderTest, UpgradeFormatVersion) {
+  auto builder = TableMetadataBuilder::BuildFromEmpty(1);
+  builder->UpgradeFormatVersion(2);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+  EXPECT_EQ(metadata->format_version, 2);
+
+  // Unsupported format version should fail
+  builder = TableMetadataBuilder::BuildFromEmpty(3);
+  builder->UpgradeFormatVersion(4);
+  EXPECT_THAT(builder->Build(),
+              HasErrorMessage("Cannot upgrade table to unsupported format version"));
+
+  // Downgrade should fail
+  builder = TableMetadataBuilder::BuildFromEmpty(2);
+  builder->UpgradeFormatVersion(1);
+  EXPECT_THAT(builder->Build(), HasErrorMessage("Cannot downgrade"));
+}
+
 // Test applying TableUpdate to builder
 TEST(TableMetadataBuilderTest, ApplyUpdate) {
   // Apply AssignUUID update
