@@ -76,6 +76,10 @@ class ReaderProperties : public ConfigBase<ReaderProperties> {
   /// \brief The batch size to read.
   inline static Entry<int64_t> kBatchSize{"read.batch-size", 4096};
 
+  /// \brief Use direct Avro decoder (true) or GenericDatum-based decoder (false).
+  /// Default: true (use direct decoder for better performance).
+  inline static Entry<bool> kAvroUseDirectDecoder{"avro.use-direct-decoder", true};
+
   /// \brief Create a default ReaderProperties instance.
   static std::unique_ptr<ReaderProperties> default_properties();
 
