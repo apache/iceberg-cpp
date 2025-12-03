@@ -34,13 +34,13 @@ namespace iceberg {
 
 Command::Command(std::string program) : program_(std::move(program)) {}
 
-Command& Command::Arg(std::string a) {
-  args_.push_back(std::move(a));
+Command& Command::Arg(std::string arg) {
+  args_.push_back(std::move(arg));
   return *this;
 }
 
-Command& Command::Args(const std::vector<std::string>& as) {
-  args_.insert(args_.end(), as.begin(), as.end());
+Command& Command::Args(const std::vector<std::string>& args) {
+  args_.insert(args_.end(), args.begin(), args.end());
   return *this;
 }
 
@@ -55,7 +55,7 @@ Command& Command::Env(const std::string& key, const std::string& val) {
 }
 
 void Command::RunCommand(const std::string& desc) const {
-  std::println("[INFO] Starting to {}, command: {} {}", desc, program_, fmt_args());
+  std::println("[INFO] Starting to {}, command: {} {}", desc, program_, FormatArgs());
 
   std::cout.flush();
   std::cerr.flush();
@@ -122,7 +122,7 @@ void Command::RunCommand(const std::string& desc) const {
   }
 }
 
-std::string Command::fmt_args() const {
+std::string Command::FormatArgs() const {
   std::string s;
   for (const auto& a : args_) {
     s += a + " ";

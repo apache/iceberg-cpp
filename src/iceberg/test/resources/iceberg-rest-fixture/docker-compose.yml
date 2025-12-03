@@ -15,20 +15,12 @@
 # specific language governing permissions and limitations
 # under the License.
 
-networks:
-  rest_bridge:
-
 services:
   rest:
-    image: apache/iceberg-rest-fixture:1.10.0
+    image: apache/iceberg-rest-fixture:latest
     environment:
-      - AWS_ACCESS_KEY_ID=admin
-      - AWS_SECRET_ACCESS_KEY=password
-      - AWS_REGION=us-east-1
       - CATALOG_CATALOG__IMPL=org.apache.iceberg.jdbc.JdbcCatalog
       - CATALOG_URI=jdbc:sqlite:file:/tmp/iceberg_rest_mode=memory
       - CATALOG_WAREHOUSE=file:///tmp/iceberg_warehouse
-    networks:
-      rest_bridge:
     ports:
       - "8181:8181"

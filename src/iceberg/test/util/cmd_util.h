@@ -35,10 +35,10 @@ class Command {
   explicit Command(std::string program);
 
   /// \brief Add a single argument
-  Command& Arg(std::string a);
+  Command& Arg(std::string arg);
 
   /// \brief Add multiple arguments at once
-  Command& Args(const std::vector<std::string>& as);
+  Command& Args(const std::vector<std::string>& args);
 
   /// \brief Set the current working directory for the command
   Command& CurrentDir(const std::filesystem::path& path);
@@ -57,7 +57,7 @@ class Command {
   std::map<std::string, std::string> env_vars_;
 
   /// \brief Format arguments for logging
-  std::string fmt_args() const;
+  std::string FormatArgs() const;
 };
 
 }  // namespace iceberg
