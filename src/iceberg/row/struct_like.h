@@ -55,6 +55,9 @@ using Scalar = std::variant<std::monostate,  // for null
                             std::shared_ptr<ArrayLike>,   // for list
                             std::shared_ptr<MapLike>>;    // for map
 
+/// \brief Convert a Literal to a Scalar
+Result<Scalar> LiteralToScalar(const Literal& literal);
+
 /// \brief An immutable struct-like wrapper.
 class ICEBERG_EXPORT StructLike {
  public:
@@ -66,6 +69,19 @@ class ICEBERG_EXPORT StructLike {
 
   /// \brief Get the number of fields in the struct.
   virtual size_t num_fields() const = 0;
+};
+
+/// \brief A single-field StructLike that wraps a Literal
+class ICEBERG_EXPORT SingleValueStructLike : public StructLike {
+ public:
+  explicit SingleValueStructLike(Literal literal);
+
+  Result<Scalar> GetField(size_t pos) const override;
+
+  size_t num_fields() const override;
+
+ private:
+  Literal literal_;
 };
 
 /// \brief An immutable array-like wrapper.

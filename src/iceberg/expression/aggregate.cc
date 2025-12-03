@@ -20,10 +20,13 @@
 #include "iceberg/expression/aggregate.h"
 
 #include <format>
+#include <map>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "iceberg/expression/literal.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/row/struct_like.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
@@ -38,6 +41,19 @@ std::shared_ptr<PrimitiveType> GetPrimitiveType(const BoundTerm& term) {
   return internal::checked_pointer_cast<PrimitiveType>(term.type());
 }
 
+Result<Literal> EvaluateBoundTerm(const BoundTerm& term,
+                                  const std::optional<std::vector<uint8_t>>& bound) {
+  auto ptype = GetPrimitiveType(term);
+  if (!bound.has_value()) {
+    SingleValueStructLike data(Literal::Null(ptype));
+    return term.Evaluate(data);
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto literal, Literal::Deserialize(*bound, ptype));
+  SingleValueStructLike data(std::move(literal));
+  return term.Evaluate(data);
+}
+
 class CountAggregator : public BoundAggregate::Aggregator {
  public:
   explicit CountAggregator(const CountAggregate& aggregate) : aggregate_(aggregate) {}
@@ -48,11 +64,32 @@ class CountAggregator : public BoundAggregate::Aggregator {
     return {};
   }
 
-  Literal GetResult() const override { return Literal::Long(count_); }
+  Status Update(const DataFile& file) override {
+    if (!valid_) {
+      return {};
+    }
+    if (!aggregate_.HasValue(file)) {
+      valid_ = false;
+      return {};
+    }
+    ICEBERG_ASSIGN_OR_RAISE(auto count, aggregate_.CountFor(file));
+    count_ += count;
+    return {};
+  }
+
+  Literal GetResult() const override {
+    if (!valid_) {
+      return Literal::Null(int64());
+    }
+    return Literal::Long(count_);
+  }
+
+  bool IsValid() const override { return valid_; }
 
  private:
   const CountAggregate& aggregate_;
   int64_t count_ = 0;
+  bool valid_ = true;
 };
 
 class MaxAggregator : public BoundAggregate::Aggregator {
@@ -82,11 +119,47 @@ class MaxAggregator : public BoundAggregate::Aggregator {
     return {};
   }
 
-  Literal GetResult() const override { return current_; }
+  Status Update(const DataFile& file) override {
+    if (!valid_) {
+      return {};
+    }
+    if (!aggregate_.HasValue(file)) {
+      valid_ = false;
+      return {};
+    }
+
+    ICEBERG_ASSIGN_OR_RAISE(auto value, aggregate_.Evaluate(file));
+    if (value.IsNull()) {
+      return {};
+    }
+    if (current_.IsNull()) {
+      current_ = std::move(value);
+      return {};
+    }
+
+    if (auto ordering = value <=> current_;
+        ordering == std::partial_ordering::unordered) {
+      return InvalidArgument("Cannot compare literal {} with current value {}",
+                             value.ToString(), current_.ToString());
+    } else if (ordering == std::partial_ordering::greater) {
+      current_ = std::move(value);
+    }
+    return {};
+  }
+
+  Literal GetResult() const override {
+    if (!valid_) {
+      return Literal::Null(GetPrimitiveType(*aggregate_.term()));
+    }
+    return current_;
+  }
+
+  bool IsValid() const override { return valid_; }
 
  private:
   const MaxAggregate& aggregate_;
   Literal current_;
+  bool valid_ = true;
 };
 
 class MinAggregator : public BoundAggregate::Aggregator {
@@ -115,12 +188,72 @@ class MinAggregator : public BoundAggregate::Aggregator {
     return {};
   }
 
-  Literal GetResult() const override { return current_; }
+  Status Update(const DataFile& file) override {
+    if (!valid_) {
+      return {};
+    }
+    if (!aggregate_.HasValue(file)) {
+      valid_ = false;
+      return {};
+    }
+
+    ICEBERG_ASSIGN_OR_RAISE(auto value, aggregate_.Evaluate(file));
+    if (value.IsNull()) {
+      return {};
+    }
+    if (current_.IsNull()) {
+      current_ = std::move(value);
+      return {};
+    }
+
+    if (auto ordering = value <=> current_;
+        ordering == std::partial_ordering::unordered) {
+      return InvalidArgument("Cannot compare literal {} with current value {}",
+                             value.ToString(), current_.ToString());
+    } else if (ordering == std::partial_ordering::less) {
+      current_ = std::move(value);
+    }
+    return {};
+  }
+
+  Literal GetResult() const override {
+    if (!valid_) {
+      return Literal::Null(GetPrimitiveType(*aggregate_.term()));
+    }
+    return current_;
+  }
+
+  bool IsValid() const override { return valid_; }
 
  private:
   const MinAggregate& aggregate_;
   Literal current_;
+  bool valid_ = true;
 };
+
+bool HasMapKey(const std::map<int32_t, int64_t>& map, int32_t key) {
+  return map.contains(key);
+}
+
+bool HasMapKey(const std::map<int32_t, std::vector<uint8_t>>& map, int32_t key) {
+  return map.contains(key);
+}
+
+template <typename T>
+std::optional<T> GetMapValue(const std::map<int32_t, T>& map, int32_t key) {
+  auto iter = map.find(key);
+  if (iter == map.end()) {
+    return std::nullopt;
+  }
+  return iter->second;
+}
+
+int32_t GetFieldId(const std::shared_ptr<BoundTerm>& term) {
+  ICEBERG_DCHECK(term != nullptr, "Aggregate term should not be null");
+  auto ref = term->reference();
+  ICEBERG_DCHECK(ref != nullptr, "Aggregate term reference should not be null");
+  return ref->field().field_id();
+}
 
 }  // namespace
 
@@ -152,6 +285,11 @@ Result<Literal> CountAggregate::Evaluate(const StructLike& data) const {
   return CountFor(data).transform([](int64_t count) { return Literal::Long(count); });
 }
 
+Result<Literal> CountAggregate::Evaluate(const DataFile& file) const {
+  ICEBERG_ASSIGN_OR_RAISE(auto count, CountFor(file));
+  return Literal::Long(count);
+}
+
 std::unique_ptr<BoundAggregate::Aggregator> CountAggregate::NewAggregator() const {
   return std::unique_ptr<BoundAggregate::Aggregator>(new CountAggregator(*this));
 }
@@ -173,6 +311,22 @@ Result<int64_t> CountNonNullAggregate::CountFor(const StructLike& data) const {
       [](const auto& val) { return val.IsNull() ? 0 : 1; });
 }
 
+Result<int64_t> CountNonNullAggregate::CountFor(const DataFile& file) const {
+  auto field_id = GetFieldId(term());
+  if (!HasValue(file)) {
+    return NotFound("Missing metrics for field id {}", field_id);
+  }
+  auto value_count = GetMapValue(file.value_counts, field_id).value();
+  auto null_count = GetMapValue(file.null_value_counts, field_id).value();
+  return value_count - null_count;
+}
+
+bool CountNonNullAggregate::HasValue(const DataFile& file) const {
+  auto field_id = GetFieldId(term());
+  return HasMapKey(file.value_counts, field_id) &&
+         HasMapKey(file.null_value_counts, field_id);
+}
+
 CountNullAggregate::CountNullAggregate(std::shared_ptr<BoundTerm> term)
     : CountAggregate(Expression::Operation::kCountNull, std::move(term)) {}
 
@@ -189,6 +343,18 @@ Result<int64_t> CountNullAggregate::CountFor(const StructLike& data) const {
       [](const auto& val) { return val.IsNull() ? 1 : 0; });
 }
 
+Result<int64_t> CountNullAggregate::CountFor(const DataFile& file) const {
+  auto field_id = GetFieldId(term());
+  if (!HasValue(file)) {
+    return NotFound("Missing metrics for field id {}", field_id);
+  }
+  return GetMapValue(file.null_value_counts, field_id).value();
+}
+
+bool CountNullAggregate::HasValue(const DataFile& file) const {
+  return HasMapKey(file.null_value_counts, GetFieldId(term()));
+}
+
 CountStarAggregate::CountStarAggregate()
     : CountAggregate(Expression::Operation::kCountStar, nullptr) {}
 
@@ -198,6 +364,17 @@ Result<std::unique_ptr<CountStarAggregate>> CountStarAggregate::Make() {
 
 Result<int64_t> CountStarAggregate::CountFor(const StructLike& /*data*/) const {
   return 1;
+}
+
+Result<int64_t> CountStarAggregate::CountFor(const DataFile& file) const {
+  if (!HasValue(file)) {
+    return NotFound("Record count is missing");
+  }
+  return file.record_count;
+}
+
+bool CountStarAggregate::HasValue(const DataFile& file) const {
+  return file.record_count >= 0;
 }
 
 MaxAggregate::MaxAggregate(std::shared_ptr<BoundTerm> term)
@@ -211,8 +388,24 @@ Result<Literal> MaxAggregate::Evaluate(const StructLike& data) const {
   return term()->Evaluate(data);
 }
 
+Result<Literal> MaxAggregate::Evaluate(const DataFile& file) const {
+  auto field_id = GetFieldId(term());
+  auto upper = GetMapValue(file.upper_bounds, field_id);
+  return EvaluateBoundTerm(*term(), upper);
+}
+
 std::unique_ptr<BoundAggregate::Aggregator> MaxAggregate::NewAggregator() const {
   return std::unique_ptr<BoundAggregate::Aggregator>(new MaxAggregator(*this));
+}
+
+bool MaxAggregate::HasValue(const DataFile& file) const {
+  auto field_id = GetFieldId(term());
+  bool has_bound = HasMapKey(file.upper_bounds, field_id);
+  auto value_count = GetMapValue(file.value_counts, field_id);
+  auto null_count = GetMapValue(file.null_value_counts, field_id);
+  bool all_null = value_count.has_value() && *value_count > 0 && null_count.has_value() &&
+                  null_count.value() == value_count.value();
+  return has_bound || all_null;
 }
 
 MinAggregate::MinAggregate(std::shared_ptr<BoundTerm> term)
@@ -226,8 +419,24 @@ Result<Literal> MinAggregate::Evaluate(const StructLike& data) const {
   return term()->Evaluate(data);
 }
 
+Result<Literal> MinAggregate::Evaluate(const DataFile& file) const {
+  auto field_id = GetFieldId(term());
+  auto lower = GetMapValue(file.lower_bounds, field_id);
+  return EvaluateBoundTerm(*term(), lower);
+}
+
 std::unique_ptr<BoundAggregate::Aggregator> MinAggregate::NewAggregator() const {
   return std::unique_ptr<BoundAggregate::Aggregator>(new MinAggregator(*this));
+}
+
+bool MinAggregate::HasValue(const DataFile& file) const {
+  auto field_id = GetFieldId(term());
+  bool has_bound = HasMapKey(file.lower_bounds, field_id);
+  auto value_count = GetMapValue(file.value_counts, field_id);
+  auto null_count = GetMapValue(file.null_value_counts, field_id);
+  bool all_null = value_count.has_value() && *value_count > 0 && null_count.has_value() &&
+                  null_count.value() == value_count.value();
+  return has_bound || all_null;
 }
 
 // -------------------- Unbound binding --------------------
@@ -275,8 +484,10 @@ Result<std::shared_ptr<UnboundAggregateImpl<B>>> UnboundAggregateImpl<B>::Make(
 }
 
 template class Aggregate<UnboundTerm<BoundReference>>;
+template class Aggregate<UnboundTerm<BoundTransform>>;
 template class Aggregate<BoundTerm>;
 template class UnboundAggregateImpl<BoundReference>;
+template class UnboundAggregateImpl<BoundTransform>;
 
 // -------------------- AggregateEvaluator --------------------
 
@@ -292,6 +503,13 @@ class AggregateEvaluatorImpl : public AggregateEvaluator {
   Status Update(const StructLike& data) override {
     for (auto& aggregator : aggregators_) {
       ICEBERG_RETURN_UNEXPECTED(aggregator->Update(data));
+    }
+    return {};
+  }
+
+  Status Update(const DataFile& file) override {
+    for (auto& aggregator : aggregators_) {
+      ICEBERG_RETURN_UNEXPECTED(aggregator->Update(file));
     }
     return {};
   }
@@ -313,6 +531,15 @@ class AggregateEvaluatorImpl : public AggregateEvaluator {
 
     ICEBERG_ASSIGN_OR_RAISE(auto all, GetResults());
     return all.front();
+  }
+
+  bool AllAggregatorsValid() const override {
+    for (const auto& aggregator : aggregators_) {
+      if (!aggregator->IsValid()) {
+        return false;
+      }
+    }
+    return true;
   }
 
  private:
