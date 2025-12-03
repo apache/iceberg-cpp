@@ -1078,8 +1078,6 @@ TEST_F(TransformProjectTest, BucketProjectWithMatchingTransformedChild) {
   // The predicate's term should be a transform
   EXPECT_EQ(bound_pred->term()->kind(), Term::Kind::kTransform);
 
-  auto dummy = Expressions::NotEqual<BoundTransform>(bucket_term, Literal::Int(5));
-
   // When the transform matches, Project should use RemoveTransform and return the
   // predicate
   ICEBERG_ASSIGN_OR_THROW(auto projected,
