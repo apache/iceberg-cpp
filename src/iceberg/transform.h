@@ -182,6 +182,18 @@ class ICEBERG_EXPORT Transform : public util::Formattable {
   Result<std::unique_ptr<UnboundPredicate>> Project(
       std::string_view name, const std::shared_ptr<BoundPredicate>& predicate);
 
+  /// \brief Transforms a BoundPredicate to a strict predicate on the partition values
+  /// produced by the transform.
+  ///
+  /// This strict transform guarantees that if Projected(transform(value)) is true, then
+  /// predicate->Test(value) is also true.
+  /// \param name The name of the partition column.
+  /// \param predicate The predicate to project.
+  /// \return A Result containing either a unique pointer to the projected predicate,
+  /// nullptr if the projection cannot be performed, or an Error if the projection fails.
+  Result<std::unique_ptr<UnboundPredicate>> ProjectStrict(
+      std::string_view name, const std::shared_ptr<BoundPredicate>& predicate);
+
   /// \brief Returns a string representation of this transform (e.g., "bucket[16]").
   std::string ToString() const override;
 

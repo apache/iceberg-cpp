@@ -306,6 +306,66 @@ Result<std::unique_ptr<UnboundPredicate>> Transform::Project(
   std::unreachable();
 }
 
+Result<std::unique_ptr<UnboundPredicate>> Transform::ProjectStrict(
+    std::string_view name, const std::shared_ptr<BoundPredicate>& predicate) {
+  switch (transform_type_) {
+    case TransformType::kIdentity:
+      return ProjectionUtil::IdentityProject(name, predicate);
+    case TransformType::kBucket: {
+      // If the predicate has a transformed child that matches the given transform, return
+      // a predicate.
+      if (predicate->term()->kind() == Term::Kind::kTransform) {
+        const auto boundTransform =
+            internal::checked_pointer_cast<BoundTransform>(predicate->term());
+        if (*this == *boundTransform->transform()) {
+          return ProjectionUtil::RemoveTransform(name, predicate);
+        } else {
+          return nullptr;
+        }
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto func, Bind(predicate->term()->type()));
+      return ProjectionUtil::BucketProjectStrict(name, predicate, func);
+    }
+    case TransformType::kTruncate: {
+      // If the predicate has a transformed child that matches the given transform, return
+      // a predicate.
+      if (predicate->term()->kind() == Term::Kind::kTransform) {
+        const auto boundTransform =
+            internal::checked_pointer_cast<BoundTransform>(predicate->term());
+        if (*this == *boundTransform->transform()) {
+          return ProjectionUtil::RemoveTransform(name, predicate);
+        } else {
+          return nullptr;
+        }
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto func, Bind(predicate->term()->type()));
+      return ProjectionUtil::TruncateProjectStrict(name, predicate, func);
+    }
+    case TransformType::kYear:
+    case TransformType::kMonth:
+    case TransformType::kDay:
+    case TransformType::kHour: {
+      // If the predicate has a transformed child that matches the given transform, return
+      // a predicate.
+      if (predicate->term()->kind() == Term::Kind::kTransform) {
+        const auto boundTransform =
+            internal::checked_pointer_cast<BoundTransform>(predicate->term());
+        if (*this == *boundTransform->transform()) {
+          return ProjectionUtil::RemoveTransform(name, predicate);
+        } else {
+          return nullptr;
+        }
+      }
+      ICEBERG_ASSIGN_OR_RAISE(auto func, Bind(predicate->term()->type()));
+      return ProjectionUtil::TemporalProjectStrict(name, predicate, func);
+    }
+    case TransformType::kUnknown:
+    case TransformType::kVoid:
+      return nullptr;
+  }
+  std::unreachable();
+}
+
 bool TransformFunction::Equals(const TransformFunction& other) const {
   return transform_type_ == other.transform_type_ && *source_type_ == *other.source_type_;
 }

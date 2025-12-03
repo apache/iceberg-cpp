@@ -26,7 +26,6 @@
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
-#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -607,24 +606,24 @@ std::shared_ptr<BoundPredicate> AssertAndCastToBoundPredicate(
 }  // namespace
 
 TEST_F(PredicateTest, BoundUnaryPredicateTestIsNull) {
-  ICEBERG_ASSIGN_OR_THROW(auto is_null_pred, Expressions::IsNull("name")->Bind(
-                                                 *schema_, /*case_sensitive=*/true));
+  ICEBERG_UNWRAP_OR_FAIL(auto is_null_pred, Expressions::IsNull("name")->Bind(
+                                                *schema_, /*case_sensitive=*/true));
   auto bound_pred = AssertAndCastToBoundPredicate(is_null_pred);
   EXPECT_THAT(bound_pred->Test(Literal::Null(string())), HasValue(testing::Eq(true)));
   EXPECT_THAT(bound_pred->Test(Literal::String("test")), HasValue(testing::Eq(false)));
 }
 
 TEST_F(PredicateTest, BoundUnaryPredicateTestNotNull) {
-  ICEBERG_ASSIGN_OR_THROW(auto not_null_pred, Expressions::NotNull("name")->Bind(
-                                                  *schema_, /*case_sensitive=*/true));
+  ICEBERG_UNWRAP_OR_FAIL(auto not_null_pred, Expressions::NotNull("name")->Bind(
+                                                 *schema_, /*case_sensitive=*/true));
   auto bound_pred = AssertAndCastToBoundPredicate(not_null_pred);
   EXPECT_THAT(bound_pred->Test(Literal::String("test")), HasValue(testing::Eq(true)));
   EXPECT_THAT(bound_pred->Test(Literal::Null(string())), HasValue(testing::Eq(false)));
 }
 
 TEST_F(PredicateTest, BoundUnaryPredicateTestIsNaN) {
-  ICEBERG_ASSIGN_OR_THROW(auto is_nan_pred, Expressions::IsNaN("salary")->Bind(
-                                                *schema_, /*case_sensitive=*/true));
+  ICEBERG_UNWRAP_OR_FAIL(auto is_nan_pred, Expressions::IsNaN("salary")->Bind(
+                                               *schema_, /*case_sensitive=*/true));
   auto bound_pred = AssertAndCastToBoundPredicate(is_nan_pred);
 
   // Test with NaN values
@@ -643,8 +642,8 @@ TEST_F(PredicateTest, BoundUnaryPredicateTestIsNaN) {
 }
 
 TEST_F(PredicateTest, BoundUnaryPredicateTestNotNaN) {
-  ICEBERG_ASSIGN_OR_THROW(auto not_nan_pred, Expressions::NotNaN("salary")->Bind(
-                                                 *schema_, /*case_sensitive=*/true));
+  ICEBERG_UNWRAP_OR_FAIL(auto not_nan_pred, Expressions::NotNaN("salary")->Bind(
+                                                *schema_, /*case_sensitive=*/true));
   auto bound_pred = AssertAndCastToBoundPredicate(not_nan_pred);
 
   // Test with regular values
@@ -661,34 +660,34 @@ TEST_F(PredicateTest, BoundUnaryPredicateTestNotNaN) {
 
 TEST_F(PredicateTest, BoundLiteralPredicateTestComparison) {
   // Test less than
-  ICEBERG_ASSIGN_OR_THROW(auto lt_pred, Expressions::LessThan("age", Literal::Int(30))
-                                            ->Bind(*schema_, /*case_sensitive=*/true));
+  ICEBERG_UNWRAP_OR_FAIL(auto lt_pred, Expressions::LessThan("age", Literal::Int(30))
+                                           ->Bind(*schema_, /*case_sensitive=*/true));
   auto bound_lt = AssertAndCastToBoundPredicate(lt_pred);
   EXPECT_THAT(bound_lt->Test(Literal::Int(20)), HasValue(testing::Eq(true)));
   EXPECT_THAT(bound_lt->Test(Literal::Int(30)), HasValue(testing::Eq(false)));
   EXPECT_THAT(bound_lt->Test(Literal::Int(40)), HasValue(testing::Eq(false)));
 
   // Test less than or equal
-  ICEBERG_ASSIGN_OR_THROW(auto lte_pred,
-                          Expressions::LessThanOrEqual("age", Literal::Int(30))
-                              ->Bind(*schema_, /*case_sensitive=*/true));
+  ICEBERG_UNWRAP_OR_FAIL(auto lte_pred,
+                         Expressions::LessThanOrEqual("age", Literal::Int(30))
+                             ->Bind(*schema_, /*case_sensitive=*/true));
   auto bound_lte = AssertAndCastToBoundPredicate(lte_pred);
   EXPECT_THAT(bound_lte->Test(Literal::Int(20)), HasValue(testing::Eq(true)));
   EXPECT_THAT(bound_lte->Test(Literal::Int(30)), HasValue(testing::Eq(true)));
   EXPECT_THAT(bound_lte->Test(Literal::Int(40)), HasValue(testing::Eq(false)));
 
   // Test greater than
-  ICEBERG_ASSIGN_OR_THROW(auto gt_pred, Expressions::GreaterThan("age", Literal::Int(30))
-                                            ->Bind(*schema_, /*case_sensitive=*/true));
+  ICEBERG_UNWRAP_OR_FAIL(auto gt_pred, Expressions::GreaterThan("age", Literal::Int(30))
+                                           ->Bind(*schema_, /*case_sensitive=*/true));
   auto bound_gt = AssertAndCastToBoundPredicate(gt_pred);
   EXPECT_THAT(bound_gt->Test(Literal::Int(20)), HasValue(testing::Eq(false)));
   EXPECT_THAT(bound_gt->Test(Literal::Int(30)), HasValue(testing::Eq(false)));
   EXPECT_THAT(bound_gt->Test(Literal::Int(40)), HasValue(testing::Eq(true)));
 
   // Test greater than or equal
-  ICEBERG_ASSIGN_OR_THROW(auto gte_pred,
-                          Expressions::GreaterThanOrEqual("age", Literal::Int(30))
-                              ->Bind(*schema_, /*case_sensitive=*/true));
+  ICEBERG_UNWRAP_OR_FAIL(auto gte_pred,
+                         Expressions::GreaterThanOrEqual("age", Literal::Int(30))
+                             ->Bind(*schema_, /*case_sensitive=*/true));
   auto bound_gte = AssertAndCastToBoundPredicate(gte_pred);
   EXPECT_THAT(bound_gte->Test(Literal::Int(20)), HasValue(testing::Eq(false)));
   EXPECT_THAT(bound_gte->Test(Literal::Int(30)), HasValue(testing::Eq(true)));
@@ -697,16 +696,16 @@ TEST_F(PredicateTest, BoundLiteralPredicateTestComparison) {
 
 TEST_F(PredicateTest, BoundLiteralPredicateTestEquality) {
   // Test equal
-  ICEBERG_ASSIGN_OR_THROW(auto eq_pred, Expressions::Equal("age", Literal::Int(25))
-                                            ->Bind(*schema_, /*case_sensitive=*/true));
+  ICEBERG_UNWRAP_OR_FAIL(auto eq_pred, Expressions::Equal("age", Literal::Int(25))
+                                           ->Bind(*schema_, /*case_sensitive=*/true));
   auto bound_eq = AssertAndCastToBoundPredicate(eq_pred);
   EXPECT_THAT(bound_eq->Test(Literal::Int(25)), HasValue(testing::Eq(true)));
   EXPECT_THAT(bound_eq->Test(Literal::Int(26)), HasValue(testing::Eq(false)));
   EXPECT_THAT(bound_eq->Test(Literal::Int(24)), HasValue(testing::Eq(false)));
 
   // Test not equal
-  ICEBERG_ASSIGN_OR_THROW(auto neq_pred, Expressions::NotEqual("age", Literal::Int(25))
-                                             ->Bind(*schema_, /*case_sensitive=*/true));
+  ICEBERG_UNWRAP_OR_FAIL(auto neq_pred, Expressions::NotEqual("age", Literal::Int(25))
+                                            ->Bind(*schema_, /*case_sensitive=*/true));
   auto bound_neq = AssertAndCastToBoundPredicate(neq_pred);
   EXPECT_THAT(bound_neq->Test(Literal::Int(25)), HasValue(testing::Eq(false)));
   EXPECT_THAT(bound_neq->Test(Literal::Int(26)), HasValue(testing::Eq(true)));
@@ -715,18 +714,18 @@ TEST_F(PredicateTest, BoundLiteralPredicateTestEquality) {
 
 TEST_F(PredicateTest, BoundLiteralPredicateTestWithDifferentTypes) {
   // Test with double
-  ICEBERG_ASSIGN_OR_THROW(auto gt_pred,
-                          Expressions::GreaterThan("salary", Literal::Double(50000.0))
-                              ->Bind(*schema_, /*case_sensitive=*/true));
+  ICEBERG_UNWRAP_OR_FAIL(auto gt_pred,
+                         Expressions::GreaterThan("salary", Literal::Double(50000.0))
+                             ->Bind(*schema_, /*case_sensitive=*/true));
   auto bound_double = AssertAndCastToBoundPredicate(gt_pred);
   EXPECT_THAT(bound_double->Test(Literal::Double(60000.0)), HasValue(testing::Eq(true)));
   EXPECT_THAT(bound_double->Test(Literal::Double(40000.0)), HasValue(testing::Eq(false)));
   EXPECT_THAT(bound_double->Test(Literal::Double(50000.0)), HasValue(testing::Eq(false)));
 
   // Test with string
-  ICEBERG_ASSIGN_OR_THROW(auto str_eq_pred,
-                          Expressions::Equal("name", Literal::String("Alice"))
-                              ->Bind(*schema_, /*case_sensitive=*/true));
+  ICEBERG_UNWRAP_OR_FAIL(auto str_eq_pred,
+                         Expressions::Equal("name", Literal::String("Alice"))
+                             ->Bind(*schema_, /*case_sensitive=*/true));
   auto bound_string = AssertAndCastToBoundPredicate(str_eq_pred);
   EXPECT_THAT(bound_string->Test(Literal::String("Alice")), HasValue(testing::Eq(true)));
   EXPECT_THAT(bound_string->Test(Literal::String("Bob")), HasValue(testing::Eq(false)));
@@ -734,16 +733,16 @@ TEST_F(PredicateTest, BoundLiteralPredicateTestWithDifferentTypes) {
               HasValue(testing::Eq(false)));  // Case sensitive
 
   // Test with boolean
-  ICEBERG_ASSIGN_OR_THROW(auto bool_eq_pred,
-                          Expressions::Equal("active", Literal::Boolean(true))
-                              ->Bind(*schema_, /*case_sensitive=*/true));
+  ICEBERG_UNWRAP_OR_FAIL(auto bool_eq_pred,
+                         Expressions::Equal("active", Literal::Boolean(true))
+                             ->Bind(*schema_, /*case_sensitive=*/true));
   auto bound_bool = AssertAndCastToBoundPredicate(bool_eq_pred);
   EXPECT_THAT(bound_bool->Test(Literal::Boolean(true)), HasValue(testing::Eq(true)));
   EXPECT_THAT(bound_bool->Test(Literal::Boolean(false)), HasValue(testing::Eq(false)));
 }
 
 TEST_F(PredicateTest, BoundLiteralPredicateTestStartsWith) {
-  ICEBERG_ASSIGN_OR_THROW(
+  ICEBERG_UNWRAP_OR_FAIL(
       auto starts_with_pred,
       Expressions::StartsWith("name", "Jo")->Bind(*schema_, /*case_sensitive=*/true));
   auto bound_pred = AssertAndCastToBoundPredicate(starts_with_pred);
@@ -759,7 +758,7 @@ TEST_F(PredicateTest, BoundLiteralPredicateTestStartsWith) {
   EXPECT_THAT(bound_pred->Test(Literal::String("")), HasValue(testing::Eq(false)));
 
   // Test empty prefix
-  ICEBERG_ASSIGN_OR_THROW(
+  ICEBERG_UNWRAP_OR_FAIL(
       auto empty_prefix_pred,
       Expressions::StartsWith("name", "")->Bind(*schema_, /*case_sensitive=*/true));
   auto bound_empty = AssertAndCastToBoundPredicate(empty_prefix_pred);
@@ -770,7 +769,7 @@ TEST_F(PredicateTest, BoundLiteralPredicateTestStartsWith) {
 }
 
 TEST_F(PredicateTest, BoundLiteralPredicateTestNotStartsWith) {
-  ICEBERG_ASSIGN_OR_THROW(
+  ICEBERG_UNWRAP_OR_FAIL(
       auto not_starts_with_pred,
       Expressions::NotStartsWith("name", "Jo")->Bind(*schema_, /*case_sensitive=*/true));
   auto bound_pred = AssertAndCastToBoundPredicate(not_starts_with_pred);
@@ -787,7 +786,7 @@ TEST_F(PredicateTest, BoundLiteralPredicateTestNotStartsWith) {
 }
 
 TEST_F(PredicateTest, BoundSetPredicateTestIn) {
-  ICEBERG_ASSIGN_OR_THROW(
+  ICEBERG_UNWRAP_OR_FAIL(
       auto in_pred,
       Expressions::In("age", {Literal::Int(10), Literal::Int(20), Literal::Int(30)})
           ->Bind(*schema_, /*case_sensitive=*/true));
@@ -805,7 +804,7 @@ TEST_F(PredicateTest, BoundSetPredicateTestIn) {
 }
 
 TEST_F(PredicateTest, BoundSetPredicateTestNotIn) {
-  ICEBERG_ASSIGN_OR_THROW(
+  ICEBERG_UNWRAP_OR_FAIL(
       auto not_in_pred,
       Expressions::NotIn("age", {Literal::Int(10), Literal::Int(20), Literal::Int(30)})
           ->Bind(*schema_, /*case_sensitive=*/true));
@@ -823,7 +822,7 @@ TEST_F(PredicateTest, BoundSetPredicateTestNotIn) {
 }
 
 TEST_F(PredicateTest, BoundSetPredicateTestWithStrings) {
-  ICEBERG_ASSIGN_OR_THROW(
+  ICEBERG_UNWRAP_OR_FAIL(
       auto in_pred,
       Expressions::In("name", {Literal::String("Alice"), Literal::String("Bob"),
                                Literal::String("Charlie")})
@@ -843,10 +842,10 @@ TEST_F(PredicateTest, BoundSetPredicateTestWithStrings) {
 }
 
 TEST_F(PredicateTest, BoundSetPredicateTestWithLongs) {
-  ICEBERG_ASSIGN_OR_THROW(auto in_pred,
-                          Expressions::In("id", {Literal::Long(100L), Literal::Long(200L),
-                                                 Literal::Long(300L)})
-                              ->Bind(*schema_, /*case_sensitive=*/true));
+  ICEBERG_UNWRAP_OR_FAIL(auto in_pred,
+                         Expressions::In("id", {Literal::Long(100L), Literal::Long(200L),
+                                                Literal::Long(300L)})
+                             ->Bind(*schema_, /*case_sensitive=*/true));
   auto bound_pred = AssertAndCastToBoundPredicate(in_pred);
 
   // Test longs in the set
@@ -860,8 +859,8 @@ TEST_F(PredicateTest, BoundSetPredicateTestWithLongs) {
 }
 
 TEST_F(PredicateTest, BoundSetPredicateTestSingleLiteral) {
-  ICEBERG_ASSIGN_OR_THROW(auto in_pred, Expressions::In("age", {Literal::Int(42)})
-                                            ->Bind(*schema_, /*case_sensitive=*/true));
+  ICEBERG_UNWRAP_OR_FAIL(auto in_pred, Expressions::In("age", {Literal::Int(42)})
+                                           ->Bind(*schema_, /*case_sensitive=*/true));
 
   // Single element IN becomes Equal
   EXPECT_EQ(in_pred->op(), Expression::Operation::kEq);

@@ -24,6 +24,7 @@
 #include <ranges>
 #include <string>
 #include <string_view>
+#include <unordered_set>
 #include <utility>
 
 #include "iceberg/expression/literal.h"
@@ -76,6 +77,37 @@ class ProjectionUtil {
         return UnboundPredicateImpl<BoundReference>::Make(
             Expression::Operation::kEq, std::move(ref), std::move(transformed));
       }
+      default:
+        return nullptr;
+    }
+  }
+
+  // General struct transform for all literal predicates.  This is used as a fallback for
+  // special cases that are not handled by the other transform functions.
+  static Result<std::unique_ptr<UnboundPredicate>> GenericTransformStrict(
+      std::unique_ptr<NamedReference> ref,
+      const std::shared_ptr<BoundLiteralPredicate>& predicate,
+      const std::shared_ptr<TransformFunction>& func) {
+    ICEBERG_ASSIGN_OR_RAISE(auto transformed, func->Transform(predicate->literal()));
+    switch (predicate->op()) {
+      case Expression::Operation::kLt:
+      case Expression::Operation::kLtEq: {
+        return UnboundPredicateImpl<BoundReference>::Make(
+            Expression::Operation::kLt, std::move(ref), std::move(transformed));
+      }
+      case Expression::Operation::kGt:
+      case Expression::Operation::kGtEq: {
+        return UnboundPredicateImpl<BoundReference>::Make(
+            Expression::Operation::kGt, std::move(ref), std::move(transformed));
+      }
+      case Expression::Operation::kNotEq: {
+        return UnboundPredicateImpl<BoundReference>::Make(
+            Expression::Operation::kNotEq, std::move(ref), std::move(transformed));
+      }
+      case Expression::Operation::kEq:
+        //  there is no predicate that guarantees equality because adjacent values
+        //  transform to the same partition
+        return nullptr;
       default:
         return nullptr;
     }
@@ -287,6 +319,193 @@ class ProjectionUtil {
     return nullptr;
   }
 
+  template <typename T>
+    requires std::is_same_v<T, int32_t> || std::is_same_v<T, int64_t>
+  static Result<std::unique_ptr<UnboundPredicate>> TruncateIntegerStrict(
+      std::string_view name, const std::shared_ptr<BoundLiteralPredicate>& predicate,
+      const std::shared_ptr<TransformFunction>& func) {
+    const Literal& literal = predicate->literal();
+    ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
+
+    switch (predicate->op()) {
+      case Expression::Operation::kLtEq: {
+        if constexpr (std::is_same_v<T, int32_t>) {
+          ICEBERG_ASSIGN_OR_RAISE(
+              auto transformed,
+              func->Transform(Literal::Int(std::get<int32_t>(literal.value()) + 1)));
+          return UnboundPredicateImpl<BoundReference>::Make(
+              Expression::Operation::kLt, std::move(ref), std::move(transformed));
+        } else {
+          ICEBERG_ASSIGN_OR_RAISE(
+              auto transformed,
+              func->Transform(Literal::Long(std::get<int64_t>(literal.value()) + 1)));
+          return UnboundPredicateImpl<BoundReference>::Make(
+              Expression::Operation::kLt, std::move(ref), std::move(transformed));
+        }
+      }
+      case Expression::Operation::kGtEq: {
+        if constexpr (std::is_same_v<T, int32_t>) {
+          ICEBERG_ASSIGN_OR_RAISE(
+              auto transformed,
+              func->Transform(Literal::Int(std::get<int32_t>(literal.value()) - 1)));
+          return UnboundPredicateImpl<BoundReference>::Make(
+              Expression::Operation::kGt, std::move(ref), std::move(transformed));
+        } else {
+          ICEBERG_ASSIGN_OR_RAISE(
+              auto transformed,
+              func->Transform(Literal::Long(std::get<int64_t>(literal.value()) - 1)));
+          return UnboundPredicateImpl<BoundReference>::Make(
+              Expression::Operation::kGt, std::move(ref), std::move(transformed));
+        }
+      }
+      default:
+        return GenericTransformStrict(std::move(ref), predicate, func);
+    }
+  }
+
+  static Result<std::unique_ptr<UnboundPredicate>> TruncateDecimalStrict(
+      std::string_view name, const std::shared_ptr<BoundLiteralPredicate>& predicate,
+      const std::shared_ptr<TransformFunction>& func) {
+    const Literal& boundary = predicate->literal();
+    ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
+
+    // For boundary adjustments, extract type info once
+    auto make_adjusted_literal = [&boundary](int adjustment) {
+      const auto& type = internal::checked_pointer_cast<DecimalType>(boundary.type());
+      Decimal adjusted = std::get<Decimal>(boundary.value()) + Decimal(adjustment);
+      return Literal::Decimal(adjusted.value(), type->precision(), type->scale());
+    };
+
+    switch (predicate->op()) {
+      case Expression::Operation::kLtEq: {
+        ICEBERG_ASSIGN_OR_RAISE(auto transformed,
+                                func->Transform(make_adjusted_literal(1)));
+        return UnboundPredicateImpl<BoundReference>::Make(
+            Expression::Operation::kLt, std::move(ref), std::move(transformed));
+      }
+      case Expression::Operation::kGtEq: {
+        ICEBERG_ASSIGN_OR_RAISE(auto transformed,
+                                func->Transform(make_adjusted_literal(-1)));
+        return UnboundPredicateImpl<BoundReference>::Make(
+            Expression::Operation::kGt, std::move(ref), std::move(transformed));
+      }
+      default:
+        return GenericTransformStrict(std::move(ref), predicate, func);
+    }
+  }
+
+  static Result<std::unique_ptr<UnboundPredicate>> TruncateStringLiteralStrict(
+      std::string_view name, const std::shared_ptr<BoundLiteralPredicate>& predicate,
+      const std::shared_ptr<TransformFunction>& func) {
+    const auto op = predicate->op();
+    ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
+    if (op != Expression::Operation::kStartsWith &&
+        op != Expression::Operation::kNotStartsWith) {
+      return GenericTransformStrict(std::move(ref), predicate, func);
+    }
+
+    const auto& truncate_transform =
+        internal::checked_pointer_cast<TruncateTransform>(func);
+    const auto& str_value = std::get<std::string>(predicate->literal().value());
+    const auto width = truncate_transform->width();
+
+    if (StringUtils::CodePointCount(str_value) < width) {
+      return UnboundPredicateImpl<BoundReference>::Make(op, std::move(ref),
+                                                        predicate->literal());
+    }
+
+    if (StringUtils::CodePointCount(str_value) == width) {
+      if (op == Expression::Operation::kStartsWith) {
+        return UnboundPredicateImpl<BoundReference>::Make(
+            Expression::Operation::kEq, std::move(ref), predicate->literal());
+      } else {
+        return UnboundPredicateImpl<BoundReference>::Make(
+            Expression::Operation::kNotEq, std::move(ref), predicate->literal());
+      }
+    }
+
+    if (op == Expression::Operation::kNotStartsWith) {
+      ICEBERG_ASSIGN_OR_RAISE(auto transformed, func->Transform(predicate->literal()));
+      return UnboundPredicateImpl<BoundReference>::Make(
+          Expression::Operation::kNotStartsWith, std::move(ref), std::move(transformed));
+    }
+
+    return nullptr;
+  }
+
+  static Result<std::unique_ptr<UnboundPredicate>> TransformTemporalStrict(
+      std::string_view name, const std::shared_ptr<BoundLiteralPredicate>& predicate,
+      const std::shared_ptr<TransformFunction>& func) {
+    const Literal& literal = predicate->literal();
+    ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
+
+    switch (func->source_type()->type_id()) {
+      case TypeId::kDate: {
+        switch (predicate->op()) {
+          case Expression::Operation::kLtEq: {
+            ICEBERG_ASSIGN_OR_RAISE(
+                auto transformed,
+                func->Transform(Literal::Date(std::get<int32_t>(literal.value()) + 1)));
+            return UnboundPredicateImpl<BoundReference>::Make(
+                Expression::Operation::kLt, std::move(ref), std::move(transformed));
+          }
+          case Expression::Operation::kGtEq: {
+            ICEBERG_ASSIGN_OR_RAISE(
+                auto transformed,
+                func->Transform(Literal::Date(std::get<int32_t>(literal.value()) - 1)));
+            return UnboundPredicateImpl<BoundReference>::Make(
+                Expression::Operation::kGt, std::move(ref), std::move(transformed));
+          }
+          default:
+            return GenericTransformStrict(std::move(ref), predicate, func);
+        }
+      }
+      case TypeId::kTimestamp: {
+        switch (predicate->op()) {
+          case Expression::Operation::kLtEq: {
+            ICEBERG_ASSIGN_OR_RAISE(auto transformed,
+                                    func->Transform(Literal::Timestamp(
+                                        std::get<int64_t>(literal.value()) + 1)));
+            return UnboundPredicateImpl<BoundReference>::Make(
+                Expression::Operation::kLt, std::move(ref), std::move(transformed));
+          }
+          case Expression::Operation::kGtEq: {
+            ICEBERG_ASSIGN_OR_RAISE(auto transformed,
+                                    func->Transform(Literal::Timestamp(
+                                        std::get<int64_t>(literal.value()) - 1)));
+            return UnboundPredicateImpl<BoundReference>::Make(
+                Expression::Operation::kGt, std::move(ref), std::move(transformed));
+          }
+          default:
+            return GenericTransformStrict(std::move(ref), predicate, func);
+        }
+      }
+      case TypeId::kTimestampTz: {
+        switch (predicate->op()) {
+          case Expression::Operation::kLtEq: {
+            ICEBERG_ASSIGN_OR_RAISE(auto transformed,
+                                    func->Transform(Literal::TimestampTz(
+                                        std::get<int64_t>(literal.value()) + 1)));
+            return UnboundPredicateImpl<BoundReference>::Make(
+                Expression::Operation::kLt, std::move(ref), std::move(transformed));
+          }
+          case Expression::Operation::kGtEq: {
+            ICEBERG_ASSIGN_OR_RAISE(auto transformed,
+                                    func->Transform(Literal::TimestampTz(
+                                        std::get<int64_t>(literal.value()) - 1)));
+            return UnboundPredicateImpl<BoundReference>::Make(
+                Expression::Operation::kGt, std::move(ref), std::move(transformed));
+          }
+          default:
+            return GenericTransformStrict(std::move(ref), predicate, func);
+        }
+      }
+      default:
+        return NotSupported("{} is not a valid input type for temporal transform",
+                            func->source_type()->ToString());
+    }
+  }
+
   // Fixes an inclusive projection to account for incorrectly transformed values.
   // align with Java implementation:
   // https://github.com/apache/iceberg/blob/1.10.x/api/src/main/java/org/apache/iceberg/transforms/ProjectionUtil.java#L275
@@ -387,6 +606,108 @@ class ProjectionUtil {
 
       default:
         return std::move(projected);
+    }
+  }
+
+  // Fixes a strict projection to account for incorrectly transformed values.
+  // align with Java implementation:
+  // https://github.com/apache/iceberg/blob/1.10.x/api/src/main/java/org/apache/iceberg/transforms/ProjectionUtil.java#L347
+  static Result<std::unique_ptr<UnboundPredicate>> FixStrictTimeProjection(
+      std::unique_ptr<UnboundPredicateImpl<BoundReference>> projected) {
+    if (projected == nullptr) {
+      return nullptr;
+    }
+
+    switch (projected->op()) {
+      case Expression::Operation::kLt:
+      case Expression::Operation::kLtEq:
+        // the correct bound is a correct strict projection for the incorrectly
+        // transformed values.
+        return std::move(projected);
+
+      case Expression::Operation::kGt: {
+        // GT and GT_EQ need to be adjusted because values that do not match the predicate
+        // may have been transformed into partition values that match the projected
+        // predicate.
+        ICEBERG_DCHECK(!projected->literals().empty(), "Expected at least one literal");
+        const auto& literal = projected->literals().front();
+        ICEBERG_DCHECK(std::holds_alternative<int32_t>(literal.value()),
+                       "Expected int32_t");
+        auto value = std::get<int32_t>(literal.value());
+        if (value <= 0) {
+          return UnboundPredicateImpl<BoundReference>::Make(Expression::Operation::kGt,
+                                                            std::move(projected->term()),
+                                                            Literal::Int(value + 1));
+        }
+        return std::move(projected);
+      }
+
+      case Expression::Operation::kGtEq: {
+        ICEBERG_DCHECK(!projected->literals().empty(), "Expected at least one literal");
+        const auto& literal = projected->literals().front();
+        ICEBERG_DCHECK(std::holds_alternative<int32_t>(literal.value()),
+                       "Expected int32_t");
+        auto value = std::get<int32_t>(literal.value());
+        if (value <= 0) {
+          return UnboundPredicateImpl<BoundReference>::Make(Expression::Operation::kGtEq,
+                                                            std::move(projected->term()),
+                                                            Literal::Int(value + 1));
+        }
+        return std::move(projected);
+      }
+
+      case Expression::Operation::kEq:
+      case Expression::Operation::kIn:
+        // there is no strict projection for EQ and IN
+        return nullptr;
+
+      case Expression::Operation::kNotEq: {
+        ICEBERG_DCHECK(!projected->literals().empty(), "Expected at least one literal");
+        const auto& literal = projected->literals().front();
+        ICEBERG_DCHECK(std::holds_alternative<int32_t>(literal.value()),
+                       "Expected int32_t");
+        auto value = std::get<int32_t>(literal.value());
+        if (value < 0) {
+          return UnboundPredicateImpl<BoundReference>::Make(
+              Expression::Operation::kNotIn, std::move(projected->term()),
+              {literal, Literal::Int(value + 1)});
+        }
+        return std::move(projected);
+      }
+
+      case Expression::Operation::kNotIn: {
+        ICEBERG_DCHECK(!projected->literals().empty(), "Expected at least one literal");
+        const auto& literals = projected->literals();
+        ICEBERG_DCHECK(
+            std::ranges::all_of(literals,
+                                [](const auto& lit) {
+                                  return std::holds_alternative<int32_t>(lit.value());
+                                }),
+            "Expected int32_t");
+        std::unordered_set<int32_t> value_set;
+        bool has_negative_value = false;
+        for (const auto& lit : literals) {
+          auto value = std::get<int32_t>(lit.value());
+          value_set.insert(value);
+          if (value < 0) {
+            value_set.insert(value + 1);
+            has_negative_value = true;
+          }
+        }
+        if (has_negative_value) {
+          auto values =
+              std::views::transform(value_set,
+                                    [](int32_t value) { return Literal::Int(value); }) |
+              std::ranges::to<std::vector>();
+          return UnboundPredicateImpl<BoundReference>::Make(Expression::Operation::kNotIn,
+                                                            std::move(projected->term()),
+                                                            std::move(values));
+        }
+        return std::move(projected);
+      }
+
+      default:
+        return nullptr;
     }
   }
 
@@ -553,6 +874,116 @@ class ProjectionUtil {
       }
     }
     std::unreachable();
+  }
+
+  static Result<std::unique_ptr<UnboundPredicate>> BucketProjectStrict(
+      std::string_view name, const std::shared_ptr<BoundPredicate>& predicate,
+      const std::shared_ptr<TransformFunction>& func) {
+    ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
+    switch (predicate->kind()) {
+      case BoundPredicate::Kind::kUnary: {
+        return UnboundPredicateImpl<BoundReference>::Make(predicate->op(),
+                                                          std::move(ref));
+      }
+      case BoundPredicate::Kind::kLiteral: {
+        if (predicate->op() == Expression::Operation::kNotEq) {
+          const auto& literalPredicate =
+              internal::checked_pointer_cast<BoundLiteralPredicate>(predicate);
+          ICEBERG_ASSIGN_OR_RAISE(auto transformed,
+                                  func->Transform(literalPredicate->literal()));
+          // TODO(anyone): need to translate not(eq(...)) into notEq in expressions
+          return UnboundPredicateImpl<BoundReference>::Make(
+              predicate->op(), std::move(ref), std::move(transformed));
+        }
+        break;
+      }
+      case BoundPredicate::Kind::kSet: {
+        if (predicate->op() == Expression::Operation::kNotIn) {
+          const auto& setPredicate =
+              internal::checked_pointer_cast<BoundSetPredicate>(predicate);
+          return TransformSet(name, setPredicate, func);
+        }
+        break;
+      }
+    }
+
+    // no strict projection for comparison or equality
+    return nullptr;
+  }
+
+  static Result<std::unique_ptr<UnboundPredicate>> TruncateProjectStrict(
+      std::string_view name, const std::shared_ptr<BoundPredicate>& predicate,
+      const std::shared_ptr<TransformFunction>& func) {
+    ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
+    // Handle unary predicates uniformly for all types
+    if (predicate->kind() == BoundPredicate::Kind::kUnary) {
+      return UnboundPredicateImpl<BoundReference>::Make(predicate->op(), std::move(ref));
+    }
+
+    // Handle set predicates (kNotIn) uniformly for all types
+    if (predicate->kind() == BoundPredicate::Kind::kSet) {
+      if (predicate->op() == Expression::Operation::kNotIn) {
+        const auto& setPredicate =
+            internal::checked_pointer_cast<BoundSetPredicate>(predicate);
+        return TransformSet(name, setPredicate, func);
+      }
+      return nullptr;
+    }
+
+    // Handle literal predicates based on source type
+    const auto& literalPredicate =
+        internal::checked_pointer_cast<BoundLiteralPredicate>(predicate);
+
+    switch (func->source_type()->type_id()) {
+      case TypeId::kInt:
+        return TruncateIntegerStrict<int32_t>(name, literalPredicate, func);
+      case TypeId::kLong:
+        return TruncateIntegerStrict<int64_t>(name, literalPredicate, func);
+      case TypeId::kDecimal:
+        return TruncateDecimalStrict(name, literalPredicate, func);
+      case TypeId::kString:
+        return TruncateStringLiteralStrict(name, literalPredicate, func);
+      case TypeId::kBinary:
+        return GenericTransformStrict(std::move(ref), literalPredicate, func);
+      default:
+        return NotSupported("{} is not a valid input type for truncate transform",
+                            func->source_type()->ToString());
+    }
+  }
+
+  static Result<std::unique_ptr<UnboundPredicate>> TemporalProjectStrict(
+      std::string_view name, const std::shared_ptr<BoundPredicate>& predicate,
+      const std::shared_ptr<TransformFunction>& func) {
+    ICEBERG_ASSIGN_OR_RAISE(auto ref, NamedReference::Make(std::string(name)));
+    if (predicate->kind() == BoundPredicate::Kind::kUnary) {
+      return UnboundPredicateImpl<BoundReference>::Make(predicate->op(), std::move(ref));
+    } else if (predicate->kind() == BoundPredicate::Kind::kLiteral) {
+      const auto& literalPredicate =
+          internal::checked_pointer_cast<BoundLiteralPredicate>(predicate);
+      ICEBERG_ASSIGN_OR_RAISE(auto projected,
+                              TransformTemporalStrict(name, literalPredicate, func));
+      if (func->transform_type() != TransformType::kDay ||
+          func->source_type()->type_id() != TypeId::kDate) {
+        return FixStrictTimeProjection(
+            internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+                std::move(projected)));
+      }
+      return projected;
+    } else if (predicate->kind() == BoundPredicate::Kind::kSet &&
+               predicate->op() == Expression::Operation::kNotIn) {
+      const auto& setPredicate =
+          internal::checked_pointer_cast<BoundSetPredicate>(predicate);
+      ICEBERG_ASSIGN_OR_RAISE(auto projected, TransformSet(name, setPredicate, func));
+      if (func->transform_type() != TransformType::kDay ||
+          func->source_type()->type_id() != TypeId::kDate) {
+        return FixStrictTimeProjection(
+            internal::checked_pointer_cast<UnboundPredicateImpl<BoundReference>>(
+                std::move(projected)));
+      }
+      return projected;
+    }
+
+    return nullptr;
   }
 };
 
