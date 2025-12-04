@@ -215,7 +215,8 @@ class ProjectionUtil {
     const auto& literal = pred->literal();
     const auto length =
         StringUtils::CodePointCount(std::get<std::string>(literal.value()));
-    const auto width = internal::checked_pointer_cast<TruncateTransform>(func)->width();
+    const auto width = static_cast<size_t>(
+        internal::checked_pointer_cast<TruncateTransform>(func)->width());
 
     if (length < width) {
       return MakePredicate(op, name, func, literal);
@@ -248,7 +249,8 @@ class ProjectionUtil {
     const auto& literal = pred->literal();
     const auto length =
         StringUtils::CodePointCount(std::get<std::string>(literal.value()));
-    const auto width = internal::checked_pointer_cast<TruncateTransform>(func)->width();
+    const auto width = static_cast<size_t>(
+        internal::checked_pointer_cast<TruncateTransform>(func)->width());
 
     if (length < width) {
       return MakePredicate(op, name, func, literal);
