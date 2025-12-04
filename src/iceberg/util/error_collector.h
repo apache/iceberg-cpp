@@ -30,6 +30,21 @@
 
 namespace iceberg {
 
+#define BUILDER_RETURN_IF_ERROR(result)                         \
+  if (auto&& result_name = result; !result_name) [[unlikely]] { \
+    errors_.emplace_back(std::move(result_name.error()));       \
+    return *this;                                               \
+  }
+
+#define BUILDER_ASSIGN_OR_RETURN_IMPL(result_name, lhs, rexpr) \
+  auto&& result_name = (rexpr);                                \
+  BUILDER_RETURN_IF_ERROR(result_name)                         \
+  lhs = std::move(result_name.value());
+
+#define BUILDER_ASSIGN_OR_RETURN(lhs, rexpr)                                             \
+  BUILDER_ASSIGN_OR_RETURN_IMPL(ICEBERG_ASSIGN_OR_RAISE_NAME(result_, __COUNTER__), lhs, \
+                                rexpr)
+
 /// \brief Base class for collecting validation errors in builder patterns
 ///
 /// This class provides error accumulation functionality for builders that

@@ -19,19 +19,32 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include <gtest/gtest.h>
 
 #include "iceberg/partition_spec.h"
+#include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
+#include "iceberg/sort_field.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/transform.h"
+#include "iceberg/type.h"
 
 namespace iceberg {
 
 namespace {
+
+// Helper function to create a simple schema for testing
+std::shared_ptr<Schema> CreateTestSchema() {
+  auto field1 = SchemaField::MakeRequired(1, "id", int32());
+  auto field2 = SchemaField::MakeRequired(2, "data", string());
+  auto field3 = SchemaField::MakeRequired(3, "ts", timestamp());
+  return std::make_shared<Schema>(std::vector<SchemaField>{field1, field2, field3}, 0);
+}
 
 // Helper function to create base metadata for tests
 std::unique_ptr<TableMetadata> CreateBaseMetadata() {
@@ -41,11 +54,14 @@ std::unique_ptr<TableMetadata> CreateBaseMetadata() {
   metadata->location = "s3://bucket/test";
   metadata->last_sequence_number = 0;
   metadata->last_updated_ms = TimePointMs{std::chrono::milliseconds(1000)};
-  metadata->last_column_id = 0;
+  metadata->last_column_id = 3;
+  metadata->current_schema_id = 0;
+  metadata->schemas.push_back(CreateTestSchema());
   metadata->default_spec_id = PartitionSpec::kInitialSpecId;
   metadata->last_partition_id = 0;
   metadata->current_snapshot_id = Snapshot::kInvalidSnapshotId;
   metadata->default_sort_order_id = SortOrder::kInitialSortOrderId;
+  metadata->sort_orders.push_back(SortOrder::Unsorted());
   metadata->next_row_id = TableMetadata::kInitialRowId;
   return metadata;
 }
@@ -82,7 +98,7 @@ TEST(TableMetadataBuilderTest, BuildFromExisting) {
   EXPECT_EQ(metadata->location, "s3://bucket/test");
 }
 
-// Test AssignUUID method
+// Test AssignUUID
 TEST(TableMetadataBuilderTest, AssignUUID) {
   // Assign UUID for new table
   auto builder = TableMetadataBuilder::BuildFromEmpty(2);
@@ -174,17 +190,149 @@ TEST(TableMetadataBuilderTest, UpgradeFormatVersion) {
   EXPECT_THAT(builder->Build(), HasErrorMessage("Cannot downgrade"));
 }
 
-// Test applying TableUpdate to builder
-TEST(TableMetadataBuilderTest, ApplyUpdate) {
-  // Apply AssignUUID update
-  auto builder = TableMetadataBuilder::BuildFromEmpty(2);
-  table::AssignUUID update("apply-uuid");
-  update.ApplyTo(*builder);
-  // TODO(Li Feiyang): Add more update and `apply` once other build methods are
-  // implemented
+// Test AddSortOrder
+TEST(TableMetadataBuilderTest, AddSortOrderBasic) {
+  auto base = CreateBaseMetadata();
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+  auto schema = CreateTestSchema();
 
+  // 1. Add unsorted - should reuse existing unsorted order
+  builder->AddSortOrder(SortOrder::Unsorted());
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
-  EXPECT_EQ(metadata->table_uuid, "apply-uuid");
+  ASSERT_EQ(metadata->sort_orders.size(), 1);
+  EXPECT_TRUE(metadata->sort_orders[0]->is_unsorted());
+
+  // 2. Add basic sort order
+  builder = TableMetadataBuilder::BuildFrom(base.get());
+  SortField field1(1, Transform::Identity(), SortDirection::kAscending,
+                   NullOrder::kFirst);
+  ICEBERG_UNWRAP_OR_FAIL(auto order1,
+                         SortOrder::Make(*schema, 1, std::vector<SortField>{field1}));
+  builder->AddSortOrder(std::move(order1));
+  ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
+  ASSERT_EQ(metadata->sort_orders.size(), 2);
+  EXPECT_EQ(metadata->sort_orders[1]->order_id(), 1);
+
+  // 3. Add duplicate - should be idempotent
+  builder = TableMetadataBuilder::BuildFrom(base.get());
+  ICEBERG_UNWRAP_OR_FAIL(auto order2,
+                         SortOrder::Make(*schema, 1, std::vector<SortField>{field1}));
+  ICEBERG_UNWRAP_OR_FAIL(auto order3,
+                         SortOrder::Make(*schema, 1, std::vector<SortField>{field1}));
+  builder->AddSortOrder(std::move(order2));
+  builder->AddSortOrder(std::move(order3));  // Duplicate
+  ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
+  ASSERT_EQ(metadata->sort_orders.size(), 2);  // Only one added
+
+  // 4. Add multiple different orders + verify ID reassignment
+  builder = TableMetadataBuilder::BuildFrom(base.get());
+  SortField field2(2, Transform::Identity(), SortDirection::kDescending,
+                   NullOrder::kLast);
+  // User provides ID=99, Builder should reassign to ID=1
+  ICEBERG_UNWRAP_OR_FAIL(auto order4,
+                         SortOrder::Make(*schema, 99, std::vector<SortField>{field1}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto order5, SortOrder::Make(*schema, 2, std::vector<SortField>{field1, field2}));
+  builder->AddSortOrder(std::move(order4));
+  builder->AddSortOrder(std::move(order5));
+  ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
+  ASSERT_EQ(metadata->sort_orders.size(), 3);
+  EXPECT_EQ(metadata->sort_orders[1]->order_id(), 1);  // Reassigned from 99
+  EXPECT_EQ(metadata->sort_orders[2]->order_id(), 2);
+}
+
+TEST(TableMetadataBuilderTest, AddSortOrderInvalid) {
+  auto base = CreateBaseMetadata();
+  auto schema = CreateTestSchema();
+
+  // 1. Invalid field ID
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+  SortField invalid_field(999, Transform::Identity(), SortDirection::kAscending,
+                          NullOrder::kFirst);
+  ICEBERG_UNWRAP_OR_FAIL(auto order1,
+                         SortOrder::Make(1, std::vector<SortField>{invalid_field}));
+  builder->AddSortOrder(std::move(order1));
+  ASSERT_THAT(builder->Build(), IsError(ErrorKind::kValidationFailed));
+  ASSERT_THAT(builder->Build(), HasErrorMessage("Cannot find source column"));
+
+  // 2. Invalid transform (Day transform on string type)
+  builder = TableMetadataBuilder::BuildFrom(base.get());
+  SortField invalid_transform(2, Transform::Day(), SortDirection::kAscending,
+                              NullOrder::kFirst);
+  ICEBERG_UNWRAP_OR_FAIL(auto order2,
+                         SortOrder::Make(1, std::vector<SortField>{invalid_transform}));
+  builder->AddSortOrder(std::move(order2));
+  ASSERT_THAT(builder->Build(), IsError(ErrorKind::kValidationFailed));
+  ASSERT_THAT(builder->Build(), HasErrorMessage("Invalid source type"));
+
+  // 3. Without schema
+  builder = TableMetadataBuilder::BuildFromEmpty(2);
+  builder->AssignUUID("test-uuid");
+  SortField field(1, Transform::Identity(), SortDirection::kAscending, NullOrder::kFirst);
+  ICEBERG_UNWRAP_OR_FAIL(auto order3,
+                         SortOrder::Make(*schema, 1, std::vector<SortField>{field}));
+  builder->AddSortOrder(std::move(order3));
+  ASSERT_THAT(builder->Build(), IsError(ErrorKind::kValidationFailed));
+  ASSERT_THAT(builder->Build(), HasErrorMessage("Schema with ID"));
+}
+
+// Test SetDefaultSortOrder
+TEST(TableMetadataBuilderTest, SetDefaultSortOrderBasic) {
+  auto base = CreateBaseMetadata();
+  auto schema = CreateTestSchema();
+
+  // 1. Set default sort order by SortOrder object
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+  SortField field1(1, Transform::Identity(), SortDirection::kAscending,
+                   NullOrder::kFirst);
+  ICEBERG_UNWRAP_OR_FAIL(auto order1_unique,
+                         SortOrder::Make(*schema, 1, std::vector<SortField>{field1}));
+  auto order1 = std::shared_ptr<SortOrder>(std::move(order1_unique));
+  builder->SetDefaultSortOrder(order1);
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+  ASSERT_EQ(metadata->sort_orders.size(), 2);
+  EXPECT_EQ(metadata->default_sort_order_id, 1);
+  EXPECT_EQ(metadata->sort_orders[1]->order_id(), 1);
+
+  // 2. Set default sort order by order ID
+  builder = TableMetadataBuilder::BuildFrom(base.get());
+  SortField field2(1, Transform::Identity(), SortDirection::kAscending,
+                   NullOrder::kFirst);
+  ICEBERG_UNWRAP_OR_FAIL(auto order2_unique,
+                         SortOrder::Make(*schema, 1, std::vector<SortField>{field2}));
+  auto order2 = std::shared_ptr<SortOrder>(std::move(order2_unique));
+  builder->AddSortOrder(order2);
+  builder->SetDefaultSortOrder(1);
+  ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
+  EXPECT_EQ(metadata->default_sort_order_id, 1);
+
+  // 3. Set default sort order using -1 (last added)
+  builder = TableMetadataBuilder::BuildFrom(base.get());
+  SortField field3(2, Transform::Identity(), SortDirection::kDescending,
+                   NullOrder::kLast);
+  ICEBERG_UNWRAP_OR_FAIL(auto order3_unique,
+                         SortOrder::Make(*schema, 1, std::vector<SortField>{field3}));
+  auto order3 = std::shared_ptr<SortOrder>(std::move(order3_unique));
+  builder->AddSortOrder(order3);
+  builder->SetDefaultSortOrder(-1);  // Use last added
+  ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
+  EXPECT_EQ(metadata->default_sort_order_id, 1);
+
+  // 4. Setting same order is no-op
+  builder = TableMetadataBuilder::BuildFrom(base.get());
+  builder->SetDefaultSortOrder(0);
+  ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
+  EXPECT_EQ(metadata->default_sort_order_id, 0);
+}
+
+TEST(TableMetadataBuilderTest, SetDefaultSortOrderInvalid) {
+  auto base = CreateBaseMetadata();
+
+  // Try to use -1 (last added) when no order has been added
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+  builder->SetDefaultSortOrder(-1);
+  ASSERT_THAT(builder->Build(), IsError(ErrorKind::kValidationFailed));
+  ASSERT_THAT(builder->Build(), HasErrorMessage("no sort order has been added"));
 }
 
 }  // namespace iceberg
