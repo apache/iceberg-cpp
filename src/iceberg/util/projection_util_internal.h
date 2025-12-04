@@ -132,7 +132,7 @@ class ProjectionUtil {
     }
   }
 
-  // Apply to int32, int64, decimal
+  // Apply to int32, int64, decimal, and temporal types
   static Result<std::unique_ptr<UnboundPredicate>> TransformNumeric(
       std::string_view name, const std::shared_ptr<BoundLiteralPredicate>& pred,
       const std::shared_ptr<TransformFunction>& func) {
@@ -263,7 +263,7 @@ class ProjectionUtil {
     }
 
     if (op == Expression::Operation::kNotStartsWith) {
-      return TruncateByteArrayStrict(name, pred, func);
+      return MakePredicate(Expression::Operation::kNotStartsWith, name, func, literal);
     }
 
     return nullptr;
