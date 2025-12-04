@@ -142,7 +142,7 @@ void AddSnapshot::GenerateRequirements(TableUpdateContext& context) const {
 void RemoveSnapshots::ApplyTo(TableMetadataBuilder& builder) const {}
 
 void RemoveSnapshots::GenerateRequirements(TableUpdateContext& context) const {
-  throw IcebergError("RemoveTableSnapshots::GenerateRequirements not implemented");
+  // RemoveSnapshots doesn't generate any requirements
 }
 
 // RemoveSnapshotRef
@@ -162,7 +162,16 @@ void SetSnapshotRef::ApplyTo(TableMetadataBuilder& builder) const {
 }
 
 void SetSnapshotRef::GenerateRequirements(TableUpdateContext& context) const {
-  throw NotImplemented("SetTableSnapshotRef::GenerateRequirements not implemented");
+  bool added = context.AddChangedRef(ref_name_);
+  if (added && context.base() != nullptr && !context.is_replace()) {
+    const auto& refs = context.base()->refs;
+    auto it = refs.find(ref_name_);
+    // Require that the ref does not exist (nullopt) or is the same as the base snapshot
+    std::optional<int64_t> base_snapshot_id =
+        (it != refs.end()) ? std::make_optional(it->second->snapshot_id) : std::nullopt;
+    context.AddRequirement(
+        std::make_unique<table::AssertRefSnapshotID>(ref_name_, base_snapshot_id));
+  }
 }
 
 // SetProperties

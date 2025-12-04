@@ -20,6 +20,7 @@
 #include "iceberg/table_requirements.h"
 
 #include <memory>
+#include <ranges>
 #include <string>
 #include <vector>
 
@@ -33,6 +34,7 @@
 #include "iceberg/table_requirement.h"
 #include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/type.h"
 
 namespace iceberg {
 
@@ -60,7 +62,7 @@ std::unique_ptr<TableMetadata> CreateBaseMetadata(
 // Helper function to create a simple schema for tests
 std::shared_ptr<Schema> CreateTestSchema(int32_t schema_id = 0) {
   std::vector<SchemaField> fields;
-  fields.emplace_back(SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()));
+  fields.emplace_back(SchemaField::MakeRequired(1, "id", int32()));
   return std::make_shared<Schema>(std::move(fields), schema_id);
 }
 
@@ -68,13 +70,9 @@ std::shared_ptr<Schema> CreateTestSchema(int32_t schema_id = 0) {
 template <typename T>
 int CountRequirementsOfType(
     const std::vector<std::unique_ptr<TableRequirement>>& requirements) {
-  int count = 0;
-  for (const auto& req : requirements) {
-    if (dynamic_cast<T*>(req.get()) != nullptr) {
-      count++;
-    }
-  }
-  return count;
+  return std::ranges::count_if(requirements, [](const auto& req) {
+    return dynamic_cast<T*>(req.get()) != nullptr;
+  });
 }
 
 // Helper function to add a branch to metadata
@@ -815,47 +813,98 @@ TEST(TableRequirementsTest, SetDefaultSortOrderFailure) {
 
 TEST(TableRequirementsTest, AddSnapshot) {
   auto metadata = CreateBaseMetadata();
-  std::vector<std::unique_ptr<TableUpdate>> updates;
 
+  std::vector<std::unique_ptr<TableUpdate>> updates;
   auto snapshot = std::make_shared<Snapshot>();
   snapshot->snapshot_id = 1;
   snapshot->sequence_number = 1;
   snapshot->timestamp_ms = TimePointMs{std::chrono::milliseconds(1000)};
   snapshot->manifest_list = "s3://bucket/manifest_list";
-
   updates.push_back(std::make_unique<table::AddSnapshot>(snapshot));
 
   auto result = TableRequirements::ForUpdateTable(*metadata, updates);
   ASSERT_THAT(result, IsOk());
 
   auto& requirements = result.value();
-  // AddSnapshot doesn't add additional requirements
   ASSERT_EQ(requirements.size(), 1);
   EXPECT_EQ(CountRequirementsOfType<table::AssertUUID>(requirements), 1);
 
-  // Validate against base metadata
   for (const auto& req : requirements) {
     EXPECT_THAT(req->Validate(metadata.get()), IsOk());
   }
+}
+
+// RemoveSnapshots Tests
+
+TEST(TableRequirementsTest, RemoveSnapshots) {
+  auto metadata = CreateBaseMetadata();
+
+  std::vector<std::unique_ptr<TableUpdate>> updates;
+  updates.push_back(std::make_unique<table::RemoveSnapshots>(std::vector<int64_t>{0}));
+
+  auto result = TableRequirements::ForUpdateTable(*metadata, updates);
+  ASSERT_THAT(result, IsOk());
+
+  auto& requirements = result.value();
+  ASSERT_EQ(requirements.size(), 1);
+  EXPECT_EQ(CountRequirementsOfType<table::AssertUUID>(requirements), 1);
+
+  for (const auto& req : requirements) {
+    EXPECT_THAT(req->Validate(metadata.get()), IsOk());
+  }
+}
+
+// SetSnapshotRef Tests
+
+TEST(TableRequirementsTest, SetSnapshotRef) {
+  constexpr int64_t kSnapshotId = 14;
+  const std::string kRefName = "branch";
+
+  auto metadata = CreateBaseMetadata();
+  AddBranch(*metadata, kRefName, kSnapshotId);
+
+  // Multiple updates to same ref should deduplicate
+  std::vector<std::unique_ptr<TableUpdate>> updates;
+  updates.push_back(std::make_unique<table::SetSnapshotRef>(kRefName, kSnapshotId,
+                                                            SnapshotRefType::kBranch));
+  updates.push_back(std::make_unique<table::SetSnapshotRef>(kRefName, kSnapshotId + 1,
+                                                            SnapshotRefType::kBranch));
+  updates.push_back(std::make_unique<table::SetSnapshotRef>(kRefName, kSnapshotId + 2,
+                                                            SnapshotRefType::kBranch));
+
+  auto result = TableRequirements::ForUpdateTable(*metadata, updates);
+  ASSERT_THAT(result, IsOk());
+
+  auto& requirements = result.value();
+  for (const auto& req : requirements) {
+    EXPECT_THAT(req->Validate(metadata.get()), IsOk());
+  }
+
+  ASSERT_EQ(requirements.size(), 2);
+  EXPECT_EQ(CountRequirementsOfType<table::AssertUUID>(requirements), 1);
+  EXPECT_EQ(CountRequirementsOfType<table::AssertRefSnapshotID>(requirements), 1);
+
+  auto* assert_ref = dynamic_cast<table::AssertRefSnapshotID*>(requirements[1].get());
+  ASSERT_NE(assert_ref, nullptr);
+  EXPECT_EQ(assert_ref->snapshot_id(), kSnapshotId);
+  EXPECT_EQ(assert_ref->ref_name(), kRefName);
 }
 
 // RemoveSnapshotRef Tests
 
 TEST(TableRequirementsTest, RemoveSnapshotRef) {
   auto metadata = CreateBaseMetadata();
-  std::vector<std::unique_ptr<TableUpdate>> updates;
 
+  std::vector<std::unique_ptr<TableUpdate>> updates;
   updates.push_back(std::make_unique<table::RemoveSnapshotRef>("branch"));
 
   auto result = TableRequirements::ForUpdateTable(*metadata, updates);
   ASSERT_THAT(result, IsOk());
 
   auto& requirements = result.value();
-  // RemoveSnapshotRef doesn't add additional requirements
   ASSERT_EQ(requirements.size(), 1);
   EXPECT_EQ(CountRequirementsOfType<table::AssertUUID>(requirements), 1);
 
-  // Validate against base metadata
   for (const auto& req : requirements) {
     EXPECT_THAT(req->Validate(metadata.get()), IsOk());
   }

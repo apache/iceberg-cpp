@@ -97,6 +97,11 @@ void TableUpdateContext::RequireNoBranchesChanged() {
   }
 }
 
+bool TableUpdateContext::AddChangedRef(const std::string& ref_name) {
+  auto [it, inserted] = changed_refs_.insert(ref_name);
+  return inserted;
+}
+
 Result<std::vector<std::unique_ptr<TableRequirement>>> TableRequirements::ForCreateTable(
     const std::vector<std::unique_ptr<TableUpdate>>& table_updates) {
   TableUpdateContext context(nullptr, false);
