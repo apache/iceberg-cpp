@@ -251,16 +251,15 @@ TEST(AggregateTest, AggregatesFromDataFileMetrics) {
       count_bound, count_null_bound, count_star_bound, max_bound, min_bound};
   ICEBERG_UNWRAP_OR_FAIL(auto evaluator, AggregateEvaluator::Make(aggregates));
 
-  DataFile file;
-  file.record_count = 10;
-  file.value_counts.emplace(1, 10);
-  file.null_value_counts.emplace(1, 2);
-  file.value_counts.emplace(2, 10);
-  file.null_value_counts.emplace(2, 0);
   ICEBERG_UNWRAP_OR_FAIL(auto lower, Literal::Int(5).Serialize());
   ICEBERG_UNWRAP_OR_FAIL(auto upper, Literal::Int(50).Serialize());
-  file.lower_bounds.emplace(2, lower);
-  file.upper_bounds.emplace(2, upper);
+  DataFile file{
+      .record_count = 10,
+      .value_counts = {{1, 10}, {2, 10}},
+      .null_value_counts = {{1, 2}, {2, 0}},
+      .lower_bounds = {{2, lower}},
+      .upper_bounds = {{2, upper}},
+  };
 
   ASSERT_TRUE(evaluator->Update(file).has_value());
 
@@ -287,8 +286,7 @@ TEST(AggregateTest, AggregatesFromDataFileMissingMetricsReturnNull) {
       count_bound, count_null_bound, count_star_bound, max_bound, min_bound};
   ICEBERG_UNWRAP_OR_FAIL(auto evaluator, AggregateEvaluator::Make(aggregates));
 
-  DataFile file;
-  file.record_count = -1;  // missing/invalid
+  DataFile file{.record_count = -1};  // missing/invalid
 
   ASSERT_TRUE(evaluator->Update(file).has_value());
 
@@ -309,14 +307,15 @@ TEST(AggregateTest, AggregatesFromDataFileWithTransform) {
   std::vector<std::shared_ptr<BoundAggregate>> aggregates{max_bound, min_bound};
   ICEBERG_UNWRAP_OR_FAIL(auto evaluator, AggregateEvaluator::Make(aggregates));
 
-  DataFile file;
-  file.record_count = 5;
-  file.value_counts.emplace(1, 5);
-  file.null_value_counts.emplace(1, 0);
   ICEBERG_UNWRAP_OR_FAIL(auto lower, Literal::Int(5).Serialize());
   ICEBERG_UNWRAP_OR_FAIL(auto upper, Literal::Int(23).Serialize());
-  file.lower_bounds.emplace(1, lower);
-  file.upper_bounds.emplace(1, upper);
+  DataFile file{
+      .record_count = 5,
+      .value_counts = {{1, 5}},
+      .null_value_counts = {{1, 0}},
+      .lower_bounds = {{1, lower}},
+      .upper_bounds = {{1, upper}},
+  };
 
   ASSERT_TRUE(evaluator->Update(file).has_value());
 
@@ -328,7 +327,7 @@ TEST(AggregateTest, AggregatesFromDataFileWithTransform) {
   EXPECT_TRUE(evaluator->AllAggregatorsValid());
 }
 
-TEST(AggregateTest, DataFileAggregatorParityWithJava) {
+TEST(AggregateTest, DataFileAggregatorParity) {
   Schema schema({SchemaField::MakeRequired(1, "id", int32()),
                  SchemaField::MakeOptional(2, "no_stats", int32()),
                  SchemaField::MakeOptional(3, "all_nulls", string()),
@@ -345,43 +344,48 @@ TEST(AggregateTest, DataFileAggregatorParityWithJava) {
   };
 
   auto [b1_lower, b1_upper] = make_bounds(1, 33, 2345);
-  DataFile file;
-  file.file_path = "file.avro";
-  file.record_count = 50;
-  file.value_counts = {{1, 50}, {3, 50}, {4, 50}};
-  file.null_value_counts = {{1, 10}, {3, 50}, {4, 10}};
-  file.lower_bounds = b1_lower;
-  file.upper_bounds = b1_upper;
+  DataFile file{
+      .file_path = "file.avro",
+      .record_count = 50,
+      .value_counts = {{1, 50}, {3, 50}, {4, 50}},
+      .null_value_counts = {{1, 10}, {3, 50}, {4, 10}},
+      .lower_bounds = std::move(b1_lower),
+      .upper_bounds = std::move(b1_upper),
+  };
 
   auto [b2_lower, b2_upper] = make_bounds(1, 33, 100);
-  DataFile missing_some_nulls_1;
-  missing_some_nulls_1.file_path = "file_2.avro";
-  missing_some_nulls_1.record_count = 20;
-  missing_some_nulls_1.value_counts = {{1, 20}, {3, 20}};
-  missing_some_nulls_1.null_value_counts = {{1, 0}, {3, 20}};
-  missing_some_nulls_1.lower_bounds = b2_lower;
-  missing_some_nulls_1.upper_bounds = b2_upper;
+  DataFile missing_some_nulls_1{
+      .file_path = "file_2.avro",
+      .record_count = 20,
+      .value_counts = {{1, 20}, {3, 20}},
+      .null_value_counts = {{1, 0}, {3, 20}},
+      .lower_bounds = std::move(b2_lower),
+      .upper_bounds = std::move(b2_upper),
+  };
 
   auto [b3_lower, b3_upper] = make_bounds(1, -33, 3333);
-  DataFile missing_some_nulls_2;
-  missing_some_nulls_2.file_path = "file_3.avro";
-  missing_some_nulls_2.record_count = 20;
-  missing_some_nulls_2.value_counts = {{1, 20}, {3, 20}};
-  missing_some_nulls_2.null_value_counts = {{1, 20}, {3, 20}};
-  missing_some_nulls_2.lower_bounds = b3_lower;
-  missing_some_nulls_2.upper_bounds = b3_upper;
+  DataFile missing_some_nulls_2{
+      .file_path = "file_3.avro",
+      .record_count = 20,
+      .value_counts = {{1, 20}, {3, 20}},
+      .null_value_counts = {{1, 20}, {3, 20}},
+      .lower_bounds = std::move(b3_lower),
+      .upper_bounds = std::move(b3_upper),
+  };
 
-  DataFile missing_some_stats;
-  missing_some_stats.file_path = "file_missing_stats.avro";
-  missing_some_stats.record_count = 20;
-  missing_some_stats.value_counts = {{1, 20}, {4, 10}};
+  DataFile missing_some_stats{
+      .file_path = "file_missing_stats.avro",
+      .record_count = 20,
+      .value_counts = {{1, 20}, {4, 10}},
+  };
   auto [b4_lower, b4_upper] = make_bounds(1, -3, 1333);
-  missing_some_stats.lower_bounds = b4_lower;
-  missing_some_stats.upper_bounds = b4_upper;
+  missing_some_stats.lower_bounds = std::move(b4_lower);
+  missing_some_stats.upper_bounds = std::move(b4_upper);
 
-  DataFile missing_all_optional_stats;
-  missing_all_optional_stats.file_path = "file_null_stats.avro";
-  missing_all_optional_stats.record_count = 20;
+  DataFile missing_all_optional_stats{
+      .file_path = "file_null_stats.avro",
+      .record_count = 20,
+  };
 
   auto run_case = [&](const std::vector<std::shared_ptr<Expression>>& exprs,
                       const std::vector<DataFile>& files,
