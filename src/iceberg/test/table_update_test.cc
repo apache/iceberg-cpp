@@ -314,4 +314,56 @@ TEST(TableUpdateTest, AssignUUIDApplyUpdate) {
   EXPECT_EQ(metadata->table_uuid, "apply-uuid");
 }
 
+// Test AddSortOrder ApplyTo
+TEST(TableUpdateTest, AddSortOrderApplyUpdate) {
+  auto base = CreateBaseMetadata();
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  // Create a sort order
+  auto schema = CreateTestSchema();
+  SortField sort_field(1, Transform::Identity(), SortDirection::kAscending,
+                       NullOrder::kFirst);
+  auto sort_order = std::shared_ptr<SortOrder>(
+      SortOrder::Make(*schema, 1, std::vector<SortField>{sort_field}).value().release());
+
+  // Apply AddSortOrder update
+  table::AddSortOrder add_sort_order(sort_order);
+  add_sort_order.ApplyTo(*builder);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+
+  // Verify the sort order was added
+  ASSERT_EQ(metadata->sort_orders.size(), 2);  // unsorted + new order
+  auto& added_order = metadata->sort_orders[1];
+  EXPECT_EQ(added_order->order_id(), 1);
+  EXPECT_EQ(added_order->fields().size(), 1);
+  EXPECT_EQ(added_order->fields()[0].source_id(), 1);
+  EXPECT_EQ(added_order->fields()[0].direction(), SortDirection::kAscending);
+  EXPECT_EQ(added_order->fields()[0].null_order(), NullOrder::kFirst);
+}
+
+// Test SetDefaultSortOrder ApplyTo
+TEST(TableUpdateTest, SetDefaultSortOrderApplyUpdate) {
+  auto base = CreateBaseMetadata();
+
+  // add a sort order to the base metadata
+  auto schema = CreateTestSchema();
+  SortField sort_field(1, Transform::Identity(), SortDirection::kDescending,
+                       NullOrder::kLast);
+  auto sort_order = std::shared_ptr<SortOrder>(
+      SortOrder::Make(*schema, 1, std::vector<SortField>{sort_field}).value().release());
+  base->sort_orders.push_back(sort_order);
+
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  // Apply SetDefaultSortOrder update to set the new sort order as default
+  table::SetDefaultSortOrder set_default_sort_order(1);
+  set_default_sort_order.ApplyTo(*builder);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+
+  // Verify the default sort order was changed
+  EXPECT_EQ(metadata->default_sort_order_id, 1);
+}
+
 }  // namespace iceberg
