@@ -98,7 +98,7 @@ void TableUpdateContext::RequireNoBranchesChanged() {
 }
 
 bool TableUpdateContext::AddChangedRef(const std::string& ref_name) {
-  auto [it, inserted] = changed_refs_.insert(ref_name);
+  auto [_, inserted] = changed_refs_.insert(ref_name);
   return inserted;
 }
 
