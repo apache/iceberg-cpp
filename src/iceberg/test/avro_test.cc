@@ -17,6 +17,8 @@
  * under the License.
  */
 
+#include <sstream>
+
 #include <arrow/array/array_base.h>
 #include <arrow/c/bridge.h>
 #include <arrow/filesystem/localfs.h>
@@ -243,5 +245,235 @@ TEST_F(AvroReaderTest, AvroWriterNestedType) {
 
   WriteAndVerify(schema, expected_string);
 }
+
+// Comprehensive tests using in-memory MockFileIO
+
+TEST_F(AvroReaderTest, AllPrimitiveTypes) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "bool_col", std::make_shared<BooleanType>()),
+      SchemaField::MakeRequired(2, "int_col", std::make_shared<IntType>()),
+      SchemaField::MakeRequired(3, "long_col", std::make_shared<LongType>()),
+      SchemaField::MakeRequired(4, "float_col", std::make_shared<FloatType>()),
+      SchemaField::MakeRequired(5, "double_col", std::make_shared<DoubleType>()),
+      SchemaField::MakeRequired(6, "string_col", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(7, "binary_col", std::make_shared<BinaryType>())});
+
+  std::string expected_string = R"([
+    [true, 42, 1234567890, 3.14, 2.71828, "test", "AQID"],
+    [false, -100, -9876543210, -1.5, 0.0, "hello", "BAUG"]
+  ])";
+
+  WriteAndVerify(schema, expected_string);
+}
+
+// Skipping DecimalType test - requires specific decimal encoding in JSON
+
+TEST_F(AvroReaderTest, DateTimeTypes) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "date_col", std::make_shared<DateType>()),
+      SchemaField::MakeRequired(2, "time_col", std::make_shared<TimeType>()),
+      SchemaField::MakeRequired(3, "timestamp_col", std::make_shared<TimestampType>())});
+
+  // Dates as days since epoch, time/timestamps as microseconds
+  std::string expected_string = R"([
+    [18628, 43200000000, 1640995200000000],
+    [18629, 86399000000, 1641081599000000]
+  ])";
+
+  WriteAndVerify(schema, expected_string);
+}
+
+TEST_F(AvroReaderTest, NestedStruct) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
+      SchemaField::MakeRequired(
+          2, "person",
+          std::make_shared<iceberg::StructType>(std::vector<SchemaField>{
+              SchemaField::MakeRequired(3, "name", std::make_shared<StringType>()),
+              SchemaField::MakeRequired(4, "age", std::make_shared<IntType>()),
+              SchemaField::MakeOptional(
+                  5, "address",
+                  std::make_shared<iceberg::StructType>(std::vector<SchemaField>{
+                      SchemaField::MakeRequired(6, "street",
+                                                std::make_shared<StringType>()),
+                      SchemaField::MakeRequired(7, "city",
+                                                std::make_shared<StringType>())}))}))});
+
+  std::string expected_string = R"([
+    [1, ["Alice", 30, ["123 Main St", "NYC"]]],
+    [2, ["Bob", 25, ["456 Oak Ave", "LA"]]]
+  ])";
+
+  WriteAndVerify(schema, expected_string);
+}
+
+TEST_F(AvroReaderTest, ListType) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
+      SchemaField::MakeRequired(2, "tags",
+                                std::make_shared<ListType>(SchemaField::MakeRequired(
+                                    3, "element", std::make_shared<StringType>())))});
+
+  std::string expected_string = R"([
+    [1, ["tag1", "tag2", "tag3"]],
+    [2, ["foo", "bar"]],
+    [3, []]
+  ])";
+
+  WriteAndVerify(schema, expected_string);
+}
+
+TEST_F(AvroReaderTest, MapType) {
+  auto schema = std::make_shared<iceberg::Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(
+          1, "properties",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(2, "key", std::make_shared<StringType>()),
+              SchemaField::MakeRequired(3, "value", std::make_shared<IntType>())))});
+
+  std::string expected_string = R"([
+    [[["key1", 100], ["key2", 200]]],
+    [[["a", 1], ["b", 2], ["c", 3]]]
+  ])";
+
+  WriteAndVerify(schema, expected_string);
+}
+
+TEST_F(AvroReaderTest, ComplexNestedTypes) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
+      SchemaField::MakeRequired(2, "nested_list",
+                                std::make_shared<ListType>(SchemaField::MakeRequired(
+                                    3, "element",
+                                    std::make_shared<ListType>(SchemaField::MakeRequired(
+                                        4, "element", std::make_shared<IntType>())))))});
+
+  std::string expected_string = R"([
+    [1, [[1, 2], [3, 4]]],
+    [2, [[5], [6, 7, 8]]]
+  ])";
+
+  WriteAndVerify(schema, expected_string);
+}
+
+TEST_F(AvroReaderTest, OptionalFieldsWithNulls) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
+      SchemaField::MakeOptional(2, "name", std::make_shared<StringType>()),
+      SchemaField::MakeOptional(3, "age", std::make_shared<IntType>())});
+
+  std::string expected_string = R"([
+    [1, "Alice", 30],
+    [2, null, 25],
+    [3, "Charlie", null],
+    [4, null, null]
+  ])";
+
+  WriteAndVerify(schema, expected_string);
+}
+
+// Test both direct decoder and GenericDatum paths
+TEST_F(AvroReaderTest, DirectDecoderVsGenericDatum) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
+      SchemaField::MakeOptional(2, "name", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(
+          3, "nested",
+          std::make_shared<iceberg::StructType>(std::vector<SchemaField>{
+              SchemaField::MakeRequired(4, "value", std::make_shared<DoubleType>())}))});
+
+  std::string expected_string = R"([
+    [1, "Alice", [3.14]],
+    [2, null, [2.71]],
+    [3, "Bob", [1.41]]
+  ])";
+
+  // Test with direct decoder (default)
+  {
+    temp_avro_file_ = CreateNewTempFilePathWithSuffix(".avro");
+    WriteAndVerify(schema, expected_string);
+  }
+
+  // Test with GenericDatum decoder
+  {
+    temp_avro_file_ = CreateNewTempFilePathWithSuffix("_generic.avro");
+    auto reader_properties = ReaderProperties::default_properties();
+    reader_properties->Set(ReaderProperties::kAvroUseDirectDecoder, false);
+
+    ArrowSchema arrow_c_schema;
+    ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
+    auto arrow_schema_result = ::arrow::ImportType(&arrow_c_schema);
+    ASSERT_TRUE(arrow_schema_result.ok());
+    auto arrow_schema = arrow_schema_result.ValueOrDie();
+
+    auto array_result = ::arrow::json::ArrayFromJSONString(arrow_schema, expected_string);
+    ASSERT_TRUE(array_result.ok());
+    auto array = array_result.ValueOrDie();
+
+    struct ArrowArray arrow_array;
+    auto export_result = ::arrow::ExportArray(*array, &arrow_array);
+    ASSERT_TRUE(export_result.ok());
+
+    std::unordered_map<std::string, std::string> metadata = {{"k1", "v1"}};
+
+    auto writer_result =
+        WriterFactoryRegistry::Open(FileFormatType::kAvro, {.path = temp_avro_file_,
+                                                            .schema = schema,
+                                                            .io = file_io_,
+                                                            .metadata = metadata});
+    ASSERT_TRUE(writer_result.has_value());
+    auto writer = std::move(writer_result.value());
+    ASSERT_THAT(writer->Write(&arrow_array), IsOk());
+    ASSERT_THAT(writer->Close(), IsOk());
+
+    auto file_info_result = local_fs_->GetFileInfo(temp_avro_file_);
+    ASSERT_TRUE(file_info_result.ok());
+
+    auto reader_result = ReaderFactoryRegistry::Open(
+        FileFormatType::kAvro, {.path = temp_avro_file_,
+                                .length = file_info_result->size(),
+                                .io = file_io_,
+                                .projection = schema,
+                                .properties = std::move(reader_properties)});
+    ASSERT_THAT(reader_result, IsOk());
+    auto reader = std::move(reader_result.value());
+    ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, expected_string));
+    ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+  }
+}
+
+TEST_F(AvroReaderTest, LargeDataset) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeRequired(2, "value", std::make_shared<DoubleType>())});
+
+  // Generate large dataset JSON
+  std::ostringstream json;
+  json << "[";
+  for (int i = 0; i < 1000; ++i) {
+    if (i > 0) json << ", ";
+    json << "[" << i << ", " << (i * 1.5) << "]";
+  }
+  json << "]";
+
+  WriteAndVerify(schema, json.str());
+}
+
+TEST_F(AvroReaderTest, EmptyCollections) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
+      SchemaField::MakeRequired(2, "list_col",
+                                std::make_shared<ListType>(SchemaField::MakeRequired(
+                                    3, "element", std::make_shared<IntType>())))});
+
+  std::string expected_string = R"([
+    [1, []],
+    [2, [10, 20, 30]]
+  ])";
+
+  WriteAndVerify(schema, expected_string);
+}
+
+// Skip Fixed and UUID tests for now - they require specific binary encoding
 
 }  // namespace iceberg::avro
