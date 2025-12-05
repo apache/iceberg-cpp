@@ -17,13 +17,17 @@
 
 install_headers(
     [
+        'aggregate.h',
         'binder.h',
+        'evaluator.h',
         'expression.h',
         'expression_visitor.h',
         'expressions.h',
+        'inclusive_metrics_evaluator.h',
         'literal.h',
         'predicate.h',
         'rewrite_not.h',
+        'strict_metrics_evaluator.h',
         'term.h',
     ],
     subdir: 'iceberg/expression',

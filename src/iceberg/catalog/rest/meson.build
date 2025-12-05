@@ -61,7 +61,6 @@ install_headers(
         'error_handlers.h',
         'http_client.h',
         'iceberg_rest_export.h',
-        'json_internal.h',
         'resource_paths.h',
         'rest_catalog.h',
         'rest_util.h',
