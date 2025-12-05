@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1BoundAggregate_1_1Aggregator" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::BoundAggregate::Aggregator</compoundname>
+    <includes refid="aggregate_8h" local="no">aggregate.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1BoundAggregate_1_1Aggregator_1a0d6dfa39266410cc6bc819df681db85d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::BoundAggregate::Aggregator::~Aggregator</definition>
+        <argsstring>()=default</argsstring>
+        <name>~Aggregator</name>
+        <qualifiedname>iceberg::BoundAggregate::Aggregator::~Aggregator</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="108" column="13"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundAggregate_1_1Aggregator_1a08081e959a5919778f729fe4ea450d8f" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::BoundAggregate::Aggregator::Update</definition>
+        <argsstring>(const StructLike &amp;data)=0</argsstring>
+        <name>Update</name>
+        <qualifiedname>iceberg::BoundAggregate::Aggregator::Update</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="110" column="20"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundAggregate_1_1Aggregator_1a01df1175901b8cea63fc52fdab7d8104" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::BoundAggregate::Aggregator::Update</definition>
+        <argsstring>(const DataFile &amp;file)</argsstring>
+        <name>Update</name>
+        <qualifiedname>iceberg::BoundAggregate::Aggregator::Update</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="112" column="20" bodyfile="iceberg/expression/aggregate.h" bodystart="112" bodyend="114"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1BoundAggregate_1_1Aggregator_1a9bf874c7f868b2a66abf5dfbcde9858f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref></type>
+        <definition>virtual Literal iceberg::BoundAggregate::Aggregator::GetResult</definition>
+        <argsstring>() const =0</argsstring>
+        <name>GetResult</name>
+        <qualifiedname>iceberg::BoundAggregate::Aggregator::GetResult</qualifiedname>
+        <briefdescription>
+<para>Get the result of the aggregation. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The result of the aggregation. </para>
+</simplesect>
+<simplesect kind="note"><para>It is an undefined behavior to call this method if any previous Update call has returned an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="120" column="21"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base class for aggregators. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/expression/aggregate.h" line="106" column="3" bodyfile="iceberg/expression/aggregate.h" bodystart="106" bodyend="121"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1BoundAggregate_1_1Aggregator_1a9bf874c7f868b2a66abf5dfbcde9858f" prot="public" virt="pure-virtual"><scope>iceberg::BoundAggregate::Aggregator</scope><name>GetResult</name></member>
+      <member refid="classiceberg_1_1BoundAggregate_1_1Aggregator_1a08081e959a5919778f729fe4ea450d8f" prot="public" virt="pure-virtual"><scope>iceberg::BoundAggregate::Aggregator</scope><name>Update</name></member>
+      <member refid="classiceberg_1_1BoundAggregate_1_1Aggregator_1a01df1175901b8cea63fc52fdab7d8104" prot="public" virt="virtual"><scope>iceberg::BoundAggregate::Aggregator</scope><name>Update</name></member>
+      <member refid="classiceberg_1_1BoundAggregate_1_1Aggregator_1a0d6dfa39266410cc6bc819df681db85d" prot="public" virt="virtual"><scope>iceberg::BoundAggregate::Aggregator</scope><name>~Aggregator</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1CopyInheritableMetadata" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::CopyInheritableMetadata</compoundname>
+    <basecompoundref refid="classiceberg_1_1InheritableMetadata" prot="public" virt="non-virtual">iceberg::InheritableMetadata</basecompoundref>
+    <includes refid="inheritable__metadata_8h" local="no">inheritable_metadata.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1CopyInheritableMetadata_1a2d0e2347b165464e1d87a6c390897a7e" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::CopyInheritableMetadata::snapshot_id_</definition>
+        <argsstring></argsstring>
+        <name>snapshot_id_</name>
+        <qualifiedname>iceberg::CopyInheritableMetadata::snapshot_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inheritable_metadata.h" line="87" column="11" bodyfile="iceberg/inheritable_metadata.h" bodystart="87" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1CopyInheritableMetadata_1aecdd79f8a06908342a0d7c9096ecee5e" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::CopyInheritableMetadata::CopyInheritableMetadata</definition>
+        <argsstring>(int64_t snapshot_id)</argsstring>
+        <name>CopyInheritableMetadata</name>
+        <qualifiedname>iceberg::CopyInheritableMetadata::CopyInheritableMetadata</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <briefdescription>
+<para>Constructor for copy metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>snapshot_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The snapshot ID to use for copying. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inheritable_metadata.h" line="82" column="12" bodyfile="iceberg/inheritable_metadata.cc" bodystart="80" bodyend="81"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1CopyInheritableMetadata_1a57c81e7f9cd6f6cc3123e8d68490a8a1" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::CopyInheritableMetadata::Apply</definition>
+        <argsstring>(ManifestEntry &amp;entry) override</argsstring>
+        <name>Apply</name>
+        <qualifiedname>iceberg::CopyInheritableMetadata::Apply</qualifiedname>
+        <reimplements refid="classiceberg_1_1InheritableMetadata_1a8cce7bd6676ae4bd6b69eff701c6398f">Apply</reimplements>
+        <param>
+          <type><ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &amp;</type>
+          <declname>entry</declname>
+        </param>
+        <briefdescription>
+<para>Apply inheritable metadata to a manifest entry. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>entry</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The manifest entry to modify. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inheritable_metadata.h" line="84" column="10" bodyfile="iceberg/inheritable_metadata.cc" bodystart="83" bodyend="86"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Metadata inheritance for copying manifests before commit. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::CopyInheritableMetadata</label>
+        <link refid="classiceberg_1_1CopyInheritableMetadata"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::InheritableMetadata</label>
+        <link refid="classiceberg_1_1InheritableMetadata"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::CopyInheritableMetadata</label>
+        <link refid="classiceberg_1_1CopyInheritableMetadata"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::InheritableMetadata</label>
+        <link refid="classiceberg_1_1InheritableMetadata"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/inheritable_metadata.h" line="78" column="1" bodyfile="iceberg/inheritable_metadata.h" bodystart="78" bodyend="88"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1CopyInheritableMetadata_1a57c81e7f9cd6f6cc3123e8d68490a8a1" prot="public" virt="virtual"><scope>iceberg::CopyInheritableMetadata</scope><name>Apply</name></member>
+      <member refid="classiceberg_1_1CopyInheritableMetadata_1aecdd79f8a06908342a0d7c9096ecee5e" prot="public" virt="non-virtual"><scope>iceberg::CopyInheritableMetadata</scope><name>CopyInheritableMetadata</name></member>
+      <member refid="classiceberg_1_1CopyInheritableMetadata_1a2d0e2347b165464e1d87a6c390897a7e" prot="private" virt="non-virtual"><scope>iceberg::CopyInheritableMetadata</scope><name>snapshot_id_</name></member>
+      <member refid="classiceberg_1_1InheritableMetadata_1a58d646f2fc88a6a679577d9f40519cc3" prot="public" virt="virtual"><scope>iceberg::CopyInheritableMetadata</scope><name>~InheritableMetadata</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

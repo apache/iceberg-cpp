@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1DefaultError" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::DefaultError</compoundname>
+    <includes refid="result_8h" local="no">result.h</includes>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structiceberg_1_1DefaultError_1a3cf89eb3d4a9dfc81e50e242224de034" prot="public" static="no">
+        <type><ref refid="structiceberg_1_1Error" kindref="compound">Error</ref></type>
+        <definition>using iceberg::DefaultError&lt; T &gt;::type =  Error</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>iceberg::DefaultError::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/result.h" line="72" column="3" bodyfile="iceberg/result.h" bodystart="72" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>/brief Default error trait </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/result.h" line="71" column="1" bodyfile="iceberg/result.h" bodystart="71" bodyend="73"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1DefaultError_1a3cf89eb3d4a9dfc81e50e242224de034" prot="public" virt="non-virtual"><scope>iceberg::DefaultError</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

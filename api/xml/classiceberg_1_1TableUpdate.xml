@@ -1,0 +1,254 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TableUpdate" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::TableUpdate</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1AddPartitionSpec" prot="public" virt="non-virtual">iceberg::table::AddPartitionSpec</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1AddSchema" prot="public" virt="non-virtual">iceberg::table::AddSchema</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1AddSnapshot" prot="public" virt="non-virtual">iceberg::table::AddSnapshot</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1AddSortOrder" prot="public" virt="non-virtual">iceberg::table::AddSortOrder</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1AssignUUID" prot="public" virt="non-virtual">iceberg::table::AssignUUID</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1RemovePartitionSpecs" prot="public" virt="non-virtual">iceberg::table::RemovePartitionSpecs</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1RemoveProperties" prot="public" virt="non-virtual">iceberg::table::RemoveProperties</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1RemoveSchemas" prot="public" virt="non-virtual">iceberg::table::RemoveSchemas</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1RemoveSnapshotRef" prot="public" virt="non-virtual">iceberg::table::RemoveSnapshotRef</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1RemoveSnapshots" prot="public" virt="non-virtual">iceberg::table::RemoveSnapshots</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1SetCurrentSchema" prot="public" virt="non-virtual">iceberg::table::SetCurrentSchema</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1SetDefaultPartitionSpec" prot="public" virt="non-virtual">iceberg::table::SetDefaultPartitionSpec</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1SetDefaultSortOrder" prot="public" virt="non-virtual">iceberg::table::SetDefaultSortOrder</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1SetLocation" prot="public" virt="non-virtual">iceberg::table::SetLocation</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1SetProperties" prot="public" virt="non-virtual">iceberg::table::SetProperties</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1SetSnapshotRef" prot="public" virt="non-virtual">iceberg::table::SetSnapshotRef</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1table_1_1UpgradeFormatVersion" prot="public" virt="non-virtual">iceberg::table::UpgradeFormatVersion</derivedcompoundref>
+    <includes refid="table__update_8h" local="no">table_update.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1TableUpdate_1ad2b2d4e5f42b2fb951c9170527dfaa4a" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::TableUpdate::~TableUpdate</definition>
+        <argsstring>()=default</argsstring>
+        <name>~TableUpdate</name>
+        <qualifiedname>iceberg::TableUpdate::~TableUpdate</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="43" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableUpdate_1af07326d407ad45eb6072b586ee6c9485" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void iceberg::TableUpdate::ApplyTo</definition>
+        <argsstring>(TableMetadataBuilder &amp;builder) const =0</argsstring>
+        <name>ApplyTo</name>
+        <qualifiedname>iceberg::TableUpdate::ApplyTo</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssignUUID_1a025ce419780aa37f5429b86958a8a965">ApplyTo</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1UpgradeFormatVersion_1a4d2cdf7ea6d5a8ce8f70ea52e6ea0514">ApplyTo</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AddSchema_1a4000f20d216ba31b64123132d1baaa23">ApplyTo</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1SetCurrentSchema_1a79ab775b8a1875e57d8392f53d355411">ApplyTo</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AddPartitionSpec_1ad72872bdc179dd1f60fd2b281c158a84">ApplyTo</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1SetDefaultPartitionSpec_1aabc988b23a16183735c5a2d833f7c02c">ApplyTo</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1RemovePartitionSpecs_1a931afdd91f9aab719572eceaf75c0117">ApplyTo</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1RemoveSchemas_1a47a4ad935a25d865080ebc5fd85748d9">ApplyTo</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AddSortOrder_1a6678a3ff3cd6b7de6a2f21b1f5e8bcdc">ApplyTo</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1SetDefaultSortOrder_1ad6769fa7068edcbe436bece2a5a64b00">ApplyTo</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AddSnapshot_1a823cacdea314694a8c3973e47f3d639e">ApplyTo</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1RemoveSnapshots_1a13b0c003967ae993291c06ab721eedf8">ApplyTo</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1RemoveSnapshotRef_1add59e4af58e6f37ba8ffff09fdc6da7c">ApplyTo</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1SetSnapshotRef_1a47dbb17dae21b72a0a5de91870fd0eca">ApplyTo</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1SetProperties_1a9c287f1415c621fc7d257dc0b487499c">ApplyTo</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1RemoveProperties_1a1c3f79dead00eca941c37382df347f53">ApplyTo</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1SetLocation_1aac21e70a4227db90001d7739f914aa41">ApplyTo</reimplementedby>
+        <param>
+          <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+          <declname>builder</declname>
+        </param>
+        <briefdescription>
+<para>Apply this update to a <ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method modifies the builder by applying the update operation it represents. Each subclass implements this to apply its specific type of update.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>builder</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The builder to apply this update to </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="52" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TableUpdate_1adddc714f83cea93141bc5b771e326e05" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void iceberg::TableUpdate::GenerateRequirements</definition>
+        <argsstring>(TableUpdateContext &amp;context) const =0</argsstring>
+        <name>GenerateRequirements</name>
+        <qualifiedname>iceberg::TableUpdate::GenerateRequirements</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1table_1_1AssignUUID_1a257f3be976b2141fa4b17d60e6e3f4c0">GenerateRequirements</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1UpgradeFormatVersion_1a2a78db6ae8580316f30911982ecfcfd6">GenerateRequirements</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AddSchema_1a8c5495bf0afac78ac514a23f40921a59">GenerateRequirements</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1SetCurrentSchema_1a4dff60fffe6ff59f76ad686b9824835d">GenerateRequirements</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AddPartitionSpec_1a0c2b4bd19f456250247a698df7e17b26">GenerateRequirements</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1SetDefaultPartitionSpec_1a2d5d15b30c7dc90254ae0b5fbc657f17">GenerateRequirements</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1RemovePartitionSpecs_1a49132a0d3821d3bbcf200bb1ac157ffd">GenerateRequirements</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1RemoveSchemas_1af1627aa61b4830323e6af195cc96f847">GenerateRequirements</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AddSortOrder_1acdab26d3e611825842b241391186312e">GenerateRequirements</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1SetDefaultSortOrder_1a3e59dbdf4100ab96b632578a8d2f1826">GenerateRequirements</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1AddSnapshot_1a1b15d856312374e9d05dabf0a041969d">GenerateRequirements</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1RemoveSnapshots_1a11ba510fbf160c2eb64d3a9b957985a1">GenerateRequirements</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1RemoveSnapshotRef_1a6f8600ef2a6fb1da6d467fd31d17c33d">GenerateRequirements</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1SetSnapshotRef_1a653d37603d5f0754425bc89e2ffcd6ec">GenerateRequirements</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1SetProperties_1a75d62c2ddc7d0a155fee142d6851af83">GenerateRequirements</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1RemoveProperties_1ab11f7f7ee5cc66e41f908033386f71b0">GenerateRequirements</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1table_1_1SetLocation_1a7ba03b023fa5b6e4a92329ecacaab378">GenerateRequirements</reimplementedby>
+        <param>
+          <type><ref refid="classiceberg_1_1TableUpdateContext" kindref="compound">TableUpdateContext</ref> &amp;</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+<para>Generate update requirements for this metadata update. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method generates the appropriate UpdateRequirement instances that must be validated before this update can be applied. The context provides information about the base metadata and operation mode.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>context</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The context containing base metadata and operation state </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="61" column="16"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base class for metadata update operations. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Represents a change to table metadata. Each concrete subclass represents a specific type of update operation. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="2">
+        <label>iceberg::table::AddPartitionSpec</label>
+        <link refid="classiceberg_1_1table_1_1AddPartitionSpec"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::table::AddSchema</label>
+        <link refid="classiceberg_1_1table_1_1AddSchema"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::table::AddSnapshot</label>
+        <link refid="classiceberg_1_1table_1_1AddSnapshot"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::table::AddSortOrder</label>
+        <link refid="classiceberg_1_1table_1_1AddSortOrder"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::table::AssignUUID</label>
+        <link refid="classiceberg_1_1table_1_1AssignUUID"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::table::RemovePartitionSpecs</label>
+        <link refid="classiceberg_1_1table_1_1RemovePartitionSpecs"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::table::RemoveProperties</label>
+        <link refid="classiceberg_1_1table_1_1RemoveProperties"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::table::RemoveSchemas</label>
+        <link refid="classiceberg_1_1table_1_1RemoveSchemas"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::table::RemoveSnapshotRef</label>
+        <link refid="classiceberg_1_1table_1_1RemoveSnapshotRef"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::table::RemoveSnapshots</label>
+        <link refid="classiceberg_1_1table_1_1RemoveSnapshots"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg::table::SetCurrentSchema</label>
+        <link refid="classiceberg_1_1table_1_1SetCurrentSchema"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg::table::SetDefaultPartitionSpec</label>
+        <link refid="classiceberg_1_1table_1_1SetDefaultPartitionSpec"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg::table::SetDefaultSortOrder</label>
+        <link refid="classiceberg_1_1table_1_1SetDefaultSortOrder"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg::table::SetLocation</label>
+        <link refid="classiceberg_1_1table_1_1SetLocation"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>iceberg::table::SetProperties</label>
+        <link refid="classiceberg_1_1table_1_1SetProperties"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>iceberg::table::SetSnapshotRef</label>
+        <link refid="classiceberg_1_1table_1_1SetSnapshotRef"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>iceberg::table::UpgradeFormatVersion</label>
+        <link refid="classiceberg_1_1table_1_1UpgradeFormatVersion"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/table_update.h" line="41" column="1" bodyfile="iceberg/table_update.h" bodystart="41" bodyend="62"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TableUpdate_1af07326d407ad45eb6072b586ee6c9485" prot="public" virt="pure-virtual"><scope>iceberg::TableUpdate</scope><name>ApplyTo</name></member>
+      <member refid="classiceberg_1_1TableUpdate_1adddc714f83cea93141bc5b771e326e05" prot="public" virt="pure-virtual"><scope>iceberg::TableUpdate</scope><name>GenerateRequirements</name></member>
+      <member refid="classiceberg_1_1TableUpdate_1ad2b2d4e5f42b2fb951c9170527dfaa4a" prot="public" virt="virtual"><scope>iceberg::TableUpdate</scope><name>~TableUpdate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

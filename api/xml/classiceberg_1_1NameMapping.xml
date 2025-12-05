@@ -1,0 +1,274 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1NameMapping" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::NameMapping</compoundname>
+    <includes refid="name__mapping_8h" local="no">name_mapping.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1NameMapping_1a5e48762901ef4b9e98aa6fc4bbabd25d" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1MappedFields" kindref="compound">MappedFields</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;MappedFields&gt; iceberg::NameMapping::mapping_</definition>
+        <argsstring></argsstring>
+        <name>mapping_</name>
+        <qualifiedname>iceberg::NameMapping::mapping_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/name_mapping.h" line="127" column="19" bodyfile="iceberg/name_mapping.h" bodystart="127" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1NameMapping_1afaad1f4c5fc146678c5732a402c25088" prot="private" static="no" mutable="yes">
+        <type>std::unordered_map&lt; int32_t, MappedFieldConstRef &gt;</type>
+        <definition>std::unordered_map&lt;int32_t, MappedFieldConstRef&gt; iceberg::NameMapping::fields_by_id_</definition>
+        <argsstring></argsstring>
+        <name>fields_by_id_</name>
+        <qualifiedname>iceberg::NameMapping::fields_by_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/name_mapping.h" line="130" column="30" bodyfile="iceberg/name_mapping.h" bodystart="130" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1NameMapping_1ab11707370c712501da992139b829c8f7" prot="private" static="no" mutable="yes">
+        <type>std::unordered_map&lt; std::string, MappedFieldConstRef &gt;</type>
+        <definition>std::unordered_map&lt;std::string, MappedFieldConstRef&gt; iceberg::NameMapping::fields_by_name_</definition>
+        <argsstring></argsstring>
+        <name>fields_by_name_</name>
+        <qualifiedname>iceberg::NameMapping::fields_by_name_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/name_mapping.h" line="131" column="30" bodyfile="iceberg/name_mapping.h" bodystart="131" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1NameMapping_1a98c55a42873ca93287da04c9717b4070" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; NameMapping &gt; iceberg::NameMapping::Make</definition>
+        <argsstring>(std::unique_ptr&lt; MappedFields &gt; fields)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::NameMapping::Make</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1MappedFields" kindref="compound">MappedFields</ref> &gt;</type>
+          <declname>fields</declname>
+        </param>
+        <briefdescription>
+<para>Create a new <ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/name_mapping.h" line="98" column="26" bodyfile="iceberg/name_mapping.cc" bodystart="211" bodyend="213"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1NameMapping_1a928fc8dcb964dabcaebb282ad20d9fd6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; NameMapping &gt; iceberg::NameMapping::Make</definition>
+        <argsstring>(std::vector&lt; MappedField &gt; fields)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::NameMapping::Make</qualifiedname>
+        <param>
+          <type>std::vector&lt; <ref refid="structiceberg_1_1MappedField" kindref="compound">MappedField</ref> &gt;</type>
+          <declname>fields</declname>
+        </param>
+        <briefdescription>
+<para>Create a new <ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/name_mapping.h" line="101" column="26" bodyfile="iceberg/name_mapping.cc" bodystart="215" bodyend="217"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1NameMapping_1a466e6ed544806f724485ca62dda7fc9e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; NameMapping &gt; iceberg::NameMapping::MakeEmpty</definition>
+        <argsstring>()</argsstring>
+        <name>MakeEmpty</name>
+        <qualifiedname>iceberg::NameMapping::MakeEmpty</qualifiedname>
+        <briefdescription>
+<para>Create an empty <ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/name_mapping.h" line="104" column="26" bodyfile="iceberg/name_mapping.cc" bodystart="207" bodyend="209"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1NameMapping_1ac8d379d9aac21acd99b3c970ea9a9ba5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::optional&lt; MappedFieldConstRef &gt;</type>
+        <definition>std::optional&lt; MappedFieldConstRef &gt; iceberg::NameMapping::Find</definition>
+        <argsstring>(int32_t id) const</argsstring>
+        <name>Find</name>
+        <qualifiedname>iceberg::NameMapping::Find</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>id</declname>
+        </param>
+        <briefdescription>
+<para>Find a field by its ID. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/name_mapping.h" line="107" column="17" bodyfile="iceberg/name_mapping.cc" bodystart="155" bodyend="161"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1NameMapping_1a39f6f0224ae291b16bd9690526e04195" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::optional&lt; MappedFieldConstRef &gt;</type>
+        <definition>std::optional&lt; MappedFieldConstRef &gt; iceberg::NameMapping::Find</definition>
+        <argsstring>(std::span&lt; const std::string &gt; names) const</argsstring>
+        <name>Find</name>
+        <qualifiedname>iceberg::NameMapping::Find</qualifiedname>
+        <param>
+          <type>std::span&lt; const std::string &gt;</type>
+          <declname>names</declname>
+        </param>
+        <briefdescription>
+<para>Find a field by its unconcatenated names. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/name_mapping.h" line="110" column="17" bodyfile="iceberg/name_mapping.cc" bodystart="163" bodyend="169"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1NameMapping_1ad53b27c499f59307f566035cca179d91" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::optional&lt; MappedFieldConstRef &gt;</type>
+        <definition>std::optional&lt; MappedFieldConstRef &gt; iceberg::NameMapping::Find</definition>
+        <argsstring>(const std::string &amp;name) const</argsstring>
+        <name>Find</name>
+        <qualifiedname>iceberg::NameMapping::Find</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>name</declname>
+        </param>
+        <briefdescription>
+<para>Find a field by its (concatenated) name. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/name_mapping.h" line="113" column="17" bodyfile="iceberg/name_mapping.cc" bodystart="171" bodyend="177"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1NameMapping_1a2f36ae3f8c01f7fef9e740ffee9d836a" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const <ref refid="classiceberg_1_1MappedFields" kindref="compound">MappedFields</ref> &amp;</type>
+        <definition>const MappedFields &amp; iceberg::NameMapping::AsMappedFields</definition>
+        <argsstring>() const</argsstring>
+        <name>AsMappedFields</name>
+        <qualifiedname>iceberg::NameMapping::AsMappedFields</qualifiedname>
+        <briefdescription>
+<para>Get the underlying <ref refid="classiceberg_1_1MappedFields" kindref="compound">MappedFields</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/name_mapping.h" line="116" column="22" bodyfile="iceberg/name_mapping.cc" bodystart="179" bodyend="185"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classiceberg_1_1NameMapping_1a202ded6bd7fe8dbc27f752e480d3ede6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>ICEBERG_EXPORT friend bool</type>
+        <definition>ICEBERG_EXPORT friend bool operator==</definition>
+        <argsstring>(const NameMapping &amp;lhs, const NameMapping &amp;rhs)</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::NameMapping::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1NameMapping" kindref="compound">NameMapping</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/name_mapping.h" line="118" column="30" bodyfile="iceberg/name_mapping.cc" bodystart="249" bodyend="251"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1NameMapping_1a89e6123cc8eab27b46d2c626d1e21deb" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::NameMapping::NameMapping</definition>
+        <argsstring>(std::unique_ptr&lt; MappedFields &gt; mapping)</argsstring>
+        <name>NameMapping</name>
+        <qualifiedname>iceberg::NameMapping::NameMapping</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1MappedFields" kindref="compound">MappedFields</ref> &gt;</type>
+          <declname>mapping</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/name_mapping.h" line="121" column="12" bodyfile="iceberg/name_mapping.cc" bodystart="152" bodyend="153"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1NameMapping_1aecfd3c11f662af533ff566204587a724" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::unordered_map&lt; int32_t, MappedFieldConstRef &gt; &amp;</type>
+        <definition>const std::unordered_map&lt; int32_t, MappedFieldConstRef &gt; &amp; iceberg::NameMapping::LazyFieldsById</definition>
+        <argsstring>() const</argsstring>
+        <name>LazyFieldsById</name>
+        <qualifiedname>iceberg::NameMapping::LazyFieldsById</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/name_mapping.h" line="123" column="28" bodyfile="iceberg/name_mapping.cc" bodystart="187" bodyend="195"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1NameMapping_1a315ff4f9ebfdcb633d9e0f5ceaf88fa8" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::unordered_map&lt; std::string, MappedFieldConstRef &gt; &amp;</type>
+        <definition>const std::unordered_map&lt; std::string, MappedFieldConstRef &gt; &amp; iceberg::NameMapping::LazyFieldsByName</definition>
+        <argsstring>() const</argsstring>
+        <name>LazyFieldsByName</name>
+        <qualifiedname>iceberg::NameMapping::LazyFieldsByName</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/name_mapping.h" line="124" column="28" bodyfile="iceberg/name_mapping.cc" bodystart="198" bodyend="205"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents a mapping from external schema names to Iceberg type IDs. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/name_mapping.h" line="95" column="1" bodyfile="iceberg/name_mapping.h" bodystart="95" bodyend="132"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1NameMapping_1a2f36ae3f8c01f7fef9e740ffee9d836a" prot="public" virt="non-virtual"><scope>iceberg::NameMapping</scope><name>AsMappedFields</name></member>
+      <member refid="classiceberg_1_1NameMapping_1afaad1f4c5fc146678c5732a402c25088" prot="private" virt="non-virtual"><scope>iceberg::NameMapping</scope><name>fields_by_id_</name></member>
+      <member refid="classiceberg_1_1NameMapping_1ab11707370c712501da992139b829c8f7" prot="private" virt="non-virtual"><scope>iceberg::NameMapping</scope><name>fields_by_name_</name></member>
+      <member refid="classiceberg_1_1NameMapping_1ac8d379d9aac21acd99b3c970ea9a9ba5" prot="public" virt="non-virtual"><scope>iceberg::NameMapping</scope><name>Find</name></member>
+      <member refid="classiceberg_1_1NameMapping_1a39f6f0224ae291b16bd9690526e04195" prot="public" virt="non-virtual"><scope>iceberg::NameMapping</scope><name>Find</name></member>
+      <member refid="classiceberg_1_1NameMapping_1ad53b27c499f59307f566035cca179d91" prot="public" virt="non-virtual"><scope>iceberg::NameMapping</scope><name>Find</name></member>
+      <member refid="classiceberg_1_1NameMapping_1aecfd3c11f662af533ff566204587a724" prot="private" virt="non-virtual"><scope>iceberg::NameMapping</scope><name>LazyFieldsById</name></member>
+      <member refid="classiceberg_1_1NameMapping_1a315ff4f9ebfdcb633d9e0f5ceaf88fa8" prot="private" virt="non-virtual"><scope>iceberg::NameMapping</scope><name>LazyFieldsByName</name></member>
+      <member refid="classiceberg_1_1NameMapping_1a98c55a42873ca93287da04c9717b4070" prot="public" virt="non-virtual"><scope>iceberg::NameMapping</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1NameMapping_1a928fc8dcb964dabcaebb282ad20d9fd6" prot="public" virt="non-virtual"><scope>iceberg::NameMapping</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1NameMapping_1a466e6ed544806f724485ca62dda7fc9e" prot="public" virt="non-virtual"><scope>iceberg::NameMapping</scope><name>MakeEmpty</name></member>
+      <member refid="classiceberg_1_1NameMapping_1a5e48762901ef4b9e98aa6fc4bbabd25d" prot="private" virt="non-virtual"><scope>iceberg::NameMapping</scope><name>mapping_</name></member>
+      <member refid="classiceberg_1_1NameMapping_1a89e6123cc8eab27b46d2c626d1e21deb" prot="private" virt="non-virtual"><scope>iceberg::NameMapping</scope><name>NameMapping</name></member>
+      <member refid="classiceberg_1_1NameMapping_1a202ded6bd7fe8dbc27f752e480d3ede6" prot="public" virt="non-virtual"><scope>iceberg::NameMapping</scope><name>operator==</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

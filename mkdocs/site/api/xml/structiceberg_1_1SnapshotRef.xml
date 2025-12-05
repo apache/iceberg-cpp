@@ -1,0 +1,151 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1SnapshotRef" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::SnapshotRef</compoundname>
+    <includes refid="snapshot_8h" local="no">snapshot.h</includes>
+    <innerclass refid="structiceberg_1_1SnapshotRef_1_1Branch" prot="public">iceberg::SnapshotRef::Branch</innerclass>
+    <innerclass refid="structiceberg_1_1SnapshotRef_1_1Tag" prot="public">iceberg::SnapshotRef::Tag</innerclass>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotRef_1aba3c18bb45dd519bab94ea9998f11406" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr std::string_view</type>
+        <definition>constexpr std::string_view iceberg::SnapshotRef::kMainBranch</definition>
+        <argsstring></argsstring>
+        <name>kMainBranch</name>
+        <qualifiedname>iceberg::SnapshotRef::kMainBranch</qualifiedname>
+        <initializer>= &quot;main&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="65" column="37" bodyfile="iceberg/snapshot.h" bodystart="65" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotRef_1a63ac8ff0babbe68126fb52e54e7e1adb" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::SnapshotRef::snapshot_id</definition>
+        <argsstring></argsstring>
+        <name>snapshot_id</name>
+        <qualifiedname>iceberg::SnapshotRef::snapshot_id</qualifiedname>
+        <briefdescription>
+<para>A reference&apos;s snapshot ID. The tagged snapshot or latest snapshot of a branch. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="106" column="11" bodyfile="iceberg/snapshot.h" bodystart="106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1SnapshotRef_1ae89f6fb03dacc07e6cde3c81a133add1" prot="public" static="no" mutable="no">
+        <type>std::variant&lt; <ref refid="structiceberg_1_1SnapshotRef_1_1Branch" kindref="compound">Branch</ref>, <ref refid="structiceberg_1_1SnapshotRef_1_1Tag" kindref="compound">Tag</ref> &gt;</type>
+        <definition>std::variant&lt;Branch, Tag&gt; iceberg::SnapshotRef::retention</definition>
+        <argsstring></argsstring>
+        <name>retention</name>
+        <qualifiedname>iceberg::SnapshotRef::retention</qualifiedname>
+        <briefdescription>
+<para><ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> retention policy. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="108" column="16" bodyfile="iceberg/snapshot.h" bodystart="108" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1SnapshotRef_1a9d6b5d8784e00362d94ccb35c54e9be6" prot="public" static="no" const="yes" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <type>SnapshotRefType</type>
+        <definition>SnapshotRefType iceberg::SnapshotRef::type</definition>
+        <argsstring>() const noexcept</argsstring>
+        <name>type</name>
+        <qualifiedname>iceberg::SnapshotRef::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="110" column="19" bodyfile="iceberg/snapshot.cc" bodystart="34" bodyend="45"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="structiceberg_1_1SnapshotRef_1a01bf700dbfb0e7307921d30795db8819" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const SnapshotRef &amp;lhs, const SnapshotRef &amp;rhs)</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::SnapshotRef::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1SnapshotRef" kindref="compound">SnapshotRef</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1SnapshotRef" kindref="compound">SnapshotRef</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Compare two snapshot refs for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="113" column="15" bodyfile="iceberg/snapshot.h" bodystart="113" bodyend="115"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="structiceberg_1_1SnapshotRef_1a6e9a0b815729e9e46e1187fa2147288f" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::SnapshotRef::Equals</definition>
+        <argsstring>(const SnapshotRef &amp;other) const</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::SnapshotRef::Equals</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1SnapshotRef" kindref="compound">SnapshotRef</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Compare two snapshot refs for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/snapshot.h" line="119" column="8" bodyfile="iceberg/snapshot.cc" bodystart="47" bodyend="63"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A reference to a snapshot, either a branch or a tag. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::SnapshotRef</label>
+        <link refid="structiceberg_1_1SnapshotRef"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>kMainBranch</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string_view</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/snapshot.h" line="64" column="1" bodyfile="iceberg/snapshot.h" bodystart="64" bodyend="120"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1SnapshotRef_1a6e9a0b815729e9e46e1187fa2147288f" prot="private" virt="non-virtual"><scope>iceberg::SnapshotRef</scope><name>Equals</name></member>
+      <member refid="structiceberg_1_1SnapshotRef_1aba3c18bb45dd519bab94ea9998f11406" prot="public" virt="non-virtual"><scope>iceberg::SnapshotRef</scope><name>kMainBranch</name></member>
+      <member refid="structiceberg_1_1SnapshotRef_1a01bf700dbfb0e7307921d30795db8819" prot="public" virt="non-virtual"><scope>iceberg::SnapshotRef</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1SnapshotRef_1ae89f6fb03dacc07e6cde3c81a133add1" prot="public" virt="non-virtual"><scope>iceberg::SnapshotRef</scope><name>retention</name></member>
+      <member refid="structiceberg_1_1SnapshotRef_1a63ac8ff0babbe68126fb52e54e7e1adb" prot="public" virt="non-virtual"><scope>iceberg::SnapshotRef</scope><name>snapshot_id</name></member>
+      <member refid="structiceberg_1_1SnapshotRef_1a9d6b5d8784e00362d94ccb35c54e9be6" prot="public" virt="non-virtual"><scope>iceberg::SnapshotRef</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

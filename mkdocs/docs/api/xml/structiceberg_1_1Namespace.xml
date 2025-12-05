@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1Namespace" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::Namespace</compoundname>
+    <includes refid="table__identifier_8h" local="no">table_identifier.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1Namespace_1a16cb20e93d0d85883d1f5da21a48b4ae" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::Namespace::levels</definition>
+        <argsstring></argsstring>
+        <name>levels</name>
+        <qualifiedname>iceberg::Namespace::levels</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_identifier.h" line="35" column="15" bodyfile="iceberg/table_identifier.h" bodystart="35" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1Namespace_1a9214f0e8c8bb852c328054b09f06d004" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::Namespace::operator==</definition>
+        <argsstring>(const Namespace &amp;other) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::Namespace::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_identifier.h" line="37" column="8" bodyfile="iceberg/table_identifier.h" bodystart="37" bodyend="37"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A namespace in a catalog. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::Namespace</label>
+        <link refid="structiceberg_1_1Namespace"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>levels</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_identifier.h" line="34" column="1" bodyfile="iceberg/table_identifier.h" bodystart="34" bodyend="38"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1Namespace_1a16cb20e93d0d85883d1f5da21a48b4ae" prot="public" virt="non-virtual"><scope>iceberg::Namespace</scope><name>levels</name></member>
+      <member refid="structiceberg_1_1Namespace_1a9214f0e8c8bb852c328054b09f06d004" prot="public" virt="non-virtual"><scope>iceberg::Namespace</scope><name>operator==</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

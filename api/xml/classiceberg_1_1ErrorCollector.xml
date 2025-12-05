@@ -1,0 +1,407 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ErrorCollector" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ErrorCollector</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1PendingUpdate" prot="public" virt="non-virtual">iceberg::PendingUpdate</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1TableMetadataBuilder" prot="public" virt="non-virtual">iceberg::TableMetadataBuilder</derivedcompoundref>
+    <includes refid="error__collector_8h" local="no">error_collector.h</includes>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ErrorCollector_1a354d1e7287bb45926a4b563f80d0c623" prot="protected" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1Error" kindref="compound">Error</ref> &gt;</type>
+        <definition>std::vector&lt;Error&gt; iceberg::ErrorCollector::errors_</definition>
+        <argsstring></argsstring>
+        <name>errors_</name>
+        <qualifiedname>iceberg::ErrorCollector::errors_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/error_collector.h" line="151" column="15" bodyfile="iceberg/util/error_collector.h" bodystart="151" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ErrorCollector_1a690c840a35a03af0f94eea092ca65aaa" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ErrorCollector::ErrorCollector</definition>
+        <argsstring>()=default</argsstring>
+        <name>ErrorCollector</name>
+        <qualifiedname>iceberg::ErrorCollector::ErrorCollector</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/error_collector.h" line="77" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ErrorCollector_1ae84ca7242062cb3e3b86ce4cb81b368d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::ErrorCollector::~ErrorCollector</definition>
+        <argsstring>()=default</argsstring>
+        <name>~ErrorCollector</name>
+        <qualifiedname>iceberg::ErrorCollector::~ErrorCollector</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/error_collector.h" line="78" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ErrorCollector_1a827c296a8527f87f76d7f9321e7ee68f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ErrorCollector::ErrorCollector</definition>
+        <argsstring>(ErrorCollector &amp;&amp;)=default</argsstring>
+        <name>ErrorCollector</name>
+        <qualifiedname>iceberg::ErrorCollector::ErrorCollector</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1ErrorCollector" kindref="compound">ErrorCollector</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/error_collector.h" line="80" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ErrorCollector_1a22311658715152d8e6e27834240ce446" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ErrorCollector" kindref="compound">ErrorCollector</ref> &amp;</type>
+        <definition>ErrorCollector &amp; iceberg::ErrorCollector::operator=</definition>
+        <argsstring>(ErrorCollector &amp;&amp;)=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::ErrorCollector::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1ErrorCollector" kindref="compound">ErrorCollector</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/error_collector.h" line="81" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ErrorCollector_1ab3fa546cd2748fe418db9c0933542755" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ErrorCollector::ErrorCollector</definition>
+        <argsstring>(const ErrorCollector &amp;)=default</argsstring>
+        <name>ErrorCollector</name>
+        <qualifiedname>iceberg::ErrorCollector::ErrorCollector</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ErrorCollector" kindref="compound">ErrorCollector</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/error_collector.h" line="83" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ErrorCollector_1aaba366560be481bfa9538735f3a38e3e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1ErrorCollector" kindref="compound">ErrorCollector</ref> &amp;</type>
+        <definition>ErrorCollector &amp; iceberg::ErrorCollector::operator=</definition>
+        <argsstring>(const ErrorCollector &amp;)=default</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::ErrorCollector::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ErrorCollector" kindref="compound">ErrorCollector</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/error_collector.h" line="84" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ErrorCollector_1abed0ef518f8268eb832b24ea41a11733" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>auto &amp;</type>
+        <definition>auto &amp; iceberg::ErrorCollector::AddError</definition>
+        <argsstring>(this auto &amp;self, ErrorKind kind, std::string message)</argsstring>
+        <name>AddError</name>
+        <qualifiedname>iceberg::ErrorCollector::AddError</qualifiedname>
+        <param>
+          <type>this auto &amp;</type>
+          <declname>self</declname>
+        </param>
+        <param>
+          <type>ErrorKind</type>
+          <declname>kind</declname>
+        </param>
+        <param>
+          <type>std::string</type>
+          <declname>message</declname>
+        </param>
+        <briefdescription>
+<para>Add a specific error and return reference to derived class. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>self</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Deduced reference to the derived class instance </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>kind</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The kind of error </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>message</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The error message </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to the derived class for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/error_collector.h" line="92" column="8" bodyfile="iceberg/util/error_collector.h" bodystart="92" bodyend="95"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ErrorCollector_1a5e555954de121d0908dcf4648da446e3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>auto &amp;</type>
+        <definition>auto &amp; iceberg::ErrorCollector::AddError</definition>
+        <argsstring>(this auto &amp;self, Error err)</argsstring>
+        <name>AddError</name>
+        <qualifiedname>iceberg::ErrorCollector::AddError</qualifiedname>
+        <param>
+          <type>this auto &amp;</type>
+          <declname>self</declname>
+        </param>
+        <param>
+          <type><ref refid="structiceberg_1_1Error" kindref="compound">Error</ref></type>
+          <declname>err</declname>
+        </param>
+        <briefdescription>
+<para>Add an existing error object and return reference to derived class. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Useful when propagating errors from other components or reusing error objects without deconstructing and reconstructing them.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>self</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Deduced reference to the derived class instance </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>err</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The error to add </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to the derived class for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/error_collector.h" line="105" column="8" bodyfile="iceberg/util/error_collector.h" bodystart="105" bodyend="108"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ErrorCollector_1a1fd248fbf492c15764b71f6d5e4d0c0f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::ErrorCollector::HasErrors</definition>
+        <argsstring>() const</argsstring>
+        <name>HasErrors</name>
+        <qualifiedname>iceberg::ErrorCollector::HasErrors</qualifiedname>
+        <briefdescription>
+<para>Check if any errors have been collected. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>true if there are accumulated errors </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/error_collector.h" line="113" column="9" bodyfile="iceberg/util/error_collector.h" bodystart="113" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ErrorCollector_1ab7534d465aced7288e1e0893d91fdde5" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::ErrorCollector::ErrorCount</definition>
+        <argsstring>() const</argsstring>
+        <name>ErrorCount</name>
+        <qualifiedname>iceberg::ErrorCollector::ErrorCount</qualifiedname>
+        <briefdescription>
+<para>Get the number of errors collected. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>The count of accumulated errors </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/error_collector.h" line="118" column="11" bodyfile="iceberg/util/error_collector.h" bodystart="118" bodyend="118"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ErrorCollector_1a16cbe7b6d423a372c9e68d970ff2c3ea" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ErrorCollector::CheckErrors</definition>
+        <argsstring>() const</argsstring>
+        <name>CheckErrors</name>
+        <qualifiedname>iceberg::ErrorCollector::CheckErrors</qualifiedname>
+        <briefdescription>
+<para>Check for accumulated errors and return them if any exist. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This should be called before completing a builder operation (e.g., in Build(), Apply(), or Commit() methods) to validate that no errors were accumulated during the builder method calls.</para>
+<para><simplesect kind="return"><para>Status::OK if no errors, or a ValidationFailed error with all accumulated error messages </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/error_collector.h" line="128" column="11" bodyfile="iceberg/util/error_collector.h" bodystart="128" bodyend="137"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ErrorCollector_1a274df2b90b0c22156a4c339aa30a4401" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ErrorCollector::ClearErrors</definition>
+        <argsstring>()</argsstring>
+        <name>ClearErrors</name>
+        <qualifiedname>iceberg::ErrorCollector::ClearErrors</qualifiedname>
+        <briefdescription>
+<para>Clear all accumulated errors. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This can be useful for resetting the error state in tests or when reusing a builder instance. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/error_collector.h" line="143" column="8" bodyfile="iceberg/util/error_collector.h" bodystart="143" bodyend="143"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ErrorCollector_1a761e8113effdfb7b50086466ecc1e022" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::vector&lt; <ref refid="structiceberg_1_1Error" kindref="compound">Error</ref> &gt; &amp;</type>
+        <definition>const std::vector&lt; Error &gt; &amp; iceberg::ErrorCollector::Errors</definition>
+        <argsstring>() const</argsstring>
+        <name>Errors</name>
+        <qualifiedname>iceberg::ErrorCollector::Errors</qualifiedname>
+        <briefdescription>
+<para>Get read-only access to all collected errors. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A const reference to the vector of errors </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/error_collector.h" line="148" column="22" bodyfile="iceberg/util/error_collector.h" bodystart="148" bodyend="148"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base class for collecting validation errors in builder patterns. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class provides error accumulation functionality for builders that cannot throw exceptions. Builder methods can call <ref refid="classiceberg_1_1ErrorCollector_1abed0ef518f8268eb832b24ea41a11733" kindref="member">AddError()</ref> to accumulate validation errors, and <ref refid="classiceberg_1_1ErrorCollector_1a16cbe7b6d423a372c9e68d970ff2c3ea" kindref="member">CheckErrors()</ref> returns all errors at once.</para>
+<para>Example usage: <programlisting><codeline><highlight class="keyword">class<sp/></highlight><highlight class="normal">MyBuilder<sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/>ErrorCollectorBase<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>MyBuilder&amp;<sp/>SetValue(</highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>val)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(val<sp/>&lt;<sp/>0)<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>AddError(ErrorKind::kInvalidArgument,<sp/></highlight><highlight class="stringliteral">&quot;Value<sp/>must<sp/>be<sp/>non-negative&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>value_<sp/>=<sp/>val;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>*</highlight><highlight class="keyword">this</highlight><highlight class="normal">;</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>Result&lt;MyObject&gt;<sp/>Build()<sp/>{</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/>ICEBERG_RETURN_UNEXPECTED(CheckErrors());</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>MyObject{value_};</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline><highlight class="normal"></highlight></codeline>
+<codeline><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>value_<sp/>=<sp/>0;</highlight></codeline>
+<codeline><highlight class="normal">};</highlight></codeline>
+</programlisting> </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+      </node>
+      <node id="2">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::TableMetadataBuilder</label>
+        <link refid="classiceberg_1_1TableMetadataBuilder"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::UpdateProperties</label>
+        <link refid="classiceberg_1_1UpdateProperties"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>iceberg::Error</label>
+        <link refid="structiceberg_1_1Error"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>message</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>errors_</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; iceberg::Error &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/util/error_collector.h" line="75" column="1" bodyfile="iceberg/util/error_collector.h" bodystart="75" bodyend="152"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ErrorCollector_1abed0ef518f8268eb832b24ea41a11733" prot="public" virt="non-virtual"><scope>iceberg::ErrorCollector</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5e555954de121d0908dcf4648da446e3" prot="public" virt="non-virtual"><scope>iceberg::ErrorCollector</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a16cbe7b6d423a372c9e68d970ff2c3ea" prot="public" virt="non-virtual"><scope>iceberg::ErrorCollector</scope><name>CheckErrors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a274df2b90b0c22156a4c339aa30a4401" prot="public" virt="non-virtual"><scope>iceberg::ErrorCollector</scope><name>ClearErrors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a690c840a35a03af0f94eea092ca65aaa" prot="public" virt="non-virtual"><scope>iceberg::ErrorCollector</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a827c296a8527f87f76d7f9321e7ee68f" prot="public" virt="non-virtual"><scope>iceberg::ErrorCollector</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ab3fa546cd2748fe418db9c0933542755" prot="public" virt="non-virtual"><scope>iceberg::ErrorCollector</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ab7534d465aced7288e1e0893d91fdde5" prot="public" virt="non-virtual"><scope>iceberg::ErrorCollector</scope><name>ErrorCount</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a761e8113effdfb7b50086466ecc1e022" prot="public" virt="non-virtual"><scope>iceberg::ErrorCollector</scope><name>Errors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a354d1e7287bb45926a4b563f80d0c623" prot="protected" virt="non-virtual"><scope>iceberg::ErrorCollector</scope><name>errors_</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a1fd248fbf492c15764b71f6d5e4d0c0f" prot="public" virt="non-virtual"><scope>iceberg::ErrorCollector</scope><name>HasErrors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a22311658715152d8e6e27834240ce446" prot="public" virt="non-virtual"><scope>iceberg::ErrorCollector</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1aaba366560be481bfa9538735f3a38e3e" prot="public" virt="non-virtual"><scope>iceberg::ErrorCollector</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ae84ca7242062cb3e3b86ce4cb81b368d" prot="public" virt="virtual"><scope>iceberg::ErrorCollector</scope><name>~ErrorCollector</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
