@@ -103,8 +103,11 @@ class StrictMetricsEvaluatorTest : public ::testing::Test {
   void TestCase(const std::shared_ptr<Expression>& unbound, bool expected_result) {
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
                            StrictMetricsEvaluator::Make(unbound, schema_, true));
-    auto file = PrepareDataFile("20251128", 10, 1024, {{"id", static_cast<int64_t>(100)}},
-                                {{"id", static_cast<int64_t>(200)}});
+    auto file = PrepareDataFile(/*partition=*/"20251128", /*record_count=*/10,
+                                /*file_size_in_bytes=*/1024,
+                                /*lower_bounds=*/{{"id", static_cast<int64_t>(100)}},
+                                /*upper_bounds=*/{{"id", static_cast<int64_t>(200)}},
+                                /*value_counts=*/{{1, 10}}, /*null_counts=*/{{1, 0}});
     auto result = evaluator->Evaluate(*file);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result.value(), expected_result) << unbound->ToString();
@@ -113,8 +116,10 @@ class StrictMetricsEvaluatorTest : public ::testing::Test {
   void TestStringCase(const std::shared_ptr<Expression>& unbound, bool expected_result) {
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
                            StrictMetricsEvaluator::Make(unbound, schema_, true));
-    auto file = PrepareDataFile("20251128", 10, 1024, {{"name", "123"}},
-                                {{"name", "456"}}, {{2, 10}}, {{2, 0}});
+    auto file = PrepareDataFile(/*partition=*/"20251128", /*record_count=*/10,
+                                /*file_size_in_bytes=*/1024,
+                                /*lower_bounds=*/{{"name", "123"}}, {{"name", "456"}},
+                                /*value_counts=*/{{2, 10}}, /*null_counts=*/{{2, 0}});
     auto result = evaluator->Evaluate(*file);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result.value(), expected_result) << unbound->ToString();
@@ -295,8 +300,11 @@ TEST_F(StrictMetricsEvaluatorTest, EQTest) {
   auto test_case = [&](const std::shared_ptr<Expression>& unbound, bool expected_result) {
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
                            StrictMetricsEvaluator::Make(unbound, schema_, true));
-    auto file = PrepareDataFile("20251128", 10, 1024, {{"id", static_cast<int64_t>(100)}},
-                                {{"id", static_cast<int64_t>(100)}});
+    auto file = PrepareDataFile(/*partition=*/"20251128", /*record_count=*/10,
+                                /*file_size_in_bytes=*/1024,
+                                /*lower_bounds=*/{{"id", static_cast<int64_t>(100)}},
+                                /*upper_bounds=*/{{"id", static_cast<int64_t>(100)}},
+                                /*value_counts=*/{{1, 10}}, /*null_counts=*/{{1, 0}});
     auto result = evaluator->Evaluate(*file);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result.value(), expected_result) << unbound->ToString();
@@ -327,8 +335,11 @@ TEST_F(StrictMetricsEvaluatorTest, InTest) {
   auto test_case = [&](const std::shared_ptr<Expression>& unbound, bool expected_result) {
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
                            StrictMetricsEvaluator::Make(unbound, schema_, true));
-    auto file = PrepareDataFile("20251128", 10, 1024, {{"id", static_cast<int64_t>(100)}},
-                                {{"id", static_cast<int64_t>(100)}});
+    auto file = PrepareDataFile(/*partition=*/"20251128", /*record_count=*/10,
+                                /*file_size_in_bytes=*/1024,
+                                /*lower_bounds=*/{{"id", static_cast<int64_t>(100)}},
+                                /*upper_bounds=*/{{"id", static_cast<int64_t>(100)}},
+                                /*value_counts=*/{{1, 10}}, /*null_counts=*/{{1, 0}});
     auto result = evaluator->Evaluate(*file);
     ASSERT_TRUE(result.has_value());
     ASSERT_EQ(result.value(), expected_result) << unbound->ToString();
