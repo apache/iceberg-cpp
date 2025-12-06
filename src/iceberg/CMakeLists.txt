@@ -19,6 +19,7 @@ set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
                      "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/src>")
 set(ICEBERG_SOURCES
     arrow_c_data_guard_internal.cc
+    base_transaction.cc
     catalog/memory/in_memory_catalog.cc
     expression/aggregate.cc
     expression/binder.cc
@@ -69,6 +70,7 @@ set(ICEBERG_SOURCES
     table_requirements.cc
     table_scan.cc
     table_update.cc
+    transaction_catalog.cc
     transform.cc
     transform_function.cc
     type.cc

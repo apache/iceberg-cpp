@@ -36,12 +36,17 @@ class ICEBERG_EXPORT Transaction {
   /// \brief Return the Table that this transaction will update
   ///
   /// \return this transaction's table
-  virtual const std::shared_ptr<Table>& table() const = 0;
+  virtual const std::shared_ptr<const Table>& table() const = 0;
+
+  /// \brief Create a new update properties operation
+  ///
+  /// \return a new UpdateProperties
+  virtual std::unique_ptr<::iceberg::UpdateProperties> UpdateProperties() = 0;
 
   /// \brief Create a new append API to add files to this table
   ///
   /// \return a new AppendFiles
-  virtual std::shared_ptr<AppendFiles> NewAppend() = 0;
+  virtual std::unique_ptr<AppendFiles> NewAppend() = 0;
 
   /// \brief Apply the pending changes from all actions and commit
   ///

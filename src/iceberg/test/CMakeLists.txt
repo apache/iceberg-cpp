@@ -69,6 +69,7 @@ add_iceberg_test(schema_test
 
 add_iceberg_test(table_test
                  SOURCES
+                 base_transaction_test.cc
                  json_internal_test.cc
                  metrics_config_test.cc
                  schema_json_test.cc

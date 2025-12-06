@@ -155,8 +155,8 @@ Result<std::unique_ptr<Table>> RestCatalog::CreateTable(
 
 Result<std::unique_ptr<Table>> RestCatalog::UpdateTable(
     [[maybe_unused]] const TableIdentifier& identifier,
-    [[maybe_unused]] const std::vector<std::unique_ptr<TableRequirement>>& requirements,
-    [[maybe_unused]] const std::vector<std::unique_ptr<TableUpdate>>& updates) {
+    [[maybe_unused]] std::vector<std::unique_ptr<TableRequirement>> requirements,
+    [[maybe_unused]] std::vector<std::unique_ptr<TableUpdate>> updates) {
   return NotImplemented("Not implemented");
 }
 

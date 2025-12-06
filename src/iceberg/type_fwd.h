@@ -87,6 +87,7 @@ class UuidType;
 struct Namespace;
 struct TableIdentifier;
 
+class BaseTransaction;
 class Catalog;
 class FileIO;
 class LocationProvider;
@@ -95,6 +96,7 @@ class SortOrder;
 class Table;
 class TableProperties;
 class Transaction;
+class TransactionCatalog;
 class Transform;
 class TransformFunction;
 
@@ -154,15 +156,34 @@ class MapLike;
 class StructLike;
 class StructLikeAccessor;
 
+class AddPartitionSpec;
+class AddSchema;
+class AddSnapshot;
+class AddSortOrder;
+class AssignUUID;
+class RemovePartitionSpecs;
+class RemoveProperties;
+class RemoveSchemas;
+class RemoveSnapshots;
+class RemoveSnapshotRef;
+class RemoveSortOrders;
+class SetCurrentSchema;
+class SetDefaultPartitionSpec;
+class SetDefaultSortOrder;
+class SetLocation;
+class SetProperties;
+class SetSnapshotRef;
 class TableUpdate;
+class UpgradeFormatVersion;
+
 class TableRequirement;
 class TableMetadataBuilder;
 class TableUpdateContext;
 
 class PendingUpdate;
-template <typename T>
-class PendingUpdateTyped;
 class UpdateProperties;
+
+struct PropertiesUpdateChanges;
 
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.

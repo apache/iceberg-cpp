@@ -33,7 +33,7 @@
 namespace iceberg {
 
 /// \brief Represents an Iceberg table
-class ICEBERG_EXPORT Table {
+class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
  public:
   ~Table();
 
@@ -123,6 +123,9 @@ class ICEBERG_EXPORT Table {
 
   /// \brief Returns a FileIO to read and write table data and metadata files
   const std::shared_ptr<FileIO>& io() const;
+
+  /// \brief Return the underlying table metadata
+  const std::shared_ptr<TableMetadata>& metadata() const { return metadata_; }
 
  private:
   const TableIdentifier identifier_;
