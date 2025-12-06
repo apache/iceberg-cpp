@@ -419,7 +419,7 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   Result<std::unique_ptr<TableMetadata>> Build();
 
   /// \brief Destructor
-  ~TableMetadataBuilder();
+  ~TableMetadataBuilder() override;
 
   // Delete copy operations (use BuildFrom to create a new builder)
   TableMetadataBuilder(const TableMetadataBuilder&) = delete;

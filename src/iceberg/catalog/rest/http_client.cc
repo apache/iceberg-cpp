@@ -139,7 +139,7 @@ Result<HttpResponse> HttpClient::Get(
     const ErrorHandler& error_handler) {
   cpr::Response response;
   {
-    std::scoped_lock<std::mutex> lock(session_mutex_);
+    std::lock_guard guard(session_mutex_);
     PrepareSession(path, headers, params);
     response = session_->Get();
   }
@@ -156,7 +156,7 @@ Result<HttpResponse> HttpClient::Post(
     const ErrorHandler& error_handler) {
   cpr::Response response;
   {
-    std::scoped_lock<std::mutex> lock(session_mutex_);
+    std::lock_guard guard(session_mutex_);
     PrepareSession(path, headers);
     session_->SetBody(cpr::Body{body});
     response = session_->Post();
@@ -176,7 +176,7 @@ Result<HttpResponse> HttpClient::PostForm(
   cpr::Response response;
 
   {
-    std::scoped_lock<std::mutex> lock(session_mutex_);
+    std::lock_guard guard(session_mutex_);
 
     // Override default Content-Type (application/json) with form-urlencoded
     auto form_headers = headers;
@@ -204,7 +204,7 @@ Result<HttpResponse> HttpClient::Head(
     const ErrorHandler& error_handler) {
   cpr::Response response;
   {
-    std::scoped_lock<std::mutex> lock(session_mutex_);
+    std::lock_guard guard(session_mutex_);
     PrepareSession(path, headers);
     response = session_->Head();
   }
@@ -220,7 +220,7 @@ Result<HttpResponse> HttpClient::Delete(
     const ErrorHandler& error_handler) {
   cpr::Response response;
   {
-    std::scoped_lock<std::mutex> lock(session_mutex_);
+    std::lock_guard guard(session_mutex_);
     PrepareSession(path, headers);
     response = session_->Delete();
   }
