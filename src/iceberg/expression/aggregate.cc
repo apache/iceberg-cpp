@@ -282,6 +282,11 @@ Result<Literal> CountAggregate::Evaluate(const DataFile& file) const {
   return CountFor(file).transform(Literal::Long);
 }
 
+Result<Literal> CountAggregate::Evaluate(const DataFile& file) const {
+  ICEBERG_ASSIGN_OR_RAISE(auto count, CountFor(file));
+  return Literal::Long(count);
+}
+
 std::unique_ptr<BoundAggregate::Aggregator> CountAggregate::NewAggregator() const {
   return std::unique_ptr<BoundAggregate::Aggregator>(new CountAggregator(*this));
 }
@@ -526,7 +531,16 @@ class AggregateEvaluatorImpl : public AggregateEvaluator {
   }
 
   bool AllAggregatorsValid() const override {
+<<<<<<< ours
     return std::ranges::all_of(aggregators_, &BoundAggregate::Aggregator::IsValid);
+=======
+    for (const auto& aggregator : aggregators_) {
+      if (!aggregator->IsValid()) {
+        return false;
+      }
+    }
+    return true;
+>>>>>>> theirs
   }
 
  private:
