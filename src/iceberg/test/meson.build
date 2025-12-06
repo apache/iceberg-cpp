@@ -66,6 +66,7 @@ iceberg_tests = {
             'literal_test.cc',
             'manifest_evaluator_test.cc',
             'predicate_test.cc',
+            'projections_test.cc',
             'residual_evaluator_test.cc',
             'strict_metrics_evaluator_test.cc',
         ),

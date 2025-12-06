@@ -29,6 +29,7 @@ set(ICEBERG_SOURCES
     expression/literal.cc
     expression/manifest_evaluator.cc
     expression/predicate.cc
+    expression/projections.cc
     expression/residual_evaluator.cc
     expression/rewrite_not.cc
     expression/strict_metrics_evaluator.cc

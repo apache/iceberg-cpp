@@ -114,7 +114,6 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
  private:
   /// \brief Create a new partition spec.
   ///
-  /// \param schema The table schema.
   /// \param spec_id The spec ID.
   /// \param fields The partition fields.
   /// \param last_assigned_field_id The last assigned field ID. If not provided, it will

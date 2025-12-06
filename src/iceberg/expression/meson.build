@@ -27,6 +27,7 @@ install_headers(
         'literal.h',
         'manifest_evaluator.h',
         'predicate.h',
+        'projections.h',
         'residual_evaluator.h',
         'rewrite_not.h',
         'strict_metrics_evaluator.h',
