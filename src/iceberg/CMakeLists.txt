@@ -54,7 +54,6 @@ set(ICEBERG_SOURCES
     partition_field.cc
     partition_spec.cc
     partition_summary.cc
-    pending_update.cc
     row/arrow_array_wrapper.cc
     row/manifest_wrapper.cc
     row/partition_values.cc
@@ -70,6 +69,7 @@ set(ICEBERG_SOURCES
     table.cc
     table_metadata.cc
     table_properties.cc
+    transaction_catalog.cc
     table_requirement.cc
     table_requirements.cc
     table_scan.cc

@@ -126,8 +126,11 @@ Status UpdateProperties::Commit() {
   if (!updates.empty()) {
     ICEBERG_ASSIGN_OR_RAISE(auto requirements,
                             TableRequirements::ForUpdateTable(*base_metadata_, updates));
-    ICEBERG_RETURN_UNEXPECTED(catalog_->UpdateTable(identifier_, requirements, updates));
+    ICEBERG_RETURN_UNEXPECTED(
+        catalog_->UpdateTable(identifier_, std::move(requirements), std::move(updates)));
   }
+
+  catalog_->SetLastOperationCommitted(true);
   return {};
 }
 

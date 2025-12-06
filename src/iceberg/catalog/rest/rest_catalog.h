@@ -76,8 +76,8 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog {
 
   Result<std::unique_ptr<Table>> UpdateTable(
       const TableIdentifier& identifier,
-      const std::vector<std::unique_ptr<TableRequirement>>& requirements,
-      const std::vector<std::unique_ptr<TableUpdate>>& updates) override;
+      const std::vector<std::shared_ptr<const TableRequirement>>& requirements,
+      const std::vector<std::shared_ptr<const TableUpdate>>& updates) override;
 
   Result<std::shared_ptr<Transaction>> StageCreateTable(
       const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
@@ -95,6 +95,8 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog {
   Result<std::shared_ptr<Table>> RegisterTable(
       const TableIdentifier& identifier,
       const std::string& metadata_file_location) override;
+
+  void SetLastOperationCommitted(bool committed) override {}
 
  private:
   RestCatalog(std::unique_ptr<RestCatalogProperties> config,

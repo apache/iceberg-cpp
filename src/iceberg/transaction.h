@@ -41,12 +41,12 @@ class ICEBERG_EXPORT Transaction {
   /// \brief Create a new update properties operation
   ///
   /// \return a new UpdateProperties
-  virtual std::shared_ptr<PropertiesUpdate> UpdateProperties() = 0;
+  virtual std::unique_ptr<UpdateProperties> UpdateProperties() = 0;
 
   /// \brief Create a new append API to add files to this table
   ///
   /// \return a new AppendFiles
-  virtual std::shared_ptr<AppendFiles> NewAppend() = 0;
+  virtual std::unique_ptr<AppendFiles> NewAppend() = 0;
 
   /// \brief Apply the pending changes from all actions and commit
   ///

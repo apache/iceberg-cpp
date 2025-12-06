@@ -392,9 +392,8 @@ Result<std::unique_ptr<Table>> InMemoryCatalog::CreateTable(
 
 Result<std::unique_ptr<Table>> InMemoryCatalog::UpdateTable(
     const TableIdentifier& identifier,
-    const std::vector<std::unique_ptr<TableRequirement>>& requirements,
-    const std::vector<std::unique_ptr<TableUpdate>>& updates) {
-  std::unique_lock lock(mutex_);
+    const std::vector<std::shared_ptr<const TableRequirement>>& requirements,
+    const std::vector<std::shared_ptr<const TableUpdate>>& updates) {
   return NotImplemented("update table");
 }
 
