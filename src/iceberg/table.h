@@ -29,6 +29,7 @@
 #include "iceberg/snapshot.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/timepoint.h"
 
 namespace iceberg {
 
@@ -45,8 +46,7 @@ class ICEBERG_EXPORT Table {
   /// \param[in] catalog The catalog that this table belongs to. If null, the table will
   /// be read-only.
   Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
-        std::string metadata_location, std::shared_ptr<FileIO> io,
-        std::shared_ptr<Catalog> catalog);
+        std::shared_ptr<FileIO> io, std::shared_ptr<Catalog> catalog);
 
   /// \brief Return the identifier of this table
   const TableIdentifier& name() const { return identifier_; }
@@ -84,8 +84,16 @@ class ICEBERG_EXPORT Table {
   /// \brief Return a map of string properties for this table
   const TableProperties& properties() const;
 
+  /// \brief Return the table's metadata file location
+  const std::string& metadata_file_location() const;
+
   /// \brief Return the table's base location
   const std::string& location() const;
+
+  /// \brief Get the time when this table was last updated
+  ///
+  /// \return the time when this table was last updated
+  const TimePointMs& last_updated_ms() const;
 
   /// \brief Return the table's current snapshot, return NotFoundError if not found
   Result<std::shared_ptr<Snapshot>> current_snapshot() const;
@@ -127,7 +135,6 @@ class ICEBERG_EXPORT Table {
  private:
   const TableIdentifier identifier_;
   std::shared_ptr<TableMetadata> metadata_;
-  std::string metadata_location_;
   std::shared_ptr<FileIO> io_;
   std::shared_ptr<Catalog> catalog_;
   std::unique_ptr<TableProperties> properties_;

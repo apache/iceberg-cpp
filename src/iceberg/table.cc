@@ -28,17 +28,16 @@
 #include "iceberg/table_scan.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/timepoint.h"
 
 namespace iceberg {
 
 Table::~Table() = default;
 
 Table::Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
-             std::string metadata_location, std::shared_ptr<FileIO> io,
-             std::shared_ptr<Catalog> catalog)
+             std::shared_ptr<FileIO> io, std::shared_ptr<Catalog> catalog)
     : identifier_(std::move(identifier)),
       metadata_(std::move(metadata)),
-      metadata_location_(std::move(metadata_location)),
       io_(std::move(io)),
       catalog_(std::move(catalog)),
       properties_(TableProperties::FromMap(metadata_->properties)),
@@ -52,9 +51,9 @@ Status Table::Refresh() {
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto refreshed_table, catalog_->LoadTable(identifier_));
-  if (metadata_location_ != refreshed_table->metadata_location_) {
+  if (metadata_->metadata_file_location !=
+      refreshed_table->metadata_->metadata_file_location) {
     metadata_ = std::move(refreshed_table->metadata_);
-    metadata_location_ = std::move(refreshed_table->metadata_location_);
     io_ = std::move(refreshed_table->io_);
     properties_ = std::move(refreshed_table->properties_);
     metadata_cache_ = std::make_unique<TableMetadataCache>(metadata_.get());
@@ -91,7 +90,13 @@ Table::sort_orders() const {
 
 const TableProperties& Table::properties() const { return *properties_; }
 
+const std::string& Table::metadata_file_location() const {
+  return metadata_->metadata_file_location;
+}
+
 const std::string& Table::location() const { return metadata_->location; }
+
+const TimePointMs& Table::last_updated_ms() const { return metadata_->last_updated_ms; }
 
 Result<std::shared_ptr<Snapshot>> Table::current_snapshot() const {
   return metadata_->Snapshot();
