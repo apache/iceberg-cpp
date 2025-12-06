@@ -24,6 +24,8 @@
 #include "iceberg/catalog.h"
 #include "iceberg/pending_update.h"
 #include "iceberg/table.h"
+#include "iceberg/table_metadata.h"
+#include "iceberg/transaction_catalog.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/util/macros.h"
 

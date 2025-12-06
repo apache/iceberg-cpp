@@ -185,6 +185,9 @@ class ICEBERG_EXPORT Catalog {
   virtual Result<std::shared_ptr<Table>> RegisterTable(
       const TableIdentifier& identifier, const std::string& metadata_file_location) = 0;
 
+  /// \brief Set whether the last operation in a transaction has been committed
+  ///
+  /// \param committed true if the last operation has been committed, false otherwise
   virtual void SetLastOperationCommitted(bool committed) = 0;
 };
 
