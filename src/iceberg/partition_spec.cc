@@ -36,9 +36,10 @@
 
 namespace iceberg {
 
-PartitionSpec::PartitionSpec(int32_t spec_id, std::vector<PartitionField> fields,
+PartitionSpec::PartitionSpec(const std::shared_ptr<Schema>& schema, int32_t spec_id,
+                             std::vector<PartitionField> fields,
                              std::optional<int32_t> last_assigned_field_id)
-    : spec_id_(spec_id), fields_(std::move(fields)) {
+    : schema_(schema), spec_id_(spec_id), fields_(std::move(fields)) {
   if (last_assigned_field_id) {
     last_assigned_field_id_ = last_assigned_field_id.value();
   } else if (fields_.empty()) {
@@ -51,8 +52,9 @@ PartitionSpec::PartitionSpec(int32_t spec_id, std::vector<PartitionField> fields
 }
 
 const std::shared_ptr<PartitionSpec>& PartitionSpec::Unpartitioned() {
-  static const std::shared_ptr<PartitionSpec> unpartitioned(new PartitionSpec(
-      kInitialSpecId, std::vector<PartitionField>{}, kLegacyPartitionDataIdStart - 1));
+  static const std::shared_ptr<PartitionSpec> unpartitioned(
+      new PartitionSpec(nullptr, kInitialSpecId, std::vector<PartitionField>{},
+                        kLegacyPartitionDataIdStart - 1));
   return unpartitioned;
 }
 
@@ -155,11 +157,12 @@ Status PartitionSpec::Validate(const Schema& schema, bool allow_missing_fields) 
 }
 
 Result<std::unique_ptr<PartitionSpec>> PartitionSpec::Make(
-    const Schema& schema, int32_t spec_id, std::vector<PartitionField> fields,
-    bool allow_missing_fields, std::optional<int32_t> last_assigned_field_id) {
+    const std::shared_ptr<Schema>& schema, int32_t spec_id,
+    std::vector<PartitionField> fields, bool allow_missing_fields,
+    std::optional<int32_t> last_assigned_field_id) {
   auto partition_spec = std::unique_ptr<PartitionSpec>(
-      new PartitionSpec(spec_id, std::move(fields), last_assigned_field_id));
-  ICEBERG_RETURN_UNEXPECTED(partition_spec->Validate(schema, allow_missing_fields));
+      new PartitionSpec(schema, spec_id, std::move(fields), last_assigned_field_id));
+  ICEBERG_RETURN_UNEXPECTED(partition_spec->Validate(*schema, allow_missing_fields));
   return partition_spec;
 }
 
@@ -167,7 +170,7 @@ Result<std::unique_ptr<PartitionSpec>> PartitionSpec::Make(
     int32_t spec_id, std::vector<PartitionField> fields,
     std::optional<int32_t> last_assigned_field_id) {
   return std::unique_ptr<PartitionSpec>(
-      new PartitionSpec(spec_id, std::move(fields), last_assigned_field_id));
+      new PartitionSpec(nullptr, spec_id, std::move(fields), last_assigned_field_id));
 }
 
 }  // namespace iceberg

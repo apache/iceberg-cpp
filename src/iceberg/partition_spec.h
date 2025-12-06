@@ -62,6 +62,9 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \brief Get the partition type binding to the input schema.
   Result<std::unique_ptr<StructType>> PartitionType(const Schema&);
 
+  /// \brief Get the schema.
+  const std::shared_ptr<Schema>& schema() const { return schema_; }
+
   std::string ToString() const override;
 
   int32_t last_assigned_field_id() const { return last_assigned_field_id_; }
@@ -87,8 +90,8 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// fields get unique IDs.
   /// \return A Result containing the partition spec or an error.
   static Result<std::unique_ptr<PartitionSpec>> Make(
-      const Schema& schema, int32_t spec_id, std::vector<PartitionField> fields,
-      bool allow_missing_fields,
+      const std::shared_ptr<Schema>& schema, int32_t spec_id,
+      std::vector<PartitionField> fields, bool allow_missing_fields,
       std::optional<int32_t> last_assigned_field_id = std::nullopt);
 
   /// \brief Create a PartitionSpec without binding to a schema.
@@ -104,18 +107,18 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
 
  private:
   /// \brief Create a new partition spec.
-  ///
-  /// \param schema The table schema.
   /// \param spec_id The spec ID.
   /// \param fields The partition fields.
   /// \param last_assigned_field_id The last assigned field ID. If not provided, it will
-  /// be calculated from the fields.
-  PartitionSpec(int32_t spec_id, std::vector<PartitionField> fields,
+  /// \param schema The schema to bind the partition spec to.
+  PartitionSpec(const std::shared_ptr<Schema>& schema, int32_t spec_id,
+                std::vector<PartitionField> fields,
                 std::optional<int32_t> last_assigned_field_id = std::nullopt);
 
   /// \brief Compare two partition specs for equality.
   bool Equals(const PartitionSpec& other) const;
 
+  const std::shared_ptr<Schema> schema_;
   const int32_t spec_id_;
   std::vector<PartitionField> fields_;
   int32_t last_assigned_field_id_;
