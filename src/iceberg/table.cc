@@ -19,8 +19,6 @@
 
 #include "iceberg/table.h"
 
-#include <algorithm>
-
 #include "iceberg/base_transaction.h"
 #include "iceberg/catalog.h"
 #include "iceberg/partition_spec.h"

@@ -28,8 +28,6 @@
 
 namespace iceberg {
 
-class BaseTransaction;
-
 /**
  * @brief Lightweight catalog wrapper for BaseTransaction.
  *

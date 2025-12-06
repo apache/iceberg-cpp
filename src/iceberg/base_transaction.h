@@ -23,11 +23,9 @@
 #include <vector>
 
 #include "iceberg/table_identifier.h"
-#include "iceberg/table_metadata.h"
 #include "iceberg/table_requirement.h"
 #include "iceberg/table_update.h"
 #include "iceberg/transaction.h"
-#include "iceberg/transaction_catalog.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {

@@ -41,7 +41,7 @@ class ICEBERG_EXPORT Transaction {
   /// \brief Create a new update properties operation
   ///
   /// \return a new UpdateProperties
-  virtual std::unique_ptr<UpdateProperties> UpdateProperties() = 0;
+  virtual std::unique_ptr<::iceberg::UpdateProperties> UpdateProperties() = 0;
 
   /// \brief Create a new append API to add files to this table
   ///
