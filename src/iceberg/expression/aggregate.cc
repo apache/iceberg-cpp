@@ -19,6 +19,7 @@
 
 #include "iceberg/expression/aggregate.h"
 
+#include <algorithm>
 #include <format>
 #include <map>
 #include <optional>
@@ -231,14 +232,6 @@ class MinAggregator : public BoundAggregate::Aggregator {
   bool valid_ = true;
 };
 
-bool HasMapKey(const std::map<int32_t, int64_t>& map, int32_t key) {
-  return map.contains(key);
-}
-
-bool HasMapKey(const std::map<int32_t, std::vector<uint8_t>>& map, int32_t key) {
-  return map.contains(key);
-}
-
 template <typename T>
 std::optional<T> GetMapValue(const std::map<int32_t, T>& map, int32_t key) {
   auto iter = map.find(key);
@@ -282,12 +275,11 @@ std::string Aggregate<T>::ToString() const {
 // -------------------- CountAggregate --------------------
 
 Result<Literal> CountAggregate::Evaluate(const StructLike& data) const {
-  return CountFor(data).transform([](int64_t count) { return Literal::Long(count); });
+  return CountFor(data).transform(Literal::Long);
 }
 
 Result<Literal> CountAggregate::Evaluate(const DataFile& file) const {
-  ICEBERG_ASSIGN_OR_RAISE(auto count, CountFor(file));
-  return Literal::Long(count);
+  return CountFor(file).transform(Literal::Long);
 }
 
 std::unique_ptr<BoundAggregate::Aggregator> CountAggregate::NewAggregator() const {
@@ -323,8 +315,8 @@ Result<int64_t> CountNonNullAggregate::CountFor(const DataFile& file) const {
 
 bool CountNonNullAggregate::HasValue(const DataFile& file) const {
   auto field_id = GetFieldId(term());
-  return HasMapKey(file.value_counts, field_id) &&
-         HasMapKey(file.null_value_counts, field_id);
+  return file.value_counts.contains(field_id) &&
+         file.null_value_counts.contains(field_id);
 }
 
 CountNullAggregate::CountNullAggregate(std::shared_ptr<BoundTerm> term)
@@ -352,7 +344,7 @@ Result<int64_t> CountNullAggregate::CountFor(const DataFile& file) const {
 }
 
 bool CountNullAggregate::HasValue(const DataFile& file) const {
-  return HasMapKey(file.null_value_counts, GetFieldId(term()));
+  return file.null_value_counts.contains(GetFieldId(term()));
 }
 
 CountStarAggregate::CountStarAggregate()
@@ -400,7 +392,7 @@ std::unique_ptr<BoundAggregate::Aggregator> MaxAggregate::NewAggregator() const 
 
 bool MaxAggregate::HasValue(const DataFile& file) const {
   auto field_id = GetFieldId(term());
-  bool has_bound = HasMapKey(file.upper_bounds, field_id);
+  bool has_bound = file.upper_bounds.contains(field_id);
   auto value_count = GetMapValue(file.value_counts, field_id);
   auto null_count = GetMapValue(file.null_value_counts, field_id);
   bool all_null = value_count.has_value() && *value_count > 0 && null_count.has_value() &&
@@ -431,7 +423,7 @@ std::unique_ptr<BoundAggregate::Aggregator> MinAggregate::NewAggregator() const 
 
 bool MinAggregate::HasValue(const DataFile& file) const {
   auto field_id = GetFieldId(term());
-  bool has_bound = HasMapKey(file.lower_bounds, field_id);
+  bool has_bound = file.lower_bounds.contains(field_id);
   auto value_count = GetMapValue(file.value_counts, field_id);
   auto null_count = GetMapValue(file.null_value_counts, field_id);
   bool all_null = value_count.has_value() && *value_count > 0 && null_count.has_value() &&
@@ -534,12 +526,7 @@ class AggregateEvaluatorImpl : public AggregateEvaluator {
   }
 
   bool AllAggregatorsValid() const override {
-    for (const auto& aggregator : aggregators_) {
-      if (!aggregator->IsValid()) {
-        return false;
-      }
-    }
-    return true;
+    return std::ranges::all_of(aggregators_, &BoundAggregate::Aggregator::IsValid);
   }
 
  private:

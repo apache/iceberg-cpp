@@ -213,7 +213,7 @@ class ICEBERG_EXPORT MaxAggregate : public BoundAggregate {
   static std::shared_ptr<MaxAggregate> Make(std::shared_ptr<BoundTerm> term);
 
   Result<Literal> Evaluate(const StructLike& data) const override;
-  Result<Literal> Evaluate(const DataFile& file) const override;
+  Result<Literal> Evaluate(const DataFile& file) const final;
 
   std::unique_ptr<Aggregator> NewAggregator() const override;
 
@@ -229,7 +229,7 @@ class ICEBERG_EXPORT MinAggregate : public BoundAggregate {
   static std::shared_ptr<MinAggregate> Make(std::shared_ptr<BoundTerm> term);
 
   Result<Literal> Evaluate(const StructLike& data) const override;
-  Result<Literal> Evaluate(const DataFile& file) const override;
+  Result<Literal> Evaluate(const DataFile& file) const final;
 
   std::unique_ptr<Aggregator> NewAggregator() const override;
 
