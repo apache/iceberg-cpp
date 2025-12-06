@@ -151,7 +151,8 @@ TEST(PartitionSpecTest, PartitionTypeTest) {
 TEST(PartitionSpecTest, InvalidTransformForType) {
   // Test Day transform on string type (should fail)
   auto field_string = SchemaField::MakeRequired(6, "s", string());
-  Schema schema_string({field_string}, Schema::kInitialSchemaId);
+  auto schema_string = std::make_shared<Schema>(std::vector<SchemaField>{field_string},
+                                                Schema::kInitialSchemaId);
 
   PartitionField pt_field_invalid(6, 1005, "s_day", Transform::Day());
   auto result = PartitionSpec::Make(schema_string, 1, {pt_field_invalid}, false);
@@ -168,7 +169,8 @@ TEST(PartitionSpecTest, InvalidTransformForType) {
 TEST(PartitionSpecTest, SourceIdNotFound) {
   auto field1 = SchemaField::MakeRequired(1, "id", int64());
   auto field2 = SchemaField::MakeRequired(2, "ts", timestamp());
-  Schema schema({field1, field2}, Schema::kInitialSchemaId);
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{field1, field2},
+                                         Schema::kInitialSchemaId);
 
   // Try to create partition field with source ID 99 which doesn't exist
   PartitionField pt_field_invalid(99, 1000, "Test", Transform::Identity());
@@ -181,7 +183,8 @@ TEST(PartitionSpecTest, SourceIdNotFound) {
 TEST(PartitionSpecTest, AllowMissingFields) {
   auto field1 = SchemaField::MakeRequired(1, "id", int64());
   auto field2 = SchemaField::MakeRequired(2, "ts", timestamp());
-  Schema schema({field1, field2}, Schema::kInitialSchemaId);
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{field1, field2},
+                                         Schema::kInitialSchemaId);
 
   // Create partition field with source ID 99 which doesn't exist
   PartitionField pt_field_missing(99, 1000, "Test", Transform::Identity());
@@ -209,7 +212,8 @@ TEST(PartitionSpecTest, PartitionFieldInStruct) {
       std::make_shared<StructType>(std::vector<SchemaField>{field1, field2});
   auto outer_struct = SchemaField::MakeRequired(11, "MyStruct", struct_type);
 
-  Schema schema({outer_struct}, Schema::kInitialSchemaId);
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{outer_struct},
+                                         Schema::kInitialSchemaId);
   PartitionField pt_field(1, 1000, "id_partition", Transform::Identity());
 
   EXPECT_THAT(PartitionSpec::Make(schema, 1, {pt_field}, false), IsOk());
@@ -225,7 +229,8 @@ TEST(PartitionSpecTest, PartitionFieldInStructInStruct) {
   auto outer_struct = std::make_shared<StructType>(std::vector<SchemaField>{inner_field});
   SchemaField outer_field(12, "Outer", outer_struct, true);
 
-  Schema schema({outer_field}, Schema::kInitialSchemaId);
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{outer_field},
+                                         Schema::kInitialSchemaId);
   PartitionField pt_field(1, 1000, "id_partition", Transform::Identity());
   EXPECT_THAT(PartitionSpec::Make(schema, 1, {pt_field}, false), IsOk());
 }
@@ -233,7 +238,8 @@ TEST(PartitionSpecTest, PartitionFieldInStructInStruct) {
 TEST(PartitionSpecTest, PartitionFieldInList) {
   auto list_type = std::make_shared<ListType>(1, int32(), /*element_required=*/false);
   auto list_field = SchemaField::MakeRequired(2, "MyList", list_type);
-  Schema schema({list_field}, Schema::kInitialSchemaId);
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{list_field},
+                                         Schema::kInitialSchemaId);
 
   // Try to partition on the list element field (field ID 1 is the element)
   PartitionField pt_field(1, 1000, "element_partition", Transform::Identity());
@@ -250,7 +256,8 @@ TEST(PartitionSpecTest, PartitionFieldInStructInList) {
                                               /*element_required=*/false);
   auto list_field = SchemaField::MakeRequired(3, "MyList", list_type);
 
-  Schema schema({list_field}, Schema::kInitialSchemaId);
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{list_field},
+                                         Schema::kInitialSchemaId);
   PartitionField pt_field(1, 1000, "foo_partition", Transform::Identity());
 
   auto result = PartitionSpec::Make(schema, 1, {pt_field}, false);
@@ -264,7 +271,8 @@ TEST(PartitionSpecTest, PartitionFieldInMap) {
   auto map_type = std::make_shared<MapType>(key_field, value_field);
   auto map_field = SchemaField::MakeRequired(3, "MyMap", map_type);
 
-  Schema schema({map_field}, Schema::kInitialSchemaId);
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{map_field},
+                                         Schema::kInitialSchemaId);
   PartitionField pt_field_key(1, 1000, "key_partition", Transform::Identity());
 
   auto result_key = PartitionSpec::Make(schema, 1, {pt_field_key}, false);
@@ -289,7 +297,8 @@ TEST(PartitionSpecTest, PartitionFieldInStructInMap) {
   auto map_type = std::make_shared<MapType>(key_field, value_field);
   auto map_field = SchemaField::MakeRequired(5, "MyMap", map_type);
 
-  Schema schema({map_field}, Schema::kInitialSchemaId);
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{map_field},
+                                         Schema::kInitialSchemaId);
   PartitionField pt_field_key(1, 1000, "foo_partition", Transform::Identity());
 
   auto result_key = PartitionSpec::Make(schema, 1, {pt_field_key}, false);

@@ -150,7 +150,7 @@ TEST(JsonInternalTest, PartitionSpec) {
   auto identity_transform = Transform::Identity();
   ICEBERG_UNWRAP_OR_FAIL(
       auto spec,
-      PartitionSpec::Make(*schema, 1,
+      PartitionSpec::Make(schema, 1,
                           {PartitionField(3, 101, "region", identity_transform),
                            PartitionField(5, 102, "ts", identity_transform)},
                           false));
