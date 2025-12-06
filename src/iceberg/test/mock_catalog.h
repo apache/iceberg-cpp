@@ -23,6 +23,8 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/catalog.h"
+#include "iceberg/table_requirement.h"
+#include "iceberg/table_update.h"
 
 namespace iceberg {
 
@@ -61,9 +63,8 @@ class MockCatalog : public Catalog {
               (override));
 
   MOCK_METHOD((Result<std::unique_ptr<Table>>), UpdateTable,
-              (const TableIdentifier&,
-               (const std::vector<std::unique_ptr<TableRequirement>>&),
-               (const std::vector<std::unique_ptr<TableUpdate>>&)),
+              (const TableIdentifier&, std::vector<std::unique_ptr<TableRequirement>>,
+               std::vector<std::unique_ptr<TableUpdate>>),
               (override));
 
   MOCK_METHOD((Result<std::shared_ptr<Transaction>>), StageCreateTable,
@@ -83,6 +84,8 @@ class MockCatalog : public Catalog {
 
   MOCK_METHOD((Result<std::shared_ptr<Table>>), RegisterTable,
               (const TableIdentifier&, const std::string&), (override));
+
+  MOCK_METHOD(void, SetLastOperationCommitted, (bool), (override));
 };
 
 }  // namespace iceberg

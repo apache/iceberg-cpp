@@ -19,38 +19,82 @@
 
 #pragma once
 
+#include <memory>
 #include <vector>
 
+#include "iceberg/table_identifier.h"
+#include "iceberg/table_metadata.h"
+#include "iceberg/table_requirement.h"
+#include "iceberg/table_update.h"
 #include "iceberg/transaction.h"
+#include "iceberg/transaction_catalog.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
 /// \brief Base class for transaction implementations
-class BaseTransaction : public Transaction {
+class ICEBERG_EXPORT BaseTransaction : public Transaction {
  public:
   BaseTransaction(std::shared_ptr<const Table> table, std::shared_ptr<Catalog> catalog);
   ~BaseTransaction() override = default;
 
   const std::shared_ptr<const Table>& table() const override;
 
-  std::shared_ptr<PropertiesUpdate> UpdateProperties() override;
+  std::unique_ptr<::iceberg::UpdateProperties> UpdateProperties() override;
 
-  std::shared_ptr<AppendFiles> NewAppend() override;
+  std::unique_ptr<AppendFiles> NewAppend() override;
 
   Status CommitTransaction() override;
 
- protected:
-  template <typename UpdateType, typename... Args>
-  std::shared_ptr<UpdateType> RegisterUpdate(Args&&... args) {
-    auto update = std::make_shared<UpdateType>(std::forward<Args>(args)...);
-    pending_updates_.push_back(update);
-    return update;
+  Result<std::unique_ptr<Table>> StageUpdates(
+      const TableIdentifier& identifier,
+      std::vector<std::unique_ptr<TableRequirement>> requirements,
+      std::vector<std::unique_ptr<TableUpdate>> updates);
+
+  bool HasLastOperationCommitted() const { return context_.last_operation_committed; }
+
+  void SetLastOperationCommitted(bool committed) {
+    context_.last_operation_committed = committed;
   }
 
+  const std::shared_ptr<TableMetadata>& CurrentMetadata() const {
+    return context_.current_metadata;
+  }
+
+  Status ApplyUpdates(const std::vector<std::unique_ptr<TableUpdate>>& updates);
+
+  std::vector<std::unique_ptr<TableRequirement>> ConsumePendingRequirements();
+
+  std::vector<std::unique_ptr<TableUpdate>> ConsumePendingUpdates();
+
+ protected:
+  template <typename UpdateType, typename... Args>
+  Result<std::unique_ptr<UpdateType>> CheckAndCreateUpdate(Args&&... args) {
+    if (!HasLastOperationCommitted()) {
+      return InvalidState(
+          "Cannot create new update: last operation in transaction has not committed");
+    }
+    SetLastOperationCommitted(false);
+    return std::make_unique<UpdateType>(std::forward<Args>(args)...);
+  }
+
+ private:
+  struct TransactionContext {
+    TransactionContext() = default;
+    TransactionContext(const TableIdentifier& identifier,
+                       std::shared_ptr<TableMetadata> metadata)
+        : identifier(identifier), current_metadata(std::move(metadata)) {}
+
+    bool last_operation_committed = true;
+    TableIdentifier identifier;
+    std::shared_ptr<TableMetadata> current_metadata;
+    std::vector<std::unique_ptr<TableRequirement>> pending_requirements;
+    std::vector<std::unique_ptr<TableUpdate>> pending_updates;
+  };
+
   std::shared_ptr<const Table> table_;
-  std::shared_ptr<Catalog> catalog_;
-  std::vector<std::shared_ptr<PendingUpdate>> pending_updates_;
+  std::shared_ptr<TransactionCatalog> catalog_;
+  TransactionContext context_;
 };
 
 }  // namespace iceberg
