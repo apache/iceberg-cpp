@@ -400,7 +400,7 @@ TEST(AggregateTest, DataFileAggregatorParity) {
     for (const auto& f : files) {
       ASSERT_TRUE(evaluator->Update(f).has_value());
     }
-    EXPECT_EQ(evaluator->AllAggregatorsValid(), expect_all_valid);
+    ASSERT_EQ(evaluator->AllAggregatorsValid(), expect_all_valid);
     ICEBERG_UNWRAP_OR_FAIL(auto results, evaluator->GetResults());
     ASSERT_EQ(results.size(), expected.size());
     for (size_t i = 0; i < expected.size(); ++i) {

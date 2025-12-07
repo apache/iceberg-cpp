@@ -111,12 +111,13 @@ class ICEBERG_EXPORT BoundAggregate : public Aggregate<BoundTerm>, public Bound 
 
     virtual Status Update(const DataFile& file) = 0;
 
-    virtual bool IsValid() const { return true; }
+    /// \brief Whether the aggregator is still valid.
+    virtual bool IsValid() const = 0;
 
     /// \brief Get the result of the aggregation.
     /// \return The result of the aggregation.
     /// \note It is an undefined behavior to call this method if any previous Update call
-    /// has returned an error.
+    /// has returned an error or if IsValid() returns false.
     virtual Literal GetResult() const = 0;
   };
 
@@ -127,6 +128,7 @@ class ICEBERG_EXPORT BoundAggregate : public Aggregate<BoundTerm>, public Bound 
   }
 
   Result<Literal> Evaluate(const StructLike& data) const override = 0;
+
   virtual Result<Literal> Evaluate(const DataFile& file) const = 0;
 
   /// \brief Whether metrics in the data file are sufficient to evaluate.
@@ -146,7 +148,7 @@ class ICEBERG_EXPORT BoundAggregate : public Aggregate<BoundTerm>, public Bound 
 /// \brief Base class for COUNT aggregates.
 class ICEBERG_EXPORT CountAggregate : public BoundAggregate {
  public:
-  Result<Literal> Evaluate(const StructLike& data) const final;
+  Result<Literal> Evaluate(const StructLike& data) const override;
   Result<Literal> Evaluate(const DataFile& file) const override;
 
   std::unique_ptr<Aggregator> NewAggregator() const override;
@@ -155,8 +157,6 @@ class ICEBERG_EXPORT CountAggregate : public BoundAggregate {
   virtual Result<int64_t> CountFor(const StructLike& data) const = 0;
   /// \brief Count using metrics from a data file.
   virtual Result<int64_t> CountFor(const DataFile& file) const = 0;
-
-  bool HasValue(const DataFile& file) const override = 0;
 
  protected:
   CountAggregate(Expression::Operation op, std::shared_ptr<BoundTerm> term)
@@ -171,7 +171,6 @@ class ICEBERG_EXPORT CountNonNullAggregate : public CountAggregate {
 
   Result<int64_t> CountFor(const StructLike& data) const override;
   Result<int64_t> CountFor(const DataFile& file) const override;
-
   bool HasValue(const DataFile& file) const override;
 
  private:
@@ -186,7 +185,6 @@ class ICEBERG_EXPORT CountNullAggregate : public CountAggregate {
 
   Result<int64_t> CountFor(const StructLike& data) const override;
   Result<int64_t> CountFor(const DataFile& file) const override;
-
   bool HasValue(const DataFile& file) const override;
 
  private:
@@ -200,7 +198,6 @@ class ICEBERG_EXPORT CountStarAggregate : public CountAggregate {
 
   Result<int64_t> CountFor(const StructLike& data) const override;
   Result<int64_t> CountFor(const DataFile& file) const override;
-
   bool HasValue(const DataFile& file) const override;
 
  private:
@@ -213,11 +210,10 @@ class ICEBERG_EXPORT MaxAggregate : public BoundAggregate {
   static std::shared_ptr<MaxAggregate> Make(std::shared_ptr<BoundTerm> term);
 
   Result<Literal> Evaluate(const StructLike& data) const override;
-  Result<Literal> Evaluate(const DataFile& file) const final;
+  Result<Literal> Evaluate(const DataFile& file) const override;
+  bool HasValue(const DataFile& file) const override;
 
   std::unique_ptr<Aggregator> NewAggregator() const override;
-
-  bool HasValue(const DataFile& file) const override;
 
  private:
   explicit MaxAggregate(std::shared_ptr<BoundTerm> term);
@@ -229,11 +225,10 @@ class ICEBERG_EXPORT MinAggregate : public BoundAggregate {
   static std::shared_ptr<MinAggregate> Make(std::shared_ptr<BoundTerm> term);
 
   Result<Literal> Evaluate(const StructLike& data) const override;
-  Result<Literal> Evaluate(const DataFile& file) const final;
+  Result<Literal> Evaluate(const DataFile& file) const override;
+  bool HasValue(const DataFile& file) const override;
 
   std::unique_ptr<Aggregator> NewAggregator() const override;
-
-  bool HasValue(const DataFile& file) const override;
 
  private:
   explicit MinAggregate(std::shared_ptr<BoundTerm> term);

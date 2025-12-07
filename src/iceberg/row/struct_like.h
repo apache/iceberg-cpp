@@ -71,19 +71,6 @@ class ICEBERG_EXPORT StructLike {
   virtual size_t num_fields() const = 0;
 };
 
-/// \brief A single-field StructLike that wraps a Literal
-class ICEBERG_EXPORT SingleValueStructLike : public StructLike {
- public:
-  explicit SingleValueStructLike(Literal literal);
-
-  Result<Scalar> GetField(size_t pos) const override;
-
-  size_t num_fields() const override;
-
- private:
-  Literal literal_;
-};
-
 /// \brief An immutable array-like wrapper.
 class ICEBERG_EXPORT ArrayLike {
  public:

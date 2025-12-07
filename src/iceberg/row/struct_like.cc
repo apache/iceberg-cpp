@@ -68,15 +68,6 @@ Result<Scalar> LiteralToScalar(const Literal& literal) {
   }
 }
 
-SingleValueStructLike::SingleValueStructLike(Literal literal)
-    : literal_(std::move(literal)) {}
-
-Result<Scalar> SingleValueStructLike::GetField(size_t /*pos*/) const {
-  return LiteralToScalar(literal_);
-}
-
-size_t SingleValueStructLike::num_fields() const { return 1; }
-
 StructLikeAccessor::StructLikeAccessor(std::shared_ptr<Type> type,
                                        std::span<const size_t> position_path)
     : type_(std::move(type)) {

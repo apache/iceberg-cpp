@@ -37,10 +37,13 @@ namespace iceberg {
 /// \brief A term is an expression node that produces a typed value when evaluated.
 class ICEBERG_EXPORT Term : public util::Formattable {
  public:
-  enum class Kind : uint8_t { kReference = 0, kTransform, kExtract };
+  enum class Kind : uint8_t { kReference, kTransform, kExtract };
 
   /// \brief Returns the kind of this term.
   virtual Kind kind() const = 0;
+
+  /// \brief Returns whether this term is unbound.
+  virtual bool is_unbound() const = 0;
 };
 
 template <typename T>
@@ -53,6 +56,8 @@ template <typename B>
 class ICEBERG_EXPORT UnboundTerm : public Unbound<B>, public Term {
  public:
   using BoundType = B;
+
+  bool is_unbound() const override { return true; }
 };
 
 /// \brief Base class for bound terms.
@@ -66,8 +71,6 @@ class ICEBERG_EXPORT BoundTerm : public Bound, public Term {
   /// \brief Returns whether this term may produce null values.
   virtual bool MayProduceNull() const = 0;
 
-  // TODO(gangwu): add a comparator function to Literal and BoundTerm.
-
   /// \brief Returns whether this term is equivalent to another.
   ///
   /// Two terms are equivalent if they produce the same values when evaluated.
@@ -79,6 +82,8 @@ class ICEBERG_EXPORT BoundTerm : public Bound, public Term {
   friend bool operator==(const BoundTerm& lhs, const BoundTerm& rhs) {
     return lhs.Equals(rhs);
   }
+
+  bool is_unbound() const override { return false; }
 };
 
 /// \brief A reference represents a named field in an expression.

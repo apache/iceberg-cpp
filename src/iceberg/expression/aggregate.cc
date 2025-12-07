@@ -42,6 +42,19 @@ std::shared_ptr<PrimitiveType> GetPrimitiveType(const BoundTerm& term) {
   return internal::checked_pointer_cast<PrimitiveType>(term.type());
 }
 
+/// \brief A single-field StructLike that wraps a Literal
+class SingleValueStructLike : public StructLike {
+ public:
+  explicit SingleValueStructLike(Literal literal) : literal_(std::move(literal)) {}
+
+  Result<Scalar> GetField(size_t) const override { return LiteralToScalar(literal_); }
+
+  size_t num_fields() const override { return 1; }
+
+ private:
+  Literal literal_;
+};
+
 Result<Literal> EvaluateBoundTerm(const BoundTerm& term,
                                   const std::optional<std::vector<uint8_t>>& bound) {
   auto ptype = GetPrimitiveType(term);
@@ -111,6 +124,7 @@ class MaxAggregator : public BoundAggregate::Aggregator {
 
     if (auto ordering = value <=> current_;
         ordering == std::partial_ordering::unordered) {
+      valid_ = false;
       return InvalidArgument("Cannot compare literal {} with current value {}",
                              value.ToString(), current_.ToString());
     } else if (ordering == std::partial_ordering::greater) {
@@ -140,6 +154,7 @@ class MaxAggregator : public BoundAggregate::Aggregator {
 
     if (auto ordering = value <=> current_;
         ordering == std::partial_ordering::unordered) {
+      valid_ = false;
       return InvalidArgument("Cannot compare literal {} with current value {}",
                              value.ToString(), current_.ToString());
     } else if (ordering == std::partial_ordering::greater) {
@@ -181,6 +196,7 @@ class MinAggregator : public BoundAggregate::Aggregator {
 
     if (auto ordering = value <=> current_;
         ordering == std::partial_ordering::unordered) {
+      valid_ = false;
       return InvalidArgument("Cannot compare literal {} with current value {}",
                              value.ToString(), current_.ToString());
     } else if (ordering == std::partial_ordering::less) {
@@ -209,6 +225,7 @@ class MinAggregator : public BoundAggregate::Aggregator {
 
     if (auto ordering = value <=> current_;
         ordering == std::partial_ordering::unordered) {
+      valid_ = false;
       return InvalidArgument("Cannot compare literal {} with current value {}",
                              value.ToString(), current_.ToString());
     } else if (ordering == std::partial_ordering::less) {
