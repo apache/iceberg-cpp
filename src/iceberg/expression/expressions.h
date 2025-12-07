@@ -135,6 +135,9 @@ class ICEBERG_EXPORT Expressions {
   /// \brief Create a MAX aggregate for an unbound term.
   static std::shared_ptr<UnboundAggregateImpl<BoundReference>> Max(
       std::shared_ptr<UnboundTerm<BoundReference>> expr);
+  /// \brief Create a MAX aggregate for an unbound transform term.
+  static std::shared_ptr<UnboundAggregateImpl<BoundTransform>> Max(
+      std::shared_ptr<UnboundTerm<BoundTransform>> expr);
 
   /// \brief Create a MIN aggregate for a field name.
   static std::shared_ptr<UnboundAggregateImpl<BoundReference>> Min(std::string name);
@@ -142,6 +145,9 @@ class ICEBERG_EXPORT Expressions {
   /// \brief Create a MIN aggregate for an unbound term.
   static std::shared_ptr<UnboundAggregateImpl<BoundReference>> Min(
       std::shared_ptr<UnboundTerm<BoundReference>> expr);
+  /// \brief Create a MIN aggregate for an unbound transform term.
+  static std::shared_ptr<UnboundAggregateImpl<BoundTransform>> Min(
+      std::shared_ptr<UnboundTerm<BoundTransform>> expr);
 
   // Unary predicates
 

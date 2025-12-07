@@ -138,6 +138,13 @@ std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Max(
   return agg;
 }
 
+std::shared_ptr<UnboundAggregateImpl<BoundTransform>> Expressions::Max(
+    std::shared_ptr<UnboundTerm<BoundTransform>> expr) {
+  ICEBERG_ASSIGN_OR_THROW(auto agg, UnboundAggregateImpl<BoundTransform>::Make(
+                                        Expression::Operation::kMax, std::move(expr)));
+  return agg;
+}
+
 std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Min(std::string name) {
   return Min(Ref(std::move(name)));
 }
@@ -145,6 +152,13 @@ std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Min(std::stri
 std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Min(
     std::shared_ptr<UnboundTerm<BoundReference>> expr) {
   ICEBERG_ASSIGN_OR_THROW(auto agg, UnboundAggregateImpl<BoundReference>::Make(
+                                        Expression::Operation::kMin, std::move(expr)));
+  return agg;
+}
+
+std::shared_ptr<UnboundAggregateImpl<BoundTransform>> Expressions::Min(
+    std::shared_ptr<UnboundTerm<BoundTransform>> expr) {
+  ICEBERG_ASSIGN_OR_THROW(auto agg, UnboundAggregateImpl<BoundTransform>::Make(
                                         Expression::Operation::kMin, std::move(expr)));
   return agg;
 }
