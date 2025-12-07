@@ -207,7 +207,7 @@ class ICEBERG_EXPORT CountStarAggregate : public CountAggregate {
 /// \brief Bound MAX aggregate.
 class ICEBERG_EXPORT MaxAggregate : public BoundAggregate {
  public:
-  static std::shared_ptr<MaxAggregate> Make(std::shared_ptr<BoundTerm> term);
+  static Result<std::unique_ptr<MaxAggregate>> Make(std::shared_ptr<BoundTerm> term);
 
   Result<Literal> Evaluate(const StructLike& data) const override;
   Result<Literal> Evaluate(const DataFile& file) const override;
@@ -222,7 +222,7 @@ class ICEBERG_EXPORT MaxAggregate : public BoundAggregate {
 /// \brief Bound MIN aggregate.
 class ICEBERG_EXPORT MinAggregate : public BoundAggregate {
  public:
-  static std::shared_ptr<MinAggregate> Make(std::shared_ptr<BoundTerm> term);
+  static Result<std::unique_ptr<MinAggregate>> Make(std::shared_ptr<BoundTerm> term);
 
   Result<Literal> Evaluate(const StructLike& data) const override;
   Result<Literal> Evaluate(const DataFile& file) const override;

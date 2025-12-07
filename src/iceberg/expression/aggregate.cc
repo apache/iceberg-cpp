@@ -22,6 +22,7 @@
 #include <algorithm>
 #include <format>
 #include <map>
+#include <memory>
 #include <optional>
 #include <string_view>
 #include <vector>
@@ -389,8 +390,15 @@ bool CountStarAggregate::HasValue(const DataFile& file) const {
 MaxAggregate::MaxAggregate(std::shared_ptr<BoundTerm> term)
     : BoundAggregate(Expression::Operation::kMax, std::move(term)) {}
 
-std::shared_ptr<MaxAggregate> MaxAggregate::Make(std::shared_ptr<BoundTerm> term) {
-  return std::shared_ptr<MaxAggregate>(new MaxAggregate(std::move(term)));
+Result<std::unique_ptr<MaxAggregate>> MaxAggregate::Make(
+    std::shared_ptr<BoundTerm> term) {
+  if (!term) {
+    return InvalidExpression("Bound max aggregate requires non-null term");
+  }
+  if (!term->type()->is_primitive()) {
+    return InvalidExpression("Max aggregate term should be primitive");
+  }
+  return std::unique_ptr<MaxAggregate>(new MaxAggregate(std::move(term)));
 }
 
 Result<Literal> MaxAggregate::Evaluate(const StructLike& data) const {
@@ -420,8 +428,15 @@ bool MaxAggregate::HasValue(const DataFile& file) const {
 MinAggregate::MinAggregate(std::shared_ptr<BoundTerm> term)
     : BoundAggregate(Expression::Operation::kMin, std::move(term)) {}
 
-std::shared_ptr<MinAggregate> MinAggregate::Make(std::shared_ptr<BoundTerm> term) {
-  return std::shared_ptr<MinAggregate>(new MinAggregate(std::move(term)));
+Result<std::unique_ptr<MinAggregate>> MinAggregate::Make(
+    std::shared_ptr<BoundTerm> term) {
+  if (!term) {
+    return InvalidExpression("Bound min aggregate requires non-null term");
+  }
+  if (!term->type()->is_primitive()) {
+    return InvalidExpression("Max aggregate term should be primitive");
+  }
+  return std::unique_ptr<MinAggregate>(new MinAggregate(std::move(term)));
 }
 
 Result<Literal> MinAggregate::Evaluate(const StructLike& data) const {
