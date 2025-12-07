@@ -260,10 +260,8 @@ class ICEBERG_EXPORT BoundVisitor : public ExpressionVisitor<R> {
 
   /// \brief Visit an unbound predicate.
   ///
-  /// Bound visitors do not support unbound predicates.
-  ///
   /// \param pred The unbound predicate
-  Result<R> Predicate(const std::shared_ptr<UnboundPredicate>& pred) final {
+  Result<R> Predicate(const std::shared_ptr<UnboundPredicate>& pred) override {
     ICEBERG_DCHECK(pred != nullptr, "UnboundPredicate cannot be null");
     return NotSupported("Not a bound predicate: {}", pred->ToString());
   }

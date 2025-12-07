@@ -88,6 +88,7 @@ add_iceberg_test(expression_test
                  inclusive_metrics_evaluator_test.cc
                  inclusive_metrics_evaluator_with_transform_test.cc
                  predicate_test.cc
+                 residual_evaluator_test.cc
                  strict_metrics_evaluator_test.cc)
 
 add_iceberg_test(json_serde_test

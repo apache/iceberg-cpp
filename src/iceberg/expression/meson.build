@@ -26,6 +26,7 @@ install_headers(
         'inclusive_metrics_evaluator.h',
         'literal.h',
         'predicate.h',
+        'residual_evaluator.h',
         'rewrite_not.h',
         'strict_metrics_evaluator.h',
         'term.h',
