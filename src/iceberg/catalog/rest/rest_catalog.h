@@ -26,6 +26,8 @@
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/result.h"
+#include "iceberg/table_requirement.h"
+#include "iceberg/table_update.h"
 
 /// \file iceberg/catalog/rest/rest_catalog.h
 /// RestCatalog implementation for Iceberg REST API.
