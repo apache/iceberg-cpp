@@ -83,6 +83,11 @@ class ICEBERG_EXPORT BaseTransaction : public Transaction {
                        std::shared_ptr<TableMetadata> metadata)
         : identifier(identifier), current_metadata(std::move(metadata)) {}
 
+    TransactionContext(const TransactionContext&) = delete;
+    TransactionContext& operator=(const TransactionContext&) = delete;
+    TransactionContext(TransactionContext&&) noexcept = default;
+    TransactionContext& operator=(TransactionContext&&) noexcept = default;
+
     bool last_operation_committed = true;
     TableIdentifier identifier;
     std::shared_ptr<TableMetadata> current_metadata;
