@@ -524,14 +524,21 @@ namespace {
 class UnpartitionedResidualEvaluator : public ResidualEvaluator {
  public:
   explicit UnpartitionedResidualEvaluator(std::shared_ptr<Expression> expr)
-      : ResidualEvaluator(std::move(expr), PartitionSpec::Unpartitioned(), nullptr,
+      : ResidualEvaluator(std::move(expr), PartitionSpec::Unpartitioned(), empty_schema_,
                           true) {}
 
   Result<std::shared_ptr<Expression>> ResidualFor(
       const StructLike& /*partition_data*/) const override {
     return expr_;
   }
+
+ private:
+  // Store an empty schema to avoid dangling reference when passing to base class
+  static const std::shared_ptr<Schema> empty_schema_;
 };
+
+// Static member definition
+const std::shared_ptr<Schema> UnpartitionedResidualEvaluator::empty_schema_;
 
 }  // namespace
 
