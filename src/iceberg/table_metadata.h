@@ -22,6 +22,7 @@
 /// \file iceberg/table_metadata.h
 /// Table metadata for Iceberg tables.
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <string_view>
@@ -58,6 +59,12 @@ struct ICEBERG_EXPORT MetadataLogEntry {
   friend bool operator==(const MetadataLogEntry& lhs, const MetadataLogEntry& rhs) {
     return lhs.timestamp_ms == rhs.timestamp_ms && lhs.metadata_file == rhs.metadata_file;
   }
+
+  struct Hasher {
+    size_t operator()(const MetadataLogEntry& m) const noexcept {
+      return std::hash<std::string>{}(m.metadata_file);
+    }
+  };
 };
 
 /// \brief Represents the metadata for an Iceberg table
@@ -76,6 +83,8 @@ struct ICEBERG_EXPORT TableMetadata {
   static constexpr int64_t kInvalidSequenceNumber = -1;
   static constexpr int64_t kInitialRowId = 0;
 
+  /// The location of the table metadata file
+  std::string metadata_file_location;
   /// An integer version number for the format
   int8_t format_version;
   /// A UUID that identifies the table
@@ -458,14 +467,41 @@ enum class ICEBERG_EXPORT MetadataFileCodecType {
   kGzip,
 };
 
-/// \brief Utility class for table metadata
-struct ICEBERG_EXPORT TableMetadataUtil {
+struct ICEBERG_EXPORT CodecTypeUtil {
+  /// \brief Returns the MetadataFileCodecType corresponding to the given string.
+  ///
+  /// \param name The string to parse.
+  /// \return The MetadataFileCodecType corresponding to the given string.
+  static Result<MetadataFileCodecType> CodecFromString(const std::string_view& name);
+
   /// \brief Get the codec type from the table metadata file name.
   ///
   /// \param file_name The name of the table metadata file.
   /// \return The codec type of the table metadata file.
   static Result<MetadataFileCodecType> CodecFromFileName(std::string_view file_name);
 
+  /// \brief Get the file extension from the codec type.
+  /// \param codec The codec name.
+  /// \return The file extension of the codec.
+  static Result<std::string> CodecNameToFileExtension(const std::string_view& codec);
+
+  /// \brief Get the file extension from the codec type.
+  /// \param codec The codec type.
+  /// \return The file extension of the codec.
+  static std::string CodecTypeToFileExtension(MetadataFileCodecType codec);
+
+  inline static constexpr std::string_view kTableMetadataFileSuffix = ".metadata.json";
+  inline static constexpr std::string_view kCompGzipTableMetadataFileSuffix =
+      ".metadata.json.gz";
+  inline static constexpr std::string_view kGzipTableMetadataFileSuffix =
+      ".gz.metadata.json";
+  inline static constexpr std::string_view kGzipTableMetadataFileExtension = ".gz";
+  inline static constexpr std::string_view kCodecTypeGzip = "GZIP";
+  inline static constexpr std::string_view kCodecTypeNone = "NONE";
+};
+
+/// \brief Utility class for table metadata
+struct ICEBERG_EXPORT TableMetadataUtil {
   /// \brief Read the table metadata file.
   ///
   /// \param io The file IO to use to read the table metadata.
@@ -476,6 +512,29 @@ struct ICEBERG_EXPORT TableMetadataUtil {
       class FileIO& io, const std::string& location,
       std::optional<size_t> length = std::nullopt);
 
+  /// \brief Write a new metadata file to storage.
+  ///
+  /// Serializes the table metadata to JSON and writes it to a new metadata
+  /// file. If no location is specified in the metadata, generates a new
+  /// file path based on the version number.
+  ///
+  /// \param io The FileIO instance for writing files
+  /// \param base The base metadata (can be null for new tables)
+  /// \param metadata The metadata to write, which will be updated with the new location
+  static Status Write(FileIO& io, const TableMetadata* base, TableMetadata* metadata);
+
+  /// \brief Delete removed metadata files based on retention policy.
+  ///
+  /// Removes obsolete metadata files that are no longer referenced in the
+  /// current metadata log, based on the metadata.delete-after-commit.enabled
+  /// property.
+  ///
+  /// \param io The FileIO instance for deleting files
+  /// \param base The previous metadata version
+  /// \param metadata The current metadata containing the updated log
+  static void DeleteRemovedMetadataFiles(FileIO& io, const TableMetadata* base,
+                                         const TableMetadata* metadata);
+
   /// \brief Write the table metadata to a file.
   ///
   /// \param io The file IO to use to write the table metadata.
@@ -483,6 +542,26 @@ struct ICEBERG_EXPORT TableMetadataUtil {
   /// \param metadata The table metadata to write.
   static Status Write(FileIO& io, const std::string& location,
                       const TableMetadata& metadata);
+
+ private:
+  /// \brief Parse the version number from a metadata file location.
+  ///
+  /// Extracts the version number from a metadata file path which follows
+  /// the format: vvvvv-uuid.metadata.json where vvvvv is the zero-padded
+  /// version number.
+  ///
+  /// \param metadata_location The metadata file location string
+  /// \return The parsed version number, or -1 if parsing fails or the
+  ///         location doesn't contain a version
+  static int ParseVersionFromLocation(const std::string_view& metadata_location);
+
+  /// \brief Generate a new metadata file path for a table.
+  ///
+  /// \param metadata The table metadata.
+  /// \param version The version number for the new metadata file.
+  /// \return The generated metadata file path.
+  static Result<std::string> NewTableMetadataFilePath(const TableMetadata& metadata,
+                                                      int version);
 };
 
 }  // namespace iceberg

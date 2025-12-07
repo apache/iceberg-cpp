@@ -17,19 +17,24 @@
  * under the License.
  */
 
+#include <filesystem>
+
 #include <arrow/filesystem/localfs.h>
 #include <arrow/io/compressed.h>
 #include <arrow/io/file.h>
 #include <arrow/util/compression.h>
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/file_io.h"
 #include "iceberg/json_internal.h"
+#include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_properties.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/temp_file_test_base.h"
 
@@ -41,7 +46,10 @@ class MetadataIOTest : public TempFileTestBase {
     TempFileTestBase::SetUp();
     io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(
         std::make_shared<::arrow::fs::LocalFileSystem>());
-    temp_filepath_ = CreateNewTempFilePathWithSuffix(".metadata.json");
+    location_ = CreateTempDirectory();
+    temp_filepath_ = std::format("{}/{}", location_, "metadata/00000-xxx.metadata.json");
+    ASSERT_TRUE(
+        std::filesystem::create_directories(std::format("{}/metadata", location_)));
   }
 
   TableMetadata PrepareMetadata() {
@@ -52,7 +60,7 @@ class MetadataIOTest : public TempFileTestBase {
 
     return TableMetadata{.format_version = 1,
                          .table_uuid = "1234567890",
-                         .location = "s3://bucket/path",
+                         .location = location_,
                          .last_sequence_number = 0,
                          .schemas = {schema},
                          .current_schema_id = 1,
@@ -72,6 +80,7 @@ class MetadataIOTest : public TempFileTestBase {
   }
 
   std::shared_ptr<iceberg::FileIO> io_;
+  std::string location_;
   std::string temp_filepath_;
 };
 
@@ -123,6 +132,75 @@ TEST_F(MetadataIOTest, ReadWriteCompressedMetadata) {
 
   auto metadata_read = std::move(result.value());
   EXPECT_EQ(*metadata_read, metadata);
+}
+
+TEST_F(MetadataIOTest, WriteMetadataWithBase) {
+  TableMetadata base = PrepareMetadata();
+
+  {
+    // Invalid base metadata_file_location, set version to 0
+    TableMetadata new_metadata = PrepareMetadata();
+    base.metadata_file_location = "invalid_location";
+    EXPECT_THAT(TableMetadataUtil::Write(*io_, &base, &new_metadata), IsOk());
+    EXPECT_THAT(new_metadata.metadata_file_location,
+                testing::HasSubstr("/metadata/00000-"));
+  }
+
+  // Reset base metadata_file_location
+  base.metadata_file_location = temp_filepath_;
+
+  {
+    // Invalid codec type property
+    TableMetadata new_metadata = PrepareMetadata();
+    new_metadata.properties[TableProperties::kMetadataCompression.key()] = "invalid";
+    auto result = TableMetadataUtil::Write(*io_, &base, &new_metadata);
+    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(result, HasErrorMessage("Invalid codec name"));
+  }
+
+  {
+    // Specify write location property
+    TableMetadata new_metadata = PrepareMetadata();
+    new_metadata.properties[TableProperties::kWriteMetadataLocation.key()] = location_;
+    auto result = TableMetadataUtil::Write(*io_, &base, &new_metadata);
+    EXPECT_THAT(result, IsOk());
+    EXPECT_THAT(new_metadata.metadata_file_location,
+                testing::HasSubstr(std::format("{}/00001-", location_)));
+  }
+
+  {
+    // Default write location
+    TableMetadata new_metadata = PrepareMetadata();
+    auto result = TableMetadataUtil::Write(*io_, &base, &new_metadata);
+    EXPECT_THAT(result, IsOk());
+    EXPECT_THAT(new_metadata.metadata_file_location,
+                testing::HasSubstr(std::format("{}/metadata/00001-", location_)));
+  }
+}
+
+TEST_F(MetadataIOTest, RemoveDeletedMetadataFiles) {
+  TableMetadata base1 = PrepareMetadata();
+  base1.properties[TableProperties::kMetadataPreviousVersionsMax.key()] = "1";
+  EXPECT_THAT(TableMetadataUtil::Write(*io_, nullptr, &base1), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto base2, TableMetadataBuilder::BuildFrom(&base1)->Build());
+  EXPECT_THAT(TableMetadataUtil::Write(*io_, &base1, base2.get()), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto new_metadata,
+                         TableMetadataBuilder::BuildFrom(base2.get())->Build());
+  EXPECT_THAT(TableMetadataUtil::Write(*io_, base2.get(), new_metadata.get()), IsOk());
+
+  // The first metadata file should not be deleted
+  new_metadata->properties[TableProperties::kMetadataDeleteAfterCommitEnabled.key()] =
+      "false";
+  TableMetadataUtil::DeleteRemovedMetadataFiles(*io_, base2.get(), new_metadata.get());
+  EXPECT_TRUE(std::filesystem::exists(base1.metadata_file_location));
+
+  // The first metadata file should be deleted
+  new_metadata->properties[TableProperties::kMetadataDeleteAfterCommitEnabled.key()] =
+      "true";
+  TableMetadataUtil::DeleteRemovedMetadataFiles(*io_, base2.get(), new_metadata.get());
+  EXPECT_FALSE(std::filesystem::exists(base1.metadata_file_location));
 }
 
 }  // namespace iceberg
