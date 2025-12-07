@@ -79,9 +79,9 @@ class ICEBERG_EXPORT BaseTransaction : public Transaction {
  private:
   struct TransactionContext {
     TransactionContext() = default;
-    TransactionContext(const TableIdentifier& identifier,
+    TransactionContext(TableIdentifier identifier,
                        std::shared_ptr<TableMetadata> metadata)
-        : identifier(identifier), current_metadata(std::move(metadata)) {}
+        : identifier(std::move(identifier)), current_metadata(std::move(metadata)) {}
 
     TransactionContext(const TransactionContext&) = delete;
     TransactionContext& operator=(const TransactionContext&) = delete;

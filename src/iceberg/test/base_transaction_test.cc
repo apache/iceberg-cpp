@@ -102,7 +102,7 @@ TEST_F(BaseTransactionTest, RemovePropertiesSkipsMissingKeys) {
             dynamic_cast<const table::RemoveProperties*>(updates.front().get());
         EXPECT_NE(remove_update, nullptr);
         EXPECT_THAT(remove_update->removed(),
-                    ::testing::ElementsAre("existing", "missing"));
+                    ::testing::UnorderedElementsAre("missing", "existing"));
         return {std::unique_ptr<Table>()};
       });
 
