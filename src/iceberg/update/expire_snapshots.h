@@ -147,7 +147,7 @@ class ICEBERG_EXPORT ExpireSnapshots
   ///
   /// \return the list of snapshots that would be expired, or an error:
   ///         - ValidationFailed: if pending changes cannot be applied
-  Result<std::vector<std::shared_ptr<Snapshot>>> Apply() override;
+  Result<std::vector<std::shared_ptr<Snapshot>>> ApplyTyped() override;
 
   /// \brief Apply and commit the pending changes to the table
   ///

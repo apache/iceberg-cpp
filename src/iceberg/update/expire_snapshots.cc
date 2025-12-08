@@ -54,9 +54,9 @@ ExpireSnapshots& ExpireSnapshots::SetCleanupLevel(CleanupLevel level) {
   return *this;
 }
 
-Result<std::vector<std::shared_ptr<Snapshot>>> ExpireSnapshots::Apply() {
+Result<std::vector<std::shared_ptr<Snapshot>>> ExpireSnapshots::ApplyTyped() {
   // Placeholder implementation - full snapshot expiration logic to be implemented
-  return NotImplemented("ExpireSnapshots::Apply() is not yet implemented");
+  return NotImplemented("ExpireSnapshots::ApplyTyped() is not yet implemented");
 }
 
 Status ExpireSnapshots::Commit() {
