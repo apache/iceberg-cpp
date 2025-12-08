@@ -19,8 +19,6 @@
 
 #include "iceberg/expression/residual_evaluator.h"
 
-#include <cstddef>
-
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expression.h"
 #include "iceberg/expression/expression_visitor.h"
@@ -461,7 +459,7 @@ Result<std::shared_ptr<Expression>> ResidualVisitor::Predicate(
       } else {
         // If the result is not a predicate, then it must be a constant like alwaysTrue
         // or alwaysFalse
-        strict_result = bound_strict;
+        strict_result = std::move(bound_strict);
       }
     }
 
@@ -492,7 +490,7 @@ Result<std::shared_ptr<Expression>> ResidualVisitor::Predicate(
       } else {
         // If the result is not a predicate, then it must be a constant like alwaysTrue
         // or alwaysFalse
-        inclusive_result = bound_inclusive;
+        inclusive_result = std::move(bound_inclusive);
       }
     }
 
