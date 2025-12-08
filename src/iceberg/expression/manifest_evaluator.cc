@@ -209,13 +209,12 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
         auto lower, DeserializeBoundLiteral(summary.lower_bound.value(), ref->type()));
     ICEBERG_ASSIGN_OR_RAISE(
         auto upper, DeserializeBoundLiteral(summary.upper_bound.value(), ref->type()));
-    auto literals_view = literal_set | std::views::filter([&](const Literal& lit) {
-                           return lower <= lit && lit <= upper;
-                         });
 
-    if (literals_view.empty()) {
-      // if all values are less than lower bound, rows cannot match.
-      // if all values are greater than upper bound, rows cannot match.
+    if (std::ranges::all_of(literal_set, [&](const Literal& lit) {
+          return lit < lower || lit > upper;
+        })) {
+      // if all values are less than lower bound or greater than upper bound,
+      // rows cannot match.
       return kRowCannotMatch;
     }
     return kRowsMightMatch;
