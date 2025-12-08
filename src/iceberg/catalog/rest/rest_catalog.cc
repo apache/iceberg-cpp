@@ -31,13 +31,14 @@
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/catalog/rest/json_internal.h"
 #include "iceberg/catalog/rest/resource_paths.h"
-#include "iceberg/catalog/rest/rest_catalog.h"
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/json_internal.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/table.h"
+#include "iceberg/table_requirement.h"
+#include "iceberg/table_update.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::rest {
