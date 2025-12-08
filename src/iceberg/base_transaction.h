@@ -44,28 +44,40 @@ class ICEBERG_EXPORT BaseTransaction : public Transaction {
 
   Status CommitTransaction() override;
 
+  /// \brief Stage updates to be applied upon commit
+  ///
+  /// \param identifier the table identifier
+  /// \param requirements the list of table requirements to validate
+  /// \param updates the list of table updates to apply
+  /// \return a new Table instance with staged updates applied
   Result<std::unique_ptr<Table>> StageUpdates(
       const TableIdentifier& identifier,
       std::vector<std::unique_ptr<TableRequirement>> requirements,
       std::vector<std::unique_ptr<TableUpdate>> updates);
 
+  /// \brief Whether the last operation has been committed
+  ///
+  /// \return true if the last operation was committed, false otherwise
   bool HasLastOperationCommitted() const { return context_.last_operation_committed; }
 
+  /// \brief Mark the last operation as committed or not
+  ///
+  /// \param committed true if the last operation was committed, false otherwise
   void SetLastOperationCommitted(bool committed) {
     context_.last_operation_committed = committed;
   }
 
-  const std::shared_ptr<TableMetadata>& CurrentMetadata() const {
-    return context_.current_metadata;
-  }
-
+ protected:
+  /// \brief Apply a list of table updates to the current metadata
+  ///
+  /// \param updates the list of table updates to apply
+  /// \return Status::OK if the updates were applied successfully, or an error status
   Status ApplyUpdates(const std::vector<std::unique_ptr<TableUpdate>>& updates);
 
-  std::vector<std::unique_ptr<TableRequirement>> ConsumePendingRequirements();
-
-  std::vector<std::unique_ptr<TableUpdate>> ConsumePendingUpdates();
-
- protected:
+  /// \brief Create a new table update if the last operation has been committed
+  ///
+  /// \param args the arguments to forward to the update constructor
+  /// \return a new UpdateType instance or an error status
   template <typename UpdateType, typename... Args>
   Result<std::unique_ptr<UpdateType>> CheckAndCreateUpdate(Args&&... args) {
     if (!HasLastOperationCommitted()) {
@@ -76,13 +88,32 @@ class ICEBERG_EXPORT BaseTransaction : public Transaction {
     return std::make_unique<UpdateType>(std::forward<Args>(args)...);
   }
 
+  /// \brief Get the current table metadata in the transaction
+  ///
+  /// \return the current TableMetadata
+  const std::shared_ptr<TableMetadata>& CurrentMetadata() const {
+    return context_.current_metadata;
+  }
+
+  /// \brief Move out all pending table requirements and clear the internal queue.
+  ///
+  /// \return the list of pending table requirements
+  std::vector<std::unique_ptr<TableRequirement>> ConsumePendingRequirements();
+
+  /// \brief Move out all pending table updates and clear the internal queue.
+  ///
+  /// \return the list of pending table updates
+  std::vector<std::unique_ptr<TableUpdate>> ConsumePendingUpdates();
+
  private:
+  /// \brief Context for transaction
   struct TransactionContext {
     TransactionContext() = default;
     TransactionContext(TableIdentifier identifier,
                        std::shared_ptr<TableMetadata> metadata)
         : identifier(std::move(identifier)), current_metadata(std::move(metadata)) {}
 
+    // Non-copyable, movable
     TransactionContext(const TransactionContext&) = delete;
     TransactionContext& operator=(const TransactionContext&) = delete;
     TransactionContext(TransactionContext&&) noexcept = default;

@@ -122,6 +122,9 @@ class ICEBERG_EXPORT TransactionCatalog : public Catalog {
 
   void SetLastOperationCommitted(bool committed) override;
 
+  /// \brief Get the underlying catalog implementation
+  ///
+  /// \return the shared pointer to the underlying catalog
   const std::shared_ptr<Catalog>& catalog_impl() const { return catalog_impl_; }
 
  private:
