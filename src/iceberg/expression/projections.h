@@ -24,9 +24,7 @@
 
 #include <memory>
 
-#include "iceberg/expression/expression.h"
 #include "iceberg/iceberg_export.h"
-#include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
