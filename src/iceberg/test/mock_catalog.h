@@ -23,9 +23,6 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/catalog.h"
-#include "iceberg/table.h"
-#include "iceberg/table_requirement.h"
-#include "iceberg/table_update.h"
 
 namespace iceberg {
 
