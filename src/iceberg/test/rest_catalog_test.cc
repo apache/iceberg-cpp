@@ -148,4 +148,155 @@ TEST_F(RestCatalogIntegrationTest, ListNamespaces) {
   EXPECT_TRUE(result->empty());
 }
 
+TEST_F(RestCatalogIntegrationTest, CreateNamespace) {
+  auto catalog_result = CreateCatalog();
+  ASSERT_THAT(catalog_result, IsOk());
+  auto& catalog = catalog_result.value();
+
+  // Create a simple namespace
+  Namespace ns{.levels = {"test_ns"}};
+  auto status = catalog->CreateNamespace(ns, {});
+  EXPECT_THAT(status, IsOk());
+
+  // Verify it was created by listing
+  Namespace root{.levels = {}};
+  auto list_result = catalog->ListNamespaces(root);
+  ASSERT_THAT(list_result, IsOk());
+  EXPECT_EQ(list_result->size(), 1);
+  EXPECT_EQ(list_result->at(0).levels, std::vector<std::string>{"test_ns"});
+}
+
+TEST_F(RestCatalogIntegrationTest, CreateNamespaceWithProperties) {
+  auto catalog_result = CreateCatalog();
+  ASSERT_THAT(catalog_result, IsOk());
+  auto& catalog = catalog_result.value();
+
+  // Create namespace with properties
+  Namespace ns{.levels = {"test_ns_props"}};
+  std::unordered_map<std::string, std::string> properties{
+      {"owner", "test_user"}, {"description", "Test namespace with properties"}};
+  auto status = catalog->CreateNamespace(ns, properties);
+  EXPECT_THAT(status, IsOk());
+
+  // Verify properties were set
+  auto props_result = catalog->GetNamespaceProperties(ns);
+  ASSERT_THAT(props_result, IsOk());
+  EXPECT_EQ(props_result->at("owner"), "test_user");
+  EXPECT_EQ(props_result->at("description"), "Test namespace with properties");
+}
+
+TEST_F(RestCatalogIntegrationTest, CreateNestedNamespace) {
+  auto catalog_result = CreateCatalog();
+  ASSERT_THAT(catalog_result, IsOk());
+  auto& catalog = catalog_result.value();
+
+  // Create parent namespace
+  Namespace parent{.levels = {"parent"}};
+  auto status = catalog->CreateNamespace(parent, {});
+  EXPECT_THAT(status, IsOk());
+
+  // Create nested namespace
+  Namespace child{.levels = {"parent", "child"}};
+  status = catalog->CreateNamespace(child, {});
+  EXPECT_THAT(status, IsOk());
+
+  // Verify nested namespace exists
+  auto list_result = catalog->ListNamespaces(parent);
+  ASSERT_THAT(list_result, IsOk());
+  EXPECT_EQ(list_result->size(), 1);
+  EXPECT_EQ(list_result->at(0).levels, (std::vector<std::string>{"parent", "child"}));
+}
+
+TEST_F(RestCatalogIntegrationTest, GetNamespaceProperties) {
+  auto catalog_result = CreateCatalog();
+  ASSERT_THAT(catalog_result, IsOk());
+  auto& catalog = catalog_result.value();
+
+  // Create namespace with properties
+  Namespace ns{.levels = {"test_get_props"}};
+  std::unordered_map<std::string, std::string> properties{{"key1", "value1"},
+                                                          {"key2", "value2"}};
+  auto status = catalog->CreateNamespace(ns, properties);
+  EXPECT_THAT(status, IsOk());
+
+  // Get properties
+  auto props_result = catalog->GetNamespaceProperties(ns);
+  ASSERT_THAT(props_result, IsOk());
+  EXPECT_EQ(props_result->at("key1"), "value1");
+  EXPECT_EQ(props_result->at("key2"), "value2");
+}
+
+TEST_F(RestCatalogIntegrationTest, NamespaceExists) {
+  auto catalog_result = CreateCatalog();
+  ASSERT_THAT(catalog_result, IsOk());
+  auto& catalog = catalog_result.value();
+
+  // Check non-existent namespace
+  Namespace ns{.levels = {"non_existent"}};
+  auto exists_result = catalog->NamespaceExists(ns);
+  ASSERT_THAT(exists_result, IsOk());
+  EXPECT_FALSE(*exists_result);
+
+  // Create namespace
+  auto status = catalog->CreateNamespace(ns, {});
+  EXPECT_THAT(status, IsOk());
+
+  // Check it now exists
+  exists_result = catalog->NamespaceExists(ns);
+  ASSERT_THAT(exists_result, IsOk());
+  EXPECT_TRUE(*exists_result);
+}
+
+TEST_F(RestCatalogIntegrationTest, UpdateNamespaceProperties) {
+  auto catalog_result = CreateCatalog();
+  ASSERT_THAT(catalog_result, IsOk());
+  auto& catalog = catalog_result.value();
+
+  // Create namespace with initial properties
+  Namespace ns{.levels = {"test_update"}};
+  std::unordered_map<std::string, std::string> initial_props{{"key1", "value1"},
+                                                             {"key2", "value2"}};
+  auto status = catalog->CreateNamespace(ns, initial_props);
+  EXPECT_THAT(status, IsOk());
+
+  // Update properties: modify key1, add key3, remove key2
+  std::unordered_map<std::string, std::string> updates{{"key1", "updated_value1"},
+                                                       {"key3", "value3"}};
+  std::unordered_set<std::string> removals{"key2"};
+  status = catalog->UpdateNamespaceProperties(ns, updates, removals);
+  EXPECT_THAT(status, IsOk());
+
+  // Verify updated properties
+  auto props_result = catalog->GetNamespaceProperties(ns);
+  ASSERT_THAT(props_result, IsOk());
+  EXPECT_EQ(props_result->at("key1"), "updated_value1");
+  EXPECT_EQ(props_result->at("key3"), "value3");
+  EXPECT_EQ(props_result->count("key2"), 0);  // Should be removed
+}
+
+TEST_F(RestCatalogIntegrationTest, DropNamespace) {
+  auto catalog_result = CreateCatalog();
+  ASSERT_THAT(catalog_result, IsOk());
+  auto& catalog = catalog_result.value();
+
+  // Create namespace
+  Namespace ns{.levels = {"test_drop"}};
+  auto status = catalog->CreateNamespace(ns, {});
+  EXPECT_THAT(status, IsOk());
+
+  // Verify it exists
+  auto exists_result = catalog->NamespaceExists(ns);
+  ASSERT_THAT(exists_result, IsOk());
+  EXPECT_TRUE(*exists_result);
+
+  // Drop namespace
+  status = catalog->DropNamespace(ns);
+  EXPECT_THAT(status, IsOk());
+
+  // Verify it no longer exists
+  exists_result = catalog->NamespaceExists(ns);
+  ASSERT_THAT(exists_result, IsOk());
+  EXPECT_FALSE(*exists_result);
+}
+
 }  // namespace iceberg::rest

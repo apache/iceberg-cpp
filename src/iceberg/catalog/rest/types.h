@@ -53,9 +53,9 @@ struct ICEBERG_REST_EXPORT CatalogConfig {
 
 /// \brief JSON error payload returned in a response with further details on the error.
 struct ICEBERG_REST_EXPORT ErrorResponse {
-  std::string message;  // required
-  std::string type;     // required
   uint32_t code;        // required
+  std::string type;     // required
+  std::string message;  // required
   std::vector<std::string> stack;
 
   /// \brief Validates the ErrorResponse.

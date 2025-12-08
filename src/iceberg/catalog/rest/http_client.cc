@@ -25,6 +25,7 @@
 #include "iceberg/catalog/rest/constant.h"
 #include "iceberg/catalog/rest/error_handlers.h"
 #include "iceberg/catalog/rest/json_internal.h"
+#include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/json_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/util/macros.h"
@@ -63,6 +64,9 @@ std::unordered_map<std::string, std::string> HttpResponse::headers() const {
 
 namespace {
 
+/// \brief Default error type for unparseable REST responses.
+constexpr std::string_view kRestExceptionType = "RESTException";
+
 /// \brief Merges global default headers with request-specific headers.
 ///
 /// Combines the global headers derived from RestCatalogProperties with the headers
@@ -96,16 +100,37 @@ bool IsSuccessful(int32_t status_code) {
          || status_code == 304;  // Not Modified
 }
 
+/// \brief Builds a default ErrorResponse when the response body cannot be parsed.
+ErrorResponse BuildDefaultErrorResponse(const cpr::Response& response) {
+  return {
+      .code = static_cast<uint32_t>(response.status_code),
+      .type = std::string(kRestExceptionType),
+      .message = !response.reason.empty() ? response.reason
+                                          : GetStandardReasonPhrase(response.status_code),
+  };
+}
+
+/// \brief Tries to parse the response body as an ErrorResponse.
+Result<ErrorResponse> TryParseErrorResponse(const std::string& text) {
+  if (text.empty()) {
+    return InvalidArgument("Empty response body");
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto json_result, FromJsonString(text));
+  ICEBERG_ASSIGN_OR_RAISE(auto error_result, ErrorResponseFromJson(json_result));
+  return error_result;
+}
+
 /// \brief Handles failure responses by invoking the provided error handler.
 Status HandleFailureResponse(const cpr::Response& response,
                              const ErrorHandler& error_handler) {
-  if (!IsSuccessful(response.status_code)) {
-    // TODO(gangwu): response status code is lost, wrap it with RestError.
-    ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.text));
-    ICEBERG_ASSIGN_OR_RAISE(auto error_response, ErrorResponseFromJson(json));
-    return error_handler.Accept(error_response);
+  if (IsSuccessful(response.status_code)) {
+    return {};
   }
-  return {};
+  auto parse_result = TryParseErrorResponse(response.text);
+  const ErrorResponse final_error = parse_result.has_value()
+                                        ? std::move(*parse_result)
+                                        : BuildDefaultErrorResponse(response);
+  return error_handler.Accept(final_error);
 }
 
 }  // namespace

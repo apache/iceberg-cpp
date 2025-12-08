@@ -213,6 +213,7 @@ Result<LoadTableResult> LoadTableResultFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(result.metadata, TableMetadataFromJson(metadata_json));
   ICEBERG_ASSIGN_OR_RAISE(result.config,
                           GetJsonValueOrDefault<decltype(result.config)>(json, kConfig));
+  ICEBERG_RETURN_UNEXPECTED(result.Validate());
   return result;
 }
 
@@ -257,6 +258,7 @@ Result<CreateNamespaceResponse> CreateNamespaceResponseFromJson(
   ICEBERG_ASSIGN_OR_RAISE(
       response.properties,
       GetJsonValueOrDefault<decltype(response.properties)>(json, kProperties));
+  ICEBERG_RETURN_UNEXPECTED(response.Validate());
   return response;
 }
 
@@ -274,6 +276,7 @@ Result<GetNamespaceResponse> GetNamespaceResponseFromJson(const nlohmann::json& 
   ICEBERG_ASSIGN_OR_RAISE(
       response.properties,
       GetJsonValueOrDefault<decltype(response.properties)>(json, kProperties));
+  ICEBERG_RETURN_UNEXPECTED(response.Validate());
   return response;
 }
 

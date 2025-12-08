@@ -81,4 +81,13 @@ ICEBERG_REST_EXPORT std::unordered_map<std::string, std::string> MergeConfigs(
     const std::unordered_map<std::string, std::string>& client_configs,
     const std::unordered_map<std::string, std::string>& server_overrides);
 
+/// \brief Get the standard HTTP reason phrase for a status code.
+///
+/// \details Returns the standard English reason phrase for common HTTP status codes.
+/// For unknown status codes, returns a generic "HTTP {code}" message.
+/// \param status_code The HTTP status code (e.g., 200, 404, 500).
+/// \return The standard reason phrase string (e.g., "OK", "Not Found", "Internal Server
+/// Error").
+ICEBERG_REST_EXPORT std::string GetStandardReasonPhrase(int32_t status_code);
+
 }  // namespace iceberg::rest

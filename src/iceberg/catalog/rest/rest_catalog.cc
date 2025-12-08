@@ -34,7 +34,9 @@
 #include "iceberg/catalog/rest/rest_catalog.h"
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/json_internal.h"
+#include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
+#include "iceberg/schema.h"
 #include "iceberg/table.h"
 #include "iceberg/util/macros.h"
 
@@ -115,29 +117,67 @@ Result<std::vector<Namespace>> RestCatalog::ListNamespaces(const Namespace& ns) 
 }
 
 Status RestCatalog::CreateNamespace(
-    [[maybe_unused]] const Namespace& ns,
-    [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties) {
-  return NotImplemented("Not implemented");
+    const Namespace& ns, const std::unordered_map<std::string, std::string>& properties) {
+  ICEBERG_ASSIGN_OR_RAISE(auto endpoint, paths_->Namespaces());
+  CreateNamespaceRequest request{.namespace_ = ns, .properties = properties};
+  ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
+  ICEBERG_ASSIGN_OR_RAISE(const auto& response,
+                          client_->Post(endpoint, json_request, /*headers=*/{},
+                                        *NamespaceErrorHandler::Instance()));
+  ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
+  ICEBERG_ASSIGN_OR_RAISE(auto create_response, CreateNamespaceResponseFromJson(json));
+  return {};
 }
 
 Result<std::unordered_map<std::string, std::string>> RestCatalog::GetNamespaceProperties(
-    [[maybe_unused]] const Namespace& ns) const {
-  return NotImplemented("Not implemented");
+    const Namespace& ns) const {
+  ICEBERG_ASSIGN_OR_RAISE(auto endpoint, paths_->Namespace_(ns));
+  ICEBERG_ASSIGN_OR_RAISE(const auto& response,
+                          client_->Get(endpoint, /*params=*/{}, /*headers=*/{},
+                                       *NamespaceErrorHandler::Instance()));
+  ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
+  ICEBERG_ASSIGN_OR_RAISE(auto get_response, GetNamespaceResponseFromJson(json));
+  return get_response.properties;
 }
 
-Status RestCatalog::DropNamespace([[maybe_unused]] const Namespace& ns) {
-  return NotImplemented("Not implemented");
+Status RestCatalog::DropNamespace(const Namespace& ns) {
+  ICEBERG_ASSIGN_OR_RAISE(auto endpoint, paths_->Namespace_(ns));
+  ICEBERG_ASSIGN_OR_RAISE(
+      const auto& response,
+      client_->Delete(endpoint, /*headers=*/{}, *DropNamespaceErrorHandler::Instance()));
+  return {};
 }
 
-Result<bool> RestCatalog::NamespaceExists([[maybe_unused]] const Namespace& ns) const {
-  return NotImplemented("Not implemented");
+Result<bool> RestCatalog::NamespaceExists(const Namespace& ns) const {
+  ICEBERG_ASSIGN_OR_RAISE(auto endpoint, paths_->Namespace_(ns));
+  auto response_or_error =
+      client_->Head(endpoint, /*headers=*/{}, *NamespaceErrorHandler::Instance());
+  if (!response_or_error.has_value()) {
+    const auto& error = response_or_error.error();
+    // catch NoSuchNamespaceException/404 and return false
+    if (error.kind == ErrorKind::kNoSuchNamespace) {
+      return false;
+    }
+    ICEBERG_RETURN_UNEXPECTED(response_or_error);
+  }
+  return true;
 }
 
 Status RestCatalog::UpdateNamespaceProperties(
-    [[maybe_unused]] const Namespace& ns,
-    [[maybe_unused]] const std::unordered_map<std::string, std::string>& updates,
-    [[maybe_unused]] const std::unordered_set<std::string>& removals) {
-  return NotImplemented("Not implemented");
+    const Namespace& ns, const std::unordered_map<std::string, std::string>& updates,
+    const std::unordered_set<std::string>& removals) {
+  ICEBERG_ASSIGN_OR_RAISE(auto endpoint, paths_->NamespaceProperties(ns));
+  UpdateNamespacePropertiesRequest request{
+      .removals = std::vector<std::string>(removals.begin(), removals.end()),
+      .updates = updates};
+  ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
+  ICEBERG_ASSIGN_OR_RAISE(const auto& response,
+                          client_->Post(endpoint, json_request, /*headers=*/{},
+                                        *NamespaceErrorHandler::Instance()));
+  ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
+  ICEBERG_ASSIGN_OR_RAISE(auto update_response,
+                          UpdateNamespacePropertiesResponseFromJson(json));
+  return {};
 }
 
 Result<std::vector<TableIdentifier>> RestCatalog::ListTables(
