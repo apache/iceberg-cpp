@@ -20,14 +20,105 @@
 #pragma once
 
 #include <functional>
-#include <stack>
+#include <memory>
+#include <string>
+#include <string_view>
+#include <unordered_map>
+#include <unordered_set>
+#include <vector>
 
-#include "iceberg/type.h"
+#include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
+#include "iceberg/schema_field.h"
+#include "iceberg/type_fwd.h"
+#include "iceberg/util/string_util.h"
 
 /// \file iceberg/util/type_util.h
-/// Utility functions for Iceberg types.
+/// Utility functions and visitors for Iceberg types.
 
 namespace iceberg {
+
+/// \brief Visitor for building a map from field ID to SchemaField reference.
+class IdToFieldVisitor {
+ public:
+  explicit IdToFieldVisitor(
+      std::unordered_map<int32_t, std::reference_wrapper<const SchemaField>>&
+          id_to_field);
+  Status Visit(const PrimitiveType& type);
+  Status Visit(const NestedType& type);
+
+ private:
+  std::unordered_map<int32_t, std::reference_wrapper<const SchemaField>>& id_to_field_;
+};
+
+/// \brief Visitor for building a map from field name to field ID.
+class NameToIdVisitor {
+ public:
+  explicit NameToIdVisitor(
+      std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>& name_to_id,
+      bool case_sensitive = true,
+      std::function<std::string(std::string_view)> quoting_func = {});
+  Status Visit(const ListType& type, const std::string& path,
+               const std::string& short_path);
+  Status Visit(const MapType& type, const std::string& path,
+               const std::string& short_path);
+  Status Visit(const StructType& type, const std::string& path,
+               const std::string& short_path);
+  Status Visit(const PrimitiveType& type, const std::string& path,
+               const std::string& short_path);
+  void Finish();
+
+ private:
+  std::string BuildPath(std::string_view prefix, std::string_view field_name,
+                        bool case_sensitive);
+
+ private:
+  bool case_sensitive_;
+  std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>& name_to_id_;
+  std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>> short_name_to_id_;
+  std::function<std::string(std::string_view)> quoting_func_;
+};
+
+/// \brief Visitor for building a map from field ID to position path.
+class PositionPathVisitor {
+ public:
+  Status Visit(const PrimitiveType& type);
+  Status Visit(const StructType& type);
+  Status Visit(const ListType& type);
+  Status Visit(const MapType& type);
+  std::unordered_map<int32_t, std::vector<size_t>> Finish();
+
+ private:
+  constexpr static int32_t kUnassignedFieldId = -1;
+  int32_t current_field_id_ = kUnassignedFieldId;
+  std::vector<size_t> current_path_;
+  std::unordered_map<int32_t, std::vector<size_t>> position_path_;
+};
+
+/// \brief Visitor for pruning columns based on selected field IDs.
+///
+/// This visitor traverses a schema and creates a projected version containing only
+/// the specified fields. When `select_full_types` is true, a field with all its
+/// sub-fields are selected if its field-id has been selected; otherwise, only leaf
+/// fields of selected field-ids are selected.
+///
+/// \note It returns an error when projection is not successful.
+class PruneColumnVisitor {
+ public:
+  PruneColumnVisitor(const std::unordered_set<int32_t>& selected_ids,
+                     bool select_full_types);
+
+  Result<std::shared_ptr<Type>> Visit(const std::shared_ptr<Type>& type) const;
+  Result<std::shared_ptr<Type>> Visit(const SchemaField& field) const;
+  static SchemaField MakeField(const SchemaField& field, std::shared_ptr<Type> type);
+  Result<std::shared_ptr<Type>> Visit(const std::shared_ptr<StructType>& type) const;
+  Result<std::shared_ptr<Type>> Visit(const std::shared_ptr<ListType>& type) const;
+  Result<std::shared_ptr<Type>> Visit(const std::shared_ptr<MapType>& type) const;
+
+ private:
+  const std::unordered_set<int32_t>& selected_ids_;
+  const bool select_full_types_;
+};
 
 /// \brief Index parent field IDs for all fields in a struct hierarchy.
 /// \param root_struct The root struct type to analyze
@@ -37,35 +128,7 @@ namespace iceberg {
 ///       - All field IDs must be unique across the entire schema hierarchy
 ///       If the struct is part of a Schema, these invariants are enforced by
 ///       StructType::InitFieldById which checks for duplicate field IDs.
-static std::unordered_map<int32_t, int32_t> indexParents(const StructType& root_struct) {
-  std::unordered_map<int32_t, int32_t> id_to_parent;
-  std::stack<int32_t> parent_id_stack;
-
-  // Recursive function to visit and build parent relationships
-  std::function<void(const Type&)> visit = [&](const Type& type) -> void {
-    switch (type.type_id()) {
-      case TypeId::kStruct:
-      case TypeId::kList:
-      case TypeId::kMap: {
-        const auto& nested_type = static_cast<const NestedType&>(type);
-        for (const auto& field : nested_type.fields()) {
-          if (!parent_id_stack.empty()) {
-            id_to_parent[field.field_id()] = parent_id_stack.top();
-          }
-          parent_id_stack.push(field.field_id());
-          visit(*field.type());
-          parent_id_stack.pop();
-        }
-        break;
-      }
-
-      default:
-        break;
-    }
-  };
-
-  visit(root_struct);
-  return id_to_parent;
-}
+ICEBERG_EXPORT std::unordered_map<int32_t, int32_t> IndexParents(
+    const StructType& root_struct);
 
 }  // namespace iceberg

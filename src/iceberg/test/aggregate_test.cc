@@ -23,6 +23,7 @@
 
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expressions.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/row/struct_like.h"
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
@@ -234,6 +235,245 @@ TEST(AggregateTest, MultipleAggregatesInEvaluator) {
   EXPECT_EQ(std::get<int32_t>(results[2].value()), 2);   // min
   EXPECT_EQ(std::get<int64_t>(results[3].value()), 1);   // count_null
   EXPECT_EQ(std::get<int64_t>(results[4].value()), 4);   // count_star
+}
+
+TEST(AggregateTest, AggregatesFromDataFileMetrics) {
+  Schema schema({SchemaField::MakeOptional(1, "id", int32()),
+                 SchemaField::MakeOptional(2, "value", int32())});
+
+  auto count_bound = BindAggregate(schema, Expressions::Count("id"));
+  auto count_null_bound = BindAggregate(schema, Expressions::CountNull("id"));
+  auto count_star_bound = BindAggregate(schema, Expressions::CountStar());
+  auto max_bound = BindAggregate(schema, Expressions::Max("value"));
+  auto min_bound = BindAggregate(schema, Expressions::Min("value"));
+
+  std::vector<std::shared_ptr<BoundAggregate>> aggregates{
+      count_bound, count_null_bound, count_star_bound, max_bound, min_bound};
+  ICEBERG_UNWRAP_OR_FAIL(auto evaluator, AggregateEvaluator::Make(aggregates));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto lower, Literal::Int(5).Serialize());
+  ICEBERG_UNWRAP_OR_FAIL(auto upper, Literal::Int(50).Serialize());
+  DataFile file{
+      .record_count = 10,
+      .value_counts = {{1, 10}, {2, 10}},
+      .null_value_counts = {{1, 2}, {2, 0}},
+      .lower_bounds = {{2, lower}},
+      .upper_bounds = {{2, upper}},
+  };
+
+  ASSERT_TRUE(evaluator->Update(file).has_value());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto results, evaluator->GetResults());
+  ASSERT_EQ(results.size(), aggregates.size());
+  EXPECT_EQ(std::get<int64_t>(results[0].value()), 8);   // count(id) = 10 - 2
+  EXPECT_EQ(std::get<int64_t>(results[1].value()), 2);   // count_null(id)
+  EXPECT_EQ(std::get<int64_t>(results[2].value()), 10);  // count_star
+  EXPECT_EQ(std::get<int32_t>(results[3].value()), 50);  // max(value)
+  EXPECT_EQ(std::get<int32_t>(results[4].value()), 5);   // min(value)
+}
+
+TEST(AggregateTest, AggregatesFromDataFileMissingMetricsReturnNull) {
+  Schema schema({SchemaField::MakeOptional(1, "id", int32()),
+                 SchemaField::MakeOptional(2, "value", int32())});
+
+  auto count_bound = BindAggregate(schema, Expressions::Count("id"));
+  auto count_null_bound = BindAggregate(schema, Expressions::CountNull("id"));
+  auto count_star_bound = BindAggregate(schema, Expressions::CountStar());
+  auto max_bound = BindAggregate(schema, Expressions::Max("value"));
+  auto min_bound = BindAggregate(schema, Expressions::Min("value"));
+
+  std::vector<std::shared_ptr<BoundAggregate>> aggregates{
+      count_bound, count_null_bound, count_star_bound, max_bound, min_bound};
+  ICEBERG_UNWRAP_OR_FAIL(auto evaluator, AggregateEvaluator::Make(aggregates));
+
+  DataFile file{.record_count = -1};  // missing/invalid
+
+  ASSERT_TRUE(evaluator->Update(file).has_value());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto results, evaluator->GetResults());
+  ASSERT_EQ(results.size(), aggregates.size());
+  for (const auto& literal : results) {
+    EXPECT_TRUE(literal.IsNull());
+  }
+}
+
+TEST(AggregateTest, AggregatesFromDataFileWithTransform) {
+  Schema schema({SchemaField::MakeOptional(1, "id", int32())});
+
+  auto truncate_id = Expressions::Truncate("id", 10);
+  auto max_bound = BindAggregate(schema, Expressions::Max(truncate_id));
+  auto min_bound = BindAggregate(schema, Expressions::Min(truncate_id));
+
+  std::vector<std::shared_ptr<BoundAggregate>> aggregates{max_bound, min_bound};
+  ICEBERG_UNWRAP_OR_FAIL(auto evaluator, AggregateEvaluator::Make(aggregates));
+
+  ICEBERG_UNWRAP_OR_FAIL(auto lower, Literal::Int(5).Serialize());
+  ICEBERG_UNWRAP_OR_FAIL(auto upper, Literal::Int(23).Serialize());
+  DataFile file{
+      .record_count = 5,
+      .value_counts = {{1, 5}},
+      .null_value_counts = {{1, 0}},
+      .lower_bounds = {{1, lower}},
+      .upper_bounds = {{1, upper}},
+  };
+
+  ASSERT_TRUE(evaluator->Update(file).has_value());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto results, evaluator->GetResults());
+  ASSERT_EQ(results.size(), aggregates.size());
+  // Truncate width 10: max(truncate(23)) -> 20, min(truncate(5)) -> 0
+  EXPECT_EQ(std::get<int32_t>(results[0].value()), 20);
+  EXPECT_EQ(std::get<int32_t>(results[1].value()), 0);
+  EXPECT_TRUE(evaluator->AllAggregatorsValid());
+}
+
+TEST(AggregateTest, DataFileAggregatorParity) {
+  Schema schema({SchemaField::MakeRequired(1, "id", int32()),
+                 SchemaField::MakeOptional(2, "no_stats", int32()),
+                 SchemaField::MakeOptional(3, "all_nulls", string()),
+                 SchemaField::MakeOptional(4, "some_nulls", string())});
+
+  auto make_bounds = [](int field_id, int32_t lower, int32_t upper) {
+    std::map<int32_t, std::vector<uint8_t>> lower_bounds;
+    std::map<int32_t, std::vector<uint8_t>> upper_bounds;
+    auto lser = Literal::Int(lower).Serialize().value();
+    auto user = Literal::Int(upper).Serialize().value();
+    lower_bounds.emplace(field_id, std::move(lser));
+    upper_bounds.emplace(field_id, std::move(user));
+    return std::pair{std::move(lower_bounds), std::move(upper_bounds)};
+  };
+
+  auto [b1_lower, b1_upper] = make_bounds(1, 33, 2345);
+  DataFile file{
+      .file_path = "file.avro",
+      .record_count = 50,
+      .value_counts = {{1, 50}, {3, 50}, {4, 50}},
+      .null_value_counts = {{1, 10}, {3, 50}, {4, 10}},
+      .lower_bounds = std::move(b1_lower),
+      .upper_bounds = std::move(b1_upper),
+  };
+
+  auto [b2_lower, b2_upper] = make_bounds(1, 33, 100);
+  DataFile missing_some_nulls_1{
+      .file_path = "file_2.avro",
+      .record_count = 20,
+      .value_counts = {{1, 20}, {3, 20}},
+      .null_value_counts = {{1, 0}, {3, 20}},
+      .lower_bounds = std::move(b2_lower),
+      .upper_bounds = std::move(b2_upper),
+  };
+
+  auto [b3_lower, b3_upper] = make_bounds(1, -33, 3333);
+  DataFile missing_some_nulls_2{
+      .file_path = "file_3.avro",
+      .record_count = 20,
+      .value_counts = {{1, 20}, {3, 20}},
+      .null_value_counts = {{1, 20}, {3, 20}},
+      .lower_bounds = std::move(b3_lower),
+      .upper_bounds = std::move(b3_upper),
+  };
+
+  DataFile missing_some_stats{
+      .file_path = "file_missing_stats.avro",
+      .record_count = 20,
+      .value_counts = {{1, 20}, {4, 10}},
+  };
+  auto [b4_lower, b4_upper] = make_bounds(1, -3, 1333);
+  missing_some_stats.lower_bounds = std::move(b4_lower);
+  missing_some_stats.upper_bounds = std::move(b4_upper);
+
+  DataFile missing_all_optional_stats{
+      .file_path = "file_null_stats.avro",
+      .record_count = 20,
+  };
+
+  auto run_case = [&](const std::vector<std::shared_ptr<Expression>>& exprs,
+                      const std::vector<DataFile>& files,
+                      const std::vector<std::optional<Scalar>>& expected,
+                      bool expect_all_valid) {
+    std::vector<std::shared_ptr<BoundAggregate>> aggregates;
+    aggregates.reserve(exprs.size());
+    for (const auto& e : exprs) {
+      aggregates.emplace_back(BindAggregate(schema, e));
+    }
+    ICEBERG_UNWRAP_OR_FAIL(auto evaluator, AggregateEvaluator::Make(aggregates));
+    for (const auto& f : files) {
+      ASSERT_TRUE(evaluator->Update(f).has_value());
+    }
+    ASSERT_EQ(evaluator->AllAggregatorsValid(), expect_all_valid);
+    ICEBERG_UNWRAP_OR_FAIL(auto results, evaluator->GetResults());
+    ASSERT_EQ(results.size(), expected.size());
+    for (size_t i = 0; i < expected.size(); ++i) {
+      if (!expected[i].has_value()) {
+        EXPECT_TRUE(results[i].IsNull());
+      } else {
+        const auto& exp = *expected[i];
+        const auto& res = results[i].value();
+        if (std::holds_alternative<int32_t>(exp)) {
+          EXPECT_EQ(std::get<int32_t>(res), std::get<int32_t>(exp));
+        } else if (std::holds_alternative<int64_t>(exp)) {
+          EXPECT_EQ(std::get<int64_t>(res), std::get<int64_t>(exp));
+        } else {
+          FAIL() << "Unexpected expected type";
+        }
+      }
+    }
+  };
+
+  // testIntAggregate
+  run_case({Expressions::CountStar(), Expressions::Count("id"),
+            Expressions::CountNull("id"), Expressions::Max("id"), Expressions::Min("id")},
+           {file, missing_some_nulls_1, missing_some_nulls_2},
+           {Scalar{int64_t{90}}, Scalar{int64_t{60}}, Scalar{int64_t{30}},
+            Scalar{int32_t{3333}}, Scalar{int32_t{-33}}},
+           /*expect_all_valid=*/true);
+
+  // testAllNulls
+  run_case({Expressions::CountStar(), Expressions::Count("all_nulls"),
+            Expressions::CountNull("all_nulls"), Expressions::Max("all_nulls"),
+            Expressions::Min("all_nulls")},
+           {file, missing_some_nulls_1, missing_some_nulls_2},
+           {Scalar{int64_t{90}}, Scalar{int64_t{0}}, Scalar{int64_t{90}}, std::nullopt,
+            std::nullopt},
+           /*expect_all_valid=*/true);
+
+  // testSomeNulls -> missing null counts for field 4
+  run_case({Expressions::CountStar(), Expressions::Count("some_nulls"),
+            Expressions::CountNull("some_nulls"), Expressions::Max("some_nulls"),
+            Expressions::Min("some_nulls")},
+           {file, missing_some_nulls_1, missing_some_nulls_2},
+           {Scalar{int64_t{90}}, std::nullopt, std::nullopt, std::nullopt, std::nullopt},
+           /*expect_all_valid=*/false);
+
+  // testNoStats -> field 2 has no metrics
+  run_case({Expressions::CountStar(), Expressions::Count("no_stats"),
+            Expressions::CountNull("no_stats"), Expressions::Max("no_stats"),
+            Expressions::Min("no_stats")},
+           {file, missing_some_nulls_1, missing_some_nulls_2},
+           {Scalar{int64_t{90}}, std::nullopt, std::nullopt, std::nullopt, std::nullopt},
+           /*expect_all_valid=*/false);
+
+  // testIntAggregateAllMissingStats -> id missing optional stats
+  run_case({Expressions::CountStar(), Expressions::Count("id"),
+            Expressions::CountNull("id"), Expressions::Max("id"), Expressions::Min("id")},
+           {missing_all_optional_stats},
+           {Scalar{int64_t{20}}, std::nullopt, std::nullopt, std::nullopt, std::nullopt},
+           /*expect_all_valid=*/false);
+
+  // testOptionalColAllMissingStats -> field 2 missing everything
+  run_case({Expressions::CountStar(), Expressions::Count("no_stats"),
+            Expressions::CountNull("no_stats"), Expressions::Max("no_stats"),
+            Expressions::Min("no_stats")},
+           {missing_all_optional_stats},
+           {Scalar{int64_t{20}}, std::nullopt, std::nullopt, std::nullopt, std::nullopt},
+           /*expect_all_valid=*/false);
+
+  // testMissingSomeStats -> some_nulls missing null stats entirely
+  run_case({Expressions::CountStar(), Expressions::Count("some_nulls"),
+            Expressions::Max("some_nulls"), Expressions::Min("some_nulls")},
+           {missing_some_stats},
+           {Scalar{int64_t{20}}, std::nullopt, std::nullopt, std::nullopt},
+           /*expect_all_valid=*/false);
 }
 
 }  // namespace iceberg

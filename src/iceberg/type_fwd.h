@@ -94,7 +94,6 @@ class SortField;
 class SortOrder;
 class Table;
 class TableProperties;
-class FileIO;
 class Transaction;
 class Transform;
 class TransformFunction;
@@ -122,6 +121,9 @@ class Uuid;
 
 class Expression;
 class Literal;
+
+class BoundPredicate;
+class UnboundPredicate;
 
 class DataTableScan;
 class FileScanTask;
@@ -160,6 +162,7 @@ class TableUpdateContext;
 class PendingUpdate;
 template <typename T>
 class PendingUpdateTyped;
+class UpdateProperties;
 
 enum class CleanupLevel;
 class ExpireSnapshots;

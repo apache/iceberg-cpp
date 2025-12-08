@@ -659,7 +659,7 @@ TEST(TypeTest, IndexParents) {
       points,
   });
 
-  std::unordered_map<int32_t, int32_t> parent_index = iceberg::indexParents(root_struct);
+  std::unordered_map<int32_t, int32_t> parent_index = iceberg::IndexParents(root_struct);
 
   // Verify top-level fields have no parent
   ASSERT_EQ(parent_index.find(1), parent_index.end());

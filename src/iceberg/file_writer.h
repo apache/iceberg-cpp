@@ -57,6 +57,9 @@ class WriterProperties : public ConfigBase<WriterProperties> {
   /// \brief Create a WriterProperties instance from a map of key-value pairs.
   static std::unique_ptr<WriterProperties> FromMap(
       const std::unordered_map<std::string, std::string>& properties);
+
+ private:
+  WriterProperties() = default;
 };
 
 /// \brief Options for creating a writer.

@@ -38,5 +38,7 @@ CheckOptions:
     value:  '_'
   - key:    readability-identifier-naming.ProtectedMemberSuffix
     value:  '_'
+  - key:    modernize-use-scoped-lock.WarnOnSingleLocks
+    value:  'false'
 
 HeaderFilterRegex: 'src/iceberg|example'

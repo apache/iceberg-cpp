@@ -54,7 +54,7 @@ class ICEBERG_EXPORT Evaluator {
   ///
   /// \param row The data row to evaluate
   /// \return true if the row matches the expression, false otherwise, or error
-  Result<bool> Eval(const StructLike& row) const;
+  Result<bool> Evaluate(const StructLike& row) const;
 
  private:
   explicit Evaluator(std::shared_ptr<Expression> bound_expr);

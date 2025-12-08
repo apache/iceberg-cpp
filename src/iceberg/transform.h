@@ -23,6 +23,7 @@
 
 #include <cstdint>
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <variant>
 
@@ -164,10 +165,34 @@ class ICEBERG_EXPORT Transform : public util::Formattable {
   /// For example, sorting by day(ts) will produce an ordering that is also by month(ts)
   /// or year(ts). However, sorting by day(ts) will not satisfy the order of hour(ts) or
   /// identity(ts).
-  ///
+  /// \param other The other transform to compare with.
   /// \return true if ordering by this transform is equivalent to ordering by the other
   /// transform.
   bool SatisfiesOrderOf(const Transform& other) const;
+
+  /// \brief Transforms a BoundPredicate to an inclusive predicate on the partition values
+  /// produced by the transform.
+  ///
+  /// This inclusive transform guarantees that if predicate->Test(value) is true, then
+  /// Projected(transform(value)) is true.
+  /// \param name The name of the partition column.
+  /// \param predicate The predicate to project.
+  /// \return A Result containing either a unique pointer to the projected predicate,
+  /// nullptr if the projection cannot be performed, or an Error if the projection fails.
+  Result<std::unique_ptr<UnboundPredicate>> Project(
+      std::string_view name, const std::shared_ptr<BoundPredicate>& predicate);
+
+  /// \brief Transforms a BoundPredicate to a strict predicate on the partition values
+  /// produced by the transform.
+  ///
+  /// This strict transform guarantees that if Projected(transform(value)) is true, then
+  /// predicate->Test(value) is also true.
+  /// \param name The name of the partition column.
+  /// \param predicate The predicate to project.
+  /// \return A Result containing either a unique pointer to the projected predicate,
+  /// nullptr if the projection cannot be performed, or an Error if the projection fails.
+  Result<std::unique_ptr<UnboundPredicate>> ProjectStrict(
+      std::string_view name, const std::shared_ptr<BoundPredicate>& predicate);
 
   /// \brief Returns a string representation of this transform (e.g., "bucket[16]").
   std::string ToString() const override;

@@ -107,86 +107,86 @@ class ICEBERG_EXPORT BoundVisitor : public ExpressionVisitor<R> {
  public:
   ~BoundVisitor() override = default;
 
-  /// \brief Visit an IS_NULL unary predicate.
-  /// \param term The bound term being tested
-  virtual Result<R> IsNull(const std::shared_ptr<BoundTerm>& term) = 0;
+  /// \brief Visit an IS_NULL bound expression.
+  /// \param expr The bound expression being tested
+  virtual Result<R> IsNull(const std::shared_ptr<Bound>& expr) = 0;
 
-  /// \brief Visit a NOT_NULL unary predicate.
-  /// \param term The bound term being tested
-  virtual Result<R> NotNull(const std::shared_ptr<BoundTerm>& term) = 0;
+  /// \brief Visit a NOT_NULL bound expression.
+  /// \param expr The bound expression being tested
+  virtual Result<R> NotNull(const std::shared_ptr<Bound>& expr) = 0;
 
-  /// \brief Visit an IS_NAN unary predicate.
-  /// \param term The bound term being tested
-  virtual Result<R> IsNaN(const std::shared_ptr<BoundTerm>& term) {
+  /// \brief Visit an IS_NAN bound expression.
+  /// \param expr The bound expression being tested
+  virtual Result<R> IsNaN(const std::shared_ptr<Bound>& expr) {
     return NotSupported("IsNaN operation is not supported by this visitor");
   }
 
-  /// \brief Visit a NOT_NAN unary predicate.
-  /// \param term The bound term being tested
-  virtual Result<R> NotNaN(const std::shared_ptr<BoundTerm>& term) {
+  /// \brief Visit a NOT_NAN bound expression.
+  /// \param expr The bound expression being tested
+  virtual Result<R> NotNaN(const std::shared_ptr<Bound>& expr) {
     return NotSupported("NotNaN operation is not supported by this visitor");
   }
 
-  /// \brief Visit a less-than predicate.
-  /// \param term The bound term
+  /// \brief Visit a less-than bound expression.
+  /// \param expr The bound expression being tested
   /// \param lit The literal value to compare against
-  virtual Result<R> Lt(const std::shared_ptr<BoundTerm>& term, const Literal& lit) = 0;
+  virtual Result<R> Lt(const std::shared_ptr<Bound>& expr, const Literal& lit) = 0;
 
-  /// \brief Visit a less-than-or-equal predicate.
-  /// \param term The bound term
+  /// \brief Visit a less-than-or-equal bound expression.
+  /// \param expr The bound expression being tested
   /// \param lit The literal value to compare against
-  virtual Result<R> LtEq(const std::shared_ptr<BoundTerm>& term, const Literal& lit) = 0;
+  virtual Result<R> LtEq(const std::shared_ptr<Bound>& expr, const Literal& lit) = 0;
 
-  /// \brief Visit a greater-than predicate.
-  /// \param term The bound term
+  /// \brief Visit a greater-than bound expression.
+  /// \param expr The bound expression being tested
   /// \param lit The literal value to compare against
-  virtual Result<R> Gt(const std::shared_ptr<BoundTerm>& term, const Literal& lit) = 0;
+  virtual Result<R> Gt(const std::shared_ptr<Bound>& expr, const Literal& lit) = 0;
 
-  /// \brief Visit a greater-than-or-equal predicate.
-  /// \param term The bound term
+  /// \brief Visit a greater-than-or-equal bound expression.
+  /// \param expr The bound expression being tested
   /// \param lit The literal value to compare against
-  virtual Result<R> GtEq(const std::shared_ptr<BoundTerm>& term, const Literal& lit) = 0;
+  virtual Result<R> GtEq(const std::shared_ptr<Bound>& expr, const Literal& lit) = 0;
 
-  /// \brief Visit an equality predicate.
-  /// \param term The bound term
+  /// \brief Visit an equality bound expression.
+  /// \param expr The bound expression being tested
   /// \param lit The literal value to compare against
-  virtual Result<R> Eq(const std::shared_ptr<BoundTerm>& term, const Literal& lit) = 0;
+  virtual Result<R> Eq(const std::shared_ptr<Bound>& expr, const Literal& lit) = 0;
 
-  /// \brief Visit a not-equal predicate.
-  /// \param term The bound term
+  /// \brief Visit a not-equal bound expression.
+  /// \param expr The bound expression being tested
   /// \param lit The literal value to compare against
-  virtual Result<R> NotEq(const std::shared_ptr<BoundTerm>& term, const Literal& lit) = 0;
+  virtual Result<R> NotEq(const std::shared_ptr<Bound>& expr, const Literal& lit) = 0;
 
-  /// \brief Visit a starts-with predicate.
-  /// \param term The bound term
+  /// \brief Visit a starts-with bound expression.
+  /// \param expr The bound expression being tested
   /// \param lit The literal value to check for prefix match
-  virtual Result<R> StartsWith([[maybe_unused]] const std::shared_ptr<BoundTerm>& term,
+  virtual Result<R> StartsWith([[maybe_unused]] const std::shared_ptr<Bound>& expr,
                                [[maybe_unused]] const Literal& lit) {
     return NotSupported("StartsWith operation is not supported by this visitor");
   }
 
-  /// \brief Visit a not-starts-with predicate.
-  /// \param term The bound term
+  /// \brief Visit a not-starts-with bound expression.
+  /// \param expr The bound expression being tested
   /// \param lit The literal value to check for prefix match
-  virtual Result<R> NotStartsWith([[maybe_unused]] const std::shared_ptr<BoundTerm>& term,
+  virtual Result<R> NotStartsWith([[maybe_unused]] const std::shared_ptr<Bound>& expr,
                                   [[maybe_unused]] const Literal& lit) {
     return NotSupported("NotStartsWith operation is not supported by this visitor");
   }
 
-  /// \brief Visit an IN set predicate.
-  /// \param term The bound term
+  /// \brief Visit an IN set bound expression.
+  /// \param expr The bound expression being tested
   /// \param literal_set The set of literal values to test membership
   virtual Result<R> In(
-      [[maybe_unused]] const std::shared_ptr<BoundTerm>& term,
+      [[maybe_unused]] const std::shared_ptr<Bound>& expr,
       [[maybe_unused]] const BoundSetPredicate::LiteralSet& literal_set) {
     return NotSupported("In operation is not supported by this visitor");
   }
 
-  /// \brief Visit a NOT_IN set predicate.
-  /// \param term The bound term
+  /// \brief Visit a NOT_IN set bound expression.
+  /// \param expr The bound expression being tested
   /// \param literal_set The set of literal values to test membership
   virtual Result<R> NotIn(
-      [[maybe_unused]] const std::shared_ptr<BoundTerm>& term,
+      [[maybe_unused]] const std::shared_ptr<Bound>& expr,
       [[maybe_unused]] const BoundSetPredicate::LiteralSet& literal_set) {
     return NotSupported("NotIn operation is not supported by this visitor");
   }

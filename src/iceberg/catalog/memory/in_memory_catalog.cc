@@ -20,9 +20,9 @@
 #include "iceberg/catalog/memory/in_memory_catalog.h"
 
 #include <algorithm>
-#include <iterator>  // IWYU pragma: keep
+#include <iterator>
+#include <mutex>
 
-#include "iceberg/exception.h"
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/util/macros.h"
@@ -337,42 +337,42 @@ std::string_view InMemoryCatalog::name() const { return catalog_name_; }
 
 Status InMemoryCatalog::CreateNamespace(
     const Namespace& ns, const std::unordered_map<std::string, std::string>& properties) {
-  std::unique_lock lock(mutex_);
+  std::lock_guard guard(mutex_);
   return root_namespace_->CreateNamespace(ns, properties);
 }
 
 Result<std::unordered_map<std::string, std::string>>
 InMemoryCatalog::GetNamespaceProperties(const Namespace& ns) const {
-  std::unique_lock lock(mutex_);
+  std::lock_guard guard(mutex_);
   return root_namespace_->GetProperties(ns);
 }
 
 Result<std::vector<Namespace>> InMemoryCatalog::ListNamespaces(
     const Namespace& ns) const {
-  std::unique_lock lock(mutex_);
+  std::lock_guard guard(mutex_);
   return root_namespace_->ListNamespaces(ns);
 }
 
 Status InMemoryCatalog::DropNamespace(const Namespace& ns) {
-  std::unique_lock lock(mutex_);
+  std::lock_guard guard(mutex_);
   return root_namespace_->DropNamespace(ns);
 }
 
 Result<bool> InMemoryCatalog::NamespaceExists(const Namespace& ns) const {
-  std::unique_lock lock(mutex_);
+  std::lock_guard guard(mutex_);
   return root_namespace_->NamespaceExists(ns);
 }
 
 Status InMemoryCatalog::UpdateNamespaceProperties(
     const Namespace& ns, const std::unordered_map<std::string, std::string>& updates,
     const std::unordered_set<std::string>& removals) {
-  std::unique_lock lock(mutex_);
+  std::lock_guard guard(mutex_);
   return root_namespace_->UpdateNamespaceProperties(ns, updates, removals);
 }
 
 Result<std::vector<TableIdentifier>> InMemoryCatalog::ListTables(
     const Namespace& ns) const {
-  std::unique_lock lock(mutex_);
+  std::lock_guard guard(mutex_);
   const auto& table_names = root_namespace_->ListTables(ns);
   ICEBERG_RETURN_UNEXPECTED(table_names);
   std::vector<TableIdentifier> table_idents;
@@ -405,12 +405,12 @@ Result<std::shared_ptr<Transaction>> InMemoryCatalog::StageCreateTable(
 }
 
 Result<bool> InMemoryCatalog::TableExists(const TableIdentifier& identifier) const {
-  std::unique_lock lock(mutex_);
+  std::lock_guard guard(mutex_);
   return root_namespace_->TableExists(identifier);
 }
 
 Status InMemoryCatalog::DropTable(const TableIdentifier& identifier, bool purge) {
-  std::unique_lock lock(mutex_);
+  std::lock_guard guard(mutex_);
   // TODO(Guotao): Delete all metadata files if purge is true.
   return root_namespace_->UnregisterTable(identifier);
 }
@@ -428,7 +428,7 @@ Result<std::unique_ptr<Table>> InMemoryCatalog::LoadTable(
 
   Result<std::string> metadata_location;
   {
-    std::unique_lock lock(mutex_);
+    std::lock_guard guard(mutex_);
     ICEBERG_ASSIGN_OR_RAISE(metadata_location,
                             root_namespace_->GetTableMetadataLocation(identifier));
   }
@@ -443,7 +443,7 @@ Result<std::unique_ptr<Table>> InMemoryCatalog::LoadTable(
 
 Result<std::shared_ptr<Table>> InMemoryCatalog::RegisterTable(
     const TableIdentifier& identifier, const std::string& metadata_file_location) {
-  std::unique_lock lock(mutex_);
+  std::lock_guard guard(mutex_);
   if (!root_namespace_->NamespaceExists(identifier.ns)) {
     return NoSuchNamespace("table namespace does not exist.");
   }

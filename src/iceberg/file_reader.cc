@@ -60,12 +60,12 @@ Result<std::unique_ptr<Reader>> ReaderFactoryRegistry::Open(
 }
 
 std::unique_ptr<ReaderProperties> ReaderProperties::default_properties() {
-  return std::make_unique<ReaderProperties>();
+  return std::unique_ptr<ReaderProperties>(new ReaderProperties());
 }
 
 std::unique_ptr<ReaderProperties> ReaderProperties::FromMap(
     const std::unordered_map<std::string, std::string>& properties) {
-  auto reader_properties = std::make_unique<ReaderProperties>();
+  auto reader_properties = std::unique_ptr<ReaderProperties>(new ReaderProperties());
   reader_properties->configs_ = properties;
   return reader_properties;
 }

@@ -138,6 +138,13 @@ std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Max(
   return agg;
 }
 
+std::shared_ptr<UnboundAggregateImpl<BoundTransform>> Expressions::Max(
+    std::shared_ptr<UnboundTerm<BoundTransform>> expr) {
+  ICEBERG_ASSIGN_OR_THROW(auto agg, UnboundAggregateImpl<BoundTransform>::Make(
+                                        Expression::Operation::kMax, std::move(expr)));
+  return agg;
+}
+
 std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Min(std::string name) {
   return Min(Ref(std::move(name)));
 }
@@ -149,6 +156,13 @@ std::shared_ptr<UnboundAggregateImpl<BoundReference>> Expressions::Min(
   return agg;
 }
 
+std::shared_ptr<UnboundAggregateImpl<BoundTransform>> Expressions::Min(
+    std::shared_ptr<UnboundTerm<BoundTransform>> expr) {
+  ICEBERG_ASSIGN_OR_THROW(auto agg, UnboundAggregateImpl<BoundTransform>::Make(
+                                        Expression::Operation::kMin, std::move(expr)));
+  return agg;
+}
+
 // Template implementations for unary predicates
 
 std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::IsNull(
@@ -156,27 +170,9 @@ std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::IsNull(
   return IsNull<BoundReference>(Ref(std::move(name)));
 }
 
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::IsNull(
-    std::shared_ptr<UnboundTerm<B>> expr) {
-  ICEBERG_ASSIGN_OR_THROW(
-      auto pred,
-      UnboundPredicateImpl<B>::Make(Expression::Operation::kIsNull, std::move(expr)));
-  return pred;
-}
-
 std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::NotNull(
     std::string name) {
   return NotNull<BoundReference>(Ref(std::move(name)));
-}
-
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::NotNull(
-    std::shared_ptr<UnboundTerm<B>> expr) {
-  ICEBERG_ASSIGN_OR_THROW(
-      auto pred,
-      UnboundPredicateImpl<B>::Make(Expression::Operation::kNotNull, std::move(expr)));
-  return pred;
 }
 
 std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::IsNaN(
@@ -184,26 +180,9 @@ std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::IsNaN(
   return IsNaN<BoundReference>(Ref(std::move(name)));
 }
 
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::IsNaN(
-    std::shared_ptr<UnboundTerm<B>> expr) {
-  ICEBERG_ASSIGN_OR_THROW(auto pred, UnboundPredicateImpl<B>::Make(
-                                         Expression::Operation::kIsNan, std::move(expr)));
-  return pred;
-}
-
 std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::NotNaN(
     std::string name) {
   return NotNaN<BoundReference>(Ref(std::move(name)));
-}
-
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::NotNaN(
-    std::shared_ptr<UnboundTerm<B>> expr) {
-  ICEBERG_ASSIGN_OR_THROW(
-      auto pred,
-      UnboundPredicateImpl<B>::Make(Expression::Operation::kNotNan, std::move(expr)));
-  return pred;
 }
 
 // Template implementations for comparison predicates
@@ -213,27 +192,9 @@ std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::LessThan(
   return LessThan<BoundReference>(Ref(std::move(name)), std::move(value));
 }
 
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::LessThan(
-    std::shared_ptr<UnboundTerm<B>> expr, Literal value) {
-  ICEBERG_ASSIGN_OR_THROW(
-      auto pred, UnboundPredicateImpl<B>::Make(Expression::Operation::kLt,
-                                               std::move(expr), std::move(value)));
-  return pred;
-}
-
 std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::LessThanOrEqual(
     std::string name, Literal value) {
   return LessThanOrEqual<BoundReference>(Ref(std::move(name)), std::move(value));
-}
-
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::LessThanOrEqual(
-    std::shared_ptr<UnboundTerm<B>> expr, Literal value) {
-  ICEBERG_ASSIGN_OR_THROW(
-      auto pred, UnboundPredicateImpl<B>::Make(Expression::Operation::kLtEq,
-                                               std::move(expr), std::move(value)));
-  return pred;
 }
 
 std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::GreaterThan(
@@ -241,27 +202,9 @@ std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::GreaterThan(
   return GreaterThan<BoundReference>(Ref(std::move(name)), std::move(value));
 }
 
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::GreaterThan(
-    std::shared_ptr<UnboundTerm<B>> expr, Literal value) {
-  ICEBERG_ASSIGN_OR_THROW(
-      auto pred, UnboundPredicateImpl<B>::Make(Expression::Operation::kGt,
-                                               std::move(expr), std::move(value)));
-  return pred;
-}
-
 std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::GreaterThanOrEqual(
     std::string name, Literal value) {
   return GreaterThanOrEqual<BoundReference>(Ref(std::move(name)), std::move(value));
-}
-
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::GreaterThanOrEqual(
-    std::shared_ptr<UnboundTerm<B>> expr, Literal value) {
-  ICEBERG_ASSIGN_OR_THROW(
-      auto pred, UnboundPredicateImpl<B>::Make(Expression::Operation::kGtEq,
-                                               std::move(expr), std::move(value)));
-  return pred;
 }
 
 std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::Equal(std::string name,
@@ -269,27 +212,9 @@ std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::Equal(std::st
   return Equal<BoundReference>(Ref(std::move(name)), std::move(value));
 }
 
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::Equal(
-    std::shared_ptr<UnboundTerm<B>> expr, Literal value) {
-  ICEBERG_ASSIGN_OR_THROW(
-      auto pred, UnboundPredicateImpl<B>::Make(Expression::Operation::kEq,
-                                               std::move(expr), std::move(value)));
-  return pred;
-}
-
 std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::NotEqual(
     std::string name, Literal value) {
   return NotEqual<BoundReference>(Ref(std::move(name)), std::move(value));
-}
-
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::NotEqual(
-    std::shared_ptr<UnboundTerm<B>> expr, Literal value) {
-  ICEBERG_ASSIGN_OR_THROW(
-      auto pred, UnboundPredicateImpl<B>::Make(Expression::Operation::kNotEq,
-                                               std::move(expr), std::move(value)));
-  return pred;
 }
 
 // String predicates
@@ -299,29 +224,9 @@ std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::StartsWith(
   return StartsWith<BoundReference>(Ref(std::move(name)), std::move(value));
 }
 
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::StartsWith(
-    std::shared_ptr<UnboundTerm<B>> expr, std::string value) {
-  ICEBERG_ASSIGN_OR_THROW(
-      auto pred,
-      UnboundPredicateImpl<B>::Make(Expression::Operation::kStartsWith, std::move(expr),
-                                    Literal::String(std::move(value))));
-  return pred;
-}
-
 std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::NotStartsWith(
     std::string name, std::string value) {
   return NotStartsWith<BoundReference>(Ref(std::move(name)), std::move(value));
-}
-
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::NotStartsWith(
-    std::shared_ptr<UnboundTerm<B>> expr, std::string value) {
-  ICEBERG_ASSIGN_OR_THROW(
-      auto pred,
-      UnboundPredicateImpl<B>::Make(Expression::Operation::kNotStartsWith,
-                                    std::move(expr), Literal::String(std::move(value))));
-  return pred;
 }
 
 // Template implementations for set predicates
@@ -331,24 +236,9 @@ std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::In(
   return In<BoundReference>(Ref(std::move(name)), std::move(values));
 }
 
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::In(
-    std::shared_ptr<UnboundTerm<B>> expr, std::vector<Literal> values) {
-  ICEBERG_ASSIGN_OR_THROW(
-      auto pred, UnboundPredicateImpl<B>::Make(Expression::Operation::kIn,
-                                               std::move(expr), std::move(values)));
-  return pred;
-}
-
 std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::In(
     std::string name, std::initializer_list<Literal> values) {
   return In<BoundReference>(Ref(std::move(name)), std::vector<Literal>(values));
-}
-
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::In(
-    std::shared_ptr<UnboundTerm<B>> expr, std::initializer_list<Literal> values) {
-  return In<B>(std::move(expr), std::vector<Literal>(values));
 }
 
 std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::NotIn(
@@ -356,24 +246,9 @@ std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::NotIn(
   return NotIn<BoundReference>(Ref(std::move(name)), std::move(values));
 }
 
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::NotIn(
-    std::shared_ptr<UnboundTerm<B>> expr, std::vector<Literal> values) {
-  ICEBERG_ASSIGN_OR_THROW(
-      auto pred, UnboundPredicateImpl<B>::Make(Expression::Operation::kNotIn,
-                                               std::move(expr), std::move(values)));
-  return pred;
-}
-
 std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::NotIn(
     std::string name, std::initializer_list<Literal> values) {
   return NotIn<BoundReference>(Ref(std::move(name)), std::vector<Literal>(values));
-}
-
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::NotIn(
-    std::shared_ptr<UnboundTerm<B>> expr, std::initializer_list<Literal> values) {
-  return NotIn<B>(expr, std::vector<Literal>(values));
 }
 
 // Template implementations for generic predicate factory
@@ -401,29 +276,6 @@ std::shared_ptr<UnboundPredicateImpl<BoundReference>> Expressions::Predicate(
     Expression::Operation op, std::string name) {
   ICEBERG_ASSIGN_OR_THROW(
       auto pred, UnboundPredicateImpl<BoundReference>::Make(op, Ref(std::move(name))));
-  return pred;
-}
-
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::Predicate(
-    Expression::Operation op, std::shared_ptr<UnboundTerm<B>> expr,
-    std::vector<Literal> values) {
-  ICEBERG_ASSIGN_OR_THROW(
-      auto pred, UnboundPredicateImpl<B>::Make(op, std::move(expr), std::move(values)));
-  return pred;
-}
-
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::Predicate(
-    Expression::Operation op, std::shared_ptr<UnboundTerm<B>> expr,
-    std::initializer_list<Literal> values) {
-  return Predicate<B>(op, std::move(expr), std::vector<Literal>(values));
-}
-
-template <typename B>
-std::shared_ptr<UnboundPredicateImpl<B>> Expressions::Predicate(
-    Expression::Operation op, std::shared_ptr<UnboundTerm<B>> expr) {
-  ICEBERG_ASSIGN_OR_THROW(auto pred, UnboundPredicateImpl<B>::Make(op, std::move(expr)));
   return pred;
 }
 

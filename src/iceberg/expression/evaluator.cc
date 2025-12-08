@@ -44,72 +44,71 @@ class EvalVisitor : public BoundVisitor<bool> {
     return left_result || right_result;
   }
 
-  Result<bool> IsNull(const std::shared_ptr<BoundTerm>& term) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(row_));
+  Result<bool> IsNull(const std::shared_ptr<Bound>& expr) override {
+    ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(row_));
     return value.IsNull();
   }
 
-  Result<bool> NotNull(const std::shared_ptr<BoundTerm>& term) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto value, IsNull(term));
+  Result<bool> NotNull(const std::shared_ptr<Bound>& expr) override {
+    ICEBERG_ASSIGN_OR_RAISE(auto value, IsNull(expr));
     return !value;
   }
 
-  Result<bool> IsNaN(const std::shared_ptr<BoundTerm>& term) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(row_));
+  Result<bool> IsNaN(const std::shared_ptr<Bound>& expr) override {
+    ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(row_));
     return value.IsNaN();
   }
 
-  Result<bool> NotNaN(const std::shared_ptr<BoundTerm>& term) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto value, IsNaN(term));
+  Result<bool> NotNaN(const std::shared_ptr<Bound>& expr) override {
+    ICEBERG_ASSIGN_OR_RAISE(auto value, IsNaN(expr));
     return !value;
   }
 
-  Result<bool> Lt(const std::shared_ptr<BoundTerm>& term, const Literal& lit) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(row_));
+  Result<bool> Lt(const std::shared_ptr<Bound>& expr, const Literal& lit) override {
+    ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(row_));
     return value < lit;
   }
 
-  Result<bool> LtEq(const std::shared_ptr<BoundTerm>& term, const Literal& lit) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(row_));
+  Result<bool> LtEq(const std::shared_ptr<Bound>& expr, const Literal& lit) override {
+    ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(row_));
     return value <= lit;
   }
 
-  Result<bool> Gt(const std::shared_ptr<BoundTerm>& term, const Literal& lit) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(row_));
+  Result<bool> Gt(const std::shared_ptr<Bound>& expr, const Literal& lit) override {
+    ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(row_));
     return value > lit;
   }
 
-  Result<bool> GtEq(const std::shared_ptr<BoundTerm>& term, const Literal& lit) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(row_));
+  Result<bool> GtEq(const std::shared_ptr<Bound>& expr, const Literal& lit) override {
+    ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(row_));
     return value >= lit;
   }
 
-  Result<bool> Eq(const std::shared_ptr<BoundTerm>& term, const Literal& lit) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(row_));
+  Result<bool> Eq(const std::shared_ptr<Bound>& expr, const Literal& lit) override {
+    ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(row_));
     return value == lit;
   }
 
-  Result<bool> NotEq(const std::shared_ptr<BoundTerm>& term,
-                     const Literal& lit) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto eq_result, Eq(term, lit));
+  Result<bool> NotEq(const std::shared_ptr<Bound>& expr, const Literal& lit) override {
+    ICEBERG_ASSIGN_OR_RAISE(auto eq_result, Eq(expr, lit));
     return !eq_result;
   }
 
-  Result<bool> In(const std::shared_ptr<BoundTerm>& term,
+  Result<bool> In(const std::shared_ptr<Bound>& expr,
                   const BoundSetPredicate::LiteralSet& literal_set) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(row_));
+    ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(row_));
     return literal_set.contains(value);
   }
 
-  Result<bool> NotIn(const std::shared_ptr<BoundTerm>& term,
+  Result<bool> NotIn(const std::shared_ptr<Bound>& expr,
                      const BoundSetPredicate::LiteralSet& literal_set) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto in_result, In(term, literal_set));
+    ICEBERG_ASSIGN_OR_RAISE(auto in_result, In(expr, literal_set));
     return !in_result;
   }
 
-  Result<bool> StartsWith(const std::shared_ptr<BoundTerm>& term,
+  Result<bool> StartsWith(const std::shared_ptr<Bound>& expr,
                           const Literal& lit) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto value, term->Evaluate(row_));
+    ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(row_));
 
     // Both value and literal should be strings
     if (!std::holds_alternative<std::string>(value.value()) ||
@@ -122,9 +121,9 @@ class EvalVisitor : public BoundVisitor<bool> {
     return str_value.starts_with(str_prefix);
   }
 
-  Result<bool> NotStartsWith(const std::shared_ptr<BoundTerm>& term,
+  Result<bool> NotStartsWith(const std::shared_ptr<Bound>& expr,
                              const Literal& lit) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto starts_result, StartsWith(term, lit));
+    ICEBERG_ASSIGN_OR_RAISE(auto starts_result, StartsWith(expr, lit));
     return !starts_result;
   }
 
@@ -144,7 +143,7 @@ Result<std::unique_ptr<Evaluator>> Evaluator::Make(const Schema& schema,
   return std::unique_ptr<Evaluator>(new Evaluator(std::move(bound_expr)));
 }
 
-Result<bool> Evaluator::Eval(const StructLike& row) const {
+Result<bool> Evaluator::Evaluate(const StructLike& row) const {
   EvalVisitor visitor(row);
   return Visit<bool, EvalVisitor>(bound_expr_, visitor);
 }

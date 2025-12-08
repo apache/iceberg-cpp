@@ -30,6 +30,7 @@
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/error_collector.h"
 #include "iceberg/util/lazy.h"
 #include "iceberg/util/timepoint.h"
 
@@ -193,7 +194,7 @@ ICEBERG_EXPORT std::string ToString(const MetadataLogEntry& entry);
 /// If a modification violates Iceberg table constraints (e.g., setting a current
 /// schema ID that does not exist), an error will be recorded and returned when
 /// Build() is called.
-class ICEBERG_EXPORT TableMetadataBuilder {
+class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
  public:
   /// \brief Create a builder for a new table
   ///
@@ -353,7 +354,7 @@ class ICEBERG_EXPORT TableMetadataBuilder {
   /// RemoveSnapshot changes are created. A snapshot is historical if no ref directly
   /// references its ID.
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& suppressHistoricalSnapshots();
+  TableMetadataBuilder& SuppressHistoricalSnapshots();
 
   /// \brief Set table statistics
   ///
@@ -418,7 +419,7 @@ class ICEBERG_EXPORT TableMetadataBuilder {
   Result<std::unique_ptr<TableMetadata>> Build();
 
   /// \brief Destructor
-  ~TableMetadataBuilder();
+  ~TableMetadataBuilder() override;
 
   // Delete copy operations (use BuildFrom to create a new builder)
   TableMetadataBuilder(const TableMetadataBuilder&) = delete;
@@ -434,6 +435,17 @@ class ICEBERG_EXPORT TableMetadataBuilder {
 
   /// \brief Private constructor for building from existing metadata
   explicit TableMetadataBuilder(const TableMetadata* base);
+
+  /// \brief Internal method to add a sort order and return its ID
+  /// \param order The sort order to add
+  /// \return The ID of the added or reused sort order
+  Result<int32_t> AddSortOrderInternal(const SortOrder& order);
+
+  /// \brief Internal method to check for existing sort order and reuse its ID or create a
+  /// new one
+  /// \param new_order The sort order to check
+  /// \return The ID to use for this sort order (reused if exists, new otherwise)
+  int32_t ReuseOrCreateNewSortOrderId(const SortOrder& new_order);
 
   /// Internal state members
   struct Impl;

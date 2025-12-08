@@ -109,14 +109,15 @@ class ICEBERG_EXPORT BoundAggregate : public Aggregate<BoundTerm>, public Bound 
 
     virtual Status Update(const StructLike& data) = 0;
 
-    virtual Status Update(const DataFile& file) {
-      return NotImplemented("Update(DataFile) not implemented");
-    }
+    virtual Status Update(const DataFile& file) = 0;
+
+    /// \brief Whether the aggregator is still valid.
+    virtual bool IsValid() const = 0;
 
     /// \brief Get the result of the aggregation.
     /// \return The result of the aggregation.
     /// \note It is an undefined behavior to call this method if any previous Update call
-    /// has returned an error.
+    /// has returned an error or if IsValid() returns false.
     virtual Literal GetResult() const = 0;
   };
 
@@ -127,6 +128,11 @@ class ICEBERG_EXPORT BoundAggregate : public Aggregate<BoundTerm>, public Bound 
   }
 
   Result<Literal> Evaluate(const StructLike& data) const override = 0;
+
+  virtual Result<Literal> Evaluate(const DataFile& file) const = 0;
+
+  /// \brief Whether metrics in the data file are sufficient to evaluate.
+  virtual bool HasValue(const DataFile& file) const = 0;
 
   bool is_bound_aggregate() const override { return true; }
 
@@ -142,12 +148,15 @@ class ICEBERG_EXPORT BoundAggregate : public Aggregate<BoundTerm>, public Bound 
 /// \brief Base class for COUNT aggregates.
 class ICEBERG_EXPORT CountAggregate : public BoundAggregate {
  public:
-  Result<Literal> Evaluate(const StructLike& data) const final;
+  Result<Literal> Evaluate(const StructLike& data) const override;
+  Result<Literal> Evaluate(const DataFile& file) const override;
 
   std::unique_ptr<Aggregator> NewAggregator() const override;
 
   /// \brief Count for a single row. Subclasses implement this.
   virtual Result<int64_t> CountFor(const StructLike& data) const = 0;
+  /// \brief Count using metrics from a data file.
+  virtual Result<int64_t> CountFor(const DataFile& file) const = 0;
 
  protected:
   CountAggregate(Expression::Operation op, std::shared_ptr<BoundTerm> term)
@@ -161,6 +170,8 @@ class ICEBERG_EXPORT CountNonNullAggregate : public CountAggregate {
       std::shared_ptr<BoundTerm> term);
 
   Result<int64_t> CountFor(const StructLike& data) const override;
+  Result<int64_t> CountFor(const DataFile& file) const override;
+  bool HasValue(const DataFile& file) const override;
 
  private:
   explicit CountNonNullAggregate(std::shared_ptr<BoundTerm> term);
@@ -173,6 +184,8 @@ class ICEBERG_EXPORT CountNullAggregate : public CountAggregate {
       std::shared_ptr<BoundTerm> term);
 
   Result<int64_t> CountFor(const StructLike& data) const override;
+  Result<int64_t> CountFor(const DataFile& file) const override;
+  bool HasValue(const DataFile& file) const override;
 
  private:
   explicit CountNullAggregate(std::shared_ptr<BoundTerm> term);
@@ -184,6 +197,8 @@ class ICEBERG_EXPORT CountStarAggregate : public CountAggregate {
   static Result<std::unique_ptr<CountStarAggregate>> Make();
 
   Result<int64_t> CountFor(const StructLike& data) const override;
+  Result<int64_t> CountFor(const DataFile& file) const override;
+  bool HasValue(const DataFile& file) const override;
 
  private:
   CountStarAggregate();
@@ -192,9 +207,11 @@ class ICEBERG_EXPORT CountStarAggregate : public CountAggregate {
 /// \brief Bound MAX aggregate.
 class ICEBERG_EXPORT MaxAggregate : public BoundAggregate {
  public:
-  static std::shared_ptr<MaxAggregate> Make(std::shared_ptr<BoundTerm> term);
+  static Result<std::unique_ptr<MaxAggregate>> Make(std::shared_ptr<BoundTerm> term);
 
   Result<Literal> Evaluate(const StructLike& data) const override;
+  Result<Literal> Evaluate(const DataFile& file) const override;
+  bool HasValue(const DataFile& file) const override;
 
   std::unique_ptr<Aggregator> NewAggregator() const override;
 
@@ -205,9 +222,11 @@ class ICEBERG_EXPORT MaxAggregate : public BoundAggregate {
 /// \brief Bound MIN aggregate.
 class ICEBERG_EXPORT MinAggregate : public BoundAggregate {
  public:
-  static std::shared_ptr<MinAggregate> Make(std::shared_ptr<BoundTerm> term);
+  static Result<std::unique_ptr<MinAggregate>> Make(std::shared_ptr<BoundTerm> term);
 
   Result<Literal> Evaluate(const StructLike& data) const override;
+  Result<Literal> Evaluate(const DataFile& file) const override;
+  bool HasValue(const DataFile& file) const override;
 
   std::unique_ptr<Aggregator> NewAggregator() const override;
 
@@ -234,11 +253,17 @@ class ICEBERG_EXPORT AggregateEvaluator {
   /// \brief Update aggregates with a row.
   virtual Status Update(const StructLike& data) = 0;
 
+  /// \brief Update aggregates using data file metrics.
+  virtual Status Update(const DataFile& file) = 0;
+
   /// \brief Final aggregated value.
   virtual Result<std::span<const Literal>> GetResults() const = 0;
 
   /// \brief Convenience accessor when only one aggregate is evaluated.
   virtual Result<Literal> GetResult() const = 0;
+
+  /// \brief Whether all aggregators are still valid (metrics present).
+  virtual bool AllAggregatorsValid() const = 0;
 };
 
 }  // namespace iceberg

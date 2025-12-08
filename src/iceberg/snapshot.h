@@ -62,6 +62,8 @@ ICEBERG_EXPORT constexpr Result<SnapshotRefType> SnapshotRefTypeFromString(
 
 /// \brief A reference to a snapshot, either a branch or a tag.
 struct ICEBERG_EXPORT SnapshotRef {
+  static constexpr std::string_view kMainBranch = "main";
+
   struct ICEBERG_EXPORT Branch {
     /// A positive number for the minimum number of snapshots to keep in a branch while
     /// expiring snapshots. Defaults to table property

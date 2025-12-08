@@ -30,24 +30,29 @@ namespace iceberg {
 class ICEBERG_EXPORT StringUtils {
  public:
   static std::string ToLower(std::string_view str) {
-    std::string input(str);
-    // TODO(xiao.dong) gcc 13.3 didn't support std::ranges::to
-    std::transform(input.begin(), input.end(), input.begin(),  // NOLINT
-                   [](char c) { return std::tolower(c); });    // NOLINT
-    return input;
+    return str | std::ranges::views::transform([](char c) { return std::tolower(c); }) |
+           std::ranges::to<std::string>();
   }
 
   static std::string ToUpper(std::string_view str) {
-    std::string input(str);
-    // TODO(xiao.dong) gcc 13.3 didn't support std::ranges::to
-    std::transform(input.begin(), input.end(), input.begin(),  // NOLINT
-                   [](char c) { return std::toupper(c); });    // NOLINT
-    return input;
+    return str | std::ranges::views::transform([](char c) { return std::toupper(c); }) |
+           std::ranges::to<std::string>();
   }
 
   static bool EqualsIgnoreCase(std::string_view lhs, std::string_view rhs) {
     return std::ranges::equal(
         lhs, rhs, [](char lc, char rc) { return std::tolower(lc) == std::tolower(rc); });
+  }
+
+  /// \brief Count the number of code points in a UTF-8 string.
+  static size_t CodePointCount(std::string_view str) {
+    size_t count = 0;
+    for (char i : str) {
+      if ((i & 0xC0) != 0x80) {
+        count++;
+      }
+    }
+    return count;
   }
 };
 

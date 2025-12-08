@@ -19,7 +19,9 @@
 
 #include "iceberg/row/struct_like.h"
 
+#include <string>
 #include <utility>
+#include <vector>
 
 #include "iceberg/result.h"
 #include "iceberg/util/checked_cast.h"
@@ -27,6 +29,44 @@
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
+
+Result<Scalar> LiteralToScalar(const Literal& literal) {
+  if (literal.IsNull()) {
+    return Scalar{std::monostate{}};
+  }
+
+  switch (literal.type()->type_id()) {
+    case TypeId::kBoolean:
+      return Scalar{std::get<bool>(literal.value())};
+    case TypeId::kInt:
+    case TypeId::kDate:
+      return Scalar{std::get<int32_t>(literal.value())};
+    case TypeId::kLong:
+    case TypeId::kTime:
+    case TypeId::kTimestamp:
+    case TypeId::kTimestampTz:
+      return Scalar{std::get<int64_t>(literal.value())};
+    case TypeId::kFloat:
+      return Scalar{std::get<float>(literal.value())};
+    case TypeId::kDouble:
+      return Scalar{std::get<double>(literal.value())};
+    case TypeId::kString: {
+      const auto& str = std::get<std::string>(literal.value());
+      return Scalar{std::string_view(str)};
+    }
+    case TypeId::kBinary:
+    case TypeId::kFixed: {
+      const auto& bytes = std::get<std::vector<uint8_t>>(literal.value());
+      return Scalar{
+          std::string_view(reinterpret_cast<const char*>(bytes.data()), bytes.size())};
+    }
+    case TypeId::kDecimal:
+      return Scalar{std::get<Decimal>(literal.value())};
+    default:
+      return NotSupported("Cannot convert literal of type {} to Scalar",
+                          literal.type()->ToString());
+  }
+}
 
 StructLikeAccessor::StructLikeAccessor(std::shared_ptr<Type> type,
                                        std::span<const size_t> position_path)

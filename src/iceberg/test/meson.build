@@ -47,12 +47,13 @@ iceberg_tests = {
     'table_test': {
         'sources': files(
             'json_internal_test.cc',
+            'metrics_config_test.cc',
             'schema_json_test.cc',
             'table_metadata_builder_test.cc',
             'table_requirement_test.cc',
             'table_test.cc',
             'table_update_test.cc',
-            'test_common.cc',
+            'update_properties_test.cc',
         ),
     },
     'expression_test': {
@@ -60,8 +61,11 @@ iceberg_tests = {
             'aggregate_test.cc',
             'expression_test.cc',
             'expression_visitor_test.cc',
+            'inclusive_metrics_evaluator_test.cc',
+            'inclusive_metrics_evaluator_with_transform_test.cc',
             'literal_test.cc',
             'predicate_test.cc',
+            'strict_metrics_evaluator_test.cc',
         ),
     },
     'json_serde_test': {
@@ -69,7 +73,6 @@ iceberg_tests = {
             'json_internal_test.cc',
             'metadata_serde_test.cc',
             'schema_json_test.cc',
-            'test_common.cc',
         ),
     },
     'util_test': {
@@ -89,17 +92,28 @@ iceberg_tests = {
 }
 
 if get_option('rest').enabled()
-    cpp_httplib_dep = dependency('cpp-httplib')
     iceberg_tests += {
         'rest_catalog_test': {
-            'sources': files(
-                'rest_catalog_test.cc',
-                'rest_json_internal_test.cc',
-                'rest_util_test.cc',
-            ),
-            'dependencies': [iceberg_rest_dep, cpp_httplib_dep],
+            'sources': files('rest_json_internal_test.cc', 'rest_util_test.cc'),
+            'dependencies': [iceberg_rest_dep],
         },
     }
+    if get_option('rest_integration_test').enabled()
+        if host_machine.system() == 'windows'
+            warning('Cannot build rest integration test on Windows, skipping.')
+        else
+            iceberg_tests += {
+                'rest_integration_test': {
+                    'sources': files(
+                        'rest_catalog_test.cc',
+                        'util/cmd_util.cc',
+                        'util/docker_compose_util.cc',
+                    ),
+                    'dependencies': [iceberg_rest_dep],
+                },
+            }
+        endif
+    endif
 endif
 
 foreach test_name, values : iceberg_tests

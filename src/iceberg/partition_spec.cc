@@ -108,7 +108,7 @@ bool PartitionSpec::Equals(const PartitionSpec& other) const {
 }
 
 Status PartitionSpec::Validate(const Schema& schema, bool allow_missing_fields) const {
-  std::unordered_map<int32_t, int32_t> parents = indexParents(schema);
+  std::unordered_map<int32_t, int32_t> parents = IndexParents(schema);
   for (const auto& partition_field : fields_) {
     ICEBERG_ASSIGN_OR_RAISE(auto source_field,
                             schema.FindFieldById(partition_field.source_id()));

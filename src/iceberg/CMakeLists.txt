@@ -25,21 +25,27 @@ set(ICEBERG_SOURCES
     expression/evaluator.cc
     expression/expression.cc
     expression/expressions.cc
+    expression/inclusive_metrics_evaluator.cc
     expression/literal.cc
     expression/predicate.cc
     expression/rewrite_not.cc
+    expression/strict_metrics_evaluator.cc
     expression/term.cc
     file_reader.cc
     file_writer.cc
     inheritable_metadata.cc
     json_internal.cc
-    manifest_adapter.cc
-    manifest_entry.cc
-    manifest_list.cc
-    manifest_reader.cc
-    manifest_reader_internal.cc
-    manifest_writer.cc
+    manifest/manifest_adapter.cc
+    manifest/manifest_entry.cc
+    manifest/manifest_list.cc
+    manifest/manifest_reader.cc
+    manifest/manifest_reader_internal.cc
+    manifest/manifest_writer.cc
+    manifest/v1_metadata.cc
+    manifest/v2_metadata.cc
+    manifest/v3_metadata.cc
     metadata_columns.cc
+    metrics_config.cc
     name_mapping.cc
     partition_field.cc
     partition_spec.cc
@@ -67,6 +73,7 @@ set(ICEBERG_SOURCES
     transform_function.cc
     type.cc
     update/expire_snapshots.cc
+    update/update_properties.cc
     util/bucket_util.cc
     util/conversions.cc
     util/decimal.cc
@@ -75,10 +82,8 @@ set(ICEBERG_SOURCES
     util/temporal_util.cc
     util/timepoint.cc
     util/truncate_util.cc
-    util/uuid.cc
-    v1_metadata.cc
-    v2_metadata.cc
-    v3_metadata.cc)
+    util/type_util.cc
+    util/uuid.cc)
 
 set(ICEBERG_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_SHARED_BUILD_INTERFACE_LIBS)
@@ -132,6 +137,7 @@ iceberg_install_all_headers(iceberg)
 
 add_subdirectory(catalog)
 add_subdirectory(expression)
+add_subdirectory(manifest)
 add_subdirectory(row)
 add_subdirectory(update)
 add_subdirectory(util)

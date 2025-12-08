@@ -104,6 +104,12 @@ class ICEBERG_EXPORT Table {
   /// \return a vector of history entries
   const std::vector<SnapshotLogEntry>& history() const;
 
+  /// \brief Create a new UpdateProperties to update table properties and commit the
+  /// changes
+  ///
+  /// \return a new UpdateProperties instance
+  virtual std::unique_ptr<iceberg::UpdateProperties> UpdateProperties() const;
+
   /// \brief Create a new table scan builder for this table
   ///
   /// Once a table scan builder is created, it can be refined to project columns and

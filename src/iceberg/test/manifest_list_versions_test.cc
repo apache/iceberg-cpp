@@ -29,13 +29,13 @@
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/file_writer.h"
-#include "iceberg/manifest_list.h"
-#include "iceberg/manifest_reader.h"
-#include "iceberg/manifest_writer.h"
+#include "iceberg/manifest/manifest_list.h"
+#include "iceberg/manifest/manifest_reader.h"
+#include "iceberg/manifest/manifest_writer.h"
+#include "iceberg/manifest/v1_metadata_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/test/matchers.h"
-#include "iceberg/v1_metadata.h"
 
 namespace iceberg {
 

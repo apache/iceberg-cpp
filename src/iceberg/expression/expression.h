@@ -27,6 +27,7 @@
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
+#include "iceberg/type_fwd.h"
 #include "iceberg/util/formattable.h"
 #include "iceberg/util/macros.h"
 
@@ -327,5 +328,44 @@ ICEBERG_EXPORT std::string_view ToString(Expression::Operation op);
 
 /// \brief Returns the negated operation.
 ICEBERG_EXPORT Result<Expression::Operation> Negate(Expression::Operation op);
+
+/// \brief Interface for unbound expressions that need schema binding.
+///
+/// Unbound expressions contain string-based references that must be resolved
+/// against a concrete schema to produce bound expressions that can be evaluated.
+///
+/// \tparam B The bound type this term produces when binding is successful
+template <typename B>
+class ICEBERG_EXPORT Unbound {
+ public:
+  /// \brief Bind this expression to a concrete schema.
+  ///
+  /// \param schema The schema to bind against
+  /// \param case_sensitive Whether field name matching should be case sensitive
+  /// \return A bound expression or an error if binding fails
+  virtual Result<std::shared_ptr<B>> Bind(const Schema& schema,
+                                          bool case_sensitive) const = 0;
+
+  /// \brief Overloaded Bind method that uses case-sensitive matching by default.
+  Result<std::shared_ptr<B>> Bind(const Schema& schema) const;
+
+  /// \brief Returns the underlying named reference for this unbound term.
+  virtual std::shared_ptr<class NamedReference> reference() = 0;
+};
+
+/// \brief Interface for bound expressions that can be evaluated.
+///
+/// Bound expressions have been resolved against a concrete schema and contain
+/// all necessary information to evaluate against data structures.
+class ICEBERG_EXPORT Bound {
+ public:
+  virtual ~Bound();
+
+  /// \brief Evaluate this expression against a row-based data.
+  virtual Result<Literal> Evaluate(const StructLike& data) const = 0;
+
+  /// \brief Returns the underlying bound reference for this term.
+  virtual std::shared_ptr<class BoundReference> reference() = 0;
+};
 
 }  // namespace iceberg
