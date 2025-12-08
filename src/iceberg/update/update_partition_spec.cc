@@ -49,10 +49,20 @@ UpdatePartitionSpec::UpdatePartitionSpec(TableIdentifier identifier,
   format_version_ = base_metadata_->format_version;
 
   // Get the current/default partition spec
-  ICEBERG_ASSIGN_OR_THROW(spec_, base_metadata_->PartitionSpec());
+  auto spec_result = base_metadata_->PartitionSpec();
+  if (!spec_result.has_value()) {
+    AddError(spec_result.error());
+    return;
+  }
+  spec_ = std::move(spec_result.value());
 
   // Get the current schema
-  ICEBERG_ASSIGN_OR_THROW(schema_, base_metadata_->Schema());
+  auto schema_result = base_metadata_->Schema();
+  if (!schema_result.has_value()) {
+    AddError(schema_result.error());
+    return;
+  }
+  schema_ = std::move(schema_result.value());
 
   last_assigned_partition_id_ = spec_->last_assigned_field_id();
   name_to_field_ = IndexSpecByName(*spec_);
@@ -420,10 +430,9 @@ Status UpdatePartitionSpec::Apply() {
     last_assigned_id = PartitionSpec::kLegacyPartitionDataIdStart - 1;
   }
 
-  // TODO(anyone): Use the Make method with schema_.
   ICEBERG_ASSIGN_OR_RAISE(
-      auto spec_result,
-      PartitionSpec::Make(new_spec_id, std::move(new_fields), last_assigned_id));
+      auto spec_result, PartitionSpec::Make(*schema_, new_spec_id, std::move(new_fields),
+                                            last_assigned_id));
   applied_spec_ = std::shared_ptr<PartitionSpec>(spec_result.release());
   return {};
 }

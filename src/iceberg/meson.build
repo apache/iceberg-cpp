@@ -194,7 +194,6 @@ install_headers(
         'transform.h',
         'type_fwd.h',
         'type.h',
-        'update/update_properties.h',
     ],
     subdir: 'iceberg',
 )
