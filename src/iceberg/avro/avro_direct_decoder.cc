@@ -51,7 +51,7 @@ Status DecodeFieldToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& d
 Status SkipAvroValue(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder) {
   switch (avro_node->type()) {
     case ::avro::AVRO_NULL:
-      // Nothing to skip
+      decoder.decodeNull();
       return {};
 
     case ::avro::AVRO_BOOL:
