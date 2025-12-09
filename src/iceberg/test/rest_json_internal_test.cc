@@ -870,26 +870,26 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "WithoutStack",
             .expected_json_str =
                 R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404}})",
-            .model = {.message = "The given namespace does not exist",
+            .model = {.code = 404,
                       .type = "NoSuchNamespaceException",
-                      .code = 404}},
+                      .message = "The given namespace does not exist"}},
         // Error with stack trace
         ErrorResponseParam{
             .test_name = "WithStack",
             .expected_json_str =
                 R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404,"stack":["a","b"]}})",
-            .model = {.message = "The given namespace does not exist",
+            .model = {.code = 404,
                       .type = "NoSuchNamespaceException",
-                      .code = 404,
+                      .message = "The given namespace does not exist",
                       .stack = {"a", "b"}}},
         // Different error type
         ErrorResponseParam{
             .test_name = "DifferentError",
             .expected_json_str =
                 R"({"error":{"message":"Internal server error","type":"InternalServerError","code":500,"stack":["line1","line2","line3"]}})",
-            .model = {.message = "Internal server error",
+            .model = {.code = 500,
                       .type = "InternalServerError",
-                      .code = 500,
+                      .message = "Internal server error",
                       .stack = {"line1", "line2", "line3"}}}),
     [](const ::testing::TestParamInfo<ErrorResponseParam>& info) {
       return info.param.test_name;
@@ -905,17 +905,17 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "NullStack",
             .json_str =
                 R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404,"stack":null}})",
-            .expected_model = {.message = "The given namespace does not exist",
+            .expected_model = {.code = 404,
                                .type = "NoSuchNamespaceException",
-                               .code = 404}},
+                               .message = "The given namespace does not exist"}},
         // Stack field is missing (should deserialize to empty vector)
         ErrorResponseDeserializeParam{
             .test_name = "MissingStack",
             .json_str =
                 R"({"error":{"message":"The given namespace does not exist","type":"NoSuchNamespaceException","code":404}})",
-            .expected_model = {.message = "The given namespace does not exist",
+            .expected_model = {.code = 404,
                                .type = "NoSuchNamespaceException",
-                               .code = 404}}),
+                               .message = "The given namespace does not exist"}}),
     [](const ::testing::TestParamInfo<ErrorResponseDeserializeParam>& info) {
       return info.param.test_name;
     });
