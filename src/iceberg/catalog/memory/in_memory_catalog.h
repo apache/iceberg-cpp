@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <mutex>
+#include <shared_mutex>
 
 #include "iceberg/catalog.h"
 
@@ -103,7 +103,7 @@ class ICEBERG_EXPORT InMemoryCatalog
   std::shared_ptr<FileIO> file_io_;
   std::string warehouse_location_;
   std::unique_ptr<class InMemoryNamespace> root_namespace_;
-  mutable std::recursive_mutex mutex_;
+  mutable std::shared_mutex mutex_;
 };
 
 }  // namespace iceberg
