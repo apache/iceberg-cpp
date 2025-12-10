@@ -20,15 +20,11 @@
 #include "iceberg/expression/projections.h"
 
 #include <memory>
-#include <vector>
 
 #include "iceberg/expression/expression.h"
 #include "iceberg/expression/expression_visitor.h"
-#include "iceberg/expression/expressions.h"
 #include "iceberg/expression/predicate.h"
 #include "iceberg/expression/rewrite_not.h"
-#include "iceberg/expression/term.h"
-#include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/transform.h"
@@ -36,13 +32,11 @@
 
 namespace iceberg {
 
-// Implementation detail - not exported
 class ProjectionVisitor : public ExpressionVisitor<std::shared_ptr<Expression>> {
  public:
   ~ProjectionVisitor() override = default;
 
-  ProjectionVisitor(const std::shared_ptr<PartitionSpec>& spec,
-                    const std::shared_ptr<Schema>& schema, bool case_sensitive)
+  ProjectionVisitor(const PartitionSpec& spec, const Schema& schema, bool case_sensitive)
       : spec_(spec), schema_(schema), case_sensitive_(case_sensitive) {}
 
   Result<std::shared_ptr<Expression>> AlwaysTrue() override { return True::Instance(); }
@@ -57,24 +51,20 @@ class ProjectionVisitor : public ExpressionVisitor<std::shared_ptr<Expression>> 
   Result<std::shared_ptr<Expression>> And(
       const std::shared_ptr<Expression>& left_result,
       const std::shared_ptr<Expression>& right_result) override {
-    return Expressions::And(left_result, right_result);
+    return And::MakeFolded(left_result, right_result);
   }
 
   Result<std::shared_ptr<Expression>> Or(
       const std::shared_ptr<Expression>& left_result,
       const std::shared_ptr<Expression>& right_result) override {
-    return Expressions::Or(left_result, right_result);
+    return Or::MakeFolded(left_result, right_result);
   }
 
   Result<std::shared_ptr<Expression>> Predicate(
       const std::shared_ptr<UnboundPredicate>& pred) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto bound_pred, pred->Bind(*schema_, case_sensitive_));
+    ICEBERG_ASSIGN_OR_RAISE(auto bound_pred, pred->Bind(schema_, case_sensitive_));
     if (bound_pred->is_bound_predicate()) {
-      auto bound_predicate = std::dynamic_pointer_cast<BoundPredicate>(bound_pred);
-      ICEBERG_DCHECK(
-          bound_predicate != nullptr,
-          "Expected bound_predicate to be non-null after is_bound_predicate() check");
-      return Predicate(bound_predicate);
+      return Predicate(std::dynamic_pointer_cast<BoundPredicate>(bound_pred));
     }
     return bound_pred;
   }
@@ -85,38 +75,9 @@ class ProjectionVisitor : public ExpressionVisitor<std::shared_ptr<Expression>> 
   }
 
  protected:
-  const std::shared_ptr<PartitionSpec>& spec_;
-  const std::shared_ptr<Schema>& schema_;
+  const PartitionSpec& spec_;
+  const Schema& schema_;
   bool case_sensitive_;
-
-  /// \brief Get partition fields that match the predicate's term.
-  std::vector<const PartitionField*> GetFieldsByPredicate(
-      const std::shared_ptr<BoundPredicate>& pred) const {
-    int32_t source_id;
-    switch (pred->term()->kind()) {
-      case Term::Kind::kReference: {
-        const auto& ref = pred->term()->reference();
-        source_id = ref->field().field_id();
-        break;
-      }
-      case Term::Kind::kTransform: {
-        const auto& transform =
-            internal::checked_pointer_cast<BoundTransform>(pred->term());
-        source_id = transform->reference()->field().field_id();
-        break;
-      }
-      default:
-        std::unreachable();
-    }
-
-    std::vector<const PartitionField*> result;
-    for (const auto& field : spec_->fields()) {
-      if (field.source_id() == source_id) {
-        result.push_back(&field);
-      }
-    }
-    return result;
-  }
 };
 
 ProjectionEvaluator::ProjectionEvaluator(std::unique_ptr<ProjectionVisitor> visitor)
@@ -131,16 +92,17 @@ class InclusiveProjectionVisitor : public ProjectionVisitor {
  public:
   ~InclusiveProjectionVisitor() override = default;
 
-  InclusiveProjectionVisitor(const std::shared_ptr<PartitionSpec>& spec,
-                             const std::shared_ptr<Schema>& schema, bool case_sensitive)
+  InclusiveProjectionVisitor(const PartitionSpec& spec, const Schema& schema,
+                             bool case_sensitive)
       : ProjectionVisitor(spec, schema, case_sensitive) {}
 
   Result<std::shared_ptr<Expression>> Predicate(
       const std::shared_ptr<BoundPredicate>& pred) override {
     ICEBERG_DCHECK(pred != nullptr, "Predicate cannot be null");
     // Find partition fields that match the predicate's term
-    auto partition_fields = GetFieldsByPredicate(pred);
-    if (partition_fields.empty()) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto parts, spec_.GetFieldsBySourceId(pred->reference()->field().field_id()));
+    if (parts.empty()) {
       // The predicate has no partition column
       return AlwaysTrue();
     }
@@ -155,19 +117,17 @@ class InclusiveProjectionVisitor : public ProjectionVisitor {
     // projection should be used. ts = 2019-01-01T01:00:00 produces day=2019-01-01 and
     // hour=2019-01-01-01. the value will be in 2019-01-01-01 and not in 2019-01-01-02.
     std::shared_ptr<Expression> result = True::Instance();
-    for (const auto* part_field : partition_fields) {
+    for (const auto& part : parts) {
       ICEBERG_ASSIGN_OR_RAISE(auto projected,
-                              part_field->transform()->Project(part_field->name(), pred));
+                              part.get().transform()->Project(part.get().name(), pred));
       if (projected != nullptr) {
-        result =
-            Expressions::And(result, std::shared_ptr<Expression>(projected.release()));
+        ICEBERG_ASSIGN_OR_RAISE(result,
+                                And::MakeFolded(std::move(result), std::move(projected)));
       }
     }
 
     return result;
   }
-
- protected:
 };
 
 /// \brief Strict projection evaluator.
@@ -177,16 +137,17 @@ class StrictProjectionVisitor : public ProjectionVisitor {
  public:
   ~StrictProjectionVisitor() override = default;
 
-  StrictProjectionVisitor(const std::shared_ptr<PartitionSpec>& spec,
-                          const std::shared_ptr<Schema>& schema, bool case_sensitive)
+  StrictProjectionVisitor(const PartitionSpec& spec, const Schema& schema,
+                          bool case_sensitive)
       : ProjectionVisitor(spec, schema, case_sensitive) {}
 
   Result<std::shared_ptr<Expression>> Predicate(
       const std::shared_ptr<BoundPredicate>& pred) override {
     ICEBERG_DCHECK(pred != nullptr, "Predicate cannot be null");
     // Find partition fields that match the predicate's term
-    auto partition_fields = GetFieldsByPredicate(pred);
-    if (partition_fields.empty()) {
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto parts, spec_.GetFieldsBySourceId(pred->reference()->field().field_id()));
+    if (parts.empty()) {
       // The predicate has no matching partition columns
       return AlwaysFalse();
     }
@@ -199,12 +160,12 @@ class StrictProjectionVisitor : public ProjectionVisitor {
     // predicate. For example, ts = 2019-01-01T03:00:00 matches the hour projection but
     // not the day, but does match the original predicate.
     std::shared_ptr<Expression> result = False::Instance();
-    for (const auto* part_field : partition_fields) {
-      ICEBERG_ASSIGN_OR_RAISE(auto projected, part_field->transform()->ProjectStrict(
-                                                  part_field->name(), pred));
+    for (const auto& part : parts) {
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto projected, part.get().transform()->ProjectStrict(part.get().name(), pred));
       if (projected != nullptr) {
-        result =
-            Expressions::Or(result, std::shared_ptr<Expression>(projected.release()));
+        ICEBERG_ASSIGN_OR_RAISE(result,
+                                Or::MakeFolded(std::move(result), std::move(projected)));
       }
     }
 
@@ -224,18 +185,18 @@ Result<std::shared_ptr<Expression>> ProjectionEvaluator::Project(
   return Visit<std::shared_ptr<Expression>, ProjectionVisitor>(rewritten, *visitor_);
 }
 
-std::unique_ptr<ProjectionEvaluator> Projections::Inclusive(
-    const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<Schema>& schema,
-    bool case_sensitive) {
+std::unique_ptr<ProjectionEvaluator> Projections::Inclusive(const PartitionSpec& spec,
+                                                            const Schema& schema,
+                                                            bool case_sensitive) {
   auto visitor =
       std::make_unique<InclusiveProjectionVisitor>(spec, schema, case_sensitive);
   return std::unique_ptr<ProjectionEvaluator>(
       new ProjectionEvaluator(std::move(visitor)));
 }
 
-std::unique_ptr<ProjectionEvaluator> Projections::Strict(
-    const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<Schema>& schema,
-    bool case_sensitive) {
+std::unique_ptr<ProjectionEvaluator> Projections::Strict(const PartitionSpec& spec,
+                                                         const Schema& schema,
+                                                         bool case_sensitive) {
   auto visitor = std::make_unique<StrictProjectionVisitor>(spec, schema, case_sensitive);
   return std::unique_ptr<ProjectionEvaluator>(
       new ProjectionEvaluator(std::move(visitor)));

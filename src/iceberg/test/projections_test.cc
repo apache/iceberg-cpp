@@ -87,7 +87,6 @@ TEST_F(ProjectionsTest, IdentityProjectionInclusive) {
   auto identity_transform = Transform::Identity();
   PartitionField pt_field(16, 1000, "id", identity_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   std::vector<std::shared_ptr<UnboundPredicate>> predicates = {
       Expressions::NotNull("id"),
@@ -107,7 +106,7 @@ TEST_F(ProjectionsTest, IdentityProjectionInclusive) {
     ASSERT_NE(bound, nullptr);
 
     // Project the bound predicate
-    auto evaluator = Projections::Inclusive(spec_sptr, schema_, true);
+    auto evaluator = Projections::Inclusive(*spec, *schema_, true);
     ICEBERG_UNWRAP_OR_FAIL(auto projected_expr, evaluator->Project(bound_pred));
 
     // Check that we got a predicate back
@@ -135,7 +134,6 @@ TEST_F(ProjectionsTest, IdentityProjectionStrict) {
   auto identity_transform = Transform::Identity();
   PartitionField pt_field(16, 1000, "id", identity_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   std::vector<std::shared_ptr<UnboundPredicate>> predicates = {
       Expressions::NotNull("id"),
@@ -155,7 +153,7 @@ TEST_F(ProjectionsTest, IdentityProjectionStrict) {
     ASSERT_NE(bound, nullptr);
 
     // Project the bound predicate
-    auto evaluator = Projections::Strict(spec_sptr, schema_, true);
+    auto evaluator = Projections::Strict(*spec, *schema_, true);
     ICEBERG_UNWRAP_OR_FAIL(auto projected_expr, evaluator->Project(bound_pred));
 
     // Check that we got a predicate back
@@ -183,7 +181,6 @@ TEST_F(ProjectionsTest, CaseInsensitiveIdentityProjection) {
   auto identity_transform = Transform::Identity();
   PartitionField pt_field(16, 1000, "id", identity_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   std::vector<std::shared_ptr<UnboundPredicate>> predicates = {
       Expressions::NotNull("ID"),
@@ -203,7 +200,7 @@ TEST_F(ProjectionsTest, CaseInsensitiveIdentityProjection) {
     ASSERT_NE(bound, nullptr);
 
     // Project the bound predicate (case insensitive)
-    auto evaluator = Projections::Inclusive(spec_sptr, schema_, false);
+    auto evaluator = Projections::Inclusive(*spec, *schema_, false);
     ICEBERG_UNWRAP_OR_FAIL(auto projected_expr, evaluator->Project(bound_pred));
 
     // Check that we got a predicate back
@@ -241,8 +238,7 @@ TEST_F(ProjectionsTest, CaseSensitiveIdentityProjectionFailure) {
 // Bucketing projection tests
 class BucketingProjectionTest : public ::testing::Test {
  protected:
-  void AssertProjectionStrict(const std::shared_ptr<PartitionSpec>& spec,
-                              const std::shared_ptr<Schema>& schema,
+  void AssertProjectionStrict(const PartitionSpec& spec, const Schema& schema,
                               const std::shared_ptr<Expression>& filter,
                               Expression::Operation expected_op,
                               const std::string& expected_literal) {
@@ -283,8 +279,7 @@ class BucketingProjectionTest : public ::testing::Test {
     }
   }
 
-  void AssertProjectionStrictValue(const std::shared_ptr<PartitionSpec>& spec,
-                                   const std::shared_ptr<Schema>& schema,
+  void AssertProjectionStrictValue(const PartitionSpec& spec, const Schema& schema,
                                    const std::shared_ptr<Expression>& filter,
                                    Expression::Operation expected_op) {
     auto evaluator = Projections::Strict(spec, schema, true);
@@ -292,8 +287,7 @@ class BucketingProjectionTest : public ::testing::Test {
     AssertProjectionValue(projection, expected_op);
   }
 
-  void AssertProjectionInclusive(const std::shared_ptr<PartitionSpec>& spec,
-                                 const std::shared_ptr<Schema>& schema,
+  void AssertProjectionInclusive(const PartitionSpec& spec, const Schema& schema,
                                  const std::shared_ptr<Expression>& filter,
                                  Expression::Operation expected_op,
                                  const std::string& expected_literal) {
@@ -334,8 +328,7 @@ class BucketingProjectionTest : public ::testing::Test {
     }
   }
 
-  void AssertProjectionInclusiveValue(const std::shared_ptr<PartitionSpec>& spec,
-                                      const std::shared_ptr<Schema>& schema,
+  void AssertProjectionInclusiveValue(const PartitionSpec& spec, const Schema& schema,
                                       const std::shared_ptr<Expression>& filter,
                                       Expression::Operation expected_op) {
     auto evaluator = Projections::Inclusive(spec, schema, true);
@@ -351,7 +344,6 @@ TEST_F(BucketingProjectionTest, BucketIntegerStrict) {
   auto bucket_transform = Transform::Bucket(10);
   PartitionField pt_field(1, 1000, "value_bucket", bucket_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   // Bind predicates first
   auto not_equal_pred = Expressions::NotEqual("value", Literal::Int(value));
@@ -374,17 +366,16 @@ TEST_F(BucketingProjectionTest, BucketIntegerStrict) {
                          greater_equal_pred->Bind(*schema, true));
 
   // The bucket number of 100 with 10 buckets is 6
-  AssertProjectionStrict(spec_sptr, schema, bound_not_equal,
-                         Expression::Operation::kNotEq, "6");
-  AssertProjectionStrictValue(spec_sptr, schema, bound_equal,
+  AssertProjectionStrict(*spec, *schema, bound_not_equal, Expression::Operation::kNotEq,
+                         "6");
+  AssertProjectionStrictValue(*spec, *schema, bound_equal, Expression::Operation::kFalse);
+  AssertProjectionStrictValue(*spec, *schema, bound_less_than,
                               Expression::Operation::kFalse);
-  AssertProjectionStrictValue(spec_sptr, schema, bound_less_than,
+  AssertProjectionStrictValue(*spec, *schema, bound_less_equal,
                               Expression::Operation::kFalse);
-  AssertProjectionStrictValue(spec_sptr, schema, bound_less_equal,
+  AssertProjectionStrictValue(*spec, *schema, bound_greater_than,
                               Expression::Operation::kFalse);
-  AssertProjectionStrictValue(spec_sptr, schema, bound_greater_than,
-                              Expression::Operation::kFalse);
-  AssertProjectionStrictValue(spec_sptr, schema, bound_greater_equal,
+  AssertProjectionStrictValue(*spec, *schema, bound_greater_equal,
                               Expression::Operation::kFalse);
 }
 
@@ -395,7 +386,6 @@ TEST_F(BucketingProjectionTest, BucketIntegerInclusive) {
   auto bucket_transform = Transform::Bucket(10);
   PartitionField pt_field(1, 1000, "value_bucket", bucket_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   // Bind predicates first
   auto equal_pred = Expressions::Equal("value", Literal::Int(value));
@@ -418,17 +408,16 @@ TEST_F(BucketingProjectionTest, BucketIntegerInclusive) {
                          greater_equal_pred->Bind(*schema, true));
 
   // The bucket number of 100 with 10 buckets is 6
-  AssertProjectionInclusive(spec_sptr, schema, bound_equal, Expression::Operation::kEq,
-                            "6");
-  AssertProjectionInclusiveValue(spec_sptr, schema, bound_not_equal,
+  AssertProjectionInclusive(*spec, *schema, bound_equal, Expression::Operation::kEq, "6");
+  AssertProjectionInclusiveValue(*spec, *schema, bound_not_equal,
                                  Expression::Operation::kTrue);
-  AssertProjectionInclusiveValue(spec_sptr, schema, bound_less_than,
+  AssertProjectionInclusiveValue(*spec, *schema, bound_less_than,
                                  Expression::Operation::kTrue);
-  AssertProjectionInclusiveValue(spec_sptr, schema, bound_less_equal,
+  AssertProjectionInclusiveValue(*spec, *schema, bound_less_equal,
                                  Expression::Operation::kTrue);
-  AssertProjectionInclusiveValue(spec_sptr, schema, bound_greater_than,
+  AssertProjectionInclusiveValue(*spec, *schema, bound_greater_than,
                                  Expression::Operation::kTrue);
-  AssertProjectionInclusiveValue(spec_sptr, schema, bound_greater_equal,
+  AssertProjectionInclusiveValue(*spec, *schema, bound_greater_equal,
                                  Expression::Operation::kTrue);
 }
 
@@ -439,7 +428,6 @@ TEST_F(BucketingProjectionTest, BucketLongStrict) {
   auto bucket_transform = Transform::Bucket(10);
   PartitionField pt_field(1, 1000, "value_bucket", bucket_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto not_equal_pred = Expressions::NotEqual("value", Literal::Long(value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_not_equal, not_equal_pred->Bind(*schema, true));
@@ -448,10 +436,9 @@ TEST_F(BucketingProjectionTest, BucketLongStrict) {
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
   // The bucket number of 100 with 10 buckets is 6
-  AssertProjectionStrict(spec_sptr, schema, bound_not_equal,
-                         Expression::Operation::kNotEq, "6");
-  AssertProjectionStrictValue(spec_sptr, schema, bound_equal,
-                              Expression::Operation::kFalse);
+  AssertProjectionStrict(*spec, *schema, bound_not_equal, Expression::Operation::kNotEq,
+                         "6");
+  AssertProjectionStrictValue(*spec, *schema, bound_equal, Expression::Operation::kFalse);
 }
 
 TEST_F(BucketingProjectionTest, BucketLongInclusive) {
@@ -461,7 +448,6 @@ TEST_F(BucketingProjectionTest, BucketLongInclusive) {
   auto bucket_transform = Transform::Bucket(10);
   PartitionField pt_field(1, 1000, "value_bucket", bucket_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto equal_pred = Expressions::Equal("value", Literal::Long(value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
@@ -470,9 +456,8 @@ TEST_F(BucketingProjectionTest, BucketLongInclusive) {
   ICEBERG_UNWRAP_OR_FAIL(auto bound_not_equal, not_equal_pred->Bind(*schema, true));
 
   // The bucket number of 100 with 10 buckets is 6
-  AssertProjectionInclusive(spec_sptr, schema, bound_equal, Expression::Operation::kEq,
-                            "6");
-  AssertProjectionInclusiveValue(spec_sptr, schema, bound_not_equal,
+  AssertProjectionInclusive(*spec, *schema, bound_equal, Expression::Operation::kEq, "6");
+  AssertProjectionInclusiveValue(*spec, *schema, bound_not_equal,
                                  Expression::Operation::kTrue);
 }
 
@@ -483,7 +468,6 @@ TEST_F(BucketingProjectionTest, BucketStringStrict) {
   auto bucket_transform = Transform::Bucket(10);
   PartitionField pt_field(1, 1000, "value_bucket", bucket_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto not_equal_pred = Expressions::NotEqual("value", Literal::String(value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_not_equal, not_equal_pred->Bind(*schema, true));
@@ -492,10 +476,9 @@ TEST_F(BucketingProjectionTest, BucketStringStrict) {
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
   // The bucket number of "abcdefg" with 10 buckets is 4
-  AssertProjectionStrict(spec_sptr, schema, bound_not_equal,
-                         Expression::Operation::kNotEq, "4");
-  AssertProjectionStrictValue(spec_sptr, schema, bound_equal,
-                              Expression::Operation::kFalse);
+  AssertProjectionStrict(*spec, *schema, bound_not_equal, Expression::Operation::kNotEq,
+                         "4");
+  AssertProjectionStrictValue(*spec, *schema, bound_equal, Expression::Operation::kFalse);
 }
 
 TEST_F(BucketingProjectionTest, BucketStringInclusive) {
@@ -505,7 +488,6 @@ TEST_F(BucketingProjectionTest, BucketStringInclusive) {
   auto bucket_transform = Transform::Bucket(10);
   PartitionField pt_field(1, 1000, "value_bucket", bucket_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto equal_pred = Expressions::Equal("value", Literal::String(value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
@@ -514,17 +496,15 @@ TEST_F(BucketingProjectionTest, BucketStringInclusive) {
   ICEBERG_UNWRAP_OR_FAIL(auto bound_not_equal, not_equal_pred->Bind(*schema, true));
 
   // The bucket number of "abcdefg" with 10 buckets is 4
-  AssertProjectionInclusive(spec_sptr, schema, bound_equal, Expression::Operation::kEq,
-                            "4");
-  AssertProjectionInclusiveValue(spec_sptr, schema, bound_not_equal,
+  AssertProjectionInclusive(*spec, *schema, bound_equal, Expression::Operation::kEq, "4");
+  AssertProjectionInclusiveValue(*spec, *schema, bound_not_equal,
                                  Expression::Operation::kTrue);
 }
 
 // Date projection tests
 class DateProjectionTest : public ::testing::Test {
  protected:
-  void AssertProjectionStrict(const std::shared_ptr<PartitionSpec>& spec,
-                              const std::shared_ptr<Schema>& schema,
+  void AssertProjectionStrict(const PartitionSpec& spec, const Schema& schema,
                               const std::shared_ptr<Expression>& filter,
                               Expression::Operation expected_op) {
     auto evaluator = Projections::Strict(spec, schema, true);
@@ -532,8 +512,7 @@ class DateProjectionTest : public ::testing::Test {
     AssertProjectionOperation(projection, expected_op);
   }
 
-  void AssertProjectionInclusive(const std::shared_ptr<PartitionSpec>& spec,
-                                 const std::shared_ptr<Schema>& schema,
+  void AssertProjectionInclusive(const PartitionSpec& spec, const Schema& schema,
                                  const std::shared_ptr<Expression>& filter,
                                  Expression::Operation expected_op) {
     auto evaluator = Projections::Inclusive(spec, schema, true);
@@ -550,7 +529,6 @@ TEST_F(DateProjectionTest, DayStrict) {
   auto day_transform = Transform::Day();
   PartitionField pt_field(1, 1000, "date_day", day_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("date", Literal::Date(date_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -569,13 +547,11 @@ TEST_F(DateProjectionTest, DayStrict) {
   auto equal_pred = Expressions::Equal("date", Literal::Date(date_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionStrict(spec_sptr, schema, bound_less_than, Expression::Operation::kLt);
-  AssertProjectionStrict(spec_sptr, schema, bound_less_equal, Expression::Operation::kLt);
-  AssertProjectionStrict(spec_sptr, schema, bound_greater_than,
-                         Expression::Operation::kGt);
-  AssertProjectionStrict(spec_sptr, schema, bound_greater_equal,
-                         Expression::Operation::kGt);
-  AssertProjectionStrict(spec_sptr, schema, bound_equal, Expression::Operation::kFalse);
+  AssertProjectionStrict(*spec, *schema, bound_less_than, Expression::Operation::kLt);
+  AssertProjectionStrict(*spec, *schema, bound_less_equal, Expression::Operation::kLt);
+  AssertProjectionStrict(*spec, *schema, bound_greater_than, Expression::Operation::kGt);
+  AssertProjectionStrict(*spec, *schema, bound_greater_equal, Expression::Operation::kGt);
+  AssertProjectionStrict(*spec, *schema, bound_equal, Expression::Operation::kFalse);
 }
 
 TEST_F(DateProjectionTest, DayInclusive) {
@@ -586,7 +562,6 @@ TEST_F(DateProjectionTest, DayInclusive) {
   auto day_transform = Transform::Day();
   PartitionField pt_field(1, 1000, "date_day", day_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("date", Literal::Date(date_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -605,15 +580,15 @@ TEST_F(DateProjectionTest, DayInclusive) {
   auto equal_pred = Expressions::Equal("date", Literal::Date(date_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionInclusive(spec_sptr, schema, bound_less_than,
+  AssertProjectionInclusive(*spec, *schema, bound_less_than,
                             Expression::Operation::kLtEq);
-  AssertProjectionInclusive(spec_sptr, schema, bound_less_equal,
+  AssertProjectionInclusive(*spec, *schema, bound_less_equal,
                             Expression::Operation::kLtEq);
-  AssertProjectionInclusive(spec_sptr, schema, bound_greater_than,
+  AssertProjectionInclusive(*spec, *schema, bound_greater_than,
                             Expression::Operation::kGtEq);
-  AssertProjectionInclusive(spec_sptr, schema, bound_greater_equal,
+  AssertProjectionInclusive(*spec, *schema, bound_greater_equal,
                             Expression::Operation::kGtEq);
-  AssertProjectionInclusive(spec_sptr, schema, bound_equal, Expression::Operation::kEq);
+  AssertProjectionInclusive(*spec, *schema, bound_equal, Expression::Operation::kEq);
 }
 
 TEST_F(DateProjectionTest, MonthStrict) {
@@ -624,7 +599,6 @@ TEST_F(DateProjectionTest, MonthStrict) {
   auto month_transform = Transform::Month();
   PartitionField pt_field(1, 1000, "date_month", month_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("date", Literal::Date(date_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -632,8 +606,8 @@ TEST_F(DateProjectionTest, MonthStrict) {
   auto equal_pred = Expressions::Equal("date", Literal::Date(date_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionStrict(spec_sptr, schema, bound_less_than, Expression::Operation::kLt);
-  AssertProjectionStrict(spec_sptr, schema, bound_equal, Expression::Operation::kFalse);
+  AssertProjectionStrict(*spec, *schema, bound_less_than, Expression::Operation::kLt);
+  AssertProjectionStrict(*spec, *schema, bound_equal, Expression::Operation::kFalse);
 }
 
 TEST_F(DateProjectionTest, MonthInclusive) {
@@ -644,7 +618,6 @@ TEST_F(DateProjectionTest, MonthInclusive) {
   auto month_transform = Transform::Month();
   PartitionField pt_field(1, 1000, "date_month", month_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("date", Literal::Date(date_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -652,9 +625,9 @@ TEST_F(DateProjectionTest, MonthInclusive) {
   auto equal_pred = Expressions::Equal("date", Literal::Date(date_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionInclusive(spec_sptr, schema, bound_less_than,
+  AssertProjectionInclusive(*spec, *schema, bound_less_than,
                             Expression::Operation::kLtEq);
-  AssertProjectionInclusive(spec_sptr, schema, bound_equal, Expression::Operation::kEq);
+  AssertProjectionInclusive(*spec, *schema, bound_equal, Expression::Operation::kEq);
 }
 
 TEST_F(DateProjectionTest, YearStrict) {
@@ -665,7 +638,6 @@ TEST_F(DateProjectionTest, YearStrict) {
   auto year_transform = Transform::Year();
   PartitionField pt_field(1, 1000, "date_year", year_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("date", Literal::Date(date_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -673,8 +645,8 @@ TEST_F(DateProjectionTest, YearStrict) {
   auto equal_pred = Expressions::Equal("date", Literal::Date(date_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionStrict(spec_sptr, schema, bound_less_than, Expression::Operation::kLt);
-  AssertProjectionStrict(spec_sptr, schema, bound_equal, Expression::Operation::kFalse);
+  AssertProjectionStrict(*spec, *schema, bound_less_than, Expression::Operation::kLt);
+  AssertProjectionStrict(*spec, *schema, bound_equal, Expression::Operation::kFalse);
 }
 
 TEST_F(DateProjectionTest, YearInclusive) {
@@ -685,7 +657,6 @@ TEST_F(DateProjectionTest, YearInclusive) {
   auto year_transform = Transform::Year();
   PartitionField pt_field(1, 1000, "date_year", year_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("date", Literal::Date(date_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -693,16 +664,15 @@ TEST_F(DateProjectionTest, YearInclusive) {
   auto equal_pred = Expressions::Equal("date", Literal::Date(date_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionInclusive(spec_sptr, schema, bound_less_than,
+  AssertProjectionInclusive(*spec, *schema, bound_less_than,
                             Expression::Operation::kLtEq);
-  AssertProjectionInclusive(spec_sptr, schema, bound_equal, Expression::Operation::kEq);
+  AssertProjectionInclusive(*spec, *schema, bound_equal, Expression::Operation::kEq);
 }
 
 // Timestamp projection tests
 class TimestampProjectionTest : public ::testing::Test {
  protected:
-  void AssertProjectionStrict(const std::shared_ptr<PartitionSpec>& spec,
-                              const std::shared_ptr<Schema>& schema,
+  void AssertProjectionStrict(const PartitionSpec& spec, const Schema& schema,
                               const std::shared_ptr<Expression>& filter,
                               Expression::Operation expected_op) {
     auto evaluator = Projections::Strict(spec, schema, true);
@@ -710,8 +680,7 @@ class TimestampProjectionTest : public ::testing::Test {
     AssertProjectionOperation(projection, expected_op);
   }
 
-  void AssertProjectionInclusive(const std::shared_ptr<PartitionSpec>& spec,
-                                 const std::shared_ptr<Schema>& schema,
+  void AssertProjectionInclusive(const PartitionSpec& spec, const Schema& schema,
                                  const std::shared_ptr<Expression>& filter,
                                  Expression::Operation expected_op) {
     auto evaluator = Projections::Inclusive(spec, schema, true);
@@ -734,7 +703,6 @@ TEST_F(TimestampProjectionTest, DayStrict) {
   auto day_transform = Transform::Day();
   PartitionField pt_field(1, 1000, "timestamp_day", day_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("timestamp", Literal::Timestamp(ts_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -742,8 +710,8 @@ TEST_F(TimestampProjectionTest, DayStrict) {
   auto equal_pred = Expressions::Equal("timestamp", Literal::Timestamp(ts_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionStrict(spec_sptr, schema, bound_less_than, Expression::Operation::kLt);
-  AssertProjectionStrict(spec_sptr, schema, bound_equal, Expression::Operation::kFalse);
+  AssertProjectionStrict(*spec, *schema, bound_less_than, Expression::Operation::kLt);
+  AssertProjectionStrict(*spec, *schema, bound_equal, Expression::Operation::kFalse);
 }
 
 TEST_F(TimestampProjectionTest, DayInclusive) {
@@ -760,7 +728,6 @@ TEST_F(TimestampProjectionTest, DayInclusive) {
   auto day_transform = Transform::Day();
   PartitionField pt_field(1, 1000, "timestamp_day", day_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("timestamp", Literal::Timestamp(ts_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -768,9 +735,9 @@ TEST_F(TimestampProjectionTest, DayInclusive) {
   auto equal_pred = Expressions::Equal("timestamp", Literal::Timestamp(ts_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionInclusive(spec_sptr, schema, bound_less_than,
+  AssertProjectionInclusive(*spec, *schema, bound_less_than,
                             Expression::Operation::kLtEq);
-  AssertProjectionInclusive(spec_sptr, schema, bound_equal, Expression::Operation::kEq);
+  AssertProjectionInclusive(*spec, *schema, bound_equal, Expression::Operation::kEq);
 }
 
 TEST_F(TimestampProjectionTest, MonthStrict) {
@@ -787,7 +754,6 @@ TEST_F(TimestampProjectionTest, MonthStrict) {
   auto month_transform = Transform::Month();
   PartitionField pt_field(1, 1000, "timestamp_month", month_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("timestamp", Literal::Timestamp(ts_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -795,8 +761,8 @@ TEST_F(TimestampProjectionTest, MonthStrict) {
   auto equal_pred = Expressions::Equal("timestamp", Literal::Timestamp(ts_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionStrict(spec_sptr, schema, bound_less_than, Expression::Operation::kLt);
-  AssertProjectionStrict(spec_sptr, schema, bound_equal, Expression::Operation::kFalse);
+  AssertProjectionStrict(*spec, *schema, bound_less_than, Expression::Operation::kLt);
+  AssertProjectionStrict(*spec, *schema, bound_equal, Expression::Operation::kFalse);
 }
 
 TEST_F(TimestampProjectionTest, MonthInclusive) {
@@ -813,7 +779,6 @@ TEST_F(TimestampProjectionTest, MonthInclusive) {
   auto month_transform = Transform::Month();
   PartitionField pt_field(1, 1000, "timestamp_month", month_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("timestamp", Literal::Timestamp(ts_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -821,9 +786,9 @@ TEST_F(TimestampProjectionTest, MonthInclusive) {
   auto equal_pred = Expressions::Equal("timestamp", Literal::Timestamp(ts_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionInclusive(spec_sptr, schema, bound_less_than,
+  AssertProjectionInclusive(*spec, *schema, bound_less_than,
                             Expression::Operation::kLtEq);
-  AssertProjectionInclusive(spec_sptr, schema, bound_equal, Expression::Operation::kEq);
+  AssertProjectionInclusive(*spec, *schema, bound_equal, Expression::Operation::kEq);
 }
 
 TEST_F(TimestampProjectionTest, YearStrict) {
@@ -840,7 +805,6 @@ TEST_F(TimestampProjectionTest, YearStrict) {
   auto year_transform = Transform::Year();
   PartitionField pt_field(1, 1000, "timestamp_year", year_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("timestamp", Literal::Timestamp(ts_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -848,8 +812,8 @@ TEST_F(TimestampProjectionTest, YearStrict) {
   auto equal_pred = Expressions::Equal("timestamp", Literal::Timestamp(ts_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionStrict(spec_sptr, schema, bound_less_than, Expression::Operation::kLt);
-  AssertProjectionStrict(spec_sptr, schema, bound_equal, Expression::Operation::kFalse);
+  AssertProjectionStrict(*spec, *schema, bound_less_than, Expression::Operation::kLt);
+  AssertProjectionStrict(*spec, *schema, bound_equal, Expression::Operation::kFalse);
 }
 
 TEST_F(TimestampProjectionTest, YearInclusive) {
@@ -866,7 +830,6 @@ TEST_F(TimestampProjectionTest, YearInclusive) {
   auto year_transform = Transform::Year();
   PartitionField pt_field(1, 1000, "timestamp_year", year_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("timestamp", Literal::Timestamp(ts_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -874,9 +837,9 @@ TEST_F(TimestampProjectionTest, YearInclusive) {
   auto equal_pred = Expressions::Equal("timestamp", Literal::Timestamp(ts_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionInclusive(spec_sptr, schema, bound_less_than,
+  AssertProjectionInclusive(*spec, *schema, bound_less_than,
                             Expression::Operation::kLtEq);
-  AssertProjectionInclusive(spec_sptr, schema, bound_equal, Expression::Operation::kEq);
+  AssertProjectionInclusive(*spec, *schema, bound_equal, Expression::Operation::kEq);
 }
 
 TEST_F(TimestampProjectionTest, HourStrict) {
@@ -893,7 +856,6 @@ TEST_F(TimestampProjectionTest, HourStrict) {
   auto hour_transform = Transform::Hour();
   PartitionField pt_field(1, 1000, "timestamp_hour", hour_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("timestamp", Literal::Timestamp(ts_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -901,8 +863,8 @@ TEST_F(TimestampProjectionTest, HourStrict) {
   auto equal_pred = Expressions::Equal("timestamp", Literal::Timestamp(ts_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionStrict(spec_sptr, schema, bound_less_than, Expression::Operation::kLt);
-  AssertProjectionStrict(spec_sptr, schema, bound_equal, Expression::Operation::kFalse);
+  AssertProjectionStrict(*spec, *schema, bound_less_than, Expression::Operation::kLt);
+  AssertProjectionStrict(*spec, *schema, bound_equal, Expression::Operation::kFalse);
 }
 
 TEST_F(TimestampProjectionTest, HourInclusive) {
@@ -919,7 +881,6 @@ TEST_F(TimestampProjectionTest, HourInclusive) {
   auto hour_transform = Transform::Hour();
   PartitionField pt_field(1, 1000, "timestamp_hour", hour_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("timestamp", Literal::Timestamp(ts_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -927,16 +888,15 @@ TEST_F(TimestampProjectionTest, HourInclusive) {
   auto equal_pred = Expressions::Equal("timestamp", Literal::Timestamp(ts_value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionInclusive(spec_sptr, schema, bound_less_than,
+  AssertProjectionInclusive(*spec, *schema, bound_less_than,
                             Expression::Operation::kLtEq);
-  AssertProjectionInclusive(spec_sptr, schema, bound_equal, Expression::Operation::kEq);
+  AssertProjectionInclusive(*spec, *schema, bound_equal, Expression::Operation::kEq);
 }
 
 // Truncate projection tests
 class TruncateProjectionTest : public ::testing::Test {
  protected:
-  void AssertProjectionStrict(const std::shared_ptr<PartitionSpec>& spec,
-                              const std::shared_ptr<Schema>& schema,
+  void AssertProjectionStrict(const PartitionSpec& spec, const Schema& schema,
                               const std::shared_ptr<Expression>& filter,
                               Expression::Operation expected_op) {
     auto evaluator = Projections::Strict(spec, schema, true);
@@ -944,8 +904,7 @@ class TruncateProjectionTest : public ::testing::Test {
     AssertProjectionOperation(projection, expected_op);
   }
 
-  void AssertProjectionInclusive(const std::shared_ptr<PartitionSpec>& spec,
-                                 const std::shared_ptr<Schema>& schema,
+  void AssertProjectionInclusive(const PartitionSpec& spec, const Schema& schema,
                                  const std::shared_ptr<Expression>& filter,
                                  Expression::Operation expected_op) {
     auto evaluator = Projections::Inclusive(spec, schema, true);
@@ -961,7 +920,6 @@ TEST_F(TruncateProjectionTest, IntegerStrict) {
   auto truncate_transform = Transform::Truncate(10);
   PartitionField pt_field(1, 1000, "value_trunc", truncate_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("value", Literal::Int(value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -969,8 +927,8 @@ TEST_F(TruncateProjectionTest, IntegerStrict) {
   auto equal_pred = Expressions::Equal("value", Literal::Int(value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionStrict(spec_sptr, schema, bound_less_than, Expression::Operation::kLt);
-  AssertProjectionStrict(spec_sptr, schema, bound_equal, Expression::Operation::kFalse);
+  AssertProjectionStrict(*spec, *schema, bound_less_than, Expression::Operation::kLt);
+  AssertProjectionStrict(*spec, *schema, bound_equal, Expression::Operation::kFalse);
 }
 
 TEST_F(TruncateProjectionTest, IntegerInclusive) {
@@ -980,7 +938,6 @@ TEST_F(TruncateProjectionTest, IntegerInclusive) {
   auto truncate_transform = Transform::Truncate(10);
   PartitionField pt_field(1, 1000, "value_trunc", truncate_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("value", Literal::Int(value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -988,9 +945,9 @@ TEST_F(TruncateProjectionTest, IntegerInclusive) {
   auto equal_pred = Expressions::Equal("value", Literal::Int(value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionInclusive(spec_sptr, schema, bound_less_than,
+  AssertProjectionInclusive(*spec, *schema, bound_less_than,
                             Expression::Operation::kLtEq);
-  AssertProjectionInclusive(spec_sptr, schema, bound_equal, Expression::Operation::kEq);
+  AssertProjectionInclusive(*spec, *schema, bound_equal, Expression::Operation::kEq);
 }
 
 TEST_F(TruncateProjectionTest, LongStrict) {
@@ -1000,7 +957,6 @@ TEST_F(TruncateProjectionTest, LongStrict) {
   auto truncate_transform = Transform::Truncate(10);
   PartitionField pt_field(1, 1000, "value_trunc", truncate_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("value", Literal::Long(value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -1008,8 +964,8 @@ TEST_F(TruncateProjectionTest, LongStrict) {
   auto equal_pred = Expressions::Equal("value", Literal::Long(value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionStrict(spec_sptr, schema, bound_less_than, Expression::Operation::kLt);
-  AssertProjectionStrict(spec_sptr, schema, bound_equal, Expression::Operation::kFalse);
+  AssertProjectionStrict(*spec, *schema, bound_less_than, Expression::Operation::kLt);
+  AssertProjectionStrict(*spec, *schema, bound_equal, Expression::Operation::kFalse);
 }
 
 TEST_F(TruncateProjectionTest, LongInclusive) {
@@ -1019,7 +975,6 @@ TEST_F(TruncateProjectionTest, LongInclusive) {
   auto truncate_transform = Transform::Truncate(10);
   PartitionField pt_field(1, 1000, "value_trunc", truncate_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("value", Literal::Long(value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -1027,9 +982,9 @@ TEST_F(TruncateProjectionTest, LongInclusive) {
   auto equal_pred = Expressions::Equal("value", Literal::Long(value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionInclusive(spec_sptr, schema, bound_less_than,
+  AssertProjectionInclusive(*spec, *schema, bound_less_than,
                             Expression::Operation::kLtEq);
-  AssertProjectionInclusive(spec_sptr, schema, bound_equal, Expression::Operation::kEq);
+  AssertProjectionInclusive(*spec, *schema, bound_equal, Expression::Operation::kEq);
 }
 
 TEST_F(TruncateProjectionTest, StringStrict) {
@@ -1039,7 +994,6 @@ TEST_F(TruncateProjectionTest, StringStrict) {
   auto truncate_transform = Transform::Truncate(5);
   PartitionField pt_field(1, 1000, "value_trunc", truncate_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("value", Literal::String(value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -1047,8 +1001,8 @@ TEST_F(TruncateProjectionTest, StringStrict) {
   auto equal_pred = Expressions::Equal("value", Literal::String(value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionStrict(spec_sptr, schema, bound_less_than, Expression::Operation::kLt);
-  AssertProjectionStrict(spec_sptr, schema, bound_equal, Expression::Operation::kFalse);
+  AssertProjectionStrict(*spec, *schema, bound_less_than, Expression::Operation::kLt);
+  AssertProjectionStrict(*spec, *schema, bound_equal, Expression::Operation::kFalse);
 }
 
 TEST_F(TruncateProjectionTest, StringInclusive) {
@@ -1058,7 +1012,6 @@ TEST_F(TruncateProjectionTest, StringInclusive) {
   auto truncate_transform = Transform::Truncate(5);
   PartitionField pt_field(1, 1000, "value_trunc", truncate_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(0, {pt_field}));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   auto less_than_pred = Expressions::LessThan("value", Literal::String(value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_less_than, less_than_pred->Bind(*schema, true));
@@ -1066,9 +1019,9 @@ TEST_F(TruncateProjectionTest, StringInclusive) {
   auto equal_pred = Expressions::Equal("value", Literal::String(value));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_equal, equal_pred->Bind(*schema, true));
 
-  AssertProjectionInclusive(spec_sptr, schema, bound_less_than,
+  AssertProjectionInclusive(*spec, *schema, bound_less_than,
                             Expression::Operation::kLtEq);
-  AssertProjectionInclusive(spec_sptr, schema, bound_equal, Expression::Operation::kEq);
+  AssertProjectionInclusive(*spec, *schema, bound_equal, Expression::Operation::kEq);
 }
 
 // Complex expression tests
@@ -1085,7 +1038,6 @@ TEST_F(ProjectionsTest, ComplexExpressionWithOr) {
   auto identity_transform = Transform::Identity();
   PartitionField pt_field(4, 1000, "dateint", identity_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec, PartitionSpec::Make(*schema, 0, {pt_field}, false));
-  auto spec_sptr = std::shared_ptr<PartitionSpec>(std::move(spec));
 
   // Create filter: dateint = 20180416 OR ((dateint = 20180415 AND hour >= 20) OR
   // (dateint = 20180417 AND hour <= 4))
@@ -1101,7 +1053,7 @@ TEST_F(ProjectionsTest, ComplexExpressionWithOr) {
   auto filter = Expressions::Or(dateint_eq1, or1);
 
   // Project
-  auto evaluator = Projections::Inclusive(spec_sptr, schema, true);
+  auto evaluator = Projections::Inclusive(*spec, *schema, true);
   ICEBERG_UNWRAP_OR_FAIL(auto projection, evaluator->Project(filter));
 
   // The projection should be an OR expression

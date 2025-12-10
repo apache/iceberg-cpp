@@ -50,7 +50,7 @@ class ICEBERG_EXPORT ProjectionEvaluator {
   /// \param visitor The projection visitor to use
   explicit ProjectionEvaluator(std::unique_ptr<class ProjectionVisitor> visitor);
 
-  std::unique_ptr<class ProjectionVisitor> visitor_;
+  std::unique_ptr<ProjectionVisitor> visitor_;
 };
 
 /// \brief Utils to project expressions on rows to expressions on partitions.
@@ -62,8 +62,7 @@ class ICEBERG_EXPORT ProjectionEvaluator {
 ///
 /// A strict projection guarantees that if a partition matches a projected expression,
 /// then all rows in that partition will match the original expression.
-class ICEBERG_EXPORT Projections {
- public:
+struct ICEBERG_EXPORT Projections {
   /// \brief Creates an inclusive ProjectionEvaluator for the partition spec.
   ///
   /// An evaluator is used to project expressions for a table's data rows into expressions
@@ -75,12 +74,13 @@ class ICEBERG_EXPORT Projections {
   /// Each predicate in the expression is projected using Transform::Project.
   ///
   /// \param spec a partition spec
+  /// \param schema a schema
   /// \param case_sensitive whether the Projection should consider case sensitivity on
   /// column names or not. Defaults to true (case sensitive).
   /// \return an inclusive projection evaluator for the partition spec
-  static std::unique_ptr<ProjectionEvaluator> Inclusive(
-      const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<Schema>& schema,
-      bool case_sensitive = true);
+  static std::unique_ptr<ProjectionEvaluator> Inclusive(const PartitionSpec& spec,
+                                                        const Schema& schema,
+                                                        bool case_sensitive = true);
 
   /// \brief Creates a strict ProjectionEvaluator for the partition spec.
   ///
@@ -93,15 +93,13 @@ class ICEBERG_EXPORT Projections {
   /// Each predicate in the expression is projected using Transform::ProjectStrict.
   ///
   /// \param spec a partition spec
+  /// \param schema a schema
   /// \param case_sensitive whether the Projection should consider case sensitivity on
   /// column names or not. Defaults to true (case sensitive).
   /// \return a strict projection evaluator for the partition spec
-  static std::unique_ptr<ProjectionEvaluator> Strict(
-      const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<Schema>& schema,
-      bool case_sensitive = true);
-
- private:
-  Projections() = default;
+  static std::unique_ptr<ProjectionEvaluator> Strict(const PartitionSpec& spec,
+                                                     const Schema& schema,
+                                                     bool case_sensitive = true);
 };
 
 }  // namespace iceberg
