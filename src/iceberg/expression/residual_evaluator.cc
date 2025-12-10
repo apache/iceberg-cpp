@@ -340,7 +340,8 @@ class UnpartitionedResidualEvaluator : public ResidualEvaluator {
 };
 
 // Static member definition
-const std::shared_ptr<Schema> UnpartitionedResidualEvaluator::empty_schema_;
+const std::shared_ptr<Schema> UnpartitionedResidualEvaluator::empty_schema_ =
+    std::make_shared<Schema>(std::vector<SchemaField>{}, std::nullopt);
 
 }  // namespace
 
