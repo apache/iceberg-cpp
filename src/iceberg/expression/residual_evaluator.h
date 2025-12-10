@@ -25,14 +25,10 @@
 #include <memory>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
-
-class Expression;
-class StructLike;
 
 /// \brief Finds the residuals for an Expression using the partitions in the given
 /// PartitionSpec.
@@ -59,14 +55,15 @@ class ICEBERG_EXPORT ResidualEvaluator {
 
   /// \brief Return a residual evaluator for a PartitionSpec and Expression.
   ///
+  /// \param expr An expression
   /// \param spec A partition spec
   /// \param schema The schema to bind expressions against
-  /// \param expr An expression
   /// \param case_sensitive Whether field name matching is case-sensitive
   /// \return A residual evaluator for the expression
-  static Result<std::unique_ptr<ResidualEvaluator>> Make(
-      const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<Schema>& schema,
-      std::shared_ptr<Expression> expr, bool case_sensitive = true);
+  static Result<std::unique_ptr<ResidualEvaluator>> Make(std::shared_ptr<Expression> expr,
+                                                         const PartitionSpec& spec,
+                                                         const Schema& schema,
+                                                         bool case_sensitive = true);
 
   ~ResidualEvaluator();
 
@@ -78,15 +75,14 @@ class ICEBERG_EXPORT ResidualEvaluator {
       const StructLike& partition_data) const;
 
  protected:
-  ResidualEvaluator(std::shared_ptr<Expression> expr,
-                    const std::shared_ptr<PartitionSpec>& spec,
-                    const std::shared_ptr<Schema>& schema, bool case_sensitive);
+  ResidualEvaluator(std::shared_ptr<Expression> expr, const PartitionSpec& spec,
+                    const Schema& schema, bool case_sensitive);
 
   std::shared_ptr<Expression> expr_;
 
  private:
-  const std::shared_ptr<PartitionSpec>& spec_;
-  const std::shared_ptr<Schema>& schema_;
+  const PartitionSpec& spec_;
+  const Schema& schema_;
   bool case_sensitive_;
 };
 

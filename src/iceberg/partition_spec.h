@@ -27,6 +27,7 @@
 #include <optional>
 #include <span>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
@@ -34,6 +35,7 @@
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/formattable.h"
+#include "iceberg/util/lazy.h"
 
 namespace iceberg {
 
@@ -60,7 +62,7 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   std::span<const PartitionField> fields() const;
 
   /// \brief Get the partition type binding to the input schema.
-  Result<std::unique_ptr<StructType>> PartitionType(const Schema&);
+  Result<std::unique_ptr<StructType>> PartitionType(const Schema&) const;
 
   std::string ToString() const override;
 
@@ -76,6 +78,13 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// source columns have been dropped from the schema.
   /// \return Error status if the partition spec is invalid.
   Status Validate(const Schema& schema, bool allow_missing_fields) const;
+
+  /// \brief Get the partition fields by source ID.
+  /// \param source_id The id of the source field.
+  /// \return The partition fields by source ID, or NotFound if the source field is not
+  /// found.
+  Result<std::vector<std::reference_wrapper<const PartitionField>>> GetFieldsBySourceId(
+      int32_t source_id) const;
 
   /// \brief Create a PartitionSpec binding to a schema.
   /// \param schema The schema to bind the partition spec to.
@@ -116,9 +125,15 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \brief Compare two partition specs for equality.
   bool Equals(const PartitionSpec& other) const;
 
+  using SourceIdToFieldsMap =
+      std::unordered_map<int32_t,
+                         std::vector<std::reference_wrapper<const PartitionField>>>;
+  static Result<SourceIdToFieldsMap> InitSourceIdToFieldsMap(const PartitionSpec&);
+
   const int32_t spec_id_;
   std::vector<PartitionField> fields_;
   int32_t last_assigned_field_id_;
+  Lazy<InitSourceIdToFieldsMap> source_id_to_fields_;
 };
 
 }  // namespace iceberg

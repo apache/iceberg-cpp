@@ -22,125 +22,164 @@
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expression.h"
 #include "iceberg/expression/expression_visitor.h"
-#include "iceberg/expression/expressions.h"
 #include "iceberg/expression/predicate.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/row/struct_like.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/transform.h"
-#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
 
+namespace {
+
+std::shared_ptr<Expression> always_true() { return True::Instance(); }
+std::shared_ptr<Expression> always_false() { return False::Instance(); }
+
 class ResidualVisitor : public BoundVisitor<std::shared_ptr<Expression>> {
  public:
-  ResidualVisitor(const std::shared_ptr<PartitionSpec>& spec,
-                  const std::shared_ptr<Schema>& schema, const StructLike& partition_data,
-                  bool case_sensitive)
-      : spec_(spec),
-        schema_(schema),
-        partition_data_(partition_data),
-        case_sensitive_(case_sensitive) {
-    ICEBERG_ASSIGN_OR_THROW(auto partition_type_, spec_->PartitionType(*schema));
-    partition_schema_ = FromStructType(std::move(*partition_type_), std::nullopt);
+  static Result<ResidualVisitor> Make(const PartitionSpec& spec, const Schema& schema,
+                                      const StructLike& partition_data,
+                                      bool case_sensitive) {
+    ICEBERG_ASSIGN_OR_RAISE(auto partition_type, spec.PartitionType(schema));
+    auto partition_schema = FromStructType(std::move(*partition_type), std::nullopt);
+    return ResidualVisitor(spec, schema, std::move(partition_schema), partition_data,
+                           case_sensitive);
   }
 
-  Result<std::shared_ptr<Expression>> AlwaysTrue() override {
-    return Expressions::AlwaysTrue();
-  }
+  Result<std::shared_ptr<Expression>> AlwaysTrue() override { return always_true(); }
 
-  Result<std::shared_ptr<Expression>> AlwaysFalse() override {
-    return Expressions::AlwaysFalse();
-  }
+  Result<std::shared_ptr<Expression>> AlwaysFalse() override { return always_false(); }
 
   Result<std::shared_ptr<Expression>> Not(
       const std::shared_ptr<Expression>& child_result) override {
-    return Expressions::Not(child_result);
+    return Not::MakeFolded(child_result);
   }
 
   Result<std::shared_ptr<Expression>> And(
       const std::shared_ptr<Expression>& left_result,
       const std::shared_ptr<Expression>& right_result) override {
-    return Expressions::And(left_result, right_result);
+    return And::MakeFolded(left_result, right_result);
   }
 
   Result<std::shared_ptr<Expression>> Or(
       const std::shared_ptr<Expression>& left_result,
       const std::shared_ptr<Expression>& right_result) override {
-    return Expressions::Or(left_result, right_result);
+    return Or::MakeFolded(left_result, right_result);
   }
 
   Result<std::shared_ptr<Expression>> IsNull(
       const std::shared_ptr<Bound>& expr) override {
-    return IsNullImpl(expr);
+    return expr->Evaluate(partition_data_).transform([](const auto& value) {
+      return value.IsNull() ? always_true() : always_false();
+    });
   }
 
   Result<std::shared_ptr<Expression>> NotNull(
       const std::shared_ptr<Bound>& expr) override {
-    return NotNullImpl(expr);
+    return expr->Evaluate(partition_data_).transform([](const auto& value) {
+      return value.IsNull() ? always_false() : always_true();
+    });
   }
 
   Result<std::shared_ptr<Expression>> IsNaN(const std::shared_ptr<Bound>& expr) override {
-    return IsNaNImpl(expr);
+    return expr->Evaluate(partition_data_).transform([](const auto& value) {
+      return value.IsNaN() ? always_true() : always_false();
+    });
   }
 
   Result<std::shared_ptr<Expression>> NotNaN(
       const std::shared_ptr<Bound>& expr) override {
-    return NotNaNImpl(expr);
+    return expr->Evaluate(partition_data_).transform([](const auto& value) {
+      return value.IsNaN() ? always_false() : always_true();
+    });
   }
 
   Result<std::shared_ptr<Expression>> Lt(const std::shared_ptr<Bound>& expr,
                                          const Literal& lit) override {
-    return LtImpl(expr, lit);
+    return expr->Evaluate(partition_data_).transform([&lit](const auto& value) {
+      return value < lit ? always_true() : always_false();
+    });
   }
 
   Result<std::shared_ptr<Expression>> LtEq(const std::shared_ptr<Bound>& expr,
                                            const Literal& lit) override {
-    return LtEqImpl(expr, lit);
+    return expr->Evaluate(partition_data_).transform([&lit](const auto& value) {
+      return value <= lit ? always_true() : always_false();
+    });
   }
 
   Result<std::shared_ptr<Expression>> Gt(const std::shared_ptr<Bound>& expr,
                                          const Literal& lit) override {
-    return GtImpl(expr, lit);
+    return expr->Evaluate(partition_data_).transform([&lit](const auto& value) {
+      return value > lit ? always_true() : always_false();
+    });
   }
 
   Result<std::shared_ptr<Expression>> GtEq(const std::shared_ptr<Bound>& expr,
                                            const Literal& lit) override {
-    return GtEqImpl(expr, lit);
+    return expr->Evaluate(partition_data_).transform([&lit](const auto& value) {
+      return value >= lit ? always_true() : always_false();
+    });
   }
 
   Result<std::shared_ptr<Expression>> Eq(const std::shared_ptr<Bound>& expr,
                                          const Literal& lit) override {
-    return EqImpl(expr, lit);
+    return expr->Evaluate(partition_data_).transform([&lit](const auto& value) {
+      return value == lit ? always_true() : always_false();
+    });
   }
 
   Result<std::shared_ptr<Expression>> NotEq(const std::shared_ptr<Bound>& expr,
                                             const Literal& lit) override {
-    return NotEqImpl(expr, lit);
+    return expr->Evaluate(partition_data_).transform([&lit](const auto& value) {
+      return value != lit ? always_true() : always_false();
+    });
   }
 
   Result<std::shared_ptr<Expression>> StartsWith(const std::shared_ptr<Bound>& expr,
                                                  const Literal& lit) override {
-    return StartsWithImpl(expr, lit);
+    ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(partition_data_));
+
+    if (!std::holds_alternative<std::string>(value.value()) ||
+        !std::holds_alternative<std::string>(lit.value())) {
+      return InvalidExpression("Both value and literal should be strings");
+    }
+
+    const auto& str_value = std::get<std::string>(value.value());
+    const auto& str_prefix = std::get<std::string>(lit.value());
+    return str_value.starts_with(str_prefix) ? always_true() : always_false();
   }
 
   Result<std::shared_ptr<Expression>> NotStartsWith(const std::shared_ptr<Bound>& expr,
                                                     const Literal& lit) override {
-    return NotStartsWithImpl(expr, lit);
+    ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(partition_data_));
+
+    if (!std::holds_alternative<std::string>(value.value()) ||
+        !std::holds_alternative<std::string>(lit.value())) {
+      return InvalidExpression("Both value and literal should be strings");
+    }
+
+    const auto& str_value = std::get<std::string>(value.value());
+    const auto& str_prefix = std::get<std::string>(lit.value());
+    return str_value.starts_with(str_prefix) ? always_false() : always_true();
   }
 
   Result<std::shared_ptr<Expression>> In(
       const std::shared_ptr<Bound>& expr,
       const BoundSetPredicate::LiteralSet& literal_set) override {
-    return InImpl(expr, literal_set);
+    return expr->Evaluate(partition_data_).transform([&literal_set](const auto& value) {
+      return literal_set.contains(value) ? always_true() : always_false();
+    });
   }
 
   Result<std::shared_ptr<Expression>> NotIn(
       const std::shared_ptr<Bound>& expr,
       const BoundSetPredicate::LiteralSet& literal_set) override {
-    return NotInImpl(expr, literal_set);
+    return expr->Evaluate(partition_data_).transform([&literal_set](const auto& value) {
+      return literal_set.contains(value) ? always_false() : always_true();
+    });
   }
 
   Result<std::shared_ptr<Expression>> Predicate(
@@ -148,7 +187,7 @@ class ResidualVisitor : public BoundVisitor<std::shared_ptr<Expression>> {
 
   Result<std::shared_ptr<Expression>> Predicate(
       const std::shared_ptr<UnboundPredicate>& pred) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto bound_predicate, pred->Bind(*schema_, case_sensitive_));
+    ICEBERG_ASSIGN_OR_RAISE(auto bound_predicate, pred->Bind(schema_, case_sensitive_));
     if (bound_predicate->is_bound_predicate()) {
       ICEBERG_ASSIGN_OR_RAISE(
           auto residual,
@@ -164,251 +203,22 @@ class ResidualVisitor : public BoundVisitor<std::shared_ptr<Expression>> {
   }
 
  private:
-  // Helper methods for bound predicates
-  Result<std::shared_ptr<Expression>> EvaluateBoundPredicate(
-      const std::shared_ptr<BoundPredicate>& pred);
+  ResidualVisitor(const PartitionSpec& spec, const Schema& schema,
+                  std::unique_ptr<Schema> partition_schema,
+                  const StructLike& partition_data, bool case_sensitive)
+      : spec_(spec),
+        schema_(schema),
+        partition_schema_(std::move(partition_schema)),
+        partition_data_(partition_data),
+        case_sensitive_(case_sensitive) {}
 
-  Result<std::shared_ptr<Expression>> IsNullImpl(const std::shared_ptr<Bound>& expr);
-  Result<std::shared_ptr<Expression>> NotNullImpl(const std::shared_ptr<Bound>& expr);
-  Result<std::shared_ptr<Expression>> IsNaNImpl(const std::shared_ptr<Bound>& expr);
-  Result<std::shared_ptr<Expression>> NotNaNImpl(const std::shared_ptr<Bound>& expr);
-  Result<std::shared_ptr<Expression>> LtImpl(const std::shared_ptr<Bound>& expr,
-                                             const Literal& lit);
-  Result<std::shared_ptr<Expression>> LtEqImpl(const std::shared_ptr<Bound>& expr,
-                                               const Literal& lit);
-  Result<std::shared_ptr<Expression>> GtImpl(const std::shared_ptr<Bound>& expr,
-                                             const Literal& lit);
-  Result<std::shared_ptr<Expression>> GtEqImpl(const std::shared_ptr<Bound>& expr,
-                                               const Literal& lit);
-  Result<std::shared_ptr<Expression>> EqImpl(const std::shared_ptr<Bound>& expr,
-                                             const Literal& lit);
-  Result<std::shared_ptr<Expression>> NotEqImpl(const std::shared_ptr<Bound>& expr,
-                                                const Literal& lit);
-  Result<std::shared_ptr<Expression>> InImpl(
-      const std::shared_ptr<Bound>& expr,
-      const BoundSetPredicate::LiteralSet& literal_set);
-  Result<std::shared_ptr<Expression>> NotInImpl(
-      const std::shared_ptr<Bound>& expr,
-      const BoundSetPredicate::LiteralSet& literal_set);
-  Result<std::shared_ptr<Expression>> StartsWithImpl(const std::shared_ptr<Bound>& expr,
-                                                     const Literal& lit);
-  Result<std::shared_ptr<Expression>> NotStartsWithImpl(
-      const std::shared_ptr<Bound>& expr, const Literal& lit);
-
-  std::shared_ptr<PartitionSpec> spec_;
-  std::shared_ptr<Schema> schema_;
-  std::shared_ptr<Schema> partition_schema_;
+  const PartitionSpec& spec_;
+  const Schema& schema_;
+  std::unique_ptr<Schema> partition_schema_;
   const StructLike& partition_data_;
   bool case_sensitive_;
 };
-
-Result<std::shared_ptr<Expression>> ResidualVisitor::IsNullImpl(
-    const std::shared_ptr<Bound>& expr) {
-  ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(partition_data_));
-  if (value.IsNull()) {
-    return Expressions::AlwaysTrue();
-  }
-  return Expressions::AlwaysFalse();
-}
-
-Result<std::shared_ptr<Expression>> ResidualVisitor::NotNullImpl(
-    const std::shared_ptr<Bound>& expr) {
-  ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(partition_data_));
-  if (value.IsNull()) {
-    return Expressions::AlwaysFalse();
-  }
-  return Expressions::AlwaysTrue();
-}
-
-Result<std::shared_ptr<Expression>> ResidualVisitor::IsNaNImpl(
-    const std::shared_ptr<Bound>& expr) {
-  ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(partition_data_));
-  if (value.IsNaN()) {
-    return Expressions::AlwaysTrue();
-  }
-  return Expressions::AlwaysFalse();
-}
-
-Result<std::shared_ptr<Expression>> ResidualVisitor::NotNaNImpl(
-    const std::shared_ptr<Bound>& expr) {
-  ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(partition_data_));
-  if (value.IsNaN()) {
-    return Expressions::AlwaysFalse();
-  }
-  return Expressions::AlwaysTrue();
-}
-
-Result<std::shared_ptr<Expression>> ResidualVisitor::LtImpl(
-    const std::shared_ptr<Bound>& expr, const Literal& lit) {
-  ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(partition_data_));
-  if (value < lit) {
-    return Expressions::AlwaysTrue();
-  }
-  return Expressions::AlwaysFalse();
-}
-
-Result<std::shared_ptr<Expression>> ResidualVisitor::LtEqImpl(
-    const std::shared_ptr<Bound>& expr, const Literal& lit) {
-  ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(partition_data_));
-  if (value <= lit) {
-    return Expressions::AlwaysTrue();
-  }
-  return Expressions::AlwaysFalse();
-}
-
-Result<std::shared_ptr<Expression>> ResidualVisitor::GtImpl(
-    const std::shared_ptr<Bound>& expr, const Literal& lit) {
-  ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(partition_data_));
-  if (value > lit) {
-    return Expressions::AlwaysTrue();
-  }
-  return Expressions::AlwaysFalse();
-}
-
-Result<std::shared_ptr<Expression>> ResidualVisitor::GtEqImpl(
-    const std::shared_ptr<Bound>& expr, const Literal& lit) {
-  ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(partition_data_));
-  if (value >= lit) {
-    return Expressions::AlwaysTrue();
-  }
-  return Expressions::AlwaysFalse();
-}
-
-Result<std::shared_ptr<Expression>> ResidualVisitor::EqImpl(
-    const std::shared_ptr<Bound>& expr, const Literal& lit) {
-  ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(partition_data_));
-  if (value == lit) {
-    return Expressions::AlwaysTrue();
-  }
-  return Expressions::AlwaysFalse();
-}
-
-Result<std::shared_ptr<Expression>> ResidualVisitor::NotEqImpl(
-    const std::shared_ptr<Bound>& expr, const Literal& lit) {
-  ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(partition_data_));
-  if (value != lit) {
-    return Expressions::AlwaysTrue();
-  }
-  return Expressions::AlwaysFalse();
-}
-
-Result<std::shared_ptr<Expression>> ResidualVisitor::InImpl(
-    const std::shared_ptr<Bound>& expr,
-    const BoundSetPredicate::LiteralSet& literal_set) {
-  ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(partition_data_));
-  if (literal_set.contains(value)) {
-    return Expressions::AlwaysTrue();
-  }
-  return Expressions::AlwaysFalse();
-}
-
-Result<std::shared_ptr<Expression>> ResidualVisitor::NotInImpl(
-    const std::shared_ptr<Bound>& expr,
-    const BoundSetPredicate::LiteralSet& literal_set) {
-  ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(partition_data_));
-  if (literal_set.contains(value)) {
-    return Expressions::AlwaysFalse();
-  }
-  return Expressions::AlwaysTrue();
-}
-
-Result<std::shared_ptr<Expression>> ResidualVisitor::StartsWithImpl(
-    const std::shared_ptr<Bound>& expr, const Literal& lit) {
-  ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(partition_data_));
-
-  // Both value and literal should be strings
-  if (!std::holds_alternative<std::string>(value.value()) ||
-      !std::holds_alternative<std::string>(lit.value())) {
-    return Expressions::AlwaysFalse();
-  }
-
-  const auto& str_value = std::get<std::string>(value.value());
-  const auto& str_prefix = std::get<std::string>(lit.value());
-  if (str_value.starts_with(str_prefix)) {
-    return Expressions::AlwaysTrue();
-  }
-  return Expressions::AlwaysFalse();
-}
-
-Result<std::shared_ptr<Expression>> ResidualVisitor::NotStartsWithImpl(
-    const std::shared_ptr<Bound>& expr, const Literal& lit) {
-  ICEBERG_ASSIGN_OR_RAISE(auto value, expr->Evaluate(partition_data_));
-
-  // Both value and literal should be strings
-  if (!std::holds_alternative<std::string>(value.value()) ||
-      !std::holds_alternative<std::string>(lit.value())) {
-    return Expressions::AlwaysTrue();
-  }
-
-  const auto& str_value = std::get<std::string>(value.value());
-  const auto& str_prefix = std::get<std::string>(lit.value());
-  if (str_value.starts_with(str_prefix)) {
-    return Expressions::AlwaysFalse();
-  }
-  return Expressions::AlwaysTrue();
-}
-
-Result<std::shared_ptr<Expression>> ResidualVisitor::EvaluateBoundPredicate(
-    const std::shared_ptr<BoundPredicate>& pred) {
-  ICEBERG_DCHECK(pred != nullptr, "BoundPredicate cannot be null");
-
-  switch (pred->kind()) {
-    case BoundPredicate::Kind::kUnary: {
-      switch (pred->op()) {
-        case Expression::Operation::kIsNull:
-          return IsNullImpl(pred->term());
-        case Expression::Operation::kNotNull:
-          return NotNullImpl(pred->term());
-        case Expression::Operation::kIsNan:
-          return IsNaNImpl(pred->term());
-        case Expression::Operation::kNotNan:
-          return NotNaNImpl(pred->term());
-        default:
-          return InvalidExpression("Invalid operation for BoundUnaryPredicate: {}",
-                                   ToString(pred->op()));
-      }
-    }
-    case BoundPredicate::Kind::kLiteral: {
-      const auto& literal_pred =
-          internal::checked_cast<const BoundLiteralPredicate&>(*pred);
-      switch (pred->op()) {
-        case Expression::Operation::kLt:
-          return LtImpl(pred->term(), literal_pred.literal());
-        case Expression::Operation::kLtEq:
-          return LtEqImpl(pred->term(), literal_pred.literal());
-        case Expression::Operation::kGt:
-          return GtImpl(pred->term(), literal_pred.literal());
-        case Expression::Operation::kGtEq:
-          return GtEqImpl(pred->term(), literal_pred.literal());
-        case Expression::Operation::kEq:
-          return EqImpl(pred->term(), literal_pred.literal());
-        case Expression::Operation::kNotEq:
-          return NotEqImpl(pred->term(), literal_pred.literal());
-        case Expression::Operation::kStartsWith:
-          return StartsWithImpl(pred->term(), literal_pred.literal());
-        case Expression::Operation::kNotStartsWith:
-          return NotStartsWithImpl(pred->term(), literal_pred.literal());
-        default:
-          return InvalidExpression("Invalid operation for BoundLiteralPredicate: {}",
-                                   ToString(pred->op()));
-      }
-    }
-    case BoundPredicate::Kind::kSet: {
-      const auto& set_pred = internal::checked_cast<const BoundSetPredicate&>(*pred);
-      switch (pred->op()) {
-        case Expression::Operation::kIn:
-          return InImpl(pred->term(), set_pred.literal_set());
-        case Expression::Operation::kNotIn:
-          return NotInImpl(pred->term(), set_pred.literal_set());
-        default:
-          return InvalidExpression("Invalid operation for BoundSetPredicate: {}",
-                                   ToString(pred->op()));
-      }
-    }
-  }
-
-  return InvalidExpression("Unsupported bound predicate: {}", pred->ToString());
-}
+}  // namespace
 
 Result<std::shared_ptr<Expression>> ResidualVisitor::Predicate(
     const std::shared_ptr<BoundPredicate>& pred) {
@@ -425,22 +235,17 @@ Result<std::shared_ptr<Expression>> ResidualVisitor::Predicate(
   int32_t field_id = ref->field().field_id();
 
   // Find partition fields that match this source field ID
-  std::vector<const PartitionField*> matching_fields;
-  for (const auto& field : spec_->fields()) {
-    if (field.source_id() == field_id) {
-      matching_fields.push_back(&field);
-    }
-  }
+  auto matching_fields = spec_.GetFieldsBySourceId(field_id);
 
-  if (matching_fields.empty()) {
+  if (!matching_fields.has_value()) {
     // Not associated with a partition field, can't be evaluated
     return pred;
   }
 
-  for (const auto* part : matching_fields) {
+  for (const auto& part : matching_fields.value()) {
     // Check the strict projection
-    ICEBERG_ASSIGN_OR_RAISE(auto strict_projection,
-                            part->transform()->ProjectStrict(part->name(), pred));
+    ICEBERG_ASSIGN_OR_RAISE(auto strict_projection, part.get().transform()->ProjectStrict(
+                                                        part.get().name(), pred));
     std::shared_ptr<Expression> strict_result = nullptr;
 
     if (strict_projection != nullptr) {
@@ -454,7 +259,7 @@ Result<std::shared_ptr<Expression>> ResidualVisitor::Predicate(
       if (bound_strict->is_bound_predicate()) {
         // Evaluate the bound predicate against partition data
         ICEBERG_ASSIGN_OR_RAISE(
-            strict_result, EvaluateBoundPredicate(
+            strict_result, BoundVisitor::Predicate(
                                std::dynamic_pointer_cast<BoundPredicate>(bound_strict)));
       } else {
         // If the result is not a predicate, then it must be a constant like alwaysTrue
@@ -465,12 +270,12 @@ Result<std::shared_ptr<Expression>> ResidualVisitor::Predicate(
 
     if (strict_result != nullptr && strict_result->op() == Expression::Operation::kTrue) {
       // If strict is true, returning true
-      return Expressions::AlwaysTrue();
+      return always_true();
     }
 
     // Check the inclusive projection
     ICEBERG_ASSIGN_OR_RAISE(auto inclusive_projection,
-                            part->transform()->Project(part->name(), pred));
+                            part.get().transform()->Project(part.get().name(), pred));
     std::shared_ptr<Expression> inclusive_result = nullptr;
 
     if (inclusive_projection != nullptr) {
@@ -485,7 +290,7 @@ Result<std::shared_ptr<Expression>> ResidualVisitor::Predicate(
         // Evaluate the bound predicate against partition data
         ICEBERG_ASSIGN_OR_RAISE(
             inclusive_result,
-            EvaluateBoundPredicate(
+            BoundVisitor::Predicate(
                 std::dynamic_pointer_cast<BoundPredicate>(bound_inclusive)));
       } else {
         // If the result is not a predicate, then it must be a constant like alwaysTrue
@@ -497,7 +302,7 @@ Result<std::shared_ptr<Expression>> ResidualVisitor::Predicate(
     if (inclusive_result != nullptr &&
         inclusive_result->op() == Expression::Operation::kFalse) {
       // If inclusive is false, returning false
-      return Expressions::AlwaysFalse();
+      return always_false();
     }
   }
 
@@ -506,8 +311,7 @@ Result<std::shared_ptr<Expression>> ResidualVisitor::Predicate(
 }
 
 ResidualEvaluator::ResidualEvaluator(std::shared_ptr<Expression> expr,
-                                     const std::shared_ptr<PartitionSpec>& spec,
-                                     const std::shared_ptr<Schema>& schema,
+                                     const PartitionSpec& spec, const Schema& schema,
                                      bool case_sensitive)
     : expr_(std::move(expr)),
       spec_(spec),
@@ -522,8 +326,8 @@ namespace {
 class UnpartitionedResidualEvaluator : public ResidualEvaluator {
  public:
   explicit UnpartitionedResidualEvaluator(std::shared_ptr<Expression> expr)
-      : ResidualEvaluator(std::move(expr), PartitionSpec::Unpartitioned(), empty_schema_,
-                          true) {}
+      : ResidualEvaluator(std::move(expr), *PartitionSpec::Unpartitioned(),
+                          *empty_schema_, true) {}
 
   Result<std::shared_ptr<Expression>> ResidualFor(
       const StructLike& /*partition_data*/) const override {
@@ -547,9 +351,9 @@ Result<std::unique_ptr<ResidualEvaluator>> ResidualEvaluator::Unpartitioned(
 }
 
 Result<std::unique_ptr<ResidualEvaluator>> ResidualEvaluator::Make(
-    const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<Schema>& schema,
-    std::shared_ptr<Expression> expr, bool case_sensitive) {
-  if (spec->fields().empty()) {
+    std::shared_ptr<Expression> expr, const PartitionSpec& spec, const Schema& schema,
+    bool case_sensitive) {
+  if (spec.fields().empty()) {
     return Unpartitioned(std::move(expr));
   }
   return std::unique_ptr<ResidualEvaluator>(
@@ -558,7 +362,9 @@ Result<std::unique_ptr<ResidualEvaluator>> ResidualEvaluator::Make(
 
 Result<std::shared_ptr<Expression>> ResidualEvaluator::ResidualFor(
     const StructLike& partition_data) const {
-  ResidualVisitor visitor(spec_, schema_, partition_data, case_sensitive_);
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto visitor,
+      ResidualVisitor::Make(spec_, schema_, partition_data, case_sensitive_));
   return Visit<std::shared_ptr<Expression>, ResidualVisitor>(expr_, visitor);
 }
 

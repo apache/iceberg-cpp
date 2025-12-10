@@ -49,7 +49,7 @@ class ResidualEvaluatorTest : public ::testing::Test {
                         const Literal& partition_value,
                         Expression::Operation expected_op) {
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
-                           ResidualEvaluator::Make(spec, schema, pred, true));
+                           ResidualEvaluator::Make(pred, *spec, *schema, true));
     PartitionValues partition_data(partition_value);
     ICEBERG_UNWRAP_OR_FAIL(auto residual, evaluator->ResidualFor(partition_data));
     EXPECT_EQ(residual->op(), expected_op);
@@ -61,7 +61,7 @@ class ResidualEvaluatorTest : public ::testing::Test {
                                const std::shared_ptr<Expression>& pred,
                                const Literal& partition_value) {
     ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
-                           ResidualEvaluator::Make(spec, schema, pred, true));
+                           ResidualEvaluator::Make(pred, *spec, *schema, true));
     PartitionValues partition_data(partition_value);
     ICEBERG_UNWRAP_OR_FAIL(auto residual, evaluator->ResidualFor(partition_data));
     ASSERT_TRUE(residual->is_unbound_predicate());
@@ -112,7 +112,7 @@ TEST_F(ResidualEvaluatorTest, IdentityTransformResiduals) {
                        Expressions::GreaterThan("hour", Literal::Int(11))));
 
   ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
-                         ResidualEvaluator::Make(spec, schema, expr, true));
+                         ResidualEvaluator::Make(expr, *spec, *schema, true));
 
   // Equal to the upper date bound
   PartitionValues partition_data1(Literal::Int(20170815));
@@ -178,7 +178,7 @@ TEST_F(ResidualEvaluatorTest, CaseInsensitiveIdentityTransformResiduals) {
                        Expressions::GreaterThan("hOUr", Literal::Int(11))));
 
   ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
-                         ResidualEvaluator::Make(spec, schema, expr, false));
+                         ResidualEvaluator::Make(expr, *spec, *schema, false));
 
   // Equal to the upper date bound
   PartitionValues partition_data1(Literal::Int(20170815));
@@ -262,7 +262,7 @@ TEST_F(ResidualEvaluatorTest, In) {
                                           Literal::Int(20170817)});
 
   ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
-                         ResidualEvaluator::Make(spec, schema, expr, true));
+                         ResidualEvaluator::Make(expr, *spec, *schema, true));
 
   PartitionValues partition_data1(Literal::Int(20170815));
   ICEBERG_UNWRAP_OR_FAIL(auto residual1, evaluator->ResidualFor(partition_data1));
@@ -290,7 +290,7 @@ TEST_F(ResidualEvaluatorTest, NotIn) {
       {Literal::Int(20170815), Literal::Int(20170816), Literal::Int(20170817)});
 
   ICEBERG_UNWRAP_OR_FAIL(auto evaluator,
-                         ResidualEvaluator::Make(spec, schema, expr, true));
+                         ResidualEvaluator::Make(expr, *spec, *schema, true));
 
   PartitionValues partition_data1(Literal::Int(20180815));
   ICEBERG_UNWRAP_OR_FAIL(auto residual1, evaluator->ResidualFor(partition_data1));
@@ -315,8 +315,9 @@ TEST_F(ResidualEvaluatorTest, IsNaN) {
   auto spec_double = std::shared_ptr<PartitionSpec>(spec_double_unique.release());
 
   auto expr_double = Expressions::IsNaN("double");
-  ICEBERG_UNWRAP_OR_FAIL(auto evaluator_double,
-                         ResidualEvaluator::Make(spec_double, schema, expr_double, true));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto evaluator_double,
+      ResidualEvaluator::Make(expr_double, *spec_double, *schema, true));
 
   PartitionValues partition_data_nan_double(Literal::Double(std::nan("")));
   ICEBERG_UNWRAP_OR_FAIL(auto residual_nan_double,
@@ -336,7 +337,7 @@ TEST_F(ResidualEvaluatorTest, IsNaN) {
 
   auto expr_float = Expressions::IsNaN("float");
   ICEBERG_UNWRAP_OR_FAIL(auto evaluator_float,
-                         ResidualEvaluator::Make(spec_float, schema, expr_float, true));
+                         ResidualEvaluator::Make(expr_float, *spec_float, *schema, true));
 
   PartitionValues partition_data_nan_float(Literal::Float(std::nanf("")));
   ICEBERG_UNWRAP_OR_FAIL(auto residual_nan_float,
@@ -363,8 +364,9 @@ TEST_F(ResidualEvaluatorTest, NotNaN) {
   auto spec_double = std::shared_ptr<PartitionSpec>(spec_double_unique.release());
 
   auto expr_double = Expressions::NotNaN("double");
-  ICEBERG_UNWRAP_OR_FAIL(auto evaluator_double,
-                         ResidualEvaluator::Make(spec_double, schema, expr_double, true));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto evaluator_double,
+      ResidualEvaluator::Make(expr_double, *spec_double, *schema, true));
 
   PartitionValues partition_data_nan_double(Literal::Double(std::nan("")));
   ICEBERG_UNWRAP_OR_FAIL(auto residual_nan_double,
@@ -384,7 +386,7 @@ TEST_F(ResidualEvaluatorTest, NotNaN) {
 
   auto expr_float = Expressions::NotNaN("float");
   ICEBERG_UNWRAP_OR_FAIL(auto evaluator_float,
-                         ResidualEvaluator::Make(spec_float, schema, expr_float, true));
+                         ResidualEvaluator::Make(expr_float, *spec_float, *schema, true));
 
   PartitionValues partition_data_nan_float(Literal::Float(std::nanf("")));
   ICEBERG_UNWRAP_OR_FAIL(auto residual_nan_float,

@@ -60,7 +60,8 @@ int32_t PartitionSpec::spec_id() const { return spec_id_; }
 
 std::span<const PartitionField> PartitionSpec::fields() const { return fields_; }
 
-Result<std::unique_ptr<StructType>> PartitionSpec::PartitionType(const Schema& schema) {
+Result<std::unique_ptr<StructType>> PartitionSpec::PartitionType(
+    const Schema& schema) const {
   if (fields_.empty()) {
     return std::make_unique<StructType>(std::vector<SchemaField>{});
   }
@@ -152,6 +153,25 @@ Status PartitionSpec::Validate(const Schema& schema, bool allow_missing_fields) 
     }
   }
   return {};
+}
+
+Result<std::vector<std::reference_wrapper<const PartitionField>>>
+PartitionSpec::GetFieldsBySourceId(int32_t source_id) const {
+  ICEBERG_ASSIGN_OR_RAISE(auto source_id_to_fields, source_id_to_fields_.Get(*this));
+  if (auto it = source_id_to_fields.get().find(source_id);
+      it != source_id_to_fields.get().cend()) {
+    return it->second;
+  }
+  return NotFound("Cannot find partition fields for source id: {}", source_id);
+}
+
+Result<PartitionSpec::SourceIdToFieldsMap> PartitionSpec::InitSourceIdToFieldsMap(
+    const PartitionSpec& self) {
+  SourceIdToFieldsMap source_id_to_fields;
+  for (const auto& field : self.fields_) {
+    source_id_to_fields[field.source_id()].emplace_back(std::cref(field));
+  }
+  return source_id_to_fields;
 }
 
 Result<std::unique_ptr<PartitionSpec>> PartitionSpec::Make(
