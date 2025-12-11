@@ -162,7 +162,8 @@ PartitionSpec::GetFieldsBySourceId(int32_t source_id) const {
       it != source_id_to_fields.get().cend()) {
     return it->second;
   }
-  return NotFound("Cannot find partition fields for source id: {}", source_id);
+  // Note that it is not an error to not find any partition fields for a source id.
+  return std::vector<PartitionFieldRef>{};
 }
 
 Result<PartitionSpec::SourceIdToFieldsMap> PartitionSpec::InitSourceIdToFieldsMap(

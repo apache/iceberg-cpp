@@ -62,7 +62,7 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   std::span<const PartitionField> fields() const;
 
   /// \brief Get the partition type binding to the input schema.
-  Result<std::unique_ptr<StructType>> PartitionType(const Schema&) const;
+  Result<std::unique_ptr<StructType>> PartitionType(const Schema& schema) const;
 
   std::string ToString() const override;
 
@@ -83,8 +83,8 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \param source_id The id of the source field.
   /// \return The partition fields by source ID, or NotFound if the source field is not
   /// found.
-  Result<std::vector<std::reference_wrapper<const PartitionField>>> GetFieldsBySourceId(
-      int32_t source_id) const;
+  using PartitionFieldRef = std::reference_wrapper<const PartitionField>;
+  Result<std::vector<PartitionFieldRef>> GetFieldsBySourceId(int32_t source_id) const;
 
   /// \brief Create a PartitionSpec binding to a schema.
   /// \param schema The schema to bind the partition spec to.
@@ -125,9 +125,7 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \brief Compare two partition specs for equality.
   bool Equals(const PartitionSpec& other) const;
 
-  using SourceIdToFieldsMap =
-      std::unordered_map<int32_t,
-                         std::vector<std::reference_wrapper<const PartitionField>>>;
+  using SourceIdToFieldsMap = std::unordered_map<int32_t, std::vector<PartitionFieldRef>>;
   static Result<SourceIdToFieldsMap> InitSourceIdToFieldsMap(const PartitionSpec&);
 
   const int32_t spec_id_;

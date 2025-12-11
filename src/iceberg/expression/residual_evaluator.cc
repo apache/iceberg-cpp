@@ -19,7 +19,6 @@
 
 #include "iceberg/expression/residual_evaluator.h"
 
-#include "iceberg/expression/binder.h"
 #include "iceberg/expression/expression.h"
 #include "iceberg/expression/expression_visitor.h"
 #include "iceberg/expression/predicate.h"
@@ -187,11 +186,11 @@ class ResidualVisitor : public BoundVisitor<std::shared_ptr<Expression>> {
 
   Result<std::shared_ptr<Expression>> Predicate(
       const std::shared_ptr<UnboundPredicate>& pred) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto bound_predicate, pred->Bind(schema_, case_sensitive_));
-    if (bound_predicate->is_bound_predicate()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto bound, pred->Bind(schema_, case_sensitive_));
+    if (bound->is_bound_predicate()) {
       ICEBERG_ASSIGN_OR_RAISE(
           auto residual,
-          Predicate(std::dynamic_pointer_cast<BoundPredicate>(bound_predicate)));
+          Predicate(internal::checked_pointer_cast<BoundPredicate>(bound)));
       if (residual->is_bound_predicate()) {
         // replace inclusive original unbound predicate
         return pred;
@@ -199,7 +198,7 @@ class ResidualVisitor : public BoundVisitor<std::shared_ptr<Expression>> {
       return residual;
     }
     // if binding didn't result in a Predicate, return the expression
-    return bound_predicate;
+    return bound;
   }
 
  private:
@@ -218,7 +217,6 @@ class ResidualVisitor : public BoundVisitor<std::shared_ptr<Expression>> {
   const StructLike& partition_data_;
   bool case_sensitive_;
 };
-}  // namespace
 
 Result<std::shared_ptr<Expression>> ResidualVisitor::Predicate(
     const std::shared_ptr<BoundPredicate>& pred) {
@@ -230,37 +228,30 @@ Result<std::shared_ptr<Expression>> ResidualVisitor::Predicate(
   // have returned false, so the predicate can also be eliminated if the inclusive
   // projection evaluates to false.
 
-  // Get the field ID from the predicate's reference
-  const auto& ref = pred->reference();
-  int32_t field_id = ref->field().field_id();
-
-  // Find partition fields that match this source field ID
-  auto matching_fields = spec_.GetFieldsBySourceId(field_id);
-
-  if (!matching_fields.has_value()) {
+  // If there is no strict projection or if it evaluates to false, then return the
+  // predicate.
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto parts, spec_.GetFieldsBySourceId(pred->reference()->field().field_id()));
+  if (parts.empty()) {
     // Not associated with a partition field, can't be evaluated
     return pred;
   }
 
-  for (const auto& part : matching_fields.value()) {
+  for (const auto& part : parts) {
     // Check the strict projection
     ICEBERG_ASSIGN_OR_RAISE(auto strict_projection, part.get().transform()->ProjectStrict(
                                                         part.get().name(), pred));
     std::shared_ptr<Expression> strict_result = nullptr;
 
     if (strict_projection != nullptr) {
-      // Bind the projected predicate to partition type
       ICEBERG_ASSIGN_OR_RAISE(
           auto bound_strict,
-          Binder::Bind(*partition_schema_,
-                       std::shared_ptr<Expression>(std::move(strict_projection)),
-                       case_sensitive_));
-
+          strict_projection->Bind(*partition_schema_, case_sensitive_));
       if (bound_strict->is_bound_predicate()) {
-        // Evaluate the bound predicate against partition data
         ICEBERG_ASSIGN_OR_RAISE(
-            strict_result, BoundVisitor::Predicate(
-                               std::dynamic_pointer_cast<BoundPredicate>(bound_strict)));
+            strict_result,
+            BoundVisitor::Predicate(
+                internal::checked_pointer_cast<BoundPredicate>(bound_strict)));
       } else {
         // If the result is not a predicate, then it must be a constant like alwaysTrue
         // or alwaysFalse
@@ -279,19 +270,15 @@ Result<std::shared_ptr<Expression>> ResidualVisitor::Predicate(
     std::shared_ptr<Expression> inclusive_result = nullptr;
 
     if (inclusive_projection != nullptr) {
-      // Bind the projected predicate to partition type
       ICEBERG_ASSIGN_OR_RAISE(
           auto bound_inclusive,
-          Binder::Bind(*partition_schema_,
-                       std::shared_ptr<Expression>(std::move(inclusive_projection)),
-                       case_sensitive_));
+          inclusive_projection->Bind(*partition_schema_, case_sensitive_));
 
       if (bound_inclusive->is_bound_predicate()) {
-        // Evaluate the bound predicate against partition data
         ICEBERG_ASSIGN_OR_RAISE(
             inclusive_result,
             BoundVisitor::Predicate(
-                std::dynamic_pointer_cast<BoundPredicate>(bound_inclusive)));
+                internal::checked_pointer_cast<BoundPredicate>(bound_inclusive)));
       } else {
         // If the result is not a predicate, then it must be a constant like alwaysTrue
         // or alwaysFalse
@@ -310,6 +297,26 @@ Result<std::shared_ptr<Expression>> ResidualVisitor::Predicate(
   return pred;
 }
 
+// Unpartitioned residual evaluator that always returns the original expression
+class UnpartitionedResidualEvaluator : public ResidualEvaluator {
+ public:
+  explicit UnpartitionedResidualEvaluator(std::shared_ptr<Expression> expr)
+      : ResidualEvaluator(std::move(expr), *PartitionSpec::Unpartitioned(),
+                          *kEmptySchema_, true) {}
+
+  Result<std::shared_ptr<Expression>> ResidualFor(
+      const StructLike& /*partition_data*/) const override {
+    return expr_;
+  }
+
+ private:
+  // Store an empty schema to avoid dangling reference when passing to base class
+  inline static const std::shared_ptr<Schema> kEmptySchema_ =
+      std::make_shared<Schema>(std::vector<SchemaField>{}, std::nullopt);
+};
+
+}  // namespace
+
 ResidualEvaluator::ResidualEvaluator(std::shared_ptr<Expression> expr,
                                      const PartitionSpec& spec, const Schema& schema,
                                      bool case_sensitive)
@@ -319,31 +326,6 @@ ResidualEvaluator::ResidualEvaluator(std::shared_ptr<Expression> expr,
       case_sensitive_(case_sensitive) {}
 
 ResidualEvaluator::~ResidualEvaluator() = default;
-
-namespace {
-
-// Unpartitioned residual evaluator that always returns the original expression
-class UnpartitionedResidualEvaluator : public ResidualEvaluator {
- public:
-  explicit UnpartitionedResidualEvaluator(std::shared_ptr<Expression> expr)
-      : ResidualEvaluator(std::move(expr), *PartitionSpec::Unpartitioned(),
-                          *empty_schema_, true) {}
-
-  Result<std::shared_ptr<Expression>> ResidualFor(
-      const StructLike& /*partition_data*/) const override {
-    return expr_;
-  }
-
- private:
-  // Store an empty schema to avoid dangling reference when passing to base class
-  static const std::shared_ptr<Schema> empty_schema_;
-};
-
-// Static member definition
-const std::shared_ptr<Schema> UnpartitionedResidualEvaluator::empty_schema_ =
-    std::make_shared<Schema>(std::vector<SchemaField>{}, std::nullopt);
-
-}  // namespace
 
 Result<std::unique_ptr<ResidualEvaluator>> ResidualEvaluator::Unpartitioned(
     std::shared_ptr<Expression> expr) {
