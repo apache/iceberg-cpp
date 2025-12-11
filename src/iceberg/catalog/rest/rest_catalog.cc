@@ -101,7 +101,7 @@ Result<std::vector<Namespace>> RestCatalog::ListNamespaces(const Namespace& ns) 
     if (!next_token.empty()) {
       params[kQueryParamPageToken] = next_token;
     }
-    ICEBERG_ASSIGN_OR_RAISE(const auto& response,
+    ICEBERG_ASSIGN_OR_RAISE(const auto response,
                             client_->Get(endpoint, params, /*headers=*/{},
                                          *NamespaceErrorHandler::Instance()));
     ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
@@ -121,7 +121,7 @@ Status RestCatalog::CreateNamespace(
   ICEBERG_ASSIGN_OR_RAISE(auto endpoint, paths_->Namespaces());
   CreateNamespaceRequest request{.namespace_ = ns, .properties = properties};
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
-  ICEBERG_ASSIGN_OR_RAISE(const auto& response,
+  ICEBERG_ASSIGN_OR_RAISE(const auto response,
                           client_->Post(endpoint, json_request, /*headers=*/{},
                                         *NamespaceErrorHandler::Instance()));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
@@ -132,7 +132,7 @@ Status RestCatalog::CreateNamespace(
 Result<std::unordered_map<std::string, std::string>> RestCatalog::GetNamespaceProperties(
     const Namespace& ns) const {
   ICEBERG_ASSIGN_OR_RAISE(auto endpoint, paths_->Namespace_(ns));
-  ICEBERG_ASSIGN_OR_RAISE(const auto& response,
+  ICEBERG_ASSIGN_OR_RAISE(const auto response,
                           client_->Get(endpoint, /*params=*/{}, /*headers=*/{},
                                        *NamespaceErrorHandler::Instance()));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
@@ -143,13 +143,15 @@ Result<std::unordered_map<std::string, std::string>> RestCatalog::GetNamespacePr
 Status RestCatalog::DropNamespace(const Namespace& ns) {
   ICEBERG_ASSIGN_OR_RAISE(auto endpoint, paths_->Namespace_(ns));
   ICEBERG_ASSIGN_OR_RAISE(
-      const auto& response,
+      const auto response,
       client_->Delete(endpoint, /*headers=*/{}, *DropNamespaceErrorHandler::Instance()));
   return {};
 }
 
 Result<bool> RestCatalog::NamespaceExists(const Namespace& ns) const {
   ICEBERG_ASSIGN_OR_RAISE(auto endpoint, paths_->Namespace_(ns));
+  // TODO(Feiyang Li): checks if the server supports the namespace exists endpoint, if
+  // not, triggers a fallback mechanism
   auto response_or_error =
       client_->Head(endpoint, /*headers=*/{}, *NamespaceErrorHandler::Instance());
   if (!response_or_error.has_value()) {
@@ -171,7 +173,7 @@ Status RestCatalog::UpdateNamespaceProperties(
       .removals = std::vector<std::string>(removals.begin(), removals.end()),
       .updates = updates};
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
-  ICEBERG_ASSIGN_OR_RAISE(const auto& response,
+  ICEBERG_ASSIGN_OR_RAISE(const auto response,
                           client_->Post(endpoint, json_request, /*headers=*/{},
                                         *NamespaceErrorHandler::Instance()));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));

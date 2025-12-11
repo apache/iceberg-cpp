@@ -127,9 +127,8 @@ Status HandleFailureResponse(const cpr::Response& response,
     return {};
   }
   auto parse_result = TryParseErrorResponse(response.text);
-  const ErrorResponse final_error = parse_result.has_value()
-                                        ? std::move(*parse_result)
-                                        : BuildDefaultErrorResponse(response);
+  const ErrorResponse final_error =
+      parse_result.value_or(BuildDefaultErrorResponse(response));
   return error_handler.Accept(final_error);
 }
 
