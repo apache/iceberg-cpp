@@ -189,8 +189,7 @@ class ResidualVisitor : public BoundVisitor<std::shared_ptr<Expression>> {
     ICEBERG_ASSIGN_OR_RAISE(auto bound, pred->Bind(schema_, case_sensitive_));
     if (bound->is_bound_predicate()) {
       ICEBERG_ASSIGN_OR_RAISE(
-          auto residual,
-          Predicate(internal::checked_pointer_cast<BoundPredicate>(bound)));
+          auto residual, Predicate(std::dynamic_pointer_cast<BoundPredicate>(bound)));
       if (residual->is_bound_predicate()) {
         // replace inclusive original unbound predicate
         return pred;
@@ -249,9 +248,8 @@ Result<std::shared_ptr<Expression>> ResidualVisitor::Predicate(
           strict_projection->Bind(*partition_schema_, case_sensitive_));
       if (bound_strict->is_bound_predicate()) {
         ICEBERG_ASSIGN_OR_RAISE(
-            strict_result,
-            BoundVisitor::Predicate(
-                internal::checked_pointer_cast<BoundPredicate>(bound_strict)));
+            strict_result, BoundVisitor::Predicate(
+                               std::dynamic_pointer_cast<BoundPredicate>(bound_strict)));
       } else {
         // If the result is not a predicate, then it must be a constant like alwaysTrue
         // or alwaysFalse
@@ -278,7 +276,7 @@ Result<std::shared_ptr<Expression>> ResidualVisitor::Predicate(
         ICEBERG_ASSIGN_OR_RAISE(
             inclusive_result,
             BoundVisitor::Predicate(
-                internal::checked_pointer_cast<BoundPredicate>(bound_inclusive)));
+                std::dynamic_pointer_cast<BoundPredicate>(bound_inclusive)));
       } else {
         // If the result is not a predicate, then it must be a constant like alwaysTrue
         // or alwaysFalse
