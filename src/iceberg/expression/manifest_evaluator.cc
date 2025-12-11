@@ -40,9 +40,9 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
   explicit ManifestEvalVisitor(const ManifestFile& manifest)
       : stats_(manifest.partitions) {}
 
-  Result<bool> AlwaysTrue() override { return true; }
+  Result<bool> AlwaysTrue() override { return kRowsMightMatch; }
 
-  Result<bool> AlwaysFalse() override { return false; }
+  Result<bool> AlwaysFalse() override { return kRowCannotMatch; }
 
   Result<bool> Not(bool child_result) override { return !child_result; }
 
@@ -57,7 +57,7 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
   Result<bool> IsNull(const std::shared_ptr<Bound>& expr) override {
     // no need to check whether the field is required because binding evaluates that case
     // if the column has no null values, the expression cannot match
-    ICEBERG_ASSIGN_OR_RAISE(auto ref, ParseBoundReference(expr));
+    const auto& ref = expr->reference();
     ICEBERG_ASSIGN_OR_RAISE(auto pos, GetPosition(*ref));
     if (!stats_.at(pos).contains_null) {
       return kRowCannotMatch;
@@ -67,7 +67,7 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
   }
 
   Result<bool> NotNull(const std::shared_ptr<Bound>& expr) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto ref, ParseBoundReference(expr));
+    const auto& ref = expr->reference();
     ICEBERG_ASSIGN_OR_RAISE(auto pos, GetPosition(*ref));
     if (AllValuesAreNull(stats_.at(pos), ref->type()->type_id())) {
       return kRowCannotMatch;
@@ -77,7 +77,7 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
   }
 
   Result<bool> IsNaN(const std::shared_ptr<Bound>& expr) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto ref, ParseBoundReference(expr));
+    const auto& ref = expr->reference();
     ICEBERG_ASSIGN_OR_RAISE(auto pos, GetPosition(*ref));
     if (stats_.at(pos).contains_nan.has_value() && !stats_.at(pos).contains_nan.value()) {
       return kRowCannotMatch;
@@ -90,7 +90,7 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
   }
 
   Result<bool> NotNaN(const std::shared_ptr<Bound>& expr) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto ref, ParseBoundReference(expr));
+    const auto& ref = expr->reference();
     ICEBERG_ASSIGN_OR_RAISE(auto pos, GetPosition(*ref));
     const auto& summary = stats_.at(pos);
     // if containsNaN is true, containsNull is false and lowerBound is null, all values
@@ -104,7 +104,7 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
   }
 
   Result<bool> Lt(const std::shared_ptr<Bound>& expr, const Literal& lit) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto ref, ParseBoundReference(expr));
+    const auto& ref = expr->reference();
     ICEBERG_ASSIGN_OR_RAISE(auto pos, GetPosition(*ref));
     const auto& summary = stats_.at(pos);
     if (!summary.lower_bound.has_value()) {
@@ -119,7 +119,7 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
   }
 
   Result<bool> LtEq(const std::shared_ptr<Bound>& expr, const Literal& lit) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto ref, ParseBoundReference(expr));
+    const auto& ref = expr->reference();
     ICEBERG_ASSIGN_OR_RAISE(auto pos, GetPosition(*ref));
     const auto& summary = stats_.at(pos);
     if (!summary.lower_bound.has_value()) {
@@ -134,7 +134,7 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
   }
 
   Result<bool> Gt(const std::shared_ptr<Bound>& expr, const Literal& lit) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto ref, ParseBoundReference(expr));
+    const auto& ref = expr->reference();
     ICEBERG_ASSIGN_OR_RAISE(auto pos, GetPosition(*ref));
     const auto& summary = stats_.at(pos);
     if (!summary.upper_bound.has_value()) {
@@ -149,14 +149,15 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
   }
 
   Result<bool> GtEq(const std::shared_ptr<Bound>& expr, const Literal& lit) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto ref, ParseBoundReference(expr));
+    const auto& ref = expr->reference();
     ICEBERG_ASSIGN_OR_RAISE(auto pos, GetPosition(*ref));
     const auto& summary = stats_.at(pos);
     if (!summary.upper_bound.has_value()) {
       return kRowCannotMatch;  // values are all null
     }
     ICEBERG_ASSIGN_OR_RAISE(
-        auto upper, DeserializeBoundLiteral(summary.upper_bound.value(), ref->type()));
+        auto upper,
+        DeserializeBoundLiteral(summary.upper_bound.value(), expr->reference()->type()));
     if (upper < lit) {
       return kRowCannotMatch;
     }
@@ -164,7 +165,7 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
   }
 
   Result<bool> Eq(const std::shared_ptr<Bound>& expr, const Literal& lit) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto ref, ParseBoundReference(expr));
+    const auto& ref = expr->reference();
     ICEBERG_ASSIGN_OR_RAISE(auto pos, GetPosition(*ref));
     const auto& summary = stats_.at(pos);
     if (!summary.lower_bound.has_value() || !summary.upper_bound.has_value()) {
@@ -193,7 +194,7 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
 
   Result<bool> In(const std::shared_ptr<Bound>& expr,
                   const BoundSetPredicate::LiteralSet& literal_set) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto ref, ParseBoundReference(expr));
+    const auto& ref = expr->reference();
     ICEBERG_ASSIGN_OR_RAISE(auto pos, GetPosition(*ref));
     const auto& summary = stats_.at(pos);
     if (!summary.lower_bound.has_value() || !summary.upper_bound.has_value()) {
@@ -230,14 +231,14 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
 
   Result<bool> StartsWith(const std::shared_ptr<Bound>& expr,
                           const Literal& lit) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto ref, ParseBoundReference(expr));
+    const auto& ref = expr->reference();
     ICEBERG_ASSIGN_OR_RAISE(auto pos, GetPosition(*ref));
     const auto& summary = stats_.at(pos);
     if (!summary.lower_bound.has_value() || !summary.upper_bound.has_value()) {
       return kRowCannotMatch;
     }
     if (lit.type()->type_id() != TypeId::kString) {
-      return Invalid("Invalid literal: not a string, cannot use StartsWith");
+      return InvalidExpression("Invalid literal: not a string, cannot use StartsWith");
     }
     const auto& prefix = std::get<std::string>(lit.value());
     ICEBERG_ASSIGN_OR_RAISE(
@@ -261,7 +262,7 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
 
   Result<bool> NotStartsWith(const std::shared_ptr<Bound>& expr,
                              const Literal& lit) override {
-    ICEBERG_ASSIGN_OR_RAISE(auto ref, ParseBoundReference(expr));
+    const auto& ref = expr->reference();
     ICEBERG_ASSIGN_OR_RAISE(auto pos, GetPosition(*ref));
     const auto& summary = stats_.at(pos);
     if (summary.contains_null || !summary.lower_bound.has_value() ||
@@ -269,7 +270,7 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
       return kRowsMightMatch;
     }
     if (lit.type()->type_id() != TypeId::kString) {
-      return Invalid("Invalid literal: not a string, cannot use notStartsWith");
+      return InvalidExpression("Invalid literal: not a string, cannot use notStartsWith");
     }
     // notStartsWith will match unless all values must start with the prefix. This happens
     // when the lower and upper bounds both start with the prefix.
@@ -301,27 +302,20 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
   }
 
  private:
-  Result<BoundReference*> ParseBoundReference(const std::shared_ptr<Bound>& expr) const {
-    auto ref = dynamic_cast<BoundReference*>(expr.get());
-    if (ref == nullptr) {
-      return Invalid("Invalid expression: not a BoundReference");
-    }
-    return ref;
-  }
-
   Result<size_t> GetPosition(const BoundReference& ref) const {
     const auto& accessor = ref.accessor();
     const auto& position_path = accessor.position_path();
     if (position_path.empty()) {
-      return Invalid("Invalid accessor: empty position path.");
+      return InvalidArgument("Invalid accessor: empty position path.");
     }
     // nested accessors are not supported for partition fields
     if (position_path.size() > 1) {
-      return Invalid("Cannot convert nested accessor to position");
+      return InvalidArgument("Cannot convert nested accessor to position");
     }
     auto pos = position_path.at(0);
     if (pos >= stats_.size()) {
-      return Invalid("Invalid position: out of partition filed range.");
+      return InvalidArgument("Position {} is out of partition field range {}", pos,
+                             stats_.size());
     }
     return pos;
   }
@@ -344,8 +338,8 @@ class ManifestEvalVisitor : public BoundVisitor<bool> {
     if (!type->is_primitive()) {
       return NotSupported("Bounds of non-primitive partition fields are not supported.");
     }
-    auto primitive_type = internal::checked_pointer_cast<PrimitiveType>(type);
-    return Literal::Deserialize(bound, primitive_type);
+    return Literal::Deserialize(
+        bound, std::move(internal::checked_pointer_cast<PrimitiveType>(type)));
   }
 
  private:
