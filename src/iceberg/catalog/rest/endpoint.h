@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include <set>
 #include <string>
 #include <string_view>
 
@@ -138,7 +137,7 @@ class ICEBERG_REST_EXPORT Endpoint {
   }
 
  private:
-  Endpoint(HttpMethod method, std::string_view path_template)
+  constexpr Endpoint(HttpMethod method, std::string_view path_template)
       : method_(method), path_template_(path_template) {}
 
   HttpMethod method_;
