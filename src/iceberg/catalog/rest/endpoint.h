@@ -78,66 +78,66 @@ class ICEBERG_REST_EXPORT Endpoint {
   }
 
   // Namespace endpoints
-  static constexpr Endpoint ListNamespaces() {
+  static Endpoint ListNamespaces() {
     return {HttpMethod::GET, "/v1/{prefix}/namespaces"};
   }
-  static constexpr Endpoint GetNamespaceProperties() {
+  static Endpoint GetNamespaceProperties() {
     return {HttpMethod::GET, "/v1/{prefix}/namespaces/{namespace}"};
   }
-  static constexpr Endpoint NamespaceExists() {
+  static Endpoint NamespaceExists() {
     return {HttpMethod::HEAD, "/v1/{prefix}/namespaces/{namespace}"};
   }
-  static constexpr Endpoint CreateNamespace() {
+  static Endpoint CreateNamespace() {
     return {HttpMethod::POST, "/v1/{prefix}/namespaces"};
   }
-  static constexpr Endpoint UpdateNamespace() {
+  static Endpoint UpdateNamespace() {
     return {HttpMethod::POST, "/v1/{prefix}/namespaces/{namespace}/properties"};
   }
-  static constexpr Endpoint DropNamespace() {
+  static Endpoint DropNamespace() {
     return {HttpMethod::DELETE, "/v1/{prefix}/namespaces/{namespace}"};
   }
 
   // Table endpoints
-  static constexpr Endpoint ListTables() {
+  static Endpoint ListTables() {
     return {HttpMethod::GET, "/v1/{prefix}/namespaces/{namespace}/tables"};
   }
-  static constexpr Endpoint LoadTable() {
+  static Endpoint LoadTable() {
     return {HttpMethod::GET, "/v1/{prefix}/namespaces/{namespace}/tables/{table}"};
   }
-  static constexpr Endpoint TableExists() {
+  static Endpoint TableExists() {
     return {HttpMethod::HEAD, "/v1/{prefix}/namespaces/{namespace}/tables/{table}"};
   }
-  static constexpr Endpoint CreateTable() {
+  static Endpoint CreateTable() {
     return {HttpMethod::POST, "/v1/{prefix}/namespaces/{namespace}/tables"};
   }
-  static constexpr Endpoint UpdateTable() {
+  static Endpoint UpdateTable() {
     return {HttpMethod::POST, "/v1/{prefix}/namespaces/{namespace}/tables/{table}"};
   }
-  static constexpr Endpoint DeleteTable() {
+  static Endpoint DeleteTable() {
     return {HttpMethod::DELETE, "/v1/{prefix}/namespaces/{namespace}/tables/{table}"};
   }
-  static constexpr Endpoint RenameTable() {
+  static Endpoint RenameTable() {
     return {HttpMethod::POST, "/v1/{prefix}/tables/rename"};
   }
-  static constexpr Endpoint RegisterTable() {
+  static Endpoint RegisterTable() {
     return {HttpMethod::POST, "/v1/{prefix}/namespaces/{namespace}/register"};
   }
-  static constexpr Endpoint ReportMetrics() {
+  static Endpoint ReportMetrics() {
     return {HttpMethod::POST,
             "/v1/{prefix}/namespaces/{namespace}/tables/{table}/metrics"};
   }
-  static constexpr Endpoint TableCredentials() {
+  static Endpoint TableCredentials() {
     return {HttpMethod::GET,
             "/v1/{prefix}/namespaces/{namespace}/tables/{table}/credentials"};
   }
 
   // Transaction endpoints
-  static constexpr Endpoint CommitTransaction() {
+  static Endpoint CommitTransaction() {
     return {HttpMethod::POST, "/v1/{prefix}/transactions/commit"};
   }
 
  private:
-  constexpr Endpoint(HttpMethod method, std::string_view path_template)
+  Endpoint(HttpMethod method, std::string_view path_template)
       : method_(method), path_template_(path_template) {}
 
   HttpMethod method_;
