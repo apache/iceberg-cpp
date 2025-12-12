@@ -41,7 +41,6 @@ Table::Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata
       metadata_location_(std::move(metadata_location)),
       io_(std::move(io)),
       catalog_(std::move(catalog)),
-      properties_(TableProperties::FromMap(metadata_->properties)),
       metadata_cache_(std::make_unique<TableMetadataCache>(metadata_.get())) {}
 
 const std::string& Table::uuid() const { return metadata_->table_uuid; }
@@ -56,7 +55,6 @@ Status Table::Refresh() {
     metadata_ = std::move(refreshed_table->metadata_);
     metadata_location_ = std::move(refreshed_table->metadata_location_);
     io_ = std::move(refreshed_table->io_);
-    properties_ = std::move(refreshed_table->properties_);
     metadata_cache_ = std::make_unique<TableMetadataCache>(metadata_.get());
   }
   return {};
@@ -89,7 +87,9 @@ Table::sort_orders() const {
   return metadata_cache_->GetSortOrdersById();
 }
 
-const TableProperties& Table::properties() const { return *properties_; }
+const std::shared_ptr<TableProperties>& Table::properties() const {
+  return metadata_->properties;
+}
 
 const std::string& Table::location() const { return metadata_->location; }
 

@@ -29,6 +29,7 @@
 #include "iceberg/sort_field.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_properties.h"
 #include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
@@ -63,6 +64,7 @@ std::unique_ptr<TableMetadata> CreateBaseMetadata() {
   metadata->default_sort_order_id = SortOrder::kInitialSortOrderId;
   metadata->sort_orders.push_back(SortOrder::Unsorted());
   metadata->next_row_id = TableMetadata::kInitialRowId;
+  metadata->properties = TableProperties::default_properties();
   return metadata;
 }
 
@@ -145,9 +147,9 @@ TEST(TableMetadataBuilderTest, SetProperties) {
   builder->SetProperties({{"key1", "value1"}, {"key2", "value2"}});
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
-  EXPECT_EQ(metadata->properties.size(), 2);
-  EXPECT_EQ(metadata->properties["key1"], "value1");
-  EXPECT_EQ(metadata->properties["key2"], "value2");
+  EXPECT_EQ(metadata->properties->configs().size(), 2);
+  EXPECT_EQ(metadata->properties->configs().at("key1"), "value1");
+  EXPECT_EQ(metadata->properties->configs().at("key2"), "value2");
 
   // Update existing property and add new one
   builder = TableMetadataBuilder::BuildFromEmpty(2);
@@ -155,9 +157,9 @@ TEST(TableMetadataBuilderTest, SetProperties) {
   builder->SetProperties({{"key1", "new_value1"}, {"key3", "value3"}});
 
   ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
-  EXPECT_EQ(metadata->properties.size(), 2);
-  EXPECT_EQ(metadata->properties["key1"], "new_value1");
-  EXPECT_EQ(metadata->properties["key3"], "value3");
+  EXPECT_EQ(metadata->properties->configs().size(), 2);
+  EXPECT_EQ(metadata->properties->configs().at("key1"), "new_value1");
+  EXPECT_EQ(metadata->properties->configs().at("key3"), "value3");
 }
 
 TEST(TableMetadataBuilderTest, RemoveProperties) {
@@ -166,9 +168,9 @@ TEST(TableMetadataBuilderTest, RemoveProperties) {
   builder->RemoveProperties({"key2", "key4"});  // key4 does not exist
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
-  EXPECT_EQ(metadata->properties.size(), 2);
-  EXPECT_EQ(metadata->properties["key1"], "value1");
-  EXPECT_EQ(metadata->properties["key3"], "value3");
+  EXPECT_EQ(metadata->properties->configs().size(), 2);
+  EXPECT_EQ(metadata->properties->configs().at("key1"), "value1");
+  EXPECT_EQ(metadata->properties->configs().at("key3"), "value3");
 }
 
 TEST(TableMetadataBuilderTest, UpgradeFormatVersion) {

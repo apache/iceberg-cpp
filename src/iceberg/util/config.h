@@ -112,6 +112,8 @@ class ConfigBase {
 
   const std::unordered_map<std::string, std::string>& configs() const { return configs_; }
 
+  std::unordered_map<std::string, std::string>& mutable_configs() { return configs_; }
+
   /// \brief Extracts the prefix from the configuration.
   /// \param prefix The prefix to extract.
   /// \return A map of entries that match the prefix with prefix removed.

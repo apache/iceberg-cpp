@@ -38,6 +38,7 @@
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_order.h"
+#include "iceberg/table_properties.h"
 #include "iceberg/table_update.h"
 #include "iceberg/util/gzip_internal.h"
 #include "iceberg/util/macros.h"
@@ -141,6 +142,19 @@ bool SnapshotRefEquals(
   return true;
 }
 
+bool TablePropertiesEquals(const std::shared_ptr<TableProperties>& lhs,
+                           const std::shared_ptr<TableProperties>& rhs) {
+  bool left_is_empty = lhs == nullptr || lhs->configs().empty();
+  bool right_is_empty = rhs == nullptr || rhs->configs().empty();
+  if (left_is_empty && right_is_empty) {
+    return true;
+  }
+  if (left_is_empty || right_is_empty) {
+    return false;
+  }
+  return lhs->configs() == rhs->configs();
+}
+
 }  // namespace
 
 bool operator==(const TableMetadata& lhs, const TableMetadata& rhs) {
@@ -153,7 +167,7 @@ bool operator==(const TableMetadata& lhs, const TableMetadata& rhs) {
          SharedPtrVectorEquals(lhs.schemas, rhs.schemas) &&
          lhs.default_spec_id == rhs.default_spec_id &&
          lhs.last_partition_id == rhs.last_partition_id &&
-         lhs.properties == rhs.properties &&
+         TablePropertiesEquals(lhs.properties, rhs.properties) &&
          lhs.current_snapshot_id == rhs.current_snapshot_id &&
          SharedPtrVectorEquals(lhs.snapshots, rhs.snapshots) &&
          lhs.snapshot_log == rhs.snapshot_log && lhs.metadata_log == rhs.metadata_log &&
@@ -300,6 +314,7 @@ struct TableMetadataBuilder::Impl {
     metadata.current_snapshot_id = Snapshot::kInvalidSnapshotId;
     metadata.default_sort_order_id = SortOrder::kInitialSortOrderId;
     metadata.next_row_id = TableMetadata::kInitialRowId;
+    metadata.properties = TableProperties::default_properties();
   }
 
   // Constructor from existing metadata
@@ -611,7 +626,7 @@ TableMetadataBuilder& TableMetadataBuilder::SetProperties(
 
   // Add all updated properties to the metadata properties
   for (const auto& [key, value] : updated) {
-    impl_->metadata.properties[key] = value;
+    impl_->metadata.properties->mutable_configs()[key] = value;
   }
 
   // Record the change
@@ -629,7 +644,7 @@ TableMetadataBuilder& TableMetadataBuilder::RemoveProperties(
 
   // Remove each property from the metadata properties
   for (const auto& key : removed) {
-    impl_->metadata.properties.erase(key);
+    impl_->metadata.properties->mutable_configs().erase(key);
   }
 
   // Record the change
