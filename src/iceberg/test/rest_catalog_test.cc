@@ -32,9 +32,13 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <netinet/in.h>
+#include <nlohmann/json.hpp>
 #include <sys/socket.h>
 
 #include "iceberg/catalog/rest/catalog_properties.h"
+#include "iceberg/catalog/rest/error_handlers.h"
+#include "iceberg/catalog/rest/http_client.h"
+#include "iceberg/catalog/rest/json_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/test/matchers.h"
@@ -135,6 +139,40 @@ TEST_F(RestCatalogIntegrationTest, MakeCatalogSuccess) {
 
   auto& catalog = catalog_result.value();
   EXPECT_EQ(catalog->name(), kCatalogName);
+}
+
+/// Verifies that the server's /v1/config endpoint returns a valid response
+/// and that the endpoints field (if present) can be parsed correctly.
+TEST_F(RestCatalogIntegrationTest, FetchServerConfigDirect) {
+  // Create HTTP client and fetch config directly
+  HttpClient client({});
+  std::string config_url =
+      std::format("{}:{}/v1/config", kLocalhostUri, kRestCatalogPort);
+
+  auto response_result = client.Get(config_url, {}, {}, *DefaultErrorHandler::Instance());
+  ASSERT_THAT(response_result, IsOk());
+  auto json_result = FromJsonString(response_result->body());
+  ASSERT_THAT(json_result, IsOk());
+  auto& json = json_result.value();
+
+  EXPECT_TRUE(json.contains("defaults"));
+  EXPECT_TRUE(json.contains("overrides"));
+
+  if (json.contains("endpoints")) {
+    EXPECT_TRUE(json["endpoints"].is_array());
+
+    // Parse the config to ensure all endpoints are valid
+    auto config_result = CatalogConfigFromJson(json);
+    ASSERT_THAT(config_result, IsOk());
+    auto& config = config_result.value();
+    std::println("[INFO] Server provided {} endpoints", config.endpoints.size());
+    EXPECT_GT(config.endpoints.size(), 0)
+        << "Server should provide at least one endpoint";
+  } else {
+    std::println(
+        "[INFO] Server did not provide endpoints field, client will use default "
+        "endpoints");
+  }
 }
 
 TEST_F(RestCatalogIntegrationTest, ListNamespaces) {

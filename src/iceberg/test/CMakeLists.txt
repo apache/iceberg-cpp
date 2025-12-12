@@ -170,7 +170,10 @@ if(ICEBERG_BUILD_REST)
     add_test(NAME ${test_name} COMMAND ${test_name})
   endfunction()
 
-  add_rest_iceberg_test(rest_catalog_test SOURCES rest_json_internal_test.cc
+  add_rest_iceberg_test(rest_catalog_test
+                        SOURCES
+                        endpoint_test.cc
+                        rest_json_internal_test.cc
                         rest_util_test.cc)
 
   if(ICEBERG_BUILD_REST_INTEGRATION_TESTS)

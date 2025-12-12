@@ -18,6 +18,7 @@
 set(ICEBERG_REST_SOURCES
     rest_catalog.cc
     catalog_properties.cc
+    endpoint.cc
     error_handlers.cc
     http_client.cc
     json_internal.cc

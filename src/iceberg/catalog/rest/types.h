@@ -24,6 +24,7 @@
 #include <unordered_map>
 #include <vector>
 
+#include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/result.h"
 #include "iceberg/table_identifier.h"
@@ -39,16 +40,10 @@ namespace iceberg::rest {
 struct ICEBERG_REST_EXPORT CatalogConfig {
   std::unordered_map<std::string, std::string> defaults;   // required
   std::unordered_map<std::string, std::string> overrides;  // required
-  std::vector<std::string> endpoints;
+  std::vector<Endpoint> endpoints;
 
   /// \brief Validates the CatalogConfig.
-  Status Validate() const {
-    // TODO(Li Feiyang): Add an invalidEndpoint test that validates endpoint format.
-    // See:
-    // https://github.com/apache/iceberg/blob/main/core/src/test/java/org/apache/iceberg/rest/responses/TestConfigResponseParser.java#L164
-    // for reference.
-    return {};
-  }
+  Status Validate() const { return {}; }
 };
 
 /// \brief JSON error payload returned in a response with further details on the error.

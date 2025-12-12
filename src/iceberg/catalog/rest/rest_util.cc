@@ -23,6 +23,7 @@
 
 #include <cpr/util.h>
 
+#include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/util/macros.h"
 
@@ -249,6 +250,14 @@ std::string GetStandardReasonPhrase(int32_t status_code) {
     default:
       return std::format("HTTP {}", status_code);
   }
+}
+
+Status CheckEndpoint(const std::set<Endpoint>& supported_endpoints,
+                     const Endpoint& endpoint) {
+  if (!supported_endpoints.contains(endpoint)) {
+    return NotSupported("Server does not support endpoint: {}", endpoint.ToString());
+  }
+  return {};
 }
 
 }  // namespace iceberg::rest
