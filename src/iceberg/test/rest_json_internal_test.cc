@@ -783,7 +783,7 @@ INSTANTIATE_TEST_SUITE_P(
         CatalogConfigParam{.test_name = "BothEmpty",
                            .expected_json_str = R"({"defaults":{},"overrides":{}})",
                            .model = {}},
-        // With endpoints
+        // With valid endpoints
         CatalogConfigParam{
             .test_name = "WithEndpoints",
             .expected_json_str =
@@ -791,13 +791,14 @@ INSTANTIATE_TEST_SUITE_P(
             .model = {.defaults = {{"warehouse", "s3://bucket/warehouse"}},
                       .overrides = {{"clients", "5"}},
 
-                      .endpoints = {"GET /v1/config", "POST /v1/tables"}}},
+                      .endpoints = {*Endpoint::Create(HttpMethod::GET, "/v1/config"),
+                                    *Endpoint::Create(HttpMethod::POST, "/v1/tables")}}},
         // Only endpoints
         CatalogConfigParam{
             .test_name = "OnlyEndpoints",
             .expected_json_str =
                 R"({"defaults":{},"overrides":{},"endpoints":["GET /v1/config"]})",
-            .model = {.endpoints = {"GET /v1/config"}}}),
+            .model = {.endpoints = {*Endpoint::Create(HttpMethod::GET, "/v1/config")}}}),
     [](const ::testing::TestParamInfo<CatalogConfigParam>& info) {
       return info.param.test_name;
     });
@@ -834,7 +835,12 @@ INSTANTIATE_TEST_SUITE_P(
         // Both fields null
         CatalogConfigDeserializeParam{.test_name = "BothNull",
                                       .json_str = R"({"defaults":null,"overrides":null})",
-                                      .expected_model = {}}),
+                                      .expected_model = {}},
+        // Missing endpoints field, client will uses default endpoints
+        CatalogConfigDeserializeParam{
+            .test_name = "MissingEndpoints",
+            .json_str = R"({"defaults":{},"overrides":{}})",
+            .expected_model = {.defaults = {}, .overrides = {}, .endpoints = {}}}),
     [](const ::testing::TestParamInfo<CatalogConfigDeserializeParam>& info) {
       return info.param.test_name;
     });
@@ -855,7 +861,22 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "WrongOverridesType",
             .invalid_json_str =
                 R"({"defaults":{"warehouse":"s3://bucket/warehouse"},"overrides":"clients"})",
-            .expected_error_message = "type must be object, but is string"}),
+            .expected_error_message = "type must be object, but is string"},
+        // Invalid endpoint format - missing space separator
+        CatalogConfigInvalidParam{
+            .test_name = "InvalidEndpointMissingSpace",
+            .invalid_json_str = R"({"endpoints":["GET_v1/namespaces/{namespace}"]})",
+            .expected_error_message =
+                "Invalid endpoint format (must consist of two elements separated by a "
+                "single space)"},
+        // Invalid endpoint format - extra element after path
+        CatalogConfigInvalidParam{
+            .test_name = "InvalidEndpointExtraElement",
+            .invalid_json_str =
+                R"({"endpoints":["GET v1/namespaces/{namespace} INVALID"]})",
+            .expected_error_message =
+                "Invalid endpoint format (must consist of two elements separated by a "
+                "single space)"}),
     [](const ::testing::TestParamInfo<CatalogConfigInvalidParam>& info) {
       return info.param.test_name;
     });

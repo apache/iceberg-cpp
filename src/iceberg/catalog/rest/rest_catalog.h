@@ -20,9 +20,11 @@
 #pragma once
 
 #include <memory>
+#include <set>
 #include <string>
 
 #include "iceberg/catalog.h"
+#include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/result.h"
@@ -98,12 +100,13 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog {
 
  private:
   RestCatalog(std::unique_ptr<RestCatalogProperties> config,
-              std::unique_ptr<ResourcePaths> paths);
+              std::unique_ptr<ResourcePaths> paths, std::set<Endpoint> endpoints);
 
   std::unique_ptr<RestCatalogProperties> config_;
   std::unique_ptr<HttpClient> client_;
   std::unique_ptr<ResourcePaths> paths_;
   std::string name_;
+  std::set<Endpoint> supported_endpoints_;
 };
 
 }  // namespace iceberg::rest

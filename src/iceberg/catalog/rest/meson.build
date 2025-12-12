@@ -17,6 +17,7 @@
 
 iceberg_rest_sources = files(
     'catalog_properties.cc',
+    'endpoint.cc',
     'error_handlers.cc',
     'http_client.cc',
     'json_internal.cc',
@@ -58,6 +59,7 @@ install_headers(
     [
         'catalog_properties.h',
         'constant.h',
+        'endpoint.h',
         'error_handlers.h',
         'http_client.h',
         'iceberg_rest_export.h',

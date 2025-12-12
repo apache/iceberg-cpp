@@ -26,6 +26,7 @@ namespace iceberg::rest {
 
 struct ErrorResponse;
 
+class Endpoint;
 class ErrorHandler;
 class HttpClient;
 class ResourcePaths;

@@ -73,7 +73,10 @@ nlohmann::json ToJson(const CatalogConfig& config) {
   nlohmann::json json;
   json[kOverrides] = config.overrides;
   json[kDefaults] = config.defaults;
-  SetContainerField(json, kEndpoints, config.endpoints);
+  for (const auto& endpoint : config.endpoints) {
+    auto endpoint_str = endpoint.ToString();
+    json[kEndpoints].push_back(endpoint_str);
+  }
   return json;
 }
 
@@ -85,8 +88,15 @@ Result<CatalogConfig> CatalogConfigFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(
       config.defaults, GetJsonValueOrDefault<decltype(config.defaults)>(json, kDefaults));
   ICEBERG_ASSIGN_OR_RAISE(
-      config.endpoints,
-      GetJsonValueOrDefault<std::vector<std::string>>(json, kEndpoints));
+      auto endpoints, GetJsonValueOrDefault<std::vector<std::string>>(json, kEndpoints));
+  for (const auto& endpoint_str : endpoints) {
+    auto endpoint_result = Endpoint::FromString(endpoint_str);
+    if (!endpoint_result.has_value()) {
+      // Convert to JsonParseError in JSON deserialization context
+      return JsonParseError("{}", endpoint_result.error().message);
+    }
+    config.endpoints.push_back(std::move(*endpoint_result));
+  }
   ICEBERG_RETURN_UNEXPECTED(config.Validate());
   return config;
 }
