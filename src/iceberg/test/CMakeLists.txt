@@ -106,6 +106,7 @@ add_iceberg_test(util_test
                  decimal_test.cc
                  endian_test.cc
                  formatter_test.cc
+                 location_util_test.cc
                  string_util_test.cc
                  truncate_util_test.cc
                  uuid_test.cc

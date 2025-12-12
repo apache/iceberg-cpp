@@ -21,14 +21,17 @@
 #include <string>
 #include <vector>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "iceberg/partition_spec.h"
+#include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_field.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_properties.h"
 #include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
@@ -49,6 +52,7 @@ std::shared_ptr<Schema> CreateTestSchema() {
 // Helper function to create base metadata for tests
 std::unique_ptr<TableMetadata> CreateBaseMetadata() {
   auto metadata = std::make_unique<TableMetadata>();
+  metadata->metadata_file_location = "s3://bucket/test/00010-xxx.metadata.json";
   metadata->format_version = 2;
   metadata->table_uuid = "test-uuid-1234";
   metadata->location = "s3://bucket/test";
@@ -83,6 +87,7 @@ TEST(TableMetadataBuilderTest, BuildFromEmpty) {
   EXPECT_EQ(metadata->default_spec_id, PartitionSpec::kInitialSpecId);
   EXPECT_EQ(metadata->default_sort_order_id, SortOrder::kInitialSortOrderId);
   EXPECT_EQ(metadata->current_snapshot_id, Snapshot::kInvalidSnapshotId);
+  EXPECT_TRUE(metadata->metadata_log.empty());
 }
 
 TEST(TableMetadataBuilderTest, BuildFromExisting) {
@@ -96,6 +101,57 @@ TEST(TableMetadataBuilderTest, BuildFromExisting) {
   EXPECT_EQ(metadata->format_version, 2);
   EXPECT_EQ(metadata->table_uuid, "test-uuid-1234");
   EXPECT_EQ(metadata->location, "s3://bucket/test");
+  ASSERT_EQ(1, metadata->metadata_log.size());
+  EXPECT_EQ(base->metadata_file_location, metadata->metadata_log[0].metadata_file);
+  EXPECT_EQ(base->last_updated_ms, metadata->metadata_log[0].timestamp_ms);
+}
+
+TEST(TableMetadataBuilderTest, BuildupMetadataLog) {
+  auto base = CreateBaseMetadata();
+  base->metadata_log = {
+      {.timestamp_ms = TimePointMs{std::chrono::milliseconds(100)},
+       .metadata_file = "s3://bucket/test/00000-aaa.metadata.json"},
+      {.timestamp_ms = TimePointMs{std::chrono::milliseconds(200)},
+       .metadata_file = "s3://bucket/test/00001-bbb.metadata.json"},
+  };
+
+  {
+    // Invalid property value for max previous versions
+    base->properties[TableProperties::kMetadataPreviousVersionsMax.key()] = "invalid";
+    auto builder = TableMetadataBuilder::BuildFrom(base.get());
+    ASSERT_NE(builder, nullptr);
+    auto metadata = builder->Build();
+    EXPECT_THAT(metadata, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(metadata, HasErrorMessage("Invalid value for property"));
+  }
+
+  {
+    // Base metadata_log size less than max size
+    base->properties[TableProperties::kMetadataPreviousVersionsMax.key()] = "3";
+    auto builder = TableMetadataBuilder::BuildFrom(base.get());
+    ASSERT_NE(builder, nullptr);
+    ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+    EXPECT_EQ(3, metadata->metadata_log.size());
+    EXPECT_EQ(base->metadata_log[0].metadata_file,
+              metadata->metadata_log[0].metadata_file);
+    EXPECT_EQ(base->metadata_log[1].metadata_file,
+              metadata->metadata_log[1].metadata_file);
+    EXPECT_EQ(base->last_updated_ms, metadata->metadata_log[2].timestamp_ms);
+    EXPECT_EQ(base->metadata_file_location, metadata->metadata_log[2].metadata_file);
+  }
+
+  {
+    // Base metadata_log size greater than max size
+    base->properties[TableProperties::kMetadataPreviousVersionsMax.key()] = "2";
+    auto builder = TableMetadataBuilder::BuildFrom(base.get());
+    ASSERT_NE(builder, nullptr);
+    ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+    EXPECT_EQ(2, metadata->metadata_log.size());
+    EXPECT_EQ(base->metadata_log[1].metadata_file,
+              metadata->metadata_log[0].metadata_file);
+    EXPECT_EQ(base->last_updated_ms, metadata->metadata_log[1].timestamp_ms);
+    EXPECT_EQ(base->metadata_file_location, metadata->metadata_log[1].metadata_file);
+  }
 }
 
 // Test AssignUUID
