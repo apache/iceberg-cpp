@@ -26,6 +26,7 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/table_scan.h"
+#include "iceberg/update/expire_snapshots.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/util/macros.h"
 
@@ -115,6 +116,10 @@ std::unique_ptr<UpdateProperties> Table::UpdateProperties() const {
 
 std::unique_ptr<Transaction> Table::NewTransaction() const {
   throw NotImplemented("Table::NewTransaction is not implemented");
+}
+
+std::unique_ptr<iceberg::ExpireSnapshots> Table::NewExpireSnapshots() {
+  return std::make_unique<iceberg::ExpireSnapshots>(this);
 }
 
 const std::shared_ptr<FileIO>& Table::io() const { return io_; }

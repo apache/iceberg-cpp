@@ -69,4 +69,44 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
   PendingUpdate() = default;
 };
 
+/// \brief Template class for type-safe table metadata changes using builder pattern
+///
+/// PendingUpdateTyped extends PendingUpdate with a type-safe Apply() method that
+/// returns the specific result type for each operation. Subclasses implement
+/// specific types of table updates such as schema changes, property updates, or
+/// snapshot-producing operations like appends and deletes.
+///
+/// Apply() can be used to validate and inspect the uncommitted changes before
+/// committing. Commit() applies the changes and commits them to the table.
+///
+/// \tparam T The type of result returned by Apply()
+template <typename T>
+class ICEBERG_EXPORT PendingUpdateTyped : public PendingUpdate {
+ public:
+  ~PendingUpdateTyped() override = default;
+
+  /// \brief Apply the pending changes and return the uncommitted result (typed version)
+  ///
+  /// This does not result in a permanent update.
+  ///
+  /// \return the uncommitted changes that would be committed, or an error:
+  ///         - ValidationFailed: if pending changes cannot be applied
+  ///         - InvalidArgument: if pending changes are conflicting
+  virtual Result<T> ApplyTyped() = 0;
+
+  /// \brief Apply the pending changes (base class override)
+  ///
+  /// This implementation calls ApplyTyped() and discards the result.
+  Status Apply() override {
+    auto result = ApplyTyped();
+    if (!result.has_value()) {
+      return std::unexpected(result.error());
+    }
+    return {};
+  }
+
+ protected:
+  PendingUpdateTyped() = default;
+};
+
 }  // namespace iceberg

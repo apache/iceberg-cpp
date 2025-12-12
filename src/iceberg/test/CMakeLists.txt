@@ -93,6 +93,8 @@ add_iceberg_test(expression_test
                  residual_evaluator_test.cc
                  strict_metrics_evaluator_test.cc)
 
+add_iceberg_test(update_test SOURCES update/expire_snapshots_test.cc)
+
 add_iceberg_test(json_serde_test
                  SOURCES
                  json_internal_test.cc
