@@ -110,6 +110,11 @@ class ICEBERG_EXPORT Table {
   /// \return a new UpdateProperties instance
   virtual std::unique_ptr<iceberg::UpdateProperties> UpdateProperties() const;
 
+  /// \brief Create a new UpdatePartitionSpec to alter the partition spec of this table
+  /// and commit the changes.
+  /// \return a pointer to the new UpdatePartitionSpec
+  virtual std::unique_ptr<UpdatePartitionSpec> UpdateSpec();
+
   /// \brief Create a new table scan builder for this table
   ///
   /// Once a table scan builder is created, it can be refined to project columns and

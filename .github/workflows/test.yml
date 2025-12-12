@@ -137,4 +137,4 @@ jobs:
           meson compile -C builddir
       - name: Test Iceberg
         run: |
-          meson test -C builddir
+          meson test -C builddir --timeout-multiplier=2

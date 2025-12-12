@@ -97,6 +97,7 @@ iceberg_sources = files(
     'transform.cc',
     'transform_function.cc',
     'type.cc',
+    'update/update_partition_spec.cc',
     'update/update_properties.cc',
     'util/bucket_util.cc',
     'util/conversions.cc',
@@ -196,7 +197,6 @@ install_headers(
         'transform.h',
         'type_fwd.h',
         'type.h',
-        'update/update_properties.h',
     ],
     subdir: 'iceberg',
 )
