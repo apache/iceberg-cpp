@@ -296,7 +296,7 @@ class ICEBERG_EXPORT TableProperties : public ConfigBase<TableProperties> {
   /// \param properties The map containing property key-value pairs
   /// \return A unique pointer to a TableProperties instance
   static std::unique_ptr<TableProperties> FromMap(
-      const std::unordered_map<std::string, std::string>& properties);
+      std::unordered_map<std::string, std::string> properties);
 
  private:
   TableProperties() = default;

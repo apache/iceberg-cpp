@@ -30,6 +30,7 @@
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_properties.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/temp_file_test_base.h"
 
@@ -58,7 +59,7 @@ class MetadataIOTest : public TempFileTestBase {
                          .current_schema_id = 1,
                          .default_spec_id = 0,
                          .last_partition_id = 0,
-                         .properties = {{"key", "value"}},
+                         .properties = TableProperties::FromMap({{"key", "value"}}),
                          .current_snapshot_id = 3051729675574597004,
                          .snapshots = {std::make_shared<Snapshot>(Snapshot{
                              .snapshot_id = 3051729675574597004,

@@ -99,7 +99,7 @@ struct ICEBERG_EXPORT TableMetadata {
   /// The highest assigned partition field ID across all partition specs for the table
   int32_t last_partition_id;
   /// A string to string map of table properties
-  std::unordered_map<std::string, std::string> properties;
+  std::shared_ptr<TableProperties> properties;
   /// ID of the current table snapshot
   int64_t current_snapshot_id;
   /// A list of valid snapshots

@@ -36,11 +36,9 @@ std::unique_ptr<TableProperties> TableProperties::default_properties() {
 }
 
 std::unique_ptr<TableProperties> TableProperties::FromMap(
-    const std::unordered_map<std::string, std::string>& properties) {
+    std::unordered_map<std::string, std::string> properties) {
   auto table_properties = std::unique_ptr<TableProperties>(new TableProperties());
-  for (const auto& [key, value] : properties) {  // NOLINT(modernize-type-traits)
-    table_properties->configs_[key] = value;
-  }
+  table_properties->configs_ = std::move(properties);
   return table_properties;
 }
 

@@ -39,6 +39,7 @@
 #include "iceberg/statistics_file.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_properties.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
@@ -796,7 +797,9 @@ nlohmann::json ToJson(const TableMetadata& table_metadata) {
   json[kSortOrders] = ToJsonList(table_metadata.sort_orders);
 
   // write properties map
-  json[kProperties] = table_metadata.properties;
+  if (table_metadata.properties) {
+    json[kProperties] = table_metadata.properties->configs();
+  }
 
   if (std::ranges::find_if(table_metadata.snapshots, [&](const auto& snapshot) {
         return snapshot->snapshot_id == table_metadata.current_snapshot_id;
@@ -1037,7 +1040,10 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
       table_metadata->default_sort_order_id, table_metadata->sort_orders));
 
   if (json.contains(kProperties)) {
-    ICEBERG_ASSIGN_OR_RAISE(table_metadata->properties, FromJsonMap(json, kProperties));
+    ICEBERG_ASSIGN_OR_RAISE(auto properties, FromJsonMap(json, kProperties));
+    table_metadata->properties = TableProperties::FromMap(std::move(properties));
+  } else {
+    table_metadata->properties = TableProperties::default_properties();
   }
 
   // This field is optional, but internally we set this to -1 when not set
