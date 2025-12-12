@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1avro_1_1ExtractDatumFromArrayTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::avro::ExtractDatumFromArrayTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::TestWithParam&lt; ExtractDatumParam &gt;</basecompoundref>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::avro::ExtractDatumFromArrayTest</label>
+        <link refid="classiceberg_1_1avro_1_1ExtractDatumFromArrayTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; ExtractDatumParam &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::avro::ExtractDatumFromArrayTest</label>
+        <link refid="classiceberg_1_1avro_1_1ExtractDatumFromArrayTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; ExtractDatumParam &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/avro_data_test.cc" line="790" column="1" bodyfile="iceberg/test/avro_data_test.cc" bodystart="790" bodyend="790"/>
+    <listofallmembers>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

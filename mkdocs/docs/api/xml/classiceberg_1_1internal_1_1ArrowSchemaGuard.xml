@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1internal_1_1ArrowSchemaGuard" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::internal::ArrowSchemaGuard</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1internal_1_1ArrowSchemaGuard_1a08b3f5d8db820c35627a807dc95230b9" prot="private" static="no" mutable="no">
+        <type><ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref> *</type>
+        <definition>ArrowSchema* iceberg::internal::ArrowSchemaGuard::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::internal::ArrowSchemaGuard::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_guard_internal.h" line="43" column="15" bodyfile="iceberg/arrow_c_data_guard_internal.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1internal_1_1ArrowSchemaGuard_1ad5a6b337d943fa232e7d3fa5dbe3d58c" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::internal::ArrowSchemaGuard::ArrowSchemaGuard</definition>
+        <argsstring>(ArrowSchema *schema)</argsstring>
+        <name>ArrowSchemaGuard</name>
+        <qualifiedname>iceberg::internal::ArrowSchemaGuard::ArrowSchemaGuard</qualifiedname>
+        <param>
+          <type><ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref> *</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_guard_internal.h" line="39" column="12" bodyfile="iceberg/arrow_c_data_guard_internal.h" bodystart="39" bodyend="39"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1internal_1_1ArrowSchemaGuard_1a99c257a4399628be85593b737e427029" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::internal::ArrowSchemaGuard::~ArrowSchemaGuard</definition>
+        <argsstring>()</argsstring>
+        <name>~ArrowSchemaGuard</name>
+        <qualifiedname>iceberg::internal::ArrowSchemaGuard::~ArrowSchemaGuard</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_guard_internal.h" line="40" column="3" bodyfile="iceberg/arrow_c_data_guard_internal.cc" bodystart="30" bodyend="34"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/arrow_c_data_guard_internal.h" line="37" column="1" bodyfile="iceberg/arrow_c_data_guard_internal.h" bodystart="37" bodyend="44"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1internal_1_1ArrowSchemaGuard_1ad5a6b337d943fa232e7d3fa5dbe3d58c" prot="public" virt="non-virtual"><scope>iceberg::internal::ArrowSchemaGuard</scope><name>ArrowSchemaGuard</name></member>
+      <member refid="classiceberg_1_1internal_1_1ArrowSchemaGuard_1a08b3f5d8db820c35627a807dc95230b9" prot="private" virt="non-virtual"><scope>iceberg::internal::ArrowSchemaGuard</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1internal_1_1ArrowSchemaGuard_1a99c257a4399628be85593b737e427029" prot="public" virt="non-virtual"><scope>iceberg::internal::ArrowSchemaGuard</scope><name>~ArrowSchemaGuard</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

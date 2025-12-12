@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1LocationProvider" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::LocationProvider</compoundname>
+    <includes refid="location__provider_8h" local="no">location_provider.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1LocationProvider_1a58da5d97b98dc637abdb16dd68555c5a" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::LocationProvider::~LocationProvider</definition>
+        <argsstring>()=default</argsstring>
+        <name>~LocationProvider</name>
+        <qualifiedname>iceberg::LocationProvider::~LocationProvider</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/location_provider.h" line="32" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LocationProvider_1a0752b00905ea58654e2767f5e97af07c" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::string</type>
+        <definition>virtual std::string iceberg::LocationProvider::NewDataLocation</definition>
+        <argsstring>(const std::string &amp;filename)=0</argsstring>
+        <name>NewDataLocation</name>
+        <qualifiedname>iceberg::LocationProvider::NewDataLocation</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>filename</declname>
+        </param>
+        <briefdescription>
+<para>Return a fully-qualified data file location for the given filename. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>filename</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a file name </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a fully-qualified location URI for a data file </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/location_provider.h" line="38" column="23"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1LocationProvider_1ab52614c557a988889a86d26be4b148ef" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::string</type>
+        <definition>virtual std::string iceberg::LocationProvider::NewDataLocation</definition>
+        <argsstring>(const PartitionSpec &amp;spec, const StructLike &amp;partition_data, const std::string &amp;filename)=0</argsstring>
+        <name>NewDataLocation</name>
+        <qualifiedname>iceberg::LocationProvider::NewDataLocation</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> &amp;</type>
+          <declname>partition_data</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>filename</declname>
+        </param>
+        <briefdescription>
+<para>Return a fully-qualified data file location for the given partition and filename. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>spec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a partition spec </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>partition_data</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a tuple of partition data for data in the file, matching the given spec </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>filename</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>a file name </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>a fully-qualified location URI for a data file</para>
+</simplesect>
+TODO(wgtmac): <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref> is not well thought yet, we may wrap an <ref refid="structArrowArray" kindref="compound">ArrowArray</ref> with single row in <ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref>. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/location_provider.h" line="51" column="23"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Interface for providing data file locations to write tasks. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/location_provider.h" line="30" column="1" bodyfile="iceberg/location_provider.h" bodystart="30" bodyend="54"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1LocationProvider_1a0752b00905ea58654e2767f5e97af07c" prot="public" virt="pure-virtual"><scope>iceberg::LocationProvider</scope><name>NewDataLocation</name></member>
+      <member refid="classiceberg_1_1LocationProvider_1ab52614c557a988889a86d26be4b148ef" prot="public" virt="pure-virtual"><scope>iceberg::LocationProvider</scope><name>NewDataLocation</name></member>
+      <member refid="classiceberg_1_1LocationProvider_1a58da5d97b98dc637abdb16dd68555c5a" prot="public" virt="virtual"><scope>iceberg::LocationProvider</scope><name>~LocationProvider</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

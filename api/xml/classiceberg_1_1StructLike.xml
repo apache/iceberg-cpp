@@ -1,0 +1,120 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1StructLike" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::StructLike</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1ArrowArrayStructLike" prot="public" virt="non-virtual">iceberg::ArrowArrayStructLike</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1ManifestFileStructLike" prot="public" virt="non-virtual">iceberg::ManifestFileStructLike</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1PartitionFieldSummaryStructLike" prot="public" virt="non-virtual">iceberg::PartitionFieldSummaryStructLike</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1PartitionValues" prot="public" virt="non-virtual">iceberg::PartitionValues</derivedcompoundref>
+    <includes refid="struct__like_8h" local="no">struct_like.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1StructLike_1a5f697a43dd30857364ee3a96f2064e4b" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type></type>
+        <definition>virtual iceberg::StructLike::~StructLike</definition>
+        <argsstring>()=default</argsstring>
+        <name>~StructLike</name>
+        <qualifiedname>iceberg::StructLike::~StructLike</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/struct_like.h" line="64" column="11"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructLike_1a1bed712ac299583f54ad2fcd91087e11" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>virtual Result&lt; Scalar &gt; iceberg::StructLike::GetField</definition>
+        <argsstring>(size_t pos) const =0</argsstring>
+        <name>GetField</name>
+        <qualifiedname>iceberg::StructLike::GetField</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1ArrowArrayStructLike_1a32df008d3f8fc1bd2e770027ea9c7e13">GetField</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1PartitionFieldSummaryStructLike_1ae0feb05d6d4e743ceba1c15487c0d6d6">GetField</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestFileStructLike_1af1b2fdf5f3694a42277922789105d09d">GetField</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1PartitionValues_1a0e4f25e83c939e00bc2e11cef55754c7">GetField</reimplementedby>
+        <param>
+          <type>size_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+<para>Get the field value at the given position. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>pos</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The position of the field in the struct. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/struct_like.h" line="68" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1StructLike_1a3c9041a832eb91386eaf51753d745914" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>size_t</type>
+        <definition>virtual size_t iceberg::StructLike::num_fields</definition>
+        <argsstring>() const =0</argsstring>
+        <name>num_fields</name>
+        <qualifiedname>iceberg::StructLike::num_fields</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1ArrowArrayStructLike_1a74642bbff4f6e5bb239eb13833295da4">num_fields</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1PartitionFieldSummaryStructLike_1a76b18514d053921e283415a0c2d444cf">num_fields</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestFileStructLike_1a9f13ddccb795998fa0a081bfb48f8e9a">num_fields</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1PartitionValues_1a9ac3c4a2e24db605edb3c5a515102fa7">num_fields</reimplementedby>
+        <briefdescription>
+<para>Get the number of fields in the struct. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/struct_like.h" line="71" column="18"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>An immutable struct-like wrapper. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::ArrowArrayStructLike</label>
+        <link refid="classiceberg_1_1ArrowArrayStructLike"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::ManifestFileStructLike</label>
+        <link refid="classiceberg_1_1ManifestFileStructLike"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::PartitionFieldSummaryStructLike</label>
+        <link refid="classiceberg_1_1PartitionFieldSummaryStructLike"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::PartitionValues</label>
+        <link refid="classiceberg_1_1PartitionValues"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/row/struct_like.h" line="62" column="1" bodyfile="iceberg/row/struct_like.h" bodystart="62" bodyend="72"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1StructLike_1a1bed712ac299583f54ad2fcd91087e11" prot="public" virt="pure-virtual"><scope>iceberg::StructLike</scope><name>GetField</name></member>
+      <member refid="classiceberg_1_1StructLike_1a3c9041a832eb91386eaf51753d745914" prot="public" virt="pure-virtual"><scope>iceberg::StructLike</scope><name>num_fields</name></member>
+      <member refid="classiceberg_1_1StructLike_1a5f697a43dd30857364ee3a96f2064e4b" prot="public" virt="virtual"><scope>iceberg::StructLike</scope><name>~StructLike</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

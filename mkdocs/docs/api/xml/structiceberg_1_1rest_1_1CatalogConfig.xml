@@ -1,0 +1,114 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1CatalogConfig" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::CatalogConfig</compoundname>
+    <includes refid="types_8h" local="no">types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1CatalogConfig_1a101868a1d1875acb1af2a6e18709506c" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::rest::CatalogConfig::defaults</definition>
+        <argsstring></argsstring>
+        <name>defaults</name>
+        <qualifiedname>iceberg::rest::CatalogConfig::defaults</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="40" column="22" bodyfile="iceberg/catalog/rest/types.h" bodystart="40" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1CatalogConfig_1a9b9fc15f1554cdd2ef4738dfb8a86eb8" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::rest::CatalogConfig::overrides</definition>
+        <argsstring></argsstring>
+        <name>overrides</name>
+        <qualifiedname>iceberg::rest::CatalogConfig::overrides</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="41" column="22" bodyfile="iceberg/catalog/rest/types.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1CatalogConfig_1a406a699e7a6f266ea1e3fe083fcbff0c" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::rest::CatalogConfig::endpoints</definition>
+        <argsstring></argsstring>
+        <name>endpoints</name>
+        <qualifiedname>iceberg::rest::CatalogConfig::endpoints</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="42" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="42" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1CatalogConfig_1add488d66f0c7f244f4090eb34940839f" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::CatalogConfig::Validate</definition>
+        <argsstring>() const</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::rest::CatalogConfig::Validate</qualifiedname>
+        <briefdescription>
+<para>Validates the <ref refid="structiceberg_1_1rest_1_1CatalogConfig" kindref="compound">CatalogConfig</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="45" column="10" bodyfile="iceberg/catalog/rest/types.h" bodystart="45" bodyend="51"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Server-provided configuration for the catalog. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::CatalogConfig</label>
+        <link refid="structiceberg_1_1rest_1_1CatalogConfig"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>defaults</edgelabel>
+          <edgelabel>overrides</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>endpoints</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/types.h" line="39" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="39" bodyend="52"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1CatalogConfig_1a101868a1d1875acb1af2a6e18709506c" prot="public" virt="non-virtual"><scope>iceberg::rest::CatalogConfig</scope><name>defaults</name></member>
+      <member refid="structiceberg_1_1rest_1_1CatalogConfig_1a406a699e7a6f266ea1e3fe083fcbff0c" prot="public" virt="non-virtual"><scope>iceberg::rest::CatalogConfig</scope><name>endpoints</name></member>
+      <member refid="structiceberg_1_1rest_1_1CatalogConfig_1a9b9fc15f1554cdd2ef4738dfb8a86eb8" prot="public" virt="non-virtual"><scope>iceberg::rest::CatalogConfig</scope><name>overrides</name></member>
+      <member refid="structiceberg_1_1rest_1_1CatalogConfig_1add488d66f0c7f244f4090eb34940839f" prot="public" virt="non-virtual"><scope>iceberg::rest::CatalogConfig</scope><name>Validate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

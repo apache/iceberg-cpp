@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="conceptSmartPointerType" kind="concept">
+    <compoundname>SmartPointerType</compoundname>
+    <includes refid="formatter__internal_8h" local="no">formatter_internal.h</includes>
+    <templateparamlist>
+      <param>
+        <type>typename T</type>
+      </param>
+    </templateparamlist>
+    <initializer>template&lt;typename T&gt;
+concept <ref refid="conceptSmartPointerType" kindref="compound">SmartPointerType</ref> =  requires(T t) {
+  { t.operator-&gt;() } -&gt; std::same_as&lt;typename T::element_type*&gt;;
+  { *t } -&gt; std::convertible_to&lt;typename T::element_type&amp;&gt;;
+  { static_cast&lt;bool&gt;(t) } -&gt; std::same_as&lt;bool&gt;;
+  typename T::element_type;
+}    </initializer>
+    <briefdescription>
+<para>Concept for smart pointer types. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/formatter_internal.h" line="36" column="1"/>
+  </compounddef>
+</doxygen>

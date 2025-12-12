@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1SchemaProjection" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::SchemaProjection</compoundname>
+    <includes refid="schema__util_8h" local="no">schema_util.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1SchemaProjection_1aec2dcfcf569a35e457487b925fa282ff" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; <ref refid="structiceberg_1_1FieldProjection" kindref="compound">FieldProjection</ref> &gt;</type>
+        <definition>std::vector&lt;FieldProjection&gt; iceberg::SchemaProjection::fields</definition>
+        <argsstring></argsstring>
+        <name>fields</name>
+        <qualifiedname>iceberg::SchemaProjection::fields</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/schema_util.h" line="78" column="15" bodyfile="iceberg/schema_util.h" bodystart="78" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A schema partner to carry projection information. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="3">
+        <label>iceberg::FieldProjection</label>
+        <link refid="structiceberg_1_1FieldProjection"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>children</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>attributes</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::FieldProjection::ExtraAttributes</label>
+        <link refid="structiceberg_1_1FieldProjection_1_1ExtraAttributes"/>
+      </node>
+      <node id="1">
+        <label>iceberg::SchemaProjection</label>
+        <link refid="structiceberg_1_1SchemaProjection"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>fields</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::FieldProjection::ExtraAttributes &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; iceberg::FieldProjection &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/schema_util.h" line="77" column="1" bodyfile="iceberg/schema_util.h" bodystart="77" bodyend="79"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1SchemaProjection_1aec2dcfcf569a35e457487b925fa282ff" prot="public" virt="non-virtual"><scope>iceberg::SchemaProjection</scope><name>fields</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

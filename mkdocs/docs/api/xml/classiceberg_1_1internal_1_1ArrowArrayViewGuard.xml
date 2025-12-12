@@ -1,0 +1,66 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1internal_1_1ArrowArrayViewGuard" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::internal::ArrowArrayViewGuard</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1internal_1_1ArrowArrayViewGuard_1a2893962098222f20aba8357295957e9e" prot="private" static="no" mutable="no">
+        <type>ArrowArrayView *</type>
+        <definition>ArrowArrayView* iceberg::internal::ArrowArrayViewGuard::view_</definition>
+        <argsstring></argsstring>
+        <name>view_</name>
+        <qualifiedname>iceberg::internal::ArrowArrayViewGuard::view_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_guard_internal.h" line="52" column="18" bodyfile="iceberg/arrow_c_data_guard_internal.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1internal_1_1ArrowArrayViewGuard_1a19cae8f42e4495d631a7411522561e5d" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::internal::ArrowArrayViewGuard::ArrowArrayViewGuard</definition>
+        <argsstring>(ArrowArrayView *view)</argsstring>
+        <name>ArrowArrayViewGuard</name>
+        <qualifiedname>iceberg::internal::ArrowArrayViewGuard::ArrowArrayViewGuard</qualifiedname>
+        <param>
+          <type>ArrowArrayView *</type>
+          <declname>view</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_guard_internal.h" line="48" column="12" bodyfile="iceberg/arrow_c_data_guard_internal.h" bodystart="48" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1internal_1_1ArrowArrayViewGuard_1a9ec1b4779f18704bc4be2b46087a41fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::internal::ArrowArrayViewGuard::~ArrowArrayViewGuard</definition>
+        <argsstring>()</argsstring>
+        <name>~ArrowArrayViewGuard</name>
+        <qualifiedname>iceberg::internal::ArrowArrayViewGuard::~ArrowArrayViewGuard</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/arrow_c_data_guard_internal.h" line="49" column="3" bodyfile="iceberg/arrow_c_data_guard_internal.cc" bodystart="36" bodyend="40"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/arrow_c_data_guard_internal.h" line="46" column="1" bodyfile="iceberg/arrow_c_data_guard_internal.h" bodystart="46" bodyend="53"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1internal_1_1ArrowArrayViewGuard_1a19cae8f42e4495d631a7411522561e5d" prot="public" virt="non-virtual"><scope>iceberg::internal::ArrowArrayViewGuard</scope><name>ArrowArrayViewGuard</name></member>
+      <member refid="classiceberg_1_1internal_1_1ArrowArrayViewGuard_1a2893962098222f20aba8357295957e9e" prot="private" virt="non-virtual"><scope>iceberg::internal::ArrowArrayViewGuard</scope><name>view_</name></member>
+      <member refid="classiceberg_1_1internal_1_1ArrowArrayViewGuard_1a9ec1b4779f18704bc4be2b46087a41fc" prot="public" virt="non-virtual"><scope>iceberg::internal::ArrowArrayViewGuard</scope><name>~ArrowArrayViewGuard</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
