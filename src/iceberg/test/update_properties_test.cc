@@ -33,8 +33,6 @@
 #include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
-#include "iceberg/table_requirement.h"
-#include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
 
