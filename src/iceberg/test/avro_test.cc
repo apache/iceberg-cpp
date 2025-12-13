@@ -53,6 +53,8 @@ class AvroReaderTest : public TempFileTestBase {
     temp_avro_file_ = CreateNewTempFilePathWithSuffix(".avro");
   }
 
+  bool skip_datum_{true};
+
   void CreateSimpleAvroFile() {
     const std::string avro_schema_json = R"({
       "type": "record",
@@ -141,11 +143,15 @@ class AvroReaderTest : public TempFileTestBase {
     ASSERT_TRUE(file_info_result.ok());
     ASSERT_EQ(file_info_result->size(), writer->length().value());
 
+    auto reader_properties = ReaderProperties::default_properties();
+    reader_properties->Set(ReaderProperties::kAvroSkipDatum, skip_datum_);
+
     auto reader_result = ReaderFactoryRegistry::Open(FileFormatType::kAvro,
                                                      {.path = temp_avro_file_,
                                                       .length = file_info_result->size(),
                                                       .io = file_io_,
-                                                      .projection = schema});
+                                                      .projection = schema,
+                                                      .properties = std::move(reader_properties)});
     ASSERT_THAT(reader_result, IsOk());
     auto reader = std::move(reader_result.value());
     ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, expected_string));
@@ -164,6 +170,16 @@ class AvroReaderTest : public TempFileTestBase {
   std::shared_ptr<::arrow::fs::LocalFileSystem> local_fs_;
   std::shared_ptr<FileIO> file_io_;
   std::string temp_avro_file_;
+};
+
+// Parameterized test fixture for testing both DirectDecoder and GenericDatum modes
+class AvroReaderParameterizedTest : public AvroReaderTest,
+                                     public ::testing::WithParamInterface<bool> {
+ protected:
+  void SetUp() override {
+    AvroReaderTest::SetUp();
+    skip_datum_ = GetParam();
+  }
 };
 
 TEST_F(AvroReaderTest, ReadTwoFields) {
@@ -222,7 +238,7 @@ TEST_F(AvroReaderTest, ReadWithBatchSize) {
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
 }
 
-TEST_F(AvroReaderTest, AvroWriterBasicType) {
+TEST_P(AvroReaderParameterizedTest, AvroWriterBasicType) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "name", std::make_shared<StringType>())});
 
@@ -231,7 +247,7 @@ TEST_F(AvroReaderTest, AvroWriterBasicType) {
   WriteAndVerify(schema, expected_string);
 }
 
-TEST_F(AvroReaderTest, AvroWriterNestedType) {
+TEST_P(AvroReaderParameterizedTest, AvroWriterNestedType) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
       SchemaField::MakeRequired(
@@ -248,7 +264,7 @@ TEST_F(AvroReaderTest, AvroWriterNestedType) {
 
 // Comprehensive tests using in-memory MockFileIO
 
-TEST_F(AvroReaderTest, AllPrimitiveTypes) {
+TEST_P(AvroReaderParameterizedTest, AllPrimitiveTypes) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "bool_col", std::make_shared<BooleanType>()),
       SchemaField::MakeRequired(2, "int_col", std::make_shared<IntType>()),
@@ -268,7 +284,7 @@ TEST_F(AvroReaderTest, AllPrimitiveTypes) {
 
 // Skipping DecimalType test - requires specific decimal encoding in JSON
 
-TEST_F(AvroReaderTest, DateTimeTypes) {
+TEST_P(AvroReaderParameterizedTest, DateTimeTypes) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "date_col", std::make_shared<DateType>()),
       SchemaField::MakeRequired(2, "time_col", std::make_shared<TimeType>()),
@@ -283,7 +299,7 @@ TEST_F(AvroReaderTest, DateTimeTypes) {
   WriteAndVerify(schema, expected_string);
 }
 
-TEST_F(AvroReaderTest, NestedStruct) {
+TEST_P(AvroReaderParameterizedTest, NestedStruct) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
       SchemaField::MakeRequired(
@@ -307,7 +323,7 @@ TEST_F(AvroReaderTest, NestedStruct) {
   WriteAndVerify(schema, expected_string);
 }
 
-TEST_F(AvroReaderTest, ListType) {
+TEST_P(AvroReaderParameterizedTest, ListType) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
       SchemaField::MakeRequired(2, "tags",
@@ -323,7 +339,7 @@ TEST_F(AvroReaderTest, ListType) {
   WriteAndVerify(schema, expected_string);
 }
 
-TEST_F(AvroReaderTest, MapType) {
+TEST_P(AvroReaderParameterizedTest, MapType) {
   auto schema = std::make_shared<iceberg::Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(
           1, "properties",
@@ -339,7 +355,7 @@ TEST_F(AvroReaderTest, MapType) {
   WriteAndVerify(schema, expected_string);
 }
 
-TEST_F(AvroReaderTest, MapTypeWithNonStringKey) {
+TEST_P(AvroReaderParameterizedTest, MapTypeWithNonStringKey) {
   auto schema = std::make_shared<iceberg::Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(
           1, "int_map",
@@ -417,7 +433,7 @@ TEST_F(AvroReaderTest, ProjectionSubsetAndReorder) {
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
 }
 
-TEST_F(AvroReaderTest, ComplexNestedTypes) {
+TEST_P(AvroReaderParameterizedTest, ComplexNestedTypes) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
       SchemaField::MakeRequired(2, "nested_list",
@@ -434,7 +450,7 @@ TEST_F(AvroReaderTest, ComplexNestedTypes) {
   WriteAndVerify(schema, expected_string);
 }
 
-TEST_F(AvroReaderTest, OptionalFieldsWithNulls) {
+TEST_P(AvroReaderParameterizedTest, OptionalFieldsWithNulls) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
       SchemaField::MakeOptional(2, "name", std::make_shared<StringType>()),
@@ -451,76 +467,7 @@ TEST_F(AvroReaderTest, OptionalFieldsWithNulls) {
 }
 
 // Test both direct decoder and GenericDatum paths
-TEST_F(AvroReaderTest, DirectDecoderVsGenericDatum) {
-  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
-      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
-      SchemaField::MakeOptional(2, "name", std::make_shared<StringType>()),
-      SchemaField::MakeRequired(
-          3, "nested",
-          std::make_shared<iceberg::StructType>(std::vector<SchemaField>{
-              SchemaField::MakeRequired(4, "value", std::make_shared<DoubleType>())}))});
-
-  std::string expected_string = R"([
-    [1, "Alice", [3.14]],
-    [2, null, [2.71]],
-    [3, "Bob", [1.41]]
-  ])";
-
-  // Test with direct decoder (default)
-  {
-    temp_avro_file_ = CreateNewTempFilePathWithSuffix(".avro");
-    WriteAndVerify(schema, expected_string);
-  }
-
-  // Test with GenericDatum decoder
-  {
-    temp_avro_file_ = CreateNewTempFilePathWithSuffix("_generic.avro");
-    auto reader_properties = ReaderProperties::default_properties();
-    reader_properties->Set(ReaderProperties::kAvroSkipDatum, false);
-
-    ArrowSchema arrow_c_schema;
-    ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
-    auto arrow_schema_result = ::arrow::ImportType(&arrow_c_schema);
-    ASSERT_TRUE(arrow_schema_result.ok());
-    auto arrow_schema = arrow_schema_result.ValueOrDie();
-
-    auto array_result = ::arrow::json::ArrayFromJSONString(arrow_schema, expected_string);
-    ASSERT_TRUE(array_result.ok());
-    auto array = array_result.ValueOrDie();
-
-    struct ArrowArray arrow_array;
-    auto export_result = ::arrow::ExportArray(*array, &arrow_array);
-    ASSERT_TRUE(export_result.ok());
-
-    std::unordered_map<std::string, std::string> metadata = {{"k1", "v1"}};
-
-    auto writer_result =
-        WriterFactoryRegistry::Open(FileFormatType::kAvro, {.path = temp_avro_file_,
-                                                            .schema = schema,
-                                                            .io = file_io_,
-                                                            .metadata = metadata});
-    ASSERT_TRUE(writer_result.has_value());
-    auto writer = std::move(writer_result.value());
-    ASSERT_THAT(writer->Write(&arrow_array), IsOk());
-    ASSERT_THAT(writer->Close(), IsOk());
-
-    auto file_info_result = local_fs_->GetFileInfo(temp_avro_file_);
-    ASSERT_TRUE(file_info_result.ok());
-
-    auto reader_result = ReaderFactoryRegistry::Open(
-        FileFormatType::kAvro, {.path = temp_avro_file_,
-                                .length = file_info_result->size(),
-                                .io = file_io_,
-                                .projection = schema,
-                                .properties = std::move(reader_properties)});
-    ASSERT_THAT(reader_result, IsOk());
-    auto reader = std::move(reader_result.value());
-    ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, expected_string));
-    ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
-  }
-}
-
-TEST_F(AvroReaderTest, LargeDataset) {
+TEST_P(AvroReaderParameterizedTest, LargeDataset) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "id", std::make_shared<LongType>()),
       SchemaField::MakeRequired(2, "value", std::make_shared<DoubleType>())});
@@ -537,7 +484,7 @@ TEST_F(AvroReaderTest, LargeDataset) {
   WriteAndVerify(schema, json.str());
 }
 
-TEST_F(AvroReaderTest, EmptyCollections) {
+TEST_P(AvroReaderParameterizedTest, EmptyCollections) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
       SchemaField::MakeRequired(2, "list_col",
@@ -553,5 +500,13 @@ TEST_F(AvroReaderTest, EmptyCollections) {
 }
 
 // Skip Fixed and UUID tests for now - they require specific binary encoding
+
+INSTANTIATE_TEST_SUITE_P(
+    DirectDecoderModes,
+    AvroReaderParameterizedTest,
+    ::testing::Bool(),
+    [](const ::testing::TestParamInfo<bool>& info) {
+      return info.param ? "DirectDecoder" : "GenericDatum";
+    });
 
 }  // namespace iceberg::avro
