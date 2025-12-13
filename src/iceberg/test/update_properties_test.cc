@@ -53,6 +53,13 @@ class UpdatePropertiesTest : public ::testing::Test {
 
     // Create catalog and table identifier
     catalog_ = std::make_shared<::testing::NiceMock<MockCatalog>>();
+    ON_CALL(*catalog_, LoadTable(::testing::_))
+        .WillByDefault([this](const TableIdentifier&) -> Result<std::unique_ptr<Table>> {
+          return std::make_unique<Table>(identifier_, metadata_,
+                                         "s3://bucket/table/metadata.json", nullptr,
+                                         catalog_);
+        });
+
     identifier_ = TableIdentifier(Namespace({"test"}), "table");
   }
 
@@ -161,8 +168,11 @@ TEST_F(UpdatePropertiesTest, InvalidTable) {
 
   {
     // metadata is null
-    UpdateProperties update(identifier_, catalog_, nullptr);
+    auto catalog = std::make_shared<::testing::NiceMock<MockCatalog>>();
+    EXPECT_CALL(*catalog, LoadTable(::testing::_))
+        .WillOnce(::testing::Return(InvalidArgument("Base table metadata is required")));
 
+    UpdateProperties update(identifier_, catalog, nullptr);
     auto result = update.Apply();
     EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
     EXPECT_THAT(result, HasErrorMessage("Base table metadata is required"));
