@@ -183,8 +183,6 @@ class TableUpdateContext;
 class PendingUpdate;
 class UpdateProperties;
 
-struct PropertiesUpdateChanges;
-
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.
 /// ----------------------------------------------------------------------------
