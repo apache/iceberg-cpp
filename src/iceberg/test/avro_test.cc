@@ -499,7 +499,6 @@ TEST_P(AvroReaderParameterizedTest, EmptyCollections) {
   WriteAndVerify(schema, expected_string);
 }
 
-// Skip Fixed and UUID tests for now - they require specific binary encoding
 
 INSTANTIATE_TEST_SUITE_P(DirectDecoderModes, AvroReaderParameterizedTest,
                          ::testing::Bool(),
