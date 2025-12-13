@@ -339,6 +339,84 @@ TEST_F(AvroReaderTest, MapType) {
   WriteAndVerify(schema, expected_string);
 }
 
+TEST_F(AvroReaderTest, MapTypeWithNonStringKey) {
+  auto schema = std::make_shared<iceberg::Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(
+          1, "int_map",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(2, "key", std::make_shared<IntType>()),
+              SchemaField::MakeRequired(3, "value", std::make_shared<StringType>())))});
+
+  std::string expected_string = R"([
+    [[[1, "one"], [2, "two"], [3, "three"]]],
+    [[[10, "ten"], [20, "twenty"]]]
+  ])";
+
+  WriteAndVerify(schema, expected_string);
+}
+
+TEST_F(AvroReaderTest, ProjectionSubsetAndReorder) {
+  // Write file with full schema
+  auto write_schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
+      SchemaField::MakeRequired(2, "name", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(3, "age", std::make_shared<IntType>()),
+      SchemaField::MakeRequired(4, "city", std::make_shared<StringType>())});
+
+  std::string write_data = R"([
+    [1, "Alice", 25, "NYC"],
+    [2, "Bob", 30, "SF"],
+    [3, "Charlie", 35, "LA"]
+  ])";
+
+  // Write with full schema
+  ArrowSchema arrow_c_schema;
+  ASSERT_THAT(ToArrowSchema(*write_schema, &arrow_c_schema), IsOk());
+  auto arrow_schema_result = ::arrow::ImportType(&arrow_c_schema);
+  ASSERT_TRUE(arrow_schema_result.ok());
+  auto arrow_schema = arrow_schema_result.ValueOrDie();
+
+  auto array_result = ::arrow::json::ArrayFromJSONString(arrow_schema, write_data);
+  ASSERT_TRUE(array_result.ok());
+  auto array = array_result.ValueOrDie();
+
+  struct ArrowArray arrow_array;
+  auto export_result = ::arrow::ExportArray(*array, &arrow_array);
+  ASSERT_TRUE(export_result.ok());
+
+  std::unordered_map<std::string, std::string> metadata = {{"k1", "v1"}};
+  auto writer_result = WriterFactoryRegistry::Open(FileFormatType::kAvro,
+                                                    {.path = temp_avro_file_,
+                                                     .schema = write_schema,
+                                                     .io = file_io_,
+                                                     .metadata = metadata});
+  ASSERT_TRUE(writer_result.has_value());
+  auto writer = std::move(writer_result.value());
+  ASSERT_THAT(writer->Write(&arrow_array), IsOk());
+  ASSERT_THAT(writer->Close(), IsOk());
+
+  // Read with projected schema: subset of columns (city, id) in different order
+  auto read_schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(4, "city", std::make_shared<StringType>()),
+      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>())});
+
+  auto file_info_result = local_fs_->GetFileInfo(temp_avro_file_);
+  ASSERT_TRUE(file_info_result.ok());
+
+  auto reader_result = ReaderFactoryRegistry::Open(FileFormatType::kAvro,
+                                                    {.path = temp_avro_file_,
+                                                     .length = file_info_result->size(),
+                                                     .io = file_io_,
+                                                     .projection = read_schema});
+  ASSERT_THAT(reader_result, IsOk());
+  auto reader = std::move(reader_result.value());
+
+  // Verify reordered subset
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(
+      *reader, R"([["NYC", 1], ["SF", 2], ["LA", 3]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
 TEST_F(AvroReaderTest, ComplexNestedTypes) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
@@ -398,7 +476,7 @@ TEST_F(AvroReaderTest, DirectDecoderVsGenericDatum) {
   {
     temp_avro_file_ = CreateNewTempFilePathWithSuffix("_generic.avro");
     auto reader_properties = ReaderProperties::default_properties();
-    reader_properties->Set(ReaderProperties::kAvroUseDirectDecoder, false);
+    reader_properties->Set(ReaderProperties::kAvroSkipDatum, false);
 
     ArrowSchema arrow_c_schema;
     ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());

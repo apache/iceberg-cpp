@@ -67,8 +67,12 @@ struct ReadContext {
   std::shared_ptr<::arrow::Schema> arrow_schema_;
   // The builder to build the record batch.
   std::shared_ptr<::arrow::ArrayBuilder> builder_;
-  // GenericDatum for GenericDatum-based decoding (only used if direct decoder is disabled)
+  // GenericDatum for GenericDatum-based decoding (only used if direct decoder is
+  // disabled)
   std::unique_ptr<::avro::GenericDatum> datum_;
+  // Decode context for reusing scratch buffers (only used if direct decoder is
+  // enabled)
+  DecodeContext decode_context_;
 };
 
 // TODO(gang.wu): there are a lot to do to make this reader work.
@@ -85,7 +89,7 @@ class AvroReader::Impl {
 
     batch_size_ = options.properties->Get(ReaderProperties::kBatchSize);
     use_direct_decoder_ =
-        options.properties->Get(ReaderProperties::kAvroUseDirectDecoder);
+        options.properties->Get(ReaderProperties::kAvroSkipDatum);
     read_schema_ = options.projection;
 
     // Open the input stream and adapt to the avro interface.
@@ -173,7 +177,8 @@ class AvroReader::Impl {
 
         ICEBERG_RETURN_UNEXPECTED(
             DecodeAvroToBuilder(GetReaderSchema().root(), base_reader_->decoder(),
-                                projection_, *read_schema_, context_->builder_.get()));
+                                projection_, *read_schema_, context_->builder_.get(),
+                                &context_->decode_context_));
       } else {
         // GenericDatum-based decoding: decode via GenericDatum intermediate
         if (!datum_reader_->read(*context_->datum_)) {
