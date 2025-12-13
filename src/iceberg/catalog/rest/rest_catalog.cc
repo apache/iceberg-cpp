@@ -31,7 +31,6 @@
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/catalog/rest/json_internal.h"
 #include "iceberg/catalog/rest/resource_paths.h"
-#include "iceberg/catalog/rest/rest_catalog.h"
 #include "iceberg/catalog/rest/rest_util.h"
 #include "iceberg/json_internal.h"
 #include "iceberg/partition_spec.h"
@@ -197,8 +196,9 @@ Result<std::unique_ptr<Table>> RestCatalog::CreateTable(
 
 Result<std::unique_ptr<Table>> RestCatalog::UpdateTable(
     [[maybe_unused]] const TableIdentifier& identifier,
-    [[maybe_unused]] const std::vector<std::unique_ptr<TableRequirement>>& requirements,
-    [[maybe_unused]] const std::vector<std::unique_ptr<TableUpdate>>& updates) {
+    [[maybe_unused]] const std::vector<std::shared_ptr<const TableRequirement>>&
+        requirements,
+    [[maybe_unused]] const std::vector<std::shared_ptr<const TableUpdate>>& updates) {
   return NotImplemented("Not implemented");
 }
 

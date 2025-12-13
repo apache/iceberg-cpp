@@ -1,0 +1,174 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+#include <unordered_map>
+
+#include <gtest/gtest.h>
+
+#include "iceberg/partition_spec.h"
+#include "iceberg/result.h"
+#include "iceberg/table.h"
+#include "iceberg/table_metadata.h"
+#include "iceberg/table_update.h"
+#include "iceberg/test/matchers.h"
+#include "iceberg/test/mock_catalog.h"
+#include "iceberg/transaction.h"
+#include "iceberg/update/update_properties.h"
+
+namespace iceberg {
+
+class BaseTransactionTest : public ::testing::Test {
+ protected:
+  void SetUp() override {
+    // Create catalog and table identifier
+    catalog_ = std::make_shared<::testing::NiceMock<MockCatalog>>();
+
+    identifier_ = TableIdentifier(Namespace({"test"}), "test_table");
+    auto metadata = std::make_shared<TableMetadata>();
+    table_ =
+        std::make_shared<Table>(identifier_, std::move(metadata),
+                                "s3://bucket/table/metadata.json", nullptr, catalog_);
+  }
+
+  std::unique_ptr<Transaction> NewTransaction() {
+    auto transaction_result = BaseTransaction::Make(table_, catalog_);
+    if (!transaction_result.has_value()) {
+      ADD_FAILURE() << "Failed to create transaction: "
+                    << transaction_result.error().message;
+    }
+    return std::move(transaction_result).value();
+  }
+
+  TableIdentifier identifier_;
+  std::shared_ptr<MockCatalog> catalog_;
+  std::shared_ptr<Table> table_;
+};
+
+TEST_F(BaseTransactionTest, CommitSetPropertiesUsesCatalog) {
+  auto transaction = NewTransaction();
+  auto update_properties = transaction->NewUpdateProperties();
+  EXPECT_TRUE(update_properties.has_value());
+  update_properties.value()->Set("new-key", "new-value");
+  EXPECT_THAT(update_properties.value()->Commit(), IsOk());
+
+  EXPECT_CALL(*catalog_,
+              UpdateTable(::testing::Eq(identifier_), ::testing::_, ::testing::_))
+      .WillOnce(
+          [](const TableIdentifier& id,
+             const std::vector<std::shared_ptr<const TableRequirement>>& /*requirements*/,
+             const std::vector<std::shared_ptr<const TableUpdate>>& updates)
+              -> Result<std::unique_ptr<Table>> {
+            EXPECT_EQ("test_table", id.name);
+            EXPECT_EQ(1u, updates.size());
+            const auto* set_update =
+                dynamic_cast<const table::SetProperties*>(updates.front().get());
+            EXPECT_NE(set_update, nullptr);
+            const auto& updated = set_update->updated();
+            auto it = updated.find("new-key");
+            EXPECT_NE(it, updated.end());
+            EXPECT_EQ("new-value", it->second);
+            return {std::unique_ptr<Table>()};
+          });
+
+  EXPECT_THAT(transaction->CommitTransaction(), IsOk());
+}
+
+TEST_F(BaseTransactionTest, RemovePropertiesSkipsMissingKeys) {
+  auto transaction = NewTransaction();
+  auto update_properties = transaction->NewUpdateProperties();
+  EXPECT_TRUE(update_properties.has_value());
+  update_properties.value()->Remove("missing").Remove("existing");
+  EXPECT_THAT(update_properties.value()->Commit(), IsOk());
+
+  EXPECT_CALL(*catalog_,
+              UpdateTable(::testing::Eq(identifier_), ::testing::_, ::testing::_))
+      .WillOnce(
+          [](const TableIdentifier&,
+             const std::vector<std::shared_ptr<const TableRequirement>>& /*requirements*/,
+             const std::vector<std::shared_ptr<const TableUpdate>>& updates)
+              -> Result<std::unique_ptr<Table>> {
+            EXPECT_EQ(1u, updates.size());
+            const auto* remove_update =
+                dynamic_cast<const table::RemoveProperties*>(updates.front().get());
+            EXPECT_NE(remove_update, nullptr);
+            EXPECT_THAT(remove_update->removed(),
+                        ::testing::UnorderedElementsAre("missing", "existing"));
+            return {std::unique_ptr<Table>()};
+          });
+
+  EXPECT_THAT(transaction->CommitTransaction(), IsOk());
+}
+
+TEST_F(BaseTransactionTest, AggregatesMultiplePendingUpdates) {
+  auto transaction = NewTransaction();
+  auto update_properties = transaction->NewUpdateProperties();
+  EXPECT_TRUE(update_properties.has_value());
+  update_properties.value()->Set("new-key", "new-value");
+  EXPECT_THAT(update_properties.value()->Commit(), IsOk());
+  auto remove_properties = transaction->NewUpdateProperties();
+  EXPECT_TRUE(remove_properties.has_value());
+  remove_properties.value()->Remove("existing");
+  EXPECT_THAT(remove_properties.value()->Commit(), IsOk());
+
+  EXPECT_CALL(*catalog_,
+              UpdateTable(::testing::Eq(identifier_), ::testing::_, ::testing::_))
+      .WillOnce(
+          [](const TableIdentifier&,
+             const std::vector<std::shared_ptr<const TableRequirement>>& /*requirements*/,
+             const std::vector<std::shared_ptr<const TableUpdate>>& updates)
+              -> Result<std::unique_ptr<Table>> {
+            EXPECT_EQ(2u, updates.size());
+
+            const auto* set_update =
+                dynamic_cast<const table::SetProperties*>(updates[0].get());
+            EXPECT_NE(set_update, nullptr);
+            const auto& updated = set_update->updated();
+            auto it = updated.find("new-key");
+            EXPECT_NE(it, updated.end());
+            EXPECT_EQ("new-value", it->second);
+
+            const auto* remove_update =
+                dynamic_cast<const table::RemoveProperties*>(updates[1].get());
+            EXPECT_NE(remove_update, nullptr);
+            EXPECT_THAT(remove_update->removed(), ::testing::ElementsAre("existing"));
+
+            return {std::unique_ptr<Table>()};
+          });
+
+  EXPECT_THAT(transaction->CommitTransaction(), IsOk());
+}
+
+TEST_F(BaseTransactionTest, FailsIfUpdateNotCommitted) {
+  auto transaction = NewTransaction();
+  auto update_properties = transaction->NewUpdateProperties();
+  EXPECT_TRUE(update_properties.has_value());
+  update_properties.value()->Set("new-key", "new-value");
+  EXPECT_THAT(transaction->CommitTransaction(), IsError(ErrorKind::kInvalidState));
+}
+
+TEST_F(BaseTransactionTest, NewTransactionFailsWithoutCatalog) {
+  auto metadata = std::make_shared<TableMetadata>();
+  auto table_without_catalog =
+      std::make_shared<Table>(identifier_, std::move(metadata),
+                              "s3://bucket/table/metadata.json", nullptr, nullptr);
+  EXPECT_THAT(table_without_catalog->NewTransaction(),
+              IsError(ErrorKind::kInvalidArgument));
+}
+
+}  // namespace iceberg

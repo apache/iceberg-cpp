@@ -72,6 +72,8 @@ set(ICEBERG_SOURCES
     table_requirements.cc
     table_scan.cc
     table_update.cc
+    transaction.cc
+    transaction_catalog.cc
     transform.cc
     transform_function.cc
     type.cc

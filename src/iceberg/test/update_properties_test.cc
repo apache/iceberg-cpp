@@ -50,7 +50,14 @@ class UpdatePropertiesTest : public ::testing::Test {
     metadata_->schemas.push_back(schema_);
 
     // Create catalog and table identifier
-    catalog_ = std::make_shared<MockCatalog>();
+    catalog_ = std::make_shared<::testing::NiceMock<MockCatalog>>();
+    ON_CALL(*catalog_, LoadTable(::testing::_))
+        .WillByDefault([this](const TableIdentifier&) -> Result<std::unique_ptr<Table>> {
+          return std::make_unique<Table>(identifier_, metadata_,
+                                         "s3://bucket/table/metadata.json", nullptr,
+                                         catalog_);
+        });
+
     identifier_ = TableIdentifier(Namespace({"test"}), "table");
   }
 
@@ -159,8 +166,11 @@ TEST_F(UpdatePropertiesTest, InvalidTable) {
 
   {
     // metadata is null
-    UpdateProperties update(identifier_, catalog_, nullptr);
+    auto catalog = std::make_shared<::testing::NiceMock<MockCatalog>>();
+    EXPECT_CALL(*catalog, LoadTable(::testing::_))
+        .WillOnce(::testing::Return(InvalidArgument("Base table metadata is required")));
 
+    UpdateProperties update(identifier_, catalog, nullptr);
     auto result = update.Apply();
     EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
     EXPECT_THAT(result, HasErrorMessage("Base table metadata is required"));
@@ -173,7 +183,9 @@ TEST_F(UpdatePropertiesTest, Commit) {
     UpdateProperties update(identifier_, catalog_, metadata_);
     update.Set("key1", "value1");
 
-    EXPECT_CALL(*catalog_, UpdateTable).Times(1).WillOnce(::testing::Return(nullptr));
+    EXPECT_CALL(*catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_))
+        .Times(1)
+        .WillOnce(::testing::Return(nullptr));
 
     auto result = update.Commit();
     EXPECT_THAT(result, IsOk());
@@ -184,7 +196,7 @@ TEST_F(UpdatePropertiesTest, Commit) {
     UpdateProperties update(identifier_, catalog_, metadata_);
     update.Set("key1", "value1");
 
-    EXPECT_CALL(*catalog_, UpdateTable)
+    EXPECT_CALL(*catalog_, UpdateTable(::testing::_, ::testing::_, ::testing::_))
         .WillOnce(::testing::Return(CommitFailed("Commit update failed")));
     auto result = update.Commit();
     EXPECT_THAT(result, IsError(ErrorKind::kCommitFailed));

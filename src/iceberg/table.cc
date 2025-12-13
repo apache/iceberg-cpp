@@ -26,6 +26,7 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/table_scan.h"
+#include "iceberg/transaction.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/util/macros.h"
 
@@ -113,8 +114,8 @@ std::unique_ptr<UpdateProperties> Table::UpdateProperties() const {
   return std::make_unique<iceberg::UpdateProperties>(identifier_, catalog_, metadata_);
 }
 
-std::unique_ptr<Transaction> Table::NewTransaction() const {
-  throw NotImplemented("Table::NewTransaction is not implemented");
+Result<std::unique_ptr<Transaction>> Table::NewTransaction() const {
+  return Transaction::Make(shared_from_this(), catalog_);
 }
 
 const std::shared_ptr<FileIO>& Table::io() const { return io_; }

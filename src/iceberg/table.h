@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/type_fwd.h"
@@ -33,7 +34,7 @@
 namespace iceberg {
 
 /// \brief Represents an Iceberg table
-class ICEBERG_EXPORT Table {
+class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
  public:
   ~Table();
 
@@ -87,6 +88,9 @@ class ICEBERG_EXPORT Table {
   /// \brief Return the table's base location
   const std::string& location() const;
 
+  /// \brief Return the table's metadata file location
+  const std::string& metadata_location() const { return metadata_location_; }
+
   /// \brief Return the table's current snapshot, return NotFoundError if not found
   Result<std::shared_ptr<Snapshot>> current_snapshot() const;
 
@@ -118,11 +122,14 @@ class ICEBERG_EXPORT Table {
 
   /// \brief Create a new transaction for this table
   ///
-  /// \return a pointer to the new Transaction
-  virtual std::unique_ptr<Transaction> NewTransaction() const;
+  /// \return a new Transaction or an error if the transaction cannot be created
+  virtual Result<std::unique_ptr<Transaction>> NewTransaction() const;
 
   /// \brief Returns a FileIO to read and write table data and metadata files
   const std::shared_ptr<FileIO>& io() const;
+
+  /// \brief Return the underlying table metadata
+  const std::shared_ptr<TableMetadata>& metadata() const { return metadata_; }
 
  private:
   const TableIdentifier identifier_;
