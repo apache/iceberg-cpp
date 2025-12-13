@@ -262,7 +262,6 @@ TEST_P(AvroReaderParameterizedTest, AvroWriterNestedType) {
   WriteAndVerify(schema, expected_string);
 }
 
-// Comprehensive tests using in-memory MockFileIO
 
 TEST_P(AvroReaderParameterizedTest, AllPrimitiveTypes) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
