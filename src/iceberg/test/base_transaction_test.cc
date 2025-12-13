@@ -19,6 +19,8 @@
 
 #include "iceberg/base_transaction.h"
 
+#include <unordered_map>
+
 #include <gtest/gtest.h>
 
 #include "iceberg/partition_spec.h"
@@ -31,14 +33,6 @@
 #include "iceberg/update/update_properties.h"
 
 namespace iceberg {
-namespace {
-std::shared_ptr<Table> CreateTestTable(const TableIdentifier& identifier,
-                                       const std::shared_ptr<TableMetadata>& metadata,
-                                       const std::shared_ptr<Catalog>& catalog) {
-  return std::make_shared<Table>(identifier, metadata, "s3://bucket/table/metadata.json",
-                                 nullptr, catalog);
-}
-}  // namespace
 
 class BaseTransactionTest : public ::testing::Test {
  protected:
@@ -60,95 +54,103 @@ class BaseTransactionTest : public ::testing::Test {
 
 TEST_F(BaseTransactionTest, CommitSetPropertiesUsesCatalog) {
   auto transaction = table_->NewTransaction();
-  auto update_properties = transaction->UpdateProperties();
-  update_properties->Set("new-key", "new-value");
-  EXPECT_THAT(update_properties->Commit(), IsOk());
+  auto update_properties = transaction->NewUpdateProperties();
+  EXPECT_TRUE(update_properties.has_value());
+  update_properties.value()->Set("new-key", "new-value");
+  EXPECT_THAT(update_properties.value()->Commit(), IsOk());
 
   EXPECT_CALL(*catalog_,
               UpdateTable(::testing::Eq(identifier_), ::testing::_, ::testing::_))
-      .WillOnce([](const TableIdentifier& id,
-                   std::vector<std::unique_ptr<TableRequirement>> /*requirements*/,
-                   std::vector<std::unique_ptr<TableUpdate>> updates)
-                    -> Result<std::unique_ptr<Table>> {
-        EXPECT_EQ("test_table", id.name);
-        EXPECT_EQ(1u, updates.size());
-        const auto* set_update =
-            dynamic_cast<const table::SetProperties*>(updates.front().get());
-        EXPECT_NE(set_update, nullptr);
-        const auto& updated = set_update->updated();
-        auto it = updated.find("new-key");
-        EXPECT_NE(it, updated.end());
-        EXPECT_EQ("new-value", it->second);
-        return {std::unique_ptr<Table>()};
-      });
+      .WillOnce(
+          [](const TableIdentifier& id,
+             const std::vector<std::shared_ptr<const TableRequirement>>& /*requirements*/,
+             const std::vector<std::shared_ptr<const TableUpdate>>& updates)
+              -> Result<std::unique_ptr<Table>> {
+            EXPECT_EQ("test_table", id.name);
+            EXPECT_EQ(1u, updates.size());
+            const auto* set_update =
+                dynamic_cast<const table::SetProperties*>(updates.front().get());
+            EXPECT_NE(set_update, nullptr);
+            const auto& updated = set_update->updated();
+            auto it = updated.find("new-key");
+            EXPECT_NE(it, updated.end());
+            EXPECT_EQ("new-value", it->second);
+            return {std::unique_ptr<Table>()};
+          });
 
   EXPECT_THAT(transaction->CommitTransaction(), IsOk());
 }
 
 TEST_F(BaseTransactionTest, RemovePropertiesSkipsMissingKeys) {
   auto transaction = table_->NewTransaction();
-  auto update_properties = transaction->UpdateProperties();
-  update_properties->Remove("missing").Remove("existing");
-  EXPECT_THAT(update_properties->Commit(), IsOk());
+  auto update_properties = transaction->NewUpdateProperties();
+  EXPECT_TRUE(update_properties.has_value());
+  update_properties.value()->Remove("missing").Remove("existing");
+  EXPECT_THAT(update_properties.value()->Commit(), IsOk());
 
   EXPECT_CALL(*catalog_,
               UpdateTable(::testing::Eq(identifier_), ::testing::_, ::testing::_))
-      .WillOnce([](const TableIdentifier&,
-                   std::vector<std::unique_ptr<TableRequirement>> /*requirements*/,
-                   std::vector<std::unique_ptr<TableUpdate>> updates)
-                    -> Result<std::unique_ptr<Table>> {
-        EXPECT_EQ(1u, updates.size());
-        const auto* remove_update =
-            dynamic_cast<const table::RemoveProperties*>(updates.front().get());
-        EXPECT_NE(remove_update, nullptr);
-        EXPECT_THAT(remove_update->removed(),
-                    ::testing::UnorderedElementsAre("missing", "existing"));
-        return {std::unique_ptr<Table>()};
-      });
+      .WillOnce(
+          [](const TableIdentifier&,
+             const std::vector<std::shared_ptr<const TableRequirement>>& /*requirements*/,
+             const std::vector<std::shared_ptr<const TableUpdate>>& updates)
+              -> Result<std::unique_ptr<Table>> {
+            EXPECT_EQ(1u, updates.size());
+            const auto* remove_update =
+                dynamic_cast<const table::RemoveProperties*>(updates.front().get());
+            EXPECT_NE(remove_update, nullptr);
+            EXPECT_THAT(remove_update->removed(),
+                        ::testing::UnorderedElementsAre("missing", "existing"));
+            return {std::unique_ptr<Table>()};
+          });
 
   EXPECT_THAT(transaction->CommitTransaction(), IsOk());
 }
 
 TEST_F(BaseTransactionTest, AggregatesMultiplePendingUpdates) {
   auto transaction = table_->NewTransaction();
-  auto update_properties = transaction->UpdateProperties();
-  update_properties->Set("new-key", "new-value");
-  EXPECT_THAT(update_properties->Commit(), IsOk());
-  auto remove_properties = transaction->UpdateProperties();
-  remove_properties->Remove("existing");
-  EXPECT_THAT(remove_properties->Commit(), IsOk());
+  auto update_properties = transaction->NewUpdateProperties();
+  EXPECT_TRUE(update_properties.has_value());
+  update_properties.value()->Set("new-key", "new-value");
+  EXPECT_THAT(update_properties.value()->Commit(), IsOk());
+  auto remove_properties = transaction->NewUpdateProperties();
+  EXPECT_TRUE(remove_properties.has_value());
+  remove_properties.value()->Remove("existing");
+  EXPECT_THAT(remove_properties.value()->Commit(), IsOk());
 
   EXPECT_CALL(*catalog_,
               UpdateTable(::testing::Eq(identifier_), ::testing::_, ::testing::_))
-      .WillOnce([](const TableIdentifier&,
-                   std::vector<std::unique_ptr<TableRequirement>> /*requirements*/,
-                   std::vector<std::unique_ptr<TableUpdate>> updates)
-                    -> Result<std::unique_ptr<Table>> {
-        EXPECT_EQ(2u, updates.size());
+      .WillOnce(
+          [](const TableIdentifier&,
+             const std::vector<std::shared_ptr<const TableRequirement>>& /*requirements*/,
+             const std::vector<std::shared_ptr<const TableUpdate>>& updates)
+              -> Result<std::unique_ptr<Table>> {
+            EXPECT_EQ(2u, updates.size());
 
-        const auto* set_update =
-            dynamic_cast<const table::SetProperties*>(updates[0].get());
-        EXPECT_NE(set_update, nullptr);
-        const auto& updated = set_update->updated();
-        auto it = updated.find("new-key");
-        EXPECT_NE(it, updated.end());
-        EXPECT_EQ("new-value", it->second);
+            const auto* set_update =
+                dynamic_cast<const table::SetProperties*>(updates[0].get());
+            EXPECT_NE(set_update, nullptr);
+            const auto& updated = set_update->updated();
+            auto it = updated.find("new-key");
+            EXPECT_NE(it, updated.end());
+            EXPECT_EQ("new-value", it->second);
 
-        const auto* remove_update =
-            dynamic_cast<const table::RemoveProperties*>(updates[1].get());
-        EXPECT_NE(remove_update, nullptr);
-        EXPECT_THAT(remove_update->removed(), ::testing::ElementsAre("existing"));
+            const auto* remove_update =
+                dynamic_cast<const table::RemoveProperties*>(updates[1].get());
+            EXPECT_NE(remove_update, nullptr);
+            EXPECT_THAT(remove_update->removed(), ::testing::ElementsAre("existing"));
 
-        return {std::unique_ptr<Table>()};
-      });
+            return {std::unique_ptr<Table>()};
+          });
 
   EXPECT_THAT(transaction->CommitTransaction(), IsOk());
 }
 
 TEST_F(BaseTransactionTest, FailsIfUpdateNotCommitted) {
   auto transaction = table_->NewTransaction();
-  auto update_properties = transaction->UpdateProperties();
-  update_properties->Set("new-key", "new-value");
+  auto update_properties = transaction->NewUpdateProperties();
+  EXPECT_TRUE(update_properties.has_value());
+  update_properties.value()->Set("new-key", "new-value");
   EXPECT_THAT(transaction->CommitTransaction(), IsError(ErrorKind::kInvalidState));
 }
 

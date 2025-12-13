@@ -87,6 +87,9 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// \brief Return the table's base location
   const std::string& location() const;
 
+  /// \brief Return the table's metadata file location
+  const std::string& metadata_location() const { return metadata_location_; }
+
   /// \brief Return the table's current snapshot, return NotFoundError if not found
   Result<std::shared_ptr<Snapshot>> current_snapshot() const;
 

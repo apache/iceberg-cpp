@@ -19,8 +19,6 @@
 
 #include "iceberg/base_transaction.h"
 
-#include <utility>
-
 #include "iceberg/catalog.h"
 #include "iceberg/pending_update.h"
 #include "iceberg/table.h"
@@ -43,17 +41,19 @@ BaseTransaction::BaseTransaction(std::shared_ptr<const Table> table,
 
 const std::shared_ptr<const Table>& BaseTransaction::table() const { return table_; }
 
-std::unique_ptr<UpdateProperties> BaseTransaction::UpdateProperties() {
-  auto update = CheckAndCreateUpdate<::iceberg::UpdateProperties>(
-      table_->name(), catalog_, CurrentMetadata());
-  if (!update.has_value()) {
-    ERROR_TO_EXCEPTION(update.error());
+Result<std::unique_ptr<UpdateProperties>> BaseTransaction::NewUpdateProperties() {
+  if (!HasLastOperationCommitted()) {
+    return InvalidState(
+        "Cannot create new update: last operation in transaction has not committed");
   }
+  SetLastOperationCommitted(false);
 
-  return std::move(update).value();
+  auto metadata = std::make_shared<TableMetadata>(*context_.current_metadata);
+  return std::make_unique<UpdateProperties>(table_->name(), catalog_,
+                                            std::move(metadata));
 }
 
-std::unique_ptr<AppendFiles> BaseTransaction::NewAppend() {
+Result<std::unique_ptr<AppendFiles>> BaseTransaction::NewAppend() {
   throw NotImplemented("BaseTransaction::NewAppend not implemented");
 }
 
@@ -62,30 +62,25 @@ Status BaseTransaction::CommitTransaction() {
     return InvalidState("Cannot commit transaction: last operation has not committed");
   }
 
-  auto pending_updates = ConsumePendingUpdates();
-  if (pending_updates.empty()) {
+  if (context_.pending_updates.empty()) {
     return {};
   }
-
-  auto pending_requirements = ConsumePendingRequirements();
 
   ICEBERG_ASSIGN_OR_RAISE(
       auto updated_table,
       catalog_->catalog_impl()->UpdateTable(
-          table_->name(), std::move(pending_requirements), std::move(pending_updates)));
+          context_.identifier, context_.pending_requirements, context_.pending_updates));
 
-  // update table to the new version
-  if (updated_table) {
-    table_ = std::shared_ptr<Table>(std::move(updated_table));
-  }
+  context_.pending_requirements.clear();
+  context_.pending_updates.clear();
 
   return {};
 }
 
 Result<std::unique_ptr<Table>> BaseTransaction::StageUpdates(
     const TableIdentifier& identifier,
-    std::vector<std::unique_ptr<TableRequirement>> requirements,
-    std::vector<std::unique_ptr<TableUpdate>> updates) {
+    const std::vector<std::shared_ptr<const TableRequirement>>& requirements,
+    const std::vector<std::shared_ptr<const TableUpdate>>& updates) {
   if (identifier != context_.identifier) {
     return InvalidArgument("Transaction only supports table '{}'",
                            context_.identifier.name);
@@ -98,25 +93,22 @@ Result<std::unique_ptr<Table>> BaseTransaction::StageUpdates(
   if (updates.empty()) {
     return std::make_unique<Table>(
         context_.identifier, std::make_shared<TableMetadata>(*context_.current_metadata),
-        table_->location(), table_->io(), catalog_->catalog_impl());
+        table_->metadata_location(), table_->io(), catalog_->catalog_impl());
   }
 
   ICEBERG_RETURN_UNEXPECTED(ApplyUpdates(updates));
-
-  for (auto& requirement : requirements) {
-    context_.pending_requirements.emplace_back(std::move(requirement));
-  }
-  for (auto& update : updates) {
-    context_.pending_updates.emplace_back(std::move(update));
-  }
+  context_.pending_requirements.insert(context_.pending_requirements.end(),
+                                       requirements.begin(), requirements.end());
+  context_.pending_updates.insert(context_.pending_updates.end(), updates.begin(),
+                                  updates.end());
 
   return std::make_unique<Table>(
       context_.identifier, std::make_shared<TableMetadata>(*context_.current_metadata),
-      table_->location(), table_->io(), catalog_->catalog_impl());
+      table_->metadata_location(), table_->io(), catalog_->catalog_impl());
 }
 
 Status BaseTransaction::ApplyUpdates(
-    const std::vector<std::unique_ptr<TableUpdate>>& updates) {
+    const std::vector<std::shared_ptr<const TableUpdate>>& updates) {
   if (updates.empty()) {
     return {};
   }
@@ -132,15 +124,6 @@ Status BaseTransaction::ApplyUpdates(
   ICEBERG_ASSIGN_OR_RAISE(auto new_metadata, builder->Build());
   context_.current_metadata = std::shared_ptr<TableMetadata>(std::move(new_metadata));
   return {};
-}
-
-std::vector<std::unique_ptr<TableRequirement>>
-BaseTransaction::ConsumePendingRequirements() {
-  return std::exchange(context_.pending_requirements, {});
-}
-
-std::vector<std::unique_ptr<TableUpdate>> BaseTransaction::ConsumePendingUpdates() {
-  return std::exchange(context_.pending_updates, {});
 }
 
 }  // namespace iceberg

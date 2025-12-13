@@ -88,8 +88,8 @@ class ICEBERG_EXPORT TransactionCatalog : public Catalog {
 
   Result<std::unique_ptr<Table>> UpdateTable(
       const TableIdentifier& identifier,
-      std::vector<std::unique_ptr<TableRequirement>> requirements,
-      std::vector<std::unique_ptr<TableUpdate>> updates) override;
+      const std::vector<std::shared_ptr<const TableRequirement>>& requirements,
+      const std::vector<std::shared_ptr<const TableUpdate>>& updates) override;
 
   Result<std::shared_ptr<Transaction>> StageCreateTable(
       const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
@@ -110,9 +110,7 @@ class ICEBERG_EXPORT TransactionCatalog : public Catalog {
     return NotImplemented("rename table");
   }
 
-  Result<std::unique_ptr<Table>> LoadTable(const TableIdentifier& identifier) override {
-    return catalog_impl_->LoadTable(identifier);
-  }
+  Result<std::unique_ptr<Table>> LoadTable(const TableIdentifier& identifier) override;
 
   Result<std::shared_ptr<Table>> RegisterTable(
       const TableIdentifier& identifier,

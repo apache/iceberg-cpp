@@ -39,7 +39,7 @@ class ICEBERG_EXPORT UpdateProperties : public PendingUpdate {
   ///
   /// \param identifier The table identifier
   /// \param catalog The catalog containing the table
-  /// \param metadata The current table metadata
+  /// \param base The current table metadata
   UpdateProperties(TableIdentifier identifier, std::shared_ptr<Catalog> catalog,
                    std::shared_ptr<TableMetadata> base);
 

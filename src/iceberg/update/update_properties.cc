@@ -74,6 +74,10 @@ Status UpdateProperties::Apply() {
   if (!catalog_) {
     return InvalidArgument("Catalog is required to apply property updates");
   }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto reloaded_table, catalog_->LoadTable(identifier_));
+  base_metadata_ = reloaded_table->metadata();
+
   if (!base_metadata_) {
     return InvalidArgument("Base table metadata is required to apply property updates");
   }
@@ -126,8 +130,19 @@ Status UpdateProperties::Commit() {
   if (!updates.empty()) {
     ICEBERG_ASSIGN_OR_RAISE(auto requirements,
                             TableRequirements::ForUpdateTable(*base_metadata_, updates));
+    auto shared_updates = std::vector<std::shared_ptr<const TableUpdate>>{};
+    shared_updates.reserve(updates.size());
+    for (auto& update : updates) {
+      shared_updates.push_back(std::move(update));
+    }
+    auto shared_requirements = std::vector<std::shared_ptr<const TableRequirement>>{};
+    shared_requirements.reserve(requirements.size());
+    for (auto& requirement : requirements) {
+      shared_requirements.push_back(std::move(requirement));
+    }
+
     ICEBERG_RETURN_UNEXPECTED(
-        catalog_->UpdateTable(identifier_, std::move(requirements), std::move(updates)));
+        catalog_->UpdateTable(identifier_, shared_requirements, shared_updates));
   }
 
   catalog_->SetLastOperationCommitted(true);
