@@ -34,6 +34,7 @@
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/avro/avro_data_util_internal.h"
+#include "iceberg/avro/avro_direct_decoder_internal.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/avro/avro_stream_internal.h"
@@ -62,12 +63,16 @@ Result<std::unique_ptr<AvroInputStream>> CreateInputStream(const ReaderOptions& 
 
 // A stateful context to keep track of the reading progress.
 struct ReadContext {
-  // The datum to reuse for reading the data.
-  std::unique_ptr<::avro::GenericDatum> datum_;
   // The arrow schema to build the record batch.
   std::shared_ptr<::arrow::Schema> arrow_schema_;
   // The builder to build the record batch.
   std::shared_ptr<::arrow::ArrayBuilder> builder_;
+  // GenericDatum for GenericDatum-based decoding (only used if direct decoder is
+  // disabled)
+  std::unique_ptr<::avro::GenericDatum> datum_;
+  // Decode context for reusing scratch buffers (only used if direct decoder is
+  // enabled)
+  DecodeContext decode_context_;
 };
 
 // TODO(gang.wu): there are a lot to do to make this reader work.
@@ -83,6 +88,7 @@ class AvroReader::Impl {
     }
 
     batch_size_ = options.properties->Get(ReaderProperties::kBatchSize);
+    use_direct_decoder_ = options.properties->Get(ReaderProperties::kAvroSkipDatum);
     read_schema_ = options.projection;
 
     // Open the input stream and adapt to the avro interface.
@@ -91,10 +97,21 @@ class AvroReader::Impl {
     ICEBERG_ASSIGN_OR_RAISE(auto input_stream,
                             CreateInputStream(options, kDefaultBufferSize));
 
-    // Create a base reader without setting reader schema to enable projection.
-    auto base_reader =
-        std::make_unique<::avro::DataFileReaderBase>(std::move(input_stream));
-    ::avro::ValidSchema file_schema = base_reader->dataSchema();
+    ::avro::ValidSchema file_schema;
+
+    if (use_direct_decoder_) {
+      // Create base reader for direct decoder access
+      auto base_reader =
+          std::make_unique<::avro::DataFileReaderBase>(std::move(input_stream));
+      file_schema = base_reader->dataSchema();
+      base_reader_ = std::move(base_reader);
+    } else {
+      // Create DataFileReader<GenericDatum> for GenericDatum-based decoding
+      auto datum_reader = std::make_unique<::avro::DataFileReader<::avro::GenericDatum>>(
+          std::move(input_stream));
+      file_schema = datum_reader->dataSchema();
+      datum_reader_ = std::move(datum_reader);
+    }
 
     // Validate field ids in the file schema.
     HasIdVisitor has_id_visitor;
@@ -121,13 +138,22 @@ class AvroReader::Impl {
     // TODO(gangwu): support pruning source fields
     ICEBERG_ASSIGN_OR_RAISE(projection_, Project(*read_schema_, file_schema.root(),
                                                  /*prune_source=*/false));
-    reader_ = std::make_unique<::avro::DataFileReader<::avro::GenericDatum>>(
-        std::move(base_reader), file_schema);
 
-    if (options.split) {
-      reader_->sync(options.split->offset);
-      split_end_ = options.split->offset + options.split->length;
+    if (use_direct_decoder_) {
+      // Initialize the base reader with the file schema
+      base_reader_->init(file_schema);
+      if (options.split) {
+        base_reader_->sync(options.split->offset);
+        split_end_ = options.split->offset + options.split->length;
+      }
+    } else {
+      // The datum reader is already initialized during construction
+      if (options.split) {
+        datum_reader_->sync(options.split->offset);
+        split_end_ = options.split->offset + options.split->length;
+      }
     }
+
     return {};
   }
 
@@ -137,25 +163,37 @@ class AvroReader::Impl {
     }
 
     while (context_->builder_->length() < batch_size_) {
-      if (split_end_ && reader_->pastSync(split_end_.value())) {
+      if (IsPastSync()) {
         break;
       }
-      if (!reader_->read(*context_->datum_)) {
-        break;
+
+      if (use_direct_decoder_) {
+        // Direct decoder: decode Avro to Arrow without GenericDatum
+        if (!base_reader_->hasMore()) {
+          break;
+        }
+        base_reader_->decr();
+
+        ICEBERG_RETURN_UNEXPECTED(DecodeAvroToBuilder(
+            GetReaderSchema().root(), base_reader_->decoder(), projection_, *read_schema_,
+            context_->builder_.get(), &context_->decode_context_));
+      } else {
+        // GenericDatum-based decoding: decode via GenericDatum intermediate
+        if (!datum_reader_->read(*context_->datum_)) {
+          break;
+        }
+
+        ICEBERG_RETURN_UNEXPECTED(
+            AppendDatumToBuilder(GetReaderSchema().root(), *context_->datum_, projection_,
+                                 *read_schema_, context_->builder_.get()));
       }
-      ICEBERG_RETURN_UNEXPECTED(
-          AppendDatumToBuilder(reader_->readerSchema().root(), *context_->datum_,
-                               projection_, *read_schema_, context_->builder_.get()));
     }
 
     return ConvertBuilderToArrowArray();
   }
 
   Status Close() {
-    if (reader_ != nullptr) {
-      reader_->close();
-      reader_.reset();
-    }
+    CloseReader();
     context_.reset();
     return {};
   }
@@ -174,12 +212,12 @@ class AvroReader::Impl {
   }
 
   Result<std::unordered_map<std::string, std::string>> Metadata() {
-    if (reader_ == nullptr) {
+    if ((use_direct_decoder_ && !base_reader_) ||
+        (!use_direct_decoder_ && !datum_reader_)) {
       return Invalid("Reader is not opened");
     }
 
-    const auto& metadata = reader_->metadata();
-
+    const ::avro::Metadata metadata = GetReaderMetadata();
     std::unordered_map<std::string, std::string> metadata_map;
     metadata_map.reserve(metadata.size());
 
@@ -194,7 +232,6 @@ class AvroReader::Impl {
  private:
   Status InitReadContext() {
     context_ = std::make_unique<ReadContext>();
-    context_->datum_ = std::make_unique<::avro::GenericDatum>(reader_->readerSchema());
 
     ArrowSchema arrow_schema;
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*read_schema_, &arrow_schema));
@@ -213,6 +250,11 @@ class AvroReader::Impl {
                            builder_result.status().message());
     }
     context_->builder_ = builder_result.MoveValueUnsafe();
+
+    // Initialize GenericDatum for GenericDatum-based decoding
+    if (!use_direct_decoder_) {
+      context_->datum_ = std::make_unique<::avro::GenericDatum>(GetReaderSchema());
+    }
 
     return {};
   }
@@ -238,17 +280,54 @@ class AvroReader::Impl {
     return arrow_array;
   }
 
+  // Helper: Check if past sync point
+  bool IsPastSync() const {
+    if (!split_end_) return false;
+    return use_direct_decoder_ ? base_reader_->pastSync(split_end_.value())
+                               : datum_reader_->pastSync(split_end_.value());
+  }
+
+  // Helper: Get metadata from appropriate reader
+  ::avro::Metadata GetReaderMetadata() const {
+    return use_direct_decoder_ ? base_reader_->metadata() : datum_reader_->metadata();
+  }
+
+  // Helper: Close the appropriate reader
+  void CloseReader() {
+    if (use_direct_decoder_) {
+      if (base_reader_) {
+        base_reader_->close();
+        base_reader_.reset();
+      }
+    } else {
+      if (datum_reader_) {
+        datum_reader_->close();
+        datum_reader_.reset();
+      }
+    }
+  }
+
+  // Helper: Get reader schema
+  const ::avro::ValidSchema& GetReaderSchema() const {
+    return use_direct_decoder_ ? base_reader_->readerSchema()
+                               : datum_reader_->readerSchema();
+  }
+
  private:
   // Max number of rows in the record batch to read.
   int64_t batch_size_{};
+  // Whether to use direct decoder (true) or GenericDatum-based decoder (false).
+  bool use_direct_decoder_{true};
   // The end of the split to read and used to terminate the reading.
   std::optional<int64_t> split_end_;
   // The schema to read.
   std::shared_ptr<::iceberg::Schema> read_schema_;
   // The projection result to apply to the read schema.
   SchemaProjection projection_;
-  // The avro reader to read the data into a datum.
-  std::unique_ptr<::avro::DataFileReader<::avro::GenericDatum>> reader_;
+  // The avro reader base - provides direct access to decoder for direct decoding.
+  std::unique_ptr<::avro::DataFileReaderBase> base_reader_;
+  // The datum reader for GenericDatum-based decoding.
+  std::unique_ptr<::avro::DataFileReader<::avro::GenericDatum>> datum_reader_;
   // The context to keep track of the reading progress.
   std::unique_ptr<ReadContext> context_;
 };

@@ -16,3 +16,9 @@
 # under the License.
 
 iceberg_install_all_headers(iceberg/avro)
+
+# avro_scan benchmark executable
+add_executable(avro_scan avro_scan.cc)
+target_link_libraries(avro_scan PRIVATE iceberg_bundle_static)
+set_target_properties(avro_scan PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+                                           "${CMAKE_BINARY_DIR}/src/iceberg/avro")

@@ -118,7 +118,14 @@ class TempFileTestBase : public ::testing::Test {
   /// \brief Get the test name for inclusion in the filename
   std::string TestInfo() const {
     if (const auto info = ::testing::UnitTest::GetInstance()->current_test_info(); info) {
-      return std::format("{}_{}", info->test_suite_name(), info->name());
+      std::string result = std::format("{}_{}", info->test_suite_name(), info->name());
+      // Replace slashes (from parameterized tests) with underscores to avoid path issues
+      for (auto& c : result) {
+        if (c == '/') {
+          c = '_';
+        }
+      }
+      return result;
     }
     return "unknown_test";
   }

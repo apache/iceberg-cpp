@@ -76,6 +76,11 @@ class ReaderProperties : public ConfigBase<ReaderProperties> {
   /// \brief The batch size to read.
   inline static Entry<int64_t> kBatchSize{"read.batch-size", 4096};
 
+  /// \brief Skip GenericDatum in Avro reader for better performance.
+  /// When true, decode directly from Avro to Arrow without GenericDatum intermediate.
+  /// Default: true (skip GenericDatum for better performance).
+  inline static Entry<bool> kAvroSkipDatum{"read.avro.skip-datum", true};
+
   /// \brief Create a default ReaderProperties instance.
   static std::unique_ptr<ReaderProperties> default_properties();
 
