@@ -262,7 +262,6 @@ TEST_P(AvroReaderParameterizedTest, AvroWriterNestedType) {
   WriteAndVerify(schema, expected_string);
 }
 
-
 TEST_P(AvroReaderParameterizedTest, AllPrimitiveTypes) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "bool_col", std::make_shared<BooleanType>()),
@@ -497,7 +496,6 @@ TEST_P(AvroReaderParameterizedTest, EmptyCollections) {
 
   WriteAndVerify(schema, expected_string);
 }
-
 
 INSTANTIATE_TEST_SUITE_P(DirectDecoderModes, AvroReaderParameterizedTest,
                          ::testing::Bool(),
