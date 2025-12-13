@@ -17,8 +17,6 @@
  * under the License.
  */
 
-#include "iceberg/base_transaction.h"
-
 #include <unordered_map>
 
 #include <gtest/gtest.h>
@@ -30,6 +28,7 @@
 #include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
+#include "iceberg/transaction.h"
 #include "iceberg/update/update_properties.h"
 
 namespace iceberg {
@@ -47,13 +46,22 @@ class BaseTransactionTest : public ::testing::Test {
                                 "s3://bucket/table/metadata.json", nullptr, catalog_);
   }
 
+  std::unique_ptr<Transaction> NewTransaction() {
+    auto transaction_result = BaseTransaction::Make(table_, catalog_);
+    if (!transaction_result.has_value()) {
+      ADD_FAILURE() << "Failed to create transaction: "
+                    << transaction_result.error().message;
+    }
+    return std::move(transaction_result).value();
+  }
+
   TableIdentifier identifier_;
   std::shared_ptr<MockCatalog> catalog_;
   std::shared_ptr<Table> table_;
 };
 
 TEST_F(BaseTransactionTest, CommitSetPropertiesUsesCatalog) {
-  auto transaction = table_->NewTransaction();
+  auto transaction = NewTransaction();
   auto update_properties = transaction->NewUpdateProperties();
   EXPECT_TRUE(update_properties.has_value());
   update_properties.value()->Set("new-key", "new-value");
@@ -82,7 +90,7 @@ TEST_F(BaseTransactionTest, CommitSetPropertiesUsesCatalog) {
 }
 
 TEST_F(BaseTransactionTest, RemovePropertiesSkipsMissingKeys) {
-  auto transaction = table_->NewTransaction();
+  auto transaction = NewTransaction();
   auto update_properties = transaction->NewUpdateProperties();
   EXPECT_TRUE(update_properties.has_value());
   update_properties.value()->Remove("missing").Remove("existing");
@@ -108,7 +116,7 @@ TEST_F(BaseTransactionTest, RemovePropertiesSkipsMissingKeys) {
 }
 
 TEST_F(BaseTransactionTest, AggregatesMultiplePendingUpdates) {
-  auto transaction = table_->NewTransaction();
+  auto transaction = NewTransaction();
   auto update_properties = transaction->NewUpdateProperties();
   EXPECT_TRUE(update_properties.has_value());
   update_properties.value()->Set("new-key", "new-value");
@@ -147,11 +155,20 @@ TEST_F(BaseTransactionTest, AggregatesMultiplePendingUpdates) {
 }
 
 TEST_F(BaseTransactionTest, FailsIfUpdateNotCommitted) {
-  auto transaction = table_->NewTransaction();
+  auto transaction = NewTransaction();
   auto update_properties = transaction->NewUpdateProperties();
   EXPECT_TRUE(update_properties.has_value());
   update_properties.value()->Set("new-key", "new-value");
   EXPECT_THAT(transaction->CommitTransaction(), IsError(ErrorKind::kInvalidState));
+}
+
+TEST_F(BaseTransactionTest, NewTransactionFailsWithoutCatalog) {
+  auto metadata = std::make_shared<TableMetadata>();
+  auto table_without_catalog =
+      std::make_shared<Table>(identifier_, std::move(metadata),
+                              "s3://bucket/table/metadata.json", nullptr, nullptr);
+  EXPECT_THAT(table_without_catalog->NewTransaction(),
+              IsError(ErrorKind::kInvalidArgument));
 }
 
 }  // namespace iceberg

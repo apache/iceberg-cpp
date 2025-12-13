@@ -26,6 +26,7 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/type_fwd.h"
@@ -121,8 +122,8 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
 
   /// \brief Create a new transaction for this table
   ///
-  /// \return a pointer to the new Transaction
-  virtual std::unique_ptr<Transaction> NewTransaction() const;
+  /// \return a new Transaction or an error if the transaction cannot be created
+  virtual Result<std::unique_ptr<Transaction>> NewTransaction() const;
 
   /// \brief Returns a FileIO to read and write table data and metadata files
   const std::shared_ptr<FileIO>& io() const;

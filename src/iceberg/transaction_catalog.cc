@@ -19,8 +19,8 @@
 
 #include "iceberg/transaction_catalog.h"
 
-#include "iceberg/base_transaction.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/transaction.h"
 
 namespace iceberg {
 
