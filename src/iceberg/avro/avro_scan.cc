@@ -32,9 +32,6 @@
 #include "iceberg/file_reader.h"
 #include "iceberg/schema.h"
 
-using namespace iceberg;
-using namespace iceberg::avro;
-
 void PrintUsage(const char* program_name) {
   std::cerr << "Usage: " << program_name << " [options] <avro_file>\n"
             << "Options:\n"
@@ -47,7 +44,7 @@ void PrintUsage(const char* program_name) {
 }
 
 int main(int argc, char* argv[]) {
-  RegisterAll();
+  iceberg::avro::RegisterAll();
 
   if (argc < 2) {
     PrintUsage(argv[0]);
@@ -64,7 +61,7 @@ int main(int argc, char* argv[]) {
     if (arg == "--help") {
       PrintUsage(argv[0]);
       return 0;
-    } else if (arg.rfind("--skip-datum=", 0) == 0) {
+    } else if (arg.starts_with("--skip-datum=")) {
       std::string value = arg.substr(13);
       if (value == "true" || value == "1") {
         skip_datum = true;
@@ -74,7 +71,7 @@ int main(int argc, char* argv[]) {
         std::cerr << "Invalid value for --skip-datum: " << value << "\n";
         return 1;
       }
-    } else if (arg.rfind("--batch-size=", 0) == 0) {
+    } else if (arg.starts_with("--batch-size=")) {
       batch_size = std::stoll(arg.substr(13));
       if (batch_size <= 0) {
         std::cerr << "Batch size must be positive\n";
@@ -119,17 +116,17 @@ int main(int argc, char* argv[]) {
   std::cout << "File size: " << file_info.size() << " bytes\n";
 
   // Configure reader properties
-  auto reader_properties = ReaderProperties::default_properties();
-  reader_properties->Set(ReaderProperties::kAvroSkipDatum, skip_datum);
-  reader_properties->Set(ReaderProperties::kBatchSize, batch_size);
+  auto reader_properties = iceberg::ReaderProperties::default_properties();
+  reader_properties->Set(iceberg::ReaderProperties::kAvroSkipDatum, skip_datum);
+  reader_properties->Set(iceberg::ReaderProperties::kBatchSize, batch_size);
 
   // Open reader (without projection to read all columns)
-  auto reader_result = ReaderFactoryRegistry::Open(
-      FileFormatType::kAvro, {.path = avro_file,
-                              .length = file_info.size(),
-                              .io = file_io,
-                              .projection = nullptr,
-                              .properties = std::move(reader_properties)});
+  auto reader_result = iceberg::ReaderFactoryRegistry::Open(
+      iceberg::FileFormatType::kAvro, {.path = avro_file,
+                                       .length = file_info.size(),
+                                       .io = file_io,
+                                       .projection = nullptr,
+                                       .properties = std::move(reader_properties)});
 
   if (!reader_result.has_value()) {
     std::cerr << "Error opening reader: " << reader_result.error().message << "\n";
