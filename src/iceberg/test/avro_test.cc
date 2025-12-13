@@ -146,12 +146,12 @@ class AvroReaderTest : public TempFileTestBase {
     auto reader_properties = ReaderProperties::default_properties();
     reader_properties->Set(ReaderProperties::kAvroSkipDatum, skip_datum_);
 
-    auto reader_result = ReaderFactoryRegistry::Open(FileFormatType::kAvro,
-                                                     {.path = temp_avro_file_,
-                                                      .length = file_info_result->size(),
-                                                      .io = file_io_,
-                                                      .projection = schema,
-                                                      .properties = std::move(reader_properties)});
+    auto reader_result = ReaderFactoryRegistry::Open(
+        FileFormatType::kAvro, {.path = temp_avro_file_,
+                                .length = file_info_result->size(),
+                                .io = file_io_,
+                                .projection = schema,
+                                .properties = std::move(reader_properties)});
     ASSERT_THAT(reader_result, IsOk());
     auto reader = std::move(reader_result.value());
     ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, expected_string));
@@ -174,7 +174,7 @@ class AvroReaderTest : public TempFileTestBase {
 
 // Parameterized test fixture for testing both DirectDecoder and GenericDatum modes
 class AvroReaderParameterizedTest : public AvroReaderTest,
-                                     public ::testing::WithParamInterface<bool> {
+                                    public ::testing::WithParamInterface<bool> {
  protected:
   void SetUp() override {
     AvroReaderTest::SetUp();
@@ -501,12 +501,10 @@ TEST_P(AvroReaderParameterizedTest, EmptyCollections) {
 
 // Skip Fixed and UUID tests for now - they require specific binary encoding
 
-INSTANTIATE_TEST_SUITE_P(
-    DirectDecoderModes,
-    AvroReaderParameterizedTest,
-    ::testing::Bool(),
-    [](const ::testing::TestParamInfo<bool>& info) {
-      return info.param ? "DirectDecoder" : "GenericDatum";
-    });
+INSTANTIATE_TEST_SUITE_P(DirectDecoderModes, AvroReaderParameterizedTest,
+                         ::testing::Bool(),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "DirectDecoder" : "GenericDatum";
+                         });
 
 }  // namespace iceberg::avro
