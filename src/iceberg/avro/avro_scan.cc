@@ -42,7 +42,8 @@ void PrintUsage(const char* program_name) {
             << "  --batch-size=<N>           Batch size for reading (default: 4096)\n"
             << "  --help                     Show this help message\n"
             << "\nExample:\n"
-            << "  " << program_name << " --skip-datum=false --batch-size=1000 data.avro\n";
+            << "  " << program_name
+            << " --skip-datum=false --batch-size=1000 data.avro\n";
 }
 
 int main(int argc, char* argv[]) {
@@ -197,9 +198,9 @@ int main(int argc, char* argv[]) {
             << (duration.count() > 0 ? (total_rows * 1000 / duration.count()) : 0)
             << " rows/sec\n";
   std::cout << "  Throughput: "
-            << (duration.count() > 0 ? (file_info.size() / 1024.0 / 1024.0) /
-                                           (duration.count() / 1000.0)
-                                     : 0)
+            << (duration.count() > 0
+                    ? (file_info.size() / 1024.0 / 1024.0) / (duration.count() / 1000.0)
+                    : 0)
             << " MB/sec\n";
 
   return 0;
