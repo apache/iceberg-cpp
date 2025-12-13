@@ -385,11 +385,11 @@ TEST_F(AvroReaderTest, ProjectionSubsetAndReorder) {
   ASSERT_TRUE(export_result.ok());
 
   std::unordered_map<std::string, std::string> metadata = {{"k1", "v1"}};
-  auto writer_result = WriterFactoryRegistry::Open(FileFormatType::kAvro,
-                                                    {.path = temp_avro_file_,
-                                                     .schema = write_schema,
-                                                     .io = file_io_,
-                                                     .metadata = metadata});
+  auto writer_result =
+      WriterFactoryRegistry::Open(FileFormatType::kAvro, {.path = temp_avro_file_,
+                                                          .schema = write_schema,
+                                                          .io = file_io_,
+                                                          .metadata = metadata});
   ASSERT_TRUE(writer_result.has_value());
   auto writer = std::move(writer_result.value());
   ASSERT_THAT(writer->Write(&arrow_array), IsOk());
@@ -404,16 +404,16 @@ TEST_F(AvroReaderTest, ProjectionSubsetAndReorder) {
   ASSERT_TRUE(file_info_result.ok());
 
   auto reader_result = ReaderFactoryRegistry::Open(FileFormatType::kAvro,
-                                                    {.path = temp_avro_file_,
-                                                     .length = file_info_result->size(),
-                                                     .io = file_io_,
-                                                     .projection = read_schema});
+                                                   {.path = temp_avro_file_,
+                                                    .length = file_info_result->size(),
+                                                    .io = file_io_,
+                                                    .projection = read_schema});
   ASSERT_THAT(reader_result, IsOk());
   auto reader = std::move(reader_result.value());
 
   // Verify reordered subset
-  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(
-      *reader, R"([["NYC", 1], ["SF", 2], ["LA", 3]])"));
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyNextBatch(*reader, R"([["NYC", 1], ["SF", 2], ["LA", 3]])"));
   ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
 }
 

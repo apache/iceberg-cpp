@@ -88,8 +88,7 @@ class AvroReader::Impl {
     }
 
     batch_size_ = options.properties->Get(ReaderProperties::kBatchSize);
-    use_direct_decoder_ =
-        options.properties->Get(ReaderProperties::kAvroSkipDatum);
+    use_direct_decoder_ = options.properties->Get(ReaderProperties::kAvroSkipDatum);
     read_schema_ = options.projection;
 
     // Open the input stream and adapt to the avro interface.
@@ -175,10 +174,9 @@ class AvroReader::Impl {
         }
         base_reader_->decr();
 
-        ICEBERG_RETURN_UNEXPECTED(
-            DecodeAvroToBuilder(GetReaderSchema().root(), base_reader_->decoder(),
-                                projection_, *read_schema_, context_->builder_.get(),
-                                &context_->decode_context_));
+        ICEBERG_RETURN_UNEXPECTED(DecodeAvroToBuilder(
+            GetReaderSchema().root(), base_reader_->decoder(), projection_, *read_schema_,
+            context_->builder_.get(), &context_->decode_context_));
       } else {
         // GenericDatum-based decoding: decode via GenericDatum intermediate
         if (!datum_reader_->read(*context_->datum_)) {

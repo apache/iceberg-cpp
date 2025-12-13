@@ -193,8 +193,9 @@ Status DecodeStructToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& 
       const auto& avro_field_node = avro_node->leafAt(avro_idx);
       auto* field_builder = struct_builder->field_builder(proj_idx);
 
-      ICEBERG_RETURN_UNEXPECTED(DecodeFieldToBuilder(
-          avro_field_node, decoder, field_projection, expected_field, field_builder, ctx));
+      ICEBERG_RETURN_UNEXPECTED(DecodeFieldToBuilder(avro_field_node, decoder,
+                                                     field_projection, expected_field,
+                                                     field_builder, ctx));
     }
   }
 
@@ -315,7 +316,8 @@ Status DecodeNestedValueToBuilder(const ::avro::NodePtr& avro_node,
                                   ::avro::Decoder& decoder,
                                   const std::span<const FieldProjection>& projections,
                                   const NestedType& projected_type,
-                                  ::arrow::ArrayBuilder* array_builder, DecodeContext* ctx) {
+                                  ::arrow::ArrayBuilder* array_builder,
+                                  DecodeContext* ctx) {
   switch (projected_type.type_id()) {
     case TypeId::kStruct: {
       const auto& struct_type = internal::checked_cast<const StructType&>(projected_type);
@@ -351,7 +353,8 @@ Status DecodeNestedValueToBuilder(const ::avro::NodePtr& avro_node,
 Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
                                      ::avro::Decoder& decoder,
                                      const SchemaField& projected_field,
-                                     ::arrow::ArrayBuilder* array_builder, DecodeContext* ctx) {
+                                     ::arrow::ArrayBuilder* array_builder,
+                                     DecodeContext* ctx) {
   const auto& projected_type = *projected_field.type();
   if (!projected_type.is_primitive()) {
     return InvalidArgument("Expected primitive type, got: {}", projected_type.ToString());
@@ -439,8 +442,8 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
       }
       auto* builder = internal::checked_cast<::arrow::BinaryBuilder*>(array_builder);
       decoder.decodeBytes(ctx->bytes_scratch);
-      ICEBERG_ARROW_RETURN_NOT_OK(
-          builder->Append(ctx->bytes_scratch.data(), static_cast<int32_t>(ctx->bytes_scratch.size())));
+      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(
+          ctx->bytes_scratch.data(), static_cast<int32_t>(ctx->bytes_scratch.size())));
       return {};
     }
 
@@ -496,8 +499,8 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
       ctx->bytes_scratch.resize(byte_width);
       decoder.decodeFixed(byte_width, ctx->bytes_scratch);
       ICEBERG_ARROW_ASSIGN_OR_RETURN(
-          auto decimal,
-          ::arrow::Decimal128::FromBigEndian(ctx->bytes_scratch.data(), ctx->bytes_scratch.size()));
+          auto decimal, ::arrow::Decimal128::FromBigEndian(ctx->bytes_scratch.data(),
+                                                           ctx->bytes_scratch.size()));
       ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(decimal));
       return {};
     }
