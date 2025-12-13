@@ -481,16 +481,6 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
 
       // Use Avro schema's fixed size (not calculated)
       size_t byte_width = avro_node->fixedSize();
-
-      // Validate byte width is sufficient for precision
-      // Max value with P digits: 10^P - 1, needs ceil(P * log(10) / log(256)) bytes
-      size_t min_bytes = (decimal_type.precision() * 415) / 1000 + 1;  // ceil(P * 0.415)
-      if (byte_width < min_bytes) {
-        return InvalidArgument(
-            "Decimal byte width {} insufficient for precision {}, need at least {} bytes",
-            byte_width, decimal_type.precision(), min_bytes);
-      }
-
       std::vector<uint8_t> decimal_data(byte_width);
       decoder.decodeFixed(byte_width, decimal_data);
 
