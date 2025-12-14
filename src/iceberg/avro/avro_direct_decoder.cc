@@ -45,7 +45,7 @@ namespace {
 Status DecodeFieldToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder,
                             const FieldProjection& projection,
                             const SchemaField& projected_field,
-                            ::arrow::ArrayBuilder* array_builder);
+                            ::arrow::ArrayBuilder* array_builder, DecodeContext* ctx);
 
 /// \brief Skip an Avro value based on its schema without decoding
 Status SkipAvroValue(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder) {
@@ -146,7 +146,7 @@ Status SkipAvroValue(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder)
 Status DecodeStructToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder,
                              const std::span<const FieldProjection>& projections,
                              const StructType& struct_type,
-                             ::arrow::ArrayBuilder* array_builder) {
+                             ::arrow::ArrayBuilder* array_builder, DecodeContext* ctx) {
   if (avro_node->type() != ::avro::AVRO_RECORD) {
     return InvalidArgument("Expected Avro record, got type: {}", ToString(avro_node));
   }
@@ -154,20 +154,33 @@ Status DecodeStructToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& 
   auto* struct_builder = internal::checked_cast<::arrow::StructBuilder*>(array_builder);
   ICEBERG_ARROW_RETURN_NOT_OK(struct_builder->Append());
 
-  // Build a map from Avro field index to projection index
+  // Build a map from Avro field index to projection index (cached per struct schema)
   // -1 means the field should be skipped
-  std::vector<int> avro_to_projection(avro_node->leaves(), -1);
-  for (size_t proj_idx = 0; proj_idx < projections.size(); ++proj_idx) {
-    const auto& field_projection = projections[proj_idx];
-    if (field_projection.kind == FieldProjection::Kind::kProjected) {
-      size_t avro_field_index = std::get<size_t>(field_projection.from);
-      avro_to_projection[avro_field_index] = static_cast<int>(proj_idx);
+  const FieldProjection* cache_key = projections.data();
+  auto cache_it = ctx->avro_to_projection_cache.find(cache_key);
+  std::vector<int>* avro_to_projection;
+
+  if (cache_it != ctx->avro_to_projection_cache.end()) {
+    // Use cached mapping
+    avro_to_projection = &cache_it->second;
+  } else {
+    // Build and cache the mapping
+    auto [inserted_it, inserted] = ctx->avro_to_projection_cache.emplace(
+        cache_key, std::vector<int>(avro_node->leaves(), -1));
+    avro_to_projection = &inserted_it->second;
+
+    for (size_t proj_idx = 0; proj_idx < projections.size(); ++proj_idx) {
+      const auto& field_projection = projections[proj_idx];
+      if (field_projection.kind == FieldProjection::Kind::kProjected) {
+        size_t avro_field_index = std::get<size_t>(field_projection.from);
+        (*avro_to_projection)[avro_field_index] = static_cast<int>(proj_idx);
+      }
     }
   }
 
   // Read all Avro fields in order (must maintain decoder position)
   for (size_t avro_idx = 0; avro_idx < avro_node->leaves(); ++avro_idx) {
-    int proj_idx = avro_to_projection[avro_idx];
+    int proj_idx = (*avro_to_projection)[avro_idx];
 
     if (proj_idx < 0) {
       // Skip this field - not in projection
@@ -180,8 +193,9 @@ Status DecodeStructToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& 
       const auto& avro_field_node = avro_node->leafAt(avro_idx);
       auto* field_builder = struct_builder->field_builder(proj_idx);
 
-      ICEBERG_RETURN_UNEXPECTED(DecodeFieldToBuilder(
-          avro_field_node, decoder, field_projection, expected_field, field_builder));
+      ICEBERG_RETURN_UNEXPECTED(DecodeFieldToBuilder(avro_field_node, decoder,
+                                                     field_projection, expected_field,
+                                                     field_builder, ctx));
     }
   }
 
@@ -191,6 +205,9 @@ Status DecodeStructToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& 
     if (field_projection.kind == FieldProjection::Kind::kNull) {
       auto* field_builder = struct_builder->field_builder(static_cast<int>(proj_idx));
       ICEBERG_ARROW_RETURN_NOT_OK(field_builder->AppendNull());
+    } else if (field_projection.kind != FieldProjection::Kind::kProjected) {
+      return InvalidArgument("Unsupported field projection kind: {}",
+                             static_cast<int>(field_projection.kind));
     }
   }
   return {};
@@ -200,7 +217,7 @@ Status DecodeStructToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& 
 Status DecodeListToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder,
                            const FieldProjection& element_projection,
                            const ListType& list_type,
-                           ::arrow::ArrayBuilder* array_builder) {
+                           ::arrow::ArrayBuilder* array_builder, DecodeContext* ctx) {
   if (avro_node->type() != ::avro::AVRO_ARRAY) {
     return InvalidArgument("Expected Avro array, got type: {}", ToString(avro_node));
   }
@@ -217,7 +234,7 @@ Status DecodeListToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& de
   while (block_count != 0) {
     for (int64_t i = 0; i < block_count; ++i) {
       ICEBERG_RETURN_UNEXPECTED(DecodeFieldToBuilder(
-          element_node, decoder, element_projection, element_field, value_builder));
+          element_node, decoder, element_projection, element_field, value_builder, ctx));
     }
     block_count = decoder.arrayNext();
   }
@@ -229,7 +246,8 @@ Status DecodeListToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& de
 Status DecodeMapToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder,
                           const FieldProjection& key_projection,
                           const FieldProjection& value_projection,
-                          const MapType& map_type, ::arrow::ArrayBuilder* array_builder) {
+                          const MapType& map_type, ::arrow::ArrayBuilder* array_builder,
+                          DecodeContext* ctx) {
   auto* map_builder = internal::checked_cast<::arrow::MapBuilder*>(array_builder);
 
   if (avro_node->type() == ::avro::AVRO_MAP) {
@@ -248,9 +266,9 @@ Status DecodeMapToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& dec
     while (block_count != 0) {
       for (int64_t i = 0; i < block_count; ++i) {
         ICEBERG_RETURN_UNEXPECTED(DecodeFieldToBuilder(key_node, decoder, key_projection,
-                                                       key_field, key_builder));
+                                                       key_field, key_builder, ctx));
         ICEBERG_RETURN_UNEXPECTED(DecodeFieldToBuilder(
-            value_node, decoder, value_projection, value_field, item_builder));
+            value_node, decoder, value_projection, value_field, item_builder, ctx));
       }
       block_count = decoder.mapNext();
     }
@@ -279,9 +297,9 @@ Status DecodeMapToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& dec
     while (block_count != 0) {
       for (int64_t i = 0; i < block_count; ++i) {
         ICEBERG_RETURN_UNEXPECTED(DecodeFieldToBuilder(key_node, decoder, key_projection,
-                                                       key_field, key_builder));
+                                                       key_field, key_builder, ctx));
         ICEBERG_RETURN_UNEXPECTED(DecodeFieldToBuilder(
-            value_node, decoder, value_projection, value_field, item_builder));
+            value_node, decoder, value_projection, value_field, item_builder, ctx));
       }
       block_count = decoder.arrayNext();
     }
@@ -298,12 +316,13 @@ Status DecodeNestedValueToBuilder(const ::avro::NodePtr& avro_node,
                                   ::avro::Decoder& decoder,
                                   const std::span<const FieldProjection>& projections,
                                   const NestedType& projected_type,
-                                  ::arrow::ArrayBuilder* array_builder) {
+                                  ::arrow::ArrayBuilder* array_builder,
+                                  DecodeContext* ctx) {
   switch (projected_type.type_id()) {
     case TypeId::kStruct: {
       const auto& struct_type = internal::checked_cast<const StructType&>(projected_type);
       return DecodeStructToBuilder(avro_node, decoder, projections, struct_type,
-                                   array_builder);
+                                   array_builder, ctx);
     }
 
     case TypeId::kList: {
@@ -313,7 +332,7 @@ Status DecodeNestedValueToBuilder(const ::avro::NodePtr& avro_node,
       }
       const auto& list_type = internal::checked_cast<const ListType&>(projected_type);
       return DecodeListToBuilder(avro_node, decoder, projections[0], list_type,
-                                 array_builder);
+                                 array_builder, ctx);
     }
 
     case TypeId::kMap: {
@@ -323,7 +342,7 @@ Status DecodeNestedValueToBuilder(const ::avro::NodePtr& avro_node,
       }
       const auto& map_type = internal::checked_cast<const MapType&>(projected_type);
       return DecodeMapToBuilder(avro_node, decoder, projections[0], projections[1],
-                                map_type, array_builder);
+                                map_type, array_builder, ctx);
     }
 
     default:
@@ -334,7 +353,8 @@ Status DecodeNestedValueToBuilder(const ::avro::NodePtr& avro_node,
 Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
                                      ::avro::Decoder& decoder,
                                      const SchemaField& projected_field,
-                                     ::arrow::ArrayBuilder* array_builder) {
+                                     ::arrow::ArrayBuilder* array_builder,
+                                     DecodeContext* ctx) {
   const auto& projected_type = *projected_field.type();
   if (!projected_type.is_primitive()) {
     return InvalidArgument("Expected primitive type, got: {}", projected_type.ToString());
@@ -410,9 +430,8 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
                                ToString(avro_node));
       }
       auto* builder = internal::checked_cast<::arrow::StringBuilder*>(array_builder);
-      std::string value;
-      decoder.decodeString(value);
-      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(value));
+      decoder.decodeString(ctx->string_scratch);
+      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(ctx->string_scratch));
       return {};
     }
 
@@ -422,10 +441,9 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
                                ToString(avro_node));
       }
       auto* builder = internal::checked_cast<::arrow::BinaryBuilder*>(array_builder);
-      std::vector<uint8_t> bytes;
-      decoder.decodeBytes(bytes);
-      ICEBERG_ARROW_RETURN_NOT_OK(
-          builder->Append(bytes.data(), static_cast<int32_t>(bytes.size())));
+      decoder.decodeBytes(ctx->bytes_scratch);
+      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(
+          ctx->bytes_scratch.data(), static_cast<int32_t>(ctx->bytes_scratch.size())));
       return {};
     }
 
@@ -435,13 +453,12 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
                                ToString(avro_node));
       }
       const auto& fixed_type = internal::checked_cast<const FixedType&>(projected_type);
-
-      std::vector<uint8_t> fixed_data(fixed_type.length());
-      decoder.decodeFixed(fixed_type.length(), fixed_data);
-
       auto* builder =
           internal::checked_cast<::arrow::FixedSizeBinaryBuilder*>(array_builder);
-      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(fixed_data.data()));
+
+      ctx->bytes_scratch.resize(fixed_type.length());
+      decoder.decodeFixed(fixed_type.length(), ctx->bytes_scratch);
+      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(ctx->bytes_scratch.data()));
       return {};
     }
 
@@ -455,22 +472,18 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
       auto* builder =
           internal::checked_cast<::arrow::FixedSizeBinaryBuilder*>(array_builder);
 
-      std::vector<uint8_t> uuid_data(16);
-      decoder.decodeFixed(16, uuid_data);
-
-      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(uuid_data.data()));
+      ctx->bytes_scratch.resize(16);
+      decoder.decodeFixed(16, ctx->bytes_scratch);
+      ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(ctx->bytes_scratch.data()));
       return {};
     }
 
     case TypeId::kDecimal: {
-      if (avro_node->type() != ::avro::AVRO_FIXED) {
-        return InvalidArgument("Expected Avro fixed for decimal field, got: {}",
-                               ToString(avro_node));
-      }
-      if (avro_node->logicalType().type() != ::avro::LogicalType::DECIMAL) {
+      if (avro_node->type() != ::avro::AVRO_FIXED ||
+          avro_node->logicalType().type() != ::avro::LogicalType::DECIMAL) {
         return InvalidArgument(
-            "Expected Avro DECIMAL logical type for decimal field, got logical type: {}",
-            static_cast<int>(avro_node->logicalType().type()));
+            "Expected Avro fixed with DECIMAL logical type for decimal field, got: {}",
+            ToString(avro_node));
       }
 
       const auto& decimal_type =
@@ -481,23 +494,13 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
 
       // Use Avro schema's fixed size (not calculated)
       size_t byte_width = avro_node->fixedSize();
-
-      // Validate byte width is sufficient for precision
-      // Max value with P digits: 10^P - 1, needs ceil(P * log(10) / log(256)) bytes
-      size_t min_bytes = (decimal_type.precision() * 415) / 1000 + 1;  // ceil(P * 0.415)
-      if (byte_width < min_bytes) {
-        return InvalidArgument(
-            "Decimal byte width {} insufficient for precision {}, need at least {} bytes",
-            byte_width, decimal_type.precision(), min_bytes);
-      }
-
-      std::vector<uint8_t> decimal_data(byte_width);
-      decoder.decodeFixed(byte_width, decimal_data);
-
-      ICEBERG_ARROW_ASSIGN_OR_RETURN(
-          auto decimal,
-          ::arrow::Decimal128::FromBigEndian(decimal_data.data(), decimal_data.size()));
       auto* builder = internal::checked_cast<::arrow::Decimal128Builder*>(array_builder);
+
+      ctx->bytes_scratch.resize(byte_width);
+      decoder.decodeFixed(byte_width, ctx->bytes_scratch);
+      ICEBERG_ARROW_ASSIGN_OR_RETURN(
+          auto decimal, ::arrow::Decimal128::FromBigEndian(ctx->bytes_scratch.data(),
+                                                           ctx->bytes_scratch.size()));
       ICEBERG_ARROW_RETURN_NOT_OK(builder->Append(decimal));
       return {};
     }
@@ -552,7 +555,7 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
 Status DecodeFieldToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder,
                             const FieldProjection& projection,
                             const SchemaField& projected_field,
-                            ::arrow::ArrayBuilder* array_builder) {
+                            ::arrow::ArrayBuilder* array_builder, DecodeContext* ctx) {
   if (avro_node->type() == ::avro::AVRO_UNION) {
     const size_t branch_index = decoder.decodeUnionIndex();
 
@@ -569,18 +572,18 @@ Status DecodeFieldToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& d
       return {};
     } else {
       return DecodeFieldToBuilder(branch_node, decoder, projection, projected_field,
-                                  array_builder);
+                                  array_builder, ctx);
     }
   }
 
   const auto& projected_type = *projected_field.type();
   if (projected_type.is_primitive()) {
     return DecodePrimitiveValueToBuilder(avro_node, decoder, projected_field,
-                                         array_builder);
+                                         array_builder, ctx);
   } else {
     const auto& nested_type = internal::checked_cast<const NestedType&>(projected_type);
     return DecodeNestedValueToBuilder(avro_node, decoder, projection.children,
-                                      nested_type, array_builder);
+                                      nested_type, array_builder, ctx);
   }
 }
 
@@ -589,9 +592,9 @@ Status DecodeFieldToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& d
 Status DecodeAvroToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder,
                            const SchemaProjection& projection,
                            const Schema& projected_schema,
-                           ::arrow::ArrayBuilder* array_builder) {
+                           ::arrow::ArrayBuilder* array_builder, DecodeContext* ctx) {
   return DecodeNestedValueToBuilder(avro_node, decoder, projection.fields,
-                                    projected_schema, array_builder);
+                                    projected_schema, array_builder, ctx);
 }
 
 }  // namespace iceberg::avro

@@ -33,6 +33,22 @@
 
 namespace iceberg::avro {
 
+/// \brief Context for reusing scratch buffers during Avro decoding
+///
+/// Avoids frequent small allocations by reusing temporary buffers across
+/// multiple decode operations. This is particularly important for string,
+/// binary, and fixed-size data types.
+struct DecodeContext {
+  // Scratch buffer for string decoding (reused across rows)
+  std::string string_scratch;
+  // Scratch buffer for binary/fixed/uuid/decimal data (reused across rows)
+  std::vector<uint8_t> bytes_scratch;
+  // Cache for avro field index to projection index mapping
+  // Key: pointer to projections array (identifies struct schema)
+  // Value: vector mapping avro field index -> projection index (-1 if not projected)
+  std::unordered_map<const FieldProjection*, std::vector<int>> avro_to_projection_cache;
+};
+
 /// \brief Directly decode Avro data to Arrow array builders without GenericDatum
 ///
 /// Eliminates the GenericDatum intermediate layer by directly calling Avro decoder
@@ -61,10 +77,11 @@ namespace iceberg::avro {
 /// \param projection The field projections (from Project() function)
 /// \param projected_schema The target Iceberg schema after projection
 /// \param array_builder The Arrow array builder to append decoded data to
+/// \param ctx Decode context for reusing scratch buffers
 /// \return Status::OK if successful, or an error status
 Status DecodeAvroToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder,
                            const SchemaProjection& projection,
                            const Schema& projected_schema,
-                           ::arrow::ArrayBuilder* array_builder);
+                           ::arrow::ArrayBuilder* array_builder, DecodeContext* ctx);
 
 }  // namespace iceberg::avro
