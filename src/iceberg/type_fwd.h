@@ -178,6 +178,8 @@ class Transaction;
 /// \brief Update family.
 class PendingUpdate;
 class UpdateProperties;
+template <typename T>
+class SnapshotUpdate;
 
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.

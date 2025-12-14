@@ -236,6 +236,21 @@ class ICEBERG_EXPORT ManifestListWriter {
       int64_t sequence_number, int64_t first_row_id,
       std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io);
 
+  /// \brief Creates a writer for the manifest list based on the format version.
+  /// \param format_version Format version of the manifest list.
+  /// \param snapshot_id ID of the snapshot.
+  /// \param parent_snapshot_id ID of the parent snapshot.
+  /// \param manifest_list_location Path to the manifest list file.
+  /// \param file_io File IO implementation to use.
+  /// \param sequence_number Sequence number of the snapshot.
+  /// \param first_row_id First row ID of the snapshot.
+  /// \return A Result containing the writer or an error.
+  static Result<std::unique_ptr<ManifestListWriter>> Make(
+      int8_t format_version, int64_t snapshot_id,
+      std::optional<int64_t> parent_snapshot_id, std::string_view manifest_list_location,
+      std::shared_ptr<FileIO> file_io, int64_t sequence_number = 0,
+      int64_t first_row_id = 0);
+
  private:
   // Private constructor for internal use only, use the static Make*Writer methods
   // instead.

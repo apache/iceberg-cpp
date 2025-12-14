@@ -50,7 +50,7 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
 
   virtual ~Table();
 
-  /// \brief Return the identifier of this table
+  /// \brief Returns the identifier of this table
   const TableIdentifier& name() const { return identifier_; }
 
   /// \brief Returns the UUID of the table
@@ -59,40 +59,40 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// \brief Return the schema for this table, return NotFoundError if not found
   Result<std::shared_ptr<Schema>> schema() const;
 
-  /// \brief Return a map of schema for this table
+  /// \brief Returns a map of schema for this table
   Result<
       std::reference_wrapper<const std::unordered_map<int32_t, std::shared_ptr<Schema>>>>
   schemas() const;
 
-  /// \brief Return the partition spec for this table, return NotFoundError if not found
+  /// \brief Returns the partition spec for this table, return NotFoundError if not found
   Result<std::shared_ptr<PartitionSpec>> spec() const;
 
-  /// \brief Return a map of partition specs for this table
+  /// \brief Returns a map of partition specs for this table
   Result<std::reference_wrapper<
       const std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>>>>
   specs() const;
 
-  /// \brief Return the sort order for this table, return NotFoundError if not found
+  /// \brief Returns the sort order for this table, return NotFoundError if not found
   Result<std::shared_ptr<SortOrder>> sort_order() const;
 
-  /// \brief Return a map of sort order IDs to sort orders for this table
+  /// \brief Returns a map of sort order IDs to sort orders for this table
   Result<std::reference_wrapper<
       const std::unordered_map<int32_t, std::shared_ptr<SortOrder>>>>
   sort_orders() const;
 
-  /// \brief Return a map of string properties for this table
+  /// \brief Returns the properties of this table
   const TableProperties& properties() const;
 
-  /// \brief Return the table's metadata file location
+  /// \brief Returns the table's metadata file location
   std::string_view metadata_file_location() const;
 
-  /// \brief Return the table's base location
+  /// \brief Returns the table's base location
   std::string_view location() const;
 
   /// \brief Returns the time when this table was last updated
   TimePointMs last_updated_ms() const;
 
-  /// \brief Return the table's current snapshot, return NotFoundError if not found
+  /// \brief Returns the table's current snapshot, return NotFoundError if not found
   Result<std::shared_ptr<Snapshot>> current_snapshot() const;
 
   /// \brief Get the snapshot of this table with the given id

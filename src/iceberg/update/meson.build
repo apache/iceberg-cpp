@@ -16,6 +16,6 @@
 # under the License.
 
 install_headers(
-    ['pending_update.h', 'update_properties.h'],
+    ['pending_update.h', 'update_properties.h', 'snapshot_update.h'],
     subdir: 'iceberg/update',
 )

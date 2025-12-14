@@ -68,7 +68,10 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// \brief Apply the pending changes to current table.
   Status Apply(std::vector<std::unique_ptr<TableUpdate>> updates);
 
-  friend class PendingUpdate;  // Need to access the Apply method.
+  /// \brief Friends to access the Apply method.
+  friend class PendingUpdate;
+  template <typename T>
+  friend class SnapshotUpdate;
 
  private:
   // The table that this transaction will update.

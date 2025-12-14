@@ -447,4 +447,23 @@ Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV3Writer(
       new ManifestListWriter(std::move(writer), std::move(adapter)));
 }
 
+Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::Make(
+    int8_t format_version, int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
+    std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io,
+    int64_t sequence_number, int64_t first_row_id) {
+  switch (format_version) {
+    case 1:
+      return MakeV1Writer(snapshot_id, parent_snapshot_id, manifest_list_location,
+                          file_io);
+    case 2:
+      return MakeV2Writer(snapshot_id, parent_snapshot_id, sequence_number,
+                          manifest_list_location, file_io);
+    case 3:
+      return MakeV3Writer(snapshot_id, parent_snapshot_id, sequence_number, first_row_id,
+                          manifest_list_location, file_io);
+    default:
+      std::unreachable();
+  }
+}
+
 }  // namespace iceberg
