@@ -130,7 +130,6 @@ class ICEBERG_EXPORT Table {
   std::string metadata_location_;
   std::shared_ptr<FileIO> io_;
   std::shared_ptr<Catalog> catalog_;
-  std::unique_ptr<TableProperties> properties_;
   std::unique_ptr<class TableMetadataCache> metadata_cache_;
 };
 
