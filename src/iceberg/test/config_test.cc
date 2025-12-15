@@ -96,13 +96,26 @@ TEST(ConfigTest, BasicOperations) {
   ASSERT_EQ(config->Get(TestConfig::kEnumConfig), TestEnum::VALUE2);
   ASSERT_EQ(config->Get(TestConfig::kDoubleConfig), 2.99);
 
+  // Test setting values again
+  config->Set(TestConfig::kStringConfig, std::string("newer_value"));
+  config->Set(TestConfig::kIntConfig, 200);
+  config->Set(TestConfig::kBoolConfig, false);
+  config->Set(TestConfig::kEnumConfig, TestEnum::VALUE1);
+  config->Set(TestConfig::kDoubleConfig, 3.99);
+
+  ASSERT_EQ(config->Get(TestConfig::kStringConfig), "newer_value");
+  ASSERT_EQ(config->Get(TestConfig::kIntConfig), 200);
+  ASSERT_EQ(config->Get(TestConfig::kBoolConfig), false);
+  ASSERT_EQ(config->Get(TestConfig::kEnumConfig), TestEnum::VALUE1);
+  ASSERT_EQ(config->Get(TestConfig::kDoubleConfig), 3.99);
+
   // Test unsetting a value
   config->Unset(TestConfig::kIntConfig);
   config->Unset(TestConfig::kEnumConfig);
   config->Unset(TestConfig::kDoubleConfig);
   ASSERT_EQ(config->Get(TestConfig::kIntConfig), 25);
-  ASSERT_EQ(config->Get(TestConfig::kStringConfig), "new_value");
-  ASSERT_EQ(config->Get(TestConfig::kBoolConfig), true);
+  ASSERT_EQ(config->Get(TestConfig::kStringConfig), "newer_value");
+  ASSERT_EQ(config->Get(TestConfig::kBoolConfig), false);
   ASSERT_EQ(config->Get(TestConfig::kEnumConfig), TestEnum::VALUE1);
   ASSERT_EQ(config->Get(TestConfig::kDoubleConfig), 3.14);
 

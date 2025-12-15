@@ -23,7 +23,10 @@
 #include <iterator>
 
 #include "iceberg/table.h"
+#include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_requirement.h"
+#include "iceberg/table_update.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -119,6 +122,13 @@ class ICEBERG_EXPORT InMemoryNamespace {
   /// \param table_ident The identifier of the table.
   /// \return The metadata location if the table exists; error otherwise.
   Result<std::string> GetTableMetadataLocation(const TableIdentifier& table_ident) const;
+
+  /// \brief Updates the metadata location for the specified table.
+  ///
+  /// \param table_ident The identifier of the table.
+  /// \param metadata_location The new metadata location.
+  Status UpdateTableMetadataLocation(const TableIdentifier& table_ident,
+                                     const std::string& metadata_location);
 
   /// \brief Internal utility for retrieving a namespace node pointer from the tree.
   ///
@@ -278,7 +288,7 @@ Result<std::vector<std::string>> InMemoryNamespace::ListTables(
   return table_names;
 }
 
-Status InMemoryNamespace::RegisterTable(TableIdentifier const& table_ident,
+Status InMemoryNamespace::RegisterTable(const TableIdentifier& table_ident,
                                         const std::string& metadata_location) {
   const auto ns = GetNamespace(this, table_ident.ns);
   ICEBERG_RETURN_UNEXPECTED(ns);
@@ -289,21 +299,21 @@ Status InMemoryNamespace::RegisterTable(TableIdentifier const& table_ident,
   return {};
 }
 
-Status InMemoryNamespace::UnregisterTable(TableIdentifier const& table_ident) {
+Status InMemoryNamespace::UnregisterTable(const TableIdentifier& table_ident) {
   const auto ns = GetNamespace(this, table_ident.ns);
   ICEBERG_RETURN_UNEXPECTED(ns);
   ns.value()->table_metadata_locations_.erase(table_ident.name);
   return {};
 }
 
-Result<bool> InMemoryNamespace::TableExists(TableIdentifier const& table_ident) const {
+Result<bool> InMemoryNamespace::TableExists(const TableIdentifier& table_ident) const {
   const auto ns = GetNamespace(this, table_ident.ns);
   ICEBERG_RETURN_UNEXPECTED(ns);
   return ns.value()->table_metadata_locations_.contains(table_ident.name);
 }
 
 Result<std::string> InMemoryNamespace::GetTableMetadataLocation(
-    TableIdentifier const& table_ident) const {
+    const TableIdentifier& table_ident) const {
   const auto ns = GetNamespace(this, table_ident.ns);
   ICEBERG_RETURN_UNEXPECTED(ns);
   const auto it = ns.value()->table_metadata_locations_.find(table_ident.name);
@@ -313,17 +323,24 @@ Result<std::string> InMemoryNamespace::GetTableMetadataLocation(
   return it->second;
 }
 
+Status InMemoryNamespace::UpdateTableMetadataLocation(
+    const TableIdentifier& table_ident, const std::string& metadata_location) {
+  ICEBERG_ASSIGN_OR_RAISE(auto ns, GetNamespace(this, table_ident.ns));
+  ns->table_metadata_locations_[table_ident.name] = metadata_location;
+  return {};
+}
+
 std::shared_ptr<InMemoryCatalog> InMemoryCatalog::Make(
-    std::string const& name, std::shared_ptr<FileIO> const& file_io,
-    std::string const& warehouse_location,
-    std::unordered_map<std::string, std::string> const& properties) {
+    const std::string& name, const std::shared_ptr<FileIO>& file_io,
+    const std::string& warehouse_location,
+    const std::unordered_map<std::string, std::string>& properties) {
   return std::make_shared<InMemoryCatalog>(name, file_io, warehouse_location, properties);
 }
 
 InMemoryCatalog::InMemoryCatalog(
-    std::string const& name, std::shared_ptr<FileIO> const& file_io,
-    std::string const& warehouse_location,
-    std::unordered_map<std::string, std::string> const& properties)
+    const std::string& name, const std::shared_ptr<FileIO>& file_io,
+    const std::string& warehouse_location,
+    const std::unordered_map<std::string, std::string>& properties)
     : catalog_name_(std::move(name)),
       properties_(std::move(properties)),
       file_io_(std::move(file_io)),
@@ -395,7 +412,32 @@ Result<std::unique_ptr<Table>> InMemoryCatalog::UpdateTable(
     const std::vector<std::unique_ptr<TableRequirement>>& requirements,
     const std::vector<std::unique_ptr<TableUpdate>>& updates) {
   std::unique_lock lock(mutex_);
-  return NotImplemented("update table");
+  ICEBERG_ASSIGN_OR_RAISE(auto base_metadata_location,
+                          root_namespace_->GetTableMetadataLocation(identifier));
+
+  ICEBERG_ASSIGN_OR_RAISE(auto base,
+                          TableMetadataUtil::Read(*file_io_, base_metadata_location));
+
+  for (const auto& requirement : requirements) {
+    ICEBERG_RETURN_UNEXPECTED(requirement->Validate(base.get()));
+  }
+
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+  for (const auto& update : updates) {
+    update->ApplyTo(*builder);
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto updated, builder->Build());
+
+  std::string new_metadata_location;
+  ICEBERG_RETURN_UNEXPECTED(TableMetadataUtil::Write(
+      *file_io_, base.get(), base_metadata_location, *updated, new_metadata_location));
+  ICEBERG_RETURN_UNEXPECTED(
+      root_namespace_->UpdateTableMetadataLocation(identifier, new_metadata_location));
+  TableMetadataUtil::DeleteRemovedMetadataFiles(*file_io_, base.get(), *updated);
+
+  return std::make_unique<Table>(identifier, std::move(updated),
+                                 std::move(new_metadata_location), file_io_,
+                                 std::static_pointer_cast<Catalog>(shared_from_this()));
 }
 
 Result<std::shared_ptr<Transaction>> InMemoryCatalog::StageCreateTable(
@@ -438,9 +480,8 @@ Result<std::unique_ptr<Table>> InMemoryCatalog::LoadTable(
 
   ICEBERG_ASSIGN_OR_RAISE(auto metadata,
                           TableMetadataUtil::Read(*file_io_, metadata_location));
-
-  return std::make_unique<Table>(identifier, std::move(metadata), metadata_location,
-                                 file_io_,
+  return std::make_unique<Table>(identifier, std::move(metadata),
+                                 std::move(metadata_location), file_io_,
                                  std::static_pointer_cast<Catalog>(shared_from_this()));
 }
 

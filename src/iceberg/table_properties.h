@@ -252,7 +252,7 @@ class ICEBERG_EXPORT TableProperties : public ConfigBase<TableProperties> {
   inline static Entry<int32_t> kMinSnapshotsToKeep{"history.expire.min-snapshots-to-keep",
                                                    1};
   inline static Entry<int64_t> kMaxRefAgeMs{"history.expire.max-ref-age-ms",
-                                            std::numeric_limits<int64_t>::max()};
+                                            (std::numeric_limits<int64_t>::max)()};
 
   // Delete/Update/Merge properties
 
@@ -289,17 +289,17 @@ class ICEBERG_EXPORT TableProperties : public ConfigBase<TableProperties> {
   /// \brief Create a default TableProperties instance.
   ///
   /// \return A unique pointer to a TableProperties instance with default values
-  static std::unique_ptr<TableProperties> default_properties();
+  static TableProperties default_properties();
 
   /// \brief Create a TableProperties instance from a map of key-value pairs.
   ///
   /// \param properties The map containing property key-value pairs
   /// \return A unique pointer to a TableProperties instance
-  static std::unique_ptr<TableProperties> FromMap(
-      std::unordered_map<std::string, std::string> properties);
+  static TableProperties FromMap(std::unordered_map<std::string, std::string> properties);
 
- private:
-  TableProperties() = default;
+  bool operator==(const TableProperties& other) const {
+    return configs_ == other.configs_;
+  }
 };
 
 }  // namespace iceberg

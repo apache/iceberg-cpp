@@ -797,9 +797,7 @@ nlohmann::json ToJson(const TableMetadata& table_metadata) {
   json[kSortOrders] = ToJsonList(table_metadata.sort_orders);
 
   // write properties map
-  if (table_metadata.properties) {
-    json[kProperties] = table_metadata.properties->configs();
-  }
+  json[kProperties] = table_metadata.properties.configs();
 
   if (std::ranges::find_if(table_metadata.snapshots, [&](const auto& snapshot) {
         return snapshot->snapshot_id == table_metadata.current_snapshot_id;

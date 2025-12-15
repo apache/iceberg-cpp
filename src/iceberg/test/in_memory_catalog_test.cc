@@ -20,6 +20,8 @@
 #include "iceberg/catalog/memory/in_memory_catalog.h"
 
 #include <filesystem>
+#include <string>
+#include <unordered_map>
 
 #include <arrow/filesystem/localfs.h>
 #include <gmock/gmock.h>
@@ -28,10 +30,14 @@
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/table.h"
+#include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_requirement.h"
+#include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/test_resource.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -63,7 +69,7 @@ class InMemoryCatalogTest : public ::testing::Test {
                                       info->test_suite_name(), info->name(), table_name);
     // generate a unique directory for the table
     std::error_code ec;
-    std::filesystem::create_directories(table_location, ec);
+    std::filesystem::create_directories(table_location + "metadata", ec);
     if (ec) {
       throw std::runtime_error(
           std::format("Failed to create temporary directory: {}, error message: {}",
@@ -164,6 +170,65 @@ TEST_F(InMemoryCatalogTest, RefreshTable) {
   ASSERT_THAT(refreshed_result, IsOk());
   // check table is refreshed
   ASSERT_EQ(loaded_table->current_snapshot().value()->snapshot_id, 2);
+}
+
+TEST_F(InMemoryCatalogTest, UpdateTable) {
+  // First, create and register a table
+  TableIdentifier table_ident{.ns = {}, .name = "t1"};
+
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata,
+                         ReadTableMetadataFromResource("TableMetadataV2Valid.json"));
+
+  auto table_location = GenerateTestTableLocation(table_ident.name);
+  auto metadata_location = std::format("{}/metadata/00001-{}.metadata.json",
+                                       table_location, Uuid::GenerateV7().ToString());
+  metadata->location = table_location;
+  auto status = TableMetadataUtil::Write(*file_io_, metadata_location, *metadata);
+  EXPECT_THAT(status, IsOk());
+
+  auto table = catalog_->RegisterTable(table_ident, metadata_location);
+  EXPECT_THAT(table, IsOk());
+  ASSERT_EQ(table.value()->name().name, "t1");
+  ASSERT_EQ(table.value()->metadata_file_location(), metadata_location);
+
+  // Prepare updates - add a new property
+  std::vector<std::unique_ptr<TableUpdate>> updates;
+  auto property_update = std::make_unique<table::SetProperties>(
+      std::unordered_map<std::string, std::string>{{"property2", "value2"}});
+  updates.push_back(std::move(property_update));
+
+  // Prepare requirements - assert table must exist
+  std::vector<std::unique_ptr<TableRequirement>> requirements;
+  requirements.push_back(std::make_unique<table::AssertUUID>(metadata->table_uuid));
+
+  // Perform the update on a nonexist table
+  TableIdentifier nonexist_table_ident{.ns = {}, .name = "nonexist_table"};
+  auto res = catalog_->UpdateTable(nonexist_table_ident, std::move(requirements),
+                                   std::move(updates));
+  EXPECT_THAT(res, IsError(ErrorKind::kNotFound));
+
+  // Verify requirements failed on an exist table
+  std::vector<std::unique_ptr<TableRequirement>> bad_requirements;
+  bad_requirements.push_back(std::make_unique<table::AssertUUID>("invalid-uuid"));
+  res =
+      catalog_->UpdateTable(table_ident, std::move(bad_requirements), std::move(updates));
+  EXPECT_THAT(res, IsError(ErrorKind::kCommitFailed));
+
+  // Perform the update
+  auto update_result = catalog_->UpdateTable(table_ident, requirements, updates);
+  EXPECT_THAT(update_result, IsOk());
+
+  // Verify the update by loading the table and checking properties
+  auto load_result = catalog_->LoadTable(table_ident);
+  EXPECT_THAT(load_result, IsOk());
+
+  auto updated_table = std::move(load_result.value());
+
+  // Verify that metadata file was updated (should have a new version)
+  EXPECT_EQ(table.value()->uuid(), updated_table->uuid());
+  EXPECT_GT(updated_table->last_updated_ms(), table.value()->last_updated_ms());
+  EXPECT_THAT(updated_table->metadata_file_location(),
+              testing::HasSubstr("metadata/00002-"));
 }
 
 TEST_F(InMemoryCatalogTest, DropTable) {

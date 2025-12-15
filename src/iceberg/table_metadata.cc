@@ -20,13 +20,16 @@
 #include "iceberg/table_metadata.h"
 
 #include <algorithm>
+#include <charconv>
 #include <chrono>
 #include <cstdint>
 #include <format>
+#include <memory>
 #include <optional>
 #include <ranges>
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 #include <nlohmann/json.hpp>
 
@@ -41,12 +44,14 @@
 #include "iceberg/table_properties.h"
 #include "iceberg/table_update.h"
 #include "iceberg/util/gzip_internal.h"
+#include "iceberg/util/location_util.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/uuid.h"
 namespace iceberg {
 namespace {
 const TimePointMs kInvalidLastUpdatedMs = TimePointMs::min();
 constexpr int32_t kLastAdded = -1;
+constexpr std::string_view kMetadataFolderName = "metadata";
 }  // namespace
 
 std::string ToString(const SnapshotLogEntry& entry) {
@@ -142,19 +147,6 @@ bool SnapshotRefEquals(
   return true;
 }
 
-bool TablePropertiesEquals(const std::shared_ptr<TableProperties>& lhs,
-                           const std::shared_ptr<TableProperties>& rhs) {
-  bool left_is_empty = lhs == nullptr || lhs->configs().empty();
-  bool right_is_empty = rhs == nullptr || rhs->configs().empty();
-  if (left_is_empty && right_is_empty) {
-    return true;
-  }
-  if (left_is_empty || right_is_empty) {
-    return false;
-  }
-  return lhs->configs() == rhs->configs();
-}
-
 }  // namespace
 
 bool operator==(const TableMetadata& lhs, const TableMetadata& rhs) {
@@ -167,7 +159,7 @@ bool operator==(const TableMetadata& lhs, const TableMetadata& rhs) {
          SharedPtrVectorEquals(lhs.schemas, rhs.schemas) &&
          lhs.default_spec_id == rhs.default_spec_id &&
          lhs.last_partition_id == rhs.last_partition_id &&
-         TablePropertiesEquals(lhs.properties, rhs.properties) &&
+         lhs.properties == rhs.properties &&
          lhs.current_snapshot_id == rhs.current_snapshot_id &&
          SharedPtrVectorEquals(lhs.snapshots, rhs.snapshots) &&
          lhs.snapshot_log == rhs.snapshot_log && lhs.metadata_log == rhs.metadata_log &&
@@ -234,30 +226,57 @@ Result<TableMetadataCache::SnapshotsMap> TableMetadataCache::InitSnapshotMap(
          std::ranges::to<SnapshotsMap>();
 }
 
-// TableMetadataUtil implementation
+Result<MetadataFileCodecType> TableMetadataUtil::Codec::FromString(
+    std::string_view name) {
+  std::string name_upper = StringUtils::ToUpper(name);
+  if (name_upper == kCodecTypeGzip) {
+    return MetadataFileCodecType::kGzip;
+  } else if (name_upper == kCodecTypeNone) {
+    return MetadataFileCodecType::kNone;
+  }
+  return InvalidArgument("Invalid codec name: {}", name);
+}
 
-Result<MetadataFileCodecType> TableMetadataUtil::CodecFromFileName(
+Result<MetadataFileCodecType> TableMetadataUtil::Codec::FromFileName(
     std::string_view file_name) {
-  auto pos = file_name.find_last_of(".metadata.json");
+  auto pos = file_name.find_last_of(kTableMetadataFileSuffix);
   if (pos == std::string::npos) {
     return InvalidArgument("{} is not a valid metadata file", file_name);
   }
 
   // We have to be backward-compatible with .metadata.json.gz files
-  if (file_name.ends_with(".metadata.json.gz")) {
+  if (file_name.ends_with(kCompGzipTableMetadataFileSuffix)) {
     return MetadataFileCodecType::kGzip;
   }
 
   std::string_view file_name_without_suffix = file_name.substr(0, pos);
-  if (file_name_without_suffix.ends_with(".gz")) {
+  if (file_name_without_suffix.ends_with(kGzipTableMetadataFileExtension)) {
     return MetadataFileCodecType::kGzip;
   }
   return MetadataFileCodecType::kNone;
 }
 
+Result<std::string> TableMetadataUtil::Codec::NameToFileExtension(
+    std::string_view codec) {
+  ICEBERG_ASSIGN_OR_RAISE(MetadataFileCodecType codec_type, FromString(codec));
+  return TypeToFileExtension(codec_type);
+}
+
+std::string TableMetadataUtil::Codec::TypeToFileExtension(MetadataFileCodecType codec) {
+  switch (codec) {
+    case MetadataFileCodecType::kGzip:
+      return std::string(kGzipTableMetadataFileSuffix);
+    case MetadataFileCodecType::kNone:
+      return std::string(kTableMetadataFileSuffix);
+  }
+  std::unreachable();
+}
+
+// TableMetadataUtil implementation
+
 Result<std::unique_ptr<TableMetadata>> TableMetadataUtil::Read(
     FileIO& io, const std::string& location, std::optional<size_t> length) {
-  ICEBERG_ASSIGN_OR_RAISE(auto codec_type, CodecFromFileName(location));
+  ICEBERG_ASSIGN_OR_RAISE(auto codec_type, Codec::FromFileName(location));
 
   ICEBERG_ASSIGN_OR_RAISE(auto content, io.ReadFile(location, length));
   if (codec_type == MetadataFileCodecType::kGzip) {
@@ -272,11 +291,78 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataUtil::Read(
   return TableMetadataFromJson(json);
 }
 
+Status TableMetadataUtil::Write(FileIO& io, const TableMetadata* base,
+                                const std::string& base_metadata_location,
+                                TableMetadata& metadata, std::string& new_file_location) {
+  int version = -1;
+  if (!base_metadata_location.empty()) {
+    // parse current version from location
+    version = ParseVersionFromLocation(base_metadata_location);
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(new_file_location,
+                          NewTableMetadataFilePath(metadata, version + 1));
+  ICEBERG_RETURN_UNEXPECTED(Write(io, new_file_location, metadata));
+  return {};
+}
+
 Status TableMetadataUtil::Write(FileIO& io, const std::string& location,
                                 const TableMetadata& metadata) {
   auto json = ToJson(metadata);
   ICEBERG_ASSIGN_OR_RAISE(auto json_string, ToJsonString(json));
   return io.WriteFile(location, json_string);
+}
+
+void TableMetadataUtil::DeleteRemovedMetadataFiles(FileIO& io, const TableMetadata* base,
+                                                   const TableMetadata& metadata) {
+  if (!base) {
+    return;
+  }
+
+  bool delete_after_commit =
+      metadata.properties.Get(TableProperties::kMetadataDeleteAfterCommitEnabled);
+  if (delete_after_commit) {
+    auto current_files =
+        metadata.metadata_log |
+        std::ranges::to<std::unordered_set<MetadataLogEntry, MetadataLogEntry::Hasher>>();
+    std::ranges::for_each(
+        base->metadata_log | std::views::filter([&current_files](const auto& entry) {
+          return !current_files.contains(entry);
+        }),
+        [&io](const auto& entry) { std::ignore = io.DeleteFile(entry.metadata_file); });
+  }
+}
+
+int32_t TableMetadataUtil::ParseVersionFromLocation(std::string_view metadata_location) {
+  size_t version_start = metadata_location.find_last_of('/') + 1;
+  size_t version_end = metadata_location.find('-', version_start);
+
+  int version = -1;
+  if (version_end != std::string::npos) {
+    std::from_chars(metadata_location.data() + version_start,
+                    metadata_location.data() + version_end, version);
+  }
+  return version;
+}
+
+Result<std::string> TableMetadataUtil::NewTableMetadataFilePath(const TableMetadata& meta,
+                                                                int new_version) {
+  auto codec_name =
+      meta.properties.Get<std::string>(TableProperties::kMetadataCompression);
+  ICEBERG_ASSIGN_OR_RAISE(std::string file_extension,
+                          Codec::NameToFileExtension(codec_name));
+
+  std::string uuid = Uuid::GenerateV7().ToString();
+  std::string filename = std::format("{:05d}-{}{}", new_version, uuid, file_extension);
+
+  auto metadata_location =
+      meta.properties.Get<std::string>(TableProperties::kWriteMetadataLocation);
+  if (!metadata_location.empty()) {
+    return std::format("{}/{}", LocationUtil::StripTrailingSlash(metadata_location),
+                       filename);
+  } else {
+    return std::format("{}/{}/{}", meta.location, kMetadataFolderName, filename);
+  }
 }
 
 // TableMetadataBuilder implementation
@@ -318,7 +404,8 @@ struct TableMetadataBuilder::Impl {
   }
 
   // Constructor from existing metadata
-  explicit Impl(const TableMetadata* base_metadata)
+  explicit Impl(const TableMetadata* base_metadata,
+                std::string base_metadata_location = "")
       : base(base_metadata), metadata(*base_metadata) {
     // Initialize index maps from base metadata
     for (const auto& schema : metadata.schemas) {
@@ -334,14 +421,20 @@ struct TableMetadataBuilder::Impl {
     for (const auto& order : metadata.sort_orders) {
       sort_orders_by_id.emplace(order->order_id(), order);
     }
+
+    if (!base_metadata_location.empty()) {
+      previous_metadata_location = std::move(base_metadata_location);
+    }
+    metadata.last_updated_ms = kInvalidLastUpdatedMs;
   }
 };
 
 TableMetadataBuilder::TableMetadataBuilder(int8_t format_version)
     : impl_(std::make_unique<Impl>(format_version)) {}
 
-TableMetadataBuilder::TableMetadataBuilder(const TableMetadata* base)
-    : impl_(std::make_unique<Impl>(base)) {}
+TableMetadataBuilder::TableMetadataBuilder(const TableMetadata* base,
+                                           std::string base_metadata_location)
+    : impl_(std::make_unique<Impl>(base, std::move(base_metadata_location))) {}
 
 TableMetadataBuilder::~TableMetadataBuilder() = default;
 
@@ -357,8 +450,9 @@ std::unique_ptr<TableMetadataBuilder> TableMetadataBuilder::BuildFromEmpty(
 }
 
 std::unique_ptr<TableMetadataBuilder> TableMetadataBuilder::BuildFrom(
-    const TableMetadata* base) {
-  return std::unique_ptr<TableMetadataBuilder>(new TableMetadataBuilder(base));  // NOLINT
+    const TableMetadata* base, std::string base_metadata_location) {
+  return std::unique_ptr<TableMetadataBuilder>(
+      new TableMetadataBuilder(base, std::move(base_metadata_location)));  // NOLINT
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetMetadataLocation(
@@ -626,7 +720,7 @@ TableMetadataBuilder& TableMetadataBuilder::SetProperties(
 
   // Add all updated properties to the metadata properties
   for (const auto& [key, value] : updated) {
-    impl_->metadata.properties->mutable_configs()[key] = value;
+    impl_->metadata.properties.mutable_configs()[key] = value;
   }
 
   // Record the change
@@ -644,7 +738,7 @@ TableMetadataBuilder& TableMetadataBuilder::RemoveProperties(
 
   // Remove each property from the metadata properties
   for (const auto& key : removed) {
-    impl_->metadata.properties->mutable_configs().erase(key);
+    impl_->metadata.properties.mutable_configs().erase(key);
   }
 
   // Record the change
@@ -679,7 +773,22 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Build() {
             std::chrono::system_clock::now().time_since_epoch())};
   }
 
-  // 4. Create and return the TableMetadata
+  // 4. Buildup metadata_log from base metadata
+  int32_t max_metadata_log_size =
+      impl_->metadata.properties.Get(TableProperties::kMetadataPreviousVersionsMax);
+  if (impl_->base != nullptr && impl_->previous_metadata_location) {
+    impl_->metadata.metadata_log.emplace_back(impl_->base->last_updated_ms,
+                                              impl_->previous_metadata_location.value());
+  }
+  if (impl_->metadata.metadata_log.size() > max_metadata_log_size) {
+    impl_->metadata.metadata_log.erase(
+        impl_->metadata.metadata_log.begin(),
+        impl_->metadata.metadata_log.end() - max_metadata_log_size);
+  }
+
+  // TODO(anyone): 5. update snapshot_log
+
+  // 6. Create and return the TableMetadata
   auto result = std::make_unique<TableMetadata>(std::move(impl_->metadata));
 
   return result;

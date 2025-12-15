@@ -29,6 +29,7 @@
 #include "iceberg/snapshot.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/timepoint.h"
 
 namespace iceberg {
 
@@ -82,10 +83,18 @@ class ICEBERG_EXPORT Table {
   sort_orders() const;
 
   /// \brief Return a map of string properties for this table
-  const std::shared_ptr<TableProperties>& properties() const;
+  const TableProperties& properties() const;
+
+  /// \brief Return the table's metadata file location
+  const std::string& metadata_file_location() const;
 
   /// \brief Return the table's base location
   const std::string& location() const;
+
+  /// \brief Get the time when this table was last updated
+  ///
+  /// \return the time when this table was last updated
+  const TimePointMs& last_updated_ms() const;
 
   /// \brief Return the table's current snapshot, return NotFoundError if not found
   Result<std::shared_ptr<Snapshot>> current_snapshot() const;

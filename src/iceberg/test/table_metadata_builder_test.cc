@@ -21,9 +21,11 @@
 #include <string>
 #include <vector>
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
 #include "iceberg/partition_spec.h"
+#include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_field.h"
@@ -85,11 +87,13 @@ TEST(TableMetadataBuilderTest, BuildFromEmpty) {
   EXPECT_EQ(metadata->default_spec_id, PartitionSpec::kInitialSpecId);
   EXPECT_EQ(metadata->default_sort_order_id, SortOrder::kInitialSortOrderId);
   EXPECT_EQ(metadata->current_snapshot_id, Snapshot::kInvalidSnapshotId);
+  EXPECT_TRUE(metadata->metadata_log.empty());
 }
 
 TEST(TableMetadataBuilderTest, BuildFromExisting) {
   auto base = CreateBaseMetadata();
-  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+  std::string base_metadata_location = "s3://bucket/test/00010-xxx.metadata.json";
+  auto builder = TableMetadataBuilder::BuildFrom(base.get(), base_metadata_location);
   ASSERT_NE(builder, nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
@@ -98,6 +102,48 @@ TEST(TableMetadataBuilderTest, BuildFromExisting) {
   EXPECT_EQ(metadata->format_version, 2);
   EXPECT_EQ(metadata->table_uuid, "test-uuid-1234");
   EXPECT_EQ(metadata->location, "s3://bucket/test");
+  ASSERT_EQ(1, metadata->metadata_log.size());
+  EXPECT_EQ(base_metadata_location, metadata->metadata_log[0].metadata_file);
+  EXPECT_EQ(base->last_updated_ms, metadata->metadata_log[0].timestamp_ms);
+}
+
+TEST(TableMetadataBuilderTest, BuildupMetadataLog) {
+  auto base = CreateBaseMetadata();
+  std::string base_metadata_location = "s3://bucket/test/00010-xxx.metadata.json";
+  base->metadata_log = {
+      {.timestamp_ms = TimePointMs{std::chrono::milliseconds(100)},
+       .metadata_file = "s3://bucket/test/00000-aaa.metadata.json"},
+      {.timestamp_ms = TimePointMs{std::chrono::milliseconds(200)},
+       .metadata_file = "s3://bucket/test/00001-bbb.metadata.json"},
+  };
+
+  {
+    // Base metadata_log size less than max size
+    base->properties.Set(TableProperties::kMetadataPreviousVersionsMax, 3);
+    auto builder = TableMetadataBuilder::BuildFrom(base.get(), base_metadata_location);
+    ASSERT_NE(builder, nullptr);
+    ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+    EXPECT_EQ(3, metadata->metadata_log.size());
+    EXPECT_EQ(base->metadata_log[0].metadata_file,
+              metadata->metadata_log[0].metadata_file);
+    EXPECT_EQ(base->metadata_log[1].metadata_file,
+              metadata->metadata_log[1].metadata_file);
+    EXPECT_EQ(base->last_updated_ms, metadata->metadata_log[2].timestamp_ms);
+    EXPECT_EQ(base_metadata_location, metadata->metadata_log[2].metadata_file);
+  }
+
+  {
+    // Base metadata_log size greater than max size
+    base->properties.Set(TableProperties::kMetadataPreviousVersionsMax, 2);
+    auto builder = TableMetadataBuilder::BuildFrom(base.get(), base_metadata_location);
+    ASSERT_NE(builder, nullptr);
+    ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+    EXPECT_EQ(2, metadata->metadata_log.size());
+    EXPECT_EQ(base->metadata_log[1].metadata_file,
+              metadata->metadata_log[0].metadata_file);
+    EXPECT_EQ(base->last_updated_ms, metadata->metadata_log[1].timestamp_ms);
+    EXPECT_EQ(base_metadata_location, metadata->metadata_log[1].metadata_file);
+  }
 }
 
 // Test AssignUUID
@@ -147,9 +193,9 @@ TEST(TableMetadataBuilderTest, SetProperties) {
   builder->SetProperties({{"key1", "value1"}, {"key2", "value2"}});
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
-  EXPECT_EQ(metadata->properties->configs().size(), 2);
-  EXPECT_EQ(metadata->properties->configs().at("key1"), "value1");
-  EXPECT_EQ(metadata->properties->configs().at("key2"), "value2");
+  EXPECT_EQ(metadata->properties.configs().size(), 2);
+  EXPECT_EQ(metadata->properties.configs().at("key1"), "value1");
+  EXPECT_EQ(metadata->properties.configs().at("key2"), "value2");
 
   // Update existing property and add new one
   builder = TableMetadataBuilder::BuildFromEmpty(2);
@@ -157,9 +203,9 @@ TEST(TableMetadataBuilderTest, SetProperties) {
   builder->SetProperties({{"key1", "new_value1"}, {"key3", "value3"}});
 
   ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
-  EXPECT_EQ(metadata->properties->configs().size(), 2);
-  EXPECT_EQ(metadata->properties->configs().at("key1"), "new_value1");
-  EXPECT_EQ(metadata->properties->configs().at("key3"), "value3");
+  EXPECT_EQ(metadata->properties.configs().size(), 2);
+  EXPECT_EQ(metadata->properties.configs().at("key1"), "new_value1");
+  EXPECT_EQ(metadata->properties.configs().at("key3"), "value3");
 }
 
 TEST(TableMetadataBuilderTest, RemoveProperties) {
@@ -168,9 +214,9 @@ TEST(TableMetadataBuilderTest, RemoveProperties) {
   builder->RemoveProperties({"key2", "key4"});  // key4 does not exist
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
-  EXPECT_EQ(metadata->properties->configs().size(), 2);
-  EXPECT_EQ(metadata->properties->configs().at("key1"), "value1");
-  EXPECT_EQ(metadata->properties->configs().at("key3"), "value3");
+  EXPECT_EQ(metadata->properties.configs().size(), 2);
+  EXPECT_EQ(metadata->properties.configs().at("key1"), "value1");
+  EXPECT_EQ(metadata->properties.configs().at("key3"), "value3");
 }
 
 TEST(TableMetadataBuilderTest, UpgradeFormatVersion) {

@@ -51,9 +51,8 @@ Status Table::Refresh() {
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto refreshed_table, catalog_->LoadTable(identifier_));
-  if (metadata_location_ != refreshed_table->metadata_location_) {
+  if (metadata_location_ != refreshed_table->metadata_file_location()) {
     metadata_ = std::move(refreshed_table->metadata_);
-    metadata_location_ = std::move(refreshed_table->metadata_location_);
     io_ = std::move(refreshed_table->io_);
     metadata_cache_ = std::make_unique<TableMetadataCache>(metadata_.get());
   }
@@ -87,11 +86,13 @@ Table::sort_orders() const {
   return metadata_cache_->GetSortOrdersById();
 }
 
-const std::shared_ptr<TableProperties>& Table::properties() const {
-  return metadata_->properties;
-}
+const TableProperties& Table::properties() const { return metadata_->properties; }
+
+const std::string& Table::metadata_file_location() const { return metadata_location_; }
 
 const std::string& Table::location() const { return metadata_->location; }
+
+const TimePointMs& Table::last_updated_ms() const { return metadata_->last_updated_ms; }
 
 Result<std::shared_ptr<Snapshot>> Table::current_snapshot() const {
   return metadata_->Snapshot();

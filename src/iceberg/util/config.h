@@ -89,7 +89,7 @@ class ConfigBase {
 
   template <typename T>
   ConfigBase& Set(const Entry<T>& entry, const T& val) {
-    configs_.emplace(entry.key_, entry.to_str_(val));
+    configs_[entry.key_] = entry.to_str_(val);
     return *this;
   }
 

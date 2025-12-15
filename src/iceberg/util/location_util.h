@@ -17,27 +17,27 @@
  * under the License.
  */
 
-#include "iceberg/table_properties.h"
+#pragma once
+
+#include <string>
+
+#include "iceberg/iceberg_export.h"
 
 namespace iceberg {
 
-const std::unordered_set<std::string>& TableProperties::reserved_properties() {
-  static const std::unordered_set<std::string> kReservedProperties = {
-      kFormatVersion.key(),          kUuid.key(),
-      kSnapshotCount.key(),          kCurrentSnapshotId.key(),
-      kCurrentSnapshotSummary.key(), kCurrentSnapshotTimestamp.key(),
-      kCurrentSchema.key(),          kDefaultPartitionSpec.key(),
-      kDefaultSortOrder.key()};
-  return kReservedProperties;
-}
+class ICEBERG_EXPORT LocationUtil {
+ public:
+  static std::string StripTrailingSlash(const std::string& path) {
+    if (path.empty()) {
+      return "";
+    }
 
-TableProperties TableProperties::default_properties() { return {}; }
-
-TableProperties TableProperties::FromMap(
-    std::unordered_map<std::string, std::string> properties) {
-  TableProperties table_properties;
-  table_properties.configs_ = std::move(properties);
-  return table_properties;
-}
+    std::string_view result = path;
+    while (result.ends_with("/") && !result.ends_with("://")) {
+      result.remove_suffix(1);
+    }
+    return std::string(result);
+  }
+};
 
 }  // namespace iceberg
