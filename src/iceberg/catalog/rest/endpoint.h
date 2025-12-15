@@ -31,7 +31,7 @@
 namespace iceberg::rest {
 
 /// \brief HTTP method enumeration.
-enum class HttpMethod : uint8_t { GET, POST, PUT, DELETE, HEAD };
+enum class HttpMethod : uint8_t { GET, POST, PUT, DELETE_, HEAD };
 
 /// \brief Convert HttpMethod to string representation.
 constexpr std::string_view ToString(HttpMethod method);
@@ -94,7 +94,7 @@ class ICEBERG_REST_EXPORT Endpoint {
     return {HttpMethod::POST, "/v1/{prefix}/namespaces/{namespace}/properties"};
   }
   static Endpoint DropNamespace() {
-    return {HttpMethod::DELETE, "/v1/{prefix}/namespaces/{namespace}"};
+    return {HttpMethod::DELETE_, "/v1/{prefix}/namespaces/{namespace}"};
   }
 
   // Table endpoints
@@ -114,7 +114,7 @@ class ICEBERG_REST_EXPORT Endpoint {
     return {HttpMethod::POST, "/v1/{prefix}/namespaces/{namespace}/tables/{table}"};
   }
   static Endpoint DeleteTable() {
-    return {HttpMethod::DELETE, "/v1/{prefix}/namespaces/{namespace}/tables/{table}"};
+    return {HttpMethod::DELETE_, "/v1/{prefix}/namespaces/{namespace}/tables/{table}"};
   }
   static Endpoint RenameTable() {
     return {HttpMethod::POST, "/v1/{prefix}/tables/rename"};

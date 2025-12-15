@@ -75,7 +75,7 @@ TEST(EndpointTest, AllHttpMethods) {
   ASSERT_THAT(put, IsOk());
   EXPECT_EQ(put->ToString(), "PUT /path");
 
-  auto del = Endpoint::Create(HttpMethod::DELETE, "/path");
+  auto del = Endpoint::Create(HttpMethod::DELETE_, "/path");
   ASSERT_THAT(del, IsOk());
   EXPECT_EQ(del->ToString(), "DELETE /path");
 
@@ -109,7 +109,7 @@ TEST(EndpointTest, NamespaceEndpoints) {
             "/v1/{prefix}/namespaces/{namespace}/properties");
 
   auto drop_namespace = Endpoint::DropNamespace();
-  EXPECT_EQ(drop_namespace.method(), HttpMethod::DELETE);
+  EXPECT_EQ(drop_namespace.method(), HttpMethod::DELETE_);
   EXPECT_EQ(drop_namespace.path_template(), "/v1/{prefix}/namespaces/{namespace}");
 }
 
@@ -139,7 +139,7 @@ TEST(EndpointTest, TableEndpoints) {
             "/v1/{prefix}/namespaces/{namespace}/tables/{table}");
 
   auto delete_table = Endpoint::DeleteTable();
-  EXPECT_EQ(delete_table.method(), HttpMethod::DELETE);
+  EXPECT_EQ(delete_table.method(), HttpMethod::DELETE_);
   EXPECT_EQ(delete_table.path_template(),
             "/v1/{prefix}/namespaces/{namespace}/tables/{table}");
 
@@ -203,7 +203,7 @@ TEST(EndpointTest, ToStringFormat) {
   EXPECT_EQ(endpoint2->ToString(), "POST /v1/{prefix}/tables");
 
   // Test with all HTTP methods
-  auto endpoint3 = Endpoint::Create(HttpMethod::DELETE, "/path");
+  auto endpoint3 = Endpoint::Create(HttpMethod::DELETE_, "/path");
   ASSERT_THAT(endpoint3, IsOk());
   EXPECT_EQ(endpoint3->ToString(), "DELETE /path");
 
@@ -231,7 +231,7 @@ TEST(EndpointTest, FromStringParsing) {
   // Test all HTTP methods
   auto result3 = Endpoint::FromString("DELETE /path");
   ASSERT_THAT(result3, IsOk());
-  EXPECT_EQ(result3->method(), HttpMethod::DELETE);
+  EXPECT_EQ(result3->method(), HttpMethod::DELETE_);
 
   auto result4 = Endpoint::FromString("PUT /path");
   ASSERT_THAT(result4, IsOk());

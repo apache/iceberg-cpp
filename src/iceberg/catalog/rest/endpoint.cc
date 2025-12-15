@@ -31,7 +31,7 @@ constexpr std::string_view ToString(HttpMethod method) {
       return "POST";
     case HttpMethod::PUT:
       return "PUT";
-    case HttpMethod::DELETE:
+    case HttpMethod::DELETE_:
       return "DELETE";
     case HttpMethod::HEAD:
       return "HEAD";
@@ -72,7 +72,7 @@ Result<Endpoint> Endpoint::FromString(std::string_view str) {
   } else if (method_str == "PUT") {
     method = HttpMethod::PUT;
   } else if (method_str == "DELETE") {
-    method = HttpMethod::DELETE;
+    method = HttpMethod::DELETE_;
   } else if (method_str == "HEAD") {
     method = HttpMethod::HEAD;
   } else {
