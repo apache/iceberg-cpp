@@ -20,26 +20,27 @@
 #include "iceberg/catalog/rest/endpoint.h"
 
 #include <format>
+#include <string_view>
 
 namespace iceberg::rest {
 
 constexpr std::string_view ToString(HttpMethod method) {
   switch (method) {
-    case HttpMethod::GET:
+    case HttpMethod::kGet:
       return "GET";
-    case HttpMethod::POST:
+    case HttpMethod::kPost:
       return "POST";
-    case HttpMethod::PUT:
+    case HttpMethod::kPut:
       return "PUT";
-    case HttpMethod::DELETE_:
+    case HttpMethod::kDelete:
       return "DELETE";
-    case HttpMethod::HEAD:
+    case HttpMethod::kHead:
       return "HEAD";
   }
   return "UNKNOWN";
 }
 
-Result<Endpoint> Endpoint::Create(HttpMethod method, std::string path_template) {
+Result<Endpoint> Endpoint::Make(HttpMethod method, std::string_view path_template) {
   if (path_template.empty()) {
     return InvalidArgument("Path template cannot be empty");
   }
@@ -52,7 +53,7 @@ Result<Endpoint> Endpoint::FromString(std::string_view str) {
       str.find(' ', space_pos + 1) != std::string_view::npos) {
     return InvalidArgument(
         "Invalid endpoint format (must consist of two elements separated by a single "
-        "space): {}",
+        "space): '{}'",
         str);
   }
 
@@ -66,24 +67,24 @@ Result<Endpoint> Endpoint::FromString(std::string_view str) {
   // Parse HTTP method
   HttpMethod method;
   if (method_str == "GET") {
-    method = HttpMethod::GET;
+    method = HttpMethod::kGet;
   } else if (method_str == "POST") {
-    method = HttpMethod::POST;
+    method = HttpMethod::kPost;
   } else if (method_str == "PUT") {
-    method = HttpMethod::PUT;
+    method = HttpMethod::kPut;
   } else if (method_str == "DELETE") {
-    method = HttpMethod::DELETE_;
+    method = HttpMethod::kDelete;
   } else if (method_str == "HEAD") {
-    method = HttpMethod::HEAD;
+    method = HttpMethod::kHead;
   } else {
     return InvalidArgument("Invalid HTTP method: '{}'", method_str);
   }
 
-  return Create(method, std::string(path_str));
+  return Make(method, std::string(path_str));
 }
 
 std::string Endpoint::ToString() const {
-  return std::format("{} {}", rest::ToString(method_), path_template_);
+  return std::format("{} {}", rest::ToString(method_), path_);
 }
 
 }  // namespace iceberg::rest

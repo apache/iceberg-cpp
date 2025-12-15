@@ -19,11 +19,12 @@
 
 #pragma once
 
-#include <set>
 #include <string>
 #include <string_view>
 #include <unordered_map>
+#include <unordered_set>
 
+#include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/result.h"
@@ -97,7 +98,8 @@ ICEBERG_REST_EXPORT std::string GetStandardReasonPhrase(int32_t status_code);
 /// \param supported_endpoints Set of endpoints advertised by the server
 /// \param endpoint Endpoint to validate
 /// \return Status::OK if supported, NotSupported error otherwise
-ICEBERG_REST_EXPORT Status CheckEndpoint(const std::set<Endpoint>& supported_endpoints,
-                                         const Endpoint& endpoint);
+ICEBERG_REST_EXPORT Status
+CheckEndpoint(const std::unordered_set<Endpoint, EndpointHash>& supported_endpoints,
+              const Endpoint& endpoint);
 
 }  // namespace iceberg::rest

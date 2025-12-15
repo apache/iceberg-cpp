@@ -100,13 +100,14 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog {
 
  private:
   RestCatalog(std::unique_ptr<RestCatalogProperties> config,
-              std::unique_ptr<ResourcePaths> paths, std::set<Endpoint> endpoints);
+              std::unique_ptr<ResourcePaths> paths,
+              std::unordered_set<Endpoint, EndpointHash> endpoints);
 
   std::unique_ptr<RestCatalogProperties> config_;
   std::unique_ptr<HttpClient> client_;
   std::unique_ptr<ResourcePaths> paths_;
   std::string name_;
-  std::set<Endpoint> supported_endpoints_;
+  std::unordered_set<Endpoint, EndpointHash> supported_endpoints_;
 };
 
 }  // namespace iceberg::rest

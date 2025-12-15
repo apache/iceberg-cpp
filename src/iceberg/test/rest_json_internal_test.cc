@@ -791,14 +791,14 @@ INSTANTIATE_TEST_SUITE_P(
             .model = {.defaults = {{"warehouse", "s3://bucket/warehouse"}},
                       .overrides = {{"clients", "5"}},
 
-                      .endpoints = {*Endpoint::Create(HttpMethod::GET, "/v1/config"),
-                                    *Endpoint::Create(HttpMethod::POST, "/v1/tables")}}},
+                      .endpoints = {*Endpoint::Make(HttpMethod::kGet, "/v1/config"),
+                                    *Endpoint::Make(HttpMethod::kPost, "/v1/tables")}}},
         // Only endpoints
         CatalogConfigParam{
             .test_name = "OnlyEndpoints",
             .expected_json_str =
                 R"({"defaults":{},"overrides":{},"endpoints":["GET /v1/config"]})",
-            .model = {.endpoints = {*Endpoint::Create(HttpMethod::GET, "/v1/config")}}}),
+            .model = {.endpoints = {*Endpoint::Make(HttpMethod::kGet, "/v1/config")}}}),
     [](const ::testing::TestParamInfo<CatalogConfigParam>& info) {
       return info.param.test_name;
     });

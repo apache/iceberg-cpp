@@ -20,6 +20,7 @@
 #include "iceberg/catalog/rest/rest_util.h"
 
 #include <format>
+#include <unordered_set>
 
 #include <cpr/util.h>
 
@@ -252,8 +253,9 @@ std::string GetStandardReasonPhrase(int32_t status_code) {
   }
 }
 
-Status CheckEndpoint(const std::set<Endpoint>& supported_endpoints,
-                     const Endpoint& endpoint) {
+Status CheckEndpoint(
+    const std::unordered_set<Endpoint, EndpointHash>& supported_endpoints,
+    const Endpoint& endpoint) {
   if (!supported_endpoints.contains(endpoint)) {
     return NotSupported("Server does not support endpoint: {}", endpoint.ToString());
   }

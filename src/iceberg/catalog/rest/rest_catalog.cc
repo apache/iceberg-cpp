@@ -35,6 +35,7 @@
 #include "iceberg/catalog/rest/resource_paths.h"
 #include "iceberg/catalog/rest/rest_catalog.h"
 #include "iceberg/catalog/rest/rest_util.h"
+#include "iceberg/catalog/rest/types.h"
 #include "iceberg/json_internal.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -48,7 +49,7 @@ namespace {
 
 /// \brief Get the default set of endpoints for backwards compatibility according to the
 /// iceberg rest spec.
-std::set<Endpoint> GetDefaultEndpoints() {
+std::unordered_set<Endpoint, EndpointHash> GetDefaultEndpoints() {
   return {
       Endpoint::ListNamespaces(),  Endpoint::GetNamespaceProperties(),
       Endpoint::CreateNamespace(), Endpoint::UpdateNamespace(),
@@ -90,11 +91,11 @@ Result<std::unique_ptr<RestCatalog>> RestCatalog::Make(
       RestCatalogProperties::FromMap(MergeConfigs(
           server_config.overrides, initial_config.configs(), server_config.defaults));
 
-  std::set<Endpoint> endpoints;
+  std::unordered_set<Endpoint, EndpointHash> endpoints;
   if (!server_config.endpoints.empty()) {
     // Endpoints are already parsed during JSON deserialization, just convert to set
-    endpoints = std::set<Endpoint>(server_config.endpoints.begin(),
-                                   server_config.endpoints.end());
+    endpoints = std::unordered_set<Endpoint, EndpointHash>(
+        server_config.endpoints.begin(), server_config.endpoints.end());
   } else {
     // If a server does not send the endpoints field, use default set of endpoints
     // for backwards compatibility with legacy servers
@@ -111,7 +112,7 @@ Result<std::unique_ptr<RestCatalog>> RestCatalog::Make(
 
 RestCatalog::RestCatalog(std::unique_ptr<RestCatalogProperties> config,
                          std::unique_ptr<ResourcePaths> paths,
-                         std::set<Endpoint> endpoints)
+                         std::unordered_set<Endpoint, EndpointHash> endpoints)
     : config_(std::move(config)),
       client_(std::make_unique<HttpClient>(config_->ExtractHeaders())),
       paths_(std::move(paths)),
@@ -195,16 +196,11 @@ Result<bool> RestCatalog::NamespaceExists(const Namespace& ns) const {
   // If server does not support HEAD endpoint, fall back to GetNamespaceProperties
   if (!check.has_value()) {
     ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Namespace_(ns));
-    auto response = client_->Get(path, /*params=*/{}, /*headers=*/{},
-                                 *NamespaceErrorHandler::Instance());
-    if (!response.has_value()) {
-      const auto& error = response.error();
-      // catch NoSuchNamespaceException/404 and return false
-      if (error.kind == ErrorKind::kNoSuchNamespace) {
-        return false;
-      }
-      ICEBERG_RETURN_UNEXPECTED(response);
+    auto result = GetNamespaceProperties(ns);
+    if (!result.has_value() && result.error().kind == ErrorKind::kNoSuchNamespace) {
+      return false;
     }
+    ICEBERG_RETURN_UNEXPECTED(result);
     // GET succeeded, namespace exists
     return true;
   }
