@@ -71,6 +71,7 @@ add_iceberg_test(table_test
                  SOURCES
                  json_internal_test.cc
                  metrics_config_test.cc
+                 replace_sort_order_test.cc
                  schema_json_test.cc
                  table_test.cc
                  table_metadata_builder_test.cc

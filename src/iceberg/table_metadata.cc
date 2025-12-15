@@ -30,6 +30,7 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 #include <nlohmann/json.hpp>
 
@@ -756,6 +757,10 @@ TableMetadataBuilder& TableMetadataBuilder::AddEncryptionKey(
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveEncryptionKey(std::string_view key_id) {
   throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+}
+
+const std::vector<std::unique_ptr<TableUpdate>>& TableMetadataBuilder::Changes() const {
+  return impl_->changes;
 }
 
 Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Build() {

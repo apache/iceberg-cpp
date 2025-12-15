@@ -151,6 +151,8 @@ class ICEBERG_EXPORT BoundReference
 
   std::shared_ptr<Type> type() const override { return field_.type(); }
 
+  int32_t field_id() const { return field_.field_id(); }
+
   bool MayProduceNull() const override { return field_.optional(); }
 
   bool Equals(const BoundTerm& other) const override;
