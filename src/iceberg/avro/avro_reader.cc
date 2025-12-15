@@ -75,10 +75,7 @@ struct ReadContext {
   DecodeContext decode_context_;
 };
 
-// TODO(gang.wu): there are a lot to do to make this reader work.
-// 1. prune the reader schema based on the projection
-// 2. read key-value metadata from the avro file
-// 3. collect basic reader metrics
+// TODO(gang.wu): collect basic reader metrics
 class AvroReader::Impl {
  public:
   Status Open(const ReaderOptions& options) {
@@ -217,7 +214,7 @@ class AvroReader::Impl {
       return Invalid("Reader is not opened");
     }
 
-    const ::avro::Metadata metadata = GetReaderMetadata();
+    const auto& metadata = GetReaderMetadata();
     std::unordered_map<std::string, std::string> metadata_map;
     metadata_map.reserve(metadata.size());
 
@@ -280,19 +277,18 @@ class AvroReader::Impl {
     return arrow_array;
   }
 
-  // Helper: Check if past sync point
   bool IsPastSync() const {
-    if (!split_end_) return false;
+    if (!split_end_) {
+      return false;
+    }
     return use_direct_decoder_ ? base_reader_->pastSync(split_end_.value())
                                : datum_reader_->pastSync(split_end_.value());
   }
 
-  // Helper: Get metadata from appropriate reader
-  ::avro::Metadata GetReaderMetadata() const {
+  const ::avro::Metadata& GetReaderMetadata() const {
     return use_direct_decoder_ ? base_reader_->metadata() : datum_reader_->metadata();
   }
 
-  // Helper: Close the appropriate reader
   void CloseReader() {
     if (use_direct_decoder_) {
       if (base_reader_) {
@@ -307,7 +303,6 @@ class AvroReader::Impl {
     }
   }
 
-  // Helper: Get reader schema
   const ::avro::ValidSchema& GetReaderSchema() const {
     return use_direct_decoder_ ? base_reader_->readerSchema()
                                : datum_reader_->readerSchema();

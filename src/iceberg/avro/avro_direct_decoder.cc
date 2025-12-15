@@ -486,13 +486,6 @@ Status DecodePrimitiveValueToBuilder(const ::avro::NodePtr& avro_node,
             ToString(avro_node));
       }
 
-      const auto& decimal_type =
-          internal::checked_cast<const DecimalType&>(projected_type);
-
-      // Note: Avro C++ LogicalType doesn't expose precision/scale getters,
-      // so we rely on schema projection validation
-
-      // Use Avro schema's fixed size (not calculated)
       size_t byte_width = avro_node->fixedSize();
       auto* builder = internal::checked_cast<::arrow::Decimal128Builder*>(array_builder);
 
