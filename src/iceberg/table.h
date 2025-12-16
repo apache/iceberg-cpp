@@ -86,15 +86,13 @@ class ICEBERG_EXPORT Table {
   const TableProperties& properties() const;
 
   /// \brief Return the table's metadata file location
-  const std::string& metadata_file_location() const;
+  std::string_view metadata_file_location() const;
 
   /// \brief Return the table's base location
-  const std::string& location() const;
+  std::string_view location() const;
 
-  /// \brief Get the time when this table was last updated
-  ///
-  /// \return the time when this table was last updated
-  const TimePointMs& last_updated_ms() const;
+  /// \brief Returns the time when this table was last updated
+  TimePointMs last_updated_ms() const;
 
   /// \brief Return the table's current snapshot, return NotFoundError if not found
   Result<std::shared_ptr<Snapshot>> current_snapshot() const;
@@ -132,6 +130,9 @@ class ICEBERG_EXPORT Table {
 
   /// \brief Returns a FileIO to read and write table data and metadata files
   const std::shared_ptr<FileIO>& io() const;
+
+  /// \brief Returns the current metadata for this table
+  const std::shared_ptr<TableMetadata>& metadata() const;
 
  private:
   const TableIdentifier identifier_;

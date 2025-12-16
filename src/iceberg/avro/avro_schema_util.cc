@@ -734,7 +734,7 @@ Result<FieldProjection> ProjectMap(const MapType& map_type,
   const auto& expected_key_field = map_type.key();
   const auto& expected_value_field = map_type.value();
 
-  FieldProjection result, key_projection, value_projection;
+  FieldProjection result;
   int32_t avro_key_id, avro_value_id;
   ::avro::NodePtr map_node;
 

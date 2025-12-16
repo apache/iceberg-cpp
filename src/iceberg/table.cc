@@ -88,11 +88,11 @@ Table::sort_orders() const {
 
 const TableProperties& Table::properties() const { return metadata_->properties; }
 
-const std::string& Table::metadata_file_location() const { return metadata_location_; }
+std::string_view Table::metadata_file_location() const { return metadata_location_; }
 
-const std::string& Table::location() const { return metadata_->location; }
+std::string_view Table::location() const { return metadata_->location; }
 
-const TimePointMs& Table::last_updated_ms() const { return metadata_->last_updated_ms; }
+TimePointMs Table::last_updated_ms() const { return metadata_->last_updated_ms; }
 
 Result<std::shared_ptr<Snapshot>> Table::current_snapshot() const {
   return metadata_->Snapshot();

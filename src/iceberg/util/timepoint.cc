@@ -27,7 +27,7 @@ Result<TimePointMs> TimePointMsFromUnixMs(int64_t unix_ms) {
   return TimePointMs{std::chrono::milliseconds(unix_ms)};
 }
 
-int64_t UnixMsFromTimePointMs(const TimePointMs& time_point_ms) {
+int64_t UnixMsFromTimePointMs(TimePointMs time_point_ms) {
   return std::chrono::duration_cast<std::chrono::milliseconds>(
              time_point_ms.time_since_epoch())
       .count();
@@ -37,7 +37,7 @@ Result<TimePointNs> TimePointNsFromUnixNs(int64_t unix_ns) {
   return TimePointNs{std::chrono::nanoseconds(unix_ns)};
 }
 
-int64_t UnixNsFromTimePointNs(const TimePointNs& time_point_ns) {
+int64_t UnixNsFromTimePointNs(TimePointNs time_point_ns) {
   return std::chrono::duration_cast<std::chrono::nanoseconds>(
              time_point_ns.time_since_epoch())
       .count();

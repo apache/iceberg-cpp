@@ -38,12 +38,12 @@ using TimePointNs =
 ICEBERG_EXPORT Result<TimePointMs> TimePointMsFromUnixMs(int64_t unix_ms);
 
 /// \brief Returns a Unix timestamp in milliseconds from a TimePointMs
-ICEBERG_EXPORT int64_t UnixMsFromTimePointMs(const TimePointMs& time_point_ms);
+ICEBERG_EXPORT int64_t UnixMsFromTimePointMs(TimePointMs time_point_ms);
 
 /// \brief Returns a TimePointNs from a Unix timestamp in nanoseconds
 ICEBERG_EXPORT Result<TimePointNs> TimePointNsFromUnixNs(int64_t unix_ns);
 
 /// \brief Returns a Unix timestamp in nanoseconds from a TimePointNs
-ICEBERG_EXPORT int64_t UnixNsFromTimePointNs(const TimePointNs& time_point_ns);
+ICEBERG_EXPORT int64_t UnixNsFromTimePointNs(TimePointNs time_point_ns);
 
 }  // namespace iceberg
