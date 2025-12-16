@@ -28,6 +28,7 @@ install_headers(
         'formatter.h',
         'int128.h',
         'lazy.h',
+        'location_util.h',
         'macros.h',
         'partition_value_util.h',
         'string_util.h',

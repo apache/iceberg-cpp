@@ -427,10 +427,9 @@ Result<std::unique_ptr<Table>> InMemoryCatalog::UpdateTable(
     update->ApplyTo(*builder);
   }
   ICEBERG_ASSIGN_OR_RAISE(auto updated, builder->Build());
-
-  std::string new_metadata_location;
-  ICEBERG_RETURN_UNEXPECTED(TableMetadataUtil::Write(
-      *file_io_, base.get(), base_metadata_location, *updated, new_metadata_location));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto new_metadata_location,
+      TableMetadataUtil::Write(*file_io_, base.get(), base_metadata_location, *updated));
   ICEBERG_RETURN_UNEXPECTED(
       root_namespace_->UpdateTableMetadataLocation(identifier, new_metadata_location));
   TableMetadataUtil::DeleteRemovedMetadataFiles(*file_io_, base.get(), *updated);

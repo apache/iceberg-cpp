@@ -59,12 +59,6 @@ struct ICEBERG_EXPORT MetadataLogEntry {
   friend bool operator==(const MetadataLogEntry& lhs, const MetadataLogEntry& rhs) {
     return lhs.timestamp_ms == rhs.timestamp_ms && lhs.metadata_file == rhs.metadata_file;
   }
-
-  struct Hasher {
-    size_t operator()(const MetadataLogEntry& m) const noexcept {
-      return std::hash<std::string>{}(m.metadata_file);
-    }
-  };
 };
 
 /// \brief Represents the metadata for an Iceberg table
@@ -214,8 +208,7 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   ///
   /// \param base The base table metadata to build from
   /// \return A new TableMetadataBuilder instance initialized with base metadata
-  static std::unique_ptr<TableMetadataBuilder> BuildFrom(
-      const TableMetadata* base, std::string base_metadata_location = "");
+  static std::unique_ptr<TableMetadataBuilder> BuildFrom(const TableMetadata* base);
 
   /// \brief Set the metadata location of the table
   ///
@@ -442,8 +435,7 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   explicit TableMetadataBuilder(int8_t format_version);
 
   /// \brief Private constructor for building from existing metadata
-  explicit TableMetadataBuilder(const TableMetadata* base,
-                                std::string base_metadata_location = "");
+  explicit TableMetadataBuilder(const TableMetadata* base);
 
   /// \brief Internal method to add a sort order and return its ID
   /// \param order The sort order to add
@@ -520,9 +512,10 @@ struct ICEBERG_EXPORT TableMetadataUtil {
   /// \param io The FileIO instance for writing files
   /// \param base The base metadata (can be null for new tables)
   /// \param metadata The metadata to write, which will be updated with the new location
-  static Status Write(FileIO& io, const TableMetadata* base,
-                      const std::string& base_metadata_location, TableMetadata& metadata,
-                      std::string& new_metadata_location);
+  /// \return The new metadata location
+  static Result<std::string> Write(FileIO& io, const TableMetadata* base,
+                                   const std::string& base_metadata_location,
+                                   TableMetadata& metadata);
 
   /// \brief Delete removed metadata files based on retention policy.
   ///
@@ -562,7 +555,17 @@ struct ICEBERG_EXPORT TableMetadataUtil {
   /// \param version The version number for the new metadata file.
   /// \return The generated metadata file path.
   static Result<std::string> NewTableMetadataFilePath(const TableMetadata& metadata,
-                                                      int version);
+                                                      int32_t version);
 };
 
 }  // namespace iceberg
+
+namespace std {
+template <>
+struct hash<iceberg::MetadataLogEntry> {
+  size_t operator()(const iceberg::MetadataLogEntry& m) const noexcept {
+    return std::hash<std::string>{}(m.metadata_file);
+  }
+};
+
+}  // namespace std

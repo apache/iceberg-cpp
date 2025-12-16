@@ -136,14 +136,13 @@ TEST_F(MetadataIOTest, ReadWriteCompressedMetadata) {
 
 TEST_F(MetadataIOTest, WriteMetadataWithBase) {
   TableMetadata base = PrepareMetadata();
-  std::string new_metadata_location;
 
   {
     // Invalid base metadata_file_location, set version to 0
     TableMetadata new_metadata = PrepareMetadata();
-    EXPECT_THAT(TableMetadataUtil::Write(*io_, &base, "invalid_location", new_metadata,
-                                         new_metadata_location),
-                IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto new_metadata_location,
+        TableMetadataUtil::Write(*io_, &base, "invalid_location", new_metadata));
     EXPECT_THAT(new_metadata_location, testing::HasSubstr("/metadata/00000-"));
   }
 
@@ -154,9 +153,9 @@ TEST_F(MetadataIOTest, WriteMetadataWithBase) {
     // Specify write location property
     TableMetadata new_metadata = PrepareMetadata();
     new_metadata.properties.Set(TableProperties::kWriteMetadataLocation, location_);
-    auto result = TableMetadataUtil::Write(*io_, &base, temp_filepath_, new_metadata,
-                                           new_metadata_location);
-    EXPECT_THAT(result, IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto new_metadata_location,
+        TableMetadataUtil::Write(*io_, &base, temp_filepath_, new_metadata));
     EXPECT_THAT(new_metadata_location,
                 testing::HasSubstr(std::format("{}/00001-", location_)));
   }
@@ -164,9 +163,9 @@ TEST_F(MetadataIOTest, WriteMetadataWithBase) {
   {
     // Default write location
     TableMetadata new_metadata = PrepareMetadata();
-    auto result = TableMetadataUtil::Write(*io_, &base, temp_filepath_, new_metadata,
-                                           new_metadata_location);
-    EXPECT_THAT(result, IsOk());
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto new_metadata_location,
+        TableMetadataUtil::Write(*io_, &base, temp_filepath_, new_metadata));
     EXPECT_THAT(new_metadata_location,
                 testing::HasSubstr(std::format("{}/metadata/00001-", location_)));
   }
@@ -174,26 +173,25 @@ TEST_F(MetadataIOTest, WriteMetadataWithBase) {
 
 TEST_F(MetadataIOTest, RemoveDeletedMetadataFiles) {
   TableMetadata base1 = PrepareMetadata();
-  std::string base1_metadata_location;
   base1.properties.Set(TableProperties::kMetadataPreviousVersionsMax, 1);
-  EXPECT_THAT(TableMetadataUtil::Write(*io_, nullptr, "", base1, base1_metadata_location),
-              IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto base1_metadata_location,
+                         TableMetadataUtil::Write(*io_, nullptr, "", base1));
 
+  ICEBERG_UNWRAP_OR_FAIL(auto base2,
+                         TableMetadataBuilder::BuildFrom(&base1)
+                             ->SetPreviousMetadataLocation(base1_metadata_location)
+                             .Build());
   ICEBERG_UNWRAP_OR_FAIL(
-      auto base2,
-      TableMetadataBuilder::BuildFrom(&base1, base1_metadata_location)->Build());
-  std::string base2_metadata_location;
-  EXPECT_THAT(TableMetadataUtil::Write(*io_, &base1, base1_metadata_location, *base2,
-                                       base2_metadata_location),
-              IsOk());
+      auto base2_metadata_location,
+      TableMetadataUtil::Write(*io_, &base1, base1_metadata_location, *base2));
 
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto new_metadata,
-      TableMetadataBuilder::BuildFrom(base2.get(), base2_metadata_location)->Build());
-  std::string new_metadata_location;
-  EXPECT_THAT(TableMetadataUtil::Write(*io_, base2.get(), base2_metadata_location,
-                                       *new_metadata, new_metadata_location),
-              IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto new_metadata,
+                         TableMetadataBuilder::BuildFrom(base2.get())
+                             ->SetPreviousMetadataLocation(base2_metadata_location)
+                             .Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto new_metadata_location,
+                         TableMetadataUtil::Write(
+                             *io_, base2.get(), base2_metadata_location, *new_metadata));
 
   // The first metadata file should not be deleted
   new_metadata->properties.Set(TableProperties::kMetadataDeleteAfterCommitEnabled, false);

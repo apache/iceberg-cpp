@@ -291,19 +291,14 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataUtil::Read(
   return TableMetadataFromJson(json);
 }
 
-Status TableMetadataUtil::Write(FileIO& io, const TableMetadata* base,
-                                const std::string& base_metadata_location,
-                                TableMetadata& metadata, std::string& new_file_location) {
-  int version = -1;
-  if (!base_metadata_location.empty()) {
-    // parse current version from location
-    version = ParseVersionFromLocation(base_metadata_location);
-  }
-
-  ICEBERG_ASSIGN_OR_RAISE(new_file_location,
+Result<std::string> TableMetadataUtil::Write(FileIO& io, const TableMetadata* base,
+                                             const std::string& base_metadata_location,
+                                             TableMetadata& metadata) {
+  int32_t version = ParseVersionFromLocation(base_metadata_location);
+  ICEBERG_ASSIGN_OR_RAISE(auto new_file_location,
                           NewTableMetadataFilePath(metadata, version + 1));
   ICEBERG_RETURN_UNEXPECTED(Write(io, new_file_location, metadata));
-  return {};
+  return new_file_location;
 }
 
 Status TableMetadataUtil::Write(FileIO& io, const std::string& location,
@@ -323,8 +318,7 @@ void TableMetadataUtil::DeleteRemovedMetadataFiles(FileIO& io, const TableMetada
       metadata.properties.Get(TableProperties::kMetadataDeleteAfterCommitEnabled);
   if (delete_after_commit) {
     auto current_files =
-        metadata.metadata_log |
-        std::ranges::to<std::unordered_set<MetadataLogEntry, MetadataLogEntry::Hasher>>();
+        metadata.metadata_log | std::ranges::to<std::unordered_set<MetadataLogEntry>>();
     std::ranges::for_each(
         base->metadata_log | std::views::filter([&current_files](const auto& entry) {
           return !current_files.contains(entry);
@@ -337,7 +331,7 @@ int32_t TableMetadataUtil::ParseVersionFromLocation(std::string_view metadata_lo
   size_t version_start = metadata_location.find_last_of('/') + 1;
   size_t version_end = metadata_location.find('-', version_start);
 
-  int version = -1;
+  int32_t version = -1;
   if (version_end != std::string::npos) {
     std::from_chars(metadata_location.data() + version_start,
                     metadata_location.data() + version_end, version);
@@ -346,7 +340,7 @@ int32_t TableMetadataUtil::ParseVersionFromLocation(std::string_view metadata_lo
 }
 
 Result<std::string> TableMetadataUtil::NewTableMetadataFilePath(const TableMetadata& meta,
-                                                                int new_version) {
+                                                                int32_t new_version) {
   auto codec_name =
       meta.properties.Get<std::string>(TableProperties::kMetadataCompression);
   ICEBERG_ASSIGN_OR_RAISE(std::string file_extension,
@@ -381,8 +375,8 @@ struct TableMetadataBuilder::Impl {
   std::optional<int32_t> last_added_spec_id;
 
   // Metadata location tracking
-  std::optional<std::string> metadata_location;
-  std::optional<std::string> previous_metadata_location;
+  std::string metadata_location;
+  std::string previous_metadata_location;
 
   // indexes for convenience
   std::unordered_map<int32_t, std::shared_ptr<Schema>> schemas_by_id;
@@ -400,7 +394,6 @@ struct TableMetadataBuilder::Impl {
     metadata.current_snapshot_id = Snapshot::kInvalidSnapshotId;
     metadata.default_sort_order_id = SortOrder::kInitialSortOrderId;
     metadata.next_row_id = TableMetadata::kInitialRowId;
-    metadata.properties = TableProperties::default_properties();
   }
 
   // Constructor from existing metadata
@@ -422,9 +415,6 @@ struct TableMetadataBuilder::Impl {
       sort_orders_by_id.emplace(order->order_id(), order);
     }
 
-    if (!base_metadata_location.empty()) {
-      previous_metadata_location = std::move(base_metadata_location);
-    }
     metadata.last_updated_ms = kInvalidLastUpdatedMs;
   }
 };
@@ -432,9 +422,8 @@ struct TableMetadataBuilder::Impl {
 TableMetadataBuilder::TableMetadataBuilder(int8_t format_version)
     : impl_(std::make_unique<Impl>(format_version)) {}
 
-TableMetadataBuilder::TableMetadataBuilder(const TableMetadata* base,
-                                           std::string base_metadata_location)
-    : impl_(std::make_unique<Impl>(base, std::move(base_metadata_location))) {}
+TableMetadataBuilder::TableMetadataBuilder(const TableMetadata* base)
+    : impl_(std::make_unique<Impl>(base)) {}
 
 TableMetadataBuilder::~TableMetadataBuilder() = default;
 
@@ -450,19 +439,28 @@ std::unique_ptr<TableMetadataBuilder> TableMetadataBuilder::BuildFromEmpty(
 }
 
 std::unique_ptr<TableMetadataBuilder> TableMetadataBuilder::BuildFrom(
-    const TableMetadata* base, std::string base_metadata_location) {
-  return std::unique_ptr<TableMetadataBuilder>(
-      new TableMetadataBuilder(base, std::move(base_metadata_location)));  // NOLINT
+    const TableMetadata* base) {
+  return std::unique_ptr<TableMetadataBuilder>(new TableMetadataBuilder(base));  // NOLINT
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetMetadataLocation(
     std::string_view metadata_location) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  impl_->metadata_location = std::string(metadata_location);
+  if (impl_->base != nullptr) {
+    // Carry over lastUpdatedMillis from base and set previousFileLocation to null to
+    // avoid writing a new metadata log entry.
+    // This is safe since setting metadata location doesn't cause any changes and no other
+    // changes can be added when metadata location is configured
+    impl_->previous_metadata_location = std::string();
+    impl_->metadata.last_updated_ms = impl_->base->last_updated_ms;
+  }
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetPreviousMetadataLocation(
     std::string_view previous_metadata_location) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  impl_->previous_metadata_location = std::string(previous_metadata_location);
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::AssignUUID() {
@@ -776,9 +774,9 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Build() {
   // 4. Buildup metadata_log from base metadata
   int32_t max_metadata_log_size =
       impl_->metadata.properties.Get(TableProperties::kMetadataPreviousVersionsMax);
-  if (impl_->base != nullptr && impl_->previous_metadata_location) {
+  if (impl_->base != nullptr && !impl_->previous_metadata_location.empty()) {
     impl_->metadata.metadata_log.emplace_back(impl_->base->last_updated_ms,
-                                              impl_->previous_metadata_location.value());
+                                              impl_->previous_metadata_location);
   }
   if (impl_->metadata.metadata_log.size() > max_metadata_log_size) {
     impl_->metadata.metadata_log.erase(
@@ -789,9 +787,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Build() {
   // TODO(anyone): 5. update snapshot_log
 
   // 6. Create and return the TableMetadata
-  auto result = std::make_unique<TableMetadata>(std::move(impl_->metadata));
-
-  return result;
+  return std::make_unique<TableMetadata>(std::move(impl_->metadata));
 }
 
 }  // namespace iceberg

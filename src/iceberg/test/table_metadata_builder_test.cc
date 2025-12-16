@@ -93,7 +93,8 @@ TEST(TableMetadataBuilderTest, BuildFromEmpty) {
 TEST(TableMetadataBuilderTest, BuildFromExisting) {
   auto base = CreateBaseMetadata();
   std::string base_metadata_location = "s3://bucket/test/00010-xxx.metadata.json";
-  auto builder = TableMetadataBuilder::BuildFrom(base.get(), base_metadata_location);
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+  builder->SetPreviousMetadataLocation(base_metadata_location);
   ASSERT_NE(builder, nullptr);
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
@@ -120,7 +121,8 @@ TEST(TableMetadataBuilderTest, BuildupMetadataLog) {
   {
     // Base metadata_log size less than max size
     base->properties.Set(TableProperties::kMetadataPreviousVersionsMax, 3);
-    auto builder = TableMetadataBuilder::BuildFrom(base.get(), base_metadata_location);
+    auto builder = TableMetadataBuilder::BuildFrom(base.get());
+    builder->SetPreviousMetadataLocation(base_metadata_location);
     ASSERT_NE(builder, nullptr);
     ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
     EXPECT_EQ(3, metadata->metadata_log.size());
@@ -135,7 +137,8 @@ TEST(TableMetadataBuilderTest, BuildupMetadataLog) {
   {
     // Base metadata_log size greater than max size
     base->properties.Set(TableProperties::kMetadataPreviousVersionsMax, 2);
-    auto builder = TableMetadataBuilder::BuildFrom(base.get(), base_metadata_location);
+    auto builder = TableMetadataBuilder::BuildFrom(base.get());
+    builder->SetPreviousMetadataLocation(base_metadata_location);
     ASSERT_NE(builder, nullptr);
     ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
     EXPECT_EQ(2, metadata->metadata_log.size());
