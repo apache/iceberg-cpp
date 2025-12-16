@@ -30,7 +30,7 @@ TEST(EndpointTest, InvalidCreate) {
   // Empty path template should fail
   auto result = Endpoint::Make(HttpMethod::kGet, "");
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-  EXPECT_THAT(result, HasErrorMessage("Path template cannot be empty"));
+  EXPECT_THAT(result, HasErrorMessage("Endpoint cannot have empty path"));
 }
 
 TEST(EndpointTest, ValidFromString) {
@@ -40,24 +40,6 @@ TEST(EndpointTest, ValidFromString) {
   auto endpoint = result.value();
   EXPECT_EQ(endpoint.method(), HttpMethod::kGet);
   EXPECT_EQ(endpoint.path(), "/path");
-}
-
-TEST(EndpointTest, ToStringRepresentation) {
-  auto endpoint1 = Endpoint::Make(HttpMethod::kPost, "/path/of/resource");
-  ASSERT_THAT(endpoint1, IsOk());
-  EXPECT_EQ(endpoint1->ToString(), "POST /path/of/resource");
-
-  auto endpoint2 = Endpoint::Make(HttpMethod::kGet, "/");
-  ASSERT_THAT(endpoint2, IsOk());
-  EXPECT_EQ(endpoint2->ToString(), "GET /");
-
-  auto endpoint3 = Endpoint::Make(HttpMethod::kPut, "/");
-  ASSERT_THAT(endpoint3, IsOk());
-  EXPECT_EQ(endpoint3->ToString(), "PUT /");
-
-  auto endpoint4 = Endpoint::Make(HttpMethod::kPut, "/namespaces/{namespace}/{x}");
-  ASSERT_THAT(endpoint4, IsOk());
-  EXPECT_EQ(endpoint4->ToString(), "PUT /namespaces/{namespace}/{x}");
 }
 
 // Test all HTTP methods
@@ -181,7 +163,7 @@ TEST(EndpointTest, Equality) {
   EXPECT_NE(*endpoint1, *endpoint4);
 }
 
-// Test string serialization (endpoints are represented as strings)
+// Test string serialization
 TEST(EndpointTest, ToStringFormat) {
   auto endpoint1 = Endpoint::Make(HttpMethod::kGet, "/v1/{prefix}/namespaces");
   ASSERT_THAT(endpoint1, IsOk());

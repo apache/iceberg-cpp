@@ -45,9 +45,9 @@ class ICEBERG_REST_EXPORT Endpoint {
   /// \brief Make an endpoint with method and path template.
   ///
   /// \param method HTTP method (GET, POST, etc.)
-  /// \param path_template Path template with placeholders (e.g., "/v1/{prefix}/tables")
+  /// \param path Path template with placeholders (e.g., "/v1/{prefix}/tables")
   /// \return Endpoint instance or error if invalid
-  static Result<Endpoint> Make(HttpMethod method, std::string_view path_template);
+  static Result<Endpoint> Make(HttpMethod method, std::string_view path);
 
   /// \brief Parse endpoint from string representation. "METHOD" have to be all
   /// upper-cased.
@@ -137,7 +137,8 @@ class ICEBERG_REST_EXPORT Endpoint {
 
 struct ICEBERG_REST_EXPORT EndpointHash {
   std::size_t operator()(const Endpoint& endpoint) const noexcept {
-    return std::hash<std::string>()(endpoint.ToString());
+    return std::hash<int32_t>()(static_cast<int32_t>(endpoint.method())) * 31 +
+           std::hash<std::string_view>()(endpoint.path());
   }
 };
 

@@ -40,11 +40,11 @@ constexpr std::string_view ToString(HttpMethod method) {
   return "UNKNOWN";
 }
 
-Result<Endpoint> Endpoint::Make(HttpMethod method, std::string_view path_template) {
-  if (path_template.empty()) {
-    return InvalidArgument("Path template cannot be empty");
+Result<Endpoint> Endpoint::Make(HttpMethod method, std::string_view path) {
+  if (path.empty()) {
+    return InvalidArgument("Endpoint cannot have empty path");
   }
-  return Endpoint(method, path_template);
+  return Endpoint(method, path);
 }
 
 Result<Endpoint> Endpoint::FromString(std::string_view str) {

@@ -20,8 +20,8 @@
 #include "iceberg/catalog/rest/rest_catalog.h"
 
 #include <memory>
-#include <set>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 
 #include <nlohmann/json.hpp>
@@ -78,18 +78,15 @@ Result<CatalogConfig> FetchServerConfig(const ResourcePaths& paths,
 RestCatalog::~RestCatalog() = default;
 
 Result<std::unique_ptr<RestCatalog>> RestCatalog::Make(
-    const RestCatalogProperties& initial_config) {
-  ICEBERG_ASSIGN_OR_RAISE(auto uri, initial_config.Uri());
+    const RestCatalogProperties& config) {
+  ICEBERG_ASSIGN_OR_RAISE(auto uri, config.Uri());
   ICEBERG_ASSIGN_OR_RAISE(
-      auto paths,
-      ResourcePaths::Make(std::string(TrimTrailingSlash(uri)),
-                          initial_config.Get(RestCatalogProperties::kPrefix)));
-  // get the raw config from server
-  ICEBERG_ASSIGN_OR_RAISE(auto server_config, FetchServerConfig(*paths, initial_config));
+      auto paths, ResourcePaths::Make(std::string(TrimTrailingSlash(uri)),
+                                      config.Get(RestCatalogProperties::kPrefix)));
+  ICEBERG_ASSIGN_OR_RAISE(auto server_config, FetchServerConfig(*paths, config));
 
-  std::unique_ptr<RestCatalogProperties> final_config =
-      RestCatalogProperties::FromMap(MergeConfigs(
-          server_config.overrides, initial_config.configs(), server_config.defaults));
+  std::unique_ptr<RestCatalogProperties> final_config = RestCatalogProperties::FromMap(
+      MergeConfigs(server_config.overrides, config.configs(), server_config.defaults));
 
   std::unordered_set<Endpoint, EndpointHash> endpoints;
   if (!server_config.endpoints.empty()) {
@@ -107,7 +104,7 @@ Result<std::unique_ptr<RestCatalog>> RestCatalog::Make(
   ICEBERG_RETURN_UNEXPECTED(paths->SetBaseUri(std::string(TrimTrailingSlash(final_uri))));
 
   return std::unique_ptr<RestCatalog>(
-      new RestCatalog(std::move(final_config), std::move(paths), endpoints));
+      new RestCatalog(std::move(final_config), std::move(paths), std::move(endpoints)));
 }
 
 RestCatalog::RestCatalog(std::unique_ptr<RestCatalogProperties> config,
@@ -193,9 +190,8 @@ Status RestCatalog::DropNamespace(const Namespace& ns) {
 
 Result<bool> RestCatalog::NamespaceExists(const Namespace& ns) const {
   auto check = CheckEndpoint(supported_endpoints_, Endpoint::NamespaceExists());
-  // If server does not support HEAD endpoint, fall back to GetNamespaceProperties
   if (!check.has_value()) {
-    ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Namespace_(ns));
+    // Fall back to GetNamespaceProperties
     auto result = GetNamespaceProperties(ns);
     if (!result.has_value() && result.error().kind == ErrorKind::kNoSuchNamespace) {
       return false;
