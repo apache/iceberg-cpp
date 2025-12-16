@@ -155,7 +155,7 @@ TEST(RestUtilTest, MergeConfigs) {
 }
 
 TEST(RestUtilTest, CheckEndpointSupported) {
-  std::unordered_set<Endpoint, EndpointHash> supported = {
+  std::unordered_set<Endpoint> supported = {
       Endpoint::ListNamespaces(), Endpoint::LoadTable(), Endpoint::CreateTable()};
 
   // Supported endpoints should pass

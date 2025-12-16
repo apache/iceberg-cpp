@@ -98,8 +98,7 @@ ICEBERG_REST_EXPORT std::string GetStandardReasonPhrase(int32_t status_code);
 /// \param supported_endpoints Set of endpoints advertised by the server
 /// \param endpoint Endpoint to validate
 /// \return Status::OK if supported, NotSupported error otherwise
-ICEBERG_REST_EXPORT Status
-CheckEndpoint(const std::unordered_set<Endpoint, EndpointHash>& supported_endpoints,
-              const Endpoint& endpoint);
+ICEBERG_REST_EXPORT Status CheckEndpoint(
+    const std::unordered_set<Endpoint>& supported_endpoints, const Endpoint& endpoint);
 
 }  // namespace iceberg::rest

@@ -49,7 +49,7 @@ namespace {
 
 /// \brief Get the default set of endpoints for backwards compatibility according to the
 /// iceberg rest spec.
-std::unordered_set<Endpoint, EndpointHash> GetDefaultEndpoints() {
+std::unordered_set<Endpoint> GetDefaultEndpoints() {
   return {
       Endpoint::ListNamespaces(),  Endpoint::GetNamespaceProperties(),
       Endpoint::CreateNamespace(), Endpoint::UpdateNamespace(),
@@ -88,11 +88,11 @@ Result<std::unique_ptr<RestCatalog>> RestCatalog::Make(
   std::unique_ptr<RestCatalogProperties> final_config = RestCatalogProperties::FromMap(
       MergeConfigs(server_config.overrides, config.configs(), server_config.defaults));
 
-  std::unordered_set<Endpoint, EndpointHash> endpoints;
+  std::unordered_set<Endpoint> endpoints;
   if (!server_config.endpoints.empty()) {
     // Endpoints are already parsed during JSON deserialization, just convert to set
-    endpoints = std::unordered_set<Endpoint, EndpointHash>(
-        server_config.endpoints.begin(), server_config.endpoints.end());
+    endpoints = std::unordered_set<Endpoint>(server_config.endpoints.begin(),
+                                             server_config.endpoints.end());
   } else {
     // If a server does not send the endpoints field, use default set of endpoints
     // for backwards compatibility with legacy servers
@@ -109,7 +109,7 @@ Result<std::unique_ptr<RestCatalog>> RestCatalog::Make(
 
 RestCatalog::RestCatalog(std::unique_ptr<RestCatalogProperties> config,
                          std::unique_ptr<ResourcePaths> paths,
-                         std::unordered_set<Endpoint, EndpointHash> endpoints)
+                         std::unordered_set<Endpoint> endpoints)
     : config_(std::move(config)),
       client_(std::make_unique<HttpClient>(config_->ExtractHeaders())),
       paths_(std::move(paths)),

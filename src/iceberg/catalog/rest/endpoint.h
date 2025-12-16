@@ -135,11 +135,16 @@ class ICEBERG_REST_EXPORT Endpoint {
   std::string path_;
 };
 
-struct ICEBERG_REST_EXPORT EndpointHash {
-  std::size_t operator()(const Endpoint& endpoint) const noexcept {
-    return std::hash<int32_t>()(static_cast<int32_t>(endpoint.method())) * 31 +
-           std::hash<std::string_view>()(endpoint.path());
+}  // namespace iceberg::rest
+
+// Specialize std::hash for Endpoint
+namespace std {
+template <>
+struct hash<iceberg::rest::Endpoint> {
+  std::size_t operator()(const iceberg::rest::Endpoint& endpoint) const noexcept {
+    std::size_t h1 = std::hash<int32_t>{}(static_cast<int32_t>(endpoint.method()));
+    std::size_t h2 = std::hash<std::string_view>{}(endpoint.path());
+    return h1 ^ (h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2));
   }
 };
-
-}  // namespace iceberg::rest
+}  // namespace std
