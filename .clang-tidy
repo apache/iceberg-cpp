@@ -22,6 +22,7 @@ Checks: |
   google-*,
   modernize-*,
   readability-identifier-naming,
+  readability-isolate-declaration,
   -modernize-use-nodiscard,
   -modernize-use-trailing-return-type,
 

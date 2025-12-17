@@ -23,6 +23,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/catalog.h"
+#include "iceberg/table.h"
 
 namespace iceberg {
 
