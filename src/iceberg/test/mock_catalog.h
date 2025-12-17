@@ -55,12 +55,12 @@ class MockCatalog : public Catalog {
   MOCK_METHOD((Result<std::vector<TableIdentifier>>), ListTables, (const Namespace&),
               (const, override));
 
-  MOCK_METHOD((Result<std::unique_ptr<Table>>), CreateTable,
+  MOCK_METHOD((Result<std::shared_ptr<Table>>), CreateTable,
               (const TableIdentifier&, const Schema&, const PartitionSpec&,
                const std::string&, (const std::unordered_map<std::string, std::string>&)),
               (override));
 
-  MOCK_METHOD((Result<std::unique_ptr<Table>>), UpdateTable,
+  MOCK_METHOD((Result<std::shared_ptr<Table>>), UpdateTable,
               (const TableIdentifier&,
                (const std::vector<std::unique_ptr<TableRequirement>>&),
                (const std::vector<std::unique_ptr<TableUpdate>>&)),
@@ -78,7 +78,7 @@ class MockCatalog : public Catalog {
   MOCK_METHOD(Status, RenameTable, (const TableIdentifier&, const TableIdentifier&),
               (override));
 
-  MOCK_METHOD((Result<std::unique_ptr<Table>>), LoadTable, (const TableIdentifier&),
+  MOCK_METHOD((Result<std::shared_ptr<Table>>), LoadTable, (const TableIdentifier&),
               (override));
 
   MOCK_METHOD((Result<std::shared_ptr<Table>>), RegisterTable,

@@ -94,9 +94,11 @@ iceberg_sources = files(
     'table_requirements.cc',
     'table_scan.cc',
     'table_update.cc',
+    'transaction.cc',
     'transform.cc',
     'transform_function.cc',
     'type.cc',
+    'update/pending_update.cc',
     'update/update_properties.cc',
     'util/bucket_util.cc',
     'util/conversions.cc',
@@ -175,7 +177,6 @@ install_headers(
         'name_mapping.h',
         'partition_field.h',
         'partition_spec.h',
-        'pending_update.h',
         'result.h',
         'schema_field.h',
         'schema.h',
@@ -196,7 +197,6 @@ install_headers(
         'transform.h',
         'type_fwd.h',
         'type.h',
-        'update/update_properties.h',
     ],
     subdir: 'iceberg',
 )
@@ -205,6 +205,7 @@ subdir('catalog')
 subdir('expression')
 subdir('manifest')
 subdir('row')
+subdir('update')
 subdir('util')
 
 if get_option('tests').enabled()

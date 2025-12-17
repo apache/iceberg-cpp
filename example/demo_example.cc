@@ -58,7 +58,13 @@ int main(int argc, char** argv) {
   }
 
   auto table = std::move(load_result.value());
-  auto scan_result = table->NewScan()->Build();
+  auto scan_builder = table->NewScan();
+  if (!scan_builder.has_value()) {
+    std::cerr << "Failed to create scan builder: " << scan_builder.error().message
+              << std::endl;
+    return 1;
+  }
+  auto scan_result = scan_builder.value()->Build();
   if (!scan_result.has_value()) {
     std::cerr << "Failed to build scan: " << scan_result.error().message << std::endl;
     return 1;

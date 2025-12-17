@@ -36,6 +36,7 @@
 #include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/mock_catalog.h"
+#include "iceberg/test/mock_io.h"
 #include "iceberg/test/test_resource.h"
 #include "iceberg/util/uuid.h"
 
@@ -128,22 +129,21 @@ TEST_F(InMemoryCatalogTest, RefreshTable) {
       std::vector<SchemaField>{SchemaField::MakeRequired(1, "x", int64())},
       /*schema_id=*/1);
 
-  std::shared_ptr<FileIO> io;
-
+  auto io = std::make_shared<MockFileIO>();
   auto catalog = std::make_shared<MockCatalog>();
   // Mock 1st call to LoadTable
   EXPECT_CALL(*catalog, LoadTable(::testing::_))
       .WillOnce(::testing::Return(
-          std::make_unique<Table>(table_ident,
-                                  std::make_shared<TableMetadata>(TableMetadata{
-                                      .schemas = {schema},
-                                      .current_schema_id = 1,
-                                      .current_snapshot_id = 1,
-                                      .snapshots = {std::make_shared<Snapshot>(Snapshot{
-                                          .snapshot_id = 1,
-                                          .sequence_number = 1,
-                                      })}}),
-                                  "s3://location/1.json", io, catalog)));
+          Table::Make(table_ident,
+                      std::make_shared<TableMetadata>(
+                          TableMetadata{.schemas = {schema},
+                                        .current_schema_id = 1,
+                                        .current_snapshot_id = 1,
+                                        .snapshots = {std::make_shared<Snapshot>(Snapshot{
+                                            .snapshot_id = 1,
+                                            .sequence_number = 1,
+                                        })}}),
+                      "s3://location/1.json", io, catalog)));
   auto load_table_result = catalog->LoadTable(table_ident);
   ASSERT_THAT(load_table_result, IsOk());
   auto loaded_table = std::move(load_table_result.value());
@@ -152,20 +152,20 @@ TEST_F(InMemoryCatalogTest, RefreshTable) {
   // Mock 2nd call to LoadTable
   EXPECT_CALL(*catalog, LoadTable(::testing::_))
       .WillOnce(::testing::Return(
-          std::make_unique<Table>(table_ident,
-                                  std::make_shared<TableMetadata>(TableMetadata{
-                                      .schemas = {schema},
-                                      .current_schema_id = 1,
-                                      .current_snapshot_id = 2,
-                                      .snapshots = {std::make_shared<Snapshot>(Snapshot{
-                                                        .snapshot_id = 1,
-                                                        .sequence_number = 1,
-                                                    }),
-                                                    std::make_shared<Snapshot>(Snapshot{
-                                                        .snapshot_id = 2,
-                                                        .sequence_number = 2,
-                                                    })}}),
-                                  "s3://location/2.json", io, catalog)));
+          Table::Make(table_ident,
+                      std::make_shared<TableMetadata>(
+                          TableMetadata{.schemas = {schema},
+                                        .current_schema_id = 1,
+                                        .current_snapshot_id = 2,
+                                        .snapshots = {std::make_shared<Snapshot>(Snapshot{
+                                                          .snapshot_id = 1,
+                                                          .sequence_number = 1,
+                                                      }),
+                                                      std::make_shared<Snapshot>(Snapshot{
+                                                          .snapshot_id = 2,
+                                                          .sequence_number = 2,
+                                                      })}}),
+                      "s3://location/2.json", io, catalog)));
   auto refreshed_result = loaded_table->Refresh();
   ASSERT_THAT(refreshed_result, IsOk());
   // check table is refreshed

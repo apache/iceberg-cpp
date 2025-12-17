@@ -21,15 +21,39 @@
 
 #include "iceberg/catalog.h"
 #include "iceberg/partition_spec.h"
+#include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/table_scan.h"
+#include "iceberg/transaction.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
+
+Result<std::shared_ptr<Table>> Table::Make(TableIdentifier identifier,
+                                           std::shared_ptr<TableMetadata> metadata,
+                                           std::string metadata_location,
+                                           std::shared_ptr<FileIO> io,
+                                           std::shared_ptr<Catalog> catalog) {
+  if (metadata == nullptr) [[unlikely]] {
+    return InvalidArgument("Metadata cannot be null");
+  }
+  if (metadata_location.empty()) [[unlikely]] {
+    return InvalidArgument("Metadata location cannot be empty");
+  }
+  if (io == nullptr) [[unlikely]] {
+    return InvalidArgument("FileIO cannot be null");
+  }
+  if (catalog == nullptr) [[unlikely]] {
+    return InvalidArgument("Catalog cannot be null");
+  }
+  return std::shared_ptr<Table>(new Table(std::move(identifier), std::move(metadata),
+                                          std::move(metadata_location), std::move(io),
+                                          std::move(catalog)));
+}
 
 Table::~Table() = default;
 
@@ -46,10 +70,6 @@ Table::Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata
 const std::string& Table::uuid() const { return metadata_->table_uuid; }
 
 Status Table::Refresh() {
-  if (!catalog_) {
-    return NotSupported("Refresh is not supported for table without a catalog");
-  }
-
   ICEBERG_ASSIGN_OR_RAISE(auto refreshed_table, catalog_->LoadTable(identifier_));
   if (metadata_location_ != refreshed_table->metadata_file_location()) {
     metadata_ = std::move(refreshed_table->metadata_);
@@ -110,18 +130,78 @@ const std::vector<SnapshotLogEntry>& Table::history() const {
   return metadata_->snapshot_log;
 }
 
-std::unique_ptr<UpdateProperties> Table::UpdateProperties() const {
-  return std::make_unique<iceberg::UpdateProperties>(identifier_, catalog_, metadata_);
-}
-
-std::unique_ptr<Transaction> Table::NewTransaction() const {
-  throw NotImplemented("Table::NewTransaction is not implemented");
-}
-
 const std::shared_ptr<FileIO>& Table::io() const { return io_; }
 
-std::unique_ptr<TableScanBuilder> Table::NewScan() const {
+const std::shared_ptr<TableMetadata>& Table::metadata() const { return metadata_; }
+
+const std::shared_ptr<Catalog>& Table::catalog() const { return catalog_; }
+
+Result<std::unique_ptr<TableScanBuilder>> Table::NewScan() const {
   return std::make_unique<TableScanBuilder>(metadata_, io_);
+}
+
+Result<std::shared_ptr<Transaction>> Table::NewTransaction() {
+  // Create a brand new transaction object for the table. Users are expected to commit the
+  // transaction manually.
+  return Transaction::Make(shared_from_this(), Transaction::Kind::kUpdate,
+                           /*auto_commit=*/false);
+}
+
+Result<std::shared_ptr<UpdateProperties>> Table::NewUpdateProperties() {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto transaction, Transaction::Make(shared_from_this(), Transaction::Kind::kUpdate,
+                                          /*auto_commit=*/true));
+  return transaction->NewUpdateProperties();
+}
+
+Result<std::shared_ptr<StagedTable>> StagedTable::Make(
+    TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
+    std::string metadata_location, std::shared_ptr<FileIO> io,
+    std::shared_ptr<Catalog> catalog) {
+  if (metadata == nullptr) [[unlikely]] {
+    return InvalidArgument("Metadata cannot be null");
+  }
+  if (io == nullptr) [[unlikely]] {
+    return InvalidArgument("FileIO cannot be null");
+  }
+  if (catalog == nullptr) [[unlikely]] {
+    return InvalidArgument("Catalog cannot be null");
+  }
+  return std::shared_ptr<StagedTable>(
+      new StagedTable(std::move(identifier), std::move(metadata),
+                      std::move(metadata_location), std::move(io), std::move(catalog)));
+}
+
+StagedTable::~StagedTable() = default;
+
+Result<std::unique_ptr<TableScanBuilder>> StagedTable::NewScan() const {
+  return NotSupported("Cannot scan a staged table");
+}
+
+Result<std::shared_ptr<StaticTable>> StaticTable::Make(
+    TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
+    std::string metadata_location, std::shared_ptr<FileIO> io) {
+  if (metadata == nullptr) [[unlikely]] {
+    return InvalidArgument("Metadata cannot be null");
+  }
+  if (io == nullptr) [[unlikely]] {
+    return InvalidArgument("FileIO cannot be null");
+  }
+  return std::shared_ptr<StaticTable>(
+      new StaticTable(std::move(identifier), std::move(metadata),
+                      std::move(metadata_location), std::move(io), /*catalog=*/nullptr));
+}
+
+StaticTable::~StaticTable() = default;
+
+Status StaticTable::Refresh() { return NotSupported("Cannot refresh a static table"); }
+
+Result<std::shared_ptr<Transaction>> StaticTable::NewTransaction() {
+  return NotSupported("Cannot create a transaction for a static table");
+}
+
+Result<std::shared_ptr<UpdateProperties>> StaticTable::NewUpdateProperties() {
+  return NotSupported("Cannot create an update properties for a static table");
 }
 
 }  // namespace iceberg

@@ -19,188 +19,122 @@
 
 #include "iceberg/update/update_properties.h"
 
-#include <cstddef>
-#include <memory>
-#include <string>
-
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
-
-#include "iceberg/file_format.h"
-#include "iceberg/result.h"
-#include "iceberg/schema.h"
-#include "iceberg/schema_field.h"
 #include "iceberg/table.h"
-#include "iceberg/table_identifier.h"
-#include "iceberg/table_metadata.h"
+#include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
-#include "iceberg/test/mock_catalog.h"
+#include "iceberg/test/update_test_base.h"
 
 namespace iceberg {
 
-class UpdatePropertiesTest : public ::testing::Test {
- protected:
-  void SetUp() override {
-    // Create a simple schema
-    SchemaField f(1, "col1", std::make_shared<LongType>(), false);
-    schema_ = std::make_shared<Schema>(std::vector<SchemaField>{f}, 1);
-
-    // Create basic table metadata
-    metadata_ = std::make_shared<TableMetadata>();
-    metadata_->schemas.push_back(schema_);
-
-    // Create catalog and table identifier
-    catalog_ = std::make_shared<MockCatalog>();
-    identifier_ = TableIdentifier(Namespace({"test"}), "table");
-  }
-
-  std::shared_ptr<Schema> schema_;
-  std::shared_ptr<TableMetadata> metadata_;
-  std::shared_ptr<MockCatalog> catalog_;
-  TableIdentifier identifier_;
-};
+class UpdatePropertiesTest : public UpdateTestBase {};
 
 TEST_F(UpdatePropertiesTest, EmptyUpdates) {
-  UpdateProperties update(identifier_, catalog_, metadata_);
-
-  auto result = update.Commit();
-  EXPECT_THAT(result, IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  EXPECT_THAT(update->Commit(), IsOk());
 }
 
 TEST_F(UpdatePropertiesTest, SetProperty) {
-  UpdateProperties update(identifier_, catalog_, metadata_);
-  update.Set("key1", "value1").Set("key2", "value2");
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  update->Set("key1", "value1").Set("key2", "value2");
 
-  auto result = update.Apply();
-  EXPECT_THAT(result, IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  EXPECT_EQ(result.updates.size(), 1);
+  EXPECT_EQ(result.updates[0]->kind(), table::SetProperties::Kind::kSetProperties);
 }
 
 TEST_F(UpdatePropertiesTest, RemoveProperty) {
-  UpdateProperties update(identifier_, catalog_, metadata_);
-  update.Remove("key1").Remove("key2");
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  update->Remove("key1").Remove("key2");
 
-  auto result = update.Apply();
-  EXPECT_THAT(result, IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  EXPECT_EQ(result.updates.size(), 1);
+  EXPECT_EQ(result.updates[0]->kind(), table::RemoveProperties::Kind::kRemoveProperties);
 }
 
-TEST_F(UpdatePropertiesTest, SetRemoveConflict) {
-  {
-    // Set a property that is already marked for removal
-    UpdateProperties update(identifier_, catalog_, metadata_);
-    update.Set("key1", "value1").Remove("key1");
+TEST_F(UpdatePropertiesTest, SetThenRemoveSameKey) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  update->Set("key1", "value1").Remove("key1");
 
-    auto result = update.Apply();
-    EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
-    EXPECT_THAT(result, HasErrorMessage("already marked for update"));
-  }
-
-  {
-    // Remove a property that is already marked for update
-    UpdateProperties update(identifier_, catalog_, metadata_);
-    update.Remove("key1").Set("key1", "value1");
-
-    auto result = update.Apply();
-    EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
-    EXPECT_THAT(result, HasErrorMessage("already marked for removal"));
-  }
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("already marked for update"));
 }
 
-TEST_F(UpdatePropertiesTest, UpgradeFormatVersion) {
-  {
-    // Valid format-version upgrade
-    UpdateProperties update(identifier_, catalog_, metadata_);
-    update.Set("format-version", "2");
+TEST_F(UpdatePropertiesTest, RemoveThenSetSameKey) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  update->Remove("key1").Set("key1", "value1");
 
-    auto result = update.Apply();
-    EXPECT_THAT(result, IsOk());
-  }
-
-  {
-    // Format-version is not a valid integer
-    UpdateProperties update(identifier_, catalog_, metadata_);
-    update.Set("format-version", "invalid");
-
-    auto result = update.Apply();
-    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-    EXPECT_THAT(result, HasErrorMessage("Invalid format version"));
-  }
-
-  {
-    // Format-version is out of range
-    UpdateProperties update(identifier_, catalog_, metadata_);
-    update.Set("format-version", "5000000000");
-
-    auto result = update.Apply();
-    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-    EXPECT_THAT(result, HasErrorMessage("out of range"));
-  }
-
-  {
-    // Format-version not supported
-    UpdateProperties update(identifier_, catalog_, metadata_);
-    update.Set("format-version",
-               std::to_string(TableMetadata::kSupportedTableFormatVersion + 1));
-
-    auto result = update.Apply();
-    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-    EXPECT_THAT(result, HasErrorMessage("unsupported format version"));
-  }
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("already marked for removal"));
 }
 
-TEST_F(UpdatePropertiesTest, InvalidTable) {
-  {
-    // catalog is null
-    UpdateProperties update(identifier_, nullptr, metadata_);
+TEST_F(UpdatePropertiesTest, UpgradeFormatVersionValid) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  update->Set("format-version", "2");
 
-    auto result = update.Apply();
-    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-    EXPECT_THAT(result, HasErrorMessage("Catalog is required"));
-  }
-
-  {
-    // metadata is null
-    UpdateProperties update(identifier_, catalog_, nullptr);
-
-    auto result = update.Apply();
-    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-    EXPECT_THAT(result, HasErrorMessage("Base table metadata is required"));
-  }
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  EXPECT_EQ(result.updates.size(), 1);
+  EXPECT_EQ(result.updates[0]->kind(),
+            table::UpgradeFormatVersion::Kind::kUpgradeFormatVersion);
 }
 
-TEST_F(UpdatePropertiesTest, Commit) {
-  {
-    // Successful commit
-    UpdateProperties update(identifier_, catalog_, metadata_);
-    update.Set("key1", "value1");
+TEST_F(UpdatePropertiesTest, UpgradeFormatVersionInvalidString) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  update->Set("format-version", "invalid");
 
-    EXPECT_CALL(*catalog_, UpdateTable).Times(1).WillOnce(::testing::Return(nullptr));
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("Invalid format version"));
+}
 
-    auto result = update.Commit();
-    EXPECT_THAT(result, IsOk());
-  }
+TEST_F(UpdatePropertiesTest, UpgradeFormatVersionOutOfRange) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  update->Set("format-version", "5000000000");
 
-  {
-    // Failed commit
-    UpdateProperties update(identifier_, catalog_, metadata_);
-    update.Set("key1", "value1");
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("out of range"));
+}
 
-    EXPECT_CALL(*catalog_, UpdateTable)
-        .WillOnce(::testing::Return(CommitFailed("Commit update failed")));
-    auto result = update.Commit();
-    EXPECT_THAT(result, IsError(ErrorKind::kCommitFailed));
-  }
+TEST_F(UpdatePropertiesTest, UpgradeFormatVersionUnsupported) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  update->Set("format-version",
+              std::to_string(TableMetadata::kSupportedTableFormatVersion + 1));
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("unsupported format version"));
+}
+
+TEST_F(UpdatePropertiesTest, CommitSuccess) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  update->Set("new.property", "new.value");
+
+  EXPECT_THAT(update->Commit(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  const auto& props = reloaded->properties().configs();
+  EXPECT_EQ(props.at("new.property"), "new.value");
 }
 
 TEST_F(UpdatePropertiesTest, FluentInterface) {
-  UpdateProperties update(identifier_, catalog_, metadata_);
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  auto& ref = update->Set("key1", "value1").Remove("key2");
 
-  auto& ref = update.Set("key1", "value1").Remove("key2");
+  EXPECT_EQ(&ref, update.get());
+  EXPECT_THAT(update->Apply(), IsOk());
+}
 
-  // Should return reference to itself
-  EXPECT_EQ(&ref, &update);
+TEST_F(UpdatePropertiesTest, SetAndRemoveDifferentKeys) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  update->Set("key1", "value1").Remove("key2");
+  EXPECT_THAT(update->Commit(), IsOk());
 
-  auto result = update.Apply();
-  EXPECT_THAT(result, IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  const auto& props = reloaded->properties().configs();
+  EXPECT_EQ(props.at("key1"), "value1");
+  EXPECT_FALSE(props.contains("key2"));
 }
 
 }  // namespace iceberg

@@ -71,12 +71,12 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog {
 
   Result<std::vector<TableIdentifier>> ListTables(const Namespace& ns) const override;
 
-  Result<std::unique_ptr<Table>> CreateTable(
+  Result<std::shared_ptr<Table>> CreateTable(
       const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
       const std::string& location,
       const std::unordered_map<std::string, std::string>& properties) override;
 
-  Result<std::unique_ptr<Table>> UpdateTable(
+  Result<std::shared_ptr<Table>> UpdateTable(
       const TableIdentifier& identifier,
       const std::vector<std::unique_ptr<TableRequirement>>& requirements,
       const std::vector<std::unique_ptr<TableUpdate>>& updates) override;
@@ -92,7 +92,7 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog {
 
   Status DropTable(const TableIdentifier& identifier, bool purge) override;
 
-  Result<std::unique_ptr<Table>> LoadTable(const TableIdentifier& identifier) override;
+  Result<std::shared_ptr<Table>> LoadTable(const TableIdentifier& identifier) override;
 
   Result<std::shared_ptr<Table>> RegisterTable(
       const TableIdentifier& identifier,

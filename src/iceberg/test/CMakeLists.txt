@@ -55,39 +55,36 @@ endfunction()
 add_iceberg_test(schema_test
                  SOURCES
                  name_mapping_test.cc
-                 schema_test.cc
-                 schema_field_test.cc
-                 type_test.cc
-                 transform_test.cc
                  partition_field_test.cc
                  partition_spec_test.cc
                  partition_value_test.cc
+                 schema_field_test.cc
+                 schema_test.cc
+                 schema_util_test.cc
                  sort_field_test.cc
                  sort_order_test.cc
-                 snapshot_test.cc
-                 schema_util_test.cc)
+                 transform_test.cc
+                 type_test.cc)
 
 add_iceberg_test(table_test
                  SOURCES
-                 json_internal_test.cc
                  metrics_config_test.cc
-                 schema_json_test.cc
-                 table_test.cc
+                 snapshot_test.cc
                  table_metadata_builder_test.cc
                  table_requirement_test.cc
                  table_requirements_test.cc
-                 table_update_test.cc
-                 update_properties_test.cc)
+                 table_test.cc
+                 table_update_test.cc)
 
 add_iceberg_test(expression_test
                  SOURCES
                  aggregate_test.cc
                  expression_test.cc
                  expression_visitor_test.cc
-                 literal_test.cc
-                 manifest_evaluator_test.cc
                  inclusive_metrics_evaluator_test.cc
                  inclusive_metrics_evaluator_with_transform_test.cc
+                 literal_test.cc
+                 manifest_evaluator_test.cc
                  predicate_test.cc
                  projections_test.cc
                  residual_evaluator_test.cc
@@ -150,6 +147,12 @@ if(ICEBERG_BUILD_BUNDLE)
                    parquet_test.cc)
 
   add_iceberg_test(scan_test USE_BUNDLE SOURCES file_scan_task_test.cc)
+
+  add_iceberg_test(table_update_test
+                   USE_BUNDLE
+                   SOURCES
+                   transaction_test.cc
+                   update_properties_test.cc)
 
 endif()
 

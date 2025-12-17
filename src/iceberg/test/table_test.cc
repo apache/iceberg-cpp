@@ -19,99 +19,129 @@
 
 #include "iceberg/table.h"
 
+#include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <nlohmann/json.hpp>
 
-#include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
-#include "iceberg/snapshot.h"
+#include "iceberg/schema_field.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
-#include "iceberg/test/test_resource.h"
+#include "iceberg/test/mock_catalog.h"
+#include "iceberg/test/mock_io.h"
 
 namespace iceberg {
 
-TEST(Table, TableV1) {
-  ICEBERG_UNWRAP_OR_FAIL(auto metadata,
-                         ReadTableMetadataFromResource("TableMetadataV1Valid.json"));
-  TableIdentifier tableIdent{.ns = {}, .name = "test_table_v1"};
-  Table table(tableIdent, std::move(metadata), "s3://bucket/test/location/meta/", nullptr,
-              nullptr);
-  ASSERT_EQ(table.name().name, "test_table_v1");
+template <typename T>
+struct TableTraits;
 
-  // Check table schema
-  auto schema = table.schema();
-  ASSERT_TRUE(schema.has_value());
-  ASSERT_EQ(schema.value()->fields().size(), 3);
-  auto schemas = table.schemas();
-  ASSERT_TRUE(schemas->get().empty());
+template <>
+struct TableTraits<Table> {
+  static constexpr bool kRefreshSupported = true;
+  static constexpr bool kTransactionSupported = true;
 
-  // Check table spec
-  auto spec = table.spec();
-  ASSERT_TRUE(spec.has_value());
-  auto specs = table.specs();
-  ASSERT_EQ(1UL, specs->get().size());
+  static Result<std::shared_ptr<Table>> Make(const TableIdentifier& ident,
+                                             std::shared_ptr<TableMetadata> metadata,
+                                             const std::string& location,
+                                             std::shared_ptr<FileIO> io,
+                                             std::shared_ptr<Catalog> catalog) {
+    return Table::Make(ident, std::move(metadata), location, std::move(io),
+                       std::move(catalog));
+  }
+};
 
-  // Check table sort_order
-  auto sort_order = table.sort_order();
-  ASSERT_TRUE(sort_order.has_value());
-  auto sort_orders = table.sort_orders();
-  ASSERT_EQ(1UL, sort_orders->get().size());
+template <>
+struct TableTraits<StaticTable> {
+  static constexpr bool kRefreshSupported = false;
+  static constexpr bool kTransactionSupported = false;
 
-  // Check table location
-  auto location = table.location();
-  ASSERT_EQ(location, "s3://bucket/test/location");
+  static Result<std::shared_ptr<StaticTable>> Make(
+      const TableIdentifier& ident, std::shared_ptr<TableMetadata> metadata,
+      const std::string& location, std::shared_ptr<FileIO> io, std::shared_ptr<Catalog>) {
+    return StaticTable::Make(ident, std::move(metadata), location, std::move(io));
+  }
+};
 
-  // Check table snapshots
-  auto snapshots = table.snapshots();
-  ASSERT_TRUE(snapshots.empty());
+template <>
+struct TableTraits<StagedTable> {
+  static constexpr bool kRefreshSupported = true;
+  static constexpr bool kTransactionSupported = true;
 
-  auto io = table.io();
-  ASSERT_TRUE(io == nullptr);
+  static Result<std::shared_ptr<StagedTable>> Make(
+      const TableIdentifier& ident, std::shared_ptr<TableMetadata> metadata,
+      const std::string& location, std::shared_ptr<FileIO> io,
+      std::shared_ptr<Catalog> catalog) {
+    return StagedTable::Make(ident, std::move(metadata), location, std::move(io),
+                             std::move(catalog));
+  }
+};
+
+template <typename T>
+class TypedTableTest : public ::testing::Test {
+ protected:
+  using Traits = TableTraits<T>;
+
+  void SetUp() override {
+    io_ = std::make_shared<MockFileIO>();
+    catalog_ = std::make_shared<MockCatalog>();
+
+    auto schema = std::make_shared<Schema>(
+        std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int64()),
+                                 SchemaField::MakeOptional(2, "name", string())},
+        1);
+    metadata_ = std::make_shared<TableMetadata>(
+        TableMetadata{.format_version = 2, .schemas = {schema}, .current_schema_id = 1});
+  }
+
+  Result<std::shared_ptr<T>> MakeTable(const std::string& name) {
+    TableIdentifier ident{.ns = Namespace{.levels = {"db"}}, .name = name};
+    return Traits::Make(ident, metadata_, "s3://bucket/meta.json", io_, catalog_);
+  }
+
+  std::shared_ptr<MockFileIO> io_;
+  std::shared_ptr<MockCatalog> catalog_;
+  std::shared_ptr<TableMetadata> metadata_;
+};
+
+using TableTypes = ::testing::Types<Table, StaticTable, StagedTable>;
+TYPED_TEST_SUITE(TypedTableTest, TableTypes);
+
+TYPED_TEST(TypedTableTest, BasicMetadata) {
+  ICEBERG_UNWRAP_OR_FAIL(auto table, this->MakeTable("test_table"));
+
+  EXPECT_EQ(table->name().name, "test_table");
+  EXPECT_EQ(table->name().ns.levels, (std::vector<std::string>{"db"}));
+  EXPECT_EQ(table->metadata()->format_version, 2);
+  EXPECT_EQ(table->metadata()->schemas.size(), 1);
 }
 
-TEST(Table, TableV2) {
-  ICEBERG_UNWRAP_OR_FAIL(auto metadata,
-                         ReadTableMetadataFromResource("TableMetadataV2Valid.json"));
-  TableIdentifier tableIdent{.ns = {}, .name = "test_table_v2"};
+TYPED_TEST(TypedTableTest, Refresh) {
+  using Traits = typename TestFixture::Traits;
+  ICEBERG_UNWRAP_OR_FAIL(auto table, this->MakeTable("test_table"));
 
-  Table table(tableIdent, std::move(metadata), "s3://bucket/test/location/meta/", nullptr,
-              nullptr);
-  ASSERT_EQ(table.name().name, "test_table_v2");
+  if constexpr (Traits::kRefreshSupported) {
+    if constexpr (std::is_same_v<TypeParam, Table>) {
+      TableIdentifier ident{.ns = Namespace{.levels = {"db"}}, .name = "test_table"};
+      ICEBERG_UNWRAP_OR_FAIL(auto refreshed,
+                             Table::Make(ident, this->metadata_, "s3://bucket/meta2.json",
+                                         this->io_, this->catalog_));
+      EXPECT_CALL(*this->catalog_, LoadTable(::testing::_))
+          .WillOnce(::testing::Return(refreshed));
+    }
+    EXPECT_THAT(table->Refresh(), IsOk());
+  } else {
+    EXPECT_THAT(table->Refresh(), IsError(ErrorKind::kNotSupported));
+  }
+}
 
-  // Check table schema
-  auto schema = table.schema();
-  ASSERT_TRUE(schema.has_value());
-  ASSERT_EQ(schema.value()->fields().size(), 3);
-  auto schemas = table.schemas();
-  ASSERT_FALSE(schemas->get().empty());
+TYPED_TEST(TypedTableTest, NewTransaction) {
+  using Traits = typename TestFixture::Traits;
+  ICEBERG_UNWRAP_OR_FAIL(auto table, this->MakeTable("test_table"));
 
-  // Check partition spec
-  auto spec = table.spec();
-  ASSERT_TRUE(spec.has_value());
-  auto specs = table.specs();
-  ASSERT_EQ(1UL, specs->get().size());
-
-  // Check sort order
-  auto sort_order = table.sort_order();
-  ASSERT_TRUE(sort_order.has_value());
-  auto sort_orders = table.sort_orders();
-  ASSERT_EQ(1UL, sort_orders->get().size());
-
-  // Check table location
-  auto location = table.location();
-  ASSERT_EQ(location, "s3://bucket/test/location");
-
-  // Check snapshot
-  auto snapshots = table.snapshots();
-  ASSERT_EQ(2UL, snapshots.size());
-  auto snapshot = table.current_snapshot();
-  ASSERT_TRUE(snapshot.has_value());
-  snapshot = table.SnapshotById(snapshot.value()->snapshot_id);
-  ASSERT_TRUE(snapshot.has_value());
-  auto invalid_snapshot_id = 9999;
-  snapshot = table.SnapshotById(invalid_snapshot_id);
-  ASSERT_FALSE(snapshot.has_value());
+  if constexpr (Traits::kTransactionSupported) {
+    EXPECT_THAT(table->NewTransaction(), IsOk());
+  } else {
+    EXPECT_THAT(table->NewTransaction(), IsError(ErrorKind::kNotSupported));
+  }
 }
 
 }  // namespace iceberg

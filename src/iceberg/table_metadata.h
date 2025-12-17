@@ -419,6 +419,15 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   /// \return A Result containing the constructed TableMetadata or an error
   Result<std::unique_ptr<TableMetadata>> Build();
 
+  /// \brief Return the changes made to the table metadata
+  const std::vector<std::unique_ptr<TableUpdate>>& changes() const;
+
+  /// \brief Return the base metadata without any changes
+  const TableMetadata* base() const;
+
+  /// \brief Return the current metadata with staged changes applied
+  const TableMetadata* current() const;
+
   /// \brief Destructor
   ~TableMetadataBuilder() override;
 

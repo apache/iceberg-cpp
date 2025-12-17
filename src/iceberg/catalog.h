@@ -110,7 +110,7 @@ class ICEBERG_EXPORT Catalog {
   /// \param location a location for the table; leave empty if unspecified
   /// \param properties a string map of table properties
   /// \return a Table instance or ErrorKind::kAlreadyExists if the table already exists
-  virtual Result<std::unique_ptr<Table>> CreateTable(
+  virtual Result<std::shared_ptr<Table>> CreateTable(
       const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
       const std::string& location,
       const std::unordered_map<std::string, std::string>& properties) = 0;
@@ -121,7 +121,7 @@ class ICEBERG_EXPORT Catalog {
   /// \param requirements a list of table requirements
   /// \param updates a list of table updates
   /// \return a Table instance or ErrorKind::kAlreadyExists if the table already exists
-  virtual Result<std::unique_ptr<Table>> UpdateTable(
+  virtual Result<std::shared_ptr<Table>> UpdateTable(
       const TableIdentifier& identifier,
       const std::vector<std::unique_ptr<TableRequirement>>& requirements,
       const std::vector<std::unique_ptr<TableUpdate>>& updates) = 0;
@@ -175,7 +175,7 @@ class ICEBERG_EXPORT Catalog {
   /// \param identifier a table identifier
   /// \return instance of Table implementation referred to by identifier or
   /// ErrorKind::kNoSuchTable if the table does not exist
-  virtual Result<std::unique_ptr<Table>> LoadTable(const TableIdentifier& identifier) = 0;
+  virtual Result<std::shared_ptr<Table>> LoadTable(const TableIdentifier& identifier) = 0;
 
   /// \brief Register a table with the catalog if it does not exist
   ///

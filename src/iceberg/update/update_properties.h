@@ -20,28 +20,24 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 
-#include "iceberg/file_format.h"
 #include "iceberg/iceberg_export.h"
-#include "iceberg/pending_update.h"
-#include "iceberg/table_identifier.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/update/pending_update.h"
 
 namespace iceberg {
 
 /// \brief Updates table properties.
 class ICEBERG_EXPORT UpdateProperties : public PendingUpdate {
  public:
-  /// \brief Constructs a UpdateProperties for the specified table.
-  ///
-  /// \param identifier The table identifier
-  /// \param catalog The catalog containing the table
-  /// \param metadata The current table metadata
-  UpdateProperties(TableIdentifier identifier, std::shared_ptr<Catalog> catalog,
-                   std::shared_ptr<TableMetadata> base);
+  static Result<std::shared_ptr<UpdateProperties>> Make(
+      std::shared_ptr<Transaction> transaction);
+
+  ~UpdateProperties() override;
 
   /// \brief Sets a property key to a specified value.
   ///
@@ -57,25 +53,12 @@ class ICEBERG_EXPORT UpdateProperties : public PendingUpdate {
   /// \return Reference to this UpdateProperties for chaining
   UpdateProperties& Remove(const std::string& key);
 
-  /// \brief Applies the property changes without committing them.
-  ///
-  /// Validates the pending property changes but does not commit them to the table.
-  /// This method can be used to validate changes before actually committing them.
-  ///
-  /// \return Status::OK if the changes are valid, or an error if validation fails
-  Status Apply() override;
+  Kind kind() const final { return Kind::kUpdateProperties; }
 
-  /// \brief Commits the property changes to the table.
-  ///
-  /// Validates the changes and applies them to the table through the catalog.
-  ///
-  /// \return OK if the changes are valid and committed successfully, or an error
-  Status Commit() override;
+  Result<ApplyResult> Apply() final;
 
  private:
-  TableIdentifier identifier_;
-  std::shared_ptr<Catalog> catalog_;
-  std::shared_ptr<TableMetadata> base_metadata_;
+  explicit UpdateProperties(std::shared_ptr<Transaction> transaction);
 
   std::unordered_map<std::string, std::string> updates_;
   std::unordered_set<std::string> removals_;

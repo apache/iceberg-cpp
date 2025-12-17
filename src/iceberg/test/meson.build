@@ -37,7 +37,6 @@ iceberg_tests = {
             'schema_field_test.cc',
             'schema_test.cc',
             'schema_util_test.cc',
-            'snapshot_test.cc',
             'sort_field_test.cc',
             'sort_order_test.cc',
             'transform_test.cc',
@@ -46,14 +45,13 @@ iceberg_tests = {
     },
     'table_test': {
         'sources': files(
-            'json_internal_test.cc',
             'metrics_config_test.cc',
-            'schema_json_test.cc',
+            'snapshot_test.cc',
             'table_metadata_builder_test.cc',
             'table_requirement_test.cc',
+            'table_requirements_test.cc',
             'table_test.cc',
             'table_update_test.cc',
-            'update_properties_test.cc',
         ),
     },
     'expression_test': {

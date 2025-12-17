@@ -399,7 +399,7 @@ Result<std::vector<TableIdentifier>> InMemoryCatalog::ListTables(
   return table_idents;
 }
 
-Result<std::unique_ptr<Table>> InMemoryCatalog::CreateTable(
+Result<std::shared_ptr<Table>> InMemoryCatalog::CreateTable(
     const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
     const std::string& location,
     const std::unordered_map<std::string, std::string>& properties) {
@@ -407,7 +407,7 @@ Result<std::unique_ptr<Table>> InMemoryCatalog::CreateTable(
   return NotImplemented("create table");
 }
 
-Result<std::unique_ptr<Table>> InMemoryCatalog::UpdateTable(
+Result<std::shared_ptr<Table>> InMemoryCatalog::UpdateTable(
     const TableIdentifier& identifier,
     const std::vector<std::unique_ptr<TableRequirement>>& requirements,
     const std::vector<std::unique_ptr<TableUpdate>>& updates) {
@@ -434,9 +434,8 @@ Result<std::unique_ptr<Table>> InMemoryCatalog::UpdateTable(
       root_namespace_->UpdateTableMetadataLocation(identifier, new_metadata_location));
   TableMetadataUtil::DeleteRemovedMetadataFiles(*file_io_, base.get(), *updated);
 
-  return std::make_unique<Table>(identifier, std::move(updated),
-                                 std::move(new_metadata_location), file_io_,
-                                 std::static_pointer_cast<Catalog>(shared_from_this()));
+  return Table::Make(identifier, std::move(updated), std::move(new_metadata_location),
+                     file_io_, shared_from_this());
 }
 
 Result<std::shared_ptr<Transaction>> InMemoryCatalog::StageCreateTable(
@@ -464,7 +463,7 @@ Status InMemoryCatalog::RenameTable(const TableIdentifier& from,
   return NotImplemented("rename table");
 }
 
-Result<std::unique_ptr<Table>> InMemoryCatalog::LoadTable(
+Result<std::shared_ptr<Table>> InMemoryCatalog::LoadTable(
     const TableIdentifier& identifier) {
   if (!file_io_) [[unlikely]] {
     return InvalidArgument("file_io is not set for catalog {}", catalog_name_);
@@ -479,9 +478,8 @@ Result<std::unique_ptr<Table>> InMemoryCatalog::LoadTable(
 
   ICEBERG_ASSIGN_OR_RAISE(auto metadata,
                           TableMetadataUtil::Read(*file_io_, metadata_location));
-  return std::make_unique<Table>(identifier, std::move(metadata),
-                                 std::move(metadata_location), file_io_,
-                                 std::static_pointer_cast<Catalog>(shared_from_this()));
+  return Table::Make(identifier, std::move(metadata), std::move(metadata_location),
+                     file_io_, shared_from_this());
 }
 
 Result<std::shared_ptr<Table>> InMemoryCatalog::RegisterTable(
@@ -500,9 +498,8 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::RegisterTable(
   if (!root_namespace_->RegisterTable(identifier, metadata_file_location)) {
     return UnknownError("The registry failed.");
   }
-  return std::make_unique<Table>(identifier, std::move(metadata), metadata_file_location,
-                                 file_io_,
-                                 std::static_pointer_cast<Catalog>(shared_from_this()));
+  return Table::Make(identifier, std::move(metadata), metadata_file_location, file_io_,
+                     shared_from_this());
 }
 
 }  // namespace iceberg

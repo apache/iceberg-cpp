@@ -23,6 +23,10 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_requirements.h"
 
+namespace iceberg {
+TableUpdate::~TableUpdate() = default;
+}
+
 namespace iceberg::table {
 
 // AssignUUID
@@ -38,7 +42,7 @@ void AssignUUID::GenerateRequirements(TableUpdateContext& context) const {
 // UpgradeFormatVersion
 
 void UpgradeFormatVersion::ApplyTo(TableMetadataBuilder& builder) const {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  builder.UpgradeFormatVersion(format_version_);
 }
 
 void UpgradeFormatVersion::GenerateRequirements(TableUpdateContext& context) const {

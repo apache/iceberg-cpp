@@ -34,29 +34,27 @@
 namespace iceberg {
 
 /// \brief Represents an Iceberg table
-class ICEBERG_EXPORT Table {
+class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
  public:
-  ~Table();
-
   /// \brief Construct a table.
   /// \param[in] identifier The identifier of the table.
   /// \param[in] metadata The metadata for the table.
   /// \param[in] metadata_location The location of the table metadata file.
   /// \param[in] io The FileIO to read and write table data and metadata files.
-  /// \param[in] catalog The catalog that this table belongs to. If null, the table will
-  /// be read-only.
-  Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
-        std::string metadata_location, std::shared_ptr<FileIO> io,
-        std::shared_ptr<Catalog> catalog);
+  /// \param[in] catalog The catalog that this table belongs to.
+  static Result<std::shared_ptr<Table>> Make(TableIdentifier identifier,
+                                             std::shared_ptr<TableMetadata> metadata,
+                                             std::string metadata_location,
+                                             std::shared_ptr<FileIO> io,
+                                             std::shared_ptr<Catalog> catalog);
+
+  virtual ~Table();
 
   /// \brief Return the identifier of this table
   const TableIdentifier& name() const { return identifier_; }
 
   /// \brief Returns the UUID of the table
   const std::string& uuid() const;
-
-  /// \brief Refresh the current table metadata
-  Status Refresh();
 
   /// \brief Return the schema for this table, return NotFoundError if not found
   Result<std::shared_ptr<Schema>> schema() const;
@@ -107,26 +105,7 @@ class ICEBERG_EXPORT Table {
   const std::vector<std::shared_ptr<Snapshot>>& snapshots() const;
 
   /// \brief Get the snapshot history of this table
-  ///
-  /// \return a vector of history entries
   const std::vector<SnapshotLogEntry>& history() const;
-
-  /// \brief Create a new UpdateProperties to update table properties and commit the
-  /// changes
-  ///
-  /// \return a new UpdateProperties instance
-  virtual std::unique_ptr<iceberg::UpdateProperties> UpdateProperties() const;
-
-  /// \brief Create a new table scan builder for this table
-  ///
-  /// Once a table scan builder is created, it can be refined to project columns and
-  /// filter data.
-  virtual std::unique_ptr<TableScanBuilder> NewScan() const;
-
-  /// \brief Create a new transaction for this table
-  ///
-  /// \return a pointer to the new Transaction
-  virtual std::unique_ptr<Transaction> NewTransaction() const;
 
   /// \brief Returns a FileIO to read and write table data and metadata files
   const std::shared_ptr<FileIO>& io() const;
@@ -134,13 +113,71 @@ class ICEBERG_EXPORT Table {
   /// \brief Returns the current metadata for this table
   const std::shared_ptr<TableMetadata>& metadata() const;
 
- private:
+  /// \brief Returns the catalog that this table belongs to
+  const std::shared_ptr<Catalog>& catalog() const;
+
+  /// \brief Refresh the current table metadata
+  virtual Status Refresh();
+
+  /// \brief Create a new table scan builder for this table
+  ///
+  /// Once a table scan builder is created, it can be refined to project columns and
+  /// filter data.
+  virtual Result<std::unique_ptr<TableScanBuilder>> NewScan() const;
+
+  /// \brief Create a new Transaction to commit multiple table operations at once.
+  virtual Result<std::shared_ptr<Transaction>> NewTransaction();
+
+  /// \brief Create a new UpdateProperties to update table properties and commit the
+  /// changes.
+  virtual Result<std::shared_ptr<UpdateProperties>> NewUpdateProperties();
+
+ protected:
+  Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
+        std::string metadata_location, std::shared_ptr<FileIO> io,
+        std::shared_ptr<Catalog> catalog);
+
   const TableIdentifier identifier_;
   std::shared_ptr<TableMetadata> metadata_;
   std::string metadata_location_;
   std::shared_ptr<FileIO> io_;
   std::shared_ptr<Catalog> catalog_;
   std::unique_ptr<class TableMetadataCache> metadata_cache_;
+};
+
+class ICEBERG_EXPORT StagedTable : public Table {
+ public:
+  static Result<std::shared_ptr<StagedTable>> Make(
+      TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
+      std::string metadata_location, std::shared_ptr<FileIO> io,
+      std::shared_ptr<Catalog> catalog);
+
+  ~StagedTable() override;
+
+  Status Refresh() override { return {}; }
+
+  Result<std::unique_ptr<TableScanBuilder>> NewScan() const override;
+
+ private:
+  using Table::Table;
+};
+
+class ICEBERG_EXPORT StaticTable : public Table {
+ public:
+  static Result<std::shared_ptr<StaticTable>> Make(
+      TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
+      std::string metadata_location, std::shared_ptr<FileIO> io);
+
+  ~StaticTable() override;
+
+  Status Refresh() override;
+
+  Result<std::shared_ptr<Transaction>> NewTransaction() override;
+
+  Result<std::shared_ptr<UpdateProperties>> NewUpdateProperties() override;
+
+ private:
+  using Table::Table;
 };
 
 }  // namespace iceberg

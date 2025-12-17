@@ -240,7 +240,7 @@ Result<std::vector<TableIdentifier>> RestCatalog::ListTables(
   return NotImplemented("Not implemented");
 }
 
-Result<std::unique_ptr<Table>> RestCatalog::CreateTable(
+Result<std::shared_ptr<Table>> RestCatalog::CreateTable(
     [[maybe_unused]] const TableIdentifier& identifier,
     [[maybe_unused]] const Schema& schema, [[maybe_unused]] const PartitionSpec& spec,
     [[maybe_unused]] const std::string& location,
@@ -248,7 +248,7 @@ Result<std::unique_ptr<Table>> RestCatalog::CreateTable(
   return NotImplemented("Not implemented");
 }
 
-Result<std::unique_ptr<Table>> RestCatalog::UpdateTable(
+Result<std::shared_ptr<Table>> RestCatalog::UpdateTable(
     [[maybe_unused]] const TableIdentifier& identifier,
     [[maybe_unused]] const std::vector<std::unique_ptr<TableRequirement>>& requirements,
     [[maybe_unused]] const std::vector<std::unique_ptr<TableUpdate>>& updates) {
@@ -278,7 +278,7 @@ Status RestCatalog::RenameTable([[maybe_unused]] const TableIdentifier& from,
   return NotImplemented("Not implemented");
 }
 
-Result<std::unique_ptr<Table>> RestCatalog::LoadTable(
+Result<std::shared_ptr<Table>> RestCatalog::LoadTable(
     [[maybe_unused]] const TableIdentifier& identifier) {
   return NotImplemented("Not implemented");
 }

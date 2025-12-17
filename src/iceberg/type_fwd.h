@@ -57,6 +57,7 @@ enum class TimeUnit {
   kMicrosecond,
 };
 
+/// \brief Data type family.
 class BinaryType;
 class BooleanType;
 class DateType;
@@ -69,12 +70,7 @@ class LongType;
 class ListType;
 class MapType;
 class NestedType;
-class PartitionField;
-class PartitionSpec;
-class PartitionValues;
 class PrimitiveType;
-class Schema;
-class SchemaField;
 class StringType;
 class StructType;
 class TimeType;
@@ -84,84 +80,103 @@ class TimestampTzType;
 class Type;
 class UuidType;
 
-struct Namespace;
-struct TableIdentifier;
+/// \brief Data values.
+class Decimal;
+class Uuid;
 
-class Catalog;
-class FileIO;
-class LocationProvider;
+/// \brief Schema.
+class Schema;
+class SchemaField;
+
+/// \brief Partition spec and values.
+class PartitionField;
+class PartitionSpec;
+class PartitionValues;
+
+/// \brief Sort order.
 class SortField;
 class SortOrder;
-class Table;
-class TableProperties;
-class Transaction;
-class Transform;
-class TransformFunction;
 
-struct PartitionStatisticsFile;
-struct Snapshot;
-struct SnapshotRef;
-
-struct MetadataLogEntry;
-struct SnapshotLogEntry;
-
-struct StatisticsFile;
-struct TableMetadata;
-
+/// \brief Name mapping.
 struct MappedField;
 class MappedFields;
 class NameMapping;
 
-enum class SnapshotRefType;
+/// \brief Transform.
 enum class TransformType;
-enum class ManifestContent;
+class Transform;
+class TransformFunction;
 
-class Decimal;
-class Uuid;
+/// \brief Table identifier.
+struct Namespace;
+struct TableIdentifier;
 
+/// \brief Table metadata.
+enum class SnapshotRefType;
+struct MetadataLogEntry;
+struct PartitionStatisticsFile;
+struct Snapshot;
+struct SnapshotLogEntry;
+struct SnapshotRef;
+struct StatisticsFile;
+struct TableMetadata;
+
+/// \brief Expression.
+class BoundPredicate;
 class Expression;
 class Literal;
-
-class BoundPredicate;
 class UnboundPredicate;
 
+/// \brief Scan.
 class DataTableScan;
 class FileScanTask;
 class ScanTask;
 class TableScan;
 class TableScanBuilder;
 
+/// \brief Manifest.
+enum class ManifestContent;
 struct DataFile;
 struct ManifestEntry;
 struct ManifestFile;
 struct ManifestList;
 struct PartitionFieldSummary;
-
-class PartitionSummary;
-
 class ManifestListReader;
 class ManifestListWriter;
 class ManifestReader;
 class ManifestWriter;
+class PartitionSummary;
 
+/// \brief File I/O.
 struct ReaderOptions;
 struct WriterOptions;
+class FileIO;
 class Reader;
 class Writer;
 
+/// \brief Row-based data structures.
 class ArrayLike;
 class MapLike;
 class StructLike;
 class StructLikeAccessor;
 
+/// \brief Catalog
+class Catalog;
+class LocationProvider;
+
+/// \brief Table.
+class Table;
+class TableProperties;
+
+/// \brief Table update.
+class TableMetadataBuilder;
 class TableUpdate;
 class TableRequirement;
-class TableMetadataBuilder;
 class TableUpdateContext;
+class Transaction;
 
+/// \brief Update family.
 class PendingUpdate;
-template <typename T>
-class PendingUpdateTyped;
 class UpdateProperties;
 
 /// ----------------------------------------------------------------------------

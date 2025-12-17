@@ -1,0 +1,111 @@
+
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+#include "iceberg/transaction.h"
+
+#include "iceberg/catalog.h"
+#include "iceberg/table.h"
+#include "iceberg/table_metadata.h"
+#include "iceberg/table_requirement.h"
+#include "iceberg/table_requirements.h"
+#include "iceberg/table_update.h"
+#include "iceberg/update/update_properties.h"
+#include "iceberg/util/macros.h"
+
+namespace iceberg {
+
+Transaction::Transaction(std::shared_ptr<Table> table, Kind kind, bool auto_commit)
+    : table_(std::move(table)),
+      kind_(kind),
+      auto_commit_(auto_commit),
+      metadata_builder_(TableMetadataBuilder::BuildFrom(table_->metadata().get())) {}
+
+Transaction::~Transaction() = default;
+
+Result<std::shared_ptr<Transaction>> Transaction::Make(std::shared_ptr<Table> table,
+                                                       Kind kind, bool auto_commit) {
+  if (!table || !table->catalog()) [[unlikely]] {
+    return InvalidArgument("Table and catalog cannot be null");
+  }
+  return std::shared_ptr<Transaction>(
+      new Transaction(std::move(table), kind, auto_commit));
+}
+
+const TableMetadata* Transaction::base() const { return metadata_builder_->base(); }
+
+const TableMetadata* Transaction::current() const { return metadata_builder_->current(); }
+
+Status Transaction::AddUpdate(const std::shared_ptr<PendingUpdate>& update) {
+  if (!last_update_committed_) {
+    return InvalidArgument("Cannot add update when previous update is not committed");
+  }
+  pending_updates_.emplace_back(std::weak_ptr<PendingUpdate>(update));
+  last_update_committed_ = false;
+  return {};
+}
+
+Status Transaction::Apply(std::vector<std::unique_ptr<TableUpdate>> updates) {
+  for (const auto& update : updates) {
+    update->ApplyTo(*metadata_builder_);
+  }
+
+  last_update_committed_ = true;
+
+  if (auto_commit_) {
+    ICEBERG_RETURN_UNEXPECTED(Commit());
+  }
+
+  return {};
+}
+
+Result<std::shared_ptr<Table>> Transaction::Commit() {
+  if (!last_update_committed_) {
+    return InvalidArgument(
+        "Cannot commit transaction when previous update is not committed");
+  }
+
+  const auto& updates = metadata_builder_->changes();
+  if (updates.empty()) {
+    return table_;
+  }
+
+  std::vector<std::unique_ptr<TableRequirement>> requirements;
+  switch (kind_) {
+    case Kind::kCreate: {
+      ICEBERG_ASSIGN_OR_RAISE(requirements, TableRequirements::ForCreateTable(updates));
+    } break;
+    case Kind::kUpdate: {
+      ICEBERG_ASSIGN_OR_RAISE(requirements, TableRequirements::ForUpdateTable(
+                                                *metadata_builder_->base(), updates));
+
+    } break;
+  }
+
+  // XXX: we should handle commit failure and retry here.
+  return table_->catalog()->UpdateTable(table_->name(), requirements, updates);
+}
+
+Result<std::shared_ptr<UpdateProperties>> Transaction::NewUpdateProperties() {
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<UpdateProperties> update_properties,
+                          UpdateProperties::Make(shared_from_this()));
+  ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_properties));
+  return update_properties;
+}
+
+}  // namespace iceberg

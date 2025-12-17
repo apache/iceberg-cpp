@@ -790,4 +790,12 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Build() {
   return std::make_unique<TableMetadata>(std::move(impl_->metadata));
 }
 
+const std::vector<std::unique_ptr<TableUpdate>>& TableMetadataBuilder::changes() const {
+  return impl_->changes;
+}
+
+const TableMetadata* TableMetadataBuilder::base() const { return impl_->base; }
+
+const TableMetadata* TableMetadataBuilder::current() const { return &impl_->metadata; }
+
 }  // namespace iceberg
