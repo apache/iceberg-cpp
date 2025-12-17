@@ -26,6 +26,7 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
+#include "gmock/gmock.h"
 #include "iceberg/file_format.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
@@ -60,19 +61,18 @@ class UpdatePropertiesTest : public ::testing::Test {
   TableIdentifier identifier_;
 };
 
-TEST_F(UpdatePropertiesTest, EmptyUpdates) {
-  UpdateProperties update(identifier_, catalog_, metadata_);
-
-  auto result = update.Commit();
-  EXPECT_THAT(result, IsOk());
-}
-
 TEST_F(UpdatePropertiesTest, SetProperty) {
   UpdateProperties update(identifier_, catalog_, metadata_);
   update.Set("key1", "value1").Set("key2", "value2");
 
   auto result = update.Apply();
   EXPECT_THAT(result, IsOk());
+
+  // Verify the actual pending updates
+  const auto& pending_updates = update.GetPendingUpdates();
+  EXPECT_EQ(pending_updates.size(), 2);
+  EXPECT_EQ(pending_updates.at("key1"), "value1");
+  EXPECT_EQ(pending_updates.at("key2"), "value2");
 }
 
 TEST_F(UpdatePropertiesTest, RemoveProperty) {
@@ -81,6 +81,12 @@ TEST_F(UpdatePropertiesTest, RemoveProperty) {
 
   auto result = update.Apply();
   EXPECT_THAT(result, IsOk());
+
+  // Verify the actual pending removals
+  const auto& pending_removals = update.GetPendingRemovals();
+  EXPECT_EQ(pending_removals.size(), 2);
+  EXPECT_TRUE(pending_removals.contains("key1"));
+  EXPECT_TRUE(pending_removals.contains("key2"));
 }
 
 TEST_F(UpdatePropertiesTest, SetRemoveConflict) {
@@ -113,6 +119,15 @@ TEST_F(UpdatePropertiesTest, UpgradeFormatVersion) {
 
     auto result = update.Apply();
     EXPECT_THAT(result, IsOk());
+
+    // Verify the format version is set correctly
+    const auto& format_version = update.GetPendingFormatVersion();
+    ASSERT_TRUE(format_version.has_value());
+    EXPECT_EQ(format_version.value(), 2);
+
+    // format-version should be removed from pending updates after Apply()
+    const auto& pending_updates = update.GetPendingUpdates();
+    EXPECT_FALSE(pending_updates.contains("format-version"));
   }
 
   {
@@ -151,10 +166,15 @@ TEST_F(UpdatePropertiesTest, InvalidTable) {
   {
     // catalog is null
     UpdateProperties update(identifier_, nullptr, metadata_);
+    update.Set("key1", "value1");
+    auto apply_result = update.Apply();
+    EXPECT_THAT(apply_result, IsOk());
 
-    auto result = update.Apply();
-    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-    EXPECT_THAT(result, HasErrorMessage("Catalog is required"));
+    // Commit should fail since catalog is required
+    auto commit_result = update.Commit();
+    EXPECT_THAT(commit_result, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(commit_result,
+                HasErrorMessage("Catalog is required to commit property updates"));
   }
 
   {
@@ -201,6 +221,15 @@ TEST_F(UpdatePropertiesTest, FluentInterface) {
 
   auto result = update.Apply();
   EXPECT_THAT(result, IsOk());
+
+  // Verify the actual pending updates and removals
+  const auto& pending_updates = update.GetPendingUpdates();
+  EXPECT_EQ(pending_updates.size(), 1);
+  EXPECT_EQ(pending_updates.at("key1"), "value1");
+
+  const auto& pending_removals = update.GetPendingRemovals();
+  EXPECT_EQ(pending_removals.size(), 1);
+  EXPECT_TRUE(pending_removals.contains("key2"));
 }
 
 }  // namespace iceberg

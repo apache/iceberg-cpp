@@ -24,7 +24,6 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include "iceberg/file_format.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/pending_update.h"
 #include "iceberg/table_identifier.h"
@@ -45,13 +44,14 @@ class ICEBERG_EXPORT UpdateProperties : public PendingUpdate {
 
   /// \brief Sets a property key to a specified value.
   ///
-  /// The key can not be marked for previous removal and reserved property keys will be
-  /// ignored.
+  /// The key must not have been previously marked for removal and reserved property keys
+  /// will be ignored.
+  /// \param key The property key to set
+  /// \param value The property value to set
+  /// \return Reference to this UpdateProperties for chaining
   UpdateProperties& Set(const std::string& key, const std::string& value);
 
   /// \brief Marks a property for removal.
-  ///
-  /// The key can not be already marked for removal.
   ///
   /// \param key The property key to remove
   /// \return Reference to this UpdateProperties for chaining
@@ -69,8 +69,23 @@ class ICEBERG_EXPORT UpdateProperties : public PendingUpdate {
   ///
   /// Validates the changes and applies them to the table through the catalog.
   ///
-  /// \return OK if the changes are valid and committed successfully, or an error
+  /// \return Status::OK if the changes are valid and committed successfully, or an error.
   Status Commit() override;
+
+  /// \brief Get the pending property updates after applying changes.
+  ///
+  /// \return The map of property updates
+  const std::unordered_map<std::string, std::string>& GetPendingUpdates() const;
+
+  /// \brief Get the pending property removals after applying changes.
+  ///
+  /// \return The set of property keys to remove
+  const std::unordered_set<std::string>& GetPendingRemovals() const;
+
+  /// \brief Get the pending format version upgrade after applying changes.
+  ///
+  /// \return The optional format version
+  const std::optional<int8_t>& GetPendingFormatVersion() const;
 
  private:
   TableIdentifier identifier_;

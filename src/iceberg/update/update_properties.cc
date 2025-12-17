@@ -71,17 +71,25 @@ UpdateProperties& UpdateProperties::Remove(const std::string& key) {
 }
 
 Status UpdateProperties::Apply() {
-  if (!catalog_) {
-    return InvalidArgument("Catalog is required to apply property updates");
-  }
   if (!base_metadata_) {
     return InvalidArgument("Base table metadata is required to apply property updates");
   }
 
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
-  auto iter = updates_.find(TableProperties::kFormatVersion.key());
-  if (iter != updates_.end()) {
+  std::unordered_map<std::string, std::string> new_properties;
+  for (const auto& [key, value] : base_metadata_->properties.configs()) {
+    if (!removals_.contains(key)) {
+      new_properties[key] = value;
+    }
+  }
+
+  for (const auto& [key, value] : updates_) {
+    new_properties[key] = value;
+  }
+
+  auto iter = new_properties.find(TableProperties::kFormatVersion.key());
+  if (iter != new_properties.end()) {
     try {
       int parsed_version = std::stoi(iter->second);
       if (parsed_version > TableMetadata::kSupportedTableFormatVersion) {
@@ -97,18 +105,22 @@ Status UpdateProperties::Apply() {
       return InvalidArgument("Format version '{}' is out of range", iter->second);
     }
 
-    updates_.erase(iter);
+    updates_.erase(TableProperties::kFormatVersion.key());
   }
 
   if (auto schema = base_metadata_->Schema(); schema.has_value()) {
     ICEBERG_RETURN_UNEXPECTED(
-        MetricsConfig::VerifyReferencedColumns(updates_, *schema.value()));
+        MetricsConfig::VerifyReferencedColumns(new_properties, *schema.value()));
   }
   return {};
 }
 
 Status UpdateProperties::Commit() {
   ICEBERG_RETURN_UNEXPECTED(Apply());
+
+  if (!catalog_) {
+    return InvalidArgument("Catalog is required to commit property updates");
+  }
 
   std::vector<std::unique_ptr<TableUpdate>> updates;
   if (!updates_.empty()) {
@@ -129,6 +141,19 @@ Status UpdateProperties::Commit() {
     ICEBERG_RETURN_UNEXPECTED(catalog_->UpdateTable(identifier_, requirements, updates));
   }
   return {};
+}
+
+const std::unordered_map<std::string, std::string>& UpdateProperties::GetPendingUpdates()
+    const {
+  return updates_;
+}
+
+const std::unordered_set<std::string>& UpdateProperties::GetPendingRemovals() const {
+  return removals_;
+}
+
+const std::optional<int8_t>& UpdateProperties::GetPendingFormatVersion() const {
+  return format_version_;
 }
 
 }  // namespace iceberg
