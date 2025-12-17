@@ -70,6 +70,7 @@ add_iceberg_test(table_test
                  SOURCES
                  metrics_config_test.cc
                  snapshot_test.cc
+                 snapshot_util_test.cc
                  table_metadata_builder_test.cc
                  table_requirement_test.cc
                  table_requirements_test.cc

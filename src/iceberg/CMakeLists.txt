@@ -83,6 +83,7 @@ set(ICEBERG_SOURCES
     util/decimal.cc
     util/gzip_internal.cc
     util/murmurhash3_internal.cc
+    util/snapshot_util.cc
     util/temporal_util.cc
     util/timepoint.cc
     util/truncate_util.cc
