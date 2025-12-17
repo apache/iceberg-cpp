@@ -46,12 +46,13 @@ ReplaceSortOrder::ReplaceSortOrder(TableIdentifier identifier,
       catalog_(std::move(catalog)),
       base_metadata_(std::move(base)) {}
 
-ReplaceSortOrder& ReplaceSortOrder::Asc(std::shared_ptr<Term> term,
-                                        NullOrder null_order) {
+ReplaceSortOrder& ReplaceSortOrder::AddSortField(std::shared_ptr<Term> term,
+                                                 SortDirection direction,
+                                                 NullOrder null_order) {
   if (!term) {
     return AddError(ErrorKind::kInvalidArgument, "Term cannot be null");
   }
-  if (term->kind() != BoundTerm::Kind::kTransform) {
+  if (term->kind() != Term::Kind::kTransform) {
     return AddError(ErrorKind::kInvalidArgument, "Term must be a transform term");
   }
   if (!term->is_unbound()) {
@@ -60,54 +61,18 @@ ReplaceSortOrder& ReplaceSortOrder::Asc(std::shared_ptr<Term> term,
   // use checked-cast to get UnboundTransform
   auto unbound_transform = internal::checked_pointer_cast<UnboundTransform>(term);
 
-  BUILDER_ASSIGN_OR_RETURN(auto schema, base_metadata_->Schema());
+  BUILDER_ASSIGN_OR_RETURN(auto schema, GetSchema());
   BUILDER_ASSIGN_OR_RETURN(auto bound_term,
                            unbound_transform->Bind(*schema, case_sensitive_));
-  return AddSortField(bound_term->reference(), unbound_transform->transform(),
-                      SortDirection::kAscending, null_order);
-}
 
-ReplaceSortOrder& ReplaceSortOrder::Desc(std::shared_ptr<Term> term,
-                                         NullOrder null_order) {
-  if (!term) {
-    return AddError(ErrorKind::kInvalidArgument, "Transform term cannot be null");
-  }
-  if (term->kind() != BoundTerm::Kind::kTransform) {
-    return AddError(ErrorKind::kInvalidArgument, "Term must be a transform term");
-  }
-  if (!term->is_unbound()) {
-    return AddError(ErrorKind::kInvalidArgument, "Term must be unbound");
-  }
-  // use checked-cast to get UnboundTransform
-  auto unbound_transform = internal::checked_pointer_cast<UnboundTransform>(term);
-  BUILDER_ASSIGN_OR_RETURN(auto schema, base_metadata_->Schema());
-  BUILDER_ASSIGN_OR_RETURN(auto bound_term,
-                           unbound_transform->Bind(*schema, case_sensitive_));
-  return AddSortField(bound_term->reference(), unbound_transform->transform(),
-                      SortDirection::kDescending, null_order);
+  int32_t source_id = bound_term->reference()->field_id();
+  sort_fields_.emplace_back(source_id, unbound_transform->transform(), direction,
+                            null_order);
+  return *this;
 }
 
 ReplaceSortOrder& ReplaceSortOrder::CaseSensitive(bool case_sensitive) {
   case_sensitive_ = case_sensitive;
-  return *this;
-}
-
-ReplaceSortOrder& ReplaceSortOrder::AddSortField(std::shared_ptr<BoundReference> ref,
-                                                 std::shared_ptr<Transform> transform,
-                                                 SortDirection direction,
-                                                 NullOrder null_order) {
-  int32_t source_id = ref->field_id();
-  const auto& field = ref->field();
-
-  // Validate that the transform can be applied to the field type  、
-  if (!transform->CanTransform(*field.type())) {
-    return AddError(
-        ErrorKind::kInvalidArgument,
-        std::format("Invalid transform {} for field '{}' with type {}",
-                    transform->ToString(), field.name(), field.type()->ToString()));
-  }
-
-  sort_fields_.emplace_back(source_id, std::move(transform), direction, null_order);
   return *this;
 }
 
@@ -118,7 +83,8 @@ Status ReplaceSortOrder::Apply() {
   // the AddSortOrder update is applied.
   ICEBERG_ASSIGN_OR_RAISE(auto order,
                           SortOrder::Make(SortOrder::kInitialSortOrderId, sort_fields_));
-  ICEBERG_RETURN_UNEXPECTED(order->Validate(*base_metadata_->Schema().value()));
+  ICEBERG_ASSIGN_OR_RAISE(auto schema, GetSchema());
+  ICEBERG_RETURN_UNEXPECTED(order->Validate(*schema));
   built_sort_order_ = std::move(order);
   return {};
 }
@@ -145,6 +111,13 @@ Status ReplaceSortOrder::Commit() {
 
 std::shared_ptr<SortOrder> ReplaceSortOrder::GetBuiltSortOrder() const {
   return built_sort_order_;
+}
+
+Result<std::shared_ptr<Schema>> ReplaceSortOrder::GetSchema() {
+  if (!cached_schema_) {
+    ICEBERG_ASSIGN_OR_RAISE(cached_schema_, base_metadata_->Schema());
+  }
+  return cached_schema_;
 }
 
 }  // namespace iceberg

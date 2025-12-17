@@ -197,8 +197,6 @@ install_headers(
         'transform.h',
         'type_fwd.h',
         'type.h',
-        'update/replace_sort_order.h',
-        'update/update_properties.h',
     ],
     subdir: 'iceberg',
 )
@@ -207,6 +205,7 @@ subdir('catalog')
 subdir('expression')
 subdir('manifest')
 subdir('row')
+subdir('update')
 subdir('util')
 
 if get_option('tests').enabled()

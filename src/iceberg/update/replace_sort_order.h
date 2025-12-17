@@ -20,6 +20,7 @@
 #pragma once
 
 #include <memory>
+#include <optional>
 #include <vector>
 
 #include "iceberg/expression/term.h"
@@ -43,19 +44,14 @@ class ICEBERG_EXPORT ReplaceSortOrder : public PendingUpdate {
   ReplaceSortOrder(TableIdentifier identifier, std::shared_ptr<Catalog> catalog,
                    std::shared_ptr<TableMetadata> base);
 
-  /// \brief Add a field to the sort by field name, ascending with the given null order.
-  ///
-  /// \param term A term referencing the field
-  /// \param null_order The null order (first or last)
-  /// \return Reference to this ReplaceSortOrder for chaining
-  ReplaceSortOrder& Asc(std::shared_ptr<Term> term, NullOrder null_order);
-
-  /// \brief Add a field to the sort by field name, descending with the given null order.
+  /// \brief Add a sort field to the sort order.
   ///
   /// \param term A transform term referencing the field
+  /// \param direction The sort direction (ascending or descending)
   /// \param null_order The null order (first or last)
   /// \return Reference to this ReplaceSortOrder for chaining
-  ReplaceSortOrder& Desc(std::shared_ptr<Term> term, NullOrder null_order);
+  ReplaceSortOrder& AddSortField(std::shared_ptr<Term> term, SortDirection direction,
+                                 NullOrder null_order);
 
   /// \brief Set case sensitivity of sort column name resolution.
   ///
@@ -84,16 +80,8 @@ class ICEBERG_EXPORT ReplaceSortOrder : public PendingUpdate {
   std::shared_ptr<SortOrder> GetBuiltSortOrder() const;
 
  private:
-  /// \brief Helper to add a sort field after binding the term.
-  ///
-  /// \param ref The bound reference to the field
-  /// \param transform The transform to apply
-  /// \param direction The sort direction
-  /// \param null_order The null order
-  /// \return Reference to this ReplaceSortOrder for chaining
-  ReplaceSortOrder& AddSortField(std::shared_ptr<BoundReference> ref,
-                                 std::shared_ptr<Transform> transform,
-                                 SortDirection direction, NullOrder null_order);
+  /// \brief Get the schema, loading and caching it on first access.
+  Result<std::shared_ptr<Schema>> GetSchema();
 
   TableIdentifier identifier_;
   std::shared_ptr<Catalog> catalog_;
@@ -102,6 +90,9 @@ class ICEBERG_EXPORT ReplaceSortOrder : public PendingUpdate {
   std::vector<SortField> sort_fields_;
   bool case_sensitive_ = true;
   std::shared_ptr<SortOrder> built_sort_order_;
+
+  // Cached schema to avoid repeated lookups
+  std::shared_ptr<Schema> cached_schema_;
 };
 
 }  // namespace iceberg

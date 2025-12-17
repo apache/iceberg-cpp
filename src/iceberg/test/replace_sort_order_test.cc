@@ -73,7 +73,7 @@ TEST_F(ReplaceSortOrderTest, AscendingSingleField) {
   auto ref = NamedReference::Make("id").value();
   auto term = UnboundTransform::Make(std::move(ref), Transform::Identity()).value();
 
-  update.Asc(std::move(term), NullOrder::kFirst);
+  update.AddSortField(std::move(term), SortDirection::kAscending, NullOrder::kFirst);
 
   auto result = update.Apply();
   EXPECT_THAT(result, IsOk());
@@ -94,7 +94,7 @@ TEST_F(ReplaceSortOrderTest, DescendingSingleField) {
   auto ref = NamedReference::Make("name").value();
   auto term = UnboundTransform::Make(std::move(ref), Transform::Identity()).value();
 
-  update.Desc(std::move(term), NullOrder::kLast);
+  update.AddSortField(std::move(term), SortDirection::kDescending, NullOrder::kLast);
 
   auto result = update.Apply();
   EXPECT_THAT(result, IsOk());
@@ -118,8 +118,8 @@ TEST_F(ReplaceSortOrderTest, MultipleFields) {
   auto ref2 = NamedReference::Make("id").value();
   auto term2 = UnboundTransform::Make(std::move(ref2), Transform::Identity()).value();
 
-  update.Asc(std::move(term1), NullOrder::kFirst)
-      .Desc(std::move(term2), NullOrder::kLast);
+  update.AddSortField(std::move(term1), SortDirection::kAscending, NullOrder::kFirst)
+      .AddSortField(std::move(term2), SortDirection::kDescending, NullOrder::kLast);
 
   auto result = update.Apply();
   EXPECT_THAT(result, IsOk());
@@ -147,7 +147,7 @@ TEST_F(ReplaceSortOrderTest, WithTransform) {
   auto ref = NamedReference::Make("ts").value();
   auto term = UnboundTransform::Make(std::move(ref), Transform::Day()).value();
 
-  update.Asc(std::move(term), NullOrder::kFirst);
+  update.AddSortField(std::move(term), SortDirection::kAscending, NullOrder::kFirst);
 
   auto result = update.Apply();
   EXPECT_THAT(result, IsOk());
@@ -169,7 +169,7 @@ TEST_F(ReplaceSortOrderTest, WithBucketTransform) {
   auto ref = NamedReference::Make("name").value();
   auto term = UnboundTransform::Make(std::move(ref), Transform::Bucket(10)).value();
 
-  update.Desc(std::move(term), NullOrder::kLast);
+  update.AddSortField(std::move(term), SortDirection::kDescending, NullOrder::kLast);
 
   auto result = update.Apply();
   EXPECT_THAT(result, IsOk());
@@ -188,7 +188,7 @@ TEST_F(ReplaceSortOrderTest, WithBucketTransform) {
 TEST_F(ReplaceSortOrderTest, NullTerm) {
   ReplaceSortOrder update(identifier_, catalog_, metadata_);
 
-  update.Asc(nullptr, NullOrder::kFirst);
+  update.AddSortField(nullptr, SortDirection::kAscending, NullOrder::kFirst);
 
   auto result = update.Apply();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
@@ -202,7 +202,7 @@ TEST_F(ReplaceSortOrderTest, InvalidTransformForType) {
   auto ref = NamedReference::Make("name").value();
   auto term = UnboundTransform::Make(std::move(ref), Transform::Day()).value();
 
-  update.Asc(std::move(term), NullOrder::kFirst);
+  update.AddSortField(std::move(term), SortDirection::kAscending, NullOrder::kFirst);
 
   auto result = update.Apply();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
@@ -215,7 +215,7 @@ TEST_F(ReplaceSortOrderTest, NonExistentField) {
   auto ref = NamedReference::Make("nonexistent").value();
   auto term = UnboundTransform::Make(std::move(ref), Transform::Identity()).value();
 
-  update.Asc(std::move(term), NullOrder::kFirst);
+  update.AddSortField(std::move(term), SortDirection::kAscending, NullOrder::kFirst);
 
   auto result = update.Apply();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
@@ -228,7 +228,8 @@ TEST_F(ReplaceSortOrderTest, CaseSensitiveTrue) {
   auto ref = NamedReference::Make("ID").value();  // Uppercase
   auto term = UnboundTransform::Make(std::move(ref), Transform::Identity()).value();
 
-  update.CaseSensitive(true).Asc(std::move(term), NullOrder::kFirst);
+  update.CaseSensitive(true).AddSortField(std::move(term), SortDirection::kAscending,
+                                          NullOrder::kFirst);
 
   auto result = update.Apply();
   // Should fail because schema has "id" (lowercase)
@@ -241,7 +242,8 @@ TEST_F(ReplaceSortOrderTest, CaseSensitiveFalse) {
   auto ref = NamedReference::Make("ID").value();  // Uppercase
   auto term = UnboundTransform::Make(std::move(ref), Transform::Identity()).value();
 
-  update.CaseSensitive(false).Asc(std::move(term), NullOrder::kFirst);
+  update.CaseSensitive(false).AddSortField(std::move(term), SortDirection::kAscending,
+                                           NullOrder::kFirst);
 
   auto result = update.Apply();
   // Should succeed because case-insensitive matching

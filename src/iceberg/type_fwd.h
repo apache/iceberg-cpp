@@ -160,8 +160,6 @@ class TableMetadataBuilder;
 class TableUpdateContext;
 
 class PendingUpdate;
-template <typename T>
-class PendingUpdateTyped;
 class UpdateProperties;
 class ReplaceSortOrder;
 
