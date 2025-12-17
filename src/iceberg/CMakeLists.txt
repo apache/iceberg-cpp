@@ -75,6 +75,7 @@ set(ICEBERG_SOURCES
     transform.cc
     transform_function.cc
     type.cc
+    update/expire_snapshots.cc
     update/update_properties.cc
     util/bucket_util.cc
     util/conversions.cc
