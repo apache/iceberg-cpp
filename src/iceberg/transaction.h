@@ -47,7 +47,7 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   const TableMetadata* base() const;
 
   /// \brief Return the current metadata with staged changes applied
-  const TableMetadata* current() const;
+  const TableMetadata& current() const;
 
   /// \brief Apply the pending changes from all actions and commit.
   ///

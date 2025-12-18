@@ -426,7 +426,7 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   const TableMetadata* base() const;
 
   /// \brief Returns the current metadata with staged changes applied
-  const TableMetadata* current() const;
+  const TableMetadata& current() const;
 
   /// \brief Destructor
   ~TableMetadataBuilder() override;

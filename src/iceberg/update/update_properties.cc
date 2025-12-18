@@ -78,11 +78,6 @@ UpdateProperties& UpdateProperties::Remove(const std::string& key) {
 Result<PendingUpdate::ApplyResult> UpdateProperties::Apply() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
-  const auto* base_metadata = transaction_->current();
-  if (!base_metadata) {
-    return InvalidArgument("Base table metadata is required to apply property updates");
-  }
-
   auto iter = updates_.find(TableProperties::kFormatVersion.key());
   if (iter != updates_.end()) {
     int parsed_version = 0;
@@ -105,7 +100,7 @@ Result<PendingUpdate::ApplyResult> UpdateProperties::Apply() {
     updates_.erase(iter);
   }
 
-  if (auto schema = base_metadata->Schema(); schema.has_value()) {
+  if (auto schema = transaction_->current().Schema(); schema.has_value()) {
     ICEBERG_RETURN_UNEXPECTED(
         MetricsConfig::VerifyReferencedColumns(updates_, *schema.value()));
   }

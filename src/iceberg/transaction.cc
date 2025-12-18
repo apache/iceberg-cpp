@@ -49,7 +49,7 @@ Result<std::shared_ptr<Transaction>> Transaction::Make(std::shared_ptr<Table> ta
 
 const TableMetadata* Transaction::base() const { return metadata_builder_->base(); }
 
-const TableMetadata* Transaction::current() const { return metadata_builder_->current(); }
+const TableMetadata& Transaction::current() const { return metadata_builder_->current(); }
 
 Status Transaction::AddUpdate(const std::shared_ptr<PendingUpdate>& update) {
   if (!last_update_committed_) {

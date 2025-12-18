@@ -796,6 +796,6 @@ const std::vector<std::unique_ptr<TableUpdate>>& TableMetadataBuilder::changes()
 
 const TableMetadata* TableMetadataBuilder::base() const { return impl_->base; }
 
-const TableMetadata* TableMetadataBuilder::current() const { return &impl_->metadata; }
+const TableMetadata& TableMetadataBuilder::current() const { return impl_->metadata; }
 
 }  // namespace iceberg
