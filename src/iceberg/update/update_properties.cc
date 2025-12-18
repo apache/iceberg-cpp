@@ -78,7 +78,7 @@ UpdateProperties& UpdateProperties::Remove(const std::string& key) {
 Result<PendingUpdate::ApplyResult> UpdateProperties::Apply() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
-  const auto* base_metadata = transaction_->base();
+  const auto* base_metadata = transaction_->current();
   if (!base_metadata) {
     return InvalidArgument("Base table metadata is required to apply property updates");
   }
@@ -112,8 +112,7 @@ Result<PendingUpdate::ApplyResult> UpdateProperties::Apply() {
 
   ApplyResult result;
   if (!updates_.empty()) {
-    result.updates.emplace_back(
-        std::make_unique<table::SetProperties>(std::move(updates_)));
+    result.updates.emplace_back(std::make_unique<table::SetProperties>(updates_));
   }
   if (!removals_.empty()) {
     result.updates.emplace_back(std::make_unique<table::RemoveProperties>(

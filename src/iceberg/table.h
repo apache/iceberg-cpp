@@ -145,7 +145,8 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   std::unique_ptr<class TableMetadataCache> metadata_cache_;
 };
 
-class ICEBERG_EXPORT StagedTable : public Table {
+/// \brief A table created by stage-create and not yet committed.
+class ICEBERG_EXPORT StagedTable final : public Table {
  public:
   static Result<std::shared_ptr<StagedTable>> Make(
       TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
@@ -162,7 +163,9 @@ class ICEBERG_EXPORT StagedTable : public Table {
   using Table::Table;
 };
 
-class ICEBERG_EXPORT StaticTable : public Table {
+/// \brief A read-only table.
+
+class ICEBERG_EXPORT StaticTable final : public Table {
  public:
   static Result<std::shared_ptr<StaticTable>> Make(
       TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,

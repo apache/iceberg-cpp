@@ -43,7 +43,7 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// \brief Return the Table that this transaction will update
   const std::shared_ptr<Table>& table() const { return table_; }
 
-  /// \brief Return the base metadata without any changes
+  /// \brief Returns the base metadata without any changes
   const TableMetadata* base() const;
 
   /// \brief Return the current metadata with staged changes applied
