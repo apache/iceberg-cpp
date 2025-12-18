@@ -18,8 +18,6 @@
  */
 
 #include <string>
-#include <unordered_map>
-#include <vector>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -32,74 +30,6 @@
 #include "iceberg/test/matchers.h"
 
 namespace iceberg::rest {
-
-// TODO(gangwu): perhaps add these equality operators to the types themselves?
-bool operator==(const CreateNamespaceRequest& lhs, const CreateNamespaceRequest& rhs) {
-  return lhs.namespace_.levels == rhs.namespace_.levels &&
-         lhs.properties == rhs.properties;
-}
-
-bool operator==(const UpdateNamespacePropertiesRequest& lhs,
-                const UpdateNamespacePropertiesRequest& rhs) {
-  return lhs.removals == rhs.removals && lhs.updates == rhs.updates;
-}
-
-bool operator==(const RegisterTableRequest& lhs, const RegisterTableRequest& rhs) {
-  return lhs.name == rhs.name && lhs.metadata_location == rhs.metadata_location &&
-         lhs.overwrite == rhs.overwrite;
-}
-
-bool operator==(const CreateNamespaceResponse& lhs, const CreateNamespaceResponse& rhs) {
-  return lhs.namespace_.levels == rhs.namespace_.levels &&
-         lhs.properties == rhs.properties;
-}
-
-bool operator==(const GetNamespaceResponse& lhs, const GetNamespaceResponse& rhs) {
-  return lhs.namespace_.levels == rhs.namespace_.levels &&
-         lhs.properties == rhs.properties;
-}
-
-bool operator==(const ListNamespacesResponse& lhs, const ListNamespacesResponse& rhs) {
-  if (lhs.namespaces.size() != rhs.namespaces.size()) return false;
-  for (size_t i = 0; i < lhs.namespaces.size(); ++i) {
-    if (lhs.namespaces[i].levels != rhs.namespaces[i].levels) return false;
-  }
-  return lhs.next_page_token == rhs.next_page_token;
-}
-
-bool operator==(const UpdateNamespacePropertiesResponse& lhs,
-                const UpdateNamespacePropertiesResponse& rhs) {
-  return lhs.updated == rhs.updated && lhs.removed == rhs.removed &&
-         lhs.missing == rhs.missing;
-}
-
-bool operator==(const ListTablesResponse& lhs, const ListTablesResponse& rhs) {
-  if (lhs.identifiers.size() != rhs.identifiers.size()) return false;
-  for (size_t i = 0; i < lhs.identifiers.size(); ++i) {
-    if (lhs.identifiers[i].ns.levels != rhs.identifiers[i].ns.levels ||
-        lhs.identifiers[i].name != rhs.identifiers[i].name) {
-      return false;
-    }
-  }
-  return lhs.next_page_token == rhs.next_page_token;
-}
-
-bool operator==(const RenameTableRequest& lhs, const RenameTableRequest& rhs) {
-  return lhs.source.ns.levels == rhs.source.ns.levels &&
-         lhs.source.name == rhs.source.name &&
-         lhs.destination.ns.levels == rhs.destination.ns.levels &&
-         lhs.destination.name == rhs.destination.name;
-}
-
-bool operator==(const CatalogConfig& lhs, const CatalogConfig& rhs) {
-  return lhs.overrides == rhs.overrides && lhs.defaults == rhs.defaults &&
-         lhs.endpoints == rhs.endpoints;
-}
-
-bool operator==(const ErrorResponse& lhs, const ErrorResponse& rhs) {
-  return lhs.message == rhs.message && lhs.type == rhs.type && lhs.code == rhs.code &&
-         lhs.stack == rhs.stack;
-}
 
 // Test parameter structure for roundtrip tests
 template <typename Model>

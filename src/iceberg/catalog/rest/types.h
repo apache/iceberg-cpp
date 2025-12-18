@@ -44,6 +44,8 @@ struct ICEBERG_REST_EXPORT CatalogConfig {
 
   /// \brief Validates the CatalogConfig.
   Status Validate() const { return {}; }
+
+  bool operator==(const CatalogConfig&) const = default;
 };
 
 /// \brief JSON error payload returned in a response with further details on the error.
@@ -66,6 +68,8 @@ struct ICEBERG_REST_EXPORT ErrorResponse {
     // stack is optional, no validation needed
     return {};
   }
+
+  bool operator==(const ErrorResponse&) const = default;
 };
 
 /// \brief Request to create a namespace.
@@ -75,6 +79,8 @@ struct ICEBERG_REST_EXPORT CreateNamespaceRequest {
 
   /// \brief Validates the CreateNamespaceRequest.
   Status Validate() const { return {}; }
+
+  bool operator==(const CreateNamespaceRequest&) const = default;
 };
 
 /// \brief Update or delete namespace properties request.
@@ -91,6 +97,8 @@ struct ICEBERG_REST_EXPORT UpdateNamespacePropertiesRequest {
     }
     return {};
   }
+
+  bool operator==(const UpdateNamespacePropertiesRequest&) const = default;
 };
 
 /// \brief Request to register a table.
@@ -111,6 +119,8 @@ struct ICEBERG_REST_EXPORT RegisterTableRequest {
 
     return {};
   }
+
+  bool operator==(const RegisterTableRequest&) const = default;
 };
 
 /// \brief Request to rename a table.
@@ -124,6 +134,8 @@ struct ICEBERG_REST_EXPORT RenameTableRequest {
     ICEBERG_RETURN_UNEXPECTED(destination.Validate());
     return {};
   }
+
+  bool operator==(const RenameTableRequest&) const = default;
 };
 
 /// \brief An opaque token that allows clients to make use of pagination for list APIs.
@@ -143,6 +155,8 @@ struct ICEBERG_REST_EXPORT LoadTableResult {
     }
     return {};
   }
+
+  bool operator==(const LoadTableResult&) const = default;
 };
 
 /// \brief Alias of LoadTableResult used as the body of CreateTableResponse
@@ -158,6 +172,8 @@ struct ICEBERG_REST_EXPORT ListNamespacesResponse {
 
   /// \brief Validates the ListNamespacesResponse.
   Status Validate() const { return {}; }
+
+  bool operator==(const ListNamespacesResponse&) const = default;
 };
 
 /// \brief Response body after creating a namespace.
@@ -167,6 +183,8 @@ struct ICEBERG_REST_EXPORT CreateNamespaceResponse {
 
   /// \brief Validates the CreateNamespaceResponse.
   Status Validate() const { return {}; }
+
+  bool operator==(const CreateNamespaceResponse&) const = default;
 };
 
 /// \brief Response body for loading namespace properties.
@@ -176,6 +194,8 @@ struct ICEBERG_REST_EXPORT GetNamespaceResponse {
 
   /// \brief Validates the GetNamespaceResponse.
   Status Validate() const { return {}; }
+
+  bool operator==(const GetNamespaceResponse&) const = default;
 };
 
 /// \brief Response body after updating namespace properties.
@@ -186,6 +206,8 @@ struct ICEBERG_REST_EXPORT UpdateNamespacePropertiesResponse {
 
   /// \brief Validates the UpdateNamespacePropertiesResponse.
   Status Validate() const { return {}; }
+
+  bool operator==(const UpdateNamespacePropertiesResponse&) const = default;
 };
 
 /// \brief Response body for listing tables in a namespace.
@@ -195,6 +217,8 @@ struct ICEBERG_REST_EXPORT ListTablesResponse {
 
   /// \brief Validates the ListTablesResponse.
   Status Validate() const { return {}; }
+
+  bool operator==(const ListTablesResponse&) const = default;
 };
 
 }  // namespace iceberg::rest
