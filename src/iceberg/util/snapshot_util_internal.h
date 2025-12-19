@@ -32,6 +32,7 @@
 namespace iceberg {
 
 /// \brief Utility functions for working with snapshots
+/// \note All the returned std::shared_ptr<Snapshot> are guaranteed to be not null.
 class ICEBERG_EXPORT SnapshotUtil {
  public:
   /// \brief Returns a vector of ancestors of the given snapshot.
@@ -251,7 +252,7 @@ class ICEBERG_EXPORT SnapshotUtil {
   /// \param table The table
   /// \param snapshot The snapshot to start from
   /// \return A vector of ancestor snapshots
-  static std::vector<std::shared_ptr<Snapshot>> AncestorsOf(
+  static Result<std::vector<std::shared_ptr<Snapshot>>> AncestorsOf(
       const Table& table, const std::shared_ptr<Snapshot>& snapshot);
 
   /// \brief Helper function to traverse ancestors of a snapshot using a lookup function.
@@ -259,7 +260,7 @@ class ICEBERG_EXPORT SnapshotUtil {
   /// \param snapshot The snapshot to start from
   /// \param lookup Function to lookup snapshots by ID
   /// \return A vector of ancestor snapshots
-  static std::vector<std::shared_ptr<Snapshot>> AncestorsOf(
+  static Result<std::vector<std::shared_ptr<Snapshot>>> AncestorsOf(
       const std::shared_ptr<Snapshot>& snapshot,
       const std::function<Result<std::shared_ptr<Snapshot>>(int64_t)>& lookup);
 

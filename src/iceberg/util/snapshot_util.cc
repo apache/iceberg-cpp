@@ -17,23 +17,30 @@
  * under the License.
  */
 
+#include <ranges>
+
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/util/macros.h"
 #include "iceberg/util/snapshot_util_internal.h"
 #include "iceberg/util/timepoint.h"
 
 namespace iceberg {
 
-namespace {}  // namespace
+#define ICEBERG_RETURN_NULLOPT_IF_NOT_FOUND(result)    \
+  if (!result.has_value()) [[unlikely]] {              \
+    if (result.error().kind == ErrorKind::kNotFound) { \
+      return std::nullopt;                             \
+    }                                                  \
+    return std::unexpected<Error>(result.error());     \
+  }
 
 Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::AncestorsOf(
     const Table& table, int64_t snapshot_id) {
   ICEBERG_ASSIGN_OR_RAISE(auto start, table.SnapshotById(snapshot_id));
-  if (!start) {
-    return InvalidArgument("Cannot find snapshot: {}", snapshot_id);
-  }
+  ICEBERG_DCHECK(start, "Snapshot is null");
   return AncestorsOf(table, start);
 }
 
@@ -57,13 +64,11 @@ Result<bool> SnapshotUtil::IsAncestorOf(const Table& table,
 Result<bool> SnapshotUtil::IsParentAncestorOf(const Table& table, int64_t snapshot_id,
                                               int64_t ancestor_parent_snapshot_id) {
   ICEBERG_ASSIGN_OR_RAISE(auto ancestors, AncestorsOf(table, snapshot_id));
-  for (const auto& snapshot : ancestors) {
-    if (snapshot->parent_snapshot_id.has_value() &&
-        snapshot->parent_snapshot_id.value() == ancestor_parent_snapshot_id) {
-      return true;
-    }
-  }
-  return false;
+  return std::ranges::any_of(
+      ancestors, [ancestor_parent_snapshot_id](const auto& snapshot) {
+        return snapshot->parent_snapshot_id.has_value() &&
+               snapshot->parent_snapshot_id.value() == ancestor_parent_snapshot_id;
+      });
 }
 
 Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::CurrentAncestors(
@@ -97,40 +102,40 @@ Result<std::optional<std::shared_ptr<Snapshot>>> SnapshotUtil::OldestAncestorOf(
 
 Result<std::optional<std::shared_ptr<Snapshot>>> SnapshotUtil::OldestAncestorAfter(
     const Table& table, TimePointMs timestamp_ms) {
-  ICEBERG_ASSIGN_OR_RAISE(auto current, table.current_snapshot());
+  auto current_result = table.current_snapshot();
+  ICEBERG_RETURN_NULLOPT_IF_NOT_FOUND(current_result);
+  auto current = current_result.value();
   if (!current) {
     // there are no snapshots or ancestors
     return std::nullopt;
   }
 
-  std::shared_ptr<Snapshot> last_snapshot = nullptr;
-  auto ancestors = AncestorsOf(table, current);
+  std::optional<std::shared_ptr<Snapshot>> last_snapshot = std::nullopt;
+  ICEBERG_ASSIGN_OR_RAISE(auto ancestors, AncestorsOf(table, current));
   for (const auto& snapshot : ancestors) {
     auto snapshot_timestamp_ms = snapshot->timestamp_ms;
     if (snapshot_timestamp_ms < timestamp_ms) {
-      return last_snapshot ? std::make_optional(last_snapshot) : std::nullopt;
+      return last_snapshot;
     } else if (snapshot_timestamp_ms == timestamp_ms) {
       return snapshot;
     }
-    last_snapshot = snapshot;
+    last_snapshot = std::move(snapshot);
   }
 
-  if (last_snapshot && !last_snapshot->parent_snapshot_id.has_value()) {
+  if (last_snapshot.has_value() &&
+      !last_snapshot.value()->parent_snapshot_id.has_value()) {
     // this is the first snapshot in the table, return it
     return last_snapshot;
   }
 
-  return ValidationFailed("Cannot find snapshot older than {}",
-                          FormatTimestamp(timestamp_ms));
+  return NotFound("Cannot find snapshot older than {}", FormatTimestamp(timestamp_ms));
 }
 
 Result<std::vector<int64_t>> SnapshotUtil::SnapshotIdsBetween(const Table& table,
                                                               int64_t from_snapshot_id,
                                                               int64_t to_snapshot_id) {
   ICEBERG_ASSIGN_OR_RAISE(auto to_snapshot, table.SnapshotById(to_snapshot_id));
-  if (!to_snapshot) {
-    return InvalidArgument("Cannot find snapshot: {}", to_snapshot_id);
-  }
+  ICEBERG_DCHECK(to_snapshot, "Snapshot is null");
 
   // Create a lookup function that returns null when snapshot_id equals from_snapshot_id
   // This effectively stops traversal at from_snapshot_id (exclusive)
@@ -142,7 +147,7 @@ Result<std::vector<int64_t>> SnapshotUtil::SnapshotIdsBetween(const Table& table
     return table.SnapshotById(id);
   };
 
-  auto ancestors = AncestorsOf(to_snapshot, lookup);
+  ICEBERG_ASSIGN_OR_RAISE(auto ancestors, AncestorsOf(to_snapshot, lookup));
   return ToIds(ancestors);
 }
 
@@ -158,9 +163,7 @@ Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::AncestorsBetween(
     const Table& table, int64_t latest_snapshot_id,
     const std::optional<int64_t>& oldest_snapshot_id) {
   ICEBERG_ASSIGN_OR_RAISE(auto start, table.SnapshotById(latest_snapshot_id));
-  if (!start) {
-    return InvalidArgument("Cannot find snapshot: {}", latest_snapshot_id);
-  }
+  ICEBERG_DCHECK(start, "Snapshot is null");
 
   if (oldest_snapshot_id.has_value()) {
     if (latest_snapshot_id == oldest_snapshot_id.value()) {
@@ -180,37 +183,19 @@ Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::AncestorsBetween(
   }
 }
 
-std::vector<std::shared_ptr<Snapshot>> SnapshotUtil::AncestorsOf(
+Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::AncestorsOf(
     const Table& table, const std::shared_ptr<Snapshot>& snapshot) {
-  std::vector<std::shared_ptr<Snapshot>> result;
-  if (!snapshot) {
-    return result;
-  }
-
-  std::shared_ptr<Snapshot> current = snapshot;
-  while (current) {
-    result.push_back(current);
-    if (!current->parent_snapshot_id.has_value()) {
-      break;
-    }
-    auto parent_result = table.SnapshotById(current->parent_snapshot_id.value());
-    if (!parent_result.has_value()) {
-      // Parent snapshot not found (e.g., expired), stop traversal
-      break;
-    }
-    current = parent_result.value();
-  }
-
-  return result;
+  auto lookup = [&table](int64_t id) -> Result<std::shared_ptr<Snapshot>> {
+    return table.SnapshotById(id);
+  };
+  return AncestorsOf(snapshot, lookup);
 }
 
-std::vector<std::shared_ptr<Snapshot>> SnapshotUtil::AncestorsOf(
+Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::AncestorsOf(
     const std::shared_ptr<Snapshot>& snapshot,
     const std::function<Result<std::shared_ptr<Snapshot>>(int64_t)>& lookup) {
   std::vector<std::shared_ptr<Snapshot>> result;
-  if (!snapshot) {
-    return result;
-  }
+  ICEBERG_DCHECK(snapshot, "Snapshot is null");
 
   std::shared_ptr<Snapshot> current = snapshot;
   while (current) {
@@ -220,13 +205,13 @@ std::vector<std::shared_ptr<Snapshot>> SnapshotUtil::AncestorsOf(
     }
     auto parent_result = lookup(current->parent_snapshot_id.value());
     if (!parent_result.has_value()) {
-      break;
+      if (parent_result.error().kind == ErrorKind::kNotFound) {
+        // Parent snapshot not found (e.g., expired), stop traversal
+        break;
+      }
+      return std::unexpected<Error>(parent_result.error());
     }
-    auto parent = parent_result.value();
-    if (!parent) {
-      break;
-    }
-    current = parent;
+    current = std::move(parent_result.value());
   }
 
   return result;
@@ -234,20 +219,16 @@ std::vector<std::shared_ptr<Snapshot>> SnapshotUtil::AncestorsOf(
 
 std::vector<int64_t> SnapshotUtil::ToIds(
     const std::vector<std::shared_ptr<Snapshot>>& snapshots) {
-  std::vector<int64_t> ids;
-  ids.reserve(snapshots.size());
-  for (const auto& snapshot : snapshots) {
-    ids.push_back(snapshot->snapshot_id);
-  }
-  return ids;
+  return snapshots | std::ranges::views::transform([](const auto& snapshot) {
+           return snapshot->snapshot_id;
+         }) |
+         std::ranges::to<std::vector<int64_t>>();
 }
 
 Result<std::shared_ptr<Snapshot>> SnapshotUtil::SnapshotAfter(const Table& table,
                                                               int64_t snapshot_id) {
   ICEBERG_ASSIGN_OR_RAISE(auto parent, table.SnapshotById(snapshot_id));
-  if (!parent) {
-    return InvalidArgument("Cannot find parent snapshot: {}", snapshot_id);
-  }
+  ICEBERG_DCHECK(parent, "Parent snapshot is null");
 
   ICEBERG_ASSIGN_OR_RAISE(auto ancestors, CurrentAncestors(table));
   for (const auto& current : ancestors) {
@@ -257,7 +238,7 @@ Result<std::shared_ptr<Snapshot>> SnapshotUtil::SnapshotAfter(const Table& table
     }
   }
 
-  return ValidationFailed(
+  return NotFound(
       "Cannot find snapshot after {}: not an ancestor of table's current snapshot",
       snapshot_id);
 }
@@ -287,6 +268,7 @@ std::optional<int64_t> SnapshotUtil::NullableSnapshotIdAsOfTime(
 Result<std::shared_ptr<Schema>> SnapshotUtil::SchemaFor(const Table& table,
                                                         int64_t snapshot_id) {
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot, table.SnapshotById(snapshot_id));
+  ICEBERG_DCHECK(snapshot, "Snapshot is null");
 
   if (snapshot->schema_id.has_value()) {
     ICEBERG_ASSIGN_OR_RAISE(auto schemas, table.schemas());
@@ -343,31 +325,27 @@ Result<std::shared_ptr<Schema>> SnapshotUtil::SchemaFor(const TableMetadata& met
 
 Result<std::optional<std::shared_ptr<Snapshot>>> SnapshotUtil::LatestSnapshot(
     const Table& table, const std::string& branch) {
-  if (branch.empty() || branch == SnapshotRef::kMainBranch) {
-    return table.current_snapshot();
-  }
-
-  const auto& metadata = table.metadata();
-  auto it = metadata->refs.find(branch);
-  if (it == metadata->refs.end()) {
-    return table.current_snapshot();
-  }
-
-  return table.SnapshotById(it->second->snapshot_id);
+  return LatestSnapshot(*table.metadata(), branch);
 }
 
 Result<std::optional<std::shared_ptr<Snapshot>>> SnapshotUtil::LatestSnapshot(
     const TableMetadata& metadata, const std::string& branch) {
   if (branch.empty() || branch == SnapshotRef::kMainBranch) {
-    return metadata.Snapshot();
+    auto snapshot_result = metadata.Snapshot();
+    ICEBERG_RETURN_NULLOPT_IF_NOT_FOUND(snapshot_result);
+    return snapshot_result.value();
   }
 
   auto it = metadata.refs.find(branch);
   if (it == metadata.refs.end()) {
-    return metadata.Snapshot();
+    auto snapshot_result = metadata.Snapshot();
+    ICEBERG_RETURN_NULLOPT_IF_NOT_FOUND(snapshot_result);
+    return snapshot_result.value();
   }
 
-  return metadata.SnapshotById(it->second->snapshot_id);
+  auto snapshot_result = metadata.SnapshotById(it->second->snapshot_id);
+  ICEBERG_RETURN_NULLOPT_IF_NOT_FOUND(snapshot_result);
+  return snapshot_result.value();
 }
 
 }  // namespace iceberg
