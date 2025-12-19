@@ -30,6 +30,7 @@
 #include "iceberg/table_properties.h"
 #include "iceberg/table_update.h"
 #include "iceberg/transaction.h"
+#include "iceberg/util/error_collector.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -49,11 +50,9 @@ UpdateProperties::~UpdateProperties() = default;
 
 UpdateProperties& UpdateProperties::Set(const std::string& key,
                                         const std::string& value) {
-  if (removals_.contains(key)) {
-    return AddError(
-        ErrorKind::kInvalidArgument,
-        std::format("Cannot set property '{}' that is already marked for removal", key));
-  }
+  ICEBERG_BUILDER_CHECK(!removals_.contains(key),
+                        "Cannot set property '{}' that is already marked for removal",
+                        key);
 
   if (!TableProperties::reserved_properties().contains(key) ||
       key == TableProperties::kFormatVersion.key()) {
@@ -64,13 +63,9 @@ UpdateProperties& UpdateProperties::Set(const std::string& key,
 }
 
 UpdateProperties& UpdateProperties::Remove(const std::string& key) {
-  if (updates_.contains(key)) {
-    return AddError(
-        ErrorKind::kInvalidArgument,
-        std::format("Cannot remove property '{}' that is already marked for update",
-                    key));
-  }
-
+  ICEBERG_BUILDER_CHECK(!updates_.contains(key),
+                        "Cannot remove property '{}' that is already marked for update",
+                        key);
   removals_.insert(key);
   return *this;
 }

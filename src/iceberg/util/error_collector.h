@@ -30,30 +30,37 @@
 
 namespace iceberg {
 
-#define BUILDER_RETURN_IF_ERROR(result)                         \
+#define ICEBERG_BUILDER_RETURN_IF_ERROR(result)                 \
   if (auto&& result_name = result; !result_name) [[unlikely]] { \
     errors_.emplace_back(std::move(result_name.error()));       \
     return *this;                                               \
   }
 
-#define BUILDER_ASSIGN_OR_RETURN_IMPL(result_name, lhs, rexpr) \
-  auto&& result_name = (rexpr);                                \
-  BUILDER_RETURN_IF_ERROR(result_name)                         \
+#define ICEBERG_BUILDER_ASSIGN_OR_RETURN_IMPL(result_name, lhs, rexpr) \
+  auto&& result_name = (rexpr);                                        \
+  ICEBERG_BUILDER_RETURN_IF_ERROR(result_name)                         \
   lhs = std::move(result_name.value());
 
-#define BUILDER_ASSIGN_OR_RETURN(lhs, rexpr)                                             \
-  BUILDER_ASSIGN_OR_RETURN_IMPL(ICEBERG_ASSIGN_OR_RAISE_NAME(result_, __COUNTER__), lhs, \
-                                rexpr)
+#define ICEBERG_BUILDER_ASSIGN_OR_RETURN(lhs, rexpr) \
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN_IMPL(             \
+      ICEBERG_ASSIGN_OR_RAISE_NAME(result_, __COUNTER__), lhs, rexpr)
 
-/// \brief Base class for collecting validation errors in builder patterns
+#define ICEBERG_BUILDER_CHECK(expr, ...)                         \
+  do {                                                           \
+    if (!(expr)) [[unlikely]] {                                  \
+      return AddError(ErrorKind::kInvalidArgument, __VA_ARGS__); \
+    }                                                            \
+  } while (false)
+
+/// \brief Base class for collecting errors in the builder pattern.
 ///
-/// This class provides error accumulation functionality for builders that
-/// cannot throw exceptions. Builder methods can call AddError() to accumulate
-/// validation errors, and CheckErrors() returns all errors at once.
+/// This class equips builders with error accumulation capabilities to make it easy
+/// for method chaining. Builder methods should call AddError() to accumulate errors
+/// and call CheckErrors() before completing the build process.
 ///
 /// Example usage:
 /// \code
-///   class MyBuilder : public ErrorCollectorBase {
+///   class MyBuilder : public ErrorCollector {
 ///    public:
 ///     MyBuilder& SetValue(int val) {
 ///       if (val < 0) {
@@ -87,10 +94,13 @@ class ICEBERG_EXPORT ErrorCollector {
   ///
   /// \param self Deduced reference to the derived class instance
   /// \param kind The kind of error
-  /// \param message The error message
+  /// \param fmt The format string
+  /// \param args The arguments to format the message
   /// \return Reference to the derived class for method chaining
-  auto& AddError(this auto& self, ErrorKind kind, std::string message) {
-    self.errors_.emplace_back(kind, std::move(message));
+  template <typename... Args>
+  auto& AddError(this auto& self, ErrorKind kind, const std::format_string<Args...> fmt,
+                 Args&&... args) {
+    self.errors_.emplace_back(kind, std::format(fmt, std::forward<Args>(args)...));
     return self;
   }
 
@@ -107,15 +117,30 @@ class ICEBERG_EXPORT ErrorCollector {
     return self;
   }
 
+  /// \brief Add an unexpected result's error and return reference to derived class
+  ///
+  /// Useful for cases like below:
+  /// \code
+  ///   return AddError(InvalidArgument("Invalid value: {}", value));
+  /// \endcode
+  ///
+  /// \param self Deduced reference to the derived class instance
+  /// \param err The unexpected result containing the error to add
+  /// \return Reference to the derived class for method chaining
+  auto& AddError(this auto& self, std::unexpected<Error> err) {
+    self.errors_.push_back(std::move(err.error()));
+    return self;
+  }
+
   /// \brief Check if any errors have been collected
   ///
   /// \return true if there are accumulated errors
-  [[nodiscard]] bool HasErrors() const { return !errors_.empty(); }
+  [[nodiscard]] bool has_errors() const { return !errors_.empty(); }
 
   /// \brief Get the number of errors collected
   ///
   /// \return The count of accumulated errors
-  [[nodiscard]] size_t ErrorCount() const { return errors_.size(); }
+  [[nodiscard]] size_t error_count() const { return errors_.size(); }
 
   /// \brief Check for accumulated errors and return them if any exist
   ///
@@ -143,9 +168,7 @@ class ICEBERG_EXPORT ErrorCollector {
   void ClearErrors() { errors_.clear(); }
 
   /// \brief Get read-only access to all collected errors
-  ///
-  /// \return A const reference to the vector of errors
-  [[nodiscard]] const std::vector<Error>& Errors() const { return errors_; }
+  [[nodiscard]] const std::vector<Error>& errors() const { return errors_; }
 
  protected:
   std::vector<Error> errors_;

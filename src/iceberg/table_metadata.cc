@@ -43,6 +43,7 @@
 #include "iceberg/sort_order.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/table_update.h"
+#include "iceberg/util/error_collector.h"
 #include "iceberg/util/gzip_internal.h"
 #include "iceberg/util/location_util.h"
 #include "iceberg/util/macros.h"
@@ -475,10 +476,7 @@ TableMetadataBuilder& TableMetadataBuilder::AssignUUID() {
 TableMetadataBuilder& TableMetadataBuilder::AssignUUID(std::string_view uuid) {
   std::string uuid_str(uuid);
 
-  // Validation: UUID cannot be empty
-  if (uuid_str.empty()) {
-    return AddError(ErrorKind::kInvalidArgument, "Cannot assign empty UUID");
-  }
+  ICEBERG_BUILDER_CHECK(!uuid_str.empty(), "Cannot assign empty UUID");
 
   // Check if UUID is already set to the same value (no-op)
   if (StringUtils::EqualsIgnoreCase(impl_->metadata.table_uuid, uuid_str)) {
@@ -497,20 +495,15 @@ TableMetadataBuilder& TableMetadataBuilder::AssignUUID(std::string_view uuid) {
 TableMetadataBuilder& TableMetadataBuilder::UpgradeFormatVersion(
     int8_t new_format_version) {
   // Check that the new format version is supported
-  if (new_format_version > TableMetadata::kSupportedTableFormatVersion) {
-    return AddError(
-        ErrorKind::kInvalidArgument,
-        std::format(
-            "Cannot upgrade table to unsupported format version: v{} (supported: v{})",
-            new_format_version, TableMetadata::kSupportedTableFormatVersion));
-  }
+  ICEBERG_BUILDER_CHECK(
+      new_format_version <= TableMetadata::kSupportedTableFormatVersion,
+      "Cannot upgrade table to unsupported format version: v{} (supported: v{})",
+      new_format_version, TableMetadata::kSupportedTableFormatVersion);
 
   // Check that we're not downgrading
-  if (new_format_version < impl_->metadata.format_version) {
-    return AddError(ErrorKind::kInvalidArgument,
-                    std::format("Cannot downgrade v{} table to v{}",
-                                impl_->metadata.format_version, new_format_version));
-  }
+  ICEBERG_BUILDER_CHECK(new_format_version >= impl_->metadata.format_version,
+                        "Cannot downgrade v{} table to v{}",
+                        impl_->metadata.format_version, new_format_version);
 
   // No-op if the version is the same
   if (new_format_version == impl_->metadata.format_version) {
@@ -566,16 +559,15 @@ TableMetadataBuilder& TableMetadataBuilder::RemoveSchemas(
 
 TableMetadataBuilder& TableMetadataBuilder::SetDefaultSortOrder(
     std::shared_ptr<SortOrder> order) {
-  BUILDER_ASSIGN_OR_RETURN(auto order_id, AddSortOrderInternal(*order));
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto order_id, AddSortOrderInternal(*order));
   return SetDefaultSortOrder(order_id);
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetDefaultSortOrder(int32_t order_id) {
   if (order_id == -1) {
-    if (!impl_->last_added_order_id.has_value()) {
-      return AddError(ErrorKind::kInvalidArgument,
-                      "Cannot set last added sort order: no sort order has been added");
-    }
+    ICEBERG_BUILDER_CHECK(
+        impl_->last_added_order_id.has_value(),
+        "Cannot set last added sort order: no sort order has been added");
     return SetDefaultSortOrder(impl_->last_added_order_id.value());
   }
 
@@ -637,7 +629,7 @@ Result<int32_t> TableMetadataBuilder::AddSortOrderInternal(const SortOrder& orde
 
 TableMetadataBuilder& TableMetadataBuilder::AddSortOrder(
     std::shared_ptr<SortOrder> order) {
-  BUILDER_ASSIGN_OR_RETURN(auto order_id, AddSortOrderInternal(*order));
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto order_id, AddSortOrderInternal(*order));
   return *this;
 }
 
