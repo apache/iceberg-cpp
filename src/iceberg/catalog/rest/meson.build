@@ -24,7 +24,7 @@ iceberg_rest_sources = files(
     'resource_paths.cc',
     'rest_catalog.cc',
     'rest_util.cc',
-    'type.cc',
+    'types.cc',
 )
 # cpr does not export symbols, so on Windows it must
 # be used as a static lib
