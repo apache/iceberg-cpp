@@ -22,11 +22,11 @@
 #include <memory>
 #include <optional>
 
-#include <nanoarrow/nanoarrow.h>
-
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
+
+struct ArrowSchema;
 
 namespace iceberg {
 
@@ -42,8 +42,8 @@ ICEBERG_EXPORT Status ToArrowSchema(const Schema& schema, ArrowSchema* out);
 /// \param[in] schema The Arrow schema to convert.
 /// \param[in] schema_id The schema ID of the Iceberg schema.
 /// \return The Iceberg schema or an error if the conversion fails.
-Result<std::unique_ptr<Schema>> FromArrowSchema(const ArrowSchema& schema,
-                                                std::optional<int32_t> schema_id);
+ICEBERG_EXPORT Result<std::unique_ptr<Schema>> FromArrowSchema(
+    const ArrowSchema& schema, std::optional<int32_t> schema_id);
 
 /// \brief Convert a struct type to an Iceberg schema.
 ///

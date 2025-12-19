@@ -19,6 +19,8 @@
 
 #include "iceberg/arrow_c_data_guard_internal.h"
 
+#include <nanoarrow/nanoarrow.h>
+
 namespace iceberg::internal {
 
 ArrowArrayGuard::~ArrowArrayGuard() {

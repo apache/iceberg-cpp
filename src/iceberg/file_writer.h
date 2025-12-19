@@ -35,7 +35,7 @@
 
 namespace iceberg {
 
-class WriterProperties : public ConfigBase<WriterProperties> {
+class ICEBERG_EXPORT WriterProperties : public ConfigBase<WriterProperties> {
  public:
   template <typename T>
   using Entry = const ConfigBase<WriterProperties>::Entry<T>;

@@ -22,6 +22,7 @@
 
 #include <arrow/api.h>
 #include <arrow/c/bridge.h>
+#include <arrow/c/helpers.h>
 #include <arrow/extension/uuid.h>
 #include <arrow/result.h>
 #include <arrow/type_fwd.h>
