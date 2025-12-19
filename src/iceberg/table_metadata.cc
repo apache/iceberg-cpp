@@ -157,6 +157,7 @@ bool operator==(const TableMetadata& lhs, const TableMetadata& rhs) {
          lhs.last_column_id == rhs.last_column_id &&
          lhs.current_schema_id == rhs.current_schema_id &&
          SharedPtrVectorEquals(lhs.schemas, rhs.schemas) &&
+         SharedPtrVectorEquals(lhs.partition_specs, rhs.partition_specs) &&
          lhs.default_spec_id == rhs.default_spec_id &&
          lhs.last_partition_id == rhs.last_partition_id &&
          lhs.properties == rhs.properties &&

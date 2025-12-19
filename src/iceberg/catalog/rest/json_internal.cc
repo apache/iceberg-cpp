@@ -364,8 +364,8 @@ Result<CreateTableRequest> CreateTableRequestFromJson(const nlohmann::json& json
   ICEBERG_ASSIGN_OR_RAISE(request.name, GetJsonValue<std::string>(json, kName));
   ICEBERG_ASSIGN_OR_RAISE(request.location,
                           GetJsonValueOrDefault<std::string>(json, kLocation));
-  ICEBERG_ASSIGN_OR_RAISE(auto schema_json, GetJsonValue<nlohmann::json>(json, kSchema));
-  ICEBERG_ASSIGN_OR_RAISE(request.schema, SchemaFromJson(schema_json));
+  ICEBERG_ASSIGN_OR_RAISE(auto schema, GetJsonValue<nlohmann::json>(json, kSchema));
+  ICEBERG_ASSIGN_OR_RAISE(request.schema, SchemaFromJson(schema));
 
   if (json.contains(kPartitionSpec)) {
     ICEBERG_ASSIGN_OR_RAISE(auto partition_spec,
@@ -375,10 +375,10 @@ Result<CreateTableRequest> CreateTableRequestFromJson(const nlohmann::json& json
                                                   PartitionSpec::kInitialSpecId));
   }
   if (json.contains(kWriteOrder)) {
-    ICEBERG_ASSIGN_OR_RAISE(auto sort_order_json,
+    ICEBERG_ASSIGN_OR_RAISE(auto sort_order,
                             GetJsonValue<nlohmann::json>(json, kWriteOrder));
     ICEBERG_ASSIGN_OR_RAISE(request.write_order,
-                            SortOrderFromJson(sort_order_json, request.schema));
+                            SortOrderFromJson(sort_order, request.schema));
   }
 
   ICEBERG_ASSIGN_OR_RAISE(request.stage_create,

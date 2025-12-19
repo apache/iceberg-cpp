@@ -25,11 +25,52 @@
 
 #include "iceberg/catalog/rest/json_internal.h"
 #include "iceberg/catalog/rest/types.h"
+#include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
+#include "iceberg/sort_order.h"
 #include "iceberg/table_identifier.h"
+#include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
 
 namespace iceberg::rest {
+
+// Helper function to create a simple schema for testing
+static std::shared_ptr<Schema> MakeSimpleSchema() {
+  return std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField(1, "id", int32(), false),     // required
+                               SchemaField(2, "data", string(), true)},  // optional
+      std::nullopt);
+}
+
+// Helper function to create a simple TableMetadata for testing
+static std::shared_ptr<TableMetadata> MakeSimpleTableMetadata() {
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField(1, "id", int32(), false)}, 1);
+  return std::make_shared<TableMetadata>(TableMetadata{
+      .format_version = 2,
+      .table_uuid = "test-uuid-1234",
+      .location = "s3://bucket/test",
+      .last_sequence_number = 0,
+      .last_updated_ms = TimePointMs{},
+      .last_column_id = 1,
+      .schemas = {schema},
+      .current_schema_id = 1,
+      .partition_specs = {PartitionSpec::Unpartitioned()},
+      .default_spec_id = 0,
+      .last_partition_id = 0,
+      .properties = {},
+      .current_snapshot_id = -1,
+      .snapshots = {},
+      .snapshot_log = {},
+      .metadata_log = {},
+      .sort_orders = {SortOrder::Unsorted()},
+      .default_sort_order_id = 0,
+      .refs = {},
+      .statistics = {},
+      .partition_statistics = {},
+      .next_row_id = 0,
+  });
+}
 
 // Test parameter structure for roundtrip tests
 template <typename Model>
@@ -903,6 +944,241 @@ INSTANTIATE_TEST_SUITE_P(
                 R"({"error":{"message":123,"type":"NoSuchNamespaceException","code":404}})",
             .expected_error_message = "type must be string, but is number"}),
     [](const ::testing::TestParamInfo<ErrorResponseInvalidParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_ROUNDTRIP_TEST(CreateTableRequest)
+
+INSTANTIATE_TEST_SUITE_P(
+    CreateTableRequestCases, CreateTableRequestTest,
+    ::testing::Values(
+        // Minimal request with only required fields (name and schema)
+        CreateTableRequestParam{
+            .test_name = "MinimalRequest",
+            .expected_json_str =
+                R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]}})",
+            .model = {.name = "my_table", .schema = MakeSimpleSchema()}},
+        // Request with location
+        CreateTableRequestParam{
+            .test_name = "WithLocation",
+            .expected_json_str =
+                R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"location":"s3://bucket/warehouse/my_table"})",
+            .model = {.name = "my_table",
+                      .location = "s3://bucket/warehouse/my_table",
+                      .schema = MakeSimpleSchema()}},
+        // Request with properties
+        CreateTableRequestParam{
+            .test_name = "WithProperties",
+            .expected_json_str =
+                R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"properties":{"owner":"alice","version":"1.0"}})",
+            .model = {.name = "my_table",
+                      .schema = MakeSimpleSchema(),
+                      .properties = {{"owner", "alice"}, {"version", "1.0"}}}},
+        // Request with stage_create = true
+        CreateTableRequestParam{
+            .test_name = "WithStageCreate",
+            .expected_json_str =
+                R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"stage-create":true})",
+            .model = {.name = "my_table",
+                      .schema = MakeSimpleSchema(),
+                      .stage_create = true}},
+        // Request with partition_spec (unpartitioned)
+        CreateTableRequestParam{
+            .test_name = "WithUnpartitionedSpec",
+            .expected_json_str =
+                R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"partition-spec":{"spec-id":0,"fields":[]}})",
+            .model = {.name = "my_table",
+                      .schema = MakeSimpleSchema(),
+                      .partition_spec = PartitionSpec::Unpartitioned()}},
+        // Request with write_order (unsorted)
+        CreateTableRequestParam{
+            .test_name = "WithUnsortedOrder",
+            .expected_json_str =
+                R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"write-order":{"order-id":0,"fields":[]}})",
+            .model = {.name = "my_table",
+                      .schema = MakeSimpleSchema(),
+                      .write_order = SortOrder::Unsorted()}}),
+    [](const ::testing::TestParamInfo<CreateTableRequestParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_DESERIALIZE_TEST(CreateTableRequest)
+
+INSTANTIATE_TEST_SUITE_P(
+    CreateTableRequestDeserializeCases, CreateTableRequestDeserializeTest,
+    ::testing::Values(
+        // Location field is missing (should deserialize to empty string)
+        CreateTableRequestDeserializeParam{
+            .test_name = "MissingLocation",
+            .json_str =
+                R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true}]}})",
+            .expected_model = {.name = "my_table",
+                               .schema = std::make_shared<Schema>(
+                                   std::vector<SchemaField>{
+                                       SchemaField(1, "id", int32(), false)},  // required
+                                   std::nullopt)}},
+        // stage-create field is missing (should default to false)
+        CreateTableRequestDeserializeParam{
+            .test_name = "MissingStageCreate",
+            .json_str =
+                R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true}]}})",
+            .expected_model = {.name = "my_table",
+                               .schema = std::make_shared<Schema>(
+                                   std::vector<SchemaField>{
+                                       SchemaField(1, "id", int32(), false)},  // required
+                                   std::nullopt),
+                               .stage_create = false}},
+        // Properties field is missing (should deserialize to empty map)
+        CreateTableRequestDeserializeParam{
+            .test_name = "MissingProperties",
+            .json_str =
+                R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true}]}})",
+            .expected_model = {.name = "my_table",
+                               .schema = std::make_shared<Schema>(
+                                   std::vector<SchemaField>{
+                                       SchemaField(1, "id", int32(), false)},  // required
+                                   std::nullopt)}}),
+    [](const ::testing::TestParamInfo<CreateTableRequestDeserializeParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_INVALID_TEST(CreateTableRequest)
+
+INSTANTIATE_TEST_SUITE_P(
+    CreateTableRequestInvalidCases, CreateTableRequestInvalidTest,
+    ::testing::Values(
+        // Missing required name field
+        CreateTableRequestInvalidParam{
+            .test_name = "MissingName",
+            .invalid_json_str =
+                R"({"schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true}]}})",
+            .expected_error_message = "Missing 'name'"},
+        // Missing required schema field
+        CreateTableRequestInvalidParam{.test_name = "MissingSchema",
+                                       .invalid_json_str = R"({"name":"my_table"})",
+                                       .expected_error_message = "Missing 'schema'"},
+        // Empty JSON object
+        CreateTableRequestInvalidParam{.test_name = "EmptyJson",
+                                       .invalid_json_str = R"({})",
+                                       .expected_error_message = "Missing 'name'"},
+        // Wrong type for name field
+        CreateTableRequestInvalidParam{
+            .test_name = "WrongNameType",
+            .invalid_json_str =
+                R"({"name":123,"schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true}]}})",
+            .expected_error_message = "type must be string, but is number"},
+        // Wrong type for schema field
+        CreateTableRequestInvalidParam{
+            .test_name = "WrongSchemaType",
+            .invalid_json_str = R"({"name":"my_table","schema":"invalid"})",
+            .expected_error_message = "Unknown primitive type: invalid"}),
+    [](const ::testing::TestParamInfo<CreateTableRequestInvalidParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_ROUNDTRIP_TEST(LoadTableResult)
+
+INSTANTIATE_TEST_SUITE_P(
+    LoadTableResultCases, LoadTableResultTest,
+    ::testing::Values(
+        // Minimal case - only required metadata field
+        LoadTableResultParam{
+            .test_name = "MinimalMetadata",
+            .expected_json_str =
+                R"({"metadata":{"current-schema-id":1,"current-snapshot-id":null,"default-sort-order-id":0,"default-spec-id":0,"format-version":2,"last-column-id":1,"last-partition-id":0,"last-sequence-number":0,"last-updated-ms":0,"location":"s3://bucket/test","metadata-log":[],"partition-specs":[{"fields":[],"spec-id":0}],"partition-statistics":[],"properties":{},"refs":{},"schemas":[{"fields":[{"id":1,"name":"id","required":true,"type":"int"}],"schema-id":1,"type":"struct"}],"snapshot-log":[],"snapshots":[],"sort-orders":[{"fields":[],"order-id":0}],"statistics":[],"table-uuid":"test-uuid-1234"}})",
+            .model = {.metadata = MakeSimpleTableMetadata()}},
+        // With metadata location
+        LoadTableResultParam{
+            .test_name = "WithMetadataLocation",
+            .expected_json_str =
+                R"({"metadata":{"current-schema-id":1,"current-snapshot-id":null,"default-sort-order-id":0,"default-spec-id":0,"format-version":2,"last-column-id":1,"last-partition-id":0,"last-sequence-number":0,"last-updated-ms":0,"location":"s3://bucket/test","metadata-log":[],"partition-specs":[{"fields":[],"spec-id":0}],"partition-statistics":[],"properties":{},"refs":{},"schemas":[{"fields":[{"id":1,"name":"id","required":true,"type":"int"}],"schema-id":1,"type":"struct"}],"snapshot-log":[],"snapshots":[],"sort-orders":[{"fields":[],"order-id":0}],"statistics":[],"table-uuid":"test-uuid-1234"},"metadata-location":"s3://bucket/metadata/v1.json"})",
+            .model = {.metadata_location = "s3://bucket/metadata/v1.json",
+                      .metadata = MakeSimpleTableMetadata()}},
+        // With config
+        LoadTableResultParam{
+            .test_name = "WithConfig",
+            .expected_json_str =
+                R"({"config":{"warehouse":"s3://bucket/warehouse"},"metadata":{"current-schema-id":1,"current-snapshot-id":null,"default-sort-order-id":0,"default-spec-id":0,"format-version":2,"last-column-id":1,"last-partition-id":0,"last-sequence-number":0,"last-updated-ms":0,"location":"s3://bucket/test","metadata-log":[],"partition-specs":[{"fields":[],"spec-id":0}],"partition-statistics":[],"properties":{},"refs":{},"schemas":[{"fields":[{"id":1,"name":"id","required":true,"type":"int"}],"schema-id":1,"type":"struct"}],"snapshot-log":[],"snapshots":[],"sort-orders":[{"fields":[],"order-id":0}],"statistics":[],"table-uuid":"test-uuid-1234"}})",
+            .model = {.metadata = MakeSimpleTableMetadata(),
+                      .config = {{"warehouse", "s3://bucket/warehouse"}}}},
+        // With both metadata location and config
+        LoadTableResultParam{
+            .test_name = "WithMetadataLocationAndConfig",
+            .expected_json_str =
+                R"({"config":{"foo":"bar","warehouse":"s3://bucket/warehouse"},"metadata":{"current-schema-id":1,"current-snapshot-id":null,"default-sort-order-id":0,"default-spec-id":0,"format-version":2,"last-column-id":1,"last-partition-id":0,"last-sequence-number":0,"last-updated-ms":0,"location":"s3://bucket/test","metadata-log":[],"partition-specs":[{"fields":[],"spec-id":0}],"partition-statistics":[],"properties":{},"refs":{},"schemas":[{"fields":[{"id":1,"name":"id","required":true,"type":"int"}],"schema-id":1,"type":"struct"}],"snapshot-log":[],"snapshots":[],"sort-orders":[{"fields":[],"order-id":0}],"statistics":[],"table-uuid":"test-uuid-1234"},"metadata-location":"s3://bucket/metadata/v1.json"})",
+            .model = {.metadata_location = "s3://bucket/metadata/v1.json",
+                      .metadata = MakeSimpleTableMetadata(),
+                      .config = {{"warehouse", "s3://bucket/warehouse"},
+                                 {"foo", "bar"}}}}),
+    [](const ::testing::TestParamInfo<LoadTableResultParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_DESERIALIZE_TEST(LoadTableResult)
+
+INSTANTIATE_TEST_SUITE_P(
+    LoadTableResultDeserializeCases, LoadTableResultDeserializeTest,
+    ::testing::Values(
+        // Minimal metadata - tests basic deserialization
+        LoadTableResultDeserializeParam{
+            .test_name = "MinimalMetadata",
+            .json_str =
+                R"({"metadata":{"format-version":2,"table-uuid":"test-uuid-1234","location":"s3://bucket/test","last-sequence-number":0,"last-updated-ms":0,"last-column-id":1,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0,"properties":{}}})",
+            .expected_model = {.metadata = MakeSimpleTableMetadata()}},
+        // With metadata location
+        LoadTableResultDeserializeParam{
+            .test_name = "WithMetadataLocation",
+            .json_str =
+                R"({"metadata-location":"s3://bucket/metadata/v1.json","metadata":{"format-version":2,"table-uuid":"test-uuid-1234","location":"s3://bucket/test","last-sequence-number":0,"last-updated-ms":0,"last-column-id":1,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0,"properties":{}}})",
+            .expected_model = {.metadata_location = "s3://bucket/metadata/v1.json",
+                               .metadata = MakeSimpleTableMetadata()}},
+        // With config
+        LoadTableResultDeserializeParam{
+            .test_name = "WithConfig",
+            .json_str =
+                R"({"metadata":{"format-version":2,"table-uuid":"test-uuid-1234","location":"s3://bucket/test","last-sequence-number":0,"last-updated-ms":0,"last-column-id":1,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0,"properties":{}},"config":{"warehouse":"s3://bucket/warehouse"}})",
+            .expected_model = {.metadata = MakeSimpleTableMetadata(),
+                               .config = {{"warehouse", "s3://bucket/warehouse"}}}}),
+    [](const ::testing::TestParamInfo<LoadTableResultDeserializeParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_INVALID_TEST(LoadTableResult)
+
+INSTANTIATE_TEST_SUITE_P(
+    LoadTableResultInvalidCases, LoadTableResultInvalidTest,
+    ::testing::Values(
+        // Missing required metadata field
+        LoadTableResultInvalidParam{.test_name = "MissingMetadata",
+                                    .invalid_json_str = R"({})",
+                                    .expected_error_message = "Missing 'metadata'"},
+        // Null metadata field
+        LoadTableResultInvalidParam{.test_name = "NullMetadata",
+                                    .invalid_json_str = R"({"metadata":null})",
+                                    .expected_error_message = "Missing 'metadata'"},
+        // Wrong type for metadata field
+        LoadTableResultInvalidParam{
+            .test_name = "WrongMetadataType",
+            .invalid_json_str = R"({"metadata":"invalid"})",
+            .expected_error_message = "Cannot parse metadata from a non-object"},
+        // Wrong type for metadata-location field
+        LoadTableResultInvalidParam{
+            .test_name = "WrongMetadataLocationType",
+            .invalid_json_str =
+                R"({"metadata-location":123,"metadata":{"format-version":2,"table-uuid":"test","location":"s3://test","last-sequence-number":0,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"default-spec-id":0,"last-partition-id":0,"default-sort-order-id":0}})",
+            .expected_error_message = "type must be string, but is number"},
+        // Wrong type for config field
+        LoadTableResultInvalidParam{
+            .test_name = "WrongConfigType",
+            .invalid_json_str =
+                R"({"config":"invalid","metadata":{"format-version":2,"table-uuid":"test","location":"s3://test","last-sequence-number":0,"last-column-id":1,"last-updated-ms":0,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0}})",
+            .expected_error_message = "type must be object, but is string"},
+        // Invalid metadata content
+        LoadTableResultInvalidParam{
+            .test_name = "InvalidMetadataContent",
+            .invalid_json_str = R"({"metadata":{"format-version":"invalid"}})",
+            .expected_error_message = "type must be number, but is string"}),
+    [](const ::testing::TestParamInfo<LoadTableResultInvalidParam>& info) {
       return info.param.test_name;
     });
 

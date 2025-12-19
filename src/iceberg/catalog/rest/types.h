@@ -159,6 +159,8 @@ struct ICEBERG_REST_EXPORT CreateTableRequest {
     }
     return {};
   }
+
+  bool operator==(const CreateTableRequest& other) const;
 };
 
 /// \brief An opaque token that allows clients to make use of pagination for list APIs.
@@ -179,7 +181,7 @@ struct ICEBERG_REST_EXPORT LoadTableResult {
     return {};
   }
 
-  bool operator==(const LoadTableResult&) const = default;
+  bool operator==(const LoadTableResult& other) const;
 };
 
 /// \brief Alias of LoadTableResult used as the body of CreateTableResponse

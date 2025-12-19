@@ -133,7 +133,7 @@ class RestCatalogIntegrationTest : public ::testing::Test {
         .Set(RestCatalogProperties::kName, std::string(kCatalogName))
         .Set(RestCatalogProperties::kWarehouse, std::string(kWarehouseName));
     auto file_io = std::make_shared<test::StdFileIO>();
-    return RestCatalog::Make(*config, file_io);
+    return RestCatalog::Make(*config, std::make_shared<test::StdFileIO>());
   }
 
   static inline std::unique_ptr<DockerCompose> docker_compose_;
