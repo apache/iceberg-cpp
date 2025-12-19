@@ -19,6 +19,12 @@ iceberg_install_all_headers(iceberg/avro)
 
 # avro_scan benchmark executable
 add_executable(avro_scan avro_scan.cc)
-target_link_libraries(avro_scan PRIVATE iceberg_bundle_static)
+
+if(ICEBERG_BUILD_SHARED)
+  target_link_libraries(avro_scan PRIVATE iceberg_bundle_shared Arrow::arrow_shared)
+else()
+  target_link_libraries(avro_scan PRIVATE iceberg_bundle_static Arrow::arrow_static)
+endif()
+
 set_target_properties(avro_scan PROPERTIES RUNTIME_OUTPUT_DIRECTORY
                                            "${CMAKE_BINARY_DIR}/src/iceberg/avro")
