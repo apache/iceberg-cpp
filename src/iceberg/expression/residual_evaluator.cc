@@ -235,6 +235,7 @@ Result<std::shared_ptr<Expression>> ResidualVisitor::Predicate(
     // Not associated with a partition field, can't be evaluated
     return pred;
   }
+  auto schema = partition_type_->ToSchema();
 
   for (const auto& part : parts) {
     // Check the strict projection
@@ -243,9 +244,8 @@ Result<std::shared_ptr<Expression>> ResidualVisitor::Predicate(
     std::shared_ptr<Expression> strict_result = nullptr;
 
     if (strict_projection != nullptr) {
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto bound_strict,
-          strict_projection->Bind(*partition_type_->ToSchema(), case_sensitive_));
+      ICEBERG_ASSIGN_OR_RAISE(auto bound_strict,
+                              strict_projection->Bind(*schema, case_sensitive_));
       if (bound_strict->is_bound_predicate()) {
         ICEBERG_ASSIGN_OR_RAISE(
             strict_result, BoundVisitor::Predicate(
@@ -268,9 +268,8 @@ Result<std::shared_ptr<Expression>> ResidualVisitor::Predicate(
     std::shared_ptr<Expression> inclusive_result = nullptr;
 
     if (inclusive_projection != nullptr) {
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto bound_inclusive,
-          inclusive_projection->Bind(*partition_type_->ToSchema(), case_sensitive_));
+      ICEBERG_ASSIGN_OR_RAISE(auto bound_inclusive,
+                              inclusive_projection->Bind(*schema, case_sensitive_));
 
       if (bound_inclusive->is_bound_predicate()) {
         ICEBERG_ASSIGN_OR_RAISE(

@@ -59,22 +59,28 @@ class ICEBERG_EXPORT Schema : public StructType {
 
   std::string ToString() const override;
 
-  /// \brief Recursively Find the SchemaField by field name.
+  /// \brief Recursively find the SchemaField by field name.
   ///
   /// Short names for maps and lists are included for any name that does not conflict with
   /// a canonical name. For example, a list, 'l', of structs with field 'x' will produce
-  /// short name 'l.x' in addition to canonical name 'l.element.x'.
+  /// short name 'l.x' in addition to canonical name 'l.element.x'. A map 'm', if its
+  /// value include a structs with field 'x' wil produce short name 'm.x' in addition to
+  /// canonical name 'm.value.x'.
   /// FIXME: Currently only handles ASCII lowercase conversion; extend to support
   /// non-ASCII characters (e.g., using std::towlower or ICU)
   Result<std::optional<std::reference_wrapper<const SchemaField>>> FindFieldByName(
       std::string_view name, bool case_sensitive = true) const;
 
-  /// \brief Recursively Find the SchemaField by field id.
+  /// \brief Recursively find the SchemaField by field id.
+  ///
+  /// \param field_id The id of the field to get the accessor for.
+  /// \return The field with the given id, or std::nullopt if not found.
   Result<std::optional<std::reference_wrapper<const SchemaField>>> FindFieldById(
       int32_t field_id) const;
 
   /// \brief Get the accessor to access the field by field id.
   ///
+  /// \param field_id The id of the field to get the accessor for.
   /// \return The accessor to access the field, or NotFound if the field is not found.
   Result<std::unique_ptr<StructLikeAccessor>> GetAccessorById(int32_t field_id) const;
 
