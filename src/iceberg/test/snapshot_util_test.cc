@@ -31,6 +31,8 @@
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/mock_catalog.h"
+#include "iceberg/test/mock_io.h"
 #include "iceberg/util/snapshot_util_internal.h"
 #include "iceberg/util/timepoint.h"
 
@@ -62,11 +64,11 @@ std::shared_ptr<Snapshot> CreateSnapshot(int64_t snapshot_id,
 }
 
 // Helper to create table metadata with snapshots
-std::unique_ptr<TableMetadata> CreateTableMetadataWithSnapshots(
+std::shared_ptr<TableMetadata> CreateTableMetadataWithSnapshots(
     int64_t base_snapshot_id, int64_t main1_snapshot_id, int64_t main2_snapshot_id,
     int64_t branch_snapshot_id, int64_t fork0_snapshot_id, int64_t fork1_snapshot_id,
     int64_t fork2_snapshot_id, TimePointMs base_timestamp) {
-  auto metadata = std::make_unique<TableMetadata>();
+  auto metadata = std::make_shared<TableMetadata>();
   metadata->format_version = 2;
   metadata->table_uuid = "test-uuid-1234";
   metadata->location = "s3://bucket/test";
@@ -157,8 +159,11 @@ class SnapshotUtilTest : public ::testing::Test {
         fork0_snapshot_id_, fork1_snapshot_id_, fork2_snapshot_id_, base_timestamp_);
 
     TableIdentifier table_ident{.ns = {}, .name = "test"};
-    table_ = std::make_unique<Table>(table_ident, std::move(metadata),
-                                     "s3://bucket/test/metadata.json", nullptr, nullptr);
+    auto io = std::make_shared<MockFileIO>();
+    auto catalog = std::make_shared<MockCatalog>();
+    table_ = std::move(Table::Make(table_ident, std::move(metadata),
+                                   "s3://bucket/test/metadata.json", io, catalog)
+                           .value());
   }
 
   TimePointMs base_timestamp_;
@@ -169,7 +174,7 @@ class SnapshotUtilTest : public ::testing::Test {
   int64_t fork0_snapshot_id_;
   int64_t fork1_snapshot_id_;
   int64_t fork2_snapshot_id_;
-  std::unique_ptr<Table> table_;
+  std::shared_ptr<Table> table_;
 };
 
 TEST_F(SnapshotUtilTest, IsParentAncestorOf) {
