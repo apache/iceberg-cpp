@@ -123,6 +123,8 @@ class ICEBERG_EXPORT StructType : public NestedType {
       std::string_view name, bool case_sensitive) const override;
   using NestedType::GetFieldByName;
 
+  std::unique_ptr<Schema> ToSchema() const;
+
  protected:
   bool Equals(const Type& other) const override;
 

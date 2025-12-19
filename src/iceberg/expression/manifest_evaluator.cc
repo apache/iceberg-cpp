@@ -363,12 +363,10 @@ Result<std::unique_ptr<ManifestEvaluator>> ManifestEvaluator::MakePartitionFilte
     std::shared_ptr<Expression> expr, const std::shared_ptr<PartitionSpec>& spec,
     const Schema& schema, bool case_sensitive) {
   ICEBERG_ASSIGN_OR_RAISE(auto partition_type, spec->PartitionType(schema));
-  auto field_span = partition_type->fields();
-  std::vector<SchemaField> fields(field_span.begin(), field_span.end());
-  auto partition_schema = std::make_shared<Schema>(fields);
   ICEBERG_ASSIGN_OR_RAISE(auto rewrite_expr, RewriteNot::Visit(std::move(expr)));
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_expr,
-                          Binder::Bind(*partition_schema, rewrite_expr, case_sensitive));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto partition_expr,
+      Binder::Bind(*partition_type->ToSchema(), rewrite_expr, case_sensitive));
   return std::unique_ptr<ManifestEvaluator>(
       new ManifestEvaluator(std::move(partition_expr)));
 }

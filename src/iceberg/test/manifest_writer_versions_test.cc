@@ -241,10 +241,9 @@ class ManifestWriterVersionsTest : public ::testing::Test {
   }
 
   std::vector<ManifestEntry> ReadManifest(const ManifestFile& manifest_file) {
-    auto partition_schema_result = spec_->PartitionType(*schema_);
-    EXPECT_THAT(partition_schema_result, IsOk());
-    std::shared_ptr<StructType> partition_type =
-        std::move(partition_schema_result.value());
+    auto partition_type_result = spec_->PartitionType(*schema_);
+    EXPECT_THAT(partition_type_result, IsOk());
+    std::shared_ptr<StructType> partition_type = std::move(partition_type_result.value());
     auto reader_result = ManifestReader::Make(manifest_file, file_io_, partition_type);
     EXPECT_THAT(reader_result, IsOk());
 

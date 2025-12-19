@@ -25,6 +25,7 @@
 #include <utility>
 
 #include "iceberg/exception.h"
+#include "iceberg/schema.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
@@ -48,6 +49,7 @@ std::string StructType::ToString() const {
   repr += ">";
   return repr;
 }
+
 std::span<const SchemaField> StructType::fields() const { return fields_; }
 Result<std::optional<NestedType::SchemaFieldConstRef>> StructType::GetFieldById(
     int32_t field_id) const {
@@ -56,6 +58,7 @@ Result<std::optional<NestedType::SchemaFieldConstRef>> StructType::GetFieldById(
   if (it == field_by_id.get().end()) return std::nullopt;
   return it->second;
 }
+
 Result<std::optional<NestedType::SchemaFieldConstRef>> StructType::GetFieldByIndex(
     int32_t index) const {
   if (index < 0 || static_cast<size_t>(index) >= fields_.size()) {
@@ -63,6 +66,7 @@ Result<std::optional<NestedType::SchemaFieldConstRef>> StructType::GetFieldByInd
   }
   return fields_[index];
 }
+
 Result<std::optional<NestedType::SchemaFieldConstRef>> StructType::GetFieldByName(
     std::string_view name, bool case_sensitive) const {
   if (case_sensitive) {
@@ -81,6 +85,11 @@ Result<std::optional<NestedType::SchemaFieldConstRef>> StructType::GetFieldByNam
   }
   return std::nullopt;
 }
+
+std::unique_ptr<Schema> StructType::ToSchema() const {
+  return std::make_unique<Schema>(fields_);
+}
+
 bool StructType::Equals(const Type& other) const {
   if (other.type_id() != TypeId::kStruct) {
     return false;
@@ -88,6 +97,7 @@ bool StructType::Equals(const Type& other) const {
   const auto& struct_ = static_cast<const StructType&>(other);
   return fields_ == struct_.fields_;
 }
+
 Result<std::unordered_map<int32_t, StructType::SchemaFieldConstRef>>
 StructType::InitFieldById(const StructType& self) {
   std::unordered_map<int32_t, SchemaFieldConstRef> field_by_id;
@@ -100,6 +110,7 @@ StructType::InitFieldById(const StructType& self) {
   }
   return field_by_id;
 }
+
 Result<std::unordered_map<std::string_view, StructType::SchemaFieldConstRef>>
 StructType::InitFieldByName(const StructType& self) {
   std::unordered_map<std::string_view, StructType::SchemaFieldConstRef> field_by_name;
@@ -113,6 +124,7 @@ StructType::InitFieldByName(const StructType& self) {
   }
   return field_by_name;
 }
+
 Result<std::unordered_map<std::string, StructType::SchemaFieldConstRef>>
 StructType::InitFieldByLowerCaseName(const StructType& self) {
   std::unordered_map<std::string, SchemaFieldConstRef> field_by_lowercase_name;
@@ -146,6 +158,7 @@ std::string ListType::ToString() const {
   repr += ">";
   return repr;
 }
+
 std::span<const SchemaField> ListType::fields() const { return {&element_, 1}; }
 Result<std::optional<NestedType::SchemaFieldConstRef>> ListType::GetFieldById(
     int32_t field_id) const {
@@ -154,6 +167,7 @@ Result<std::optional<NestedType::SchemaFieldConstRef>> ListType::GetFieldById(
   }
   return std::nullopt;
 }
+
 Result<std::optional<NestedType::SchemaFieldConstRef>> ListType::GetFieldByIndex(
     int index) const {
   if (index == 0) {
@@ -161,6 +175,7 @@ Result<std::optional<NestedType::SchemaFieldConstRef>> ListType::GetFieldByIndex
   }
   return InvalidArgument("Invalid index {} to get field from list", index);
 }
+
 Result<std::optional<NestedType::SchemaFieldConstRef>> ListType::GetFieldByName(
     std::string_view name, bool case_sensitive) const {
   if (case_sensitive) {
@@ -174,6 +189,7 @@ Result<std::optional<NestedType::SchemaFieldConstRef>> ListType::GetFieldByName(
   }
   return std::nullopt;
 }
+
 bool ListType::Equals(const Type& other) const {
   if (other.type_id() != TypeId::kList) {
     return false;
@@ -195,6 +211,7 @@ MapType::MapType(SchemaField key, SchemaField value)
 const SchemaField& MapType::key() const { return fields_[0]; }
 const SchemaField& MapType::value() const { return fields_[1]; }
 TypeId MapType::type_id() const { return kTypeId; }
+
 std::string MapType::ToString() const {
   // XXX: work around Clang/libc++: "<{}>" in a format string appears to get
   // parsed as {<>} or something; split up the format string to avoid that
@@ -204,6 +221,7 @@ std::string MapType::ToString() const {
   repr += ">";
   return repr;
 }
+
 std::span<const SchemaField> MapType::fields() const { return fields_; }
 Result<std::optional<NestedType::SchemaFieldConstRef>> MapType::GetFieldById(
     int32_t field_id) const {
@@ -214,6 +232,7 @@ Result<std::optional<NestedType::SchemaFieldConstRef>> MapType::GetFieldById(
   }
   return std::nullopt;
 }
+
 Result<std::optional<NestedType::SchemaFieldConstRef>> MapType::GetFieldByIndex(
     int32_t index) const {
   if (index == 0) {
@@ -223,6 +242,7 @@ Result<std::optional<NestedType::SchemaFieldConstRef>> MapType::GetFieldByIndex(
   }
   return InvalidArgument("Invalid index {} to get field from map", index);
 }
+
 Result<std::optional<NestedType::SchemaFieldConstRef>> MapType::GetFieldByName(
     std::string_view name, bool case_sensitive) const {
   if (case_sensitive) {
@@ -241,6 +261,7 @@ Result<std::optional<NestedType::SchemaFieldConstRef>> MapType::GetFieldByName(
   }
   return std::nullopt;
 }
+
 bool MapType::Equals(const Type& other) const {
   if (other.type_id() != TypeId::kMap) {
     return false;
