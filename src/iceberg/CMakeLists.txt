@@ -156,6 +156,13 @@ add_iceberg_lib(iceberg
                 OUTPUTS
                 ICEBERG_LIBRARIES)
 
+if(ICEBERG_BUILD_SHARED)
+  set_target_properties(iceberg_shared
+                        PROPERTIES C_VISIBILITY_PRESET hidden
+                                   CXX_VISIBILITY_PRESET hidden VISIBILITY_INLINES_HIDDEN
+                                                                1)
+endif()
+
 iceberg_install_all_headers(iceberg)
 
 add_subdirectory(catalog)

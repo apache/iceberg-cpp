@@ -21,8 +21,8 @@
 
 #include <arrow/type_fwd.h>
 
-#include "iceberg/iceberg_bundle_export.h"
 #include "iceberg/arrow/metadata_column_util_internal.h"
+#include "iceberg/iceberg_bundle_export.h"
 #include "iceberg/schema_util.h"
 
 namespace iceberg::parquet {
