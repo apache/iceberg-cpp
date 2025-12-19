@@ -71,7 +71,8 @@ class ICEBERG_EXPORT InMemoryCatalog
   Result<std::vector<TableIdentifier>> ListTables(const Namespace& ns) const override;
 
   Result<std::shared_ptr<Table>> CreateTable(
-      const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
+      const TableIdentifier& identifier, const std::shared_ptr<Schema>& schema,
+      const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<SortOrder>& order,
       const std::string& location,
       const std::unordered_map<std::string, std::string>& properties) override;
 
@@ -81,7 +82,8 @@ class ICEBERG_EXPORT InMemoryCatalog
       const std::vector<std::unique_ptr<TableUpdate>>& updates) override;
 
   Result<std::shared_ptr<Transaction>> StageCreateTable(
-      const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
+      const TableIdentifier& identifier, const std::shared_ptr<Schema>& schema,
+      const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<SortOrder>& order,
       const std::string& location,
       const std::unordered_map<std::string, std::string>& properties) override;
 

@@ -20,8 +20,8 @@
 #pragma once
 
 #include <memory>
-#include <set>
 #include <string>
+#include <unordered_set>
 
 #include "iceberg/catalog.h"
 #include "iceberg/catalog/rest/endpoint.h"
@@ -35,7 +35,8 @@
 namespace iceberg::rest {
 
 /// \brief Rest catalog implementation.
-class ICEBERG_REST_EXPORT RestCatalog : public Catalog {
+class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
+                                        public std::enable_shared_from_this<RestCatalog> {
  public:
   ~RestCatalog() override;
 
@@ -47,8 +48,10 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog {
   /// \brief Create a RestCatalog instance
   ///
   /// \param config the configuration for the RestCatalog
-  /// \return a unique_ptr to RestCatalog instance
-  static Result<std::unique_ptr<RestCatalog>> Make(const RestCatalogProperties& config);
+  /// \param file_io the FileIO instance to use for table operations
+  /// \return a shared_ptr to RestCatalog instance
+  static Result<std::shared_ptr<RestCatalog>> Make(const RestCatalogProperties& config,
+                                                   std::shared_ptr<FileIO> file_io);
 
   std::string_view name() const override;
 
@@ -72,7 +75,8 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog {
   Result<std::vector<TableIdentifier>> ListTables(const Namespace& ns) const override;
 
   Result<std::shared_ptr<Table>> CreateTable(
-      const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
+      const TableIdentifier& identifier, const std::shared_ptr<Schema>& schema,
+      const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<SortOrder>& order,
       const std::string& location,
       const std::unordered_map<std::string, std::string>& properties) override;
 
@@ -82,7 +86,8 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog {
       const std::vector<std::unique_ptr<TableUpdate>>& updates) override;
 
   Result<std::shared_ptr<Transaction>> StageCreateTable(
-      const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
+      const TableIdentifier& identifier, const std::shared_ptr<Schema>& schema,
+      const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<SortOrder>& order,
       const std::string& location,
       const std::unordered_map<std::string, std::string>& properties) override;
 
@@ -100,10 +105,11 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog {
 
  private:
   RestCatalog(std::unique_ptr<RestCatalogProperties> config,
-              std::unique_ptr<ResourcePaths> paths,
+              std::shared_ptr<FileIO> file_io, std::unique_ptr<ResourcePaths> paths,
               std::unordered_set<Endpoint> endpoints);
 
   std::unique_ptr<RestCatalogProperties> config_;
+  std::shared_ptr<FileIO> file_io_;
   std::unique_ptr<HttpClient> client_;
   std::unique_ptr<ResourcePaths> paths_;
   std::string name_;

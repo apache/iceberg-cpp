@@ -56,7 +56,8 @@ class MockCatalog : public Catalog {
               (const, override));
 
   MOCK_METHOD((Result<std::shared_ptr<Table>>), CreateTable,
-              (const TableIdentifier&, const Schema&, const PartitionSpec&,
+              (const TableIdentifier&, const std::shared_ptr<Schema>&,
+               const std::shared_ptr<PartitionSpec>&, const std::shared_ptr<SortOrder>&,
                const std::string&, (const std::unordered_map<std::string, std::string>&)),
               (override));
 
@@ -67,7 +68,8 @@ class MockCatalog : public Catalog {
               (override));
 
   MOCK_METHOD((Result<std::shared_ptr<Transaction>>), StageCreateTable,
-              (const TableIdentifier&, const Schema&, const PartitionSpec&,
+              (const TableIdentifier&, const std::shared_ptr<Schema>&,
+               const std::shared_ptr<PartitionSpec>&, const std::shared_ptr<SortOrder>&,
                const std::string&, (const std::unordered_map<std::string, std::string>&)),
               (override));
 

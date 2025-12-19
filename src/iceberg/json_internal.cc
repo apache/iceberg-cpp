@@ -220,18 +220,6 @@ Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
   return SortOrder::Make(*current_schema, order_id, std::move(sort_fields));
 }
 
-Result<std::unique_ptr<SortOrder>> SortOrderFromJson(const nlohmann::json& json) {
-  ICEBERG_ASSIGN_OR_RAISE(auto order_id, GetJsonValue<int32_t>(json, kOrderId));
-  ICEBERG_ASSIGN_OR_RAISE(auto fields, GetJsonValue<nlohmann::json>(json, kFields));
-
-  std::vector<SortField> sort_fields;
-  for (const auto& field_json : fields) {
-    ICEBERG_ASSIGN_OR_RAISE(auto sort_field, SortFieldFromJson(field_json));
-    sort_fields.push_back(std::move(*sort_field));
-  }
-  return SortOrder::Make(order_id, std::move(sort_fields));
-}
-
 nlohmann::json ToJson(const SchemaField& field) {
   nlohmann::json json;
   json[kId] = field.field_id();

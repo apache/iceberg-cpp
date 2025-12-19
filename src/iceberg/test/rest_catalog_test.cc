@@ -39,9 +39,14 @@
 #include "iceberg/catalog/rest/error_handlers.h"
 #include "iceberg/catalog/rest/http_client.h"
 #include "iceberg/catalog/rest/json_internal.h"
+#include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
+#include "iceberg/schema.h"
+#include "iceberg/sort_order.h"
+#include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/test/matchers.h"
+#include "iceberg/test/std_io.h"
 #include "iceberg/test/test_resource.h"
 #include "iceberg/test/util/docker_compose_util.h"
 
@@ -120,14 +125,15 @@ class RestCatalogIntegrationTest : public ::testing::Test {
   void TearDown() override {}
 
   // Helper function to create a REST catalog instance
-  Result<std::unique_ptr<RestCatalog>> CreateCatalog() {
+  Result<std::shared_ptr<RestCatalog>> CreateCatalog() {
     auto config = RestCatalogProperties::default_properties();
     config
         ->Set(RestCatalogProperties::kUri,
               std::format("{}:{}", kLocalhostUri, kRestCatalogPort))
         .Set(RestCatalogProperties::kName, std::string(kCatalogName))
         .Set(RestCatalogProperties::kWarehouse, std::string(kWarehouseName));
-    return RestCatalog::Make(*config);
+    auto file_io = std::make_shared<test::StdFileIO>();
+    return RestCatalog::Make(*config, file_io);
   }
 
   static inline std::unique_ptr<DockerCompose> docker_compose_;
@@ -335,6 +341,63 @@ TEST_F(RestCatalogIntegrationTest, DropNamespace) {
   exists_result = catalog->NamespaceExists(ns);
   ASSERT_THAT(exists_result, IsOk());
   EXPECT_FALSE(*exists_result);
+}
+
+TEST_F(RestCatalogIntegrationTest, CreateTable) {
+  auto catalog_result = CreateCatalog();
+  ASSERT_THAT(catalog_result, IsOk());
+  auto& catalog = catalog_result.value();
+
+  // Create nested namespace with properties
+  Namespace ns{.levels = {"test_create_table", "apple", "ios"}};
+  std::unordered_map<std::string, std::string> ns_properties{{"owner", "ray"},
+                                                             {"community", "apache"}};
+
+  // Create parent namespaces first
+  auto status = catalog->CreateNamespace(Namespace{.levels = {"test_create_table"}}, {});
+  EXPECT_THAT(status, IsOk());
+  status =
+      catalog->CreateNamespace(Namespace{.levels = {"test_create_table", "apple"}}, {});
+  EXPECT_THAT(status, IsOk());
+  status = catalog->CreateNamespace(ns, ns_properties);
+  EXPECT_THAT(status, IsOk());
+
+  // Create schema
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeOptional(1, "foo", string()),
+                               SchemaField::MakeRequired(2, "bar", int32()),
+                               SchemaField::MakeOptional(3, "baz", boolean())},
+      /*schema_id=*/1);
+
+  // Create partition spec and sort order (unpartitioned and unsorted)
+  auto partition_spec_result = PartitionSpec::Make(PartitionSpec::kInitialSpecId, {}, 0);
+  ASSERT_THAT(partition_spec_result, IsOk());
+  auto partition_spec = std::shared_ptr<PartitionSpec>(std::move(*partition_spec_result));
+
+  auto sort_order_result =
+      SortOrder::Make(SortOrder::kUnsortedOrderId, std::vector<SortField>{});
+  ASSERT_THAT(sort_order_result, IsOk());
+  auto sort_order = std::shared_ptr<SortOrder>(std::move(*sort_order_result));
+
+  // Create table
+  TableIdentifier table_id{.ns = ns, .name = "t1"};
+  std::unordered_map<std::string, std::string> table_properties;
+  auto table_result = catalog->CreateTable(table_id, schema, partition_spec, sort_order,
+                                           "", table_properties);
+  ASSERT_THAT(table_result, IsOk());
+  auto& table = table_result.value();
+
+  // Verify table
+  EXPECT_EQ(table->name().ns.levels,
+            (std::vector<std::string>{"test_create_table", "apple", "ios"}));
+  EXPECT_EQ(table->name().name, "t1");
+
+  // Verify that creating the same table again fails
+  auto duplicate_result = catalog->CreateTable(table_id, schema, partition_spec,
+                                               sort_order, "", table_properties);
+  EXPECT_THAT(duplicate_result, IsError(ErrorKind::kAlreadyExists));
+  EXPECT_THAT(duplicate_result,
+              HasErrorMessage("Table already exists: test_create_table.apple.ios.t1"));
 }
 
 }  // namespace iceberg::rest

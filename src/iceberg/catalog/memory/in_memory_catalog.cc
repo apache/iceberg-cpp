@@ -400,7 +400,8 @@ Result<std::vector<TableIdentifier>> InMemoryCatalog::ListTables(
 }
 
 Result<std::shared_ptr<Table>> InMemoryCatalog::CreateTable(
-    const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
+    const TableIdentifier& identifier, const std::shared_ptr<Schema>& schema,
+    const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<SortOrder>& order,
     const std::string& location,
     const std::unordered_map<std::string, std::string>& properties) {
   std::unique_lock lock(mutex_);
@@ -439,7 +440,8 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::UpdateTable(
 }
 
 Result<std::shared_ptr<Transaction>> InMemoryCatalog::StageCreateTable(
-    const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
+    const TableIdentifier& identifier, const std::shared_ptr<Schema>& schema,
+    const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<SortOrder>& order,
     const std::string& location,
     const std::unordered_map<std::string, std::string>& properties) {
   std::unique_lock lock(mutex_);

@@ -19,6 +19,7 @@
 
 #include "iceberg/catalog/rest/json_internal.h"
 
+#include <memory>
 #include <string>
 #include <utility>
 #include <vector>
@@ -27,6 +28,8 @@
 
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/json_internal.h"
+#include "iceberg/partition_spec.h"
+#include "iceberg/sort_order.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/util/json_util_internal.h"
 #include "iceberg/util/macros.h"
@@ -336,6 +339,57 @@ Result<ListTablesResponse> ListTablesResponseFromJson(const nlohmann::json& json
   return response;
 }
 
+nlohmann::json ToJson(const CreateTableRequest& request) {
+  nlohmann::json json;
+  json[kName] = request.name;
+  SetOptionalStringField(json, kLocation, request.location);
+  if (request.schema) {
+    json[kSchema] = ToJson(*request.schema);
+  }
+  if (request.partition_spec) {
+    json[kPartitionSpec] = ToJson(*request.partition_spec);
+  }
+  if (request.write_order) {
+    json[kWriteOrder] = ToJson(*request.write_order);
+  }
+  if (request.stage_create) {
+    json[kStageCreate] = request.stage_create;
+  }
+  SetContainerField(json, kProperties, request.properties);
+  return json;
+}
+
+Result<CreateTableRequest> CreateTableRequestFromJson(const nlohmann::json& json) {
+  CreateTableRequest request;
+  ICEBERG_ASSIGN_OR_RAISE(request.name, GetJsonValue<std::string>(json, kName));
+  ICEBERG_ASSIGN_OR_RAISE(request.location,
+                          GetJsonValueOrDefault<std::string>(json, kLocation));
+  ICEBERG_ASSIGN_OR_RAISE(auto schema_json, GetJsonValue<nlohmann::json>(json, kSchema));
+  ICEBERG_ASSIGN_OR_RAISE(request.schema, SchemaFromJson(schema_json));
+
+  if (json.contains(kPartitionSpec)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto partition_spec,
+                            GetJsonValue<nlohmann::json>(json, kPartitionSpec));
+    ICEBERG_ASSIGN_OR_RAISE(request.partition_spec,
+                            PartitionSpecFromJson(request.schema, partition_spec,
+                                                  PartitionSpec::kInitialSpecId));
+  }
+  if (json.contains(kWriteOrder)) {
+    ICEBERG_ASSIGN_OR_RAISE(auto sort_order_json,
+                            GetJsonValue<nlohmann::json>(json, kWriteOrder));
+    ICEBERG_ASSIGN_OR_RAISE(request.write_order,
+                            SortOrderFromJson(sort_order_json, request.schema));
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(request.stage_create,
+                          GetJsonValueOrDefault<bool>(json, kStageCreate, false));
+  ICEBERG_ASSIGN_OR_RAISE(
+      request.properties,
+      GetJsonValueOrDefault<decltype(request.properties)>(json, kProperties));
+  ICEBERG_RETURN_UNEXPECTED(request.Validate());
+  return request;
+}
+
 #define ICEBERG_DEFINE_FROM_JSON(Model)                       \
   template <>                                                 \
   Result<Model> FromJson<Model>(const nlohmann::json& json) { \
@@ -354,5 +408,6 @@ ICEBERG_DEFINE_FROM_JSON(ListTablesResponse)
 ICEBERG_DEFINE_FROM_JSON(LoadTableResult)
 ICEBERG_DEFINE_FROM_JSON(RegisterTableRequest)
 ICEBERG_DEFINE_FROM_JSON(RenameTableRequest)
+ICEBERG_DEFINE_FROM_JSON(CreateTableRequest)
 
 }  // namespace iceberg::rest

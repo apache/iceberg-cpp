@@ -107,11 +107,13 @@ class ICEBERG_EXPORT Catalog {
   /// \param identifier a table identifier
   /// \param schema a schema
   /// \param spec a partition spec
+  /// \param order a sort order
   /// \param location a location for the table; leave empty if unspecified
   /// \param properties a string map of table properties
   /// \return a Table instance or ErrorKind::kAlreadyExists if the table already exists
   virtual Result<std::shared_ptr<Table>> CreateTable(
-      const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
+      const TableIdentifier& identifier, const std::shared_ptr<Schema>& schema,
+      const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<SortOrder>& order,
       const std::string& location,
       const std::unordered_map<std::string, std::string>& properties) = 0;
 
@@ -131,12 +133,14 @@ class ICEBERG_EXPORT Catalog {
   /// \param identifier a table identifier
   /// \param schema a schema
   /// \param spec a partition spec
+  /// \param order a sort order
   /// \param location a location for the table; leave empty if unspecified
   /// \param properties a string map of table properties
   /// \return a Transaction to create the table or ErrorKind::kAlreadyExists if the
   /// table already exists
   virtual Result<std::shared_ptr<Transaction>> StageCreateTable(
-      const TableIdentifier& identifier, const Schema& schema, const PartitionSpec& spec,
+      const TableIdentifier& identifier, const std::shared_ptr<Schema>& schema,
+      const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<SortOrder>& order,
       const std::string& location,
       const std::unordered_map<std::string, std::string>& properties) = 0;
 

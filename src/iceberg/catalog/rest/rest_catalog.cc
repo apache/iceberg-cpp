@@ -40,6 +40,7 @@
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
+#include "iceberg/sort_order.h"
 #include "iceberg/table.h"
 #include "iceberg/util/macros.h"
 
@@ -77,8 +78,8 @@ Result<CatalogConfig> FetchServerConfig(const ResourcePaths& paths,
 
 RestCatalog::~RestCatalog() = default;
 
-Result<std::unique_ptr<RestCatalog>> RestCatalog::Make(
-    const RestCatalogProperties& config) {
+Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
+    const RestCatalogProperties& config, std::shared_ptr<FileIO> file_io) {
   ICEBERG_ASSIGN_OR_RAISE(auto uri, config.Uri());
   ICEBERG_ASSIGN_OR_RAISE(
       auto paths, ResourcePaths::Make(std::string(TrimTrailingSlash(uri)),
@@ -103,14 +104,17 @@ Result<std::unique_ptr<RestCatalog>> RestCatalog::Make(
   ICEBERG_ASSIGN_OR_RAISE(auto final_uri, final_config->Uri());
   ICEBERG_RETURN_UNEXPECTED(paths->SetBaseUri(std::string(TrimTrailingSlash(final_uri))));
 
-  return std::unique_ptr<RestCatalog>(
-      new RestCatalog(std::move(final_config), std::move(paths), std::move(endpoints)));
+  return std::shared_ptr<RestCatalog>(
+      new RestCatalog(std::move(final_config), std::move(file_io), std::move(paths),
+                      std::move(endpoints)));
 }
 
 RestCatalog::RestCatalog(std::unique_ptr<RestCatalogProperties> config,
+                         std::shared_ptr<FileIO> file_io,
                          std::unique_ptr<ResourcePaths> paths,
                          std::unordered_set<Endpoint> endpoints)
     : config_(std::move(config)),
+      file_io_(std::move(file_io)),
       client_(std::make_unique<HttpClient>(config_->ExtractHeaders())),
       paths_(std::move(paths)),
       name_(config_->Get(RestCatalogProperties::kName)),
@@ -241,11 +245,33 @@ Result<std::vector<TableIdentifier>> RestCatalog::ListTables(
 }
 
 Result<std::shared_ptr<Table>> RestCatalog::CreateTable(
-    [[maybe_unused]] const TableIdentifier& identifier,
-    [[maybe_unused]] const Schema& schema, [[maybe_unused]] const PartitionSpec& spec,
-    [[maybe_unused]] const std::string& location,
-    [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties) {
-  return NotImplemented("Not implemented");
+    const TableIdentifier& identifier, const std::shared_ptr<Schema>& schema,
+    const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<SortOrder>& order,
+    const std::string& location,
+    const std::unordered_map<std::string, std::string>& properties) {
+  ICEBERG_RETURN_UNEXPECTED(CheckEndpoint(supported_endpoints_, Endpoint::CreateTable()));
+  ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Tables(identifier.ns));
+
+  CreateTableRequest request{
+      .name = identifier.name,
+      .location = location,
+      .schema = schema,
+      .partition_spec = spec,
+      .write_order = order,
+      .stage_create = false,
+      .properties = properties,
+  };
+
+  ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
+  ICEBERG_ASSIGN_OR_RAISE(
+      const auto response,
+      client_->Post(path, json_request, /*headers=*/{}, *TableErrorHandler::Instance()));
+
+  ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
+  ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
+  return Table::Make(identifier, load_result.metadata,
+                     std::move(load_result.metadata_location), file_io_,
+                     shared_from_this());
 }
 
 Result<std::shared_ptr<Table>> RestCatalog::UpdateTable(
@@ -257,7 +283,9 @@ Result<std::shared_ptr<Table>> RestCatalog::UpdateTable(
 
 Result<std::shared_ptr<Transaction>> RestCatalog::StageCreateTable(
     [[maybe_unused]] const TableIdentifier& identifier,
-    [[maybe_unused]] const Schema& schema, [[maybe_unused]] const PartitionSpec& spec,
+    [[maybe_unused]] const std::shared_ptr<Schema>& schema,
+    [[maybe_unused]] const std::shared_ptr<PartitionSpec>& spec,
+    [[maybe_unused]] const std::shared_ptr<SortOrder>& order,
     [[maybe_unused]] const std::string& location,
     [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties) {
   return NotImplemented("Not implemented");
