@@ -82,7 +82,7 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
     const RestCatalogProperties& config, std::shared_ptr<FileIO> file_io) {
   ICEBERG_ASSIGN_OR_RAISE(auto uri, config.Uri());
   if (!file_io) {
-    return RestError("FileIO instance is required to create RestCatalog");
+    return InvalidArgument("FileIO is required to create RestCatalog");
   }
   ICEBERG_ASSIGN_OR_RAISE(
       auto paths, ResourcePaths::Make(std::string(TrimTrailingSlash(uri)),
