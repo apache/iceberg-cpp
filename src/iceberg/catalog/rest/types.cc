@@ -52,24 +52,20 @@ bool CreateTableRequest::operator==(const CreateTableRequest& other) const {
   if (write_order && *write_order != *other.write_order) {
     return false;
   }
-
   return true;
 }
 
 bool LoadTableResult::operator==(const LoadTableResult& other) const {
-  // Compare primitive fields
   if (metadata_location != other.metadata_location || config != other.config) {
     return false;
   }
 
-  // Compare metadata (required) - deep comparison
   if (!metadata != !other.metadata) {
-    return false;  // One is null, the other isn't
+    return false;
   }
   if (metadata && *metadata != *other.metadata) {
     return false;
   }
-
   return true;
 }
 
