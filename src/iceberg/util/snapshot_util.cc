@@ -47,17 +47,15 @@ Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::AncestorsOf(
 Result<bool> SnapshotUtil::IsAncestorOf(const Table& table, int64_t snapshot_id,
                                         int64_t ancestor_snapshot_id) {
   ICEBERG_ASSIGN_OR_RAISE(auto ancestors, AncestorsOf(table, snapshot_id));
-  for (const auto& snapshot : ancestors) {
-    if (snapshot->snapshot_id == ancestor_snapshot_id) {
-      return true;
-    }
-  }
-  return false;
+  return std::ranges::any_of(ancestors, [ancestor_snapshot_id](const auto& snapshot) {
+    return snapshot->snapshot_id == ancestor_snapshot_id;
+  });
 }
 
 Result<bool> SnapshotUtil::IsAncestorOf(const Table& table,
                                         int64_t ancestor_snapshot_id) {
   ICEBERG_ASSIGN_OR_RAISE(auto current, table.current_snapshot());
+  ICEBERG_DCHECK(current, "Current snapshot is null");
   return IsAncestorOf(table, current->snapshot_id, ancestor_snapshot_id);
 }
 
@@ -73,8 +71,14 @@ Result<bool> SnapshotUtil::IsParentAncestorOf(const Table& table, int64_t snapsh
 
 Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::CurrentAncestors(
     const Table& table) {
-  ICEBERG_ASSIGN_OR_RAISE(auto current, table.current_snapshot());
-  return AncestorsOf(table, current);
+  auto current_result = table.current_snapshot();
+  if (!current_result.has_value()) {
+    if (current_result.error().kind == ErrorKind::kNotFound) {
+      return std::vector<std::shared_ptr<Snapshot>>();
+    }
+    return std::unexpected<Error>(current_result.error());
+  }
+  return AncestorsOf(table, current_result.value());
 }
 
 Result<std::vector<int64_t>> SnapshotUtil::CurrentAncestorIds(const Table& table) {
@@ -105,10 +109,7 @@ Result<std::optional<std::shared_ptr<Snapshot>>> SnapshotUtil::OldestAncestorAft
   auto current_result = table.current_snapshot();
   ICEBERG_RETURN_NULLOPT_IF_NOT_FOUND(current_result);
   auto current = current_result.value();
-  if (!current) {
-    // there are no snapshots or ancestors
-    return std::nullopt;
-  }
+  ICEBERG_DCHECK(current, "Current snapshot is null");
 
   std::optional<std::shared_ptr<Snapshot>> last_snapshot = std::nullopt;
   ICEBERG_ASSIGN_OR_RAISE(auto ancestors, AncestorsOf(table, current));

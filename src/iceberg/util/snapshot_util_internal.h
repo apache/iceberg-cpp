@@ -78,7 +78,7 @@ class ICEBERG_EXPORT SnapshotUtil {
   static Result<std::vector<std::shared_ptr<Snapshot>>> CurrentAncestors(
       const Table& table);
 
-  /// \brief Return the snapshot IDs for the ancestors of the current table state.
+  /// \brief Returns the snapshot IDs for the ancestors of the current table state.
   ///
   /// Ancestor IDs are ordered by commit time, descending. The first ID is the current
   /// snapshot, followed by its parent, and so on.
