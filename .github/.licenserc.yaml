@@ -29,7 +29,6 @@ header:
     - 'LICENSE'
     - 'NOTICE'
     - 'requirements.txt'
-    - 'src/iceberg/expected.h'
     - 'src/iceberg/util/murmurhash3_internal.*'
     - 'src/iceberg/test/resources/**'
 
