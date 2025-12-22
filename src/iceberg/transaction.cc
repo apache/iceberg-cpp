@@ -76,7 +76,7 @@ Status Transaction::Apply(std::vector<std::unique_ptr<TableUpdate>> updates) {
 
 Result<std::shared_ptr<Table>> Transaction::Commit() {
   if (committed_) {
-    return InvalidArgument("Transaction already committed");
+    return Invalid("Transaction already committed");
   }
   if (!last_update_committed_) {
     return InvalidArgument(
