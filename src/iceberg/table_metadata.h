@@ -128,7 +128,7 @@ struct ICEBERG_EXPORT TableMetadata {
   Result<std::shared_ptr<iceberg::Schema>> Schema() const;
   /// \brief Get the current schema by ID, return NotFoundError if not found
   Result<std::shared_ptr<iceberg::Schema>> SchemaById(
-      const std::optional<int32_t>& schema_id) const;
+      std::optional<int32_t> schema_id) const;
   /// \brief Get the current partition spec, return NotFoundError if not found
   Result<std::shared_ptr<iceberg::PartitionSpec>> PartitionSpec() const;
   /// \brief Get the current sort order, return NotFoundError if not found

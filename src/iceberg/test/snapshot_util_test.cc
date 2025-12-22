@@ -337,11 +337,11 @@ TEST_F(SnapshotUtilTest, SnapshotAfter) {
 TEST_F(SnapshotUtilTest, SnapshotIdAsOfTime) {
   // Test with timestamp before any snapshot
   auto early_timestamp = base_timestamp_ - std::chrono::milliseconds(1000);
-  auto snapshot_id = SnapshotUtil::NullableSnapshotIdAsOfTime(*table_, early_timestamp);
+  auto snapshot_id = SnapshotUtil::OptionalSnapshotIdAsOfTime(*table_, early_timestamp);
   EXPECT_FALSE(snapshot_id.has_value());
 
   // Test with timestamp at base snapshot
-  auto snapshot_id1 = SnapshotUtil::NullableSnapshotIdAsOfTime(*table_, base_timestamp_);
+  auto snapshot_id1 = SnapshotUtil::OptionalSnapshotIdAsOfTime(*table_, base_timestamp_);
   ASSERT_TRUE(snapshot_id1.has_value());
   EXPECT_EQ(snapshot_id1.value(), base_snapshot_id_);
 
@@ -357,21 +357,18 @@ TEST_F(SnapshotUtilTest, LatestSnapshot) {
   ICEBERG_UNWRAP_OR_FAIL(
       auto main_snapshot,
       SnapshotUtil::LatestSnapshot(*table_, std::string(SnapshotRef::kMainBranch)));
-  ASSERT_TRUE(main_snapshot.has_value());
-  EXPECT_EQ(main_snapshot.value()->snapshot_id, main2_snapshot_id_);
+  EXPECT_EQ(main_snapshot->snapshot_id, main2_snapshot_id_);
 
   // Test branch
   ICEBERG_UNWRAP_OR_FAIL(auto branch_snapshot,
                          SnapshotUtil::LatestSnapshot(*table_, "b1"));
-  ASSERT_TRUE(branch_snapshot.has_value());
-  EXPECT_EQ(branch_snapshot.value()->snapshot_id, branch_snapshot_id_);
+  EXPECT_EQ(branch_snapshot->snapshot_id, branch_snapshot_id_);
 
   // Test non-existing branch
   ICEBERG_UNWRAP_OR_FAIL(auto non_existing,
                          SnapshotUtil::LatestSnapshot(*table_, "non-existing"));
-  ASSERT_TRUE(non_existing.has_value());
   // Should return current snapshot
-  EXPECT_EQ(non_existing.value()->snapshot_id, main2_snapshot_id_);
+  EXPECT_EQ(non_existing->snapshot_id, main2_snapshot_id_);
 }
 
 }  // namespace iceberg

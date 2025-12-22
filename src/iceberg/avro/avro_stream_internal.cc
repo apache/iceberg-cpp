@@ -66,8 +66,9 @@ bool AvroInputStream::next(const uint8_t** data, size_t* len) {
 }
 
 void AvroInputStream::backup(size_t len) {
-  ICEBERG_CHECK(len <= buffer_pos_, "Cannot backup {} bytes, only {} bytes available",
-                len, buffer_pos_);
+  ICEBERG_CHECK_OR_DIE(len <= buffer_pos_,
+                       "Cannot backup {} bytes, only {} bytes available", len,
+                       buffer_pos_);
 
   buffer_pos_ -= len;
   byte_count_ -= len;
@@ -88,7 +89,8 @@ size_t AvroInputStream::byteCount() const { return byte_count_; }
 
 void AvroInputStream::seek(int64_t position) {
   auto status = input_stream_->Seek(position);
-  ICEBERG_CHECK(status.ok(), "Failed to seek to {}, got {}", position, status.ToString());
+  ICEBERG_CHECK_OR_DIE(status.ok(), "Failed to seek to {}, got {}", position,
+                       status.ToString());
 
   buffer_pos_ = 0;
   available_bytes_ = 0;
@@ -116,8 +118,9 @@ bool AvroOutputStream::next(uint8_t** data, size_t* len) {
 }
 
 void AvroOutputStream::backup(size_t len) {
-  ICEBERG_CHECK(len <= buffer_pos_, "Cannot backup {} bytes, only {} bytes available",
-                len, buffer_pos_);
+  ICEBERG_CHECK_OR_DIE(len <= buffer_pos_,
+                       "Cannot backup {} bytes, only {} bytes available", len,
+                       buffer_pos_);
   buffer_pos_ -= len;
 }
 
@@ -126,12 +129,12 @@ uint64_t AvroOutputStream::byteCount() const { return flushed_bytes_ + buffer_po
 void AvroOutputStream::flush() {
   if (buffer_pos_ > 0) {
     auto status = output_stream_->Write(buffer_.data(), buffer_pos_);
-    ICEBERG_CHECK(status.ok(), "Write failed {}", status.ToString());
+    ICEBERG_CHECK_OR_DIE(status.ok(), "Write failed {}", status.ToString());
     flushed_bytes_ += buffer_pos_;
     buffer_pos_ = 0;
   }
   auto status = output_stream_->Flush();
-  ICEBERG_CHECK(status.ok(), "Flush failed {}", status.ToString());
+  ICEBERG_CHECK_OR_DIE(status.ok(), "Flush failed {}", status.ToString());
 }
 
 const std::shared_ptr<::arrow::io::OutputStream>& AvroOutputStream::arrow_output_stream()

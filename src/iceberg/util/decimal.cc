@@ -300,8 +300,8 @@ bool RescaleWouldCauseDataLoss(const Decimal& value, int32_t delta_scale,
 
 Decimal::Decimal(std::string_view str) {
   auto result = Decimal::FromString(str);
-  ICEBERG_CHECK(result, "Failed to parse Decimal from string: {}, error: {}", str,
-                result.error().message);
+  ICEBERG_CHECK_OR_DIE(result, "Failed to parse Decimal from string: {}, error: {}", str,
+                       result.error().message);
   *this = std::move(result.value());
 }
 

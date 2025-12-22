@@ -69,9 +69,9 @@ Result<std::shared_ptr<Schema>> TableMetadata::Schema() const {
 }
 
 Result<std::shared_ptr<Schema>> TableMetadata::SchemaById(
-    const std::optional<int32_t>& schema_id) const {
+    std::optional<int32_t> schema_id) const {
   auto iter = std::ranges::find_if(schemas, [schema_id](const auto& schema) {
-    return schema->schema_id() == schema_id;
+    return schema != nullptr && schema->schema_id() == schema_id;
   });
   if (iter == schemas.end()) {
     return NotFound("Schema with ID {} is not found", schema_id.value_or(-1));
@@ -81,7 +81,7 @@ Result<std::shared_ptr<Schema>> TableMetadata::SchemaById(
 
 Result<std::shared_ptr<PartitionSpec>> TableMetadata::PartitionSpec() const {
   auto iter = std::ranges::find_if(partition_specs, [this](const auto& spec) {
-    return spec->spec_id() == default_spec_id;
+    return spec != nullptr && spec->spec_id() == default_spec_id;
   });
   if (iter == partition_specs.end()) {
     return NotFound("Default partition spec is not found");
@@ -91,7 +91,7 @@ Result<std::shared_ptr<PartitionSpec>> TableMetadata::PartitionSpec() const {
 
 Result<std::shared_ptr<SortOrder>> TableMetadata::SortOrder() const {
   auto iter = std::ranges::find_if(sort_orders, [this](const auto& order) {
-    return order->order_id() == default_sort_order_id;
+    return order != nullptr && order->order_id() == default_sort_order_id;
   });
   if (iter == sort_orders.end()) {
     return NotFound("Default sort order is not found");
@@ -105,7 +105,7 @@ Result<std::shared_ptr<Snapshot>> TableMetadata::Snapshot() const {
 
 Result<std::shared_ptr<Snapshot>> TableMetadata::SnapshotById(int64_t snapshot_id) const {
   auto iter = std::ranges::find_if(snapshots, [snapshot_id](const auto& snapshot) {
-    return snapshot->snapshot_id == snapshot_id;
+    return snapshot != nullptr && snapshot->snapshot_id == snapshot_id;
   });
   if (iter == snapshots.end()) {
     return NotFound("Snapshot with ID {} is not found", snapshot_id);

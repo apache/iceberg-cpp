@@ -115,7 +115,8 @@ class ICEBERG_EXPORT SnapshotUtil {
   /// \param table The table
   /// \param timestamp_ms A timestamp in milliseconds
   /// \return The first snapshot after the given timestamp, or nullopt if the current
-  /// snapshot is older than the timestamp
+  /// snapshot is older than the timestamp. If the first ancestor after the given time
+  /// can't be determined, returns a NotFound error.
   static Result<std::optional<std::shared_ptr<Snapshot>>> OldestAncestorAfter(
       const Table& table, TimePointMs timestamp_ms);
 
@@ -151,7 +152,7 @@ class ICEBERG_EXPORT SnapshotUtil {
   /// \return A vector of ancestor snapshots between the two snapshots
   static Result<std::vector<std::shared_ptr<Snapshot>>> AncestorsBetween(
       const Table& table, int64_t latest_snapshot_id,
-      const std::optional<int64_t>& oldest_snapshot_id);
+      std::optional<int64_t> oldest_snapshot_id);
 
   /// \brief Traverses the history of the table's current snapshot and finds the snapshot
   /// with the given snapshot id as its parent.
@@ -175,7 +176,7 @@ class ICEBERG_EXPORT SnapshotUtil {
   /// \param table The table
   /// \param timestamp_ms The timestamp in millis since the Unix epoch
   /// \return The snapshot ID, or nullopt if not found
-  static std::optional<int64_t> NullableSnapshotIdAsOfTime(const Table& table,
+  static std::optional<int64_t> OptionalSnapshotIdAsOfTime(const Table& table,
                                                            TimePointMs timestamp_ms);
 
   /// \brief Returns the schema of the table for the specified snapshot.
@@ -227,8 +228,8 @@ class ICEBERG_EXPORT SnapshotUtil {
   /// \param table The table
   /// \param branch Branch name of the table (empty string means main branch)
   /// \return The latest snapshot for the given branch
-  static Result<std::optional<std::shared_ptr<Snapshot>>> LatestSnapshot(
-      const Table& table, const std::string& branch);
+  static Result<std::shared_ptr<Snapshot>> LatestSnapshot(const Table& table,
+                                                          const std::string& branch);
 
   /// \brief Fetch the snapshot at the head of the given branch in the given table.
   ///
@@ -243,8 +244,8 @@ class ICEBERG_EXPORT SnapshotUtil {
   /// \param branch Branch name of the table metadata (empty string means main
   /// branch)
   /// \return The latest snapshot for the given branch
-  static Result<std::optional<std::shared_ptr<Snapshot>>> LatestSnapshot(
-      const TableMetadata& metadata, const std::string& branch);
+  static Result<std::shared_ptr<Snapshot>> LatestSnapshot(const TableMetadata& metadata,
+                                                          const std::string& branch);
 
  private:
   /// \brief Helper function to traverse ancestors of a snapshot.
@@ -268,7 +269,7 @@ class ICEBERG_EXPORT SnapshotUtil {
   ///
   /// \param snapshots The snapshots
   /// \return A vector of snapshot IDs
-  static std::vector<int64_t> ToIds(
+  static Result<std::vector<int64_t>> ToIds(
       const std::vector<std::shared_ptr<Snapshot>>& snapshots);
 };
 

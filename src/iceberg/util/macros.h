@@ -42,7 +42,24 @@
   ICEBERG_ASSIGN_OR_RAISE_IMPL(ICEBERG_ASSIGN_OR_RAISE_NAME(result_, __COUNTER__), lhs, \
                                rexpr)
 
+// Macro for debug checks
 #define ICEBERG_DCHECK(expr, message) assert((expr) && (message))
+
+// Macro for precondition checks, usually used for function arguments
+#define ICEBERG_PRECHECK(expr, ...)        \
+  do {                                     \
+    if (!(expr)) [[unlikely]] {            \
+      return InvalidArgument(__VA_ARGS__); \
+    }                                      \
+  } while (0)
+
+// Macro for state checks, usually used for unexpected states
+#define ICEBERG_CHECK(expr, ...)   \
+  do {                             \
+    if (!(expr)) [[unlikely]] {    \
+      return Invalid(__VA_ARGS__); \
+    }                              \
+  } while (0)
 
 #define ERROR_TO_EXCEPTION(error)                             \
   if (error.kind == iceberg::ErrorKind::kInvalidExpression) { \

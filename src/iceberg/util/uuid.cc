@@ -204,7 +204,7 @@ Result<Uuid> Uuid::FromBytes(std::span<const uint8_t> bytes) {
 }
 
 uint8_t Uuid::operator[](size_t index) const {
-  ICEBERG_CHECK(index < kLength, "UUID index out of range: {}", index);
+  ICEBERG_CHECK_OR_DIE(index < kLength, "UUID index out of range: {}", index);
   return data_[index];
 }
 

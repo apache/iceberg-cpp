@@ -141,9 +141,9 @@ StructType::InitFieldByLowerCaseName(const StructType& self) {
 }
 
 ListType::ListType(SchemaField element) : element_(std::move(element)) {
-  ICEBERG_CHECK(element_.name() == kElementName,
-                "ListType: child field name should be '{}', was '{}'", kElementName,
-                element_.name());
+  ICEBERG_CHECK_OR_DIE(element_.name() == kElementName,
+                       "ListType: child field name should be '{}', was '{}'",
+                       kElementName, element_.name());
 }
 
 ListType::ListType(int32_t field_id, std::shared_ptr<Type> type, bool optional)
@@ -200,12 +200,12 @@ bool ListType::Equals(const Type& other) const {
 
 MapType::MapType(SchemaField key, SchemaField value)
     : fields_{std::move(key), std::move(value)} {
-  ICEBERG_CHECK(this->key().name() == kKeyName,
-                "MapType: key field name should be '{}', was '{}'", kKeyName,
-                this->key().name());
-  ICEBERG_CHECK(this->value().name() == kValueName,
-                "MapType: value field name should be '{}', was '{}'", kValueName,
-                this->value().name());
+  ICEBERG_CHECK_OR_DIE(this->key().name() == kKeyName,
+                       "MapType: key field name should be '{}', was '{}'", kKeyName,
+                       this->key().name());
+  ICEBERG_CHECK_OR_DIE(this->value().name() == kValueName,
+                       "MapType: value field name should be '{}', was '{}'", kValueName,
+                       this->value().name());
 }
 
 const SchemaField& MapType::key() const { return fields_[0]; }
@@ -292,8 +292,8 @@ bool DoubleType::Equals(const Type& other) const { return other.type_id() == kTy
 
 DecimalType::DecimalType(int32_t precision, int32_t scale)
     : precision_(precision), scale_(scale) {
-  ICEBERG_CHECK(precision >= 0 && precision <= kMaxPrecision,
-                "DecimalType: precision must be in [0, 38], was {}", precision);
+  ICEBERG_CHECK_OR_DIE(precision >= 0 && precision <= kMaxPrecision,
+                       "DecimalType: precision must be in [0, 38], was {}", precision);
 }
 
 int32_t DecimalType::precision() const { return precision_; }
@@ -341,7 +341,7 @@ std::string UuidType::ToString() const { return "uuid"; }
 bool UuidType::Equals(const Type& other) const { return other.type_id() == kTypeId; }
 
 FixedType::FixedType(int32_t length) : length_(length) {
-  ICEBERG_CHECK(length >= 0, "FixedType: length must be >= 0, was {}", length);
+  ICEBERG_CHECK_OR_DIE(length >= 0, "FixedType: length must be >= 0, was {}", length);
 }
 
 int32_t FixedType::length() const { return length_; }

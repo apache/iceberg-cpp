@@ -44,7 +44,7 @@ class ICEBERG_EXPORT ExpressionError : public IcebergError {
   explicit ExpressionError(const std::string& what) : IcebergError(what) {}
 };
 
-#define ICEBERG_CHECK(condition, ...)                        \
+#define ICEBERG_CHECK_OR_DIE(condition, ...)                 \
   do {                                                       \
     if (!(condition)) [[unlikely]] {                         \
       throw iceberg::IcebergError(std::format(__VA_ARGS__)); \

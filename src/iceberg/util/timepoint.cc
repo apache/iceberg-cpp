@@ -45,12 +45,11 @@ int64_t UnixNsFromTimePointNs(TimePointNs time_point_ns) {
       .count();
 }
 
-std::string FormatTimestamp(TimePointMs timestamp_ms) {
+std::string FormatTimestamp(TimePointMs time_point_ns) {
   // Convert TimePointMs to system_clock::time_point
-  auto unix_ms = UnixMsFromTimePointMs(timestamp_ms);
+  auto unix_ms = UnixMsFromTimePointMs(time_point_ns);
   auto time_point =
       std::chrono::system_clock::time_point(std::chrono::milliseconds(unix_ms));
-
   auto time_t = std::chrono::system_clock::to_time_t(time_point);
 
   // Format as ISO 8601-like string: YYYY-MM-DD HH:MM:SS
