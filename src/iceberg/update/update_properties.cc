@@ -74,6 +74,7 @@ Result<PendingUpdate::ApplyResult> UpdateProperties::Apply() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
   const auto& current_props = transaction_->current().properties.configs();
   std::unordered_map<std::string, std::string> new_properties;
+  std::vector<std::string> removals;
   for (const auto& [key, value] : current_props) {
     if (!removals_.contains(key)) {
       new_properties[key] = value;
@@ -116,15 +117,13 @@ Result<PendingUpdate::ApplyResult> UpdateProperties::Apply() {
     result.updates.emplace_back(std::make_unique<table::SetProperties>(updates_));
   }
   if (!removals_.empty()) {
-    std::vector<std::string> existing_removals;
     for (const auto& key : removals_) {
       if (current_props.contains(key)) {
-        existing_removals.push_back(key);
+        removals.push_back(key);
       }
     }
-    if (!existing_removals.empty()) {
-      result.updates.emplace_back(
-          std::make_unique<table::RemoveProperties>(existing_removals));
+    if (!removals.empty()) {
+      result.updates.emplace_back(std::make_unique<table::RemoveProperties>(removals));
     }
   }
   if (format_version_.has_value()) {
