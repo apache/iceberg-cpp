@@ -19,8 +19,6 @@
 
 #include "iceberg/update/update_properties.h"
 
-#include <gtest/gtest.h>
-
 #include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/update_test_base.h"
