@@ -109,7 +109,7 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   committed_ = true;
   table_ = std::move(updated_table);
 
-  return updated_table;
+  return table_;
 }
 
 Result<std::shared_ptr<UpdateProperties>> Transaction::NewUpdateProperties() {
