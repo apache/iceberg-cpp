@@ -353,9 +353,8 @@ ManifestEvaluator::ManifestEvaluator(std::shared_ptr<Expression> expr)
 ManifestEvaluator::~ManifestEvaluator() = default;
 
 Result<std::unique_ptr<ManifestEvaluator>> ManifestEvaluator::MakeRowFilter(
-    [[maybe_unused]] std::shared_ptr<Expression> expr,
-    [[maybe_unused]] const std::shared_ptr<PartitionSpec>& spec,
-    [[maybe_unused]] const Schema& schema, [[maybe_unused]] bool case_sensitive) {
+    std::shared_ptr<Expression> expr, const std::shared_ptr<PartitionSpec>& spec,
+    const Schema& schema, bool case_sensitive) {
   auto projection_valuator = Projections::Inclusive(*spec, schema, case_sensitive);
   ICEBERG_ASSIGN_OR_RAISE(auto partition_expr, projection_valuator->Project(expr));
   return MakePartitionFilter(partition_expr, spec, schema, case_sensitive);
