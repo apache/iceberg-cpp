@@ -19,7 +19,8 @@
 
 #include "iceberg/update/update_properties.h"
 
-#include "iceberg/table.h"
+#include <gtest/gtest.h>
+
 #include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/update_test_base.h"
@@ -27,11 +28,6 @@
 namespace iceberg {
 
 class UpdatePropertiesTest : public UpdateTestBase {};
-
-TEST_F(UpdatePropertiesTest, EmptyUpdates) {
-  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
-  EXPECT_THAT(update->Commit(), IsOk());
-}
 
 TEST_F(UpdatePropertiesTest, SetProperty) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
@@ -43,7 +39,14 @@ TEST_F(UpdatePropertiesTest, SetProperty) {
 }
 
 TEST_F(UpdatePropertiesTest, RemoveProperty) {
-  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  // First, add properties to remove
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateProperties());
+  setup_update->Set("key1", "value1").Set("key2", "value2");
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Reload and remove the properties
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateProperties());
   update->Remove("key1").Remove("key2");
 
   ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
@@ -67,6 +70,17 @@ TEST_F(UpdatePropertiesTest, RemoveThenSetSameKey) {
   auto result = update->Apply();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("already marked for removal"));
+}
+
+TEST_F(UpdatePropertiesTest, SetAndRemoveDifferentKeys) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
+  update->Set("key1", "value1").Remove("key2");
+  EXPECT_THAT(update->Commit(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  const auto& props = reloaded->properties().configs();
+  EXPECT_EQ(props.at("key1"), "value1");
+  EXPECT_FALSE(props.contains("key2"));
 }
 
 TEST_F(UpdatePropertiesTest, UpgradeFormatVersionValid) {
@@ -108,33 +122,20 @@ TEST_F(UpdatePropertiesTest, UpgradeFormatVersionUnsupported) {
 }
 
 TEST_F(UpdatePropertiesTest, CommitSuccess) {
+  ICEBERG_UNWRAP_OR_FAIL(auto empty_update, table_->NewUpdateProperties());
+  EXPECT_THAT(empty_update->Commit(), IsOk());
+
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   update->Set("new.property", "new.value");
+  update->Set("format-version", "3");
 
   EXPECT_THAT(update->Commit(), IsOk());
 
   ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
   const auto& props = reloaded->properties().configs();
   EXPECT_EQ(props.at("new.property"), "new.value");
-}
-
-TEST_F(UpdatePropertiesTest, FluentInterface) {
-  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
-  auto& ref = update->Set("key1", "value1").Remove("key2");
-
-  EXPECT_EQ(&ref, update.get());
-  EXPECT_THAT(update->Apply(), IsOk());
-}
-
-TEST_F(UpdatePropertiesTest, SetAndRemoveDifferentKeys) {
-  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
-  update->Set("key1", "value1").Remove("key2");
-  EXPECT_THAT(update->Commit(), IsOk());
-
-  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
-  const auto& props = reloaded->properties().configs();
-  EXPECT_EQ(props.at("key1"), "value1");
-  EXPECT_FALSE(props.contains("key2"));
+  const auto& format_version = reloaded->metadata()->format_version;
+  EXPECT_EQ(format_version, 3);
 }
 
 }  // namespace iceberg

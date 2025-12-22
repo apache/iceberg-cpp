@@ -56,7 +56,7 @@ UpdateProperties& UpdateProperties::Set(const std::string& key,
 
   if (!TableProperties::reserved_properties().contains(key) ||
       key == TableProperties::kFormatVersion.key()) {
-    updates_.emplace(key, value);
+    updates_.insert_or_assign(key, value);
   }
 
   return *this;
@@ -72,9 +72,20 @@ UpdateProperties& UpdateProperties::Remove(const std::string& key) {
 
 Result<PendingUpdate::ApplyResult> UpdateProperties::Apply() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
+  const auto& current_props = transaction_->current().properties.configs();
+  std::unordered_map<std::string, std::string> new_properties;
+  for (const auto& [key, value] : current_props) {
+    if (!removals_.contains(key)) {
+      new_properties[key] = value;
+    }
+  }
 
-  auto iter = updates_.find(TableProperties::kFormatVersion.key());
-  if (iter != updates_.end()) {
+  for (const auto& [key, value] : updates_) {
+    new_properties[key] = value;
+  }
+
+  auto iter = new_properties.find(TableProperties::kFormatVersion.key());
+  if (iter != new_properties.end()) {
     int parsed_version = 0;
     const auto& val = iter->second;
     auto [ptr, ec] = std::from_chars(val.data(), val.data() + val.size(), parsed_version);
@@ -92,12 +103,12 @@ Result<PendingUpdate::ApplyResult> UpdateProperties::Apply() {
     }
     format_version_ = static_cast<int8_t>(parsed_version);
 
-    updates_.erase(iter);
+    updates_.erase(TableProperties::kFormatVersion.key());
   }
 
   if (auto schema = transaction_->current().Schema(); schema.has_value()) {
     ICEBERG_RETURN_UNEXPECTED(
-        MetricsConfig::VerifyReferencedColumns(updates_, *schema.value()));
+        MetricsConfig::VerifyReferencedColumns(new_properties, *schema.value()));
   }
 
   ApplyResult result;
@@ -105,8 +116,16 @@ Result<PendingUpdate::ApplyResult> UpdateProperties::Apply() {
     result.updates.emplace_back(std::make_unique<table::SetProperties>(updates_));
   }
   if (!removals_.empty()) {
-    result.updates.emplace_back(std::make_unique<table::RemoveProperties>(
-        std::vector<std::string>{removals_.begin(), removals_.end()}));
+    std::vector<std::string> existing_removals;
+    for (const auto& key : removals_) {
+      if (current_props.contains(key)) {
+        existing_removals.push_back(key);
+      }
+    }
+    if (!existing_removals.empty()) {
+      result.updates.emplace_back(
+          std::make_unique<table::RemoveProperties>(existing_removals));
+    }
   }
   if (format_version_.has_value()) {
     result.updates.emplace_back(

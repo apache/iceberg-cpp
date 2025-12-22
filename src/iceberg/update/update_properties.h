@@ -41,13 +41,15 @@ class ICEBERG_EXPORT UpdateProperties : public PendingUpdate {
 
   /// \brief Sets a property key to a specified value.
   ///
-  /// The key can not be marked for previous removal and reserved property keys will be
-  /// ignored.
+  /// The key must not have been previously marked for removal and reserved property keys
+  /// will be ignored.
+  ///
+  /// \param key The property key to set
+  /// \param value The property value to set
+  /// \return Reference to this UpdateProperties for chaining
   UpdateProperties& Set(const std::string& key, const std::string& value);
 
   /// \brief Marks a property for removal.
-  ///
-  /// The key can not be already marked for removal.
   ///
   /// \param key The property key to remove
   /// \return Reference to this UpdateProperties for chaining
