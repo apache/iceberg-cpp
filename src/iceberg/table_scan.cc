@@ -271,15 +271,13 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
   std::vector<std::shared_ptr<FileScanTask>> tasks;
   ICEBERG_ASSIGN_OR_RAISE(auto partition_spec, context_.table_metadata->PartitionSpec());
 
-  // Get the table schema and partition type
+  // Get the table schema
   ICEBERG_ASSIGN_OR_RAISE(auto current_schema, context_.table_metadata->Schema());
-  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<StructType> partition_type,
-                          partition_spec->PartitionType(*current_schema));
 
   for (const auto& manifest_file : manifest_files) {
     ICEBERG_ASSIGN_OR_RAISE(
         auto manifest_reader,
-        ManifestReader::Make(manifest_file, file_io_, partition_type));
+        ManifestReader::Make(manifest_file, file_io_, current_schema, partition_spec));
     ICEBERG_ASSIGN_OR_RAISE(auto manifests, manifest_reader->Entries());
 
     // TODO(gty404): filter manifests using partition spec and filter expression

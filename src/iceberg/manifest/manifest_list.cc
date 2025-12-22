@@ -19,22 +19,24 @@
 
 #include "iceberg/manifest/manifest_list.h"
 
-#include "iceberg/schema.h"
+#include <memory>
+
+#include "iceberg/type.h"
 
 namespace iceberg {
 
-const StructType& PartitionFieldSummary::Type() {
-  static const StructType kInstance{{
+const std::shared_ptr<StructType>& PartitionFieldSummary::Type() {
+  static const auto kInstance = std::make_shared<StructType>(std::vector<SchemaField>{
       PartitionFieldSummary::kContainsNull,
       PartitionFieldSummary::kContainsNaN,
       PartitionFieldSummary::kLowerBound,
       PartitionFieldSummary::kUpperBound,
-  }};
+  });
   return kInstance;
 }
 
-const std::shared_ptr<Schema>& ManifestFile::Type() {
-  static const auto kInstance = std::make_shared<Schema>(std::vector<SchemaField>{
+const std::shared_ptr<StructType>& ManifestFile::Type() {
+  static const auto kInstance = std::make_shared<StructType>(std::vector<SchemaField>{
       kManifestPath,
       kManifestLength,
       kPartitionSpecId,

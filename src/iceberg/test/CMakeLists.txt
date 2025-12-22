@@ -121,6 +121,8 @@ if(ICEBERG_BUILD_BUNDLE)
                    avro_schema_test.cc
                    avro_stream_test.cc
                    manifest_list_versions_test.cc
+                   manifest_reader_stats_test.cc
+                   manifest_reader_test.cc
                    manifest_writer_versions_test.cc)
 
   add_iceberg_test(arrow_test

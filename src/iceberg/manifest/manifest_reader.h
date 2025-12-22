@@ -23,11 +23,12 @@
 /// Data reader interface for manifest files.
 
 #include <memory>
+#include <string>
+#include <unordered_map>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
-#include "iceberg/type.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -35,31 +36,58 @@ namespace iceberg {
 /// \brief Read manifest entries from a manifest file.
 class ICEBERG_EXPORT ManifestReader {
  public:
+  /// \brief Special value to select all columns from manifest files.
+  inline static const std::vector<std::string> kAllColumns{"*"};
+
   virtual ~ManifestReader() = default;
 
   /// \brief Read all manifest entries in the manifest file.
-  virtual Result<std::vector<ManifestEntry>> Entries() const = 0;
+  ///
+  /// TODO(gangwu): provide a lazy-evaluated iterator interface for better performance.
+  virtual Result<std::vector<ManifestEntry>> Entries() = 0;
 
-  /// \brief Get the metadata of the manifest file.
-  virtual Result<std::unordered_map<std::string, std::string>> Metadata() const = 0;
+  /// \brief Read only live (non-deleted) manifest entries.
+  virtual Result<std::vector<ManifestEntry>> LiveEntries() = 0;
+
+  /// \brief Select specific columns of data file to read from the manifest entries.
+  virtual ManifestReader& Select(const std::vector<std::string>& columns) = 0;
+
+  /// \brief Filter manifest entries by partition filter.
+  virtual ManifestReader& FilterPartitions(std::shared_ptr<Expression> expr) = 0;
+
+  /// \brief Filter manifest entries to a specific set of partitions.
+  virtual ManifestReader& FilterPartitions(
+      std::shared_ptr<class PartitionSet> partition_set) = 0;
+
+  /// \brief Filter manifest entries by row-level filter.
+  virtual ManifestReader& FilterRows(std::shared_ptr<Expression> expr) = 0;
+
+  /// \brief Set case sensitivity for column name matching.
+  virtual ManifestReader& CaseSensitive(bool case_sensitive) = 0;
 
   /// \brief Creates a reader for a manifest file.
   /// \param manifest A ManifestFile object containing metadata about the manifest.
   /// \param file_io File IO implementation to use.
-  /// \param partition_type Schema for the partition.
+  /// \param schema Schema used to bind the partition type.
+  /// \param spec Partition spec used for this manifest file.
   /// \return A Result containing the reader or an error.
   static Result<std::unique_ptr<ManifestReader>> Make(
       const ManifestFile& manifest, std::shared_ptr<FileIO> file_io,
-      std::shared_ptr<StructType> partition_type);
+      std::shared_ptr<Schema> schema, std::shared_ptr<PartitionSpec> spec);
 
   /// \brief Creates a reader for a manifest file.
   /// \param manifest_location Path to the manifest file.
   /// \param file_io File IO implementation to use.
-  /// \param partition_type Schema for the partition.
+  /// \param schema Schema used to bind the partition type.
+  /// \param spec Partition spec used for this manifest file.
   /// \return A Result containing the reader or an error.
   static Result<std::unique_ptr<ManifestReader>> Make(
       std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
-      std::shared_ptr<StructType> partition_type);
+      std::shared_ptr<Schema> schema, std::shared_ptr<PartitionSpec> spec);
+
+  /// \brief Add stats columns to the column list if needed.
+  static std::vector<std::string> WithStatsColumns(
+      const std::vector<std::string>& columns);
 };
 
 /// \brief Read manifest files from a manifest list file.

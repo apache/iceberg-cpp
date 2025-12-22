@@ -69,7 +69,7 @@ struct ICEBERG_EXPORT PartitionFieldSummary {
 
   bool operator==(const PartitionFieldSummary& other) const = default;
 
-  static const StructType& Type();
+  static const std::shared_ptr<StructType>& Type();
 };
 
 /// \brief The type of files tracked by the manifest, either data or delete files; 0 for
@@ -153,51 +153,86 @@ struct ICEBERG_EXPORT ManifestFile {
   /// \brief Checks if this manifest file contains entries with DELETED status
   bool has_deleted_files() const { return deleted_files_count.value_or(1) > 0; }
 
+  inline static const int32_t kManifestPathFieldId = 500;
   inline static const SchemaField kManifestPath = SchemaField::MakeRequired(
-      500, "manifest_path", iceberg::string(), "Location URI with FS scheme");
+      kManifestPathFieldId, "manifest_path", string(), "Location URI with FS scheme");
+
+  inline static const int32_t kManifestLengthFieldId = 501;
   inline static const SchemaField kManifestLength = SchemaField::MakeRequired(
-      501, "manifest_length", iceberg::int64(), "Total file size in bytes");
+      kManifestLengthFieldId, "manifest_length", int64(), "Total file size in bytes");
+
+  inline static const int32_t kPartitionSpecIdFieldId = 502;
   inline static const SchemaField kPartitionSpecId = SchemaField::MakeRequired(
-      502, "partition_spec_id", iceberg::int32(), "Spec ID used to write");
+      kPartitionSpecIdFieldId, "partition_spec_id", int32(), "Spec ID used to write");
+
+  inline static const int32_t kContentFieldId = 517;
   inline static const SchemaField kContent = SchemaField::MakeOptional(
-      517, "content", iceberg::int32(), "Contents of the manifest: 0=data, 1=deletes");
+      kContentFieldId, "content", int32(), "Contents of the manifest: 0=data, 1=deletes");
+
+  inline static const int32_t kSequenceNumberFieldId = 515;
   inline static const SchemaField kSequenceNumber =
-      SchemaField::MakeOptional(515, "sequence_number", iceberg::int64(),
+      SchemaField::MakeOptional(kSequenceNumberFieldId, "sequence_number", int64(),
                                 "Sequence number when the manifest was added");
+
+  inline static const int32_t kMinSequenceNumberFieldId = 516;
   inline static const SchemaField kMinSequenceNumber =
-      SchemaField::MakeOptional(516, "min_sequence_number", iceberg::int64(),
+      SchemaField::MakeOptional(kMinSequenceNumberFieldId, "min_sequence_number", int64(),
                                 "Lowest sequence number in the manifest");
-  inline static const SchemaField kAddedSnapshotId = SchemaField::MakeRequired(
-      503, "added_snapshot_id", iceberg::int64(), "Snapshot ID that added the manifest");
+
+  inline static const int32_t kAddedSnapshotIdFieldId = 503;
+  inline static const SchemaField kAddedSnapshotId =
+      SchemaField::MakeRequired(kAddedSnapshotIdFieldId, "added_snapshot_id", int64(),
+                                "Snapshot ID that added the manifest");
+
+  inline static const int32_t kAddedFilesCountFieldId = 504;
   inline static const SchemaField kAddedFilesCount = SchemaField::MakeOptional(
-      504, "added_files_count", iceberg::int32(), "Added entry count");
-  inline static const SchemaField kExistingFilesCount = SchemaField::MakeOptional(
-      505, "existing_files_count", iceberg::int32(), "Existing entry count");
+      kAddedFilesCountFieldId, "added_files_count", int32(), "Added entry count");
+
+  inline static const int32_t kExistingFilesCountFieldId = 505;
+  inline static const SchemaField kExistingFilesCount =
+      SchemaField::MakeOptional(kExistingFilesCountFieldId, "existing_files_count",
+                                int32(), "Existing entry count");
+
+  inline static const int32_t kDeletedFilesCountFieldId = 506;
   inline static const SchemaField kDeletedFilesCount = SchemaField::MakeOptional(
-      506, "deleted_files_count", iceberg::int32(), "Deleted entry count");
+      kDeletedFilesCountFieldId, "deleted_files_count", int32(), "Deleted entry count");
+
+  inline static const int32_t kAddedRowsCountFieldId = 512;
   inline static const SchemaField kAddedRowsCount = SchemaField::MakeOptional(
-      512, "added_rows_count", iceberg::int64(), "Added rows count");
+      kAddedRowsCountFieldId, "added_rows_count", int64(), "Added rows count");
+
+  inline static const int32_t kExistingRowsCountFieldId = 513;
   inline static const SchemaField kExistingRowsCount = SchemaField::MakeOptional(
-      513, "existing_rows_count", iceberg::int64(), "Existing rows count");
+      kExistingRowsCountFieldId, "existing_rows_count", int64(), "Existing rows count");
+
+  inline static const int32_t kDeletedRowsCountFieldId = 514;
   inline static const SchemaField kDeletedRowsCount = SchemaField::MakeOptional(
-      514, "deleted_rows_count", iceberg::int64(), "Deleted rows count");
+      kDeletedRowsCountFieldId, "deleted_rows_count", int64(), "Deleted rows count");
+
+  inline static const int32_t kPartitionSummaryFieldId = 507;
   inline static const SchemaField kPartitions = SchemaField::MakeOptional(
-      507, "partitions",
-      std::make_shared<ListType>(SchemaField::MakeRequired(
-          508, std::string(ListType::kElementName),
-          struct_(
-              {PartitionFieldSummary::kContainsNull, PartitionFieldSummary::kContainsNaN,
-               PartitionFieldSummary::kLowerBound, PartitionFieldSummary::kUpperBound}))),
+      kPartitionSummaryFieldId, "partitions",
+      list(SchemaField::MakeRequired(508, std::string(ListType::kElementName),
+                                     struct_({
+                                         PartitionFieldSummary::kContainsNull,
+                                         PartitionFieldSummary::kContainsNaN,
+                                         PartitionFieldSummary::kLowerBound,
+                                         PartitionFieldSummary::kUpperBound,
+                                     }))),
       "Summary for each partition");
+
+  inline static const int32_t kKeyMetadataFieldId = 519;
   inline static const SchemaField kKeyMetadata = SchemaField::MakeOptional(
-      519, "key_metadata", iceberg::binary(), "Encryption key metadata blob");
+      kKeyMetadataFieldId, "key_metadata", binary(), "Encryption key metadata blob");
+
+  inline static const int32_t kFirstRowIdFieldId = 520;
   inline static const SchemaField kFirstRowId = SchemaField::MakeOptional(
-      520, "first_row_id", iceberg::int64(),
+      kFirstRowIdFieldId, "first_row_id", int64(),
       "Starting row ID to assign to new rows in ADDED data files");
 
   bool operator==(const ManifestFile& other) const = default;
 
-  static const std::shared_ptr<Schema>& Type();
+  static const std::shared_ptr<StructType>& Type();
 };
 
 /// Snapshots are embedded in table metadata, but the list of manifests for a snapshot are

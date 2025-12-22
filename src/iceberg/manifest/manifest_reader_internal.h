@@ -22,33 +22,105 @@
 /// \file iceberg/manifest/manifest_reader_internal.h
 /// Reader implementation for manifest list files and manifest files.
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <vector>
+
+#include "iceberg/expression/evaluator.h"
+#include "iceberg/expression/expression.h"
+#include "iceberg/expression/inclusive_metrics_evaluator.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/inheritable_metadata.h"
 #include "iceberg/manifest/manifest_reader.h"
+#include "iceberg/util/partition_value_util.h"
 
 namespace iceberg {
 
 /// \brief Read manifest entries from a manifest file.
+///
+/// This implementation supports lazy reader creation and filtering based on
+/// partition expressions, row expressions, and partition sets. Following the
+/// Java implementation pattern.
 class ManifestReaderImpl : public ManifestReader {
  public:
-  explicit ManifestReaderImpl(std::unique_ptr<Reader> reader,
-                              std::shared_ptr<Schema> schema,
-                              std::unique_ptr<InheritableMetadata> inheritable_metadata,
-                              std::optional<int64_t> first_row_id)
-      : schema_(std::move(schema)),
-        reader_(std::move(reader)),
-        inheritable_metadata_(std::move(inheritable_metadata)),
-        first_row_id_(first_row_id) {}
+  /// \brief Construct a ManifestReaderImpl for lazy initialization.
+  ///
+  /// \param manifest_path Path to the manifest file.
+  /// \param manifest_length Length of the manifest file (optional).
+  /// \param file_io File IO implementation.
+  /// \param schema Table schema.
+  /// \param spec Partition spec.
+  /// \param inheritable_metadata Metadata inherited from manifest.
+  /// \param first_row_id First row ID for V3 manifests.
+  /// \note ManifestReader::Make() functions should guarantee non-null parameters.
+  ManifestReaderImpl(std::string manifest_path, std::optional<int64_t> manifest_length,
+                     std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> schema,
+                     std::shared_ptr<PartitionSpec> spec,
+                     std::unique_ptr<InheritableMetadata> inheritable_metadata,
+                     std::optional<int64_t> first_row_id);
 
-  Result<std::vector<ManifestEntry>> Entries() const override;
+  Result<std::vector<ManifestEntry>> Entries() override;
 
-  Result<std::unordered_map<std::string, std::string>> Metadata() const override;
+  Result<std::vector<ManifestEntry>> LiveEntries() override;
+
+  ManifestReader& Select(const std::vector<std::string>& columns) override;
+
+  ManifestReader& FilterPartitions(std::shared_ptr<Expression> expr) override;
+
+  ManifestReader& FilterPartitions(std::shared_ptr<PartitionSet> partition_set) override;
+
+  ManifestReader& FilterRows(std::shared_ptr<Expression> expr) override;
+
+  ManifestReader& CaseSensitive(bool case_sensitive) override;
 
  private:
-  std::shared_ptr<Schema> schema_;
-  std::unique_ptr<Reader> reader_;
-  std::unique_ptr<InheritableMetadata> inheritable_metadata_;
-  mutable std::optional<int64_t> first_row_id_;
+  /// \brief Read entries with optional live-only filtering.
+  Result<std::vector<ManifestEntry>> ReadEntries(bool only_live);
+
+  /// \brief Lazily open the underlying Avro reader with appropriate schema projection.
+  Status OpenReader(std::shared_ptr<Schema> projection);
+
+  /// \brief Check if there's a non-trivial partition filter.
+  bool HasPartitionFilter() const;
+
+  /// \brief Check if there's a non-trivial row filter.
+  bool HasRowFilter() const;
+
+  /// \brief Add stats columns to the column list if needed.
+  std::vector<std::string> WithStatsColumns(
+      const std::vector<std::string>& columns) const;
+
+  /// \brief Get or create the partition evaluator.
+  Result<Evaluator*> GetEvaluator();
+
+  /// \brief Get or create the metrics evaluator.
+  Result<InclusiveMetricsEvaluator*> GetMetricsEvaluator();
+
+  /// \brief Check if a partition is in the partition set.
+  bool InPartitionSet(const DataFile& file) const;
+
+  // Fields set at construction
+  const std::string manifest_path_;
+  const std::optional<int64_t> manifest_length_;
+  const std::shared_ptr<FileIO> file_io_;
+  const std::shared_ptr<Schema> schema_;
+  const std::shared_ptr<PartitionSpec> spec_;
+  const std::unique_ptr<InheritableMetadata> inheritable_metadata_;
+  std::optional<int64_t> first_row_id_;
+
+  // Configuration fields
+  std::vector<std::string> columns_;
+  std::shared_ptr<Expression> part_filter_{True::Instance()};
+  std::shared_ptr<Expression> row_filter_{True::Instance()};
+  std::shared_ptr<PartitionSet> partition_set_;
+  bool case_sensitive_{true};
+
+  // Lazy fields
+  std::unique_ptr<Reader> file_reader_;
+  std::shared_ptr<Schema> file_schema_;
+  std::unique_ptr<Evaluator> evaluator_;
+  std::unique_ptr<InclusiveMetricsEvaluator> metrics_evaluator_;
 };
 
 /// \brief Read manifest files from a manifest list file.
