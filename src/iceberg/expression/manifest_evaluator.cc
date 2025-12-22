@@ -21,6 +21,7 @@
 
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expression_visitor.h"
+#include "iceberg/expression/projections.h"
 #include "iceberg/expression/rewrite_not.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/row/struct_like.h"
@@ -355,8 +356,9 @@ Result<std::unique_ptr<ManifestEvaluator>> ManifestEvaluator::MakeRowFilter(
     [[maybe_unused]] std::shared_ptr<Expression> expr,
     [[maybe_unused]] const std::shared_ptr<PartitionSpec>& spec,
     [[maybe_unused]] const Schema& schema, [[maybe_unused]] bool case_sensitive) {
-  // TODO(xiao.dong) we need a projection util to project row filter to the partition col
-  return NotImplemented("ManifestEvaluator::MakeRowFilter");
+  auto projection_valuator = Projections::Inclusive(*spec, schema, case_sensitive);
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_expr, projection_valuator->Project(expr));
+  return MakePartitionFilter(partition_expr, spec, schema, case_sensitive);
 }
 
 Result<std::unique_ptr<ManifestEvaluator>> ManifestEvaluator::MakePartitionFilter(
