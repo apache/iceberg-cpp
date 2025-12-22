@@ -75,6 +75,9 @@ Status Transaction::Apply(std::vector<std::unique_ptr<TableUpdate>> updates) {
 }
 
 Result<std::shared_ptr<Table>> Transaction::Commit() {
+  if (committed_) {
+    return InvalidArgument("Transaction already committed");
+  }
   if (!last_update_committed_) {
     return InvalidArgument(
         "Cannot commit transaction when previous update is not committed");
@@ -82,6 +85,7 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
 
   const auto& updates = metadata_builder_->changes();
   if (updates.empty()) {
+    committed_ = true;
     return table_;
   }
 
@@ -98,7 +102,14 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   }
 
   // XXX: we should handle commit failure and retry here.
-  return table_->catalog()->UpdateTable(table_->name(), requirements, updates);
+  ICEBERG_ASSIGN_OR_RAISE(auto updated_table, table_->catalog()->UpdateTable(
+                                                  table_->name(), requirements, updates));
+
+  // Mark as committed and update table reference
+  committed_ = true;
+  table_ = updated_table;
+
+  return updated_table;
 }
 
 Result<std::shared_ptr<UpdateProperties>> Transaction::NewUpdateProperties() {

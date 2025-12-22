@@ -80,6 +80,8 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   const bool auto_commit_;
   // To make the state simple, we require updates are added and committed in order.
   bool last_update_committed_ = true;
+  // Tracks if transaction has been committed to prevent double-commit
+  bool committed_ = false;
   // Keep track of all created pending updates. Use weak_ptr to avoid circular references.
   // This is useful to retry failed updates.
   std::vector<std::weak_ptr<PendingUpdate>> pending_updates_;
