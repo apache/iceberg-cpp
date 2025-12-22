@@ -107,7 +107,7 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
 
   // Mark as committed and update table reference
   committed_ = true;
-  table_ = updated_table;
+  table_ = std::move(updated_table);
 
   return updated_table;
 }
