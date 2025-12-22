@@ -70,6 +70,21 @@ TEST(SchemaTest, Basics) {
     ASSERT_THAT(result,
                 iceberg::HasErrorMessage("Invalid index -1 to get field from struct"));
     ASSERT_EQ(std::nullopt, schema.GetFieldByName("element"));
+    ASSERT_EQ(0, schema.IdentifierFieldIds().size());
+    auto identifier_field_names = schema.IdentifierFieldNames();
+    ASSERT_THAT(identifier_field_names, iceberg::IsOk());
+    ASSERT_THAT(identifier_field_names.value(), ::testing::IsEmpty());
+  }
+
+  {
+    // identifier fields not empty
+    iceberg::SchemaField field1(5, "foo", iceberg::int32(), true);
+    iceberg::SchemaField field2(7, "bar", iceberg::string(), true);
+    iceberg::Schema schema({field1, field2}, 100, {5, 7});
+    ASSERT_THAT(schema.IdentifierFieldIds(), testing::ElementsAre(5, 7));
+    auto result = schema.IdentifierFieldNames();
+    ASSERT_THAT(result, iceberg::IsOk());
+    ASSERT_THAT(result.value(), testing::ElementsAre("foo", "bar"));
   }
 }
 
@@ -82,6 +97,9 @@ TEST(SchemaTest, Equality) {
   iceberg::Schema schema3({field1}, 101);
   iceberg::Schema schema4({field3, field2}, 101);
   iceberg::Schema schema5({field1, field2}, 100);
+  iceberg::Schema schema6({field1, field2}, 100, {5});
+  iceberg::Schema schema7({field1, field2}, 100, {5});
+  iceberg::Schema schema8({field1, field2}, 100, {7});
 
   ASSERT_EQ(schema1, schema1);
   ASSERT_NE(schema1, schema2);
@@ -92,6 +110,10 @@ TEST(SchemaTest, Equality) {
   ASSERT_NE(schema4, schema1);
   ASSERT_EQ(schema1, schema5);
   ASSERT_EQ(schema5, schema1);
+
+  ASSERT_NE(schema5, schema6);
+  ASSERT_EQ(schema6, schema7);
+  ASSERT_NE(schema6, schema8);
 }
 
 class BasicShortNameTest : public ::testing::Test {
@@ -215,8 +237,8 @@ class ComplexShortNameTest : public ::testing::Test {
 
     field9_ = std::make_unique<iceberg::SchemaField>(9, "Map", maptype, false);
 
-    schema_ =
-        std::make_unique<iceberg::Schema>(std::vector<iceberg::SchemaField>{*field9_}, 1);
+    schema_ = std::make_unique<iceberg::Schema>(
+        std::vector<iceberg::SchemaField>{*field9_}, 1, std::vector<int32_t>{1, 2});
   }
 
   std::unique_ptr<iceberg::Schema> schema_;
@@ -243,6 +265,27 @@ TEST_F(ComplexShortNameTest, TestFindById) {
   ASSERT_THAT(schema_->FindFieldById(1), ::testing::Optional(*field1_));
 
   ASSERT_THAT(schema_->FindFieldById(0), ::testing::Optional(std::nullopt));
+}
+
+TEST_F(ComplexShortNameTest, TestFindColumnNameById) {
+  ASSERT_THAT(schema_->FindColumnNameById(0), ::testing::Optional(std::nullopt));
+  ASSERT_THAT(schema_->FindColumnNameById(1),
+              ::testing::Optional(std::string("Map.value.Second_child.element.Foo")));
+  ASSERT_THAT(schema_->FindColumnNameById(2),
+              ::testing::Optional(std::string("Map.value.Second_child.element.Bar")));
+  ASSERT_THAT(schema_->FindColumnNameById(3),
+              ::testing::Optional(std::string("Map.value.Second_child.element.Foobar")));
+  ASSERT_THAT(schema_->FindColumnNameById(4),
+              ::testing::Optional(std::string("Map.value.Second_child.element")));
+  ASSERT_THAT(schema_->FindColumnNameById(5),
+              ::testing::Optional(std::string("Map.value.First_child")));
+  ASSERT_THAT(schema_->FindColumnNameById(6),
+              ::testing::Optional(std::string("Map.value.Second_child")));
+  ASSERT_THAT(schema_->FindColumnNameById(7),
+              ::testing::Optional(std::string("Map.key")));
+  ASSERT_THAT(schema_->FindColumnNameById(8),
+              ::testing::Optional(std::string("Map.value")));
+  ASSERT_THAT(schema_->FindColumnNameById(9), ::testing::Optional(std::string("Map")));
 }
 
 TEST_F(ComplexShortNameTest, TestFindByName) {
@@ -313,6 +356,14 @@ TEST_F(ComplexShortNameTest, TestFindByShortNameCaseInsensitive) {
               ::testing::Optional(*field1_));
   ASSERT_THAT(schema_->FindFieldByName("Map.Second_child.aaa", false),
               ::testing::Optional(std::nullopt));
+}
+
+TEST_F(ComplexShortNameTest, TestIdentifierFieldNames) {
+  auto result = schema_->IdentifierFieldNames();
+  ASSERT_THAT(result, iceberg::IsOk());
+  ASSERT_THAT(result.value(),
+              ::testing::ElementsAre("Map.value.Second_child.element.Foo",
+                                     "Map.value.Second_child.element.Bar"));
 }
 
 class ComplexMapStructShortNameTest : public ::testing::Test {

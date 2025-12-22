@@ -22,6 +22,7 @@
 #include <stack>
 
 #include "iceberg/result.h"
+#include "iceberg/schema.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter_internal.h"
 #include "iceberg/util/string_util.h"
@@ -50,9 +51,11 @@ Status IdToFieldVisitor::Visit(const NestedType& type) {
 
 NameToIdVisitor::NameToIdVisitor(
     std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>& name_to_id,
-    bool case_sensitive, std::function<std::string(std::string_view)> quoting_func)
+    std::unordered_map<int32_t, std::string>* id_to_name, bool case_sensitive,
+    std::function<std::string(std::string_view)> quoting_func)
     : case_sensitive_(case_sensitive),
       name_to_id_(name_to_id),
+      id_to_name_(id_to_name),
       quoting_func_(std::move(quoting_func)) {}
 
 Status NameToIdVisitor::Visit(const ListType& type, const std::string& path,
@@ -140,6 +143,11 @@ std::string NameToIdVisitor::BuildPath(std::string_view prefix,
 }
 
 void NameToIdVisitor::Finish() {
+  if (id_to_name_) {
+    for (auto& [name, id] : name_to_id_) {
+      id_to_name_->try_emplace(id, name);
+    }
+  }
   for (auto&& it : short_name_to_id_) {
     name_to_id_.try_emplace(it.first, it.second);
   }
@@ -292,6 +300,74 @@ std::unordered_map<int32_t, int32_t> IndexParents(const StructType& root_struct)
 
   visit(root_struct);
   return id_to_parent;
+}
+
+AssignFreshIdVisitor::AssignFreshIdVisitor(std::function<int32_t()> next_id)
+    : next_id_(std::move(next_id)) {}
+
+std::shared_ptr<Type> AssignFreshIdVisitor::Visit(
+    const std::shared_ptr<Type>& type) const {
+  switch (type->type_id()) {
+    case TypeId::kStruct:
+      return Visit(*internal::checked_pointer_cast<StructType>(type));
+    case TypeId::kMap:
+      return Visit(*internal::checked_pointer_cast<MapType>(type));
+    case TypeId::kList:
+      return Visit(*internal::checked_pointer_cast<ListType>(type));
+    default:
+      return type;
+  }
+}
+
+std::shared_ptr<StructType> AssignFreshIdVisitor::Visit(const StructType& type) const {
+  auto fresh_ids =
+      type.fields() |
+      std::views::transform([&](const auto& /* unused */) { return next_id_(); }) |
+      std::ranges::to<std::vector<int32_t>>();
+  std::vector<SchemaField> fresh_fields;
+  for (size_t i = 0; i < type.fields().size(); ++i) {
+    const auto& field = type.fields()[i];
+    fresh_fields.emplace_back(fresh_ids[i], std::string(field.name()),
+                              Visit(field.type()), field.optional(),
+                              std::string(field.doc()));
+  }
+  return std::make_shared<StructType>(std::move(fresh_fields));
+}
+
+std::shared_ptr<ListType> AssignFreshIdVisitor::Visit(const ListType& type) const {
+  const auto& elem_field = type.fields()[0];
+  int32_t fresh_id = next_id_();
+  SchemaField fresh_elem_field(fresh_id, std::string(elem_field.name()),
+                               Visit(elem_field.type()), elem_field.optional(),
+                               std::string(elem_field.doc()));
+  return std::make_shared<ListType>(std::move(fresh_elem_field));
+}
+
+std::shared_ptr<MapType> AssignFreshIdVisitor::Visit(const MapType& type) const {
+  const auto& key_field = type.fields()[0];
+  const auto& value_field = type.fields()[1];
+
+  int32_t fresh_key_id = next_id_();
+  int32_t fresh_value_id = next_id_();
+
+  SchemaField fresh_key_field(fresh_key_id, std::string(key_field.name()),
+                              Visit(key_field.type()), key_field.optional(),
+                              std::string(key_field.doc()));
+  SchemaField fresh_value_field(fresh_value_id, std::string(value_field.name()),
+                                Visit(value_field.type()), value_field.optional(),
+                                std::string(value_field.doc()));
+  return std::make_shared<MapType>(std::move(fresh_key_field),
+                                   std::move(fresh_value_field));
+}
+
+Result<std::shared_ptr<Schema>> AssignFreshIds(int32_t schema_id, const Schema& schema,
+                                               std::function<int32_t()> next_id) {
+  auto fresh_type = AssignFreshIdVisitor(std::move(next_id))
+                        .Visit(internal::checked_cast<const StructType&>(schema));
+  std::vector<SchemaField> fields =
+      fresh_type->fields() | std::ranges::to<std::vector<SchemaField>>();
+  ICEBERG_ASSIGN_OR_RAISE(auto identifier_field_names, schema.IdentifierFieldNames());
+  return Schema::Make(std::move(fields), schema_id, identifier_field_names);
 }
 
 }  // namespace iceberg

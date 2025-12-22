@@ -33,8 +33,28 @@
 
 namespace iceberg {
 
-Schema::Schema(std::vector<SchemaField> fields, std::optional<int32_t> schema_id)
-    : StructType(std::move(fields)), schema_id_(schema_id) {}
+Schema::Schema(std::vector<SchemaField> fields, std::optional<int32_t> schema_id,
+               std::vector<int32_t> identifier_field_ids)
+    : StructType(std::move(fields)),
+      schema_id_(schema_id),
+      identifier_field_ids_(std::move(identifier_field_ids)) {}
+
+Result<std::unique_ptr<Schema>> Schema::Make(
+    std::vector<SchemaField> fields, std::optional<int32_t> schema_id,
+    const std::vector<std::string>& identifier_field_names) {
+  auto schema = std::make_unique<Schema>(std::move(fields), schema_id);
+
+  std::vector<int32_t> fresh_identifier_ids;
+  for (const auto& name : identifier_field_names) {
+    ICEBERG_ASSIGN_OR_RAISE(auto field, schema->FindFieldByName(name));
+    if (!field) {
+      return InvalidSchema("Cannot find identifier field: {}", name);
+    }
+    fresh_identifier_ids.push_back(field.value().get().field_id());
+  }
+  schema->identifier_field_ids_ = std::move(fresh_identifier_ids);
+  return schema;
+}
 
 std::optional<int32_t> Schema::schema_id() const { return schema_id_; }
 
@@ -48,15 +68,16 @@ std::string Schema::ToString() const {
 }
 
 bool Schema::Equals(const Schema& other) const {
-  return schema_id_ == other.schema_id_ && fields_ == other.fields_;
+  return schema_id_ == other.schema_id_ && fields_ == other.fields_ &&
+         identifier_field_ids_ == other.identifier_field_ids_;
 }
 
 Result<std::optional<std::reference_wrapper<const SchemaField>>> Schema::FindFieldByName(
     std::string_view name, bool case_sensitive) const {
   if (case_sensitive) {
-    ICEBERG_ASSIGN_OR_RAISE(auto name_to_id, name_to_id_.Get(*this));
-    auto it = name_to_id.get().find(name);
-    if (it == name_to_id.get().end()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto name_id_map, name_id_map_.Get(*this));
+    auto it = name_id_map.get().name_to_id.find(name);
+    if (it == name_id_map.get().name_to_id.end()) {
       return std::nullopt;
     };
     return FindFieldById(it->second);
@@ -77,21 +98,22 @@ Schema::InitIdToFieldMap(const Schema& self) {
   return id_to_field;
 }
 
-Result<std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>>
-Schema::InitNameToIdMap(const Schema& self) {
-  std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>> name_to_id;
-  NameToIdVisitor visitor(name_to_id, /*case_sensitive=*/true);
+Result<Schema::NameIdMap> Schema::InitNameIdMap(const Schema& self) {
+  NameIdMap name_id_map;
+  NameToIdVisitor visitor(name_id_map.name_to_id, &name_id_map.id_to_name,
+                          /*case_sensitive=*/true);
   ICEBERG_RETURN_UNEXPECTED(
       VisitTypeInline(self, &visitor, /*path=*/"", /*short_path=*/""));
   visitor.Finish();
-  return name_to_id;
+  return name_id_map;
 }
 
 Result<std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>>
 Schema::InitLowerCaseNameToIdMap(const Schema& self) {
   std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>
       lowercase_name_to_id;
-  NameToIdVisitor visitor(lowercase_name_to_id, /*case_sensitive=*/false);
+  NameToIdVisitor visitor(lowercase_name_to_id, /*id_to_name=*/nullptr,
+                          /*case_sensitive=*/false);
   ICEBERG_RETURN_UNEXPECTED(
       VisitTypeInline(self, &visitor, /*path=*/"", /*short_path=*/""));
   visitor.Finish();
@@ -103,6 +125,16 @@ Result<std::optional<std::reference_wrapper<const SchemaField>>> Schema::FindFie
   ICEBERG_ASSIGN_OR_RAISE(auto id_to_field, id_to_field_.Get(*this));
   auto it = id_to_field.get().find(field_id);
   if (it == id_to_field.get().end()) {
+    return std::nullopt;
+  }
+  return it->second;
+}
+
+Result<std::optional<std::string_view>> Schema::FindColumnNameById(
+    int32_t field_id) const {
+  ICEBERG_ASSIGN_OR_RAISE(auto name_id_map, name_id_map_.Get(*this));
+  auto it = name_id_map.get().id_to_name.find(field_id);
+  if (it == name_id_map.get().id_to_name.end()) {
     return std::nullopt;
   }
   return it->second;
@@ -177,6 +209,23 @@ Result<std::unique_ptr<Schema>> Schema::Project(
 
   return FromStructType(std::move(internal::checked_cast<StructType&>(*project_type)),
                         std::nullopt);
+}
+
+const std::vector<int32_t>& Schema::IdentifierFieldIds() const {
+  return identifier_field_ids_;
+}
+
+Result<std::vector<std::string>> Schema::IdentifierFieldNames() const {
+  std::vector<std::string> names;
+  names.reserve(identifier_field_ids_.size());
+  for (auto id : identifier_field_ids_) {
+    ICEBERG_ASSIGN_OR_RAISE(auto name, FindColumnNameById(id));
+    if (!name.has_value()) {
+      return InvalidSchema("Cannot find the field of the specified field id: {}", id);
+    }
+    names.emplace_back(name.value());
+  }
+  return names;
 }
 
 }  // namespace iceberg

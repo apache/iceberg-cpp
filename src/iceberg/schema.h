@@ -49,7 +49,18 @@ class ICEBERG_EXPORT Schema : public StructType {
   static constexpr int32_t kInvalidColumnId = -1;
 
   explicit Schema(std::vector<SchemaField> fields,
-                  std::optional<int32_t> schema_id = std::nullopt);
+                  std::optional<int32_t> schema_id = std::nullopt,
+                  std::vector<int32_t> identifier_field_ids = {});
+
+  /// \brief Create a schema.
+  ///
+  /// \param fields The fields that make up the schema.
+  /// \param schema_id The unique identifier for this schema (default: kInitialSchemaId).
+  /// \param identifier_field_names Canonical names of fields that uniquely identify rows
+  /// in the table (default: empty). \return A new Schema instance or Status if failed.
+  static Result<std::unique_ptr<Schema>> Make(
+      std::vector<SchemaField> fields, std::optional<int32_t> schema_id = std::nullopt,
+      const std::vector<std::string>& identifier_field_names = {});
 
   /// \brief Get the schema ID.
   ///
@@ -78,6 +89,13 @@ class ICEBERG_EXPORT Schema : public StructType {
   Result<std::optional<std::reference_wrapper<const SchemaField>>> FindFieldById(
       int32_t field_id) const;
 
+  /// \brief Returns the canonical field name for the given id.
+  ///
+  /// \param field_id The id of the field to get the canonical name for.
+  /// \return The canocinal column name of the field with the given id, or std::nullopt if
+  /// not found.
+  Result<std::optional<std::string_view>> FindColumnNameById(int32_t field_id) const;
+
   /// \brief Get the accessor to access the field by field id.
   ///
   /// \param field_id The id of the field to get the accessor for.
@@ -103,26 +121,48 @@ class ICEBERG_EXPORT Schema : public StructType {
   Result<std::unique_ptr<Schema>> Project(
       const std::unordered_set<int32_t>& field_ids) const;
 
+  /// \brief Return the field IDs of the identifier fields.
+  const std::vector<int32_t>& IdentifierFieldIds() const;
+
+  /// \brief Return the canonical field names of the identifier fields.
+  Result<std::vector<std::string>> IdentifierFieldNames() const;
+
   friend bool operator==(const Schema& lhs, const Schema& rhs) { return lhs.Equals(rhs); }
 
  private:
   /// \brief Compare two schemas for equality.
   bool Equals(const Schema& other) const;
 
+  struct NameIdMap {
+    /// \brief Mapping from canonical field name to ID
+    ///
+    /// \note Short names for maps and lists are included for any name that does not
+    /// conflict with a canonical name. For example, a list, 'l', of structs with field
+    /// 'x' will produce short name 'l.x' in addition to canonical name 'l.element.x'.
+    std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>> name_to_id;
+
+    /// \brief Mapping from field ID to canonical name
+    ///
+    /// \note Canonical names, but not short names are set, for example
+    /// 'list.element.field' instead of 'list.field'.
+    std::unordered_map<int32_t, std::string> id_to_name;
+  };
+
   static Result<std::unordered_map<int32_t, std::reference_wrapper<const SchemaField>>>
   InitIdToFieldMap(const Schema&);
-  static Result<std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>>
-  InitNameToIdMap(const Schema&);
+  static Result<NameIdMap> InitNameIdMap(const Schema&);
   static Result<std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>>
   InitLowerCaseNameToIdMap(const Schema&);
   static Result<std::unordered_map<int32_t, std::vector<size_t>>> InitIdToPositionPath(
       const Schema&);
 
   const std::optional<int32_t> schema_id_;
+  /// Field IDs that uniquely identify rows in the table.
+  std::vector<int32_t> identifier_field_ids_;
   /// Mapping from field id to field.
   Lazy<InitIdToFieldMap> id_to_field_;
   /// Mapping from field name to field id.
-  Lazy<InitNameToIdMap> name_to_id_;
+  Lazy<InitNameIdMap> name_id_map_;
   /// Mapping from lowercased field name to field id
   Lazy<InitLowerCaseNameToIdMap> lowercase_name_to_id_;
   /// Mapping from field id to (nested) position path to access the field.

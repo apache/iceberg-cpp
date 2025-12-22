@@ -51,12 +51,13 @@ class IdToFieldVisitor {
   std::unordered_map<int32_t, std::reference_wrapper<const SchemaField>>& id_to_field_;
 };
 
-/// \brief Visitor for building a map from field name to field ID.
+/// \brief Visitor for building maps from field name to field ID and field ID to field
+/// name.
 class NameToIdVisitor {
  public:
   explicit NameToIdVisitor(
       std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>& name_to_id,
-      bool case_sensitive = true,
+      std::unordered_map<int32_t, std::string>* id_to_name, bool case_sensitive = true,
       std::function<std::string(std::string_view)> quoting_func = {});
   Status Visit(const ListType& type, const std::string& path,
                const std::string& short_path);
@@ -75,6 +76,7 @@ class NameToIdVisitor {
  private:
   bool case_sensitive_;
   std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>& name_to_id_;
+  std::unordered_map<int32_t, std::string>* id_to_name_;
   std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>> short_name_to_id_;
   std::function<std::string(std::string_view)> quoting_func_;
 };
@@ -130,5 +132,28 @@ class PruneColumnVisitor {
 ///       StructType::InitFieldById which checks for duplicate field IDs.
 ICEBERG_EXPORT std::unordered_map<int32_t, int32_t> IndexParents(
     const StructType& root_struct);
+
+/// \brief Assigns fresh IDs to all fields in the schema.
+class AssignFreshIdVisitor {
+ public:
+  explicit AssignFreshIdVisitor(std::function<int32_t()> next_id);
+
+  std::shared_ptr<Type> Visit(const std::shared_ptr<Type>& type) const;
+  std::shared_ptr<StructType> Visit(const StructType& type) const;
+  std::shared_ptr<ListType> Visit(const ListType& type) const;
+  std::shared_ptr<MapType> Visit(const MapType& type) const;
+
+ private:
+  std::function<int32_t()> next_id_;
+};
+
+/// \brief Assigns fresh IDs to all fields in a schema.
+///
+/// \param schema_id An ID assigned to this schema
+/// \param schema The schema to assign IDs to.
+/// \param next_id An id assignment function, which returns the next ID to assign.
+/// \return A schema with new ids assigned by the next_id function.
+ICEBERG_EXPORT Result<std::shared_ptr<Schema>> AssignFreshIds(
+    int32_t schema_id, const Schema& schema, std::function<int32_t()> next_id);
 
 }  // namespace iceberg
