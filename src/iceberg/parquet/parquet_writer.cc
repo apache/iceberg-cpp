@@ -107,7 +107,16 @@ class ParquetWriter::Impl {
 
   bool Closed() const { return writer_ == nullptr; }
 
-  int64_t length() const { return total_bytes_; }
+  Result<int64_t> length() {
+    if (Closed()) {
+      return total_bytes_;
+    }
+    // Return current flushed length when writer is still open.
+    // It would be good if we could get the number of buffered bytes
+    // from the internal RowGroupWriter.
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto current_pos, output_stream_->Tell());
+    return current_pos;
+  }
 
   std::vector<int64_t> split_offsets() const { return split_offsets_; }
 
@@ -144,12 +153,7 @@ Result<Metrics> ParquetWriter::metrics() {
   return {};
 }
 
-Result<int64_t> ParquetWriter::length() {
-  if (!impl_->Closed()) {
-    return Invalid("ParquetWriter is not closed");
-  }
-  return impl_->length();
-}
+Result<int64_t> ParquetWriter::length() { return impl_->length(); }
 
 std::vector<int64_t> ParquetWriter::split_offsets() {
   if (!impl_->Closed()) {

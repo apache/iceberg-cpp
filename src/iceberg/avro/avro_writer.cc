@@ -120,7 +120,14 @@ class AvroWriter::Impl {
 
   bool Closed() const { return writer_ == nullptr; }
 
-  int64_t length() { return total_bytes_; }
+  Result<int64_t> length() {
+    if (Closed()) {
+      return total_bytes_;
+    }
+    // Return current flushed length when writer is still open
+    ICEBERG_ARROW_ASSIGN_OR_RETURN(auto current_pos, arrow_output_stream_->Tell());
+    return current_pos;
+  }
 
  private:
   // The schema to write.
@@ -135,6 +142,7 @@ class AvroWriter::Impl {
   std::unique_ptr<::avro::GenericDatum> datum_;
   // Arrow schema to write data.
   ArrowSchema arrow_schema_;
+  // Total length of the written Avro file.
   int64_t total_bytes_ = 0;
 };
 
@@ -162,12 +170,7 @@ Result<Metrics> AvroWriter::metrics() {
   return Invalid("AvroWriter is not closed");
 }
 
-Result<int64_t> AvroWriter::length() {
-  if (impl_->Closed()) {
-    return impl_->length();
-  }
-  return Invalid("AvroWriter is not closed");
-}
+Result<int64_t> AvroWriter::length() { return impl_->length(); }
 
 std::vector<int64_t> AvroWriter::split_offsets() { return {}; }
 
