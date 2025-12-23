@@ -87,10 +87,6 @@ class ManifestReaderImpl : public ManifestReader {
   /// \brief Check if there's a non-trivial row filter.
   bool HasRowFilter() const;
 
-  /// \brief Add stats columns to the column list if needed.
-  std::vector<std::string> WithStatsColumns(
-      const std::vector<std::string>& columns) const;
-
   /// \brief Get or create the partition evaluator.
   Result<Evaluator*> GetEvaluator();
 

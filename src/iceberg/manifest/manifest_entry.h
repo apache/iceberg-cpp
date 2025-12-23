@@ -178,112 +178,112 @@ struct ICEBERG_EXPORT DataFile {
   /// present
   std::optional<int64_t> content_size_in_bytes;
 
-  inline static constexpr int32_t kContentFieldId = 134;
+  static constexpr int32_t kContentFieldId = 134;
   inline static const SchemaField kContent = SchemaField::MakeOptional(
       kContentFieldId, "content", int32(),
       "Contents of the file: 0=data, 1=position deletes, 2=equality deletes");
 
-  inline static constexpr int32_t kFilePathFieldId = 100;
+  static constexpr int32_t kFilePathFieldId = 100;
   inline static const SchemaField kFilePath = SchemaField::MakeRequired(
       kFilePathFieldId, "file_path", string(), "Location URI with FS scheme");
 
-  inline static constexpr int32_t kFileFormatFieldId = 101;
+  static constexpr int32_t kFileFormatFieldId = 101;
   inline static const SchemaField kFileFormat =
       SchemaField::MakeRequired(kFileFormatFieldId, "file_format", string(),
                                 "File format name: avro, orc, or parquet");
 
-  inline static constexpr int32_t kPartitionFieldId = 102;
+  static constexpr int32_t kPartitionFieldId = 102;
   inline static const std::string kPartitionField = "partition";
   inline static const std::string kPartitionDoc =
       "Partition data tuple, schema based on the partition spec";
 
-  inline static constexpr int32_t kRecordCountFieldId = 103;
+  static constexpr int32_t kRecordCountFieldId = 103;
   inline static const SchemaField kRecordCount = SchemaField::MakeRequired(
       kRecordCountFieldId, "record_count", int64(), "Number of records in the file");
 
-  inline static constexpr int32_t kFileSizeFieldId = 104;
+  static constexpr int32_t kFileSizeFieldId = 104;
   inline static const SchemaField kFileSize = SchemaField::MakeRequired(
       kFileSizeFieldId, "file_size_in_bytes", int64(), "Total file size in bytes");
 
-  inline static constexpr int32_t kColumnSizesFieldId = 108;
+  static constexpr int32_t kColumnSizesFieldId = 108;
   inline static const SchemaField kColumnSizes = SchemaField::MakeOptional(
       kColumnSizesFieldId, "column_sizes",
       map(SchemaField::MakeRequired(117, std::string(MapType::kKeyName), int32()),
           SchemaField::MakeRequired(118, std::string(MapType::kValueName), int64())),
       "Map of column id to total size on disk");
 
-  inline static constexpr int32_t kValueCountsFieldId = 109;
+  static constexpr int32_t kValueCountsFieldId = 109;
   inline static const SchemaField kValueCounts = SchemaField::MakeOptional(
       kValueCountsFieldId, "value_counts",
       map(SchemaField::MakeRequired(119, std::string(MapType::kKeyName), int32()),
           SchemaField::MakeRequired(120, std::string(MapType::kValueName), int64())),
       "Map of column id to total count, including null and NaN");
 
-  inline static constexpr int32_t kNullValueCountsFieldId = 110;
+  static constexpr int32_t kNullValueCountsFieldId = 110;
   inline static const SchemaField kNullValueCounts = SchemaField::MakeOptional(
       kNullValueCountsFieldId, "null_value_counts",
       map(SchemaField::MakeRequired(121, std::string(MapType::kKeyName), int32()),
           SchemaField::MakeRequired(122, std::string(MapType::kValueName), int64())),
       "Map of column id to null value count");
 
-  inline static constexpr int32_t kNanValueCountsFieldId = 137;
+  static constexpr int32_t kNanValueCountsFieldId = 137;
   inline static const SchemaField kNanValueCounts = SchemaField::MakeOptional(
       kNanValueCountsFieldId, "nan_value_counts",
       map(SchemaField::MakeRequired(138, std::string(MapType::kKeyName), int32()),
           SchemaField::MakeRequired(139, std::string(MapType::kValueName), int64())),
       "Map of column id to number of NaN values in the column");
 
-  inline static constexpr int32_t kLowerBoundsFieldId = 125;
+  static constexpr int32_t kLowerBoundsFieldId = 125;
   inline static const SchemaField kLowerBounds = SchemaField::MakeOptional(
       kLowerBoundsFieldId, "lower_bounds",
       map(SchemaField::MakeRequired(126, std::string(MapType::kKeyName), int32()),
           SchemaField::MakeRequired(127, std::string(MapType::kValueName), binary())),
       "Map of column id to lower bound");
 
-  inline static constexpr int32_t kUpperBoundsFieldId = 128;
+  static constexpr int32_t kUpperBoundsFieldId = 128;
   inline static const SchemaField kUpperBounds = SchemaField::MakeOptional(
       kUpperBoundsFieldId, "upper_bounds",
       map(SchemaField::MakeRequired(129, std::string(MapType::kKeyName), int32()),
           SchemaField::MakeRequired(130, std::string(MapType::kValueName), binary())),
       "Map of column id to upper bound");
 
-  inline static constexpr int32_t kKeyMetadataFieldId = 131;
+  static constexpr int32_t kKeyMetadataFieldId = 131;
   inline static const SchemaField kKeyMetadata = SchemaField::MakeOptional(
       kKeyMetadataFieldId, "key_metadata", binary(), "Encryption key metadata blob");
 
-  inline static constexpr int32_t kSplitOffsetsFieldId = 132;
+  static constexpr int32_t kSplitOffsetsFieldId = 132;
   inline static const SchemaField kSplitOffsets = SchemaField::MakeOptional(
       kSplitOffsetsFieldId, "split_offsets",
       list(SchemaField::MakeRequired(133, std::string(ListType::kElementName), int64())),
       "Splittable offsets");
 
-  inline static constexpr int32_t kEqualityIdsFieldId = 135;
+  static constexpr int32_t kEqualityIdsFieldId = 135;
   inline static const SchemaField kEqualityIds = SchemaField::MakeOptional(
       kEqualityIdsFieldId, "equality_ids",
       list(SchemaField::MakeRequired(136, std::string(ListType::kElementName), int32())),
       "Equality comparison field IDs");
 
-  inline static constexpr int32_t kSortOrderIdFieldId = 140;
+  static constexpr int32_t kSortOrderIdFieldId = 140;
   inline static const SchemaField kSortOrderId = SchemaField::MakeOptional(
       kSortOrderIdFieldId, "sort_order_id", int32(), "Sort order ID");
 
-  inline static constexpr int32_t kFirstRowIdFieldId = 142;
+  static constexpr int32_t kFirstRowIdFieldId = 142;
   inline static const SchemaField kFirstRowId =
       SchemaField::MakeOptional(kFirstRowIdFieldId, "first_row_id", int64(),
                                 "Starting row ID to assign to new rows");
 
-  inline static constexpr int32_t kReferencedDataFileFieldId = 143;
+  static constexpr int32_t kReferencedDataFileFieldId = 143;
   inline static const SchemaField kReferencedDataFile = SchemaField::MakeOptional(
       kReferencedDataFileFieldId, "referenced_data_file", string(),
       "Fully qualified location (URI with FS scheme) of a data file that all deletes "
       "reference");
 
-  inline static constexpr int32_t kContentOffsetFieldId = 144;
+  static constexpr int32_t kContentOffsetFieldId = 144;
   inline static const SchemaField kContentOffset =
       SchemaField::MakeOptional(kContentOffsetFieldId, "content_offset", int64(),
                                 "The offset in the file where the content starts");
 
-  inline static constexpr int32_t kContentSizeFieldId = 145;
+  static constexpr int32_t kContentSizeFieldId = 145;
   inline static const SchemaField kContentSize =
       SchemaField::MakeOptional(kContentSizeFieldId, "content_size_in_bytes", int64(),
                                 "The length of referenced content stored in the file");
@@ -318,22 +318,22 @@ struct ICEBERG_EXPORT ManifestEntry {
   /// File path, partition tuple, metrics, ...
   std::shared_ptr<DataFile> data_file;
 
-  inline static constexpr int32_t kStatusFieldId = 0;
+  static constexpr int32_t kStatusFieldId = 0;
   inline static const SchemaField kStatus =
       SchemaField::MakeRequired(kStatusFieldId, "status", int32());
 
-  inline static constexpr int32_t kSnapshotIdFieldId = 1;
+  static constexpr int32_t kSnapshotIdFieldId = 1;
   inline static const SchemaField kSnapshotId =
       SchemaField::MakeOptional(kSnapshotIdFieldId, "snapshot_id", int64());
 
   inline static const int32_t kDataFileFieldId = 2;
   inline static const std::string kDataFileField = "data_file";
 
-  inline static constexpr int32_t kSequenceNumberFieldId = 3;
+  static constexpr int32_t kSequenceNumberFieldId = 3;
   inline static const SchemaField kSequenceNumber =
       SchemaField::MakeOptional(kSequenceNumberFieldId, "sequence_number", int64());
 
-  inline static constexpr int32_t kFileSequenceNumberFieldId = 4;
+  static constexpr int32_t kFileSequenceNumberFieldId = 4;
   inline static const SchemaField kFileSequenceNumber = SchemaField::MakeOptional(
       kFileSequenceNumberFieldId, "file_sequence_number", int64());
 

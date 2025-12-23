@@ -305,33 +305,42 @@ Result<std::vector<ManifestFile>> ParseManifestList(ArrowSchema* schema,
 
 Status ParseLiteral(ArrowArrayView* view_of_partition, int64_t row_idx,
                     std::vector<ManifestEntry>& manifest_entries) {
-  if (view_of_partition->storage_type == ArrowType::NANOARROW_TYPE_BOOL) {
-    auto value = ArrowArrayViewGetUIntUnsafe(view_of_partition, row_idx);
-    manifest_entries[row_idx].data_file->partition.AddValue(Literal::Boolean(value != 0));
-  } else if (view_of_partition->storage_type == ArrowType::NANOARROW_TYPE_INT32) {
-    auto value = ArrowArrayViewGetIntUnsafe(view_of_partition, row_idx);
-    manifest_entries[row_idx].data_file->partition.AddValue(Literal::Int(value));
-  } else if (view_of_partition->storage_type == ArrowType::NANOARROW_TYPE_INT64) {
-    auto value = ArrowArrayViewGetIntUnsafe(view_of_partition, row_idx);
-    manifest_entries[row_idx].data_file->partition.AddValue(Literal::Long(value));
-  } else if (view_of_partition->storage_type == ArrowType::NANOARROW_TYPE_FLOAT) {
-    auto value = ArrowArrayViewGetDoubleUnsafe(view_of_partition, row_idx);
-    manifest_entries[row_idx].data_file->partition.AddValue(Literal::Float(value));
-  } else if (view_of_partition->storage_type == ArrowType::NANOARROW_TYPE_DOUBLE) {
-    auto value = ArrowArrayViewGetDoubleUnsafe(view_of_partition, row_idx);
-    manifest_entries[row_idx].data_file->partition.AddValue(Literal::Double(value));
-  } else if (view_of_partition->storage_type == ArrowType::NANOARROW_TYPE_STRING) {
-    auto value = ArrowArrayViewGetStringUnsafe(view_of_partition, row_idx);
-    manifest_entries[row_idx].data_file->partition.AddValue(
-        Literal::String(std::string(value.data, value.size_bytes)));
-  } else if (view_of_partition->storage_type == ArrowType::NANOARROW_TYPE_BINARY) {
-    auto buffer = ArrowArrayViewGetBytesUnsafe(view_of_partition, row_idx);
-    manifest_entries[row_idx].data_file->partition.AddValue(
-        Literal::Binary(std::vector<uint8_t>(buffer.data.as_char,
-                                             buffer.data.as_char + buffer.size_bytes)));
-  } else {
-    return InvalidManifest("Unsupported field type: {} in data file partition.",
-                           static_cast<int32_t>(view_of_partition->storage_type));
+  switch (view_of_partition->storage_type) {
+    case ArrowType::NANOARROW_TYPE_BOOL: {
+      auto value = ArrowArrayViewGetUIntUnsafe(view_of_partition, row_idx);
+      manifest_entries[row_idx].data_file->partition.AddValue(
+          Literal::Boolean(value != 0));
+    } break;
+    case ArrowType::NANOARROW_TYPE_INT32: {
+      auto value = ArrowArrayViewGetIntUnsafe(view_of_partition, row_idx);
+      manifest_entries[row_idx].data_file->partition.AddValue(Literal::Int(value));
+    } break;
+    case ArrowType::NANOARROW_TYPE_INT64: {
+      auto value = ArrowArrayViewGetIntUnsafe(view_of_partition, row_idx);
+      manifest_entries[row_idx].data_file->partition.AddValue(Literal::Long(value));
+    } break;
+    case ArrowType::NANOARROW_TYPE_FLOAT: {
+      auto value = ArrowArrayViewGetDoubleUnsafe(view_of_partition, row_idx);
+      manifest_entries[row_idx].data_file->partition.AddValue(Literal::Float(value));
+    } break;
+    case ArrowType::NANOARROW_TYPE_DOUBLE: {
+      auto value = ArrowArrayViewGetDoubleUnsafe(view_of_partition, row_idx);
+      manifest_entries[row_idx].data_file->partition.AddValue(Literal::Double(value));
+    } break;
+    case ArrowType::NANOARROW_TYPE_STRING: {
+      auto value = ArrowArrayViewGetStringUnsafe(view_of_partition, row_idx);
+      manifest_entries[row_idx].data_file->partition.AddValue(
+          Literal::String(std::string(value.data, value.size_bytes)));
+    } break;
+    case ArrowType::NANOARROW_TYPE_BINARY: {
+      auto buffer = ArrowArrayViewGetBytesUnsafe(view_of_partition, row_idx);
+      manifest_entries[row_idx].data_file->partition.AddValue(
+          Literal::Binary(std::vector<uint8_t>(buffer.data.as_char,
+                                               buffer.data.as_char + buffer.size_bytes)));
+    } break;
+    default:
+      return InvalidManifest("Unsupported field type: {} in data file partition.",
+                             static_cast<int32_t>(view_of_partition->storage_type));
   }
   return {};
 }
@@ -547,9 +556,9 @@ Result<std::vector<ManifestEntry>> ParseManifestEntry(
   return manifest_entries;
 }
 
-const std::unordered_set<std::string> kStatsColumns = {
-    "value_counts", "null_value_counts", "nan_value_counts",
-    "lower_bounds", "upper_bounds",      "record_count"};
+const std::vector<std::string> kStatsColumns = {"value_counts",     "null_value_counts",
+                                                "nan_value_counts", "lower_bounds",
+                                                "upper_bounds",     "record_count"};
 
 bool RequireStatsProjection(const std::shared_ptr<Expression>& row_filter,
                             const std::vector<std::string>& columns) {
@@ -560,9 +569,7 @@ bool RequireStatsProjection(const std::shared_ptr<Expression>& row_filter,
     return false;
   }
   const std::unordered_set<std::string> selected(columns.cbegin(), columns.cend());
-  if (std::ranges::all_of(
-          ManifestReader::kAllColumns,
-          [&selected](const std::string& col) { return selected.contains(col); })) {
+  if (selected.contains(ManifestReader::kAllColumns)) {
     return false;
   }
   if (std::ranges::all_of(kStatsColumns, [&selected](const std::string& col) {
@@ -586,10 +593,7 @@ Result<std::shared_ptr<Schema>> ProjectSchema(std::shared_ptr<Schema> schema,
 
 std::vector<std::string> ManifestReader::WithStatsColumns(
     const std::vector<std::string>& columns) {
-  if (std::ranges::all_of(ManifestReader::kAllColumns,
-                          [&columns](const std::string& col) {
-                            return std::ranges::find(columns, col) != columns.cend();
-                          })) {
+  if (std::ranges::contains(columns, ManifestReader::kAllColumns)) {
     return columns;
   } else {
     std::vector<std::string> updated_columns{columns};
@@ -641,11 +645,13 @@ ManifestReader& ManifestReaderImpl::CaseSensitive(bool case_sensitive) {
 }
 
 bool ManifestReaderImpl::HasPartitionFilter() const {
-  return part_filter_ && part_filter_->op() != Expression::Operation::kTrue;
+  ICEBERG_DCHECK(part_filter_, "Partition filter is not set");
+  return part_filter_->op() != Expression::Operation::kTrue;
 }
 
 bool ManifestReaderImpl::HasRowFilter() const {
-  return row_filter_ && row_filter_->op() != Expression::Operation::kTrue;
+  ICEBERG_DCHECK(row_filter_, "Row filter is not set");
+  return row_filter_->op() != Expression::Operation::kTrue;
 }
 
 Result<Evaluator*> ManifestReaderImpl::GetEvaluator() {
@@ -818,17 +824,16 @@ Result<std::vector<ManifestFile>> ManifestListReaderImpl::Files() const {
   internal::ArrowSchemaGuard schema_guard(&arrow_schema);
   while (true) {
     ICEBERG_ASSIGN_OR_RAISE(auto result, reader_->Next());
-    if (result.has_value()) {
-      internal::ArrowArrayGuard array_guard(&result.value());
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto parse_result, ParseManifestList(&arrow_schema, &result.value(), *schema_));
-      manifest_files.insert(manifest_files.end(),
-                            std::make_move_iterator(parse_result.begin()),
-                            std::make_move_iterator(parse_result.end()));
-    } else {
+    if (!result.has_value()) {
       // eof
       break;
     }
+    internal::ArrowArrayGuard array_guard(&result.value());
+    ICEBERG_ASSIGN_OR_RAISE(auto parse_result,
+                            ParseManifestList(&arrow_schema, &result.value(), *schema_));
+    manifest_files.insert(manifest_files.end(),
+                          std::make_move_iterator(parse_result.begin()),
+                          std::make_move_iterator(parse_result.end()));
   }
   return manifest_files;
 }

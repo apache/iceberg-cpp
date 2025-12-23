@@ -37,7 +37,7 @@ namespace iceberg {
 class ICEBERG_EXPORT ManifestReader {
  public:
   /// \brief Special value to select all columns from manifest files.
-  inline static const std::vector<std::string> kAllColumns{"*"};
+  inline static const std::string kAllColumns = "*";
 
   virtual ~ManifestReader() = default;
 
