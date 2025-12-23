@@ -19,8 +19,6 @@
 
 #include "iceberg/transaction.h"
 
-#include "iceberg/table.h"
-#include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/update/update_properties.h"
@@ -33,14 +31,6 @@ TEST_F(TransactionTest, CreateTransaction) {
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
   EXPECT_NE(txn, nullptr);
   EXPECT_EQ(txn->table(), table_);
-}
-
-TEST_F(TransactionTest, UpdatePropertiesInTransaction) {
-  ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
-  ICEBERG_UNWRAP_OR_FAIL(auto update, txn->NewUpdateProperties());
-
-  update->Set("key1", "value1");
-  EXPECT_THAT(update->Apply(), IsOk());
 }
 
 TEST_F(TransactionTest, CommitEmptyTransaction) {

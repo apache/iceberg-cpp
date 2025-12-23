@@ -175,7 +175,7 @@ INSTANTIATE_TEST_SUITE_P(
             .update_factory =
                 [] {
                   return std::make_unique<table::RemoveProperties>(
-                      std::vector<std::string>{"key"});
+                      std::unordered_set<std::string>{"key"});
                 },
             .expected_existing_table_count = 0,
             .validator = nullptr},

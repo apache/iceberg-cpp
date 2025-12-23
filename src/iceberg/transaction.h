@@ -60,13 +60,17 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// changes.
   Result<std::shared_ptr<UpdateProperties>> NewUpdateProperties();
 
+  /// \brief Create a new ReplaceSortOrder to replace the table sort order and commit the
+  /// changes.
+  Result<std::shared_ptr<ReplaceSortOrder>> NewReplaceSortOrder();
+
  private:
   Transaction(std::shared_ptr<Table> table, Kind kind, bool auto_commit);
 
   Status AddUpdate(const std::shared_ptr<PendingUpdate>& update);
 
   /// \brief Apply the pending changes to current table.
-  Status Apply(std::vector<std::unique_ptr<TableUpdate>> updates);
+  Status Apply(PendingUpdate& updates);
 
   friend class PendingUpdate;  // Need to access the Apply method.
 

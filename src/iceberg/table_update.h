@@ -26,6 +26,7 @@
 #include <optional>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
@@ -379,10 +380,10 @@ class ICEBERG_EXPORT SetProperties : public TableUpdate {
 /// \brief Represents removing table properties
 class ICEBERG_EXPORT RemoveProperties : public TableUpdate {
  public:
-  explicit RemoveProperties(std::vector<std::string> removed)
+  explicit RemoveProperties(std::unordered_set<std::string> removed)
       : removed_(std::move(removed)) {}
 
-  const std::vector<std::string>& removed() const { return removed_; }
+  const std::unordered_set<std::string>& removed() const { return removed_; }
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
@@ -391,7 +392,7 @@ class ICEBERG_EXPORT RemoveProperties : public TableUpdate {
   Kind kind() const override { return Kind::kRemoveProperties; }
 
  private:
-  std::vector<std::string> removed_;
+  std::unordered_set<std::string> removed_;
 };
 
 /// \brief Represents setting the table location

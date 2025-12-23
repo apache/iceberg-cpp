@@ -154,6 +154,13 @@ Result<std::shared_ptr<UpdateProperties>> Table::NewUpdateProperties() {
   return transaction->NewUpdateProperties();
 }
 
+Result<std::shared_ptr<ReplaceSortOrder>> Table::NewReplaceSortOrder() {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto transaction, Transaction::Make(shared_from_this(), Transaction::Kind::kUpdate,
+                                          /*auto_commit=*/true));
+  return transaction->NewReplaceSortOrder();
+}
+
 Result<std::shared_ptr<StagedTable>> StagedTable::Make(
     TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
     std::string metadata_location, std::shared_ptr<FileIO> io,

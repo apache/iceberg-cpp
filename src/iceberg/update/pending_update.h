@@ -43,24 +43,11 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
  public:
   enum class Kind : uint8_t {
     kUpdateProperties,
+    kReplaceSortOrder,
   };
 
   /// \brief Return the kind of this pending update.
   virtual Kind kind() const = 0;
-
-  struct ApplyResult {
-    std::vector<std::unique_ptr<TableUpdate>> updates;
-  };
-
-  /// \brief Apply the pending changes and return the uncommitted changes for validation.
-  ///
-  /// \note This does not result in a permanent update.
-  /// \return The uncommitted changes that would be committed by calling Commit(), or an
-  /// error:
-  ///         - ValidationFailed: the pending changes cannot be applied to the current
-  ///         metadata
-  ///         - InvalidArgument: if pending changes are conflicting or invalid
-  virtual Result<ApplyResult> Apply() = 0;
 
   /// \brief Apply the pending changes and commit.
   ///

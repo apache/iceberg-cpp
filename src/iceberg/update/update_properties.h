@@ -26,6 +26,7 @@
 #include <unordered_set>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/update/pending_update.h"
 
@@ -38,6 +39,12 @@ class ICEBERG_EXPORT UpdateProperties : public PendingUpdate {
       std::shared_ptr<Transaction> transaction);
 
   ~UpdateProperties() override;
+
+  struct ApplyResult {
+    std::unordered_map<std::string, std::string> updates_;
+    std::unordered_set<std::string> removals_;
+    std::optional<int8_t> format_version_;
+  };
 
   /// \brief Sets a property key to a specified value.
   ///
@@ -57,9 +64,11 @@ class ICEBERG_EXPORT UpdateProperties : public PendingUpdate {
 
   Kind kind() const final { return Kind::kUpdateProperties; }
 
-  Result<ApplyResult> Apply() final;
-
  private:
+  Result<ApplyResult> Apply();
+
+  friend class Transaction;
+
   explicit UpdateProperties(std::shared_ptr<Transaction> transaction);
 
   std::unordered_map<std::string, std::string> updates_;

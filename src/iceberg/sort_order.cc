@@ -111,7 +111,9 @@ Result<std::unique_ptr<SortOrder>> SortOrder::Make(const Schema& schema, int32_t
   }
 
   if (fields.empty() && sort_id != kUnsortedOrderId) [[unlikely]] {
-    return InvalidArgument("Sort order must have at least one sort field");
+    return InvalidArgument(
+        "Sorted order must have at least one sort field. Use SortOrder::Unsorted() to "
+        "create an unsorted order");
   }
 
   auto sort_order = std::unique_ptr<SortOrder>(new SortOrder(sort_id, std::move(fields)));

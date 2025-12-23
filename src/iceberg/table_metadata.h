@@ -394,7 +394,7 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   ///
   /// \param removed Set of property keys to remove
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& RemoveProperties(const std::vector<std::string>& removed);
+  TableMetadataBuilder& RemoveProperties(const std::unordered_set<std::string>& removed);
 
   /// \brief Set the table location
   ///

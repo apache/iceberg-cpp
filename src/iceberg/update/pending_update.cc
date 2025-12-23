@@ -19,9 +19,7 @@
 
 #include "iceberg/update/pending_update.h"
 
-#include "iceberg/table_update.h"
 #include "iceberg/transaction.h"
-#include "iceberg/util/macros.h"
 
 namespace iceberg {
 
@@ -30,9 +28,6 @@ PendingUpdate::PendingUpdate(std::shared_ptr<Transaction> transaction)
 
 PendingUpdate::~PendingUpdate() = default;
 
-Status PendingUpdate::Commit() {
-  ICEBERG_ASSIGN_OR_RAISE(auto apply_result, Apply());
-  return transaction_->Apply(std::move(apply_result.updates));
-}
+Status PendingUpdate::Commit() { return transaction_->Apply(*this); }
 
 }  // namespace iceberg

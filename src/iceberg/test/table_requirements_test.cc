@@ -939,7 +939,7 @@ TEST(TableRequirementsTest, RemoveProperties) {
   std::vector<std::unique_ptr<TableUpdate>> updates;
 
   updates.push_back(
-      std::make_unique<table::RemoveProperties>(std::vector<std::string>{"test"}));
+      std::make_unique<table::RemoveProperties>(std::unordered_set<std::string>{"test"}));
 
   auto result = TableRequirements::ForUpdateTable(*metadata, updates);
   ASSERT_THAT(result, IsOk());

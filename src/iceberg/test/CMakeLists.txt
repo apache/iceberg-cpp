@@ -154,7 +154,8 @@ if(ICEBERG_BUILD_BUNDLE)
                    USE_BUNDLE
                    SOURCES
                    transaction_test.cc
-                   update_properties_test.cc)
+                   update_properties_test.cc
+                   replace_sort_order_test.cc)
 
 endif()
 

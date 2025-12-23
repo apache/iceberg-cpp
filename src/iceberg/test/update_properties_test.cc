@@ -19,7 +19,6 @@
 
 #include "iceberg/update/update_properties.h"
 
-#include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/update_test_base.h"
 
@@ -27,13 +26,22 @@ namespace iceberg {
 
 class UpdatePropertiesTest : public UpdateTestBase {};
 
+TEST_F(UpdatePropertiesTest, EmptyUpdate) {
+  // commit an empty update, should succeed
+  ICEBERG_UNWRAP_OR_FAIL(auto empty_update, table_->NewUpdateProperties());
+  EXPECT_THAT(empty_update->Commit(), IsOk());
+}
+
 TEST_F(UpdatePropertiesTest, SetProperty) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   update->Set("key1", "value1").Set("key2", "value2");
+  EXPECT_THAT(update->Commit(), IsOk());
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
-  EXPECT_EQ(result.updates.size(), 1);
-  EXPECT_EQ(result.updates[0]->kind(), table::SetProperties::Kind::kSetProperties);
+  // Verify the properties were set
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  const auto& props = reloaded->properties().configs();
+  EXPECT_EQ(props.at("key1"), "value1");
+  EXPECT_EQ(props.at("key2"), "value2");
 }
 
 TEST_F(UpdatePropertiesTest, RemoveProperty) {
@@ -47,16 +55,20 @@ TEST_F(UpdatePropertiesTest, RemoveProperty) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateProperties());
   update->Remove("key1").Remove("key2");
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
-  EXPECT_EQ(result.updates.size(), 1);
-  EXPECT_EQ(result.updates[0]->kind(), table::RemoveProperties::Kind::kRemoveProperties);
+  EXPECT_THAT(update->Commit(), IsOk());
+
+  // Verify the properties were removed
+  ICEBERG_UNWRAP_OR_FAIL(auto final_table, catalog_->LoadTable(table_ident_));
+  const auto& props = final_table->properties().configs();
+  EXPECT_FALSE(props.contains("key1"));
+  EXPECT_FALSE(props.contains("key2"));
 }
 
 TEST_F(UpdatePropertiesTest, SetThenRemoveSameKey) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   update->Set("key1", "value1").Remove("key1");
 
-  auto result = update->Apply();
+  auto result = update->Commit();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("already marked for update"));
 }
@@ -65,7 +77,7 @@ TEST_F(UpdatePropertiesTest, RemoveThenSetSameKey) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   update->Remove("key1").Set("key1", "value1");
 
-  auto result = update->Apply();
+  auto result = update->Commit();
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage("already marked for removal"));
 }
@@ -83,19 +95,19 @@ TEST_F(UpdatePropertiesTest, SetAndRemoveDifferentKeys) {
 
 TEST_F(UpdatePropertiesTest, UpgradeFormatVersionValid) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
-  update->Set("format-version", "2");
+  update->Set("format-version", "3");
+  EXPECT_THAT(update->Commit(), IsOk());
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
-  EXPECT_EQ(result.updates.size(), 1);
-  EXPECT_EQ(result.updates[0]->kind(),
-            table::UpgradeFormatVersion::Kind::kUpgradeFormatVersion);
+  // Verify the format version was upgraded
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  EXPECT_EQ(reloaded->metadata()->format_version, 3);
 }
 
 TEST_F(UpdatePropertiesTest, UpgradeFormatVersionInvalidString) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   update->Set("format-version", "invalid");
 
-  auto result = update->Apply();
+  auto result = update->Commit();
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(result, HasErrorMessage("Invalid format version"));
 }
@@ -104,7 +116,7 @@ TEST_F(UpdatePropertiesTest, UpgradeFormatVersionOutOfRange) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   update->Set("format-version", "5000000000");
 
-  auto result = update->Apply();
+  auto result = update->Commit();
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(result, HasErrorMessage("out of range"));
 }
@@ -114,26 +126,9 @@ TEST_F(UpdatePropertiesTest, UpgradeFormatVersionUnsupported) {
   update->Set("format-version",
               std::to_string(TableMetadata::kSupportedTableFormatVersion + 1));
 
-  auto result = update->Apply();
+  auto result = update->Commit();
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(result, HasErrorMessage("unsupported format version"));
-}
-
-TEST_F(UpdatePropertiesTest, CommitSuccess) {
-  ICEBERG_UNWRAP_OR_FAIL(auto empty_update, table_->NewUpdateProperties());
-  EXPECT_THAT(empty_update->Commit(), IsOk());
-
-  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
-  update->Set("new.property", "new.value");
-  update->Set("format-version", "3");
-
-  EXPECT_THAT(update->Commit(), IsOk());
-
-  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
-  const auto& props = reloaded->properties().configs();
-  EXPECT_EQ(props.at("new.property"), "new.value");
-  const auto& format_version = reloaded->metadata()->format_version;
-  EXPECT_EQ(format_version, 3);
 }
 
 }  // namespace iceberg

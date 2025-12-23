@@ -178,6 +178,7 @@ class Transaction;
 /// \brief Update family.
 class PendingUpdate;
 class UpdateProperties;
+class ReplaceSortOrder;
 
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.
