@@ -71,6 +71,15 @@ class ICEBERG_EXPORT ManifestReader {
   /// \brief Set case sensitivity for column name matching.
   virtual ManifestReader& CaseSensitive(bool case_sensitive) = 0;
 
+  /// \brief Try to drop stats from returned DataFile objects.
+  virtual ManifestReader& TryDropStats() = 0;
+
+  /// \brief Determine whether stats should be dropped based on selected columns.
+  ///
+  /// Returns true if the selected columns do not include any stats columns, or only
+  /// include record_count (which is a primitive, not a large map).
+  static bool ShouldDropStats(const std::vector<std::string>& columns);
+
   /// \brief Creates a reader for a manifest file.
   /// \param manifest A ManifestFile object containing metadata about the manifest.
   /// \param file_io File IO implementation to use.
