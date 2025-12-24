@@ -446,17 +446,6 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   /// \brief Private constructor for building from existing metadata
   explicit TableMetadataBuilder(const TableMetadata* base);
 
-  /// \brief Internal method to add a sort order and return its ID
-  /// \param order The sort order to add
-  /// \return The ID of the added or reused sort order
-  Result<int32_t> AddSortOrderInternal(const SortOrder& order);
-
-  /// \brief Internal method to check for existing sort order and reuse its ID or create a
-  /// new one
-  /// \param new_order The sort order to check
-  /// \return The ID to use for this sort order (reused if exists, new otherwise)
-  int32_t ReuseOrCreateNewSortOrderId(const SortOrder& new_order);
-
   /// Internal state members
   struct Impl;
   std::unique_ptr<Impl> impl_;
