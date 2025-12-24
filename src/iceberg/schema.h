@@ -122,7 +122,6 @@ class ICEBERG_EXPORT Schema : public StructType {
   Result<std::unique_ptr<Schema>> Project(
       const std::unordered_set<int32_t>& field_ids) const;
 
-
   /// \brief Return the field IDs of the identifier fields.
   const std::vector<int32_t>& IdentifierFieldIds() const;
 
