@@ -36,62 +36,61 @@
 
 namespace iceberg {
 
-class UpdateSortOrderTest : public UpdateTestBase {};
+class UpdateSortOrderTest : public UpdateTestBase {
+ protected:
+  // Helper function to apply update and verify the resulting sort order
+  void ApplyAndExpectSortOrder(UpdateSortOrder* update,
+                               std::vector<SortField> expected_fields) {
+    ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+    ICEBERG_UNWRAP_OR_FAIL(
+        auto expected_sort_order,
+        SortOrder::Make(result.sort_order->order_id(), std::move(expected_fields)));
+    EXPECT_EQ(*result.sort_order, *expected_sort_order);
+  }
+};
+
+TEST_F(UpdateSortOrderTest, EmptySortOrder) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  // Should succeed with an unsorted order
+  EXPECT_TRUE(result.sort_order->fields().empty());
+}
 
 TEST_F(UpdateSortOrderTest, AddSingleSortFieldAscending) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
   auto term = Expressions::Transform("x", Transform::Identity());
-
   update->AddSortField(term, SortDirection::kAscending, NullOrder::kFirst);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
-  EXPECT_FALSE(result.sort_order->is_unsorted());
 
   std::vector<SortField> expected_fields;
   expected_fields.emplace_back(1, Transform::Identity(), SortDirection::kAscending,
                                NullOrder::kFirst);
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto expected_sort_order,
-      SortOrder::Make(result.sort_order->order_id(), std::move(expected_fields)));
-  EXPECT_EQ(*result.sort_order, *expected_sort_order);
+  ApplyAndExpectSortOrder(update.get(), std::move(expected_fields));
 }
 
 TEST_F(UpdateSortOrderTest, AddSingleSortFieldDescending) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
   auto term = Expressions::Transform("y", Transform::Identity());
-
   update->AddSortField(term, SortDirection::kDescending, NullOrder::kLast);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
 
   std::vector<SortField> expected_fields;
   expected_fields.emplace_back(2, Transform::Identity(), SortDirection::kDescending,
                                NullOrder::kLast);
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto expected_sort_order,
-      SortOrder::Make(result.sort_order->order_id(), std::move(expected_fields)));
-  EXPECT_EQ(*result.sort_order, *expected_sort_order);
+  ApplyAndExpectSortOrder(update.get(), std::move(expected_fields));
 }
 
 TEST_F(UpdateSortOrderTest, AddMultipleSortFields) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
   auto term1 = Expressions::Transform("y", Transform::Identity());
   auto term2 = Expressions::Transform("x", Transform::Identity());
-
   update->AddSortField(term1, SortDirection::kAscending, NullOrder::kFirst)
       .AddSortField(term2, SortDirection::kDescending, NullOrder::kLast);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
 
   std::vector<SortField> expected_fields;
   expected_fields.emplace_back(2, Transform::Identity(), SortDirection::kAscending,
                                NullOrder::kFirst);
   expected_fields.emplace_back(1, Transform::Identity(), SortDirection::kDescending,
                                NullOrder::kLast);
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto expected_sort_order,
-      SortOrder::Make(result.sort_order->order_id(), std::move(expected_fields)));
-  EXPECT_EQ(*result.sort_order, *expected_sort_order);
+  ApplyAndExpectSortOrder(update.get(), std::move(expected_fields));
 }
 
 TEST_F(UpdateSortOrderTest, AddSortFieldWithNamedReference) {
@@ -99,69 +98,45 @@ TEST_F(UpdateSortOrderTest, AddSortFieldWithNamedReference) {
   // identity
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
   auto ref = Expressions::Ref("x");
-
   update->AddSortField(ref, SortDirection::kAscending, NullOrder::kFirst);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
 
   std::vector<SortField> expected_fields;
   expected_fields.emplace_back(1, Transform::Identity(), SortDirection::kAscending,
                                NullOrder::kFirst);
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto expected_sort_order,
-      SortOrder::Make(result.sort_order->order_id(), std::move(expected_fields)));
-  EXPECT_EQ(*result.sort_order, *expected_sort_order);
+  ApplyAndExpectSortOrder(update.get(), std::move(expected_fields));
 }
 
 TEST_F(UpdateSortOrderTest, AddSortFieldByName) {
   // Test the convenience method for adding sort field by name
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
-
   update->AddSortFieldByName("x", SortDirection::kAscending, NullOrder::kFirst);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
 
   std::vector<SortField> expected_fields;
   expected_fields.emplace_back(1, Transform::Identity(), SortDirection::kAscending,
                                NullOrder::kFirst);
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto expected_sort_order,
-      SortOrder::Make(result.sort_order->order_id(), std::move(expected_fields)));
-  EXPECT_EQ(*result.sort_order, *expected_sort_order);
+  ApplyAndExpectSortOrder(update.get(), std::move(expected_fields));
 }
 
 TEST_F(UpdateSortOrderTest, AddSortFieldWithTruncateTransform) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
   auto term = Expressions::Truncate("x", 10);
-
   update->AddSortField(term, SortDirection::kAscending, NullOrder::kFirst);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
 
   std::vector<SortField> expected_fields;
   expected_fields.emplace_back(1, Transform::Truncate(10), SortDirection::kAscending,
                                NullOrder::kFirst);
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto expected_sort_order,
-      SortOrder::Make(result.sort_order->order_id(), std::move(expected_fields)));
-  EXPECT_EQ(*result.sort_order, *expected_sort_order);
+  ApplyAndExpectSortOrder(update.get(), std::move(expected_fields));
 }
 
 TEST_F(UpdateSortOrderTest, AddSortFieldWithBucketTransform) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
   auto term = Expressions::Bucket("y", 10);
-
   update->AddSortField(term, SortDirection::kDescending, NullOrder::kLast);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
 
   std::vector<SortField> expected_fields;
   expected_fields.emplace_back(2, Transform::Bucket(10), SortDirection::kDescending,
                                NullOrder::kLast);
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto expected_sort_order,
-      SortOrder::Make(result.sort_order->order_id(), std::move(expected_fields)));
-  EXPECT_EQ(*result.sort_order, *expected_sort_order);
+  ApplyAndExpectSortOrder(update.get(), std::move(expected_fields));
 }
 
 TEST_F(UpdateSortOrderTest, AddSortFieldNullTerm) {
@@ -219,19 +194,14 @@ TEST_F(UpdateSortOrderTest, CaseSensitiveFalse) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
   auto ref = NamedReference::Make("X").value();  // Uppercase
   auto term = UnboundTransform::Make(std::move(ref), Transform::Identity()).value();
-
   update->CaseSensitive(false).AddSortField(std::move(term), SortDirection::kAscending,
                                             NullOrder::kFirst);
 
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
   // Should succeed because case-insensitive matching
   std::vector<SortField> expected_fields;
   expected_fields.emplace_back(1, Transform::Identity(), SortDirection::kAscending,
                                NullOrder::kFirst);
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto expected_sort_order,
-      SortOrder::Make(result.sort_order->order_id(), std::move(expected_fields)));
-  EXPECT_EQ(*result.sort_order, *expected_sort_order);
+  ApplyAndExpectSortOrder(update.get(), std::move(expected_fields));
 }
 
 TEST_F(UpdateSortOrderTest, CommitSuccess) {
@@ -261,13 +231,6 @@ TEST_F(UpdateSortOrderTest, CommitSuccess) {
       auto expected_sort_order,
       SortOrder::Make(sort_order->order_id(), std::move(expected_fields)));
   EXPECT_EQ(*sort_order, *expected_sort_order);
-}
-
-TEST_F(UpdateSortOrderTest, EmptySortOrder) {
-  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
-  // Should succeed with an unsorted order
-  EXPECT_TRUE(result.sort_order->fields().empty());
 }
 
 }  // namespace iceberg

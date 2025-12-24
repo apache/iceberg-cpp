@@ -27,7 +27,6 @@ namespace iceberg {
 class UpdatePropertiesTest : public UpdateTestBase {};
 
 TEST_F(UpdatePropertiesTest, EmptyUpdate) {
-  // commit an empty update, should succeed
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateProperties());
   ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
   EXPECT_THAT(result.updates.empty(), true);
