@@ -24,22 +24,19 @@
 #include <vector>
 
 #include "iceberg/expression/term.h"
-#include "iceberg/result.h"
-#include "iceberg/sort_field.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/transaction.h"
+#include "iceberg/transform.h"
 #include "iceberg/util/checked_cast.h"
-#include "iceberg/util/error_collector.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
 
 Result<std::shared_ptr<UpdateSortOrder>> UpdateSortOrder::Make(
     std::shared_ptr<Transaction> transaction) {
-  if (!transaction) [[unlikely]] {
-    return InvalidArgument("Cannot create UpdateSortOrder without a transaction");
-  }
+  ICEBERG_PRECHECK(transaction != nullptr,
+                   "Cannot create UpdateSortOrder without a transaction");
   return std::shared_ptr<UpdateSortOrder>(new UpdateSortOrder(std::move(transaction)));
 }
 
@@ -48,28 +45,42 @@ UpdateSortOrder::UpdateSortOrder(std::shared_ptr<Transaction> transaction)
 
 UpdateSortOrder::~UpdateSortOrder() = default;
 
-UpdateSortOrder& UpdateSortOrder::AddSortField(std::shared_ptr<Term> term,
+UpdateSortOrder& UpdateSortOrder::AddSortField(const std::shared_ptr<Term>& term,
                                                SortDirection direction,
                                                NullOrder null_order) {
-  if (!term) {
-    return AddError(ErrorKind::kInvalidArgument, "Term cannot be null");
-  }
-  if (term->kind() != Term::Kind::kTransform) {
-    return AddError(ErrorKind::kInvalidArgument, "Term must be a transform term");
-  }
-  if (!term->is_unbound()) {
-    return AddError(ErrorKind::kInvalidArgument, "Term must be unbound");
-  }
-  // use checked-cast to get UnboundTransform
-  auto unbound_transform = internal::checked_pointer_cast<UnboundTransform>(term);
-  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto schema, transaction_->current().Schema());
-  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto bound_term,
-                                   unbound_transform->Bind(*schema, case_sensitive_));
+  ICEBERG_BUILDER_CHECK(term != nullptr, "Term cannot be null");
+  ICEBERG_BUILDER_CHECK(term->is_unbound(), "Term must be unbound");
 
-  int32_t source_id = bound_term->reference()->field_id();
-  sort_fields_.emplace_back(source_id, unbound_transform->transform(), direction,
-                            null_order);
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto schema, transaction_->current().Schema());
+
+  int32_t source_id;
+  std::shared_ptr<Transform> transform;
+
+  if (term->kind() == Term::Kind::kReference) {
+    // kReference is treated as identity transform
+    auto named_ref = internal::checked_pointer_cast<NamedReference>(term);
+    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto bound_ref,
+                                     named_ref->Bind(*schema, case_sensitive_));
+    sort_fields_.emplace_back(bound_ref->field_id(), Transform::Identity(), direction,
+                              null_order);
+  } else {
+    // kTransform - use the specified transform
+    auto unbound_transform = internal::checked_pointer_cast<UnboundTransform>(term);
+    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto bound_term,
+                                     unbound_transform->Bind(*schema, case_sensitive_));
+    sort_fields_.emplace_back(bound_term->reference()->field_id(),
+                              unbound_transform->transform(), direction, null_order);
+  }
+
   return *this;
+}
+
+UpdateSortOrder& UpdateSortOrder::AddSortFieldByName(std::string_view name,
+                                                     SortDirection direction,
+                                                     NullOrder null_order) {
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto named_ref,
+                                   NamedReference::Make(std::string(name)));
+  return AddSortField(std::move(named_ref), direction, null_order);
 }
 
 UpdateSortOrder& UpdateSortOrder::CaseSensitive(bool case_sensitive) {
@@ -85,15 +96,13 @@ Result<UpdateSortOrder::ApplyResult> UpdateSortOrder::Apply() {
   if (sort_fields_.empty()) {
     order = SortOrder::Unsorted();
   } else {
-    // Use kInitialSortOrderId (1) as a placeholder for non-empty sort orders.
+    // Use -1 as a placeholder for non-empty sort orders.
     // The actual sort order ID will be assigned by TableMetadataBuilder when
     // the AddSortOrder update is applied.
-    ICEBERG_ASSIGN_OR_RAISE(
-        order, SortOrder::Make(SortOrder::kInitialSortOrderId, sort_fields_));
+    ICEBERG_ASSIGN_OR_RAISE(order, SortOrder::Make(/*sort_id=*/-1, sort_fields_));
+    ICEBERG_ASSIGN_OR_RAISE(auto schema, transaction_->current().Schema());
+    ICEBERG_RETURN_UNEXPECTED(order->Validate(*schema));
   }
-
-  ICEBERG_ASSIGN_OR_RAISE(auto schema, transaction_->current().Schema());
-  ICEBERG_RETURN_UNEXPECTED(order->Validate(*schema));
   return ApplyResult{std::move(order)};
 }
 

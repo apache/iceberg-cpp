@@ -36,9 +36,8 @@ namespace iceberg {
 
 Result<std::shared_ptr<UpdateProperties>> UpdateProperties::Make(
     std::shared_ptr<Transaction> transaction) {
-  if (!transaction) [[unlikely]] {
-    return InvalidArgument("Cannot create UpdateProperties without a transaction");
-  }
+  ICEBERG_PRECHECK(transaction != nullptr,
+                   "Cannot create UpdateProperties without a transaction");
   return std::shared_ptr<UpdateProperties>(new UpdateProperties(std::move(transaction)));
 }
 
@@ -110,9 +109,8 @@ Result<UpdateProperties::ApplyResult> UpdateProperties::Apply() {
     ICEBERG_RETURN_UNEXPECTED(
         MetricsConfig::VerifyReferencedColumns(new_properties, *schema.value()));
   }
-  return ApplyResult{.updates_ = std::move(new_properties),
-                     .removals_ = std::move(removals_),
-                     .format_version_ = format_version_};
+  return ApplyResult{
+      .updates = updates_, .removals = removals_, .format_version = format_version_};
 }
 
 }  // namespace iceberg

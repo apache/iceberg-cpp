@@ -19,7 +19,9 @@
 
 #include "iceberg/transaction.h"
 
+#include "iceberg/expression/expressions.h"
 #include "iceberg/expression/term.h"
+#include "iceberg/sort_order.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/update_test_base.h"
 #include "iceberg/transform.h"
@@ -67,8 +69,8 @@ TEST_F(TransactionTest, MultipleUpdatesInTransaction) {
 
   // Second update: update sort order
   ICEBERG_UNWRAP_OR_FAIL(auto update2, txn->NewUpdateSortOrder());
-  auto ref = NamedReference::Make("x").value();
-  auto term = UnboundTransform::Make(std::move(ref), Transform::Identity()).value();
+  auto term =
+      UnboundTransform::Make(Expressions::Ref("x"), Transform::Identity()).value();
   update2->AddSortField(std::move(term), SortDirection::kAscending, NullOrder::kFirst);
   EXPECT_THAT(update2->Commit(), IsOk());
 
@@ -83,12 +85,13 @@ TEST_F(TransactionTest, MultipleUpdatesInTransaction) {
 
   // Verify sort order was updated
   ICEBERG_UNWRAP_OR_FAIL(auto sort_order, reloaded->sort_order());
-  EXPECT_FALSE(sort_order->is_unsorted());
-  const auto& fields = sort_order->fields();
-  ASSERT_EQ(fields.size(), 1);
-  EXPECT_EQ(fields[0].source_id(), 1);  // field id for "x"
-  EXPECT_EQ(fields[0].direction(), SortDirection::kAscending);
-  EXPECT_EQ(fields[0].null_order(), NullOrder::kFirst);
+  std::vector<SortField> expected_fields;
+  expected_fields.emplace_back(1, Transform::Identity(), SortDirection::kAscending,
+                               NullOrder::kFirst);
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto expected_sort_order,
+      SortOrder::Make(sort_order->order_id(), std::move(expected_fields)));
+  EXPECT_EQ(*sort_order, *expected_sort_order);
 }
 
 }  // namespace iceberg

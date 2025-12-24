@@ -30,6 +30,7 @@
 #include "iceberg/update/pending_update.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/update/update_sort_order.h"
+#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -67,23 +68,26 @@ Status Transaction::AddUpdate(const std::shared_ptr<PendingUpdate>& update) {
 Status Transaction::Apply(PendingUpdate& update) {
   switch (update.kind()) {
     case PendingUpdate::Kind::kUpdateProperties: {
-      auto& update_properties = static_cast<UpdateProperties&>(update);
-      ICEBERG_ASSIGN_OR_RAISE(UpdateProperties::ApplyResult result,
-                              update_properties.Apply());
-      metadata_builder_->SetProperties(std::move(result.updates_));
-      metadata_builder_->RemoveProperties(std::move(result.removals_));
-      if (result.format_version_.has_value()) {
-        metadata_builder_->UpgradeFormatVersion(result.format_version_.value());
+      auto& update_properties = internal::checked_cast<UpdateProperties&>(update);
+      ICEBERG_ASSIGN_OR_RAISE(auto result, update_properties.Apply());
+      if (!result.updates.empty()) {
+        metadata_builder_->SetProperties(std::move(result.updates));
+      }
+      if (!result.removals.empty()) {
+        metadata_builder_->RemoveProperties(std::move(result.removals));
+      }
+      if (result.format_version.has_value()) {
+        metadata_builder_->UpgradeFormatVersion(result.format_version.value());
       }
     } break;
     case PendingUpdate::Kind::kUpdateSortOrder: {
-      auto& update_sort_order = static_cast<UpdateSortOrder&>(update);
-      ICEBERG_ASSIGN_OR_RAISE(UpdateSortOrder::ApplyResult result,
-                              update_sort_order.Apply());
-      metadata_builder_->SetDefaultSortOrder(result.sort_order_);
+      auto& update_sort_order = internal::checked_cast<UpdateSortOrder&>(update);
+      ICEBERG_ASSIGN_OR_RAISE(auto result, update_sort_order.Apply());
+      metadata_builder_->SetDefaultSortOrder(result.sort_order);
     } break;
     default:
-      return InvalidArgument("Unsupported pending update kind");
+      return NotSupported("Unsupported pending update: {}",
+                          static_cast<int>(update.kind()));
   }
 
   last_update_committed_ = true;

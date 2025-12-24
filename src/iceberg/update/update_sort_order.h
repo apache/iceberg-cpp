@@ -20,12 +20,11 @@
 #pragma once
 
 #include <memory>
+#include <string_view>
 #include <vector>
 
 #include "iceberg/expression/term.h"
-#include "iceberg/iceberg_export.h"
 #include "iceberg/sort_field.h"
-#include "iceberg/sort_order.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/update/pending_update.h"
 
@@ -43,7 +42,7 @@ class ICEBERG_EXPORT UpdateSortOrder : public PendingUpdate {
   ~UpdateSortOrder() override;
 
   struct ApplyResult {
-    std::shared_ptr<SortOrder> sort_order_;
+    std::shared_ptr<SortOrder> sort_order;
   };
 
   /// \brief Add a sort field to the sort order.
@@ -52,8 +51,17 @@ class ICEBERG_EXPORT UpdateSortOrder : public PendingUpdate {
   /// \param direction The sort direction (ascending or descending)
   /// \param null_order The null order (first or last)
   /// \return Reference to this UpdateSortOrder for chaining
-  UpdateSortOrder& AddSortField(std::shared_ptr<Term> term, SortDirection direction,
-                                NullOrder null_order);
+  UpdateSortOrder& AddSortField(const std::shared_ptr<Term>& term,
+                                SortDirection direction, NullOrder null_order);
+
+  /// \brief Add a sort field by field name with identity transform.
+  ///
+  /// \param name The name of the field to sort by
+  /// \param direction The sort direction (ascending or descending)
+  /// \param null_order The null order (first or last)
+  /// \return Reference to this UpdateSortOrder for chaining
+  UpdateSortOrder& AddSortFieldByName(std::string_view name, SortDirection direction,
+                                      NullOrder null_order);
 
   /// \brief Set case sensitivity of sort column name resolution.
   ///
@@ -63,16 +71,16 @@ class ICEBERG_EXPORT UpdateSortOrder : public PendingUpdate {
 
   Kind kind() const final { return Kind::kUpdateSortOrder; }
 
- private:
+  /// \brief Apply the pending changes and return the new SortOrder.
   Result<ApplyResult> Apply();
 
+ private:
   friend class Transaction;
 
   explicit UpdateSortOrder(std::shared_ptr<Transaction> transaction);
 
   std::vector<SortField> sort_fields_;
   bool case_sensitive_ = true;
-  std::shared_ptr<SortOrder> sort_order_;
 };
 
 }  // namespace iceberg

@@ -44,9 +44,9 @@ class ICEBERG_EXPORT UpdateProperties : public PendingUpdate {
   ~UpdateProperties() override;
 
   struct ApplyResult {
-    std::unordered_map<std::string, std::string> updates_;
-    std::unordered_set<std::string> removals_;
-    std::optional<int8_t> format_version_;
+    std::unordered_map<std::string, std::string> updates;
+    std::unordered_set<std::string> removals;
+    std::optional<int8_t> format_version;
   };
 
   /// \brief Sets a property key to a specified value.
@@ -67,9 +67,10 @@ class ICEBERG_EXPORT UpdateProperties : public PendingUpdate {
 
   Kind kind() const final { return Kind::kUpdateProperties; }
 
- private:
+  /// \brief Apply the pending changes and return the updates and removals.
   Result<ApplyResult> Apply();
 
+ private:
   friend class Transaction;
 
   explicit UpdateProperties(std::shared_ptr<Transaction> transaction);
