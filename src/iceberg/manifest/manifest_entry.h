@@ -326,7 +326,7 @@ struct ICEBERG_EXPORT ManifestEntry {
   inline static const SchemaField kSnapshotId =
       SchemaField::MakeOptional(kSnapshotIdFieldId, "snapshot_id", int64());
 
-  inline static const int32_t kDataFileFieldId = 2;
+  static constexpr int32_t kDataFileFieldId = 2;
   inline static const std::string kDataFileField = "data_file";
 
   static constexpr int32_t kSequenceNumberFieldId = 3;

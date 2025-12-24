@@ -153,63 +153,63 @@ struct ICEBERG_EXPORT ManifestFile {
   /// \brief Checks if this manifest file contains entries with DELETED status
   bool has_deleted_files() const { return deleted_files_count.value_or(1) > 0; }
 
-  inline static const int32_t kManifestPathFieldId = 500;
+  static constexpr int32_t kManifestPathFieldId = 500;
   inline static const SchemaField kManifestPath = SchemaField::MakeRequired(
       kManifestPathFieldId, "manifest_path", string(), "Location URI with FS scheme");
 
-  inline static const int32_t kManifestLengthFieldId = 501;
+  static constexpr int32_t kManifestLengthFieldId = 501;
   inline static const SchemaField kManifestLength = SchemaField::MakeRequired(
       kManifestLengthFieldId, "manifest_length", int64(), "Total file size in bytes");
 
-  inline static const int32_t kPartitionSpecIdFieldId = 502;
+  static constexpr int32_t kPartitionSpecIdFieldId = 502;
   inline static const SchemaField kPartitionSpecId = SchemaField::MakeRequired(
       kPartitionSpecIdFieldId, "partition_spec_id", int32(), "Spec ID used to write");
 
-  inline static const int32_t kContentFieldId = 517;
+  static constexpr int32_t kContentFieldId = 517;
   inline static const SchemaField kContent = SchemaField::MakeOptional(
       kContentFieldId, "content", int32(), "Contents of the manifest: 0=data, 1=deletes");
 
-  inline static const int32_t kSequenceNumberFieldId = 515;
+  static constexpr int32_t kSequenceNumberFieldId = 515;
   inline static const SchemaField kSequenceNumber =
       SchemaField::MakeOptional(kSequenceNumberFieldId, "sequence_number", int64(),
                                 "Sequence number when the manifest was added");
 
-  inline static const int32_t kMinSequenceNumberFieldId = 516;
+  static constexpr int32_t kMinSequenceNumberFieldId = 516;
   inline static const SchemaField kMinSequenceNumber =
       SchemaField::MakeOptional(kMinSequenceNumberFieldId, "min_sequence_number", int64(),
                                 "Lowest sequence number in the manifest");
 
-  inline static const int32_t kAddedSnapshotIdFieldId = 503;
+  static constexpr int32_t kAddedSnapshotIdFieldId = 503;
   inline static const SchemaField kAddedSnapshotId =
       SchemaField::MakeRequired(kAddedSnapshotIdFieldId, "added_snapshot_id", int64(),
                                 "Snapshot ID that added the manifest");
 
-  inline static const int32_t kAddedFilesCountFieldId = 504;
+  static constexpr int32_t kAddedFilesCountFieldId = 504;
   inline static const SchemaField kAddedFilesCount = SchemaField::MakeOptional(
       kAddedFilesCountFieldId, "added_files_count", int32(), "Added entry count");
 
-  inline static const int32_t kExistingFilesCountFieldId = 505;
+  static constexpr int32_t kExistingFilesCountFieldId = 505;
   inline static const SchemaField kExistingFilesCount =
       SchemaField::MakeOptional(kExistingFilesCountFieldId, "existing_files_count",
                                 int32(), "Existing entry count");
 
-  inline static const int32_t kDeletedFilesCountFieldId = 506;
+  static constexpr int32_t kDeletedFilesCountFieldId = 506;
   inline static const SchemaField kDeletedFilesCount = SchemaField::MakeOptional(
       kDeletedFilesCountFieldId, "deleted_files_count", int32(), "Deleted entry count");
 
-  inline static const int32_t kAddedRowsCountFieldId = 512;
+  static constexpr int32_t kAddedRowsCountFieldId = 512;
   inline static const SchemaField kAddedRowsCount = SchemaField::MakeOptional(
       kAddedRowsCountFieldId, "added_rows_count", int64(), "Added rows count");
 
-  inline static const int32_t kExistingRowsCountFieldId = 513;
+  static constexpr int32_t kExistingRowsCountFieldId = 513;
   inline static const SchemaField kExistingRowsCount = SchemaField::MakeOptional(
       kExistingRowsCountFieldId, "existing_rows_count", int64(), "Existing rows count");
 
-  inline static const int32_t kDeletedRowsCountFieldId = 514;
+  static constexpr int32_t kDeletedRowsCountFieldId = 514;
   inline static const SchemaField kDeletedRowsCount = SchemaField::MakeOptional(
       kDeletedRowsCountFieldId, "deleted_rows_count", int64(), "Deleted rows count");
 
-  inline static const int32_t kPartitionSummaryFieldId = 507;
+  static constexpr int32_t kPartitionSummaryFieldId = 507;
   inline static const SchemaField kPartitions = SchemaField::MakeOptional(
       kPartitionSummaryFieldId, "partitions",
       list(SchemaField::MakeRequired(508, std::string(ListType::kElementName),
@@ -221,11 +221,11 @@ struct ICEBERG_EXPORT ManifestFile {
                                      }))),
       "Summary for each partition");
 
-  inline static const int32_t kKeyMetadataFieldId = 519;
+  static constexpr int32_t kKeyMetadataFieldId = 519;
   inline static const SchemaField kKeyMetadata = SchemaField::MakeOptional(
       kKeyMetadataFieldId, "key_metadata", binary(), "Encryption key metadata blob");
 
-  inline static const int32_t kFirstRowIdFieldId = 520;
+  static constexpr int32_t kFirstRowIdFieldId = 520;
   inline static const SchemaField kFirstRowId = SchemaField::MakeOptional(
       kFirstRowIdFieldId, "first_row_id", int64(),
       "Starting row ID to assign to new rows in ADDED data files");
