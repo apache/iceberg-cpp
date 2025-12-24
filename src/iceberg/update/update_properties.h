@@ -71,8 +71,6 @@ class ICEBERG_EXPORT UpdateProperties : public PendingUpdate {
   Result<ApplyResult> Apply();
 
  private:
-  friend class Transaction;
-
   explicit UpdateProperties(std::shared_ptr<Transaction> transaction);
 
   std::unordered_map<std::string, std::string> updates_;

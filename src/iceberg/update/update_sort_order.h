@@ -75,8 +75,6 @@ class ICEBERG_EXPORT UpdateSortOrder : public PendingUpdate {
   Result<ApplyResult> Apply();
 
  private:
-  friend class Transaction;
-
   explicit UpdateSortOrder(std::shared_ptr<Transaction> transaction);
 
   std::vector<SortField> sort_fields_;

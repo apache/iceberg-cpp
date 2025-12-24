@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "iceberg/expression/term.h"
+#include "iceberg/result.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/transaction.h"
@@ -52,10 +53,6 @@ UpdateSortOrder& UpdateSortOrder::AddSortField(const std::shared_ptr<Term>& term
   ICEBERG_BUILDER_CHECK(term->is_unbound(), "Term must be unbound");
 
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto schema, transaction_->current().Schema());
-
-  int32_t source_id;
-  std::shared_ptr<Transform> transform;
-
   if (term->kind() == Term::Kind::kReference) {
     // kReference is treated as identity transform
     auto named_ref = internal::checked_pointer_cast<NamedReference>(term);
@@ -63,13 +60,15 @@ UpdateSortOrder& UpdateSortOrder::AddSortField(const std::shared_ptr<Term>& term
                                      named_ref->Bind(*schema, case_sensitive_));
     sort_fields_.emplace_back(bound_ref->field_id(), Transform::Identity(), direction,
                               null_order);
-  } else {
-    // kTransform - use the specified transform
+  } else if (term->kind() == Term::Kind::kTransform) {
     auto unbound_transform = internal::checked_pointer_cast<UnboundTransform>(term);
     ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto bound_term,
                                      unbound_transform->Bind(*schema, case_sensitive_));
     sort_fields_.emplace_back(bound_term->reference()->field_id(),
                               unbound_transform->transform(), direction, null_order);
+  } else {
+    return AddError(ErrorKind::kNotSupported, "Not supported unbound term: {}",
+                    static_cast<int>(term->kind()));
   }
 
   return *this;
