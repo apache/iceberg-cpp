@@ -623,7 +623,8 @@ TEST(TableRequirementsTest, RemoveSchemas) {
   metadata->current_schema_id = 3;
 
   std::vector<std::unique_ptr<TableUpdate>> updates;
-  updates.push_back(std::make_unique<table::RemoveSchemas>(std::vector<int32_t>{1, 2}));
+  updates.push_back(
+      std::make_unique<table::RemoveSchemas>(std::unordered_set<int32_t>{1, 2}));
 
   auto result = TableRequirements::ForUpdateTable(*metadata, updates);
   ASSERT_THAT(result, IsOk());
@@ -652,7 +653,8 @@ TEST(TableRequirementsTest, RemoveSchemasWithBranch) {
   AddBranch(*metadata, "branch", 42);
 
   std::vector<std::unique_ptr<TableUpdate>> updates;
-  updates.push_back(std::make_unique<table::RemoveSchemas>(std::vector<int32_t>{1, 2}));
+  updates.push_back(
+      std::make_unique<table::RemoveSchemas>(std::unordered_set<int32_t>{1, 2}));
 
   auto result = TableRequirements::ForUpdateTable(*metadata, updates);
   ASSERT_THAT(result, IsOk());
@@ -675,7 +677,8 @@ TEST(TableRequirementsTest, RemoveSchemasWithSchemaChangedFailure) {
   metadata->current_schema_id = 3;
 
   std::vector<std::unique_ptr<TableUpdate>> updates;
-  updates.push_back(std::make_unique<table::RemoveSchemas>(std::vector<int32_t>{1, 2}));
+  updates.push_back(
+      std::make_unique<table::RemoveSchemas>(std::unordered_set<int32_t>{1, 2}));
 
   auto result = TableRequirements::ForUpdateTable(*metadata, updates);
   ASSERT_THAT(result, IsOk());
@@ -703,7 +706,8 @@ TEST(TableRequirementsTest, RemoveSchemasWithBranchChangedFailure) {
   AddBranch(*metadata, "test", 42);
 
   std::vector<std::unique_ptr<TableUpdate>> updates;
-  updates.push_back(std::make_unique<table::RemoveSchemas>(std::vector<int32_t>{1, 2}));
+  updates.push_back(
+      std::make_unique<table::RemoveSchemas>(std::unordered_set<int32_t>{1, 2}));
 
   auto result = TableRequirements::ForUpdateTable(*metadata, updates);
   ASSERT_THAT(result, IsOk());
@@ -1074,7 +1078,8 @@ TEST(TableRequirementsTest, ReplaceTableDoesNotAddBranchRequirements) {
   AddBranch(*metadata, "branch", 42);
 
   std::vector<std::unique_ptr<TableUpdate>> updates;
-  updates.push_back(std::make_unique<table::RemoveSchemas>(std::vector<int32_t>{1, 2}));
+  updates.push_back(
+      std::make_unique<table::RemoveSchemas>(std::unordered_set<int32_t>{1, 2}));
 
   auto result = TableRequirements::ForReplaceTable(*metadata, updates);
   ASSERT_THAT(result, IsOk());

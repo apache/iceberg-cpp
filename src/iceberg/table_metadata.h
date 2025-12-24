@@ -73,9 +73,12 @@ struct ICEBERG_EXPORT TableMetadata {
   static constexpr int8_t kDefaultTableFormatVersion = 2;
   static constexpr int8_t kSupportedTableFormatVersion = 3;
   static constexpr int8_t kMinFormatVersionRowLineage = 3;
+  static constexpr int8_t kMinFormatVersionDefaultValues = 3;
   static constexpr int64_t kInitialSequenceNumber = 0;
   static constexpr int64_t kInvalidSequenceNumber = -1;
   static constexpr int64_t kInitialRowId = 0;
+
+  static inline const std::unordered_map<TypeId, int8_t> kMinFormatVersions = {};
 
   /// An integer version number for the format
   int8_t format_version;
@@ -187,7 +190,7 @@ ICEBERG_EXPORT std::string ToString(const MetadataLogEntry& entry);
 /// This builder provides a fluent interface for creating and modifying table metadata.
 /// It supports both creating new tables and building from existing metadata.
 ///
-/// Each modification method generates a corresponding MetadataUpdate that is tracked
+/// Each modification method generates a corresponding TableUpdate that is tracked
 /// in a changes list. This allows the builder to maintain a complete history of all
 /// modifications made to the table metadata, which is important for tracking table
 /// evolution and for serialization purposes.
@@ -246,7 +249,7 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   /// \param schema The schema to set as current
   /// \param new_last_column_id The highest column ID in the schema
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& SetCurrentSchema(std::shared_ptr<Schema> schema,
+  TableMetadataBuilder& SetCurrentSchema(std::shared_ptr<Schema> const& schema,
                                          int32_t new_last_column_id);
 
   /// \brief Set the current schema by schema ID
@@ -259,7 +262,7 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   ///
   /// \param schema The schema to add
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& AddSchema(std::shared_ptr<Schema> schema);
+  TableMetadataBuilder& AddSchema(std::shared_ptr<Schema> const& schema);
 
   /// \brief Set the default partition spec for the table
   ///

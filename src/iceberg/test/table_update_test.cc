@@ -71,11 +71,12 @@ std::unique_ptr<TableMetadata> CreateBaseMetadata() {
   metadata->last_column_id = 3;
   metadata->current_schema_id = 0;
   metadata->schemas.push_back(CreateTestSchema());
+  metadata->partition_specs.push_back(PartitionSpec::Unpartitioned());
   metadata->default_spec_id = PartitionSpec::kInitialSpecId;
   metadata->last_partition_id = 0;
   metadata->current_snapshot_id = Snapshot::kInvalidSnapshotId;
-  metadata->default_sort_order_id = SortOrder::kInitialSortOrderId;
   metadata->sort_orders.push_back(SortOrder::Unsorted());
+  metadata->default_sort_order_id = SortOrder::kUnsortedOrderId;
   metadata->next_row_id = TableMetadata::kInitialRowId;
   return metadata;
 }
@@ -286,7 +287,8 @@ INSTANTIATE_TEST_SUITE_P(
             .test_name = "RemoveSchemas",
             .update_factory =
                 [] {
-                  return std::make_unique<table::RemoveSchemas>(std::vector<int>{1});
+                  return std::make_unique<table::RemoveSchemas>(
+                      std::unordered_set<int>{1});
                 },
             .expected_existing_table_count = 1,
             .validator =

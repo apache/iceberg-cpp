@@ -216,10 +216,10 @@ class ICEBERG_EXPORT RemovePartitionSpecs : public TableUpdate {
 /// \brief Represents removing schemas from the table
 class ICEBERG_EXPORT RemoveSchemas : public TableUpdate {
  public:
-  explicit RemoveSchemas(std::vector<int32_t> schema_ids)
+  explicit RemoveSchemas(std::unordered_set<int32_t> schema_ids)
       : schema_ids_(std::move(schema_ids)) {}
 
-  const std::vector<int32_t>& schema_ids() const { return schema_ids_; }
+  const std::unordered_set<int32_t>& schema_ids() const { return schema_ids_; }
 
   void ApplyTo(TableMetadataBuilder& builder) const override;
 
@@ -228,7 +228,7 @@ class ICEBERG_EXPORT RemoveSchemas : public TableUpdate {
   Kind kind() const override { return Kind::kRemoveSchemas; }
 
  private:
-  std::vector<int32_t> schema_ids_;
+  std::unordered_set<int32_t> schema_ids_;
 };
 
 /// \brief Represents adding a new sort order to the table

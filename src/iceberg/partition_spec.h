@@ -84,6 +84,10 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \return Error status if the partition spec is invalid.
   Status Validate(const Schema& schema, bool allow_missing_fields) const;
 
+  // \brief Validates the partition field names are unique within the partition spec and
+  // schema.
+  Status ValidatePartitionName(const Schema& schema) const;
+
   /// \brief Get the partition fields by source ID.
   /// \param source_id The id of the source field.
   /// \return The partition fields by source ID, or NotFound if the source field is not

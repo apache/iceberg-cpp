@@ -30,6 +30,7 @@
 #include "iceberg/util/macros.h"
 #include "iceberg/util/type_util.h"
 #include "iceberg/util/visit_type.h"
+#include "table_metadata.h"
 
 namespace iceberg {
 
@@ -226,6 +227,45 @@ Result<std::vector<std::string>> Schema::IdentifierFieldNames() const {
     names.emplace_back(name.value());
   }
   return names;
+}
+
+Result<int32_t> Schema::HighestFieldId() const {
+  ICEBERG_ASSIGN_OR_RAISE(auto id_to_field, id_to_field_.Get(*this));
+
+  if (id_to_field.get().empty()) {
+    return kInitialColumnId;
+  }
+
+  auto max_it = std::ranges::max_element(
+      id_to_field.get(),
+      [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; });
+
+  return max_it->first;
+}
+
+bool Schema::SameSchema(const Schema& other) const { return fields_ == other.fields_; }
+
+Status Schema::Validate(int32_t format_version) const {
+  // Get all fields including nested ones
+  ICEBERG_ASSIGN_OR_RAISE(auto id_to_field, id_to_field_.Get(*this));
+
+  // Check each field's type and defaults
+  for (const auto& [field_id, field_ref] : id_to_field.get()) {
+    const auto& field = field_ref.get();
+
+    // Check if the field's type requires a minimum format version
+    if (auto it = TableMetadata::kMinFormatVersions.find(field.type()->type_id());
+        it != TableMetadata::kMinFormatVersions.end()) {
+      if (int32_t min_format_version = it->second; format_version < min_format_version) {
+        return InvalidSchema("Invalid type for {}: {} is not supported until v{}",
+                             field.name(), *field.type(), min_format_version);
+      }
+    }
+
+    // TODO(GuoTao.yu): Check default values when they are supported
+  }
+
+  return {};
 }
 
 }  // namespace iceberg

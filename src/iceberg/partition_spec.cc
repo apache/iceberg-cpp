@@ -177,6 +177,42 @@ Status PartitionSpec::Validate(const Schema& schema, bool allow_missing_fields) 
   return {};
 }
 
+Status PartitionSpec::ValidatePartitionName(const Schema& schema) const {
+  std::unordered_set<std::string> partition_names;
+  for (const auto& partition_field : fields_) {
+    auto name = std::string(partition_field.name());
+    if (name.empty()) {
+      return InvalidArgument("Cannot use empty partition name: {}", name);
+    }
+    if (partition_names.contains(name)) {
+      return InvalidArgument("Cannot use partition name more than once: {}", name);
+    }
+    partition_names.insert(name);
+
+    ICEBERG_ASSIGN_OR_RAISE(auto schema_field, schema.FindFieldByName(name));
+    auto transform_type = partition_field.transform()->transform_type();
+    if (transform_type == TransformType::kIdentity) {
+      // for identity transform case we allow conflicts between partition and schema field
+      // name as long as they are sourced from the same schema field
+      if (schema_field.has_value() &&
+          schema_field.value().get().field_id() != partition_field.source_id()) {
+        return InvalidArgument(
+            "Cannot create identity partition sourced from different field in schema: {}",
+            name);
+      }
+    } else {
+      // for all other transforms we don't allow conflicts between partition name and
+      // schema field name
+      if (schema_field.has_value()) {
+        return InvalidArgument(
+            "Cannot create partition from name that exists in schema: {}", name);
+      }
+    }
+  }
+
+  return {};
+}
+
 Result<std::vector<std::reference_wrapper<const PartitionField>>>
 PartitionSpec::GetFieldsBySourceId(int32_t source_id) const {
   ICEBERG_ASSIGN_OR_RAISE(auto source_id_to_fields, source_id_to_fields_.Get(*this));
