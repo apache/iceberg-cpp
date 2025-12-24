@@ -19,9 +19,12 @@
 
 #include "iceberg/transaction.h"
 
+#include "iceberg/expression/term.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/update_test_base.h"
+#include "iceberg/transform.h"
 #include "iceberg/update/update_properties.h"
+#include "iceberg/update/update_sort_order.h"
 
 namespace iceberg {
 
@@ -57,24 +60,35 @@ TEST_F(TransactionTest, CommitTransactionWithPropertyUpdate) {
 TEST_F(TransactionTest, MultipleUpdatesInTransaction) {
   ICEBERG_UNWRAP_OR_FAIL(auto txn, table_->NewTransaction());
 
-  // First update
+  // First update: set property
   ICEBERG_UNWRAP_OR_FAIL(auto update1, txn->NewUpdateProperties());
-  update1->Set("key1", "value1");
+  update1->Set("key1", "value1").Set("key2", "value2");
   EXPECT_THAT(update1->Commit(), IsOk());
 
-  // Second update
-  ICEBERG_UNWRAP_OR_FAIL(auto update2, txn->NewUpdateProperties());
-  update2->Set("key2", "value2");
+  // Second update: update sort order
+  ICEBERG_UNWRAP_OR_FAIL(auto update2, txn->NewUpdateSortOrder());
+  auto ref = NamedReference::Make("x").value();
+  auto term = UnboundTransform::Make(std::move(ref), Transform::Identity()).value();
+  update2->AddSortField(std::move(term), SortDirection::kAscending, NullOrder::kFirst);
   EXPECT_THAT(update2->Commit(), IsOk());
 
   // Commit transaction
   ICEBERG_UNWRAP_OR_FAIL(auto updated_table, txn->Commit());
 
-  // Verify both properties were set
+  // Verify properties were set
   ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
   const auto& props = reloaded->properties().configs();
   EXPECT_EQ(props.at("key1"), "value1");
   EXPECT_EQ(props.at("key2"), "value2");
+
+  // Verify sort order was updated
+  ICEBERG_UNWRAP_OR_FAIL(auto sort_order, reloaded->sort_order());
+  EXPECT_FALSE(sort_order->is_unsorted());
+  const auto& fields = sort_order->fields();
+  ASSERT_EQ(fields.size(), 1);
+  EXPECT_EQ(fields[0].source_id(), 1);  // field id for "x"
+  EXPECT_EQ(fields[0].direction(), SortDirection::kAscending);
+  EXPECT_EQ(fields[0].null_order(), NullOrder::kFirst);
 }
 
 }  // namespace iceberg
