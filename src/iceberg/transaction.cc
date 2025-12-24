@@ -70,8 +70,6 @@ Status Transaction::Apply(std::vector<std::unique_ptr<TableUpdate>> updates) {
   if (auto_commit_) {
     auto result = Commit();
     if (!result.has_value()) {
-      // Commit failed, revert the flag
-      last_update_committed_ = false;
       return std::unexpected(result.error());
     }
   }
