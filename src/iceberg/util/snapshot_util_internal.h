@@ -247,6 +247,15 @@ class ICEBERG_EXPORT SnapshotUtil {
   static Result<std::shared_ptr<Snapshot>> LatestSnapshot(const TableMetadata& metadata,
                                                           const std::string& branch);
 
+  /// \brief Generate a new snapshot ID.
+  static int64_t GenerateSnapshotId();
+
+  /// \brief Generate a new snapshot ID for the given table.
+  ///
+  /// \param table The table
+  /// \return A new snapshot ID
+  static int64_t GenerateSnapshotId(const Table& table);
+
  private:
   /// \brief Helper function to traverse ancestors of a snapshot.
   ///
