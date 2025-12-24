@@ -29,6 +29,7 @@
 #include <ranges>
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 #include <utility>
 
 #include <nlohmann/json.hpp>
@@ -426,7 +427,7 @@ class TableMetadataBuilder::Impl {
   Status SetDefaultSortOrder(int32_t order_id);
   Result<int32_t> AddSortOrder(const SortOrder& order);
   Status SetProperties(const std::unordered_map<std::string, std::string>& updated);
-  Status RemoveProperties(const std::vector<std::string>& removed);
+  Status RemoveProperties(const std::unordered_set<std::string>& removed);
 
   std::unique_ptr<TableMetadata> Build();
 
@@ -590,7 +591,7 @@ Status TableMetadataBuilder::Impl::SetProperties(
 }
 
 Status TableMetadataBuilder::Impl::RemoveProperties(
-    const std::vector<std::string>& removed) {
+    const std::unordered_set<std::string>& removed) {
   // If removed is empty, return early (no-op)
   if (removed.empty()) {
     return {};
@@ -820,7 +821,7 @@ TableMetadataBuilder& TableMetadataBuilder::SetProperties(
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveProperties(
-    const std::vector<std::string>& removed) {
+    const std::unordered_set<std::string>& removed) {
   ICEBERG_BUILDER_RETURN_IF_ERROR(impl_->RemoveProperties(removed));
   return *this;
 }
