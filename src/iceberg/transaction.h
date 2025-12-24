@@ -60,9 +60,9 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// changes.
   Result<std::shared_ptr<UpdateProperties>> NewUpdateProperties();
 
-  /// \brief Create a new ReplaceSortOrder to replace the table sort order and commit the
+  /// \brief Create a new UpdateSortOrder to update the table sort order and commit the
   /// changes.
-  Result<std::shared_ptr<ReplaceSortOrder>> NewReplaceSortOrder();
+  Result<std::shared_ptr<UpdateSortOrder>> NewUpdateSortOrder();
 
  private:
   Transaction(std::shared_ptr<Table> table, Kind kind, bool auto_commit);

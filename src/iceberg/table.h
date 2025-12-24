@@ -132,9 +132,9 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// changes.
   virtual Result<std::shared_ptr<UpdateProperties>> NewUpdateProperties();
 
-  /// \brief Create a new ReplaceSortOrder to replace the table sort order and commit the
+  /// \brief Create a new UpdateSortOrder to update the table sort order and commit the
   /// changes.
-  virtual Result<std::shared_ptr<ReplaceSortOrder>> NewReplaceSortOrder();
+  virtual Result<std::shared_ptr<UpdateSortOrder>> NewUpdateSortOrder();
 
  protected:
   Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,

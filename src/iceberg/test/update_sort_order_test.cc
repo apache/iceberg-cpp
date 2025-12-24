@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/update/replace_sort_order.h"
+#include "iceberg/update/update_sort_order.h"
 
 #include <memory>
 #include <string>
@@ -38,10 +38,10 @@
 
 namespace iceberg {
 
-class ReplaceSortOrderTest : public UpdateTestBase {};
+class UpdateSortOrderTest : public UpdateTestBase {};
 
-TEST_F(ReplaceSortOrderTest, AddSingleSortFieldAscending) {
-  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewReplaceSortOrder());
+TEST_F(UpdateSortOrderTest, AddSingleSortFieldAscending) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
   auto ref = NamedReference::Make("x").value();
   auto term = UnboundTransform::Make(std::move(ref), Transform::Identity()).value();
 
@@ -60,8 +60,8 @@ TEST_F(ReplaceSortOrderTest, AddSingleSortFieldAscending) {
   EXPECT_EQ(field.null_order(), NullOrder::kFirst);
 }
 
-TEST_F(ReplaceSortOrderTest, AddSingleSortFieldDescending) {
-  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewReplaceSortOrder());
+TEST_F(UpdateSortOrderTest, AddSingleSortFieldDescending) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
   auto ref = NamedReference::Make("y").value();
   auto term = UnboundTransform::Make(std::move(ref), Transform::Identity()).value();
 
@@ -80,8 +80,8 @@ TEST_F(ReplaceSortOrderTest, AddSingleSortFieldDescending) {
   EXPECT_EQ(field.null_order(), NullOrder::kLast);
 }
 
-TEST_F(ReplaceSortOrderTest, AddMultipleSortFields) {
-  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewReplaceSortOrder());
+TEST_F(UpdateSortOrderTest, AddMultipleSortFields) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
   auto ref1 = NamedReference::Make("y").value();
   auto term1 = UnboundTransform::Make(std::move(ref1), Transform::Identity()).value();
 
@@ -112,8 +112,8 @@ TEST_F(ReplaceSortOrderTest, AddMultipleSortFields) {
   EXPECT_EQ(field2.null_order(), NullOrder::kLast);
 }
 
-TEST_F(ReplaceSortOrderTest, AddSortFieldWithTruncateTransform) {
-  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewReplaceSortOrder());
+TEST_F(UpdateSortOrderTest, AddSortFieldWithTruncateTransform) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
 
   auto ref = NamedReference::Make("x").value();
   auto term = UnboundTransform::Make(std::move(ref), Transform::Truncate(10)).value();
@@ -133,8 +133,8 @@ TEST_F(ReplaceSortOrderTest, AddSortFieldWithTruncateTransform) {
   EXPECT_EQ(field.direction(), SortDirection::kAscending);
 }
 
-TEST_F(ReplaceSortOrderTest, AddSortFieldWithBucketTransform) {
-  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewReplaceSortOrder());
+TEST_F(UpdateSortOrderTest, AddSortFieldWithBucketTransform) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
 
   auto ref = NamedReference::Make("y").value();
   auto term = UnboundTransform::Make(std::move(ref), Transform::Bucket(10)).value();
@@ -154,8 +154,8 @@ TEST_F(ReplaceSortOrderTest, AddSortFieldWithBucketTransform) {
   EXPECT_EQ(field.direction(), SortDirection::kDescending);
 }
 
-TEST_F(ReplaceSortOrderTest, AddSortFieldNullTerm) {
-  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewReplaceSortOrder());
+TEST_F(UpdateSortOrderTest, AddSortFieldNullTerm) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
 
   update->AddSortField(nullptr, SortDirection::kAscending, NullOrder::kFirst);
 
@@ -164,8 +164,8 @@ TEST_F(ReplaceSortOrderTest, AddSortFieldNullTerm) {
   EXPECT_THAT(result, HasErrorMessage("Term cannot be null"));
 }
 
-TEST_F(ReplaceSortOrderTest, AddSortFieldInvalidTransform) {
-  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewReplaceSortOrder());
+TEST_F(UpdateSortOrderTest, AddSortFieldInvalidTransform) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
 
   // Try to apply day transform to a long field (invalid - day requires date/timestamp)
   auto ref = NamedReference::Make("x").value();
@@ -178,8 +178,8 @@ TEST_F(ReplaceSortOrderTest, AddSortFieldInvalidTransform) {
   EXPECT_THAT(result, HasErrorMessage("not a valid input type"));
 }
 
-TEST_F(ReplaceSortOrderTest, AddSortFieldNonExistentField) {
-  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewReplaceSortOrder());
+TEST_F(UpdateSortOrderTest, AddSortFieldNonExistentField) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
 
   auto ref = NamedReference::Make("nonexistent").value();
   auto term = UnboundTransform::Make(std::move(ref), Transform::Identity()).value();
@@ -191,8 +191,8 @@ TEST_F(ReplaceSortOrderTest, AddSortFieldNonExistentField) {
   EXPECT_THAT(result, HasErrorMessage("Cannot find"));
 }
 
-TEST_F(ReplaceSortOrderTest, CaseSensitiveTrue) {
-  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewReplaceSortOrder());
+TEST_F(UpdateSortOrderTest, CaseSensitiveTrue) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
 
   auto ref = NamedReference::Make("X").value();  // Uppercase
   auto term = UnboundTransform::Make(std::move(ref), Transform::Identity()).value();
@@ -205,8 +205,8 @@ TEST_F(ReplaceSortOrderTest, CaseSensitiveTrue) {
   EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
 }
 
-TEST_F(ReplaceSortOrderTest, CaseSensitiveFalse) {
-  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewReplaceSortOrder());
+TEST_F(UpdateSortOrderTest, CaseSensitiveFalse) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
   auto ref = NamedReference::Make("X").value();  // Uppercase
   auto term = UnboundTransform::Make(std::move(ref), Transform::Identity()).value();
 
@@ -224,9 +224,9 @@ TEST_F(ReplaceSortOrderTest, CaseSensitiveFalse) {
   EXPECT_EQ(sort_order->fields()[0].source_id(), 1);
 }
 
-TEST_F(ReplaceSortOrderTest, ReplaceExistingSortOrder) {
+TEST_F(UpdateSortOrderTest, ReplaceExistingSortOrder) {
   // First, set an initial sort order
-  ICEBERG_UNWRAP_OR_FAIL(auto update1, table_->NewReplaceSortOrder());
+  ICEBERG_UNWRAP_OR_FAIL(auto update1, table_->NewUpdateSortOrder());
 
   auto ref1 = NamedReference::Make("x").value();
   auto term1 = UnboundTransform::Make(std::move(ref1), Transform::Identity()).value();
@@ -236,7 +236,7 @@ TEST_F(ReplaceSortOrderTest, ReplaceExistingSortOrder) {
   // Now replace with a different sort order
   ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
 
-  ICEBERG_UNWRAP_OR_FAIL(auto update2, reloaded->NewReplaceSortOrder());
+  ICEBERG_UNWRAP_OR_FAIL(auto update2, reloaded->NewUpdateSortOrder());
   auto ref2 = NamedReference::Make("y").value();
   auto term2 = UnboundTransform::Make(std::move(ref2), Transform::Identity()).value();
   update2->AddSortField(std::move(term2), SortDirection::kDescending, NullOrder::kLast);
@@ -254,8 +254,8 @@ TEST_F(ReplaceSortOrderTest, ReplaceExistingSortOrder) {
   EXPECT_EQ(field.null_order(), NullOrder::kLast);
 }
 
-TEST_F(ReplaceSortOrderTest, EmptySortOrder) {
-  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewReplaceSortOrder());
+TEST_F(UpdateSortOrderTest, EmptySortOrder) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
 
   // Don't add any sort fields
   auto result = update->Commit();

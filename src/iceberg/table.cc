@@ -154,11 +154,11 @@ Result<std::shared_ptr<UpdateProperties>> Table::NewUpdateProperties() {
   return transaction->NewUpdateProperties();
 }
 
-Result<std::shared_ptr<ReplaceSortOrder>> Table::NewReplaceSortOrder() {
+Result<std::shared_ptr<UpdateSortOrder>> Table::NewUpdateSortOrder() {
   ICEBERG_ASSIGN_OR_RAISE(
       auto transaction, Transaction::Make(shared_from_this(), Transaction::Kind::kUpdate,
                                           /*auto_commit=*/true));
-  return transaction->NewReplaceSortOrder();
+  return transaction->NewUpdateSortOrder();
 }
 
 Result<std::shared_ptr<StagedTable>> StagedTable::Make(

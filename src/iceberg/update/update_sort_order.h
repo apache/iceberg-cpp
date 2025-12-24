@@ -29,18 +29,18 @@
 #include "iceberg/type_fwd.h"
 #include "iceberg/update/pending_update.h"
 
-/// \file iceberg/update/replace_sort_order.h
-/// \brief Replaces the table sort order.
+/// \file iceberg/update/update_sort_order.h
+/// \brief Updates the table sort order.
 
 namespace iceberg {
 
-/// \brief Replacing table sort order with a newly created order.
-class ICEBERG_EXPORT ReplaceSortOrder : public PendingUpdate {
+/// \brief Updating table sort order with a newly created order.
+class ICEBERG_EXPORT UpdateSortOrder : public PendingUpdate {
  public:
-  static Result<std::shared_ptr<ReplaceSortOrder>> Make(
+  static Result<std::shared_ptr<UpdateSortOrder>> Make(
       std::shared_ptr<Transaction> transaction);
 
-  ~ReplaceSortOrder() override;
+  ~UpdateSortOrder() override;
 
   struct ApplyResult {
     std::shared_ptr<SortOrder> sort_order_;
@@ -51,24 +51,24 @@ class ICEBERG_EXPORT ReplaceSortOrder : public PendingUpdate {
   /// \param term A transform term referencing the field
   /// \param direction The sort direction (ascending or descending)
   /// \param null_order The null order (first or last)
-  /// \return Reference to this ReplaceSortOrder for chaining
-  ReplaceSortOrder& AddSortField(std::shared_ptr<Term> term, SortDirection direction,
-                                 NullOrder null_order);
+  /// \return Reference to this UpdateSortOrder for chaining
+  UpdateSortOrder& AddSortField(std::shared_ptr<Term> term, SortDirection direction,
+                                NullOrder null_order);
 
   /// \brief Set case sensitivity of sort column name resolution.
   ///
   /// \param case_sensitive When true, column name resolution is case-sensitive
-  /// \return Reference to this ReplaceSortOrder for chaining
-  ReplaceSortOrder& CaseSensitive(bool case_sensitive);
+  /// \return Reference to this UpdateSortOrder for chaining
+  UpdateSortOrder& CaseSensitive(bool case_sensitive);
 
-  Kind kind() const final { return Kind::kReplaceSortOrder; }
+  Kind kind() const final { return Kind::kUpdateSortOrder; }
 
  private:
   Result<ApplyResult> Apply();
 
   friend class Transaction;
 
-  explicit ReplaceSortOrder(std::shared_ptr<Transaction> transaction);
+  explicit UpdateSortOrder(std::shared_ptr<Transaction> transaction);
 
   std::vector<SortField> sort_fields_;
   bool case_sensitive_ = true;

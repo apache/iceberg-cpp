@@ -17,7 +17,7 @@
  * under the License.
  */
 
-#include "iceberg/update/replace_sort_order.h"
+#include "iceberg/update/update_sort_order.h"
 
 #include <cstdint>
 #include <memory>
@@ -35,22 +35,22 @@
 
 namespace iceberg {
 
-Result<std::shared_ptr<ReplaceSortOrder>> ReplaceSortOrder::Make(
+Result<std::shared_ptr<UpdateSortOrder>> UpdateSortOrder::Make(
     std::shared_ptr<Transaction> transaction) {
   if (!transaction) [[unlikely]] {
-    return InvalidArgument("Cannot create UpdateProperties without a transaction");
+    return InvalidArgument("Cannot create UpdateSortOrder without a transaction");
   }
-  return std::shared_ptr<ReplaceSortOrder>(new ReplaceSortOrder(std::move(transaction)));
+  return std::shared_ptr<UpdateSortOrder>(new UpdateSortOrder(std::move(transaction)));
 }
 
-ReplaceSortOrder::ReplaceSortOrder(std::shared_ptr<Transaction> transaction)
+UpdateSortOrder::UpdateSortOrder(std::shared_ptr<Transaction> transaction)
     : PendingUpdate(std::move(transaction)) {}
 
-ReplaceSortOrder::~ReplaceSortOrder() = default;
+UpdateSortOrder::~UpdateSortOrder() = default;
 
-ReplaceSortOrder& ReplaceSortOrder::AddSortField(std::shared_ptr<Term> term,
-                                                 SortDirection direction,
-                                                 NullOrder null_order) {
+UpdateSortOrder& UpdateSortOrder::AddSortField(std::shared_ptr<Term> term,
+                                               SortDirection direction,
+                                               NullOrder null_order) {
   if (!term) {
     return AddError(ErrorKind::kInvalidArgument, "Term cannot be null");
   }
@@ -72,12 +72,12 @@ ReplaceSortOrder& ReplaceSortOrder::AddSortField(std::shared_ptr<Term> term,
   return *this;
 }
 
-ReplaceSortOrder& ReplaceSortOrder::CaseSensitive(bool case_sensitive) {
+UpdateSortOrder& UpdateSortOrder::CaseSensitive(bool case_sensitive) {
   case_sensitive_ = case_sensitive;
   return *this;
 }
 
-Result<ReplaceSortOrder::ApplyResult> ReplaceSortOrder::Apply() {
+Result<UpdateSortOrder::ApplyResult> UpdateSortOrder::Apply() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
   // If no sort fields are specified, return an unsorted order (ID = 0).

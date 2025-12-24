@@ -193,7 +193,7 @@ TEST_F(SortOrderTest, MakeInvalidSortOrderEmptyFields) {
   auto sort_order = SortOrder::Make(*schema_, 1, std::vector<SortField>{});
   EXPECT_THAT(sort_order, IsError(ErrorKind::kInvalidArgument));
   EXPECT_THAT(sort_order,
-              HasErrorMessage("Sort order must have at least one sort field"));
+              HasErrorMessage("Sorted order must have at least one sort field"));
 }
 
 TEST_F(SortOrderTest, MakeInvalidSortOrderUnsortedId) {

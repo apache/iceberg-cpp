@@ -43,7 +43,7 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
  public:
   enum class Kind : uint8_t {
     kUpdateProperties,
-    kReplaceSortOrder,
+    kUpdateSortOrder,
   };
 
   /// \brief Return the kind of this pending update.

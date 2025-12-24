@@ -28,8 +28,8 @@
 #include "iceberg/table_requirements.h"
 #include "iceberg/table_update.h"
 #include "iceberg/update/pending_update.h"
-#include "iceberg/update/replace_sort_order.h"
 #include "iceberg/update/update_properties.h"
+#include "iceberg/update/update_sort_order.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -76,10 +76,10 @@ Status Transaction::Apply(PendingUpdate& update) {
         metadata_builder_->UpgradeFormatVersion(result.format_version_.value());
       }
     } break;
-    case PendingUpdate::Kind::kReplaceSortOrder: {
-      auto& replace_sort_order = static_cast<ReplaceSortOrder&>(update);
-      ICEBERG_ASSIGN_OR_RAISE(ReplaceSortOrder::ApplyResult result,
-                              replace_sort_order.Apply());
+    case PendingUpdate::Kind::kUpdateSortOrder: {
+      auto& update_sort_order = static_cast<UpdateSortOrder&>(update);
+      ICEBERG_ASSIGN_OR_RAISE(UpdateSortOrder::ApplyResult result,
+                              update_sort_order.Apply());
       metadata_builder_->SetDefaultSortOrder(result.sort_order_);
     } break;
     default:
@@ -140,11 +140,11 @@ Result<std::shared_ptr<UpdateProperties>> Transaction::NewUpdateProperties() {
   return update_properties;
 }
 
-Result<std::shared_ptr<ReplaceSortOrder>> Transaction::NewReplaceSortOrder() {
-  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<ReplaceSortOrder> replace_sort_order,
-                          ReplaceSortOrder::Make(shared_from_this()));
-  ICEBERG_RETURN_UNEXPECTED(AddUpdate(replace_sort_order));
-  return replace_sort_order;
+Result<std::shared_ptr<UpdateSortOrder>> Transaction::NewUpdateSortOrder() {
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<UpdateSortOrder> update_sort_order,
+                          UpdateSortOrder::Make(shared_from_this()));
+  ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_sort_order));
+  return update_sort_order;
 }
 
 }  // namespace iceberg

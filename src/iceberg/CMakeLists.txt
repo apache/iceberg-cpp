@@ -77,7 +77,7 @@ set(ICEBERG_SOURCES
     transform_function.cc
     type.cc
     update/pending_update.cc
-    update/replace_sort_order.cc
+    update/update_sort_order.cc
     update/update_properties.cc
     util/bucket_util.cc
     util/conversions.cc
