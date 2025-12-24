@@ -41,10 +41,6 @@ class ICEBERG_EXPORT UpdateSortOrder : public PendingUpdate {
 
   ~UpdateSortOrder() override;
 
-  struct ApplyResult {
-    std::shared_ptr<SortOrder> sort_order;
-  };
-
   /// \brief Add a sort field to the sort order.
   ///
   /// \param term A transform term referencing the field
@@ -72,7 +68,7 @@ class ICEBERG_EXPORT UpdateSortOrder : public PendingUpdate {
   Kind kind() const final { return Kind::kUpdateSortOrder; }
 
   /// \brief Apply the pending changes and return the new SortOrder.
-  Result<ApplyResult> Apply();
+  Result<std::shared_ptr<SortOrder>> Apply();
 
  private:
   explicit UpdateSortOrder(std::shared_ptr<Transaction> transaction);

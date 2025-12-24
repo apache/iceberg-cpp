@@ -83,7 +83,7 @@ Status Transaction::Apply(PendingUpdate& update) {
     case PendingUpdate::Kind::kUpdateSortOrder: {
       auto& update_sort_order = internal::checked_cast<UpdateSortOrder&>(update);
       ICEBERG_ASSIGN_OR_RAISE(auto result, update_sort_order.Apply());
-      metadata_builder_->SetDefaultSortOrder(result.sort_order);
+      metadata_builder_->SetDefaultSortOrder(result);
     } break;
     default:
       return NotSupported("Unsupported pending update: {}",

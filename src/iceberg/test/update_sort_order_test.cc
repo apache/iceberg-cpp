@@ -44,8 +44,8 @@ class UpdateSortOrderTest : public UpdateTestBase {
     ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
     ICEBERG_UNWRAP_OR_FAIL(
         auto expected_sort_order,
-        SortOrder::Make(result.sort_order->order_id(), std::move(expected_fields)));
-    EXPECT_EQ(*result.sort_order, *expected_sort_order);
+        SortOrder::Make(result->order_id(), std::move(expected_fields)));
+    EXPECT_EQ(*result, *expected_sort_order);
   }
 };
 
@@ -53,7 +53,7 @@ TEST_F(UpdateSortOrderTest, EmptySortOrder) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSortOrder());
   ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
   // Should succeed with an unsorted order
-  EXPECT_TRUE(result.sort_order->fields().empty());
+  EXPECT_TRUE(result->fields().empty());
 }
 
 TEST_F(UpdateSortOrderTest, AddSingleSortFieldAscending) {

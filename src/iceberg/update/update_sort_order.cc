@@ -87,7 +87,7 @@ UpdateSortOrder& UpdateSortOrder::CaseSensitive(bool case_sensitive) {
   return *this;
 }
 
-Result<UpdateSortOrder::ApplyResult> UpdateSortOrder::Apply() {
+Result<std::shared_ptr<SortOrder>> UpdateSortOrder::Apply() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
   // If no sort fields are specified, return an unsorted order (ID = 0).
@@ -102,7 +102,7 @@ Result<UpdateSortOrder::ApplyResult> UpdateSortOrder::Apply() {
     ICEBERG_ASSIGN_OR_RAISE(auto schema, transaction_->current().Schema());
     ICEBERG_RETURN_UNEXPECTED(order->Validate(*schema));
   }
-  return ApplyResult{std::move(order)};
+  return order;
 }
 
 }  // namespace iceberg
