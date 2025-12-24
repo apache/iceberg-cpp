@@ -19,6 +19,7 @@
 
 #include "iceberg/update/update_partition_spec.h"
 
+#include <algorithm>
 #include <format>
 #include <memory>
 #include <utility>
@@ -29,7 +30,6 @@
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_metadata.h"
-#include "iceberg/table_update.h"
 #include "iceberg/transaction.h"
 #include "iceberg/transform.h"
 #include "iceberg/util/macros.h"
@@ -66,7 +66,8 @@ UpdatePartitionSpec::UpdatePartitionSpec(std::shared_ptr<Transaction> transactio
   }
   schema_ = std::move(schema_result.value());
 
-  last_assigned_partition_id_ = spec_->last_assigned_field_id();
+  last_assigned_partition_id_ = std::max(base_metadata.last_partition_id,
+                                         PartitionSpec::kLegacyPartitionDataIdStart - 1);
   name_to_field_ = IndexSpecByName(*spec_);
   transform_to_field_ = IndexSpecByTransform(*spec_);
 
