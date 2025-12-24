@@ -29,6 +29,9 @@
 #include "iceberg/type_fwd.h"
 #include "iceberg/update/pending_update.h"
 
+/// \file iceberg/update/replace_sort_order.h
+/// \brief Replaces the table sort order.
+
 namespace iceberg {
 
 /// \brief Replacing table sort order with a newly created order.

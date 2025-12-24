@@ -30,6 +30,9 @@
 #include "iceberg/type_fwd.h"
 #include "iceberg/update/pending_update.h"
 
+/// \file iceberg/update/update_properties.h
+/// \brief Updates table properties.
+
 namespace iceberg {
 
 /// \brief Updates table properties.
