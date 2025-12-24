@@ -37,7 +37,7 @@ namespace iceberg {
 class ICEBERG_EXPORT ManifestReader {
  public:
   /// \brief Special value to select all columns from manifest files.
-  inline static const std::string kAllColumns = "*";
+  static constexpr std::string_view kAllColumns = "*";
 
   virtual ~ManifestReader() = default;
 
@@ -50,9 +50,15 @@ class ICEBERG_EXPORT ManifestReader {
   virtual Result<std::vector<ManifestEntry>> LiveEntries() = 0;
 
   /// \brief Select specific columns of data file to read from the manifest entries.
+  ///
+  /// \note Column names should match the names in `DataFile` schema. Unmatched names
+  /// will be ignored.
   virtual ManifestReader& Select(const std::vector<std::string>& columns) = 0;
 
   /// \brief Filter manifest entries by partition filter.
+  ///
+  /// \note Unlike the Java implementation, this method does not combine new expressions
+  /// with existing ones. Each call replaces the previous partition filter.
   virtual ManifestReader& FilterPartitions(std::shared_ptr<Expression> expr) = 0;
 
   /// \brief Filter manifest entries to a specific set of partitions.
@@ -60,6 +66,9 @@ class ICEBERG_EXPORT ManifestReader {
       std::shared_ptr<class PartitionSet> partition_set) = 0;
 
   /// \brief Filter manifest entries by row-level filter.
+  ///
+  /// \note Unlike the Java implementation, this method does not combine new expressions
+  /// with existing ones. Each call replaces the previous row filter.
   virtual ManifestReader& FilterRows(std::shared_ptr<Expression> expr) = 0;
 
   /// \brief Set case sensitivity for column name matching.

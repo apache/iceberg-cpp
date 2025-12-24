@@ -45,6 +45,7 @@ namespace iceberg {
 
 namespace {
 
+// TODO(gangwu): refactor these macros with template functions.
 #define PARSE_PRIMITIVE_FIELD(item, array_view, type)                                   \
   for (int64_t row_idx = 0; row_idx < array_view->length; row_idx++) {                  \
     if (!ArrowArrayViewIsNull(array_view, row_idx)) {                                   \
@@ -145,30 +146,30 @@ Status ParsePartitionFieldSummaryList(ArrowArrayView* view_of_column,
   if (view_of_column->storage_type != ArrowType::NANOARROW_TYPE_LIST) {
     return InvalidManifestList("partitions field should be a list.");
   }
-  auto view_of_list_iterm = view_of_column->children[0];
-  // view_of_list_iterm is struct<PartitionFieldSummary>
-  if (view_of_list_iterm->storage_type != ArrowType::NANOARROW_TYPE_STRUCT) {
-    return InvalidManifestList("partitions list field should be a list.");
+  auto view_of_list_item = view_of_column->children[0];
+  // view_of_list_item is struct<PartitionFieldSummary>
+  if (view_of_list_item->storage_type != ArrowType::NANOARROW_TYPE_STRUCT) {
+    return InvalidManifestList("partitions list item should be a struct.");
   }
-  if (view_of_list_iterm->n_children != 4) {
+  if (view_of_list_item->n_children != 4) {
     return InvalidManifestList("PartitionFieldSummary should have 4 fields.");
   }
-  if (view_of_list_iterm->children[0]->storage_type != ArrowType::NANOARROW_TYPE_BOOL) {
+  if (view_of_list_item->children[0]->storage_type != ArrowType::NANOARROW_TYPE_BOOL) {
     return InvalidManifestList("contains_null should have be bool type column.");
   }
-  auto contains_null = view_of_list_iterm->children[0];
-  if (view_of_list_iterm->children[1]->storage_type != ArrowType::NANOARROW_TYPE_BOOL) {
+  auto contains_null = view_of_list_item->children[0];
+  if (view_of_list_item->children[1]->storage_type != ArrowType::NANOARROW_TYPE_BOOL) {
     return InvalidManifestList("contains_nan should have be bool type column.");
   }
-  auto contains_nan = view_of_list_iterm->children[1];
-  if (view_of_list_iterm->children[2]->storage_type != ArrowType::NANOARROW_TYPE_BINARY) {
+  auto contains_nan = view_of_list_item->children[1];
+  if (view_of_list_item->children[2]->storage_type != ArrowType::NANOARROW_TYPE_BINARY) {
     return InvalidManifestList("lower_bound should have be binary type column.");
   }
-  auto lower_bound_list = view_of_list_iterm->children[2];
-  if (view_of_list_iterm->children[3]->storage_type != ArrowType::NANOARROW_TYPE_BINARY) {
+  auto lower_bound_list = view_of_list_item->children[2];
+  if (view_of_list_item->children[3]->storage_type != ArrowType::NANOARROW_TYPE_BINARY) {
     return InvalidManifestList("upper_bound should have be binary type column.");
   }
-  auto upper_bound_list = view_of_list_iterm->children[3];
+  auto upper_bound_list = view_of_list_item->children[3];
   for (int64_t manifest_idx = 0; manifest_idx < manifest_count; manifest_idx++) {
     auto offset = ArrowArrayViewListChildOffset(view_of_column, manifest_idx);
     auto next_offset = ArrowArrayViewListChildOffset(view_of_column, manifest_idx + 1);
@@ -303,8 +304,8 @@ Result<std::vector<ManifestFile>> ParseManifestList(ArrowSchema* schema,
   return manifest_files;
 }
 
-Status ParseLiteral(ArrowArrayView* view_of_partition, int64_t row_idx,
-                    std::vector<ManifestEntry>& manifest_entries) {
+Status ParsePartitionValues(ArrowArrayView* view_of_partition, int64_t row_idx,
+                            std::vector<ManifestEntry>& manifest_entries) {
   switch (view_of_partition->storage_type) {
     case ArrowType::NANOARROW_TYPE_BOOL: {
       auto value = ArrowArrayViewGetUIntUnsafe(view_of_partition, row_idx);
@@ -395,7 +396,7 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
                 break;
               }
               ICEBERG_RETURN_UNEXPECTED(
-                  ParseLiteral(view_of_partition, row_idx, manifest_entries));
+                  ParsePartitionValues(view_of_partition, row_idx, manifest_entries));
             }
           }
         }
@@ -568,7 +569,7 @@ bool RequireStatsProjection(const std::shared_ptr<Expression>& row_filter,
   if (columns.empty()) {
     return false;
   }
-  const std::unordered_set<std::string> selected(columns.cbegin(), columns.cend());
+  const std::unordered_set<std::string_view> selected(columns.cbegin(), columns.cend());
   if (selected.contains(ManifestReader::kAllColumns)) {
     return false;
   }
