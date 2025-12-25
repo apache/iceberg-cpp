@@ -884,6 +884,20 @@ int32_t TableMetadataBuilder::Impl::ReuseOrCreateNewSortOrderId(
   return new_order_id;
 }
 
+int32_t TableMetadataBuilder::Impl::ReuseOrCreateNewPartitionSpecId(
+    const PartitionSpec& new_spec) {
+  // if the spec already exists, use the same ID. otherwise, use the highest ID + 1.
+  int32_t new_spec_id = PartitionSpec::kInitialSpecId;
+  for (const auto& spec : metadata_.partition_specs) {
+    if (new_spec.CompatibleWith(*spec)) {
+      return spec->spec_id();
+    } else if (new_spec_id <= spec->spec_id()) {
+      new_spec_id = spec->spec_id() + 1;
+    }
+  }
+  return new_spec_id;
+}
+
 int32_t TableMetadataBuilder::Impl::ReuseOrCreateNewSchemaId(
     const Schema& new_schema) const {
   // if the schema already exists, use its id; otherwise use the highest id + 1
@@ -913,9 +927,9 @@ Result<std::shared_ptr<PartitionSpec>> TableMetadataBuilder::Impl::UpdateSpecSch
     last_assigned_field_id = std::max(last_assigned_field_id, field.field_id());
   }
 
-  // Build without validation because the schema may have changed in a way that makes
-  // this spec invalid. The spec should still be preserved so that older metadata can
-  // be interpreted.
+  // Build without validation because the schema may have changed in a way that
+  // makes this spec invalid. The spec should still be preserved so that older
+  // metadata can be interpreted.
   ICEBERG_ASSIGN_OR_RAISE(auto new_partition_spec,
                           PartitionSpec::Make(partition_spec.spec_id(), std::move(fields),
                                               last_assigned_field_id));
@@ -927,9 +941,9 @@ Result<std::shared_ptr<PartitionSpec>> TableMetadataBuilder::Impl::UpdateSpecSch
 
 Result<std::unique_ptr<SortOrder>> TableMetadataBuilder::Impl::UpdateSortOrderSchema(
     const Schema& schema, const SortOrder& sort_order) {
-  // Build without validation because the schema may have changed in a way that makes
-  // this order invalid. The order should still be preserved so that older metadata can
-  // be interpreted.
+  // Build without validation because the schema may have changed in a way that
+  // makes this order invalid. The order should still be preserved so that older
+  // metadata can be interpreted.
   auto fields = sort_order.fields();
   std::vector<SortField> new_fields{fields.begin(), fields.end()};
   return SortOrder::Make(sort_order.order_id(), std::move(new_fields));
