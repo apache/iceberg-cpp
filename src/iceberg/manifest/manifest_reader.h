@@ -36,9 +36,6 @@ namespace iceberg {
 /// \brief Read manifest entries from a manifest file.
 class ICEBERG_EXPORT ManifestReader {
  public:
-  /// \brief Special value to select all columns from manifest files.
-  static constexpr std::string_view kAllColumns = "*";
-
   virtual ~ManifestReader() = default;
 
   /// \brief Read all manifest entries in the manifest file.

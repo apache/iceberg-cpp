@@ -124,7 +124,7 @@ Result<std::optional<std::shared_ptr<Snapshot>>> SnapshotUtil::OldestAncestorAft
   }
 
   // the first ancestor after the given time can't be determined
-  return NotFound("Cannot find snapshot older than {}", FormatTimestamp(timestamp_ms));
+  return NotFound("Cannot find snapshot older than {}", FormatTimePointMs(timestamp_ms));
 }
 
 Result<std::vector<int64_t>> SnapshotUtil::SnapshotIdsBetween(const Table& table,
@@ -232,7 +232,7 @@ Result<int64_t> SnapshotUtil::SnapshotIdAsOfTime(const Table& table,
                                                  TimePointMs timestamp_ms) {
   auto snapshot_id = OptionalSnapshotIdAsOfTime(table, timestamp_ms);
   ICEBERG_CHECK(snapshot_id.has_value(), "Cannot find a snapshot older than {}",
-                FormatTimestamp(timestamp_ms));
+                FormatTimePointMs(timestamp_ms));
   return snapshot_id.value();
 }
 

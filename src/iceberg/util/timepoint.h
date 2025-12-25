@@ -47,6 +47,6 @@ ICEBERG_EXPORT Result<TimePointNs> TimePointNsFromUnixNs(int64_t unix_ns);
 ICEBERG_EXPORT int64_t UnixNsFromTimePointNs(TimePointNs time_point_ns);
 
 /// \brief Returns a human-readable string representation of a TimePointMs
-ICEBERG_EXPORT std::string FormatTimestamp(TimePointMs time_point_ns);
+ICEBERG_EXPORT std::string FormatTimePointMs(TimePointMs time_point_ms);
 
 }  // namespace iceberg

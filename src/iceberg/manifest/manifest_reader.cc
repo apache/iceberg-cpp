@@ -570,7 +570,7 @@ bool RequireStatsProjection(const std::shared_ptr<Expression>& row_filter,
     return false;
   }
   const std::unordered_set<std::string_view> selected(columns.cbegin(), columns.cend());
-  if (selected.contains(ManifestReader::kAllColumns)) {
+  if (selected.contains(Schema::kAllColumns)) {
     return false;
   }
   if (std::ranges::all_of(kStatsColumns, [&selected](const std::string& col) {
@@ -594,7 +594,7 @@ Result<std::shared_ptr<Schema>> ProjectSchema(std::shared_ptr<Schema> schema,
 
 std::vector<std::string> ManifestReader::WithStatsColumns(
     const std::vector<std::string>& columns) {
-  if (std::ranges::contains(columns, ManifestReader::kAllColumns)) {
+  if (std::ranges::contains(columns, Schema::kAllColumns)) {
     return columns;
   } else {
     std::vector<std::string> updated_columns{columns};

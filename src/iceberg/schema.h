@@ -48,6 +48,9 @@ class ICEBERG_EXPORT Schema : public StructType {
   static constexpr int32_t kInitialSchemaId = 0;
   static constexpr int32_t kInvalidColumnId = -1;
 
+  /// \brief Special value to select all columns from manifest files.
+  static constexpr std::string_view kAllColumns = "*";
+
   explicit Schema(std::vector<SchemaField> fields,
                   std::optional<int32_t> schema_id = std::nullopt,
                   std::vector<int32_t> identifier_field_ids = {});

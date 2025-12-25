@@ -163,7 +163,6 @@ Result<std::unique_ptr<StructLikeAccessor>> Schema::GetAccessorById(
 
 Result<std::unique_ptr<Schema>> Schema::Select(std::span<const std::string> names,
                                                bool case_sensitive) const {
-  const std::string kAllColumns = "*";
   if (std::ranges::find(names, kAllColumns) != names.end()) {
     auto struct_type = ToStructType(*this);
     return FromStructType(std::move(*struct_type), std::nullopt);

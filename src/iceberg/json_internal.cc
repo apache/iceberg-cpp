@@ -787,9 +787,9 @@ nlohmann::json ToJson(const TableMetadata& table_metadata) {
   // write properties map
   json[kProperties] = table_metadata.properties.configs();
 
-  if (std::ranges::find_if(table_metadata.snapshots, [&](const auto& snapshot) {
+  if (std::ranges::any_of(table_metadata.snapshots, [&](const auto& snapshot) {
         return snapshot->snapshot_id == table_metadata.current_snapshot_id;
-      }) != table_metadata.snapshots.cend()) {
+      })) {
     json[kCurrentSnapshotId] = table_metadata.current_snapshot_id;
   } else {
     json[kCurrentSnapshotId] = nlohmann::json::value_t::null;

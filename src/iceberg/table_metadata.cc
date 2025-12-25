@@ -548,12 +548,12 @@ Result<int32_t> TableMetadataBuilder::Impl::AddSortOrder(const SortOrder& order)
     // is now the last)
     bool is_new_order =
         last_added_order_id_.has_value() &&
-        std::ranges::find_if(changes_, [new_order_id](const auto& change) {
+        std::ranges::any_of(changes_, [new_order_id](const auto& change) {
           return change->kind() == TableUpdate::Kind::kAddSortOrder &&
                  internal::checked_cast<const table::AddSortOrder&>(*change)
                          .sort_order()
                          ->order_id() == new_order_id;
-        }) != changes_.cend();
+        });
     last_added_order_id_ = is_new_order ? std::make_optional(new_order_id) : std::nullopt;
     return new_order_id;
   }
@@ -613,12 +613,12 @@ Result<int32_t> TableMetadataBuilder::Impl::AddPartitionSpec(const PartitionSpec
     // is now the last)
     bool is_new_spec =
         last_added_spec_id_.has_value() &&
-        std::ranges::find_if(changes_, [new_spec_id](const auto& change) {
+        std::ranges::any_of(changes_, [new_spec_id](const auto& change) {
           return change->kind() == TableUpdate::Kind::kAddPartitionSpec &&
                  internal::checked_cast<const table::AddPartitionSpec&>(*change)
                          .spec()
                          ->spec_id() == new_spec_id;
-        }) != changes_.cend();
+        });
     last_added_spec_id_ = is_new_spec ? std::make_optional(new_spec_id) : std::nullopt;
     return new_spec_id;
   }
