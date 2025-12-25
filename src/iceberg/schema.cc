@@ -235,7 +235,7 @@ Result<std::vector<std::string>> Schema::IdentifierFieldNames() const {
   for (auto id : identifier_field_ids_) {
     ICEBERG_ASSIGN_OR_RAISE(auto name, FindColumnNameById(id));
     if (!name.has_value()) {
-      return InvalidSchema("Cannot find the field of the specified field id: {}", id);
+      return InvalidSchema("Cannot find identifier field id: {}", id);
     }
     names.emplace_back(name.value());
   }

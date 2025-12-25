@@ -40,7 +40,8 @@ Transaction::Transaction(std::shared_ptr<Table> table, Kind kind, bool auto_comm
     : table_(std::move(table)),
       kind_(kind),
       auto_commit_(auto_commit),
-      metadata_builder_(TableMetadataBuilder::BuildFrom(table_->metadata().get())) {}
+      metadata_builder_(TableMetadataBuilder::BuildFrom(table_->metadata().get(),
+                                                        kind == Kind::kCreate)) {}
 
 Transaction::~Transaction() = default;
 

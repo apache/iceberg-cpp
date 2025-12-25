@@ -201,7 +201,7 @@ void RemoveProperties::GenerateRequirements(TableUpdateContext& context) const {
 // SetLocation
 
 void SetLocation::ApplyTo(TableMetadataBuilder& builder) const {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  builder.SetLocation(location_);
 }
 
 void SetLocation::GenerateRequirements(TableUpdateContext& context) const {

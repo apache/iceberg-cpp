@@ -31,6 +31,7 @@ install_headers(
         'location_util.h',
         'macros.h',
         'partition_value_util.h',
+        'property_util.h',
         'string_util.h',
         'temporal_util.h',
         'timepoint.h',

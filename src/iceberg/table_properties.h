@@ -286,6 +286,9 @@ class ICEBERG_EXPORT TableProperties : public ConfigBase<TableProperties> {
   /// \return The set of reserved property keys
   static const std::unordered_set<std::string>& reserved_properties();
 
+  /// \brief Get the set of commit table property keys.
+  static const std::unordered_set<std::string>& commit_properties();
+
   /// \brief Create a default TableProperties instance.
   ///
   /// \return A unique pointer to a TableProperties instance with default values

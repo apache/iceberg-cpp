@@ -28,7 +28,9 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
+#include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
+#include "iceberg/sort_order.h"
 #include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
@@ -38,6 +40,8 @@
 #include "iceberg/test/mock_catalog.h"
 #include "iceberg/test/mock_io.h"
 #include "iceberg/test/test_resource.h"
+#include "iceberg/transaction.h"
+#include "iceberg/update/update_properties.h"
 #include "iceberg/util/uuid.h"
 
 namespace iceberg {
@@ -104,6 +108,26 @@ TEST_F(InMemoryCatalogTest, TableExists) {
   TableIdentifier tableIdent{.ns = {}, .name = "t1"};
   auto result = catalog_->TableExists(tableIdent);
   EXPECT_THAT(result, HasValue(::testing::Eq(false)));
+}
+
+TEST_F(InMemoryCatalogTest, CreateTable) {
+  TableIdentifier table_ident{.ns = {}, .name = "t1"};
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "x", int64())},
+      /*schema_id=*/1);
+  auto spec = PartitionSpec::Unpartitioned();
+  auto sort_order = SortOrder::Unsorted();
+  auto metadata_location = GenerateTestTableLocation(table_ident.name);
+
+  // Create table successfully
+  auto table = catalog_->CreateTable(table_ident, schema, spec, sort_order,
+                                     metadata_location, {{"property1", "value1"}});
+  EXPECT_THAT(table, IsOk());
+
+  // Create table already exists
+  auto table2 = catalog_->CreateTable(table_ident, schema, spec, sort_order,
+                                      metadata_location, {{"property1", "value1"}});
+  EXPECT_THAT(table2, IsError(ErrorKind::kAlreadyExists));
 }
 
 TEST_F(InMemoryCatalogTest, RegisterTable) {
@@ -229,6 +253,50 @@ TEST_F(InMemoryCatalogTest, UpdateTable) {
   EXPECT_GT(updated_table->last_updated_ms(), table.value()->last_updated_ms());
   EXPECT_THAT(updated_table->metadata_file_location(),
               testing::HasSubstr("metadata/00002-"));
+}
+
+TEST_F(InMemoryCatalogTest, StageCreateTable) {
+  TableIdentifier table_ident{.ns = {}, .name = "t1"};
+  auto schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "x", int64())},
+      /*schema_id=*/1);
+  auto spec = PartitionSpec::Unpartitioned();
+  auto sort_order = SortOrder::Unsorted();
+
+  // Stage table
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto staged_table,
+      catalog_->StageCreateTable(table_ident, schema, spec, sort_order,
+                                 GenerateTestTableLocation(table_ident.name), {}));
+
+  // Perform the update
+  ICEBERG_UNWRAP_OR_FAIL(auto update_properties, staged_table->NewUpdateProperties());
+  EXPECT_THAT(update_properties->Set("property1", "value1").Commit(), IsOk());
+  auto res1 = staged_table->Commit();
+  EXPECT_THAT(res1, IsOk());
+  auto created_table = res1.value();
+  EXPECT_EQ("t1", created_table->name().name);
+  EXPECT_EQ("value1", created_table->metadata()->properties.Get(
+                          TableProperties::Entry<std::string>("property1", "")));
+
+  // Staged already exist table
+  auto res = catalog_->StageCreateTable(table_ident, schema, spec, sort_order,
+                                        GenerateTestTableLocation(table_ident.name), {});
+  EXPECT_THAT(res, IsError(ErrorKind::kAlreadyExists));
+
+  // Stage create ok but commit already exist
+  TableIdentifier table_ident2{.ns = {}, .name = "t2"};
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto staged_table2,
+      catalog_->StageCreateTable(table_ident2, schema, spec, sort_order,
+                                 GenerateTestTableLocation(table_ident2.name), {}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto created_table2,
+      catalog_->CreateTable(table_ident2, schema, spec, sort_order,
+                            GenerateTestTableLocation(table_ident2.name), {}));
+
+  auto commit_res = staged_table2->Commit();
+  EXPECT_THAT(commit_res, IsError(ErrorKind::kAlreadyExists));
 }
 
 TEST_F(InMemoryCatalogTest, DropTable) {

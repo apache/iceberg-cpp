@@ -29,6 +29,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/statistics_file.h"
+#include "iceberg/table_identifier.h"
 #include "iceberg/util/formatter_internal.h"
 
 namespace iceberg {
@@ -158,6 +159,21 @@ TEST(FormatterTest, StatisticsFileFormat) {
       "]"
       "]";
   EXPECT_EQ(expected, std::format("{}", statistics_file));
+}
+
+// For Types that has a ToString function
+TEST(FormatterTest, TableIdentifierFormat) {
+  TableIdentifier empty_ns_table{
+      .ns = Namespace({}),
+      .name = "table_name",
+  };
+  EXPECT_EQ(".table_name", std::format("{}", empty_ns_table));
+
+  TableIdentifier table{
+      .ns = Namespace({"ns1", "ns2"}),
+      .name = "table_name",
+  };
+  EXPECT_EQ("ns1.ns2.table_name", std::format("{}", table));
 }
 
 }  // namespace iceberg

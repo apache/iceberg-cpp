@@ -102,6 +102,20 @@ TEST(TableRequirementsTest, EmptyUpdatesForCreateTable) {
   EXPECT_NE(assert_does_not_exist, nullptr);
 }
 
+TEST(TableRequirementsTest, IsCreate) {
+  // Should have only AssertDoesNotExist requirement
+  std::vector<std::unique_ptr<TableRequirement>> requirements;
+  requirements.push_back(std::make_unique<table::AssertDoesNotExist>());
+  EXPECT_TRUE(TableRequirements::IsCreate(requirements));
+
+  // Not only have AssertDoesNotExist requirement
+  requirements.push_back(std::make_unique<table::AssertCurrentSchemaID>(0));
+  auto res = TableRequirements::IsCreate(requirements);
+  EXPECT_THAT(res, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(res,
+              HasErrorMessage("Cannot have other requirements than AssertDoesNotExist"));
+}
+
 TEST(TableRequirementsTest, EmptyUpdatesForUpdateTable) {
   auto metadata = CreateBaseMetadata();
   std::vector<std::unique_ptr<TableUpdate>> updates;

@@ -26,7 +26,9 @@
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_requirement.h"
+#include "iceberg/table_requirements.h"
 #include "iceberg/table_update.h"
+#include "iceberg/transaction.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -318,7 +320,7 @@ Result<std::string> InMemoryNamespace::GetTableMetadataLocation(
   ICEBERG_RETURN_UNEXPECTED(ns);
   const auto it = ns.value()->table_metadata_locations_.find(table_ident.name);
   if (it == ns.value()->table_metadata_locations_.end()) {
-    return NotFound("{} does not exist", table_ident.name);
+    return NotFound("Table does not exist: {}", table_ident);
   }
   return it->second;
 }
@@ -405,7 +407,24 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::CreateTable(
     const std::string& location,
     const std::unordered_map<std::string, std::string>& properties) {
   std::unique_lock lock(mutex_);
-  return NotImplemented("create table");
+  if (root_namespace_->TableExists(identifier).value_or(false)) {
+    return AlreadyExists("Table already exists: {}", identifier);
+  }
+
+  std::string base_location =
+      location.empty() ? warehouse_location_ + "/" + identifier.ToString() : location;
+
+  ICEBERG_ASSIGN_OR_RAISE(auto table_metadata, TableMetadata::Make(*schema, *spec, *order,
+                                                                   location, properties));
+
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto metadata_file_location,
+      TableMetadataUtil::Write(*file_io_, nullptr, "", *table_metadata));
+  ICEBERG_RETURN_UNEXPECTED(
+      root_namespace_->UpdateTableMetadataLocation(identifier, metadata_file_location));
+  return Table::Make(identifier, std::move(table_metadata),
+                     std::move(metadata_file_location), file_io_,
+                     std::static_pointer_cast<Catalog>(shared_from_this()));
 }
 
 Result<std::shared_ptr<Table>> InMemoryCatalog::UpdateTable(
@@ -413,24 +432,43 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::UpdateTable(
     const std::vector<std::unique_ptr<TableRequirement>>& requirements,
     const std::vector<std::unique_ptr<TableUpdate>>& updates) {
   std::unique_lock lock(mutex_);
-  ICEBERG_ASSIGN_OR_RAISE(auto base_metadata_location,
-                          root_namespace_->GetTableMetadataLocation(identifier));
-
-  ICEBERG_ASSIGN_OR_RAISE(auto base,
-                          TableMetadataUtil::Read(*file_io_, base_metadata_location));
+  auto base_metadata_location = root_namespace_->GetTableMetadataLocation(identifier);
+  std::unique_ptr<TableMetadata> base;
+  std::unique_ptr<TableMetadataBuilder> builder;
+  ICEBERG_ASSIGN_OR_RAISE(auto is_create, TableRequirements::IsCreate(requirements));
+  if (is_create) {
+    if (base_metadata_location.has_value()) {
+      return AlreadyExists("Table already exists: {}", identifier);
+    }
+    int8_t format_version = TableMetadata::kDefaultTableFormatVersion;
+    for (const auto& update : updates) {
+      if (update->kind() == TableUpdate::Kind::kUpgradeFormatVersion) {
+        format_version =
+            dynamic_cast<const table::UpgradeFormatVersion&>(*update).format_version();
+      }
+    }
+    builder = TableMetadataBuilder::BuildFromEmpty(format_version);
+  } else {
+    ICEBERG_RETURN_UNEXPECTED(base_metadata_location);
+    ICEBERG_ASSIGN_OR_RAISE(
+        base, TableMetadataUtil::Read(*file_io_, base_metadata_location.value()));
+    builder = TableMetadataBuilder::BuildFrom(base.get());
+  }
 
   for (const auto& requirement : requirements) {
     ICEBERG_RETURN_UNEXPECTED(requirement->Validate(base.get()));
   }
 
-  auto builder = TableMetadataBuilder::BuildFrom(base.get());
   for (const auto& update : updates) {
     update->ApplyTo(*builder);
   }
   ICEBERG_ASSIGN_OR_RAISE(auto updated, builder->Build());
   ICEBERG_ASSIGN_OR_RAISE(
       auto new_metadata_location,
-      TableMetadataUtil::Write(*file_io_, base.get(), base_metadata_location, *updated));
+      TableMetadataUtil::Write(
+          *file_io_, base.get(),
+          base_metadata_location.has_value() ? base_metadata_location.value() : "",
+          *updated));
   ICEBERG_RETURN_UNEXPECTED(
       root_namespace_->UpdateTableMetadataLocation(identifier, new_metadata_location));
   TableMetadataUtil::DeleteRemovedMetadataFiles(*file_io_, base.get(), *updated);
@@ -445,7 +483,20 @@ Result<std::shared_ptr<Transaction>> InMemoryCatalog::StageCreateTable(
     const std::string& location,
     const std::unordered_map<std::string, std::string>& properties) {
   std::unique_lock lock(mutex_);
-  return NotImplemented("stage create table");
+  if (root_namespace_->TableExists(identifier).value_or(false)) {
+    return AlreadyExists("Table already exists: {}", identifier);
+  }
+
+  std::string base_location =
+      location.empty() ? warehouse_location_ + "/" + identifier.ToString() : location;
+
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto table_metadata,
+      TableMetadata::Make(*schema, *spec, *order, base_location, properties));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto table, StagedTable::Make(identifier, std::move(table_metadata), "", file_io_,
+                                    shared_from_this()));
+  return Transaction::Make(std::move(table), Transaction::Kind::kCreate, false);
 }
 
 Result<bool> InMemoryCatalog::TableExists(const TableIdentifier& identifier) const {
@@ -495,7 +546,7 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::RegisterTable(
 
   std::unique_lock lock(mutex_);
   if (!root_namespace_->NamespaceExists(identifier.ns)) {
-    return NoSuchNamespace("table namespace does not exist.");
+    return NoSuchNamespace("Table namespace does not exist: {}", identifier.ns);
   }
   if (!root_namespace_->RegisterTable(identifier, metadata_file_location)) {
     return UnknownError("The registry failed.");

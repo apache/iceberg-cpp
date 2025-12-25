@@ -49,6 +49,24 @@ std::shared_ptr<Schema> CreateTestSchema() {
   return std::make_shared<Schema>(std::vector<SchemaField>{field1, field2, field3}, 0);
 }
 
+// Helper function to create a simple schema with invalid identifier fields
+std::shared_ptr<Schema> CreateInvalidSchema() {
+  auto field1 = SchemaField::MakeRequired(2, "id", int32());
+  auto field2 = SchemaField::MakeRequired(5, "part_col", string());
+  auto field3 = SchemaField::MakeRequired(8, "sort_col", timestamp());
+  return std::make_shared<Schema>(std::vector<SchemaField>{field1, field2, field3},
+                                  std::make_optional(1), std::vector<int32_t>{1});
+}
+
+// Helper function to create a simple schema with disordered field_ids
+std::shared_ptr<Schema> CreateDisorderedSchema() {
+  auto field1 = SchemaField::MakeRequired(2, "id", int32());
+  auto field2 = SchemaField::MakeRequired(5, "part_col", string());
+  auto field3 = SchemaField::MakeRequired(8, "sort_col", timestamp());
+  return std::make_shared<Schema>(std::vector<SchemaField>{field1, field2, field3},
+                                  std::make_optional(1), std::vector<int32_t>{2});
+}
+
 // Helper function to create base metadata for tests
 std::unique_ptr<TableMetadata> CreateBaseMetadata() {
   auto metadata = std::make_unique<TableMetadata>();
@@ -72,6 +90,131 @@ std::unique_ptr<TableMetadata> CreateBaseMetadata() {
 }
 
 }  // namespace
+
+// test for TableMetadata
+TEST(TableMetadataTest, Make) {
+  auto Schema = CreateDisorderedSchema();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec, PartitionSpec::Make(1, std::vector<PartitionField>{PartitionField(
+                                            5, 1, "part_name", Transform::Identity())}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto order, SortOrder::Make(1, std::vector<SortField>{SortField(
+                                         8, Transform::Identity(),
+                                         SortDirection::kAscending, NullOrder::kLast)}));
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto metadata, TableMetadata::Make(*Schema, *spec, *order, "s3://bucket/test", {}));
+  // Check schema fields
+  ASSERT_EQ(1, metadata->schemas.size());
+  auto fields = metadata->schemas[0]->fields() | std::ranges::to<std::vector>();
+  ASSERT_EQ(3, fields.size());
+  EXPECT_EQ(1, fields[0].field_id());
+  EXPECT_EQ("id", fields[0].name());
+  EXPECT_EQ(2, fields[1].field_id());
+  EXPECT_EQ("part_col", fields[1].name());
+  EXPECT_EQ(3, fields[2].field_id());
+  EXPECT_EQ("sort_col", fields[2].name());
+  const auto& identifier_field_ids = metadata->schemas[0]->IdentifierFieldIds();
+  ASSERT_EQ(1, identifier_field_ids.size());
+  EXPECT_EQ(1, identifier_field_ids[0]);
+
+  // Check partition spec
+  ASSERT_EQ(1, metadata->partition_specs.size());
+  EXPECT_EQ(PartitionSpec::kInitialSpecId, metadata->partition_specs[0]->spec_id());
+  auto spec_fields =
+      metadata->partition_specs[0]->fields() | std::ranges::to<std::vector>();
+  ASSERT_EQ(1, spec_fields.size());
+  EXPECT_EQ(PartitionSpec::kInvalidPartitionFieldId + 1, spec_fields[0].field_id());
+  EXPECT_EQ(2, spec_fields[0].source_id());
+  EXPECT_EQ("part_name", spec_fields[0].name());
+
+  // Check sort order
+  ASSERT_EQ(1, metadata->sort_orders.size());
+  EXPECT_EQ(SortOrder::kInitialSortOrderId, metadata->sort_orders[0]->order_id());
+  auto order_fields = metadata->sort_orders[0]->fields() | std::ranges::to<std::vector>();
+  ASSERT_EQ(1, order_fields.size());
+  EXPECT_EQ(3, order_fields[0].source_id());
+  EXPECT_EQ(SortDirection::kAscending, order_fields[0].direction());
+  EXPECT_EQ(NullOrder::kLast, order_fields[0].null_order());
+}
+
+TEST(TableMetadataTest, MakeWithInvalidSchema) {
+  auto schema = CreateInvalidSchema();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec, PartitionSpec::Make(1, std::vector<PartitionField>{PartitionField(
+                                            5, 1, "part_name", Transform::Identity())}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto order, SortOrder::Make(1, std::vector<SortField>{SortField(
+                                         5, Transform::Identity(),
+                                         SortDirection::kAscending, NullOrder::kLast)}));
+
+  auto res = TableMetadata::Make(*schema, *spec, *order, "s3://bucket/test", {});
+  EXPECT_THAT(res, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(res, HasErrorMessage("Cannot find identifier field id"));
+}
+
+TEST(TableMetadataTest, MakeWithInvalidPartitionSpec) {
+  auto schema = CreateDisorderedSchema();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec, PartitionSpec::Make(1, std::vector<PartitionField>{PartitionField(
+                                            6, 1, "part_name", Transform::Identity())}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto order, SortOrder::Make(1, std::vector<SortField>{SortField(
+                                         8, Transform::Identity(),
+                                         SortDirection::kAscending, NullOrder::kLast)}));
+
+  auto res = TableMetadata::Make(*schema, *spec, *order, "s3://bucket/test", {});
+  EXPECT_THAT(res, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(res, HasErrorMessage("Cannot find source partition field"));
+}
+
+TEST(TableMetadataTest, MakeWithInvalidSortOrder) {
+  auto schema = CreateDisorderedSchema();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec, PartitionSpec::Make(1, std::vector<PartitionField>{PartitionField(
+                                            5, 1, "part_name", Transform::Identity())}));
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto order, SortOrder::Make(1, std::vector<SortField>{SortField(
+                                         9, Transform::Identity(),
+                                         SortDirection::kAscending, NullOrder::kLast)}));
+
+  auto res = TableMetadata::Make(*schema, *spec, *order, "s3://bucket/test", {});
+  EXPECT_THAT(res, IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(res, HasErrorMessage("Cannot find source sort field"));
+}
+
+TEST(TableMetadataTest, InvalidProperties) {
+  auto spec = PartitionSpec::Unpartitioned();
+  auto order = SortOrder::Unsorted();
+
+  {
+    // Invalid metrics config
+    auto schema = CreateDisorderedSchema();
+    std::unordered_map<std::string, std::string> invlaid_metric_config = {
+        {std::string(TableProperties::kMetricModeColumnConfPrefix) + "unknown_col",
+         "value"}};
+
+    auto res = TableMetadata::Make(*schema, *spec, *order, "s3://bucket/test",
+                                   invlaid_metric_config);
+    EXPECT_THAT(res, IsError(ErrorKind::kValidationFailed));
+    EXPECT_THAT(res, HasErrorMessage("Invalid metrics config"));
+  }
+
+  {
+    // Invaid commit properties
+    auto schema = CreateDisorderedSchema();
+    std::unordered_map<std::string, std::string> invlaid_commit_properties = {
+        {TableProperties::kCommitNumRetries.key(), "-1"}};
+
+    auto res = TableMetadata::Make(*schema, *spec, *order, "s3://bucket/test",
+                                   invlaid_commit_properties);
+    EXPECT_THAT(res, IsError(ErrorKind::kValidationFailed));
+    EXPECT_THAT(res,
+                HasErrorMessage(std::format(
+                    "Table property {} must have non negative integer value, but got {}",
+                    TableProperties::kCommitNumRetries.key(), -1)));
+  }
+}
 
 // test construction of TableMetadataBuilder
 TEST(TableMetadataBuilderTest, BuildFromEmpty) {

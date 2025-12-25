@@ -19,7 +19,9 @@
 
 #include "iceberg/table_requirements.h"
 
+#include <algorithm>
 #include <memory>
+#include <ranges>
 
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
@@ -132,6 +134,21 @@ Result<std::vector<std::unique_ptr<TableRequirement>>> TableRequirements::ForUpd
     update->GenerateRequirements(context);
   }
   return context.Build();
+}
+
+Result<bool> TableRequirements::IsCreate(
+    const std::vector<std::unique_ptr<TableRequirement>>& requirements) {
+  bool is_create = std::ranges::any_of(requirements, [](const auto& req) {
+    return req->kind() == TableRequirement::Kind::kAssertDoesNotExist;
+  });
+
+  if (is_create) {
+    ICEBERG_PRECHECK(
+        requirements.size() == 1,
+        "Cannot have other requirements than AssertDoesNotExist in a table creation");
+  }
+
+  return is_create;
 }
 
 }  // namespace iceberg

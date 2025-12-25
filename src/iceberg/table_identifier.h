@@ -27,6 +27,7 @@
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
+#include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
 namespace iceberg {
 
@@ -35,7 +36,11 @@ struct ICEBERG_EXPORT Namespace {
   std::vector<std::string> levels;
 
   bool operator==(const Namespace& other) const { return levels == other.levels; }
+
+  std::string ToString() const;
 };
+
+ICEBERG_EXPORT inline std::string ToString(const Namespace& ns) { return ns.ToString(); }
 
 /// \brief Identifies a table in iceberg catalog.
 struct ICEBERG_EXPORT TableIdentifier {
@@ -53,6 +58,12 @@ struct ICEBERG_EXPORT TableIdentifier {
     }
     return {};
   }
+
+  std::string ToString() const;
 };
+
+ICEBERG_EXPORT inline std::string ToString(const TableIdentifier& ident) {
+  return ident.ToString();
+}
 
 }  // namespace iceberg
