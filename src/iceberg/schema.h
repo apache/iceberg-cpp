@@ -173,6 +173,7 @@ class ICEBERG_EXPORT Schema : public StructType {
   InitLowerCaseNameToIdMap(const Schema&);
   static Result<std::unordered_map<int32_t, std::vector<size_t>>> InitIdToPositionPath(
       const Schema&);
+  static Result<int32_t> InitHighestFieldId(const Schema&);
 
   const std::optional<int32_t> schema_id_;
   /// Field IDs that uniquely identify rows in the table.
@@ -185,6 +186,8 @@ class ICEBERG_EXPORT Schema : public StructType {
   Lazy<InitLowerCaseNameToIdMap> lowercase_name_to_id_;
   /// Mapping from field id to (nested) position path to access the field.
   Lazy<InitIdToPositionPath> id_to_position_path_;
+  /// Highest field ID in the schema.
+  Lazy<InitHighestFieldId> highest_field_id_;
 };
 
 }  // namespace iceberg

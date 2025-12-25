@@ -181,9 +181,8 @@ Status PartitionSpec::ValidatePartitionName(const Schema& schema) const {
   std::unordered_set<std::string> partition_names;
   for (const auto& partition_field : fields_) {
     auto name = std::string(partition_field.name());
-    if (name.empty()) {
-      return InvalidArgument("Cannot use empty partition name: {}", name);
-    }
+    ICEBERG_PRECHECK(!name.empty(), "Cannot use empty partition name: {}", name);
+
     if (partition_names.contains(name)) {
       return InvalidArgument("Cannot use partition name more than once: {}", name);
     }

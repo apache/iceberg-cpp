@@ -292,7 +292,7 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   ///
   /// \param schema_ids The IDs of schemas to remove
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& RemoveSchemas(const std::vector<int32_t>& schema_ids);
+  TableMetadataBuilder& RemoveSchemas(const std::unordered_set<int32_t>& schema_ids);
 
   /// \brief Set the default sort order for the table
   ///

@@ -25,12 +25,12 @@
 #include "iceberg/result.h"
 #include "iceberg/row/struct_like.h"
 #include "iceberg/schema_internal.h"
+#include "iceberg/table_metadata.h"
 #include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
 #include "iceberg/util/type_util.h"
 #include "iceberg/util/visit_type.h"
-#include "table_metadata.h"
 
 namespace iceberg {
 
@@ -148,6 +148,20 @@ Result<std::unordered_map<int32_t, std::vector<size_t>>> Schema::InitIdToPositio
   return visitor.Finish();
 }
 
+Result<int32_t> Schema::InitHighestFieldId(const Schema& self) {
+  ICEBERG_ASSIGN_OR_RAISE(auto id_to_field, self.id_to_field_.Get(self));
+
+  if (id_to_field.get().empty()) {
+    return kInitialColumnId;
+  }
+
+  auto max_it = std::ranges::max_element(
+      id_to_field.get(),
+      [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; });
+
+  return max_it->first;
+}
+
 Result<std::unique_ptr<StructLikeAccessor>> Schema::GetAccessorById(
     int32_t field_id) const {
   ICEBERG_ASSIGN_OR_RAISE(auto id_to_position_path, id_to_position_path_.Get(*this));
@@ -229,21 +243,11 @@ Result<std::vector<std::string>> Schema::IdentifierFieldNames() const {
   return names;
 }
 
-Result<int32_t> Schema::HighestFieldId() const {
-  ICEBERG_ASSIGN_OR_RAISE(auto id_to_field, id_to_field_.Get(*this));
+Result<int32_t> Schema::HighestFieldId() const { return highest_field_id_.Get(*this); }
 
-  if (id_to_field.get().empty()) {
-    return kInitialColumnId;
-  }
-
-  auto max_it = std::ranges::max_element(
-      id_to_field.get(),
-      [](const auto& lhs, const auto& rhs) { return lhs.first < rhs.first; });
-
-  return max_it->first;
+bool Schema::SameSchema(const Schema& other) const {
+  return fields_ == other.fields_ && identifier_field_ids_ == other.identifier_field_ids_;
 }
-
-bool Schema::SameSchema(const Schema& other) const { return fields_ == other.fields_; }
 
 Status Schema::Validate(int32_t format_version) const {
   // Get all fields including nested ones

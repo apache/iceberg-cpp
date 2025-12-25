@@ -52,7 +52,7 @@ void UpgradeFormatVersion::GenerateRequirements(TableUpdateContext& context) con
 // AddSchema
 
 void AddSchema::ApplyTo(TableMetadataBuilder& builder) const {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  builder.AddSchema(schema_);
 }
 
 void AddSchema::GenerateRequirements(TableUpdateContext& context) const {
@@ -62,7 +62,7 @@ void AddSchema::GenerateRequirements(TableUpdateContext& context) const {
 // SetCurrentSchema
 
 void SetCurrentSchema::ApplyTo(TableMetadataBuilder& builder) const {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  builder.SetCurrentSchema(schema_id_);
 }
 
 void SetCurrentSchema::GenerateRequirements(TableUpdateContext& context) const {
@@ -103,7 +103,7 @@ void RemovePartitionSpecs::GenerateRequirements(TableUpdateContext& context) con
 // RemoveSchemas
 
 void RemoveSchemas::ApplyTo(TableMetadataBuilder& builder) const {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  builder.RemoveSchemas(schema_ids_);
 }
 
 void RemoveSchemas::GenerateRequirements(TableUpdateContext& context) const {
