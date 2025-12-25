@@ -395,7 +395,6 @@ Result<std::string> Transform::GeneratePartitionName(std::string_view source_nam
     case TransformType::kBucket:
       return std::format("{}_bucket_{}", source_name, std::get<int32_t>(param_));
     case TransformType::kTruncate:
-      // Format: sourceName_trunc_N (matching Java: sourceName + "_trunc_" + width)
       return std::format("{}_trunc_{}", source_name, std::get<int32_t>(param_));
     case TransformType::kYear:
     case TransformType::kMonth:
