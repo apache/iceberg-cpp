@@ -393,7 +393,6 @@ Result<std::string> Transform::GeneratePartitionName(std::string_view source_nam
     case TransformType::kIdentity:
       return std::string(source_name);
     case TransformType::kBucket:
-      // Format: sourceName_bucket_N (matching Java: sourceName + "_bucket_" + numBuckets)
       return std::format("{}_bucket_{}", source_name, std::get<int32_t>(param_));
     case TransformType::kTruncate:
       // Format: sourceName_trunc_N (matching Java: sourceName + "_trunc_" + width)
