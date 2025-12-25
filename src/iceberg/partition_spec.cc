@@ -20,6 +20,7 @@
 #include "iceberg/partition_spec.h"
 
 #include <algorithm>
+#include <cstddef>
 #include <cstdint>
 #include <format>
 #include <memory>
@@ -95,9 +96,25 @@ Result<std::unique_ptr<StructType>> PartitionSpec::PartitionType(
   return std::make_unique<StructType>(std::move(partition_fields));
 }
 
-bool PartitionSpec::SameSpec(const PartitionSpec& other) const {
-  return fields_ == other.fields_ &&
-         last_assigned_field_id_ == other.last_assigned_field_id_;
+bool PartitionSpec::CompatibleWith(const PartitionSpec& other) const {
+  if (Equals(other)) {
+    return true;
+  }
+
+  if (fields_.size() != other.fields_.size()) {
+    return false;
+  }
+
+  for (const auto& [lhs, rhs] :
+       std::ranges::zip_view<std::span<const PartitionField>,
+                             std::span<const PartitionField>>{fields_, other.fields_}) {
+    if (lhs.source_id() != rhs.source_id() || *lhs.transform() != *rhs.transform() ||
+        lhs.name() != rhs.name()) {
+      return false;
+    }
+  }
+
+  return true;
 }
 
 std::string PartitionSpec::ToString() const {
@@ -194,6 +211,15 @@ Result<std::unique_ptr<PartitionSpec>> PartitionSpec::Make(
     std::optional<int32_t> last_assigned_field_id) {
   return std::unique_ptr<PartitionSpec>(
       new PartitionSpec(spec_id, std::move(fields), last_assigned_field_id));
+}
+
+bool PartitionSpec::HasSequentialFieldIds(const PartitionSpec& spec) {
+  for (size_t i = 0; i < spec.fields().size(); i += 1) {
+    if (spec.fields()[i].field_id() != PartitionSpec::kLegacyPartitionDataIdStart + i) {
+      return false;
+    }
+  }
+  return true;
 }
 
 }  // namespace iceberg

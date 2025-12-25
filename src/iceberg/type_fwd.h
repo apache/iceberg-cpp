@@ -123,15 +123,12 @@ struct TableMetadata;
 
 /// \brief Expression.
 class BoundPredicate;
-class Expression;
-class Literal;
-class UnboundPredicate;
 class BoundReference;
 class BoundTransform;
-template <typename B>
-class UnboundTerm;
-class NamedReference;
-class UnboundTransform;
+class Expression;
+class Literal;
+class Term;
+class UnboundPredicate;
 
 /// \brief Scan.
 class DataTableScan;

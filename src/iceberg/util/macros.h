@@ -54,11 +54,11 @@
   } while (0)
 
 // Macro for state checks, usually used for unexpected states
-#define ICEBERG_CHECK(expr, ...)   \
-  do {                             \
-    if (!(expr)) [[unlikely]] {    \
-      return Invalid(__VA_ARGS__); \
-    }                              \
+#define ICEBERG_CHECK(expr, ...)            \
+  do {                                      \
+    if (!(expr)) [[unlikely]] {             \
+      return ValidationFailed(__VA_ARGS__); \
+    }                                       \
   } while (0)
 
 #define ERROR_TO_EXCEPTION(error)                             \

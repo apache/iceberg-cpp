@@ -89,12 +89,10 @@ Status Transaction::Apply(PendingUpdate& update) {
     case PendingUpdate::Kind::kUpdatePartitionSpec: {
       auto& update_partition_spec = internal::checked_cast<UpdatePartitionSpec&>(update);
       ICEBERG_ASSIGN_OR_RAISE(auto result, update_partition_spec.Apply());
-
-      metadata_builder_->SetDefaultPartitionSpec(result.spec);
       if (result.set_as_default) {
-        metadata_builder_->SetDefaultPartitionSpec(result.spec);
+        metadata_builder_->SetDefaultPartitionSpec(std::move(result.spec));
       } else {
-        metadata_builder_->AddPartitionSpec(result.spec);
+        metadata_builder_->AddPartitionSpec(std::move(result.spec));
       }
     } break;
     default:

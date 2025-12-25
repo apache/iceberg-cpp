@@ -64,9 +64,10 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \brief Get the partition type binding to the input schema.
   Result<std::unique_ptr<StructType>> PartitionType(const Schema& schema) const;
 
-  /// \brief Checks whether this partition spec is equivalent to another partition spec
-  /// while ignoring the spec id.
-  bool SameSpec(const PartitionSpec& other) const;
+  /// \brief Returns true if this spec is equivalent to the other, with partition field
+  /// ids ignored. That is, if both specs have the same number of fields, field order,
+  /// field name, source columns, and transforms.
+  bool CompatibleWith(const PartitionSpec& other) const;
 
   std::string ToString() const override;
 
@@ -114,6 +115,8 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   static Result<std::unique_ptr<PartitionSpec>> Make(
       int32_t spec_id, std::vector<PartitionField> fields,
       std::optional<int32_t> last_assigned_field_id = std::nullopt);
+
+  static bool HasSequentialFieldIds(const PartitionSpec& spec);
 
  private:
   /// \brief Create a new partition spec.

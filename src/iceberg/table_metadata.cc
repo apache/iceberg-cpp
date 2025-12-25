@@ -37,6 +37,7 @@
 #include "iceberg/exception.h"
 #include "iceberg/file_io.h"
 #include "iceberg/json_internal.h"
+#include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
@@ -44,6 +45,7 @@
 #include "iceberg/sort_order.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/table_update.h"
+#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/gzip_internal.h"
 #include "iceberg/util/location_util.h"
@@ -547,9 +549,10 @@ Result<int32_t> TableMetadataBuilder::Impl::AddSortOrder(const SortOrder& order)
     bool is_new_order =
         last_added_order_id_.has_value() &&
         std::ranges::find_if(changes_, [new_order_id](const auto& change) {
-          auto* add_sort_order = dynamic_cast<table::AddSortOrder*>(change.get());
-          return add_sort_order &&
-                 add_sort_order->sort_order()->order_id() == new_order_id;
+          return change->kind() == TableUpdate::Kind::kAddSortOrder &&
+                 internal::checked_cast<const table::AddSortOrder&>(*change)
+                         .sort_order()
+                         ->order_id() == new_order_id;
         }) != changes_.cend();
     last_added_order_id_ = is_new_order ? std::make_optional(new_order_id) : std::nullopt;
     return new_order_id;
@@ -582,34 +585,40 @@ Result<int32_t> TableMetadataBuilder::Impl::AddSortOrder(const SortOrder& order)
 Status TableMetadataBuilder::Impl::SetDefaultPartitionSpec(int32_t spec_id) {
   if (spec_id == -1) {
     if (!last_added_spec_id_.has_value()) {
-      return InvalidArgument(
+      return ValidationFailed(
           "Cannot set last added partition spec: no partition spec has been added");
     }
     return SetDefaultPartitionSpec(last_added_spec_id_.value());
   }
 
   if (spec_id == metadata_.default_spec_id) {
+    // the new spec is already current and no change is needed
     return {};
   }
 
   metadata_.default_spec_id = spec_id;
-
-  changes_.push_back(std::make_unique<table::SetDefaultPartitionSpec>(spec_id));
+  if (last_added_spec_id_ == std::make_optional(spec_id)) {
+    changes_.push_back(std::make_unique<table::SetDefaultPartitionSpec>(kLastAdded));
+  } else {
+    changes_.push_back(std::make_unique<table::SetDefaultPartitionSpec>(spec_id));
+  }
   return {};
 }
 
 Result<int32_t> TableMetadataBuilder::Impl::AddPartitionSpec(const PartitionSpec& spec) {
   int32_t new_spec_id = ReuseOrCreateNewPartitionSpecId(spec);
 
-  if (specs_by_id_.find(new_spec_id) != specs_by_id_.end()) {
+  if (specs_by_id_.contains(new_spec_id)) {
     // update last_added_spec_id if the spec was added in this set of changes (since it
     // is now the last)
-    bool is_new_spec = last_added_spec_id_.has_value() &&
-                       std::ranges::find_if(changes_, [new_spec_id](const auto& change) {
-                         auto* add_spec =
-                             dynamic_cast<table::AddPartitionSpec*>(change.get());
-                         return add_spec && add_spec->spec()->spec_id() == new_spec_id;
-                       }) != changes_.cend();
+    bool is_new_spec =
+        last_added_spec_id_.has_value() &&
+        std::ranges::find_if(changes_, [new_spec_id](const auto& change) {
+          return change->kind() == TableUpdate::Kind::kAddPartitionSpec &&
+                 internal::checked_cast<const table::AddPartitionSpec&>(*change)
+                         .spec()
+                         ->spec_id() == new_spec_id;
+        }) != changes_.cend();
     last_added_spec_id_ = is_new_spec ? std::make_optional(new_spec_id) : std::nullopt;
     return new_spec_id;
   }
@@ -617,17 +626,22 @@ Result<int32_t> TableMetadataBuilder::Impl::AddPartitionSpec(const PartitionSpec
   // Get current schema and validate the partition spec against it
   ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata_.Schema());
   ICEBERG_RETURN_UNEXPECTED(spec.Validate(*schema, /*allow_missing_fields=*/false));
+  ICEBERG_CHECK(
+      metadata_.format_version > 1 || PartitionSpec::HasSequentialFieldIds(spec),
+      "Spec does not use sequential IDs that are required in v1: {}", spec.ToString());
 
-  std::shared_ptr<PartitionSpec> new_spec;
   ICEBERG_ASSIGN_OR_RAISE(
-      new_spec,
+      std::shared_ptr<PartitionSpec> new_spec,
       PartitionSpec::Make(new_spec_id, std::vector<PartitionField>(spec.fields().begin(),
                                                                    spec.fields().end())));
+  metadata_.last_partition_id =
+      std::max(metadata_.last_partition_id, new_spec->last_assigned_field_id());
   metadata_.partition_specs.push_back(new_spec);
   specs_by_id_.emplace(new_spec_id, new_spec);
 
   changes_.push_back(std::make_unique<table::AddPartitionSpec>(new_spec));
   last_added_spec_id_ = new_spec_id;
+
   return new_spec_id;
 }
 
@@ -714,10 +728,10 @@ int32_t TableMetadataBuilder::Impl::ReuseOrCreateNewSortOrderId(
 
 int32_t TableMetadataBuilder::Impl::ReuseOrCreateNewPartitionSpecId(
     const PartitionSpec& new_spec) {
-  // determine the next spec id
+  // if the spec already exists, use the same ID. otherwise, use the highest ID + 1.
   int32_t new_spec_id = PartitionSpec::kInitialSpecId;
   for (const auto& spec : metadata_.partition_specs) {
-    if (spec->SameSpec(new_spec)) {
+    if (new_spec.CompatibleWith(*spec)) {
       return spec->spec_id();
     } else if (new_spec_id <= spec->spec_id()) {
       new_spec_id = spec->spec_id() + 1;

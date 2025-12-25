@@ -69,4 +69,14 @@ struct ICEBERG_EXPORT StringHash {
   std::size_t operator()(const std::string& str) const { return hash_type{}(str); }
 };
 
+/// \brief Transparent equality function that supports std::string_view as lookup key
+struct ICEBERG_EXPORT StringEqual {
+  using is_transparent = void;
+
+  bool operator()(std::string_view lhs, std::string_view rhs) const { return lhs == rhs; }
+  bool operator()(const std::string& lhs, const std::string& rhs) const {
+    return lhs == rhs;
+  }
+};
+
 }  // namespace iceberg

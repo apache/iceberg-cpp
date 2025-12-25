@@ -22,17 +22,18 @@
 /// \file iceberg/update/update_partition_spec.h
 /// API for partition spec evolution.
 
+#include <functional>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
-#include "iceberg/expression/term.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/update/pending_update.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
@@ -47,22 +48,17 @@ class ICEBERG_EXPORT UpdatePartitionSpec : public PendingUpdate {
 
   ~UpdatePartitionSpec() override;
 
-  struct ApplyResult {
-    std::shared_ptr<PartitionSpec> spec;
-    bool set_as_default;
-  };
-
   /// \brief Set whether column resolution in the source schema should be case sensitive.
   UpdatePartitionSpec& CaseSensitive(bool is_case_sensitive);
 
   /// \brief Add a new partition field from a source column.
   ///
-  /// The partition field will be created as an identity partition field for the given
-  /// source column, with the same name as the source column.
+  /// The partition field will use identity transform on the source column,
+  /// and use source column name as the partition field name.
   ///
   /// \param source_name Source column name in the table schema.
   /// \return Reference to this for method chaining.
-  UpdatePartitionSpec& AddField(const std::string& source_name);
+  UpdatePartitionSpec& AddField(std::string_view source_name);
 
   /// \brief Add a new partition field with a custom name.
   ///
@@ -70,18 +66,18 @@ class ICEBERG_EXPORT UpdatePartitionSpec : public PendingUpdate {
   /// \param part_name Name for the partition field.
   /// \return Reference to this for method chaining.
   UpdatePartitionSpec& AddField(const std::shared_ptr<Term>& term,
-                                const std::string& part_name = "");
+                                std::string_view part_name = "");
 
   /// \brief Remove a partition field by name.
   ///
   /// \param name Name of the partition field to remove.
   /// \return Reference to this for method chaining.
-  UpdatePartitionSpec& RemoveField(const std::string& name);
+  UpdatePartitionSpec& RemoveField(std::string_view name);
 
   /// \brief Remove a partition field by its source term.
   ///
   /// The partition field with the same transform and source reference will be removed.
-  /// If the term is a reference and does not have a transform, the identity transform
+  /// If the term is a reference and does not have a transform, identity transform
   /// is used.
   ///
   /// \param term The term representing the source column, should be unbound.
@@ -93,7 +89,7 @@ class ICEBERG_EXPORT UpdatePartitionSpec : public PendingUpdate {
   /// \param name Name of the partition field to rename.
   /// \param new_name Replacement name for the partition field.
   /// \return Reference to this for method chaining.
-  UpdatePartitionSpec& RenameField(const std::string& name, const std::string& new_name);
+  UpdatePartitionSpec& RenameField(std::string_view name, std::string new_name);
 
   /// \brief Sets that the new partition spec will NOT be set as the default.
   ///
@@ -104,6 +100,10 @@ class ICEBERG_EXPORT UpdatePartitionSpec : public PendingUpdate {
 
   Kind kind() const final { return Kind::kUpdatePartitionSpec; }
 
+  struct ApplyResult {
+    std::shared_ptr<PartitionSpec> spec;
+    bool set_as_default;
+  };
   Result<ApplyResult> Apply();
 
  private:
@@ -122,10 +122,6 @@ class ICEBERG_EXPORT UpdatePartitionSpec : public PendingUpdate {
   /// \brief Assign a new partition field ID.
   int32_t AssignFieldId();
 
-  ///
-  /// In V2, searches for a similar partition field in historical specs.
-  /// If not found or in V1, creates a new PartitionField.
-
   /// \brief Recycle or create a partition field.
   ///
   /// In V2 it searches for a similar partition field in historical partition specs. Tries
@@ -138,10 +134,10 @@ class ICEBERG_EXPORT UpdatePartitionSpec : public PendingUpdate {
   /// \return The recycled or newly created partition field.
   PartitionField RecycleOrCreatePartitionField(int32_t source_id,
                                                std::shared_ptr<Transform> transform,
-                                               const std::string& name);
+                                               std::string_view name);
 
   /// \brief Internal implementation of AddField with resolved source ID and transform.
-  UpdatePartitionSpec& AddFieldInternal(const std::string& name, int32_t source_id,
+  UpdatePartitionSpec& AddFieldInternal(std::string_view name, int32_t source_id,
                                         const std::shared_ptr<Transform>& transform);
 
   /// \brief Generate a partition field name from the source and transform.
@@ -159,15 +155,15 @@ class ICEBERG_EXPORT UpdatePartitionSpec : public PendingUpdate {
 
   /// \brief Handle rewriting a delete-and-add operation for the same field.
   UpdatePartitionSpec& RewriteDeleteAndAddField(const PartitionField& existing,
-                                                const std::string& name);
+                                                std::string_view name);
 
   /// \brief Internal helper to remove a field by transform key.
   UpdatePartitionSpec& RemoveFieldByTransform(const TransformKey& key,
-                                              const std::string& term_str);
+                                              std::string_view term_str);
 
   /// \brief Index the spec fields by name.
-  static std::unordered_map<std::string, const PartitionField*> IndexSpecByName(
-      const PartitionSpec& spec);
+  static std::unordered_map<std::string, const PartitionField*, StringHash, StringEqual>
+  IndexSpecByName(const PartitionSpec& spec);
 
   /// \brief Index the spec fields by (source_id, transform) pair.
   static std::unordered_map<TransformKey, const PartitionField*, TransformKeyHash>
@@ -185,22 +181,23 @@ class ICEBERG_EXPORT UpdatePartitionSpec : public PendingUpdate {
   int32_t last_assigned_partition_id_;
 
   // Indexes for existing fields
-  std::unordered_map<std::string, const PartitionField*> name_to_field_;
+  std::unordered_map<std::string, const PartitionField*, StringHash, StringEqual>
+      name_to_field_;
   std::unordered_map<TransformKey, const PartitionField*, TransformKeyHash>
       transform_to_field_;
 
-  // Index for historical partition fields (V2+ only) for efficient recycling
-  // Maps (source_id, transform_string) -> PartitionField from all historical specs
+  // Index for historical partition fields (V2+ only) for efficient recycling.
+  // Maps (source_id, transform_string) -> PartitionField from all historical specs.
   std::unordered_map<TransformKey, PartitionField, TransformKeyHash> historical_fields_;
 
   // Pending changes
   std::vector<PartitionField> adds_;
-  std::unordered_set<std::string> added_field_names_;
+  std::unordered_set<std::string, StringHash, StringEqual> added_field_names_;
   std::unordered_map<int32_t, std::string> added_time_fields_;
   std::unordered_map<TransformKey, std::string, TransformKeyHash>
       transform_to_added_field_;
   std::unordered_set<int32_t> deletes_;
-  std::unordered_map<std::string, std::string> renames_;
+  std::unordered_map<std::string, std::string, StringHash, StringEqual> renames_;
 };
 
 }  // namespace iceberg

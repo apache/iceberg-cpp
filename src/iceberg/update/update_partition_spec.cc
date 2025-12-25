@@ -22,25 +22,25 @@
 #include <algorithm>
 #include <format>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "iceberg/expression/term.h"
 #include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"
-#include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/transaction.h"
 #include "iceberg/transform.h"
+#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
 
 Result<std::shared_ptr<UpdatePartitionSpec>> UpdatePartitionSpec::Make(
     std::shared_ptr<Transaction> transaction) {
-  if (!transaction) [[unlikely]] {
-    return InvalidArgument("Cannot create UpdatePartitionSpec without a transaction");
-  }
+  ICEBERG_PRECHECK(transaction != nullptr,
+                   "Cannot create UpdatePartitionSpec without transaction");
   return std::shared_ptr<UpdatePartitionSpec>(
       new UpdatePartitionSpec(std::move(transaction)));
 }
@@ -99,7 +99,7 @@ UpdatePartitionSpec& UpdatePartitionSpec::AddNonDefaultSpec() {
   return *this;
 }
 
-UpdatePartitionSpec& UpdatePartitionSpec::AddField(const std::string& source_name) {
+UpdatePartitionSpec& UpdatePartitionSpec::AddField(std::string_view source_name) {
   // Find the source field in the schema
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(
       auto field_opt, schema_->FindFieldByName(source_name, case_sensitive_));
@@ -107,39 +107,36 @@ UpdatePartitionSpec& UpdatePartitionSpec::AddField(const std::string& source_nam
   ICEBERG_BUILDER_CHECK(field_opt.has_value(), "Cannot find source field: {}",
                         source_name);
   int32_t source_id = field_opt->get().field_id();
-  return AddFieldInternal(std::string(), source_id, Transform::Identity());
+  return AddFieldInternal(source_name, source_id, Transform::Identity());
 }
 
 UpdatePartitionSpec& UpdatePartitionSpec::AddField(const std::shared_ptr<Term>& term,
-                                                   const std::string& part_name) {
+                                                   std::string_view part_name) {
   ICEBERG_BUILDER_CHECK(term->is_unbound(), "Cannot add bound term to partition spec");
   // Bind the term to get the source id
   if (term->kind() == Term::Kind::kReference) {
-    const auto& ref = std::dynamic_pointer_cast<NamedReference>(term);
-    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto bound_ref,
-                                     ref->Bind(*schema_, case_sensitive_));
+    const auto& ref = dynamic_cast<const NamedReference&>(*term);
+    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto bound_ref, ref.Bind(*schema_, case_sensitive_));
     int32_t source_id = bound_ref->field().field_id();
     return AddFieldInternal(part_name, source_id, Transform::Identity());
   } else if (term->kind() == Term::Kind::kTransform) {
-    const auto& unbound_transform = std::dynamic_pointer_cast<UnboundTransform>(term);
+    const auto& unbound_transform = dynamic_cast<const UnboundTransform&>(*term);
     ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto bound_transform,
-                                     unbound_transform->Bind(*schema_, case_sensitive_));
+                                     unbound_transform.Bind(*schema_, case_sensitive_));
     int32_t source_id = bound_transform->reference()->field().field_id();
     return AddFieldInternal(part_name, source_id, bound_transform->transform());
   }
 
-  ICEBERG_BUILDER_CHECK(false, "Cannot add {} term to partition spec", term->ToString());
-  std::unreachable();
+  return AddError(
+      InvalidArgument("Cannot add {} term to partition spec", term->ToString()));
 }
 
 UpdatePartitionSpec& UpdatePartitionSpec::AddFieldInternal(
-    const std::string& name, int32_t source_id,
+    std::string_view name, int32_t source_id,
     const std::shared_ptr<Transform>& transform) {
   // Check for duplicate name in added fields
-  if (!name.empty()) {
-    ICEBERG_BUILDER_CHECK(!added_field_names_.contains(name),
-                          "Cannot add duplicate partition field: {}", name);
-  }
+  ICEBERG_BUILDER_CHECK(name.empty() || !added_field_names_.contains(name),
+                        "Cannot add duplicate partition field: {}", name);
 
   // Cache transform string to avoid repeated ToString() calls
   const std::string transform_str = transform->ToString();
@@ -195,21 +192,19 @@ UpdatePartitionSpec& UpdatePartitionSpec::AddFieldInternal(
   if (existing_name_it != name_to_field_.end()) {
     const auto& existing_field = existing_name_it->second;
     const bool existing_is_deleted = deletes_.contains(existing_field->field_id());
+    std::string renamed =
+        std::format("{}_{}", existing_field->name(), existing_field->field_id());
     if (!existing_is_deleted) {
       if (IsVoidTransform(*existing_field)) {
         // Rename the old deleted field
-        std::string renamed =
-            std::format("{}_{}", existing_field->name(), existing_field->field_id());
-        RenameField(std::string(existing_field->name()), renamed);
+        RenameField(existing_field->name(), std::move(renamed));
       } else {
-        ICEBERG_BUILDER_CHECK(false, "Cannot add duplicate partition field name: {}",
-                              field_name);
+        return AddError(
+            InvalidArgument("Cannot add duplicate partition field name: {}", field_name));
       }
     } else {
       // Field is being deleted, rename it to avoid conflict
-      std::string renamed =
-          std::format("{}_{}", existing_field->name(), existing_field->field_id());
-      renames_[std::string(existing_field->name())] = renamed;
+      renames_.emplace(existing_field->name(), std::move(renamed));
     }
   }
 
@@ -220,15 +215,15 @@ UpdatePartitionSpec& UpdatePartitionSpec::AddFieldInternal(
 }
 
 UpdatePartitionSpec& UpdatePartitionSpec::RewriteDeleteAndAddField(
-    const PartitionField& existing, const std::string& name) {
+    const PartitionField& existing, std::string_view name) {
   deletes_.erase(existing.field_id());
   if (name.empty() || std::string(existing.name()) == name) {
     return *this;
   }
-  return RenameField(std::string(existing.name()), name);
+  return RenameField(std::string(existing.name()), std::string{name});
 }
 
-UpdatePartitionSpec& UpdatePartitionSpec::RemoveField(const std::string& name) {
+UpdatePartitionSpec& UpdatePartitionSpec::RemoveField(std::string_view name) {
   // Cannot delete newly added fields
   ICEBERG_BUILDER_CHECK(!added_field_names_.contains(name),
                         "Cannot delete newly added field: {}", name);
@@ -250,31 +245,28 @@ UpdatePartitionSpec& UpdatePartitionSpec::RemoveField(const std::shared_ptr<Term
                         "Cannot remove bound term from partition spec");
   // Bind the term to get the source id
   if (term->kind() == Term::Kind::kReference) {
-    const auto& ref = std::dynamic_pointer_cast<NamedReference>(term);
-    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto bound_ref,
-                                     ref->Bind(*schema_, case_sensitive_));
+    const auto& ref = dynamic_cast<const NamedReference&>(*term);
+    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto bound_ref, ref.Bind(*schema_, case_sensitive_));
     int32_t source_id = bound_ref->field().field_id();
     // Reference terms use identity transform
     TransformKey key{source_id, Transform::Identity()->ToString()};
     return RemoveFieldByTransform(key, term->ToString());
   } else if (term->kind() == Term::Kind::kTransform) {
-    const auto& unbound_transform = std::dynamic_pointer_cast<UnboundTransform>(term);
+    const auto& unbound_transform = dynamic_cast<const UnboundTransform&>(*term);
     ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto bound_transform,
-                                     unbound_transform->Bind(*schema_, case_sensitive_));
+                                     unbound_transform.Bind(*schema_, case_sensitive_));
     int32_t source_id = bound_transform->reference()->field().field_id();
     auto transform = bound_transform->transform();
-
     TransformKey key{source_id, transform->ToString()};
     return RemoveFieldByTransform(key, term->ToString());
   }
 
-  ICEBERG_BUILDER_CHECK(false, "Cannot remove {} term from partition spec",
-                        term->ToString());
-  std::unreachable();
+  return AddError(
+      InvalidArgument("Cannot remove {} term from partition spec", term->ToString()));
 }
 
 UpdatePartitionSpec& UpdatePartitionSpec::RemoveFieldByTransform(
-    const TransformKey& key, const std::string& term_str) {
+    const TransformKey& key, std::string_view term_str) {
   // Cannot delete newly added fields
   ICEBERG_BUILDER_CHECK(!transform_to_added_field_.contains(key),
                         "Cannot delete newly added field: {}", term_str);
@@ -292,14 +284,14 @@ UpdatePartitionSpec& UpdatePartitionSpec::RemoveFieldByTransform(
   return *this;
 }
 
-UpdatePartitionSpec& UpdatePartitionSpec::RenameField(const std::string& name,
-                                                      const std::string& new_name) {
+UpdatePartitionSpec& UpdatePartitionSpec::RenameField(std::string_view name,
+                                                      std::string new_name) {
   // Handle existing void field with the new name
   auto existing_it = name_to_field_.find(new_name);
   if (existing_it != name_to_field_.end() && IsVoidTransform(*existing_it->second)) {
     std::string renamed = std::format("{}_{}", existing_it->second->name(),
                                       existing_it->second->field_id());
-    RenameField(std::string(existing_it->second->name()), renamed);
+    RenameField(existing_it->second->name(), std::move(renamed));
   }
 
   // Cannot rename newly added fields
@@ -314,24 +306,21 @@ UpdatePartitionSpec& UpdatePartitionSpec::RenameField(const std::string& name,
   ICEBERG_BUILDER_CHECK(!deletes_.contains(field_it->second->field_id()),
                         "Cannot delete and rename partition field: {}", name);
 
-  renames_[name] = new_name;
+  renames_.emplace(name, std::move(new_name));
   return *this;
 }
 
 Result<UpdatePartitionSpec::ApplyResult> UpdatePartitionSpec::Apply() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
-  // Reserve capacity to avoid reallocations
-  const size_t existing_fields_count = spec_->fields().size();
-  const size_t adds_count = adds_.size();
   std::vector<PartitionField> new_fields;
-  new_fields.reserve(existing_fields_count + adds_count);
+  new_fields.reserve(spec_->fields().size() + adds_.size());
 
   // Process existing fields
   for (const auto& field : spec_->fields()) {
     if (!deletes_.contains(field.field_id())) {
       // Field is kept, check for rename
-      auto rename_it = renames_.find(std::string(field.name()));
+      auto rename_it = renames_.find(field.name());
       if (rename_it != renames_.end()) {
         new_fields.emplace_back(field.source_id(), field.field_id(), rename_it->second,
                                 field.transform());
@@ -344,7 +333,7 @@ Result<UpdatePartitionSpec::ApplyResult> UpdatePartitionSpec::Apply() {
       // To maintain consistent field ids across partition specs in v1 tables, any
       // partition field that is removed must be replaced with a null transform. null
       // values are always allowed in partition data.
-      auto rename_it = renames_.find(std::string(field.name()));
+      auto rename_it = renames_.find(field.name());
       std::string field_name =
           rename_it != renames_.end() ? rename_it->second : std::string(field.name());
       new_fields.emplace_back(field.source_id(), field.field_id(), std::move(field_name),
@@ -356,20 +345,11 @@ Result<UpdatePartitionSpec::ApplyResult> UpdatePartitionSpec::Apply() {
   // Add new fields
   new_fields.insert(new_fields.end(), adds_.begin(), adds_.end());
 
-  // In V2, if all fields are removed, reset last_assigned_partition_id to allow
-  // field IDs to restart from 1000 when fields are added again
-  int32_t last_assigned_id = last_assigned_partition_id_;
-  if (format_version_ >= 2 && new_fields.empty()) {
-    last_assigned_id = PartitionSpec::kLegacyPartitionDataIdStart - 1;
-  }
-
   // Use -1 as a placeholder for the spec id, the actual spec id will be assigned by
   // TableMetadataBuilder when the AddPartitionSpec update is applied.
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto new_spec, PartitionSpec::Make(/*spec_id=*/-1, std::move(new_fields),
-                                         /*last_assigned_field_id=*/last_assigned_id));
-  ICEBERG_ASSIGN_OR_RAISE(auto schema, transaction_->current().Schema());
-  ICEBERG_RETURN_UNEXPECTED(new_spec->Validate(*schema, /*allow_missing_fields=*/false));
+  ICEBERG_ASSIGN_OR_RAISE(auto new_spec,
+                          PartitionSpec::Make(/*spec_id=*/-1, std::move(new_fields)));
+  ICEBERG_RETURN_UNEXPECTED(new_spec->Validate(*schema_, /*allow_missing_fields=*/false));
 
   return ApplyResult{.spec = std::move(new_spec), .set_as_default = set_as_default_};
 }
@@ -377,22 +357,20 @@ Result<UpdatePartitionSpec::ApplyResult> UpdatePartitionSpec::Apply() {
 int32_t UpdatePartitionSpec::AssignFieldId() { return ++last_assigned_partition_id_; }
 
 PartitionField UpdatePartitionSpec::RecycleOrCreatePartitionField(
-    int32_t source_id, std::shared_ptr<Transform> transform, const std::string& name) {
+    int32_t source_id, std::shared_ptr<Transform> transform, std::string_view name) {
   // In V2+, use pre-built index for O(1) lookup instead of O(n*m) iteration
   if (format_version_ >= 2 && !historical_fields_.empty()) {
-    const std::string transform_str = transform->ToString();
-    TransformKey key{source_id, transform_str};
-    auto it = historical_fields_.find(key);
+    auto it = historical_fields_.find(TransformKey{source_id, transform->ToString()});
     if (it != historical_fields_.end()) {
       const auto& field = it->second;
       // If target name is specified then consider it too, otherwise not
-      if (name.empty() || std::string(field.name()) == name) {
+      if (name.empty() || field.name() == name) {
         return field;
       }
     }
   }
   // No matching field found, create a new one
-  return {source_id, AssignFieldId(), name, transform};
+  return {source_id, AssignFieldId(), std::string{name}, std::move(transform)};
 }
 
 Result<std::string> UpdatePartitionSpec::GeneratePartitionName(
@@ -433,11 +411,11 @@ void UpdatePartitionSpec::CheckForRedundantAddedPartitions(const PartitionField&
   }
 }
 
-std::unordered_map<std::string, const PartitionField*>
+std::unordered_map<std::string, const PartitionField*, StringHash, StringEqual>
 UpdatePartitionSpec::IndexSpecByName(const PartitionSpec& spec) {
-  std::unordered_map<std::string, const PartitionField*> index;
+  std::unordered_map<std::string, const PartitionField*, StringHash, StringEqual> index;
   for (const auto& field : spec.fields()) {
-    index.emplace(std::string(field.name()), &field);
+    index.emplace(field.name(), &field);
   }
   return index;
 }
