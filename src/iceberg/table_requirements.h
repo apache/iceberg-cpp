@@ -144,6 +144,10 @@ class ICEBERG_EXPORT TableRequirements {
   static Result<std::vector<std::unique_ptr<TableRequirement>>> ForUpdateTable(
       const TableMetadata& base,
       const std::vector<std::unique_ptr<TableUpdate>>& table_updates);
+
+  /// \brief Check if the requirements are for table creation
+  static Result<bool> IsCreate(
+      const std::vector<std::unique_ptr<TableRequirement>>& requirements);
 };
 
 }  // namespace iceberg

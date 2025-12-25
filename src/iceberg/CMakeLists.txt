@@ -65,6 +65,7 @@ set(ICEBERG_SOURCES
     sort_order.cc
     statistics_file.cc
     table.cc
+    table_identifier.cc
     table_metadata.cc
     table_properties.cc
     table_requirement.cc
@@ -84,6 +85,7 @@ set(ICEBERG_SOURCES
     util/decimal.cc
     util/gzip_internal.cc
     util/murmurhash3_internal.cc
+    util/property_util.cc
     util/snapshot_util.cc
     util/temporal_util.cc
     util/timepoint.cc

@@ -36,7 +36,7 @@ TEST(TableRequirementTest, AssertUUID) {
 
   // Success - UUID matches
   table::AssertUUID requirement("test-uuid-1234");
-  EXPECT_EQ(TableRequirement::Kind::AssertUUID, requirement.kind());
+  EXPECT_EQ(TableRequirement::Kind::kAssertUUID, requirement.kind());
   ASSERT_THAT(requirement.Validate(base.get()), IsOk());
 
   // UUID mismatch
@@ -63,7 +63,7 @@ TEST(TableRequirementTest, AssertCurrentSchemaID) {
 
   // Success - schema ID matches
   table::AssertCurrentSchemaID requirement(5);
-  EXPECT_EQ(TableRequirement::Kind::AssertCurrentSchemaID, requirement.kind());
+  EXPECT_EQ(TableRequirement::Kind::kAssertCurrentSchemaID, requirement.kind());
   ASSERT_THAT(requirement.Validate(base.get()), IsOk());
 
   // Schema ID mismatch
@@ -89,7 +89,7 @@ TEST(TableRequirementTest, AssertCurrentSchemaID) {
 TEST(TableRequirementTest, AssertDoesNotExist) {
   // Success - table does not exist (null metadata)
   table::AssertDoesNotExist requirement;
-  EXPECT_EQ(TableRequirement::Kind::AssertDoesNotExist, requirement.kind());
+  EXPECT_EQ(TableRequirement::Kind::kAssertDoesNotExist, requirement.kind());
   ASSERT_THAT(requirement.Validate(nullptr), IsOk());
 
   // Table already exists
@@ -108,7 +108,7 @@ TEST(TableRequirementTest, AssertRefSnapshotID) {
 
   // Success - ref snapshot ID matches
   table::AssertRefSnapshotID requirement("main", 100);
-  EXPECT_EQ(TableRequirement::Kind::AssertRefSnapshotID, requirement.kind());
+  EXPECT_EQ(TableRequirement::Kind::kAssertRefSnapshotID, requirement.kind());
   ASSERT_THAT(requirement.Validate(base.get()), IsOk());
 
   // Snapshot ID mismatch
@@ -140,7 +140,7 @@ TEST(TableRequirementTest, AssertLastAssignedFieldId) {
 
   // Success - field ID matches
   table::AssertLastAssignedFieldId requirement(10);
-  EXPECT_EQ(TableRequirement::Kind::AssertLastAssignedFieldId, requirement.kind());
+  EXPECT_EQ(TableRequirement::Kind::kAssertLastAssignedFieldId, requirement.kind());
   ASSERT_THAT(requirement.Validate(base.get()), IsOk());
 
   // Field ID mismatch
@@ -160,7 +160,7 @@ TEST(TableRequirementTest, AssertLastAssignedPartitionId) {
 
   // Success - partition ID matches
   table::AssertLastAssignedPartitionId requirement(5);
-  EXPECT_EQ(TableRequirement::Kind::AssertLastAssignedPartitionId, requirement.kind());
+  EXPECT_EQ(TableRequirement::Kind::kAssertLastAssignedPartitionId, requirement.kind());
   ASSERT_THAT(requirement.Validate(base.get()), IsOk());
 
   // Partition ID mismatch
@@ -182,7 +182,7 @@ TEST(TableRequirementTest, AssertDefaultSpecID) {
 
   // Success - spec ID matches
   table::AssertDefaultSpecID requirement(3);
-  EXPECT_EQ(TableRequirement::Kind::AssertDefaultSpecID, requirement.kind());
+  EXPECT_EQ(TableRequirement::Kind::kAssertDefaultSpecID, requirement.kind());
   ASSERT_THAT(requirement.Validate(base.get()), IsOk());
 
   // Spec ID mismatch
@@ -198,7 +198,7 @@ TEST(TableRequirementTest, AssertDefaultSortOrderID) {
 
   // Success - sort order ID matches
   table::AssertDefaultSortOrderID requirement(2);
-  EXPECT_EQ(TableRequirement::Kind::AssertDefaultSortOrderID, requirement.kind());
+  EXPECT_EQ(TableRequirement::Kind::kAssertDefaultSortOrderID, requirement.kind());
   ASSERT_THAT(requirement.Validate(base.get()), IsOk());
 
   // Sort order ID mismatch
