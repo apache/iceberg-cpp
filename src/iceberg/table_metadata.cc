@@ -1007,7 +1007,9 @@ TableMetadataBuilder& TableMetadataBuilder::SetCurrentSchema(int32_t schema_id) 
 TableMetadataBuilder& TableMetadataBuilder::AddSchema(
     std::shared_ptr<Schema> const& schema) {
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto highest_field_id, schema->HighestFieldId());
-  impl_->AddSchema(*schema, std::max(impl_->metadata().last_column_id, highest_field_id));
+  auto new_last_column_id = std::max(impl_->metadata().last_column_id, highest_field_id);
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto schema_id,
+                                   impl_->AddSchema(*schema, new_last_column_id));
   return *this;
 }
 

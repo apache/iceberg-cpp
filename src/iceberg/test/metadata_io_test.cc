@@ -33,6 +33,7 @@
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
+#include "iceberg/sort_order.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/test/matchers.h"
@@ -75,6 +76,7 @@ class MetadataIOTest : public TempFileTestBase {
                              .manifest_list = "s3://a/b/1.avro",
                              .summary = {{"operation", "append"}},
                          })},
+                         .sort_orders = {SortOrder::Unsorted()},
                          .default_sort_order_id = 0,
                          .next_row_id = 0};
   }
