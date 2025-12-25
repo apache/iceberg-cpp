@@ -42,7 +42,21 @@ namespace iceberg {
 /// a specific type of requirement check.
 class ICEBERG_EXPORT TableRequirement {
  public:
+  enum class Kind : uint8_t {
+    AssertDoesNotExist,
+    AssertUUID,
+    AssertRefSnapshotID,
+    AssertLastAssignedFieldId,
+    AssertCurrentSchemaID,
+    AssertLastAssignedPartitionId,
+    AssertDefaultSpecID,
+    AssertDefaultSortOrderID,
+  };
+
   virtual ~TableRequirement() = default;
+
+  /// \brief Return the kind of requirement
+  virtual Kind kind() const = 0;
 
   /// \brief Validate this requirement against table metadata
   ///
@@ -61,6 +75,8 @@ class ICEBERG_EXPORT AssertDoesNotExist : public TableRequirement {
  public:
   AssertDoesNotExist() = default;
 
+  Kind kind() const override { return Kind::AssertDoesNotExist; }
+
   Status Validate(const TableMetadata* base) const override;
 };
 
@@ -73,6 +89,8 @@ class ICEBERG_EXPORT AssertUUID : public TableRequirement {
   explicit AssertUUID(std::string uuid) : uuid_(std::move(uuid)) {}
 
   const std::string& uuid() const { return uuid_; }
+
+  Kind kind() const override { return Kind::AssertUUID; }
 
   Status Validate(const TableMetadata* base) const override;
 
@@ -94,6 +112,8 @@ class ICEBERG_EXPORT AssertRefSnapshotID : public TableRequirement {
 
   const std::optional<int64_t>& snapshot_id() const { return snapshot_id_; }
 
+  Kind kind() const override { return Kind::AssertRefSnapshotID; }
+
   Status Validate(const TableMetadata* base) const override;
 
  private:
@@ -112,6 +132,8 @@ class ICEBERG_EXPORT AssertLastAssignedFieldId : public TableRequirement {
 
   int32_t last_assigned_field_id() const { return last_assigned_field_id_; }
 
+  Kind kind() const override { return Kind::AssertLastAssignedFieldId; }
+
   Status Validate(const TableMetadata* base) const override;
 
  private:
@@ -127,6 +149,8 @@ class ICEBERG_EXPORT AssertCurrentSchemaID : public TableRequirement {
   explicit AssertCurrentSchemaID(int32_t schema_id) : schema_id_(schema_id) {}
 
   int32_t schema_id() const { return schema_id_; }
+
+  Kind kind() const override { return Kind::AssertCurrentSchemaID; }
 
   Status Validate(const TableMetadata* base) const override;
 
@@ -145,6 +169,8 @@ class ICEBERG_EXPORT AssertLastAssignedPartitionId : public TableRequirement {
 
   int32_t last_assigned_partition_id() const { return last_assigned_partition_id_; }
 
+  Kind kind() const override { return Kind::AssertLastAssignedPartitionId; }
+
   Status Validate(const TableMetadata* base) const override;
 
  private:
@@ -160,6 +186,8 @@ class ICEBERG_EXPORT AssertDefaultSpecID : public TableRequirement {
   explicit AssertDefaultSpecID(int32_t spec_id) : spec_id_(spec_id) {}
 
   int32_t spec_id() const { return spec_id_; }
+
+  Kind kind() const override { return Kind::AssertDefaultSpecID; }
 
   Status Validate(const TableMetadata* base) const override;
 
@@ -177,6 +205,8 @@ class ICEBERG_EXPORT AssertDefaultSortOrderID : public TableRequirement {
       : sort_order_id_(sort_order_id) {}
 
   int32_t sort_order_id() const { return sort_order_id_; }
+
+  Kind kind() const override { return Kind::AssertDefaultSortOrderID; }
 
   Status Validate(const TableMetadata* base) const override;
 
