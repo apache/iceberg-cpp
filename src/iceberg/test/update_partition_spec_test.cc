@@ -131,7 +131,7 @@ class UpdatePartitionSpecTest : public ::testing::TestWithParam<int8_t> {
     metadata->default_spec_id = spec->spec_id();
     metadata->last_partition_id = spec->last_assigned_field_id();
     metadata->current_snapshot_id = Snapshot::kInvalidSnapshotId;
-    metadata->default_sort_order_id = SortOrder::kInitialSortOrderId;
+    metadata->default_sort_order_id = SortOrder::kUnsortedOrderId;
     metadata->sort_orders.push_back(SortOrder::Unsorted());
     metadata->next_row_id = TableMetadata::kInitialRowId;
     metadata->properties = TableProperties::default_properties();
