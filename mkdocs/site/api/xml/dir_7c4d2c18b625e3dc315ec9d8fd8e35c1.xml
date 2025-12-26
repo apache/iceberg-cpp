@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_7c4d2c18b625e3dc315ec9d8fd8e35c1" kind="dir">
+    <compoundname>iceberg/update</compoundname>
+    <innerfile refid="pending__update_8cc">pending_update.cc</innerfile>
+    <innerfile refid="pending__update_8h">pending_update.h</innerfile>
+    <innerfile refid="update__partition__spec_8cc">update_partition_spec.cc</innerfile>
+    <innerfile refid="update__partition__spec_8h">update_partition_spec.h</innerfile>
+    <innerfile refid="update__properties_8cc">update_properties.cc</innerfile>
+    <innerfile refid="update__properties_8h">update_properties.h</innerfile>
+    <innerfile refid="update__sort__order_8cc">update_sort_order.cc</innerfile>
+    <innerfile refid="update__sort__order_8h">update_sort_order.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/update/"/>
+  </compounddef>
+</doxygen>

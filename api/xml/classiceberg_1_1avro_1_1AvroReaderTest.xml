@@ -1,0 +1,282 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1avro_1_1AvroReaderTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::avro::AvroReaderTest</compoundname>
+    <basecompoundref refid="classiceberg_1_1TempFileTestBase" prot="public" virt="non-virtual">iceberg::TempFileTestBase</basecompoundref>
+    <derivedcompoundref refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest" prot="public" virt="non-virtual">iceberg::avro::AvroReaderParameterizedTest</derivedcompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroReaderTest_1a6948d5f7c64e3e014ffa7e15faceacfb" prot="protected" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::avro::AvroReaderTest::skip_datum_</definition>
+        <argsstring></argsstring>
+        <name>skip_datum_</name>
+        <qualifiedname>iceberg::avro::AvroReaderTest::skip_datum_</qualifiedname>
+        <initializer>{true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="56" column="8" bodyfile="iceberg/test/avro_test.cc" bodystart="56" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroReaderTest_1a6c1b7753210e491d7fd09a6535555701" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt;::arrow::fs::LocalFileSystem &gt;</type>
+        <definition>std::shared_ptr&lt;::arrow::fs::LocalFileSystem&gt; iceberg::avro::AvroReaderTest::local_fs_</definition>
+        <argsstring></argsstring>
+        <name>local_fs_</name>
+        <qualifiedname>iceberg::avro::AvroReaderTest::local_fs_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="170" column="19" bodyfile="iceberg/test/avro_test.cc" bodystart="170" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroReaderTest_1a5aba44a7da351ebcf6a1beb29caa6890" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::avro::AvroReaderTest::file_io_</definition>
+        <argsstring></argsstring>
+        <name>file_io_</name>
+        <qualifiedname>iceberg::avro::AvroReaderTest::file_io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="171" column="19" bodyfile="iceberg/test/avro_test.cc" bodystart="171" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroReaderTest_1a72dd2be52af92e8a11429317873f52a1" prot="protected" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::avro::AvroReaderTest::temp_avro_file_</definition>
+        <argsstring></argsstring>
+        <name>temp_avro_file_</name>
+        <qualifiedname>iceberg::avro::AvroReaderTest::temp_avro_file_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="172" column="15" bodyfile="iceberg/test/avro_test.cc" bodystart="172" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-static-func">
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroReaderTest_1a6f891422ef5570e0a7b1f953fbcdb7ae" prot="protected" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>static void iceberg::avro::AvroReaderTest::SetUpTestSuite</definition>
+        <argsstring>()</argsstring>
+        <name>SetUpTestSuite</name>
+        <qualifiedname>iceberg::avro::AvroReaderTest::SetUpTestSuite</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="47" column="15" bodyfile="iceberg/test/avro_test.cc" bodystart="47" bodyend="47"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroReaderTest_1a342b6cac3b86f23acacedc5dc7123cc4" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::AvroReaderTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::avro::AvroReaderTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="49" column="8" bodyfile="iceberg/test/avro_test.cc" bodystart="49" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroReaderTest_1a510f499c7639a4e2801687d2d8924561" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::AvroReaderTest::CreateSimpleAvroFile</definition>
+        <argsstring>()</argsstring>
+        <name>CreateSimpleAvroFile</name>
+        <qualifiedname>iceberg::avro::AvroReaderTest::CreateSimpleAvroFile</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="58" column="8" bodyfile="iceberg/test/avro_test.cc" bodystart="58" bodyend="83"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroReaderTest_1a2334c789eb1d27d4deddb6a42d8a952b" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::AvroReaderTest::VerifyNextBatch</definition>
+        <argsstring>(Reader &amp;reader, std::string_view expected_json)</argsstring>
+        <name>VerifyNextBatch</name>
+        <qualifiedname>iceberg::avro::AvroReaderTest::VerifyNextBatch</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref> &amp;</type>
+          <declname>reader</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>expected_json</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="85" column="8" bodyfile="iceberg/test/avro_test.cc" bodystart="85" bodyend="105"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroReaderTest_1a6c5a879467fbf71b09cca7c5d9385784" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::AvroReaderTest::VerifyExhausted</definition>
+        <argsstring>(Reader &amp;reader)</argsstring>
+        <name>VerifyExhausted</name>
+        <qualifiedname>iceberg::avro::AvroReaderTest::VerifyExhausted</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref> &amp;</type>
+          <declname>reader</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="107" column="8" bodyfile="iceberg/test/avro_test.cc" bodystart="107" bodyend="111"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroReaderTest_1a01540245ca8680165c0dc7c6e9b3ef00" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::AvroReaderTest::WriteAndVerify</definition>
+        <argsstring>(std::shared_ptr&lt; Schema &gt; schema, const std::string &amp;expected_string)</argsstring>
+        <name>WriteAndVerify</name>
+        <qualifiedname>iceberg::avro::AvroReaderTest::WriteAndVerify</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>expected_string</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_test.cc" line="113" column="8" bodyfile="iceberg/test/avro_test.cc" bodystart="113" bodyend="168"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::TempFileTestBase</label>
+        <link refid="classiceberg_1_1TempFileTestBase"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::avro::AvroReaderParameterizedTest</label>
+        <link refid="classiceberg_1_1avro_1_1AvroReaderParameterizedTest"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::avro::AvroReaderTest</label>
+        <link refid="classiceberg_1_1avro_1_1AvroReaderTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="9">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="2">
+        <label>iceberg::TempFileTestBase</label>
+        <link refid="classiceberg_1_1TempFileTestBase"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>created_temp_files_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::avro::AvroReaderTest</label>
+        <link refid="classiceberg_1_1avro_1_1AvroReaderTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>local_fs_</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>file_io_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>temp_avro_file_</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::shared_ptr&lt;::arrow::fs::LocalFileSystem &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>testing::Test</label>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/avro_test.cc" line="45" column="1" bodyfile="iceberg/test/avro_test.cc" bodystart="45" bodyend="173"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TempFileTestBase_1a81e8f787019341a0f6e808b06944692c" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>created_temp_files_</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a469206ba6bfaea7b40483a594c819d8f" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>CreateNewTempFilePath</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a79c5ec372d23b44b3b25f90faadafcdf" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>CreateNewTempFilePathWithSuffix</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReaderTest_1a510f499c7639a4e2801687d2d8924561" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>CreateSimpleAvroFile</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a78b1aeba8972a7b7a1efe8250fc275b9" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>CreateTempDirectory</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a0f94d0c787eed57fca2687c77f0873dd" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>CreateTempFileWithContent</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReaderTest_1a5aba44a7da351ebcf6a1beb29caa6890" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>file_io_</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ab8c455679ca860cf68d867b134fd6dbc" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>GenerateRandomString</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ac4a5a13677373ca5e40f5251f2fc16d5" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>GenerateUniqueTempFilePath</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a25203f87d8d23209c611949d95749559" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>GenerateUniqueTempFilePathWithSuffix</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReaderTest_1a6c1b7753210e491d7fd09a6535555701" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>local_fs_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReaderTest_1a342b6cac3b86f23acacedc5dc7123cc4" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReaderTest_1a6f891422ef5570e0a7b1f953fbcdb7ae" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>SetUpTestSuite</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReaderTest_1a6948d5f7c64e3e014ffa7e15faceacfb" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>skip_datum_</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ad0259e7197a5f7c88a6cd9688efe6b53" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>TearDown</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReaderTest_1a72dd2be52af92e8a11429317873f52a1" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>temp_avro_file_</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ac5dbf7b55b849f990733840057bd450f" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>TestInfo</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReaderTest_1a6c5a879467fbf71b09cca7c5d9385784" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>VerifyExhausted</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReaderTest_1a2334c789eb1d27d4deddb6a42d8a952b" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>VerifyNextBatch</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReaderTest_1a01540245ca8680165c0dc7c6e9b3ef00" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>WriteAndVerify</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a3ba86e7547c2ea06ac70f76e61040af5" prot="protected" virt="non-virtual"><scope>iceberg::avro::AvroReaderTest</scope><name>WriteContentToFile</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

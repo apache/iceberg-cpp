@@ -1,0 +1,164 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1avro_1_1ReadContext" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::avro::ReadContext</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1ReadContext_1ac32073a1acf95a4158cbe677ccee4cc6" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt;::arrow::Schema &gt;</type>
+        <definition>std::shared_ptr&lt;::arrow::Schema&gt; iceberg::avro::ReadContext::arrow_schema_</definition>
+        <argsstring></argsstring>
+        <name>arrow_schema_</name>
+        <qualifiedname>iceberg::avro::ReadContext::arrow_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="67" column="19" bodyfile="iceberg/avro/avro_reader.cc" bodystart="67" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1ReadContext_1a31bb12f3128e0f059028567740b404f6" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt;::arrow::ArrayBuilder &gt;</type>
+        <definition>std::shared_ptr&lt;::arrow::ArrayBuilder&gt; iceberg::avro::ReadContext::builder_</definition>
+        <argsstring></argsstring>
+        <name>builder_</name>
+        <qualifiedname>iceberg::avro::ReadContext::builder_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="69" column="19" bodyfile="iceberg/avro/avro_reader.cc" bodystart="69" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1ReadContext_1a8b28408299a13f035631605756a329cf" prot="public" static="no" mutable="no">
+        <type>std::unique_ptr&lt;::avro::GenericDatum &gt;</type>
+        <definition>std::unique_ptr&lt;::avro::GenericDatum&gt; iceberg::avro::ReadContext::datum_</definition>
+        <argsstring></argsstring>
+        <name>datum_</name>
+        <qualifiedname>iceberg::avro::ReadContext::datum_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="72" column="19" bodyfile="iceberg/avro/avro_reader.cc" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1avro_1_1ReadContext_1a38457c5ffe5151f9f7d6f3dabe17d84d" prot="public" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1avro_1_1DecodeContext" kindref="compound">DecodeContext</ref></type>
+        <definition>DecodeContext iceberg::avro::ReadContext::decode_context_</definition>
+        <argsstring></argsstring>
+        <name>decode_context_</name>
+        <qualifiedname>iceberg::avro::ReadContext::decode_context_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="75" column="17" bodyfile="iceberg/avro/avro_reader.cc" bodystart="75" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="10">
+        <label>iceberg::FieldProjection</label>
+        <link refid="structiceberg_1_1FieldProjection"/>
+        <childnode refid="11" relation="usage">
+          <edgelabel>children</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>attributes</edgelabel>
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg::FieldProjection::ExtraAttributes</label>
+        <link refid="structiceberg_1_1FieldProjection_1_1ExtraAttributes"/>
+      </node>
+      <node id="5">
+        <label>iceberg::avro::DecodeContext</label>
+        <link refid="structiceberg_1_1avro_1_1DecodeContext"/>
+        <childnode refid="6" relation="usage">
+          <edgelabel>string_scratch</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>bytes_scratch</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>avro_to_projection_cache</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::avro::ReadContext</label>
+        <link refid="structiceberg_1_1avro_1_1ReadContext"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>arrow_schema_</edgelabel>
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>builder_</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>datum_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>decode_context_</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>std::shared_ptr&lt; iceberg::FieldProjection::ExtraAttributes &gt;</label>
+        <childnode refid="13" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt;::arrow::ArrayBuilder &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::shared_ptr&lt;::arrow::Schema &gt;</label>
+      </node>
+      <node id="7">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::string</label>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::unique_ptr&lt;::avro::GenericDatum &gt;</label>
+      </node>
+      <node id="9">
+        <label>std::unordered_map&lt; const iceberg::FieldProjection *, std::vector&lt; int &gt; &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>std::vector&lt; iceberg::FieldProjection &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="14">
+        <label>std::vector&lt; int &gt;</label>
+      </node>
+      <node id="8">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/avro/avro_reader.cc" line="65" column="1" bodyfile="iceberg/avro/avro_reader.cc" bodystart="65" bodyend="76"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1avro_1_1ReadContext_1ac32073a1acf95a4158cbe677ccee4cc6" prot="public" virt="non-virtual"><scope>iceberg::avro::ReadContext</scope><name>arrow_schema_</name></member>
+      <member refid="structiceberg_1_1avro_1_1ReadContext_1a31bb12f3128e0f059028567740b404f6" prot="public" virt="non-virtual"><scope>iceberg::avro::ReadContext</scope><name>builder_</name></member>
+      <member refid="structiceberg_1_1avro_1_1ReadContext_1a8b28408299a13f035631605756a329cf" prot="public" virt="non-virtual"><scope>iceberg::avro::ReadContext</scope><name>datum_</name></member>
+      <member refid="structiceberg_1_1avro_1_1ReadContext_1a38457c5ffe5151f9f7d6f3dabe17d84d" prot="public" virt="non-virtual"><scope>iceberg::avro::ReadContext</scope><name>decode_context_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

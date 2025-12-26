@@ -1,0 +1,61 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1MetricsConfig" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::MetricsConfig</compoundname>
+    <includes refid="metrics__config_8h" local="no">metrics_config.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1MetricsConfig_1a67ce9ae32b86c984e05eeeb35080d8f6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::MetricsConfig::VerifyReferencedColumns</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;updates, const Schema &amp;schema)</argsstring>
+        <name>VerifyReferencedColumns</name>
+        <qualifiedname>iceberg::MetricsConfig::VerifyReferencedColumns</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>updates</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+<para>Verify that all referenced columns are valid. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>updates</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The updates to verify </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The schema to verify against </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>OK if all referenced columns are valid </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics_config.h" line="41" column="17" bodyfile="iceberg/metrics_config.cc" bodystart="31" bodyend="48"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Configuration utilities for table metrics. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/metrics_config.h" line="35" column="1" bodyfile="iceberg/metrics_config.h" bodystart="35" bodyend="43"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1MetricsConfig_1a67ce9ae32b86c984e05eeeb35080d8f6" prot="public" virt="non-virtual"><scope>iceberg::MetricsConfig</scope><name>VerifyReferencedColumns</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

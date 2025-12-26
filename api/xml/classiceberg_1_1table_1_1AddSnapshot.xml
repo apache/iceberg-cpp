@@ -1,0 +1,176 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1table_1_1AddSnapshot" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::table::AddSnapshot</compoundname>
+    <basecompoundref refid="classiceberg_1_1TableUpdate" prot="public" virt="non-virtual">iceberg::TableUpdate</basecompoundref>
+    <includes refid="table__update_8h" local="no">table_update.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1table_1_1AddSnapshot_1ac93c669d0f09d986594ad429545f92c2" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Snapshot&gt; iceberg::table::AddSnapshot::snapshot_</definition>
+        <argsstring></argsstring>
+        <name>snapshot_</name>
+        <qualifiedname>iceberg::table::AddSnapshot::snapshot_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="284" column="19" bodyfile="iceberg/table_update.h" bodystart="284" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AddSnapshot_1af26940a9a98d1a60b0fe9394089b1c96" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::table::AddSnapshot::AddSnapshot</definition>
+        <argsstring>(std::shared_ptr&lt; Snapshot &gt; snapshot)</argsstring>
+        <name>AddSnapshot</name>
+        <qualifiedname>iceberg::table::AddSnapshot::AddSnapshot</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt;</type>
+          <declname>snapshot</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="272" column="12" bodyfile="iceberg/table_update.h" bodystart="272" bodyend="273"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AddSnapshot_1ab45a252c86a9dede9f1ac8de4d825e28" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; Snapshot &gt; &amp; iceberg::table::AddSnapshot::snapshot</definition>
+        <argsstring>() const</argsstring>
+        <name>snapshot</name>
+        <qualifiedname>iceberg::table::AddSnapshot::snapshot</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="275" column="25" bodyfile="iceberg/table_update.h" bodystart="275" bodyend="275"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AddSnapshot_1a823cacdea314694a8c3973e47f3d639e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::table::AddSnapshot::ApplyTo</definition>
+        <argsstring>(TableMetadataBuilder &amp;builder) const override</argsstring>
+        <name>ApplyTo</name>
+        <qualifiedname>iceberg::table::AddSnapshot::ApplyTo</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1af07326d407ad45eb6072b586ee6c9485">ApplyTo</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+          <declname>builder</declname>
+        </param>
+        <briefdescription>
+<para>Apply this update to a <ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method modifies the builder by applying the update operation it represents. Each subclass implements this to apply its specific type of update.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>builder</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The builder to apply this update to </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="277" column="8" bodyfile="iceberg/table_update.cc" bodystart="136" bodyend="138"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AddSnapshot_1a1b15d856312374e9d05dabf0a041969d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::table::AddSnapshot::GenerateRequirements</definition>
+        <argsstring>(TableUpdateContext &amp;context) const override</argsstring>
+        <name>GenerateRequirements</name>
+        <qualifiedname>iceberg::table::AddSnapshot::GenerateRequirements</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1adddc714f83cea93141bc5b771e326e05">GenerateRequirements</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1TableUpdateContext" kindref="compound">TableUpdateContext</ref> &amp;</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+<para>Generate update requirements for this metadata update. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method generates the appropriate UpdateRequirement instances that must be validated before this update can be applied. The context provides information about the base metadata and operation mode.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>context</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The context containing base metadata and operation state </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="279" column="8" bodyfile="iceberg/table_update.cc" bodystart="140" bodyend="142"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1AddSnapshot_1a486377f29c05b2741241c6e633fd4360" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::table::AddSnapshot::kind</definition>
+        <argsstring>() const override</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::table::AddSnapshot::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1acf1e83fa9835010cda68a6a3387a08a5">kind</reimplements>
+        <briefdescription>
+<para>Return the kind of this update. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="281" column="8" bodyfile="iceberg/table_update.h" bodystart="281" bodyend="281"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents adding a snapshot to the table. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::AddSnapshot</label>
+        <link refid="classiceberg_1_1table_1_1AddSnapshot"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::AddSnapshot</label>
+        <link refid="classiceberg_1_1table_1_1AddSnapshot"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_update.h" line="270" column="1" bodyfile="iceberg/table_update.h" bodystart="270" bodyend="285"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1table_1_1AddSnapshot_1af26940a9a98d1a60b0fe9394089b1c96" prot="public" virt="non-virtual"><scope>iceberg::table::AddSnapshot</scope><name>AddSnapshot</name></member>
+      <member refid="classiceberg_1_1table_1_1AddSnapshot_1a823cacdea314694a8c3973e47f3d639e" prot="public" virt="virtual"><scope>iceberg::table::AddSnapshot</scope><name>ApplyTo</name></member>
+      <member refid="classiceberg_1_1table_1_1AddSnapshot_1a1b15d856312374e9d05dabf0a041969d" prot="public" virt="virtual"><scope>iceberg::table::AddSnapshot</scope><name>GenerateRequirements</name></member>
+      <member refid="classiceberg_1_1table_1_1AddSnapshot_1a486377f29c05b2741241c6e633fd4360" prot="public" virt="virtual"><scope>iceberg::table::AddSnapshot</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1TableUpdate_1ad8c72b1755b111ad20acff6ae6d4974d" prot="public" virt="non-virtual"><scope>iceberg::table::AddSnapshot</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1table_1_1AddSnapshot_1ab45a252c86a9dede9f1ac8de4d825e28" prot="public" virt="non-virtual"><scope>iceberg::table::AddSnapshot</scope><name>snapshot</name></member>
+      <member refid="classiceberg_1_1table_1_1AddSnapshot_1ac93c669d0f09d986594ad429545f92c2" prot="private" virt="non-virtual"><scope>iceberg::table::AddSnapshot</scope><name>snapshot_</name></member>
+      <member refid="classiceberg_1_1TableUpdate_1a1a77bb6c54a6d728aa28b9847a039d85" prot="public" virt="virtual"><scope>iceberg::table::AddSnapshot</scope><name>~TableUpdate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

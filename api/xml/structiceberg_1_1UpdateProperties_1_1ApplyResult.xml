@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1UpdateProperties_1_1ApplyResult" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::UpdateProperties::ApplyResult</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1UpdateProperties_1_1ApplyResult_1ada9cb34c8d49ca7ae97f46f8436b33ca" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::UpdateProperties::ApplyResult::updates</definition>
+        <argsstring></argsstring>
+        <name>updates</name>
+        <qualifiedname>iceberg::UpdateProperties::ApplyResult::updates</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_properties.h" line="47" column="24" bodyfile="iceberg/update/update_properties.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1UpdateProperties_1_1ApplyResult_1a8f74587673f716eb1b6ab068e8cc13c2" prot="public" static="no" mutable="no">
+        <type>std::unordered_set&lt; std::string &gt;</type>
+        <definition>std::unordered_set&lt;std::string&gt; iceberg::UpdateProperties::ApplyResult::removals</definition>
+        <argsstring></argsstring>
+        <name>removals</name>
+        <qualifiedname>iceberg::UpdateProperties::ApplyResult::removals</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_properties.h" line="48" column="24" bodyfile="iceberg/update/update_properties.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1UpdateProperties_1_1ApplyResult_1a573ac1afd8e03e0a4b7549c8abe098f8" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int8_t &gt;</type>
+        <definition>std::optional&lt;int8_t&gt; iceberg::UpdateProperties::ApplyResult::format_version</definition>
+        <argsstring></argsstring>
+        <name>format_version</name>
+        <qualifiedname>iceberg::UpdateProperties::ApplyResult::format_version</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_properties.h" line="49" column="19" bodyfile="iceberg/update/update_properties.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::UpdateProperties::ApplyResult</label>
+        <link refid="structiceberg_1_1UpdateProperties_1_1ApplyResult"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>updates</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>removals</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::unordered_set&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/update/update_properties.h" line="46" column="3" bodyfile="iceberg/update/update_properties.h" bodystart="46" bodyend="50"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1UpdateProperties_1_1ApplyResult_1a573ac1afd8e03e0a4b7549c8abe098f8" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties::ApplyResult</scope><name>format_version</name></member>
+      <member refid="structiceberg_1_1UpdateProperties_1_1ApplyResult_1a8f74587673f716eb1b6ab068e8cc13c2" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties::ApplyResult</scope><name>removals</name></member>
+      <member refid="structiceberg_1_1UpdateProperties_1_1ApplyResult_1ada9cb34c8d49ca7ae97f46f8436b33ca" prot="public" virt="non-virtual"><scope>iceberg::UpdateProperties::ApplyResult</scope><name>updates</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

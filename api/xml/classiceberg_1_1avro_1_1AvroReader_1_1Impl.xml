@@ -1,0 +1,310 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1avro_1_1AvroReader_1_1Impl" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::avro::AvroReader::Impl</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a16ed80e80c1466eee6a3cc225c2a93b1" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::avro::AvroReader::Impl::batch_size_</definition>
+        <argsstring></argsstring>
+        <name>batch_size_</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::batch_size_</qualifiedname>
+        <initializer>{}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="313" column="11" bodyfile="iceberg/avro/avro_reader.cc" bodystart="313" bodyend="313"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1abb1f256bb987519ad83caae9a37a3c62" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::avro::AvroReader::Impl::use_direct_decoder_</definition>
+        <argsstring></argsstring>
+        <name>use_direct_decoder_</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::use_direct_decoder_</qualifiedname>
+        <initializer>{true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="315" column="8" bodyfile="iceberg/avro/avro_reader.cc" bodystart="315" bodyend="315"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a6040815934875659be0d56c2964d9304" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::avro::AvroReader::Impl::split_end_</definition>
+        <argsstring></argsstring>
+        <name>split_end_</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::split_end_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="317" column="17" bodyfile="iceberg/avro/avro_reader.cc" bodystart="317" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a87e9bd48ac9e0f4a6242a8804ed367ea" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt;<ref refid="classiceberg_1_1Schema" kindref="compound">::iceberg::Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;::iceberg::Schema&gt; iceberg::avro::AvroReader::Impl::read_schema_</definition>
+        <argsstring></argsstring>
+        <name>read_schema_</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::read_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="319" column="19" bodyfile="iceberg/avro/avro_reader.cc" bodystart="319" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a24e8b5fee8529f871be53adbe0f4c98e" prot="private" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1SchemaProjection" kindref="compound">SchemaProjection</ref></type>
+        <definition>SchemaProjection iceberg::avro::AvroReader::Impl::projection_</definition>
+        <argsstring></argsstring>
+        <name>projection_</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::projection_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="321" column="20" bodyfile="iceberg/avro/avro_reader.cc" bodystart="321" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a049fa6e77e9f99019de84fc0d92bcbe5" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt;::avro::DataFileReaderBase &gt;</type>
+        <definition>std::unique_ptr&lt;::avro::DataFileReaderBase&gt; iceberg::avro::AvroReader::Impl::base_reader_</definition>
+        <argsstring></argsstring>
+        <name>base_reader_</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::base_reader_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="323" column="19" bodyfile="iceberg/avro/avro_reader.cc" bodystart="323" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a97a6f6c1cf3e63e17b4c78ef9dd6cba8" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt;::avro::DataFileReader&lt;::avro::GenericDatum &gt; &gt;</type>
+        <definition>std::unique_ptr&lt;::avro::DataFileReader&lt;::avro::GenericDatum&gt; &gt; iceberg::avro::AvroReader::Impl::datum_reader_</definition>
+        <argsstring></argsstring>
+        <name>datum_reader_</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::datum_reader_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="325" column="19" bodyfile="iceberg/avro/avro_reader.cc" bodystart="325" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a2289601835a67e541a12c3aec456e48d" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="structiceberg_1_1avro_1_1ReadContext" kindref="compound">ReadContext</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;ReadContext&gt; iceberg::avro::AvroReader::Impl::context_</definition>
+        <argsstring></argsstring>
+        <name>context_</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::context_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="327" column="19" bodyfile="iceberg/avro/avro_reader.cc" bodystart="327" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a3d1c3db7adb5691436c880839bd2a671" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::AvroReader::Impl::Open</definition>
+        <argsstring>(const ReaderOptions &amp;options)</argsstring>
+        <name>Open</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::Open</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ReaderOptions" kindref="compound">ReaderOptions</ref> &amp;</type>
+          <declname>options</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="81" column="10" bodyfile="iceberg/avro/avro_reader.cc" bodystart="81" bodyend="155"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a1c37c676149c298d1fd0f7a480046a53" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::optional&lt; <ref refid="structArrowArray" kindref="compound">ArrowArray</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; ArrowArray &gt; &gt; iceberg::avro::AvroReader::Impl::Next</definition>
+        <argsstring>()</argsstring>
+        <name>Next</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::Next</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="157" column="10" bodyfile="iceberg/avro/avro_reader.cc" bodystart="157" bodyend="190"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1ae5510c124dde6a2fc8b3ab447233a78b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::AvroReader::Impl::Close</definition>
+        <argsstring>()</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::Close</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="192" column="10" bodyfile="iceberg/avro/avro_reader.cc" bodystart="192" bodyend="196"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1ac547cf9d959413309a9457c6ea3adc39" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; <ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref> &gt;</type>
+        <definition>Result&lt; ArrowSchema &gt; iceberg::avro::AvroReader::Impl::Schema</definition>
+        <argsstring>()</argsstring>
+        <name>Schema</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::Schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="198" column="10" bodyfile="iceberg/avro/avro_reader.cc" bodystart="198" bodyend="209"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a38ce22937191dbeb4c8846069910d877" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unordered_map&lt; std::string, std::string &gt; &gt;</type>
+        <definition>Result&lt; std::unordered_map&lt; std::string, std::string &gt; &gt; iceberg::avro::AvroReader::Impl::Metadata</definition>
+        <argsstring>()</argsstring>
+        <name>Metadata</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::Metadata</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="211" column="10" bodyfile="iceberg/avro/avro_reader.cc" bodystart="211" bodyend="227"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1aab69ae4985a1e5c3c806c148c9ff6615" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::AvroReader::Impl::InitReadContext</definition>
+        <argsstring>()</argsstring>
+        <name>InitReadContext</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::InitReadContext</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="230" column="10" bodyfile="iceberg/avro/avro_reader.cc" bodystart="230" bodyend="257"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a8e66335d0c78f24dfe4bd83d93908ac2" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::optional&lt; <ref refid="structArrowArray" kindref="compound">ArrowArray</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; ArrowArray &gt; &gt; iceberg::avro::AvroReader::Impl::ConvertBuilderToArrowArray</definition>
+        <argsstring>()</argsstring>
+        <name>ConvertBuilderToArrowArray</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::ConvertBuilderToArrowArray</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="259" column="10" bodyfile="iceberg/avro/avro_reader.cc" bodystart="259" bodyend="278"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1afd91bf52a61989c1457031318a0d51c6" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::avro::AvroReader::Impl::IsPastSync</definition>
+        <argsstring>() const</argsstring>
+        <name>IsPastSync</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::IsPastSync</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="280" column="8" bodyfile="iceberg/avro/avro_reader.cc" bodystart="280" bodyend="286"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a321bfe8cef0017d83a5b26c10163639a" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const ::avro::Metadata &amp;</type>
+        <definition>const ::avro::Metadata &amp; iceberg::avro::AvroReader::Impl::GetReaderMetadata</definition>
+        <argsstring>() const</argsstring>
+        <name>GetReaderMetadata</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::GetReaderMetadata</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="288" column="26" bodyfile="iceberg/avro/avro_reader.cc" bodystart="288" bodyend="290"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a80faaac6490e27b2acc8804eef9c0234" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::AvroReader::Impl::CloseReader</definition>
+        <argsstring>()</argsstring>
+        <name>CloseReader</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::CloseReader</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="292" column="8" bodyfile="iceberg/avro/avro_reader.cc" bodystart="292" bodyend="304"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a2a32f20f3f2ae27f98cbc03e6758c514" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const ::avro::ValidSchema &amp;</type>
+        <definition>const ::avro::ValidSchema &amp; iceberg::avro::AvroReader::Impl::GetReaderSchema</definition>
+        <argsstring>() const</argsstring>
+        <name>GetReaderSchema</name>
+        <qualifiedname>iceberg::avro::AvroReader::Impl::GetReaderSchema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_reader.cc" line="306" column="29" bodyfile="iceberg/avro/avro_reader.cc" bodystart="306" bodyend="309"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/avro/avro_reader.cc" line="79" column="1" bodyfile="iceberg/avro/avro_reader.cc" bodystart="79" bodyend="328"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a049fa6e77e9f99019de84fc0d92bcbe5" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>base_reader_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a16ed80e80c1466eee6a3cc225c2a93b1" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>batch_size_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1ae5510c124dde6a2fc8b3ab447233a78b" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a80faaac6490e27b2acc8804eef9c0234" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>CloseReader</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a2289601835a67e541a12c3aec456e48d" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>context_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a8e66335d0c78f24dfe4bd83d93908ac2" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>ConvertBuilderToArrowArray</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a97a6f6c1cf3e63e17b4c78ef9dd6cba8" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>datum_reader_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a321bfe8cef0017d83a5b26c10163639a" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>GetReaderMetadata</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a2a32f20f3f2ae27f98cbc03e6758c514" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>GetReaderSchema</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1aab69ae4985a1e5c3c806c148c9ff6615" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>InitReadContext</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1afd91bf52a61989c1457031318a0d51c6" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>IsPastSync</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a38ce22937191dbeb4c8846069910d877" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>Metadata</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a1c37c676149c298d1fd0f7a480046a53" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>Next</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a3d1c3db7adb5691436c880839bd2a671" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>Open</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a24e8b5fee8529f871be53adbe0f4c98e" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>projection_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a87e9bd48ac9e0f4a6242a8804ed367ea" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>read_schema_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1ac547cf9d959413309a9457c6ea3adc39" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>Schema</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1a6040815934875659be0d56c2964d9304" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>split_end_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroReader_1_1Impl_1abb1f256bb987519ad83caae9a37a3c62" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroReader::Impl</scope><name>use_direct_decoder_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

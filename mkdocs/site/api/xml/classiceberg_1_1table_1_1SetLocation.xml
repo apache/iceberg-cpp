@@ -1,0 +1,176 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1table_1_1SetLocation" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::table::SetLocation</compoundname>
+    <basecompoundref refid="classiceberg_1_1TableUpdate" prot="public" virt="non-virtual">iceberg::TableUpdate</basecompoundref>
+    <includes refid="table__update_8h" local="no">table_update.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1table_1_1SetLocation_1af1bffe64be0872fca57212209bc7274c" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::table::SetLocation::location_</definition>
+        <argsstring></argsstring>
+        <name>location_</name>
+        <qualifiedname>iceberg::table::SetLocation::location_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="412" column="15" bodyfile="iceberg/table_update.h" bodystart="412" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetLocation_1aeb221185049a5df920ded1967264bec6" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::table::SetLocation::SetLocation</definition>
+        <argsstring>(std::string location)</argsstring>
+        <name>SetLocation</name>
+        <qualifiedname>iceberg::table::SetLocation::SetLocation</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>location</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="401" column="12" bodyfile="iceberg/table_update.h" bodystart="401" bodyend="401"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetLocation_1aeab64e48688157ea70a37f7e6a8010f1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::string &amp;</type>
+        <definition>const std::string &amp; iceberg::table::SetLocation::location</definition>
+        <argsstring>() const</argsstring>
+        <name>location</name>
+        <qualifiedname>iceberg::table::SetLocation::location</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="403" column="21" bodyfile="iceberg/table_update.h" bodystart="403" bodyend="403"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetLocation_1aac21e70a4227db90001d7739f914aa41" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::table::SetLocation::ApplyTo</definition>
+        <argsstring>(TableMetadataBuilder &amp;builder) const override</argsstring>
+        <name>ApplyTo</name>
+        <qualifiedname>iceberg::table::SetLocation::ApplyTo</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1af07326d407ad45eb6072b586ee6c9485">ApplyTo</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref> &amp;</type>
+          <declname>builder</declname>
+        </param>
+        <briefdescription>
+<para>Apply this update to a <ref refid="classiceberg_1_1TableMetadataBuilder" kindref="compound">TableMetadataBuilder</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method modifies the builder by applying the update operation it represents. Each subclass implements this to apply its specific type of update.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>builder</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The builder to apply this update to </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="405" column="8" bodyfile="iceberg/table_update.cc" bodystart="203" bodyend="205"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetLocation_1a7ba03b023fa5b6e4a92329ecacaab378" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>void</type>
+        <definition>void iceberg::table::SetLocation::GenerateRequirements</definition>
+        <argsstring>(TableUpdateContext &amp;context) const override</argsstring>
+        <name>GenerateRequirements</name>
+        <qualifiedname>iceberg::table::SetLocation::GenerateRequirements</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1adddc714f83cea93141bc5b771e326e05">GenerateRequirements</reimplements>
+        <param>
+          <type><ref refid="classiceberg_1_1TableUpdateContext" kindref="compound">TableUpdateContext</ref> &amp;</type>
+          <declname>context</declname>
+        </param>
+        <briefdescription>
+<para>Generate update requirements for this metadata update. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method generates the appropriate UpdateRequirement instances that must be validated before this update can be applied. The context provides information about the base metadata and operation mode.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>context</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The context containing base metadata and operation state </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="407" column="8" bodyfile="iceberg/table_update.cc" bodystart="207" bodyend="209"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1table_1_1SetLocation_1a825dd5ff9269ae4f5e9f47380788c144" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::table::SetLocation::kind</definition>
+        <argsstring>() const override</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::table::SetLocation::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1TableUpdate_1acf1e83fa9835010cda68a6a3387a08a5">kind</reimplements>
+        <briefdescription>
+<para>Return the kind of this update. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/table_update.h" line="409" column="8" bodyfile="iceberg/table_update.h" bodystart="409" bodyend="409"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents setting the table location. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::SetLocation</label>
+        <link refid="classiceberg_1_1table_1_1SetLocation"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::TableUpdate</label>
+        <link refid="classiceberg_1_1TableUpdate"/>
+      </node>
+      <node id="1">
+        <label>iceberg::table::SetLocation</label>
+        <link refid="classiceberg_1_1table_1_1SetLocation"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/table_update.h" line="399" column="1" bodyfile="iceberg/table_update.h" bodystart="399" bodyend="413"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1table_1_1SetLocation_1aac21e70a4227db90001d7739f914aa41" prot="public" virt="virtual"><scope>iceberg::table::SetLocation</scope><name>ApplyTo</name></member>
+      <member refid="classiceberg_1_1table_1_1SetLocation_1a7ba03b023fa5b6e4a92329ecacaab378" prot="public" virt="virtual"><scope>iceberg::table::SetLocation</scope><name>GenerateRequirements</name></member>
+      <member refid="classiceberg_1_1table_1_1SetLocation_1a825dd5ff9269ae4f5e9f47380788c144" prot="public" virt="virtual"><scope>iceberg::table::SetLocation</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1TableUpdate_1ad8c72b1755b111ad20acff6ae6d4974d" prot="public" virt="non-virtual"><scope>iceberg::table::SetLocation</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1table_1_1SetLocation_1aeab64e48688157ea70a37f7e6a8010f1" prot="public" virt="non-virtual"><scope>iceberg::table::SetLocation</scope><name>location</name></member>
+      <member refid="classiceberg_1_1table_1_1SetLocation_1af1bffe64be0872fca57212209bc7274c" prot="private" virt="non-virtual"><scope>iceberg::table::SetLocation</scope><name>location_</name></member>
+      <member refid="classiceberg_1_1table_1_1SetLocation_1aeb221185049a5df920ded1967264bec6" prot="public" virt="non-virtual"><scope>iceberg::table::SetLocation</scope><name>SetLocation</name></member>
+      <member refid="classiceberg_1_1TableUpdate_1a1a77bb6c54a6d728aa28b9847a039d85" prot="public" virt="virtual"><scope>iceberg::table::SetLocation</scope><name>~TableUpdate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

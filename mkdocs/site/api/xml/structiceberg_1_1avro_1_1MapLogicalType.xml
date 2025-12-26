@@ -1,0 +1,53 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1avro_1_1MapLogicalType" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::avro::MapLogicalType</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">avro::CustomLogicalType</basecompoundref>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1avro_1_1MapLogicalType_1a5236bd97221f0c89a960a92fc4fbe9ba" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::MapLogicalType::MapLogicalType</definition>
+        <argsstring>()</argsstring>
+        <name>MapLogicalType</name>
+        <qualifiedname>iceberg::avro::MapLogicalType::MapLogicalType</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_schema_util_internal.h" line="39" column="3" bodyfile="iceberg/avro/avro_schema_util_internal.h" bodystart="39" bodyend="39"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>avro::CustomLogicalType</label>
+      </node>
+      <node id="1">
+        <label>iceberg::avro::MapLogicalType</label>
+        <link refid="structiceberg_1_1avro_1_1MapLogicalType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>avro::CustomLogicalType</label>
+      </node>
+      <node id="1">
+        <label>iceberg::avro::MapLogicalType</label>
+        <link refid="structiceberg_1_1avro_1_1MapLogicalType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/avro/avro_schema_util_internal.h" line="38" column="1" bodyfile="iceberg/avro/avro_schema_util_internal.h" bodystart="38" bodyend="40"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1avro_1_1MapLogicalType_1a5236bd97221f0c89a960a92fc4fbe9ba" prot="public" virt="non-virtual"><scope>iceberg::avro::MapLogicalType</scope><name>MapLogicalType</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
