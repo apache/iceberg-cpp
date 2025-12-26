@@ -503,4 +503,446 @@ INSTANTIATE_TEST_SUITE_P(DirectDecoderModes, AvroReaderParameterizedTest,
                            return info.param ? "DirectDecoder" : "GenericDatum";
                          });
 
+// ====================================================================================
+// Dedicated Writer Tests - Verify encoder output directly using Avro library
+// ====================================================================================
+
+class AvroWriterTest : public TempFileTestBase {
+ protected:
+  static void SetUpTestSuite() { RegisterAll(); }
+
+  void SetUp() override {
+    TempFileTestBase::SetUp();
+    local_fs_ = std::make_shared<::arrow::fs::LocalFileSystem>();
+    file_io_ = std::make_shared<iceberg::arrow::ArrowFileSystemFileIO>(local_fs_);
+    temp_avro_file_ = CreateNewTempFilePathWithSuffix(".avro");
+  }
+
+  // Helper to write Arrow data to Avro file
+  void WriteAvroFile(std::shared_ptr<Schema> schema, const std::string& json_data) {
+    ArrowSchema arrow_c_schema;
+    ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
+
+    auto arrow_schema_result = ::arrow::ImportType(&arrow_c_schema);
+    ASSERT_TRUE(arrow_schema_result.ok());
+    auto arrow_schema = arrow_schema_result.ValueOrDie();
+
+    auto array_result = ::arrow::json::ArrayFromJSONString(arrow_schema, json_data);
+    ASSERT_TRUE(array_result.ok());
+    auto array = array_result.ValueOrDie();
+
+    struct ArrowArray arrow_array;
+    auto export_result = ::arrow::ExportArray(*array, &arrow_array);
+    ASSERT_TRUE(export_result.ok());
+
+    std::unordered_map<std::string, std::string> metadata = {
+        {"writer_test", "direct_encoder"}};
+
+    auto writer_properties = WriterProperties::default_properties();
+    writer_properties->Set(WriterProperties::kAvroSkipDatum, skip_datum_);
+
+    auto writer_result = WriterFactoryRegistry::Open(
+        FileFormatType::kAvro, {.path = temp_avro_file_,
+                                .schema = schema,
+                                .io = file_io_,
+                                .metadata = metadata,
+                                .properties = std::move(writer_properties)});
+    ASSERT_TRUE(writer_result.has_value());
+    auto writer = std::move(writer_result.value());
+    ASSERT_THAT(writer->Write(&arrow_array), IsOk());
+    ASSERT_THAT(writer->Close(), IsOk());
+  }
+
+  // Helper to read raw Avro file and verify using Avro GenericDatum
+  template <typename VerifyFunc>
+  void VerifyAvroFileContent(VerifyFunc verify_func) {
+    ::avro::DataFileReader<::avro::GenericDatum> reader(temp_avro_file_.c_str());
+
+    // Create datum with the schema from the file
+    ::avro::GenericDatum datum(reader.dataSchema());
+
+    size_t row_count = 0;
+    while (reader.read(datum)) {
+      verify_func(datum, row_count);
+      row_count++;
+    }
+    reader.close();
+  }
+
+  std::shared_ptr<::arrow::fs::LocalFileSystem> local_fs_;
+  std::shared_ptr<FileIO> file_io_;
+  std::string temp_avro_file_;
+  bool skip_datum_{true};
+};
+
+// Parameterized test fixture for testing both direct encoder and GenericDatum modes
+class AvroWriterParameterizedTest : public AvroWriterTest,
+                                    public ::testing::WithParamInterface<bool> {
+ protected:
+  void SetUp() override {
+    AvroWriterTest::SetUp();
+    skip_datum_ = GetParam();
+  }
+};
+
+TEST_P(AvroWriterParameterizedTest, WritePrimitiveTypes) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "bool_col", std::make_shared<BooleanType>()),
+      SchemaField::MakeRequired(2, "int_col", std::make_shared<IntType>()),
+      SchemaField::MakeRequired(3, "long_col", std::make_shared<LongType>()),
+      SchemaField::MakeRequired(4, "float_col", std::make_shared<FloatType>()),
+      SchemaField::MakeRequired(5, "double_col", std::make_shared<DoubleType>()),
+      SchemaField::MakeRequired(6, "string_col", std::make_shared<StringType>())});
+
+  std::string test_data = R"([
+    [true, 42, 1234567890, 3.14, 2.71828, "hello"],
+    [false, -100, -9876543210, -1.5, 0.0, "world"]
+  ])";
+
+  WriteAvroFile(schema, test_data);
+
+  VerifyAvroFileContent([](const ::avro::GenericDatum& datum, size_t row_idx) {
+    ASSERT_EQ(datum.type(), ::avro::AVRO_RECORD);
+    const auto& record = datum.value<::avro::GenericRecord>();
+    ASSERT_EQ(record.fieldCount(), 6);
+
+    if (row_idx == 0) {
+      EXPECT_TRUE(record.fieldAt(0).value<bool>());
+      EXPECT_EQ(record.fieldAt(1).value<int32_t>(), 42);
+      EXPECT_EQ(record.fieldAt(2).value<int64_t>(), 1234567890);
+      EXPECT_FLOAT_EQ(record.fieldAt(3).value<float>(), 3.14f);
+      EXPECT_DOUBLE_EQ(record.fieldAt(4).value<double>(), 2.71828);
+      EXPECT_EQ(record.fieldAt(5).value<std::string>(), "hello");
+    } else if (row_idx == 1) {
+      EXPECT_FALSE(record.fieldAt(0).value<bool>());
+      EXPECT_EQ(record.fieldAt(1).value<int32_t>(), -100);
+      EXPECT_EQ(record.fieldAt(2).value<int64_t>(), -9876543210);
+      EXPECT_FLOAT_EQ(record.fieldAt(3).value<float>(), -1.5f);
+      EXPECT_DOUBLE_EQ(record.fieldAt(4).value<double>(), 0.0);
+      EXPECT_EQ(record.fieldAt(5).value<std::string>(), "world");
+    }
+  });
+}
+
+TEST_P(AvroWriterParameterizedTest, WriteTemporalTypes) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "date_col", std::make_shared<DateType>()),
+      SchemaField::MakeRequired(2, "time_col", std::make_shared<TimeType>()),
+      SchemaField::MakeRequired(3, "timestamp_col", std::make_shared<TimestampType>())});
+
+  std::string test_data = R"([
+    [18628, 43200000000, 1640995200000000],
+    [18629, 86399000000, 1641081599000000]
+  ])";
+
+  WriteAvroFile(schema, test_data);
+
+  VerifyAvroFileContent([](const ::avro::GenericDatum& datum, size_t row_idx) {
+    ASSERT_EQ(datum.type(), ::avro::AVRO_RECORD);
+    const auto& record = datum.value<::avro::GenericRecord>();
+    ASSERT_EQ(record.fieldCount(), 3);
+
+    if (row_idx == 0) {
+      EXPECT_EQ(record.fieldAt(0).value<int32_t>(), 18628);
+      EXPECT_EQ(record.fieldAt(1).value<int64_t>(), 43200000000);
+      EXPECT_EQ(record.fieldAt(2).value<int64_t>(), 1640995200000000);
+    } else if (row_idx == 1) {
+      EXPECT_EQ(record.fieldAt(0).value<int32_t>(), 18629);
+      EXPECT_EQ(record.fieldAt(1).value<int64_t>(), 86399000000);
+      EXPECT_EQ(record.fieldAt(2).value<int64_t>(), 1641081599000000);
+    }
+  });
+}
+
+TEST_P(AvroWriterParameterizedTest, WriteNestedStruct) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
+      SchemaField::MakeRequired(
+          2, "person",
+          std::make_shared<iceberg::StructType>(std::vector<SchemaField>{
+              SchemaField::MakeRequired(3, "name", std::make_shared<StringType>()),
+              SchemaField::MakeRequired(4, "age", std::make_shared<IntType>())}))});
+
+  std::string test_data = R"([
+    [1, ["Alice", 30]],
+    [2, ["Bob", 25]]
+  ])";
+
+  WriteAvroFile(schema, test_data);
+
+  VerifyAvroFileContent([](const ::avro::GenericDatum& datum, size_t row_idx) {
+    ASSERT_EQ(datum.type(), ::avro::AVRO_RECORD);
+    const auto& record = datum.value<::avro::GenericRecord>();
+    ASSERT_EQ(record.fieldCount(), 2);
+
+    if (row_idx == 0) {
+      EXPECT_EQ(record.fieldAt(0).value<int32_t>(), 1);
+      const auto& person = record.fieldAt(1).value<::avro::GenericRecord>();
+      EXPECT_EQ(person.fieldAt(0).value<std::string>(), "Alice");
+      EXPECT_EQ(person.fieldAt(1).value<int32_t>(), 30);
+    } else if (row_idx == 1) {
+      EXPECT_EQ(record.fieldAt(0).value<int32_t>(), 2);
+      const auto& person = record.fieldAt(1).value<::avro::GenericRecord>();
+      EXPECT_EQ(person.fieldAt(0).value<std::string>(), "Bob");
+      EXPECT_EQ(person.fieldAt(1).value<int32_t>(), 25);
+    }
+  });
+}
+
+TEST_P(AvroWriterParameterizedTest, WriteListType) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
+      SchemaField::MakeRequired(2, "tags",
+                                std::make_shared<ListType>(SchemaField::MakeRequired(
+                                    3, "element", std::make_shared<StringType>())))});
+
+  std::string test_data = R"([
+    [1, ["tag1", "tag2", "tag3"]],
+    [2, ["foo", "bar"]],
+    [3, []]
+  ])";
+
+  WriteAvroFile(schema, test_data);
+
+  VerifyAvroFileContent([](const ::avro::GenericDatum& datum, size_t row_idx) {
+    ASSERT_EQ(datum.type(), ::avro::AVRO_RECORD);
+    const auto& record = datum.value<::avro::GenericRecord>();
+    ASSERT_EQ(record.fieldCount(), 2);
+
+    if (row_idx == 0) {
+      EXPECT_EQ(record.fieldAt(0).value<int32_t>(), 1);
+      const auto& tags = record.fieldAt(1).value<::avro::GenericArray>();
+      ASSERT_EQ(tags.value().size(), 3);
+      EXPECT_EQ(tags.value()[0].value<std::string>(), "tag1");
+      EXPECT_EQ(tags.value()[1].value<std::string>(), "tag2");
+      EXPECT_EQ(tags.value()[2].value<std::string>(), "tag3");
+    } else if (row_idx == 1) {
+      EXPECT_EQ(record.fieldAt(0).value<int32_t>(), 2);
+      const auto& tags = record.fieldAt(1).value<::avro::GenericArray>();
+      ASSERT_EQ(tags.value().size(), 2);
+      EXPECT_EQ(tags.value()[0].value<std::string>(), "foo");
+      EXPECT_EQ(tags.value()[1].value<std::string>(), "bar");
+    } else if (row_idx == 2) {
+      EXPECT_EQ(record.fieldAt(0).value<int32_t>(), 3);
+      const auto& tags = record.fieldAt(1).value<::avro::GenericArray>();
+      EXPECT_EQ(tags.value().size(), 0);
+    }
+  });
+}
+
+TEST_P(AvroWriterParameterizedTest, WriteMapTypeWithStringKey) {
+  auto schema = std::make_shared<iceberg::Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(
+          1, "properties",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(2, "key", std::make_shared<StringType>()),
+              SchemaField::MakeRequired(3, "value", std::make_shared<IntType>())))});
+
+  std::string test_data = R"([
+    [[["key1", 100], ["key2", 200]]],
+    [[["a", 1], ["b", 2], ["c", 3]]]
+  ])";
+
+  WriteAvroFile(schema, test_data);
+
+  VerifyAvroFileContent([](const ::avro::GenericDatum& datum, size_t row_idx) {
+    ASSERT_EQ(datum.type(), ::avro::AVRO_RECORD);
+    const auto& record = datum.value<::avro::GenericRecord>();
+    ASSERT_EQ(record.fieldCount(), 1);
+
+    const auto& map = record.fieldAt(0).value<::avro::GenericMap>();
+    const auto& map_value = map.value();
+    if (row_idx == 0) {
+      ASSERT_EQ(map_value.size(), 2);
+      // Find entries by key
+      bool found_key1 = false;
+      bool found_key2 = false;
+      for (const auto& entry : map_value) {
+        if (entry.first == "key1") {
+          EXPECT_EQ(entry.second.value<int32_t>(), 100);
+          found_key1 = true;
+        } else if (entry.first == "key2") {
+          EXPECT_EQ(entry.second.value<int32_t>(), 200);
+          found_key2 = true;
+        }
+      }
+      EXPECT_TRUE(found_key1 && found_key2);
+    } else if (row_idx == 1) {
+      ASSERT_EQ(map_value.size(), 3);
+      // Find entries by key
+      bool found_a = false;
+      bool found_b = false;
+      bool found_c = false;
+      for (const auto& entry : map_value) {
+        if (entry.first == "a") {
+          EXPECT_EQ(entry.second.value<int32_t>(), 1);
+          found_a = true;
+        } else if (entry.first == "b") {
+          EXPECT_EQ(entry.second.value<int32_t>(), 2);
+          found_b = true;
+        } else if (entry.first == "c") {
+          EXPECT_EQ(entry.second.value<int32_t>(), 3);
+          found_c = true;
+        }
+      }
+      EXPECT_TRUE(found_a && found_b && found_c);
+    }
+  });
+}
+
+TEST_P(AvroWriterParameterizedTest, WriteMapTypeWithNonStringKey) {
+  auto schema = std::make_shared<iceberg::Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(
+          1, "int_map",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(2, "key", std::make_shared<IntType>()),
+              SchemaField::MakeRequired(3, "value", std::make_shared<StringType>())))});
+
+  std::string test_data = R"([
+    [[[1, "one"], [2, "two"], [3, "three"]]],
+    [[[10, "ten"], [20, "twenty"]]]
+  ])";
+
+  WriteAvroFile(schema, test_data);
+
+  VerifyAvroFileContent([](const ::avro::GenericDatum& datum, size_t row_idx) {
+    ASSERT_EQ(datum.type(), ::avro::AVRO_RECORD);
+    const auto& record = datum.value<::avro::GenericRecord>();
+    ASSERT_EQ(record.fieldCount(), 1);
+
+    // Maps with non-string keys are encoded as arrays of key-value records in Avro
+    const auto& array = record.fieldAt(0).value<::avro::GenericArray>();
+    if (row_idx == 0) {
+      ASSERT_EQ(array.value().size(), 3);
+
+      const auto& entry0 = array.value()[0].value<::avro::GenericRecord>();
+      EXPECT_EQ(entry0.fieldAt(0).value<int32_t>(), 1);
+      EXPECT_EQ(entry0.fieldAt(1).value<std::string>(), "one");
+
+      const auto& entry1 = array.value()[1].value<::avro::GenericRecord>();
+      EXPECT_EQ(entry1.fieldAt(0).value<int32_t>(), 2);
+      EXPECT_EQ(entry1.fieldAt(1).value<std::string>(), "two");
+
+      const auto& entry2 = array.value()[2].value<::avro::GenericRecord>();
+      EXPECT_EQ(entry2.fieldAt(0).value<int32_t>(), 3);
+      EXPECT_EQ(entry2.fieldAt(1).value<std::string>(), "three");
+    } else if (row_idx == 1) {
+      ASSERT_EQ(array.value().size(), 2);
+
+      const auto& entry0 = array.value()[0].value<::avro::GenericRecord>();
+      EXPECT_EQ(entry0.fieldAt(0).value<int32_t>(), 10);
+      EXPECT_EQ(entry0.fieldAt(1).value<std::string>(), "ten");
+
+      const auto& entry1 = array.value()[1].value<::avro::GenericRecord>();
+      EXPECT_EQ(entry1.fieldAt(0).value<int32_t>(), 20);
+      EXPECT_EQ(entry1.fieldAt(1).value<std::string>(), "twenty");
+    }
+  });
+}
+
+TEST_P(AvroWriterParameterizedTest, WriteEmptyMaps) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(
+          1, "string_map",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(2, "key", std::make_shared<StringType>()),
+              SchemaField::MakeRequired(3, "value", std::make_shared<IntType>()))),
+      SchemaField::MakeRequired(
+          4, "int_map",
+          std::make_shared<MapType>(
+              SchemaField::MakeRequired(5, "key", std::make_shared<IntType>()),
+              SchemaField::MakeRequired(6, "value", std::make_shared<StringType>())))});
+
+  // Test empty maps for both string and non-string keys
+  std::string test_data = R"([
+    [[], []],
+    [[["a", 1]], []]
+  ])";
+
+  // Just verify writing succeeds (empty maps are handled correctly by the encoder)
+  ASSERT_NO_FATAL_FAILURE(WriteAvroFile(schema, test_data));
+}
+
+TEST_P(AvroWriterParameterizedTest, WriteOptionalFields) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<IntType>()),
+      SchemaField::MakeOptional(2, "name", std::make_shared<StringType>()),
+      SchemaField::MakeOptional(3, "age", std::make_shared<IntType>())});
+
+  std::string test_data = R"([
+    [1, "Alice", 30],
+    [2, null, 25],
+    [3, "Charlie", null],
+    [4, null, null]
+  ])";
+
+  WriteAvroFile(schema, test_data);
+
+  VerifyAvroFileContent([](const ::avro::GenericDatum& datum, size_t row_idx) {
+    ASSERT_EQ(datum.type(), ::avro::AVRO_RECORD);
+    const auto& record = datum.value<::avro::GenericRecord>();
+    ASSERT_EQ(record.fieldCount(), 3);
+
+    EXPECT_EQ(record.fieldAt(0).value<int32_t>(), static_cast<int32_t>(row_idx + 1));
+
+    if (row_idx == 0) {
+      EXPECT_EQ(record.fieldAt(1).unionBranch(), 1);  // non-null
+      EXPECT_EQ(record.fieldAt(1).value<std::string>(), "Alice");
+      EXPECT_EQ(record.fieldAt(2).unionBranch(), 1);  // non-null
+      EXPECT_EQ(record.fieldAt(2).value<int32_t>(), 30);
+    } else if (row_idx == 1) {
+      EXPECT_EQ(record.fieldAt(1).unionBranch(), 0);  // null
+      EXPECT_EQ(record.fieldAt(2).unionBranch(), 1);  // non-null
+      EXPECT_EQ(record.fieldAt(2).value<int32_t>(), 25);
+    } else if (row_idx == 2) {
+      EXPECT_EQ(record.fieldAt(1).unionBranch(), 1);  // non-null
+      EXPECT_EQ(record.fieldAt(1).value<std::string>(), "Charlie");
+      EXPECT_EQ(record.fieldAt(2).unionBranch(), 0);  // null
+    } else if (row_idx == 3) {
+      EXPECT_EQ(record.fieldAt(1).unionBranch(), 0);  // null
+      EXPECT_EQ(record.fieldAt(2).unionBranch(), 0);  // null
+    }
+  });
+}
+
+TEST_P(AvroWriterParameterizedTest, WriteLargeDataset) {
+  auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", std::make_shared<LongType>()),
+      SchemaField::MakeRequired(2, "value", std::make_shared<DoubleType>())});
+
+  // Generate large dataset JSON
+  std::ostringstream json;
+  json << "[";
+  for (int i = 0; i < 1000; ++i) {
+    if (i > 0) json << ", ";
+    json << "[" << i << ", " << (i * 1.5) << "]";
+  }
+  json << "]";
+
+  WriteAvroFile(schema, json.str());
+
+  size_t expected_row_count = 1000;
+  size_t actual_row_count = 0;
+
+  VerifyAvroFileContent([&](const ::avro::GenericDatum& datum, size_t row_idx) {
+    ASSERT_EQ(datum.type(), ::avro::AVRO_RECORD);
+    const auto& record = datum.value<::avro::GenericRecord>();
+    ASSERT_EQ(record.fieldCount(), 2);
+
+    EXPECT_EQ(record.fieldAt(0).value<int64_t>(), static_cast<int64_t>(row_idx));
+    EXPECT_DOUBLE_EQ(record.fieldAt(1).value<double>(), row_idx * 1.5);
+
+    actual_row_count++;
+  });
+
+  EXPECT_EQ(actual_row_count, expected_row_count);
+}
+
+// Instantiate parameterized tests for both direct encoder and GenericDatum paths
+INSTANTIATE_TEST_SUITE_P(DirectEncoderModes, AvroWriterParameterizedTest,
+                         ::testing::Values(true, false),
+                         [](const ::testing::TestParamInfo<bool>& info) {
+                           return info.param ? "DirectEncoder" : "GenericDatum";
+                         });
+
 }  // namespace iceberg::avro

@@ -32,6 +32,7 @@
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/avro/avro_data_util_internal.h"
+#include "iceberg/avro/avro_direct_encoder_internal.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/avro/avro_stream_internal.h"
@@ -63,6 +64,7 @@ class AvroWriter::Impl {
 
   Status Open(const WriterOptions& options) {
     write_schema_ = options.schema;
+    use_direct_encoder_ = options.properties->Get(WriterProperties::kAvroSkipDatum);
 
     ::avro::NodePtr root;
     ICEBERG_RETURN_UNEXPECTED(ToAvroNodeVisitor{}.Visit(*write_schema_, &root));
@@ -87,11 +89,23 @@ class AvroWriter::Impl {
       vec.assign(value.begin(), value.end());
       metadata.emplace(key, std::move(vec));
     }
-    writer_ = std::make_unique<::avro::DataFileWriter<::avro::GenericDatum>>(
-        std::move(output_stream), *avro_schema_,
-        options.properties->Get(WriterProperties::kAvroSyncInterval),
-        ::avro::NULL_CODEC /*codec*/, metadata);
-    datum_ = std::make_unique<::avro::GenericDatum>(*avro_schema_);
+
+    if (use_direct_encoder_) {
+      // Use direct encoder (faster path)
+      writer_base_ = std::make_unique<::avro::DataFileWriterBase>(
+          std::move(output_stream), *avro_schema_,
+          options.properties->Get(WriterProperties::kAvroSyncInterval),
+          ::avro::NULL_CODEC /*codec*/, metadata);
+      avro_root_node_ = avro_schema_->root();
+    } else {
+      // Use GenericDatum (legacy path)
+      writer_datum_ = std::make_unique<::avro::DataFileWriter<::avro::GenericDatum>>(
+          std::move(output_stream), *avro_schema_,
+          options.properties->Get(WriterProperties::kAvroSyncInterval),
+          ::avro::NULL_CODEC /*codec*/, metadata);
+      datum_ = std::make_unique<::avro::GenericDatum>(*avro_schema_);
+    }
+
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*write_schema_, &arrow_schema_));
     return {};
   }
@@ -100,25 +114,47 @@ class AvroWriter::Impl {
     ICEBERG_ARROW_ASSIGN_OR_RETURN(auto result,
                                    ::arrow::ImportArray(data, &arrow_schema_));
 
-    for (int64_t i = 0; i < result->length(); i++) {
-      ICEBERG_RETURN_UNEXPECTED(ExtractDatumFromArray(*result, i, datum_.get()));
-      writer_->write(*datum_);
+    if (use_direct_encoder_) {
+      // Direct encoder path
+      for (int64_t i = 0; i < result->length(); i++) {
+        ICEBERG_RETURN_UNEXPECTED(
+            EncodeArrowToAvro(avro_root_node_, writer_base_->encoder(), *write_schema_,
+                              *result, i, &encode_ctx_));
+        writer_base_->incr();
+      }
+    } else {
+      // GenericDatum path
+      for (int64_t i = 0; i < result->length(); i++) {
+        ICEBERG_RETURN_UNEXPECTED(ExtractDatumFromArray(*result, i, datum_.get()));
+        writer_datum_->write(*datum_);
+      }
     }
 
     return {};
   }
 
   Status Close() {
-    if (writer_ != nullptr) {
-      writer_->close();
-      writer_.reset();
-      ICEBERG_ARROW_ASSIGN_OR_RETURN(total_bytes_, arrow_output_stream_->Tell());
-      ICEBERG_ARROW_RETURN_NOT_OK(arrow_output_stream_->Close());
+    if (use_direct_encoder_) {
+      if (writer_base_ != nullptr) {
+        writer_base_->close();
+        writer_base_.reset();
+        ICEBERG_ARROW_ASSIGN_OR_RETURN(total_bytes_, arrow_output_stream_->Tell());
+        ICEBERG_ARROW_RETURN_NOT_OK(arrow_output_stream_->Close());
+      }
+    } else {
+      if (writer_datum_ != nullptr) {
+        writer_datum_->close();
+        writer_datum_.reset();
+        ICEBERG_ARROW_ASSIGN_OR_RETURN(total_bytes_, arrow_output_stream_->Tell());
+        ICEBERG_ARROW_RETURN_NOT_OK(arrow_output_stream_->Close());
+      }
     }
     return {};
   }
 
-  bool Closed() const { return writer_ == nullptr; }
+  bool Closed() const {
+    return use_direct_encoder_ ? writer_base_ == nullptr : writer_datum_ == nullptr;
+  }
 
   Result<int64_t> length() {
     if (Closed()) {
@@ -136,14 +172,29 @@ class AvroWriter::Impl {
   std::shared_ptr<::avro::ValidSchema> avro_schema_;
   // Arrow output stream of the Avro file to write
   std::shared_ptr<::arrow::io::OutputStream> arrow_output_stream_;
-  // The avro writer to write the data into a datum.
-  std::unique_ptr<::avro::DataFileWriter<::avro::GenericDatum>> writer_;
-  // Reusable Avro datum for writing individual records.
-  std::unique_ptr<::avro::GenericDatum> datum_;
   // Arrow schema to write data.
   ArrowSchema arrow_schema_;
   // Total length of the written Avro file.
   int64_t total_bytes_ = 0;
+
+  // Flag to determine which encoder to use
+  bool use_direct_encoder_ = true;
+
+  // Direct encoder path (fast)
+  // Root node of the Avro schema (only used if direct encoder is enabled)
+  ::avro::NodePtr avro_root_node_;
+  // The avro writer using direct encoder (only used if direct encoder is enabled)
+  std::unique_ptr<::avro::DataFileWriterBase> writer_base_;
+  // Encode context for reusing scratch buffers (only used if direct encoder is enabled)
+  EncodeContext encode_ctx_;
+
+  // GenericDatum path (legacy)
+  // The avro writer to write the data into a datum (only used if direct encoder is
+  // disabled)
+  std::unique_ptr<::avro::DataFileWriter<::avro::GenericDatum>> writer_datum_;
+  // Reusable Avro datum for writing individual records (only used if direct encoder is
+  // disabled)
+  std::unique_ptr<::avro::GenericDatum> datum_;
 };
 
 AvroWriter::~AvroWriter() = default;

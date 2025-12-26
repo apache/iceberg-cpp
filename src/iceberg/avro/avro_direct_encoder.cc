@@ -1,0 +1,417 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+#include <algorithm>
+#include <cstring>
+
+#include <arrow/array.h>
+#include <arrow/extension_type.h>
+#include <arrow/type.h>
+#include <avro/Specific.hh>
+
+#include "iceberg/avro/avro_constants.h"
+#include "iceberg/avro/avro_direct_encoder_internal.h"
+#include "iceberg/util/checked_cast.h"
+
+namespace iceberg::avro {
+
+namespace {
+
+// Helper to validate union structure and get branch indices
+// Returns {null_index, value_index, value_node}
+struct UnionBranches {
+  size_t null_index;
+  size_t value_index;
+  ::avro::NodePtr value_node;
+};
+
+Result<UnionBranches> ValidateUnion(const ::avro::NodePtr& union_node) {
+  if (union_node->leaves() != 2) {
+    return InvalidArgument("Union must have exactly 2 branches, got {}",
+                           union_node->leaves());
+  }
+
+  const auto& branch_0 = union_node->leafAt(0);
+  const auto& branch_1 = union_node->leafAt(1);
+
+  if (branch_0->type() == ::avro::AVRO_NULL && branch_1->type() != ::avro::AVRO_NULL) {
+    return UnionBranches{.null_index = 0, .value_index = 1, .value_node = branch_1};
+  } else if (branch_1->type() == ::avro::AVRO_NULL &&
+             branch_0->type() != ::avro::AVRO_NULL) {
+    return UnionBranches{.null_index = 1, .value_index = 0, .value_node = branch_0};
+  } else {
+    return InvalidArgument("Union must have exactly one null branch");
+  }
+}
+
+}  // namespace
+
+Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& encoder,
+                         const Type& type, const ::arrow::Array& array, int64_t row_index,
+                         EncodeContext* ctx) {
+  if (!ctx) {
+    return InvalidArgument("EncodeContext must not be null");
+  }
+  if (row_index < 0 || row_index >= array.length()) {
+    return InvalidArgument("Row index {} out of bounds for array of length {}", row_index,
+                           array.length());
+  }
+
+  const bool is_null = array.IsNull(row_index);
+
+  // Handle unions (optional fields)
+  if (avro_node->type() == ::avro::AVRO_UNION) {
+    ICEBERG_ASSIGN_OR_RAISE(auto branches, ValidateUnion(avro_node));
+
+    if (is_null) {
+      encoder.encodeUnionIndex(branches.null_index);
+      encoder.encodeNull();
+      return {};
+    } else {
+      encoder.encodeUnionIndex(branches.value_index);
+      // Continue with the value branch
+      return EncodeArrowToAvro(branches.value_node, encoder, type, array, row_index, ctx);
+    }
+  }
+
+  // Non-union null handling
+  if (is_null) {
+    return InvalidArgument("Null value in non-nullable field");
+  }
+
+  // Encode based on Avro type
+  switch (avro_node->type()) {
+    case ::avro::AVRO_NULL:
+      encoder.encodeNull();
+      return {};
+
+    case ::avro::AVRO_BOOL: {
+      const auto& bool_array =
+          internal::checked_cast<const ::arrow::BooleanArray&>(array);
+      encoder.encodeBool(bool_array.Value(row_index));
+      return {};
+    }
+
+    case ::avro::AVRO_INT: {
+      // AVRO_INT can represent: int32, date (days since epoch)
+      switch (array.type()->id()) {
+        case ::arrow::Type::INT32: {
+          const auto& int32_array =
+              internal::checked_cast<const ::arrow::Int32Array&>(array);
+          encoder.encodeInt(int32_array.Value(row_index));
+          return {};
+        }
+        case ::arrow::Type::DATE32: {
+          const auto& date_array =
+              internal::checked_cast<const ::arrow::Date32Array&>(array);
+          encoder.encodeInt(date_array.Value(row_index));
+          return {};
+        }
+        default:
+          return InvalidArgument("AVRO_INT expects Int32Array or Date32Array, got {}",
+                                 array.type()->ToString());
+      }
+    }
+
+    case ::avro::AVRO_LONG: {
+      // AVRO_LONG can represent: int64, time (microseconds), timestamp (microseconds)
+      switch (array.type()->id()) {
+        case ::arrow::Type::INT64: {
+          const auto& int64_array =
+              internal::checked_cast<const ::arrow::Int64Array&>(array);
+          encoder.encodeLong(int64_array.Value(row_index));
+          return {};
+        }
+        case ::arrow::Type::TIME64: {
+          const auto& time_array =
+              internal::checked_cast<const ::arrow::Time64Array&>(array);
+          encoder.encodeLong(time_array.Value(row_index));
+          return {};
+        }
+        case ::arrow::Type::TIMESTAMP: {
+          const auto& timestamp_array =
+              internal::checked_cast<const ::arrow::TimestampArray&>(array);
+          encoder.encodeLong(timestamp_array.Value(row_index));
+          return {};
+        }
+        default:
+          return InvalidArgument(
+              "AVRO_LONG expects Int64Array, Time64Array, or TimestampArray, got {}",
+              array.type()->ToString());
+      }
+    }
+
+    case ::avro::AVRO_FLOAT: {
+      const auto& float_array = internal::checked_cast<const ::arrow::FloatArray&>(array);
+      encoder.encodeFloat(float_array.Value(row_index));
+      return {};
+    }
+
+    case ::avro::AVRO_DOUBLE: {
+      const auto& double_array =
+          internal::checked_cast<const ::arrow::DoubleArray&>(array);
+      encoder.encodeDouble(double_array.Value(row_index));
+      return {};
+    }
+
+    case ::avro::AVRO_STRING: {
+      const auto& string_array =
+          internal::checked_cast<const ::arrow::StringArray&>(array);
+      std::string_view value = string_array.GetView(row_index);
+      encoder.encodeString(std::string(value));
+      return {};
+    }
+
+    case ::avro::AVRO_BYTES: {
+      const auto& binary_array =
+          internal::checked_cast<const ::arrow::BinaryArray&>(array);
+      std::string_view value = binary_array.GetView(row_index);
+      ctx->bytes_scratch.assign(value.begin(), value.end());
+      encoder.encodeBytes(ctx->bytes_scratch);
+      return {};
+    }
+
+    case ::avro::AVRO_FIXED: {
+      // Handle UUID
+      if (avro_node->logicalType().type() == ::avro::LogicalType::UUID) {
+        const auto& extension_array =
+            internal::checked_cast<const ::arrow::ExtensionArray&>(array);
+        const auto& fixed_array =
+            internal::checked_cast<const ::arrow::FixedSizeBinaryArray&>(
+                *extension_array.storage());
+        std::string_view value = fixed_array.GetView(row_index);
+        ctx->bytes_scratch.assign(value.begin(), value.end());
+        encoder.encodeFixed(ctx->bytes_scratch.data(), ctx->bytes_scratch.size());
+        return {};
+      }
+
+      // Handle DECIMAL
+      if (avro_node->logicalType().type() == ::avro::LogicalType::DECIMAL) {
+        const auto& decimal_array =
+            internal::checked_cast<const ::arrow::Decimal128Array&>(array);
+        std::string_view decimal_value = decimal_array.GetView(row_index);
+        ctx->bytes_scratch.assign(decimal_value.begin(), decimal_value.end());
+        // Arrow Decimal128 bytes are in little-endian order, Avro requires big-endian
+        std::ranges::reverse(ctx->bytes_scratch);
+        encoder.encodeFixed(ctx->bytes_scratch.data(), ctx->bytes_scratch.size());
+        return {};
+      }
+
+      // Handle regular FIXED
+      const auto& fixed_array =
+          internal::checked_cast<const ::arrow::FixedSizeBinaryArray&>(array);
+      std::string_view value = fixed_array.GetView(row_index);
+      ctx->bytes_scratch.assign(value.begin(), value.end());
+      encoder.encodeFixed(ctx->bytes_scratch.data(), ctx->bytes_scratch.size());
+      return {};
+    }
+
+    case ::avro::AVRO_RECORD: {
+      if (array.type()->id() != ::arrow::Type::STRUCT) {
+        return InvalidArgument("AVRO_RECORD expects StructArray, got {}",
+                               array.type()->ToString());
+      }
+      if (!type.is_nested()) {
+        return InvalidArgument("AVRO_RECORD expects nested type, got type {}",
+                               type.ToString());
+      }
+
+      const auto& struct_array =
+          internal::checked_cast<const ::arrow::StructArray&>(array);
+
+      // AVRO_RECORD corresponds to Iceberg StructType (including Schema which extends
+      // StructType). Note: ListType and MapType are encoded as AVRO_ARRAY and AVRO_MAP
+      // respectively, not AVRO_RECORD.
+      if (type.type_id() != TypeId::kStruct) {
+        return InvalidArgument("AVRO_RECORD expects StructType, got type {}",
+                               type.ToString());
+      }
+
+      // Safe cast: type_id() == kStruct guarantees this is StructType or Schema
+      // (Schema extends StructType)
+      const auto& struct_type = static_cast<const StructType&>(type);
+      const size_t num_fields = avro_node->leaves();
+
+      for (size_t i = 0; i < num_fields; ++i) {
+        const auto& field_node = avro_node->leafAt(i);
+        const auto& field_array = struct_array.field(static_cast<int>(i));
+        const auto& field_schema = struct_type.fields()[i];
+
+        ICEBERG_RETURN_UNEXPECTED(EncodeArrowToAvro(
+            field_node, encoder, *field_schema.type(), *field_array, row_index, ctx));
+      }
+      return {};
+    }
+
+    case ::avro::AVRO_ARRAY: {
+      // AVRO_ARRAY can represent either:
+      // 1. Iceberg ListType -> Arrow ListArray
+      // 2. Iceberg MapType with non-string keys -> Arrow MapArray (converted to array of
+      // records)
+
+      const auto& element_node = avro_node->leafAt(0);
+
+      // Try ListArray first (most common case)
+      if (array.type()->id() == ::arrow::Type::LIST) {
+        const auto& list_array = internal::checked_cast<const ::arrow::ListArray&>(array);
+        const auto& list_type = static_cast<const ListType&>(type);
+
+        const auto start = list_array.value_offset(row_index);
+        const auto end = list_array.value_offset(row_index + 1);
+        const auto length = end - start;
+
+        encoder.arrayStart();
+        if (length > 0) {
+          encoder.setItemCount(length);
+          const auto& values = list_array.values();
+          const auto& element_type = *list_type.fields()[0].type();
+
+          for (int64_t i = start; i < end; ++i) {
+            encoder.startItem();
+            ICEBERG_RETURN_UNEXPECTED(
+                EncodeArrowToAvro(element_node, encoder, element_type, *values, i, ctx));
+          }
+        }
+        encoder.arrayEnd();
+        return {};
+      }
+
+      // Handle MapArray (for maps with non-string keys, represented as array of key-value
+      // records in Avro)
+      if (array.type()->id() == ::arrow::Type::MAP) {
+        const auto& map_array = internal::checked_cast<const ::arrow::MapArray&>(array);
+        const auto& map_type = static_cast<const MapType&>(type);
+
+        const auto start = map_array.value_offset(row_index);
+        const auto end = map_array.value_offset(row_index + 1);
+        const auto length = end - start;
+
+        encoder.arrayStart();
+        if (length > 0) {
+          encoder.setItemCount(length);
+          const auto& keys = map_array.keys();
+          const auto& values = map_array.items();
+          const auto& key_type = *map_type.key().type();
+          const auto& value_type = *map_type.value().type();
+
+          // The element_node should be a RECORD with "key" and "value" fields
+          for (int64_t i = start; i < end; ++i) {
+            encoder.startItem();
+            // Encode the key-value pair as a record
+            if (element_node->type() != ::avro::AVRO_RECORD ||
+                element_node->leaves() != 2) {
+              return InvalidArgument(
+                  "Expected AVRO_RECORD with 2 fields for map key-value pair");
+            }
+
+            // Assumption: key is always at index 0, value at index 1
+            // This matches the schema generation in ToAvroNodeVisitor::Visit(const
+            // MapType&)
+            const auto& key_node = element_node->leafAt(0);
+            const auto& value_node = element_node->leafAt(1);
+
+            // Encode key
+            ICEBERG_RETURN_UNEXPECTED(
+                EncodeArrowToAvro(key_node, encoder, key_type, *keys, i, ctx));
+            // Encode value
+            ICEBERG_RETURN_UNEXPECTED(
+                EncodeArrowToAvro(value_node, encoder, value_type, *values, i, ctx));
+          }
+        }
+        encoder.arrayEnd();
+        return {};
+      }
+
+      return InvalidArgument("AVRO_ARRAY must map to ListArray or MapArray, got {}",
+                             array.type()->ToString());
+    }
+
+    case ::avro::AVRO_MAP: {
+      // AVRO_MAP is for maps with string keys
+      // Arrow represents this as MapArray
+      if (array.type()->id() != ::arrow::Type::MAP) {
+        return InvalidArgument("AVRO_MAP expects MapArray, got {}",
+                               array.type()->ToString());
+      }
+      if (type.type_id() != TypeId::kMap) {
+        return InvalidArgument("AVRO_MAP expects MapType, got type {}", type.ToString());
+      }
+
+      const auto& map_array = internal::checked_cast<const ::arrow::MapArray&>(array);
+      const auto& map_type = static_cast<const MapType&>(type);
+
+      const auto start = map_array.value_offset(row_index);
+      const auto end = map_array.value_offset(row_index + 1);
+      const auto length = end - start;
+
+      encoder.mapStart();
+      if (length > 0) {
+        encoder.setItemCount(length);
+        const auto& keys = map_array.keys();
+        const auto& values = map_array.items();
+        const auto& value_type = *map_type.value().type();
+        // In Avro maps, leafAt(0) is the key type (always string), leafAt(1) is the value
+        // type
+        const auto& value_node = avro_node->leafAt(1);
+
+        // Validate keys are strings
+        if (keys->type()->id() != ::arrow::Type::STRING &&
+            keys->type()->id() != ::arrow::Type::LARGE_STRING) {
+          return InvalidArgument("AVRO_MAP keys must be StringArray, got {}",
+                                 keys->type()->ToString());
+        }
+
+        for (int64_t i = start; i < end; ++i) {
+          encoder.startItem();
+          // Encode key (must be string in Avro maps)
+          if (keys->type()->id() == ::arrow::Type::STRING) {
+            const auto& string_array =
+                internal::checked_cast<const ::arrow::StringArray&>(*keys);
+            std::string_view key_value = string_array.GetView(i);
+            encoder.encodeString(std::string(key_value));
+          } else {
+            const auto& large_string_array =
+                internal::checked_cast<const ::arrow::LargeStringArray&>(*keys);
+            std::string_view key_value = large_string_array.GetView(i);
+            encoder.encodeString(std::string(key_value));
+          }
+
+          // Encode value
+          ICEBERG_RETURN_UNEXPECTED(
+              EncodeArrowToAvro(value_node, encoder, value_type, *values, i, ctx));
+        }
+      }
+      encoder.mapEnd();
+      return {};
+    }
+
+    case ::avro::AVRO_ENUM:
+      return NotSupported("ENUM type encoding not yet implemented");
+
+    case ::avro::AVRO_UNION:
+      // Already handled above
+      return InvalidArgument("Unexpected union handling");
+
+    default:
+      return NotSupported("Unsupported Avro type: {}",
+                          ::avro::toString(avro_node->type()));
+  }
+}
+
+}  // namespace iceberg::avro
