@@ -23,6 +23,7 @@
 #include <cstddef>
 #include <cstdint>
 #include <format>
+#include <map>
 #include <memory>
 #include <ranges>
 #include <unordered_map>
@@ -265,19 +266,21 @@ bool PartitionSpec::HasSequentialFieldIds(const PartitionSpec& spec) {
 
 Status PartitionSpec::ValidateRedundantPartitions(const PartitionSpec& spec) {
   // Use a map to track deduplication keys (source_id + transform dedup name)
-  std::unordered_map<std::pair<int32_t, std::string>, const PartitionField*> dedup_fields;
+  std::map<std::pair<int32_t, std::string>, const PartitionField*> dedup_fields;
 
   for (const auto& field : spec.fields()) {
-    // Create dedup key: (source_id, transform_dedup_name)
+    // The dedup name is provided by the transform's DedupName() method
+    // which typically returns the transform's string representation
     auto dedup_key = std::make_pair(field.source_id(), field.transform()->DedupName());
 
     // Check if this dedup key already exists
+    // If it does, we have found a redundant partition field
     auto existing_field_iter = dedup_fields.find(dedup_key);
     ICEBERG_PRECHECK(existing_field_iter == dedup_fields.end(),
                      "Cannot add redundant partition: {} conflicts with {}",
                      field.ToString(), existing_field_iter->second->ToString());
 
-    // Add this field to the dedup map
+    // Add this field to the dedup map for future conflict detection
     dedup_fields[dedup_key] = &field;
   }
 
