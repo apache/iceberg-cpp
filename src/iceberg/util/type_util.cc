@@ -271,6 +271,31 @@ Result<std::shared_ptr<Type>> PruneColumnVisitor::Visit(
       MakeField(value_field, std::move(value_type)));
 }
 
+GetProjectedIdsVisitor::GetProjectedIdsVisitor(bool include_struct_ids)
+    : include_struct_ids_(include_struct_ids) {}
+
+Status GetProjectedIdsVisitor::Visit(const std::shared_ptr<Type>& type) {
+  if (type->is_nested()) {
+    return Visit(internal::checked_cast<const NestedType&>(*type));
+  }
+  return {};
+}
+
+Status GetProjectedIdsVisitor::Visit(const NestedType& type) {
+  for (auto& field : type.fields()) {
+    ICEBERG_RETURN_UNEXPECTED(Visit(field.type()));
+  }
+  for (auto& field : type.fields()) {
+    if ((include_struct_ids_ && field.type()->type_id() == TypeId::kStruct) ||
+        field.type()->is_primitive()) {
+      ids_.insert(field.field_id());
+    }
+  }
+  return {};
+}
+
+std::unordered_set<int32_t> GetProjectedIdsVisitor::Finish() const { return ids_; }
+
 std::unordered_map<int32_t, int32_t> IndexParents(const StructType& root_struct) {
   std::unordered_map<int32_t, int32_t> id_to_parent;
   std::stack<int32_t> parent_id_stack;

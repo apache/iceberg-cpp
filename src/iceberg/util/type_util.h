@@ -122,6 +122,20 @@ class PruneColumnVisitor {
   const bool select_full_types_;
 };
 
+/// \brief Visitor for get field IDs which could be used for projection.
+class GetProjectedIdsVisitor {
+ public:
+  explicit GetProjectedIdsVisitor(bool include_struct_ids = false);
+
+  Status Visit(const std::shared_ptr<Type>& type);
+  Status Visit(const NestedType& type);
+  std::unordered_set<int32_t> Finish() const;
+
+ private:
+  const bool include_struct_ids_;
+  std::unordered_set<int32_t> ids_;
+};
+
 /// \brief Index parent field IDs for all fields in a struct hierarchy.
 /// \param root_struct The root struct type to analyze
 /// \return A map from field ID to its parent struct field ID
