@@ -406,7 +406,7 @@ TEST_F(ResidualEvaluatorTest, IntegerTruncateTransformResiduals) {
 
   // Valid partitions would be 0, 10, 20...90, 100 etc.
   auto truncate_transform = Transform::Truncate(10);
-  PartitionField pt_field(50, 1000, "value", truncate_transform);
+  PartitionField pt_field(50, 1000, "__value", truncate_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec_unique,
                          PartitionSpec::Make(*schema, 0, {pt_field}, false));
   auto spec = std::shared_ptr<PartitionSpec>(spec_unique.release());
@@ -523,7 +523,7 @@ TEST_F(ResidualEvaluatorTest, StringTruncateTransformResiduals) {
 
   // Valid partitions would be two letter strings for eg: ab, bc etc
   auto truncate_transform = Transform::Truncate(2);
-  PartitionField pt_field(50, 1000, "value", truncate_transform);
+  PartitionField pt_field(50, 1000, "__value", truncate_transform);
   ICEBERG_UNWRAP_OR_FAIL(auto spec_unique,
                          PartitionSpec::Make(*schema, 0, {pt_field}, false));
   auto spec = std::shared_ptr<PartitionSpec>(spec_unique.release());

@@ -109,17 +109,17 @@ TEST(PartitionSpecTest, PartitionTypeTest) {
   "fields": [ {
       "source-id": 4,
       "field-id": 1000,
-      "name": "ts_day",
+      "name": "__ts_day",
       "transform": "day"
       }, {
       "source-id": 1,
       "field-id": 1001,
-      "name": "id_bucket",
+      "name": "__id_bucket",
       "transform": "bucket[16]"
       }, {
       "source-id": 2,
       "field-id": 1002,
-      "name": "id_truncate",
+      "name": "__id_truncate",
       "transform": "truncate[4]"
       } ]
   })"_json;
@@ -137,9 +137,9 @@ TEST(PartitionSpecTest, PartitionTypeTest) {
   ICEBERG_UNWRAP_OR_FAIL(auto parsed_spec, PartitionSpecFromJson(schema, json, 1));
   ICEBERG_UNWRAP_OR_FAIL(auto partition_type, parsed_spec->PartitionType(*schema));
 
-  SchemaField pt_field1(1000, "ts_day", date(), true);
-  SchemaField pt_field2(1001, "id_bucket", int32(), true);
-  SchemaField pt_field3(1002, "id_truncate", string(), true);
+  SchemaField pt_field1(1000, "__ts_day", date(), true);
+  SchemaField pt_field2(1001, "__id_bucket", int32(), true);
+  SchemaField pt_field3(1002, "__id_truncate", string(), true);
 
   ASSERT_EQ(3, partition_type->fields().size());
 
