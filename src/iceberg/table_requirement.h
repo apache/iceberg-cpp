@@ -43,14 +43,14 @@ namespace iceberg {
 class ICEBERG_EXPORT TableRequirement {
  public:
   enum class Kind : uint8_t {
-    AssertDoesNotExist,
-    AssertUUID,
-    AssertRefSnapshotID,
-    AssertLastAssignedFieldId,
-    AssertCurrentSchemaID,
-    AssertLastAssignedPartitionId,
-    AssertDefaultSpecID,
-    AssertDefaultSortOrderID,
+    kAssertDoesNotExist,
+    kAssertUUID,
+    kAssertRefSnapshotID,
+    kAssertLastAssignedFieldId,
+    kAssertCurrentSchemaID,
+    kAssertLastAssignedPartitionId,
+    kAssertDefaultSpecID,
+    kAssertDefaultSortOrderID,
   };
 
   virtual ~TableRequirement() = default;
@@ -75,7 +75,7 @@ class ICEBERG_EXPORT AssertDoesNotExist : public TableRequirement {
  public:
   AssertDoesNotExist() = default;
 
-  Kind kind() const override { return Kind::AssertDoesNotExist; }
+  Kind kind() const override { return Kind::kAssertDoesNotExist; }
 
   Status Validate(const TableMetadata* base) const override;
 };
@@ -90,7 +90,7 @@ class ICEBERG_EXPORT AssertUUID : public TableRequirement {
 
   const std::string& uuid() const { return uuid_; }
 
-  Kind kind() const override { return Kind::AssertUUID; }
+  Kind kind() const override { return Kind::kAssertUUID; }
 
   Status Validate(const TableMetadata* base) const override;
 
@@ -112,7 +112,7 @@ class ICEBERG_EXPORT AssertRefSnapshotID : public TableRequirement {
 
   const std::optional<int64_t>& snapshot_id() const { return snapshot_id_; }
 
-  Kind kind() const override { return Kind::AssertRefSnapshotID; }
+  Kind kind() const override { return Kind::kAssertRefSnapshotID; }
 
   Status Validate(const TableMetadata* base) const override;
 
@@ -132,7 +132,7 @@ class ICEBERG_EXPORT AssertLastAssignedFieldId : public TableRequirement {
 
   int32_t last_assigned_field_id() const { return last_assigned_field_id_; }
 
-  Kind kind() const override { return Kind::AssertLastAssignedFieldId; }
+  Kind kind() const override { return Kind::kAssertLastAssignedFieldId; }
 
   Status Validate(const TableMetadata* base) const override;
 
@@ -150,7 +150,7 @@ class ICEBERG_EXPORT AssertCurrentSchemaID : public TableRequirement {
 
   int32_t schema_id() const { return schema_id_; }
 
-  Kind kind() const override { return Kind::AssertCurrentSchemaID; }
+  Kind kind() const override { return Kind::kAssertCurrentSchemaID; }
 
   Status Validate(const TableMetadata* base) const override;
 
@@ -169,7 +169,7 @@ class ICEBERG_EXPORT AssertLastAssignedPartitionId : public TableRequirement {
 
   int32_t last_assigned_partition_id() const { return last_assigned_partition_id_; }
 
-  Kind kind() const override { return Kind::AssertLastAssignedPartitionId; }
+  Kind kind() const override { return Kind::kAssertLastAssignedPartitionId; }
 
   Status Validate(const TableMetadata* base) const override;
 
@@ -187,7 +187,7 @@ class ICEBERG_EXPORT AssertDefaultSpecID : public TableRequirement {
 
   int32_t spec_id() const { return spec_id_; }
 
-  Kind kind() const override { return Kind::AssertDefaultSpecID; }
+  Kind kind() const override { return Kind::kAssertDefaultSpecID; }
 
   Status Validate(const TableMetadata* base) const override;
 
@@ -206,7 +206,7 @@ class ICEBERG_EXPORT AssertDefaultSortOrderID : public TableRequirement {
 
   int32_t sort_order_id() const { return sort_order_id_; }
 
-  Kind kind() const override { return Kind::AssertDefaultSortOrderID; }
+  Kind kind() const override { return Kind::kAssertDefaultSortOrderID; }
 
   Status Validate(const TableMetadata* base) const override;
 

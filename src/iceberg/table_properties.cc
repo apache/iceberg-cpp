@@ -31,6 +31,13 @@ const std::unordered_set<std::string>& TableProperties::reserved_properties() {
   return kReservedProperties;
 }
 
+const std::unordered_set<std::string>& TableProperties::commit_properties() {
+  static const std::unordered_set<std::string> kCommitProperties = {
+      kCommitNumRetries.key(), kCommitMinRetryWaitMs.key(), kCommitMaxRetryWaitMs.key(),
+      kCommitTotalRetryTimeMs.key()};
+  return kCommitProperties;
+}
+
 TableProperties TableProperties::default_properties() { return {}; }
 
 TableProperties TableProperties::FromMap(

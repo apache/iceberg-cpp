@@ -93,11 +93,11 @@ struct ICEBERG_EXPORT TableMetadata {
   /// The highest assigned column ID for the table
   int32_t last_column_id;
   /// A list of schemas
-  std::vector<std::shared_ptr<iceberg::Schema>> schemas;
+  std::vector<std::shared_ptr<class Schema>> schemas;
   /// ID of the table's current schema
   std::optional<int32_t> current_schema_id;
   /// A list of partition specs
-  std::vector<std::shared_ptr<iceberg::PartitionSpec>> partition_specs;
+  std::vector<std::shared_ptr<class PartitionSpec>> partition_specs;
   /// ID of the current partition spec that writers should use by default
   int32_t default_spec_id;
   /// The highest assigned partition field ID across all partition specs for the table
@@ -107,7 +107,7 @@ struct ICEBERG_EXPORT TableMetadata {
   /// ID of the current table snapshot
   int64_t current_snapshot_id;
   /// A list of valid snapshots
-  std::vector<std::shared_ptr<iceberg::Snapshot>> snapshots;
+  std::vector<std::shared_ptr<class Snapshot>> snapshots;
   /// A list of timestamp and snapshot ID pairs that encodes changes to the current
   /// snapshot for the table
   std::vector<SnapshotLogEntry> snapshot_log;
@@ -115,7 +115,7 @@ struct ICEBERG_EXPORT TableMetadata {
   /// previous metadata files for the table
   std::vector<MetadataLogEntry> metadata_log;
   /// A list of sort orders
-  std::vector<std::shared_ptr<iceberg::SortOrder>> sort_orders;
+  std::vector<std::shared_ptr<class SortOrder>> sort_orders;
   /// Default sort order id of the table
   int32_t default_sort_order_id;
   /// A map of snapshot references
@@ -127,19 +127,28 @@ struct ICEBERG_EXPORT TableMetadata {
   /// A `long` higher than all assigned row IDs
   int64_t next_row_id;
 
+  static Result<std::unique_ptr<TableMetadata>> Make(
+      const class Schema& schema, const class PartitionSpec& spec,
+      const class SortOrder& sort_order, const std::string& location,
+      const std::unordered_map<std::string, std::string>& properties,
+      int format_version = kDefaultTableFormatVersion);
+
+  /// \brief Get the list of changes required to create this table metadata from scratch
+  std::vector<std::unique_ptr<TableUpdate>> ChangesForCreate() const;
+
   /// \brief Get the current schema, return NotFoundError if not found
-  Result<std::shared_ptr<iceberg::Schema>> Schema() const;
+  Result<std::shared_ptr<class Schema>> Schema() const;
   /// \brief Get the current schema by ID, return NotFoundError if not found
-  Result<std::shared_ptr<iceberg::Schema>> SchemaById(
+  Result<std::shared_ptr<class Schema>> SchemaById(
       std::optional<int32_t> schema_id) const;
   /// \brief Get the current partition spec, return NotFoundError if not found
-  Result<std::shared_ptr<iceberg::PartitionSpec>> PartitionSpec() const;
+  Result<std::shared_ptr<class PartitionSpec>> PartitionSpec() const;
   /// \brief Get the current sort order, return NotFoundError if not found
-  Result<std::shared_ptr<iceberg::SortOrder>> SortOrder() const;
+  Result<std::shared_ptr<class SortOrder>> SortOrder() const;
   /// \brief Get the current snapshot, return NotFoundError if not found
-  Result<std::shared_ptr<iceberg::Snapshot>> Snapshot() const;
+  Result<std::shared_ptr<class Snapshot>> Snapshot() const;
   /// \brief Get the snapshot of this table with the given id
-  Result<std::shared_ptr<iceberg::Snapshot>> SnapshotById(int64_t snapshot_id) const;
+  Result<std::shared_ptr<class Snapshot>> SnapshotById(int64_t snapshot_id) const;
 
   ICEBERG_EXPORT friend bool operator==(const TableMetadata& lhs,
                                         const TableMetadata& rhs);
@@ -210,8 +219,13 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   /// \brief Create a builder from existing table metadata
   ///
   /// \param base The base table metadata to build from
-  /// \return A new TableMetadataBuilder instance initialized with base metadata
-  static std::unique_ptr<TableMetadataBuilder> BuildFrom(const TableMetadata* base);
+  /// \param is_create Whether the builder is for creating a new table. It will call
+  /// `BuildFromEmpty` and set changes to make the tablemetadata but not copy the base
+  /// metadata directly if true.
+  /// \return A new TableMetadataBuilder instance initialized
+  /// with base metadata
+  static std::unique_ptr<TableMetadataBuilder> BuildFrom(const TableMetadata* base,
+                                                         bool is_create = false);
 
   /// \brief Set the metadata location of the table
   ///
