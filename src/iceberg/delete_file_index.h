@@ -22,7 +22,6 @@
 /// \file iceberg/delete_file_index.h
 /// An index of delete files by sequence number.
 
-#include <algorithm>
 #include <functional>
 #include <map>
 #include <memory>
@@ -86,13 +85,6 @@ struct ICEBERG_EXPORT EqualityDeleteFile {
   /// \brief Convert bounds from binary to Literal. Implemented in .cc file.
   Status ConvertBoundsIfNeeded() const;
 };
-
-/// \brief Find the start index in a sorted array where all elements from that
-/// index onward have sequence numbers >= the given sequence number.
-inline size_t FindStartIndex(const std::vector<int64_t>& seqs, int64_t seq) {
-  auto it = std::ranges::lower_bound(seqs, seq);
-  return static_cast<size_t>(std::ranges::distance(seqs.cbegin(), it));
-}
 
 /// \brief Check if two ranges overlap.
 inline bool RangesOverlap(const Literal& data_lower, const Literal& data_upper,

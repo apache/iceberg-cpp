@@ -950,7 +950,7 @@ TEST_P(DeleteFileIndexTest, TestInvalidDVSequenceNumber) {
 
   // Querying with sequence number > DV sequence number should fail
   auto result = index->ForDataFile(2, *file_a_);
-  EXPECT_THAT(result, IsError(ErrorKind::kInvalid));
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
   EXPECT_THAT(result, HasErrorMessage(
                           "must be greater than or equal to data file sequence number"));
 }

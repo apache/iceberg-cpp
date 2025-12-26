@@ -20,6 +20,7 @@
 #include "iceberg/delete_file_index.h"
 
 #include <algorithm>
+#include <cstdint>
 #include <iterator>
 #include <ranges>
 #include <vector>
@@ -176,20 +177,18 @@ Status PositionDeletes::Add(ManifestEntry&& entry) {
 std::vector<std::shared_ptr<DataFile>> PositionDeletes::Filter(int64_t seq) {
   IndexIfNeeded();
 
-  size_t start = FindStartIndex(seqs_, seq);
-  if (start >= files_.size()) {
+  auto iter = std::ranges::lower_bound(seqs_, seq);
+  if (iter == seqs_.end()) {
     return {};
   }
-
-  return files_ | std::views::drop(start) |
+  return files_ | std::views::drop(iter - seqs_.begin()) |
          std::views::transform(&ManifestEntry::data_file) |
          std::ranges::to<std::vector<std::shared_ptr<DataFile>>>();
 }
 
 std::vector<std::shared_ptr<DataFile>> PositionDeletes::ReferencedDeleteFiles() {
   IndexIfNeeded();
-  return std::ranges::transform_view(files_,
-                                     [](const auto& entry) { return entry.data_file; }) |
+  return files_ | std::views::transform(&ManifestEntry::data_file) |
          std::ranges::to<std::vector<std::shared_ptr<DataFile>>>();
 }
 
@@ -199,13 +198,11 @@ void PositionDeletes::IndexIfNeeded() {
   }
 
   // Sort by data sequence number
-  std::ranges::sort(files_, [](const auto& a, const auto& b) {
-    return a.sequence_number.value() < b.sequence_number.value();
-  });
+  std::ranges::sort(files_, std::ranges::less{}, &ManifestEntry::sequence_number);
 
   // Build sequence number array for binary search
-  seqs_ = std::ranges::transform_view(
-              files_, [](const auto& entry) { return entry.sequence_number.value(); }) |
+  seqs_ = files_ |
+          std::views::transform([](const auto& e) { return e.sequence_number.value(); }) |
           std::ranges::to<std::vector<int64_t>>();
 
   indexed_ = true;
@@ -226,15 +223,13 @@ Result<std::vector<std::shared_ptr<DataFile>>> EqualityDeletes::Filter(
     int64_t seq, const DataFile& data_file) {
   IndexIfNeeded();
 
-  size_t start = FindStartIndex(seqs_, seq);
-  if (start >= files_.size()) {
+  auto iter = std::ranges::lower_bound(seqs_, seq);
+  if (iter == seqs_.end()) {
     return {};
   }
-
   std::vector<std::shared_ptr<DataFile>> result;
-  result.reserve(files_.size() - start);
-  for (size_t i = start; i < files_.size(); ++i) {
-    const auto& delete_file = files_[i];
+  result.reserve(seqs_.end() - iter);
+  for (auto& delete_file : files_ | std::views::drop(iter - seqs_.begin())) {
     ICEBERG_ASSIGN_OR_RAISE(bool may_contain,
                             CanContainEqDeletesForFile(data_file, delete_file));
     if (may_contain) {
@@ -247,8 +242,8 @@ Result<std::vector<std::shared_ptr<DataFile>>> EqualityDeletes::Filter(
 
 std::vector<std::shared_ptr<DataFile>> EqualityDeletes::ReferencedDeleteFiles() {
   IndexIfNeeded();
-  return std::ranges::transform_view(
-             files_, [](const auto& file) { return file.wrapped.data_file; }) |
+  return files_ |
+         std::views::transform([](const auto& f) { return f.wrapped.data_file; }) |
          std::ranges::to<std::vector<std::shared_ptr<DataFile>>>();
 }
 
@@ -258,13 +253,11 @@ void EqualityDeletes::IndexIfNeeded() {
   }
 
   // Sort by apply sequence number
-  std::ranges::sort(files_, [](const auto& a, const auto& b) {
-    return a.apply_sequence_number < b.apply_sequence_number;
-  });
+  std::ranges::sort(files_, std::ranges::less{},
+                    &EqualityDeleteFile::apply_sequence_number);
 
   // Build sequence number array for binary search
-  seqs_ = std::ranges::transform_view(
-              files_, [](const auto& file) { return file.apply_sequence_number; }) |
+  seqs_ = files_ | std::views::transform(&EqualityDeleteFile::apply_sequence_number) |
           std::ranges::to<std::vector<int64_t>>();
 
   indexed_ = true;
