@@ -93,7 +93,8 @@ class ICEBERG_EXPORT InMemoryCatalog
 
   Status RenameTable(const TableIdentifier& from, const TableIdentifier& to) override;
 
-  Result<std::shared_ptr<Table>> LoadTable(const TableIdentifier& identifier) override;
+  Result<std::shared_ptr<Table>> LoadTable(
+      const TableIdentifier& identifier) const override;
 
   Result<std::shared_ptr<Table>> RegisterTable(
       const TableIdentifier& identifier,

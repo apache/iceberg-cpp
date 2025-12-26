@@ -135,9 +135,8 @@ Status HandleFailureResponse(const cpr::Response& response,
 }  // namespace
 
 void HttpClient::PrepareSession(
-    const std::string& path,
-    const std::unordered_map<std::string, std::string>& request_headers,
-    const std::unordered_map<std::string, std::string>& params) {
+    const std::string& path, const std::unordered_map<std::string, std::string>& params,
+    const std::unordered_map<std::string, std::string>& request_headers) {
   session_->SetUrl(cpr::Url{path});
   session_->SetParameters(GetParameters(params));
   session_->RemoveContent();
@@ -164,7 +163,7 @@ Result<HttpResponse> HttpClient::Get(
   cpr::Response response;
   {
     std::lock_guard guard(session_mutex_);
-    PrepareSession(path, headers, params);
+    PrepareSession(path, params, headers);
     response = session_->Get();
   }
 
@@ -181,7 +180,7 @@ Result<HttpResponse> HttpClient::Post(
   cpr::Response response;
   {
     std::lock_guard guard(session_mutex_);
-    PrepareSession(path, headers);
+    PrepareSession(path, /*params=*/{}, headers);
     session_->SetBody(cpr::Body{body});
     response = session_->Post();
   }
@@ -206,7 +205,7 @@ Result<HttpResponse> HttpClient::PostForm(
     auto form_headers = headers;
     form_headers[kHeaderContentType] = kMimeTypeFormUrlEncoded;
 
-    PrepareSession(path, form_headers);
+    PrepareSession(path, /*params=*/{}, form_headers);
     std::vector<cpr::Pair> pair_list;
     pair_list.reserve(form_data.size());
     for (const auto& [key, val] : form_data) {
@@ -229,7 +228,7 @@ Result<HttpResponse> HttpClient::Head(
   cpr::Response response;
   {
     std::lock_guard guard(session_mutex_);
-    PrepareSession(path, headers);
+    PrepareSession(path, /*params=*/{}, headers);
     response = session_->Head();
   }
 
@@ -240,12 +239,13 @@ Result<HttpResponse> HttpClient::Head(
 }
 
 Result<HttpResponse> HttpClient::Delete(
-    const std::string& path, const std::unordered_map<std::string, std::string>& headers,
+    const std::string& path, const std::unordered_map<std::string, std::string>& params,
+    const std::unordered_map<std::string, std::string>& headers,
     const ErrorHandler& error_handler) {
   cpr::Response response;
   {
     std::lock_guard guard(session_mutex_);
-    PrepareSession(path, headers);
+    PrepareSession(path, params, headers);
     response = session_->Delete();
   }
 

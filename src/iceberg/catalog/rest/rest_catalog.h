@@ -97,7 +97,8 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
 
   Status DropTable(const TableIdentifier& identifier, bool purge) override;
 
-  Result<std::shared_ptr<Table>> LoadTable(const TableIdentifier& identifier) override;
+  Result<std::shared_ptr<Table>> LoadTable(
+      const TableIdentifier& identifier) const override;
 
   Result<std::shared_ptr<Table>> RegisterTable(
       const TableIdentifier& identifier,

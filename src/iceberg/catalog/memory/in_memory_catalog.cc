@@ -519,7 +519,7 @@ Status InMemoryCatalog::RenameTable(const TableIdentifier& from,
 }
 
 Result<std::shared_ptr<Table>> InMemoryCatalog::LoadTable(
-    const TableIdentifier& identifier) {
+    const TableIdentifier& identifier) const {
   if (!file_io_) [[unlikely]] {
     return InvalidArgument("file_io is not set for catalog {}", catalog_name_);
   }
@@ -533,8 +533,9 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::LoadTable(
 
   ICEBERG_ASSIGN_OR_RAISE(auto metadata,
                           TableMetadataUtil::Read(*file_io_, metadata_location));
+  auto non_const_catalog = std::const_pointer_cast<InMemoryCatalog>(shared_from_this());
   return Table::Make(identifier, std::move(metadata), std::move(metadata_location),
-                     file_io_, shared_from_this());
+                     file_io_, non_const_catalog);
 }
 
 Result<std::shared_ptr<Table>> InMemoryCatalog::RegisterTable(
