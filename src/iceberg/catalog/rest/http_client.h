@@ -104,13 +104,14 @@ class ICEBERG_REST_EXPORT HttpClient {
 
   /// \brief Sends a DELETE request.
   Result<HttpResponse> Delete(const std::string& path,
+                              const std::unordered_map<std::string, std::string>& params,
                               const std::unordered_map<std::string, std::string>& headers,
                               const ErrorHandler& error_handler);
 
  private:
-  void PrepareSession(const std::string& path,
-                      const std::unordered_map<std::string, std::string>& request_headers,
-                      const std::unordered_map<std::string, std::string>& params = {});
+  void PrepareSession(
+      const std::string& path, const std::unordered_map<std::string, std::string>& params,
+      const std::unordered_map<std::string, std::string>& request_headers);
 
   std::unordered_map<std::string, std::string> default_headers_;
 
