@@ -136,6 +136,30 @@ class RestCatalogIntegrationTest : public ::testing::Test {
     return RestCatalog::Make(*config, std::make_shared<test::StdFileIO>());
   }
 
+  // Helper function to create a default schema for testing
+  std::shared_ptr<Schema> CreateDefaultSchema() {
+    return std::make_shared<Schema>(
+        std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32()),
+                                 SchemaField::MakeOptional(2, "data", string())},
+        /*schema_id=*/1);
+  }
+
+  // Helper function to create a default unpartitioned partition spec
+  std::shared_ptr<PartitionSpec> CreateDefaultPartitionSpec() {
+    auto partition_spec_result =
+        PartitionSpec::Make(PartitionSpec::kInitialSpecId, {}, 0);
+    EXPECT_THAT(partition_spec_result, IsOk());
+    return {std::move(*partition_spec_result)};
+  }
+
+  // Helper function to create a default unsorted sort order
+  std::shared_ptr<SortOrder> CreateDefaultSortOrder() {
+    auto sort_order_result =
+        SortOrder::Make(SortOrder::kUnsortedOrderId, std::vector<SortField>{});
+    EXPECT_THAT(sort_order_result, IsOk());
+    return {std::move(*sort_order_result)};
+  }
+
   static inline std::unique_ptr<DockerCompose> docker_compose_;
 };
 
@@ -288,7 +312,7 @@ TEST_F(RestCatalogIntegrationTest, NamespaceExists) {
   // Check it now exists
   exists_result = catalog->NamespaceExists(ns);
   ASSERT_THAT(exists_result, IsOk());
-  EXPECT_TRUE(*exists_result);
+  EXPECT_TRUE(exists_result.value());
 }
 
 TEST_F(RestCatalogIntegrationTest, UpdateNamespaceProperties) {
@@ -340,7 +364,19 @@ TEST_F(RestCatalogIntegrationTest, DropNamespace) {
   // Verify it no longer exists
   exists_result = catalog->NamespaceExists(ns);
   ASSERT_THAT(exists_result, IsOk());
-  EXPECT_FALSE(*exists_result);
+  EXPECT_FALSE(exists_result.value());
+}
+
+TEST_F(RestCatalogIntegrationTest, DropNonExistentNamespace) {
+  auto catalog_result = CreateCatalog();
+  ASSERT_THAT(catalog_result, IsOk());
+  auto& catalog = catalog_result.value();
+
+  Namespace ns{.levels = {"nonexistent_namespace"}};
+  auto status = catalog->DropNamespace(ns);
+
+  // Should return NoSuchNamespace error
+  EXPECT_THAT(status, IsError(ErrorKind::kNoSuchNamespace));
 }
 
 TEST_F(RestCatalogIntegrationTest, CreateTable) {
@@ -362,22 +398,9 @@ TEST_F(RestCatalogIntegrationTest, CreateTable) {
   status = catalog->CreateNamespace(ns, ns_properties);
   EXPECT_THAT(status, IsOk());
 
-  // Create schema
-  auto schema = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeOptional(1, "foo", string()),
-                               SchemaField::MakeRequired(2, "bar", int32()),
-                               SchemaField::MakeOptional(3, "baz", boolean())},
-      /*schema_id=*/1);
-
-  // Create partition spec and sort order (unpartitioned and unsorted)
-  auto partition_spec_result = PartitionSpec::Make(PartitionSpec::kInitialSpecId, {}, 0);
-  ASSERT_THAT(partition_spec_result, IsOk());
-  auto partition_spec = std::shared_ptr<PartitionSpec>(std::move(*partition_spec_result));
-
-  auto sort_order_result =
-      SortOrder::Make(SortOrder::kUnsortedOrderId, std::vector<SortField>{});
-  ASSERT_THAT(sort_order_result, IsOk());
-  auto sort_order = std::shared_ptr<SortOrder>(std::move(*sort_order_result));
+  auto schema = CreateDefaultSchema();
+  auto partition_spec = CreateDefaultPartitionSpec();
+  auto sort_order = CreateDefaultSortOrder();
 
   // Create table
   TableIdentifier table_id{.ns = ns, .name = "t1"};
@@ -398,6 +421,84 @@ TEST_F(RestCatalogIntegrationTest, CreateTable) {
   EXPECT_THAT(duplicate_result, IsError(ErrorKind::kAlreadyExists));
   EXPECT_THAT(duplicate_result,
               HasErrorMessage("Table already exists: test_create_table.apple.ios.t1"));
+}
+
+TEST_F(RestCatalogIntegrationTest, LoadTable) {
+  auto catalog_result = CreateCatalog();
+  ASSERT_THAT(catalog_result, IsOk());
+  auto& catalog = catalog_result.value();
+
+  // Create namespace and table first
+  Namespace ns{.levels = {"test_load_table"}};
+  auto status = catalog->CreateNamespace(ns, {});
+  EXPECT_THAT(status, IsOk());
+
+  // Create schema, partition spec, and sort order using helper functions
+  auto schema = CreateDefaultSchema();
+  auto partition_spec = CreateDefaultPartitionSpec();
+  auto sort_order = CreateDefaultSortOrder();
+
+  // Create table
+  TableIdentifier table_id{.ns = ns, .name = "test_table"};
+  std::unordered_map<std::string, std::string> table_properties{{"key1", "value1"}};
+  auto create_result = catalog->CreateTable(table_id, schema, partition_spec, sort_order,
+                                            "", table_properties);
+  ASSERT_THAT(create_result, IsOk());
+
+  // Load the table
+  auto load_result = catalog->LoadTable(table_id);
+  ASSERT_THAT(load_result, IsOk());
+  auto& loaded_table = load_result.value();
+
+  // Verify loaded table properties
+  EXPECT_EQ(loaded_table->name().ns.levels, std::vector<std::string>{"test_load_table"});
+  EXPECT_EQ(loaded_table->name().name, "test_table");
+  EXPECT_NE(loaded_table->metadata(), nullptr);
+
+  // Verify schema
+  auto loaded_schema_result = loaded_table->schema();
+  ASSERT_THAT(loaded_schema_result, IsOk());
+  auto loaded_schema = loaded_schema_result.value();
+  EXPECT_TRUE(loaded_schema->schema_id().has_value());  // Server assigns schema_id
+  EXPECT_EQ(loaded_schema->fields().size(), 2);
+  EXPECT_EQ(loaded_schema->fields()[0].name(), "id");
+  EXPECT_EQ(loaded_schema->fields()[1].name(), "data");
+}
+
+TEST_F(RestCatalogIntegrationTest, DropTable) {
+  auto catalog_result = CreateCatalog();
+  ASSERT_THAT(catalog_result, IsOk());
+  auto& catalog = catalog_result.value();
+
+  // Create namespace and table first
+  Namespace ns{.levels = {"test_drop_table"}};
+  auto status = catalog->CreateNamespace(ns, {});
+  EXPECT_THAT(status, IsOk());
+
+  // Create table
+  auto schema = CreateDefaultSchema();
+  auto partition_spec = CreateDefaultPartitionSpec();
+  auto sort_order = CreateDefaultSortOrder();
+
+  TableIdentifier table_id{.ns = ns, .name = "table_to_drop"};
+  std::unordered_map<std::string, std::string> table_properties;
+  auto create_result = catalog->CreateTable(table_id, schema, partition_spec, sort_order,
+                                            "", table_properties);
+  ASSERT_THAT(create_result, IsOk());
+
+  // Verify table exists
+  auto load_result = catalog->TableExists(table_id);
+  ASSERT_THAT(load_result, IsOk());
+  EXPECT_TRUE(load_result.value());
+
+  // Drop the table
+  status = catalog->DropTable(table_id, /*purge=*/false);
+  ASSERT_THAT(status, IsOk());
+
+  // Verify table no longer exists
+  load_result = catalog->TableExists(table_id);
+  ASSERT_THAT(load_result, IsOk());
+  EXPECT_FALSE(load_result.value());
 }
 
 }  // namespace iceberg::rest
