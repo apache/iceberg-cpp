@@ -131,8 +131,8 @@ std::string ToString(const MetadataLogEntry& entry) {
 }
 
 Result<std::unique_ptr<TableMetadata>> TableMetadata::Make(
-    const iceberg::Schema& schema, const iceberg::PartitionSpec& spec,
-    const iceberg::SortOrder& sort_order, const std::string& location,
+    const class Schema& schema, const class PartitionSpec& spec,
+    const class SortOrder& sort_order, const std::string& location,
     const std::unordered_map<std::string, std::string>& properties, int format_version) {
   for (const auto& [key, _] : properties) {
     if (TableProperties::reserved_properties().contains(key)) {
