@@ -26,6 +26,7 @@
 #include <memory>
 #include <ranges>
 #include <unordered_map>
+#include <utility>
 
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
@@ -132,6 +133,7 @@ bool PartitionSpec::Equals(const PartitionSpec& other) const {
 
 Status PartitionSpec::Validate(const Schema& schema, bool allow_missing_fields) const {
   ICEBERG_RETURN_UNEXPECTED(ValidatePartitionName(schema, *this));
+  ICEBERG_RETURN_UNEXPECTED(ValidateRedundantPartitions(*this));
 
   std::unordered_map<int32_t, int32_t> parents = IndexParents(schema);
   for (const auto& partition_field : fields_) {
@@ -259,6 +261,27 @@ bool PartitionSpec::HasSequentialFieldIds(const PartitionSpec& spec) {
     }
   }
   return true;
+}
+
+Status PartitionSpec::ValidateRedundantPartitions(const PartitionSpec& spec) {
+  // Use a map to track deduplication keys (source_id + transform dedup name)
+  std::unordered_map<std::pair<int32_t, std::string>, const PartitionField*> dedup_fields;
+
+  for (const auto& field : spec.fields()) {
+    // Create dedup key: (source_id, transform_dedup_name)
+    auto dedup_key = std::make_pair(field.source_id(), field.transform()->DedupName());
+
+    // Check if this dedup key already exists
+    auto existing_field_iter = dedup_fields.find(dedup_key);
+    ICEBERG_PRECHECK(existing_field_iter == dedup_fields.end(),
+                     "Cannot add redundant partition: {} conflicts with {}",
+                     field.ToString(), existing_field_iter->second->ToString());
+
+    // Add this field to the dedup map
+    dedup_fields[dedup_key] = &field;
+  }
+
+  return {};
 }
 
 }  // namespace iceberg
