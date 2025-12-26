@@ -79,14 +79,14 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
 
   /// \brief Validates the partition spec against a schema.
   /// \param schema The schema to validate against.
-  /// \param allowMissingFields Whether to skip validation for partition fields whose
+  /// \param allow_missing_fields Whether to skip validation for partition fields whose
   /// source columns have been dropped from the schema.
   /// \return Error status if the partition spec is invalid.
   Status Validate(const Schema& schema, bool allow_missing_fields) const;
 
   // \brief Validates the partition field names are unique within the partition spec and
   // schema.
-  Status ValidatePartitionName(const Schema& schema) const;
+  static Status ValidatePartitionName(const Schema& schema, const PartitionSpec& spec);
 
   /// \brief Get the partition fields by source ID.
   /// \param source_id The id of the source field.

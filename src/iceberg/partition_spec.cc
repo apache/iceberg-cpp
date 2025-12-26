@@ -131,6 +131,8 @@ bool PartitionSpec::Equals(const PartitionSpec& other) const {
 }
 
 Status PartitionSpec::Validate(const Schema& schema, bool allow_missing_fields) const {
+  ICEBERG_RETURN_UNEXPECTED(ValidatePartitionName(schema, *this));
+
   std::unordered_map<int32_t, int32_t> parents = IndexParents(schema);
   for (const auto& partition_field : fields_) {
     ICEBERG_ASSIGN_OR_RAISE(auto source_field,
@@ -177,9 +179,10 @@ Status PartitionSpec::Validate(const Schema& schema, bool allow_missing_fields) 
   return {};
 }
 
-Status PartitionSpec::ValidatePartitionName(const Schema& schema) const {
+Status PartitionSpec::ValidatePartitionName(const Schema& schema,
+                                            const PartitionSpec& spec) {
   std::unordered_set<std::string> partition_names;
-  for (const auto& partition_field : fields_) {
+  for (const auto& partition_field : spec.fields()) {
     auto name = std::string(partition_field.name());
     ICEBERG_PRECHECK(!name.empty(), "Cannot use empty partition name: {}", name);
 
@@ -190,9 +193,10 @@ Status PartitionSpec::ValidatePartitionName(const Schema& schema) const {
 
     ICEBERG_ASSIGN_OR_RAISE(auto schema_field, schema.FindFieldByName(name));
     auto transform_type = partition_field.transform()->transform_type();
-    if (transform_type == TransformType::kIdentity) {
-      // for identity transform case we allow conflicts between partition and schema field
-      // name as long as they are sourced from the same schema field
+    if (transform_type == TransformType::kIdentity ||
+        transform_type == TransformType::kVoid) {
+      // for identity/nulls transform case we allow conflicts between partition and schema
+      // field name as long as they are sourced from the same schema field
       if (schema_field.has_value() &&
           schema_field.value().get().field_id() != partition_field.source_id()) {
         return InvalidArgument(

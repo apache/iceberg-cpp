@@ -30,6 +30,7 @@
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/file_io.h"
 #include "iceberg/json_internal.h"
+#include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
@@ -65,6 +66,7 @@ class MetadataIOTest : public TempFileTestBase {
                          .last_sequence_number = 0,
                          .schemas = {schema},
                          .current_schema_id = 1,
+                         .partition_specs = {PartitionSpec::Unpartitioned()},
                          .default_spec_id = 0,
                          .last_partition_id = 0,
                          .properties = TableProperties::FromMap({{"key", "value"}}),

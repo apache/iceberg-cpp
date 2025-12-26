@@ -249,7 +249,7 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   /// \param schema The schema to set as current
   /// \param new_last_column_id The highest column ID in the schema
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& SetCurrentSchema(std::shared_ptr<Schema> const& schema,
+  TableMetadataBuilder& SetCurrentSchema(const std::shared_ptr<Schema>& schema,
                                          int32_t new_last_column_id);
 
   /// \brief Set the current schema by schema ID
@@ -262,7 +262,7 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   ///
   /// \param schema The schema to add
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& AddSchema(std::shared_ptr<Schema> const& schema);
+  TableMetadataBuilder& AddSchema(const std::shared_ptr<Schema>& schema);
 
   /// \brief Set the default partition spec for the table
   ///

@@ -81,6 +81,7 @@ TEST(TableMetadataBuilderTest, BuildFromEmpty) {
   auto schema = CreateTestSchema();
   builder->SetCurrentSchema(schema, schema->HighestFieldId().value());
   builder->SetDefaultSortOrder(SortOrder::Unsorted());
+  builder->SetDefaultPartitionSpec(PartitionSpec::Unpartitioned());
   builder->AssignUUID("new-uuid-5678");
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
@@ -160,6 +161,7 @@ TEST(TableMetadataBuilderTest, AssignUUID) {
   auto schema = CreateTestSchema();
   builder->SetCurrentSchema(schema, schema->HighestFieldId().value());
   builder->SetDefaultSortOrder(SortOrder::Unsorted());
+  builder->SetDefaultPartitionSpec(PartitionSpec::Unpartitioned());
   builder->AssignUUID("new-uuid-5678");
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
   EXPECT_EQ(metadata->table_uuid, "new-uuid-5678");
@@ -187,6 +189,7 @@ TEST(TableMetadataBuilderTest, AssignUUID) {
   builder = TableMetadataBuilder::BuildFromEmpty(2);
   builder->SetCurrentSchema(schema, schema->HighestFieldId().value());
   builder->SetDefaultSortOrder(SortOrder::Unsorted());
+  builder->SetDefaultPartitionSpec(PartitionSpec::Unpartitioned());
   builder->AssignUUID();
   ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
   EXPECT_FALSE(metadata->table_uuid.empty());
@@ -238,6 +241,7 @@ TEST(TableMetadataBuilderTest, UpgradeFormatVersion) {
   auto schema = CreateTestSchema();
   builder->SetCurrentSchema(schema, schema->HighestFieldId().value());
   builder->SetDefaultSortOrder(SortOrder::Unsorted());
+  builder->SetDefaultPartitionSpec(PartitionSpec::Unpartitioned());
   builder->UpgradeFormatVersion(2);
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
@@ -436,17 +440,6 @@ TEST(TableMetadataBuilderTest, AddSchemaBasic) {
   EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 1);
   EXPECT_EQ(metadata->schemas[2]->schema_id().value(), 2);
   EXPECT_EQ(metadata->last_column_id, 6);
-}
-
-TEST(TableMetadataBuilderTest, AddSchemaInvalid) {
-  auto base = CreateBaseMetadata();
-
-  auto builder = TableMetadataBuilder::BuildFrom(base.get());
-  auto field_low_id = SchemaField::MakeRequired(1, "low_id", int32());
-  auto schema_low_id =
-      std::make_shared<Schema>(std::vector<SchemaField>{field_low_id}, 1);
-  // Manually try to set a lower last_column_id via SetCurrentSchema
-  // This is tested indirectly through AddSchemaInternal validation
 }
 
 // Test SetCurrentSchema
