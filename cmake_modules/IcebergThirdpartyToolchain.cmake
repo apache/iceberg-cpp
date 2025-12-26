@@ -208,8 +208,8 @@ function(resolve_avro_dependency)
     # Default to GitHub - uses unreleased version
     fetchcontent_declare(avro-cpp
                          ${FC_DECLARE_COMMON_OPTIONS}
-                         GIT_REPOSITORY https://github.com/apache/avro.git
-                         GIT_TAG e6c308780e876b4c11a470b9900995947f7b0fb5
+                         GIT_REPOSITORY https://github.com/stephanlachnit/avro.git
+                         GIT_TAG 52938d00107626aaedbafb2ea9e9fb50f3b95138
                          SOURCE_SUBDIR
                          lang/c++
                          FIND_PACKAGE_ARGS
