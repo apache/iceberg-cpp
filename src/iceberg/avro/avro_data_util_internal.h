@@ -19,10 +19,16 @@
 
 #pragma once
 
-#include <arrow/array/builder_base.h>
-#include <avro/GenericDatum.hh>
+#include <arrow/type_fwd.h>
 
+#include "iceberg/iceberg_bundle_export.h"
 #include "iceberg/schema_util.h"
+
+namespace avro {
+class Node;
+class GenericDatum;
+using NodePtr = std::shared_ptr<Node>;
+}  // namespace avro
 
 namespace iceberg::avro {
 
@@ -37,11 +43,11 @@ namespace iceberg::avro {
 /// \param projected_schema The projected schema
 /// \param array_builder The Arrow array builder to append to (must be a struct builder)
 /// \return Status indicating success or failure
-Status AppendDatumToBuilder(const ::avro::NodePtr& avro_node,
-                            const ::avro::GenericDatum& avro_datum,
-                            const SchemaProjection& projection,
-                            const Schema& projected_schema,
-                            ::arrow::ArrayBuilder* array_builder);
+ICEBERG_BUNDLE_EXPORT Status AppendDatumToBuilder(const ::avro::NodePtr& avro_node,
+                                                  const ::avro::GenericDatum& avro_datum,
+                                                  const SchemaProjection& projection,
+                                                  const Schema& projected_schema,
+                                                  ::arrow::ArrayBuilder* array_builder);
 
 /// \brief Extract an Avro datum from an Arrow array.
 ///
@@ -49,7 +55,8 @@ Status AppendDatumToBuilder(const ::avro::NodePtr& avro_node,
 /// \param index The index of the element to extract.
 /// \param datum The Avro datum to extract to. Its Avro type should be consistent with the
 /// Arrow type.
-Status ExtractDatumFromArray(const ::arrow::Array& array, int64_t index,
-                             ::avro::GenericDatum* datum);
+ICEBERG_BUNDLE_EXPORT Status ExtractDatumFromArray(const ::arrow::Array& array,
+                                                   int64_t index,
+                                                   ::avro::GenericDatum* datum);
 
 }  // namespace iceberg::avro
