@@ -388,6 +388,8 @@ std::string Transform::ToString() const {
   std::unreachable();
 }
 
+std::string Transform::DedupName() const { return ToString(); }
+
 Result<std::string> Transform::GeneratePartitionName(std::string_view source_name) const {
   switch (transform_type_) {
     case TransformType::kIdentity:
