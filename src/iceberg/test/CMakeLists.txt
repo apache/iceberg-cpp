@@ -146,7 +146,8 @@ if(ICEBERG_BUILD_BUNDLE)
                    manifest_list_versions_test.cc
                    manifest_reader_stats_test.cc
                    manifest_reader_test.cc
-                   manifest_writer_versions_test.cc)
+                   manifest_writer_versions_test.cc
+                   rolling_manifest_writer_test.cc)
 
   add_iceberg_test(parquet_test
                    USE_BUNDLE

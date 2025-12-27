@@ -103,7 +103,7 @@ class ICEBERG_EXPORT Writer {
   virtual Result<Metrics> metrics() = 0;
 
   /// \brief Get the file length.
-  /// Only valid after the file is closed.
+  /// This can be called while the writer is still open or after the file is closed.
   virtual Result<int64_t> length() = 0;
 
   /// \brief Returns a list of recommended split locations, if applicable, empty

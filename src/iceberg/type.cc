@@ -19,6 +19,7 @@
 
 #include "iceberg/type.h"
 
+#include <cstdint>
 #include <format>
 #include <iterator>
 #include <memory>
@@ -162,7 +163,7 @@ Result<std::optional<NestedType::SchemaFieldConstRef>> ListType::GetFieldById(
 }
 
 Result<std::optional<NestedType::SchemaFieldConstRef>> ListType::GetFieldByIndex(
-    int index) const {
+    int32_t index) const {
   if (index == 0) {
     return std::cref(element_);
   }

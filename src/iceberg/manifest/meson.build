@@ -21,6 +21,7 @@ install_headers(
         'manifest_list.h',
         'manifest_reader.h',
         'manifest_writer.h',
+        'rolling_manifest_writer.h',
     ],
     subdir: 'iceberg/manifest',
 )

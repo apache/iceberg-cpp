@@ -108,6 +108,10 @@ class ICEBERG_EXPORT ManifestWriter {
   /// \note Only valid after the file is closed.
   Result<Metrics> metrics() const;
 
+  /// \brief Get the current length of the manifest file in bytes.
+  /// \return The current length of the file, or an error if the operation fails.
+  Result<int64_t> length() const;
+
   /// \brief Get the ManifestFile object.
   /// \note Only valid after the file is closed.
   Result<ManifestFile> ToManifestFile() const;
