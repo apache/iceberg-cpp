@@ -74,6 +74,8 @@ class ManifestReaderImpl : public ManifestReader {
 
   ManifestReader& CaseSensitive(bool case_sensitive) override;
 
+  ManifestReader& TryDropStats() override;
+
  private:
   /// \brief Read entries with optional live-only filtering.
   Result<std::vector<ManifestEntry>> ReadEntries(bool only_live);
@@ -111,6 +113,7 @@ class ManifestReaderImpl : public ManifestReader {
   std::shared_ptr<Expression> row_filter_{True::Instance()};
   std::shared_ptr<PartitionSet> partition_set_;
   bool case_sensitive_{true};
+  bool drop_stats_{false};
 
   // Lazy fields
   std::unique_ptr<Reader> file_reader_;

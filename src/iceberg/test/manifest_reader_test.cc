@@ -375,6 +375,71 @@ TEST_P(TestManifestReader, TestInvalidUsage) {
   EXPECT_THAT(reader_result, HasErrorMessage("has no snapshot ID"));
 }
 
+TEST_P(TestManifestReader, TestDropStats) {
+  int version = GetParam();
+
+  // Create a data file with full metrics
+  auto file_with_stats = std::make_unique<DataFile>(DataFile{
+      .file_path = "/path/to/data-with-stats.parquet",
+      .file_format = FileFormatType::kParquet,
+      .partition = PartitionValues({Literal::Int(0)}),
+      .record_count = 100,
+      .file_size_in_bytes = 1024,
+      // Add stats for multiple columns
+      .column_sizes = {{1, 100}, {2, 200}, {3, 300}},
+      .value_counts = {{1, 10}, {2, 20}, {3, 30}},
+      .null_value_counts = {{1, 1}, {2, 2}, {3, 3}},
+      .nan_value_counts = {{1, 0}, {2, 0}, {3, 0}},
+      .lower_bounds = {{1, {0x01}}, {2, {0x02}}, {3, {0x03}}},
+      .upper_bounds = {{1, {0xFF}}, {2, {0xFE}}, {3, {0xFD}}},
+      .sort_order_id = 0,
+  });
+
+  auto entry = MakeEntry(ManifestStatus::kAdded, /*snapshot_id=*/1000L,
+                         std::move(file_with_stats));
+
+  std::vector<ManifestEntry> entries;
+  entries.push_back(std::move(entry));
+
+  auto manifest = WriteManifest(version, /*snapshot_id=*/1000L, std::move(entries));
+
+  auto reader_result = ManifestReader::Make(manifest, file_io_, schema_, spec_);
+  ASSERT_THAT(reader_result, IsOk());
+  auto reader = std::move(reader_result.value());
+  reader->Select({"record_count"}).TryDropStats();
+
+  ICEBERG_UNWRAP_OR_FAIL(auto read_entries, reader->Entries());
+  ASSERT_EQ(read_entries.size(), 1);
+  const auto& read_entry = read_entries[0];
+
+  // record_count should be preserved
+  EXPECT_EQ(read_entry.data_file->record_count, 100);
+
+  // Stats maps should be cleared
+  EXPECT_TRUE(read_entry.data_file->column_sizes.empty());
+  EXPECT_TRUE(read_entry.data_file->value_counts.empty());
+  EXPECT_TRUE(read_entry.data_file->null_value_counts.empty());
+  EXPECT_TRUE(read_entry.data_file->nan_value_counts.empty());
+  EXPECT_TRUE(read_entry.data_file->lower_bounds.empty());
+  EXPECT_TRUE(read_entry.data_file->upper_bounds.empty());
+}
+
+TEST(ManifestReaderStaticTest, TestShouldDropStats) {
+  EXPECT_FALSE(ManifestReader::ShouldDropStats({}));
+  EXPECT_FALSE(ManifestReader::ShouldDropStats({std::string(Schema::kAllColumns)}));
+  EXPECT_TRUE(ManifestReader::ShouldDropStats({"file_path", "file_format", "partition"}));
+  EXPECT_TRUE(
+      ManifestReader::ShouldDropStats({"file_path", "file_format", "record_count"}));
+  EXPECT_FALSE(
+      ManifestReader::ShouldDropStats({"file_path", "file_format", "value_counts"}));
+  EXPECT_FALSE(
+      ManifestReader::ShouldDropStats({"file_path", "file_format", "lower_bounds"}));
+  EXPECT_FALSE(ManifestReader::ShouldDropStats(
+      {"file_path", "value_counts", "null_value_counts", "lower_bounds"}));
+  EXPECT_FALSE(
+      ManifestReader::ShouldDropStats({"file_path", "record_count", "value_counts"}));
+}
+
 INSTANTIATE_TEST_SUITE_P(ManifestReaderVersions, TestManifestReader,
                          testing::Values(1, 2, 3));
 

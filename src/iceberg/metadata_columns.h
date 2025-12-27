@@ -39,19 +39,22 @@ struct ICEBERG_EXPORT MetadataColumns {
   constexpr static int32_t kInt32Max = std::numeric_limits<int32_t>::max();
 
   // IDs kInt32Max - (1-100) are used for metadata columns
-  inline static const SchemaField kFilePath =
-      SchemaField::MakeRequired(kInt32Max - 1, "_file", iceberg::string(),
-                                "Path of the file in which a row is stored");
+  constexpr static int32_t kFilePathColumnId = kInt32Max - 1;
+  inline static const SchemaField kFilePath = SchemaField::MakeRequired(
+      kFilePathColumnId, "_file", string(), "Path of the file in which a row is stored");
 
+  constexpr static int32_t kFilePositionColumnId = kInt32Max - 2;
   inline static const SchemaField kRowPosition =
-      SchemaField::MakeRequired(kInt32Max - 2, "_pos", iceberg::int64(),
+      SchemaField::MakeRequired(kFilePositionColumnId, "_pos", int64(),
                                 "Ordinal position of a row in the source data file");
 
+  constexpr static int32_t kIsDeletedColumnId = kInt32Max - 3;
   inline static const SchemaField kIsDeleted = SchemaField::MakeRequired(
-      kInt32Max - 3, "_deleted", iceberg::binary(), "Whether the row has been deleted");
+      kIsDeletedColumnId, "_deleted", binary(), "Whether the row has been deleted");
 
+  constexpr static int32_t kSpecIdColumnId = kInt32Max - 4;
   inline static const SchemaField kSpecId =
-      SchemaField::MakeRequired(kInt32Max - 4, "_spec_id", iceberg::int32(),
+      SchemaField::MakeRequired(kSpecIdColumnId, "_spec_id", int32(),
                                 "Spec ID used to track the file containing a row");
 
   // The partition column type depends on all specs in the table
@@ -64,35 +67,41 @@ struct ICEBERG_EXPORT MetadataColumns {
   constexpr static int32_t kContentSizeInBytesColumnId = kInt32Max - 7;
 
   // IDs kInt32Max - (101-200) are used for reserved columns
+  constexpr static int32_t kDeleteFilePathColumnId = kInt32Max - 101;
   inline static const SchemaField kDeleteFilePath =
-      SchemaField::MakeRequired(kInt32Max - 101, "file_path", iceberg::string(),
+      SchemaField::MakeRequired(kDeleteFilePathColumnId, "file_path", string(),
                                 "Path of a file in which a deleted row is stored");
 
+  constexpr static int32_t kDeleteFilePosColumnId = kInt32Max - 102;
   inline static const SchemaField kDeleteFilePos =
-      SchemaField::MakeRequired(kInt32Max - 102, "pos", iceberg::int64(),
+      SchemaField::MakeRequired(kDeleteFilePosColumnId, "pos", int64(),
                                 "Ordinal position of a deleted row in the data file");
 
   // The row column type depends on the table schema
-  constexpr static int32_t kDeleteFileRowFieldId = kInt32Max - 103;
+  constexpr static int32_t kDeleteFileRowColumnId = kInt32Max - 103;
   constexpr static std::string_view kDeleteFileRowFieldName = "row";
   constexpr static std::string_view kDeleteFileRowDoc = "Deleted row values";
 
+  constexpr static int32_t kChangeTypeColumnId = kInt32Max - 104;
   inline static const SchemaField kChangeType = SchemaField::MakeRequired(
-      kInt32Max - 104, "_change_type", iceberg::string(), "Record type in changelog");
+      kChangeTypeColumnId, "_change_type", string(), "Record type in changelog");
 
-  inline static const SchemaField kChangeOrdinal =
-      SchemaField::MakeOptional(kInt32Max - 105, "_change_ordinal", iceberg::int32(),
-                                "Change ordinal in changelog");
+  constexpr static int32_t kChangeOrdinalColumnId = kInt32Max - 105;
+  inline static const SchemaField kChangeOrdinal = SchemaField::MakeOptional(
+      kChangeOrdinalColumnId, "_change_ordinal", int32(), "Change ordinal in changelog");
 
+  constexpr static int32_t kCommitSnapshotIdColumnId = kInt32Max - 106;
   inline static const SchemaField kCommitSnapshotId = SchemaField::MakeOptional(
-      kInt32Max - 106, "_commit_snapshot_id", iceberg::int64(), "Commit snapshot ID");
+      kCommitSnapshotIdColumnId, "_commit_snapshot_id", int64(), "Commit snapshot ID");
 
+  constexpr static int32_t kRowIdColumnId = kInt32Max - 107;
   inline static const SchemaField kRowId =
-      SchemaField::MakeOptional(kInt32Max - 107, "_row_id", iceberg::int64(),
+      SchemaField::MakeOptional(kRowIdColumnId, "_row_id", int64(),
                                 "Implicit row ID that is automatically assigned");
 
+  constexpr static int32_t kLastUpdatedSequenceNumberColumnId = kInt32Max - 108;
   inline static const SchemaField kLastUpdatedSequenceNumber = SchemaField::MakeOptional(
-      kInt32Max - 108, "_last_updated_sequence_number", iceberg::int64(),
+      kLastUpdatedSequenceNumberColumnId, "_last_updated_sequence_number", int64(),
       "Sequence number when the row was last updated");
 
   /// \brief Get the set of metadata field IDs.
