@@ -303,7 +303,6 @@ TEST(PartitionSpecTest, PartitionFieldInStructInMap) {
   EXPECT_THAT(result_value, HasErrorMessage("Invalid partition field parent"));
 }
 
-// Test ValidateRedundantPartitions
 TEST(PartitionSpecTest, ValidateRedundantPartitionsExactDuplicates) {
   // Create a schema with different field types
   auto ts_field = SchemaField::MakeRequired(1, "ts", timestamp());
@@ -316,7 +315,7 @@ TEST(PartitionSpecTest, ValidateRedundantPartitionsExactDuplicates) {
     PartitionField field2(1, 1001, "ts_day2", Transform::Day());
 
     auto result = PartitionSpec::Make(schema, 1, {field1, field2}, false);
-    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
     EXPECT_THAT(result, HasErrorMessage("Cannot add redundant partition"));
     EXPECT_THAT(result, HasErrorMessage("conflicts with"));
   }
@@ -327,7 +326,7 @@ TEST(PartitionSpecTest, ValidateRedundantPartitionsExactDuplicates) {
     PartitionField bucket2(2, 1001, "id_bucket2", Transform::Bucket(16));
 
     auto result = PartitionSpec::Make(schema, 1, {bucket1, bucket2}, false);
-    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
     EXPECT_THAT(result, HasErrorMessage("Cannot add redundant partition"));
   }
 
@@ -341,7 +340,7 @@ TEST(PartitionSpecTest, ValidateRedundantPartitionsExactDuplicates) {
 
     auto result =
         PartitionSpec::Make(schema_with_string, 1, {truncate1, truncate2}, false);
-    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
     EXPECT_THAT(result, HasErrorMessage("Cannot add redundant partition"));
   }
 }
@@ -412,7 +411,7 @@ TEST(PartitionSpecTest, ValidateRedundantPartitionsIdentityTransforms) {
     PartitionField identity2(1, 1001, "id2", Transform::Identity());
 
     auto result = PartitionSpec::Make(schema, 1, {identity1, identity2}, false);
-    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
     EXPECT_THAT(result, HasErrorMessage("Cannot add redundant partition"));
   }
 
