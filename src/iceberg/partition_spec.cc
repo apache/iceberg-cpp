@@ -187,11 +187,10 @@ Status PartitionSpec::ValidatePartitionName(const Schema& schema,
   std::unordered_set<std::string> partition_names;
   for (const auto& partition_field : spec.fields()) {
     auto name = std::string(partition_field.name());
-    ICEBERG_PRECHECK(!name.empty(), "Cannot use empty partition name: {}", name);
+    ICEBERG_CHECK(!name.empty(), "Cannot use empty partition name: {}", name);
 
-    if (partition_names.contains(name)) {
-      return InvalidArgument("Cannot use partition name more than once: {}", name);
-    }
+    ICEBERG_PRECHECK(!partition_names.contains(name),
+                     "Cannot use partition name more than once: {}", name);
     partition_names.insert(name);
 
     ICEBERG_ASSIGN_OR_RAISE(auto schema_field, schema.FindFieldByName(name));
@@ -202,17 +201,15 @@ Status PartitionSpec::ValidatePartitionName(const Schema& schema,
       // field name as long as they are sourced from the same schema field
       if (schema_field.has_value() &&
           schema_field.value().get().field_id() != partition_field.source_id()) {
-        return InvalidArgument(
+        return ValidationFailed(
             "Cannot create identity partition sourced from different field in schema: {}",
             name);
       }
     } else {
       // for all other transforms we don't allow conflicts between partition name and
       // schema field name
-      if (schema_field.has_value()) {
-        return InvalidArgument(
-            "Cannot create partition from name that exists in schema: {}", name);
-      }
+      ICEBERG_CHECK(!schema_field.has_value(),
+                    "Cannot create partition from name that exists in schema: {}", name);
     }
   }
 
@@ -276,9 +273,9 @@ Status PartitionSpec::ValidateRedundantPartitions(const PartitionSpec& spec) {
     // Check if this dedup key already exists
     // If it does, we have found a redundant partition field
     auto existing_field_iter = dedup_fields.find(dedup_key);
-    ICEBERG_PRECHECK(existing_field_iter == dedup_fields.end(),
-                     "Cannot add redundant partition: {} conflicts with {}",
-                     field.ToString(), existing_field_iter->second->ToString());
+    ICEBERG_CHECK(existing_field_iter == dedup_fields.end(),
+                  "Cannot add redundant partition: {} conflicts with {}",
+                  field.ToString(), existing_field_iter->second->ToString());
 
     // Add this field to the dedup map for future conflict detection
     dedup_fields[dedup_key] = &field;
