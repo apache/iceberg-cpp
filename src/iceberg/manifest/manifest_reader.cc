@@ -601,7 +601,7 @@ bool ManifestReader::ShouldDropStats(const std::vector<std::string>& columns) {
   // select record_count, which is a primitive type.
   if (!columns.empty()) {
     const std::unordered_set<std::string_view> selected(columns.cbegin(), columns.cend());
-    if (selected.contains(ManifestReader::kAllColumns)) {
+    if (selected.contains(Schema::kAllColumns)) {
       return false;
     }
     std::unordered_set<std::string_view> intersection;

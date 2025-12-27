@@ -167,6 +167,7 @@ install_headers(
         'arrow_c_data.h',
         'catalog.h',
         'constants.h',
+        'delete_file_index.h',
         'exception.h',
         'file_format.h',
         'file_io.h',

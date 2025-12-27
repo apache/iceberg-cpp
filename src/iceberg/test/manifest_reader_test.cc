@@ -426,8 +426,7 @@ TEST_P(TestManifestReader, TestDropStats) {
 
 TEST(ManifestReaderStaticTest, TestShouldDropStats) {
   EXPECT_FALSE(ManifestReader::ShouldDropStats({}));
-  EXPECT_FALSE(
-      ManifestReader::ShouldDropStats({std::string(ManifestReader::kAllColumns)}));
+  EXPECT_FALSE(ManifestReader::ShouldDropStats({std::string(Schema::kAllColumns)}));
   EXPECT_TRUE(ManifestReader::ShouldDropStats({"file_path", "file_format", "partition"}));
   EXPECT_TRUE(
       ManifestReader::ShouldDropStats({"file_path", "file_format", "record_count"}));
