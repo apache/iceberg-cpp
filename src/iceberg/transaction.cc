@@ -97,7 +97,7 @@ Status Transaction::Apply(PendingUpdate& update) {
     } break;
     default:
       return NotSupported("Unsupported pending update: {}",
-                          static_cast<int>(update.kind()));
+                          static_cast<int32_t>(update.kind()));
   }
 
   last_update_committed_ = true;
