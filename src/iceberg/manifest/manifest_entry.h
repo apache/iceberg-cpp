@@ -46,7 +46,7 @@ enum class ManifestStatus {
 
 /// \brief Get the relative manifest status type from int
 ICEBERG_EXPORT constexpr Result<ManifestStatus> ManifestStatusFromInt(
-    int status) noexcept {
+    int32_t status) noexcept {
   switch (status) {
     case 0:
       return ManifestStatus::kExisting;
@@ -387,7 +387,7 @@ ICEBERG_EXPORT constexpr std::string_view ToString(DataFile::Content type) noexc
 
 /// \brief Get the relative data file content type from int
 ICEBERG_EXPORT constexpr Result<DataFile::Content> DataFileContentFromInt(
-    int content) noexcept {
+    int32_t content) noexcept {
   switch (content) {
     case 0:
       return DataFile::Content::kData;

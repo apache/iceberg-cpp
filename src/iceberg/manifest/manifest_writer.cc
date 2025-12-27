@@ -217,6 +217,8 @@ ManifestContent ManifestWriter::content() const { return adapter_->content(); }
 
 Result<Metrics> ManifestWriter::metrics() const { return writer_->metrics(); }
 
+Result<int64_t> ManifestWriter::length() const { return writer_->length(); }
+
 Result<ManifestFile> ManifestWriter::ToManifestFile() const {
   if (!closed_) [[unlikely]] {
     return Invalid("Cannot get ManifestFile before closing the writer.");
