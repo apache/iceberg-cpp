@@ -151,12 +151,7 @@ ListType::ListType(int32_t field_id, std::shared_ptr<Type> type, bool optional)
 
 TypeId ListType::type_id() const { return kTypeId; }
 std::string ListType::ToString() const {
-  // XXX: work around Clang/libc++: "<{}>" in a format string appears to get
-  // parsed as {<>} or something; split up the format string to avoid that
-  std::string repr = "list<";
-  std::format_to(std::back_inserter(repr), "{}", element_);
-  repr += ">";
-  return repr;
+  return std::format("list<{}>", element_);
 }
 
 std::span<const SchemaField> ListType::fields() const { return {&element_, 1}; }
@@ -213,13 +208,7 @@ const SchemaField& MapType::value() const { return fields_[1]; }
 TypeId MapType::type_id() const { return kTypeId; }
 
 std::string MapType::ToString() const {
-  // XXX: work around Clang/libc++: "<{}>" in a format string appears to get
-  // parsed as {<>} or something; split up the format string to avoid that
-  std::string repr = "map<";
-
-  std::format_to(std::back_inserter(repr), "{}: {}", key(), value());
-  repr += ">";
-  return repr;
+  return std::format("map<{}: {}>", key(), value());
 }
 
 std::span<const SchemaField> MapType::fields() const { return fields_; }
