@@ -49,8 +49,8 @@ namespace iceberg {
 ///
 /// \note This interface uses PascalCase method naming (Write, Length, Close, Metadata)
 /// to distinguish it from the lower-level iceberg/file_writer.h::Writer interface which
-/// uses lowercase naming. FileWriter is the Iceberg-specific data file writer abstraction,
-/// while Writer is the file format-level abstraction.
+/// uses lowercase naming. FileWriter is the Iceberg-specific data file writer
+/// abstraction, while Writer is the file format-level abstraction.
 class ICEBERG_EXPORT FileWriter {
  public:
   virtual ~FileWriter() = default;

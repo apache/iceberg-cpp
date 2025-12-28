@@ -17,8 +17,6 @@
  * under the License.
  */
 
-#include "iceberg/data/writer.h"
-
 #include <memory>
 #include <vector>
 
@@ -26,6 +24,7 @@
 #include <gtest/gtest.h>
 
 #include "iceberg/arrow_c_data.h"
+#include "iceberg/data/writer.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/result.h"
 #include "iceberg/test/matchers.h"
@@ -35,7 +34,7 @@ namespace iceberg {
 // Mock implementation of FileWriter for testing
 class MockFileWriter : public FileWriter {
  public:
-  MockFileWriter() : bytes_written_(0), is_closed_(false), write_count_(0) {}
+  MockFileWriter() = default;
 
   Status Write(ArrowArray* data) override {
     if (is_closed_) {
@@ -80,9 +79,9 @@ class MockFileWriter : public FileWriter {
   int32_t write_count() const { return write_count_; }
 
  private:
-  int64_t bytes_written_;
-  bool is_closed_;
-  int32_t write_count_;
+  int64_t bytes_written_ = 0;
+  bool is_closed_ = false;
+  int32_t write_count_ = 0;
 };
 
 TEST(FileWriterTest, BasicWriteOperation) {
@@ -158,7 +157,8 @@ TEST(FileWriterTest, MetadataBeforeClose) {
   ASSERT_THAT(writer.Write(&dummy_array), IsOk());
 
   auto metadata_result = writer.Metadata();
-  ASSERT_THAT(metadata_result, HasErrorMessage("Writer must be closed before getting metadata"));
+  ASSERT_THAT(metadata_result,
+              HasErrorMessage("Writer must be closed before getting metadata"));
 }
 
 TEST(FileWriterTest, MetadataAfterClose) {
@@ -183,7 +183,7 @@ TEST(FileWriterTest, MetadataAfterClose) {
   const auto& data_file = result.data_files[0];
   ASSERT_EQ(data_file->file_path, "/test/data/file.parquet");
   ASSERT_EQ(data_file->file_format, FileFormatType::kParquet);
-  ASSERT_EQ(data_file->record_count, 300);  // 3 writes * 100 records
+  ASSERT_EQ(data_file->record_count, 300);         // 3 writes * 100 records
   ASSERT_EQ(data_file->file_size_in_bytes, 3072);  // 3 * 1024
 }
 
