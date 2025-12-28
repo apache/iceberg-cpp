@@ -91,7 +91,8 @@ class AvroReader::Impl {
     // Open the input stream and adapt to the avro interface.
     ICEBERG_ASSIGN_OR_RAISE(
         auto input_stream,
-        CreateInputStream(options, options.properties->Get(ReaderProperties::kAvroBufferSize)));
+        CreateInputStream(options,
+                          options.properties->Get(ReaderProperties::kAvroBufferSize)));
 
     ::avro::ValidSchema file_schema;
 
