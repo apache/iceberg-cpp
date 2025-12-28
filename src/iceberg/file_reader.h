@@ -81,6 +81,9 @@ class ReaderProperties : public ConfigBase<ReaderProperties> {
   /// Default: true (skip GenericDatum for better performance).
   inline static Entry<bool> kAvroSkipDatum{"read.avro.skip-datum", true};
 
+  /// \brief The buffer size used by Avro input stream.
+  inline static Entry<int64_t> kAvroBufferSize{"read.avro.buffer-size", 1024 * 1024};
+
   /// \brief Create a default ReaderProperties instance.
   static std::unique_ptr<ReaderProperties> default_properties();
 
