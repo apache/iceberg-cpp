@@ -29,6 +29,7 @@
 #include "iceberg/partition_summary_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
+#include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/util/macros.h"
 

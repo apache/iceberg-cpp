@@ -19,6 +19,11 @@
 
 #include "iceberg/snapshot.h"
 
+#include "iceberg/file_io.h"
+#include "iceberg/manifest/manifest_list.h"
+#include "iceberg/manifest/manifest_reader.h"
+#include "iceberg/util/macros.h"
+
 namespace iceberg {
 
 bool SnapshotRef::Branch::Equals(const SnapshotRef::Branch& other) const {
@@ -78,6 +83,62 @@ bool Snapshot::Equals(const Snapshot& other) const {
          parent_snapshot_id == other.parent_snapshot_id &&
          sequence_number == other.sequence_number && timestamp_ms == other.timestamp_ms &&
          schema_id == other.schema_id;
+}
+
+Result<CachedSnapshot::ManifestsCache> CachedSnapshot::InitManifestsCache(
+    const Snapshot& snapshot, std::shared_ptr<FileIO> file_io) {
+  if (file_io == nullptr) {
+    return InvalidArgument("Cannot cache manifests: FileIO is null");
+  }
+
+  // Read manifest list
+  ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                          ManifestListReader::Make(snapshot.manifest_list, file_io));
+  ICEBERG_ASSIGN_OR_RAISE(auto manifest_files, reader->Files());
+
+  std::vector<ManifestFile> manifests;
+  manifests.reserve(manifest_files.size());
+
+  // Partition manifests: data manifests first, then delete manifests
+  // First pass: collect data manifests
+  for (const auto& manifest_file : manifest_files) {
+    if (manifest_file.content == ManifestContent::kData) {
+      manifests.push_back(manifest_file);
+    }
+  }
+  size_t data_manifests_count = manifests.size();
+
+  // Second pass: append delete manifests
+  for (const auto& manifest_file : manifest_files) {
+    if (manifest_file.content == ManifestContent::kDeletes) {
+      manifests.push_back(manifest_file);
+    }
+  }
+
+  return std::make_pair(std::move(manifests), data_manifests_count);
+}
+
+Result<std::span<ManifestFile>> CachedSnapshot::Manifests(
+    std::shared_ptr<FileIO> file_io) const {
+  ICEBERG_ASSIGN_OR_RAISE(auto cache_ref, manifests_cache_.Get(snapshot_, file_io));
+  auto& cache = cache_ref.get();
+  return std::span<ManifestFile>(cache.first.data(), cache.first.size());
+}
+
+Result<std::span<ManifestFile>> CachedSnapshot::DataManifests(
+    std::shared_ptr<FileIO> file_io) const {
+  ICEBERG_ASSIGN_OR_RAISE(auto cache_ref, manifests_cache_.Get(snapshot_, file_io));
+  auto& cache = cache_ref.get();
+  return std::span<ManifestFile>(cache.first.data(), cache.second);
+}
+
+Result<std::span<ManifestFile>> CachedSnapshot::DeleteManifests(
+    std::shared_ptr<FileIO> file_io) const {
+  ICEBERG_ASSIGN_OR_RAISE(auto cache_ref, manifests_cache_.Get(snapshot_, file_io));
+  auto& cache = cache_ref.get();
+  const size_t delete_start = cache.second;
+  const size_t delete_count = cache.first.size() - delete_start;
+  return std::span<ManifestFile>(cache.first.data() + delete_start, delete_count);
 }
 
 }  // namespace iceberg

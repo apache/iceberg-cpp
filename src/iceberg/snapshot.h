@@ -19,7 +19,9 @@
 
 #pragma once
 
+#include <memory>
 #include <optional>
+#include <span>
 #include <string>
 #include <string_view>
 #include <unordered_map>
@@ -27,7 +29,10 @@
 #include <variant>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/manifest/manifest_list.h"
 #include "iceberg/result.h"
+#include "iceberg/type_fwd.h"
+#include "iceberg/util/lazy.h"
 #include "iceberg/util/timepoint.h"
 
 namespace iceberg {
@@ -258,6 +263,56 @@ struct ICEBERG_EXPORT Snapshot {
  private:
   /// \brief Compare two snapshots for equality.
   bool Equals(const Snapshot& other) const;
+};
+
+/// \brief A snapshot with cached manifest loading capabilities.
+///
+/// This class wraps a Snapshot reference and provides lazy-loading of manifests.
+class ICEBERG_EXPORT CachedSnapshot {
+ public:
+  explicit CachedSnapshot(const Snapshot& snapshot) : snapshot_(snapshot) {}
+
+  /// \brief Get the underlying Snapshot reference
+  const Snapshot& snapshot() const { return snapshot_; }
+
+  /// \brief Returns all ManifestFile instances for either data or delete manifests
+  /// in this snapshot.
+  ///
+  /// \param file_io The FileIO instance to use for reading the manifest list
+  /// \return A span of ManifestFile instances, or an error
+  Result<std::span<ManifestFile>> Manifests(std::shared_ptr<FileIO> file_io) const;
+
+  /// \brief Returns a ManifestFile for each data manifest in this snapshot.
+  ///
+  /// \param file_io The FileIO instance to use for reading the manifest list
+  /// \return A span of ManifestFile instances, or an error
+  Result<std::span<ManifestFile>> DataManifests(std::shared_ptr<FileIO> file_io) const;
+
+  /// \brief Returns a ManifestFile for each delete manifest in this snapshot.
+  ///
+  /// \param file_io The FileIO instance to use for reading the manifest list
+  /// \return A span of ManifestFile instances, or an error
+  Result<std::span<ManifestFile>> DeleteManifests(std::shared_ptr<FileIO> file_io) const;
+
+ private:
+  /// \brief Cache structure for storing loaded manifests
+  ///
+  /// \note Manifests are stored in a single vector with data manifests at the head
+  /// and delete manifests at the tail, separated by the number of data manifests.
+  using ManifestsCache = std::pair<std::vector<ManifestFile>, size_t>;
+
+  /// \brief Initialize manifests cache by loading them from the manifest list file.
+  /// \param snapshot The snapshot to initialize the manifests cache for
+  /// \param file_io The FileIO instance to use for reading the manifest list
+  /// \return A result containing the manifests cache
+  static Result<ManifestsCache> InitManifestsCache(const Snapshot& snapshot,
+                                                   std::shared_ptr<FileIO> file_io);
+
+  /// The underlying snapshot data
+  const Snapshot& snapshot_;
+
+  /// Lazy-loaded manifests cache
+  Lazy<InitManifestsCache> manifests_cache_;
 };
 
 }  // namespace iceberg
