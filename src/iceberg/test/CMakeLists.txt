@@ -113,6 +113,8 @@ add_iceberg_test(util_test
 
 add_iceberg_test(roaring_test SOURCES roaring_test.cc)
 
+add_iceberg_test(data_writer_test SOURCES data_writer_test.cc)
+
 if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(avro_test
                    USE_BUNDLE
