@@ -150,9 +150,7 @@ ListType::ListType(int32_t field_id, std::shared_ptr<Type> type, bool optional)
     : element_(field_id, std::string(kElementName), std::move(type), optional) {}
 
 TypeId ListType::type_id() const { return kTypeId; }
-std::string ListType::ToString() const {
-  return std::format("list<{}>", element_);
-}
+std::string ListType::ToString() const { return std::format("list<{}>", element_); }
 
 std::span<const SchemaField> ListType::fields() const { return {&element_, 1}; }
 Result<std::optional<NestedType::SchemaFieldConstRef>> ListType::GetFieldById(
