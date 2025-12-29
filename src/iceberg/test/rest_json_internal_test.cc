@@ -37,9 +37,8 @@ namespace iceberg::rest {
 // Helper function to create a simple schema for testing
 static std::shared_ptr<Schema> MakeSimpleSchema() {
   return std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField(1, "id", int32(), false),     // required
-                               SchemaField(2, "data", string(), true)},  // optional
-      std::nullopt);
+      std::vector<SchemaField>{SchemaField(1, "id", int32(), false),  // required
+                               SchemaField(2, "data", string(), true)});
 }
 
 // Helper function to create a simple TableMetadata for testing
@@ -1013,20 +1012,18 @@ INSTANTIATE_TEST_SUITE_P(
             .json_str =
                 R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true}]}})",
             .expected_model = {.name = "my_table",
-                               .schema = std::make_shared<Schema>(
-                                   std::vector<SchemaField>{
-                                       SchemaField(1, "id", int32(), false)},  // required
-                                   std::nullopt)}},
+                               .schema =
+                                   std::make_shared<Schema>(std::vector<SchemaField>{
+                                       SchemaField(1, "id", int32(), false)})}},
         // stage-create field is missing (should default to false)
         CreateTableRequestDeserializeParam{
             .test_name = "MissingStageCreate",
             .json_str =
                 R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true}]}})",
             .expected_model = {.name = "my_table",
-                               .schema = std::make_shared<Schema>(
-                                   std::vector<SchemaField>{
-                                       SchemaField(1, "id", int32(), false)},  // required
-                                   std::nullopt),
+                               .schema =
+                                   std::make_shared<Schema>(std::vector<SchemaField>{
+                                       SchemaField(1, "id", int32(), false)}),
                                .stage_create = false}},
         // Properties field is missing (should deserialize to empty map)
         CreateTableRequestDeserializeParam{
@@ -1034,10 +1031,9 @@ INSTANTIATE_TEST_SUITE_P(
             .json_str =
                 R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true}]}})",
             .expected_model = {.name = "my_table",
-                               .schema = std::make_shared<Schema>(
-                                   std::vector<SchemaField>{
-                                       SchemaField(1, "id", int32(), false)},  // required
-                                   std::nullopt)}}),
+                               .schema =
+                                   std::make_shared<Schema>(std::vector<SchemaField>{
+                                       SchemaField(1, "id", int32(), false)})}}),
     [](const ::testing::TestParamInfo<CreateTableRequestDeserializeParam>& info) {
       return info.param.test_name;
     });

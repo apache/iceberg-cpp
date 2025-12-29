@@ -39,7 +39,7 @@ std::shared_ptr<iceberg::StructType> MakeStructType(Args&&... args) {
 template <typename... Args>
 std::unique_ptr<iceberg::Schema> MakeSchema(Args&&... args) {
   return std::make_unique<iceberg::Schema>(
-      std::vector<iceberg::SchemaField>{std::move(args)...}, std::nullopt);
+      std::vector<iceberg::SchemaField>{std::move(args)...});
 }
 
 TEST(SchemaTest, Basics) {

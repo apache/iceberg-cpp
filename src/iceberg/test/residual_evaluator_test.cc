@@ -90,8 +90,7 @@ class ResidualEvaluatorTest : public ::testing::Test {
 TEST_F(ResidualEvaluatorTest, IdentityTransformResiduals) {
   auto schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeOptional(50, "dateint", int32()),
-                               SchemaField::MakeOptional(51, "hour", int32())},
-      std::nullopt);
+                               SchemaField::MakeOptional(51, "hour", int32())});
 
   auto identity_transform = Transform::Identity();
   PartitionField pt_field(50, 1000, "dateint", identity_transform);
@@ -158,8 +157,7 @@ TEST_F(ResidualEvaluatorTest, IdentityTransformResiduals) {
 TEST_F(ResidualEvaluatorTest, CaseInsensitiveIdentityTransformResiduals) {
   auto schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeOptional(50, "dateint", int32()),
-                               SchemaField::MakeOptional(51, "hour", int32())},
-      std::nullopt);
+                               SchemaField::MakeOptional(51, "hour", int32())});
 
   auto identity_transform = Transform::Identity();
   PartitionField pt_field(50, 1000, "dateint", identity_transform);
@@ -249,8 +247,7 @@ TEST_F(ResidualEvaluatorTest, UnpartitionedResiduals) {
 TEST_F(ResidualEvaluatorTest, In) {
   auto schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeOptional(50, "dateint", int32()),
-                               SchemaField::MakeOptional(51, "hour", int32())},
-      std::nullopt);
+                               SchemaField::MakeOptional(51, "hour", int32())});
 
   auto identity_transform = Transform::Identity();
   PartitionField pt_field(50, 1000, "dateint", identity_transform);
@@ -276,8 +273,7 @@ TEST_F(ResidualEvaluatorTest, In) {
 TEST_F(ResidualEvaluatorTest, NotIn) {
   auto schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeOptional(50, "dateint", int32()),
-                               SchemaField::MakeOptional(51, "hour", int32())},
-      std::nullopt);
+                               SchemaField::MakeOptional(51, "hour", int32())});
 
   auto identity_transform = Transform::Identity();
   PartitionField pt_field(50, 1000, "dateint", identity_transform);
@@ -304,8 +300,7 @@ TEST_F(ResidualEvaluatorTest, NotIn) {
 TEST_F(ResidualEvaluatorTest, IsNaN) {
   auto schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeOptional(50, "double", float64()),
-                               SchemaField::MakeOptional(51, "float", float32())},
-      std::nullopt);
+                               SchemaField::MakeOptional(51, "float", float32())});
 
   // Test double field
   auto identity_transform = Transform::Identity();
@@ -353,8 +348,7 @@ TEST_F(ResidualEvaluatorTest, IsNaN) {
 TEST_F(ResidualEvaluatorTest, NotNaN) {
   auto schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeOptional(50, "double", float64()),
-                               SchemaField::MakeOptional(51, "float", float32())},
-      std::nullopt);
+                               SchemaField::MakeOptional(51, "float", float32())});
 
   // Test double field
   auto identity_transform = Transform::Identity();
@@ -401,8 +395,7 @@ TEST_F(ResidualEvaluatorTest, NotNaN) {
 
 TEST_F(ResidualEvaluatorTest, IntegerTruncateTransformResiduals) {
   auto schema = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeOptional(50, "value", int32())},
-      std::nullopt);
+      std::vector<SchemaField>{SchemaField::MakeOptional(50, "value", int32())});
 
   // Valid partitions would be 0, 10, 20...90, 100 etc.
   auto truncate_transform = Transform::Truncate(10);
@@ -518,8 +511,7 @@ TEST_F(ResidualEvaluatorTest, IntegerTruncateTransformResiduals) {
 
 TEST_F(ResidualEvaluatorTest, StringTruncateTransformResiduals) {
   auto schema = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeOptional(50, "value", string())},
-      std::nullopt);
+      std::vector<SchemaField>{SchemaField::MakeOptional(50, "value", string())});
 
   // Valid partitions would be two letter strings for eg: ab, bc etc
   auto truncate_transform = Transform::Truncate(2);

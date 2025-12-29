@@ -96,8 +96,7 @@ TEST(MetadataSerdeTest, DeserializeV1Valid) {
   auto expected_schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(1, "x", int64()),
                                SchemaField::MakeRequired(2, "y", int64()),
-                               SchemaField::MakeRequired(3, "z", int64())},
-      /*schema_id=*/std::nullopt);
+                               SchemaField::MakeRequired(3, "z", int64())});
 
   auto expected_spec_result = PartitionSpec::Make(
       /*spec_id=*/0,
