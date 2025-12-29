@@ -50,7 +50,7 @@ class WriterProperties : public ConfigBase<WriterProperties> {
   inline static Entry<int64_t> kAvroSyncInterval{"write.avro.sync-interval", 16 * 1024};
 
   /// \brief Whether to skip GenericDatum and use direct encoder for Avro writing.
-  /// When true, uses direct encoder (faster). When false, uses GenericDatum (legacy).
+  /// When true, uses direct encoder (faster). When false, uses GenericDatum.
   inline static Entry<bool> kAvroSkipDatum{"write.avro.skip-datum", true};
 
   /// TODO(gangwu): add more properties, like compression codec, compression level, etc.
