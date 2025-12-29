@@ -135,6 +135,9 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \brief Compare two partition specs for equality.
   bool Equals(const PartitionSpec& other) const;
 
+  /// \brief Validates that there are no redundant partition fields in the spec.
+  static Status ValidateRedundantPartitions(const PartitionSpec& spec);
+
   using SourceIdToFieldsMap = std::unordered_map<int32_t, std::vector<PartitionFieldRef>>;
   static Result<SourceIdToFieldsMap> InitSourceIdToFieldsMap(const PartitionSpec&);
 

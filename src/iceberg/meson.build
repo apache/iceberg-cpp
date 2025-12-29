@@ -42,6 +42,7 @@ iceberg_include_dir = include_directories('..')
 iceberg_sources = files(
     'arrow_c_data_guard_internal.cc',
     'catalog/memory/in_memory_catalog.cc',
+    'delete_file_index.cc',
     'expression/aggregate.cc',
     'expression/binder.cc',
     'expression/evaluator.cc',
@@ -102,6 +103,7 @@ iceberg_sources = files(
     'update/update_properties.cc',
     'update/update_sort_order.cc',
     'util/bucket_util.cc',
+    'util/content_file_util.cc',
     'util/conversions.cc',
     'util/decimal.cc',
     'util/gzip_internal.cc',
@@ -165,6 +167,7 @@ install_headers(
         'arrow_c_data.h',
         'catalog.h',
         'constants.h',
+        'delete_file_index.h',
         'exception.h',
         'file_format.h',
         'file_io.h',

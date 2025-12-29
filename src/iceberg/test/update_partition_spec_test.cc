@@ -729,39 +729,41 @@ TEST_P(UpdatePartitionSpecTest, TestRemoveAndAddMultiTimes) {
   update3->AddField(Expressions::Day("ts"), "ts_date");
   auto add_second_time_spec = ApplyUpdateAndGetSpec(update3);
 
-  // Remove second time
-  auto table3 = CreateTableWithSpec(add_second_time_spec, "test_table3");
-  auto update4 = CreateUpdateFromTable(table3);
-  update4->RemoveField(Expressions::Day("ts"));
-  auto remove_second_time_spec = ApplyUpdateAndGetSpec(update4);
-
   // Add third time with month
-  auto table4 = CreateTableWithSpec(remove_second_time_spec, "test_table4");
+  auto table4 = CreateTableWithSpec(add_second_time_spec, "test_table4");
   auto update5 = CreateUpdateFromTable(table4);
-  update5->AddField(Expressions::Month("ts"));
+  update5->AddField(Expressions::Month("ts"), "ts_month");
   auto add_third_time_spec = ApplyUpdateAndGetSpec(update5);
 
   // Rename ts_month to ts_date
   auto table5 = CreateTableWithSpec(add_third_time_spec, "test_table5");
   auto update6 = CreateUpdateFromTable(table5);
-  update6->RenameField("ts_month", "ts_date");
+  update6->RenameField("ts_month", "__ts_date");
   auto updated_spec = ApplyUpdateAndGetSpec(update6);
 
   if (format_version_ == 1) {
+    // Remove second time
+    auto table3 = CreateTableWithSpec(add_second_time_spec, "test_table3");
+    auto update4 = CreateUpdateFromTable(table3);
+    update4->RemoveField(Expressions::Day("ts"));
+    ExpectError(update4, ErrorKind::kValidationFailed,
+                "Cannot add redundant partition: ts_date");
+
     ASSERT_EQ(updated_spec->fields().size(), 3);
     // In V1, we expect void transforms for deleted fields
     EXPECT_TRUE(updated_spec->fields()[0].name().find("ts_date") == 0);
     EXPECT_TRUE(updated_spec->fields()[1].name().find("ts_date") == 0);
-    EXPECT_EQ(updated_spec->fields()[2].name(), "ts_date");
+    EXPECT_EQ(updated_spec->fields()[2].name(), "__ts_date");
     EXPECT_EQ(*updated_spec->fields()[0].transform(), *Transform::Void());
-    EXPECT_EQ(*updated_spec->fields()[1].transform(), *Transform::Void());
+    EXPECT_EQ(*updated_spec->fields()[1].transform(), *Transform::Day());
     EXPECT_EQ(*updated_spec->fields()[2].transform(), *Transform::Month());
   } else {
     ICEBERG_UNWRAP_OR_FAIL(
         auto expected_spec,
         PartitionSpec::Make(PartitionSpec::kInitialSpecId,
                             std::vector<PartitionField>{
-                                PartitionField(2, 1000, "ts_date", Transform::Month())},
+                                PartitionField(2, 1000, "ts_date", Transform::Day()),
+                                PartitionField(2, 1001, "__ts_date", Transform::Month())},
                             1000));
     auto expected = std::shared_ptr<PartitionSpec>(expected_spec.release());
     AssertPartitionSpecEquals(*expected, *updated_spec);

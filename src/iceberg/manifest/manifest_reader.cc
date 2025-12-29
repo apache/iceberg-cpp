@@ -39,6 +39,7 @@
 #include "iceberg/schema_field.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
+#include "iceberg/util/content_file_util.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -557,9 +558,9 @@ Result<std::vector<ManifestEntry>> ParseManifestEntry(
   return manifest_entries;
 }
 
-const std::vector<std::string> kStatsColumns = {"value_counts",     "null_value_counts",
-                                                "nan_value_counts", "lower_bounds",
-                                                "upper_bounds",     "record_count"};
+const std::vector<std::string> kStatsColumns = {
+    "value_counts", "null_value_counts", "nan_value_counts", "lower_bounds",
+    "upper_bounds", "column_sizes",      "record_count"};
 
 bool RequireStatsProjection(const std::shared_ptr<Expression>& row_filter,
                             const std::vector<std::string>& columns) {
@@ -591,6 +592,29 @@ Result<std::shared_ptr<Schema>> ProjectSchema(std::shared_ptr<Schema> schema,
 }
 
 }  // namespace
+
+bool ManifestReader::ShouldDropStats(const std::vector<std::string>& columns) {
+  // Make sure we only drop all stats if we had projected all stats.
+  // We do not drop stats even if we had partially added some stats columns, except for
+  // record_count column.
+  // Since we don't want to keep stats map which could be huge in size just because we
+  // select record_count, which is a primitive type.
+  if (!columns.empty()) {
+    const std::unordered_set<std::string_view> selected(columns.cbegin(), columns.cend());
+    if (selected.contains(Schema::kAllColumns)) {
+      return false;
+    }
+    std::unordered_set<std::string_view> intersection;
+    for (const auto& col : kStatsColumns) {
+      if (selected.contains(col)) {
+        intersection.insert(col);
+      }
+    }
+    return intersection.empty() ||
+           (intersection.size() == 1 && intersection.contains("record_count"));
+  }
+  return false;
+}
 
 std::vector<std::string> ManifestReader::WithStatsColumns(
     const std::vector<std::string>& columns) {
@@ -642,6 +666,11 @@ ManifestReader& ManifestReaderImpl::FilterRows(std::shared_ptr<Expression> expr)
 
 ManifestReader& ManifestReaderImpl::CaseSensitive(bool case_sensitive) {
   case_sensitive_ = case_sensitive;
+  return *this;
+}
+
+ManifestReader& ManifestReaderImpl::TryDropStats() {
+  drop_stats_ = true;
   return *this;
 }
 
@@ -773,6 +802,8 @@ Result<std::vector<ManifestEntry>> ManifestReaderImpl::ReadEntries(bool only_liv
     ICEBERG_ASSIGN_OR_RAISE(metrics_evaluator, GetMetricsEvaluator());
   }
 
+  bool drop_stats = drop_stats_ && ShouldDropStats(columns_);
+
   while (true) {
     ICEBERG_ASSIGN_OR_RAISE(auto result, file_reader_->Next());
     if (!result.has_value()) {
@@ -810,6 +841,10 @@ Result<std::vector<ManifestEntry>> ManifestReaderImpl::ReadEntries(bool only_liv
         if (!InPartitionSet(*entry.data_file)) {
           continue;
         }
+      }
+
+      if (drop_stats) {
+        ContentFileUtil::DropAllStats(*entry.data_file);
       }
 
       manifest_entries.push_back(std::move(entry));

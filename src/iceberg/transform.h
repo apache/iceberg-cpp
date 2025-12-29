@@ -197,6 +197,10 @@ class ICEBERG_EXPORT Transform : public util::Formattable {
   /// \brief Returns a string representation of this transform (e.g., "bucket[16]").
   std::string ToString() const override;
 
+  /// \brief Return the unique transform name to check if similar transforms for the same
+  /// source field are added multiple times in partition spec builder.
+  std::string DedupName() const;
+
   /// \brief Generates a partition name for the transform.
   /// \param source_name The name of the source column.
   /// \return A string representation of the partition name.
