@@ -41,7 +41,7 @@ class ICEBERG_EXPORT ManifestWriter {
 
   /// \brief Write the entry that all its fields are populated correctly.
   /// \param entry Manifest entry to write.
-  /// \return Status::OK() if entry was written successfully
+  /// \return Status indicating success or failure
   /// \note All other write entry variants delegate to this method after populating
   /// the necessary fields.
   Status WriteEntry(const ManifestEntry& entry);
@@ -50,7 +50,7 @@ class ICEBERG_EXPORT ManifestWriter {
   ///
   /// \param file an added data file
   /// \param data_sequence_number a data sequence number for the file
-  /// \return Status::OK() if the entry was written successfully
+  /// \return Status indicating success or failure
   /// \note The entry's snapshot ID will be this manifest's snapshot ID. The entry's data
   /// sequence number will be the provided data sequence number. The entry's file sequence
   /// number will be assigned at commit.
@@ -67,7 +67,7 @@ class ICEBERG_EXPORT ManifestWriter {
   /// file was added)
   /// \param file_sequence_number a file sequence number (assigned when the file was
   /// added)
-  /// \return Status::OK() if the entry was written successfully
+  /// \return Status indicating success or failure
   /// \note The original data and file sequence numbers, snapshot ID, which were assigned
   /// at commit, must be preserved when adding an existing entry.
   Status WriteExistingEntry(std::shared_ptr<DataFile> file, int64_t file_snapshot_id,
@@ -83,7 +83,7 @@ class ICEBERG_EXPORT ManifestWriter {
   /// file was added)
   /// \param file_sequence_number a file sequence number (assigned when the file was
   /// added)
-  /// \return Status::OK() if the entry was written successfully
+  /// \return Status indicating success or failure
   /// \note The entry's snapshot ID will be this manifest's snapshot ID. However, the
   /// original data and file sequence numbers of the file must be preserved when the file
   /// is marked as deleted.
@@ -95,7 +95,7 @@ class ICEBERG_EXPORT ManifestWriter {
 
   /// \brief Write manifest entries to file.
   /// \param entries Already populated manifest entries to write.
-  /// \return Status::OK() if all entries were written successfully
+  /// \return Status indicating success or failure
   Status AddAll(const std::vector<ManifestEntry>& entries);
 
   /// \brief Close writer and flush to storage.
@@ -191,12 +191,12 @@ class ICEBERG_EXPORT ManifestListWriter {
 
   /// \brief Write manifest file to manifest list file.
   /// \param file Manifest file to write.
-  /// \return Status::OK() if file was written successfully
+  /// \return Status indicating success or failure
   Status Add(const ManifestFile& file);
 
   /// \brief Write manifest file list to manifest list file.
   /// \param files Manifest file list to write.
-  /// \return Status::OK() if all files were written successfully
+  /// \return Status indicating success or failure
   Status AddAll(const std::vector<ManifestFile>& files);
 
   /// \brief Close writer and flush to storage.

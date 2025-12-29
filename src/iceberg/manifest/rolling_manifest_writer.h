@@ -54,7 +54,7 @@ class ICEBERG_EXPORT RollingManifestWriter {
   /// \brief Add an added entry for a file.
   ///
   /// \param file a data file
-  /// \return Status::OK() if the entry was written successfully
+  /// \return Status indicating success or failure
   /// \note The entry's snapshot ID will be this manifest's snapshot ID. The
   /// entry's data sequence number will be the provided data sequence number.
   /// The entry's file sequence number will be assigned at commit.
@@ -69,7 +69,7 @@ class ICEBERG_EXPORT RollingManifestWriter {
   /// the file was added)
   /// \param file_sequence_number a file sequence number (assigned when the file
   /// was added)
-  /// \return Status::OK() if the entry was written successfully
+  /// \return Status indicating success or failure
   /// \note The original data and file sequence numbers, snapshot ID, which were
   /// assigned at commit, must be preserved when adding an existing entry.
   Status WriteExistingEntry(std::shared_ptr<DataFile> file, int64_t file_snapshot_id,
@@ -83,7 +83,7 @@ class ICEBERG_EXPORT RollingManifestWriter {
   /// the file was added)
   /// \param file_sequence_number a file sequence number (assigned when the file
   /// was added)
-  /// \return Status::OK() if the entry was written successfully
+  /// \return Status indicating success or failure
   /// \note The entry's snapshot ID will be this manifest's snapshot ID. However,
   /// the original data and file sequence numbers of the file must be preserved
   /// when the file is marked as deleted.
