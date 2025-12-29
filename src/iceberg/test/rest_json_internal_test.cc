@@ -955,13 +955,13 @@ INSTANTIATE_TEST_SUITE_P(
         CreateTableRequestParam{
             .test_name = "MinimalRequest",
             .expected_json_str =
-                R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]}})",
+                R"({"name":"my_table","schema":{"type":"struct","schema-id":0,"fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]}})",
             .model = {.name = "my_table", .schema = MakeSimpleSchema()}},
         // Request with location
         CreateTableRequestParam{
             .test_name = "WithLocation",
             .expected_json_str =
-                R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"location":"s3://bucket/warehouse/my_table"})",
+                R"({"name":"my_table","schema":{"type":"struct","schema-id":0,"fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"location":"s3://bucket/warehouse/my_table"})",
             .model = {.name = "my_table",
                       .location = "s3://bucket/warehouse/my_table",
                       .schema = MakeSimpleSchema()}},
@@ -969,7 +969,7 @@ INSTANTIATE_TEST_SUITE_P(
         CreateTableRequestParam{
             .test_name = "WithProperties",
             .expected_json_str =
-                R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"properties":{"owner":"alice","version":"1.0"}})",
+                R"({"name":"my_table","schema":{"type":"struct","schema-id":0,"fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"properties":{"owner":"alice","version":"1.0"}})",
             .model = {.name = "my_table",
                       .schema = MakeSimpleSchema(),
                       .properties = {{"owner", "alice"}, {"version", "1.0"}}}},
@@ -977,7 +977,7 @@ INSTANTIATE_TEST_SUITE_P(
         CreateTableRequestParam{
             .test_name = "WithStageCreate",
             .expected_json_str =
-                R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"stage-create":true})",
+                R"({"name":"my_table","schema":{"type":"struct","schema-id":0,"fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"stage-create":true})",
             .model = {.name = "my_table",
                       .schema = MakeSimpleSchema(),
                       .stage_create = true}},
@@ -985,7 +985,7 @@ INSTANTIATE_TEST_SUITE_P(
         CreateTableRequestParam{
             .test_name = "WithUnpartitionedSpec",
             .expected_json_str =
-                R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"partition-spec":{"spec-id":0,"fields":[]}})",
+                R"({"name":"my_table","schema":{"type":"struct","schema-id":0,"fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"partition-spec":{"spec-id":0,"fields":[]}})",
             .model = {.name = "my_table",
                       .schema = MakeSimpleSchema(),
                       .partition_spec = PartitionSpec::Unpartitioned()}},
@@ -993,7 +993,7 @@ INSTANTIATE_TEST_SUITE_P(
         CreateTableRequestParam{
             .test_name = "WithUnsortedOrder",
             .expected_json_str =
-                R"({"name":"my_table","schema":{"type":"struct","fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"write-order":{"order-id":0,"fields":[]}})",
+                R"({"name":"my_table","schema":{"type":"struct","schema-id":0,"fields":[{"id":1,"name":"id","type":"int","required":true},{"id":2,"name":"data","type":"string","required":false}]},"write-order":{"order-id":0,"fields":[]}})",
             .model = {.name = "my_table",
                       .schema = MakeSimpleSchema(),
                       .write_order = SortOrder::Unsorted()}}),
