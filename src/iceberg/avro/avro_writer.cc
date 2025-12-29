@@ -119,7 +119,7 @@ class AvroWriter::Impl {
       for (int64_t i = 0; i < result->length(); i++) {
         ICEBERG_RETURN_UNEXPECTED(
             EncodeArrowToAvro(avro_root_node_, writer_base_->encoder(), *write_schema_,
-                              *result, i, &encode_ctx_));
+                              *result, i, encode_ctx_));
         writer_base_->incr();
       }
     } else {

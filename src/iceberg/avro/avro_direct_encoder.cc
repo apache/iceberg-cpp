@@ -64,10 +64,7 @@ Result<UnionBranches> ValidateUnion(const ::avro::NodePtr& union_node) {
 
 Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& encoder,
                          const Type& type, const ::arrow::Array& array, int64_t row_index,
-                         EncodeContext* ctx) {
-  if (!ctx) {
-    return InvalidArgument("EncodeContext must not be null");
-  }
+                         EncodeContext& ctx) {
   if (row_index < 0 || row_index >= array.length()) {
     return InvalidArgument("Row index {} out of bounds for array of length {}", row_index,
                            array.length());
@@ -182,8 +179,8 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
       const auto& binary_array =
           internal::checked_cast<const ::arrow::BinaryArray&>(array);
       std::string_view value = binary_array.GetView(row_index);
-      ctx->bytes_scratch.assign(value.begin(), value.end());
-      encoder.encodeBytes(ctx->bytes_scratch);
+      ctx.bytes_scratch.assign(value.begin(), value.end());
+      encoder.encodeBytes(ctx.bytes_scratch);
       return {};
     }
 
@@ -196,8 +193,8 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
             internal::checked_cast<const ::arrow::FixedSizeBinaryArray&>(
                 *extension_array.storage());
         std::string_view value = fixed_array.GetView(row_index);
-        ctx->bytes_scratch.assign(value.begin(), value.end());
-        encoder.encodeFixed(ctx->bytes_scratch.data(), ctx->bytes_scratch.size());
+        ctx.bytes_scratch.assign(value.begin(), value.end());
+        encoder.encodeFixed(ctx.bytes_scratch.data(), ctx.bytes_scratch.size());
         return {};
       }
 
@@ -206,10 +203,10 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
         const auto& decimal_array =
             internal::checked_cast<const ::arrow::Decimal128Array&>(array);
         std::string_view decimal_value = decimal_array.GetView(row_index);
-        ctx->bytes_scratch.assign(decimal_value.begin(), decimal_value.end());
+        ctx.bytes_scratch.assign(decimal_value.begin(), decimal_value.end());
         // Arrow Decimal128 bytes are in little-endian order, Avro requires big-endian
-        std::ranges::reverse(ctx->bytes_scratch);
-        encoder.encodeFixed(ctx->bytes_scratch.data(), ctx->bytes_scratch.size());
+        std::ranges::reverse(ctx.bytes_scratch);
+        encoder.encodeFixed(ctx.bytes_scratch.data(), ctx.bytes_scratch.size());
         return {};
       }
 
@@ -217,8 +214,8 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
       const auto& fixed_array =
           internal::checked_cast<const ::arrow::FixedSizeBinaryArray&>(array);
       std::string_view value = fixed_array.GetView(row_index);
-      ctx->bytes_scratch.assign(value.begin(), value.end());
-      encoder.encodeFixed(ctx->bytes_scratch.data(), ctx->bytes_scratch.size());
+      ctx.bytes_scratch.assign(value.begin(), value.end());
+      encoder.encodeFixed(ctx.bytes_scratch.data(), ctx.bytes_scratch.size());
       return {};
     }
 
@@ -247,6 +244,18 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
       // (Schema extends StructType)
       const auto& struct_type = static_cast<const StructType&>(type);
       const size_t num_fields = avro_node->leaves();
+
+      // Validate field count matches
+      if (struct_array.num_fields() != static_cast<int>(num_fields)) {
+        return InvalidArgument(
+            "Field count mismatch: Arrow struct has {} fields, Avro node has {} fields",
+            struct_array.num_fields(), num_fields);
+      }
+      if (struct_type.fields().size() != num_fields) {
+        return InvalidArgument(
+            "Field count mismatch: Iceberg struct has {} fields, Avro node has {} fields",
+            struct_type.fields().size(), num_fields);
+      }
 
       for (size_t i = 0; i < num_fields; ++i) {
         const auto& field_node = avro_node->leafAt(i);

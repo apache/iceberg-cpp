@@ -173,7 +173,7 @@ class AvroReader::Impl {
 
         ICEBERG_RETURN_UNEXPECTED(DecodeAvroToBuilder(
             GetReaderSchema().root(), base_reader_->decoder(), projection_, *read_schema_,
-            context_->builder_.get(), &context_->decode_context_));
+            context_->builder_.get(), context_->decode_context_));
       } else {
         // GenericDatum-based decoding: decode via GenericDatum intermediate
         if (!datum_reader_->read(*context_->datum_)) {

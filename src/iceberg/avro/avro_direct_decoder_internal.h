@@ -82,6 +82,6 @@ struct DecodeContext {
 Status DecodeAvroToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder,
                            const SchemaProjection& projection,
                            const Schema& projected_schema,
-                           ::arrow::ArrayBuilder* array_builder, DecodeContext* ctx);
+                           ::arrow::ArrayBuilder* array_builder, DecodeContext& ctx);
 
 }  // namespace iceberg::avro

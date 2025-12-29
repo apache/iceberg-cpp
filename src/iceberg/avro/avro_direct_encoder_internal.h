@@ -54,6 +54,6 @@ struct EncodeContext {
 /// \return Status::OK if successful, or an error status
 Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& encoder,
                          const Type& type, const ::arrow::Array& array, int64_t row_index,
-                         EncodeContext* ctx);
+                         EncodeContext& ctx);
 
 }  // namespace iceberg::avro
