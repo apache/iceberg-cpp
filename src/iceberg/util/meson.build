@@ -20,6 +20,7 @@ install_headers(
         'bucket_util.h',
         'checked_cast.h',
         'config.h',
+        'content_file_util.h',
         'conversions.h',
         'decimal.h',
         'endian.h',

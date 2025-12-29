@@ -442,17 +442,18 @@ TEST(TableMetadataBuilderTest, AddSchemaBasic) {
   EXPECT_EQ(metadata->last_column_id, 6);
 }
 
-TEST(TableMetadataBuilderTest, AddSchemaInvalidColumnIds) {
+TEST(TableMetadataBuilderTest, AddSchemaWithDuplicateColumnIds) {
   auto base = CreateBaseMetadata();
   auto builder = TableMetadataBuilder::BuildFrom(base.get());
 
-  // Try to add schema with column ID lower than existing last_column_id
+  // Add schema with column ID that already exists - should still work
   auto field1 =
       SchemaField::MakeRequired(2, "duplicate_id", int64());  // ID 2 already exists
-  auto invalid_schema = std::make_shared<Schema>(std::vector<SchemaField>{field1}, 1);
-  builder->AddSchema(invalid_schema);
+  auto schema_with_duplicate =
+      std::make_shared<Schema>(std::vector<SchemaField>{field1}, 1);
+  builder->AddSchema(schema_with_duplicate);
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
-  // Should still work - AddSchema automatically uses max(existing, highest_in_schema)
+  // Should work - AddSchema automatically uses max(existing, highest_in_schema)
   ASSERT_EQ(metadata->schemas.size(), 2);
   EXPECT_EQ(metadata->last_column_id, 3);  // Should remain 3 (from base metadata)
 }
@@ -481,6 +482,50 @@ TEST(TableMetadataBuilderTest, AddSchemaEmptyFields) {
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
   ASSERT_EQ(metadata->schemas.size(), 2);
   EXPECT_EQ(metadata->last_column_id, 3);  // Should remain unchanged
+}
+
+TEST(TableMetadataBuilderTest, AddSchemaIdempotent) {
+  auto base = CreateBaseMetadata();
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  // Add the same schema twice
+  auto field1 = SchemaField::MakeRequired(4, "field1", int64());
+  auto field2 = SchemaField::MakeRequired(5, "field2", string());
+  auto schema1 = std::make_shared<Schema>(std::vector<SchemaField>{field1, field2}, 1);
+  auto schema2 = std::make_shared<Schema>(std::vector<SchemaField>{field1, field2},
+                                          2);  // Different ID but same fields
+
+  builder->AddSchema(schema1);
+  builder->AddSchema(schema2);  // Should reuse existing schema
+
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+  ASSERT_EQ(metadata->schemas.size(), 2);  // Only one new schema should be added
+  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 1);
+}
+
+TEST(TableMetadataBuilderTest, AddSchemaMultipleDifferent) {
+  auto base = CreateBaseMetadata();
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  // Add multiple different schemas
+  auto field1 = SchemaField::MakeRequired(4, "field1", int64());
+  auto field2 = SchemaField::MakeRequired(5, "field2", string());
+  auto field3 = SchemaField::MakeRequired(6, "field3", float64());
+
+  auto schema1 = std::make_shared<Schema>(std::vector<SchemaField>{field1}, 1);
+  auto schema2 = std::make_shared<Schema>(std::vector<SchemaField>{field2}, 2);
+  auto schema3 = std::make_shared<Schema>(std::vector<SchemaField>{field3}, 3);
+
+  builder->AddSchema(schema1);
+  builder->AddSchema(schema2);
+  builder->AddSchema(schema3);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+  ASSERT_EQ(metadata->schemas.size(), 4);  // Original + 3 new
+  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 1);
+  EXPECT_EQ(metadata->schemas[2]->schema_id().value(), 2);
+  EXPECT_EQ(metadata->schemas[3]->schema_id().value(), 3);
+  EXPECT_EQ(metadata->last_column_id, 6);
 }
 
 // Test SetCurrentSchema
@@ -546,6 +591,219 @@ TEST(TableMetadataBuilderTest, SetCurrentSchemaUpdatesLastColumnId) {
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
   EXPECT_EQ(metadata->current_schema_id.value(), 1);
   EXPECT_EQ(metadata->last_column_id, 10);
+}
+
+// Additional comprehensive tests for AddSchema
+TEST(TableMetadataBuilderTest, AddSchemaWithNestedTypes) {
+  auto base = CreateBaseMetadata();
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  // Add schema with nested struct type
+  auto inner_field1 = SchemaField::MakeRequired(10, "inner_id", int64());
+  auto inner_field2 = SchemaField::MakeRequired(11, "inner_name", string());
+  auto struct_type =
+      std::make_shared<StructType>(std::vector<SchemaField>{inner_field1, inner_field2});
+  auto struct_field = SchemaField::MakeRequired(4, "nested_struct", struct_type);
+
+  auto new_schema = std::make_shared<Schema>(std::vector<SchemaField>{struct_field}, 1);
+  builder->AddSchema(new_schema);
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+
+  ASSERT_EQ(metadata->schemas.size(), 2);
+  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 1);
+  EXPECT_EQ(metadata->last_column_id, 11);  // Should be highest nested field ID
+}
+
+TEST(TableMetadataBuilderTest, AddSchemaWithListAndMapTypes) {
+  auto base = CreateBaseMetadata();
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  // Add schema with list type
+  auto list_type = std::make_shared<ListType>(10, int32(), true);
+  auto list_field = SchemaField::MakeRequired(4, "int_list", list_type);
+
+  // Add schema with map type
+  auto key_field = SchemaField::MakeRequired(11, "key", string());
+  auto value_field = SchemaField::MakeRequired(12, "value", int64());
+  auto map_type = std::make_shared<MapType>(key_field, value_field);
+  auto map_field = SchemaField::MakeRequired(5, "string_int_map", map_type);
+
+  auto new_schema =
+      std::make_shared<Schema>(std::vector<SchemaField>{list_field, map_field}, 1);
+  builder->AddSchema(new_schema);
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+
+  ASSERT_EQ(metadata->schemas.size(), 2);
+  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 1);
+  EXPECT_EQ(metadata->last_column_id, 12);  // Should be highest field ID including nested
+}
+
+TEST(TableMetadataBuilderTest, AddSchemaSequentialIds) {
+  auto base = CreateBaseMetadata();
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  // Add multiple schemas and verify ID assignment
+  auto field1 = SchemaField::MakeRequired(4, "field1", int64());
+  auto schema1 = std::make_shared<Schema>(std::vector<SchemaField>{field1}, 1);
+
+  auto field2 = SchemaField::MakeRequired(5, "field2", string());
+  auto schema2 = std::make_shared<Schema>(std::vector<SchemaField>{field2}, 2);
+
+  auto field3 = SchemaField::MakeRequired(6, "field3", float64());
+  auto schema3 = std::make_shared<Schema>(std::vector<SchemaField>{field3}, 3);
+
+  builder->AddSchema(schema1);
+  builder->AddSchema(schema2);
+  builder->AddSchema(schema3);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+  ASSERT_EQ(metadata->schemas.size(), 4);  // Original + 3 new
+
+  // Verify sequential schema IDs
+  EXPECT_EQ(metadata->schemas[0]->schema_id().value(), 0);  // Original
+  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 1);
+  EXPECT_EQ(metadata->schemas[2]->schema_id().value(), 2);
+  EXPECT_EQ(metadata->schemas[3]->schema_id().value(), 3);
+}
+
+TEST(TableMetadataBuilderTest, AddSchemaWithOptionalFields) {
+  auto base = CreateBaseMetadata();
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  // Add schema with mix of required and optional fields
+  auto required_field = SchemaField::MakeRequired(4, "required_field", int64());
+  auto optional_field = SchemaField::MakeOptional(5, "optional_field", string());
+
+  auto new_schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{required_field, optional_field}, 1);
+  builder->AddSchema(new_schema);
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+
+  ASSERT_EQ(metadata->schemas.size(), 2);
+  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 1);
+
+  // Verify field properties
+  const auto& fields = metadata->schemas[1]->fields();
+  ASSERT_EQ(fields.size(), 2);
+  EXPECT_FALSE(fields[0].optional());  // required_field
+  EXPECT_TRUE(fields[1].optional());   // optional_field
+}
+
+// Additional comprehensive tests for SetCurrentSchema
+TEST(TableMetadataBuilderTest, SetCurrentSchemaInvalidId) {
+  auto base = CreateBaseMetadata();
+
+  // 1. Try to use -1 (last added) when no schema has been added
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+  builder->SetCurrentSchema(-1);
+  ASSERT_THAT(builder->Build(), IsError(ErrorKind::kValidationFailed));
+  ASSERT_THAT(builder->Build(), HasErrorMessage("no schema has been added"));
+
+  // 2. Try to set non-existent schema ID
+  builder = TableMetadataBuilder::BuildFrom(base.get());
+  builder->SetCurrentSchema(999);
+  ASSERT_THAT(builder->Build(), IsError(ErrorKind::kValidationFailed));
+  ASSERT_THAT(builder->Build(), HasErrorMessage("unknown schema: 999"));
+}
+
+TEST(TableMetadataBuilderTest, SetCurrentSchemaWithPartitionSpecRebuild) {
+  auto base = CreateBaseMetadata();
+
+  // Add a partition spec to the base metadata
+  auto schema = CreateTestSchema();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec,
+      PartitionSpec::Make(PartitionSpec::kInitialSpecId,
+                          {PartitionField(1, 1000, "id_bucket", Transform::Bucket(16))},
+                          1000));
+  base->partition_specs.push_back(std::move(spec));
+
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  // Add and set a new schema - should rebuild partition specs
+  auto field1 = SchemaField::MakeRequired(4, "new_id", int64());
+  auto field2 = SchemaField::MakeRequired(5, "new_data", string());
+  auto new_schema = std::make_shared<Schema>(std::vector<SchemaField>{field1, field2}, 1);
+  builder->SetCurrentSchema(new_schema, 5);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+
+  // Verify schema was set
+  EXPECT_EQ(metadata->current_schema_id.value(), 1);
+  EXPECT_EQ(metadata->last_column_id, 5);
+
+  // Verify partition specs were rebuilt (they should still exist)
+  ASSERT_EQ(metadata->partition_specs.size(), 2);
+}
+
+TEST(TableMetadataBuilderTest, SetCurrentSchemaMultipleOperations) {
+  auto base = CreateBaseMetadata();
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  // Add multiple schemas
+  auto field1 = SchemaField::MakeRequired(4, "field1", int64());
+  auto schema1 = std::make_shared<Schema>(std::vector<SchemaField>{field1}, 1);
+
+  auto field2 = SchemaField::MakeRequired(5, "field2", string());
+  auto schema2 = std::make_shared<Schema>(std::vector<SchemaField>{field2}, 2);
+
+  builder->AddSchema(schema1);
+  builder->AddSchema(schema2);
+
+  // Set current to first added schema
+  builder->SetCurrentSchema(1);
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+  EXPECT_EQ(metadata->current_schema_id.value(), 1);
+
+  // Change current to second schema
+  builder = TableMetadataBuilder::BuildFrom(metadata.get());
+  builder->SetCurrentSchema(2);
+  ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
+  EXPECT_EQ(metadata->current_schema_id.value(), 2);
+
+  // Change back to original schema
+  builder = TableMetadataBuilder::BuildFrom(metadata.get());
+  builder->SetCurrentSchema(0);
+  ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
+  EXPECT_EQ(metadata->current_schema_id.value(), 0);
+}
+
+TEST(TableMetadataBuilderTest, SetCurrentSchemaLastAddedTracking) {
+  auto base = CreateBaseMetadata();
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  // Add multiple schemas
+  auto field1 = SchemaField::MakeRequired(4, "field1", int64());
+  auto schema1 = std::make_shared<Schema>(std::vector<SchemaField>{field1}, 1);
+
+  auto field2 = SchemaField::MakeRequired(5, "field2", string());
+  auto schema2 = std::make_shared<Schema>(std::vector<SchemaField>{field2}, 2);
+
+  builder->AddSchema(schema1);
+  builder->AddSchema(schema2);  // This becomes the "last added"
+
+  // Use -1 to set current to last added schema
+  builder->SetCurrentSchema(-1);
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+  EXPECT_EQ(metadata->current_schema_id.value(), 2);  // Should be schema2
+}
+
+TEST(TableMetadataBuilderTest, AddSchemaAndSetCurrentCombined) {
+  auto base = CreateBaseMetadata();
+  auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+  // Add a schema and immediately set it as current
+  auto field1 = SchemaField::MakeRequired(4, "new_field", int64());
+  auto new_schema = std::make_shared<Schema>(std::vector<SchemaField>{field1}, 1);
+
+  builder->AddSchema(new_schema);
+  builder->SetCurrentSchema(-1);  // Set to last added
+
+  ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+  ASSERT_EQ(metadata->schemas.size(), 2);
+  EXPECT_EQ(metadata->current_schema_id.value(), 1);
+  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 1);
+  EXPECT_EQ(metadata->last_column_id, 4);
 }
 
 TEST(TableMetadataBuilderTest, SetCurrentSchemaInvalid) {

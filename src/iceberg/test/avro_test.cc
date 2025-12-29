@@ -945,4 +945,27 @@ INSTANTIATE_TEST_SUITE_P(DirectEncoderModes, AvroWriterParameterizedTest,
                            return info.param ? "DirectEncoder" : "GenericDatum";
                          });
 
+TEST_F(AvroReaderTest, BufferSizeConfiguration) {
+  // Test default buffer size
+  auto properties1 = ReaderProperties::default_properties();
+  ASSERT_EQ(properties1->Get(ReaderProperties::kAvroBufferSize), 1024 * 1024);
+
+  // Test setting custom buffer size
+  auto properties2 = ReaderProperties::default_properties();
+  constexpr int64_t kCustomBufferSize = 2 * 1024 * 1024;  // 2MB
+  properties2->Set(ReaderProperties::kAvroBufferSize, kCustomBufferSize);
+  ASSERT_EQ(properties2->Get(ReaderProperties::kAvroBufferSize), kCustomBufferSize);
+
+  // Test setting via FromMap
+  std::unordered_map<std::string, std::string> config_map = {
+      {"read.avro.buffer-size", "4194304"}  // 4MB
+  };
+  auto properties3 = ReaderProperties::FromMap(config_map);
+  ASSERT_EQ(properties3->Get(ReaderProperties::kAvroBufferSize), 4194304);
+
+  // Test that unset returns to default
+  properties2->Unset(ReaderProperties::kAvroBufferSize);
+  ASSERT_EQ(properties2->Get(ReaderProperties::kAvroBufferSize), 1024 * 1024);
+}
+
 }  // namespace iceberg::avro

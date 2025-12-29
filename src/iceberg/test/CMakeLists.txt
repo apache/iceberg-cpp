@@ -120,11 +120,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    avro_data_test.cc
                    avro_test.cc
                    avro_schema_test.cc
-                   avro_stream_test.cc
-                   manifest_list_versions_test.cc
-                   manifest_reader_stats_test.cc
-                   manifest_reader_test.cc
-                   manifest_writer_versions_test.cc)
+                   avro_stream_test.cc)
 
   add_iceberg_test(arrow_test
                    USE_BUNDLE
@@ -142,6 +138,15 @@ if(ICEBERG_BUILD_BUNDLE)
                    SOURCES
                    eval_expr_test.cc
                    evaluator_test.cc)
+
+  add_iceberg_test(manifest_test
+                   USE_BUNDLE
+                   SOURCES
+                   delete_file_index_test.cc
+                   manifest_list_versions_test.cc
+                   manifest_reader_stats_test.cc
+                   manifest_reader_test.cc
+                   manifest_writer_versions_test.cc)
 
   add_iceberg_test(parquet_test
                    USE_BUNDLE

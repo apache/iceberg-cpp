@@ -89,10 +89,10 @@ class AvroReader::Impl {
     read_schema_ = options.projection;
 
     // Open the input stream and adapt to the avro interface.
-    // TODO(gangwu): make this configurable
-    constexpr int64_t kDefaultBufferSize = 1024 * 1024;
-    ICEBERG_ASSIGN_OR_RAISE(auto input_stream,
-                            CreateInputStream(options, kDefaultBufferSize));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto input_stream,
+        CreateInputStream(options,
+                          options.properties->Get(ReaderProperties::kAvroBufferSize)));
 
     ::avro::ValidSchema file_schema;
 

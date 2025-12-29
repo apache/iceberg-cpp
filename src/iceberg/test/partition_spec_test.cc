@@ -303,4 +303,126 @@ TEST(PartitionSpecTest, PartitionFieldInStructInMap) {
   EXPECT_THAT(result_value, HasErrorMessage("Invalid partition field parent"));
 }
 
+TEST(PartitionSpecTest, ValidateRedundantPartitionsExactDuplicates) {
+  // Create a schema with different field types
+  auto ts_field = SchemaField::MakeRequired(1, "ts", timestamp());
+  auto id_field = SchemaField::MakeRequired(2, "id", int64());
+  Schema schema({ts_field, id_field}, Schema::kInitialSchemaId);
+
+  // Test: exact duplicate transforms on same field (same dedup name)
+  {
+    PartitionField field1(1, 1000, "ts_day_1_0", Transform::Day());
+    PartitionField field2(1, 1001, "ts_day_1_1", Transform::Day());
+
+    auto result = PartitionSpec::Make(schema, 1, {field1, field2}, false);
+    EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+    EXPECT_THAT(result, HasErrorMessage("Cannot add redundant partition"));
+    EXPECT_THAT(result, HasErrorMessage("conflicts with"));
+  }
+
+  // Test: same bucket size on same field (redundant)
+  {
+    PartitionField bucket1(2, 1000, "id_bucket_16_2_0", Transform::Bucket(16));
+    PartitionField bucket2(2, 1001, "id_bucket_16_2_1", Transform::Bucket(16));
+
+    auto result = PartitionSpec::Make(schema, 1, {bucket1, bucket2}, false);
+    EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+    EXPECT_THAT(result, HasErrorMessage("Cannot add redundant partition"));
+  }
+
+  // Test: same truncate width on same field (redundant)
+  {
+    auto name_field = SchemaField::MakeRequired(3, "name", string());
+    Schema schema_with_string({name_field}, Schema::kInitialSchemaId);
+
+    PartitionField truncate1(3, 1000, "name_trunc_4_3_1", Transform::Truncate(4));
+    PartitionField truncate2(3, 1001, "name_trunc_4_3_2", Transform::Truncate(4));
+
+    auto result =
+        PartitionSpec::Make(schema_with_string, 1, {truncate1, truncate2}, false);
+    EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+    EXPECT_THAT(result, HasErrorMessage("Cannot add redundant partition"));
+  }
+}
+
+TEST(PartitionSpecTest, ValidateRedundantPartitionsAllowedCases) {
+  // Create a schema with different field types
+  auto ts_field = SchemaField::MakeRequired(1, "ts", timestamp());
+  auto id_field = SchemaField::MakeRequired(2, "id", int64());
+  auto name_field = SchemaField::MakeRequired(3, "name", string());
+  Schema schema({ts_field, id_field, name_field}, Schema::kInitialSchemaId);
+
+  // Test: different bucket sizes on same field (allowed - different dedup names)
+  {
+    PartitionField bucket16(2, 1000, "id_bucket_16_2", Transform::Bucket(16));
+    PartitionField bucket32(2, 1001, "id_bucket_32_2", Transform::Bucket(32));
+
+    auto result = PartitionSpec::Make(schema, 1, {bucket16, bucket32}, false);
+    EXPECT_THAT(result, IsOk());
+  }
+
+  // Test: different truncate widths on same field (allowed - different dedup names)
+  {
+    PartitionField truncate4(3, 1000, "name_trunc_4_3", Transform::Truncate(4));
+    PartitionField truncate8(3, 1001, "name_trunc_8_3", Transform::Truncate(8));
+
+    auto result = PartitionSpec::Make(schema, 1, {truncate4, truncate8}, false);
+    EXPECT_THAT(result, IsOk());
+  }
+
+  // Test: same transforms on different fields (allowed)
+  {
+    PartitionField ts_day(1, 1000, "ts_day_1", Transform::Day());
+    PartitionField id_bucket(2, 1001, "id_bucket_2", Transform::Bucket(16));
+
+    auto result = PartitionSpec::Make(schema, 1, {ts_day, id_bucket}, false);
+    EXPECT_THAT(result, IsOk());
+  }
+
+  // Test: different transforms on same field (allowed if dedup names differ)
+  {
+    PartitionField ts_day(1, 1000, "ts_day_1", Transform::Day());
+    PartitionField ts_month(1, 1001, "ts_month_1", Transform::Month());
+
+    // This should be allowed since Day and Month have different dedup names
+    // The Java logic only checks for exact dedup name matches
+    auto result = PartitionSpec::Make(schema, 1, {ts_day, ts_month}, false);
+    EXPECT_THAT(result, IsOk());
+  }
+
+  // Test: single partition field (no redundancy possible)
+  {
+    PartitionField single_field(1, 1000, "ts_year_1", Transform::Year());
+
+    auto result = PartitionSpec::Make(schema, 1, {single_field}, false);
+    EXPECT_THAT(result, IsOk());
+  }
+}
+
+TEST(PartitionSpecTest, ValidateRedundantPartitionsIdentityTransforms) {
+  // Create a schema with different field types
+  auto id_field = SchemaField::MakeRequired(1, "id", int64());
+  auto name_field = SchemaField::MakeRequired(2, "name", string());
+  Schema schema({id_field, name_field}, Schema::kInitialSchemaId);
+
+  // Test: multiple identity transforms on same field (redundant)
+  {
+    PartitionField identity1(1, 1000, "id_1_0", Transform::Identity());
+    PartitionField identity2(1, 1001, "id_1_1", Transform::Identity());
+
+    auto result = PartitionSpec::Make(schema, 1, {identity1, identity2}, false);
+    EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+    EXPECT_THAT(result, HasErrorMessage("Cannot add redundant partition"));
+  }
+
+  // Test: identity transforms on different fields (allowed)
+  {
+    PartitionField id_identity(1, 1000, "id_1", Transform::Identity());
+    PartitionField name_identity(2, 1001, "name_2", Transform::Identity());
+
+    auto result = PartitionSpec::Make(schema, 1, {id_identity, name_identity}, false);
+    EXPECT_THAT(result, IsOk());
+  }
+}
+
 }  // namespace iceberg
