@@ -42,6 +42,7 @@
 #include "iceberg/table_properties.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
+#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/json_util_internal.h"
 #include "iceberg/util/macros.h"
@@ -309,7 +310,9 @@ nlohmann::json ToJson(const Type& type) {
 nlohmann::json ToJson(const Schema& schema) {
   nlohmann::json json = ToJson(static_cast<const Type&>(schema));
   json[kSchemaId] = schema.schema_id();
-  // TODO(gangwu): add identifier-field-ids.
+  if (!schema.IdentifierFieldIds().empty()) {
+    json[kIdentifierFieldIds] = schema.IdentifierFieldIds();
+  }
   return json;
 }
 
@@ -473,10 +476,21 @@ Result<std::unique_ptr<Schema>> SchemaFromJson(const nlohmann::json& json) {
   if (type->type_id() != TypeId::kStruct) [[unlikely]] {
     return JsonParseError("Schema must be a struct type, but got {}", SafeDumpJson(json));
   }
+  auto& struct_type = internal::checked_cast<StructType&>(*type);
 
-  auto& struct_type = static_cast<StructType&>(*type);
-  auto schema_id = schema_id_opt.value_or(Schema::kInitialSchemaId);
-  return FromStructType(std::move(struct_type), schema_id);
+  std::vector<SchemaField> fields;
+  fields.reserve(struct_type.fields().size());
+  for (auto& field : struct_type.fields()) {
+    fields.emplace_back(std::move(field));
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto identifier_field_ids,
+      GetJsonValueOrDefault<std::vector<int32_t>>(json, kIdentifierFieldIds));
+
+  return std::make_unique<Schema>(std::move(fields),
+                                  schema_id_opt.value_or(Schema::kInitialSchemaId),
+                                  std::move(identifier_field_ids));
 }
 
 nlohmann::json ToJson(const PartitionField& partition_field) {

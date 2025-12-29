@@ -27,6 +27,7 @@
 #include "iceberg/json_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
+#include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
 
 namespace iceberg {
@@ -131,6 +132,54 @@ TEST(SchemaJsonTest, RoundTrip) {
 
   auto dumped_json = ToJson(*schema).dump();
   ASSERT_EQ(dumped_json, json);
+}
+
+TEST(SchemaJsonTest, IdentifierFieldIds) {
+  // Test schema with identifier-field-ids
+  constexpr std::string_view json_with_identifier_str =
+      R"({"fields":[{"id":1,"name":"id","required":true,"type":"long"},
+                    {"id":2,"name":"data","required":false,"type":"string"}],
+          "identifier-field-ids":[1],
+          "schema-id":1,
+          "type":"struct"})";
+
+  auto json_with_identifiers = nlohmann::json::parse(json_with_identifier_str);
+  ICEBERG_UNWRAP_OR_FAIL(auto schema_with_identifers,
+                         SchemaFromJson(json_with_identifiers));
+  ASSERT_EQ(schema_with_identifers->fields().size(), 2);
+  ASSERT_EQ(schema_with_identifers->schema_id(), 1);
+  ASSERT_EQ(schema_with_identifers->IdentifierFieldIds().size(), 1);
+  ASSERT_EQ(schema_with_identifers->IdentifierFieldIds()[0], 1);
+  ASSERT_EQ(ToJson(*schema_with_identifers), json_with_identifiers);
+
+  // Test schema without identifier-field-ids
+  constexpr std::string_view json_without_identifiers_str =
+      R"({"fields":[{"id":1,"name":"id","required":true,"type":"int"},
+                    {"id":2,"name":"name","required":false,"type":"string"}],
+          "schema-id":1,
+          "type":"struct"})";
+
+  auto json_without_identifiers = nlohmann::json::parse(json_without_identifiers_str);
+  ICEBERG_UNWRAP_OR_FAIL(auto schema_without_identifiers,
+                         SchemaFromJson(json_without_identifiers));
+  ASSERT_TRUE(schema_without_identifiers->IdentifierFieldIds().empty());
+  ASSERT_EQ(ToJson(*schema_without_identifiers), json_without_identifiers);
+
+  // Test schema with multiple identifier fields
+  constexpr std::string_view json_multi_identifiers_str =
+      R"({"fields":[{"id":1,"name":"user_id","required":true,"type":"long"},
+                    {"id":2,"name":"org_id","required":true,"type":"long"},
+                    {"id":3,"name":"data","required":false,"type":"string"}],
+          "identifier-field-ids":[1,2],
+          "schema-id":2,
+          "type":"struct"})";
+  auto json_multi_identifiers = nlohmann::json::parse(json_multi_identifiers_str);
+  ICEBERG_UNWRAP_OR_FAIL(auto schema_multi_identifiers,
+                         SchemaFromJson(json_multi_identifiers));
+  ASSERT_EQ(schema_multi_identifiers->IdentifierFieldIds().size(), 2);
+  ASSERT_EQ(schema_multi_identifiers->IdentifierFieldIds()[0], 1);
+  ASSERT_EQ(schema_multi_identifiers->IdentifierFieldIds()[1], 2);
+  ASSERT_EQ(ToJson(*schema_multi_identifiers), json_multi_identifiers);
 }
 
 }  // namespace iceberg

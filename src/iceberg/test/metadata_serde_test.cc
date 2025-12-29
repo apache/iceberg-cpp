@@ -143,7 +143,8 @@ TEST(MetadataSerdeTest, DeserializeV2Valid) {
       std::vector<SchemaField>{SchemaField::MakeRequired(1, "x", int64()),
                                SchemaField::MakeRequired(2, "y", int64()),
                                SchemaField::MakeRequired(3, "z", int64())},
-      /*schema_id=*/1);
+      /*schema_id=*/1,
+      /*identifier_field_ids=*/std::vector<int32_t>{1, 2});
 
   auto expected_spec_result = PartitionSpec::Make(
       /*spec_id=*/0,
