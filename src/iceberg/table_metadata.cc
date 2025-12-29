@@ -118,6 +118,63 @@ Result<std::shared_ptr<SortOrder>> FreshSortOrder(int32_t order_id,
   }
   return SortOrder::Make(order_id, std::move(sort_fields));
 }
+
+std::vector<std::unique_ptr<TableUpdate>> ChangesForCreate(
+    const TableMetadata& metadata) {
+  std::vector<std::unique_ptr<TableUpdate>> changes;
+
+  // Add UUID assignment
+  changes.push_back(std::make_unique<table::AssignUUID>(metadata.table_uuid));
+
+  // Add format version upgrade
+  changes.push_back(
+      std::make_unique<table::UpgradeFormatVersion>(metadata.format_version));
+
+  // Add schema
+  if (auto current_schema_result = metadata.Schema(); current_schema_result.has_value()) {
+    auto current_schema = current_schema_result.value();
+    changes.push_back(
+        std::make_unique<table::AddSchema>(current_schema, metadata.last_column_id));
+    changes.push_back(std::make_unique<table::SetCurrentSchema>(kLastAdded));
+  }
+
+  // Add partition spec
+  if (auto partition_spec_result = metadata.PartitionSpec();
+      partition_spec_result.has_value()) {
+    auto spec = partition_spec_result.value();
+    if (spec && spec->spec_id() != PartitionSpec::kInitialSpecId) {
+      changes.push_back(std::make_unique<table::AddPartitionSpec>(spec));
+    } else {
+      changes.push_back(
+          std::make_unique<table::AddPartitionSpec>(PartitionSpec::Unpartitioned()));
+    }
+    changes.push_back(std::make_unique<table::SetDefaultPartitionSpec>(kLastAdded));
+  }
+
+  // Add sort order
+  if (auto sort_order_result = metadata.SortOrder(); sort_order_result.has_value()) {
+    auto order = sort_order_result.value();
+    if (order && order->is_sorted()) {
+      changes.push_back(std::make_unique<table::AddSortOrder>(order));
+    } else {
+      changes.push_back(std::make_unique<table::AddSortOrder>(SortOrder::Unsorted()));
+    }
+    changes.push_back(std::make_unique<table::SetDefaultSortOrder>(kLastAdded));
+  }
+
+  // Set location if not empty
+  if (!metadata.location.empty()) {
+    changes.push_back(std::make_unique<table::SetLocation>(metadata.location));
+  }
+
+  // Set properties if not empty
+  if (!metadata.properties.configs().empty()) {
+    changes.push_back(
+        std::make_unique<table::SetProperties>(metadata.properties.configs()));
+  }
+
+  return changes;
+}
 }  // namespace
 
 std::string ToString(const SnapshotLogEntry& entry) {
@@ -170,58 +227,6 @@ Result<std::unique_ptr<TableMetadata>> TableMetadata::Make(
       .SetDefaultSortOrder(std::move(fresh_order))
       .SetProperties(properties)
       .Build();
-}
-
-std::vector<std::unique_ptr<TableUpdate>> TableMetadata::ChangesForCreate() const {
-  std::vector<std::unique_ptr<TableUpdate>> changes;
-
-  // Add UUID assignment
-  changes.push_back(std::make_unique<table::AssignUUID>(table_uuid));
-
-  // Add format version upgrade
-  changes.push_back(std::make_unique<table::UpgradeFormatVersion>(format_version));
-
-  // Add schema
-  if (auto current_schema_result = Schema(); current_schema_result.has_value()) {
-    auto current_schema = current_schema_result.value();
-    changes.push_back(std::make_unique<table::AddSchema>(current_schema, last_column_id));
-    changes.push_back(std::make_unique<table::SetCurrentSchema>(kLastAdded));
-  }
-
-  // Add partition spec
-  if (auto partition_spec_result = PartitionSpec(); partition_spec_result.has_value()) {
-    auto spec = partition_spec_result.value();
-    if (spec && spec->spec_id() != PartitionSpec::kInitialSpecId) {
-      changes.push_back(std::make_unique<table::AddPartitionSpec>(spec));
-    } else {
-      changes.push_back(
-          std::make_unique<table::AddPartitionSpec>(PartitionSpec::Unpartitioned()));
-    }
-    changes.push_back(std::make_unique<table::SetDefaultPartitionSpec>(kLastAdded));
-  }
-
-  // Add sort order
-  if (auto sort_order_result = SortOrder(); sort_order_result.has_value()) {
-    auto order = sort_order_result.value();
-    if (order && order->is_sorted()) {
-      changes.push_back(std::make_unique<table::AddSortOrder>(order));
-    } else {
-      changes.push_back(std::make_unique<table::AddSortOrder>(SortOrder::Unsorted()));
-    }
-    changes.push_back(std::make_unique<table::SetDefaultSortOrder>(kLastAdded));
-  }
-
-  // Set location if not empty
-  if (!location.empty()) {
-    changes.push_back(std::make_unique<table::SetLocation>(location));
-  }
-
-  // Set properties if not empty
-  if (!properties.configs().empty()) {
-    changes.push_back(std::make_unique<table::SetProperties>(properties.configs()));
-  }
-
-  return changes;
 }
 
 Result<std::shared_ptr<Schema>> TableMetadata::Schema() const {
@@ -1105,7 +1110,7 @@ std::unique_ptr<TableMetadataBuilder> TableMetadataBuilder::BuildFrom(
 
 TableMetadataBuilder& TableMetadataBuilder::ApplyChangesForCreate(
     const TableMetadata& base) {
-  for (auto& change : base.ChangesForCreate()) {
+  for (auto& change : ChangesForCreate(base)) {
     change->ApplyTo(*this);
   }
   return *this;

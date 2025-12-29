@@ -133,9 +133,6 @@ struct ICEBERG_EXPORT TableMetadata {
       const std::unordered_map<std::string, std::string>& properties,
       int format_version = kDefaultTableFormatVersion);
 
-  /// \brief Get the list of changes required to create this table metadata from scratch
-  std::vector<std::unique_ptr<TableUpdate>> ChangesForCreate() const;
-
   /// \brief Get the current schema, return NotFoundError if not found
   Result<std::shared_ptr<iceberg::Schema>> Schema() const;
   /// \brief Get the current schema by ID, return NotFoundError if not found
