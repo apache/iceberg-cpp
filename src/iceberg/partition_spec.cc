@@ -189,8 +189,8 @@ Status PartitionSpec::ValidatePartitionName(const Schema& schema,
     auto name = std::string(partition_field.name());
     ICEBERG_CHECK(!name.empty(), "Cannot use empty partition name: {}", name);
 
-    ICEBERG_PRECHECK(!partition_names.contains(name),
-                     "Cannot use partition name more than once: {}", name);
+    ICEBERG_CHECK(!partition_names.contains(name),
+                  "Cannot use partition name more than once: {}", name);
     partition_names.insert(name);
 
     ICEBERG_ASSIGN_OR_RAISE(auto schema_field, schema.FindFieldByName(name));

@@ -311,8 +311,8 @@ TEST(PartitionSpecTest, ValidateRedundantPartitionsExactDuplicates) {
 
   // Test: exact duplicate transforms on same field (same dedup name)
   {
-    PartitionField field1(1, 1000, "ts_day1", Transform::Day());
-    PartitionField field2(1, 1001, "ts_day2", Transform::Day());
+    PartitionField field1(1, 1000, "ts_day_1_0", Transform::Day());
+    PartitionField field2(1, 1001, "ts_day_1_1", Transform::Day());
 
     auto result = PartitionSpec::Make(schema, 1, {field1, field2}, false);
     EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
@@ -322,8 +322,8 @@ TEST(PartitionSpecTest, ValidateRedundantPartitionsExactDuplicates) {
 
   // Test: same bucket size on same field (redundant)
   {
-    PartitionField bucket1(2, 1000, "id_bucket1", Transform::Bucket(16));
-    PartitionField bucket2(2, 1001, "id_bucket2", Transform::Bucket(16));
+    PartitionField bucket1(2, 1000, "id_bucket_16_2_0", Transform::Bucket(16));
+    PartitionField bucket2(2, 1001, "id_bucket_16_2_1", Transform::Bucket(16));
 
     auto result = PartitionSpec::Make(schema, 1, {bucket1, bucket2}, false);
     EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
@@ -335,8 +335,8 @@ TEST(PartitionSpecTest, ValidateRedundantPartitionsExactDuplicates) {
     auto name_field = SchemaField::MakeRequired(3, "name", string());
     Schema schema_with_string({name_field}, Schema::kInitialSchemaId);
 
-    PartitionField truncate1(3, 1000, "name_trunc1", Transform::Truncate(4));
-    PartitionField truncate2(3, 1001, "name_trunc2", Transform::Truncate(4));
+    PartitionField truncate1(3, 1000, "name_trunc_4_3_1", Transform::Truncate(4));
+    PartitionField truncate2(3, 1001, "name_trunc_4_3_2", Transform::Truncate(4));
 
     auto result =
         PartitionSpec::Make(schema_with_string, 1, {truncate1, truncate2}, false);
@@ -354,8 +354,8 @@ TEST(PartitionSpecTest, ValidateRedundantPartitionsAllowedCases) {
 
   // Test: different bucket sizes on same field (allowed - different dedup names)
   {
-    PartitionField bucket16(2, 1000, "id_bucket16", Transform::Bucket(16));
-    PartitionField bucket32(2, 1001, "id_bucket32", Transform::Bucket(32));
+    PartitionField bucket16(2, 1000, "id_bucket_16_2", Transform::Bucket(16));
+    PartitionField bucket32(2, 1001, "id_bucket_32_2", Transform::Bucket(32));
 
     auto result = PartitionSpec::Make(schema, 1, {bucket16, bucket32}, false);
     EXPECT_THAT(result, IsOk());
@@ -363,8 +363,8 @@ TEST(PartitionSpecTest, ValidateRedundantPartitionsAllowedCases) {
 
   // Test: different truncate widths on same field (allowed - different dedup names)
   {
-    PartitionField truncate4(3, 1000, "name_trunc4", Transform::Truncate(4));
-    PartitionField truncate8(3, 1001, "name_trunc8", Transform::Truncate(8));
+    PartitionField truncate4(3, 1000, "name_trunc_4_3", Transform::Truncate(4));
+    PartitionField truncate8(3, 1001, "name_trunc_8_3", Transform::Truncate(8));
 
     auto result = PartitionSpec::Make(schema, 1, {truncate4, truncate8}, false);
     EXPECT_THAT(result, IsOk());
@@ -372,8 +372,8 @@ TEST(PartitionSpecTest, ValidateRedundantPartitionsAllowedCases) {
 
   // Test: same transforms on different fields (allowed)
   {
-    PartitionField ts_day(1, 1000, "ts_day", Transform::Day());
-    PartitionField id_bucket(2, 1001, "id_bucket", Transform::Bucket(16));
+    PartitionField ts_day(1, 1000, "ts_day_1", Transform::Day());
+    PartitionField id_bucket(2, 1001, "id_bucket_2", Transform::Bucket(16));
 
     auto result = PartitionSpec::Make(schema, 1, {ts_day, id_bucket}, false);
     EXPECT_THAT(result, IsOk());
@@ -381,8 +381,8 @@ TEST(PartitionSpecTest, ValidateRedundantPartitionsAllowedCases) {
 
   // Test: different transforms on same field (allowed if dedup names differ)
   {
-    PartitionField ts_day(1, 1000, "ts_day", Transform::Day());
-    PartitionField ts_month(1, 1001, "ts_month", Transform::Month());
+    PartitionField ts_day(1, 1000, "ts_day_1", Transform::Day());
+    PartitionField ts_month(1, 1001, "ts_month_1", Transform::Month());
 
     // This should be allowed since Day and Month have different dedup names
     // The Java logic only checks for exact dedup name matches
@@ -392,7 +392,7 @@ TEST(PartitionSpecTest, ValidateRedundantPartitionsAllowedCases) {
 
   // Test: single partition field (no redundancy possible)
   {
-    PartitionField single_field(1, 1000, "ts_year", Transform::Year());
+    PartitionField single_field(1, 1000, "ts_year_1", Transform::Year());
 
     auto result = PartitionSpec::Make(schema, 1, {single_field}, false);
     EXPECT_THAT(result, IsOk());
@@ -407,8 +407,8 @@ TEST(PartitionSpecTest, ValidateRedundantPartitionsIdentityTransforms) {
 
   // Test: multiple identity transforms on same field (redundant)
   {
-    PartitionField identity1(1, 1000, "id1", Transform::Identity());
-    PartitionField identity2(1, 1001, "id2", Transform::Identity());
+    PartitionField identity1(1, 1000, "id_1_0", Transform::Identity());
+    PartitionField identity2(1, 1001, "id_1_1", Transform::Identity());
 
     auto result = PartitionSpec::Make(schema, 1, {identity1, identity2}, false);
     EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
@@ -417,8 +417,8 @@ TEST(PartitionSpecTest, ValidateRedundantPartitionsIdentityTransforms) {
 
   // Test: identity transforms on different fields (allowed)
   {
-    PartitionField id_identity(1, 1000, "id", Transform::Identity());
-    PartitionField name_identity(2, 1001, "name", Transform::Identity());
+    PartitionField id_identity(1, 1000, "id_1", Transform::Identity());
+    PartitionField name_identity(2, 1001, "name_2", Transform::Identity());
 
     auto result = PartitionSpec::Make(schema, 1, {id_identity, name_identity}, false);
     EXPECT_THAT(result, IsOk());
