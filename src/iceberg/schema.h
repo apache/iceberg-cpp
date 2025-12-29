@@ -79,7 +79,7 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// Short names for maps and lists are included for any name that does not conflict with
   /// a canonical name. For example, a list, 'l', of structs with field 'x' will produce
   /// short name 'l.x' in addition to canonical name 'l.element.x'. A map 'm', if its
-  /// value include a structs with field 'x' wil produce short name 'm.x' in addition to
+  /// value includes a struct with field 'x' will produce short name 'm.x' in addition to
   /// canonical name 'm.value.x'.
   /// FIXME: Currently only handles ASCII lowercase conversion; extend to support
   /// non-ASCII characters (e.g., using std::towlower or ICU)
