@@ -51,8 +51,8 @@ void TableUpdateContext::RequireLastAssignedFieldIdUnchanged() {
 void TableUpdateContext::RequireCurrentSchemaIdUnchanged() {
   if (!added_current_schema_id_) {
     if (base_ != nullptr && !is_replace_) {
-      AddRequirement(std::make_unique<table::AssertCurrentSchemaID>(
-          base_->current_schema_id.value()));
+      AddRequirement(
+          std::make_unique<table::AssertCurrentSchemaID>(base_->current_schema_id));
     }
     added_current_schema_id_ = true;
   }

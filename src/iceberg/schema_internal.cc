@@ -304,12 +304,13 @@ Result<std::shared_ptr<Type>> FromArrowSchema(const ArrowSchema& schema) {
 }  // namespace
 
 std::unique_ptr<Schema> FromStructType(StructType&& struct_type,
-                                       std::optional<int32_t> schema_id) {
+                                       std::optional<int32_t> schema_id_opt) {
   std::vector<SchemaField> fields;
   fields.reserve(struct_type.fields().size());
   for (auto& field : struct_type.fields()) {
     fields.emplace_back(std::move(field));
   }
+  auto schema_id = schema_id_opt.value_or(Schema::kInitialSchemaId);
   return std::make_unique<Schema>(std::move(fields), schema_id);
 }
 

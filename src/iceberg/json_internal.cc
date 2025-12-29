@@ -308,7 +308,7 @@ nlohmann::json ToJson(const Type& type) {
 
 nlohmann::json ToJson(const Schema& schema) {
   nlohmann::json json = ToJson(static_cast<const Type&>(schema));
-  SetOptionalField(json, kSchemaId, schema.schema_id());
+  json[kSchemaId] = schema.schema_id();
   // TODO(gangwu): add identifier-field-ids.
   return json;
 }
@@ -466,7 +466,8 @@ Result<std::unique_ptr<SchemaField>> FieldFromJson(const nlohmann::json& json) {
 }
 
 Result<std::unique_ptr<Schema>> SchemaFromJson(const nlohmann::json& json) {
-  ICEBERG_ASSIGN_OR_RAISE(auto schema_id, GetJsonValueOptional<int32_t>(json, kSchemaId));
+  ICEBERG_ASSIGN_OR_RAISE(auto schema_id_opt,
+                          GetJsonValueOptional<int32_t>(json, kSchemaId));
   ICEBERG_ASSIGN_OR_RAISE(auto type, TypeFromJson(json));
 
   if (type->type_id() != TypeId::kStruct) [[unlikely]] {
@@ -474,6 +475,7 @@ Result<std::unique_ptr<Schema>> SchemaFromJson(const nlohmann::json& json) {
   }
 
   auto& struct_type = static_cast<StructType&>(*type);
+  auto schema_id = schema_id_opt.value_or(Schema::kInitialSchemaId);
   return FromStructType(std::move(struct_type), schema_id);
 }
 
@@ -762,7 +764,7 @@ nlohmann::json ToJson(const TableMetadata& table_metadata) {
   }
 
   // write the current schema ID and schema list
-  SetOptionalField(json, kCurrentSchemaId, table_metadata.current_schema_id);
+  json[kCurrentSchemaId] = table_metadata.current_schema_id;
   json[kSchemas] = ToJsonList(table_metadata.schemas);
 
   // for older readers, continue writing the default spec as "partition-spec"
@@ -824,8 +826,7 @@ namespace {
 ///
 /// \return The current schema or parse error.
 Result<std::shared_ptr<Schema>> ParseSchemas(
-    const nlohmann::json& json, int8_t format_version,
-    std::optional<int32_t>& current_schema_id,
+    const nlohmann::json& json, int8_t format_version, int32_t& current_schema_id,
     std::vector<std::shared_ptr<Schema>>& schemas) {
   std::shared_ptr<Schema> current_schema;
   if (json.contains(kSchemas)) {
@@ -848,7 +849,7 @@ Result<std::shared_ptr<Schema>> ParseSchemas(
     }
     if (!current_schema) {
       return JsonParseError("Cannot find schema with {}={} from {}", kCurrentSchemaId,
-                            current_schema_id.value(), SafeDumpJson(schema_array));
+                            current_schema_id, SafeDumpJson(schema_array));
     }
   } else {
     if (format_version != 1) {

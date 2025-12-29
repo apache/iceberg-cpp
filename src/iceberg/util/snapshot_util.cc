@@ -298,7 +298,7 @@ Result<std::shared_ptr<Schema>> SnapshotUtil::SchemaFor(const TableMetadata& met
     return metadata.Schema();
   }
 
-  return metadata.SchemaById(snapshot->schema_id);
+  return metadata.SchemaById(snapshot->schema_id.value());
 }
 
 Result<std::shared_ptr<Snapshot>> SnapshotUtil::LatestSnapshot(

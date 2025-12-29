@@ -34,14 +34,14 @@
 
 namespace iceberg {
 
-Schema::Schema(std::vector<SchemaField> fields, std::optional<int32_t> schema_id,
+Schema::Schema(std::vector<SchemaField> fields, int32_t schema_id,
                std::vector<int32_t> identifier_field_ids)
     : StructType(std::move(fields)),
       schema_id_(schema_id),
       identifier_field_ids_(std::move(identifier_field_ids)) {}
 
 Result<std::unique_ptr<Schema>> Schema::Make(
-    std::vector<SchemaField> fields, std::optional<int32_t> schema_id,
+    std::vector<SchemaField> fields, int32_t schema_id,
     const std::vector<std::string>& identifier_field_names) {
   auto schema = std::make_unique<Schema>(std::move(fields), schema_id);
 
@@ -57,7 +57,13 @@ Result<std::unique_ptr<Schema>> Schema::Make(
   return schema;
 }
 
-std::optional<int32_t> Schema::schema_id() const { return schema_id_; }
+const std::shared_ptr<Schema>& Schema::EmptySchema() {
+  static const auto empty_schema =
+      std::make_shared<Schema>(std::vector<SchemaField>{}, kInitialSchemaId);
+  return empty_schema;
+}
+
+int32_t Schema::schema_id() const { return schema_id_; }
 
 std::string Schema::ToString() const {
   std::string repr = "schema<";
@@ -196,7 +202,7 @@ Result<std::unique_ptr<Schema>> Schema::Select(std::span<const std::string> name
       auto pruned_type, visitor.Visit(std::shared_ptr<StructType>(ToStructType(*this))));
 
   if (!pruned_type) {
-    return std::make_unique<Schema>(std::vector<SchemaField>{}, std::nullopt);
+    return std::make_unique<Schema>(std::vector<SchemaField>{}, kInitialSchemaId);
   }
 
   if (pruned_type->type_id() != TypeId::kStruct) {
@@ -214,7 +220,7 @@ Result<std::unique_ptr<Schema>> Schema::Project(
       auto project_type, visitor.Visit(std::shared_ptr<StructType>(ToStructType(*this))));
 
   if (!project_type) {
-    return std::make_unique<Schema>(std::vector<SchemaField>{}, std::nullopt);
+    return std::make_unique<Schema>(std::vector<SchemaField>{}, kInitialSchemaId);
   }
 
   if (project_type->type_id() != TypeId::kStruct) {

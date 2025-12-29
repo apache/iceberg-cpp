@@ -90,15 +90,10 @@ Status AssertCurrentSchemaID::Validate(const TableMetadata* base) const {
     return CommitFailed("Requirement failed: current table metadata is missing");
   }
 
-  if (!base->current_schema_id.has_value()) {
-    return CommitFailed(
-        "Requirement failed: current schema ID is not set in table metadata");
-  }
-
-  if (base->current_schema_id.value() != schema_id_) {
+  if (base->current_schema_id != schema_id_) {
     return CommitFailed(
         "Requirement failed: current schema ID does not match, expected {} != {}",
-        schema_id_, base->current_schema_id.value());
+        schema_id_, base->current_schema_id);
   }
 
   return {};

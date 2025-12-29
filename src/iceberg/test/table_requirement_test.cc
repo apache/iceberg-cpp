@@ -77,13 +77,6 @@ TEST(TableRequirementTest, AssertCurrentSchemaID) {
   status = req_for_null.Validate(nullptr);
   EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
   EXPECT_THAT(status, HasErrorMessage("metadata is missing"));
-
-  // Schema ID not set
-  base->current_schema_id = std::nullopt;
-  table::AssertCurrentSchemaID req_for_nullopt(5);
-  status = req_for_nullopt.Validate(base.get());
-  EXPECT_THAT(status, IsError(ErrorKind::kCommitFailed));
-  EXPECT_THAT(status, HasErrorMessage("schema ID is not set"));
 }
 
 TEST(TableRequirementTest, AssertDoesNotExist) {

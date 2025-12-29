@@ -559,7 +559,7 @@ TEST(TableMetadataBuilderTest, AddSchemaBasic) {
   builder->AddSchema(new_schema);
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
   ASSERT_EQ(metadata->schemas.size(), 2);
-  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 1);
+  EXPECT_EQ(metadata->schemas[1]->schema_id(), 1);
   EXPECT_EQ(metadata->last_column_id, 5);
 
   // 2. Add duplicate schema - should be idempotent
@@ -580,8 +580,8 @@ TEST(TableMetadataBuilderTest, AddSchemaBasic) {
   builder->AddSchema(schema4);
   ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
   ASSERT_EQ(metadata->schemas.size(), 3);
-  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 1);
-  EXPECT_EQ(metadata->schemas[2]->schema_id().value(), 2);
+  EXPECT_EQ(metadata->schemas[1]->schema_id(), 1);
+  EXPECT_EQ(metadata->schemas[2]->schema_id(), 2);
   EXPECT_EQ(metadata->last_column_id, 6);
 }
 
@@ -643,7 +643,7 @@ TEST(TableMetadataBuilderTest, AddSchemaIdempotent) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
   ASSERT_EQ(metadata->schemas.size(), 2);  // Only one new schema should be added
-  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 1);
+  EXPECT_EQ(metadata->schemas[1]->schema_id(), 1);
 }
 
 TEST(TableMetadataBuilderTest, AddSchemaMultipleDifferent) {
@@ -665,9 +665,9 @@ TEST(TableMetadataBuilderTest, AddSchemaMultipleDifferent) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
   ASSERT_EQ(metadata->schemas.size(), 4);  // Original + 3 new
-  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 1);
-  EXPECT_EQ(metadata->schemas[2]->schema_id().value(), 2);
-  EXPECT_EQ(metadata->schemas[3]->schema_id().value(), 3);
+  EXPECT_EQ(metadata->schemas[1]->schema_id(), 1);
+  EXPECT_EQ(metadata->schemas[2]->schema_id(), 2);
+  EXPECT_EQ(metadata->schemas[3]->schema_id(), 3);
   EXPECT_EQ(metadata->last_column_id, 6);
 }
 
@@ -682,8 +682,8 @@ TEST(TableMetadataBuilderTest, SetCurrentSchemaBasic) {
   builder->SetCurrentSchema(new_schema, 4);
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
   ASSERT_EQ(metadata->schemas.size(), 2);
-  EXPECT_EQ(metadata->current_schema_id.value(), 1);
-  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 1);
+  EXPECT_EQ(metadata->current_schema_id, 1);
+  EXPECT_EQ(metadata->schemas[1]->schema_id(), 1);
   EXPECT_EQ(metadata->last_column_id, 4);
 
   // 2. Set current schema by schema ID
@@ -692,7 +692,7 @@ TEST(TableMetadataBuilderTest, SetCurrentSchemaBasic) {
   builder->AddSchema(schema1);
   builder->SetCurrentSchema(1);
   ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
-  EXPECT_EQ(metadata->current_schema_id.value(), 1);
+  EXPECT_EQ(metadata->current_schema_id, 1);
 
   // 3. Set current schema using -1 (last added)
   builder = TableMetadataBuilder::BuildFrom(base.get());
@@ -701,13 +701,13 @@ TEST(TableMetadataBuilderTest, SetCurrentSchemaBasic) {
   builder->AddSchema(schema2);
   builder->SetCurrentSchema(-1);  // Use last added
   ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
-  EXPECT_EQ(metadata->current_schema_id.value(), 1);
+  EXPECT_EQ(metadata->current_schema_id, 1);
 
   // 4. Setting same schema is no-op
   builder = TableMetadataBuilder::BuildFrom(base.get());
   builder->SetCurrentSchema(0);
   ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
-  EXPECT_EQ(metadata->current_schema_id.value(), 0);
+  EXPECT_EQ(metadata->current_schema_id, 0);
 }
 
 TEST(TableMetadataBuilderTest, SetCurrentSchemaWithInvalidLastColumnId) {
@@ -732,7 +732,7 @@ TEST(TableMetadataBuilderTest, SetCurrentSchemaUpdatesLastColumnId) {
   auto new_schema = std::make_shared<Schema>(std::vector<SchemaField>{field1, field2}, 1);
   builder->SetCurrentSchema(new_schema, 10);  // Higher than field IDs
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
-  EXPECT_EQ(metadata->current_schema_id.value(), 1);
+  EXPECT_EQ(metadata->current_schema_id, 1);
   EXPECT_EQ(metadata->last_column_id, 10);
 }
 
@@ -753,7 +753,7 @@ TEST(TableMetadataBuilderTest, AddSchemaWithNestedTypes) {
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
 
   ASSERT_EQ(metadata->schemas.size(), 2);
-  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 1);
+  EXPECT_EQ(metadata->schemas[1]->schema_id(), 1);
   EXPECT_EQ(metadata->last_column_id, 11);  // Should be highest nested field ID
 }
 
@@ -777,7 +777,7 @@ TEST(TableMetadataBuilderTest, AddSchemaWithListAndMapTypes) {
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
 
   ASSERT_EQ(metadata->schemas.size(), 2);
-  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 1);
+  EXPECT_EQ(metadata->schemas[1]->schema_id(), 1);
   EXPECT_EQ(metadata->last_column_id, 12);  // Should be highest field ID including nested
 }
 
@@ -803,10 +803,10 @@ TEST(TableMetadataBuilderTest, AddSchemaSequentialIds) {
   ASSERT_EQ(metadata->schemas.size(), 4);  // Original + 3 new
 
   // Verify sequential schema IDs
-  EXPECT_EQ(metadata->schemas[0]->schema_id().value(), 0);  // Original
-  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 1);
-  EXPECT_EQ(metadata->schemas[2]->schema_id().value(), 2);
-  EXPECT_EQ(metadata->schemas[3]->schema_id().value(), 3);
+  EXPECT_EQ(metadata->schemas[0]->schema_id(), 0);  // Original
+  EXPECT_EQ(metadata->schemas[1]->schema_id(), 1);
+  EXPECT_EQ(metadata->schemas[2]->schema_id(), 2);
+  EXPECT_EQ(metadata->schemas[3]->schema_id(), 3);
 }
 
 TEST(TableMetadataBuilderTest, AddSchemaWithOptionalFields) {
@@ -823,7 +823,7 @@ TEST(TableMetadataBuilderTest, AddSchemaWithOptionalFields) {
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
 
   ASSERT_EQ(metadata->schemas.size(), 2);
-  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 1);
+  EXPECT_EQ(metadata->schemas[1]->schema_id(), 1);
 
   // Verify field properties
   const auto& fields = metadata->schemas[1]->fields();
@@ -872,7 +872,7 @@ TEST(TableMetadataBuilderTest, SetCurrentSchemaWithPartitionSpecRebuild) {
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
 
   // Verify schema was set
-  EXPECT_EQ(metadata->current_schema_id.value(), 1);
+  EXPECT_EQ(metadata->current_schema_id, 1);
   EXPECT_EQ(metadata->last_column_id, 5);
 
   // Verify partition specs were rebuilt (they should still exist)
@@ -896,19 +896,19 @@ TEST(TableMetadataBuilderTest, SetCurrentSchemaMultipleOperations) {
   // Set current to first added schema
   builder->SetCurrentSchema(1);
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
-  EXPECT_EQ(metadata->current_schema_id.value(), 1);
+  EXPECT_EQ(metadata->current_schema_id, 1);
 
   // Change current to second schema
   builder = TableMetadataBuilder::BuildFrom(metadata.get());
   builder->SetCurrentSchema(2);
   ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
-  EXPECT_EQ(metadata->current_schema_id.value(), 2);
+  EXPECT_EQ(metadata->current_schema_id, 2);
 
   // Change back to original schema
   builder = TableMetadataBuilder::BuildFrom(metadata.get());
   builder->SetCurrentSchema(0);
   ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
-  EXPECT_EQ(metadata->current_schema_id.value(), 0);
+  EXPECT_EQ(metadata->current_schema_id, 0);
 }
 
 TEST(TableMetadataBuilderTest, SetCurrentSchemaLastAddedTracking) {
@@ -928,7 +928,7 @@ TEST(TableMetadataBuilderTest, SetCurrentSchemaLastAddedTracking) {
   // Use -1 to set current to last added schema
   builder->SetCurrentSchema(-1);
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
-  EXPECT_EQ(metadata->current_schema_id.value(), 2);  // Should be schema2
+  EXPECT_EQ(metadata->current_schema_id, 2);  // Should be schema2
 }
 
 TEST(TableMetadataBuilderTest, AddSchemaAndSetCurrentCombined) {
@@ -944,8 +944,8 @@ TEST(TableMetadataBuilderTest, AddSchemaAndSetCurrentCombined) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
   ASSERT_EQ(metadata->schemas.size(), 2);
-  EXPECT_EQ(metadata->current_schema_id.value(), 1);
-  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 1);
+  EXPECT_EQ(metadata->current_schema_id, 1);
+  EXPECT_EQ(metadata->schemas[1]->schema_id(), 1);
   EXPECT_EQ(metadata->last_column_id, 4);
 }
 
@@ -998,7 +998,7 @@ TEST(TableMetadataBuilderTest, SetCurrentSchemaRebuildsSpecsAndOrders) {
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
 
   // Verify schema was set
-  EXPECT_EQ(metadata->current_schema_id.value(), 1);
+  EXPECT_EQ(metadata->current_schema_id, 1);
 
   // Verify partition specs were rebuilt (they should still exist)
   ASSERT_EQ(metadata->partition_specs.size(), 2);
@@ -1032,16 +1032,16 @@ TEST(TableMetadataBuilderTest, RemoveSchemasBasic) {
   builder->RemoveSchemas({1});
   ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
   ASSERT_EQ(metadata->schemas.size(), 3);
-  EXPECT_EQ(metadata->schemas[0]->schema_id().value(), 0);
-  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 2);
-  EXPECT_EQ(metadata->schemas[2]->schema_id().value(), 3);
+  EXPECT_EQ(metadata->schemas[0]->schema_id(), 0);
+  EXPECT_EQ(metadata->schemas[1]->schema_id(), 2);
+  EXPECT_EQ(metadata->schemas[2]->schema_id(), 3);
 
   // Remove multiple schemas
   builder = TableMetadataBuilder::BuildFrom(metadata.get());
   builder->RemoveSchemas({2, 3});
   ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
   ASSERT_EQ(metadata->schemas.size(), 1);
-  EXPECT_EQ(metadata->schemas[0]->schema_id().value(), Schema::kInitialSchemaId);
+  EXPECT_EQ(metadata->schemas[0]->schema_id(), Schema::kInitialSchemaId);
 }
 
 TEST(TableMetadataBuilderTest, RemoveSchemasCannotRemoveCurrent) {
@@ -1055,7 +1055,7 @@ TEST(TableMetadataBuilderTest, RemoveSchemasCannotRemoveCurrent) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
   ASSERT_EQ(metadata->schemas.size(), 2);
-  EXPECT_EQ(metadata->current_schema_id.value(), 0);
+  EXPECT_EQ(metadata->current_schema_id, 0);
 
   // Try to remove current schema (ID 0)
   builder = TableMetadataBuilder::BuildFrom(metadata.get());
@@ -1093,7 +1093,7 @@ TEST(TableMetadataBuilderTest, RemoveSchemasNonExistent) {
   builder->RemoveSchemas({1, 999, 888});
   ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
   ASSERT_EQ(metadata->schemas.size(), 1);
-  EXPECT_EQ(metadata->schemas[0]->schema_id().value(), Schema::kInitialSchemaId);
+  EXPECT_EQ(metadata->schemas[0]->schema_id(), Schema::kInitialSchemaId);
 }
 
 TEST(TableMetadataBuilderTest, RemoveSchemasEmptySet) {
@@ -1131,16 +1131,16 @@ TEST(TableMetadataBuilderTest, RemoveSchemasAfterSchemaChange) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
   ASSERT_EQ(metadata->schemas.size(), 3);
-  EXPECT_EQ(metadata->current_schema_id.value(), 1);
+  EXPECT_EQ(metadata->current_schema_id, 1);
 
   // Now remove the old current schema (ID 0)
   builder = TableMetadataBuilder::BuildFrom(metadata.get());
   builder->RemoveSchemas({0});
   ICEBERG_UNWRAP_OR_FAIL(metadata, builder->Build());
   ASSERT_EQ(metadata->schemas.size(), 2);
-  EXPECT_EQ(metadata->current_schema_id.value(), 1);
-  EXPECT_EQ(metadata->schemas[0]->schema_id().value(), 1);
-  EXPECT_EQ(metadata->schemas[1]->schema_id().value(), 2);
+  EXPECT_EQ(metadata->current_schema_id, 1);
+  EXPECT_EQ(metadata->schemas[0]->schema_id(), 1);
+  EXPECT_EQ(metadata->schemas[1]->schema_id(), 2);
 
   // Cannot remove the new current schema
   builder = TableMetadataBuilder::BuildFrom(metadata.get());

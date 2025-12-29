@@ -308,8 +308,7 @@ class UnpartitionedResidualEvaluator : public ResidualEvaluator {
 
  private:
   // Store an empty schema to avoid dangling reference when passing to base class
-  inline static const std::shared_ptr<Schema> kEmptySchema_ =
-      std::make_shared<Schema>(std::vector<SchemaField>{}, std::nullopt);
+  inline static const std::shared_ptr<Schema> kEmptySchema_ = Schema::EmptySchema();
 };
 
 }  // namespace

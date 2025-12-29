@@ -95,7 +95,7 @@ struct ICEBERG_EXPORT TableMetadata {
   /// A list of schemas
   std::vector<std::shared_ptr<iceberg::Schema>> schemas;
   /// ID of the table's current schema
-  std::optional<int32_t> current_schema_id;
+  int32_t current_schema_id;
   /// A list of partition specs
   std::vector<std::shared_ptr<iceberg::PartitionSpec>> partition_specs;
   /// ID of the current partition spec that writers should use by default
@@ -136,8 +136,7 @@ struct ICEBERG_EXPORT TableMetadata {
   /// \brief Get the current schema, return NotFoundError if not found
   Result<std::shared_ptr<iceberg::Schema>> Schema() const;
   /// \brief Get the current schema by ID, return NotFoundError if not found
-  Result<std::shared_ptr<iceberg::Schema>> SchemaById(
-      std::optional<int32_t> schema_id) const;
+  Result<std::shared_ptr<iceberg::Schema>> SchemaById(int32_t schema_id) const;
   /// \brief Get the current partition spec, return NotFoundError if not found
   Result<std::shared_ptr<iceberg::PartitionSpec>> PartitionSpec() const;
   /// \brief Get the current sort order, return NotFoundError if not found

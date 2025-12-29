@@ -233,13 +233,12 @@ Result<std::shared_ptr<Schema>> TableMetadata::Schema() const {
   return SchemaById(current_schema_id);
 }
 
-Result<std::shared_ptr<Schema>> TableMetadata::SchemaById(
-    std::optional<int32_t> schema_id) const {
+Result<std::shared_ptr<Schema>> TableMetadata::SchemaById(int32_t schema_id) const {
   auto iter = std::ranges::find_if(schemas, [schema_id](const auto& schema) {
     return schema != nullptr && schema->schema_id() == schema_id;
   });
   if (iter == schemas.end()) {
-    return NotFound("Schema with ID {} is not found", schema_id.value_or(-1));
+    return NotFound("Schema with ID {} is not found", schema_id);
   }
   return *iter;
 }
@@ -359,11 +358,8 @@ Result<TableMetadataCache::SnapshotsMapRef> TableMetadataCache::GetSnapshotsById
 
 Result<TableMetadataCache::SchemasMap> TableMetadataCache::InitSchemasMap(
     const TableMetadata* metadata) {
-  return metadata->schemas | std::views::filter([](const auto& schema) {
-           return schema->schema_id().has_value();
-         }) |
-         std::views::transform([](const auto& schema) {
-           return std::make_pair(schema->schema_id().value(), schema);
+  return metadata->schemas | std::views::transform([](const auto& schema) {
+           return std::make_pair(schema->schema_id(), schema);
          }) |
          std::ranges::to<SchemasMap>();
 }
@@ -548,9 +544,7 @@ class TableMetadataBuilder::Impl {
       : base_(base_metadata), metadata_(*base_metadata) {
     // Initialize index maps from base metadata
     for (const auto& schema : metadata_.schemas) {
-      if (schema->schema_id().has_value()) {
-        schemas_by_id_.emplace(schema->schema_id().value(), schema);
-      }
+      schemas_by_id_.emplace(schema->schema_id(), schema);
     }
 
     for (const auto& spec : metadata_.partition_specs) {
@@ -920,14 +914,13 @@ Status TableMetadataBuilder::Impl::SetCurrentSchema(int32_t schema_id) {
 
 Status TableMetadataBuilder::Impl::RemoveSchemas(
     const std::unordered_set<int32_t>& schema_ids) {
-  auto current_schema_id = metadata_.current_schema_id.value_or(Schema::kInitialSchemaId);
+  auto current_schema_id = metadata_.current_schema_id;
   ICEBERG_PRECHECK(!schema_ids.contains(current_schema_id),
                    "Cannot remove current schema: {}", current_schema_id);
 
   if (!schema_ids.empty()) {
     metadata_.schemas = metadata_.schemas | std::views::filter([&](const auto& schema) {
-                          return schema->schema_id().has_value() &&
-                                 !schema_ids.contains(schema->schema_id().value());
+                          return !schema_ids.contains(schema->schema_id());
                         }) |
                         std::ranges::to<std::vector<std::shared_ptr<Schema>>>();
     changes_.push_back(std::make_unique<table::RemoveSchemas>(schema_ids));
@@ -999,7 +992,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Impl::Build() {
             std::chrono::system_clock::now().time_since_epoch())};
   }
 
-  auto current_schema_id = metadata_.current_schema_id.value_or(Schema::kInitialSchemaId);
+  auto current_schema_id = metadata_.current_schema_id;
   auto schema_it = schemas_by_id_.find(current_schema_id);
   ICEBERG_PRECHECK(schema_it != schemas_by_id_.end(),
                    "Current schema ID {} not found in schemas", current_schema_id);
@@ -1072,9 +1065,9 @@ int32_t TableMetadataBuilder::Impl::ReuseOrCreateNewPartitionSpecId(
 int32_t TableMetadataBuilder::Impl::ReuseOrCreateNewSchemaId(
     const Schema& new_schema) const {
   // if the schema already exists, use its id; otherwise use the highest id + 1
-  auto new_schema_id = metadata_.current_schema_id.value_or(Schema::kInitialSchemaId);
+  auto new_schema_id = metadata_.current_schema_id;
   for (auto& schema : metadata_.schemas) {
-    auto schema_id = schema->schema_id().value_or(Schema::kInitialSchemaId);
+    auto schema_id = schema->schema_id();
     if (schema->SameSchema(new_schema)) {
       return schema_id;
     } else if (new_schema_id <= schema_id) {

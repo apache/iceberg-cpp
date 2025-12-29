@@ -115,7 +115,7 @@ TEST(MetadataSerdeTest, DeserializeV1Valid) {
       .last_updated_ms = TimePointMsFromUnixMs(1602638573874).value(),
       .last_column_id = 3,
       .schemas = {expected_schema},
-      .current_schema_id = std::nullopt,
+      .current_schema_id = Schema::kInitialSchemaId,
       .partition_specs = {expected_spec},
       .default_spec_id = 0,
       .last_partition_id = 1000,

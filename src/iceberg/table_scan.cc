@@ -216,8 +216,7 @@ Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
 
   if (!context_.projected_schema) {
     const auto& snapshot = context_.snapshot;
-    auto schema_id =
-        snapshot->schema_id ? snapshot->schema_id : table_metadata->current_schema_id;
+    auto schema_id = table_metadata->current_schema_id;
     ICEBERG_ASSIGN_OR_RAISE(auto schema, table_metadata->SchemaById(schema_id));
 
     if (column_names_.empty()) {
@@ -231,7 +230,7 @@ Result<std::unique_ptr<TableScan>> TableScanBuilder::Build() {
         auto field_opt = schema->GetFieldByName(column_name);
         if (!field_opt) {
           return InvalidArgument("Column {} not found in schema '{}'", column_name,
-                                 *schema_id);
+                                 schema_id);
         }
         projected_fields.emplace_back(field_opt.value()->get());
       }
