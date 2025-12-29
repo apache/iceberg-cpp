@@ -28,8 +28,8 @@
 
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/iceberg_export.h"
+#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/result.h"
-#include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
@@ -64,10 +64,21 @@ class ICEBERG_EXPORT FileWriter {
   virtual Status Close() = 0;
 
   /// \brief File metadata for all files produced by the writer.
+  ///
+  /// \note The following features from Java are not yet supported:
+  /// - Encryption key metadata (EncryptionKeyMetadata)
+  /// - Split offsets for data files
+  /// - Referenced data files tracking for position deletes
   struct ICEBERG_EXPORT WriteResult {
-    /// Usually a writer produces a single data or delete file.
-    /// Position delete writer may produce multiple file-scoped delete files.
-    /// In the future, multiple files can be produced if file rolling is supported.
+    /// Data files produced by this writer.
+    ///
+    /// \note When multiple files are produced:
+    /// - Position delete writers may produce multiple file-scoped delete files (one per
+    ///   referenced data file) to avoid large manifests
+    /// - Future feature: File rolling will produce multiple files when size/record
+    /// thresholds
+    ///   are exceeded
+    /// - Current implementation: Each writer produces exactly one file
     std::vector<std::shared_ptr<DataFile>> data_files;
   };
 
