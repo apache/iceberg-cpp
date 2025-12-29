@@ -43,17 +43,7 @@ struct EncodeContext {
 /// \brief Directly encode Arrow data to Avro without GenericDatum
 ///
 /// Eliminates the GenericDatum intermediate layer by directly calling Avro encoder
-/// methods from Arrow arrays. Matches Java Iceberg's approach for better performance.
-///
-/// Features:
-/// - All primitive, temporal, and logical types
-/// - Nested types (struct, list, map)
-/// - Union types for optional fields
-///
-/// Error Handling:
-/// - Type mismatches → InvalidArgument
-/// - Null in non-nullable field → InvalidArgument
-/// - Invalid decimal precision → InvalidArgument
+/// methods from Arrow arrays.
 ///
 /// \param avro_node The Avro schema node for the data being encoded
 /// \param encoder The Avro encoder to write data to
