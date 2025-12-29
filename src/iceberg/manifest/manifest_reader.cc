@@ -844,7 +844,7 @@ Result<std::vector<ManifestEntry>> ManifestReaderImpl::ReadEntries(bool only_liv
       }
 
       if (drop_stats) {
-        ContentFileUtil::DropStats(*entry.data_file);
+        ContentFileUtil::DropAllStats(*entry.data_file);
       }
 
       manifest_entries.push_back(std::move(entry));

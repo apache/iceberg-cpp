@@ -35,6 +35,7 @@
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/manifest/manifest_writer.h"
+#include "iceberg/metadata_columns.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
@@ -1065,11 +1066,13 @@ TEST_P(DeleteFileIndexTest, TestDeletedStatusExcluded) {
                                             "/path/to/pos-delete-added.parquet"));
 }
 
-// TODO(gangwu): enable this test after ManifestGroup has been added.
-TEST_P(DeleteFileIndexTest, DISABLED_TestPositionDeleteDiscardMetrics) {
+TEST_P(DeleteFileIndexTest, TestPositionDeleteDiscardMetrics) {
   int version = GetParam();
 
   auto partition_a = PartitionValues({Literal::Int(0)});
+
+  constexpr int32_t kDeleteFilePathFieldId = MetadataColumns::kDeleteFilePathColumnId;
+  constexpr int32_t kPositionFieldId = MetadataColumns::kFilePositionColumnId;
 
   // Create a position delete file with full metrics
   auto pos_delete = std::make_shared<DataFile>(DataFile{
@@ -1080,12 +1083,12 @@ TEST_P(DeleteFileIndexTest, DISABLED_TestPositionDeleteDiscardMetrics) {
       .record_count = 100,
       .file_size_in_bytes = 1024,
       // Add stats for multiple columns
-      .column_sizes = {{1, 100}, {2, 200}, {3, 300}},
-      .value_counts = {{1, 10}, {2, 20}, {3, 30}},
-      .null_value_counts = {{1, 1}, {2, 2}, {3, 3}},
-      .nan_value_counts = {{1, 0}, {2, 0}, {3, 0}},
-      .lower_bounds = {{1, {0x01}}, {2, {0x02}}, {3, {0x03}}},
-      .upper_bounds = {{1, {0xFF}}, {2, {0xFE}}, {3, {0xFD}}},
+      .column_sizes = {{kDeleteFilePathFieldId, 100}, {kPositionFieldId, 200}},
+      .value_counts = {{kDeleteFilePathFieldId, 10}, {kPositionFieldId, 20}},
+      .null_value_counts = {{kDeleteFilePathFieldId, 1}, {kPositionFieldId, 2}},
+      .nan_value_counts = {{kDeleteFilePathFieldId, 0}, {kPositionFieldId, 0}},
+      .lower_bounds = {{kDeleteFilePathFieldId, {0x01}}, {kPositionFieldId, {0x02}}},
+      .upper_bounds = {{kDeleteFilePathFieldId, {0xFF}}, {kPositionFieldId, {0xFE}}},
       .partition_spec_id = partitioned_spec_->spec_id(),
   });
 
@@ -1108,17 +1111,22 @@ TEST_P(DeleteFileIndexTest, DISABLED_TestPositionDeleteDiscardMetrics) {
   EXPECT_EQ(returned_file->file_path, "/path/to/pos-delete-with-metrics.parquet");
   // record_count should be preserved
   EXPECT_EQ(returned_file->record_count, 100);
-  // Stats maps should be cleared (empty) after building the index
-  EXPECT_TRUE(returned_file->column_sizes.empty());
-  EXPECT_TRUE(returned_file->value_counts.empty());
-  EXPECT_TRUE(returned_file->null_value_counts.empty());
-  EXPECT_TRUE(returned_file->nan_value_counts.empty());
-  EXPECT_TRUE(returned_file->lower_bounds.empty());
-  EXPECT_TRUE(returned_file->upper_bounds.empty());
+  // Stats maps should only contain entries for delete file path.
+  EXPECT_EQ(returned_file->column_sizes.size(), 1);
+  EXPECT_EQ(returned_file->value_counts.size(), 1);
+  EXPECT_EQ(returned_file->null_value_counts.size(), 1);
+  EXPECT_EQ(returned_file->nan_value_counts.size(), 1);
+  EXPECT_EQ(returned_file->lower_bounds.size(), 1);
+  EXPECT_EQ(returned_file->upper_bounds.size(), 1);
+  EXPECT_TRUE(returned_file->column_sizes.contains(kDeleteFilePathFieldId));
+  EXPECT_TRUE(returned_file->value_counts.contains(kDeleteFilePathFieldId));
+  EXPECT_TRUE(returned_file->null_value_counts.contains(kDeleteFilePathFieldId));
+  EXPECT_TRUE(returned_file->nan_value_counts.contains(kDeleteFilePathFieldId));
+  EXPECT_TRUE(returned_file->lower_bounds.contains(kDeleteFilePathFieldId));
+  EXPECT_TRUE(returned_file->upper_bounds.contains(kDeleteFilePathFieldId));
 }
 
-// TODO(gangwu): enable this test after ManifestGroup has been added.
-TEST_P(DeleteFileIndexTest, DISABLED_TestEqualityDeleteDiscardMetrics) {
+TEST_P(DeleteFileIndexTest, TestEqualityDeleteDiscardMetrics) {
   int version = GetParam();
 
   auto partition_a = PartitionValues({Literal::Int(0)});
@@ -1161,13 +1169,19 @@ TEST_P(DeleteFileIndexTest, DISABLED_TestEqualityDeleteDiscardMetrics) {
   EXPECT_EQ(returned_file->file_path, "/path/to/eq-delete-with-metrics.parquet");
   // record_count should be preserved
   EXPECT_EQ(returned_file->record_count, 50);
-  // Stats maps should be cleared (empty) after building the index
-  EXPECT_TRUE(returned_file->column_sizes.empty());
-  EXPECT_TRUE(returned_file->value_counts.empty());
-  EXPECT_TRUE(returned_file->null_value_counts.empty());
-  EXPECT_TRUE(returned_file->nan_value_counts.empty());
-  EXPECT_TRUE(returned_file->lower_bounds.empty());
-  EXPECT_TRUE(returned_file->upper_bounds.empty());
+  // Stats maps should only contain entries for equality field IDs.
+  EXPECT_EQ(returned_file->column_sizes.size(), 1);
+  EXPECT_EQ(returned_file->value_counts.size(), 1);
+  EXPECT_EQ(returned_file->null_value_counts.size(), 1);
+  EXPECT_EQ(returned_file->nan_value_counts.size(), 1);
+  EXPECT_EQ(returned_file->lower_bounds.size(), 1);
+  EXPECT_EQ(returned_file->upper_bounds.size(), 1);
+  EXPECT_TRUE(returned_file->column_sizes.contains(1));
+  EXPECT_TRUE(returned_file->value_counts.contains(1));
+  EXPECT_TRUE(returned_file->null_value_counts.contains(1));
+  EXPECT_TRUE(returned_file->nan_value_counts.contains(1));
+  EXPECT_TRUE(returned_file->lower_bounds.contains(1));
+  EXPECT_TRUE(returned_file->upper_bounds.contains(1));
 }
 
 INSTANTIATE_TEST_SUITE_P(DeleteFileIndexVersions, DeleteFileIndexTest,

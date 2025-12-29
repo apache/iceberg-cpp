@@ -83,13 +83,41 @@ std::string ContentFileUtil::DVDesc(const DataFile& file) {
                      file.referenced_data_file.value_or(""));
 }
 
-void ContentFileUtil::DropStats(DataFile& data_file) {
+void ContentFileUtil::DropAllStats(DataFile& data_file) {
   data_file.column_sizes.clear();
   data_file.value_counts.clear();
   data_file.null_value_counts.clear();
   data_file.nan_value_counts.clear();
   data_file.lower_bounds.clear();
   data_file.upper_bounds.clear();
+}
+
+namespace {
+
+template <typename V>
+void DropUnselectedColumnStats(std::map<int32_t, V>& map,
+                               const std::unordered_set<int32_t>& columns) {
+  for (auto it = map.begin(); it != map.end();) {
+    if (columns.find(it->first) == columns.end()) {
+      it = map.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
+}  // namespace
+
+void ContentFileUtil::DropUnselectedStats(
+    DataFile& data_file, const std::unordered_set<int32_t>& selected_columns) {
+  DropUnselectedColumnStats<int64_t>(data_file.column_sizes, selected_columns);
+  DropUnselectedColumnStats<int64_t>(data_file.value_counts, selected_columns);
+  DropUnselectedColumnStats<int64_t>(data_file.null_value_counts, selected_columns);
+  DropUnselectedColumnStats<int64_t>(data_file.nan_value_counts, selected_columns);
+  DropUnselectedColumnStats<std::vector<uint8_t>>(data_file.lower_bounds,
+                                                  selected_columns);
+  DropUnselectedColumnStats<std::vector<uint8_t>>(data_file.upper_bounds,
+                                                  selected_columns);
 }
 
 }  // namespace iceberg

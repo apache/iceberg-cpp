@@ -32,6 +32,7 @@
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader.h"
+#include "iceberg/metadata_columns.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/util/checked_cast.h"
@@ -524,11 +525,6 @@ DeleteFileIndex::Builder& DeleteFileIndex::Builder::IgnoreResiduals() {
 }
 
 Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
-  ICEBERG_PRECHECK(io_ != nullptr, "FileIO is required to load delete files");
-  ICEBERG_PRECHECK(!specs_by_id_.empty(),
-                   "Partition specs are required to load delete files");
-  ICEBERG_PRECHECK(schema_ != nullptr, "Schema is required to load delete files");
-
   // Build expression caches per spec ID
   std::unordered_map<int32_t, std::shared_ptr<Expression>> part_expr_cache;
   std::unordered_map<int32_t, std::unique_ptr<ManifestEvaluator>> eval_cache;
@@ -615,6 +611,14 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
                     "Missing sequence number for delete file: {}",
                     entry.data_file->file_path);
       if (entry.sequence_number.value() > min_sequence_number_) {
+        auto& file = *entry.data_file;
+        // keep minimum stats to avoid memory pressure
+        std::unordered_set<int32_t> columns =
+            file.content == DataFile::Content::kPositionDeletes
+                ? std::unordered_set<int32_t>{MetadataColumns::kDeleteFilePathColumnId}
+                : std::unordered_set<int32_t>(file.equality_ids.begin(),
+                                              file.equality_ids.end());
+        ContentFileUtil::DropUnselectedStats(*entry.data_file, columns);
         files.emplace_back(std::move(entry));
       }
     }
@@ -717,7 +721,10 @@ Status DeleteFileIndex::Builder::AddEqualityDelete(
 
 Result<std::unique_ptr<DeleteFileIndex>> DeleteFileIndex::Builder::Build() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
-  ICEBERG_PRECHECK(schema_ != nullptr, "Schema is required to build DeleteFileIndex");
+  ICEBERG_PRECHECK(io_ != nullptr, "FileIO is required to load delete files");
+  ICEBERG_PRECHECK(schema_ != nullptr, "Schema is required to load delete files");
+  ICEBERG_PRECHECK(!specs_by_id_.empty(),
+                   "Partition specs are required to load delete files");
 
   std::vector<ManifestEntry> entries;
   if (!delete_manifests_.empty()) {

@@ -26,6 +26,7 @@
 #include <optional>
 #include <span>
 #include <string>
+#include <unordered_set>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/manifest/manifest_entry.h"
@@ -52,7 +53,11 @@ struct ICEBERG_EXPORT ContentFileUtil {
   static std::string DVDesc(const DataFile& file);
 
   /// \brief In-place drop stats.
-  static void DropStats(DataFile& data_file);
+  static void DropAllStats(DataFile& data_file);
+
+  /// \brief Preserve stats based on selected columns.
+  static void DropUnselectedStats(DataFile& data_file,
+                                  const std::unordered_set<int32_t>& selected_columns);
 };
 
 }  // namespace iceberg
