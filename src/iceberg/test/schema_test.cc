@@ -43,49 +43,36 @@ std::unique_ptr<iceberg::Schema> MakeSchema(Args&&... args) {
 }
 
 TEST(SchemaTest, Basics) {
-  {
-    iceberg::SchemaField field1(5, "foo", iceberg::int32(), true);
-    iceberg::SchemaField field2(7, "bar", iceberg::string(), true);
-    iceberg::Schema schema({field1, field2}, 100);
-    ASSERT_EQ(schema, schema);
-    ASSERT_EQ(100, schema.schema_id());
-    std::span<const iceberg::SchemaField> fields = schema.fields();
-    ASSERT_EQ(2, fields.size());
-    ASSERT_EQ(field1, fields[0]);
-    ASSERT_EQ(field2, fields[1]);
-    ASSERT_THAT(schema.GetFieldById(5), ::testing::Optional(field1));
-    ASSERT_THAT(schema.GetFieldById(7), ::testing::Optional(field2));
-    ASSERT_THAT(schema.GetFieldByIndex(0), ::testing::Optional(field1));
-    ASSERT_THAT(schema.GetFieldByIndex(1), ::testing::Optional(field2));
-    ASSERT_THAT(schema.GetFieldByName("foo"), ::testing::Optional(field1));
-    ASSERT_THAT(schema.GetFieldByName("bar"), ::testing::Optional(field2));
+  iceberg::SchemaField field1(5, "foo", iceberg::int32(), true);
+  iceberg::SchemaField field2(7, "bar", iceberg::string(), true);
+  iceberg::Schema schema({field1, field2}, 100);
+  ASSERT_EQ(schema, schema);
+  ASSERT_EQ(100, schema.schema_id());
+  std::span<const iceberg::SchemaField> fields = schema.fields();
+  ASSERT_EQ(2, fields.size());
+  ASSERT_EQ(field1, fields[0]);
+  ASSERT_EQ(field2, fields[1]);
+  ASSERT_THAT(schema.GetFieldById(5), ::testing::Optional(field1));
+  ASSERT_THAT(schema.GetFieldById(7), ::testing::Optional(field2));
+  ASSERT_THAT(schema.GetFieldByIndex(0), ::testing::Optional(field1));
+  ASSERT_THAT(schema.GetFieldByIndex(1), ::testing::Optional(field2));
+  ASSERT_THAT(schema.GetFieldByName("foo"), ::testing::Optional(field1));
+  ASSERT_THAT(schema.GetFieldByName("bar"), ::testing::Optional(field2));
 
-    ASSERT_EQ(std::nullopt, schema.GetFieldById(0));
-    auto result = schema.GetFieldByIndex(2);
-    ASSERT_THAT(result, IsError(iceberg::ErrorKind::kInvalidArgument));
-    ASSERT_THAT(result,
-                iceberg::HasErrorMessage("Invalid index 2 to get field from struct"));
-    result = schema.GetFieldByIndex(-1);
-    ASSERT_THAT(result, IsError(iceberg::ErrorKind::kInvalidArgument));
-    ASSERT_THAT(result,
-                iceberg::HasErrorMessage("Invalid index -1 to get field from struct"));
-    ASSERT_EQ(std::nullopt, schema.GetFieldByName("element"));
-    ASSERT_EQ(0, schema.IdentifierFieldIds().size());
-    auto identifier_field_names = schema.IdentifierFieldNames();
-    ASSERT_THAT(identifier_field_names, iceberg::IsOk());
-    ASSERT_THAT(identifier_field_names.value(), ::testing::IsEmpty());
-  }
-
-  {
-    // identifier fields not empty
-    iceberg::SchemaField field1(5, "foo", iceberg::int32(), true);
-    iceberg::SchemaField field2(7, "bar", iceberg::string(), true);
-    iceberg::Schema schema({field1, field2}, 100, {5, 7});
-    ASSERT_THAT(schema.IdentifierFieldIds(), testing::ElementsAre(5, 7));
-    auto result = schema.IdentifierFieldNames();
-    ASSERT_THAT(result, iceberg::IsOk());
-    ASSERT_THAT(result.value(), testing::ElementsAre("foo", "bar"));
-  }
+  ASSERT_EQ(std::nullopt, schema.GetFieldById(0));
+  auto result = schema.GetFieldByIndex(2);
+  ASSERT_THAT(result, IsError(iceberg::ErrorKind::kInvalidArgument));
+  ASSERT_THAT(result,
+              iceberg::HasErrorMessage("Invalid index 2 to get field from struct"));
+  result = schema.GetFieldByIndex(-1);
+  ASSERT_THAT(result, IsError(iceberg::ErrorKind::kInvalidArgument));
+  ASSERT_THAT(result,
+              iceberg::HasErrorMessage("Invalid index -1 to get field from struct"));
+  ASSERT_EQ(std::nullopt, schema.GetFieldByName("element"));
+  ASSERT_EQ(0, schema.IdentifierFieldIds().size());
+  auto identifier_field_names = schema.IdentifierFieldNames();
+  ASSERT_THAT(identifier_field_names, iceberg::IsOk());
+  ASSERT_THAT(identifier_field_names.value(), ::testing::IsEmpty());
 }
 
 TEST(SchemaTest, Equality) {
@@ -97,9 +84,6 @@ TEST(SchemaTest, Equality) {
   iceberg::Schema schema3({field1}, 101);
   iceberg::Schema schema4({field3, field2}, 101);
   iceberg::Schema schema5({field1, field2}, 100);
-  iceberg::Schema schema6({field1, field2}, 100, {5});
-  iceberg::Schema schema7({field1, field2}, 100, {5});
-  iceberg::Schema schema8({field1, field2}, 100, {7});
 
   ASSERT_EQ(schema1, schema1);
   ASSERT_NE(schema1, schema2);
@@ -110,10 +94,85 @@ TEST(SchemaTest, Equality) {
   ASSERT_NE(schema4, schema1);
   ASSERT_EQ(schema1, schema5);
   ASSERT_EQ(schema5, schema1);
+}
 
-  ASSERT_NE(schema5, schema6);
-  ASSERT_EQ(schema6, schema7);
-  ASSERT_NE(schema6, schema8);
+TEST(SchemaTest, IdentifierFields) {
+  using iceberg::ErrorKind;
+  using iceberg::Schema;
+  using iceberg::SchemaField;
+
+  // identifier fields without identifier fields
+  SchemaField field1(1, "id", iceberg::int32(), false);
+  SchemaField field2(2, "name", iceberg::string(), true);
+  SchemaField field3(3, "age", iceberg::float32(), false);
+  Schema schema({field1, field2}, 100);
+
+  // Schema with normal identifier fields
+  ICEBERG_UNWRAP_OR_FAIL(auto schema_with_pk,
+                         Schema::Make({field1, field2}, 100, std::vector<int32_t>{1}));
+  ASSERT_THAT(schema_with_pk->IdentifierFieldIds(), testing::ElementsAre(1));
+  auto result = schema_with_pk->IdentifierFieldNames();
+  ASSERT_THAT(result, iceberg::IsOk());
+  EXPECT_THAT(result.value(), testing::ElementsAre("id"));
+
+  // Euqality check
+  EXPECT_NE(schema, *schema_with_pk);
+  auto schema_with_pk_other =
+      Schema::Make({field1, field2}, 100, std::vector<int32_t>{1});
+  ASSERT_THAT(schema_with_pk_other, iceberg::IsOk())
+      << schema_with_pk_other.error().message;
+  EXPECT_EQ(*schema_with_pk, *schema_with_pk_other.value());
+
+  // Invalid identifier fields, identifier fields cannot be optional
+  auto res = Schema::Make({field1, field2}, 100, std::vector<int32_t>{2});
+  EXPECT_THAT(res, iceberg::IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(res, iceberg::HasErrorMessage("not a required field"));
+
+  // Invalid identifier fields, identifier fields invalid type
+  res = Schema::Make({field1, field2, field3}, 100, std::vector<int32_t>{3});
+  EXPECT_THAT(res, iceberg::IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(res, iceberg::HasErrorMessage("must not be float or double field"));
+
+  SchemaField field4(
+      4, "struct",
+      std::make_shared<iceberg::StructType>(std::vector<SchemaField>{field1, field2}),
+      false);
+  res = Schema::Make({field4}, 100, std::vector<int32_t>{4});
+  EXPECT_THAT(res, iceberg::IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(res, iceberg::HasErrorMessage("not a primitive type field"));
+
+  // Invalid identifier fields, identifier fields cannot be nested in optional field
+  SchemaField field5(
+      4, "struct",
+      std::make_shared<iceberg::StructType>(std::vector<SchemaField>{field1, field2}),
+      true);
+  res = Schema::Make({field5}, 100, std::vector<int32_t>{1});
+  EXPECT_THAT(res, iceberg::IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(res, iceberg::HasErrorMessage("must not be nested in optional field"));
+
+  // Invalid identifier fields, identifier fields cannot be nested in repeated field
+  SchemaField field6(5, "element", iceberg::int32(), false);
+  SchemaField field7(4, "list", std::make_shared<iceberg::ListType>(field6), true);
+  res = Schema::Make({field7}, 100, std::vector<int32_t>{5});
+  EXPECT_THAT(res, iceberg::IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(res, iceberg::HasErrorMessage("must not be nested in list"));
+
+  // Normal nested identifier fields
+  SchemaField field8(
+      4, "struct",
+      std::make_shared<iceberg::StructType>(std::vector<SchemaField>{field1, field2}),
+      false);
+  res = Schema::Make({field8}, 100, std::vector<int32_t>{1});
+  ASSERT_THAT(res, iceberg::IsOk());
+  EXPECT_THAT(res.value()->IdentifierFieldIds(), testing::ElementsAre(1));
+  ICEBERG_UNWRAP_OR_FAIL(auto identifier_field_names,
+                         res.value()->IdentifierFieldNames());
+  EXPECT_THAT(identifier_field_names, testing::ElementsAre("struct.id"));
+
+  // Invalid identifier fields, identifier fields not found
+  res = Schema::Make({field1, field2}, 100, std::vector<std::string>{"not_exist"});
+  EXPECT_THAT(res, iceberg::IsError(ErrorKind::kInvalidSchema));
+  EXPECT_THAT(res, iceberg::HasErrorMessage("Cannot find identifier field"));
 }
 
 class BasicShortNameTest : public ::testing::Test {
@@ -237,8 +296,8 @@ class ComplexShortNameTest : public ::testing::Test {
 
     field9_ = std::make_unique<iceberg::SchemaField>(9, "Map", maptype, false);
 
-    schema_ = std::make_unique<iceberg::Schema>(
-        std::vector<iceberg::SchemaField>{*field9_}, 1, std::vector<int32_t>{1, 2});
+    schema_ =
+        std::make_unique<iceberg::Schema>(std::vector<iceberg::SchemaField>{*field9_}, 1);
   }
 
   std::unique_ptr<iceberg::Schema> schema_;
@@ -356,14 +415,6 @@ TEST_F(ComplexShortNameTest, TestFindByShortNameCaseInsensitive) {
               ::testing::Optional(*field1_));
   ASSERT_THAT(schema_->FindFieldByName("Map.Second_child.aaa", false),
               ::testing::Optional(std::nullopt));
-}
-
-TEST_F(ComplexShortNameTest, TestIdentifierFieldNames) {
-  auto result = schema_->IdentifierFieldNames();
-  ASSERT_THAT(result, iceberg::IsOk());
-  ASSERT_THAT(result.value(),
-              ::testing::ElementsAre("Map.value.Second_child.element.Foo",
-                                     "Map.value.Second_child.element.Bar"));
 }
 
 class ComplexMapStructShortNameTest : public ::testing::Test {

@@ -52,17 +52,31 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// \brief Special value to select all columns from manifest files.
   static constexpr std::string_view kAllColumns = "*";
 
-  explicit Schema(std::vector<SchemaField> fields, int32_t schema_id = kInitialSchemaId,
-                  std::vector<int32_t> identifier_field_ids = {});
+  explicit Schema(std::vector<SchemaField> fields, int32_t schema_id = kInitialSchemaId);
+
+  explicit Schema(std::vector<SchemaField> fields,
+                  std::optional<int32_t> schema_id = std::nullopt);
+
+  /// \brief Create a schema.
+  ///
+  /// \param fields The fields that make up the schema.
+  /// \param schema_id The unique identifier for this schema (default:kInitialSchemaId).
+  /// \param identifier_field_ids Field IDs that uniquely identify
+  /// rows in the table (default: empty).
+  /// \return A new Schema instance or Status if failed.
+  static Result<std::unique_ptr<Schema>> Make(std::vector<SchemaField> fields,
+                                              int32_t schema_id,
+                                              std::vector<int32_t> identifier_field_ids);
 
   /// \brief Create a schema.
   ///
   /// \param fields The fields that make up the schema.
   /// \param schema_id The unique identifier for this schema (default: kInitialSchemaId).
   /// \param identifier_field_names Canonical names of fields that uniquely identify rows
-  /// in the table (default: empty). \return A new Schema instance or Status if failed.
+  /// in the table (default: empty).
+  /// \return A new Schema instance or Status if failed.
   static Result<std::unique_ptr<Schema>> Make(
-      std::vector<SchemaField> fields, int32_t schema_id = kInitialSchemaId,
+      std::vector<SchemaField> fields, int32_t schema_id,
       const std::vector<std::string>& identifier_field_names = {});
 
   /// \brief Get an empty schema.

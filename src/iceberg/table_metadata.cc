@@ -958,9 +958,9 @@ Result<int32_t> TableMetadataBuilder::Impl::AddSchema(const Schema& schema,
 
   metadata_.last_column_id = new_last_column_id;
 
-  auto new_schema =
-      std::make_shared<Schema>(schema.fields() | std::ranges::to<std::vector>(),
-                               new_schema_id, schema.IdentifierFieldIds());
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<Schema> new_schema,
+                          Schema::Make(schema.fields() | std::ranges::to<std::vector>(),
+                                       new_schema_id, schema.IdentifierFieldIds()))
 
   if (!schema_found) {
     metadata_.schemas.push_back(new_schema);

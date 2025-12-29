@@ -21,6 +21,7 @@
 
 #include <format>
 #include <functional>
+#include <stack>
 
 #include "iceberg/result.h"
 #include "iceberg/row/struct_like.h"
@@ -34,11 +35,79 @@
 
 namespace iceberg {
 
-Schema::Schema(std::vector<SchemaField> fields, int32_t schema_id,
-               std::vector<int32_t> identifier_field_ids)
-    : StructType(std::move(fields)),
-      schema_id_(schema_id),
-      identifier_field_ids_(std::move(identifier_field_ids)) {}
+
+
+namespace {
+Status ValidateIdentifierFields(
+    int32_t field_id, const Schema& schema,
+    const std::unordered_map<int32_t, int32_t>& id_to_parent) {
+  ICEBERG_ASSIGN_OR_RAISE(auto field_opt, schema.FindFieldById(field_id));
+  ICEBERG_PRECHECK(field_opt.has_value(),
+                   "Cannot add field {} as an identifier field: field does not exist",
+                   field_id);
+
+  const SchemaField& field = field_opt.value().get();
+  ICEBERG_PRECHECK(
+      field.type()->is_primitive(),
+      "Cannot add field {} as an identifier field: not a primitive type field", field_id);
+  ICEBERG_PRECHECK(!field.optional(),
+                   "Cannot add field {} as an identifier field: not a required field",
+                   field_id);
+  ICEBERG_PRECHECK(
+      field.type()->type_id() != TypeId::kDouble &&
+          field.type()->type_id() != TypeId::kFloat,
+      "Cannot add field {} as an identifier field: must not be float or double field",
+      field_id);
+
+  // check whether the nested field is in a chain of required struct fields
+  // exploring from root for better error message for list and map types
+  std::stack<int32_t> ancestors;
+  auto parent_it = id_to_parent.find(field.field_id());
+  while (parent_it != id_to_parent.end()) {
+    ancestors.push(parent_it->second);
+    parent_it = id_to_parent.find(parent_it->second);
+  }
+
+  while (!ancestors.empty()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto parent_opt, schema.FindFieldById(ancestors.top()));
+    ICEBERG_PRECHECK(
+        parent_opt.has_value(),
+        "Cannot add field {} as an identifier field: parent field id {} does not exist",
+        field_id, ancestors.top());
+    const SchemaField& parent = parent_opt.value().get();
+    ICEBERG_PRECHECK(
+        parent.type()->type_id() == TypeId::kStruct,
+        "Cannot add field {} as an identifier field: must not be nested in {}", field_id,
+        *parent.type());
+    ICEBERG_PRECHECK(!parent.optional(),
+                     "Cannot add field {} as an identifier field: must not be nested in "
+                     "optional field {}",
+                     field_id, parent.field_id());
+    ancestors.pop();
+  }
+  return {};
+}
+}  // namespace
+
+Schema::Schema(std::vector<SchemaField> fields, int32_t schema_id)
+    : StructType(std::move(fields)), schema_id_(schema_id) {}
+
+Result<std::unique_ptr<Schema>> Schema::Make(std::vector<SchemaField> fields,
+                                             int32_t schema_id,
+                                             std::vector<int32_t> identifier_field_ids) {
+  auto schema = std::make_unique<Schema>(std::move(fields), schema_id);
+
+  if (!identifier_field_ids.empty()) {
+    auto id_to_parent = IndexParents(*schema);
+    for (auto field_id : identifier_field_ids) {
+      ICEBERG_RETURN_UNEXPECTED(
+          ValidateIdentifierFields(field_id, *schema, id_to_parent));
+    }
+  }
+
+  schema->identifier_field_ids_ = std::move(identifier_field_ids);
+  return schema;
+}
 
 Result<std::unique_ptr<Schema>> Schema::Make(
     std::vector<SchemaField> fields, int32_t schema_id,
@@ -53,6 +122,15 @@ Result<std::unique_ptr<Schema>> Schema::Make(
     }
     fresh_identifier_ids.push_back(field.value().get().field_id());
   }
+
+  if (!fresh_identifier_ids.empty()) {
+    auto id_to_parent = IndexParents(*schema);
+    for (auto field_id : fresh_identifier_ids) {
+      ICEBERG_RETURN_UNEXPECTED(
+          ValidateIdentifierFields(field_id, *schema, id_to_parent));
+    }
+  }
+
   schema->identifier_field_ids_ = std::move(fresh_identifier_ids);
   return schema;
 }

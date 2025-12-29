@@ -74,8 +74,9 @@ std::shared_ptr<Type> CreateNestedStruct() {
   });
 }
 
-Schema CreateNestedSchema(std::vector<int32_t> identifier_field_ids = {}) {
-  return Schema(
+Result<std::unique_ptr<Schema>> CreateNestedSchema(
+    std::vector<int32_t> identifier_field_ids = {}) {
+  return Schema::Make(
       {
           SchemaField::MakeRequired(/*field_id=*/10, "id", iceberg::int64()),
           SchemaField::MakeOptional(/*field_id=*/20, "list", CreateListOfStruct()),
@@ -108,11 +109,11 @@ TEST(AssignFreshIdVisitorTest, FlatSchema) {
 }
 
 TEST(AssignFreshIdVisitorTest, NestedSchema) {
-  Schema schema = CreateNestedSchema();
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, CreateNestedSchema());
   std::atomic<int32_t> id = 0;
   auto next_id = [&id]() { return ++id; };
   ICEBERG_UNWRAP_OR_FAIL(auto fresh_schema,
-                         AssignFreshIds(Schema::kInitialSchemaId, schema, next_id));
+                         AssignFreshIds(Schema::kInitialSchemaId, *schema, next_id));
 
   ASSERT_EQ(4, fresh_schema->fields().size());
   for (int32_t i = 0; i < fresh_schema->fields().size(); ++i) {
@@ -169,20 +170,16 @@ TEST(AssignFreshIdVisitorTest, NestedSchema) {
 }
 
 TEST(AssignFreshIdVisitorTest, RefreshIdentifierId) {
-  std::atomic<int32_t> id = 0;
+  int32_t id = 0;
   auto next_id = [&id]() { return ++id; };
 
-  Schema invalid_schema = CreateNestedSchema({10, 400});
-  // Invalid identified field id
-  auto result = AssignFreshIds(Schema::kInitialSchemaId, invalid_schema, next_id);
-  EXPECT_THAT(result, IsError(ErrorKind::kInvalidSchema));
-  EXPECT_THAT(result, HasErrorMessage("Cannot find"));
-
-  id = 0;
-  Schema schema = CreateNestedSchema({10, 301});
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, CreateNestedSchema({10, 301}));
   ICEBERG_UNWRAP_OR_FAIL(auto fresh_schema,
-                         AssignFreshIds(Schema::kInitialSchemaId, schema, next_id));
+                         AssignFreshIds(Schema::kInitialSchemaId, *schema, next_id));
   EXPECT_THAT(fresh_schema->IdentifierFieldIds(), testing::ElementsAre(1, 12));
+  ICEBERG_UNWRAP_OR_FAIL(auto identifier_field_names,
+                         fresh_schema->IdentifierFieldNames());
+  EXPECT_THAT(identifier_field_names, testing::ElementsAre("id", "struct.outer_id"));
 }
 
 }  // namespace iceberg
