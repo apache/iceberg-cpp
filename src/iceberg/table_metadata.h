@@ -219,13 +219,15 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   /// \brief Create a builder from existing table metadata
   ///
   /// \param base The base table metadata to build from
-  /// \param is_create Whether the builder is for creating a new table. It will call
-  /// `BuildFromEmpty` and set changes to make the tablemetadata but not copy the base
-  /// metadata directly if true.
   /// \return A new TableMetadataBuilder instance initialized
   /// with base metadata
-  static std::unique_ptr<TableMetadataBuilder> BuildFrom(const TableMetadata* base,
-                                                         bool is_create = false);
+  static std::unique_ptr<TableMetadataBuilder> BuildFrom(const TableMetadata* base);
+
+  /// \brief Apply changes required to create this table metadata
+  ///
+  /// \param base The table metadata to build from
+  /// \return Reference to this builder for method chaining
+  TableMetadataBuilder& ApplyChangesForCreate(const TableMetadata& base);
 
   /// \brief Set the metadata location of the table
   ///

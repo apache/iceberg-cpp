@@ -167,7 +167,7 @@ TEST(FormatterTest, TableIdentifierFormat) {
       .ns = Namespace({}),
       .name = "table_name",
   };
-  EXPECT_EQ(".table_name", std::format("{}", empty_ns_table));
+  EXPECT_EQ("table_name", std::format("{}", empty_ns_table));
 
   TableIdentifier table{
       .ns = Namespace({"ns1", "ns2"}),

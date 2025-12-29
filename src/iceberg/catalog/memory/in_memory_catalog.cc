@@ -29,6 +29,7 @@
 #include "iceberg/table_requirements.h"
 #include "iceberg/table_update.h"
 #include "iceberg/transaction.h"
+#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -423,8 +424,7 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::CreateTable(
   ICEBERG_RETURN_UNEXPECTED(
       root_namespace_->UpdateTableMetadataLocation(identifier, metadata_file_location));
   return Table::Make(identifier, std::move(table_metadata),
-                     std::move(metadata_file_location), file_io_,
-                     std::static_pointer_cast<Catalog>(shared_from_this()));
+                     std::move(metadata_file_location), file_io_, shared_from_this());
 }
 
 Result<std::shared_ptr<Table>> InMemoryCatalog::UpdateTable(
@@ -444,7 +444,8 @@ Result<std::shared_ptr<Table>> InMemoryCatalog::UpdateTable(
     for (const auto& update : updates) {
       if (update->kind() == TableUpdate::Kind::kUpgradeFormatVersion) {
         format_version =
-            dynamic_cast<const table::UpgradeFormatVersion&>(*update).format_version();
+            internal::checked_cast<const table::UpgradeFormatVersion&>(*update)
+                .format_version();
       }
     }
     builder = TableMetadataBuilder::BuildFromEmpty(format_version);
@@ -496,7 +497,8 @@ Result<std::shared_ptr<Transaction>> InMemoryCatalog::StageCreateTable(
   ICEBERG_ASSIGN_OR_RAISE(
       auto table, StagedTable::Make(identifier, std::move(table_metadata), "", file_io_,
                                     shared_from_this()));
-  return Transaction::Make(std::move(table), Transaction::Kind::kCreate, false);
+  return Transaction::Make(std::move(table), Transaction::Kind::kCreate,
+                           /* auto_commit */ false);
 }
 
 Result<bool> InMemoryCatalog::TableExists(const TableIdentifier& identifier) const {

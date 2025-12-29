@@ -1099,16 +1099,16 @@ std::unique_ptr<TableMetadataBuilder> TableMetadataBuilder::BuildFromEmpty(
 }
 
 std::unique_ptr<TableMetadataBuilder> TableMetadataBuilder::BuildFrom(
-    const TableMetadata* base, bool is_create) {
-  if (is_create) {
-    ICEBERG_DCHECK(base != nullptr, "base should not be nullptr if is_create is true");
-    auto builder = BuildFromEmpty();
-    for (auto& change : base->ChangesForCreate()) {
-      change->ApplyTo(*builder);
-    }
-    return builder;
-  }
+    const TableMetadata* base) {
   return std::unique_ptr<TableMetadataBuilder>(new TableMetadataBuilder(base));  // NOLINT
+}
+
+TableMetadataBuilder& TableMetadataBuilder::ApplyChangesForCreate(
+    const TableMetadata& base) {
+  for (auto& change : base.ChangesForCreate()) {
+    change->ApplyTo(*this);
+  }
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetMetadataLocation(

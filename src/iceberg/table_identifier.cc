@@ -26,7 +26,11 @@ namespace iceberg {
 std::string Namespace::ToString() const { return FormatRange(levels, ".", "", ""); }
 
 std::string TableIdentifier::ToString() const {
-  return std::format("{}.{}", ns.ToString(), name);
+  if (!ns.levels.empty()) {
+    return std::format("{}.{}", ns.ToString(), name);
+  } else {
+    return name;
+  }
 }
 
 }  // namespace iceberg

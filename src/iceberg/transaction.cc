@@ -36,12 +36,12 @@
 
 namespace iceberg {
 
-Transaction::Transaction(std::shared_ptr<Table> table, Kind kind, bool auto_commit)
+Transaction::Transaction(std::shared_ptr<Table> table, Kind kind, bool auto_commit,
+                         std::unique_ptr<TableMetadataBuilder> metadata_builder)
     : table_(std::move(table)),
       kind_(kind),
       auto_commit_(auto_commit),
-      metadata_builder_(TableMetadataBuilder::BuildFrom(table_->metadata().get(),
-                                                        kind == Kind::kCreate)) {}
+      metadata_builder_(std::move(metadata_builder)) {}
 
 Transaction::~Transaction() = default;
 
@@ -50,8 +50,17 @@ Result<std::shared_ptr<Transaction>> Transaction::Make(std::shared_ptr<Table> ta
   if (!table || !table->catalog()) [[unlikely]] {
     return InvalidArgument("Table and catalog cannot be null");
   }
+
+  std::unique_ptr<TableMetadataBuilder> metadata_builder;
+  if (kind == Kind::kCreate) {
+    metadata_builder = TableMetadataBuilder::BuildFromEmpty();
+    std::ignore = metadata_builder->ApplyChangesForCreate(*table->metadata());
+  } else {
+    metadata_builder = TableMetadataBuilder::BuildFrom(table->metadata().get());
+  }
+
   return std::shared_ptr<Transaction>(
-      new Transaction(std::move(table), kind, auto_commit));
+      new Transaction(std::move(table), kind, auto_commit, std::move(metadata_builder)));
 }
 
 const TableMetadata* Transaction::base() const { return metadata_builder_->base(); }
