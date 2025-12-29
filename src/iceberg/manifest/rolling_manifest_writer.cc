@@ -32,9 +32,7 @@ RollingManifestWriter::RollingManifestWriter(
 
 RollingManifestWriter::~RollingManifestWriter() {
   // Ensure we close the current writer if not already closed
-  if (!closed_) {
-    (void)CloseCurrentWriter();
-  }
+  std::ignore = Close();
 }
 
 Status RollingManifestWriter::WriteAddedEntry(
@@ -96,13 +94,13 @@ bool RollingManifestWriter::ShouldRollToNewFile() const {
   if (current_writer_ == nullptr) {
     return false;
   }
-  // Roll when row count is a multiple of ROWS_DIVISOR and file size >= target
+  // Roll when row count is a multiple of the divisor and file size >= target
   if (current_file_rows_ % kRowsDivisor == 0) {
     auto length_result = current_writer_->length();
     if (length_result.has_value()) {
       return length_result.value() >= target_file_size_in_bytes_;
     }
-    // If we can't get the length, don't roll
+    // TODO(anyone): If we can't get the length, don't roll for now, revisit this later.
   }
   return false;
 }

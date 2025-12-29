@@ -35,9 +35,6 @@
 namespace iceberg {
 
 /// \brief A rolling manifest writer that can produce multiple manifest files.
-///
-/// As opposed to ManifestWriter, a rolling writer could produce multiple manifest
-/// files.
 class ICEBERG_EXPORT RollingManifestWriter {
  public:
   /// \brief Factory function type for creating ManifestWriter instances.
@@ -115,6 +112,8 @@ class ICEBERG_EXPORT RollingManifestWriter {
   /// \brief Close the current writer and add its ManifestFile to the list.
   Status CloseCurrentWriter();
 
+  /// \brief The number of rows after which to consider rolling to a new file.
+  /// \note This aligned with Iceberg's Java impl.
   static constexpr int64_t kRowsDivisor = 250;
 
   ManifestWriterFactory manifest_writer_factory_;
