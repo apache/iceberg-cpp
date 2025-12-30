@@ -55,7 +55,8 @@ std::shared_ptr<Schema> CreateInvalidSchema() {
   auto field2 = SchemaField::MakeRequired(5, "part_col", string());
   auto field3 = SchemaField::MakeRequired(8, "sort_col", timestamp());
   return std::make_shared<Schema>(std::vector<SchemaField>{field1, field2, field3},
-                                  std::make_optional(1), std::vector<int32_t>{1});
+                                  /*schema_id=*/1,
+                                  /*identifier_field_ids=*/std::vector<int32_t>{10});
 }
 
 // Helper function to create a simple schema with disordered field_ids
@@ -64,7 +65,8 @@ std::shared_ptr<Schema> CreateDisorderedSchema() {
   auto field2 = SchemaField::MakeRequired(5, "part_col", string());
   auto field3 = SchemaField::MakeRequired(8, "sort_col", timestamp());
   return std::make_shared<Schema>(std::vector<SchemaField>{field1, field2, field3},
-                                  std::make_optional(1), std::vector<int32_t>{2});
+                                  /*schema_id=*/1,
+                                  /*identifier_field_ids=*/std::vector<int32_t>{2});
 }
 
 // Helper function to create base metadata for tests
