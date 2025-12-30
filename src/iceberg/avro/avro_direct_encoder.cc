@@ -223,7 +223,7 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
       const size_t num_fields = avro_node->leaves();
 
       ICEBERG_PRECHECK(
-          static_cast<size_t>(struct_array.num_fields()) == num_fields,
+          struct_array.num_fields() == static_cast<int>(num_fields),
           "Field count mismatch: Arrow struct has {} fields, Avro node has {} fields",
           struct_array.num_fields(), num_fields);
       ICEBERG_PRECHECK(
