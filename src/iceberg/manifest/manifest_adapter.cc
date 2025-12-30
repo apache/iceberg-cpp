@@ -36,6 +36,7 @@ namespace iceberg {
 namespace {
 
 constexpr int64_t kBlockSizeInBytesV1 = 64 * 1024 * 1024L;
+constexpr int32_t kBlockSizeInBytesFieldId = 105;
 
 Status AppendField(ArrowArray* array, int64_t value) {
   ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendInt(array, value));
@@ -254,64 +255,63 @@ Status ManifestEntryAdapter::AppendDataFile(
     auto child_array = array->children[i];
 
     switch (field.field_id()) {
-      case 134:  // content (optional int32)
+      case DataFile::kContentFieldId:  // optional int32
         ICEBERG_RETURN_UNEXPECTED(
             AppendField(child_array, static_cast<int64_t>(file.content)));
         break;
-      case 100:  // file_path (required string)
+      case DataFile::kFilePathFieldId:  // required string
         ICEBERG_RETURN_UNEXPECTED(AppendField(child_array, file.file_path));
         break;
-      case 101:  // file_format (required string)
+      case DataFile::kFileFormatFieldId:  // required string
         ICEBERG_RETURN_UNEXPECTED(AppendField(child_array, ToString(file.file_format)));
         break;
-      case 102: {
-        // partition (required struct)
+      case DataFile::kPartitionFieldId: {  // required struct
         auto partition_type = internal::checked_pointer_cast<StructType>(field.type());
         ICEBERG_RETURN_UNEXPECTED(
             AppendPartitionValues(child_array, partition_type, file.partition));
       } break;
-      case 103:  // record_count (required int64)
+      case DataFile::kRecordCountFieldId:  // required int64
         ICEBERG_RETURN_UNEXPECTED(AppendField(child_array, file.record_count));
         break;
-      case 104:  // file_size_in_bytes (required int64)
+      case DataFile::kFileSizeFieldId:  // required int64
         ICEBERG_RETURN_UNEXPECTED(AppendField(child_array, file.file_size_in_bytes));
         break;
-      case 105:  // block_size_in_bytes (compatible in v1)
+      case kBlockSizeInBytesFieldId:  // compatible with v1
         // always 64MB for v1
         ICEBERG_RETURN_UNEXPECTED(AppendField(child_array, kBlockSizeInBytesV1));
         break;
-      case 108:  // column_sizes (optional map)
+      case DataFile::kColumnSizesFieldId:  // optional map
         ICEBERG_RETURN_UNEXPECTED(AppendMap(child_array, file.column_sizes));
         break;
-      case 109:  // value_counts (optional map)
+      case DataFile::kValueCountsFieldId:  // optional map
         ICEBERG_RETURN_UNEXPECTED(AppendMap(child_array, file.value_counts));
         break;
-      case 110:  // null_value_counts (optional map)
+      case DataFile::kNullValueCountsFieldId:  // optional map
         ICEBERG_RETURN_UNEXPECTED(AppendMap(child_array, file.null_value_counts));
         break;
-      case 137:  // nan_value_counts (optional map)
+      case DataFile::kNanValueCountsFieldId:  // optional map
         ICEBERG_RETURN_UNEXPECTED(AppendMap(child_array, file.nan_value_counts));
         break;
-      case 125:  // lower_bounds (optional map)
+      case DataFile::kLowerBoundsFieldId:  // optional map
         ICEBERG_RETURN_UNEXPECTED(AppendMap(child_array, file.lower_bounds));
         break;
-      case 128:  // upper_bounds (optional map)
+      case DataFile::kUpperBoundsFieldId:  // optional map
         ICEBERG_RETURN_UNEXPECTED(AppendMap(child_array, file.upper_bounds));
         break;
-      case 131:  // key_metadata (optional binary)
+      case DataFile::kKeyMetadataFieldId:  // optional binary
         if (!file.key_metadata.empty()) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(child_array, file.key_metadata));
         } else {
           ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(child_array, 1));
         }
         break;
-      case 132:  // split_offsets (optional list)
+      case DataFile::kSplitOffsetsFieldId:  // optional list
         ICEBERG_RETURN_UNEXPECTED(AppendList(child_array, file.split_offsets));
         break;
-      case 135:  // equality_ids (optional list)
+      case DataFile::kEqualityIdsFieldId:  // optional list
         ICEBERG_RETURN_UNEXPECTED(AppendList(child_array, file.equality_ids));
         break;
-      case 140:  // sort_order_id (optional int32)
+      case DataFile::kSortOrderIdFieldId:  // optional int32
         if (file.sort_order_id.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(
               AppendField(child_array, static_cast<int64_t>(file.sort_order_id.value())));
@@ -319,15 +319,14 @@ Status ManifestEntryAdapter::AppendDataFile(
           ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(child_array, 1));
         }
         break;
-      case 142:  // first_row_id (optional int64)
+      case DataFile::kFirstRowIdFieldId:  // optional int64
         if (file.first_row_id.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(child_array, file.first_row_id.value()));
         } else {
           ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(child_array, 1));
         }
         break;
-      case 143: {
-        // referenced_data_file (optional string)
+      case DataFile::kReferencedDataFileFieldId: {  // optional string
         ICEBERG_ASSIGN_OR_RAISE(auto referenced_data_file, GetReferenceDataFile(file));
         if (referenced_data_file.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(
@@ -337,7 +336,7 @@ Status ManifestEntryAdapter::AppendDataFile(
         }
         break;
       }
-      case 144:  // content_offset (optional int64)
+      case DataFile::kContentOffsetFieldId:  // optional int64
         if (file.content_offset.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(
               AppendField(child_array, file.content_offset.value()));
@@ -345,7 +344,7 @@ Status ManifestEntryAdapter::AppendDataFile(
           ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(child_array, 1));
         }
         break;
-      case 145:  // content_size_in_bytes (optional int64)
+      case DataFile::kContentSizeFieldId:  // optional int64
         if (file.content_size_in_bytes.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(
               AppendField(child_array, file.content_size_in_bytes.value()));
@@ -397,18 +396,18 @@ Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
     auto array = array_.children[i];
 
     switch (field.field_id()) {
-      case 0:  // status (required int32)
+      case ManifestEntry::kStatusFieldId:  // required int32
         ICEBERG_RETURN_UNEXPECTED(
             AppendField(array, static_cast<int64_t>(static_cast<int32_t>(entry.status))));
         break;
-      case 1:  // snapshot_id (optional int64)
+      case ManifestEntry::kSnapshotIdFieldId:  // optional int64
         if (entry.snapshot_id.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(array, entry.snapshot_id.value()));
         } else {
           ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(array, 1));
         }
         break;
-      case 2:  // data_file (required struct)
+      case ManifestEntry::kDataFileFieldId:  // required struct
         if (entry.data_file) {
           // Get the data file type from the field
           auto data_file_type = internal::checked_pointer_cast<StructType>(field.type());
@@ -418,8 +417,7 @@ Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
           return InvalidManifest("Missing required data_file field from manifest entry.");
         }
         break;
-      case 3: {
-        // sequence_number (optional int64)
+      case ManifestEntry::kSequenceNumberFieldId: {  // optional int64
         ICEBERG_ASSIGN_OR_RAISE(auto sequence_num, GetSequenceNumber(entry));
         if (sequence_num.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(array, sequence_num.value()));
@@ -428,7 +426,7 @@ Status ManifestEntryAdapter::AppendInternal(const ManifestEntry& entry) {
         }
         break;
       }
-      case 4:  // file_sequence_number (optional int64)
+      case ManifestEntry::kFileSequenceNumberFieldId:  // optional int64
         if (entry.file_sequence_number.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(
               AppendField(array, entry.file_sequence_number.value()));
@@ -538,36 +536,34 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
     const auto& field = fields[i];
     auto array = array_.children[i];
     switch (field.field_id()) {
-      case 500:  // manifest_path
+      case ManifestFile::kManifestPathFieldId:
         ICEBERG_RETURN_UNEXPECTED(AppendField(array, file.manifest_path));
         break;
-      case 501:  // manifest_length
+      case ManifestFile::kManifestLengthFieldId:
         ICEBERG_RETURN_UNEXPECTED(AppendField(array, file.manifest_length));
         break;
-      case 502:  // partition_spec_id
+      case ManifestFile::kPartitionSpecIdFieldId:
         ICEBERG_RETURN_UNEXPECTED(
             AppendField(array, static_cast<int64_t>(file.partition_spec_id)));
         break;
-      case 517:  // content
+      case ManifestFile::kContentFieldId:
         ICEBERG_RETURN_UNEXPECTED(
             AppendField(array, static_cast<int64_t>(static_cast<int32_t>(file.content))));
         break;
-      case 515: {
-        // sequence_number
+      case ManifestFile::kSequenceNumberFieldId: {
         ICEBERG_ASSIGN_OR_RAISE(auto sequence_num, GetSequenceNumber(file));
         ICEBERG_RETURN_UNEXPECTED(AppendField(array, sequence_num));
         break;
       }
-      case 516: {
-        // min_sequence_number
+      case ManifestFile::kMinSequenceNumberFieldId: {
         ICEBERG_ASSIGN_OR_RAISE(auto min_sequence_num, GetMinSequenceNumber(file));
         ICEBERG_RETURN_UNEXPECTED(AppendField(array, min_sequence_num));
         break;
       }
-      case 503:  // added_snapshot_id
+      case ManifestFile::kAddedSnapshotIdFieldId:
         ICEBERG_RETURN_UNEXPECTED(AppendField(array, file.added_snapshot_id));
         break;
-      case 504:  // added_files_count
+      case ManifestFile::kAddedFilesCountFieldId:
         if (file.added_files_count.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(
               AppendField(array, static_cast<int64_t>(file.added_files_count.value())));
@@ -576,7 +572,7 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
           ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(array, 1));
         }
         break;
-      case 505:  // existing_files_count
+      case ManifestFile::kExistingFilesCountFieldId:
         if (file.existing_files_count.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(
               array, static_cast<int64_t>(file.existing_files_count.value())));
@@ -585,7 +581,7 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
           ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(array, 1));
         }
         break;
-      case 506:  // deleted_files_count
+      case ManifestFile::kDeletedFilesCountFieldId:
         if (file.deleted_files_count.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(
               AppendField(array, static_cast<int64_t>(file.deleted_files_count.value())));
@@ -594,7 +590,7 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
           ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(array, 1));
         }
         break;
-      case 512:  // added_rows_count
+      case ManifestFile::kAddedRowsCountFieldId:
         if (file.added_rows_count.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(array, file.added_rows_count.value()));
         } else {
@@ -602,7 +598,7 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
           ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(array, 1));
         }
         break;
-      case 513:  // existing_rows_count
+      case ManifestFile::kExistingRowsCountFieldId:
         if (file.existing_rows_count.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(array, file.existing_rows_count.value()));
         } else {
@@ -610,7 +606,7 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
           ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(array, 1));
         }
         break;
-      case 514:  // deleted_rows_count
+      case ManifestFile::kDeletedRowsCountFieldId:
         if (file.deleted_rows_count.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(array, file.deleted_rows_count.value()));
         } else {
@@ -618,20 +614,19 @@ Status ManifestFileAdapter::AppendInternal(const ManifestFile& file) {
           ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(array, 1));
         }
         break;
-      case 507:  // partitions
+      case ManifestFile::kPartitionSummaryFieldId:
         ICEBERG_RETURN_UNEXPECTED(AppendPartitionSummary(
             array, internal::checked_pointer_cast<ListType>(field.type()),
             file.partitions));
         break;
-      case 519:  // key_metadata
+      case ManifestFile::kKeyMetadataFieldId:
         if (!file.key_metadata.empty()) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(array, file.key_metadata));
         } else {
           ICEBERG_NANOARROW_RETURN_UNEXPECTED(ArrowArrayAppendNull(array, 1));
         }
         break;
-      case 520: {
-        // first_row_id
+      case ManifestFile::kFirstRowIdFieldId: {
         ICEBERG_ASSIGN_OR_RAISE(auto first_row_id, GetFirstRowId(file));
         if (first_row_id.has_value()) {
           ICEBERG_RETURN_UNEXPECTED(AppendField(array, first_row_id.value()));

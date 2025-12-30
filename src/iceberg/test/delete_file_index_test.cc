@@ -198,9 +198,9 @@ class DeleteFileIndexTest : public testing::TestWithParam<int> {
   Result<std::unique_ptr<DeleteFileIndex>> BuildIndex(
       std::vector<ManifestFile> delete_manifests,
       std::optional<int64_t> after_sequence_number = std::nullopt) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto builder, DeleteFileIndex::BuilderFor(file_io_, std::move(delete_manifests)));
-    builder.SpecsById(GetSpecsById()).WithSchema(schema_);
+    ICEBERG_ASSIGN_OR_RAISE(auto builder,
+                            DeleteFileIndex::BuilderFor(file_io_, schema_, GetSpecsById(),
+                                                        std::move(delete_manifests)));
     if (after_sequence_number.has_value()) {
       builder.AfterSequenceNumber(after_sequence_number.value());
     }

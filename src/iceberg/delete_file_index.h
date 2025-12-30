@@ -268,10 +268,14 @@ class ICEBERG_EXPORT DeleteFileIndex {
   /// \brief Create a builder for constructing a DeleteFileIndex from manifest files.
   ///
   /// \param io The FileIO to use for reading manifests
+  /// \param schema Current table schema
+  /// \param specs_by_id Partition specs by their IDs
   /// \param delete_manifests The delete manifests to index
   /// \return A Builder instance
-  static Result<Builder> BuilderFor(std::shared_ptr<FileIO> io,
-                                    std::vector<ManifestFile> delete_manifests);
+  static Result<Builder> BuilderFor(
+      std::shared_ptr<FileIO> io, std::shared_ptr<Schema> schema,
+      std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id,
+      std::vector<ManifestFile> delete_manifests);
 
  private:
   friend class Builder;
@@ -318,7 +322,9 @@ class ICEBERG_EXPORT DeleteFileIndex {
 class ICEBERG_EXPORT DeleteFileIndex::Builder : public ErrorCollector {
  public:
   /// \brief Construct a builder from manifest files.
-  Builder(std::shared_ptr<FileIO> io, std::vector<ManifestFile> delete_manifests);
+  Builder(std::shared_ptr<FileIO> io, std::shared_ptr<Schema> schema,
+          std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id,
+          std::vector<ManifestFile> delete_manifests);
 
   ~Builder() override;
 
@@ -326,15 +332,6 @@ class ICEBERG_EXPORT DeleteFileIndex::Builder : public ErrorCollector {
   Builder& operator=(Builder&&) noexcept;
   Builder(const Builder&) = delete;
   Builder& operator=(const Builder&) = delete;
-
-  /// \brief Set the partition specs by ID.
-  Builder& SpecsById(
-      std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id);
-
-  /// \brief Set the table schema.
-  ///
-  /// Required for filtering and expression evaluation.
-  Builder& WithSchema(std::shared_ptr<Schema> schema);
 
   /// \brief Set the minimum sequence number for delete files.
   ///
@@ -384,10 +381,10 @@ class ICEBERG_EXPORT DeleteFileIndex::Builder : public ErrorCollector {
       ManifestEntry&& entry);
 
   std::shared_ptr<FileIO> io_;
+  std::shared_ptr<Schema> schema_;
+  std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id_;
   std::vector<ManifestFile> delete_manifests_;
   int64_t min_sequence_number_ = 0;
-  std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id_;
-  std::shared_ptr<Schema> schema_;
   std::shared_ptr<Expression> data_filter_;
   std::shared_ptr<Expression> partition_filter_;
   std::shared_ptr<PartitionSet> partition_set_;

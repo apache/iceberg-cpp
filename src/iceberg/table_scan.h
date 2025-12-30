@@ -46,10 +46,29 @@ class ICEBERG_EXPORT ScanTask {
 /// \brief Task representing a data file and its corresponding delete files.
 class ICEBERG_EXPORT FileScanTask : public ScanTask {
  public:
-  explicit FileScanTask(std::shared_ptr<DataFile> data_file);
+  /// \brief Construct with data file, delete files, and residual filter.
+  ///
+  /// \param data_file The data file to read.
+  /// \param delete_files Delete files that apply to this data file.
+  /// \param residual_filter Optional residual filter to apply after reading.
+  explicit FileScanTask(std::shared_ptr<DataFile> data_file,
+                        std::vector<std::shared_ptr<DataFile>> delete_files = {},
+                        std::shared_ptr<Expression> residual_filter = nullptr);
 
   /// \brief The data file that should be read by this scan task.
   const std::shared_ptr<DataFile>& data_file() const;
+
+  /// \brief Delete files that apply to this data file.
+  const std::vector<std::shared_ptr<DataFile>>& delete_files() const;
+
+  /// \brief Residual filter to apply after reading.
+  const std::shared_ptr<Expression>& residual_filter() const;
+
+  /// \brief Check if any deletes need to be applied.
+  bool has_deletes() const;
+
+  /// \brief Check if a residual filter needs to be applied.
+  bool has_residual_filter() const;
 
   int64_t size_bytes() const override;
   int32_t files_count() const override;
@@ -70,6 +89,10 @@ class ICEBERG_EXPORT FileScanTask : public ScanTask {
  private:
   /// \brief Data file metadata.
   std::shared_ptr<DataFile> data_file_;
+  /// \brief Delete files that apply to this data file.
+  std::vector<std::shared_ptr<DataFile>> delete_files_;
+  /// \brief Residual filter to apply after reading.
+  std::shared_ptr<Expression> residual_filter_;
 };
 
 /// \brief Scan context holding snapshot and scan-specific metadata.

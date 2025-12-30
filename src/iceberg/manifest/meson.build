@@ -18,6 +18,7 @@
 install_headers(
     [
         'manifest_entry.h',
+        'manifest_group.h',
         'manifest_list.h',
         'manifest_reader.h',
         'manifest_writer.h',

@@ -453,33 +453,31 @@ Result<std::shared_ptr<DataFile>> DeleteFileIndex::FindDV(
 }
 
 Result<DeleteFileIndex::Builder> DeleteFileIndex::BuilderFor(
-    std::shared_ptr<FileIO> io, std::vector<ManifestFile> delete_manifests) {
+    std::shared_ptr<FileIO> io, std::shared_ptr<Schema> schema,
+    std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id,
+    std::vector<ManifestFile> delete_manifests) {
   ICEBERG_PRECHECK(io != nullptr, "FileIO cannot be null");
-  return Builder(std::move(io), std::move(delete_manifests));
+  ICEBERG_PRECHECK(schema != nullptr, "Schema cannot be null");
+  ICEBERG_PRECHECK(!specs_by_id.empty(), "Partition specs cannot be empty");
+  return Builder(std::move(io), std::move(schema), std::move(specs_by_id),
+                 std::move(delete_manifests));
 }
 
 // Builder implementation
 
-DeleteFileIndex::Builder::Builder(std::shared_ptr<FileIO> io,
-                                  std::vector<ManifestFile> delete_manifests)
-    : io_(std::move(io)), delete_manifests_(std::move(delete_manifests)) {}
+DeleteFileIndex::Builder::Builder(
+    std::shared_ptr<FileIO> io, std::shared_ptr<Schema> schema,
+    std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id,
+    std::vector<ManifestFile> delete_manifests)
+    : io_(std::move(io)),
+      schema_(std::move(schema)),
+      specs_by_id_(std::move(specs_by_id)),
+      delete_manifests_(std::move(delete_manifests)) {}
 
 DeleteFileIndex::Builder::~Builder() = default;
 DeleteFileIndex::Builder::Builder(Builder&&) noexcept = default;
 DeleteFileIndex::Builder& DeleteFileIndex::Builder::operator=(Builder&&) noexcept =
     default;
-
-DeleteFileIndex::Builder& DeleteFileIndex::Builder::SpecsById(
-    std::unordered_map<int32_t, std::shared_ptr<PartitionSpec>> specs_by_id) {
-  specs_by_id_ = std::move(specs_by_id);
-  return *this;
-}
-
-DeleteFileIndex::Builder& DeleteFileIndex::Builder::WithSchema(
-    std::shared_ptr<Schema> schema) {
-  schema_ = std::move(schema);
-  return *this;
-}
 
 DeleteFileIndex::Builder& DeleteFileIndex::Builder::AfterSequenceNumber(int64_t seq) {
   min_sequence_number_ = seq;
@@ -721,10 +719,6 @@ Status DeleteFileIndex::Builder::AddEqualityDelete(
 
 Result<std::unique_ptr<DeleteFileIndex>> DeleteFileIndex::Builder::Build() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
-  ICEBERG_PRECHECK(io_ != nullptr, "FileIO is required to load delete files");
-  ICEBERG_PRECHECK(schema_ != nullptr, "Schema is required to load delete files");
-  ICEBERG_PRECHECK(!specs_by_id_.empty(),
-                   "Partition specs are required to load delete files");
 
   std::vector<ManifestEntry> entries;
   if (!delete_manifests_.empty()) {

@@ -31,7 +31,6 @@
 #include "iceberg/schema_field.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
-#include "iceberg/type.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -136,11 +135,28 @@ Result<ArrowArrayStream> MakeArrowArrayStream(std::unique_ptr<Reader> reader) {
 
 }  // namespace
 
-// implement FileScanTask
-FileScanTask::FileScanTask(std::shared_ptr<DataFile> data_file)
-    : data_file_(std::move(data_file)) {}
+// FileScanTask implementation
+
+FileScanTask::FileScanTask(std::shared_ptr<DataFile> data_file,
+                           std::vector<std::shared_ptr<DataFile>> delete_files,
+                           std::shared_ptr<Expression> residual_filter)
+    : data_file_(std::move(data_file)),
+      delete_files_(std::move(delete_files)),
+      residual_filter_(std::move(residual_filter)) {}
 
 const std::shared_ptr<DataFile>& FileScanTask::data_file() const { return data_file_; }
+
+const std::vector<std::shared_ptr<DataFile>>& FileScanTask::delete_files() const {
+  return delete_files_;
+}
+
+const std::shared_ptr<Expression>& FileScanTask::residual_filter() const {
+  return residual_filter_;
+}
+
+bool FileScanTask::has_deletes() const { return !delete_files_.empty(); }
+
+bool FileScanTask::has_residual_filter() const { return residual_filter_ != nullptr; }
 
 int64_t FileScanTask::size_bytes() const { return data_file_->file_size_in_bytes; }
 
@@ -151,6 +167,10 @@ int64_t FileScanTask::estimated_row_count() const { return data_file_->record_co
 Result<ArrowArrayStream> FileScanTask::ToArrow(
     const std::shared_ptr<FileIO>& io, const std::shared_ptr<Schema>& projected_schema,
     const std::shared_ptr<Expression>& filter) const {
+  if (has_deletes()) {
+    return NotSupported("Reading data files with delete files is not yet supported.");
+  }
+
   const ReaderOptions options{.path = data_file_->file_path,
                               .length = data_file_->file_size_in_bytes,
                               .io = io,

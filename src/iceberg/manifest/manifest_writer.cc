@@ -21,6 +21,7 @@
 
 #include <optional>
 
+#include "iceberg/constants.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/v1_metadata_internal.h"
@@ -233,11 +234,12 @@ Result<ManifestFile> ManifestWriter::ToManifestFile() const {
       .manifest_length = manifest_length,
       .partition_spec_id = adapter_->partition_spec()->spec_id(),
       .content = adapter_->content(),
-      // sequence_number and min_sequence_number with kInvalidSequenceNumber will be
-      // replace with real sequence number in `ManifestListWriter`.
-      .sequence_number = TableMetadata::kInvalidSequenceNumber,
-      .min_sequence_number =
-          min_sequence_number_.value_or(TableMetadata::kInvalidSequenceNumber),
+      // sequence_number with kUnassignedSequenceNumber will be assigned when committed.
+      .sequence_number = kUnassignedSequenceNumber,
+      // if the min_sequence_number_ is missing, then no manifests with a sequence number
+      // have been written, so the min data sequence number is the one that will be
+      // assigned when this is committed. pass kUnassignedSequenceNumber to inherit it.
+      .min_sequence_number = min_sequence_number_.value_or(kUnassignedSequenceNumber),
       .added_snapshot_id = adapter_->snapshot_id().value_or(kInvalidSnapshotId),
       .added_files_count = add_files_count_,
       .existing_files_count = existing_files_count_,

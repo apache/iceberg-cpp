@@ -20,6 +20,7 @@
 #include <memory>
 #include <optional>
 
+#include "iceberg/constants.h"
 #include "iceberg/json_internal.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
@@ -205,7 +206,7 @@ Status ManifestFileAdapterV3::Append(const ManifestFile& file) {
 }
 
 Result<int64_t> ManifestFileAdapterV3::GetSequenceNumber(const ManifestFile& file) const {
-  if (file.sequence_number == TableMetadata::kInvalidSequenceNumber) {
+  if (file.sequence_number == kUnassignedSequenceNumber) {
     // if the sequence number is being assigned here, then the manifest must be created by
     // the current operation. to validate this, check that the snapshot id matches the
     // current commit
@@ -221,7 +222,7 @@ Result<int64_t> ManifestFileAdapterV3::GetSequenceNumber(const ManifestFile& fil
 
 Result<int64_t> ManifestFileAdapterV3::GetMinSequenceNumber(
     const ManifestFile& file) const {
-  if (file.min_sequence_number == TableMetadata::kInvalidSequenceNumber) {
+  if (file.min_sequence_number == kUnassignedSequenceNumber) {
     // same sanity check as above
     if (snapshot_id_ != file.added_snapshot_id) {
       return InvalidManifestList(

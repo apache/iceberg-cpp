@@ -42,6 +42,7 @@ set(ICEBERG_SOURCES
     json_internal.cc
     manifest/manifest_adapter.cc
     manifest/manifest_entry.cc
+    manifest/manifest_group.cc
     manifest/manifest_list.cc
     manifest/manifest_reader.cc
     manifest/manifest_writer.cc

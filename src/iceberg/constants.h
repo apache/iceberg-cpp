@@ -19,6 +19,12 @@
 
 #pragma once
 
+/// \file iceberg/constants.h
+/// This file defines constants used commonly and shared across multiple
+/// source files.  It is mostly useful to add constants that are used as
+/// default values in the class definitions in the header files without
+/// including other headers just for the constant definitions.
+
 #include <cstdint>
 #include <string_view>
 
@@ -26,5 +32,11 @@ namespace iceberg {
 
 constexpr std::string_view kParquetFieldIdKey = "PARQUET:field_id";
 constexpr int64_t kInvalidSnapshotId = -1;
+/// \brief Stand-in for the current sequence number that will be assigned when the commit
+/// is successful. This is replaced when writing a manifest list by the ManifestFile
+/// wrapper
+constexpr int64_t kUnassignedSequenceNumber = -1;
+
+// TODO(gangwu): move other commonly used constants here.
 
 }  // namespace iceberg

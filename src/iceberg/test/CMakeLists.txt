@@ -143,6 +143,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    USE_BUNDLE
                    SOURCES
                    delete_file_index_test.cc
+                   manifest_group_test.cc
                    manifest_list_versions_test.cc
                    manifest_reader_stats_test.cc
                    manifest_reader_test.cc
