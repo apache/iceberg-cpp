@@ -68,6 +68,10 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// changes.
   Result<std::shared_ptr<UpdateSortOrder>> NewUpdateSortOrder();
 
+  /// \brief Create a new UpdateSchema to alter the columns of this table and commit the
+  /// changes.
+  Result<std::shared_ptr<UpdateSchema>> NewUpdateSchema();
+
  private:
   Transaction(std::shared_ptr<Table> table, Kind kind, bool auto_commit,
               std::unique_ptr<TableMetadataBuilder> metadata_builder);

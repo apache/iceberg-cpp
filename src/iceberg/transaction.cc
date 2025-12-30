@@ -22,6 +22,7 @@
 #include <memory>
 
 #include "iceberg/catalog.h"
+#include "iceberg/schema.h"
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_requirement.h"
@@ -30,6 +31,7 @@
 #include "iceberg/update/pending_update.h"
 #include "iceberg/update/update_partition_spec.h"
 #include "iceberg/update/update_properties.h"
+#include "iceberg/update/update_schema.h"
 #include "iceberg/update/update_sort_order.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
@@ -105,6 +107,12 @@ Status Transaction::Apply(PendingUpdate& update) {
         metadata_builder_->AddPartitionSpec(std::move(result.spec));
       }
     } break;
+    case PendingUpdate::Kind::kUpdateSchema: {
+      auto& update_schema = internal::checked_cast<UpdateSchema&>(update);
+      ICEBERG_ASSIGN_OR_RAISE(auto result, update_schema.Apply());
+      metadata_builder_->SetCurrentSchema(std::move(result.schema),
+                                          result.new_last_column_id);
+    } break;
     default:
       return NotSupported("Unsupported pending update: {}",
                           static_cast<int32_t>(update.kind()));
@@ -176,6 +184,13 @@ Result<std::shared_ptr<UpdateSortOrder>> Transaction::NewUpdateSortOrder() {
                           UpdateSortOrder::Make(shared_from_this()));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_sort_order));
   return update_sort_order;
+}
+
+Result<std::shared_ptr<UpdateSchema>> Transaction::NewUpdateSchema() {
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<UpdateSchema> update_schema,
+                          UpdateSchema::Make(shared_from_this()));
+  ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_schema));
+  return update_schema;
 }
 
 }  // namespace iceberg

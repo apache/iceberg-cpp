@@ -32,6 +32,7 @@
 #include "iceberg/transaction.h"
 #include "iceberg/update/update_partition_spec.h"
 #include "iceberg/update/update_properties.h"
+#include "iceberg/update/update_schema.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -171,6 +172,13 @@ Result<std::shared_ptr<UpdateSortOrder>> Table::NewUpdateSortOrder() {
   return transaction->NewUpdateSortOrder();
 }
 
+Result<std::shared_ptr<UpdateSchema>> Table::NewUpdateSchema() {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto transaction, Transaction::Make(shared_from_this(), Transaction::Kind::kUpdate,
+                                          /*auto_commit=*/true));
+  return transaction->NewUpdateSchema();
+}
+
 Result<std::shared_ptr<StagedTable>> StagedTable::Make(
     TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
     std::string metadata_location, std::shared_ptr<FileIO> io,
@@ -219,6 +227,10 @@ Result<std::shared_ptr<Transaction>> StaticTable::NewTransaction() {
 
 Result<std::shared_ptr<UpdateProperties>> StaticTable::NewUpdateProperties() {
   return NotSupported("Cannot create an update properties for a static table");
+}
+
+Result<std::shared_ptr<UpdateSchema>> StaticTable::NewUpdateSchema() {
+  return NotSupported("Cannot create an update schema for a static table");
 }
 
 }  // namespace iceberg

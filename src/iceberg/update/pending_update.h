@@ -44,6 +44,7 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
   enum class Kind : uint8_t {
     kUpdatePartitionSpec,
     kUpdateProperties,
+    kUpdateSchema,
     kUpdateSortOrder,
   };
 
