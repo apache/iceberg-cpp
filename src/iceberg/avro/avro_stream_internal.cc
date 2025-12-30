@@ -17,12 +17,13 @@
  * under the License.
  */
 
-#include "avro_stream_internal.h"
+#include "iceberg/avro/avro_stream_internal.h"
 
-#include <format>
-
+#include <arrow/filesystem/localfs.h>
 #include <arrow/result.h>
+#include <avro/Stream.hh>
 
+#include "iceberg/avro/avro_stream_test_internal.h"
 #include "iceberg/exception.h"
 
 namespace iceberg::avro {
@@ -143,3 +144,31 @@ const std::shared_ptr<::arrow::io::OutputStream>& AvroOutputStream::arrow_output
 }
 
 }  // namespace iceberg::avro
+
+namespace iceberg::avro::test {
+
+std::shared_ptr<::avro::OutputStream> CreateOutputStream(
+    const std::shared_ptr<::arrow::fs::LocalFileSystem>& local_fs,
+    const std::string& path, int64_t buffer_size) {
+  auto arrow_out_ret = local_fs->OpenOutputStream(path);
+  if (!arrow_out_ret.ok()) {
+    throw std::runtime_error("Failed to open output stream: " +
+                             arrow_out_ret.status().message());
+  }
+  return std::make_shared<AvroOutputStream>(std::move(arrow_out_ret.ValueUnsafe()),
+                                            buffer_size);
+}
+
+std::shared_ptr<::avro::SeekableInputStream> CreateInputStream(
+    const std::shared_ptr<::arrow::fs::LocalFileSystem>& local_fs,
+    const std::string& path, int64_t buffer_size) {
+  auto arrow_in_ret = local_fs->OpenInputFile(path);
+  if (!arrow_in_ret.ok()) {
+    throw std::runtime_error("Failed to open input stream: " +
+                             arrow_in_ret.status().message());
+  }
+  return std::make_shared<AvroInputStream>(std::move(arrow_in_ret.ValueUnsafe()),
+                                           buffer_size);
+}
+
+}  // namespace iceberg::avro::test

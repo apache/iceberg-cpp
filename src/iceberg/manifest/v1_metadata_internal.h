@@ -21,6 +21,7 @@
 
 /// \file iceberg/manifest/v1_metadata_internal.h
 
+#include "iceberg/iceberg_export.h"
 #include "iceberg/manifest/manifest_adapter_internal.h"
 
 namespace iceberg {
@@ -42,7 +43,7 @@ class ManifestEntryAdapterV1 : public ManifestEntryAdapter {
 };
 
 /// \brief Adapter to convert V1 ManifestFile to `ArrowArray`.
-class ManifestFileAdapterV1 : public ManifestFileAdapter {
+class ICEBERG_EXPORT ManifestFileAdapterV1 : public ManifestFileAdapter {
  public:
   ManifestFileAdapterV1(int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id)
       : snapshot_id_(snapshot_id), parent_snapshot_id_(parent_snapshot_id) {}

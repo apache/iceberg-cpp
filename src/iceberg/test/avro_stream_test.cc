@@ -19,9 +19,10 @@
 
 #include <arrow/filesystem/localfs.h>
 #include <arrow/result.h>
+#include <avro/Stream.hh>
 #include <gtest/gtest.h>
 
-#include "iceberg/avro/avro_stream_internal.h"
+#include "iceberg/avro/avro_stream_test_internal.h"
 #include "iceberg/test/temp_file_test_base.h"
 
 namespace iceberg::avro {
@@ -34,29 +35,17 @@ class AVROStreamTest : public TempFileTestBase {
     local_fs_ = std::make_shared<::arrow::fs::LocalFileSystem>();
   }
 
-  std::shared_ptr<AvroOutputStream> CreateOutputStream(const std::string& path,
-                                                       int64_t buffer_size) {
-    auto arrow_out_ret = local_fs_->OpenOutputStream(path);
-    if (!arrow_out_ret.ok()) {
-      throw std::runtime_error("Failed to open output stream: " +
-                               arrow_out_ret.status().message());
-    }
-    return std::make_shared<AvroOutputStream>(std::move(arrow_out_ret.ValueUnsafe()),
-                                              buffer_size);
+  std::shared_ptr<::avro::OutputStream> CreateOutputStream(const std::string& path,
+                                                           int64_t buffer_size) {
+    return test::CreateOutputStream(local_fs_, path, buffer_size);
   }
 
-  std::shared_ptr<AvroInputStream> CreateInputStream(const std::string& path,
-                                                     int64_t buffer_size) {
-    auto arrow_in_ret = local_fs_->OpenInputFile(path);
-    if (!arrow_in_ret.ok()) {
-      throw std::runtime_error("Failed to open input stream: " +
-                               arrow_in_ret.status().message());
-    }
-    return std::make_shared<AvroInputStream>(std::move(arrow_in_ret.ValueUnsafe()),
-                                             buffer_size);
+  std::shared_ptr<::avro::SeekableInputStream> CreateInputStream(const std::string& path,
+                                                                 int64_t buffer_size) {
+    return test::CreateInputStream(local_fs_, path, buffer_size);
   }
 
-  void WriteDataToStream(const std::shared_ptr<AvroOutputStream>& avro_output_stream,
+  void WriteDataToStream(const std::shared_ptr<::avro::OutputStream>& avro_output_stream,
                          const std::string& data) {
     uint8_t* buf;
     size_t buf_size;
@@ -66,15 +55,17 @@ class AVROStreamTest : public TempFileTestBase {
     avro_output_stream->flush();
   }
 
-  void ReadDataFromStream(const std::shared_ptr<AvroInputStream>& avro_input_stream,
-                          std::string& data) {
+  void ReadDataFromStream(
+      const std::shared_ptr<::avro::SeekableInputStream>& avro_input_stream,
+      std::string& data) {
     const uint8_t* buf{};
     size_t len{};
     ASSERT_TRUE(avro_input_stream->next(&buf, &len));
     data = std::string(reinterpret_cast<const char*>(buf), len);
   }
 
-  void CheckStreamEof(const std::shared_ptr<AvroInputStream>& avro_input_stream) {
+  void CheckStreamEof(
+      const std::shared_ptr<::avro::SeekableInputStream>& avro_input_stream) {
     const uint8_t* buf{};
     size_t len{};
     ASSERT_FALSE(avro_input_stream->next(&buf, &len));

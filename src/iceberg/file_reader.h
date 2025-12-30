@@ -68,7 +68,7 @@ struct ICEBERG_EXPORT Split {
   size_t length;
 };
 
-class ReaderProperties : public ConfigBase<ReaderProperties> {
+class ICEBERG_EXPORT ReaderProperties : public ConfigBase<ReaderProperties> {
  public:
   template <typename T>
   using Entry = const ConfigBase<ReaderProperties>::Entry<T>;
