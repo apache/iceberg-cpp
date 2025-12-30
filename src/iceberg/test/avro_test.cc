@@ -503,10 +503,6 @@ INSTANTIATE_TEST_SUITE_P(DirectDecoderModes, AvroReaderParameterizedTest,
                            return info.param ? "DirectDecoder" : "GenericDatum";
                          });
 
-// ====================================================================================
-// Dedicated Writer Tests - Verify encoder output directly using Avro library
-// ====================================================================================
-
 class AvroWriterTest : public TempFileTestBase {
  protected:
   static void SetUpTestSuite() { RegisterAll(); }
@@ -518,7 +514,6 @@ class AvroWriterTest : public TempFileTestBase {
     temp_avro_file_ = CreateNewTempFilePathWithSuffix(".avro");
   }
 
-  // Helper to write Arrow data to Avro file
   void WriteAvroFile(std::shared_ptr<Schema> schema, const std::string& json_data) {
     ArrowSchema arrow_c_schema;
     ASSERT_THAT(ToArrowSchema(*schema, &arrow_c_schema), IsOk());
@@ -553,12 +548,9 @@ class AvroWriterTest : public TempFileTestBase {
     ASSERT_THAT(writer->Close(), IsOk());
   }
 
-  // Helper to read raw Avro file and verify using Avro GenericDatum
   template <typename VerifyFunc>
   void VerifyAvroFileContent(VerifyFunc verify_func) {
     ::avro::DataFileReader<::avro::GenericDatum> reader(temp_avro_file_.c_str());
-
-    // Create datum with the schema from the file
     ::avro::GenericDatum datum(reader.dataSchema());
 
     size_t row_count = 0;

@@ -19,14 +19,14 @@
 
 #pragma once
 
-#include <memory>
+#include <vector>
 
 #include <arrow/record_batch.h>
 #include <avro/Encoder.hh>
 #include <avro/Node.hh>
 
 #include "iceberg/result.h"
-#include "iceberg/schema.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg::avro {
 

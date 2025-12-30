@@ -91,14 +91,14 @@ class AvroWriter::Impl {
     }
 
     if (use_direct_encoder_) {
-      // Use direct encoder (faster path)
+      // Skip avro::GenericDatum by using encoder provided by DataFileWriterBase.
       writer_base_ = std::make_unique<::avro::DataFileWriterBase>(
           std::move(output_stream), *avro_schema_,
           options.properties->Get(WriterProperties::kAvroSyncInterval),
           ::avro::NULL_CODEC /*codec*/, metadata);
       avro_root_node_ = avro_schema_->root();
     } else {
-      // Use GenericDatum (legacy path)
+      // Everything via avro::GenericDatum.
       writer_datum_ = std::make_unique<::avro::DataFileWriter<::avro::GenericDatum>>(
           std::move(output_stream), *avro_schema_,
           options.properties->Get(WriterProperties::kAvroSyncInterval),
@@ -115,7 +115,6 @@ class AvroWriter::Impl {
                                    ::arrow::ImportArray(data, &arrow_schema_));
 
     if (use_direct_encoder_) {
-      // Direct encoder path
       for (int64_t i = 0; i < result->length(); i++) {
         ICEBERG_RETURN_UNEXPECTED(
             EncodeArrowToAvro(avro_root_node_, writer_base_->encoder(), *write_schema_,
@@ -123,7 +122,6 @@ class AvroWriter::Impl {
         writer_base_->incr();
       }
     } else {
-      // GenericDatum path
       for (int64_t i = 0; i < result->length(); i++) {
         ICEBERG_RETURN_UNEXPECTED(ExtractDatumFromArray(*result, i, datum_.get()));
         writer_datum_->write(*datum_);
@@ -180,20 +178,16 @@ class AvroWriter::Impl {
   // Flag to determine which encoder to use
   bool use_direct_encoder_ = true;
 
-  // Direct encoder path (fast)
-  // Root node of the Avro schema (only used if direct encoder is enabled)
+  // [Encoder path] Root node of the Avro schema
   ::avro::NodePtr avro_root_node_;
-  // The avro writer using direct encoder (only used if direct encoder is enabled)
+  // [Encoder path] The avro writer using direct encoder
   std::unique_ptr<::avro::DataFileWriterBase> writer_base_;
-  // Encode context for reusing scratch buffers (only used if direct encoder is enabled)
+  // [Encoder path] Encode context for reusing scratch buffers
   EncodeContext encode_ctx_;
 
-  // GenericDatum path (legacy)
-  // The avro writer to write the data into a datum (only used if direct encoder is
-  // disabled)
+  // [GenericDatum path] The avro writer to write the data into a datum
   std::unique_ptr<::avro::DataFileWriter<::avro::GenericDatum>> writer_datum_;
-  // Reusable Avro datum for writing individual records (only used if direct encoder is
-  // disabled)
+  // [GenericDatum path] Reusable Avro datum for writing individual records
   std::unique_ptr<::avro::GenericDatum> datum_;
 };
 

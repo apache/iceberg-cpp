@@ -25,16 +25,16 @@
 #include <arrow/type.h>
 #include <avro/Specific.hh>
 
-#include "iceberg/avro/avro_constants.h"
 #include "iceberg/avro/avro_direct_encoder_internal.h"
+#include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg::avro {
 
 namespace {
 
-// Helper to validate union structure and get branch indices
-// Returns {null_index, value_index, value_node}
+// Utility struct for union branch information
 struct UnionBranches {
   size_t null_index;
   size_t value_index;
@@ -42,22 +42,19 @@ struct UnionBranches {
 };
 
 Result<UnionBranches> ValidateUnion(const ::avro::NodePtr& union_node) {
-  if (union_node->leaves() != 2) {
-    return InvalidArgument("Union must have exactly 2 branches, got {}",
-                           union_node->leaves());
-  }
+  ICEBERG_PRECHECK(union_node->leaves() == 2,
+                   "Union must have exactly 2 branches, got {}", union_node->leaves());
 
   const auto& branch_0 = union_node->leafAt(0);
   const auto& branch_1 = union_node->leafAt(1);
 
   if (branch_0->type() == ::avro::AVRO_NULL && branch_1->type() != ::avro::AVRO_NULL) {
     return UnionBranches{.null_index = 0, .value_index = 1, .value_node = branch_1};
-  } else if (branch_1->type() == ::avro::AVRO_NULL &&
-             branch_0->type() != ::avro::AVRO_NULL) {
-    return UnionBranches{.null_index = 1, .value_index = 0, .value_node = branch_0};
-  } else {
-    return InvalidArgument("Union must have exactly one null branch");
   }
+  if (branch_1->type() == ::avro::AVRO_NULL && branch_0->type() != ::avro::AVRO_NULL) {
+    return UnionBranches{.null_index = 1, .value_index = 0, .value_node = branch_0};
+  }
+  return InvalidArgument("Union must have exactly one null branch");
 }
 
 }  // namespace
@@ -65,14 +62,11 @@ Result<UnionBranches> ValidateUnion(const ::avro::NodePtr& union_node) {
 Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& encoder,
                          const Type& type, const ::arrow::Array& array, int64_t row_index,
                          EncodeContext& ctx) {
-  if (row_index < 0 || row_index >= array.length()) {
-    return InvalidArgument("Row index {} out of bounds for array of length {}", row_index,
-                           array.length());
-  }
+  ICEBERG_PRECHECK(row_index >= 0 && row_index < array.length(),
+                   "Row index {} out of bounds {}", row_index, array.length());
 
   const bool is_null = array.IsNull(row_index);
 
-  // Handle unions (optional fields)
   if (avro_node->type() == ::avro::AVRO_UNION) {
     ICEBERG_ASSIGN_OR_RAISE(auto branches, ValidateUnion(avro_node));
 
@@ -80,19 +74,16 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
       encoder.encodeUnionIndex(branches.null_index);
       encoder.encodeNull();
       return {};
-    } else {
-      encoder.encodeUnionIndex(branches.value_index);
-      // Continue with the value branch
-      return EncodeArrowToAvro(branches.value_node, encoder, type, array, row_index, ctx);
     }
+
+    encoder.encodeUnionIndex(branches.value_index);
+    return EncodeArrowToAvro(branches.value_node, encoder, type, array, row_index, ctx);
   }
 
-  // Non-union null handling
   if (is_null) {
     return InvalidArgument("Null value in non-nullable field");
   }
 
-  // Encode based on Avro type
   switch (avro_node->type()) {
     case ::avro::AVRO_NULL:
       encoder.encodeNull();
@@ -220,42 +211,25 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
     }
 
     case ::avro::AVRO_RECORD: {
-      if (array.type()->id() != ::arrow::Type::STRUCT) {
-        return InvalidArgument("AVRO_RECORD expects StructArray, got {}",
-                               array.type()->ToString());
-      }
-      if (!type.is_nested()) {
-        return InvalidArgument("AVRO_RECORD expects nested type, got type {}",
-                               type.ToString());
-      }
+      ICEBERG_PRECHECK(array.type()->id() == ::arrow::Type::STRUCT,
+                       "AVRO_RECORD expects StructArray, got {}",
+                       array.type()->ToString());
+      ICEBERG_PRECHECK(type.type_id() == TypeId::kStruct,
+                       "AVRO_RECORD expects struct type, got type {}", type.ToString());
 
       const auto& struct_array =
           internal::checked_cast<const ::arrow::StructArray&>(array);
-
-      // AVRO_RECORD corresponds to Iceberg StructType (including Schema which extends
-      // StructType). Note: ListType and MapType are encoded as AVRO_ARRAY and AVRO_MAP
-      // respectively, not AVRO_RECORD.
-      if (type.type_id() != TypeId::kStruct) {
-        return InvalidArgument("AVRO_RECORD expects StructType, got type {}",
-                               type.ToString());
-      }
-
-      // Safe cast: type_id() == kStruct guarantees this is StructType or Schema
-      // (Schema extends StructType)
-      const auto& struct_type = static_cast<const StructType&>(type);
+      const auto& struct_type = internal::checked_cast<const StructType&>(type);
       const size_t num_fields = avro_node->leaves();
 
-      // Validate field count matches
-      if (struct_array.num_fields() != static_cast<int>(num_fields)) {
-        return InvalidArgument(
-            "Field count mismatch: Arrow struct has {} fields, Avro node has {} fields",
-            struct_array.num_fields(), num_fields);
-      }
-      if (struct_type.fields().size() != num_fields) {
-        return InvalidArgument(
-            "Field count mismatch: Iceberg struct has {} fields, Avro node has {} fields",
-            struct_type.fields().size(), num_fields);
-      }
+      ICEBERG_PRECHECK(
+          static_cast<size_t>(struct_array.num_fields()) == num_fields,
+          "Field count mismatch: Arrow struct has {} fields, Avro node has {} fields",
+          struct_array.num_fields(), num_fields);
+      ICEBERG_PRECHECK(
+          struct_type.fields().size() == num_fields,
+          "Field count mismatch: Iceberg struct has {} fields, Avro node has {} fields",
+          struct_type.fields().size(), num_fields);
 
       for (size_t i = 0; i < num_fields; ++i) {
         const auto& field_node = avro_node->leafAt(i);
@@ -269,17 +243,12 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
     }
 
     case ::avro::AVRO_ARRAY: {
-      // AVRO_ARRAY can represent either:
-      // 1. Iceberg ListType -> Arrow ListArray
-      // 2. Iceberg MapType with non-string keys -> Arrow MapArray (converted to array of
-      // records)
-
       const auto& element_node = avro_node->leafAt(0);
 
-      // Try ListArray first (most common case)
+      // Handle ListArray
       if (array.type()->id() == ::arrow::Type::LIST) {
         const auto& list_array = internal::checked_cast<const ::arrow::ListArray&>(array);
-        const auto& list_type = static_cast<const ListType&>(type);
+        const auto& list_type = internal::checked_cast<const ListType&>(type);
 
         const auto start = list_array.value_offset(row_index);
         const auto end = list_array.value_offset(row_index + 1);
@@ -301,11 +270,15 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
         return {};
       }
 
-      // Handle MapArray (for maps with non-string keys, represented as array of key-value
-      // records in Avro)
+      // Handle MapArray (for Avro maps with non-string keys)
       if (array.type()->id() == ::arrow::Type::MAP) {
+        ICEBERG_PRECHECK(
+            element_node->type() == ::avro::AVRO_RECORD && element_node->leaves() == 2,
+            "Expected AVRO_RECORD for map key-value pair, got {}",
+            ::avro::toString(element_node->type()));
+
         const auto& map_array = internal::checked_cast<const ::arrow::MapArray&>(array);
-        const auto& map_type = static_cast<const MapType&>(type);
+        const auto& map_type = internal::checked_cast<const MapType&>(type);
 
         const auto start = map_array.value_offset(row_index);
         const auto end = map_array.value_offset(row_index + 1);
@@ -321,24 +294,12 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
 
           // The element_node should be a RECORD with "key" and "value" fields
           for (int64_t i = start; i < end; ++i) {
-            encoder.startItem();
-            // Encode the key-value pair as a record
-            if (element_node->type() != ::avro::AVRO_RECORD ||
-                element_node->leaves() != 2) {
-              return InvalidArgument(
-                  "Expected AVRO_RECORD with 2 fields for map key-value pair");
-            }
-
-            // Assumption: key is always at index 0, value at index 1
-            // This matches the schema generation in ToAvroNodeVisitor::Visit(const
-            // MapType&)
             const auto& key_node = element_node->leafAt(0);
             const auto& value_node = element_node->leafAt(1);
 
-            // Encode key
+            encoder.startItem();
             ICEBERG_RETURN_UNEXPECTED(
                 EncodeArrowToAvro(key_node, encoder, key_type, *keys, i, ctx));
-            // Encode value
             ICEBERG_RETURN_UNEXPECTED(
                 EncodeArrowToAvro(value_node, encoder, value_type, *values, i, ctx));
           }
@@ -352,18 +313,13 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
     }
 
     case ::avro::AVRO_MAP: {
-      // AVRO_MAP is for maps with string keys
-      // Arrow represents this as MapArray
-      if (array.type()->id() != ::arrow::Type::MAP) {
-        return InvalidArgument("AVRO_MAP expects MapArray, got {}",
-                               array.type()->ToString());
-      }
-      if (type.type_id() != TypeId::kMap) {
-        return InvalidArgument("AVRO_MAP expects MapType, got type {}", type.ToString());
-      }
+      ICEBERG_PRECHECK(array.type()->id() == ::arrow::Type::MAP,
+                       "AVRO_MAP expects MapArray, got {}", array.type()->ToString());
+      ICEBERG_PRECHECK(type.type_id() == TypeId::kMap,
+                       "AVRO_MAP expects MapType, got type {}", type.ToString());
 
       const auto& map_array = internal::checked_cast<const ::arrow::MapArray&>(array);
-      const auto& map_type = static_cast<const MapType&>(type);
+      const auto& map_type = internal::checked_cast<const MapType&>(type);
 
       const auto start = map_array.value_offset(row_index);
       const auto end = map_array.value_offset(row_index + 1);
@@ -375,20 +331,16 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
         const auto& keys = map_array.keys();
         const auto& values = map_array.items();
         const auto& value_type = *map_type.value().type();
-        // In Avro maps, leafAt(0) is the key type (always string), leafAt(1) is the value
-        // type
         const auto& value_node = avro_node->leafAt(1);
 
-        // Validate keys are strings
-        if (keys->type()->id() != ::arrow::Type::STRING &&
-            keys->type()->id() != ::arrow::Type::LARGE_STRING) {
-          return InvalidArgument("AVRO_MAP keys must be StringArray, got {}",
-                                 keys->type()->ToString());
-        }
+        ICEBERG_PRECHECK(keys->type()->id() == ::arrow::Type::STRING ||
+                             keys->type()->id() == ::arrow::Type::LARGE_STRING,
+                         "AVRO_MAP keys must be StringArray, got {}",
+                         keys->type()->ToString());
 
         for (int64_t i = start; i < end; ++i) {
           encoder.startItem();
-          // Encode key (must be string in Avro maps)
+
           if (keys->type()->id() == ::arrow::Type::STRING) {
             const auto& string_array =
                 internal::checked_cast<const ::arrow::StringArray&>(*keys);
@@ -401,7 +353,6 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
             encoder.encodeString(std::string(key_value));
           }
 
-          // Encode value
           ICEBERG_RETURN_UNEXPECTED(
               EncodeArrowToAvro(value_node, encoder, value_type, *values, i, ctx));
         }
@@ -415,7 +366,7 @@ Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& enco
 
     case ::avro::AVRO_UNION:
       // Already handled above
-      return InvalidArgument("Unexpected union handling");
+      return Invalid("Unexpected union handling");
 
     default:
       return NotSupported("Unsupported Avro type: {}",
