@@ -46,6 +46,7 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
     kUpdateProperties,
     kUpdateSchema,
     kUpdateSortOrder,
+    kUpdateSnapshot,
   };
 
   /// \brief Return the kind of this pending update.

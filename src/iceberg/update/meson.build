@@ -18,6 +18,7 @@
 install_headers(
     [
         'pending_update.h',
+        'snapshot_update.h',
         'update_partition_spec.h',
         'update_schema.h',
         'update_sort_order.h',
