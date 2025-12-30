@@ -48,7 +48,8 @@ constexpr T ByteSwap(T value) {
     } else if constexpr (sizeof(T) == sizeof(uint64_t)) {
       return std::bit_cast<T>(std::byteswap(std::bit_cast<uint64_t>(value)));
     } else {
-      static_assert(false, "Unsupported floating-point size for endian conversion.");
+      static_assert(sizeof(T) == 0,
+                    "Unsupported floating-point size for endian conversion.");
     }
   }
 }
