@@ -29,6 +29,7 @@
 #include "iceberg/table_requirements.h"
 #include "iceberg/table_update.h"
 #include "iceberg/update/pending_update.h"
+#include "iceberg/update/snapshot_update.h"
 #include "iceberg/update/update_partition_spec.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/update/update_schema.h"
@@ -113,6 +114,23 @@ Status Transaction::Apply(PendingUpdate& update) {
       metadata_builder_->SetCurrentSchema(std::move(result.schema),
                                           result.new_last_column_id);
     } break;
+    case PendingUpdate::Kind::kUpdateSnapshot: {
+      auto& update_snapshot = internal::checked_cast<SnapshotUpdate&>(update);
+      ICEBERG_ASSIGN_OR_RAISE(auto result, update_snapshot.Apply());
+      if (metadata_builder_->current()
+              .SnapshotById(result.snapshot->snapshot_id)
+              .has_value()) {
+        metadata_builder_->SetBranchSnapshot(result.snapshot->snapshot_id,
+                                             result.target_branch);
+      } else if (result.stage_only) {
+        metadata_builder_->AddSnapshot(result.snapshot);
+      } else {
+        // Normal commit - add snapshot first, then set as branch snapshot
+        metadata_builder_->AddSnapshot(result.snapshot);
+        metadata_builder_->SetBranchSnapshot(result.snapshot->snapshot_id,
+                                             result.target_branch);
+      }
+    } break;
     default:
       return NotSupported("Unsupported pending update: {}",
                           static_cast<int32_t>(update.kind()));
@@ -157,6 +175,15 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   // XXX: we should handle commit failure and retry here.
   ICEBERG_ASSIGN_OR_RAISE(auto updated_table, table_->catalog()->UpdateTable(
                                                   table_->name(), requirements, updates));
+
+  for (const auto& update : pending_updates_) {
+    if (auto update_ptr = update.lock()) {
+      if (auto snapshot_update =
+              internal::checked_cast<SnapshotUpdate*>(update_ptr.get())) {
+        std::ignore = snapshot_update->Finalize();
+      }
+    }
+  }
 
   // Mark as committed and update table reference
   committed_ = true;

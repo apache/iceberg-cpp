@@ -274,7 +274,7 @@ std::unique_ptr<TableUpdate> SetDefaultSortOrder::Clone() const {
 // AddSnapshot
 
 void AddSnapshot::ApplyTo(TableMetadataBuilder& builder) const {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  builder.AddSnapshot(snapshot_);
 }
 
 void AddSnapshot::GenerateRequirements(TableUpdateContext& context) const {
@@ -344,7 +344,7 @@ std::unique_ptr<TableUpdate> RemoveSnapshotRef::Clone() const {
 // SetSnapshotRef
 
 void SetSnapshotRef::ApplyTo(TableMetadataBuilder& builder) const {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  builder.SetBranchSnapshot(snapshot_id_, ref_name_);
 }
 
 void SetSnapshotRef::GenerateRequirements(TableUpdateContext& context) const {

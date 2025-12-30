@@ -19,10 +19,13 @@
 
 #include "iceberg/snapshot.h"
 
+#include <charconv>
+
 #include "iceberg/file_io.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
@@ -73,6 +76,24 @@ std::optional<std::string_view> Snapshot::operation() const {
     return it->second;
   }
   return std::nullopt;
+}
+
+std::optional<int64_t> Snapshot::FirstRowId() const {
+  auto it = summary.find("first-row-id");
+  if (it == summary.end()) {
+    return std::nullopt;
+  }
+
+  return StringUtils::ParseInt<int64_t>(it->second);
+}
+
+std::optional<int64_t> Snapshot::AddedRows() const {
+  auto it = summary.find("added-rows");
+  if (it == summary.end()) {
+    return std::nullopt;
+  }
+
+  return StringUtils::ParseInt<int64_t>(it->second);
 }
 
 bool Snapshot::Equals(const Snapshot& other) const {
@@ -139,6 +160,105 @@ Result<std::span<ManifestFile>> SnapshotCache::DeleteManifests(
   const size_t delete_start = cache.second;
   const size_t delete_count = cache.first.size() - delete_start;
   return std::span<ManifestFile>(cache.first.data() + delete_start, delete_count);
+}
+
+// SnapshotRef::Builder implementation
+
+SnapshotRef::Builder::Builder(SnapshotRefType type, int64_t snapshot_id)
+    : type_(type), snapshot_id_(snapshot_id) {}
+
+SnapshotRef::Builder SnapshotRef::Builder::TagBuilder(int64_t snapshot_id) {
+  return Builder(SnapshotRefType::kTag, snapshot_id);
+}
+
+SnapshotRef::Builder SnapshotRef::Builder::BranchBuilder(int64_t snapshot_id) {
+  return Builder(SnapshotRefType::kBranch, snapshot_id);
+}
+
+SnapshotRef::Builder SnapshotRef::Builder::BuilderFor(int64_t snapshot_id,
+                                                      SnapshotRefType type) {
+  return Builder(type, snapshot_id);
+}
+
+SnapshotRef::Builder SnapshotRef::Builder::BuilderFrom(const SnapshotRef& ref) {
+  Builder builder(ref.type(), ref.snapshot_id);
+  if (ref.type() == SnapshotRefType::kBranch) {
+    const auto& branch = std::get<SnapshotRef::Branch>(ref.retention);
+    builder.min_snapshots_to_keep_ = branch.min_snapshots_to_keep;
+    builder.max_snapshot_age_ms_ = branch.max_snapshot_age_ms;
+    builder.max_ref_age_ms_ = branch.max_ref_age_ms;
+  } else {
+    const auto& tag = std::get<SnapshotRef::Tag>(ref.retention);
+    builder.max_ref_age_ms_ = tag.max_ref_age_ms;
+  }
+  return builder;
+}
+
+SnapshotRef::Builder SnapshotRef::Builder::BuilderFrom(const SnapshotRef& ref,
+                                                       int64_t snapshot_id) {
+  Builder builder(ref.type(), snapshot_id);
+  if (ref.type() == SnapshotRefType::kBranch) {
+    const auto& branch = std::get<SnapshotRef::Branch>(ref.retention);
+    builder.min_snapshots_to_keep_ = branch.min_snapshots_to_keep;
+    builder.max_snapshot_age_ms_ = branch.max_snapshot_age_ms;
+    builder.max_ref_age_ms_ = branch.max_ref_age_ms;
+  } else {
+    const auto& tag = std::get<SnapshotRef::Tag>(ref.retention);
+    builder.max_ref_age_ms_ = tag.max_ref_age_ms;
+  }
+  return builder;
+}
+
+SnapshotRef::Builder& SnapshotRef::Builder::MinSnapshotsToKeep(
+    std::optional<int32_t> value) {
+  if (type_ == SnapshotRefType::kTag && value.has_value()) {
+    return AddError(ErrorKind::kInvalidArgument,
+                    "Tags do not support setting minSnapshotsToKeep");
+  }
+  if (value.has_value() && value.value() <= 0) {
+    return AddError(ErrorKind::kInvalidArgument,
+                    "Min snapshots to keep must be greater than 0");
+  }
+  min_snapshots_to_keep_ = value;
+  return *this;
+}
+
+SnapshotRef::Builder& SnapshotRef::Builder::MaxSnapshotAgeMs(
+    std::optional<int64_t> value) {
+  if (type_ == SnapshotRefType::kTag && value.has_value()) {
+    return AddError(ErrorKind::kInvalidArgument,
+                    "Tags do not support setting maxSnapshotAgeMs");
+  }
+  if (value.has_value() && value.value() <= 0) {
+    return AddError(ErrorKind::kInvalidArgument,
+                    "Max snapshot age must be greater than 0 ms");
+  }
+  max_snapshot_age_ms_ = value;
+  return *this;
+}
+
+SnapshotRef::Builder& SnapshotRef::Builder::MaxRefAgeMs(std::optional<int64_t> value) {
+  if (value.has_value() && value.value() <= 0) {
+    return AddError(ErrorKind::kInvalidArgument,
+                    "Max reference age must be greater than 0");
+  }
+  max_ref_age_ms_ = value;
+  return *this;
+}
+
+Result<SnapshotRef> SnapshotRef::Builder::Build() const {
+  ICEBERG_RETURN_UNEXPECTED(CheckErrors());
+
+  if (type_ == SnapshotRefType::kBranch) {
+    return SnapshotRef{
+        .snapshot_id = snapshot_id_,
+        .retention = SnapshotRef::Branch{.min_snapshots_to_keep = min_snapshots_to_keep_,
+                                         .max_snapshot_age_ms = max_snapshot_age_ms_,
+                                         .max_ref_age_ms = max_ref_age_ms_}};
+  } else {
+    return SnapshotRef{.snapshot_id = snapshot_id_,
+                       .retention = SnapshotRef::Tag{.max_ref_age_ms = max_ref_age_ms_}};
+  }
 }
 
 }  // namespace iceberg

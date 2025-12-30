@@ -20,8 +20,10 @@
 #pragma once
 
 #include <algorithm>
+#include <charconv>
 #include <ranges>
 #include <string>
+#include <string_view>
 
 #include "iceberg/iceberg_export.h"
 
@@ -60,6 +62,16 @@ class ICEBERG_EXPORT StringUtils {
       }
     }
     return count;
+  }
+
+  template <typename T>
+  static std::optional<T> ParseInt(std::string_view str) {
+    T value = 0;
+    auto [_, ec] = std::from_chars(str.data(), str.data() + str.size(), value);
+    if (ec == std::errc()) {
+      return value;
+    }
+    return std::nullopt;
   }
 };
 

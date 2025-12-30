@@ -32,6 +32,7 @@
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/error_collector.h"
 #include "iceberg/util/lazy.h"
 #include "iceberg/util/timepoint.h"
 
@@ -118,6 +119,67 @@ struct ICEBERG_EXPORT SnapshotRef {
   friend bool operator==(const SnapshotRef& lhs, const SnapshotRef& rhs) {
     return lhs.Equals(rhs);
   }
+
+  /// \brief Builder class for constructing SnapshotRef objects
+  class ICEBERG_EXPORT Builder : public ErrorCollector {
+   public:
+    /// \brief Create a builder for a tag reference
+    /// \param snapshot_id The snapshot ID for the tag
+    /// \return A new Builder instance for a tag
+    static Builder TagBuilder(int64_t snapshot_id);
+
+    /// \brief Create a builder for a branch reference
+    /// \param snapshot_id The snapshot ID for the branch
+    /// \return A new Builder instance for a branch
+    static Builder BranchBuilder(int64_t snapshot_id);
+
+    /// \brief Create a builder from an existing SnapshotRef
+    /// \param ref The existing reference to copy properties from
+    /// \return A new Builder instance with properties from the existing ref
+    static Builder BuilderFrom(const SnapshotRef& ref);
+
+    /// \brief Create a builder from an existing SnapshotRef with a new snapshot ID
+    /// \param ref The existing reference to copy properties from
+    /// \param snapshot_id The new snapshot ID to use
+    /// \return A new Builder instance with properties from the existing ref but new
+    /// snapshot ID
+    static Builder BuilderFrom(const SnapshotRef& ref, int64_t snapshot_id);
+
+    /// \brief Create a builder for a specific type
+    /// \param snapshot_id The snapshot ID
+    /// \param type The type of reference (branch or tag)
+    /// \return A new Builder instance
+    static Builder BuilderFor(int64_t snapshot_id, SnapshotRefType type);
+
+    /// \brief Set the minimum number of snapshots to keep (branch only)
+    /// \param value The minimum number of snapshots to keep, or nullopt for default
+    /// \return Reference to this builder for method chaining
+    Builder& MinSnapshotsToKeep(std::optional<int32_t> value);
+
+    /// \brief Set the maximum snapshot age in milliseconds (branch only)
+    /// \param value The maximum snapshot age in milliseconds, or nullopt for default
+    /// \return Reference to this builder for method chaining
+    Builder& MaxSnapshotAgeMs(std::optional<int64_t> value);
+
+    /// \brief Set the maximum reference age in milliseconds
+    /// \param value The maximum reference age in milliseconds, or nullopt for default
+    /// \return Reference to this builder for method chaining
+    Builder& MaxRefAgeMs(std::optional<int64_t> value);
+
+    /// \brief Build the SnapshotRef
+    /// \return A Result containing the SnapshotRef instance, or an error if validation
+    /// failed
+    Result<SnapshotRef> Build() const;
+
+   private:
+    explicit Builder(SnapshotRefType type, int64_t snapshot_id);
+
+    SnapshotRefType type_;
+    int64_t snapshot_id_;
+    std::optional<int32_t> min_snapshots_to_keep_;
+    std::optional<int64_t> max_snapshot_age_ms_;
+    std::optional<int64_t> max_ref_age_ms_;
+  };
 
  private:
   /// \brief Compare two snapshot refs for equality.
@@ -252,6 +314,29 @@ struct ICEBERG_EXPORT Snapshot {
   /// \return the operation that produced this snapshot, or nullopt if the operation is
   /// unknown.
   std::optional<std::string_view> operation() const;
+
+  /// \brief The row-id of the first newly added row in this snapshot.
+  ///
+  /// All rows added in this snapshot will have a row-id assigned to them greater than
+  /// this value. All rows with a row-id less than this value were created in a snapshot
+  /// that was added to the table (but not necessarily committed to this branch) in the
+  /// past.
+  ///
+  /// \return the first row-id to be used in this snapshot or nullopt when row lineage
+  /// is not supported
+  std::optional<int64_t> FirstRowId() const;
+
+  /// \brief The upper bound of number of rows with assigned row IDs in this snapshot.
+  ///
+  /// It can be used safely to increment the table's `next-row-id` during a commit. It
+  /// can be more than the number of rows added in this snapshot and include some
+  /// existing rows.
+  ///
+  /// This field is optional but is required when the table version supports row lineage.
+  ///
+  /// \return the upper bound of number of rows with assigned row IDs in this snapshot
+  /// or nullopt if the value was not stored.
+  std::optional<int64_t> AddedRows() const;
 
   /// \brief Compare two snapshots for equality.
   friend bool operator==(const Snapshot& lhs, const Snapshot& rhs) {
