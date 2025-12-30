@@ -73,6 +73,7 @@ add_iceberg_test(schema_test
 
 add_iceberg_test(table_test
                  SOURCES
+                 location_provider_test.cc
                  metrics_config_test.cc
                  snapshot_test.cc
                  snapshot_util_test.cc

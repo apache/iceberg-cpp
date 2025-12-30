@@ -40,6 +40,7 @@ set(ICEBERG_SOURCES
     file_writer.cc
     inheritable_metadata.cc
     json_internal.cc
+    location_provider.cc
     manifest/manifest_adapter.cc
     manifest/manifest_entry.cc
     manifest/manifest_group.cc

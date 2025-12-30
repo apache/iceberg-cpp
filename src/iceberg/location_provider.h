@@ -19,9 +19,11 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -48,9 +50,57 @@ class ICEBERG_EXPORT LocationProvider {
   ///
   /// TODO(wgtmac): StructLike is not well thought yet, we may wrap an ArrowArray
   /// with single row in StructLike.
-  virtual std::string NewDataLocation(const PartitionSpec& spec,
-                                      const StructLike& partition_data,
-                                      const std::string& filename) = 0;
+  virtual Result<std::string> NewDataLocation(const PartitionSpec& spec,
+                                              const PartitionValues& partition_data,
+                                              const std::string& filename) = 0;
+};
+
+class ICEBERG_EXPORT LocationProviderFactory {
+ public:
+  virtual ~LocationProviderFactory() = default;
+
+  /// \brief Create a LocationProvider for the given table location and properties.
+  ///
+  /// \param input_location the table location
+  /// \param properties the table properties
+  /// \return a LocationProvider instance
+  static Result<std::unique_ptr<LocationProvider>> For(const std::string& input_location,
+                                                       const TableProperties& properties);
+};
+
+/// \brief DefaultLocationProvider privides default location provider for local file
+/// system.
+class ICEBERG_EXPORT DefaultLocationProvider : public LocationProvider {
+ public:
+  DefaultLocationProvider(const std::string& table_location,
+                          const TableProperties& properties);
+
+  std::string NewDataLocation(const std::string& filename) override;
+
+  Result<std::string> NewDataLocation(const PartitionSpec& spec,
+                                      const PartitionValues& partition_data,
+                                      const std::string& filename) override;
+
+ private:
+  std::string data_location_;
+};
+
+/// \brief ObjectStoreLocationProvider provides location provider for object stores.
+class ICEBERG_EXPORT ObjectStoreLocationProvider : public LocationProvider {
+ public:
+  ObjectStoreLocationProvider(const std::string& table_location,
+                              const TableProperties& properties);
+
+  std::string NewDataLocation(const std::string& filename) override;
+
+  Result<std::string> NewDataLocation(const PartitionSpec& spec,
+                                      const PartitionValues& partition_data,
+                                      const std::string& filename) override;
+
+ private:
+  std::string storage_location_;
+  std::string context_;
+  bool include_partition_paths_;
 };
 
 }  // namespace iceberg
