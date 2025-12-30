@@ -35,10 +35,53 @@
 
 namespace iceberg {
 
+Schema::Schema(std::vector<SchemaField> fields, int32_t schema_id)
+    : StructType(std::move(fields)), schema_id_(schema_id) {}
 
+Result<std::unique_ptr<Schema>> Schema::Make(std::vector<SchemaField> fields,
+                                             int32_t schema_id,
+                                             std::vector<int32_t> identifier_field_ids) {
+  auto schema = std::make_unique<Schema>(std::move(fields), schema_id);
 
-namespace {
-Status ValidateIdentifierFields(
+  if (!identifier_field_ids.empty()) {
+    auto id_to_parent = IndexParents(*schema);
+    for (auto field_id : identifier_field_ids) {
+      ICEBERG_RETURN_UNEXPECTED(
+          ValidateIdentifierFields(field_id, *schema, id_to_parent));
+    }
+  }
+
+  schema->identifier_field_ids_ = std::move(identifier_field_ids);
+  return schema;
+}
+
+Result<std::unique_ptr<Schema>> Schema::Make(
+    std::vector<SchemaField> fields, int32_t schema_id,
+    const std::vector<std::string>& identifier_field_names) {
+  auto schema = std::make_unique<Schema>(std::move(fields), schema_id);
+
+  std::vector<int32_t> fresh_identifier_ids;
+  for (const auto& name : identifier_field_names) {
+    ICEBERG_ASSIGN_OR_RAISE(auto field, schema->FindFieldByName(name));
+    if (!field) {
+      return InvalidSchema("Cannot find identifier field: {}", name);
+    }
+    fresh_identifier_ids.push_back(field.value().get().field_id());
+  }
+
+  if (!fresh_identifier_ids.empty()) {
+    auto id_to_parent = IndexParents(*schema);
+    for (auto field_id : fresh_identifier_ids) {
+      ICEBERG_RETURN_UNEXPECTED(
+          ValidateIdentifierFields(field_id, *schema, id_to_parent));
+    }
+  }
+
+  schema->identifier_field_ids_ = std::move(fresh_identifier_ids);
+  return schema;
+}
+
+Status Schema::ValidateIdentifierFields(
     int32_t field_id, const Schema& schema,
     const std::unordered_map<int32_t, int32_t>& id_to_parent) {
   ICEBERG_ASSIGN_OR_RAISE(auto field_opt, schema.FindFieldById(field_id));
@@ -86,53 +129,6 @@ Status ValidateIdentifierFields(
     ancestors.pop();
   }
   return {};
-}
-}  // namespace
-
-Schema::Schema(std::vector<SchemaField> fields, int32_t schema_id)
-    : StructType(std::move(fields)), schema_id_(schema_id) {}
-
-Result<std::unique_ptr<Schema>> Schema::Make(std::vector<SchemaField> fields,
-                                             int32_t schema_id,
-                                             std::vector<int32_t> identifier_field_ids) {
-  auto schema = std::make_unique<Schema>(std::move(fields), schema_id);
-
-  if (!identifier_field_ids.empty()) {
-    auto id_to_parent = IndexParents(*schema);
-    for (auto field_id : identifier_field_ids) {
-      ICEBERG_RETURN_UNEXPECTED(
-          ValidateIdentifierFields(field_id, *schema, id_to_parent));
-    }
-  }
-
-  schema->identifier_field_ids_ = std::move(identifier_field_ids);
-  return schema;
-}
-
-Result<std::unique_ptr<Schema>> Schema::Make(
-    std::vector<SchemaField> fields, int32_t schema_id,
-    const std::vector<std::string>& identifier_field_names) {
-  auto schema = std::make_unique<Schema>(std::move(fields), schema_id);
-
-  std::vector<int32_t> fresh_identifier_ids;
-  for (const auto& name : identifier_field_names) {
-    ICEBERG_ASSIGN_OR_RAISE(auto field, schema->FindFieldByName(name));
-    if (!field) {
-      return InvalidSchema("Cannot find identifier field: {}", name);
-    }
-    fresh_identifier_ids.push_back(field.value().get().field_id());
-  }
-
-  if (!fresh_identifier_ids.empty()) {
-    auto id_to_parent = IndexParents(*schema);
-    for (auto field_id : fresh_identifier_ids) {
-      ICEBERG_RETURN_UNEXPECTED(
-          ValidateIdentifierFields(field_id, *schema, id_to_parent));
-    }
-  }
-
-  schema->identifier_field_ids_ = std::move(fresh_identifier_ids);
-  return schema;
 }
 
 const std::shared_ptr<Schema>& Schema::EmptySchema() {
