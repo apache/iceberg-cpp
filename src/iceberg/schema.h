@@ -54,9 +54,6 @@ class ICEBERG_EXPORT Schema : public StructType {
 
   explicit Schema(std::vector<SchemaField> fields, int32_t schema_id = kInitialSchemaId);
 
-  explicit Schema(std::vector<SchemaField> fields,
-                  std::optional<int32_t> schema_id = std::nullopt);
-
   /// \brief Create a schema.
   ///
   /// \param fields The fields that make up the schema.
@@ -77,7 +74,7 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// \return A new Schema instance or Status if failed.
   static Result<std::unique_ptr<Schema>> Make(
       std::vector<SchemaField> fields, int32_t schema_id,
-      const std::vector<std::string>& identifier_field_names = {});
+      const std::vector<std::string>& identifier_field_names);
 
   /// \brief Get an empty schema.
   ///

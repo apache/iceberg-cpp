@@ -49,24 +49,15 @@ std::shared_ptr<Schema> CreateTestSchema() {
   return std::make_shared<Schema>(std::vector<SchemaField>{field1, field2, field3}, 0);
 }
 
-// Helper function to create a simple schema with invalid identifier fields
-std::shared_ptr<Schema> CreateInvalidSchema() {
-  auto field1 = SchemaField::MakeRequired(2, "id", int32());
-  auto field2 = SchemaField::MakeRequired(5, "part_col", string());
-  auto field3 = SchemaField::MakeRequired(8, "sort_col", timestamp());
-  return std::make_shared<Schema>(std::vector<SchemaField>{field1, field2, field3},
-                                  /*schema_id=*/1,
-                                  /*identifier_field_ids=*/std::vector<int32_t>{10});
-}
-
 // Helper function to create a simple schema with disordered field_ids
-std::shared_ptr<Schema> CreateDisorderedSchema() {
+Result<std::unique_ptr<Schema>> CreateDisorderedSchema() {
   auto field1 = SchemaField::MakeRequired(2, "id", int32());
   auto field2 = SchemaField::MakeRequired(5, "part_col", string());
   auto field3 = SchemaField::MakeRequired(8, "sort_col", timestamp());
-  return std::make_shared<Schema>(std::vector<SchemaField>{field1, field2, field3},
-                                  /*schema_id=*/1,
-                                  /*identifier_field_ids=*/std::vector<int32_t>{2});
+
+  return Schema::Make(std::vector<SchemaField>{field1, field2, field3},
+                      /*schema_id=*/1,
+                      /*identifier_field_ids=*/std::vector<int32_t>{2});
 }
 
 // Helper function to create base metadata for tests
@@ -95,7 +86,7 @@ std::unique_ptr<TableMetadata> CreateBaseMetadata() {
 
 // test for TableMetadata
 TEST(TableMetadataTest, Make) {
-  auto Schema = CreateDisorderedSchema();
+  ICEBERG_UNWRAP_OR_FAIL(auto Schema, CreateDisorderedSchema());
   ICEBERG_UNWRAP_OR_FAIL(
       auto spec, PartitionSpec::Make(1, std::vector<PartitionField>{PartitionField(
                                             5, 1, "part_name", Transform::Identity())}));
@@ -140,23 +131,8 @@ TEST(TableMetadataTest, Make) {
   EXPECT_EQ(NullOrder::kLast, order_fields[0].null_order());
 }
 
-TEST(TableMetadataTest, MakeWithInvalidSchema) {
-  auto schema = CreateInvalidSchema();
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto spec, PartitionSpec::Make(1, std::vector<PartitionField>{PartitionField(
-                                            5, 1, "part_name", Transform::Identity())}));
-  ICEBERG_UNWRAP_OR_FAIL(
-      auto order, SortOrder::Make(1, std::vector<SortField>{SortField(
-                                         5, Transform::Identity(),
-                                         SortDirection::kAscending, NullOrder::kLast)}));
-
-  auto res = TableMetadata::Make(*schema, *spec, *order, "s3://bucket/test", {});
-  EXPECT_THAT(res, IsError(ErrorKind::kInvalidSchema));
-  EXPECT_THAT(res, HasErrorMessage("Cannot find identifier field id"));
-}
-
 TEST(TableMetadataTest, MakeWithInvalidPartitionSpec) {
-  auto schema = CreateDisorderedSchema();
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, CreateDisorderedSchema());
   ICEBERG_UNWRAP_OR_FAIL(
       auto spec, PartitionSpec::Make(1, std::vector<PartitionField>{PartitionField(
                                             6, 1, "part_name", Transform::Identity())}));
@@ -171,7 +147,7 @@ TEST(TableMetadataTest, MakeWithInvalidPartitionSpec) {
 }
 
 TEST(TableMetadataTest, MakeWithInvalidSortOrder) {
-  auto schema = CreateDisorderedSchema();
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, CreateDisorderedSchema());
   ICEBERG_UNWRAP_OR_FAIL(
       auto spec, PartitionSpec::Make(1, std::vector<PartitionField>{PartitionField(
                                             5, 1, "part_name", Transform::Identity())}));
@@ -191,7 +167,7 @@ TEST(TableMetadataTest, InvalidProperties) {
 
   {
     // Invalid metrics config
-    auto schema = CreateDisorderedSchema();
+    ICEBERG_UNWRAP_OR_FAIL(auto schema, CreateDisorderedSchema());
     std::unordered_map<std::string, std::string> invlaid_metric_config = {
         {std::string(TableProperties::kMetricModeColumnConfPrefix) + "unknown_col",
          "value"}};
@@ -204,7 +180,7 @@ TEST(TableMetadataTest, InvalidProperties) {
 
   {
     // Invaid commit properties
-    auto schema = CreateDisorderedSchema();
+    ICEBERG_UNWRAP_OR_FAIL(auto schema, CreateDisorderedSchema());
     std::unordered_map<std::string, std::string> invlaid_commit_properties = {
         {TableProperties::kCommitNumRetries.key(), "-1"}};
 

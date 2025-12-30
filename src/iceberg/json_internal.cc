@@ -488,9 +488,8 @@ Result<std::unique_ptr<Schema>> SchemaFromJson(const nlohmann::json& json) {
       auto identifier_field_ids,
       GetJsonValueOrDefault<std::vector<int32_t>>(json, kIdentifierFieldIds));
 
-  return std::make_unique<Schema>(std::move(fields),
-                                  schema_id_opt.value_or(Schema::kInitialSchemaId),
-                                  std::move(identifier_field_ids));
+  return Schema::Make(std::move(fields), schema_id_opt.value_or(Schema::kInitialSchemaId),
+                      std::move(identifier_field_ids));
 }
 
 nlohmann::json ToJson(const PartitionField& partition_field) {
