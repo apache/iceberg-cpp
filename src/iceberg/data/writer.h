@@ -23,6 +23,7 @@
 /// Base interface for Iceberg data file writers.
 
 #include <cstdint>
+#include <memory>
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
