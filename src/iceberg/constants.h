@@ -34,7 +34,7 @@ constexpr std::string_view kParquetFieldIdKey = "PARQUET:field_id";
 constexpr int64_t kInvalidSnapshotId = -1;
 /// \brief Stand-in for the current sequence number that will be assigned when the commit
 /// is successful. This is replaced when writing a manifest list by the ManifestFile
-/// wrapper
+/// adapter.
 constexpr int64_t kUnassignedSequenceNumber = -1;
 
 // TODO(gangwu): move other commonly used constants here.

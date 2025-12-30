@@ -31,6 +31,7 @@
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_scan.h"
+#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/content_file_util.h"
 #include "iceberg/util/macros.h"
 
@@ -109,8 +110,7 @@ ManifestGroup& ManifestGroup::FilterPartitions(std::shared_ptr<Expression> filte
 
 ManifestGroup& ManifestGroup::FilterManifestEntries(
     std::function<bool(const ManifestEntry&)> predicate) {
-  auto old_predicate = std::move(manifest_entry_predicate_);
-  manifest_entry_predicate_ = [old_predicate = std::move(old_predicate),
+  manifest_entry_predicate_ = [old_predicate = std::move(manifest_entry_predicate_),
                                predicate =
                                    std::move(predicate)](const ManifestEntry& entry) {
     return old_predicate(entry) && predicate(entry);
@@ -179,7 +179,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> ManifestGroup::PlanFiles() {
   std::vector<std::shared_ptr<FileScanTask>> file_tasks;
   file_tasks.reserve(tasks.size());
   for (auto& task : tasks) {
-    file_tasks.push_back(std::static_pointer_cast<FileScanTask>(task));
+    file_tasks.push_back(internal::checked_pointer_cast<FileScanTask>(task));
   }
   return file_tasks;
 }
@@ -320,7 +320,8 @@ ManifestGroup::ReadEntries() {
     ICEBERG_ASSIGN_OR_RAISE(auto manifest_evaluator, get_manifest_evaluator(spec_id));
     ICEBERG_ASSIGN_OR_RAISE(bool should_match, manifest_evaluator->Evaluate(manifest));
     if (!should_match) {
-      continue;  // Skip this manifest because it doesn't match partition filter
+      // Skip this manifest because it doesn't match partition filter
+      continue;
     }
 
     if (ignore_deleted_) {
