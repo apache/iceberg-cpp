@@ -21,7 +21,6 @@
 
 namespace iceberg {
 
-// FileWriter is a pure virtual interface class.
-// Implementations will be provided in subsequent tasks.
+FileWriter::~FileWriter() = default;
 
 }  // namespace iceberg

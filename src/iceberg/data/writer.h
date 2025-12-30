@@ -23,13 +23,12 @@
 /// Base interface for Iceberg data file writers.
 
 #include <cstdint>
-#include <memory>
 #include <vector>
 
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/iceberg_export.h"
-#include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/result.h"
+#include "iceberg/type_fwd.h"
 
 namespace iceberg {
 
@@ -43,12 +42,9 @@ namespace iceberg {
 /// 2. Call Write() one or more times to write data
 /// 3. Call Close() to finalize the file
 /// 4. Call Metadata() to get file metadata (only valid after Close())
-///
-/// \note This interface is not thread-safe. Concurrent calls to Write()
-/// from multiple threads on the same instance are not supported.
 class ICEBERG_EXPORT FileWriter {
  public:
-  virtual ~FileWriter() = default;
+  virtual ~FileWriter();
 
   /// \brief Write a batch of records.
   ///
