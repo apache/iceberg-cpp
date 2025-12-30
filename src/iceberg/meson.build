@@ -128,16 +128,9 @@ croaring_needs_static = (
 croaring_dep = dependency('croaring', static: croaring_needs_static)
 nanoarrow_dep = dependency('nanoarrow')
 nlohmann_json_dep = dependency('nlohmann_json')
-spdlog_dep = dependency('spdlog')
 zlib_dep = dependency('zlib')
 
-iceberg_deps = [
-    croaring_dep,
-    nanoarrow_dep,
-    nlohmann_json_dep,
-    spdlog_dep,
-    zlib_dep,
-]
+iceberg_deps = [croaring_dep, nanoarrow_dep, nlohmann_json_dep, zlib_dep]
 
 iceberg_lib = library(
     'iceberg',

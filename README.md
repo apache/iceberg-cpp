@@ -43,7 +43,6 @@ The following environment variables can be set to customize dependency URLs:
 - `ICEBERG_NANOARROW_URL`: Nanoarrow tarball URL
 - `ICEBERG_CROARING_URL`: CRoaring tarball URL
 - `ICEBERG_NLOHMANN_JSON_URL`: nlohmann-json tarball URL
-- `ICEBERG_SPDLOG_URL`: spdlog tarball URL
 - `ICEBERG_CPR_URL`: cpr tarball URL
 
 Example usage:
