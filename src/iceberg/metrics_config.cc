@@ -36,8 +36,8 @@ Status MetricsConfig::VerifyReferencedColumns(
     }
     auto field_name =
         std::string_view(key).substr(TableProperties::kMetricModeColumnConfPrefix.size());
-    auto field = schema.FindFieldByName(field_name);
-    if (!field.has_value() || !field.value().has_value()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto field, schema.FindFieldByName(field_name));
+    if (!field.has_value()) {
       return ValidationFailed(
           "Invalid metrics config, could not find column {} from table prop {} in "
           "schema {}",
