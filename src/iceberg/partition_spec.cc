@@ -26,10 +26,12 @@
 #include <map>
 #include <memory>
 #include <ranges>
+#include <sstream>
 #include <unordered_map>
 #include <utility>
 
 #include "iceberg/result.h"
+#include "iceberg/row/partition_values.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/transform.h"
@@ -96,6 +98,22 @@ Result<std::unique_ptr<StructType>> PartitionSpec::PartitionType(
   }
 
   return std::make_unique<StructType>(std::move(partition_fields));
+}
+
+Result<std::string> PartitionSpec::PartitionPath(const PartitionValues& data) const {
+  std::stringstream ss;
+  for (int32_t i = 0; i < fields_.size(); ++i) {
+    ICEBERG_ASSIGN_OR_RAISE(auto value, data.ValueAt(i));
+    if (i > 0) {
+      ss << "/";
+    }
+    // TODO(zhuo.wang): json parse string literal?
+    std::string partition_value = value.get().ToString();
+    // TODO(zhuo.wang): UrlEncoder::Encode for partition name and value
+    ss << fields_[i].name() << "="
+       << std::string_view(partition_value.data() + 1, partition_value.size() - 2);
+  }
+  return ss.str();
 }
 
 bool PartitionSpec::CompatibleWith(const PartitionSpec& other) const {
