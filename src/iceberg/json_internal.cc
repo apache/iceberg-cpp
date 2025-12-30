@@ -1033,9 +1033,9 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
   }
 
   // This field is optional, but internally we set this to -1 when not set
-  ICEBERG_ASSIGN_OR_RAISE(table_metadata->current_snapshot_id,
-                          GetJsonValueOrDefault<int64_t>(json, kCurrentSnapshotId,
-                                                         Snapshot::kInvalidSnapshotId));
+  ICEBERG_ASSIGN_OR_RAISE(
+      table_metadata->current_snapshot_id,
+      GetJsonValueOrDefault<int64_t>(json, kCurrentSnapshotId, kInvalidSnapshotId));
 
   if (table_metadata->format_version >= 3) {
     ICEBERG_ASSIGN_OR_RAISE(table_metadata->next_row_id,
@@ -1053,7 +1053,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
     ICEBERG_ASSIGN_OR_RAISE(
         table_metadata->refs,
         FromJsonMap<std::shared_ptr<SnapshotRef>>(json, kRefs, SnapshotRefFromJson));
-  } else if (table_metadata->current_snapshot_id != Snapshot::kInvalidSnapshotId) {
+  } else if (table_metadata->current_snapshot_id != kInvalidSnapshotId) {
     table_metadata->refs["main"] = std::make_unique<SnapshotRef>(SnapshotRef{
         .snapshot_id = table_metadata->current_snapshot_id,
         .retention = SnapshotRef::Branch{},

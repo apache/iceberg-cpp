@@ -238,7 +238,7 @@ Result<ManifestFile> ManifestWriter::ToManifestFile() const {
       .sequence_number = TableMetadata::kInvalidSequenceNumber,
       .min_sequence_number =
           min_sequence_number_.value_or(TableMetadata::kInvalidSequenceNumber),
-      .added_snapshot_id = adapter_->snapshot_id().value_or(Snapshot::kInvalidSnapshotId),
+      .added_snapshot_id = adapter_->snapshot_id().value_or(kInvalidSnapshotId),
       .added_files_count = add_files_count_,
       .existing_files_count = existing_files_count_,
       .deleted_files_count = delete_files_count_,

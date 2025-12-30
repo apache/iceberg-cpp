@@ -19,10 +19,12 @@
 
 #pragma once
 
+#include <cstdint>
 #include <string_view>
 
 namespace iceberg {
 
 constexpr std::string_view kParquetFieldIdKey = "PARQUET:field_id";
+constexpr int64_t kInvalidSnapshotId = -1;
 
 }  // namespace iceberg

@@ -92,7 +92,7 @@ Result<std::unique_ptr<InheritableMetadata>> InheritableMetadataFactory::Empty()
 Result<std::unique_ptr<InheritableMetadata>> InheritableMetadataFactory::FromManifest(
     const ManifestFile& manifest) {
   // Validate that the manifest has a snapshot ID assigned
-  if (manifest.added_snapshot_id == Snapshot::kInvalidSnapshotId) {
+  if (manifest.added_snapshot_id == kInvalidSnapshotId) {
     return InvalidManifest("Manifest file {} has no snapshot ID", manifest.manifest_path);
   }
 

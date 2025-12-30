@@ -537,7 +537,7 @@ class TableMetadataBuilder::Impl {
     metadata_.last_column_id = Schema::kInvalidColumnId;
     metadata_.default_spec_id = PartitionSpec::kInitialSpecId;
     metadata_.last_partition_id = PartitionSpec::kInvalidPartitionFieldId;
-    metadata_.current_snapshot_id = Snapshot::kInvalidSnapshotId;
+    metadata_.current_snapshot_id = kInvalidSnapshotId;
     metadata_.default_sort_order_id = SortOrder::kInitialSortOrderId;
     metadata_.next_row_id = TableMetadata::kInitialRowId;
   }

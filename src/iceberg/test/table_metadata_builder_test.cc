@@ -81,7 +81,7 @@ std::unique_ptr<TableMetadata> CreateBaseMetadata() {
   metadata->partition_specs.push_back(PartitionSpec::Unpartitioned());
   metadata->default_spec_id = PartitionSpec::kInitialSpecId;
   metadata->last_partition_id = 0;
-  metadata->current_snapshot_id = Snapshot::kInvalidSnapshotId;
+  metadata->current_snapshot_id = kInvalidSnapshotId;
   metadata->default_sort_order_id = SortOrder::kUnsortedOrderId;
   metadata->sort_orders.push_back(SortOrder::Unsorted());
   metadata->next_row_id = TableMetadata::kInitialRowId;
@@ -234,7 +234,7 @@ TEST(TableMetadataBuilderTest, BuildFromEmpty) {
   EXPECT_EQ(metadata->last_sequence_number, TableMetadata::kInitialSequenceNumber);
   EXPECT_EQ(metadata->default_spec_id, PartitionSpec::kInitialSpecId);
   EXPECT_EQ(metadata->default_sort_order_id, SortOrder::kUnsortedOrderId);
-  EXPECT_EQ(metadata->current_snapshot_id, Snapshot::kInvalidSnapshotId);
+  EXPECT_EQ(metadata->current_snapshot_id, kInvalidSnapshotId);
   EXPECT_TRUE(metadata->metadata_log.empty());
 }
 

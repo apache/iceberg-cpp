@@ -74,7 +74,7 @@ std::unique_ptr<TableMetadata> CreateBaseMetadata() {
   metadata->partition_specs.push_back(PartitionSpec::Unpartitioned());
   metadata->default_spec_id = PartitionSpec::kInitialSpecId;
   metadata->last_partition_id = 0;
-  metadata->current_snapshot_id = Snapshot::kInvalidSnapshotId;
+  metadata->current_snapshot_id = kInvalidSnapshotId;
   metadata->sort_orders.push_back(SortOrder::Unsorted());
   metadata->default_sort_order_id = SortOrder::kUnsortedOrderId;
   metadata->next_row_id = TableMetadata::kInitialRowId;

@@ -27,6 +27,7 @@
 #include <string_view>
 #include <utility>
 
+#include "iceberg/constants.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
@@ -106,7 +107,7 @@ struct ICEBERG_EXPORT ManifestFile {
   int64_t min_sequence_number = TableMetadata::kInitialSequenceNumber;
   /// Field id: 503
   /// ID of the snapshot where the manifest file was added
-  int64_t added_snapshot_id = -1;  // Snapshot::kInvalidSnapshotId
+  int64_t added_snapshot_id = kInvalidSnapshotId;
   /// Field id: 504
   /// Number of entries in the manifest that have status ADDED (1), when null this is
   /// assumed to be non-zero
