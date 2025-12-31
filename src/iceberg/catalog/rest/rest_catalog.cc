@@ -107,9 +107,8 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   ICEBERG_ASSIGN_OR_RAISE(auto final_uri, final_config->Uri());
   ICEBERG_RETURN_UNEXPECTED(paths->SetBaseUri(std::string(TrimTrailingSlash(final_uri))));
 
-  return std::shared_ptr<RestCatalog>(
-      new RestCatalog(std::move(final_config), std::move(file_io), std::move(paths),
-                      std::move(endpoints)));
+  return std::make_shared<RestCatalog>(std::move(final_config), std::move(file_io),
+                                       std::move(paths), std::move(endpoints));
 }
 
 RestCatalog::RestCatalog(std::unique_ptr<RestCatalogProperties> config,
