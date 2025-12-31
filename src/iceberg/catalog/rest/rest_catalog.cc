@@ -152,7 +152,6 @@ Result<std::vector<Namespace>> RestCatalog::ListNamespaces(const Namespace& ns) 
     }
     next_token = list_response.next_page_token;
   }
-  return result;
 }
 
 Status RestCatalog::CreateNamespace(
