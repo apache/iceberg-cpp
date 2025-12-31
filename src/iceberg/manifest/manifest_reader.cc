@@ -46,24 +46,16 @@ namespace iceberg {
 
 namespace {
 
-template <typename... Args>
-[[nodiscard]] Status MakeError(ErrorKind error_kind, std::format_string<Args...> fmt,
-                               Args&&... args) {
-  return std::unexpected<Error>(
-      {error_kind, std::format(fmt, std::forward<Args>(args)...)});
-}
-
-[[nodiscard]] Status MakeNullError(ErrorKind error_kind, std::string_view field_name,
-                                   int64_t row_idx) {
-  return MakeError(error_kind, "Required field '{}' is null at row {}", field_name,
-                   row_idx);
+[[nodiscard]] Status MakeNullError(std::string_view field_name, int64_t row_idx) {
+  return InvalidArgument("Required field '{}' is null at row {}", field_name, row_idx);
 }
 
 [[nodiscard]] Status AssertViewType(const ArrowArrayView* view, ArrowType expected_type,
-                                    std::string_view field_name, ErrorKind error_kind) {
+                                    std::string_view field_name) {
   if (view->storage_type != expected_type) {
-    return MakeError(error_kind, "Field '{}' should be of type {}, got {}", field_name,
-                     ArrowTypeString(expected_type), ArrowTypeString(view->storage_type));
+    return InvalidArgument("Field '{}' should be of type {}, got {}", field_name,
+                           ArrowTypeString(expected_type),
+                           ArrowTypeString(view->storage_type));
   }
   return {};
 }
@@ -71,15 +63,15 @@ template <typename... Args>
 [[nodiscard]] Status AssertViewTypeAndChildren(const ArrowArrayView* view,
                                                ArrowType expected_type,
                                                int64_t expected_children,
-                                               std::string_view field_name,
-                                               ErrorKind error_kind) {
+                                               std::string_view field_name) {
   if (view->storage_type != expected_type) {
-    return MakeError(error_kind, "Field '{}' should be of type {}, got {}", field_name,
-                     ArrowTypeString(expected_type), ArrowTypeString(view->storage_type));
+    return InvalidArgument("Field '{}' should be of type {}, got {}", field_name,
+                           ArrowTypeString(expected_type),
+                           ArrowTypeString(view->storage_type));
   }
   if (view->n_children != expected_children) {
-    return MakeError(error_kind, "Field '{}' should have {} children, got {}", field_name,
-                     expected_children, view->n_children);
+    return InvalidArgument("Field '{}' should have {} children, got {}", field_name,
+                           expected_children, view->n_children);
   }
   return {};
 }
@@ -91,161 +83,152 @@ std::vector<uint8_t> ParseInt8VectorField(const ArrowArrayView* view,
 }
 
 template <typename T, typename Container, typename Accessor>
-Status ParseIntegerField(const ArrowArrayView* array_view, Container& container,
-                         Accessor&& accessor, std::string_view field_name, bool required,
-                         ErrorKind error_kind) {
-  for (int64_t row_idx = 0; row_idx < array_view->length; row_idx++) {
-    if (!ArrowArrayViewIsNull(array_view, row_idx)) {
-      auto value = ArrowArrayViewGetIntUnsafe(array_view, row_idx);
+Status ParseIntegerField(const ArrowArrayView* view, Container& container,
+                         Accessor&& accessor, std::string_view field_name,
+                         bool required) {
+  for (int64_t row_idx = 0; row_idx < view->length; row_idx++) {
+    if (!ArrowArrayViewIsNull(view, row_idx)) {
+      auto value = ArrowArrayViewGetIntUnsafe(view, row_idx);
       accessor(container, row_idx) = static_cast<T>(value);
     } else if (required) {
-      return MakeNullError(error_kind, field_name, row_idx);
+      return MakeNullError(field_name, row_idx);
     }
   }
   return {};
 }
 
 template <typename Container, typename Accessor>
-Status ParseStringField(const ArrowArrayView* array_view, Container& container,
-                        Accessor&& accessor, std::string_view field_name, bool required,
-                        ErrorKind error_kind) {
-  for (int64_t row_idx = 0; row_idx < array_view->length; row_idx++) {
-    if (!ArrowArrayViewIsNull(array_view, row_idx)) {
-      auto value = ArrowArrayViewGetStringUnsafe(array_view, row_idx);
+Status ParseStringField(const ArrowArrayView* view, Container& container,
+                        Accessor&& accessor, std::string_view field_name, bool required) {
+  for (int64_t row_idx = 0; row_idx < view->length; row_idx++) {
+    if (!ArrowArrayViewIsNull(view, row_idx)) {
+      auto value = ArrowArrayViewGetStringUnsafe(view, row_idx);
       accessor(container, row_idx) = std::string(value.data, value.size_bytes);
     } else if (required) {
-      return MakeNullError(error_kind, field_name, row_idx);
+      return MakeNullError(field_name, row_idx);
     }
   }
   return {};
 }
 
 template <typename Container, typename Accessor>
-Status ParseBinaryField(const ArrowArrayView* array_view, Container& container,
-                        Accessor&& accessor, std::string_view field_name, bool required,
-                        ErrorKind error_kind) {
-  for (int64_t row_idx = 0; row_idx < array_view->length; row_idx++) {
-    if (!ArrowArrayViewIsNull(array_view, row_idx)) {
-      accessor(container, row_idx) = ParseInt8VectorField(array_view, row_idx);
+Status ParseBinaryField(const ArrowArrayView* view, Container& container,
+                        Accessor&& accessor, std::string_view field_name, bool required) {
+  for (int64_t row_idx = 0; row_idx < view->length; row_idx++) {
+    if (!ArrowArrayViewIsNull(view, row_idx)) {
+      accessor(container, row_idx) = ParseInt8VectorField(view, row_idx);
     } else if (required) {
-      return MakeNullError(error_kind, field_name, row_idx);
+      return MakeNullError(field_name, row_idx);
     }
   }
   return {};
 }
 
 template <typename T, typename Container, typename Accessor>
-void ParseIntegerVectorField(const ArrowArrayView* array_view, int64_t length,
+void ParseIntegerVectorField(const ArrowArrayView* view, int64_t length,
                              Container& container, Accessor&& accessor) {
   for (int64_t row_idx = 0; row_idx < length; row_idx++) {
-    auto begin_offset = ArrowArrayViewListChildOffset(array_view, row_idx);
-    auto end_offset = ArrowArrayViewListChildOffset(array_view, row_idx + 1);
+    auto begin_offset = ArrowArrayViewListChildOffset(view, row_idx);
+    auto end_offset = ArrowArrayViewListChildOffset(view, row_idx + 1);
     for (int64_t offset = begin_offset; offset < end_offset; offset++) {
-      auto value = ArrowArrayViewGetIntUnsafe(array_view->children[0], offset);
+      auto value = ArrowArrayViewGetIntUnsafe(view->children[0], offset);
       accessor(container, row_idx).emplace_back(static_cast<T>(value));
     }
   }
 }
 
 template <typename Container, typename Accessor>
-Status ParseIntLongMapField(const ArrowArrayView* array_view, int64_t length,
+Status ParseIntLongMapField(const ArrowArrayView* view, int64_t length,
                             Container& container, Accessor&& accessor,
-                            std::string_view field_name, ErrorKind error_kind) {
+                            std::string_view field_name) {
   ICEBERG_RETURN_UNEXPECTED(
-      AssertViewType(array_view, ArrowType::NANOARROW_TYPE_MAP, field_name, error_kind));
+      AssertViewType(view, ArrowType::NANOARROW_TYPE_MAP, field_name));
 
-  auto map_array_view = array_view->children[0];
+  auto map_view = view->children[0];
   ICEBERG_RETURN_UNEXPECTED(AssertViewTypeAndChildren(
-      map_array_view, ArrowType::NANOARROW_TYPE_STRUCT, 2, field_name, error_kind));
+      map_view, ArrowType::NANOARROW_TYPE_STRUCT, 2, field_name));
 
-  auto key_array_view = map_array_view->children[0];
-  auto value_array_view = map_array_view->children[1];
-  ICEBERG_RETURN_UNEXPECTED(AssertViewType(
-      key_array_view, ArrowType::NANOARROW_TYPE_INT32, field_name, error_kind));
-  ICEBERG_RETURN_UNEXPECTED(AssertViewType(
-      value_array_view, ArrowType::NANOARROW_TYPE_INT64, field_name, error_kind));
+  auto key_view = map_view->children[0];
+  auto value_view = map_view->children[1];
+  ICEBERG_RETURN_UNEXPECTED(
+      AssertViewType(key_view, ArrowType::NANOARROW_TYPE_INT32, field_name));
+  ICEBERG_RETURN_UNEXPECTED(
+      AssertViewType(value_view, ArrowType::NANOARROW_TYPE_INT64, field_name));
 
   for (int64_t row_idx = 0; row_idx < length; row_idx++) {
-    auto begin_offset = array_view->buffer_views[1].data.as_int32[row_idx];
-    auto end_offset = array_view->buffer_views[1].data.as_int32[row_idx + 1];
+    auto begin_offset = view->buffer_views[1].data.as_int32[row_idx];
+    auto end_offset = view->buffer_views[1].data.as_int32[row_idx + 1];
     for (int32_t offset = begin_offset; offset < end_offset; offset++) {
-      auto key = ArrowArrayViewGetIntUnsafe(key_array_view, offset);
-      accessor(container, row_idx)[key] =
-          ArrowArrayViewGetIntUnsafe(value_array_view, offset);
+      auto key = ArrowArrayViewGetIntUnsafe(key_view, offset);
+      accessor(container, row_idx)[key] = ArrowArrayViewGetIntUnsafe(value_view, offset);
     }
   }
   return {};
 }
 
 template <typename Container, typename Accessor>
-Status ParseIntBinaryMapField(const ArrowArrayView* array_view, int64_t length,
+Status ParseIntBinaryMapField(const ArrowArrayView* view, int64_t length,
                               Container& container, Accessor&& accessor,
-                              std::string_view field_name, ErrorKind error_kind) {
+                              std::string_view field_name) {
   ICEBERG_RETURN_UNEXPECTED(
-      AssertViewType(array_view, ArrowType::NANOARROW_TYPE_MAP, field_name, error_kind));
+      AssertViewType(view, ArrowType::NANOARROW_TYPE_MAP, field_name));
 
-  auto map_array_view = array_view->children[0];
+  auto map_view = view->children[0];
   ICEBERG_RETURN_UNEXPECTED(AssertViewTypeAndChildren(
-      map_array_view, ArrowType::NANOARROW_TYPE_STRUCT, 2, field_name, error_kind));
+      map_view, ArrowType::NANOARROW_TYPE_STRUCT, 2, field_name));
 
-  auto key_array_view = map_array_view->children[0];
-  auto value_array_view = map_array_view->children[1];
-  ICEBERG_RETURN_UNEXPECTED(AssertViewType(
-      key_array_view, ArrowType::NANOARROW_TYPE_INT32, field_name, error_kind));
-  ICEBERG_RETURN_UNEXPECTED(AssertViewType(
-      value_array_view, ArrowType::NANOARROW_TYPE_BINARY, field_name, error_kind));
+  auto key_view = map_view->children[0];
+  auto value_view = map_view->children[1];
+  ICEBERG_RETURN_UNEXPECTED(
+      AssertViewType(key_view, ArrowType::NANOARROW_TYPE_INT32, field_name));
+  ICEBERG_RETURN_UNEXPECTED(
+      AssertViewType(value_view, ArrowType::NANOARROW_TYPE_BINARY, field_name));
 
   for (int64_t row_idx = 0; row_idx < length; row_idx++) {
-    auto begin_offset = array_view->buffer_views[1].data.as_int32[row_idx];
-    auto end_offset = array_view->buffer_views[1].data.as_int32[row_idx + 1];
+    auto begin_offset = view->buffer_views[1].data.as_int32[row_idx];
+    auto end_offset = view->buffer_views[1].data.as_int32[row_idx + 1];
     for (int32_t offset = begin_offset; offset < end_offset; offset++) {
-      auto key = ArrowArrayViewGetIntUnsafe(key_array_view, offset);
-      accessor(container, row_idx)[key] = ParseInt8VectorField(value_array_view, offset);
+      auto key = ArrowArrayViewGetIntUnsafe(key_view, offset);
+      accessor(container, row_idx)[key] = ParseInt8VectorField(value_view, offset);
     }
   }
   return {};
 }
 
-Status ParsePartitionFieldSummaryList(ArrowArrayView* array_view,
+Status ParsePartitionFieldSummaryList(ArrowArrayView* view,
                                       std::vector<ManifestFile>& manifest_files) {
-  // schema of array_view is list<struct<PartitionFieldSummary>>
-  ICEBERG_RETURN_UNEXPECTED(AssertViewType(array_view, ArrowType::NANOARROW_TYPE_LIST,
-                                           "partitions",
-                                           ErrorKind::kInvalidManifestList));
-
-  // schema of elem_array_view is struct<PartitionFieldSummary>
-  auto elem_array_view = array_view->children[0];
+  // schema of view is list<struct<PartitionFieldSummary>>
   ICEBERG_RETURN_UNEXPECTED(
-      AssertViewTypeAndChildren(elem_array_view, ArrowType::NANOARROW_TYPE_STRUCT, 4,
-                                "partitions", ErrorKind::kInvalidManifestList));
+      AssertViewType(view, ArrowType::NANOARROW_TYPE_LIST, "partitions"));
 
-  auto contains_null = elem_array_view->children[0];
-  auto contains_nan = elem_array_view->children[1];
-  auto lower_bounds = elem_array_view->children[2];
-  auto upper_bounds = elem_array_view->children[3];
-  ICEBERG_RETURN_UNEXPECTED(AssertViewType(contains_null, ArrowType::NANOARROW_TYPE_BOOL,
-                                           "contains_null",
-                                           ErrorKind::kInvalidManifestList));
-  ICEBERG_RETURN_UNEXPECTED(AssertViewType(contains_nan, ArrowType::NANOARROW_TYPE_BOOL,
-                                           "contains_nan",
-                                           ErrorKind::kInvalidManifestList));
-  ICEBERG_RETURN_UNEXPECTED(AssertViewType(lower_bounds, ArrowType::NANOARROW_TYPE_BINARY,
-                                           "lower_bounds",
-                                           ErrorKind::kInvalidManifestList));
-  ICEBERG_RETURN_UNEXPECTED(AssertViewType(upper_bounds, ArrowType::NANOARROW_TYPE_BINARY,
-                                           "upper_bounds",
-                                           ErrorKind::kInvalidManifestList));
+  // schema of elem_view is struct<PartitionFieldSummary>
+  auto elem_view = view->children[0];
+  ICEBERG_RETURN_UNEXPECTED(AssertViewTypeAndChildren(
+      elem_view, ArrowType::NANOARROW_TYPE_STRUCT, 4, "partitions"));
 
-  for (int64_t row_idx = 0; row_idx < array_view->length; row_idx++) {
-    auto begin_offset = ArrowArrayViewListChildOffset(array_view, row_idx);
-    auto end_offset = ArrowArrayViewListChildOffset(array_view, row_idx + 1);
+  auto contains_null = elem_view->children[0];
+  auto contains_nan = elem_view->children[1];
+  auto lower_bounds = elem_view->children[2];
+  auto upper_bounds = elem_view->children[3];
+  ICEBERG_RETURN_UNEXPECTED(
+      AssertViewType(contains_null, ArrowType::NANOARROW_TYPE_BOOL, "contains_null"));
+  ICEBERG_RETURN_UNEXPECTED(
+      AssertViewType(contains_nan, ArrowType::NANOARROW_TYPE_BOOL, "contains_nan"));
+  ICEBERG_RETURN_UNEXPECTED(
+      AssertViewType(lower_bounds, ArrowType::NANOARROW_TYPE_BINARY, "lower_bounds"));
+  ICEBERG_RETURN_UNEXPECTED(
+      AssertViewType(upper_bounds, ArrowType::NANOARROW_TYPE_BINARY, "upper_bounds"));
+
+  for (int64_t row_idx = 0; row_idx < view->length; row_idx++) {
+    auto begin_offset = ArrowArrayViewListChildOffset(view, row_idx);
+    auto end_offset = ArrowArrayViewListChildOffset(view, row_idx + 1);
     auto& manifest_file = manifest_files[row_idx];
     for (int64_t offset = begin_offset; offset < end_offset; offset++) {
       auto& summary = manifest_file.partitions.emplace_back();
       if (!ArrowArrayViewIsNull(contains_null, offset)) {
         summary.contains_null = ArrowArrayViewGetIntUnsafe(contains_null, offset);
       } else {
-        return MakeNullError(ErrorKind::kInvalidManifestList, "contains_null", offset);
+        return MakeNullError("contains_null", offset);
       }
       if (!ArrowArrayViewIsNull(contains_nan, offset)) {
         summary.contains_nan = ArrowArrayViewGetIntUnsafe(contains_nan, offset);
@@ -265,19 +248,17 @@ Result<std::vector<ManifestFile>> ParseManifestList(ArrowSchema* arrow_schema,
                                                     ArrowArray* array,
                                                     const Schema& schema) {
   ArrowError error;
-  ArrowArrayView array_view;
+  ArrowArrayView view;
   ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
-      ArrowArrayViewInitFromSchema(&array_view, arrow_schema, &error), error);
-  internal::ArrowArrayViewGuard view_guard(&array_view);
+      ArrowArrayViewInitFromSchema(&view, arrow_schema, &error), error);
+  internal::ArrowArrayViewGuard view_guard(&view);
   ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
-      ArrowArrayViewSetArray(&array_view, array, &error), error);
+      ArrowArrayViewSetArray(&view, array, &error), error);
   ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
-      ArrowArrayViewValidate(&array_view, NANOARROW_VALIDATION_LEVEL_FULL, &error),
-      error);
+      ArrowArrayViewValidate(&view, NANOARROW_VALIDATION_LEVEL_FULL, &error), error);
 
   ICEBERG_RETURN_UNEXPECTED(AssertViewTypeAndChildren(
-      &array_view, ArrowType::NANOARROW_TYPE_STRUCT, schema.fields().size(),
-      "manifest_list", ErrorKind::kInvalidManifestList));
+      &view, ArrowType::NANOARROW_TYPE_STRUCT, schema.fields().size(), "manifest_list"));
 
   std::vector<ManifestFile> manifest_files;
   manifest_files.resize(array->length);
@@ -289,101 +270,101 @@ Result<std::vector<ManifestFile>> ParseManifestList(ArrowSchema* arrow_schema,
     auto field_name = field->get().name();
     auto field_id = field->get().field_id();
     auto required = !field->get().optional();
-    auto field_array_view = array_view.children[idx];
+    auto field_view = view.children[idx];
     switch (field_id) {
       case ManifestFile::kManifestPathFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseStringField(
-            field_array_view, manifest_files,
+            field_view, manifest_files,
             [](auto& c, int64_t i) -> auto& { return c[i].manifest_path; }, field_name,
-            required, ErrorKind::kInvalidManifestList));
+            required));
         break;
       case ManifestFile::kManifestLengthFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int64_t>(
-            field_array_view, manifest_files,
+            field_view, manifest_files,
             [](auto& c, int64_t i) -> auto& { return c[i].manifest_length; }, field_name,
-            required, ErrorKind::kInvalidManifestList));
+            required));
         break;
       case ManifestFile::kPartitionSpecIdFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int32_t>(
-            field_array_view, manifest_files,
+            field_view, manifest_files,
             [](auto& c, int64_t i) -> auto& { return c[i].partition_spec_id; },
-            field_name, required, ErrorKind::kInvalidManifestList));
+            field_name, required));
         break;
       case ManifestFile::kContentFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<ManifestContent>(
-            field_array_view, manifest_files,
+            field_view, manifest_files,
             [](auto& c, int64_t i) -> auto& { return c[i].content; }, field_name,
-            required, ErrorKind::kInvalidManifestList));
+            required));
         break;
       case ManifestFile::kSequenceNumberFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int64_t>(
-            field_array_view, manifest_files,
+            field_view, manifest_files,
             [](auto& c, int64_t i) -> auto& { return c[i].sequence_number; }, field_name,
-            required, ErrorKind::kInvalidManifestList));
+            required));
         break;
       case ManifestFile::kMinSequenceNumberFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int64_t>(
-            field_array_view, manifest_files,
+            field_view, manifest_files,
             [](auto& c, int64_t i) -> auto& { return c[i].min_sequence_number; },
-            field_name, required, ErrorKind::kInvalidManifestList));
+            field_name, required));
         break;
       case ManifestFile::kAddedSnapshotIdFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int64_t>(
-            field_array_view, manifest_files,
+            field_view, manifest_files,
             [](auto& c, int64_t i) -> auto& { return c[i].added_snapshot_id; },
-            field_name, required, ErrorKind::kInvalidManifestList));
+            field_name, required));
         break;
       case ManifestFile::kAddedFilesCountFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int32_t>(
-            field_array_view, manifest_files,
+            field_view, manifest_files,
             [](auto& c, int64_t i) -> auto& { return c[i].added_files_count; },
-            field_name, required, ErrorKind::kInvalidManifestList));
+            field_name, required));
         break;
       case ManifestFile::kExistingFilesCountFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int32_t>(
-            field_array_view, manifest_files,
+            field_view, manifest_files,
             [](auto& c, int64_t i) -> auto& { return c[i].existing_files_count; },
-            field_name, required, ErrorKind::kInvalidManifestList));
+            field_name, required));
         break;
       case ManifestFile::kDeletedFilesCountFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int32_t>(
-            field_array_view, manifest_files,
+            field_view, manifest_files,
             [](auto& c, int64_t i) -> auto& { return c[i].deleted_files_count; },
-            field_name, required, ErrorKind::kInvalidManifestList));
+            field_name, required));
         break;
       case ManifestFile::kAddedRowsCountFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int64_t>(
-            field_array_view, manifest_files,
+            field_view, manifest_files,
             [](auto& c, int64_t i) -> auto& { return c[i].added_rows_count; }, field_name,
-            required, ErrorKind::kInvalidManifestList));
+            required));
         break;
       case ManifestFile::kExistingRowsCountFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int64_t>(
-            field_array_view, manifest_files,
+            field_view, manifest_files,
             [](auto& c, int64_t i) -> auto& { return c[i].existing_rows_count; },
-            field_name, required, ErrorKind::kInvalidManifestList));
+            field_name, required));
         break;
       case ManifestFile::kDeletedRowsCountFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int64_t>(
-            field_array_view, manifest_files,
+            field_view, manifest_files,
             [](auto& c, int64_t i) -> auto& { return c[i].deleted_rows_count; },
-            field_name, required, ErrorKind::kInvalidManifestList));
+            field_name, required));
         break;
       case ManifestFile::kPartitionSummaryFieldId:
         ICEBERG_RETURN_UNEXPECTED(
-            ParsePartitionFieldSummaryList(field_array_view, manifest_files));
+            ParsePartitionFieldSummaryList(field_view, manifest_files));
         break;
       case ManifestFile::kKeyMetadataFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseBinaryField(
-            field_array_view, manifest_files,
+            field_view, manifest_files,
             [](auto& c, int64_t i) -> auto& { return c[i].key_metadata; }, field_name,
-            required, ErrorKind::kInvalidManifestList));
+            required));
         break;
       case ManifestFile::kFirstRowIdFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int64_t>(
-            field_array_view, manifest_files,
+            field_view, manifest_files,
             [](auto& c, int64_t i) -> auto& { return c[i].first_row_id; }, field_name,
-            required, ErrorKind::kInvalidManifestList));
+            required));
         break;
       default:
         return InvalidManifestList("Unsupported field: {} in manifest file.", field_name);
@@ -437,9 +418,9 @@ Status ParsePartitionValues(ArrowArrayView* view, int64_t row_idx,
 Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
                      ArrowArrayView* view, std::optional<int64_t>& first_row_id,
                      std::vector<ManifestEntry>& manifest_entries) {
-  ICEBERG_RETURN_UNEXPECTED(AssertViewTypeAndChildren(
-      view, ArrowType::NANOARROW_TYPE_STRUCT, data_file_schema->fields().size(),
-      "DataFile", ErrorKind::kInvalidManifest));
+  ICEBERG_RETURN_UNEXPECTED(
+      AssertViewTypeAndChildren(view, ArrowType::NANOARROW_TYPE_STRUCT,
+                                data_file_schema->fields().size(), "data_file"));
 
   for (int64_t col_idx = 0; col_idx < view->n_children; ++col_idx) {
     ICEBERG_ASSIGN_OR_RAISE(auto field, data_file_schema->GetFieldByIndex(col_idx));
@@ -447,25 +428,25 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
     auto field_name = field->get().name();
     auto field_id = field->get().field_id();
     auto required = !field->get().optional();
-    auto field_array_view = view->children[col_idx];
+    auto field_view = view->children[col_idx];
 
     switch (field_id) {
       case DataFile::kContentFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<DataFile::Content>(
-            field_array_view, manifest_entries,
+            field_view, manifest_entries,
             [](auto& c, int64_t i) -> auto& { return c[i].data_file->content; },
-            field_name, required, ErrorKind::kInvalidManifest));
+            field_name, required));
         break;
       case DataFile::kFilePathFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseStringField(
-            field_array_view, manifest_entries,
+            field_view, manifest_entries,
             [](auto& c, int64_t i) -> auto& { return c[i].data_file->file_path; },
-            field_name, required, ErrorKind::kInvalidManifest));
+            field_name, required));
         break;
       case DataFile::kFileFormatFieldId:
-        for (int64_t row_idx = 0; row_idx < field_array_view->length; row_idx++) {
-          if (!ArrowArrayViewIsNull(field_array_view, row_idx)) {
-            auto value = ArrowArrayViewGetStringUnsafe(field_array_view, row_idx);
+        for (int64_t row_idx = 0; row_idx < field_view->length; row_idx++) {
+          if (!ArrowArrayViewIsNull(field_view, row_idx)) {
+            auto value = ArrowArrayViewGetStringUnsafe(field_view, row_idx);
             std::string_view path_str(value.data, value.size_bytes);
             ICEBERG_ASSIGN_OR_RAISE(manifest_entries[row_idx].data_file->file_format,
                                     FileFormatTypeFromString(path_str));
@@ -474,98 +455,97 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
         break;
       case DataFile::kPartitionFieldId: {
         ICEBERG_RETURN_UNEXPECTED(
-            AssertViewType(field_array_view, ArrowType::NANOARROW_TYPE_STRUCT, field_name,
-                           ErrorKind::kInvalidManifest));
-        for (int64_t part_idx = 0; part_idx < field_array_view->n_children; part_idx++) {
-          auto part_array_view = field_array_view->children[part_idx];
-          for (int64_t row_idx = 0; row_idx < part_array_view->length; row_idx++) {
-            if (ArrowArrayViewIsNull(part_array_view, row_idx)) {
+            AssertViewType(field_view, ArrowType::NANOARROW_TYPE_STRUCT, field_name));
+        for (int64_t part_idx = 0; part_idx < field_view->n_children; part_idx++) {
+          auto part_view = field_view->children[part_idx];
+          for (int64_t row_idx = 0; row_idx < part_view->length; row_idx++) {
+            if (ArrowArrayViewIsNull(part_view, row_idx)) {
               break;
             }
             ICEBERG_RETURN_UNEXPECTED(
-                ParsePartitionValues(part_array_view, row_idx, manifest_entries));
+                ParsePartitionValues(part_view, row_idx, manifest_entries));
           }
         }
       } break;
       case DataFile::kRecordCountFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int64_t>(
-            field_array_view, manifest_entries,
+            field_view, manifest_entries,
             [](auto& c, int64_t i) -> auto& { return c[i].data_file->record_count; },
-            field_name, required, ErrorKind::kInvalidManifest));
+            field_name, required));
         break;
       case DataFile::kFileSizeFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int64_t>(
-            field_array_view, manifest_entries,
+            field_view, manifest_entries,
             [](auto& c, int64_t i) -> auto& {
               return c[i].data_file->file_size_in_bytes;
             },
-            field_name, required, ErrorKind::kInvalidManifest));
+            field_name, required));
         break;
       case DataFile::kColumnSizesFieldId:
         // XXX: map key and value should have the same offset but
         // ArrowArrayViewListChildOffset cannot get the correct offset for map
         ICEBERG_RETURN_UNEXPECTED(ParseIntLongMapField(
-            field_array_view, field_array_view->length, manifest_entries,
+            field_view, field_view->length, manifest_entries,
             [](auto& c, int64_t i) -> auto& { return c[i].data_file->column_sizes; },
-            field_name, ErrorKind::kInvalidManifest));
+            field_name));
         break;
       case DataFile::kValueCountsFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntLongMapField(
-            field_array_view, field_array_view->length, manifest_entries,
+            field_view, field_view->length, manifest_entries,
             [](auto& c, int64_t i) -> auto& { return c[i].data_file->value_counts; },
-            field_name, ErrorKind::kInvalidManifest));
+            field_name));
         break;
       case DataFile::kNullValueCountsFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntLongMapField(
-            field_array_view, field_array_view->length, manifest_entries,
+            field_view, field_view->length, manifest_entries,
             [](auto& c, int64_t i) -> auto& { return c[i].data_file->null_value_counts; },
-            field_name, ErrorKind::kInvalidManifest));
+            field_name));
         break;
       case DataFile::kNanValueCountsFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntLongMapField(
-            field_array_view, field_array_view->length, manifest_entries,
+            field_view, field_view->length, manifest_entries,
             [](auto& c, int64_t i) -> auto& { return c[i].data_file->nan_value_counts; },
-            field_name, ErrorKind::kInvalidManifest));
+            field_name));
         break;
       case DataFile::kLowerBoundsFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntBinaryMapField(
-            field_array_view, field_array_view->length, manifest_entries,
+            field_view, field_view->length, manifest_entries,
             [](auto& c, int64_t i) -> auto& { return c[i].data_file->lower_bounds; },
-            field_name, ErrorKind::kInvalidManifest));
+            field_name));
         break;
       case DataFile::kUpperBoundsFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntBinaryMapField(
-            field_array_view, field_array_view->length, manifest_entries,
+            field_view, field_view->length, manifest_entries,
             [](auto& c, int64_t i) -> auto& { return c[i].data_file->upper_bounds; },
-            field_name, ErrorKind::kInvalidManifest));
+            field_name));
         break;
       case DataFile::kKeyMetadataFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseBinaryField(
-            field_array_view, manifest_entries,
+            field_view, manifest_entries,
             [](auto& c, int64_t i) -> auto& { return c[i].data_file->key_metadata; },
-            field_name, required, ErrorKind::kInvalidManifest));
+            field_name, required));
         break;
       case DataFile::kSplitOffsetsFieldId:
         ParseIntegerVectorField<int64_t>(
-            field_array_view, field_array_view->length, manifest_entries,
+            field_view, field_view->length, manifest_entries,
             [](auto& c, int64_t i) -> auto& { return c[i].data_file->split_offsets; });
         break;
       case DataFile::kEqualityIdsFieldId:
         ParseIntegerVectorField<int32_t>(
-            field_array_view, field_array_view->length, manifest_entries,
+            field_view, field_view->length, manifest_entries,
             [](auto& c, int64_t i) -> auto& { return c[i].data_file->equality_ids; });
         break;
       case DataFile::kSortOrderIdFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int32_t>(
-            field_array_view, manifest_entries,
+            field_view, manifest_entries,
             [](auto& c, int64_t i) -> auto& { return c[i].data_file->sort_order_id; },
-            field_name, required, ErrorKind::kInvalidManifest));
+            field_name, required));
         break;
       case DataFile::kFirstRowIdFieldId: {
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int64_t>(
-            field_array_view, manifest_entries,
+            field_view, manifest_entries,
             [](auto& c, int64_t i) -> auto& { return c[i].data_file->first_row_id; },
-            field_name, required, ErrorKind::kInvalidManifest));
+            field_name, required));
         if (first_row_id.has_value()) {
           std::ranges::for_each(manifest_entries, [&first_row_id](ManifestEntry& entry) {
             if (entry.status != ManifestStatus::kDeleted &&
@@ -584,25 +564,25 @@ Status ParseDataFile(const std::shared_ptr<StructType>& data_file_schema,
       }
       case DataFile::kReferencedDataFileFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseStringField(
-            field_array_view, manifest_entries,
+            field_view, manifest_entries,
             [](auto& c, int64_t i) -> auto& {
               return c[i].data_file->referenced_data_file;
             },
-            field_name, required, ErrorKind::kInvalidManifest));
+            field_name, required));
         break;
       case DataFile::kContentOffsetFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int64_t>(
-            field_array_view, manifest_entries,
+            field_view, manifest_entries,
             [](auto& c, int64_t i) -> auto& { return c[i].data_file->content_offset; },
-            field_name, required, ErrorKind::kInvalidManifest));
+            field_name, required));
         break;
       case DataFile::kContentSizeFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int64_t>(
-            field_array_view, manifest_entries,
+            field_view, manifest_entries,
             [](auto& c, int64_t i) -> auto& {
               return c[i].data_file->content_size_in_bytes;
             },
-            field_name, required, ErrorKind::kInvalidManifest));
+            field_name, required));
         break;
       default:
         return InvalidManifest("Unsupported field '{}' in the data file schema",
@@ -616,19 +596,17 @@ Result<std::vector<ManifestEntry>> ParseManifestEntry(
     ArrowSchema* arrow_schema, ArrowArray* array, const Schema& schema,
     std::optional<int64_t>& first_row_id) {
   ArrowError error;
-  ArrowArrayView array_view;
+  ArrowArrayView view;
   ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
-      ArrowArrayViewInitFromSchema(&array_view, arrow_schema, &error), error);
-  internal::ArrowArrayViewGuard view_guard(&array_view);
+      ArrowArrayViewInitFromSchema(&view, arrow_schema, &error), error);
+  internal::ArrowArrayViewGuard view_guard(&view);
   ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
-      ArrowArrayViewSetArray(&array_view, array, &error), error);
+      ArrowArrayViewSetArray(&view, array, &error), error);
   ICEBERG_NANOARROW_RETURN_UNEXPECTED_WITH_ERROR(
-      ArrowArrayViewValidate(&array_view, NANOARROW_VALIDATION_LEVEL_FULL, &error),
-      error);
+      ArrowArrayViewValidate(&view, NANOARROW_VALIDATION_LEVEL_FULL, &error), error);
 
   ICEBERG_RETURN_UNEXPECTED(AssertViewTypeAndChildren(
-      &array_view, ArrowType::NANOARROW_TYPE_STRUCT, schema.fields().size(),
-      "manifest_entry", ErrorKind::kInvalidManifest));
+      &view, ArrowType::NANOARROW_TYPE_STRUCT, schema.fields().size(), "manifest_entry"));
 
   std::vector<ManifestEntry> manifest_entries;
   manifest_entries.resize(array->length);
@@ -644,38 +622,38 @@ Result<std::vector<ManifestEntry>> ParseManifestEntry(
     auto field_name = field->get().name();
     auto field_id = field->get().field_id();
     auto required = !field->get().optional();
-    auto field_array_view = array_view.children[col_idx];
+    auto field_view = view.children[col_idx];
 
     switch (field_id) {
       case ManifestEntry::kStatusFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<ManifestStatus>(
-            field_array_view, manifest_entries,
-            [](auto& c, int64_t i) -> auto& { return c[i].status; }, field_name, required,
-            ErrorKind::kInvalidManifest));
+            field_view, manifest_entries,
+            [](auto& c, int64_t i) -> auto& { return c[i].status; }, field_name,
+            required));
         break;
       case ManifestEntry::kSnapshotIdFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int64_t>(
-            field_array_view, manifest_entries,
+            field_view, manifest_entries,
             [](auto& c, int64_t i) -> auto& { return c[i].snapshot_id; }, field_name,
-            required, ErrorKind::kInvalidManifest));
+            required));
         break;
       case ManifestEntry::kSequenceNumberFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int64_t>(
-            field_array_view, manifest_entries,
+            field_view, manifest_entries,
             [](auto& c, int64_t i) -> auto& { return c[i].sequence_number; }, field_name,
-            required, ErrorKind::kInvalidManifest));
+            required));
         break;
       case ManifestEntry::kFileSequenceNumberFieldId:
         ICEBERG_RETURN_UNEXPECTED(ParseIntegerField<int64_t>(
-            field_array_view, manifest_entries,
+            field_view, manifest_entries,
             [](auto& c, int64_t i) -> auto& { return c[i].file_sequence_number; },
-            field_name, required, ErrorKind::kInvalidManifest));
+            field_name, required));
         break;
       case ManifestEntry::kDataFileFieldId: {
         auto data_file_schema =
             internal::checked_pointer_cast<StructType>(field->get().type());
-        ICEBERG_RETURN_UNEXPECTED(ParseDataFile(data_file_schema, field_array_view,
-                                                first_row_id, manifest_entries));
+        ICEBERG_RETURN_UNEXPECTED(
+            ParseDataFile(data_file_schema, field_view, first_row_id, manifest_entries));
         break;
       }
       default:
