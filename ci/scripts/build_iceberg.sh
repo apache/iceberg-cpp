@@ -22,6 +22,7 @@ set -eux
 source_dir=${1}
 build_dir=${1}/build
 build_rest_integration_test=${2:-OFF}
+build_enable_sccache=${3:-OFF}
 
 mkdir ${build_dir}
 pushd ${build_dir}
@@ -43,6 +44,11 @@ if is_windows; then
     CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=Release")
 else
     CMAKE_ARGS+=("-DCMAKE_BUILD_TYPE=Debug")
+fi
+
+if [[ "${build_enable_sccache}" == "ON" ]]; then
+    CMAKE_ARGS+=("-DCMAKE_CXX_COMPILER_LAUNCHER=sccache")
+    CMAKE_ARGS+=("-DCMAKE_C_COMPILER_LAUNCHER=sccache")
 fi
 
 cmake "${CMAKE_ARGS[@]}" ${source_dir}

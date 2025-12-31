@@ -77,9 +77,9 @@ jobs:
         shell: bash
         run: ci/scripts/build_example.sh $(pwd)/example
   windows:
-    name: AMD64 Windows 2022
-    runs-on: windows-2022
-    timeout-minutes: 30
+    name: AMD64 Windows 2025
+    runs-on: windows-2025
+    timeout-minutes: 60
     strategy:
       fail-fast: false
     steps:
@@ -89,11 +89,16 @@ jobs:
         shell: cmd
         run: |
           vcpkg install zlib:x64-windows nlohmann-json:x64-windows nanoarrow:x64-windows roaring:x64-windows cpr:x64-windows
+      - name: Setup sccache
+        uses: mozilla-actions/sccache-action@7d986dd989559c6ecdb630a3fd2557667be217ad # v0.0.9
       - name: Build Iceberg
         shell: cmd
+        env:
+          SCCACHE_GHA_ENABLED: "true"
         run: |
           call "C:\Program Files\Microsoft Visual Studio\2022\Enterprise\VC\Auxiliary\Build\vcvarsall.bat" x64
-          bash -c "ci/scripts/build_iceberg.sh $(pwd)"
+          bash -c "ci/scripts/build_iceberg.sh $(pwd) OFF ON"
+          sccache --show-stats
       - name: Build Example
         shell: cmd
         run: |

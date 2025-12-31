@@ -69,6 +69,7 @@ endif()
 include(CMakeParseArguments)
 include(IcebergBuildUtils)
 include(IcebergSanitizer)
+include(IcebergSccache)
 include(IcebergThirdpartyToolchain)
 
 if(ICEBERG_BUILD_TESTS)
