@@ -112,26 +112,6 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   UpdateSchema& AddColumn(std::optional<std::string_view> parent, std::string_view name,
                           std::shared_ptr<Type> type, std::string_view doc = "");
 
-  /// \brief Add a new required top-level column.
-  ///
-  /// Adding a required column without a default is an incompatible change that can
-  /// break reading older data. To suppress exceptions thrown when an incompatible
-  /// change is detected, call AllowIncompatibleChanges().
-  ///
-  /// Because "." may be interpreted as a column path separator or may be used in
-  /// field names, it is not allowed in names passed to this method. To add to nested
-  /// structures or to add fields with names that contain ".", use
-  /// AddRequiredColumn(parent, name, type).
-  ///
-  /// If type is a nested type, its field IDs are reassigned when added to the
-  /// existing schema.
-  ///
-  /// \param name Name for the new column.
-  /// \param type Type for the new column.
-  /// \return Reference to this for method chaining.
-  /// \note InvalidArgument will be reported if name contains ".".
-  UpdateSchema& AddRequiredColumn(std::string_view name, std::shared_ptr<Type> type);
-
   /// \brief Add a new required top-level column with documentation.
   ///
   /// Adding a required column without a default is an incompatible change that can
@@ -152,33 +132,7 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \return Reference to this for method chaining.
   /// \note InvalidArgument will be reported if name contains ".".
   UpdateSchema& AddRequiredColumn(std::string_view name, std::shared_ptr<Type> type,
-                                  std::string_view doc);
-
-  /// \brief Add a new required column to a nested struct.
-  ///
-  /// Adding a required column without a default is an incompatible change that can
-  /// break reading older data. To suppress exceptions thrown when an incompatible
-  /// change is detected, call AllowIncompatibleChanges().
-  ///
-  /// The parent name is used to find the parent using Schema::FindFieldByName(). If
-  /// the parent name is null or empty, the new column will be added to the root as a
-  /// top-level column. If parent identifies a struct, a new column is added to that
-  /// struct. If it identifies a list, the column is added to the list element struct,
-  /// and if it identifies a map, the new column is added to the map's value struct.
-  ///
-  /// The given name is used to name the new column and names containing "." are not
-  /// handled differently.
-  ///
-  /// If type is a nested type, its field IDs are reassigned when added to the
-  /// existing schema.
-  ///
-  /// \param parent Name of the parent struct to which the column will be added.
-  /// \param name Name for the new column.
-  /// \param type Type for the new column.
-  /// \return Reference to this for method chaining.
-  /// \note InvalidArgument will be reported if parent doesn't identify a struct.
-  UpdateSchema& AddRequiredColumn(std::optional<std::string_view> parent,
-                                  std::string_view name, std::shared_ptr<Type> type);
+                                  std::string_view doc = "");
 
   /// \brief Add a new required column to a nested struct with documentation.
   ///
@@ -206,7 +160,7 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \note InvalidArgument will be reported if parent doesn't identify a struct.
   UpdateSchema& AddRequiredColumn(std::optional<std::string_view> parent,
                                   std::string_view name, std::shared_ptr<Type> type,
-                                  std::string_view doc);
+                                  std::string_view doc = "");
 
   /// \brief Rename a column in the schema.
   ///
