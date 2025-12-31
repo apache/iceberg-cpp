@@ -546,9 +546,9 @@ INSTANTIATE_TEST_SUITE_P(
                               .expected_type_id = TypeId::kDecimal,
                               .expected_string = "0"},
         BasicLiteralTestParam{.test_name = "String",
-                              .literal = Literal::String("hello world"),
+                              .literal = Literal::String("hello \" world"),
                               .expected_type_id = TypeId::kString,
-                              .expected_string = "\"hello world\""},
+                              .expected_string = "\"hello \\\" world\""},
         BasicLiteralTestParam{
             .test_name = "Uuid",
             .literal = Literal::UUID(
