@@ -24,6 +24,8 @@
 #include <cstdint>
 #include <string>
 
+#include <nlohmann/json.hpp>
+
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/conversions.h"
 #include "iceberg/util/macros.h"
@@ -488,7 +490,8 @@ std::string Literal::ToString() const {
           .value_or("invalid literal of type decimal");
     }
     case TypeId::kString: {
-      return "\"" + std::get<std::string>(value_) + "\"";
+      nlohmann::json json = std::get<std::string>(value_);
+      return json.dump();
     }
     case TypeId::kUuid: {
       return std::get<Uuid>(value_).ToString();
