@@ -24,10 +24,10 @@
 
 #include <memory>
 #include <optional>
+#include <span>
 #include <string>
 #include <string_view>
 #include <unordered_set>
-#include <vector>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
@@ -40,6 +40,10 @@ namespace iceberg {
 ///
 /// When committing, these changes will be applied to the current table metadata.
 /// Commit conflicts will not be resolved and will result in a CommitFailed error.
+///
+/// TODO(Guotao Yu): Add support for V3 default values when adding columns. Currently, all
+/// added columns use null as the default value, but Iceberg V3 supports custom
+/// default values for new columns.
 class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
  public:
   static Result<std::shared_ptr<UpdateSchema>> Make(
@@ -63,24 +67,6 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \return Reference to this for method chaining.
   UpdateSchema& AllowIncompatibleChanges();
 
-  /// \brief Add a new optional top-level column.
-  ///
-  /// Because "." may be interpreted as a column path separator or may be used in
-  /// field names, it is not allowed in names passed to this method. To add to nested
-  /// structures or to add fields with names that contain ".", use AddColumn(parent,
-  /// name, type, ...).
-  ///
-  /// If type is a nested type, its field IDs are reassigned when added to the
-  /// existing schema.
-  ///
-  /// The added column will be optional with a null default value.
-  ///
-  /// \param name Name for the new column.
-  /// \param type Type for the new column.
-  /// \return Reference to this for method chaining.
-  /// \throws InvalidArgument If name contains ".".
-  UpdateSchema& AddColumn(std::string_view name, std::shared_ptr<Type> type);
-
   /// \brief Add a new optional top-level column with documentation.
   ///
   /// Because "." may be interpreted as a column path separator or may be used in
@@ -97,33 +83,9 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \param type Type for the new column.
   /// \param doc Documentation string for the new column.
   /// \return Reference to this for method chaining.
-  /// \throws InvalidArgument If name contains ".".
+  /// \note InvalidArgument will be reported if name contains ".".
   UpdateSchema& AddColumn(std::string_view name, std::shared_ptr<Type> type,
-                          std::string_view doc);
-
-  /// \brief Add a new optional column to a nested struct.
-  ///
-  /// The parent name is used to find the parent using Schema::FindFieldByName(). If
-  /// the parent name is null or empty, the new column will be added to the root as a
-  /// top-level column. If parent identifies a struct, a new column is added to that
-  /// struct. If it identifies a list, the column is added to the list element struct,
-  /// and if it identifies a map, the new column is added to the map's value struct.
-  ///
-  /// The given name is used to name the new column and names containing "." are not
-  /// handled differently.
-  ///
-  /// If type is a nested type, its field IDs are reassigned when added to the
-  /// existing schema.
-  ///
-  /// The added column will be optional with a null default value.
-  ///
-  /// \param parent Name of the parent struct to which the column will be added.
-  /// \param name Name for the new column.
-  /// \param type Type for the new column.
-  /// \return Reference to this for method chaining.
-  /// \throws InvalidArgument If parent doesn't identify a struct.
-  UpdateSchema& AddColumn(std::optional<std::string> parent, std::string_view name,
-                          std::shared_ptr<Type> type);
+                          std::string_view doc = "");
 
   /// \brief Add a new optional column to a nested struct with documentation.
   ///
@@ -146,9 +108,9 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \param type Type for the new column.
   /// \param doc Documentation string for the new column.
   /// \return Reference to this for method chaining.
-  /// \throws InvalidArgument If parent doesn't identify a struct.
-  UpdateSchema& AddColumn(std::optional<std::string> parent, std::string_view name,
-                          std::shared_ptr<Type> type, std::string_view doc);
+  /// \note InvalidArgument will be reported if parent doesn't identify a struct.
+  UpdateSchema& AddColumn(std::optional<std::string_view> parent, std::string_view name,
+                          std::shared_ptr<Type> type, std::string_view doc = "");
 
   /// \brief Add a new required top-level column.
   ///
@@ -167,7 +129,7 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \param name Name for the new column.
   /// \param type Type for the new column.
   /// \return Reference to this for method chaining.
-  /// \throws InvalidArgument If name contains ".".
+  /// \note InvalidArgument will be reported if name contains ".".
   UpdateSchema& AddRequiredColumn(std::string_view name, std::shared_ptr<Type> type);
 
   /// \brief Add a new required top-level column with documentation.
@@ -188,7 +150,7 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \param type Type for the new column.
   /// \param doc Documentation string for the new column.
   /// \return Reference to this for method chaining.
-  /// \throws InvalidArgument If name contains ".".
+  /// \note InvalidArgument will be reported if name contains ".".
   UpdateSchema& AddRequiredColumn(std::string_view name, std::shared_ptr<Type> type,
                                   std::string_view doc);
 
@@ -214,8 +176,8 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \param name Name for the new column.
   /// \param type Type for the new column.
   /// \return Reference to this for method chaining.
-  /// \throws InvalidArgument If parent doesn't identify a struct.
-  UpdateSchema& AddRequiredColumn(std::optional<std::string> parent,
+  /// \note InvalidArgument will be reported if parent doesn't identify a struct.
+  UpdateSchema& AddRequiredColumn(std::optional<std::string_view> parent,
                                   std::string_view name, std::shared_ptr<Type> type);
 
   /// \brief Add a new required column to a nested struct with documentation.
@@ -241,8 +203,8 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \param type Type for the new column.
   /// \param doc Documentation string for the new column.
   /// \return Reference to this for method chaining.
-  /// \throws InvalidArgument If parent doesn't identify a struct.
-  UpdateSchema& AddRequiredColumn(std::optional<std::string> parent,
+  /// \note InvalidArgument will be reported if parent doesn't identify a struct.
+  UpdateSchema& AddRequiredColumn(std::optional<std::string_view> parent,
                                   std::string_view name, std::shared_ptr<Type> type,
                                   std::string_view doc);
 
@@ -258,8 +220,9 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \param name Name of the column to rename.
   /// \param new_name Replacement name for the column.
   /// \return Reference to this for method chaining.
-  /// \throws InvalidArgument If name doesn't identify a column in the schema or if
-  ///         this change conflicts with other additions, renames, or updates.
+  /// \note InvalidArgument will be reported if name doesn't identify a column in the
+  /// schema or if
+  ///       this change conflicts with other additions, renames, or updates.
   UpdateSchema& RenameColumn(std::string_view name, std::string_view new_name);
 
   /// \brief Update a column in the schema to a new primitive type.
@@ -273,30 +236,12 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \param name Name of the column to update.
   /// \param new_type Replacement type for the column (must be primitive).
   /// \return Reference to this for method chaining.
-  /// \throws InvalidArgument If name doesn't identify a column in the schema or if
-  ///         this change introduces a type incompatibility or if it conflicts with
-  ///         other additions, renames, or updates.
+  /// \note InvalidArgument will be reported if name doesn't identify a column in the
+  /// schema or if
+  ///       this change introduces a type incompatibility or if it conflicts with
+  ///       other additions, renames, or updates.
   UpdateSchema& UpdateColumn(std::string_view name,
                              std::shared_ptr<PrimitiveType> new_type);
-
-  /// \brief Update a column in the schema to a new primitive type with documentation.
-  ///
-  /// The name is used to find the column to update using Schema::FindFieldByName().
-  ///
-  /// Only updates that widen types are allowed.
-  ///
-  /// Columns may be updated and renamed in the same schema update.
-  ///
-  /// \param name Name of the column to update.
-  /// \param new_type Replacement type for the column (must be primitive).
-  /// \param new_doc Replacement documentation string for the column.
-  /// \return Reference to this for method chaining.
-  /// \throws InvalidArgument If name doesn't identify a column in the schema or if
-  ///         this change introduces a type incompatibility or if it conflicts with
-  ///         other additions, renames, or updates.
-  UpdateSchema& UpdateColumn(std::string_view name,
-                             std::shared_ptr<PrimitiveType> new_type,
-                             std::string_view new_doc);
 
   /// \brief Update the documentation string for a column.
   ///
@@ -305,8 +250,9 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \param name Name of the column to update the documentation string for.
   /// \param new_doc Replacement documentation string for the column.
   /// \return Reference to this for method chaining.
-  /// \throws InvalidArgument If name doesn't identify a column in the schema or if
-  ///         the column will be deleted.
+  /// \note InvalidArgument will be reported if name doesn't identify a column in the
+  /// schema or if
+  ///       the column will be deleted.
   UpdateSchema& UpdateColumnDoc(std::string_view name, std::string_view new_doc);
 
   /// \brief Update a column to be optional.
@@ -330,8 +276,9 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   ///
   /// \param name Name of the column to delete.
   /// \return Reference to this for method chaining.
-  /// \throws InvalidArgument If name doesn't identify a column in the schema or if
-  ///         this change conflicts with other additions, renames, or updates.
+  /// \note InvalidArgument will be reported if name doesn't identify a column in the
+  /// schema or if
+  ///       this change conflicts with other additions, renames, or updates.
   UpdateSchema& DeleteColumn(std::string_view name);
 
   /// \brief Move a column from its current position to the start of the schema or its
@@ -339,8 +286,9 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   ///
   /// \param name Name of the column to move.
   /// \return Reference to this for method chaining.
-  /// \throws InvalidArgument If name doesn't identify a column in the schema or if
-  ///         this change conflicts with other changes.
+  /// \note InvalidArgument will be reported if name doesn't identify a column in the
+  /// schema or if
+  ///       this change conflicts with other changes.
   UpdateSchema& MoveFirst(std::string_view name);
 
   /// \brief Move a column from its current position to directly before a reference
@@ -353,8 +301,9 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \param name Name of the column to move.
   /// \param before_name Name of the reference column.
   /// \return Reference to this for method chaining.
-  /// \throws InvalidArgument If name doesn't identify a column in the schema or if
-  ///         this change conflicts with other changes.
+  /// \note InvalidArgument will be reported if name doesn't identify a column in the
+  /// schema or if
+  ///       this change conflicts with other changes.
   UpdateSchema& MoveBefore(std::string_view name, std::string_view before_name);
 
   /// \brief Move a column from its current position to directly after a reference
@@ -367,8 +316,9 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \param name Name of the column to move.
   /// \param after_name Name of the reference column.
   /// \return Reference to this for method chaining.
-  /// \throws InvalidArgument If name doesn't identify a column in the schema or if
-  ///         this change conflicts with other changes.
+  /// \note InvalidArgument will be reported if name doesn't identify a column in the
+  /// schema or if
+  ///       this change conflicts with other changes.
   UpdateSchema& MoveAfter(std::string_view name, std::string_view after_name);
 
   /// \brief Applies all field additions and updates from the provided new schema to
@@ -388,10 +338,11 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \param new_schema A schema used in conjunction with the existing schema to
   ///        create a union schema.
   /// \return Reference to this for method chaining.
-  /// \throws InvalidState If it encounters errors during provided schema traversal.
-  /// \throws InvalidArgument If name doesn't identify a column in the schema or if
-  ///         this change introduces a type incompatibility or if it conflicts with
-  ///         other additions, renames, or updates.
+  /// \note InvalidState will be reported if it encounters errors during provided schema
+  /// traversal. \note InvalidArgument will be reported if name doesn't identify a column
+  /// in the schema or if
+  ///       this change introduces a type incompatibility or if it conflicts with
+  ///       other additions, renames, or updates.
   UpdateSchema& UnionByNameWith(std::shared_ptr<Schema> new_schema);
 
   /// \brief Set the identifier fields given a set of field names.
@@ -401,7 +352,7 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   ///
   /// \param names Names of the columns to set as identifier fields.
   /// \return Reference to this for method chaining.
-  UpdateSchema& SetIdentifierFields(const std::vector<std::string>& names);
+  UpdateSchema& SetIdentifierFields(const std::span<std::string_view>& names);
 
   /// \brief Determines if the case of schema needs to be considered when comparing
   /// column names.
@@ -436,7 +387,7 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \param type Type for the new column.
   /// \param doc Optional documentation string.
   /// \return Reference to this for method chaining.
-  UpdateSchema& AddColumnInternal(std::optional<std::string> parent,
+  UpdateSchema& AddColumnInternal(std::optional<std::string_view> parent,
                                   std::string_view name, bool is_optional,
                                   std::shared_ptr<Type> type, std::string_view doc);
 

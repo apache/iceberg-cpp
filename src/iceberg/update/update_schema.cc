@@ -26,7 +26,6 @@
 #include <string_view>
 #include <unordered_set>
 #include <utility>
-#include <vector>
 
 #include "iceberg/schema.h"
 #include "iceberg/table_metadata.h"
@@ -81,10 +80,6 @@ UpdateSchema& UpdateSchema::CaseSensitive(bool case_sensitive) {
   return *this;
 }
 
-UpdateSchema& UpdateSchema::AddColumn(std::string_view name, std::shared_ptr<Type> type) {
-  return AddColumn(name, std::move(type), "");
-}
-
 UpdateSchema& UpdateSchema::AddColumn(std::string_view name, std::shared_ptr<Type> type,
                                       std::string_view doc) {
   // Check for "." in top-level name
@@ -96,22 +91,11 @@ UpdateSchema& UpdateSchema::AddColumn(std::string_view name, std::shared_ptr<Typ
                            doc);
 }
 
-UpdateSchema& UpdateSchema::AddColumn(std::optional<std::string> parent,
-                                      std::string_view name, std::shared_ptr<Type> type) {
-  return AddColumnInternal(std::move(parent), name, /*is_optional=*/true, std::move(type),
-                           "");
-}
-
-UpdateSchema& UpdateSchema::AddColumn(std::optional<std::string> parent,
+UpdateSchema& UpdateSchema::AddColumn(std::optional<std::string_view> parent,
                                       std::string_view name, std::shared_ptr<Type> type,
                                       std::string_view doc) {
   return AddColumnInternal(std::move(parent), name, /*is_optional=*/true, std::move(type),
                            doc);
-}
-
-UpdateSchema& UpdateSchema::AddRequiredColumn(std::string_view name,
-                                              std::shared_ptr<Type> type) {
-  return AddRequiredColumn(name, std::move(type), "");
 }
 
 UpdateSchema& UpdateSchema::AddRequiredColumn(std::string_view name,
@@ -126,14 +110,14 @@ UpdateSchema& UpdateSchema::AddRequiredColumn(std::string_view name,
                            doc);
 }
 
-UpdateSchema& UpdateSchema::AddRequiredColumn(std::optional<std::string> parent,
+UpdateSchema& UpdateSchema::AddRequiredColumn(std::optional<std::string_view> parent,
                                               std::string_view name,
                                               std::shared_ptr<Type> type) {
   return AddColumnInternal(std::move(parent), name, /*is_optional=*/false,
                            std::move(type), "");
 }
 
-UpdateSchema& UpdateSchema::AddRequiredColumn(std::optional<std::string> parent,
+UpdateSchema& UpdateSchema::AddRequiredColumn(std::optional<std::string_view> parent,
                                               std::string_view name,
                                               std::shared_ptr<Type> type,
                                               std::string_view doc) {
@@ -148,13 +132,14 @@ UpdateSchema& UpdateSchema::UpdateColumn(std::string_view name,
   return *this;
 }
 
-UpdateSchema& UpdateSchema::UpdateColumn(std::string_view name,
-                                         std::shared_ptr<PrimitiveType> new_type,
-                                         std::string_view new_doc) {
-  return UpdateColumn(name, std::move(new_type)).UpdateColumnDoc(name, new_doc);
+UpdateSchema& UpdateSchema::UpdateColumnDoc(std::string_view name,
+                                            std::string_view new_doc) {
+  // TODO(Guotao Yu): Implement UpdateColumnDoc
+  AddError(NotImplemented("UpdateSchema::UpdateColumnDoc not implemented"));
+  return *this;
 }
 
-UpdateSchema& UpdateSchema::AddColumnInternal(std::optional<std::string> parent,
+UpdateSchema& UpdateSchema::AddColumnInternal(std::optional<std::string_view> parent,
                                               std::string_view name, bool is_optional,
                                               std::shared_ptr<Type> type,
                                               std::string_view doc) {
@@ -168,13 +153,6 @@ UpdateSchema& UpdateSchema::RenameColumn(std::string_view name,
                                          std::string_view new_name) {
   // TODO(Guotao Yu): Implement RenameColumn
   AddError(NotImplemented("UpdateSchema::RenameColumn not implemented"));
-  return *this;
-}
-
-UpdateSchema& UpdateSchema::UpdateColumnDoc(std::string_view name,
-                                            std::string_view new_doc) {
-  // TODO(Guotao Yu): Implement UpdateColumnDoc
-  AddError(NotImplemented("UpdateSchema::UpdateColumnDoc not implemented"));
   return *this;
 }
 
@@ -222,7 +200,8 @@ UpdateSchema& UpdateSchema::UnionByNameWith(std::shared_ptr<Schema> new_schema) 
   return *this;
 }
 
-UpdateSchema& UpdateSchema::SetIdentifierFields(const std::vector<std::string>& names) {
+UpdateSchema& UpdateSchema::SetIdentifierFields(
+    const std::span<std::string_view>& names) {
   identifier_field_names_ = names | std::ranges::to<std::unordered_set<std::string>>();
   return *this;
 }
