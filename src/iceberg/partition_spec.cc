@@ -89,8 +89,7 @@ Result<std::unique_ptr<StructType>> PartitionSpec::PartitionType(
 
     // Create the partition field with the transform result type
     // Partition fields are always optional (can be null)
-    partition_fields.emplace_back(partition_field.field_id(),
-                                  std::string(partition_field.name()),
+    partition_fields.emplace_back(partition_field.field_id(), partition_field.name(),
                                   std::move(result_type),
                                   /*optional=*/true);
   }
