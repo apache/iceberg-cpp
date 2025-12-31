@@ -88,6 +88,7 @@ iceberg_tests = {
             'location_util_test.cc',
             'string_util_test.cc',
             'truncate_util_test.cc',
+            'url_encoder_test.cc',
             'uuid_test.cc',
             'visit_type_test.cc',
         ),
