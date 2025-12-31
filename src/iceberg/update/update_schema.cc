@@ -112,13 +112,6 @@ UpdateSchema& UpdateSchema::AddRequiredColumn(std::string_view name,
 
 UpdateSchema& UpdateSchema::AddRequiredColumn(std::optional<std::string_view> parent,
                                               std::string_view name,
-                                              std::shared_ptr<Type> type) {
-  return AddColumnInternal(std::move(parent), name, /*is_optional=*/false,
-                           std::move(type), "");
-}
-
-UpdateSchema& UpdateSchema::AddRequiredColumn(std::optional<std::string_view> parent,
-                                              std::string_view name,
                                               std::shared_ptr<Type> type,
                                               std::string_view doc) {
   return AddColumnInternal(std::move(parent), name, /*is_optional=*/false,
