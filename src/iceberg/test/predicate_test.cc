@@ -285,7 +285,7 @@ TEST_F(PredicateTest, UnboundPredicateToString) {
   EXPECT_EQ(in_pred->ToString(), "ref(name=\"age\") in [10, 20]");
 
   auto starts_with_pred = Expressions::StartsWith("name", "John");
-  EXPECT_EQ(starts_with_pred->ToString(), "ref(name=\"name\") startsWith \"John\"");
+  EXPECT_EQ(starts_with_pred->ToString(), "ref(name=\"name\") startsWith John");
 }
 
 TEST_F(PredicateTest, UnboundPredicateNegate) {

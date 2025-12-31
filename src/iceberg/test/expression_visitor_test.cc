@@ -114,14 +114,14 @@ TEST_F(BinderTest, ComparisonPredicates) {
   ICEBERG_UNWRAP_OR_FAIL(auto bound_eq, Bind(unbound_eq));
   EXPECT_EQ(bound_eq->op(), Expression::Operation::kEq);
   EXPECT_TRUE(bound_eq->is_bound_predicate());
-  EXPECT_EQ(bound_eq->ToString(), "ref(id=2, type=string) == \"Alice\"");
+  EXPECT_EQ(bound_eq->ToString(), "ref(id=2, type=string) == Alice");
 
   // Test NotEqual
   auto unbound_neq = Expressions::NotEqual("name", Literal::String("Bob"));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_neq, Bind(unbound_neq));
   EXPECT_EQ(bound_neq->op(), Expression::Operation::kNotEq);
   EXPECT_TRUE(bound_neq->is_bound_predicate());
-  EXPECT_EQ(bound_neq->ToString(), "ref(id=2, type=string) != \"Bob\"");
+  EXPECT_EQ(bound_neq->ToString(), "ref(id=2, type=string) != Bob");
 }
 
 TEST_F(BinderTest, StringPredicates) {
@@ -130,15 +130,14 @@ TEST_F(BinderTest, StringPredicates) {
   ICEBERG_UNWRAP_OR_FAIL(auto bound_starts, Bind(unbound_starts));
   EXPECT_EQ(bound_starts->op(), Expression::Operation::kStartsWith);
   EXPECT_TRUE(bound_starts->is_bound_predicate());
-  EXPECT_EQ(bound_starts->ToString(), "ref(id=2, type=string) startsWith \"\"Al\"\"");
+  EXPECT_EQ(bound_starts->ToString(), "ref(id=2, type=string) startsWith \"Al\"");
 
   // Test NotStartsWith
   auto unbound_not_starts = Expressions::NotStartsWith("name", "Bo");
   ICEBERG_UNWRAP_OR_FAIL(auto bound_not_starts, Bind(unbound_not_starts));
   EXPECT_EQ(bound_not_starts->op(), Expression::Operation::kNotStartsWith);
   EXPECT_TRUE(bound_not_starts->is_bound_predicate());
-  EXPECT_EQ(bound_not_starts->ToString(),
-            "ref(id=2, type=string) notStartsWith \"\"Bo\"\"");
+  EXPECT_EQ(bound_not_starts->ToString(), "ref(id=2, type=string) notStartsWith \"Bo\"");
 }
 
 TEST_F(BinderTest, SetPredicates) {
@@ -179,7 +178,7 @@ TEST_F(BinderTest, AndExpression) {
   ICEBERG_UNWRAP_OR_FAIL(auto bound_and, Bind(unbound_and));
   EXPECT_EQ(bound_and->op(), Expression::Operation::kAnd);
   EXPECT_EQ(bound_and->ToString(),
-            "(ref(id=2, type=string) == \"Alice\" and ref(id=3, type=int) > 25)");
+            "(ref(id=2, type=string) == Alice and ref(id=3, type=int) > 25)");
 
   // Verify both children are bound
   auto result = IsBoundVisitor::IsBound(bound_and);
@@ -447,7 +446,7 @@ TEST_F(RewriteNotTest, NotExpression) {
   // Equal should be negated to NotEqual
   EXPECT_EQ(rewritten->op(), Expression::Operation::kNotEq);
   EXPECT_TRUE(rewritten->is_bound_predicate());
-  EXPECT_EQ(rewritten->ToString(), "ref(id=2, type=string) != \"Alice\"");
+  EXPECT_EQ(rewritten->ToString(), "ref(id=2, type=string) != Alice");
 }
 
 TEST_F(RewriteNotTest, DoubleNegation) {

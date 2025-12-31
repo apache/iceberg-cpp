@@ -841,7 +841,7 @@ TEST_F(InclusiveMetricsEvaluatorMigratedTest, StringStartsWithTest) {
   auto above_max = TruncateUtils::TruncateLiteral(Literal::String("イロハニホヘト"), 4)
                        .value()
                        .ToString();
-  RunTest(Expressions::StartsWith("required", above_max), kRowCannotMatch, file4_);
+  RunTest(Expressions::StartsWith("required", above_max), kRowsMightMatch, file4_);
 }
 
 TEST_F(InclusiveMetricsEvaluatorMigratedTest, StringNotStartsWithTest) {

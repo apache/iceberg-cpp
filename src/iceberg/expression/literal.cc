@@ -488,7 +488,7 @@ std::string Literal::ToString() const {
           .value_or("invalid literal of type decimal");
     }
     case TypeId::kString: {
-      return "\"" + std::get<std::string>(value_) + "\"";
+      return std::get<std::string>(value_);
     }
     case TypeId::kUuid: {
       return std::get<Uuid>(value_).ToString();
