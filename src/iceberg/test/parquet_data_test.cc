@@ -69,9 +69,9 @@ void VerifyProjectRecordBatch(const Schema& projected_schema, const Schema& sour
   auto projected_arrow_schema =
       ::arrow::ImportSchema(&projected_arrow_c_schema).ValueOrDie();
 
-  auto project_result =
-      ProjectRecordBatch(input_record_batch, projected_arrow_schema, projected_schema,
-                         schema_projection, ::arrow::default_memory_pool());
+  auto project_result = ProjectRecordBatch(
+      input_record_batch, projected_arrow_schema, projected_schema, schema_projection,
+      /*metadata_context=*/{}, ::arrow::default_memory_pool());
   ASSERT_THAT(project_result, IsOk());
   auto projected_record_batch = std::move(project_result.value());
 

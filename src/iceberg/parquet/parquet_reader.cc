@@ -34,6 +34,7 @@
 
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/arrow/metadata_column_util_internal.h"
 #include "iceberg/parquet/parquet_data_util_internal.h"
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/parquet/parquet_schema_util_internal.h"
@@ -135,6 +136,7 @@ class ParquetReader::Impl {
 
     // Project read schema onto the Parquet file schema
     ICEBERG_ASSIGN_OR_RAISE(projection_, BuildProjection(reader_.get(), *read_schema_));
+    metadata_context_ = {.file_path = options.path, .next_file_pos = 0};
 
     return {};
   }
@@ -152,7 +154,9 @@ class ParquetReader::Impl {
 
     ICEBERG_ASSIGN_OR_RAISE(
         batch, ProjectRecordBatch(std::move(batch), context_->output_arrow_schema_,
-                                  *read_schema_, projection_, pool_));
+                                  *read_schema_, projection_, metadata_context_, pool_));
+
+    metadata_context_.next_file_pos += batch->num_rows();
 
     ArrowArray arrow_array;
     ICEBERG_ARROW_RETURN_NOT_OK(::arrow::ExportRecordBatch(*batch, &arrow_array));
@@ -230,6 +234,8 @@ class ParquetReader::Impl {
           row_group_indices.push_back(i);
         } else if (row_group_offset >= split_->offset + split_->length) {
           break;
+        } else {
+          metadata_context_.next_file_pos += metadata->RowGroup(i)->num_rows();
         }
       }
     } else {
@@ -264,6 +270,8 @@ class ParquetReader::Impl {
   std::shared_ptr<::arrow::io::RandomAccessFile> input_stream_;
   // Parquet file reader to create RecordBatchReader.
   std::unique_ptr<::parquet::arrow::FileReader> reader_;
+  // Metadata column context for populating _file and _pos columns.
+  arrow::MetadataColumnContext metadata_context_;
   // The context to keep track of the reading progress.
   std::unique_ptr<ReadContext> context_;
 };

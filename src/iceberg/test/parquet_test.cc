@@ -34,6 +34,7 @@
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/file_writer.h"
+#include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_register.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
@@ -272,8 +273,10 @@ TEST_F(ParquetReaderTest, ReadSplit) {
   }
   ASSERT_EQ(split_offsets.size(), 2);
 
-  auto schema = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())});
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      MetadataColumns::kRowPosition,
+  });
 
   std::vector<Split> splits = {
       {.offset = 0, .length = std::numeric_limits<size_t>::max()},
@@ -283,7 +286,7 @@ TEST_F(ParquetReaderTest, ReadSplit) {
       {.offset = 0, .length = split_offsets[0]},
   };
   std::vector<std::string> expected_json = {
-      R"([[1], [2], [3]])", R"([[1], [2]])", R"([[3]])", "", "",
+      R"([[1, 0], [2, 1], [3, 2]])", R"([[1, 0], [2, 1]])", R"([[3, 2]])", "", "",
   };
 
   std::shared_ptr<ReaderProperties> reader_properties =
@@ -306,6 +309,79 @@ TEST_F(ParquetReaderTest, ReadSplit) {
     }
     ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
   }
+}
+
+TEST_F(ParquetReaderTest, ReadMetadataColumns) {
+  temp_parquet_file_ = "metadata_columns.parquet";
+  CreateSimpleParquetFile();
+
+  // Create schema with both _file and _pos metadata columns
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      MetadataColumns::kFilePath,
+      MetadataColumns::kRowPosition,
+  });
+
+  const std::string kExpectedJson =
+      R"([[1, "metadata_columns.parquet", 0],
+          [2, "metadata_columns.parquet", 1],
+          [3, "metadata_columns.parquet", 2]])";
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader,
+      ReaderFactoryRegistry::Open(
+          FileFormatType::kParquet,
+          {.path = temp_parquet_file_, .io = file_io_, .projection = schema}));
+
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, kExpectedJson));
+}
+
+TEST_F(ParquetReaderTest, ReadRowPositionWithBatchSize) {
+  CreateSimpleParquetFile();
+
+  // Create schema with _pos metadata column
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      MetadataColumns::kRowPosition,
+  });
+
+  auto reader_properties = ReaderProperties::default_properties();
+  reader_properties->Set(ReaderProperties::kBatchSize, int64_t{2});
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reader, ReaderFactoryRegistry::Open(
+                                          FileFormatType::kParquet,
+                                          {.path = temp_parquet_file_,
+                                           .io = file_io_,
+                                           .projection = schema,
+                                           .properties = std::move(reader_properties)}));
+
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[1, 0], [2, 1]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, R"([[3, 2]])"));
+  ASSERT_NO_FATAL_FAILURE(VerifyExhausted(*reader));
+}
+
+TEST_F(ParquetReaderTest, ReadMetadataOnlyProjection) {
+  temp_parquet_file_ = "metadata_only.parquet";
+  CreateSimpleParquetFile();
+
+  // Create schema with only metadata columns (no data columns)
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      MetadataColumns::kFilePath,
+      MetadataColumns::kRowPosition,
+  });
+
+  const std::string kExpectedJson =
+      R"([["metadata_only.parquet", 0],
+          ["metadata_only.parquet", 1],
+          ["metadata_only.parquet", 2]])";
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader,
+      ReaderFactoryRegistry::Open(
+          FileFormatType::kParquet,
+          {.path = temp_parquet_file_, .io = file_io_, .projection = schema}));
+
+  ASSERT_NO_FATAL_FAILURE(VerifyNextBatch(*reader, kExpectedJson));
 }
 
 class ParquetReadWrite : public ::testing::Test {
