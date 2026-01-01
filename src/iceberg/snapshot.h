@@ -265,13 +265,13 @@ struct ICEBERG_EXPORT Snapshot {
 
 /// \brief A snapshot with cached manifest loading capabilities.
 ///
-/// This class wraps a Snapshot reference and provides lazy-loading of manifests.
-class ICEBERG_EXPORT CachedSnapshot {
+/// This class wraps a Snapshot pointer and provides lazy-loading of manifests.
+class ICEBERG_EXPORT SnapshotCache {
  public:
-  explicit CachedSnapshot(const Snapshot& snapshot) : snapshot_(snapshot) {}
+  explicit SnapshotCache(const Snapshot* snapshot) : snapshot_(snapshot) {}
 
   /// \brief Get the underlying Snapshot reference
-  const Snapshot& snapshot() const { return snapshot_; }
+  const Snapshot& snapshot() const { return *snapshot_; }
 
   /// \brief Returns all ManifestFile instances for either data or delete manifests
   /// in this snapshot.
@@ -303,11 +303,11 @@ class ICEBERG_EXPORT CachedSnapshot {
   /// \param snapshot The snapshot to initialize the manifests cache for
   /// \param file_io The FileIO instance to use for reading the manifest list
   /// \return A result containing the manifests cache
-  static Result<ManifestsCache> InitManifestsCache(const Snapshot& snapshot,
+  static Result<ManifestsCache> InitManifestsCache(const Snapshot* snapshot,
                                                    std::shared_ptr<FileIO> file_io);
 
   /// The underlying snapshot data
-  const Snapshot& snapshot_;
+  const Snapshot* snapshot_;
 
   /// Lazy-loaded manifests cache
   Lazy<InitManifestsCache> manifests_cache_;

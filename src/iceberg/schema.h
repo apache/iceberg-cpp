@@ -26,6 +26,7 @@
 #include <cstdint>
 #include <optional>
 #include <string>
+#include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
@@ -37,6 +38,8 @@
 #include "iceberg/util/string_util.h"
 
 namespace iceberg {
+
+class SchemaCache;
 
 /// \brief A schema for a Table.
 ///
@@ -187,6 +190,22 @@ class ICEBERG_EXPORT Schema : public StructType {
   /// \brief Compare two schemas for equality.
   bool Equals(const Schema& other) const;
 
+  const int32_t schema_id_;
+  // Field IDs that uniquely identify rows in the table.
+  std::vector<int32_t> identifier_field_ids_;
+  // Cache for schema mappings to facilitate fast lookups.
+  std::unique_ptr<SchemaCache> cache_;
+};
+
+// Cache for schema mappings to facilitate fast lookups.
+class ICEBERG_EXPORT SchemaCache {
+ public:
+  explicit SchemaCache(const Schema* schema) : schema_(schema) {}
+
+  using IdToFieldMap =
+      std::unordered_map<int32_t, std::reference_wrapper<const SchemaField>>;
+  using IdToFieldMapRef = std::reference_wrapper<const IdToFieldMap>;
+
   struct NameIdMap {
     /// \brief Mapping from canonical field name to ID
     ///
@@ -201,28 +220,38 @@ class ICEBERG_EXPORT Schema : public StructType {
     /// 'list.element.field' instead of 'list.field'.
     std::unordered_map<int32_t, std::string> id_to_name;
   };
+  using NameIdMapRef = std::reference_wrapper<const NameIdMap>;
 
-  static Result<std::unordered_map<int32_t, std::reference_wrapper<const SchemaField>>>
-  InitIdToFieldMap(const Schema&);
-  static Result<NameIdMap> InitNameIdMap(const Schema&);
-  static Result<std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>>
-  InitLowerCaseNameToIdMap(const Schema&);
-  static Result<std::unordered_map<int32_t, std::vector<size_t>>> InitIdToPositionPath(
-      const Schema&);
-  static Result<int32_t> InitHighestFieldId(const Schema&);
+  using LowercaseNameToIdMap =
+      std::unordered_map<std::string, int32_t, StringHash, std::equal_to<>>;
+  using LowercaseNameToIdMapRef = std::reference_wrapper<const LowercaseNameToIdMap>;
 
-  const int32_t schema_id_;
-  /// Field IDs that uniquely identify rows in the table.
-  std::vector<int32_t> identifier_field_ids_;
-  /// Mapping from field id to field.
+  using IdToPositionPathMap = std::unordered_map<int32_t, std::vector<size_t>>;
+  using IdToPositionPathMapRef = std::reference_wrapper<const IdToPositionPathMap>;
+
+  Result<IdToFieldMapRef> GetIdToFieldMap() const;
+  Result<NameIdMapRef> GetNameIdMap() const;
+  Result<LowercaseNameToIdMapRef> GetLowercaseNameToIdMap() const;
+  Result<IdToPositionPathMapRef> GetIdToPositionPathMap() const;
+  Result<int32_t> GetHighestFieldId() const;
+
+ private:
+  static Result<IdToFieldMap> InitIdToFieldMap(const Schema* schema);
+  static Result<NameIdMap> InitNameIdMap(const Schema* schema);
+  static Result<LowercaseNameToIdMap> InitLowerCaseNameToIdMap(const Schema* schema);
+  static Result<IdToPositionPathMap> InitIdToPositionPath(const Schema* schema);
+  static Result<int32_t> InitHighestFieldId(const Schema* schema);
+
+  const Schema* schema_;
+  // Mapping from field id to field.
   Lazy<InitIdToFieldMap> id_to_field_;
-  /// Mapping from field name to field id.
+  // Mapping from field name to field id.
   Lazy<InitNameIdMap> name_id_map_;
-  /// Mapping from lowercased field name to field id
+  // Mapping from lowercased field name to field id.
   Lazy<InitLowerCaseNameToIdMap> lowercase_name_to_id_;
-  /// Mapping from field id to (nested) position path to access the field.
+  // Mapping from field id to (nested) position path to access the field.
   Lazy<InitIdToPositionPath> id_to_position_path_;
-  /// Highest field ID in the schema.
+  // Highest field ID in the schema.
   Lazy<InitHighestFieldId> highest_field_id_;
 };
 

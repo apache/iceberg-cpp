@@ -85,15 +85,15 @@ bool Snapshot::Equals(const Snapshot& other) const {
          schema_id == other.schema_id;
 }
 
-Result<CachedSnapshot::ManifestsCache> CachedSnapshot::InitManifestsCache(
-    const Snapshot& snapshot, std::shared_ptr<FileIO> file_io) {
+Result<SnapshotCache::ManifestsCache> SnapshotCache::InitManifestsCache(
+    const Snapshot* snapshot, std::shared_ptr<FileIO> file_io) {
   if (file_io == nullptr) {
     return InvalidArgument("Cannot cache manifests: FileIO is null");
   }
 
   // Read manifest list
   ICEBERG_ASSIGN_OR_RAISE(auto reader,
-                          ManifestListReader::Make(snapshot.manifest_list, file_io));
+                          ManifestListReader::Make(snapshot->manifest_list, file_io));
   ICEBERG_ASSIGN_OR_RAISE(auto manifest_files, reader->Files());
 
   std::vector<ManifestFile> manifests;
@@ -118,21 +118,21 @@ Result<CachedSnapshot::ManifestsCache> CachedSnapshot::InitManifestsCache(
   return std::make_pair(std::move(manifests), data_manifests_count);
 }
 
-Result<std::span<ManifestFile>> CachedSnapshot::Manifests(
+Result<std::span<ManifestFile>> SnapshotCache::Manifests(
     std::shared_ptr<FileIO> file_io) const {
   ICEBERG_ASSIGN_OR_RAISE(auto cache_ref, manifests_cache_.Get(snapshot_, file_io));
   auto& cache = cache_ref.get();
   return std::span<ManifestFile>(cache.first.data(), cache.first.size());
 }
 
-Result<std::span<ManifestFile>> CachedSnapshot::DataManifests(
+Result<std::span<ManifestFile>> SnapshotCache::DataManifests(
     std::shared_ptr<FileIO> file_io) const {
   ICEBERG_ASSIGN_OR_RAISE(auto cache_ref, manifests_cache_.Get(snapshot_, file_io));
   auto& cache = cache_ref.get();
   return std::span<ManifestFile>(cache.first.data(), cache.second);
 }
 
-Result<std::span<ManifestFile>> CachedSnapshot::DeleteManifests(
+Result<std::span<ManifestFile>> SnapshotCache::DeleteManifests(
     std::shared_ptr<FileIO> file_io) const {
   ICEBERG_ASSIGN_OR_RAISE(auto cache_ref, manifests_cache_.Get(snapshot_, file_io));
   auto& cache = cache_ref.get();
