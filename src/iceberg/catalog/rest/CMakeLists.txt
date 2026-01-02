@@ -15,6 +15,9 @@
 # specific language governing permissions and limitations
 # under the License.
 
+# Include auth subdirectory
+add_subdirectory(auth)
+
 set(ICEBERG_REST_SOURCES
     catalog_properties.cc
     endpoint.cc
@@ -25,6 +28,11 @@ set(ICEBERG_REST_SOURCES
     rest_catalog.cc
     rest_util.cc
     types.cc)
+
+# Add auth sources with proper path prefix
+foreach(AUTH_SOURCE ${ICEBERG_REST_AUTH_SOURCES})
+  list(APPEND ICEBERG_REST_SOURCES "auth/${AUTH_SOURCE}")
+endforeach()
 
 set(ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS)
