@@ -109,9 +109,9 @@ class ICEBERG_REST_EXPORT HttpClient {
                               const ErrorHandler& error_handler);
 
  private:
-  void PrepareSession(
-      const std::string& path, const std::unordered_map<std::string, std::string>& params,
-      const std::unordered_map<std::string, std::string>& request_headers);
+  void PrepareSession(const std::string& path,
+                      const std::unordered_map<std::string, std::string>& params,
+                      const std::unordered_map<std::string, std::string>& headers);
 
   std::unordered_map<std::string, std::string> default_headers_;
 

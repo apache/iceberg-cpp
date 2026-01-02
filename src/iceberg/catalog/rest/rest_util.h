@@ -93,12 +93,4 @@ ICEBERG_REST_EXPORT std::unordered_map<std::string, std::string> MergeConfigs(
 /// Error").
 ICEBERG_REST_EXPORT std::string GetStandardReasonPhrase(int32_t status_code);
 
-/// \brief Check whether the given endpoint is in the set of supported endpoints.
-///
-/// \param supported_endpoints Set of endpoints advertised by the server
-/// \param endpoint Endpoint to validate
-/// \return Status::OK if supported, NotSupported error otherwise
-ICEBERG_REST_EXPORT Status CheckEndpoint(
-    const std::unordered_set<Endpoint>& supported_endpoints, const Endpoint& endpoint);
-
 }  // namespace iceberg::rest

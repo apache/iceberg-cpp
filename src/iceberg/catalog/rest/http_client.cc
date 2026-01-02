@@ -136,11 +136,11 @@ Status HandleFailureResponse(const cpr::Response& response,
 
 void HttpClient::PrepareSession(
     const std::string& path, const std::unordered_map<std::string, std::string>& params,
-    const std::unordered_map<std::string, std::string>& request_headers) {
+    const std::unordered_map<std::string, std::string>& headers) {
   session_->SetUrl(cpr::Url{path});
   session_->SetParameters(GetParameters(params));
   session_->RemoveContent();
-  auto final_headers = MergeHeaders(default_headers_, request_headers);
+  auto final_headers = MergeHeaders(default_headers_, headers);
   session_->SetHeader(final_headers);
 }
 

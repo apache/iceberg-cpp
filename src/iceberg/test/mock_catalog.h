@@ -81,7 +81,7 @@ class MockCatalog : public Catalog {
               (override));
 
   MOCK_METHOD((Result<std::shared_ptr<Table>>), LoadTable, (const TableIdentifier&),
-              (const, override));
+              (override));
 
   MOCK_METHOD((Result<std::shared_ptr<Table>>), RegisterTable,
               (const TableIdentifier&, const std::string&), (override));

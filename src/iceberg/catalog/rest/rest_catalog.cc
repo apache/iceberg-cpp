@@ -74,6 +74,33 @@ Result<CatalogConfig> FetchServerConfig(const ResourcePaths& paths,
   return CatalogConfigFromJson(json);
 }
 
+#define ICEBERG_ENDPOINT_CHECK(endpoints, endpoint)                           \
+  do {                                                                        \
+    if (!endpoints.contains(endpoint)) {                                      \
+      return NotSupported("Not supported endpoint: {}", endpoint.ToString()); \
+    }                                                                         \
+  } while (0)
+
+Result<bool> CaptureNoSuchObject(const auto& status, ErrorKind kind) {
+  ICEBERG_DCHECK(kind == ErrorKind::kNoSuchTable || kind == ErrorKind::kNoSuchNamespace,
+                 "Invalid kind for CaptureNoSuchObject");
+  if (status.has_value()) {
+    return true;
+  }
+  if (status.error().kind == kind) {
+    return false;
+  }
+  return std::unexpected(status.error());
+}
+
+Result<bool> CaptureNoSuchTable(const auto& status) {
+  return CaptureNoSuchObject(status, ErrorKind::kNoSuchTable);
+}
+
+Result<bool> CaptureNoSuchNamespace(const auto& status) {
+  return CaptureNoSuchObject(status, ErrorKind::kNoSuchNamespace);
+}
+
 }  // namespace
 
 RestCatalog::~RestCatalog() = default;
@@ -126,9 +153,7 @@ RestCatalog::RestCatalog(std::unique_ptr<RestCatalogProperties> config,
 std::string_view RestCatalog::name() const { return name_; }
 
 Result<std::vector<Namespace>> RestCatalog::ListNamespaces(const Namespace& ns) const {
-  ICEBERG_RETURN_UNEXPECTED(
-      CheckEndpoint(supported_endpoints_, Endpoint::ListNamespaces()));
-
+  ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::ListNamespaces());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Namespaces());
   std::vector<Namespace> result;
   std::string next_token;
@@ -157,9 +182,7 @@ Result<std::vector<Namespace>> RestCatalog::ListNamespaces(const Namespace& ns) 
 
 Status RestCatalog::CreateNamespace(
     const Namespace& ns, const std::unordered_map<std::string, std::string>& properties) {
-  ICEBERG_RETURN_UNEXPECTED(
-      CheckEndpoint(supported_endpoints_, Endpoint::CreateNamespace()));
-
+  ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::CreateNamespace());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Namespaces());
   CreateNamespaceRequest request{.namespace_ = ns, .properties = properties};
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
@@ -173,9 +196,7 @@ Status RestCatalog::CreateNamespace(
 
 Result<std::unordered_map<std::string, std::string>> RestCatalog::GetNamespaceProperties(
     const Namespace& ns) const {
-  ICEBERG_RETURN_UNEXPECTED(
-      CheckEndpoint(supported_endpoints_, Endpoint::GetNamespaceProperties()));
-
+  ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::GetNamespaceProperties());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Namespace_(ns));
   ICEBERG_ASSIGN_OR_RAISE(const auto response,
                           client_->Get(path, /*params=*/{}, /*headers=*/{},
@@ -186,10 +207,8 @@ Result<std::unordered_map<std::string, std::string>> RestCatalog::GetNamespacePr
 }
 
 Status RestCatalog::DropNamespace(const Namespace& ns) {
-  ICEBERG_RETURN_UNEXPECTED(
-      CheckEndpoint(supported_endpoints_, Endpoint::DropNamespace()));
+  ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::DropNamespace());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Namespace_(ns));
-
   ICEBERG_ASSIGN_OR_RAISE(const auto response,
                           client_->Delete(path, /*params=*/{}, /*headers=*/{},
                                           *DropNamespaceErrorHandler::Instance()));
@@ -197,37 +216,20 @@ Status RestCatalog::DropNamespace(const Namespace& ns) {
 }
 
 Result<bool> RestCatalog::NamespaceExists(const Namespace& ns) const {
-  auto check = CheckEndpoint(supported_endpoints_, Endpoint::NamespaceExists());
-  if (!check.has_value()) {
+  if (!supported_endpoints_.contains(Endpoint::NamespaceExists())) {
     // Fall back to GetNamespaceProperties
-    auto result = GetNamespaceProperties(ns);
-    if (!result.has_value() && result.error().kind == ErrorKind::kNoSuchNamespace) {
-      return false;
-    }
-    ICEBERG_RETURN_UNEXPECTED(result);
-    // GetNamespaceProperties succeeded, namespace exists
-    return true;
+    return CaptureNoSuchNamespace(GetNamespaceProperties(ns));
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Namespace_(ns));
-  auto response_or_error =
-      client_->Head(path, /*headers=*/{}, *NamespaceErrorHandler::Instance());
-  if (!response_or_error.has_value()) {
-    // catch NoSuchNamespaceException/404 and return false
-    if (response_or_error.error().kind == ErrorKind::kNoSuchNamespace) {
-      return false;
-    }
-    ICEBERG_RETURN_UNEXPECTED(response_or_error);
-  }
-  return true;
+  return CaptureNoSuchNamespace(
+      client_->Head(path, /*headers=*/{}, *NamespaceErrorHandler::Instance()));
 }
 
 Status RestCatalog::UpdateNamespaceProperties(
     const Namespace& ns, const std::unordered_map<std::string, std::string>& updates,
     const std::unordered_set<std::string>& removals) {
-  ICEBERG_RETURN_UNEXPECTED(
-      CheckEndpoint(supported_endpoints_, Endpoint::UpdateNamespace()));
-
+  ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::UpdateNamespace());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->NamespaceProperties(ns));
   UpdateNamespacePropertiesRequest request{
       .removals = std::vector<std::string>(removals.begin(), removals.end()),
@@ -252,7 +254,7 @@ Result<std::shared_ptr<Table>> RestCatalog::CreateTable(
     const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<SortOrder>& order,
     const std::string& location,
     const std::unordered_map<std::string, std::string>& properties) {
-  ICEBERG_RETURN_UNEXPECTED(CheckEndpoint(supported_endpoints_, Endpoint::CreateTable()));
+  ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::CreateTable());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Tables(identifier.ns));
 
   CreateTableRequest request{
@@ -295,7 +297,7 @@ Result<std::shared_ptr<Transaction>> RestCatalog::StageCreateTable(
 }
 
 Status RestCatalog::DropTable(const TableIdentifier& identifier, bool purge) {
-  ICEBERG_RETURN_UNEXPECTED(CheckEndpoint(supported_endpoints_, Endpoint::DeleteTable()));
+  ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::DeleteTable());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Table(identifier));
 
   std::unordered_map<std::string, std::string> params;
@@ -309,29 +311,14 @@ Status RestCatalog::DropTable(const TableIdentifier& identifier, bool purge) {
 }
 
 Result<bool> RestCatalog::TableExists(const TableIdentifier& identifier) const {
-  auto check = CheckEndpoint(supported_endpoints_, Endpoint::TableExists());
-  if (!check.has_value()) {
-    // Fall back to LoadTable endpoint (GET)
-    auto result = LoadTable(identifier);
-    if (!result.has_value() && result.error().kind == ErrorKind::kNoSuchTable) {
-      return false;
-    }
-    ICEBERG_RETURN_UNEXPECTED(result);
-    // LoadTable succeeded, table exists
-    return true;
+  if (!supported_endpoints_.contains(Endpoint::TableExists())) {
+    // Fall back to call LoadTable
+    return CaptureNoSuchTable(LoadTableInternal(identifier));
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Table(identifier));
-  auto response_or_error =
-      client_->Head(path, /*headers=*/{}, *TableErrorHandler::Instance());
-  if (!response_or_error.has_value()) {
-    // catch NoSuchTableException/404 and return false
-    if (response_or_error.error().kind == ErrorKind::kNoSuchTable) {
-      return false;
-    }
-    ICEBERG_RETURN_UNEXPECTED(response_or_error);
-  }
-  return true;
+  return CaptureNoSuchTable(
+      client_->Head(path, /*headers=*/{}, *TableErrorHandler::Instance()));
 }
 
 Status RestCatalog::RenameTable([[maybe_unused]] const TableIdentifier& from,
@@ -339,23 +326,27 @@ Status RestCatalog::RenameTable([[maybe_unused]] const TableIdentifier& from,
   return NotImplemented("Not implemented");
 }
 
-Result<std::shared_ptr<Table>> RestCatalog::LoadTable(
+Result<std::string> RestCatalog::LoadTableInternal(
     const TableIdentifier& identifier) const {
-  ICEBERG_RETURN_UNEXPECTED(CheckEndpoint(supported_endpoints_, Endpoint::LoadTable()));
+  ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::LoadTable());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Table(identifier));
-
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
       client_->Get(path, /*params=*/{}, /*headers=*/{}, *TableErrorHandler::Instance()));
+  return response.body();
+}
 
-  // TODO(Feiyang Li): support load metadata table
-  ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
+Result<std::shared_ptr<Table>> RestCatalog::LoadTable(const TableIdentifier& identifier) {
+  ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::LoadTable());
+  ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Table(identifier));
+
+  ICEBERG_ASSIGN_OR_RAISE(const auto body, LoadTableInternal(identifier));
+  ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(body));
   ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
-  // Cast away const since Table needs non-const Catalog pointer for mutations
-  auto non_const_catalog = std::const_pointer_cast<RestCatalog>(shared_from_this());
-  return Table::Make(identifier, load_result.metadata,
+
+  return Table::Make(identifier, std::move(load_result.metadata),
                      std::move(load_result.metadata_location), file_io_,
-                     non_const_catalog);
+                     shared_from_this());
 }
 
 Result<std::shared_ptr<Table>> RestCatalog::RegisterTable(

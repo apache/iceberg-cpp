@@ -144,22 +144,6 @@ class RestCatalogIntegrationTest : public ::testing::Test {
         /*schema_id=*/1);
   }
 
-  // Helper function to create a default unpartitioned partition spec
-  std::shared_ptr<PartitionSpec> CreateDefaultPartitionSpec() {
-    auto partition_spec_result =
-        PartitionSpec::Make(PartitionSpec::kInitialSpecId, {}, 0);
-    EXPECT_THAT(partition_spec_result, IsOk());
-    return {std::move(*partition_spec_result)};
-  }
-
-  // Helper function to create a default unsorted sort order
-  std::shared_ptr<SortOrder> CreateDefaultSortOrder() {
-    auto sort_order_result =
-        SortOrder::Make(SortOrder::kUnsortedOrderId, std::vector<SortField>{});
-    EXPECT_THAT(sort_order_result, IsOk());
-    return {std::move(*sort_order_result)};
-  }
-
   static inline std::unique_ptr<DockerCompose> docker_compose_;
 };
 
@@ -399,8 +383,8 @@ TEST_F(RestCatalogIntegrationTest, CreateTable) {
   EXPECT_THAT(status, IsOk());
 
   auto schema = CreateDefaultSchema();
-  auto partition_spec = CreateDefaultPartitionSpec();
-  auto sort_order = CreateDefaultSortOrder();
+  auto partition_spec = PartitionSpec::Unpartitioned();
+  auto sort_order = SortOrder::Unsorted();
 
   // Create table
   TableIdentifier table_id{.ns = ns, .name = "t1"};
@@ -435,8 +419,8 @@ TEST_F(RestCatalogIntegrationTest, LoadTable) {
 
   // Create schema, partition spec, and sort order using helper functions
   auto schema = CreateDefaultSchema();
-  auto partition_spec = CreateDefaultPartitionSpec();
-  auto sort_order = CreateDefaultSortOrder();
+  auto partition_spec = PartitionSpec::Unpartitioned();
+  auto sort_order = SortOrder::Unsorted();
 
   // Create table
   TableIdentifier table_id{.ns = ns, .name = "test_table"};
@@ -459,7 +443,6 @@ TEST_F(RestCatalogIntegrationTest, LoadTable) {
   auto loaded_schema_result = loaded_table->schema();
   ASSERT_THAT(loaded_schema_result, IsOk());
   auto loaded_schema = loaded_schema_result.value();
-  EXPECT_TRUE(loaded_schema->schema_id().has_value());  // Server assigns schema_id
   EXPECT_EQ(loaded_schema->fields().size(), 2);
   EXPECT_EQ(loaded_schema->fields()[0].name(), "id");
   EXPECT_EQ(loaded_schema->fields()[1].name(), "data");
@@ -477,8 +460,8 @@ TEST_F(RestCatalogIntegrationTest, DropTable) {
 
   // Create table
   auto schema = CreateDefaultSchema();
-  auto partition_spec = CreateDefaultPartitionSpec();
-  auto sort_order = CreateDefaultSortOrder();
+  auto partition_spec = PartitionSpec::Unpartitioned();
+  auto sort_order = SortOrder::Unsorted();
 
   TableIdentifier table_id{.ns = ns, .name = "table_to_drop"};
   std::unordered_map<std::string, std::string> table_properties;

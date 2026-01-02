@@ -253,12 +253,4 @@ std::string GetStandardReasonPhrase(int32_t status_code) {
   }
 }
 
-Status CheckEndpoint(const std::unordered_set<Endpoint>& supported_endpoints,
-                     const Endpoint& endpoint) {
-  if (!supported_endpoints.contains(endpoint)) {
-    return NotSupported("Server does not support endpoint: {}", endpoint.ToString());
-  }
-  return {};
-}
-
 }  // namespace iceberg::rest

@@ -154,20 +154,4 @@ TEST(RestUtilTest, MergeConfigs) {
   EXPECT_EQ(merged_empty["key"], "value");
 }
 
-TEST(RestUtilTest, CheckEndpointSupported) {
-  std::unordered_set<Endpoint> supported = {
-      Endpoint::ListNamespaces(), Endpoint::LoadTable(), Endpoint::CreateTable()};
-
-  // Supported endpoints should pass
-  EXPECT_THAT(CheckEndpoint(supported, Endpoint::ListNamespaces()), IsOk());
-  EXPECT_THAT(CheckEndpoint(supported, Endpoint::LoadTable()), IsOk());
-  EXPECT_THAT(CheckEndpoint(supported, Endpoint::CreateTable()), IsOk());
-
-  // Unsupported endpoints should fail
-  EXPECT_THAT(CheckEndpoint(supported, Endpoint::DeleteTable()),
-              IsError(ErrorKind::kNotSupported));
-  EXPECT_THAT(CheckEndpoint(supported, Endpoint::UpdateTable()),
-              IsError(ErrorKind::kNotSupported));
-}
-
 }  // namespace iceberg::rest
