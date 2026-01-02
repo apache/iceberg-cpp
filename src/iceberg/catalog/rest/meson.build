@@ -16,6 +16,9 @@
 # under the License.
 
 iceberg_rest_sources = files(
+    'auth/auth_manager.cc',
+    'auth/auth_managers.cc',
+    'auth/auth_session.cc',
     'catalog_properties.cc',
     'endpoint.cc',
     'error_handlers.cc',
@@ -71,4 +74,14 @@ install_headers(
         'types.h',
     ],
     subdir: 'iceberg/catalog/rest',
+)
+
+install_headers(
+    [
+        'auth/auth_manager.h',
+        'auth/auth_managers.h',
+        'auth/auth_properties.h',
+        'auth/auth_session.h',
+    ],
+    subdir: 'iceberg/catalog/rest/auth',
 )
