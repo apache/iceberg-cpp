@@ -814,11 +814,13 @@ Result<InclusiveMetricsEvaluator*> ManifestReaderImpl::GetMetricsEvaluator() {
   return metrics_evaluator_.get();
 }
 
-bool ManifestReaderImpl::InPartitionSet(const DataFile& file) const {
+Result<bool> ManifestReaderImpl::InPartitionSet(const DataFile& file) const {
   if (!partition_set_) {
     return true;
   }
-  return partition_set_->contains(file.partition_spec_id, file.partition);
+  ICEBERG_PRECHECK(file.partition_spec_id.has_value(),
+                   "Missing partition spec id from data file {}", file.file_path);
+  return partition_set_->contains(file.partition_spec_id.value(), file.partition);
 }
 
 Status ManifestReaderImpl::OpenReader(std::shared_ptr<Schema> projection) {
@@ -943,7 +945,8 @@ Result<std::vector<ManifestEntry>> ManifestReaderImpl::ReadEntries(bool only_liv
             continue;
           }
         }
-        if (!InPartitionSet(*entry.data_file)) {
+        ICEBERG_ASSIGN_OR_RAISE(bool in_partition_set, InPartitionSet(*entry.data_file));
+        if (!in_partition_set) {
           continue;
         }
       }

@@ -98,8 +98,8 @@ class ManifestGroupTest : public testing::TestWithParam<int> {
         .partition = partition,
         .record_count = 1,
         .file_size_in_bytes = 10,
-        .partition_spec_id = spec_id,
         .referenced_data_file = referenced_file,
+        .partition_spec_id = spec_id,
     });
   }
 

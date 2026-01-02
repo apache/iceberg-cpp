@@ -147,9 +147,6 @@ struct ICEBERG_EXPORT DataFile {
   /// order, and should set sort order id to null. Readers must ignore sort order id for
   /// position delete files.
   std::optional<int32_t> sort_order_id;
-  /// This field is not included in spec, so it is not serialized into the manifest file.
-  /// It is just store in memory representation used in process.
-  int32_t partition_spec_id = PartitionSpec::kInitialSpecId;
   /// Field id: 142
   /// The _row_id for the first row in the data file.
   ///
@@ -177,6 +174,11 @@ struct ICEBERG_EXPORT DataFile {
   /// The length of a referenced content stored in the file; required if content_offset is
   /// present
   std::optional<int64_t> content_size_in_bytes;
+
+  /// \brief Partition spec id for this data file.
+  /// \note This field is for internal use only and will not be persisted to manifest
+  /// entry.
+  std::optional<int32_t> partition_spec_id;
 
   static constexpr int32_t kContentFieldId = 134;
   inline static const SchemaField kContent = SchemaField::MakeOptional(
