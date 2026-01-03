@@ -20,6 +20,10 @@ set(ICEBERG_INCLUDES "$<BUILD_INTERFACE:${PROJECT_BINARY_DIR}/src>"
 set(ICEBERG_SOURCES
     arrow_c_data_guard_internal.cc
     catalog/memory/in_memory_catalog.cc
+    data/data_writer.cc
+    data/equality_delete_writer.cc
+    data/file_writer_factory.cc
+    data/position_delete_writer.cc
     data/writer.cc
     delete_file_index.cc
     expression/aggregate.cc
