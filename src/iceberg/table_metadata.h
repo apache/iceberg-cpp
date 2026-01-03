@@ -145,6 +145,8 @@ struct ICEBERG_EXPORT TableMetadata {
   Result<std::shared_ptr<iceberg::Snapshot>> Snapshot() const;
   /// \brief Get the snapshot of this table with the given id
   Result<std::shared_ptr<iceberg::Snapshot>> SnapshotById(int64_t snapshot_id) const;
+  /// \brief Get the next sequence number for
+  int64_t NextSequenceNumber() const;
 
   ICEBERG_EXPORT friend bool operator==(const TableMetadata& lhs,
                                         const TableMetadata& rhs);

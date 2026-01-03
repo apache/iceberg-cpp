@@ -244,6 +244,9 @@ class ICEBERG_EXPORT TableProperties : public ConfigBase<TableProperties> {
   inline static Entry<int64_t> kDeleteTargetFileSizeBytes{
       "write.delete.target-file-size-bytes", int64_t{64} * 1024 * 1024};  // 64 MB
 
+  inline static Entry<bool> kSnapshotIdInheritanceEnabled{
+      "compatibility.snapshot-id-inheritance.enabled", false};
+
   // Garbage collection properties
 
   inline static Entry<bool> kGcEnabled{"gc.enabled", true};
