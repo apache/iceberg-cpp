@@ -47,7 +47,7 @@ Status ResourcePaths::SetBaseUri(const std::string& base_uri) {
 }
 
 Result<std::string> ResourcePaths::Config() const {
-  return std::format("{}/v1/{}config", base_uri_, prefix_);
+  return std::format("{}/v1/config", base_uri_);
 }
 
 Result<std::string> ResourcePaths::OAuth2Tokens() const {

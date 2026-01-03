@@ -47,7 +47,7 @@ class ICEBERG_REST_EXPORT ResourcePaths {
   /// \brief Set the base URI of the REST catalog server.
   Status SetBaseUri(const std::string& base_uri);
 
-  /// \brief Get the /v1/{prefix}/config endpoint path.
+  /// \brief Get the /v1/config endpoint path.
   Result<std::string> Config() const;
 
   /// \brief Get the /v1/{prefix}/oauth/tokens endpoint path.
