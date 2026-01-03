@@ -117,7 +117,7 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   ICEBERG_ASSIGN_OR_RAISE(auto server_config, FetchServerConfig(*paths, config));
 
   std::unique_ptr<RestCatalogProperties> final_config = RestCatalogProperties::FromMap(
-      MergeConfigs(server_config.overrides, config.configs(), server_config.defaults));
+      MergeConfigs(server_config.defaults, config.configs(), server_config.overrides));
 
   std::unordered_set<Endpoint> endpoints;
   if (!server_config.endpoints.empty()) {
@@ -132,7 +132,11 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
 
   // Update resource paths based on the final config
   ICEBERG_ASSIGN_OR_RAISE(auto final_uri, final_config->Uri());
-  ICEBERG_RETURN_UNEXPECTED(paths->SetBaseUri(std::string(TrimTrailingSlash(final_uri))));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto final_paths,
+      ResourcePaths::Make(std::string(TrimTrailingSlash(final_uri)),
+                          final_config->Get(RestCatalogProperties::kPrefix)));
+  paths = std::move(final_paths);
 
   return std::shared_ptr<RestCatalog>(
       new RestCatalog(std::move(final_config), std::move(file_io), std::move(paths),
