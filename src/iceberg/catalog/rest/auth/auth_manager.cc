@@ -17,28 +17,23 @@
  * under the License.
  */
 
-#pragma once
-
-/// \file iceberg/catalog/rest/type_fwd.h
-/// Forward declarations and enum definitions for Iceberg REST API types.
-
-namespace iceberg::rest {
-
-struct ErrorResponse;
-
-class Endpoint;
-class ErrorHandler;
-class HttpClient;
-class ResourcePaths;
-class RestCatalog;
-class RestCatalogProperties;
-
-}  // namespace iceberg::rest
+#include "iceberg/catalog/rest/auth/auth_manager.h"
 
 namespace iceberg::rest::auth {
 
-class AuthManager;
-class AuthSession;
-class DefaultAuthSession;
+std::shared_ptr<AuthSession> AuthManager::InitSession(
+    HttpClient* init_client,
+    const std::unordered_map<std::string, std::string>& properties) {
+  // By default, use the catalog session for initialization
+  return CatalogSession(init_client, properties);
+}
+
+std::shared_ptr<AuthSession> AuthManager::TableSession(
+    [[maybe_unused]] const TableIdentifier& table,
+    [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties,
+    std::shared_ptr<AuthSession> parent) {
+  // By default, return the parent session
+  return parent;
+}
 
 }  // namespace iceberg::rest::auth
