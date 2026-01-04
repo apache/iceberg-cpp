@@ -227,7 +227,9 @@ nlohmann::json ToJson(const SchemaField& field) {
   json[kName] = field.name();
   json[kRequired] = !field.optional();
   json[kType] = ToJson(*field.type());
-  json[kDoc] = field.doc();
+  if (!field.doc().empty()) {
+    json[kDoc] = field.doc();
+  }
   return json;
 }
 
