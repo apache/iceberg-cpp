@@ -27,6 +27,7 @@
 
 #include "iceberg/exception.h"
 #include "iceberg/schema.h"
+#include "iceberg/schema_field.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
@@ -151,7 +152,12 @@ ListType::ListType(int32_t field_id, std::shared_ptr<Type> type, bool optional)
     : element_(field_id, std::string(kElementName), std::move(type), optional) {}
 
 TypeId ListType::type_id() const { return kTypeId; }
-std::string ListType::ToString() const { return std::format("list<{}>", element_); }
+
+const SchemaField& ListType::element() const { return element_; }
+
+std::string ListType::ToString() const {
+  return std::vformat("list<{}>", std::make_format_args(element_));
+}
 
 std::span<const SchemaField> ListType::fields() const { return {&element_, 1}; }
 Result<std::optional<NestedType::SchemaFieldConstRef>> ListType::GetFieldById(
@@ -207,7 +213,7 @@ const SchemaField& MapType::value() const { return fields_[1]; }
 TypeId MapType::type_id() const { return kTypeId; }
 
 std::string MapType::ToString() const {
-  return std::format("map<{}: {}>", key(), value());
+  return std::vformat("map<{}: {}>", std::make_format_args(key(), value()));
 }
 
 std::span<const SchemaField> MapType::fields() const { return fields_; }

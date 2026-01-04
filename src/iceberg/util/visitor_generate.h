@@ -40,4 +40,21 @@ namespace iceberg {
   ACTION(List);                                \
   ACTION(Map);
 
+/// \brief Generate switch-case for schema visitor pattern
+///
+/// This macro generates switch cases that dispatch to visitor methods based on type:
+/// - Struct types -> calls ACTION with Struct
+/// - List types -> calls ACTION with List
+/// - Map types -> calls ACTION with Map
+/// - All primitive types (default) -> calls ACTION with Primitive
+#define ICEBERG_GENERATE_SCHEMA_VISITOR_CASES(ACTION) \
+  case ::iceberg::TypeId::kStruct:                    \
+    ACTION(Struct)                                    \
+  case ::iceberg::TypeId::kList:                      \
+    ACTION(List)                                      \
+  case ::iceberg::TypeId::kMap:                       \
+    ACTION(Map)                                       \
+  default:                                            \
+    ACTION(Primitive)
+
 }  // namespace iceberg

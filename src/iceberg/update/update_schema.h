@@ -27,6 +27,7 @@
 #include <span>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 #include <unordered_set>
 
 #include "iceberg/iceberg_export.h"
@@ -345,12 +346,31 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
                                   std::string_view name, bool is_optional,
                                   std::shared_ptr<Type> type, std::string_view doc);
 
+  /// \brief Assign a new column ID and increment the counter.
+  int32_t AssignNewColumnId();
+
+  /// \brief Find a field by name using case-sensitive or case-insensitive search.
+  Result<std::optional<std::reference_wrapper<const SchemaField>>> FindField(
+      std::string_view name) const;
+
   // Internal state
   std::shared_ptr<Schema> schema_;
   int32_t last_column_id_;
   bool allow_incompatible_changes_{false};
   bool case_sensitive_{true};
-  std::unordered_set<std::string> identifier_field_names_;
+  std::vector<std::string> identifier_field_names_;
+
+  // Tracking changes
+  // field ID -> parent field ID
+  std::unordered_map<int32_t, int32_t> id_to_parent_;
+  // field IDs to delete
+  std::unordered_set<int32_t> deletes_;
+  // field ID -> updated field
+  std::unordered_map<int32_t, std::shared_ptr<SchemaField>> updates_;
+  // parent ID -> added child IDs
+  std::unordered_map<int32_t, std::vector<int32_t>> parent_to_added_ids_;
+  // full name -> field ID for added fields
+  std::unordered_map<std::string, int32_t> added_name_to_id_;
 };
 
 }  // namespace iceberg

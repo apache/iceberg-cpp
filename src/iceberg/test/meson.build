@@ -93,6 +93,15 @@ iceberg_tests = {
         ),
     },
     'roaring_test': {'sources': files('roaring_test.cc')},
+    'table_update_test': {
+        'sources': files(
+            'transaction_test.cc',
+            'update_partition_spec_test.cc',
+            'update_properties_test.cc',
+            'update_schema_test.cc',
+            'update_sort_order_test.cc',
+        ),
+    },
 }
 
 if get_option('rest').enabled()

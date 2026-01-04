@@ -155,6 +155,7 @@ class ICEBERG_EXPORT ListType : public NestedType {
   ~ListType() override = default;
 
   TypeId type_id() const override;
+  const SchemaField& element() const;
   std::string ToString() const override;
 
   std::span<const SchemaField> fields() const override;

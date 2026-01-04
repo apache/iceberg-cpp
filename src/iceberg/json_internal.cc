@@ -227,6 +227,7 @@ nlohmann::json ToJson(const SchemaField& field) {
   json[kName] = field.name();
   json[kRequired] = !field.optional();
   json[kType] = ToJson(*field.type());
+  json[kDoc] = field.doc();
   return json;
 }
 
@@ -463,9 +464,10 @@ Result<std::unique_ptr<SchemaField>> FieldFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto field_id, GetJsonValue<int32_t>(json, kId));
   ICEBERG_ASSIGN_OR_RAISE(auto name, GetJsonValue<std::string>(json, kName));
   ICEBERG_ASSIGN_OR_RAISE(auto required, GetJsonValue<bool>(json, kRequired));
+  ICEBERG_ASSIGN_OR_RAISE(auto doc, GetJsonValueOrDefault<std::string>(json, kDoc));
 
   return std::make_unique<SchemaField>(field_id, std::move(name), std::move(type),
-                                       !required);
+                                       !required, doc);
 }
 
 Result<std::unique_ptr<Schema>> SchemaFromJson(const nlohmann::json& json) {

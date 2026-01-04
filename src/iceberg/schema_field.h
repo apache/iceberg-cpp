@@ -46,15 +46,15 @@ class ICEBERG_EXPORT SchemaField : public iceberg::util::Formattable {
   /// \param[in] type The field type.
   /// \param[in] optional Whether values of this field are required or nullable.
   /// \param[in] doc Optional documentation string for the field.
-  SchemaField(int32_t field_id, std::string name, std::shared_ptr<Type> type,
-              bool optional, std::string doc = {});
+  SchemaField(int32_t field_id, std::string_view name, std::shared_ptr<Type> type,
+              bool optional, std::string_view doc = {});
 
   /// \brief Construct an optional (nullable) field.
-  static SchemaField MakeOptional(int32_t field_id, std::string name,
-                                  std::shared_ptr<Type> type, std::string doc = {});
+  static SchemaField MakeOptional(int32_t field_id, std::string_view name,
+                                  std::shared_ptr<Type> type, std::string_view doc = {});
   /// \brief Construct a required (non-null) field.
-  static SchemaField MakeRequired(int32_t field_id, std::string name,
-                                  std::shared_ptr<Type> type, std::string doc = {});
+  static SchemaField MakeRequired(int32_t field_id, std::string_view name,
+                                  std::shared_ptr<Type> type, std::string_view doc = {});
 
   /// \brief Get the field ID.
   [[nodiscard]] int32_t field_id() const;

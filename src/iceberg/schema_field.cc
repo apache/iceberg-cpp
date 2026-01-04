@@ -20,28 +20,29 @@
 #include "iceberg/schema_field.h"
 
 #include <format>
+#include <string_view>
 
 #include "iceberg/type.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 
 namespace iceberg {
 
-SchemaField::SchemaField(int32_t field_id, std::string name, std::shared_ptr<Type> type,
-                         bool optional, std::string doc)
+SchemaField::SchemaField(int32_t field_id, std::string_view name,
+                         std::shared_ptr<Type> type, bool optional, std::string_view doc)
     : field_id_(field_id),
-      name_(std::move(name)),
+      name_(name),
       type_(std::move(type)),
       optional_(optional),
-      doc_(std::move(doc)) {}
+      doc_(doc) {}
 
-SchemaField SchemaField::MakeOptional(int32_t field_id, std::string name,
-                                      std::shared_ptr<Type> type, std::string doc) {
-  return {field_id, std::move(name), std::move(type), true, std::move(doc)};
+SchemaField SchemaField::MakeOptional(int32_t field_id, std::string_view name,
+                                      std::shared_ptr<Type> type, std::string_view doc) {
+  return {field_id, name, std::move(type), true, doc};
 }
 
-SchemaField SchemaField::MakeRequired(int32_t field_id, std::string name,
-                                      std::shared_ptr<Type> type, std::string doc) {
-  return {field_id, std::move(name), std::move(type), false, std::move(doc)};
+SchemaField SchemaField::MakeRequired(int32_t field_id, std::string_view name,
+                                      std::shared_ptr<Type> type, std::string_view doc) {
+  return {field_id, name, std::move(type), false, doc};
 }
 
 int32_t SchemaField::field_id() const { return field_id_; }
