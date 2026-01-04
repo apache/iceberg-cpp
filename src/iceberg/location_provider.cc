@@ -35,7 +35,7 @@ constexpr int32_t kEntropyDirLength = 4;
 constexpr int32_t kEntropyDirDepth = 3;
 
 std::string DataLocation(const TableProperties& properties,
-                         const std::string& table_location) {
+                         std::string_view table_location) {
   auto data_location = properties.Get(TableProperties::kWriteDataLocation);
   if (data_location.empty()) {
     data_location = std::format("{}/data", table_location);
@@ -44,11 +44,11 @@ std::string DataLocation(const TableProperties& properties,
 }
 
 std::string PathContext(std::string_view table_location) {
-  std::string path = LocationUtil::StripTrailingSlash(table_location);
+  std::string_view path = LocationUtil::StripTrailingSlash(table_location);
 
   size_t last_slash = path.find_last_of('/');
   if (last_slash != std::string::npos && last_slash < path.length() - 1) {
-    std::string_view data_path(path.data(), path.size() - last_slash - 1);
+    std::string_view data_path = path.substr(last_slash + 1);
     std::string_view parent_path(path.data(), last_slash);
     size_t parent_last_slash = parent_path.find_last_of('/');
 
@@ -74,7 +74,7 @@ std::string PathContext(std::string_view table_location) {
 std::string DirsFromHash(int32_t hash) {
   std::string hash_with_dirs;
 
-  for (int i = 0; i < kEntropyDirDepth * kEntropyDirLength; i += kEntropyDirLength) {
+  for (int32_t i = 0; i < kEntropyDirDepth * kEntropyDirLength; i += kEntropyDirLength) {
     if (i > 0) {
       hash_with_dirs += "/";
     }
@@ -97,23 +97,25 @@ std::string ComputeHash(std::string_view file_name) {
 
 }  // namespace
 
-Result<std::unique_ptr<LocationProvider>> LocationProviderFactory::For(
-    const std::string& input_location, const TableProperties& properties) {
-  std::string location = LocationUtil::StripTrailingSlash(input_location);
+/// \brief DefaultLocationProvider privides default location provider for local file
+/// system.
+class DefaultLocationProvider : public LocationProvider {
+ public:
+  DefaultLocationProvider(std::string_view table_location,
+                          const TableProperties& properties);
 
-  // Note: Not support dynamic constructor according to kWriteLocationProviderImpl
+  std::string NewDataLocation(const std::string& filename) override;
 
-  properties.Get(TableProperties::kObjectStoreEnabled);
+  Result<std::string> NewDataLocation(const PartitionSpec& spec,
+                                      const PartitionValues& partition_data,
+                                      const std::string& filename) override;
 
-  if (properties.Get(TableProperties::kObjectStoreEnabled)) {
-    return std::make_unique<ObjectStoreLocationProvider>(location, properties);
-  } else {
-    return std::make_unique<DefaultLocationProvider>(location, properties);
-  }
-}
+ private:
+  std::string data_location_;
+};
 
 // Implementation of DefaultLocationProvider
-DefaultLocationProvider::DefaultLocationProvider(const std::string& table_location,
+DefaultLocationProvider::DefaultLocationProvider(std::string_view table_location,
                                                  const TableProperties& properties)
     : data_location_(
           LocationUtil::StripTrailingSlash(DataLocation(properties, table_location))) {}
@@ -129,9 +131,27 @@ Result<std::string> DefaultLocationProvider::NewDataLocation(
   return std::format("{}/{}/{}", data_location_, partition_path, filename);
 }
 
+/// \brief ObjectStoreLocationProvider provides location provider for object stores.
+class ObjectStoreLocationProvider : public LocationProvider {
+ public:
+  ObjectStoreLocationProvider(std::string_view table_location,
+                              const TableProperties& properties);
+
+  std::string NewDataLocation(const std::string& filename) override;
+
+  Result<std::string> NewDataLocation(const PartitionSpec& spec,
+                                      const PartitionValues& partition_data,
+                                      const std::string& filename) override;
+
+ private:
+  std::string storage_location_;
+  std::string context_;
+  bool include_partition_paths_;
+};
+
 // Implementation of ObjectStoreLocationProvider
 ObjectStoreLocationProvider::ObjectStoreLocationProvider(
-    const std::string& table_location, const TableProperties& properties)
+    std::string_view table_location, const TableProperties& properties)
     : include_partition_paths_(
           properties.Get(TableProperties::kWriteObjectStorePartitionedPaths)) {
   storage_location_ =
@@ -170,6 +190,19 @@ Result<std::string> ObjectStoreLocationProvider::NewDataLocation(
     return NewDataLocation(std::format("{}/{}", partition_path, filename));
   } else {
     return NewDataLocation(filename);
+  }
+}
+
+Result<std::unique_ptr<LocationProvider>> LocationProvider::Make(
+    const std::string& input_location, const TableProperties& properties) {
+  std::string_view location = LocationUtil::StripTrailingSlash(input_location);
+
+  // TODO(xxx): Support dynamic constructor according to kWriteLocationProviderImpl
+
+  if (properties.Get(TableProperties::kObjectStoreEnabled)) {
+    return std::make_unique<ObjectStoreLocationProvider>(location, properties);
+  } else {
+    return std::make_unique<DefaultLocationProvider>(location, properties);
   }
 }
 

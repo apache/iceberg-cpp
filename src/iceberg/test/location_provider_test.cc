@@ -63,7 +63,7 @@ class LocationProviderTest : public ::testing::Test {
 TEST_F(LocationProviderTest, DefaultLocationProvider) {
   properties_ = {};  // Empty properties to use defaults
   ICEBERG_UNWRAP_OR_FAIL(auto provider,
-                         LocationProviderFactory::For(table_location_, properties_));
+                         LocationProvider::Make(table_location_, properties_));
 
   auto location = provider->NewDataLocation("my_file");
   EXPECT_EQ(std::format("{}/data/my_file", table_location_), location);
@@ -73,7 +73,7 @@ TEST_F(LocationProviderTest, DefaultLocationProviderWithCustomDataLocation) {
   std::ignore =
       properties_.Set(TableProperties::kWriteDataLocation, std::string("new_location"));
   ICEBERG_UNWRAP_OR_FAIL(auto provider,
-                         LocationProviderFactory::For(table_location_, properties_));
+                         LocationProvider::Make(table_location_, properties_));
 
   auto location = provider->NewDataLocation("my_file");
   EXPECT_EQ("new_location/my_file", location);
@@ -82,7 +82,7 @@ TEST_F(LocationProviderTest, DefaultLocationProviderWithCustomDataLocation) {
 TEST_F(LocationProviderTest, ObjectStorageLocationProvider) {
   std::ignore = properties_.Set(TableProperties::kObjectStoreEnabled, true);
   ICEBERG_UNWRAP_OR_FAIL(auto provider,
-                         LocationProviderFactory::For(table_location_, properties_));
+                         LocationProvider::Make(table_location_, properties_));
 
   auto location = provider->NewDataLocation("test.parquet");
   std::string relative_location = location;
@@ -103,7 +103,7 @@ TEST_F(LocationProviderTest, ObjectStorageLocationProvider) {
 TEST_F(LocationProviderTest, ObjectStorageWithPartition) {
   std::ignore = properties_.Set(TableProperties::kObjectStoreEnabled, true);
   ICEBERG_UNWRAP_OR_FAIL(auto provider,
-                         LocationProviderFactory::For(table_location_, properties_));
+                         LocationProvider::Make(table_location_, properties_));
 
   ICEBERG_UNWRAP_OR_FAIL(
       auto mock_spec,
@@ -126,7 +126,7 @@ TEST_F(LocationProviderTest, ObjectStorageExcludePartitionInPath) {
   std::ignore = properties_.Set(TableProperties::kObjectStoreEnabled, true)
                     .Set(TableProperties::kWriteObjectStorePartitionedPaths, false);
   ICEBERG_UNWRAP_OR_FAIL(auto provider,
-                         LocationProviderFactory::For(table_location_, properties_));
+                         LocationProvider::Make(table_location_, properties_));
 
   auto location = provider->NewDataLocation("test.parquet");
 
@@ -138,7 +138,7 @@ TEST_F(LocationProviderTest, ObjectStorageExcludePartitionInPath) {
 TEST_F(LocationProviderTest, HashInjection) {
   std::ignore = properties_.Set(TableProperties::kObjectStoreEnabled, true);
   ICEBERG_UNWRAP_OR_FAIL(auto provider,
-                         LocationProviderFactory::For(table_location_, properties_));
+                         LocationProvider::Make(table_location_, properties_));
 
   auto location_a = provider->NewDataLocation("a");
   EXPECT_THAT(location_a, testing::EndsWith("/data/0101/0110/1001/10110010/a"));

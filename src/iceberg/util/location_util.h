@@ -27,7 +27,7 @@ namespace iceberg {
 
 class ICEBERG_EXPORT LocationUtil {
  public:
-  static std::string StripTrailingSlash(std::string_view path) {
+  static std::string_view StripTrailingSlash(std::string_view path) {
     if (path.empty()) {
       return "";
     }
@@ -35,7 +35,7 @@ class ICEBERG_EXPORT LocationUtil {
     while (path.ends_with("/") && !path.ends_with("://")) {
       path.remove_suffix(1);
     }
-    return std::string(path);
+    return path;
   }
 };
 
