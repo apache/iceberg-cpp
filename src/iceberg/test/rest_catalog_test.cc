@@ -52,6 +52,7 @@
 #include "iceberg/test/std_io.h"
 #include "iceberg/test/test_resource.h"
 #include "iceberg/test/util/docker_compose_util.h"
+#include "iceberg/transaction.h"
 
 namespace iceberg::rest {
 
@@ -637,6 +638,53 @@ TEST_F(RestCatalogIntegrationTest, RegisterTable) {
 
   EXPECT_EQ(table->metadata_file_location(), registered_table->metadata_file_location());
   EXPECT_NE(table->name(), registered_table->name());
+}
+
+TEST_F(RestCatalogIntegrationTest, StageCreateTable) {
+  auto catalog_result = CreateCatalog();
+  ASSERT_THAT(catalog_result, IsOk());
+  auto& catalog = catalog_result.value();
+
+  // Create namespace
+  Namespace ns{.levels = {"test_stage_create"}};
+  auto status = catalog->CreateNamespace(ns, {});
+  EXPECT_THAT(status, IsOk());
+
+  // Stage create table
+  auto schema = CreateDefaultSchema();
+  auto partition_spec = PartitionSpec::Unpartitioned();
+  auto sort_order = SortOrder::Unsorted();
+
+  TableIdentifier table_id{.ns = ns, .name = "staged_table"};
+  std::unordered_map<std::string, std::string> table_properties{{"key1", "value1"}};
+  auto txn_result = catalog->StageCreateTable(table_id, schema, partition_spec,
+                                              sort_order, "", table_properties);
+  ASSERT_THAT(txn_result, IsOk());
+  auto& txn = txn_result.value();
+
+  // Verify the staged table in transaction
+  EXPECT_NE(txn->table(), nullptr);
+  EXPECT_EQ(txn->table()->name(), table_id);
+
+  // Table should NOT exist in catalog yet (staged but not committed)
+  auto exists_result = catalog->TableExists(table_id);
+  ASSERT_THAT(exists_result, IsOk());
+  EXPECT_FALSE(exists_result.value());
+
+  // Commit the transaction
+  auto commit_result = txn->Commit();
+  ASSERT_THAT(commit_result, IsOk());
+  auto& committed_table = commit_result.value();
+
+  // Verify table now exists
+  exists_result = catalog->TableExists(table_id);
+  ASSERT_THAT(exists_result, IsOk());
+  EXPECT_TRUE(exists_result.value());
+
+  // Verify table properties
+  EXPECT_EQ(committed_table->name(), table_id);
+  auto& props = committed_table->metadata()->properties.configs();
+  EXPECT_EQ(props.at("key1"), "value1");
 }
 
 }  // namespace iceberg::rest

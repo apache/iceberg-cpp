@@ -110,6 +110,12 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
 
   Result<std::string> LoadTableInternal(const TableIdentifier& identifier) const;
 
+  Result<LoadTableResult> CreateTableInternal(
+      const TableIdentifier& identifier, const std::shared_ptr<Schema>& schema,
+      const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<SortOrder>& order,
+      const std::string& location,
+      const std::unordered_map<std::string, std::string>& properties, bool stage_create);
+
   std::unique_ptr<RestCatalogProperties> config_;
   std::shared_ptr<FileIO> file_io_;
   std::unique_ptr<HttpClient> client_;

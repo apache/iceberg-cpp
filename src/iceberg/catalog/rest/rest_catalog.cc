@@ -44,6 +44,7 @@
 #include "iceberg/table.h"
 #include "iceberg/table_requirement.h"
 #include "iceberg/table_update.h"
+#include "iceberg/transaction.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::rest {
@@ -274,11 +275,11 @@ Result<std::vector<TableIdentifier>> RestCatalog::ListTables(const Namespace& ns
   return result;
 }
 
-Result<std::shared_ptr<Table>> RestCatalog::CreateTable(
+Result<LoadTableResult> RestCatalog::CreateTableInternal(
     const TableIdentifier& identifier, const std::shared_ptr<Schema>& schema,
     const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<SortOrder>& order,
     const std::string& location,
-    const std::unordered_map<std::string, std::string>& properties) {
+    const std::unordered_map<std::string, std::string>& properties, bool stage_create) {
   ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::CreateTable());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Tables(identifier.ns));
 
@@ -288,7 +289,7 @@ Result<std::shared_ptr<Table>> RestCatalog::CreateTable(
       .schema = schema,
       .partition_spec = spec,
       .write_order = order,
-      .stage_create = false,
+      .stage_create = stage_create,
       .properties = properties,
   };
 
@@ -298,10 +299,19 @@ Result<std::shared_ptr<Table>> RestCatalog::CreateTable(
       client_->Post(path, json_request, /*headers=*/{}, *TableErrorHandler::Instance()));
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
-  ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
-  return Table::Make(identifier, load_result.metadata,
-                     std::move(load_result.metadata_location), file_io_,
-                     shared_from_this());
+  return LoadTableResultFromJson(json);
+}
+
+Result<std::shared_ptr<Table>> RestCatalog::CreateTable(
+    const TableIdentifier& identifier, const std::shared_ptr<Schema>& schema,
+    const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<SortOrder>& order,
+    const std::string& location,
+    const std::unordered_map<std::string, std::string>& properties) {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto result,
+      CreateTableInternal(identifier, schema, spec, order, location, properties, false));
+  return Table::Make(identifier, result.metadata, std::move(result.metadata_location),
+                     file_io_, shared_from_this());
 }
 
 Result<std::shared_ptr<Table>> RestCatalog::UpdateTable(
@@ -335,13 +345,19 @@ Result<std::shared_ptr<Table>> RestCatalog::UpdateTable(
 }
 
 Result<std::shared_ptr<Transaction>> RestCatalog::StageCreateTable(
-    [[maybe_unused]] const TableIdentifier& identifier,
-    [[maybe_unused]] const std::shared_ptr<Schema>& schema,
-    [[maybe_unused]] const std::shared_ptr<PartitionSpec>& spec,
-    [[maybe_unused]] const std::shared_ptr<SortOrder>& order,
-    [[maybe_unused]] const std::string& location,
-    [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties) {
-  return NotImplemented("Not implemented");
+    const TableIdentifier& identifier, const std::shared_ptr<Schema>& schema,
+    const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<SortOrder>& order,
+    const std::string& location,
+    const std::unordered_map<std::string, std::string>& properties) {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto result,
+      CreateTableInternal(identifier, schema, spec, order, location, properties, true));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto staged_table,
+      StagedTable::Make(identifier, result.metadata, std::move(result.metadata_location),
+                        file_io_, shared_from_this()));
+  return Transaction::Make(staged_table, Transaction::Kind::kCreate,
+                           /*auto_commit=*/false);
 }
 
 Status RestCatalog::DropTable(const TableIdentifier& identifier, bool purge) {
@@ -393,9 +409,6 @@ Result<std::string> RestCatalog::LoadTableInternal(
 }
 
 Result<std::shared_ptr<Table>> RestCatalog::LoadTable(const TableIdentifier& identifier) {
-  ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::LoadTable());
-  ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Table(identifier));
-
   ICEBERG_ASSIGN_OR_RAISE(const auto body, LoadTableInternal(identifier));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(body));
   ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));

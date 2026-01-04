@@ -25,6 +25,7 @@
 namespace iceberg::rest {
 
 struct ErrorResponse;
+struct LoadTableResult;
 
 class Endpoint;
 class ErrorHandler;
