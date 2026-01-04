@@ -80,6 +80,7 @@ class DirectEncoderBackend : public AvroWriteBackend {
 
   Status WriteRow(const Schema& write_schema, const ::arrow::Array& array,
                   int64_t row_index) override {
+    writer_->syncIfNeeded();
     ICEBERG_RETURN_UNEXPECTED(EncodeArrowToAvro(avro_root_node_, writer_->encoder(),
                                                 write_schema, array, row_index,
                                                 encode_ctx_));
