@@ -64,6 +64,9 @@ class ICEBERG_EXPORT PartitionSpec : public util::Formattable {
   /// \brief Get the partition type binding to the input schema.
   Result<std::unique_ptr<StructType>> PartitionType(const Schema& schema) const;
 
+  /// \brief Get the partition path for the given partition data.
+  Result<std::string> PartitionPath(const PartitionValues& data) const;
+
   /// \brief Returns true if this spec is equivalent to the other, with partition field
   /// ids ignored. That is, if both specs have the same number of fields, field order,
   /// field name, source columns, and transforms.

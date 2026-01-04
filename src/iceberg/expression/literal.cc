@@ -488,6 +488,7 @@ std::string Literal::ToString() const {
           .value_or("invalid literal of type decimal");
     }
     case TypeId::kString: {
+      // TODO(zhuo.wang): escape string?
       return "\"" + std::get<std::string>(value_) + "\"";
     }
     case TypeId::kUuid: {
