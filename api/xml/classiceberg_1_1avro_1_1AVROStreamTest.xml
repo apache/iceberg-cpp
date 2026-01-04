@@ -1,0 +1,261 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1avro_1_1AVROStreamTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::avro::AVROStreamTest</compoundname>
+    <basecompoundref refid="classiceberg_1_1TempFileTestBase" prot="public" virt="non-virtual">iceberg::TempFileTestBase</basecompoundref>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AVROStreamTest_1a3b85d0271068ac29117b3cff3c46c4a7" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::avro::AVROStreamTest::buffer_size_</definition>
+        <argsstring></argsstring>
+        <name>buffer_size_</name>
+        <qualifiedname>iceberg::avro::AVROStreamTest::buffer_size_</qualifiedname>
+        <initializer>= 1024</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_stream_test.cc" line="83" column="11" bodyfile="iceberg/test/avro_stream_test.cc" bodystart="83" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AVROStreamTest_1a5513f2ad68f31ca29c7fcaade411bfa6" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt;::arrow::fs::LocalFileSystem &gt;</type>
+        <definition>std::shared_ptr&lt;::arrow::fs::LocalFileSystem&gt; iceberg::avro::AVROStreamTest::local_fs_</definition>
+        <argsstring></argsstring>
+        <name>local_fs_</name>
+        <qualifiedname>iceberg::avro::AVROStreamTest::local_fs_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_stream_test.cc" line="84" column="19" bodyfile="iceberg/test/avro_stream_test.cc" bodystart="84" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AVROStreamTest_1ab29afa4f76a2fc00113605c8368c582a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::avro::AVROStreamTest::temp_filepath_</definition>
+        <argsstring></argsstring>
+        <name>temp_filepath_</name>
+        <qualifiedname>iceberg::avro::AVROStreamTest::temp_filepath_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_stream_test.cc" line="85" column="15" bodyfile="iceberg/test/avro_stream_test.cc" bodystart="85" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AVROStreamTest_1afe751f93e198d9d8088ec85ea5c9ee31" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::AVROStreamTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::avro::AVROStreamTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_stream_test.cc" line="31" column="8" bodyfile="iceberg/test/avro_stream_test.cc" bodystart="31" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AVROStreamTest_1aeb431000c10404a1f3dbb739e9df28c1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1avro_1_1AvroOutputStream" kindref="compound">AvroOutputStream</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; AvroOutputStream &gt; iceberg::avro::AVROStreamTest::CreateOutputStream</definition>
+        <argsstring>(const std::string &amp;path, int64_t buffer_size)</argsstring>
+        <name>CreateOutputStream</name>
+        <qualifiedname>iceberg::avro::AVROStreamTest::CreateOutputStream</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>buffer_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_stream_test.cc" line="37" column="19" bodyfile="iceberg/test/avro_stream_test.cc" bodystart="37" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AVROStreamTest_1a8bd30c3fc88175ac87698b8220d2ec5b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1avro_1_1AvroInputStream" kindref="compound">AvroInputStream</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; AvroInputStream &gt; iceberg::avro::AVROStreamTest::CreateInputStream</definition>
+        <argsstring>(const std::string &amp;path, int64_t buffer_size)</argsstring>
+        <name>CreateInputStream</name>
+        <qualifiedname>iceberg::avro::AVROStreamTest::CreateInputStream</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>buffer_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_stream_test.cc" line="48" column="19" bodyfile="iceberg/test/avro_stream_test.cc" bodystart="48" bodyend="57"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AVROStreamTest_1a1e0c21920df16c05b6e05c0abfc79fb4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::AVROStreamTest::WriteDataToStream</definition>
+        <argsstring>(const std::shared_ptr&lt; AvroOutputStream &gt; &amp;avro_output_stream, const std::string &amp;data)</argsstring>
+        <name>WriteDataToStream</name>
+        <qualifiedname>iceberg::avro::AVROStreamTest::WriteDataToStream</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1avro_1_1AvroOutputStream" kindref="compound">AvroOutputStream</ref> &gt; &amp;</type>
+          <declname>avro_output_stream</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_stream_test.cc" line="59" column="8" bodyfile="iceberg/test/avro_stream_test.cc" bodystart="59" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AVROStreamTest_1acd1113184fd8b6c91abcffd2379e26fc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::AVROStreamTest::ReadDataFromStream</definition>
+        <argsstring>(const std::shared_ptr&lt; AvroInputStream &gt; &amp;avro_input_stream, std::string &amp;data)</argsstring>
+        <name>ReadDataFromStream</name>
+        <qualifiedname>iceberg::avro::AVROStreamTest::ReadDataFromStream</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1avro_1_1AvroInputStream" kindref="compound">AvroInputStream</ref> &gt; &amp;</type>
+          <declname>avro_input_stream</declname>
+        </param>
+        <param>
+          <type>std::string &amp;</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_stream_test.cc" line="69" column="8" bodyfile="iceberg/test/avro_stream_test.cc" bodystart="69" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AVROStreamTest_1ae628d1bd7fc1fb2343533ab1a6d14c05" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::AVROStreamTest::CheckStreamEof</definition>
+        <argsstring>(const std::shared_ptr&lt; AvroInputStream &gt; &amp;avro_input_stream)</argsstring>
+        <name>CheckStreamEof</name>
+        <qualifiedname>iceberg::avro::AVROStreamTest::CheckStreamEof</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1avro_1_1AvroInputStream" kindref="compound">AvroInputStream</ref> &gt; &amp;</type>
+          <declname>avro_input_stream</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/avro_stream_test.cc" line="77" column="8" bodyfile="iceberg/test/avro_stream_test.cc" bodystart="77" bodyend="81"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::TempFileTestBase</label>
+        <link refid="classiceberg_1_1TempFileTestBase"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::avro::AVROStreamTest</label>
+        <link refid="classiceberg_1_1avro_1_1AVROStreamTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::TempFileTestBase</label>
+        <link refid="classiceberg_1_1TempFileTestBase"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>created_temp_files_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::avro::AVROStreamTest</label>
+        <link refid="classiceberg_1_1avro_1_1AVROStreamTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>local_fs_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>temp_filepath_</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::shared_ptr&lt;::arrow::fs::LocalFileSystem &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>testing::Test</label>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/avro_stream_test.cc" line="29" column="1" bodyfile="iceberg/test/avro_stream_test.cc" bodystart="29" bodyend="86"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1avro_1_1AVROStreamTest_1a3b85d0271068ac29117b3cff3c46c4a7" prot="public" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>buffer_size_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AVROStreamTest_1ae628d1bd7fc1fb2343533ab1a6d14c05" prot="public" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>CheckStreamEof</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a81e8f787019341a0f6e808b06944692c" prot="protected" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>created_temp_files_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AVROStreamTest_1a8bd30c3fc88175ac87698b8220d2ec5b" prot="public" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>CreateInputStream</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a469206ba6bfaea7b40483a594c819d8f" prot="protected" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>CreateNewTempFilePath</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a79c5ec372d23b44b3b25f90faadafcdf" prot="protected" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>CreateNewTempFilePathWithSuffix</name></member>
+      <member refid="classiceberg_1_1avro_1_1AVROStreamTest_1aeb431000c10404a1f3dbb739e9df28c1" prot="public" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>CreateOutputStream</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a78b1aeba8972a7b7a1efe8250fc275b9" prot="protected" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>CreateTempDirectory</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a0f94d0c787eed57fca2687c77f0873dd" prot="protected" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>CreateTempFileWithContent</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ab8c455679ca860cf68d867b134fd6dbc" prot="protected" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>GenerateRandomString</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ac4a5a13677373ca5e40f5251f2fc16d5" prot="protected" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>GenerateUniqueTempFilePath</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a25203f87d8d23209c611949d95749559" prot="protected" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>GenerateUniqueTempFilePathWithSuffix</name></member>
+      <member refid="classiceberg_1_1avro_1_1AVROStreamTest_1a5513f2ad68f31ca29c7fcaade411bfa6" prot="public" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>local_fs_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AVROStreamTest_1acd1113184fd8b6c91abcffd2379e26fc" prot="public" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>ReadDataFromStream</name></member>
+      <member refid="classiceberg_1_1avro_1_1AVROStreamTest_1afe751f93e198d9d8088ec85ea5c9ee31" prot="public" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ad0259e7197a5f7c88a6cd9688efe6b53" prot="protected" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>TearDown</name></member>
+      <member refid="classiceberg_1_1avro_1_1AVROStreamTest_1ab29afa4f76a2fc00113605c8368c582a" prot="public" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>temp_filepath_</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1ac5dbf7b55b849f990733840057bd450f" prot="protected" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>TestInfo</name></member>
+      <member refid="classiceberg_1_1TempFileTestBase_1a3ba86e7547c2ea06ac70f76e61040af5" prot="protected" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>WriteContentToFile</name></member>
+      <member refid="classiceberg_1_1avro_1_1AVROStreamTest_1a1e0c21920df16c05b6e05c0abfc79fb4" prot="public" virt="non-virtual"><scope>iceberg::avro::AVROStreamTest</scope><name>WriteDataToStream</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

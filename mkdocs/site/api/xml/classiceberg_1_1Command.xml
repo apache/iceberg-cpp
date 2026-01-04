@@ -1,0 +1,223 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Command" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::Command</compoundname>
+    <includes refid="cmd__util_8h" local="no">cmd_util.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1Command_1a5f75395f8c2e16e96c3962dbc40e7779" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::Command::program_</definition>
+        <argsstring></argsstring>
+        <name>program_</name>
+        <qualifiedname>iceberg::Command::program_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/cmd_util.h" line="54" column="15" bodyfile="iceberg/test/util/cmd_util.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1Command_1a74cd71432ac09bca6226975d44abefe2" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::Command::args_</definition>
+        <argsstring></argsstring>
+        <name>args_</name>
+        <qualifiedname>iceberg::Command::args_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/cmd_util.h" line="55" column="15" bodyfile="iceberg/test/util/cmd_util.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1Command_1a78f80eaf3b917bbdb6f1cb76206e45b6" prot="private" static="no" mutable="no">
+        <type>std::filesystem::path</type>
+        <definition>std::filesystem::path iceberg::Command::cwd_</definition>
+        <argsstring></argsstring>
+        <name>cwd_</name>
+        <qualifiedname>iceberg::Command::cwd_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/cmd_util.h" line="56" column="25" bodyfile="iceberg/test/util/cmd_util.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1Command_1a2f47deb233413d6f7efd488771676e27" prot="private" static="no" mutable="no">
+        <type>std::map&lt; std::string, std::string &gt;</type>
+        <definition>std::map&lt;std::string, std::string&gt; iceberg::Command::env_vars_</definition>
+        <argsstring></argsstring>
+        <name>env_vars_</name>
+        <qualifiedname>iceberg::Command::env_vars_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/cmd_util.h" line="57" column="12" bodyfile="iceberg/test/util/cmd_util.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Command_1a0ee372e7fa720220e45862656fbe3a4d" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Command::Command</definition>
+        <argsstring>(std::string program)</argsstring>
+        <name>Command</name>
+        <qualifiedname>iceberg::Command::Command</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>program</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/cmd_util.h" line="35" column="12" bodyfile="iceberg/test/util/cmd_util.cc" bodystart="35" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Command_1a3cf5de84ee7f3247db5401cf9f3040de" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Command" kindref="compound">Command</ref> &amp;</type>
+        <definition>Command &amp; iceberg::Command::Arg</definition>
+        <argsstring>(std::string arg)</argsstring>
+        <name>Arg</name>
+        <qualifiedname>iceberg::Command::Arg</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>arg</declname>
+        </param>
+        <briefdescription>
+<para>Add a single argument. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/cmd_util.h" line="38" column="11" bodyfile="iceberg/test/util/cmd_util.cc" bodystart="37" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Command_1a3ce3c9edf5ef6f03acfe4920c4895aab" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Command" kindref="compound">Command</ref> &amp;</type>
+        <definition>Command &amp; iceberg::Command::Args</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;args)</argsstring>
+        <name>Args</name>
+        <qualifiedname>iceberg::Command::Args</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>args</declname>
+        </param>
+        <briefdescription>
+<para>Add multiple arguments at once. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/cmd_util.h" line="41" column="11" bodyfile="iceberg/test/util/cmd_util.cc" bodystart="42" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Command_1ae3e1ec5384671a0bcfb0cf2cb3596056" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Command" kindref="compound">Command</ref> &amp;</type>
+        <definition>Command &amp; iceberg::Command::CurrentDir</definition>
+        <argsstring>(const std::filesystem::path &amp;path)</argsstring>
+        <name>CurrentDir</name>
+        <qualifiedname>iceberg::Command::CurrentDir</qualifiedname>
+        <param>
+          <type>const std::filesystem::path &amp;</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+<para>Set the current working directory for the command. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/cmd_util.h" line="44" column="11" bodyfile="iceberg/test/util/cmd_util.cc" bodystart="47" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Command_1a4f7da9f4b7a0a2d7c4e30b0fcc0510fc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1Command" kindref="compound">Command</ref> &amp;</type>
+        <definition>Command &amp; iceberg::Command::Env</definition>
+        <argsstring>(const std::string &amp;key, const std::string &amp;val)</argsstring>
+        <name>Env</name>
+        <qualifiedname>iceberg::Command::Env</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>key</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+<para>Set an environment variable for the command. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/cmd_util.h" line="47" column="11" bodyfile="iceberg/test/util/cmd_util.cc" bodystart="52" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Command_1a852fb0a2dc8e3b040d2edd5490cbf5f6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::Command::RunCommand</definition>
+        <argsstring>(const std::string &amp;desc) const</argsstring>
+        <name>RunCommand</name>
+        <qualifiedname>iceberg::Command::RunCommand</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>desc</declname>
+        </param>
+        <briefdescription>
+<para>Execute the command and print logs. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A Status indicating success or failure </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/cmd_util.h" line="51" column="8" bodyfile="iceberg/test/util/cmd_util.cc" bodystart="57" bodyend="123"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1Command_1a409027ee281b255ce9ecc0586500d087" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::Command::FormatArgs</definition>
+        <argsstring>() const</argsstring>
+        <name>FormatArgs</name>
+        <qualifiedname>iceberg::Command::FormatArgs</qualifiedname>
+        <briefdescription>
+<para>Format arguments for logging. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/util/cmd_util.h" line="60" column="15" bodyfile="iceberg/test/util/cmd_util.cc" bodystart="125" bodyend="131"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A shell command builder and executor for tests. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/test/util/cmd_util.h" line="33" column="1" bodyfile="iceberg/test/util/cmd_util.h" bodystart="33" bodyend="61"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Command_1a3cf5de84ee7f3247db5401cf9f3040de" prot="public" virt="non-virtual"><scope>iceberg::Command</scope><name>Arg</name></member>
+      <member refid="classiceberg_1_1Command_1a3ce3c9edf5ef6f03acfe4920c4895aab" prot="public" virt="non-virtual"><scope>iceberg::Command</scope><name>Args</name></member>
+      <member refid="classiceberg_1_1Command_1a74cd71432ac09bca6226975d44abefe2" prot="private" virt="non-virtual"><scope>iceberg::Command</scope><name>args_</name></member>
+      <member refid="classiceberg_1_1Command_1a0ee372e7fa720220e45862656fbe3a4d" prot="public" virt="non-virtual"><scope>iceberg::Command</scope><name>Command</name></member>
+      <member refid="classiceberg_1_1Command_1ae3e1ec5384671a0bcfb0cf2cb3596056" prot="public" virt="non-virtual"><scope>iceberg::Command</scope><name>CurrentDir</name></member>
+      <member refid="classiceberg_1_1Command_1a78f80eaf3b917bbdb6f1cb76206e45b6" prot="private" virt="non-virtual"><scope>iceberg::Command</scope><name>cwd_</name></member>
+      <member refid="classiceberg_1_1Command_1a4f7da9f4b7a0a2d7c4e30b0fcc0510fc" prot="public" virt="non-virtual"><scope>iceberg::Command</scope><name>Env</name></member>
+      <member refid="classiceberg_1_1Command_1a2f47deb233413d6f7efd488771676e27" prot="private" virt="non-virtual"><scope>iceberg::Command</scope><name>env_vars_</name></member>
+      <member refid="classiceberg_1_1Command_1a409027ee281b255ce9ecc0586500d087" prot="private" virt="non-virtual"><scope>iceberg::Command</scope><name>FormatArgs</name></member>
+      <member refid="classiceberg_1_1Command_1a5f75395f8c2e16e96c3962dbc40e7779" prot="private" virt="non-virtual"><scope>iceberg::Command</scope><name>program_</name></member>
+      <member refid="classiceberg_1_1Command_1a852fb0a2dc8e3b040d2edd5490cbf5f6" prot="public" virt="non-virtual"><scope>iceberg::Command</scope><name>RunCommand</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

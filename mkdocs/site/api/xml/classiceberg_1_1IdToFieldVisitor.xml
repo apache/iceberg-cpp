@@ -1,0 +1,91 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1IdToFieldVisitor" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::IdToFieldVisitor</compoundname>
+    <includes refid="type__util_8h" local="no">type_util.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1IdToFieldVisitor_1af27a2527a68687ef5ea7eb092e8b9324" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; int32_t, std::reference_wrapper&lt; const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> &gt; &gt; &amp;</type>
+        <definition>std::unordered_map&lt;int32_t, std::reference_wrapper&lt;const SchemaField&gt; &gt;&amp; iceberg::IdToFieldVisitor::id_to_field_</definition>
+        <argsstring></argsstring>
+        <name>id_to_field_</name>
+        <qualifiedname>iceberg::IdToFieldVisitor::id_to_field_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="51" column="22" bodyfile="iceberg/util/type_util.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1IdToFieldVisitor_1a3ebd04688c992871793d81e8c75813b8" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::IdToFieldVisitor::IdToFieldVisitor</definition>
+        <argsstring>(std::unordered_map&lt; int32_t, std::reference_wrapper&lt; const SchemaField &gt; &gt; &amp;id_to_field)</argsstring>
+        <name>IdToFieldVisitor</name>
+        <qualifiedname>iceberg::IdToFieldVisitor::IdToFieldVisitor</qualifiedname>
+        <param>
+          <type>std::unordered_map&lt; int32_t, std::reference_wrapper&lt; const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> &gt; &gt; &amp;</type>
+          <declname>id_to_field</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="44" column="12" bodyfile="iceberg/util/type_util.cc" bodystart="33" bodyend="35"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1IdToFieldVisitor_1a2df4dec75df2678bb131000bdba4c5d3" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::IdToFieldVisitor::Visit</definition>
+        <argsstring>(const PrimitiveType &amp;type)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::IdToFieldVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="47" column="10" bodyfile="iceberg/util/type_util.cc" bodystart="37" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1IdToFieldVisitor_1af86ccc73bf50a8de640397a6e43bd599" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::IdToFieldVisitor::Visit</definition>
+        <argsstring>(const NestedType &amp;type)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::IdToFieldVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1NestedType" kindref="compound">NestedType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="48" column="10" bodyfile="iceberg/util/type_util.cc" bodystart="39" bodyend="50"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Visitor for building a map from field ID to <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> reference. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/type_util.h" line="42" column="1" bodyfile="iceberg/util/type_util.h" bodystart="42" bodyend="52"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1IdToFieldVisitor_1af27a2527a68687ef5ea7eb092e8b9324" prot="private" virt="non-virtual"><scope>iceberg::IdToFieldVisitor</scope><name>id_to_field_</name></member>
+      <member refid="classiceberg_1_1IdToFieldVisitor_1a3ebd04688c992871793d81e8c75813b8" prot="public" virt="non-virtual"><scope>iceberg::IdToFieldVisitor</scope><name>IdToFieldVisitor</name></member>
+      <member refid="classiceberg_1_1IdToFieldVisitor_1a2df4dec75df2678bb131000bdba4c5d3" prot="public" virt="non-virtual"><scope>iceberg::IdToFieldVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1IdToFieldVisitor_1af86ccc73bf50a8de640397a6e43bd599" prot="public" virt="non-virtual"><scope>iceberg::IdToFieldVisitor</scope><name>Visit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1BlobMetadata" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::BlobMetadata</compoundname>
+    <includes refid="statistics__file_8h" local="no">statistics_file.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1BlobMetadata_1a24c36733628f7eb93dddf817db5f8cf3" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::BlobMetadata::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>iceberg::BlobMetadata::type</qualifiedname>
+        <briefdescription>
+<para><ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> of the blob. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/statistics_file.h" line="37" column="15" bodyfile="iceberg/statistics_file.h" bodystart="37" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1BlobMetadata_1a65ffbc7cd817be822e60fffbb7217bc2" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::BlobMetadata::source_snapshot_id</definition>
+        <argsstring></argsstring>
+        <name>source_snapshot_id</name>
+        <qualifiedname>iceberg::BlobMetadata::source_snapshot_id</qualifiedname>
+        <briefdescription>
+<para>ID of the Iceberg table&apos;s snapshot the blob was computed from. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/statistics_file.h" line="39" column="11" bodyfile="iceberg/statistics_file.h" bodystart="39" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1BlobMetadata_1a677f24776580eecfc54caceaa59e6d7f" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::BlobMetadata::source_snapshot_sequence_number</definition>
+        <argsstring></argsstring>
+        <name>source_snapshot_sequence_number</name>
+        <qualifiedname>iceberg::BlobMetadata::source_snapshot_sequence_number</qualifiedname>
+        <briefdescription>
+<para>Sequence number of the Iceberg table&apos;s snapshot the blob was computed from. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/statistics_file.h" line="41" column="11" bodyfile="iceberg/statistics_file.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1BlobMetadata_1add0d07c5a907d2402900be541c0188f9" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int32_t &gt;</type>
+        <definition>std::vector&lt;int32_t&gt; iceberg::BlobMetadata::fields</definition>
+        <argsstring></argsstring>
+        <name>fields</name>
+        <qualifiedname>iceberg::BlobMetadata::fields</qualifiedname>
+        <briefdescription>
+<para>Ordered list of fields the blob was calculated from. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/statistics_file.h" line="43" column="15" bodyfile="iceberg/statistics_file.h" bodystart="43" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1BlobMetadata_1a4221b8b17fa719b1146c3c63248ffeb2" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::BlobMetadata::properties</definition>
+        <argsstring></argsstring>
+        <name>properties</name>
+        <qualifiedname>iceberg::BlobMetadata::properties</qualifiedname>
+        <briefdescription>
+<para>Additional properties of the blob, specific to the blob type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/statistics_file.h" line="45" column="22" bodyfile="iceberg/statistics_file.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="structiceberg_1_1BlobMetadata_1aaffda2f19d58a19f1b7ee90b35e289b4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const BlobMetadata &amp;lhs, const BlobMetadata &amp;rhs)=default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::BlobMetadata::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1BlobMetadata" kindref="compound">BlobMetadata</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1BlobMetadata" kindref="compound">BlobMetadata</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Compare two BlobMetadatas for equality. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/statistics_file.h" line="48" column="15"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A metadata about a statistics or indices blob. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::BlobMetadata</label>
+        <link refid="structiceberg_1_1BlobMetadata"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>fields</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/statistics_file.h" line="35" column="1" bodyfile="iceberg/statistics_file.h" bodystart="35" bodyend="49"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1BlobMetadata_1add0d07c5a907d2402900be541c0188f9" prot="public" virt="non-virtual"><scope>iceberg::BlobMetadata</scope><name>fields</name></member>
+      <member refid="structiceberg_1_1BlobMetadata_1aaffda2f19d58a19f1b7ee90b35e289b4" prot="public" virt="non-virtual"><scope>iceberg::BlobMetadata</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1BlobMetadata_1a4221b8b17fa719b1146c3c63248ffeb2" prot="public" virt="non-virtual"><scope>iceberg::BlobMetadata</scope><name>properties</name></member>
+      <member refid="structiceberg_1_1BlobMetadata_1a65ffbc7cd817be822e60fffbb7217bc2" prot="public" virt="non-virtual"><scope>iceberg::BlobMetadata</scope><name>source_snapshot_id</name></member>
+      <member refid="structiceberg_1_1BlobMetadata_1a677f24776580eecfc54caceaa59e6d7f" prot="public" virt="non-virtual"><scope>iceberg::BlobMetadata</scope><name>source_snapshot_sequence_number</name></member>
+      <member refid="structiceberg_1_1BlobMetadata_1a24c36733628f7eb93dddf817db5f8cf3" prot="public" virt="non-virtual"><scope>iceberg::BlobMetadata</scope><name>type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,21 @@
+var searchData=
+[
+  ['datafile_0',['DataFile',['../structiceberg_1_1DataFile.html',1,'iceberg']]],
+  ['dataoperation_1',['DataOperation',['../structiceberg_1_1DataOperation.html',1,'iceberg']]],
+  ['datatablescan_2',['DataTableScan',['../classiceberg_1_1DataTableScan.html',1,'iceberg']]],
+  ['dateparts_3',['DateParts',['../structiceberg_1_1DateParts.html',1,'iceberg']]],
+  ['dateprojectiontest_4',['DateProjectionTest',['../classiceberg_1_1DateProjectionTest.html',1,'iceberg']]],
+  ['datetype_5',['DateType',['../classiceberg_1_1DateType.html',1,'iceberg']]],
+  ['daytransform_6',['DayTransform',['../classiceberg_1_1DayTransform.html',1,'iceberg']]],
+  ['daytransformtest_7',['DayTransformTest',['../classiceberg_1_1DayTransformTest.html',1,'iceberg']]],
+  ['decimal_8',['Decimal',['../classiceberg_1_1Decimal.html',1,'iceberg']]],
+  ['decimaltype_9',['DecimalType',['../classiceberg_1_1DecimalType.html',1,'iceberg']]],
+  ['decodecontext_10',['DecodeContext',['../structiceberg_1_1avro_1_1DecodeContext.html',1,'iceberg::avro']]],
+  ['defaulterror_11',['DefaultError',['../structiceberg_1_1DefaultError.html',1,'iceberg']]],
+  ['defaulterrorhandler_12',['DefaultErrorHandler',['../classiceberg_1_1rest_1_1DefaultErrorHandler.html',1,'iceberg::rest']]],
+  ['deletefileindex_13',['DeleteFileIndex',['../classiceberg_1_1DeleteFileIndex.html',1,'iceberg']]],
+  ['deletefileindextest_14',['DeleteFileIndexTest',['../classiceberg_1_1DeleteFileIndexTest.html',1,'iceberg']]],
+  ['dockercompose_15',['DockerCompose',['../classiceberg_1_1DockerCompose.html',1,'iceberg']]],
+  ['doubletype_16',['DoubleType',['../classiceberg_1_1DoubleType.html',1,'iceberg']]],
+  ['dropnamespaceerrorhandler_17',['DropNamespaceErrorHandler',['../classiceberg_1_1rest_1_1DropNamespaceErrorHandler.html',1,'iceberg::rest']]]
+];

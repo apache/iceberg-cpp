@@ -1,0 +1,544 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ProjectionUtil" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ProjectionUtil</compoundname>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1ab1286d70edb6b620af36599270a8fd0c" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>static Result&lt; Literal &gt; iceberg::ProjectionUtil::AdjustLiteral</definition>
+        <argsstring>(const Literal &amp;literal, int adjustment)</argsstring>
+        <name>AdjustLiteral</name>
+        <qualifiedname>iceberg::ProjectionUtil::AdjustLiteral</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <param>
+          <type>int</type>
+          <declname>adjustment</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="45" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="45" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1a5a1ab65f24e84117812adc97da759f0d" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>static Result&lt; Literal &gt; iceberg::ProjectionUtil::PlusOne</definition>
+        <argsstring>(const Literal &amp;literal)</argsstring>
+        <name>PlusOne</name>
+        <qualifiedname>iceberg::ProjectionUtil::PlusOne</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="70" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="70" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1ae056da17b6c6e925c505e83277048846" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>static Result&lt; Literal &gt; iceberg::ProjectionUtil::MinusOne</definition>
+        <argsstring>(const Literal &amp;literal)</argsstring>
+        <name>MinusOne</name>
+        <qualifiedname>iceberg::ProjectionUtil::MinusOne</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="74" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="74" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1adab877401e4be608b320cb0afab8e398" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::ProjectionUtil::MakePredicate</definition>
+        <argsstring>(Expression::Operation op, std::string_view name, const std::shared_ptr&lt; TransformFunction &gt; &amp;func, const Literal &amp;literal)</argsstring>
+        <name>MakePredicate</name>
+        <qualifiedname>iceberg::ProjectionUtil::MakePredicate</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+          <declname>op</declname>
+        </param>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &amp;</type>
+          <declname>func</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="78" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="78" bodyend="84"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1aefb24dbe7f983513a00edc3614296d70" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::ProjectionUtil::TransformSet</definition>
+        <argsstring>(std::string_view name, const std::shared_ptr&lt; BoundSetPredicate &gt; &amp;pred, const std::shared_ptr&lt; TransformFunction &gt; &amp;func)</argsstring>
+        <name>TransformSet</name>
+        <qualifiedname>iceberg::ProjectionUtil::TransformSet</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundSetPredicate" kindref="compound">BoundSetPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &amp;</type>
+          <declname>func</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="86" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="86" bodyend="98"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1a89344dcdec5c807b7ecd061d43b27c79" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::ProjectionUtil::TruncateByteArray</definition>
+        <argsstring>(std::string_view name, const std::shared_ptr&lt; BoundLiteralPredicate &gt; &amp;pred, const std::shared_ptr&lt; TransformFunction &gt; &amp;func)</argsstring>
+        <name>TruncateByteArray</name>
+        <qualifiedname>iceberg::ProjectionUtil::TruncateByteArray</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundLiteralPredicate" kindref="compound">BoundLiteralPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &amp;</type>
+          <declname>func</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="100" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="100" bodyend="116"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1a31bc694e76cda37f61848aeec82a9aea" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::ProjectionUtil::TruncateByteArrayStrict</definition>
+        <argsstring>(std::string_view name, const std::shared_ptr&lt; BoundLiteralPredicate &gt; &amp;pred, const std::shared_ptr&lt; TransformFunction &gt; &amp;func)</argsstring>
+        <name>TruncateByteArrayStrict</name>
+        <qualifiedname>iceberg::ProjectionUtil::TruncateByteArrayStrict</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundLiteralPredicate" kindref="compound">BoundLiteralPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &amp;</type>
+          <declname>func</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="118" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="118" bodyend="133"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1a85ca9fbe63d488df74f806bcadcf5e96" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::ProjectionUtil::TransformNumeric</definition>
+        <argsstring>(std::string_view name, const std::shared_ptr&lt; BoundLiteralPredicate &gt; &amp;pred, const std::shared_ptr&lt; TransformFunction &gt; &amp;func)</argsstring>
+        <name>TransformNumeric</name>
+        <qualifiedname>iceberg::ProjectionUtil::TransformNumeric</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundLiteralPredicate" kindref="compound">BoundLiteralPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &amp;</type>
+          <declname>func</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="136" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="136" bodyend="170"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1a23c6600dc646d882cfce14cc0b61ec81" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::ProjectionUtil::TransformNumericStrict</definition>
+        <argsstring>(std::string_view name, const std::shared_ptr&lt; BoundLiteralPredicate &gt; &amp;pred, const std::shared_ptr&lt; TransformFunction &gt; &amp;func)</argsstring>
+        <name>TransformNumericStrict</name>
+        <qualifiedname>iceberg::ProjectionUtil::TransformNumericStrict</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundLiteralPredicate" kindref="compound">BoundLiteralPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &amp;</type>
+          <declname>func</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="172" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="172" bodyend="204"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1a09517960360d960ac5ae4daf8210ea5d" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::ProjectionUtil::TruncateStringLiteral</definition>
+        <argsstring>(std::string_view name, const std::shared_ptr&lt; BoundLiteralPredicate &gt; &amp;pred, const std::shared_ptr&lt; TransformFunction &gt; &amp;func)</argsstring>
+        <name>TruncateStringLiteral</name>
+        <qualifiedname>iceberg::ProjectionUtil::TruncateStringLiteral</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundLiteralPredicate" kindref="compound">BoundLiteralPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &amp;</type>
+          <declname>func</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="206" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="206" bodyend="238"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1a957063412ad73b084b8712a1d96b9237" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::ProjectionUtil::TruncateStringLiteralStrict</definition>
+        <argsstring>(std::string_view name, const std::shared_ptr&lt; BoundLiteralPredicate &gt; &amp;pred, const std::shared_ptr&lt; TransformFunction &gt; &amp;func)</argsstring>
+        <name>TruncateStringLiteralStrict</name>
+        <qualifiedname>iceberg::ProjectionUtil::TruncateStringLiteralStrict</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundLiteralPredicate" kindref="compound">BoundLiteralPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &amp;</type>
+          <declname>func</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="240" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="240" bodyend="272"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1a7887aae3f9dd4f43a55e471dae3865af" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::ProjectionUtil::FixInclusiveTimeProjection</definition>
+        <argsstring>(std::unique_ptr&lt; UnboundPredicateImpl&lt; BoundReference &gt; &gt; projected)</argsstring>
+        <name>FixInclusiveTimeProjection</name>
+        <qualifiedname>iceberg::ProjectionUtil::FixInclusiveTimeProjection</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicateImpl" kindref="compound">UnboundPredicateImpl</ref>&lt; <ref refid="classiceberg_1_1BoundReference" kindref="compound">BoundReference</ref> &gt; &gt;</type>
+          <declname>projected</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="277" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="277" bodyend="373"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1a664aa7b6b27eff144b7ed4ca9c0b5de8" prot="private" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::ProjectionUtil::FixStrictTimeProjection</definition>
+        <argsstring>(std::unique_ptr&lt; UnboundPredicateImpl&lt; BoundReference &gt; &gt; projected)</argsstring>
+        <name>FixStrictTimeProjection</name>
+        <qualifiedname>iceberg::ProjectionUtil::FixStrictTimeProjection</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicateImpl" kindref="compound">UnboundPredicateImpl</ref>&lt; <ref refid="classiceberg_1_1BoundReference" kindref="compound">BoundReference</ref> &gt; &gt;</type>
+          <declname>projected</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="378" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="378" bodyend="472"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1a89205642d390dc2aec4b04868f989d3e" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::ProjectionUtil::IdentityProject</definition>
+        <argsstring>(std::string_view name, const std::shared_ptr&lt; BoundPredicate &gt; &amp;pred)</argsstring>
+        <name>IdentityProject</name>
+        <qualifiedname>iceberg::ProjectionUtil::IdentityProject</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="475" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="475" bodyend="498"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1a2352c672c2de992f5aabfee8168877bd" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::ProjectionUtil::BucketProject</definition>
+        <argsstring>(std::string_view name, const std::shared_ptr&lt; BoundPredicate &gt; &amp;pred, const std::shared_ptr&lt; TransformFunction &gt; &amp;func)</argsstring>
+        <name>BucketProject</name>
+        <qualifiedname>iceberg::ProjectionUtil::BucketProject</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &amp;</type>
+          <declname>func</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="500" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="500" bodyend="534"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1a6d5f34eed54b3d187e30a159d2207cd9" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::ProjectionUtil::TruncateProject</definition>
+        <argsstring>(std::string_view name, const std::shared_ptr&lt; BoundPredicate &gt; &amp;pred, const std::shared_ptr&lt; TransformFunction &gt; &amp;func)</argsstring>
+        <name>TruncateProject</name>
+        <qualifiedname>iceberg::ProjectionUtil::TruncateProject</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &amp;</type>
+          <declname>func</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="536" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="536" bodyend="572"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1ac07eb2464d1d7f7b1a1be8695bcbb0bd" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::ProjectionUtil::TemporalProject</definition>
+        <argsstring>(std::string_view name, const std::shared_ptr&lt; BoundPredicate &gt; &amp;pred, const std::shared_ptr&lt; TransformFunction &gt; &amp;func)</argsstring>
+        <name>TemporalProject</name>
+        <qualifiedname>iceberg::ProjectionUtil::TemporalProject</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &amp;</type>
+          <declname>func</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="574" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="574" bodyend="606"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1aef5a94d949872369bb2470512e7c414e" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::ProjectionUtil::RemoveTransform</definition>
+        <argsstring>(std::string_view name, const std::shared_ptr&lt; BoundPredicate &gt; &amp;pred)</argsstring>
+        <name>RemoveTransform</name>
+        <qualifiedname>iceberg::ProjectionUtil::RemoveTransform</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="608" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="608" bodyend="631"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1aafb868882c77b1b0910f39b81498850a" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::ProjectionUtil::BucketProjectStrict</definition>
+        <argsstring>(std::string_view name, const std::shared_ptr&lt; BoundPredicate &gt; &amp;pred, const std::shared_ptr&lt; TransformFunction &gt; &amp;func)</argsstring>
+        <name>BucketProjectStrict</name>
+        <qualifiedname>iceberg::ProjectionUtil::BucketProjectStrict</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &amp;</type>
+          <declname>func</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="633" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="633" bodyend="665"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1abb8820c0c3827f24578175a8f876cf59" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::ProjectionUtil::TruncateProjectStrict</definition>
+        <argsstring>(std::string_view name, const std::shared_ptr&lt; BoundPredicate &gt; &amp;pred, const std::shared_ptr&lt; TransformFunction &gt; &amp;func)</argsstring>
+        <name>TruncateProjectStrict</name>
+        <qualifiedname>iceberg::ProjectionUtil::TruncateProjectStrict</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &amp;</type>
+          <declname>func</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="667" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="667" bodyend="703"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ProjectionUtil_1aaf9ad58827f638aa8795d3cc3d5b9b50" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::ProjectionUtil::TemporalProjectStrict</definition>
+        <argsstring>(std::string_view name, const std::shared_ptr&lt; BoundPredicate &gt; &amp;pred, const std::shared_ptr&lt; TransformFunction &gt; &amp;func)</argsstring>
+        <name>TemporalProjectStrict</name>
+        <qualifiedname>iceberg::ProjectionUtil::TemporalProjectStrict</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref> &gt; &amp;</type>
+          <declname>pred</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &amp;</type>
+          <declname>func</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/projection_util_internal.h" line="705" column="17" bodyfile="iceberg/util/projection_util_internal.h" bodystart="705" bodyend="737"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/projection_util_internal.h" line="43" column="1" bodyfile="iceberg/util/projection_util_internal.h" bodystart="43" bodyend="738"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ProjectionUtil_1ab1286d70edb6b620af36599270a8fd0c" prot="private" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>AdjustLiteral</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1a2352c672c2de992f5aabfee8168877bd" prot="public" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>BucketProject</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1aafb868882c77b1b0910f39b81498850a" prot="public" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>BucketProjectStrict</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1a7887aae3f9dd4f43a55e471dae3865af" prot="private" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>FixInclusiveTimeProjection</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1a664aa7b6b27eff144b7ed4ca9c0b5de8" prot="private" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>FixStrictTimeProjection</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1a89205642d390dc2aec4b04868f989d3e" prot="public" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>IdentityProject</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1adab877401e4be608b320cb0afab8e398" prot="private" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>MakePredicate</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1ae056da17b6c6e925c505e83277048846" prot="private" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>MinusOne</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1a5a1ab65f24e84117812adc97da759f0d" prot="private" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>PlusOne</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1aef5a94d949872369bb2470512e7c414e" prot="public" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>RemoveTransform</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1ac07eb2464d1d7f7b1a1be8695bcbb0bd" prot="public" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>TemporalProject</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1aaf9ad58827f638aa8795d3cc3d5b9b50" prot="public" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>TemporalProjectStrict</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1a85ca9fbe63d488df74f806bcadcf5e96" prot="private" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>TransformNumeric</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1a23c6600dc646d882cfce14cc0b61ec81" prot="private" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>TransformNumericStrict</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1aefb24dbe7f983513a00edc3614296d70" prot="private" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>TransformSet</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1a89344dcdec5c807b7ecd061d43b27c79" prot="private" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>TruncateByteArray</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1a31bc694e76cda37f61848aeec82a9aea" prot="private" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>TruncateByteArrayStrict</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1a6d5f34eed54b3d187e30a159d2207cd9" prot="public" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>TruncateProject</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1abb8820c0c3827f24578175a8f876cf59" prot="public" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>TruncateProjectStrict</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1a09517960360d960ac5ae4daf8210ea5d" prot="private" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>TruncateStringLiteral</name></member>
+      <member refid="classiceberg_1_1ProjectionUtil_1a957063412ad73b084b8712a1d96b9237" prot="private" virt="non-virtual"><scope>iceberg::ProjectionUtil</scope><name>TruncateStringLiteralStrict</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

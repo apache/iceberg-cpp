@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1PartitionValuesEqual" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::PartitionValuesEqual</compoundname>
+    <includes refid="partition__value__util_8h" local="no">partition_value_util.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1PartitionValuesEqual_1a988348f002ff04ced8b20eec84108fea" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::PartitionValuesEqual::operator()</definition>
+        <argsstring>(const PartitionValues &amp;lhs, const PartitionValues &amp;rhs) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::PartitionValuesEqual::operator()</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/partition_value_util.h" line="63" column="8" bodyfile="iceberg/util/partition_value_util.h" bodystart="63" bodyend="65"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Equality functor for <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/partition_value_util.h" line="62" column="1" bodyfile="iceberg/util/partition_value_util.h" bodystart="62" bodyend="66"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1PartitionValuesEqual_1a988348f002ff04ced8b20eec84108fea" prot="public" virt="non-virtual"><scope>iceberg::PartitionValuesEqual</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
