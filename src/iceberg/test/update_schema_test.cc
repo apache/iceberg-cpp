@@ -315,8 +315,6 @@ TEST_F(UpdateSchemaTest, CommitSuccess) {
 
   const auto& field = field_opt->get();
   EXPECT_EQ(field.name(), "committed_col");
-  auto type_id = field.type()->type_id();
-
   EXPECT_EQ(*field.type(), *int64());
   EXPECT_TRUE(field.optional());
   EXPECT_EQ(field.doc(), "A committed column");
