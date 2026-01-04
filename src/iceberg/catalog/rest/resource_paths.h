@@ -23,7 +23,6 @@
 #include <string>
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
-#include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
@@ -48,7 +47,7 @@ class ICEBERG_REST_EXPORT ResourcePaths {
   Status SetBaseUri(const std::string& base_uri);
 
   /// \brief Get the /v1/config endpoint path.
-  Result<std::string> Config() const;
+  static Result<std::string> Config(const std::string& base_uri);
 
   /// \brief Get the /v1/{prefix}/oauth/tokens endpoint path.
   Result<std::string> OAuth2Tokens() const;
