@@ -17,8 +17,6 @@
  * under the License.
  */
 
-#include <ranges>
-
 #include <arrow/array/builder_binary.h>
 #include <arrow/array/builder_decimal.h>
 #include <arrow/array/builder_nested.h>
@@ -35,6 +33,7 @@
 #include "iceberg/arrow/arrow_status_internal.h"
 #include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
+#include "iceberg/metadata_columns.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_util.h"
 #include "iceberg/util/checked_cast.h"
@@ -51,6 +50,7 @@ Status AppendFieldToBuilder(const ::avro::NodePtr& avro_node,
                             const ::avro::GenericDatum& avro_datum,
                             const FieldProjection& projection,
                             const SchemaField& projected_field,
+                            const arrow::MetadataColumnContext& metadata_context,
                             ::arrow::ArrayBuilder* array_builder);
 
 /// \brief Append Avro record data to Arrow struct builder.
@@ -58,6 +58,7 @@ Status AppendStructToBuilder(const ::avro::NodePtr& avro_node,
                              const ::avro::GenericDatum& avro_datum,
                              const std::span<const FieldProjection>& projections,
                              const StructType& struct_type,
+                             const arrow::MetadataColumnContext& metadata_context,
                              ::arrow::ArrayBuilder* array_builder) {
   if (avro_node->type() != ::avro::AVRO_RECORD) {
     return InvalidArgument("Expected Avro record, got type: {}", ToString(avro_node));
@@ -83,9 +84,21 @@ Status AppendStructToBuilder(const ::avro::NodePtr& avro_node,
       const auto& avro_field_datum = avro_record.fieldAt(avro_field_index);
       ICEBERG_RETURN_UNEXPECTED(AppendFieldToBuilder(avro_field_node, avro_field_datum,
                                                      field_projection, expected_field,
-                                                     field_builder));
+                                                     metadata_context, field_builder));
     } else if (field_projection.kind == FieldProjection::Kind::kNull) {
       ICEBERG_ARROW_RETURN_NOT_OK(field_builder->AppendNull());
+    } else if (field_projection.kind == FieldProjection::Kind::kMetadata) {
+      int32_t field_id = expected_field.field_id();
+      if (field_id == MetadataColumns::kFilePathColumnId) {
+        auto string_builder =
+            internal::checked_cast<::arrow::StringBuilder*>(field_builder);
+        ICEBERG_ARROW_RETURN_NOT_OK(string_builder->Append(metadata_context.file_path));
+      } else if (field_id == MetadataColumns::kFilePositionColumnId) {
+        auto int_builder = internal::checked_cast<::arrow::Int64Builder*>(field_builder);
+        ICEBERG_ARROW_RETURN_NOT_OK(int_builder->Append(metadata_context.next_file_pos));
+      } else {
+        return NotSupported("Unsupported metadata column field id: {}", field_id);
+      }
     } else {
       return NotImplemented("Unsupported field projection kind: {}",
                             ToString(field_projection.kind));
@@ -99,6 +112,7 @@ Status AppendListToBuilder(const ::avro::NodePtr& avro_node,
                            const ::avro::GenericDatum& avro_datum,
                            const FieldProjection& element_projection,
                            const ListType& list_type,
+                           const arrow::MetadataColumnContext& metadata_context,
                            ::arrow::ArrayBuilder* array_builder) {
   if (avro_node->type() != ::avro::AVRO_ARRAY) {
     return InvalidArgument("Expected Avro array, got type: {}", ToString(avro_node));
@@ -113,8 +127,9 @@ Status AppendListToBuilder(const ::avro::NodePtr& avro_node,
   const auto& element_field = list_type.fields().back();
 
   for (const auto& element : avro_array.value()) {
-    ICEBERG_RETURN_UNEXPECTED(AppendFieldToBuilder(
-        element_node, element, element_projection, element_field, value_builder));
+    ICEBERG_RETURN_UNEXPECTED(AppendFieldToBuilder(element_node, element,
+                                                   element_projection, element_field,
+                                                   metadata_context, value_builder));
   }
   return {};
 }
@@ -124,7 +139,9 @@ Status AppendMapToBuilder(const ::avro::NodePtr& avro_node,
                           const ::avro::GenericDatum& avro_datum,
                           const FieldProjection& key_projection,
                           const FieldProjection& value_projection,
-                          const MapType& map_type, ::arrow::ArrayBuilder* array_builder) {
+                          const MapType& map_type,
+                          const arrow::MetadataColumnContext& metadata_context,
+                          ::arrow::ArrayBuilder* array_builder) {
   auto* map_builder = internal::checked_cast<::arrow::MapBuilder*>(array_builder);
 
   if (avro_node->type() == ::avro::AVRO_MAP) {
@@ -143,10 +160,12 @@ Status AppendMapToBuilder(const ::avro::NodePtr& avro_node,
     auto* item_builder = map_builder->item_builder();
 
     for (const auto& entry : map_entries) {
-      ICEBERG_RETURN_UNEXPECTED(AppendFieldToBuilder(
-          key_node, entry.first, key_projection, key_field, key_builder));
-      ICEBERG_RETURN_UNEXPECTED(AppendFieldToBuilder(
-          value_node, entry.second, value_projection, value_field, item_builder));
+      ICEBERG_RETURN_UNEXPECTED(AppendFieldToBuilder(key_node, entry.first,
+                                                     key_projection, key_field,
+                                                     metadata_context, key_builder));
+      ICEBERG_RETURN_UNEXPECTED(AppendFieldToBuilder(value_node, entry.second,
+                                                     value_projection, value_field,
+                                                     metadata_context, item_builder));
     }
 
     return {};
@@ -173,10 +192,12 @@ Status AppendMapToBuilder(const ::avro::NodePtr& avro_node,
 
     for (const auto& entry : array_entries) {
       const auto& record = entry.value<::avro::GenericRecord>();
-      ICEBERG_RETURN_UNEXPECTED(AppendFieldToBuilder(
-          key_node, record.fieldAt(0), key_projection, key_field, key_builder));
-      ICEBERG_RETURN_UNEXPECTED(AppendFieldToBuilder(
-          value_node, record.fieldAt(1), value_projection, value_field, item_builder));
+      ICEBERG_RETURN_UNEXPECTED(AppendFieldToBuilder(key_node, record.fieldAt(0),
+                                                     key_projection, key_field,
+                                                     metadata_context, key_builder));
+      ICEBERG_RETURN_UNEXPECTED(AppendFieldToBuilder(value_node, record.fieldAt(1),
+                                                     value_projection, value_field,
+                                                     metadata_context, item_builder));
     }
 
     return {};
@@ -191,12 +212,13 @@ Status AppendNestedValueToBuilder(const ::avro::NodePtr& avro_node,
                                   const ::avro::GenericDatum& avro_datum,
                                   const std::span<const FieldProjection>& projections,
                                   const NestedType& projected_type,
+                                  const arrow::MetadataColumnContext& metadata_context,
                                   ::arrow::ArrayBuilder* array_builder) {
   switch (projected_type.type_id()) {
     case TypeId::kStruct: {
       const auto& struct_type = internal::checked_cast<const StructType&>(projected_type);
       return AppendStructToBuilder(avro_node, avro_datum, projections, struct_type,
-                                   array_builder);
+                                   metadata_context, array_builder);
     }
 
     case TypeId::kList: {
@@ -206,7 +228,7 @@ Status AppendNestedValueToBuilder(const ::avro::NodePtr& avro_node,
       }
       const auto& list_type = internal::checked_cast<const ListType&>(projected_type);
       return AppendListToBuilder(avro_node, avro_datum, projections[0], list_type,
-                                 array_builder);
+                                 metadata_context, array_builder);
     }
 
     case TypeId::kMap: {
@@ -216,7 +238,7 @@ Status AppendNestedValueToBuilder(const ::avro::NodePtr& avro_node,
       }
       const auto& map_type = internal::checked_cast<const MapType&>(projected_type);
       return AppendMapToBuilder(avro_node, avro_datum, projections[0], projections[1],
-                                map_type, array_builder);
+                                map_type, metadata_context, array_builder);
     }
 
     default:
@@ -420,6 +442,7 @@ Status AppendFieldToBuilder(const ::avro::NodePtr& avro_node,
                             const ::avro::GenericDatum& avro_datum,
                             const FieldProjection& projection,
                             const SchemaField& projected_field,
+                            const arrow::MetadataColumnContext& metadata_context,
                             ::arrow::ArrayBuilder* array_builder) {
   if (avro_node->type() == ::avro::AVRO_UNION) {
     size_t branch = avro_datum.unionBranch();
@@ -428,7 +451,7 @@ Status AppendFieldToBuilder(const ::avro::NodePtr& avro_node,
       return {};
     } else {
       return AppendFieldToBuilder(avro_node->leafAt(branch), avro_datum, projection,
-                                  projected_field, array_builder);
+                                  projected_field, metadata_context, array_builder);
     }
   }
 
@@ -439,7 +462,7 @@ Status AppendFieldToBuilder(const ::avro::NodePtr& avro_node,
   } else {
     const auto& nested_type = internal::checked_cast<const NestedType&>(projected_type);
     return AppendNestedValueToBuilder(avro_node, avro_datum, projection.children,
-                                      nested_type, array_builder);
+                                      nested_type, metadata_context, array_builder);
   }
 }
 
@@ -449,9 +472,10 @@ Status AppendDatumToBuilder(const ::avro::NodePtr& avro_node,
                             const ::avro::GenericDatum& avro_datum,
                             const SchemaProjection& projection,
                             const Schema& projected_schema,
+                            const arrow::MetadataColumnContext& metadata_context,
                             ::arrow::ArrayBuilder* array_builder) {
   return AppendNestedValueToBuilder(avro_node, avro_datum, projection.fields,
-                                    projected_schema, array_builder);
+                                    projected_schema, metadata_context, array_builder);
 }
 
 namespace {

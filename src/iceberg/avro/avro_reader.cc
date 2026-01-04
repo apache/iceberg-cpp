@@ -33,11 +33,13 @@
 
 #include "iceberg/arrow/arrow_fs_file_io_internal.h"
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/arrow/metadata_column_util_internal.h"
 #include "iceberg/avro/avro_data_util_internal.h"
 #include "iceberg/avro/avro_direct_decoder_internal.h"
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/avro/avro_stream_internal.h"
+#include "iceberg/metadata_columns.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/util/checked_cast.h"
@@ -59,6 +61,16 @@ Result<std::unique_ptr<AvroInputStream>> CreateInputStream(const ReaderOptions& 
   return std::make_unique<AvroInputStream>(file, buffer_size);
 }
 
+// Check if the row position metadata column is in the read schema
+bool HasRowPositionColumn(const Schema& schema) {
+  for (const auto& field : schema.fields()) {
+    if (field.field_id() == MetadataColumns::kFilePositionColumnId) {
+      return true;
+    }
+  }
+  return false;
+}
+
 // Abstract base class for Avro read backends.
 class AvroReadBackend {
  public:
@@ -70,6 +82,7 @@ class AvroReadBackend {
   virtual void InitReadContext(const ::avro::ValidSchema& reader_schema) = 0;
   virtual bool HasMore() = 0;
   virtual Status DecodeNext(const SchemaProjection& projection, const Schema& read_schema,
+                            const arrow::MetadataColumnContext& metadata_context,
                             ::arrow::ArrayBuilder* builder) = 0;
   virtual bool IsPastSync(int64_t split_end) const = 0;
   virtual const ::avro::Metadata& GetMetadata() const = 0;
@@ -101,10 +114,11 @@ class DirectDecoderBackend : public AvroReadBackend {
   bool HasMore() override { return reader_->hasMore(); }
 
   Status DecodeNext(const SchemaProjection& projection, const Schema& read_schema,
+                    const arrow::MetadataColumnContext& metadata_context,
                     ::arrow::ArrayBuilder* builder) override {
     reader_->decr();
     return DecodeAvroToBuilder(GetReaderSchema().root(), reader_->decoder(), projection,
-                               read_schema, builder, decode_context_);
+                               read_schema, metadata_context, builder, decode_context_);
   }
 
   bool IsPastSync(int64_t split_end) const override {
@@ -160,9 +174,10 @@ class GenericDatumBackend : public AvroReadBackend {
   }
 
   Status DecodeNext(const SchemaProjection& projection, const Schema& read_schema,
+                    const arrow::MetadataColumnContext& metadata_context,
                     ::arrow::ArrayBuilder* builder) override {
     return AppendDatumToBuilder(GetReaderSchema().root(), *datum_, projection,
-                                read_schema, builder);
+                                read_schema, metadata_context, builder);
   }
 
   bool IsPastSync(int64_t split_end) const override {
@@ -258,7 +273,14 @@ class AvroReader::Impl {
 
     if (options.split) {
       split_end_ = options.split->offset + options.split->length;
+
+      if (options.split->offset != 0 && HasRowPositionColumn(*read_schema_)) {
+        return NotSupported(
+            "Reading '_pos' metadata column with split is not supported for Avro files.");
+      }
     }
+
+    metadata_context_ = {.file_path = options.path, .next_file_pos = 0};
 
     return {};
   }
@@ -275,8 +297,9 @@ class AvroReader::Impl {
       if (!backend_->HasMore()) {
         break;
       }
-      ICEBERG_RETURN_UNEXPECTED(
-          backend_->DecodeNext(projection_, *read_schema_, context_->builder_.get()));
+      ICEBERG_RETURN_UNEXPECTED(backend_->DecodeNext(
+          projection_, *read_schema_, metadata_context_, context_->builder_.get()));
+      metadata_context_.next_file_pos++;
     }
 
     return ConvertBuilderToArrowArray();
@@ -381,6 +404,8 @@ class AvroReader::Impl {
   std::shared_ptr<::iceberg::Schema> read_schema_;
   // The projection result to apply to the read schema.
   SchemaProjection projection_;
+  // The metadata column context for populating _file and _pos columns.
+  arrow::MetadataColumnContext metadata_context_;
   // The read backend to read data into Arrow.
   std::unique_ptr<AvroReadBackend> backend_;
   // The context to keep track of the reading progress.

@@ -81,7 +81,7 @@ void VerifyAppendDatumToBuilder(const Schema& projected_schema,
   // Call AppendDatumToBuilder repeatedly to append the datum
   for (const auto& avro_datum : avro_data) {
     ASSERT_THAT(AppendDatumToBuilder(avro_node, avro_datum, projection, projected_schema,
-                                     builder.get()),
+                                     /*metadata_context=*/{}, builder.get()),
                 IsOk());
   }
 
@@ -1227,9 +1227,10 @@ void VerifyRoundTripConversion(const RoundTripParam& test_case) {
 
   auto builder = ::arrow::MakeBuilder(arrow_struct_type).ValueOrDie();
   for (const auto& datum : extracted_data) {
-    ASSERT_THAT(AppendDatumToBuilder(avro_node, datum, projection,
-                                     *test_case.iceberg_schema, builder.get()),
-                IsOk());
+    ASSERT_THAT(
+        AppendDatumToBuilder(avro_node, datum, projection, *test_case.iceberg_schema,
+                             /*metadata_context=*/{}, builder.get()),
+        IsOk());
   }
 
   auto rebuilt_array = builder->Finish().ValueOrDie();

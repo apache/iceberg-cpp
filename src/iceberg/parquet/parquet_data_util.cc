@@ -24,6 +24,7 @@
 #include <arrow/type.h>
 
 #include "iceberg/arrow/arrow_status_internal.h"
+#include "iceberg/metadata_columns.h"
 #include "iceberg/parquet/parquet_data_util_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_util.h"
@@ -40,7 +41,7 @@ Result<std::shared_ptr<::arrow::Array>> ProjectNestedArray(
     const std::shared_ptr<::arrow::Array>& array,
     const std::shared_ptr<::arrow::DataType>& output_arrow_type,
     const NestedType& nested_type, std::span<const FieldProjection> projections,
-    ::arrow::MemoryPool* pool);
+    const arrow::MetadataColumnContext& metadata_context, ::arrow::MemoryPool* pool);
 
 /// \brief Create a null array of the given type and length.
 Result<std::shared_ptr<::arrow::Array>> MakeNullArray(
@@ -72,7 +73,7 @@ Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
     const std::shared_ptr<::arrow::StructArray>& struct_array,
     const std::shared_ptr<::arrow::StructType>& output_struct_type,
     const StructType& struct_type, std::span<const FieldProjection> projections,
-    ::arrow::MemoryPool* pool) {
+    const arrow::MetadataColumnContext& metadata_context, ::arrow::MemoryPool* pool) {
   if (struct_type.fields().size() != projections.size()) {
     return InvalidSchema(
         "Inconsistent number of fields ({}) and number of projections ({})",
@@ -108,7 +109,7 @@ Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
         ICEBERG_ASSIGN_OR_RAISE(
             projected_array,
             ProjectNestedArray(parquet_array, output_arrow_type, nested_type,
-                               field_projection.children, pool));
+                               field_projection.children, metadata_context, pool));
       } else {
         ICEBERG_ASSIGN_OR_RAISE(
             projected_array,
@@ -118,6 +119,19 @@ Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
       ICEBERG_ASSIGN_OR_RAISE(
           projected_array,
           MakeNullArray(output_arrow_type, struct_array->length(), pool));
+    } else if (field_projection.kind == FieldProjection::Kind::kMetadata) {
+      int32_t field_id = projected_field.field_id();
+      if (field_id == MetadataColumns::kFilePathColumnId) {
+        ICEBERG_ASSIGN_OR_RAISE(projected_array,
+                                arrow::MakeFilePathArray(metadata_context.file_path,
+                                                         struct_array->length(), pool));
+      } else if (field_id == MetadataColumns::kFilePositionColumnId) {
+        ICEBERG_ASSIGN_OR_RAISE(
+            projected_array, arrow::MakeRowPositionArray(metadata_context.next_file_pos,
+                                                         struct_array->length(), pool));
+      } else {
+        return NotSupported("Unsupported metadata field id: {}", field_id);
+      }
     } else {
       return NotImplemented("Unsupported field projection kind: {}",
                             ToString(field_projection.kind));
@@ -138,7 +152,8 @@ Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
 Result<std::shared_ptr<::arrow::Array>> ProjectListArray(
     const std::shared_ptr<::arrow::ListArray>& list_array,
     const std::shared_ptr<::arrow::ListType>& output_list_type, const ListType& list_type,
-    std::span<const FieldProjection> projections, ::arrow::MemoryPool* pool) {
+    std::span<const FieldProjection> projections,
+    const arrow::MetadataColumnContext& metadata_context, ::arrow::MemoryPool* pool) {
   if (projections.size() != 1) {
     return InvalidArgument("Expected 1 projection for list, got: {}", projections.size());
   }
@@ -154,7 +169,7 @@ Result<std::shared_ptr<::arrow::Array>> ProjectListArray(
     ICEBERG_ASSIGN_OR_RAISE(
         projected_values,
         ProjectNestedArray(list_array->values(), output_element_type, nested_type,
-                           element_projection.children, pool));
+                           element_projection.children, metadata_context, pool));
   } else {
     ICEBERG_ASSIGN_OR_RAISE(
         projected_values,
@@ -170,7 +185,8 @@ Result<std::shared_ptr<::arrow::Array>> ProjectListArray(
 Result<std::shared_ptr<::arrow::Array>> ProjectMapArray(
     const std::shared_ptr<::arrow::MapArray>& map_array,
     const std::shared_ptr<::arrow::MapType>& output_map_type, const MapType& map_type,
-    std::span<const FieldProjection> projections, ::arrow::MemoryPool* pool) {
+    std::span<const FieldProjection> projections,
+    const arrow::MetadataColumnContext& metadata_context, ::arrow::MemoryPool* pool) {
   if (projections.size() != 2) {
     return InvalidArgument("Expected 2 projections for map, got: {}", projections.size());
   }
@@ -185,8 +201,9 @@ Result<std::shared_ptr<::arrow::Array>> ProjectMapArray(
   if (key_type->is_nested()) {
     const auto& nested_type = internal::checked_cast<const NestedType&>(*key_type);
     ICEBERG_ASSIGN_OR_RAISE(
-        projected_keys, ProjectNestedArray(map_array->keys(), output_map_type->key_type(),
-                                           nested_type, key_projection.children, pool));
+        projected_keys,
+        ProjectNestedArray(map_array->keys(), output_map_type->key_type(), nested_type,
+                           key_projection.children, metadata_context, pool));
   } else {
     ICEBERG_ASSIGN_OR_RAISE(
         projected_keys,
@@ -200,7 +217,7 @@ Result<std::shared_ptr<::arrow::Array>> ProjectMapArray(
     ICEBERG_ASSIGN_OR_RAISE(
         projected_items,
         ProjectNestedArray(map_array->items(), output_map_type->item_type(), nested_type,
-                           value_projection.children, pool));
+                           value_projection.children, metadata_context, pool));
   } else {
     ICEBERG_ASSIGN_OR_RAISE(
         projected_items,
@@ -217,7 +234,7 @@ Result<std::shared_ptr<::arrow::Array>> ProjectNestedArray(
     const std::shared_ptr<::arrow::Array>& array,
     const std::shared_ptr<::arrow::DataType>& output_arrow_type,
     const NestedType& nested_type, std::span<const FieldProjection> projections,
-    ::arrow::MemoryPool* pool) {
+    const arrow::MetadataColumnContext& metadata_context, ::arrow::MemoryPool* pool) {
   switch (nested_type.type_id()) {
     case TypeId::kStruct: {
       if (output_arrow_type->id() != ::arrow::Type::STRUCT) {
@@ -229,7 +246,7 @@ Result<std::shared_ptr<::arrow::Array>> ProjectNestedArray(
           internal::checked_pointer_cast<::arrow::StructType>(output_arrow_type);
       const auto& struct_type = internal::checked_cast<const StructType&>(nested_type);
       return ProjectStructArray(struct_array, output_struct_type, struct_type,
-                                projections, pool);
+                                projections, metadata_context, pool);
     }
     case TypeId::kList: {
       if (output_arrow_type->id() != ::arrow::Type::LIST) {
@@ -241,7 +258,8 @@ Result<std::shared_ptr<::arrow::Array>> ProjectNestedArray(
       auto output_list_type =
           internal::checked_pointer_cast<::arrow::ListType>(output_arrow_type);
       const auto& list_type = internal::checked_cast<const ListType&>(nested_type);
-      return ProjectListArray(list_array, output_list_type, list_type, projections, pool);
+      return ProjectListArray(list_array, output_list_type, list_type, projections,
+                              metadata_context, pool);
     }
     case TypeId::kMap: {
       if (output_arrow_type->id() != ::arrow::Type::MAP) {
@@ -252,7 +270,8 @@ Result<std::shared_ptr<::arrow::Array>> ProjectNestedArray(
       auto output_map_type =
           internal::checked_pointer_cast<::arrow::MapType>(output_arrow_type);
       const auto& map_type = internal::checked_cast<const MapType&>(nested_type);
-      return ProjectMapArray(map_array, output_map_type, map_type, projections, pool);
+      return ProjectMapArray(map_array, output_map_type, map_type, projections,
+                             metadata_context, pool);
     }
     default:
       return InvalidSchema("Cannot project array of unsupported nested type: {}",
@@ -266,14 +285,14 @@ Result<std::shared_ptr<::arrow::RecordBatch>> ProjectRecordBatch(
     std::shared_ptr<::arrow::RecordBatch> record_batch,
     const std::shared_ptr<::arrow::Schema>& output_arrow_schema,
     const Schema& projected_schema, const SchemaProjection& projection,
-    ::arrow::MemoryPool* pool) {
+    const arrow::MetadataColumnContext& metadata_context, ::arrow::MemoryPool* pool) {
   auto array = std::make_shared<::arrow::StructArray>(
       ::arrow::struct_(record_batch->schema()->fields()), record_batch->num_rows(),
       record_batch->columns());
   ICEBERG_ASSIGN_OR_RAISE(
       auto output_array,
       ProjectNestedArray(array, ::arrow::struct_(output_arrow_schema->fields()),
-                         projected_schema, projection.fields, pool));
+                         projected_schema, projection.fields, metadata_context, pool));
   auto* struct_array = internal::checked_cast<::arrow::StructArray*>(output_array.get());
   return ::arrow::RecordBatch::Make(output_arrow_schema, record_batch->num_rows(),
                                     struct_array->fields());

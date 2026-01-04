@@ -19,16 +19,13 @@
 
 #pragma once
 
-#include <memory>
-#include <span>
-
 #include <arrow/array/builder_base.h>
 #include <avro/Decoder.hh>
 #include <avro/Node.hh>
 
+#include "iceberg/arrow/metadata_column_util_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
-#include "iceberg/schema_internal.h"
 #include "iceberg/schema_util.h"
 
 namespace iceberg::avro {
@@ -55,33 +52,18 @@ struct DecodeContext {
 /// methods and immediately appending to Arrow builders. Matches Java Iceberg's
 /// ValueReader approach for better performance.
 ///
-/// Features:
-/// - All primitive, temporal, and logical types
-/// - Nested types (struct, list, map)
-/// - Union types with bounds checking
-/// - Field skipping for schema projection
-///
-/// Schema Evolution:
-/// Schema resolution is handled via SchemaProjection (from Project() function).
-/// Supports field reordering and missing fields (set to NULL). Default values
-/// are NOT currently supported.
-///
-/// Error Handling:
-/// - Type mismatches → InvalidArgument
-/// - Union branch out of range → InvalidArgument
-/// - Decimal precision insufficient → InvalidArgument
-/// - Missing logical type → InvalidArgument
-///
 /// \param avro_node The Avro schema node for the data being decoded
 /// \param decoder The Avro decoder positioned at the data to read
 /// \param projection The field projections (from Project() function)
 /// \param projected_schema The target Iceberg schema after projection
+/// \param metadata_context The metadata column context for populating them
 /// \param array_builder The Arrow array builder to append decoded data to
 /// \param ctx Decode context for reusing scratch buffers
 /// \return Status::OK if successful, or an error status
 Status DecodeAvroToBuilder(const ::avro::NodePtr& avro_node, ::avro::Decoder& decoder,
                            const SchemaProjection& projection,
                            const Schema& projected_schema,
+                           const arrow::MetadataColumnContext& metadata_context,
                            ::arrow::ArrayBuilder* array_builder, DecodeContext& ctx);
 
 }  // namespace iceberg::avro

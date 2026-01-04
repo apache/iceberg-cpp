@@ -19,6 +19,7 @@
 
 #include <sstream>
 
+#include <arrow/array.h>
 #include <arrow/array/array_base.h>
 #include <arrow/c/bridge.h>
 #include <arrow/json/from_string.h>
@@ -28,6 +29,7 @@
 #include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_writer.h"
 #include "iceberg/file_reader.h"
+#include "iceberg/metadata_columns.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_internal.h"
 #include "iceberg/test/matchers.h"
@@ -476,7 +478,6 @@ TEST_P(AvroReaderParameterizedTest, OptionalFieldsWithNulls) {
   WriteAndVerify(schema, expected_string);
 }
 
-// Test both direct decoder and GenericDatum paths
 TEST_P(AvroReaderParameterizedTest, LargeDataset) {
   auto schema = std::make_shared<iceberg::Schema>(std::vector<SchemaField>{
       SchemaField::MakeRequired(1, "id", std::make_shared<LongType>()),
@@ -507,6 +508,117 @@ TEST_P(AvroReaderParameterizedTest, EmptyCollections) {
   ])";
 
   WriteAndVerify(schema, expected_string);
+}
+
+TEST_P(AvroReaderParameterizedTest, ReadFilePathColumn) {
+  temp_avro_file_ = "avro_metadata_path.avro";
+  CreateSimpleAvroFile();
+
+  // Create schema with _path metadata column
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      MetadataColumns::kFilePath,
+  });
+
+  const std::string expected_string = R"([
+    [1, "avro_metadata_path.avro"],
+    [2, "avro_metadata_path.avro"],
+    [3, "avro_metadata_path.avro"]
+  ])";
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, ReaderFactoryRegistry::Open(
+                       FileFormatType::kAvro,
+                       {.path = temp_avro_file_, .io = file_io_, .projection = schema}));
+
+  VerifyNextBatch(*reader, expected_string);
+}
+
+TEST_P(AvroReaderParameterizedTest, ReadRowPositionColumn) {
+  temp_avro_file_ = "avro_metadata_pos.avro";
+  CreateSimpleAvroFile();
+
+  // Create schema with _pos metadata column
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      MetadataColumns::kRowPosition,
+  });
+
+  const std::string expected_string = R"([[1, 0], [2, 1], [3, 2]])";
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, ReaderFactoryRegistry::Open(
+                       FileFormatType::kAvro,
+                       {.path = temp_avro_file_, .io = file_io_, .projection = schema}));
+}
+
+TEST_P(AvroReaderParameterizedTest, ReadBothMetadataColumns) {
+  temp_avro_file_ = "avro_metadata_path_pos.avro";
+  CreateSimpleAvroFile();
+
+  // Create schema with both _file and _pos metadata columns
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      MetadataColumns::kFilePath,
+      MetadataColumns::kRowPosition,
+  });
+
+  const std::string expected_string = R"([
+    [1, "avro_metadata_path_pos.avro", 0],
+    [2, "avro_metadata_path_pos.avro", 1],
+    [3, "avro_metadata_path_pos.avro", 2]
+  ])";
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, ReaderFactoryRegistry::Open(
+                       FileFormatType::kAvro,
+                       {.path = temp_avro_file_, .io = file_io_, .projection = schema}));
+
+  VerifyNextBatch(*reader, expected_string);
+}
+
+TEST_P(AvroReaderParameterizedTest, ReadMetadataOnlyProjection) {
+  temp_avro_file_ = "avro_metadata_only.avro";
+  CreateSimpleAvroFile();
+
+  // Create schema with only metadata columns (no data columns)
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      MetadataColumns::kFilePath,
+      MetadataColumns::kRowPosition,
+  });
+
+  const std::string expected_string = R"([
+    ["avro_metadata_only.avro", 0],
+    ["avro_metadata_only.avro", 1],
+    ["avro_metadata_only.avro", 2]
+  ])";
+
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto reader, ReaderFactoryRegistry::Open(
+                       FileFormatType::kAvro,
+                       {.path = temp_avro_file_, .io = file_io_, .projection = schema}));
+
+  VerifyNextBatch(*reader, expected_string);
+}
+
+TEST_P(AvroReaderParameterizedTest, SplitWithRowPositionNotSupported) {
+  CreateSimpleAvroFile();
+
+  // Create schema with _pos metadata column
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(1, "id", int32()),
+      MetadataColumns::kRowPosition,
+  });
+
+  auto reader_result = ReaderFactoryRegistry::Open(
+      FileFormatType::kAvro, {.path = temp_avro_file_,
+                              .split = Split{.offset = 100, .length = 200},
+                              .io = file_io_,
+                              .projection = schema});
+
+  ASSERT_THAT(reader_result, IsError(ErrorKind::kNotSupported));
+  EXPECT_THAT(reader_result,
+              HasErrorMessage("'_pos' metadata column with split is not supported"));
 }
 
 INSTANTIATE_TEST_SUITE_P(DirectDecoderModes, AvroReaderParameterizedTest,
