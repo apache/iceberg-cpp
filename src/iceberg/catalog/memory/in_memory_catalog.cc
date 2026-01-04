@@ -58,7 +58,7 @@ class ICEBERG_EXPORT InMemoryNamespace {
   ///
   /// \param namespace_ident The namespace to create.
   /// \param properties A map of key-value pairs to associate with the namespace.
-  /// \return Status::OK if the namespace is created;
+  /// \return Status indicating success if the namespace is created;
   ///         ErrorKind::kAlreadyExists if the namespace already exists.
   Status CreateNamespace(const Namespace& namespace_ident,
                          const std::unordered_map<std::string, std::string>& properties);
@@ -66,7 +66,7 @@ class ICEBERG_EXPORT InMemoryNamespace {
   /// \brief Deletes an existing namespace.
   ///
   /// \param namespace_ident The namespace to delete.
-  /// \return Status::OK if the namespace is deleted;
+  /// \return Status indicating success if the namespace is deleted;
   ///         ErrorKind::kNoSuchNamespace if the namespace does not exist;
   ///         ErrorKind::kNotAllowed if the namespace is not empty.
   Status DropNamespace(const Namespace& namespace_ident);
@@ -84,7 +84,7 @@ class ICEBERG_EXPORT InMemoryNamespace {
   /// \param namespace_ident The namespace to update.
   /// \param updates Properties to add or overwrite.
   /// \param removals Property keys to remove.
-  /// \return Status::OK if the update is successful;
+  /// \return Status indicating success if the update is successful;
   ///         ErrorKind::kNoSuchNamespace if the namespace does not exist;
   ///         ErrorKind::kUnsupported if the operation is not supported.
   Status UpdateNamespaceProperties(
@@ -102,7 +102,7 @@ class ICEBERG_EXPORT InMemoryNamespace {
   ///
   /// \param table_ident The fully qualified identifier of the table.
   /// \param metadata_location The path to the table's metadata.
-  /// \return Status::OK if the table is registered;
+  /// \return Status indicating success if the table is registered;
   ///         Error otherwise.
   Status RegisterTable(const TableIdentifier& table_ident,
                        const std::string& metadata_location);
@@ -110,7 +110,7 @@ class ICEBERG_EXPORT InMemoryNamespace {
   /// \brief Unregisters a table from the specified namespace.
   ///
   /// \param table_ident The identifier of the table to unregister.
-  /// \return Status::OK if the table is removed;
+  /// \return Status indicating success if the table is removed;
   ///         ErrorKind::kNoSuchTable if the table does not exist.
   Status UnregisterTable(const TableIdentifier& table_ident);
 

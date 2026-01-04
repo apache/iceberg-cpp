@@ -148,8 +148,8 @@ class ICEBERG_EXPORT ErrorCollector {
   /// in Build(), Apply(), or Commit() methods) to validate that no errors
   /// were accumulated during the builder method calls.
   ///
-  /// \return Status::OK if no errors, or a ValidationFailed error with
-  ///         all accumulated error messages
+  /// \return Status indicating success if no errors, or a ValidationFailed
+  ///         error with all accumulated error messages
   [[nodiscard]] Status CheckErrors() const {
     if (!errors_.empty()) {
       std::string error_msg = "Validation failed due to the following errors:\n";

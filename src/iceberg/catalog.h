@@ -47,7 +47,7 @@ class ICEBERG_EXPORT Catalog {
   ///
   /// \param ns the namespace to create
   /// \param properties a key-value map of metadata for the namespace
-  /// \return Status::OK if created successfully;
+  /// \return Status indicating success if created successfully;
   ///         ErrorKind::kAlreadyExists if the namespace already exists;
   ///         ErrorKind::kNotSupported if the operation is not supported
   virtual Status CreateNamespace(
@@ -72,7 +72,7 @@ class ICEBERG_EXPORT Catalog {
   /// \brief Drop a namespace.
   ///
   /// \param ns the namespace to drop
-  /// \return Status::OK if dropped successfully;
+  /// \return Status indicating success if dropped successfully;
   ///         ErrorKind::kNoSuchNamespace if the namespace does not exist;
   ///         ErrorKind::kNotAllowed if the namespace is not empty
   virtual Status DropNamespace(const Namespace& ns) = 0;
@@ -88,7 +88,7 @@ class ICEBERG_EXPORT Catalog {
   /// \param ns the namespace to update
   /// \param updates a set of properties to add or overwrite
   /// \param removals a set of property keys to remove
-  /// \return Status::OK if the update is successful;
+  /// \return Status indicating success if the update is successful;
   ///         ErrorKind::kNoSuchNamespace if the namespace does not exist;
   ///         ErrorKind::kUnsupported if the operation is not supported
   virtual Status UpdateNamespaceProperties(

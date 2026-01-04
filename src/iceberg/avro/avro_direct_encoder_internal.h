@@ -51,7 +51,7 @@ struct EncodeContext {
 /// \param array The Arrow array containing the data to encode
 /// \param row_index The index of the row to encode within the array
 /// \param ctx Encode context for reusing scratch buffers
-/// \return Status::OK if successful, or an error status
+/// \return Status indicating success, or an error status
 Status EncodeArrowToAvro(const ::avro::NodePtr& avro_node, ::avro::Encoder& encoder,
                          const Type& type, const ::arrow::Array& array, int64_t row_index,
                          EncodeContext& ctx);
