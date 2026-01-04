@@ -140,6 +140,10 @@ void HttpClient::PrepareSession(
   session_->SetUrl(cpr::Url{path});
   session_->SetParameters(GetParameters(params));
   session_->RemoveContent();
+  // clear lingering POST mode state from prior requests. CURLOPT_POST is implicitly set
+  // to 1 by POST requests, and this state is not reset by RemoveContent(), so we must
+  // manually enforce HTTP GET to clear it.
+  curl_easy_setopt(session_->GetCurlHolder()->handle, CURLOPT_HTTPGET, 1L);
   auto final_headers = MergeHeaders(default_headers_, headers);
   session_->SetHeader(final_headers);
 }

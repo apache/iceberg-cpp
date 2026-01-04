@@ -170,6 +170,54 @@ constexpr std::string_view kFileSizeInBytes = "file-size-in-bytes";
 constexpr std::string_view kFileFooterSizeInBytes = "file-footer-size-in-bytes";
 constexpr std::string_view kBlobMetadata = "blob-metadata";
 
+// TableUpdate action constants
+constexpr std::string_view kAction = "action";
+constexpr std::string_view kActionAssignUUID = "assign-uuid";
+constexpr std::string_view kActionUpgradeFormatVersion = "upgrade-format-version";
+constexpr std::string_view kActionAddSchema = "add-schema";
+constexpr std::string_view kActionSetCurrentSchema = "set-current-schema";
+constexpr std::string_view kActionAddPartitionSpec = "add-spec";
+constexpr std::string_view kActionSetDefaultPartitionSpec = "set-default-spec";
+constexpr std::string_view kActionRemovePartitionSpecs = "remove-partition-specs";
+constexpr std::string_view kActionRemoveSchemas = "remove-schemas";
+constexpr std::string_view kActionAddSortOrder = "add-sort-order";
+constexpr std::string_view kActionSetDefaultSortOrder = "set-default-sort-order";
+constexpr std::string_view kActionAddSnapshot = "add-snapshot";
+constexpr std::string_view kActionRemoveSnapshots = "remove-snapshots";
+constexpr std::string_view kActionRemoveSnapshotRef = "remove-snapshot-ref";
+constexpr std::string_view kActionSetSnapshotRef = "set-snapshot-ref";
+constexpr std::string_view kActionSetProperties = "set-properties";
+constexpr std::string_view kActionRemoveProperties = "remove-properties";
+constexpr std::string_view kActionSetLocation = "set-location";
+
+// TableUpdate field constants
+constexpr std::string_view kUUID = "uuid";
+constexpr std::string_view kSpec = "spec";
+constexpr std::string_view kSpecIds = "spec-ids";
+constexpr std::string_view kSchemaIds = "schema-ids";
+constexpr std::string_view kSortOrder = "sort-order";
+constexpr std::string_view kSortOrderId = "sort-order-id";
+constexpr std::string_view kSnapshot = "snapshot";
+constexpr std::string_view kSnapshotIds = "snapshot-ids";
+constexpr std::string_view kRefName = "ref-name";
+constexpr std::string_view kUpdates = "updates";
+constexpr std::string_view kRemovals = "removals";
+
+// TableRequirement type constants
+constexpr std::string_view kRequirementAssertDoesNotExist = "assert-create";
+constexpr std::string_view kRequirementAssertUUID = "assert-table-uuid";
+constexpr std::string_view kRequirementAssertRefSnapshotID = "assert-ref-snapshot-id";
+constexpr std::string_view kRequirementAssertLastAssignedFieldId =
+    "assert-last-assigned-field-id";
+constexpr std::string_view kRequirementAssertCurrentSchemaID = "assert-current-schema-id";
+constexpr std::string_view kRequirementAssertLastAssignedPartitionId =
+    "assert-last-assigned-partition-id";
+constexpr std::string_view kRequirementAssertDefaultSpecID = "assert-default-spec-id";
+constexpr std::string_view kRequirementAssertDefaultSortOrderID =
+    "assert-default-sort-order-id";
+constexpr std::string_view kLastAssignedFieldId = "last-assigned-field-id";
+constexpr std::string_view kLastAssignedPartitionId = "last-assigned-partition-id";
+
 }  // namespace
 
 nlohmann::json ToJson(const SortField& sort_field) {
@@ -1212,6 +1260,166 @@ Result<Namespace> NamespaceFromJson(const nlohmann::json& json) {
   Namespace ns;
   ICEBERG_ASSIGN_OR_RAISE(ns.levels, GetTypedJsonValue<std::vector<std::string>>(json));
   return ns;
+}
+
+nlohmann::json ToJson(const TableUpdate& update) {
+  nlohmann::json json;
+  switch (update.kind()) {
+    case TableUpdate::Kind::kAssignUUID: {
+      const auto& u = static_cast<const table::AssignUUID&>(update);
+      json[kAction] = kActionAssignUUID;
+      json[kUUID] = u.uuid();
+      break;
+    }
+    case TableUpdate::Kind::kUpgradeFormatVersion: {
+      const auto& u = static_cast<const table::UpgradeFormatVersion&>(update);
+      json[kAction] = kActionUpgradeFormatVersion;
+      json[kFormatVersion] = u.format_version();
+      break;
+    }
+    case TableUpdate::Kind::kAddSchema: {
+      const auto& u = static_cast<const table::AddSchema&>(update);
+      json[kAction] = kActionAddSchema;
+      json[kSchema] = ToJson(*u.schema());
+      json[kLastColumnId] = u.last_column_id();
+      break;
+    }
+    case TableUpdate::Kind::kSetCurrentSchema: {
+      const auto& u = static_cast<const table::SetCurrentSchema&>(update);
+      json[kAction] = kActionSetCurrentSchema;
+      json[kSchemaId] = u.schema_id();
+      break;
+    }
+    case TableUpdate::Kind::kAddPartitionSpec: {
+      const auto& u = static_cast<const table::AddPartitionSpec&>(update);
+      json[kAction] = kActionAddPartitionSpec;
+      json[kSpec] = ToJson(*u.spec());
+      break;
+    }
+    case TableUpdate::Kind::kSetDefaultPartitionSpec: {
+      const auto& u = static_cast<const table::SetDefaultPartitionSpec&>(update);
+      json[kAction] = kActionSetDefaultPartitionSpec;
+      json[kSpecId] = u.spec_id();
+      break;
+    }
+    case TableUpdate::Kind::kRemovePartitionSpecs: {
+      const auto& u = static_cast<const table::RemovePartitionSpecs&>(update);
+      json[kAction] = kActionRemovePartitionSpecs;
+      json[kSpecIds] = u.spec_ids();
+      break;
+    }
+    case TableUpdate::Kind::kRemoveSchemas: {
+      const auto& u = static_cast<const table::RemoveSchemas&>(update);
+      json[kAction] = kActionRemoveSchemas;
+      json[kSchemaIds] = u.schema_ids();
+      break;
+    }
+    case TableUpdate::Kind::kAddSortOrder: {
+      const auto& u = static_cast<const table::AddSortOrder&>(update);
+      json[kAction] = kActionAddSortOrder;
+      json[kSortOrder] = ToJson(*u.sort_order());
+      break;
+    }
+    case TableUpdate::Kind::kSetDefaultSortOrder: {
+      const auto& u = static_cast<const table::SetDefaultSortOrder&>(update);
+      json[kAction] = kActionSetDefaultSortOrder;
+      json[kSortOrderId] = u.sort_order_id();
+      break;
+    }
+    case TableUpdate::Kind::kAddSnapshot: {
+      const auto& u = static_cast<const table::AddSnapshot&>(update);
+      json[kAction] = kActionAddSnapshot;
+      json[kSnapshot] = ToJson(*u.snapshot());
+      break;
+    }
+    case TableUpdate::Kind::kRemoveSnapshots: {
+      const auto& u = static_cast<const table::RemoveSnapshots&>(update);
+      json[kAction] = kActionRemoveSnapshots;
+      json[kSnapshotIds] = u.snapshot_ids();
+      break;
+    }
+    case TableUpdate::Kind::kRemoveSnapshotRef: {
+      const auto& u = static_cast<const table::RemoveSnapshotRef&>(update);
+      json[kAction] = kActionRemoveSnapshotRef;
+      json[kRefName] = u.ref_name();
+      break;
+    }
+    case TableUpdate::Kind::kSetSnapshotRef: {
+      const auto& u = static_cast<const table::SetSnapshotRef&>(update);
+      json[kAction] = kActionSetSnapshotRef;
+      json[kRefName] = u.ref_name();
+      json[kSnapshotId] = u.snapshot_id();
+      json[kType] = ToString(u.type());
+      if (u.min_snapshots_to_keep().has_value()) {
+        json[kMinSnapshotsToKeep] = u.min_snapshots_to_keep().value();
+      }
+      if (u.max_snapshot_age_ms().has_value()) {
+        json[kMaxSnapshotAgeMs] = u.max_snapshot_age_ms().value();
+      }
+      if (u.max_ref_age_ms().has_value()) {
+        json[kMaxRefAgeMs] = u.max_ref_age_ms().value();
+      }
+      break;
+    }
+    case TableUpdate::Kind::kSetProperties: {
+      const auto& u = static_cast<const table::SetProperties&>(update);
+      json[kAction] = kActionSetProperties;
+      json[kUpdates] = u.updated();
+      break;
+    }
+    case TableUpdate::Kind::kRemoveProperties: {
+      const auto& u = static_cast<const table::RemoveProperties&>(update);
+      json[kAction] = kActionRemoveProperties;
+      json[kRemovals] = std::vector<std::string>(u.removed().begin(), u.removed().end());
+      break;
+    }
+    case TableUpdate::Kind::kSetLocation: {
+      const auto& u = static_cast<const table::SetLocation&>(update);
+      json[kAction] = kActionSetLocation;
+      json[kLocation] = u.location();
+      break;
+    }
+  }
+  return json;
+}
+
+nlohmann::json ToJson(const TableRequirement& requirement) {
+  nlohmann::json json;
+
+  if (dynamic_cast<const table::AssertDoesNotExist*>(&requirement)) {
+    json[kType] = kRequirementAssertDoesNotExist;
+  } else if (auto* r = dynamic_cast<const table::AssertUUID*>(&requirement)) {
+    json[kType] = kRequirementAssertUUID;
+    json[kUUID] = r->uuid();
+  } else if (auto* r = dynamic_cast<const table::AssertRefSnapshotID*>(&requirement)) {
+    json[kType] = kRequirementAssertRefSnapshotID;
+    json[kRefName] = r->ref_name();
+    if (r->snapshot_id().has_value()) {
+      json[kSnapshotId] = r->snapshot_id().value();
+    } else {
+      json[kSnapshotId] = nullptr;
+    }
+  } else if (auto* r =
+                 dynamic_cast<const table::AssertLastAssignedFieldId*>(&requirement)) {
+    json[kType] = kRequirementAssertLastAssignedFieldId;
+    json[kLastAssignedFieldId] = r->last_assigned_field_id();
+  } else if (auto* r = dynamic_cast<const table::AssertCurrentSchemaID*>(&requirement)) {
+    json[kType] = kRequirementAssertCurrentSchemaID;
+    json[kCurrentSchemaId] = r->schema_id();
+  } else if (auto* r = dynamic_cast<const table::AssertLastAssignedPartitionId*>(
+                 &requirement)) {
+    json[kType] = kRequirementAssertLastAssignedPartitionId;
+    json[kLastAssignedPartitionId] = r->last_assigned_partition_id();
+  } else if (auto* r = dynamic_cast<const table::AssertDefaultSpecID*>(&requirement)) {
+    json[kType] = kRequirementAssertDefaultSpecID;
+    json[kDefaultSpecId] = r->spec_id();
+  } else if (auto* r =
+                 dynamic_cast<const table::AssertDefaultSortOrderID*>(&requirement)) {
+    json[kType] = kRequirementAssertDefaultSortOrderID;
+    json[kDefaultSortOrderId] = r->sort_order_id();
+  }
+
+  return json;
 }
 
 }  // namespace iceberg

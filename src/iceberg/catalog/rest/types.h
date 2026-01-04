@@ -29,6 +29,8 @@
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_identifier.h"
+#include "iceberg/table_requirement.h"
+#include "iceberg/table_update.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/macros.h"
 
@@ -244,6 +246,35 @@ struct ICEBERG_REST_EXPORT ListTablesResponse {
   Status Validate() const { return {}; }
 
   bool operator==(const ListTablesResponse&) const = default;
+};
+
+/// \brief Request to commit changes to a table.
+struct ICEBERG_REST_EXPORT CommitTableRequest {
+  TableIdentifier identifier;
+  std::vector<std::shared_ptr<TableRequirement>> requirements;
+  std::vector<std::shared_ptr<TableUpdate>> updates;
+
+  /// \brief Validates the CommitTableRequest.
+  Status Validate() const { return {}; }
+
+  bool operator==(const CommitTableRequest& other) const;
+};
+
+/// \brief Response from committing changes to a table.
+struct ICEBERG_REST_EXPORT CommitTableResponse {
+  std::string metadata_location;
+  std::shared_ptr<TableMetadata> metadata;  // required
+  // TODO(Li Feiyang): Add std::shared_ptr<StorageCredential> storage_credential;
+
+  /// \brief Validates the CommitTableResponse.
+  Status Validate() const {
+    if (!metadata) {
+      return Invalid("Invalid metadata: null");
+    }
+    return {};
+  }
+
+  bool operator==(const CommitTableResponse& other) const;
 };
 
 }  // namespace iceberg::rest

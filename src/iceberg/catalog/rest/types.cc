@@ -69,4 +69,32 @@ bool LoadTableResult::operator==(const LoadTableResult& other) const {
   return true;
 }
 
+bool CommitTableRequest::operator==(const CommitTableRequest& other) const {
+  if (identifier != other.identifier) {
+    return false;
+  }
+  if (requirements.size() != other.requirements.size()) {
+    return false;
+  }
+  if (updates.size() != other.updates.size()) {
+    return false;
+  }
+  // Note: Deep comparison of requirements and updates is not implemented
+  // as they contain polymorphic types. This is primarily for testing.
+  return true;
+}
+
+bool CommitTableResponse::operator==(const CommitTableResponse& other) const {
+  if (metadata_location != other.metadata_location) {
+    return false;
+  }
+  if (!metadata != !other.metadata) {
+    return false;
+  }
+  if (metadata && *metadata != *other.metadata) {
+    return false;
+  }
+  return true;
+}
+
 }  // namespace iceberg::rest

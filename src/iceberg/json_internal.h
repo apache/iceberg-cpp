@@ -26,6 +26,8 @@
 #include "iceberg/result.h"
 #include "iceberg/statistics_file.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_requirement.h"
+#include "iceberg/table_update.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -356,5 +358,17 @@ ICEBERG_EXPORT nlohmann::json ToJson(const Namespace& ns);
 /// \param[in] json The JSON array representing a `Namespace`.
 /// \return A `Namespace` object or an error if the conversion fails.
 ICEBERG_EXPORT Result<Namespace> NamespaceFromJson(const nlohmann::json& json);
+
+/// \brief Serializes a `TableUpdate` object to JSON.
+///
+/// \param[in] update The `TableUpdate` object to be serialized.
+/// \return A JSON object representing the `TableUpdate`.
+ICEBERG_EXPORT nlohmann::json ToJson(const TableUpdate& update);
+
+/// \brief Serializes a `TableRequirement` object to JSON.
+///
+/// \param[in] requirement The `TableRequirement` object to be serialized.
+/// \return A JSON object representing the `TableRequirement`.
+ICEBERG_EXPORT nlohmann::json ToJson(const TableRequirement& requirement);
 
 }  // namespace iceberg

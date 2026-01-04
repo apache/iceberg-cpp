@@ -21,6 +21,7 @@
 
 #include <unistd.h>
 
+#include <algorithm>
 #include <chrono>
 #include <memory>
 #include <print>
@@ -45,6 +46,8 @@
 #include "iceberg/sort_order.h"
 #include "iceberg/table.h"
 #include "iceberg/table_identifier.h"
+#include "iceberg/table_requirement.h"
+#include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/test/std_io.h"
 #include "iceberg/test/test_resource.h"
@@ -407,6 +410,49 @@ TEST_F(RestCatalogIntegrationTest, CreateTable) {
               HasErrorMessage("Table already exists: test_create_table.apple.ios.t1"));
 }
 
+TEST_F(RestCatalogIntegrationTest, ListTables) {
+  auto catalog_result = CreateCatalog();
+  ASSERT_THAT(catalog_result, IsOk());
+  auto& catalog = catalog_result.value();
+
+  // Create namespace
+  Namespace ns{.levels = {"test_list_tables"}};
+  auto status = catalog->CreateNamespace(ns, {});
+  EXPECT_THAT(status, IsOk());
+
+  // Initially no tables
+  auto list_result = catalog->ListTables(ns);
+  ASSERT_THAT(list_result, IsOk());
+  EXPECT_TRUE(list_result.value().empty());
+
+  // Create tables
+  auto schema = CreateDefaultSchema();
+  auto partition_spec = PartitionSpec::Unpartitioned();
+  auto sort_order = SortOrder::Unsorted();
+  std::unordered_map<std::string, std::string> table_properties;
+
+  TableIdentifier table1{.ns = ns, .name = "table1"};
+  auto create_result = catalog->CreateTable(table1, schema, partition_spec, sort_order,
+                                            "", table_properties);
+  ASSERT_THAT(create_result, IsOk());
+
+  TableIdentifier table2{.ns = ns, .name = "table2"};
+  create_result = catalog->CreateTable(table2, schema, partition_spec, sort_order, "",
+                                       table_properties);
+  ASSERT_THAT(create_result, IsOk());
+
+  // List and varify tables
+  list_result = catalog->ListTables(ns);
+  ASSERT_THAT(list_result, IsOk());
+  EXPECT_EQ(list_result.value().size(), 2);
+  std::vector<std::string> table_names;
+  for (const auto& id : list_result.value()) {
+    table_names.push_back(id.name);
+  }
+  std::ranges::sort(table_names);
+  EXPECT_EQ(table_names, (std::vector<std::string>{"table1", "table2"}));
+}
+
 TEST_F(RestCatalogIntegrationTest, LoadTable) {
   auto catalog_result = CreateCatalog();
   ASSERT_THAT(catalog_result, IsOk());
@@ -482,6 +528,119 @@ TEST_F(RestCatalogIntegrationTest, DropTable) {
   load_result = catalog->TableExists(table_id);
   ASSERT_THAT(load_result, IsOk());
   EXPECT_FALSE(load_result.value());
+}
+
+TEST_F(RestCatalogIntegrationTest, RenameTable) {
+  auto catalog_result = CreateCatalog();
+  ASSERT_THAT(catalog_result, IsOk());
+  auto& catalog = catalog_result.value();
+
+  // Create namespace
+  Namespace ns{.levels = {"test_rename_table"}};
+  auto status = catalog->CreateNamespace(ns, {});
+  EXPECT_THAT(status, IsOk());
+
+  // Create table
+  auto schema = CreateDefaultSchema();
+  auto partition_spec = PartitionSpec::Unpartitioned();
+  auto sort_order = SortOrder::Unsorted();
+
+  TableIdentifier old_table_id{.ns = ns, .name = "old_table"};
+  std::unordered_map<std::string, std::string> table_properties;
+  auto table_result = catalog->CreateTable(old_table_id, schema, partition_spec,
+                                           sort_order, "", table_properties);
+  ASSERT_THAT(table_result, IsOk());
+
+  // Rename table
+  TableIdentifier new_table_id{.ns = ns, .name = "new_table"};
+  status = catalog->RenameTable(old_table_id, new_table_id);
+  ASSERT_THAT(status, IsOk());
+
+  // Verify old table no longer exists
+  auto exists_result = catalog->TableExists(old_table_id);
+  ASSERT_THAT(exists_result, IsOk());
+  EXPECT_FALSE(exists_result.value());
+
+  // Verify new table exists
+  exists_result = catalog->TableExists(new_table_id);
+  ASSERT_THAT(exists_result, IsOk());
+  EXPECT_TRUE(exists_result.value());
+}
+
+TEST_F(RestCatalogIntegrationTest, UpdateTable) {
+  auto catalog_result = CreateCatalog();
+  ASSERT_THAT(catalog_result, IsOk());
+  auto& catalog = catalog_result.value();
+
+  // Create namespace
+  Namespace ns{.levels = {"test_update_table"}};
+  auto status = catalog->CreateNamespace(ns, {});
+  EXPECT_THAT(status, IsOk());
+
+  // Create table
+  auto schema = CreateDefaultSchema();
+  auto partition_spec = PartitionSpec::Unpartitioned();
+  auto sort_order = SortOrder::Unsorted();
+
+  TableIdentifier table_id{.ns = ns, .name = "t1"};
+  std::unordered_map<std::string, std::string> table_properties;
+  auto table_result = catalog->CreateTable(table_id, schema, partition_spec, sort_order,
+                                           "", table_properties);
+  ASSERT_THAT(table_result, IsOk());
+  auto& table = table_result.value();
+
+  // Update table properties
+  std::vector<std::unique_ptr<TableRequirement>> requirements;
+  requirements.push_back(std::make_unique<table::AssertUUID>(table->uuid()));
+
+  std::vector<std::unique_ptr<TableUpdate>> updates;
+  updates.push_back(std::make_unique<table::SetProperties>(
+      std::unordered_map<std::string, std::string>{{"key1", "value1"}}));
+
+  auto update_result = catalog->UpdateTable(table_id, requirements, updates);
+  ASSERT_THAT(update_result, IsOk());
+  auto& updated_table = update_result.value();
+
+  // Verify the property was set
+  auto& props = updated_table->metadata()->properties.configs();
+  EXPECT_EQ(props.at("key1"), "value1");
+}
+
+TEST_F(RestCatalogIntegrationTest, RegisterTable) {
+  auto catalog_result = CreateCatalog();
+  ASSERT_THAT(catalog_result, IsOk());
+  auto& catalog = catalog_result.value();
+
+  // Create namespace
+  Namespace ns{.levels = {"test_register_table"}};
+  auto status = catalog->CreateNamespace(ns, {});
+  EXPECT_THAT(status, IsOk());
+
+  // Create table
+  auto schema = CreateDefaultSchema();
+  auto partition_spec = PartitionSpec::Unpartitioned();
+  auto sort_order = SortOrder::Unsorted();
+
+  TableIdentifier table_id{.ns = ns, .name = "t1"};
+  std::unordered_map<std::string, std::string> table_properties;
+  auto table_result = catalog->CreateTable(table_id, schema, partition_spec, sort_order,
+                                           "", table_properties);
+  ASSERT_THAT(table_result, IsOk());
+  auto& table = table_result.value();
+  std::string metadata_location(table->metadata_file_location());
+
+  // Drop table (without purge, to keep metadata file)
+  status = catalog->DropTable(table_id, /*purge=*/false);
+  ASSERT_THAT(status, IsOk());
+
+  // Register table with new name
+  TableIdentifier new_table_id{.ns = ns, .name = "t2"};
+  auto register_result = catalog->RegisterTable(new_table_id, metadata_location);
+  ASSERT_THAT(register_result, IsOk());
+  auto& registered_table = register_result.value();
+
+  EXPECT_EQ(table->metadata_file_location(), registered_table->metadata_file_location());
+  EXPECT_NE(table->name(), registered_table->name());
 }
 
 }  // namespace iceberg::rest
