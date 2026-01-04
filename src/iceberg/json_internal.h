@@ -365,10 +365,40 @@ ICEBERG_EXPORT Result<Namespace> NamespaceFromJson(const nlohmann::json& json);
 /// \return A JSON object representing the `TableUpdate`.
 ICEBERG_EXPORT nlohmann::json ToJson(const TableUpdate& update);
 
+/// \brief Deserializes a JSON object into a `TableUpdate` object.
+///
+/// This function parses the provided JSON and creates a `TableUpdate` object.
+/// For updates that require schema context (AddPartitionSpec, AddSortOrder),
+/// use the overload that takes a schema parameter.
+///
+/// \param[in] json The JSON object representing a `TableUpdate`.
+/// \return A `TableUpdate` object or an error if the conversion fails.
+ICEBERG_EXPORT Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(
+    const nlohmann::json& json);
+
+/// \brief Deserializes a JSON object into a `TableUpdate` object with schema context.
+///
+/// This overload is required for updates like AddPartitionSpec and AddSortOrder
+/// that need a schema to properly validate field references.
+///
+/// \param[in] json The JSON object representing a `TableUpdate`.
+/// \param[in] schema The schema to use for validation (needed for AddPartitionSpec,
+///                   AddSortOrder).
+/// \return A `TableUpdate` object or an error if the conversion fails.
+ICEBERG_EXPORT Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(
+    const nlohmann::json& json, const std::shared_ptr<Schema>& schema);
+
 /// \brief Serializes a `TableRequirement` object to JSON.
 ///
 /// \param[in] requirement The `TableRequirement` object to be serialized.
 /// \return A JSON object representing the `TableRequirement`.
 ICEBERG_EXPORT nlohmann::json ToJson(const TableRequirement& requirement);
+
+/// \brief Deserializes a JSON object into a `TableRequirement` object.
+///
+/// \param[in] json The JSON object representing a `TableRequirement`.
+/// \return A `TableRequirement` object or an error if the conversion fails.
+ICEBERG_EXPORT Result<std::unique_ptr<TableRequirement>> TableRequirementFromJson(
+    const nlohmann::json& json);
 
 }  // namespace iceberg

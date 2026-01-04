@@ -78,6 +78,11 @@ class ICEBERG_EXPORT AssertDoesNotExist : public TableRequirement {
   Kind kind() const override { return Kind::kAssertDoesNotExist; }
 
   Status Validate(const TableMetadata* base) const override;
+
+  /// \brief Compare two AssertDoesNotExist for equality
+  friend bool operator==(const AssertDoesNotExist&, const AssertDoesNotExist&) {
+    return true;  // No fields to compare
+  }
 };
 
 /// \brief Requirement that the table UUID matches the expected value
@@ -93,6 +98,11 @@ class ICEBERG_EXPORT AssertUUID : public TableRequirement {
   Kind kind() const override { return Kind::kAssertUUID; }
 
   Status Validate(const TableMetadata* base) const override;
+
+  /// \brief Compare two AssertUUID for equality
+  friend bool operator==(const AssertUUID& lhs, const AssertUUID& rhs) {
+    return lhs.uuid_ == rhs.uuid_;
+  }
 
  private:
   std::string uuid_;
@@ -116,6 +126,11 @@ class ICEBERG_EXPORT AssertRefSnapshotID : public TableRequirement {
 
   Status Validate(const TableMetadata* base) const override;
 
+  /// \brief Compare two AssertRefSnapshotID for equality
+  friend bool operator==(const AssertRefSnapshotID& lhs, const AssertRefSnapshotID& rhs) {
+    return lhs.ref_name_ == rhs.ref_name_ && lhs.snapshot_id_ == rhs.snapshot_id_;
+  }
+
  private:
   std::string ref_name_;
   std::optional<int64_t> snapshot_id_;
@@ -136,6 +151,12 @@ class ICEBERG_EXPORT AssertLastAssignedFieldId : public TableRequirement {
 
   Status Validate(const TableMetadata* base) const override;
 
+  /// \brief Compare two AssertLastAssignedFieldId for equality
+  friend bool operator==(const AssertLastAssignedFieldId& lhs,
+                         const AssertLastAssignedFieldId& rhs) {
+    return lhs.last_assigned_field_id_ == rhs.last_assigned_field_id_;
+  }
+
  private:
   int32_t last_assigned_field_id_;
 };
@@ -153,6 +174,12 @@ class ICEBERG_EXPORT AssertCurrentSchemaID : public TableRequirement {
   Kind kind() const override { return Kind::kAssertCurrentSchemaID; }
 
   Status Validate(const TableMetadata* base) const override;
+
+  /// \brief Compare two AssertCurrentSchemaID for equality
+  friend bool operator==(const AssertCurrentSchemaID& lhs,
+                         const AssertCurrentSchemaID& rhs) {
+    return lhs.schema_id_ == rhs.schema_id_;
+  }
 
  private:
   int32_t schema_id_;
@@ -173,6 +200,12 @@ class ICEBERG_EXPORT AssertLastAssignedPartitionId : public TableRequirement {
 
   Status Validate(const TableMetadata* base) const override;
 
+  /// \brief Compare two AssertLastAssignedPartitionId for equality
+  friend bool operator==(const AssertLastAssignedPartitionId& lhs,
+                         const AssertLastAssignedPartitionId& rhs) {
+    return lhs.last_assigned_partition_id_ == rhs.last_assigned_partition_id_;
+  }
+
  private:
   int32_t last_assigned_partition_id_;
 };
@@ -190,6 +223,11 @@ class ICEBERG_EXPORT AssertDefaultSpecID : public TableRequirement {
   Kind kind() const override { return Kind::kAssertDefaultSpecID; }
 
   Status Validate(const TableMetadata* base) const override;
+
+  /// \brief Compare two AssertDefaultSpecID for equality
+  friend bool operator==(const AssertDefaultSpecID& lhs, const AssertDefaultSpecID& rhs) {
+    return lhs.spec_id_ == rhs.spec_id_;
+  }
 
  private:
   int32_t spec_id_;
@@ -209,6 +247,12 @@ class ICEBERG_EXPORT AssertDefaultSortOrderID : public TableRequirement {
   Kind kind() const override { return Kind::kAssertDefaultSortOrderID; }
 
   Status Validate(const TableMetadata* base) const override;
+
+  /// \brief Compare two AssertDefaultSortOrderID for equality
+  friend bool operator==(const AssertDefaultSortOrderID& lhs,
+                         const AssertDefaultSortOrderID& rhs) {
+    return lhs.sort_order_id_ == rhs.sort_order_id_;
+  }
 
  private:
   int32_t sort_order_id_;
