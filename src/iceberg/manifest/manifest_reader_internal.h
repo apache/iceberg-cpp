@@ -96,7 +96,7 @@ class ManifestReaderImpl : public ManifestReader {
   Result<InclusiveMetricsEvaluator*> GetMetricsEvaluator();
 
   /// \brief Check if a partition is in the partition set.
-  bool InPartitionSet(const DataFile& file) const;
+  Result<bool> InPartitionSet(const DataFile& file) const;
 
   // Fields set at construction
   const std::string manifest_path_;

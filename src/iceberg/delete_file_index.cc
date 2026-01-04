@@ -168,7 +168,7 @@ Result<bool> CanContainEqDeletesForFile(const DataFile& data_file,
 
 Status PositionDeletes::Add(ManifestEntry&& entry) {
   ICEBERG_PRECHECK(entry.sequence_number.has_value(),
-                   "Missing sequence number for position delete: {}",
+                   "Missing sequence number from position delete: {}",
                    entry.data_file->file_path);
   files_.emplace_back(std::move(entry));
   indexed_ = false;
@@ -213,7 +213,7 @@ void PositionDeletes::IndexIfNeeded() {
 
 Status EqualityDeletes::Add(ManifestEntry&& entry) {
   ICEBERG_PRECHECK(entry.sequence_number.has_value(),
-                   "Missing sequence number for equality delete: {}",
+                   "Missing sequence number from equality delete: {}",
                    entry.data_file->file_path);
   files_.emplace_back(&schema_, std::move(entry));
   indexed_ = false;
@@ -343,7 +343,7 @@ Result<std::vector<std::shared_ptr<DataFile>>> DeleteFileIndex::ForEntry(
     const ManifestEntry& entry) const {
   ICEBERG_PRECHECK(entry.data_file != nullptr, "Manifest entry has null data file");
   ICEBERG_PRECHECK(entry.sequence_number.has_value(),
-                   "Missing sequence number for data file: {}",
+                   "Missing sequence number from data file: {}",
                    entry.data_file->file_path);
   return ForDataFile(entry.sequence_number.value(), *entry.data_file);
 }
@@ -396,8 +396,11 @@ Result<std::vector<std::shared_ptr<DataFile>>> DeleteFileIndex::FindEqPartitionD
     return {};
   }
 
-  auto deletes =
-      eq_deletes_by_partition_->get(data_file.partition_spec_id, data_file.partition);
+  ICEBERG_PRECHECK(data_file.partition_spec_id.has_value(),
+                   "Missing partition spec id from data file {}", data_file.file_path);
+
+  auto deletes = eq_deletes_by_partition_->get(data_file.partition_spec_id.value(),
+                                               data_file.partition);
   if (!deletes.has_value()) {
     return {};
   }
@@ -410,8 +413,11 @@ Result<std::vector<std::shared_ptr<DataFile>>> DeleteFileIndex::FindPosPartition
     return {};
   }
 
-  auto deletes =
-      pos_deletes_by_partition_->get(data_file.partition_spec_id, data_file.partition);
+  ICEBERG_PRECHECK(data_file.partition_spec_id.has_value(),
+                   "Missing partition spec id from data file {}", data_file.file_path);
+
+  auto deletes = pos_deletes_by_partition_->get(data_file.partition_spec_id.value(),
+                                                data_file.partition);
   if (!deletes.has_value()) {
     return {};
   }
@@ -606,7 +612,7 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
     for (auto& entry : entries) {
       ICEBERG_CHECK(entry.data_file != nullptr, "ManifestEntry must have a data file");
       ICEBERG_CHECK(entry.sequence_number.has_value(),
-                    "Missing sequence number for delete file: {}",
+                    "Missing sequence number from delete file: {}",
                     entry.data_file->file_path);
       if (entry.sequence_number.value() > min_sequence_number_) {
         auto& file = *entry.data_file;
@@ -628,8 +634,8 @@ Result<std::vector<ManifestEntry>> DeleteFileIndex::Builder::LoadDeleteFiles() {
 Status DeleteFileIndex::Builder::AddDV(
     std::unordered_map<std::string, ManifestEntry>& dv_by_path, ManifestEntry&& entry) {
   ICEBERG_PRECHECK(entry.data_file != nullptr, "ManifestEntry must have a data file");
-  ICEBERG_PRECHECK(entry.sequence_number.has_value(), "Missing sequence number for DV {}",
-                   entry.data_file->file_path);
+  ICEBERG_PRECHECK(entry.sequence_number.has_value(),
+                   "Missing sequence number from DV {}", entry.data_file->file_path);
 
   const auto& path = entry.data_file->referenced_data_file;
   ICEBERG_PRECHECK(path.has_value(), "DV must have a referenced data file");
@@ -649,7 +655,7 @@ Status DeleteFileIndex::Builder::AddPositionDelete(
     ManifestEntry&& entry) {
   ICEBERG_PRECHECK(entry.data_file != nullptr, "ManifestEntry must have a data file");
   ICEBERG_PRECHECK(entry.sequence_number.has_value(),
-                   "Missing sequence number for position delete {}",
+                   "Missing sequence number from position delete {}",
                    entry.data_file->file_path);
 
   ICEBERG_ASSIGN_OR_RAISE(auto referenced_path,
@@ -664,7 +670,10 @@ Status DeleteFileIndex::Builder::AddPositionDelete(
     ICEBERG_RETURN_UNEXPECTED(deletes->Add(std::move(entry)));
   } else {
     // Partition-scoped position delete
-    int32_t spec_id = entry.data_file->partition_spec_id;
+    ICEBERG_PRECHECK(entry.data_file->partition_spec_id.has_value(),
+                     "Missing partition spec id from position delete {}",
+                     entry.data_file->file_path);
+    int32_t spec_id = entry.data_file->partition_spec_id.value();
     const auto& partition = entry.data_file->partition;
 
     auto existing = deletes_by_partition.get(spec_id, partition);
@@ -686,10 +695,13 @@ Status DeleteFileIndex::Builder::AddEqualityDelete(
     ManifestEntry&& entry) {
   ICEBERG_PRECHECK(entry.data_file != nullptr, "ManifestEntry must have a data file");
   ICEBERG_PRECHECK(entry.sequence_number.has_value(),
-                   "Missing sequence number for equality delete {}",
+                   "Missing sequence number from equality delete {}",
+                   entry.data_file->file_path);
+  ICEBERG_PRECHECK(entry.data_file->partition_spec_id.has_value(),
+                   "Missing partition spec id from equality delete {}",
                    entry.data_file->file_path);
 
-  int32_t spec_id = entry.data_file->partition_spec_id;
+  int32_t spec_id = entry.data_file->partition_spec_id.value();
 
   auto spec_it = specs_by_id_.find(spec_id);
   if (spec_it == specs_by_id_.end()) {

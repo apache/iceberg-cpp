@@ -108,8 +108,8 @@ class DeleteFileIndexTest : public testing::TestWithParam<int> {
         .partition = partition,
         .record_count = 1,
         .file_size_in_bytes = 10,
-        .partition_spec_id = spec_id,
         .referenced_data_file = referenced_file,
+        .partition_spec_id = spec_id,
     });
   }
 
@@ -141,10 +141,10 @@ class DeleteFileIndexTest : public testing::TestWithParam<int> {
         .partition = partition,
         .record_count = 1,
         .file_size_in_bytes = 10,
-        .partition_spec_id = spec_id,
         .referenced_data_file = referenced_file,
         .content_offset = content_offset,
         .content_size_in_bytes = content_size,
+        .partition_spec_id = spec_id,
     });
   }
 
