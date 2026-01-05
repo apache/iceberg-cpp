@@ -41,7 +41,7 @@ constexpr int8_t FromHex(char c) {
 }  // namespace
 
 std::string UrlEncoder::Encode(std::string_view str_to_encode) {
-  static const char* hex_chars = "0123456789ABCDEF";
+  static const char* kHexChars = "0123456789ABCDEF";
   std::string result;
   result.reserve(str_to_encode.size() * 3 / 2 /* Heuristic reservation */);
 
@@ -50,8 +50,8 @@ std::string UrlEncoder::Encode(std::string_view str_to_encode) {
       result += c;
     } else {
       result += '%';
-      result += hex_chars[c >> 4];
-      result += hex_chars[c & 0xF];
+      result += kHexChars[c >> 4];
+      result += kHexChars[c & 0xF];
     }
   }
 
