@@ -43,9 +43,6 @@ class ICEBERG_REST_EXPORT ResourcePaths {
   static Result<std::unique_ptr<ResourcePaths>> Make(std::string base_uri,
                                                      const std::string& prefix);
 
-  /// \brief Set the base URI of the REST catalog server.
-  Status SetBaseUri(const std::string& base_uri);
-
   /// \brief Get the /v1/config endpoint path.
   static Result<std::string> Config(const std::string& base_uri);
 
