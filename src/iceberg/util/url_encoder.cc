@@ -19,9 +19,17 @@
 
 #include "iceberg/util/url_encoder.h"
 
+#include <locale>
+
 namespace iceberg {
 
 namespace {
+
+bool IsUnreserved(unsigned char c) {
+  return (c >= '0' && c <= '9') || (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z') ||
+         c == '-' || c == '.' || c == '_' || c == '~';
+}
+
 // Helper: convert hex char to int (0–15), returns -1 if invalid
 constexpr int8_t FromHex(char c) {
   if (c >= '0' && c <= '9') return c - '0';
@@ -29,16 +37,17 @@ constexpr int8_t FromHex(char c) {
   if (c >= 'a' && c <= 'f') return c - 'a' + 10;
   return -1;
 }
+
 }  // namespace
 
 std::string UrlEncoder::Encode(std::string_view str_to_encode) {
   static const char* hex_chars = "0123456789ABCDEF";
   std::string result;
-  result.reserve(str_to_encode.size() * 3 /* Worst case: every char becomes %XX */);
+  result.reserve(str_to_encode.size() * 3 / 2 /* Heuristic reservation */);
 
-  for (unsigned char c : str_to_encode) {
-    if (std::isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
-      result += static_cast<char>(c);
+  for (char c : str_to_encode) {
+    if (IsUnreserved(c)) {
+      result += c;
     } else {
       result += '%';
       result += hex_chars[c >> 4];

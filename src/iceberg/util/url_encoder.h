@@ -23,7 +23,6 @@
 #include <string_view>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/result.h"
 
 /// \file iceberg/util/url_encoder.h
 /// \brief URL encoding and decoding.
