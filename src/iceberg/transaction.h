@@ -49,6 +49,12 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// \brief Return the current metadata with staged changes applied
   const TableMetadata& current() const;
 
+  /// \brief Return the location of the metadata file with the given filename
+  ///
+  /// \param filename the name of the metadata file
+  /// \return the location of the metadata file
+  std::string MetadataFileLocation(std::string_view filename) const;
+
   /// \brief Apply the pending changes from all actions and commit.
   ///
   /// \return Updated table if the transaction was committed successfully, or an error:

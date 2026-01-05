@@ -19,15 +19,16 @@
 
 #include "iceberg/update/snapshot_update.h"
 
-#include <charconv>
-#include <chrono>
 #include <format>
 
+#include "iceberg/constants.h"
 #include "iceberg/file_io.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
+#include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/manifest/rolling_manifest_writer.h"
+#include "iceberg/partition_summary_internal.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table.h"
 #include "iceberg/util/macros.h"
@@ -37,20 +38,165 @@
 
 namespace iceberg {
 
-SnapshotUpdate::SnapshotUpdate(std::shared_ptr<Transaction> transaction)
-    : PendingUpdate(std::move(transaction)) {
-  target_manifest_size_bytes_ =
-      transaction_->current().properties.Get(TableProperties::kManifestTargetSizeBytes);
+namespace {
 
-  // For format version 1, check if snapshot ID inheritance is enabled
-  if (transaction_->current().format_version == 1) {
-    can_inherit_snapshot_id_ = transaction_->current().properties.Get(
-        TableProperties::kSnapshotIdInheritanceEnabled);
+Status UpdateTotal(std::unordered_map<std::string, std::string>& summary,
+                   const std::unordered_map<std::string, std::string>& previous_summary,
+                   const std::string& total_property, const std::string& added_property,
+                   const std::string& deleted_property) {
+  auto total_it = previous_summary.find(total_property);
+  if (total_it != previous_summary.end()) {
+    ICEBERG_ASSIGN_OR_RAISE(auto new_total,
+                            StringUtils::ParseInt<int64_t>(total_it->second));
+
+    auto added_it = summary.find(added_property);
+    if (new_total >= 0 && added_it != summary.end()) {
+      ICEBERG_ASSIGN_OR_RAISE(auto added_value,
+                              StringUtils::ParseInt<int64_t>(added_it->second));
+      new_total += added_value;
+    }
+
+    auto deleted_it = summary.find(deleted_property);
+    if (new_total >= 0 && deleted_it != summary.end()) {
+      ICEBERG_ASSIGN_OR_RAISE(auto deleted_value,
+                              StringUtils::ParseInt<int64_t>(deleted_it->second));
+      new_total -= deleted_value;
+    }
+
+    if (new_total >= 0) {
+      summary[total_property] = std::to_string(new_total);
+    }
+  }
+  return {};
+}
+
+/// \brief Add metadata to a manifest file by reading it and extracting statistics.
+///
+/// This function reads the manifest file and fills in missing fields like
+/// added_snapshot_id, file counts, row counts, and partition summaries.
+Result<ManifestFile> AddMetadata(const ManifestFile& manifest,
+                                 std::shared_ptr<FileIO> file_io,
+                                 const TableMetadata& metadata) {
+  ICEBERG_PRECHECK(manifest.added_snapshot_id == kInvalidSnapshotId,
+                   "Manifest already has a snapshot ID");
+
+  // Get the partition spec for this manifest
+  auto spec_iter =
+      std::ranges::find_if(metadata.partition_specs, [&manifest](const auto& spec) {
+        return spec != nullptr && spec->spec_id() == manifest.partition_spec_id;
+      });
+  if (spec_iter == metadata.partition_specs.end()) {
+    return NotFound("Partition spec with ID {} is not found", manifest.partition_spec_id);
+  }
+  auto spec = *spec_iter;
+  ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata.Schema());
+
+  // Create a manifest reader and read all entries
+  ICEBERG_ASSIGN_OR_RAISE(auto reader,
+                          ManifestReader::Make(manifest, file_io, schema, spec));
+  ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
+
+  // Statistics
+  int32_t added_files = 0;
+  int64_t added_rows = 0;
+  int32_t existing_files = 0;
+  int64_t existing_rows = 0;
+  int32_t deleted_files = 0;
+  int64_t deleted_rows = 0;
+
+  std::optional<int64_t> snapshot_id;
+  int64_t max_snapshot_id = std::numeric_limits<int64_t>::min();
+
+  // Get partition type and create partition summary
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_type, spec->PartitionType(*schema));
+  PartitionSummary partition_summary(*partition_type);
+
+  // Process entries
+  for (const auto& entry : entries) {
+    // Track max snapshot ID
+    if (entry.snapshot_id.has_value()) {
+      if (entry.snapshot_id.value() > max_snapshot_id) {
+        max_snapshot_id = entry.snapshot_id.value();
+      }
+    }
+
+    // Update statistics based on entry status
+    switch (entry.status) {
+      case ManifestStatus::kAdded:
+        added_files += 1;
+        if (entry.data_file) {
+          added_rows += entry.data_file->record_count;
+        }
+        if (!snapshot_id.has_value() && entry.snapshot_id.has_value()) {
+          snapshot_id = entry.snapshot_id;
+        }
+        break;
+      case ManifestStatus::kExisting:
+        existing_files += 1;
+        if (entry.data_file) {
+          existing_rows += entry.data_file->record_count;
+        }
+        break;
+      case ManifestStatus::kDeleted:
+        deleted_files += 1;
+        if (entry.data_file) {
+          deleted_rows += entry.data_file->record_count;
+        }
+        if (!snapshot_id.has_value() && entry.snapshot_id.has_value()) {
+          snapshot_id = entry.snapshot_id;
+        }
+        break;
+    }
+
+    // Update partition summary
+    if (entry.data_file) {
+      ICEBERG_RETURN_UNEXPECTED(partition_summary.Update(entry.data_file->partition));
+    }
   }
 
-  // Generate commit UUID
-  commit_uuid_ = Uuid::GenerateV7().ToString();
+  // If no snapshot ID was found from ADDED/DELETED entries, use the max snapshot ID
+  if (!snapshot_id.has_value()) {
+    if (max_snapshot_id != std::numeric_limits<int64_t>::min()) {
+      snapshot_id = max_snapshot_id;
+    } else {
+      return InvalidManifest("Cannot determine snapshot ID for manifest: {}",
+                             manifest.manifest_path);
+    }
+  }
 
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_summaries, partition_summary.Summaries());
+
+  // Create enriched manifest file
+  ManifestFile enriched = manifest;
+  enriched.added_snapshot_id = snapshot_id.value();
+  enriched.added_files_count =
+      added_files > 0 ? std::make_optional(added_files) : std::nullopt;
+  enriched.existing_files_count =
+      existing_files > 0 ? std::make_optional(existing_files) : std::nullopt;
+  enriched.deleted_files_count =
+      deleted_files > 0 ? std::make_optional(deleted_files) : std::nullopt;
+  enriched.added_rows_count =
+      added_rows > 0 ? std::make_optional(added_rows) : std::nullopt;
+  enriched.existing_rows_count =
+      existing_rows > 0 ? std::make_optional(existing_rows) : std::nullopt;
+  enriched.deleted_rows_count =
+      deleted_rows > 0 ? std::make_optional(deleted_rows) : std::nullopt;
+  enriched.partitions = std::move(partition_summaries);
+
+  return enriched;
+}
+
+}  // anonymous namespace
+
+SnapshotUpdate::SnapshotUpdate(std::shared_ptr<Transaction> transaction)
+    : PendingUpdate(std::move(transaction)),
+      can_inherit_snapshot_id_(
+          base().format_version == 1
+              ? base().properties.Get(TableProperties::kSnapshotIdInheritanceEnabled)
+              : true),
+      commit_uuid_(Uuid::GenerateV7().ToString()),
+      target_manifest_size_bytes_(
+          base().properties.Get(TableProperties::kManifestTargetSizeBytes)) {
   // Initialize delete function if not set
   if (!delete_func_) {
     delete_func_ = [this](const std::string& path) {
@@ -65,32 +211,20 @@ Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDataManifests(
     return std::vector<ManifestFile>{};
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto current_schema, transaction_->current().Schema());
+  ICEBERG_ASSIGN_OR_RAISE(auto current_schema, base().Schema());
 
-  int8_t format_version = transaction_->current().format_version;
   std::optional<int64_t> snapshot_id =
       snapshot_id_ ? std::make_optional(*snapshot_id_) : std::nullopt;
 
   // Create factory function for rolling manifest writer
   RollingManifestWriter::ManifestWriterFactory factory =
-      [this, spec, current_schema, format_version,
+      [this, spec, current_schema,
        snapshot_id]() -> Result<std::unique_ptr<ManifestWriter>> {
     std::string manifest_path = ManifestPath();
-
-    if (format_version == 1) {
-      return ManifestWriter::MakeV1Writer(
-          snapshot_id, manifest_path, transaction_->table()->io(), spec, current_schema);
-    } else if (format_version == 2) {
-      return ManifestWriter::MakeV2Writer(snapshot_id, manifest_path,
-                                          transaction_->table()->io(), spec,
-                                          current_schema, ManifestContent::kData);
-    } else {  // format_version == 3
-      std::optional<int64_t> first_row_id =
-          transaction_->table()->metadata()->next_row_id;
-      return ManifestWriter::MakeV3Writer(snapshot_id, first_row_id, manifest_path,
-                                          transaction_->table()->io(), spec,
-                                          current_schema, ManifestContent::kData);
-    }
+    return ManifestWriter::MakeWriter(base().format_version, snapshot_id, manifest_path,
+                                      transaction_->table()->io(), spec, current_schema,
+                                      ManifestContent::kData,
+                                      /*first_row_id=*/base().next_row_id);
   };
 
   // Create rolling manifest writer
@@ -118,13 +252,13 @@ Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDeleteManifests(
     return std::vector<ManifestFile>{};
   }
 
-  int8_t format_version = transaction_->current().format_version;
-  if (format_version < 2) {
+  int8_t format_version = base().format_version;
+  if (base().format_version < 2) {
     // Delete manifests are only supported in format version 2+
     return std::vector<ManifestFile>{};
   }
 
-  ICEBERG_ASSIGN_OR_RAISE(auto current_schema, transaction_->current().Schema());
+  ICEBERG_ASSIGN_OR_RAISE(auto current_schema, base().Schema());
 
   std::optional<int64_t> snapshot_id =
       snapshot_id_ ? std::make_optional(*snapshot_id_) : std::nullopt;
@@ -134,18 +268,10 @@ Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDeleteManifests(
       [this, spec, current_schema, format_version,
        snapshot_id]() -> Result<std::unique_ptr<ManifestWriter>> {
     std::string manifest_path = ManifestPath();
-
-    if (format_version == 2) {
-      return ManifestWriter::MakeV2Writer(snapshot_id, manifest_path,
-                                          transaction_->table()->io(), spec,
-                                          current_schema, ManifestContent::kDeletes);
-    } else {  // format_version == 3
-      std::optional<int64_t> first_row_id =
-          transaction_->table()->metadata()->next_row_id;
-      return ManifestWriter::MakeV3Writer(snapshot_id, first_row_id, manifest_path,
-                                          transaction_->table()->io(), spec,
-                                          current_schema, ManifestContent::kDeletes);
-    }
+    return ManifestWriter::MakeWriter(format_version, snapshot_id, manifest_path,
+                                      transaction_->table()->io(), spec, current_schema,
+                                      ManifestContent::kDeletes,
+                                      /*first_row_id=*/base().next_row_id);
   };
 
   // Create rolling manifest writer
@@ -170,7 +296,7 @@ int64_t SnapshotUpdate::SnapshotId() {
   if (snapshot_id_.has_value()) {
     return *snapshot_id_;
   }
-  snapshot_id_ = SnapshotUtil::GenerateSnapshotId(transaction_->current());
+  snapshot_id_ = SnapshotUtil::GenerateSnapshotId(base());
   return *snapshot_id_;
 }
 
@@ -178,100 +304,102 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
 
   // Get the latest snapshot for the target branch
-  std::shared_ptr<Snapshot> parent_snapshot;
   std::optional<int64_t> parent_snapshot_id;
-  auto parent_snapshot_result =
-      SnapshotUtil::LatestSnapshot(transaction_->current(), target_branch_);
-  if (!parent_snapshot_result.has_value()) [[unlikely]] {
-    if (parent_snapshot_result.error().kind == ErrorKind::kNotFound) {
-      parent_snapshot_id = std::nullopt;
-    }
-    return std::unexpected<Error>(parent_snapshot_result.error());
-  } else {
-    parent_snapshot = *parent_snapshot_result;
-    parent_snapshot_id = parent_snapshot->snapshot_id;
+  ICEBERG_ASSIGN_OR_RAISE(auto parent_snapshot,
+                          SnapshotUtil::OptionalLatestSnapshot(base(), target_branch_));
+  parent_snapshot_id =
+      parent_snapshot ? std::make_optional(parent_snapshot->snapshot_id) : std::nullopt;
+  int64_t sequence_number = base().NextSequenceNumber();
+
+  if (parent_snapshot) {
+    ICEBERG_RETURN_UNEXPECTED(Validate(base(), parent_snapshot));
   }
-  int64_t sequence_number = transaction_->current().NextSequenceNumber();
 
-  ICEBERG_RETURN_UNEXPECTED(Validate(transaction_->current(), parent_snapshot));
-
-  std::vector<ManifestFile> manifests = Apply(transaction_->current(), parent_snapshot);
+  ICEBERG_ASSIGN_OR_RAISE(auto manifests, Apply(base(), parent_snapshot));
 
   std::string manifest_list_path = ManifestListPath();
   manifest_lists_.push_back(manifest_list_path);
 
   // Create manifest list writer based on format version
-  int8_t format_version = transaction_->current().format_version;
+  int8_t format_version = base().format_version;
   int64_t snapshot_id = SnapshotId();
-  std::unique_ptr<ManifestListWriter> writer;
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto writer, ManifestListWriter::MakeWriter(
+                       format_version, snapshot_id, parent_snapshot_id,
+                       manifest_list_path, transaction_->table()->io(), sequence_number,
+                       /*first_row_id=*/base().next_row_id));
 
-  if (format_version == 1) {
-    ICEBERG_ASSIGN_OR_RAISE(writer, ManifestListWriter::MakeV1Writer(
-                                        snapshot_id, parent_snapshot_id,
-                                        manifest_list_path, transaction_->table()->io()));
-  } else if (format_version == 2) {
-    ICEBERG_ASSIGN_OR_RAISE(writer, ManifestListWriter::MakeV2Writer(
-                                        snapshot_id, parent_snapshot_id, sequence_number,
-                                        manifest_list_path, transaction_->table()->io()));
-  } else {  // format_version == 3
-    int64_t first_row_id = transaction_->current().next_row_id;
-    ICEBERG_ASSIGN_OR_RAISE(
-        writer, ManifestListWriter::MakeV3Writer(
-                    snapshot_id, parent_snapshot_id, sequence_number, first_row_id,
-                    manifest_list_path, transaction_->table()->io()));
+  // Enrich manifests that are missing metadata (added_snapshot_id == kInvalidSnapshotId)
+  std::vector<ManifestFile> enriched_manifests;
+  enriched_manifests.reserve(manifests.size());
+  for (const auto& manifest : manifests) {
+    if (manifest.added_snapshot_id == kInvalidSnapshotId) {
+      // Check cache first to avoid regenerating enriched manifest
+      auto cache_it = enriched_manifest_cache_.find(manifest.manifest_path);
+      if (cache_it != enriched_manifest_cache_.end()) {
+        enriched_manifests.push_back(cache_it->second);
+      } else {
+        ICEBERG_ASSIGN_OR_RAISE(
+            auto enriched, AddMetadata(manifest, transaction_->table()->io(), base()));
+        // Store in cache for future use
+        enriched_manifest_cache_[manifest.manifest_path] = enriched;
+        enriched_manifests.push_back(std::move(enriched));
+      }
+    } else {
+      enriched_manifests.push_back(manifest);
+    }
   }
 
-  ICEBERG_RETURN_UNEXPECTED(writer->AddAll(manifests));
+  ICEBERG_RETURN_UNEXPECTED(writer->AddAll(enriched_manifests));
   ICEBERG_RETURN_UNEXPECTED(writer->Close());
 
   // Get nextRowId and assignedRows for format version 3
   std::optional<int64_t> next_row_id;
   std::optional<int64_t> assigned_rows;
   if (format_version >= 3) {
-    next_row_id = transaction_->current().next_row_id;
-    if (writer->next_row_id().has_value()) {
-      assigned_rows = writer->next_row_id().value() - next_row_id.value();
-    }
+    next_row_id = base().next_row_id;
+    ICEBERG_CHECK(writer->next_row_id().has_value(),
+                  "Next row ID is not set in manifest writer");
+    assigned_rows = *writer->next_row_id() - *next_row_id;
   }
 
-  std::unordered_map<std::string, std::string> summary = Summary();
   std::string op = operation();
+  ICEBERG_CHECK(!op.empty(), "Operation is empty");
 
-  if (!op.empty() && op == DataOperation::kReplace) {
+  if (op == DataOperation::kReplace) {
+    const auto& summary = Summary();
     auto added_records_it = summary.find(SnapshotSummaryFields::kAddedRecords);
     auto replaced_records_it = summary.find(SnapshotSummaryFields::kDeletedRecords);
     if (added_records_it != summary.end() && replaced_records_it != summary.end()) {
-      auto added_records = StringUtils::ParseInt<int64_t>(added_records_it->second);
-      auto replaced_records = StringUtils::ParseInt<int64_t>(replaced_records_it->second);
-      if (added_records.has_value() && replaced_records.has_value() &&
-          added_records.value() > replaced_records.value()) {
+      ICEBERG_ASSIGN_OR_RAISE(auto added_records,
+                              StringUtils::ParseInt<int64_t>(added_records_it->second));
+      ICEBERG_ASSIGN_OR_RAISE(auto replaced_records, StringUtils::ParseInt<int64_t>(
+                                                         replaced_records_it->second));
+      if (added_records > replaced_records) {
         return InvalidArgument(
             "Invalid REPLACE operation: {} added records > {} replaced records",
-            added_records.value(), replaced_records.value());
+            added_records, replaced_records);
       }
     }
   }
 
-  summary = ComputeSummary(transaction_->current());
-
-  // Get current time
-  auto now = std::chrono::system_clock::now();
-  auto duration_since_epoch = now.time_since_epoch();
-  TimePointMs timestamp_ms = std::chrono::time_point_cast<std::chrono::milliseconds>(
-      std::chrono::system_clock::time_point(duration_since_epoch));
-
-  // Get schema ID
-  std::optional<int32_t> schema_id = transaction_->current().current_schema_id;
+  ICEBERG_ASSIGN_OR_RAISE(auto summary, ComputeSummary(base()));
+  if (next_row_id.has_value()) {
+    summary[SnapshotSummaryFields::kFirstRowId] = std::to_string(*next_row_id);
+  }
+  if (assigned_rows.has_value()) {
+    summary[SnapshotSummaryFields::kAddedRows] = std::to_string(*assigned_rows);
+  }
 
   // Create snapshot
   staged_snapshot_ =
       std::make_shared<Snapshot>(Snapshot{.snapshot_id = snapshot_id,
                                           .parent_snapshot_id = parent_snapshot_id,
                                           .sequence_number = sequence_number,
-                                          .timestamp_ms = timestamp_ms,
+                                          .timestamp_ms = CurrentTimePointMs(),
                                           .manifest_list = manifest_list_path,
                                           .summary = std::move(summary),
-                                          .schema_id = schema_id});
+                                          .schema_id = base().current_schema_id});
 
   // Return the new snapshot
   return ApplyResult{.snapshot = staged_snapshot_,
@@ -281,7 +409,7 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
 
 Status SnapshotUpdate::Finalize() {
   // Cleanup after successful commit
-  if (cleanup_after_commit()) {
+  if (CleanupAfterCommit() && staged_snapshot_ != nullptr) {
     auto cached_snapshot = SnapshotCache(staged_snapshot_.get());
     ICEBERG_ASSIGN_OR_RAISE(auto manifests,
                             cached_snapshot.Manifests(transaction_->table()->io()));
@@ -301,40 +429,35 @@ Status SnapshotUpdate::Finalize() {
   return {};
 }
 
-void SnapshotUpdate::SetTargetBranch(const std::string& branch) {
-  if (branch.empty()) {
-    AddError(ErrorKind::kInvalidArgument, "Invalid branch name: empty");
-    return;
-  }
+Status SnapshotUpdate::SetTargetBranch(const std::string& branch) {
+  ICEBERG_PRECHECK(!branch.empty(), "Invalid branch name: empty");
 
-  auto ref_it = transaction_->current().refs.find(branch);
-  if (ref_it != transaction_->current().refs.end()) {
-    if (ref_it->second->type() != SnapshotRefType::kBranch) {
-      AddError(
-          ErrorKind::kInvalidArgument,
-          "{} is a tag, not a branch. Tags cannot be targets for producing snapshots",
-          branch);
-      return;
-    }
+  auto ref_it = base().refs.find(branch);
+  if (ref_it != base().refs.end()) {
+    ICEBERG_PRECHECK(
+        ref_it->second->type() == SnapshotRefType::kBranch,
+        "{} is a tag, not a branch. Tags cannot be targets for producing snapshots",
+        branch);
   }
 
   target_branch_ = branch;
+  return {};
 }
 
-std::unordered_map<std::string, std::string> SnapshotUpdate::ComputeSummary(
+Result<std::unordered_map<std::string, std::string>> SnapshotUpdate::ComputeSummary(
     const TableMetadata& previous) {
   std::unordered_map<std::string, std::string> summary = Summary();
 
   if (summary.empty()) {
-    return std::unordered_map<std::string, std::string>{};
+    return summary;
   }
 
   // Get previous summary from the target branch
   std::unordered_map<std::string, std::string> previous_summary;
   if (auto ref_it = previous.refs.find(target_branch_); ref_it != previous.refs.end()) {
-    auto snapshot_result = previous.SnapshotById(ref_it->second->snapshot_id);
-    if (snapshot_result.has_value() && (*snapshot_result)->summary.size() > 0) {
-      previous_summary = (*snapshot_result)->summary;
+    auto snapshot = previous.OptionalSnapshotById(ref_it->second->snapshot_id);
+    if (snapshot != nullptr && snapshot->summary.size() > 0) {
+      previous_summary = snapshot->summary;
     }
   }
 
@@ -349,25 +472,28 @@ std::unordered_map<std::string, std::string> SnapshotUpdate::ComputeSummary(
   }
 
   // Update totals
-  UpdateTotal(summary, previous_summary, SnapshotSummaryFields::kTotalRecords,
-              SnapshotSummaryFields::kAddedRecords,
-              SnapshotSummaryFields::kDeletedRecords);
-  UpdateTotal(summary, previous_summary, SnapshotSummaryFields::kTotalFileSize,
-              SnapshotSummaryFields::kAddedFileSize,
-              SnapshotSummaryFields::kRemovedFileSize);
-  UpdateTotal(summary, previous_summary, SnapshotSummaryFields::kTotalDataFiles,
-              SnapshotSummaryFields::kAddedDataFiles,
-              SnapshotSummaryFields::kDeletedDataFiles);
-  UpdateTotal(summary, previous_summary, SnapshotSummaryFields::kTotalDeleteFiles,
-              SnapshotSummaryFields::kAddedDeleteFiles,
-              SnapshotSummaryFields::kRemovedDeleteFiles);
-  UpdateTotal(summary, previous_summary, SnapshotSummaryFields::kTotalPosDeletes,
-              SnapshotSummaryFields::kAddedPosDeletes,
-              SnapshotSummaryFields::kRemovedPosDeletes);
-  UpdateTotal(summary, previous_summary, SnapshotSummaryFields::kTotalEqDeletes,
-              SnapshotSummaryFields::kAddedEqDeletes,
-              SnapshotSummaryFields::kRemovedEqDeletes);
+  ICEBERG_RETURN_UNEXPECTED(UpdateTotal(
+      summary, previous_summary, SnapshotSummaryFields::kTotalRecords,
+      SnapshotSummaryFields::kAddedRecords, SnapshotSummaryFields::kDeletedRecords));
+  ICEBERG_RETURN_UNEXPECTED(UpdateTotal(
+      summary, previous_summary, SnapshotSummaryFields::kTotalFileSize,
+      SnapshotSummaryFields::kAddedFileSize, SnapshotSummaryFields::kRemovedFileSize));
+  ICEBERG_RETURN_UNEXPECTED(UpdateTotal(
+      summary, previous_summary, SnapshotSummaryFields::kTotalDataFiles,
+      SnapshotSummaryFields::kAddedDataFiles, SnapshotSummaryFields::kDeletedDataFiles));
+  ICEBERG_RETURN_UNEXPECTED(UpdateTotal(summary, previous_summary,
+                                        SnapshotSummaryFields::kTotalDeleteFiles,
+                                        SnapshotSummaryFields::kAddedDeleteFiles,
+                                        SnapshotSummaryFields::kRemovedDeleteFiles));
+  ICEBERG_RETURN_UNEXPECTED(UpdateTotal(summary, previous_summary,
+                                        SnapshotSummaryFields::kTotalPosDeletes,
+                                        SnapshotSummaryFields::kAddedPosDeletes,
+                                        SnapshotSummaryFields::kRemovedPosDeletes));
+  ICEBERG_RETURN_UNEXPECTED(UpdateTotal(
+      summary, previous_summary, SnapshotSummaryFields::kTotalEqDeletes,
+      SnapshotSummaryFields::kAddedEqDeletes, SnapshotSummaryFields::kRemovedEqDeletes));
 
+  // TODO(anyone): we can add custom summary fields like engine info in the future
   return summary;
 }
 
@@ -386,53 +512,16 @@ std::string SnapshotUpdate::ManifestListPath() {
   // Generate manifest list path
   // Format: {metadata_location}/snap-{snapshot_id}-{attempt}-{uuid}.avro
   int64_t snapshot_id = SnapshotId();
-  std::string filename = std::format("snap-{}-{}-{}.avro", snapshot_id,
-                                     attempt_.fetch_add(1) + 1, commit_uuid_);
-  return std::format("{}/metadata/{}", transaction_->table()->location(), filename);
+  std::string filename =
+      std::format("snap-{}-{}-{}.avro", snapshot_id, ++attempt_, commit_uuid_);
+  return transaction_->MetadataFileLocation(filename);
 }
 
 std::string SnapshotUpdate::ManifestPath() {
   // Generate manifest path
   // Format: {metadata_location}/{uuid}-m{manifest_count}.avro
-  int32_t count = manifest_count_.fetch_add(1);
-  std::string filename = std::format("{}-m{}.avro", commit_uuid_, count);
-  return std::format("{}/metadata/{}", transaction_->table()->location(), filename);
-}
-
-void SnapshotUpdate::UpdateTotal(
-    std::unordered_map<std::string, std::string>& summary,
-    const std::unordered_map<std::string, std::string>& previous_summary,
-    const std::string& total_property, const std::string& added_property,
-    const std::string& deleted_property) {
-  auto total_it = previous_summary.find(total_property);
-  if (total_it != previous_summary.end()) {
-    auto new_total_opt = StringUtils::ParseInt<int64_t>(total_it->second);
-    if (!new_total_opt.has_value()) [[unlikely]] {
-      // Ignore and do not add total
-      return;
-    }
-    int64_t new_total = new_total_opt.value();
-
-    auto added_it = summary.find(added_property);
-    if (new_total >= 0 && added_it != summary.end()) {
-      auto added_value_opt = StringUtils::ParseInt<int64_t>(added_it->second);
-      if (added_value_opt.has_value()) {
-        new_total += added_value_opt.value();
-      }
-    }
-
-    auto deleted_it = summary.find(deleted_property);
-    if (new_total >= 0 && deleted_it != summary.end()) {
-      auto deleted_value_opt = StringUtils::ParseInt<int64_t>(deleted_it->second);
-      if (deleted_value_opt.has_value()) {
-        new_total -= deleted_value_opt.value();
-      }
-    }
-
-    if (new_total >= 0) {
-      summary[total_property] = std::to_string(new_total);
-    }
-  }
+  std::string filename = std::format("{}-m{}.avro", commit_uuid_, manifest_count_++);
+  return transaction_->MetadataFileLocation(filename);
 }
 
 }  // namespace iceberg

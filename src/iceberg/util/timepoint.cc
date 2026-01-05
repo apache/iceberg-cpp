@@ -60,4 +60,11 @@ std::string FormatTimePointMs(TimePointMs time_point_ms) {
   return oss.str();
 }
 
+TimePointMs CurrentTimePointMs() {
+  auto now = std::chrono::system_clock::now();
+  auto duration_since_epoch = now.time_since_epoch();
+  return TimePointMs{
+      std::chrono::duration_cast<std::chrono::milliseconds>(duration_since_epoch)};
+}
+
 }  // namespace iceberg

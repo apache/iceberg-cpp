@@ -1553,9 +1553,17 @@ Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(const nlohmann::json& j
                             GetJsonValueOptional<int64_t>(json, kMaxSnapshotAgeMs));
     ICEBERG_ASSIGN_OR_RAISE(auto max_ref_age,
                             GetJsonValueOptional<int64_t>(json, kMaxRefAgeMs));
-    return std::make_unique<table::SetSnapshotRef>(std::move(ref_name), snapshot_id, type,
-                                                   min_snapshots, max_snapshot_age,
-                                                   max_ref_age);
+    if (type == SnapshotRefType::kTag) {
+      ICEBERG_ASSIGN_OR_RAISE(auto tag, SnapshotRef::MakeTag(snapshot_id, max_ref_age));
+      return std::make_unique<table::SetSnapshotRef>(std::move(ref_name), *tag);
+    } else {
+      ICEBERG_CHECK(type == SnapshotRefType::kBranch,
+                    "Expected branch type for snapshot ref");
+      ICEBERG_ASSIGN_OR_RAISE(auto branch,
+                              SnapshotRef::MakeBranch(snapshot_id, min_snapshots,
+                                                      max_snapshot_age, max_ref_age));
+      return std::make_unique<table::SetSnapshotRef>(std::move(ref_name), *branch);
+    }
   }
   if (action == kActionSetProperties) {
     using StringMap = std::unordered_map<std::string, std::string>;

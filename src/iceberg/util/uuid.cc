@@ -217,13 +217,13 @@ std::string Uuid::ToString() const {
       data_[15]);
 }
 
-int64_t Uuid::highbits() const {
+int64_t Uuid::high_bits() const {
   int64_t result;
   std::memcpy(&result, data_.data(), 8);
   return result;
 }
 
-int64_t Uuid::lowbits() const {
+int64_t Uuid::low_bits() const {
   int64_t result;
   std::memcpy(&result, data_.data() + 8, 8);
   return result;

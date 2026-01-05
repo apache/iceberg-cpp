@@ -336,9 +336,20 @@ Result<std::shared_ptr<Snapshot>> SnapshotUtil::LatestSnapshot(
   return metadata.SnapshotById(it->second->snapshot_id);
 }
 
+Result<std::shared_ptr<Snapshot>> SnapshotUtil::OptionalLatestSnapshot(
+    const TableMetadata& metadata, const std::string& branch) {
+  return LatestSnapshot(metadata, branch)
+      .or_else([](const auto& error) -> Result<std::shared_ptr<Snapshot>> {
+        if (error.kind == ErrorKind::kNotFound) {
+          return nullptr;
+        }
+        return std::unexpected<Error>(error);
+      });
+}
+
 int64_t SnapshotUtil::GenerateSnapshotId() {
   auto uuid = Uuid::GenerateV7();
-  return (uuid.highbits() ^ uuid.lowbits()) & std::numeric_limits<int64_t>::max();
+  return (uuid.high_bits() ^ uuid.low_bits()) & std::numeric_limits<int64_t>::max();
 }
 
 int64_t SnapshotUtil::GenerateSnapshotId(const TableMetadata& metadata) {

@@ -19,8 +19,6 @@
 
 #include "iceberg/snapshot.h"
 
-#include <charconv>
-
 #include "iceberg/file_io.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader.h"
@@ -52,6 +50,78 @@ SnapshotRefType SnapshotRef::type() const noexcept {
       retention);
 }
 
+Status SnapshotRef::MinSnapshotsToKeep(std::optional<int32_t> value) {
+  ICEBERG_PRECHECK(this->type() != SnapshotRefType::kTag,
+                   "Tags do not support setting minSnapshotsToKeep");
+  ICEBERG_PRECHECK(!value.has_value() || value.value() > 0,
+                   "Min snapshots to keep must be greater than 0");
+  std::get<Branch>(this->retention).min_snapshots_to_keep = value;
+  return {};
+}
+
+Status SnapshotRef::MaxSnapshotAgeMs(std::optional<int64_t> value) {
+  ICEBERG_PRECHECK(this->type() != SnapshotRefType::kTag,
+                   "Tags do not support setting maxSnapshotAgeMs");
+  ICEBERG_PRECHECK(!value.has_value() || value.value() > 0,
+                   "Max snapshot age must be greater than 0 ms");
+  std::get<Branch>(this->retention).max_snapshot_age_ms = value;
+  return {};
+}
+
+Status SnapshotRef::MaxRefAgeMs(std::optional<int64_t> value) {
+  ICEBERG_PRECHECK(!value.has_value() || value.value() > 0,
+                   "Max reference age must be greater than 0");
+  if (this->type() == SnapshotRefType::kBranch) {
+    std::get<Branch>(this->retention).max_ref_age_ms = value;
+  } else {
+    std::get<Tag>(this->retention).max_ref_age_ms = value;
+  }
+  return {};
+}
+
+Result<std::unique_ptr<SnapshotRef>> SnapshotRef::MakeBranch(
+    int64_t snapshot_id, std::optional<int32_t> min_snapshots_to_keep,
+    std::optional<int64_t> max_snapshot_age_ms, std::optional<int64_t> max_ref_age_ms) {
+  // Validate optional parameters
+  if (min_snapshots_to_keep.has_value() && min_snapshots_to_keep.value() <= 0) {
+    return InvalidArgument("Min snapshots to keep must be greater than 0");
+  }
+  if (max_snapshot_age_ms.has_value() && max_snapshot_age_ms.value() <= 0) {
+    return InvalidArgument("Max snapshot age must be greater than 0 ms");
+  }
+  if (max_ref_age_ms.has_value() && max_ref_age_ms.value() <= 0) {
+    return InvalidArgument("Max reference age must be greater than 0");
+  }
+
+  auto ref = std::make_unique<SnapshotRef>();
+  ref->snapshot_id = snapshot_id;
+  ref->retention = Branch{.min_snapshots_to_keep = min_snapshots_to_keep,
+                          .max_snapshot_age_ms = max_snapshot_age_ms,
+                          .max_ref_age_ms = max_ref_age_ms};
+  return ref;
+}
+
+Result<std::unique_ptr<SnapshotRef>> SnapshotRef::MakeTag(
+    int64_t snapshot_id, std::optional<int64_t> max_ref_age_ms) {
+  // Validate optional parameter
+  if (max_ref_age_ms.has_value() && max_ref_age_ms.value() <= 0) {
+    return InvalidArgument("Max reference age must be greater than 0");
+  }
+
+  auto ref = std::make_unique<SnapshotRef>();
+  ref->snapshot_id = snapshot_id;
+  ref->retention = Tag{.max_ref_age_ms = max_ref_age_ms};
+  return ref;
+}
+
+std::unique_ptr<SnapshotRef> SnapshotRef::Clone(
+    std::optional<int64_t> new_snapshot_id) const {
+  auto ref = std::make_unique<SnapshotRef>();
+  ref->snapshot_id = new_snapshot_id.value_or(snapshot_id);
+  ref->retention = retention;
+  return ref;
+}
+
 bool SnapshotRef::Equals(const SnapshotRef& other) const {
   if (this == &other) {
     return true;
@@ -78,8 +148,8 @@ std::optional<std::string_view> Snapshot::operation() const {
   return std::nullopt;
 }
 
-std::optional<int64_t> Snapshot::FirstRowId() const {
-  auto it = summary.find("first-row-id");
+Result<std::optional<int64_t>> Snapshot::FirstRowId() const {
+  auto it = summary.find(SnapshotSummaryFields::kFirstRowId);
   if (it == summary.end()) {
     return std::nullopt;
   }
@@ -87,8 +157,8 @@ std::optional<int64_t> Snapshot::FirstRowId() const {
   return StringUtils::ParseInt<int64_t>(it->second);
 }
 
-std::optional<int64_t> Snapshot::AddedRows() const {
-  auto it = summary.find("added-rows");
+Result<std::optional<int64_t>> Snapshot::AddedRows() const {
+  auto it = summary.find(SnapshotSummaryFields::kAddedRows);
   if (it == summary.end()) {
     return std::nullopt;
   }
@@ -160,105 +230,6 @@ Result<std::span<ManifestFile>> SnapshotCache::DeleteManifests(
   const size_t delete_start = cache.second;
   const size_t delete_count = cache.first.size() - delete_start;
   return std::span<ManifestFile>(cache.first.data() + delete_start, delete_count);
-}
-
-// SnapshotRef::Builder implementation
-
-SnapshotRef::Builder::Builder(SnapshotRefType type, int64_t snapshot_id)
-    : type_(type), snapshot_id_(snapshot_id) {}
-
-SnapshotRef::Builder SnapshotRef::Builder::TagBuilder(int64_t snapshot_id) {
-  return Builder(SnapshotRefType::kTag, snapshot_id);
-}
-
-SnapshotRef::Builder SnapshotRef::Builder::BranchBuilder(int64_t snapshot_id) {
-  return Builder(SnapshotRefType::kBranch, snapshot_id);
-}
-
-SnapshotRef::Builder SnapshotRef::Builder::BuilderFor(int64_t snapshot_id,
-                                                      SnapshotRefType type) {
-  return Builder(type, snapshot_id);
-}
-
-SnapshotRef::Builder SnapshotRef::Builder::BuilderFrom(const SnapshotRef& ref) {
-  Builder builder(ref.type(), ref.snapshot_id);
-  if (ref.type() == SnapshotRefType::kBranch) {
-    const auto& branch = std::get<SnapshotRef::Branch>(ref.retention);
-    builder.min_snapshots_to_keep_ = branch.min_snapshots_to_keep;
-    builder.max_snapshot_age_ms_ = branch.max_snapshot_age_ms;
-    builder.max_ref_age_ms_ = branch.max_ref_age_ms;
-  } else {
-    const auto& tag = std::get<SnapshotRef::Tag>(ref.retention);
-    builder.max_ref_age_ms_ = tag.max_ref_age_ms;
-  }
-  return builder;
-}
-
-SnapshotRef::Builder SnapshotRef::Builder::BuilderFrom(const SnapshotRef& ref,
-                                                       int64_t snapshot_id) {
-  Builder builder(ref.type(), snapshot_id);
-  if (ref.type() == SnapshotRefType::kBranch) {
-    const auto& branch = std::get<SnapshotRef::Branch>(ref.retention);
-    builder.min_snapshots_to_keep_ = branch.min_snapshots_to_keep;
-    builder.max_snapshot_age_ms_ = branch.max_snapshot_age_ms;
-    builder.max_ref_age_ms_ = branch.max_ref_age_ms;
-  } else {
-    const auto& tag = std::get<SnapshotRef::Tag>(ref.retention);
-    builder.max_ref_age_ms_ = tag.max_ref_age_ms;
-  }
-  return builder;
-}
-
-SnapshotRef::Builder& SnapshotRef::Builder::MinSnapshotsToKeep(
-    std::optional<int32_t> value) {
-  if (type_ == SnapshotRefType::kTag && value.has_value()) {
-    return AddError(ErrorKind::kInvalidArgument,
-                    "Tags do not support setting minSnapshotsToKeep");
-  }
-  if (value.has_value() && value.value() <= 0) {
-    return AddError(ErrorKind::kInvalidArgument,
-                    "Min snapshots to keep must be greater than 0");
-  }
-  min_snapshots_to_keep_ = value;
-  return *this;
-}
-
-SnapshotRef::Builder& SnapshotRef::Builder::MaxSnapshotAgeMs(
-    std::optional<int64_t> value) {
-  if (type_ == SnapshotRefType::kTag && value.has_value()) {
-    return AddError(ErrorKind::kInvalidArgument,
-                    "Tags do not support setting maxSnapshotAgeMs");
-  }
-  if (value.has_value() && value.value() <= 0) {
-    return AddError(ErrorKind::kInvalidArgument,
-                    "Max snapshot age must be greater than 0 ms");
-  }
-  max_snapshot_age_ms_ = value;
-  return *this;
-}
-
-SnapshotRef::Builder& SnapshotRef::Builder::MaxRefAgeMs(std::optional<int64_t> value) {
-  if (value.has_value() && value.value() <= 0) {
-    return AddError(ErrorKind::kInvalidArgument,
-                    "Max reference age must be greater than 0");
-  }
-  max_ref_age_ms_ = value;
-  return *this;
-}
-
-Result<SnapshotRef> SnapshotRef::Builder::Build() const {
-  ICEBERG_RETURN_UNEXPECTED(CheckErrors());
-
-  if (type_ == SnapshotRefType::kBranch) {
-    return SnapshotRef{
-        .snapshot_id = snapshot_id_,
-        .retention = SnapshotRef::Branch{.min_snapshots_to_keep = min_snapshots_to_keep_,
-                                         .max_snapshot_age_ms = max_snapshot_age_ms_,
-                                         .max_ref_age_ms = max_ref_age_ms_}};
-  } else {
-    return SnapshotRef{.snapshot_id = snapshot_id_,
-                       .retention = SnapshotRef::Tag{.max_ref_age_ms = max_ref_age_ms_}};
-  }
 }
 
 }  // namespace iceberg

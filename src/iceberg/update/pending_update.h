@@ -60,6 +60,14 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
   ///         - CommitStateUnknown: unknown status, no cleanup should be done.
   virtual Status Commit();
 
+  /// \brief Finalize the pending update.
+  ///
+  /// This method is called after the update is committed successfully.
+  /// Implementations should override this method to clean up any resources.
+  ///
+  /// \return Status indicating success or failure
+  virtual Status Finalize();
+
   // Non-copyable, movable
   PendingUpdate(const PendingUpdate&) = delete;
   PendingUpdate& operator=(const PendingUpdate&) = delete;
@@ -70,6 +78,8 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
 
  protected:
   explicit PendingUpdate(std::shared_ptr<Transaction> transaction);
+
+  const TableMetadata& base() const;
 
   std::shared_ptr<Transaction> transaction_;
 };

@@ -369,23 +369,18 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeWriter(
     int8_t format_version, std::optional<int64_t> snapshot_id,
     std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
     std::shared_ptr<PartitionSpec> partition_spec, std::shared_ptr<Schema> current_schema,
-    std::optional<ManifestContent> content, std::optional<int64_t> first_row_id) {
+    ManifestContent content, std::optional<int64_t> first_row_id) {
   switch (format_version) {
     case 1:
       return MakeV1Writer(snapshot_id, manifest_location, std::move(file_io),
                           std::move(partition_spec), std::move(current_schema));
     case 2:
-      ICEBERG_PRECHECK(content.has_value(),
-                       "ManifestContent is required for format version 2");
       return MakeV2Writer(snapshot_id, manifest_location, std::move(file_io),
-                          std::move(partition_spec), std::move(current_schema),
-                          content.value());
+                          std::move(partition_spec), std::move(current_schema), content);
     case 3:
-      ICEBERG_PRECHECK(content.has_value(),
-                       "ManifestContent is required for format version 3");
       return MakeV3Writer(snapshot_id, first_row_id, manifest_location,
                           std::move(file_io), std::move(partition_spec),
-                          std::move(current_schema), content.value());
+                          std::move(current_schema), content);
     default:
       return NotSupported("Format version {} is not supported", format_version);
   }

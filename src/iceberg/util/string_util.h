@@ -26,6 +26,7 @@
 #include <string_view>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 
 namespace iceberg {
 
@@ -65,13 +66,17 @@ class ICEBERG_EXPORT StringUtils {
   }
 
   template <typename T>
-  static std::optional<T> ParseInt(std::string_view str) {
+  static Result<T> ParseInt(std::string_view str) {
     T value = 0;
-    auto [_, ec] = std::from_chars(str.data(), str.data() + str.size(), value);
-    if (ec == std::errc()) {
-      return value;
+    auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), value);
+    if (ec == std::errc::invalid_argument) [[unlikely]] {
+      return InvalidArgument("Failed to parse integer from string '{}': invalid argument",
+                             str);
+    } else if (ec == std::errc::result_out_of_range) [[unlikely]] {
+      return InvalidArgument(
+          "Failed to parse integer from string '{}': value out of range", str);
     }
-    return std::nullopt;
+    return value;
   }
 };
 

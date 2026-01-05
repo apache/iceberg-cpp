@@ -78,8 +78,8 @@ class ICEBERG_EXPORT Uuid : public util::Formattable {
     return lhs.data_ == rhs.data_;
   }
 
-  int64_t highbits() const;
-  int64_t lowbits() const;
+  int64_t high_bits() const;
+  int64_t low_bits() const;
 
  private:
   std::array<uint8_t, kLength> data_;

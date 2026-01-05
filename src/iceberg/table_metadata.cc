@@ -52,6 +52,7 @@
 #include "iceberg/util/location_util.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/property_util.h"
+#include "iceberg/util/timepoint.h"
 #include "iceberg/util/type_util.h"
 #include "iceberg/util/uuid.h"
 
@@ -273,6 +274,16 @@ Result<std::shared_ptr<Snapshot>> TableMetadata::SnapshotById(int64_t snapshot_i
   });
   if (iter == snapshots.end()) {
     return NotFound("Snapshot with ID {} is not found", snapshot_id);
+  }
+  return *iter;
+}
+
+std::shared_ptr<Snapshot> TableMetadata::OptionalSnapshotById(int64_t snapshot_id) const {
+  auto iter = std::ranges::find_if(snapshots, [snapshot_id](const auto& snapshot) {
+    return snapshot != nullptr && snapshot->snapshot_id == snapshot_id;
+  });
+  if (iter == snapshots.end()) {
+    return nullptr;
   }
   return *iter;
 }
@@ -623,6 +634,32 @@ class TableMetadataBuilder::Impl {
   /// \param new_schema The schema to check
   /// \return The ID to use for this schema (reused if exists, new otherwise
   int32_t ReuseOrCreateNewSchemaId(const Schema& new_schema) const;
+
+  /// \brief Finds intermediate snapshots that have not been committed as the current
+  /// snapshot.
+  ///
+  /// Transactions can create snapshots that are never the current snapshot because
+  /// several changes are combined by the transaction into one table metadata update. When
+  /// each intermediate snapshot is added to table metadata, it is added to the snapshot
+  /// log, assuming that it will be the current snapshot. When there are multiple snapshot
+  /// updates, the log must be corrected by suppressing the intermediate snapshot entries.
+  ///
+  /// A snapshot is an intermediate snapshot if it was added but is not the current
+  /// snapshot.
+  ///
+  /// \param current_snapshot_id The current snapshot ID
+  /// \return A set of snapshot IDs for all added snapshots that were later replaced as
+  /// the current snapshot in changes
+  std::unordered_set<int64_t> IntermediateSnapshotIdSet(
+      int64_t current_snapshot_id) const;
+
+  /// \brief Updates the snapshot log by removing intermediate snapshots and handling
+  /// removed snapshots.
+  ///
+  /// \param current_snapshot_id The current snapshot ID
+  /// \return Updated snapshot log or error
+  Result<std::vector<SnapshotLogEntry>> UpdateSnapshotLog(
+      int64_t current_snapshot_id) const;
 
  private:
   // Base metadata (nullptr for new tables)
@@ -1026,7 +1063,7 @@ Status TableMetadataBuilder::Impl::AddSnapshot(std::shared_ptr<Snapshot> snapsho
 
   // Handle row lineage for format version >= 3
   if (metadata_.format_version >= TableMetadata::kMinFormatVersionRowLineage) {
-    auto first_row_id = snapshot->FirstRowId();
+    ICEBERG_ASSIGN_OR_RAISE(auto first_row_id, snapshot->FirstRowId());
     ICEBERG_CHECK(first_row_id.has_value(),
                   "Cannot add a snapshot: first-row-id is null");
     ICEBERG_CHECK(
@@ -1034,7 +1071,8 @@ Status TableMetadataBuilder::Impl::AddSnapshot(std::shared_ptr<Snapshot> snapsho
         "Cannot add a snapshot, first-row-id is behind table next-row-id: {} < {}",
         first_row_id.value(), metadata_.next_row_id);
 
-    metadata_.next_row_id += snapshot->AddedRows().value_or(0);
+    ICEBERG_ASSIGN_OR_RAISE(auto add_rows, snapshot->AddedRows());
+    metadata_.next_row_id += add_rows.value_or(0);
   }
 
   return {};
@@ -1072,14 +1110,10 @@ Status TableMetadataBuilder::Impl::SetBranchSnapshot(int64_t snapshot_id,
   // Create new ref: either from existing ref or create new branch ref
   std::shared_ptr<SnapshotRef> new_ref;
   if (ref_it != metadata_.refs.end()) {
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto ref_result,
-        SnapshotRef::Builder::BuilderFrom(*ref_it->second, snapshot_id).Build());
-    new_ref = std::make_shared<SnapshotRef>(std::move(ref_result));
+    new_ref = std::shared_ptr<SnapshotRef>(ref_it->second->Clone(snapshot_id));
   } else {
-    ICEBERG_ASSIGN_OR_RAISE(auto ref_result,
-                            SnapshotRef::Builder::BranchBuilder(snapshot_id).Build());
-    new_ref = std::make_shared<SnapshotRef>(std::move(ref_result));
+    ICEBERG_ASSIGN_OR_RAISE(auto ref_result, SnapshotRef::MakeBranch(snapshot_id));
+    new_ref = std::shared_ptr<SnapshotRef>(std::move(ref_result));
   }
 
   return SetRef(branch, std::move(new_ref));
@@ -1114,9 +1148,7 @@ Status TableMetadataBuilder::Impl::SetRef(const std::string& name,
   if (name == SnapshotRef::kMainBranch) {
     metadata_.current_snapshot_id = ref->snapshot_id;
     if (metadata_.last_updated_ms == kInvalidLastUpdatedMs) {
-      metadata_.last_updated_ms =
-          TimePointMs{std::chrono::duration_cast<std::chrono::milliseconds>(
-              std::chrono::system_clock::now().time_since_epoch())};
+      metadata_.last_updated_ms = CurrentTimePointMs();
     }
     metadata_.snapshot_log.emplace_back(metadata_.last_updated_ms, ref->snapshot_id);
   }
@@ -1124,26 +1156,78 @@ Status TableMetadataBuilder::Impl::SetRef(const std::string& name,
   // Set the ref
   metadata_.refs[name] = ref;
 
-  // Extract properties from SnapshotRef for the change
-  std::optional<int32_t> min_snapshots_to_keep = std::nullopt;
-  std::optional<int64_t> max_snapshot_age_ms = std::nullopt;
-  std::optional<int64_t> max_ref_age_ms = std::nullopt;
-
-  if (ref->type() == SnapshotRefType::kBranch) {
-    const auto& branch = std::get<SnapshotRef::Branch>(ref->retention);
-    min_snapshots_to_keep = branch.min_snapshots_to_keep;
-    max_snapshot_age_ms = branch.max_snapshot_age_ms;
-    max_ref_age_ms = branch.max_ref_age_ms;
-  } else {
-    const auto& tag = std::get<SnapshotRef::Tag>(ref->retention);
-    max_ref_age_ms = tag.max_ref_age_ms;
-  }
-
-  changes_.push_back(std::make_unique<table::SetSnapshotRef>(
-      name, ref->snapshot_id, ref->type(), min_snapshots_to_keep, max_snapshot_age_ms,
-      max_ref_age_ms));
+  changes_.push_back(std::make_unique<table::SetSnapshotRef>(name, *ref));
 
   return {};
+}
+
+std::unordered_set<int64_t> TableMetadataBuilder::Impl::IntermediateSnapshotIdSet(
+    int64_t current_snapshot_id) const {
+  std::unordered_set<int64_t> added_snapshot_ids;
+  std::unordered_set<int64_t> intermediate_snapshot_ids;
+
+  std::ranges::for_each(changes_, [&](const auto& change) {
+    if (change->kind() == TableUpdate::Kind::kAddSnapshot) {
+      // Adds must always come before set current snapshot
+      const auto* add_snapshot =
+          internal::checked_cast<const table::AddSnapshot*>(change.get());
+      added_snapshot_ids.insert(add_snapshot->snapshot()->snapshot_id);
+    } else if (change->kind() == TableUpdate::Kind::kSetSnapshotRef) {
+      const auto* set_ref =
+          internal::checked_cast<const table::SetSnapshotRef*>(change.get());
+      int64_t snapshot_id = set_ref->snapshot_id();
+      if (added_snapshot_ids.contains(snapshot_id) &&
+          set_ref->ref_name() == SnapshotRef::kMainBranch &&
+          snapshot_id != current_snapshot_id) {
+        intermediate_snapshot_ids.insert(snapshot_id);
+      }
+    }
+  });
+
+  return intermediate_snapshot_ids;
+}
+
+Result<std::vector<SnapshotLogEntry>> TableMetadataBuilder::Impl::UpdateSnapshotLog(
+    int64_t current_snapshot_id) const {
+  std::unordered_set<int64_t> intermediate_snapshot_ids =
+      IntermediateSnapshotIdSet(current_snapshot_id);
+  bool has_removed_snapshots = std::ranges::any_of(changes_, [](const auto& change) {
+    return change->kind() == TableUpdate::Kind::kRemoveSnapshots;
+  });
+
+  if (intermediate_snapshot_ids.empty() && !has_removed_snapshots) {
+    return metadata_.snapshot_log;
+  }
+
+  // Update the snapshot log
+  std::vector<SnapshotLogEntry> new_snapshot_log;
+  for (const auto& log_entry : metadata_.snapshot_log) {
+    int64_t snapshot_id = log_entry.snapshot_id;
+    if (snapshots_by_id_.contains(snapshot_id)) {
+      if (!intermediate_snapshot_ids.contains(snapshot_id)) {
+        // Copy the log entries that are still valid
+        new_snapshot_log.push_back(log_entry);
+      }
+    } else if (has_removed_snapshots) {
+      // Any invalid entry causes the history before it to be removed. Otherwise, there
+      // could be history gaps that cause time-travel queries to produce incorrect
+      // results. For example, if history is [(t1, s1), (t2, s2), (t3, s3)] and s2 is
+      // removed, the history cannot be [(t1, s1), (t3, s3)] because it appears that s3
+      // was current during the time between t2 and t3 when in fact s2 was the current
+      // snapshot.
+      new_snapshot_log.clear();
+    }
+  }
+
+  if (snapshots_by_id_.contains(current_snapshot_id)) {
+    ICEBERG_CHECK(!new_snapshot_log.empty(),
+                  "Cannot set invalid snapshot log: no entries");
+    ICEBERG_CHECK(
+        new_snapshot_log.back().snapshot_id == current_snapshot_id,
+        "Cannot set invalid snapshot log: latest entry is not the current snapshot");
+  }
+
+  return new_snapshot_log;
 }
 
 Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Impl::Build() {
@@ -1189,7 +1273,9 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataBuilder::Impl::Build() {
                                  metadata_.metadata_log.end() - max_metadata_log_size);
   }
 
-  // TODO(anyone): 4. update snapshot_log
+  // 4. Update snapshot_log
+  ICEBERG_ASSIGN_OR_RAISE(metadata_.snapshot_log,
+                          UpdateSnapshotLog(metadata_.current_snapshot_id));
 
   // 5. Create and return the TableMetadata
   return std::make_unique<TableMetadata>(std::move(metadata_));

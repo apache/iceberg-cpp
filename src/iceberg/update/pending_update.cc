@@ -30,4 +30,8 @@ PendingUpdate::~PendingUpdate() = default;
 
 Status PendingUpdate::Commit() { return transaction_->Apply(*this); }
 
+Status PendingUpdate::Finalize() { return {}; }
+
+const TableMetadata& PendingUpdate::base() const { return transaction_->current(); }
+
 }  // namespace iceberg

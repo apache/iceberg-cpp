@@ -28,7 +28,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "iceberg/catalog.h"
 #include "iceberg/iceberg_export.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/result.h"
@@ -43,13 +42,11 @@ namespace iceberg {
 /// \brief Base class for operations that produce snapshots.
 ///
 /// This class provides common functionality for creating new snapshots,
-/// including manifest list writing, commit retries, and cleanup.
-///
+/// including manifest list writing and cleanup.
 class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
  public:
   /// \brief Result of applying a snapshot update
   struct ApplyResult {
-    /// \brief The new snapshot
     std::shared_ptr<Snapshot> snapshot;
     std::string target_branch;
     bool stage_only = false;
@@ -61,23 +58,24 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   ///
   /// \param delete_func A function used to delete file locations
   /// \return Reference to this for method chaining
-  /// \tparam T The concrete subclass type
-  template <typename T>
-    requires std::is_base_of_v<SnapshotUpdate, T>
-  T& DeleteWith(std::function<Status(const std::string&)> delete_func) {
-    delete_func_ = std::move(delete_func);
-    return static_cast<T&>(*this);
+  /// \note Cannot be called more than once
+  auto& DeleteWith(this auto& self,
+                   std::function<Status(const std::string&)> delete_func) {
+    if (self.delete_func_set_) [[unlikely]] {
+      return self.AddError(ErrorKind::kInvalidArgument,
+                           "Cannot set delete callback more than once");
+    }
+    self.delete_func_ = std::move(delete_func);
+    self.delete_func_set_ = true;
+    return self;
   }
 
   /// \brief Stage a snapshot in table metadata, but not update the current snapshot id.
   ///
   /// \return Reference to this for method chaining
-  /// \tparam T The concrete subclass type
-  template <typename T>
-    requires std::is_base_of_v<SnapshotUpdate, T>
-  T& StageOnly() {
-    stage_only_ = true;
-    return static_cast<T&>(*this);
+  auto& StageOnly(this auto& self) {
+    self.stage_only_ = true;
+    return self;
   }
 
   /// \brief Apply the update's changes to create a new snapshot.
@@ -89,10 +87,8 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \return A result containing the new snapshot, or an error
   Result<ApplyResult> Apply();
 
-  /// \brief Finalizes the snapshot, cleaning up any uncommitted files.
-  ///
-  /// \return Status indicating success or failure
-  Status Finalize();
+  /// \brief Finalize the snapshot update, cleaning up any uncommitted files.
+  Status Finalize() override;
 
  protected:
   explicit SnapshotUpdate(std::shared_ptr<Transaction> transaction);
@@ -115,26 +111,21 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
       const std::vector<DataFile>& delete_files,
       const std::shared_ptr<PartitionSpec>& spec);
 
-  void SetTargetBranch(const std::string& branch);
-
+  Status SetTargetBranch(const std::string& branch);
   const std::string& target_branch() const { return target_branch_; }
 
   bool can_inherit_snapshot_id() const { return can_inherit_snapshot_id_; }
-
-  int64_t target_manifest_size_bytes() const { return target_manifest_size_bytes_; }
-
   const std::string& commit_uuid() const { return commit_uuid_; }
-
-  int32_t attempt() const { return attempt_.load(); }
-
-  int32_t manifest_count() const { return manifest_count_.load(); }
+  int32_t manifest_count() const { return manifest_count_; }
+  int32_t attempt() const { return attempt_; }
+  int64_t target_manifest_size_bytes() const { return target_manifest_size_bytes_; }
 
   /// \brief Clean up any uncommitted manifests that were created.
   ///
-  /// Manifests may not be committed if apply is called multiple times
+  /// Manifests may not be committed if Apply is called multiple times
   /// because a commit conflict has occurred. Implementations may keep
   /// around manifests because the same changes will be made by both
-  /// apply calls. This method instructs the implementation to clean up
+  /// Apply calls. This method instructs the implementation to clean up
   /// those manifests and passes the paths of the manifests that were
   /// actually committed.
   ///
@@ -153,15 +144,18 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \param current_metadata Current table metadata to validate
   /// \param snapshot Ending snapshot on the lineage which is being validated
   virtual Status Validate(const TableMetadata& current_metadata,
-                          const std::shared_ptr<Snapshot>& snapshot) = 0;
+                          const std::shared_ptr<Snapshot>& snapshot) {
+    return {};
+  };
 
   /// \brief Apply the update's changes to the given metadata and snapshot.
   ///
   /// \param metadata_to_update The base table metadata to apply changes to
   /// \param snapshot Snapshot to apply the changes to
   /// \return A vector of manifest files for the new snapshot
-  virtual std::vector<ManifestFile> Apply(const TableMetadata& metadata_to_update,
-                                          const std::shared_ptr<Snapshot>& snapshot) = 0;
+  virtual Result<std::vector<ManifestFile>> Apply(
+      const TableMetadata& metadata_to_update,
+      const std::shared_ptr<Snapshot>& snapshot) = 0;
 
   /// \brief Get the summary map for this operation.
   ///
@@ -171,13 +165,13 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \brief Check if cleanup should happen after commit
   ///
   /// \return True if cleanup should happen after commit
-  virtual bool cleanup_after_commit() const { return true; }
+  virtual bool CleanupAfterCommit() const { return true; }
 
   int64_t SnapshotId();
 
  private:
   /// \brief Returns the snapshot summary from the implementation and updates totals.
-  std::unordered_map<std::string, std::string> ComputeSummary(
+  Result<std::unordered_map<std::string, std::string>> ComputeSummary(
       const TableMetadata& previous);
 
   /// \brief Clean up all uncommitted files
@@ -192,30 +186,26 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \brief Get the path for a manifest file
   std::string ManifestPath();
 
-  /// \brief Update a total property in the summary
-  void UpdateTotal(std::unordered_map<std::string, std::string>& summary,
-                   const std::unordered_map<std::string, std::string>& previous_summary,
-                   const std::string& total_property, const std::string& added_property,
-                   const std::string& deleted_property);
-
-  int32_t format_version_;
   std::shared_ptr<PartitionSpec> spec_;
   std::shared_ptr<Schema> schema_;
 
-  std::function<Status(const std::string&)> delete_func_;
-  bool stage_only_ = false;
-  std::string target_branch_ = std::string(SnapshotRef::kMainBranch);
-
-  std::optional<int64_t> snapshot_id_{std::nullopt};
-  std::atomic<int32_t> attempt_{0};
-  std::atomic<int32_t> manifest_count_{0};
-  std::vector<std::string> manifest_lists_;
-  std::string commit_uuid_;
-  std::shared_ptr<Snapshot> staged_snapshot_;
-
-  int64_t target_manifest_size_bytes_;
   // For format version > 1, inheritance is enabled by default
   bool can_inherit_snapshot_id_{true};
+  std::string commit_uuid_;
+  int32_t manifest_count_{0};
+  int32_t attempt_{0};
+  std::vector<std::string> manifest_lists_;
+  int64_t target_manifest_size_bytes_;
+  std::optional<int64_t> snapshot_id_{std::nullopt};
+  bool stage_only_{false};
+  std::function<Status(const std::string&)> delete_func_;
+  bool delete_func_set_{false};
+  std::string target_branch_{SnapshotRef::kMainBranch};
+
+  std::shared_ptr<Snapshot> staged_snapshot_;
+
+  // Cache for enriched ManifestFile instances to avoid regenerating them on retries
+  std::unordered_map<std::string, ManifestFile> enriched_manifest_cache_;
 };
 
 }  // namespace iceberg

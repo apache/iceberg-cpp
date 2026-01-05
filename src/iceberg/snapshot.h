@@ -25,14 +25,12 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
-#include <utility>
 #include <variant>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
-#include "iceberg/util/error_collector.h"
 #include "iceberg/util/lazy.h"
 #include "iceberg/util/timepoint.h"
 
@@ -115,71 +113,55 @@ struct ICEBERG_EXPORT SnapshotRef {
 
   SnapshotRefType type() const noexcept;
 
+  /// \brief Set the minimum number of snapshots to keep (branch only)
+  /// \param value The minimum number of snapshots to keep, or nullopt for default
+  /// \return Status indicating success or failure
+  Status MinSnapshotsToKeep(std::optional<int32_t> value);
+
+  /// \brief Set the maximum snapshot age in milliseconds (branch only)
+  /// \param value The maximum snapshot age in milliseconds, or nullopt for default
+  /// \return Status indicating success or failure
+  Status MaxSnapshotAgeMs(std::optional<int64_t> value);
+
+  /// \brief Set the maximum reference age in milliseconds
+  /// \param value The maximum reference age in milliseconds, or nullopt for default
+  /// \return Status indicating success or failure
+  Status MaxRefAgeMs(std::optional<int64_t> value);
+
+  /// \brief Create a branch reference
+  ///
+  /// \param snapshot_id The snapshot ID for the branch
+  /// \param min_snapshots_to_keep Optional minimum number of snapshots to keep
+  /// \param max_snapshot_age_ms Optional maximum snapshot age in milliseconds
+  /// \param max_ref_age_ms Optional maximum reference age in milliseconds
+  /// \return A Result containing a unique_ptr to the SnapshotRef, or an error if
+  /// validation failed
+  static Result<std::unique_ptr<SnapshotRef>> MakeBranch(
+      int64_t snapshot_id, std::optional<int32_t> min_snapshots_to_keep = std::nullopt,
+      std::optional<int64_t> max_snapshot_age_ms = std::nullopt,
+      std::optional<int64_t> max_ref_age_ms = std::nullopt);
+
+  /// \brief Create a tag reference
+  ///
+  /// \param snapshot_id The snapshot ID for the tag
+  /// \param max_ref_age_ms Optional maximum reference age in milliseconds
+  /// \return A Result containing a unique_ptr to the SnapshotRef, or an error if
+  /// validation failed
+  static Result<std::unique_ptr<SnapshotRef>> MakeTag(
+      int64_t snapshot_id, std::optional<int64_t> max_ref_age_ms = std::nullopt);
+
+  /// \brief Clone this SnapshotRef with an optional new snapshot ID
+  ///
+  /// \param new_snapshot_id Optional new snapshot ID. If not provided, uses the current
+  /// snapshot_id
+  /// \return A unique_ptr to the cloned SnapshotRef
+  std::unique_ptr<SnapshotRef> Clone(
+      std::optional<int64_t> new_snapshot_id = std::nullopt) const;
+
   /// \brief Compare two snapshot refs for equality
   friend bool operator==(const SnapshotRef& lhs, const SnapshotRef& rhs) {
     return lhs.Equals(rhs);
   }
-
-  /// \brief Builder class for constructing SnapshotRef objects
-  class ICEBERG_EXPORT Builder : public ErrorCollector {
-   public:
-    /// \brief Create a builder for a tag reference
-    /// \param snapshot_id The snapshot ID for the tag
-    /// \return A new Builder instance for a tag
-    static Builder TagBuilder(int64_t snapshot_id);
-
-    /// \brief Create a builder for a branch reference
-    /// \param snapshot_id The snapshot ID for the branch
-    /// \return A new Builder instance for a branch
-    static Builder BranchBuilder(int64_t snapshot_id);
-
-    /// \brief Create a builder from an existing SnapshotRef
-    /// \param ref The existing reference to copy properties from
-    /// \return A new Builder instance with properties from the existing ref
-    static Builder BuilderFrom(const SnapshotRef& ref);
-
-    /// \brief Create a builder from an existing SnapshotRef with a new snapshot ID
-    /// \param ref The existing reference to copy properties from
-    /// \param snapshot_id The new snapshot ID to use
-    /// \return A new Builder instance with properties from the existing ref but new
-    /// snapshot ID
-    static Builder BuilderFrom(const SnapshotRef& ref, int64_t snapshot_id);
-
-    /// \brief Create a builder for a specific type
-    /// \param snapshot_id The snapshot ID
-    /// \param type The type of reference (branch or tag)
-    /// \return A new Builder instance
-    static Builder BuilderFor(int64_t snapshot_id, SnapshotRefType type);
-
-    /// \brief Set the minimum number of snapshots to keep (branch only)
-    /// \param value The minimum number of snapshots to keep, or nullopt for default
-    /// \return Reference to this builder for method chaining
-    Builder& MinSnapshotsToKeep(std::optional<int32_t> value);
-
-    /// \brief Set the maximum snapshot age in milliseconds (branch only)
-    /// \param value The maximum snapshot age in milliseconds, or nullopt for default
-    /// \return Reference to this builder for method chaining
-    Builder& MaxSnapshotAgeMs(std::optional<int64_t> value);
-
-    /// \brief Set the maximum reference age in milliseconds
-    /// \param value The maximum reference age in milliseconds, or nullopt for default
-    /// \return Reference to this builder for method chaining
-    Builder& MaxRefAgeMs(std::optional<int64_t> value);
-
-    /// \brief Build the SnapshotRef
-    /// \return A Result containing the SnapshotRef instance, or an error if validation
-    /// failed
-    Result<SnapshotRef> Build() const;
-
-   private:
-    explicit Builder(SnapshotRefType type, int64_t snapshot_id);
-
-    SnapshotRefType type_;
-    int64_t snapshot_id_;
-    std::optional<int32_t> min_snapshots_to_keep_;
-    std::optional<int64_t> max_snapshot_age_ms_;
-    std::optional<int64_t> max_ref_age_ms_;
-  };
 
  private:
   /// \brief Compare two snapshot refs for equality.
@@ -190,6 +172,12 @@ struct ICEBERG_EXPORT SnapshotRef {
 struct SnapshotSummaryFields {
   /// \brief The operation field key
   inline static const std::string kOperation = "operation";
+
+  /// \brief The first row id field key
+  inline static const std::string kFirstRowId = "first-row-id";
+
+  /// \brief The added rows field key
+  inline static const std::string kAddedRows = "added-rows";
 
   /// Metrics, see https://iceberg.apache.org/spec/#metrics
 
@@ -324,7 +312,7 @@ struct ICEBERG_EXPORT Snapshot {
   ///
   /// \return the first row-id to be used in this snapshot or nullopt when row lineage
   /// is not supported
-  std::optional<int64_t> FirstRowId() const;
+  Result<std::optional<int64_t>> FirstRowId() const;
 
   /// \brief The upper bound of number of rows with assigned row IDs in this snapshot.
   ///
@@ -336,7 +324,7 @@ struct ICEBERG_EXPORT Snapshot {
   ///
   /// \return the upper bound of number of rows with assigned row IDs in this snapshot
   /// or nullopt if the value was not stored.
-  std::optional<int64_t> AddedRows() const;
+  Result<std::optional<int64_t>> AddedRows() const;
 
   /// \brief Compare two snapshots for equality.
   friend bool operator==(const Snapshot& lhs, const Snapshot& rhs) {
