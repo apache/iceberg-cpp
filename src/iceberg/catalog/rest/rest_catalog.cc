@@ -63,8 +63,9 @@ std::unordered_set<Endpoint> GetDefaultEndpoints() {
 }
 
 /// \brief Fetch server config and merge it with client config
-Result<CatalogConfig> FetchServerConfig(const std::string& config_path,
+Result<CatalogConfig> FetchServerConfig(const ResourcePaths& paths,
                                         const RestCatalogProperties& current_config) {
+  ICEBERG_ASSIGN_OR_RAISE(auto config_path, paths.Config());
   HttpClient client(current_config.ExtractHeaders());
   ICEBERG_ASSIGN_OR_RAISE(const auto response,
                           client.Get(config_path, /*params=*/{}, /*headers=*/{},
@@ -110,9 +111,10 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   if (!file_io) {
     return InvalidArgument("FileIO is required to create RestCatalog");
   }
-  ICEBERG_ASSIGN_OR_RAISE(auto config_uri,
-                          ResourcePaths::Config(std::string(TrimTrailingSlash(uri))));
-  ICEBERG_ASSIGN_OR_RAISE(auto server_config, FetchServerConfig(config_uri, config));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto paths, ResourcePaths::Make(std::string(TrimTrailingSlash(uri)),
+                                      config.Get(RestCatalogProperties::kPrefix)));
+  ICEBERG_ASSIGN_OR_RAISE(auto server_config, FetchServerConfig(*paths, config));
 
   std::unique_ptr<RestCatalogProperties> final_config = RestCatalogProperties::FromMap(
       MergeConfigs(server_config.defaults, config.configs(), server_config.overrides));
@@ -131,8 +133,8 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   // Update resource paths based on the final config
   ICEBERG_ASSIGN_OR_RAISE(auto final_uri, final_config->Uri());
   ICEBERG_ASSIGN_OR_RAISE(
-      auto paths, ResourcePaths::Make(std::string(TrimTrailingSlash(final_uri)),
-                                      final_config->Get(RestCatalogProperties::kPrefix)));
+      paths, ResourcePaths::Make(std::string(TrimTrailingSlash(final_uri)),
+                                 final_config->Get(RestCatalogProperties::kPrefix)));
 
   return std::shared_ptr<RestCatalog>(
       new RestCatalog(std::move(final_config), std::move(file_io), std::move(paths),

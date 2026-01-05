@@ -38,8 +38,8 @@ Result<std::unique_ptr<ResourcePaths>> ResourcePaths::Make(std::string base_uri,
 ResourcePaths::ResourcePaths(std::string base_uri, const std::string& prefix)
     : base_uri_(std::move(base_uri)), prefix_(prefix.empty() ? "" : (prefix + "/")) {}
 
-Result<std::string> ResourcePaths::Config(const std::string& base_uri) {
-  return std::format("{}/v1/config", base_uri);
+Result<std::string> ResourcePaths::Config() const {
+  return std::format("{}/v1/config", base_uri_);
 }
 
 Result<std::string> ResourcePaths::OAuth2Tokens() const {
