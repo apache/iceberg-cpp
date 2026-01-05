@@ -137,7 +137,7 @@ TEST_F(FileScanTaskTest, ReadFullSchema) {
 
   FileScanTask task(data_file);
 
-  auto stream_result = task.ToArrow(file_io_, projected_schema, nullptr);
+  auto stream_result = task.ToArrow(file_io_, projected_schema);
   ASSERT_THAT(stream_result, IsOk());
   auto stream = std::move(stream_result.value());
 
@@ -156,7 +156,7 @@ TEST_F(FileScanTaskTest, ReadProjectedAndReorderedSchema) {
 
   FileScanTask task(data_file);
 
-  auto stream_result = task.ToArrow(file_io_, projected_schema, nullptr);
+  auto stream_result = task.ToArrow(file_io_, projected_schema);
   ASSERT_THAT(stream_result, IsOk());
   auto stream = std::move(stream_result.value());
 
@@ -175,7 +175,7 @@ TEST_F(FileScanTaskTest, ReadEmptyFile) {
 
   FileScanTask task(data_file);
 
-  auto stream_result = task.ToArrow(file_io_, projected_schema, nullptr);
+  auto stream_result = task.ToArrow(file_io_, projected_schema);
   ASSERT_THAT(stream_result, IsOk());
   auto stream = std::move(stream_result.value());
 

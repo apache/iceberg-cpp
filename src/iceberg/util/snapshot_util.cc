@@ -228,9 +228,30 @@ Result<std::shared_ptr<Snapshot>> SnapshotUtil::SnapshotAfter(const Table& table
       snapshot_id);
 }
 
+namespace {
+
+std::optional<int64_t> OptionalSnapshotIdAsOfTimeImpl(const TableMetadata& metadata,
+                                                      TimePointMs timestamp_ms) {
+  std::optional<int64_t> snapshot_id = std::nullopt;
+  for (const auto& log_entry : metadata.snapshot_log) {
+    if (log_entry.timestamp_ms <= timestamp_ms) {
+      snapshot_id = log_entry.snapshot_id;
+    }
+  }
+  return snapshot_id;
+}
+
+}  // namespace
+
 Result<int64_t> SnapshotUtil::SnapshotIdAsOfTime(const Table& table,
                                                  TimePointMs timestamp_ms) {
-  auto snapshot_id = OptionalSnapshotIdAsOfTime(table, timestamp_ms);
+  ICEBERG_PRECHECK(table.metadata() != nullptr, "Table metadata is null");
+  return SnapshotIdAsOfTime(*table.metadata(), timestamp_ms);
+}
+
+Result<int64_t> SnapshotUtil::SnapshotIdAsOfTime(const TableMetadata& metadata,
+                                                 TimePointMs timestamp_ms) {
+  auto snapshot_id = OptionalSnapshotIdAsOfTimeImpl(metadata, timestamp_ms);
   ICEBERG_CHECK(snapshot_id.has_value(), "Cannot find a snapshot older than {}",
                 FormatTimePointMs(timestamp_ms));
   return snapshot_id.value();
@@ -238,13 +259,7 @@ Result<int64_t> SnapshotUtil::SnapshotIdAsOfTime(const Table& table,
 
 std::optional<int64_t> SnapshotUtil::OptionalSnapshotIdAsOfTime(
     const Table& table, TimePointMs timestamp_ms) {
-  std::optional<int64_t> snapshot_id = std::nullopt;
-  for (const auto& log_entry : table.history()) {
-    if (log_entry.timestamp_ms <= timestamp_ms) {
-      snapshot_id = log_entry.snapshot_id;
-    }
-  }
-  return snapshot_id;
+  return OptionalSnapshotIdAsOfTimeImpl(*table.metadata(), timestamp_ms);
 }
 
 Result<std::shared_ptr<Schema>> SnapshotUtil::SchemaFor(const Table& table,

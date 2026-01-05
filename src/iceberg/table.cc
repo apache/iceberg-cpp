@@ -141,7 +141,7 @@ const std::shared_ptr<TableMetadata>& Table::metadata() const { return metadata_
 const std::shared_ptr<Catalog>& Table::catalog() const { return catalog_; }
 
 Result<std::unique_ptr<TableScanBuilder>> Table::NewScan() const {
-  return std::make_unique<TableScanBuilder>(metadata_, io_);
+  return TableScanBuilder::Make(metadata_, io_);
 }
 
 Result<std::shared_ptr<Transaction>> Table::NewTransaction() {

@@ -170,6 +170,14 @@ class ICEBERG_EXPORT SnapshotUtil {
   /// \return The snapshot ID
   static Result<int64_t> SnapshotIdAsOfTime(const Table& table, TimePointMs timestamp_ms);
 
+  /// \brief Returns the ID of the most recent snapshot for the table as of the timestamp.
+  ///
+  /// \param metadata The table metadata
+  /// \param timestamp_ms The timestamp in millis since the Unix epoch
+  /// \return The snapshot ID
+  static Result<int64_t> SnapshotIdAsOfTime(const TableMetadata& metadata,
+                                            TimePointMs timestamp_ms);
+
   /// \brief Returns the ID of the most recent snapshot for the table as of the timestamp,
   /// or nullopt if not found.
   ///
