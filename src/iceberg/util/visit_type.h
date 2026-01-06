@@ -124,7 +124,7 @@ inline Status VisitTypeIdInline(TypeId id, VISITOR* visitor, ARGS&&... args) {
 
 #undef TYPE_ID_VISIT_INLINE
 
-/// \brief Visit a type using a schema visitor pattern
+/// \brief Visit a type using a categorical visitor pattern
 ///
 /// This function provides a simplified visitor interface that groups Iceberg types into
 /// four categories based on their structural properties:
@@ -149,13 +149,15 @@ inline Status VisitTypeIdInline(TypeId id, VISITOR* visitor, ARGS&&... args) {
 /// \param args Additional arguments forwarded to the Visit methods
 /// \return The return value from the invoked Visit method
 template <typename VISITOR, typename... ARGS>
-inline auto VisitSchemaInline(const Type& type, VISITOR* visitor, ARGS&&... args) {
+inline auto VisitTypeCategory(const Type& type, VISITOR* visitor, ARGS&&... args) {
 #define SCHEMA_VISIT_ACTION(TYPE_CLASS)                      \
   return visitor->Visit##TYPE_CLASS(                         \
       internal::checked_cast<const TYPE_CLASS##Type&>(type), \
       std::forward<ARGS>(args)...);
 
-  switch (type.type_id()) { ICEBERG_GENERATE_SCHEMA_VISITOR_CASES(SCHEMA_VISIT_ACTION) }
+  switch (type.type_id()) {
+    ICEBERG_TYPE_SWITCH_WITH_PRIMITIVE_DEFAULT(SCHEMA_VISIT_ACTION)
+  }
 
 #undef SCHEMA_VISIT_ACTION
 }

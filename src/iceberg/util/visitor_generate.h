@@ -47,14 +47,14 @@ namespace iceberg {
 /// - List types -> calls ACTION with List
 /// - Map types -> calls ACTION with Map
 /// - All primitive types (default) -> calls ACTION with Primitive
-#define ICEBERG_GENERATE_SCHEMA_VISITOR_CASES(ACTION) \
-  case ::iceberg::TypeId::kStruct:                    \
-    ACTION(Struct)                                    \
-  case ::iceberg::TypeId::kList:                      \
-    ACTION(List)                                      \
-  case ::iceberg::TypeId::kMap:                       \
-    ACTION(Map)                                       \
-  default:                                            \
+#define ICEBERG_TYPE_SWITCH_WITH_PRIMITIVE_DEFAULT(ACTION) \
+  case ::iceberg::TypeId::kStruct:                         \
+    ACTION(Struct)                                         \
+  case ::iceberg::TypeId::kList:                           \
+    ACTION(List)                                           \
+  case ::iceberg::TypeId::kMap:                            \
+    ACTION(Map)                                            \
+  default:                                                 \
     ACTION(Primitive)
 
 }  // namespace iceberg

@@ -57,7 +57,7 @@ class ApplyChangesVisitor {
   /// \brief Apply changes to a type using schema visitor pattern
   Result<std::shared_ptr<Type>> ApplyChanges(const std::shared_ptr<Type>& type,
                                              int32_t parent_id) {
-    return VisitSchemaInline(*type, this, type, parent_id);
+    return VisitTypeCategory(*type, this, type, parent_id);
   }
 
   /// \brief Apply changes to a struct type
@@ -65,6 +65,7 @@ class ApplyChangesVisitor {
                                             const std::shared_ptr<Type>& base_type,
                                             int32_t parent_id) {
     std::vector<SchemaField> new_fields;
+    bool has_changes = false;
 
     // Process existing fields
     for (const auto& field : struct_type.fields()) {
@@ -77,19 +78,34 @@ class ApplyChangesVisitor {
                               ProcessField(field, field_type_result));
 
       if (processed_field.has_value()) {
-        new_fields.push_back(std::move(processed_field.value()));
+        const auto& new_field = processed_field.value();
+        new_fields.push_back(new_field);
+
+        // Check if this field changed
+        if (new_field != field) {
+          has_changes = true;
+        }
+      } else {
+        // Field was deleted
+        has_changes = true;
       }
     }
 
     // Add new fields for this struct
     auto adds_it = parent_to_added_ids_.find(parent_id);
-    if (adds_it != parent_to_added_ids_.end()) {
+    if (adds_it != parent_to_added_ids_.end() && !adds_it->second.empty()) {
+      has_changes = true;
       for (int32_t added_id : adds_it->second) {
         auto added_field_it = updates_.find(added_id);
         if (added_field_it != updates_.end()) {
           new_fields.push_back(*added_field_it->second);
         }
       }
+    }
+
+    // Return original type if nothing changed
+    if (!has_changes) {
+      return base_type;
     }
 
     return std::make_shared<StructType>(std::move(new_fields));
@@ -253,7 +269,7 @@ UpdateSchema::UpdateSchema(std::shared_ptr<Transaction> transaction)
     AddError(identifier_names_result.error());
     return;
   }
-  identifier_field_names_ = identifier_names_result.value();
+  identifier_field_names_ = std::move(identifier_names_result.value());
 
   // Initialize id_to_parent map from the schema
   id_to_parent_ = IndexParents(*schema_);
@@ -349,11 +365,8 @@ UpdateSchema& UpdateSchema::DeleteColumn(std::string_view name) {
   const auto& field = field_opt->get();
   int32_t field_id = field.field_id();
 
-  // Check the field doesn't have additions
   ICEBERG_BUILDER_CHECK(!parent_to_added_ids_.contains(field_id),
                         "Cannot delete a column that has additions: {}", name);
-
-  // Check the field doesn't have updates
   ICEBERG_BUILDER_CHECK(!updates_.contains(field_id),
                         "Cannot delete a column that has updates: {}", name);
 
@@ -405,7 +418,6 @@ Result<UpdateSchema::ApplyResult> UpdateSchema::Apply() {
       const auto& field = field_opt->get();
       auto field_id = field.field_id();
 
-      // Check the field itself is not deleted
       ICEBERG_CHECK(!deletes_.contains(field_id),
                     "Cannot delete identifier field {}. To force deletion, also call "
                     "SetIdentifierFields to update identifier fields.",
@@ -415,35 +427,24 @@ Result<UpdateSchema::ApplyResult> UpdateSchema::Apply() {
       auto parent_it = id_to_parent_.find(field_id);
       while (parent_it != id_to_parent_.end()) {
         int32_t parent_id = parent_it->second;
-        ICEBERG_ASSIGN_OR_RAISE(auto parent_field_opt, schema_->FindFieldById(parent_id));
         ICEBERG_CHECK(
             !deletes_.contains(parent_id),
-            "Cannot delete field {} as it will delete nested identifier field {}",
-            parent_field_opt.has_value() ? std::string(parent_field_opt->get().name())
-                                         : std::to_string(parent_id),
-            name);
+            "Cannot delete field with id {} as it will delete nested identifier field {}",
+            parent_id, name);
         parent_it = id_to_parent_.find(parent_id);
       }
     }
   }
 
-  // Apply schema changes using visitor pattern
-  // Create a temporary struct type from the schema to use with the visitor
-  auto schema_struct_type = std::make_shared<StructType>(
-      schema_->fields() | std::ranges::to<std::vector<SchemaField>>());
-
   // Apply changes recursively using the visitor
   ApplyChangesVisitor visitor(deletes_, updates_, parent_to_added_ids_);
-  ICEBERG_ASSIGN_OR_RAISE(auto new_type,
-                          visitor.ApplyChanges(schema_struct_type, kTableRootId));
+  ICEBERG_ASSIGN_OR_RAISE(auto new_type, visitor.ApplyChanges(schema_, kTableRootId));
 
   // Cast result back to StructType and extract fields
   auto new_struct_type = internal::checked_pointer_cast<StructType>(new_type);
-  std::vector<SchemaField> new_fields(new_struct_type->fields() |
-                                      std::ranges::to<std::vector<SchemaField>>());
 
   // Convert identifier field names to IDs
-  auto temp_schema = std::make_shared<Schema>(new_fields);
+  auto temp_schema = new_struct_type->ToSchema();
   std::vector<int32_t> fresh_identifier_ids;
   for (const auto& name : identifier_field_names_) {
     ICEBERG_ASSIGN_OR_RAISE(auto field_opt,
@@ -456,6 +457,7 @@ Result<UpdateSchema::ApplyResult> UpdateSchema::Apply() {
   }
 
   // Create the new schema
+  auto new_fields = temp_schema->fields() | std::ranges::to<std::vector<SchemaField>>();
   ICEBERG_ASSIGN_OR_RAISE(
       auto new_schema,
       Schema::Make(std::move(new_fields), schema_->schema_id(), fresh_identifier_ids));
@@ -464,6 +466,7 @@ Result<UpdateSchema::ApplyResult> UpdateSchema::Apply() {
                      .new_last_column_id = last_column_id_};
 }
 
+// TODO(Guotao Yu): v3 default value is not yet supported
 UpdateSchema& UpdateSchema::AddColumnInternal(std::optional<std::string_view> parent,
                                               std::string_view name, bool is_optional,
                                               std::shared_ptr<Type> type,
@@ -472,7 +475,8 @@ UpdateSchema& UpdateSchema::AddColumnInternal(std::optional<std::string_view> pa
   std::string full_name;
 
   // Handle parent field
-  if (parent.has_value() && !parent->empty()) {
+  if (parent.has_value()) {
+    ICEBERG_BUILDER_CHECK(!parent->empty(), "Parent name cannot be empty");
     // Find parent field
     ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto parent_field_opt, FindField(*parent));
     ICEBERG_BUILDER_CHECK(parent_field_opt.has_value(), "Cannot find parent struct: {}",
@@ -483,22 +487,19 @@ UpdateSchema& UpdateSchema::AddColumnInternal(std::optional<std::string_view> pa
 
     // Get the actual field to add to (handle map/list)
     const SchemaField* target_field = &parent_field;
-    if (parent_type->is_nested()) {
-      const auto& nested = internal::checked_cast<const NestedType&>(*parent_type);
-      if (nested.type_id() == TypeId::kMap) {
-        // For maps, add to value field
-        const auto& map_type = internal::checked_cast<const MapType&>(nested);
-        target_field = &map_type.value();
-      } else if (nested.type_id() == TypeId::kList) {
-        // For lists, add to element field
-        const auto& list_type = internal::checked_cast<const ListType&>(nested);
-        target_field = &list_type.element();
-      }
+
+    if (parent_type->type_id() == TypeId::kMap) {
+      // For maps, add to value field
+      const auto& map_type = internal::checked_cast<const MapType&>(*parent_type);
+      target_field = &map_type.value();
+    } else if (parent_type->type_id() == TypeId::kList) {
+      // For lists, add to element field
+      const auto& list_type = internal::checked_cast<const ListType&>(*parent_type);
+      target_field = &list_type.element();
     }
 
     // Validate target is a struct
-    ICEBERG_BUILDER_CHECK(target_field->type()->is_nested() &&
-                              target_field->type()->type_id() == TypeId::kStruct,
+    ICEBERG_BUILDER_CHECK(target_field->type()->type_id() == TypeId::kStruct,
                           "Cannot add to non-struct column: {}: {}", *parent,
                           target_field->type()->ToString());
 
@@ -510,28 +511,25 @@ UpdateSchema& UpdateSchema::AddColumnInternal(std::optional<std::string_view> pa
 
     // Check field doesn't already exist (unless it's being deleted)
     std::string nested_name = std::format("{}.{}", *parent, name);
-    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto current_field_opt, FindField(nested_name));
-    if (current_field_opt.has_value()) {
-      const auto& current_field = current_field_opt->get();
-      ICEBERG_BUILDER_CHECK(deletes_.contains(current_field.field_id()),
-                            "Cannot add column, name already exists: {}.{}", *parent,
-                            name);
-    }
+    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto current_field, FindField(nested_name));
+    ICEBERG_BUILDER_CHECK(
+        !current_field.has_value() || deletes_.contains(current_field->get().field_id()),
+        "Cannot add column, name already exists: {}.{}", *parent, name);
 
     // Build full name using canonical name of parent
     ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto parent_name_opt,
                                      schema_->FindColumnNameById(parent_id));
     ICEBERG_BUILDER_CHECK(parent_name_opt.has_value(),
                           "Cannot find column name for parent id: {}", parent_id);
+
     full_name = std::format("{}.{}", *parent_name_opt, name);
   } else {
     // Top-level field
-    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto current_field_opt, FindField(name));
-    if (current_field_opt.has_value()) {
-      const auto& current_field = current_field_opt->get();
-      ICEBERG_BUILDER_CHECK(deletes_.contains(current_field.field_id()),
-                            "Cannot add column, name already exists: {}", name);
-    }
+    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto current_field, FindField(name));
+    ICEBERG_BUILDER_CHECK(
+        !current_field.has_value() || deletes_.contains(current_field->get().field_id()),
+        "Cannot add column, name already exists: {}", name);
+
     full_name = std::string(name);
   }
 
@@ -567,11 +565,7 @@ UpdateSchema& UpdateSchema::AddColumnInternal(std::optional<std::string_view> pa
   return *this;
 }
 
-int32_t UpdateSchema::AssignNewColumnId() {
-  int32_t next = last_column_id_ + 1;
-  last_column_id_ = next;
-  return next;
-}
+int32_t UpdateSchema::AssignNewColumnId() { return ++last_column_id_; }
 
 Result<std::optional<std::reference_wrapper<const SchemaField>>> UpdateSchema::FindField(
     std::string_view name) const {
