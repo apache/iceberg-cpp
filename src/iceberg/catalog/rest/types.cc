@@ -23,6 +23,8 @@
 #include "iceberg/schema.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_requirement.h"
+#include "iceberg/table_update.h"
 
 namespace iceberg::rest {
 
@@ -79,8 +81,25 @@ bool CommitTableRequest::operator==(const CommitTableRequest& other) const {
   if (updates.size() != other.updates.size()) {
     return false;
   }
-  // Note: Deep comparison of requirements and updates is not implemented
-  // as they contain polymorphic types. This is primarily for testing.
+
+  for (size_t i = 0; i < requirements.size(); ++i) {
+    if (!requirements[i] != !other.requirements[i]) {
+      return false;
+    }
+    if (requirements[i] && !requirements[i]->Equals(*other.requirements[i])) {
+      return false;
+    }
+  }
+
+  for (size_t i = 0; i < updates.size(); ++i) {
+    if (!updates[i] != !other.updates[i]) {
+      return false;
+    }
+    if (updates[i] && !updates[i]->Equals(*other.updates[i])) {
+      return false;
+    }
+  }
+
   return true;
 }
 

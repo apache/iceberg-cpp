@@ -30,6 +30,8 @@
 #include "iceberg/sort_order.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_requirement.h"
+#include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
 
 namespace iceberg::rest {
@@ -1175,6 +1177,206 @@ INSTANTIATE_TEST_SUITE_P(
             .invalid_json_str = R"({"metadata":{"format-version":"invalid"}})",
             .expected_error_message = "type must be number, but is string"}),
     [](const ::testing::TestParamInfo<LoadTableResultInvalidParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_ROUNDTRIP_TEST(CommitTableRequest)
+
+INSTANTIATE_TEST_SUITE_P(
+    CommitTableRequestCases, CommitTableRequestTest,
+    ::testing::Values(
+        // Full request with identifier, requirements, and updates
+        CommitTableRequestParam{
+            .test_name = "FullRequest",
+            .expected_json_str =
+                R"({"identifier":{"namespace":["ns1"],"name":"table1"},"requirements":[{"type":"assert-table-uuid","uuid":"2cc52516-5e73-41f2-b139-545d41a4e151"},{"type":"assert-create"}],"updates":[{"action":"assign-uuid","uuid":"2cc52516-5e73-41f2-b139-545d41a4e151"},{"action":"set-current-schema","schema-id":23}]})",
+            .model = {.identifier = TableIdentifier{Namespace{{"ns1"}}, "table1"},
+                      .requirements = {std::make_shared<table::AssertUUID>(
+                                           "2cc52516-5e73-41f2-b139-545d41a4e151"),
+                                       std::make_shared<table::AssertDoesNotExist>()},
+                      .updates = {std::make_shared<table::AssignUUID>(
+                                      "2cc52516-5e73-41f2-b139-545d41a4e151"),
+                                  std::make_shared<table::SetCurrentSchema>(23)}}},
+        // Request without identifier (identifier optional)
+        CommitTableRequestParam{
+            .test_name = "WithoutIdentifier",
+            .expected_json_str =
+                R"({"requirements":[{"type":"assert-table-uuid","uuid":"2cc52516-5e73-41f2-b139-545d41a4e151"},{"type":"assert-create"}],"updates":[{"action":"assign-uuid","uuid":"2cc52516-5e73-41f2-b139-545d41a4e151"},{"action":"set-current-schema","schema-id":23}]})",
+            .model = {.requirements = {std::make_shared<table::AssertUUID>(
+                                           "2cc52516-5e73-41f2-b139-545d41a4e151"),
+                                       std::make_shared<table::AssertDoesNotExist>()},
+                      .updates = {std::make_shared<table::AssignUUID>(
+                                      "2cc52516-5e73-41f2-b139-545d41a4e151"),
+                                  std::make_shared<table::SetCurrentSchema>(23)}}},
+        // Request with empty requirements and updates
+        CommitTableRequestParam{
+            .test_name = "EmptyRequirementsAndUpdates",
+            .expected_json_str =
+                R"({"identifier":{"namespace":["ns1"],"name":"table1"},"requirements":[],"updates":[]})",
+            .model = {.identifier = TableIdentifier{Namespace{{"ns1"}}, "table1"}}}),
+    [](const ::testing::TestParamInfo<CommitTableRequestParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_DESERIALIZE_TEST(CommitTableRequest)
+
+INSTANTIATE_TEST_SUITE_P(
+    CommitTableRequestDeserializeCases, CommitTableRequestDeserializeTest,
+    ::testing::Values(
+        // Identifier field is missing (should deserialize to empty identifier)
+        CommitTableRequestDeserializeParam{
+            .test_name = "MissingIdentifier",
+            .json_str = R"({"requirements":[],"updates":[]})",
+            .expected_model = {}}),
+    [](const ::testing::TestParamInfo<CommitTableRequestDeserializeParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_INVALID_TEST(CommitTableRequest)
+
+INSTANTIATE_TEST_SUITE_P(
+    CommitTableRequestInvalidCases, CommitTableRequestInvalidTest,
+    ::testing::Values(
+        // Invalid table identifier - missing name field
+        CommitTableRequestInvalidParam{
+            .test_name = "InvalidTableIdentifier",
+            .invalid_json_str = R"({"identifier":{},"requirements":[],"updates":[]})",
+            .expected_error_message = "Missing 'name'"},
+        // Invalid table identifier - wrong type for name
+        CommitTableRequestInvalidParam{
+            .test_name = "InvalidIdentifierNameType",
+            .invalid_json_str =
+                R"({"identifier":{"namespace":["ns1"],"name":23},"requirements":[],"updates":[]})",
+            .expected_error_message = "type must be string, but is number"},
+        // Invalid requirements - non-object value in requirements array
+        CommitTableRequestInvalidParam{
+            .test_name = "InvalidRequirementsNonObject",
+            .invalid_json_str =
+                R"({"identifier":{"namespace":["ns1"],"name":"table1"},"requirements":[23],"updates":[]})",
+            .expected_error_message = "Missing 'type' in"},
+        // Invalid requirements - missing type field
+        CommitTableRequestInvalidParam{
+            .test_name = "InvalidRequirementsMissingType",
+            .invalid_json_str =
+                R"({"identifier":{"namespace":["ns1"],"name":"table1"},"requirements":[{}],"updates":[]})",
+            .expected_error_message = "Missing 'type'"},
+        // Invalid requirements - assert-table-uuid missing uuid field
+        CommitTableRequestInvalidParam{
+            .test_name = "InvalidRequirementsMissingUUID",
+            .invalid_json_str =
+                R"({"identifier":{"namespace":["ns1"],"name":"table1"},"requirements":[{"type":"assert-table-uuid"}],"updates":[]})",
+            .expected_error_message = "Missing 'uuid'"},
+        // Invalid updates - non-object value in updates array
+        CommitTableRequestInvalidParam{
+            .test_name = "InvalidUpdatesNonObject",
+            .invalid_json_str =
+                R"({"identifier":{"namespace":["ns1"],"name":"table1"},"requirements":[],"updates":[23]})",
+            .expected_error_message = "Missing 'action' in"},
+        // Invalid updates - missing action field
+        CommitTableRequestInvalidParam{
+            .test_name = "InvalidUpdatesMissingAction",
+            .invalid_json_str =
+                R"({"identifier":{"namespace":["ns1"],"name":"table1"},"requirements":[],"updates":[{}]})",
+            .expected_error_message = "Missing 'action'"},
+        // Invalid updates - assign-uuid missing uuid field
+        CommitTableRequestInvalidParam{
+            .test_name = "InvalidUpdatesMissingUUID",
+            .invalid_json_str =
+                R"({"identifier":{"namespace":["ns1"],"name":"table1"},"requirements":[],"updates":[{"action":"assign-uuid"}]})",
+            .expected_error_message = "Missing 'uuid'"},
+        // Missing required requirements field
+        CommitTableRequestInvalidParam{
+            .test_name = "MissingRequirements",
+            .invalid_json_str =
+                R"({"identifier":{"namespace":["ns1"],"name":"table1"},"updates":[]})",
+            .expected_error_message = "Missing 'requirements'"},
+        // Missing required updates field
+        CommitTableRequestInvalidParam{
+            .test_name = "MissingUpdates",
+            .invalid_json_str =
+                R"({"identifier":{"namespace":["ns1"],"name":"table1"},"requirements":[]})",
+            .expected_error_message = "Missing 'updates'"},
+        // Empty JSON object
+        CommitTableRequestInvalidParam{
+            .test_name = "EmptyJson",
+            .invalid_json_str = R"({})",
+            .expected_error_message = "Missing 'requirements'"}),
+    [](const ::testing::TestParamInfo<CommitTableRequestInvalidParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_ROUNDTRIP_TEST(CommitTableResponse)
+
+INSTANTIATE_TEST_SUITE_P(
+    CommitTableResponseCases, CommitTableResponseTest,
+    ::testing::Values(
+        // Full response with metadata location and metadata
+        CommitTableResponseParam{
+            .test_name = "FullResponse",
+            .expected_json_str =
+                R"({"metadata-location":"s3://bucket/metadata/v2.json","metadata":{"current-schema-id":1,"current-snapshot-id":null,"default-sort-order-id":0,"default-spec-id":0,"format-version":2,"last-column-id":1,"last-partition-id":0,"last-sequence-number":0,"last-updated-ms":0,"location":"s3://bucket/test","metadata-log":[],"partition-specs":[{"fields":[],"spec-id":0}],"partition-statistics":[],"properties":{},"refs":{},"schemas":[{"fields":[{"id":1,"name":"id","required":true,"type":"int"}],"schema-id":1,"type":"struct"}],"snapshot-log":[],"snapshots":[],"sort-orders":[{"fields":[],"order-id":0}],"statistics":[],"table-uuid":"test-uuid-1234"}})",
+            .model = {.metadata_location = "s3://bucket/metadata/v2.json",
+                      .metadata = MakeSimpleTableMetadata()}}),
+    [](const ::testing::TestParamInfo<CommitTableResponseParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_DESERIALIZE_TEST(CommitTableResponse)
+
+INSTANTIATE_TEST_SUITE_P(
+    CommitTableResponseDeserializeCases, CommitTableResponseDeserializeTest,
+    ::testing::Values(
+        // Standard response with all fields
+        CommitTableResponseDeserializeParam{
+            .test_name = "StandardResponse",
+            .json_str =
+                R"({"metadata-location":"s3://bucket/metadata/v2.json","metadata":{"format-version":2,"table-uuid":"test-uuid-1234","location":"s3://bucket/test","last-sequence-number":0,"last-updated-ms":0,"last-column-id":1,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0,"properties":{}}})",
+            .expected_model = {.metadata_location = "s3://bucket/metadata/v2.json",
+                               .metadata = MakeSimpleTableMetadata()}}),
+    [](const ::testing::TestParamInfo<CommitTableResponseDeserializeParam>& info) {
+      return info.param.test_name;
+    });
+
+DECLARE_INVALID_TEST(CommitTableResponse)
+
+INSTANTIATE_TEST_SUITE_P(
+    CommitTableResponseInvalidCases, CommitTableResponseInvalidTest,
+    ::testing::Values(
+        // Missing required metadata-location field
+        CommitTableResponseInvalidParam{
+            .test_name = "MissingMetadataLocation",
+            .invalid_json_str =
+                R"({"metadata":{"format-version":2,"table-uuid":"test","location":"s3://test","last-sequence-number":0,"last-column-id":1,"last-updated-ms":0,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0}})",
+            .expected_error_message = "Missing 'metadata-location'"},
+        // Missing required metadata field
+        CommitTableResponseInvalidParam{
+            .test_name = "MissingMetadata",
+            .invalid_json_str = R"({"metadata-location":"s3://bucket/metadata/v2.json"})",
+            .expected_error_message = "Missing 'metadata'"},
+        // Null metadata field
+        CommitTableResponseInvalidParam{
+            .test_name = "NullMetadata",
+            .invalid_json_str =
+                R"({"metadata-location":"s3://bucket/metadata/v2.json","metadata":null})",
+            .expected_error_message = "Missing 'metadata'"},
+        // Wrong type for metadata-location field
+        CommitTableResponseInvalidParam{
+            .test_name = "WrongMetadataLocationType",
+            .invalid_json_str =
+                R"({"metadata-location":123,"metadata":{"format-version":2,"table-uuid":"test","location":"s3://test","last-sequence-number":0,"last-column-id":1,"last-updated-ms":0,"schemas":[{"type":"struct","schema-id":1,"fields":[{"id":1,"name":"id","type":"int","required":true}]}],"current-schema-id":1,"partition-specs":[{"spec-id":0,"fields":[]}],"default-spec-id":0,"last-partition-id":0,"sort-orders":[{"order-id":0,"fields":[]}],"default-sort-order-id":0}})",
+            .expected_error_message = "type must be string, but is number"},
+        // Wrong type for metadata field
+        CommitTableResponseInvalidParam{
+            .test_name = "WrongMetadataType",
+            .invalid_json_str =
+                R"({"metadata-location":"s3://bucket/metadata/v2.json","metadata":"invalid"})",
+            .expected_error_message = "Cannot parse metadata from a non-object"},
+        // Empty JSON object
+        CommitTableResponseInvalidParam{
+            .test_name = "EmptyJson",
+            .invalid_json_str = R"({})",
+            .expected_error_message = "Missing 'metadata-location'"}),
+    [](const ::testing::TestParamInfo<CommitTableResponseInvalidParam>& info) {
       return info.param.test_name;
     });
 

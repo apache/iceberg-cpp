@@ -71,8 +71,6 @@ constexpr std::string_view kType = "type";
 constexpr std::string_view kCode = "code";
 constexpr std::string_view kStack = "stack";
 constexpr std::string_view kError = "error";
-
-// CommitTableRequest field constants
 constexpr std::string_view kIdentifier = "identifier";
 constexpr std::string_view kRequirements = "requirements";
 
@@ -400,18 +398,18 @@ Result<CreateTableRequest> CreateTableRequestFromJson(const nlohmann::json& json
 nlohmann::json ToJson(const CommitTableRequest& request) {
   nlohmann::json json;
   if (!request.identifier.name.empty()) {
-    json[kIdentifier] = iceberg::ToJson(request.identifier);
+    json[kIdentifier] = ToJson(request.identifier);
   }
 
   nlohmann::json requirements_json = nlohmann::json::array();
   for (const auto& req : request.requirements) {
-    requirements_json.push_back(iceberg::ToJson(*req));
+    requirements_json.push_back(ToJson(*req));
   }
   json[kRequirements] = std::move(requirements_json);
 
   nlohmann::json updates_json = nlohmann::json::array();
   for (const auto& update : request.updates) {
-    updates_json.push_back(iceberg::ToJson(*update));
+    updates_json.push_back(ToJson(*update));
   }
   json[kUpdates] = std::move(updates_json);
 
@@ -425,8 +423,21 @@ Result<CommitTableRequest> CommitTableRequestFromJson(const nlohmann::json& json
                             GetJsonValue<nlohmann::json>(json, kIdentifier));
     ICEBERG_ASSIGN_OR_RAISE(request.identifier, TableIdentifierFromJson(identifier_json));
   }
-  // Note: requirements and updates deserialization would be complex
-  // and is not typically needed for the client side
+
+  ICEBERG_ASSIGN_OR_RAISE(auto requirements_json,
+                          GetJsonValue<nlohmann::json>(json, kRequirements));
+  for (const auto& req_json : requirements_json) {
+    ICEBERG_ASSIGN_OR_RAISE(auto requirement, TableRequirementFromJson(req_json));
+    request.requirements.push_back(std::move(requirement));
+  }
+
+  ICEBERG_ASSIGN_OR_RAISE(auto updates_json,
+                          GetJsonValue<nlohmann::json>(json, kUpdates));
+  for (const auto& update_json : updates_json) {
+    ICEBERG_ASSIGN_OR_RAISE(auto update, TableUpdateFromJson(update_json));
+    request.updates.push_back(std::move(update));
+  }
+
   ICEBERG_RETURN_UNEXPECTED(request.Validate());
   return request;
 }
@@ -434,15 +445,17 @@ Result<CommitTableRequest> CommitTableRequestFromJson(const nlohmann::json& json
 // CommitTableResponse serialization
 nlohmann::json ToJson(const CommitTableResponse& response) {
   nlohmann::json json;
-  SetOptionalStringField(json, kMetadataLocation, response.metadata_location);
-  json[kMetadata] = ToJson(*response.metadata);
+  json[kMetadataLocation] = response.metadata_location;
+  if (response.metadata) {
+    json[kMetadata] = ToJson(*response.metadata);
+  }
   return json;
 }
 
 Result<CommitTableResponse> CommitTableResponseFromJson(const nlohmann::json& json) {
   CommitTableResponse response;
   ICEBERG_ASSIGN_OR_RAISE(response.metadata_location,
-                          GetJsonValueOrDefault<std::string>(json, kMetadataLocation));
+                          GetJsonValue<std::string>(json, kMetadataLocation));
   ICEBERG_ASSIGN_OR_RAISE(auto metadata_json,
                           GetJsonValue<nlohmann::json>(json, kMetadata));
   ICEBERG_ASSIGN_OR_RAISE(response.metadata, TableMetadataFromJson(metadata_json));

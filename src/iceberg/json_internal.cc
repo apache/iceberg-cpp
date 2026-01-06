@@ -40,6 +40,8 @@
 #include "iceberg/table_identifier.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
+#include "iceberg/table_requirement.h"
+#include "iceberg/table_update.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
 #include "iceberg/util/checked_cast.h"
@@ -281,7 +283,7 @@ nlohmann::json ToJson(const SchemaField& field) {
 nlohmann::json ToJson(const Type& type) {
   switch (type.type_id()) {
     case TypeId::kStruct: {
-      const auto& struct_type = static_cast<const StructType&>(type);
+      const auto& struct_type = internal::checked_cast<const StructType&>(type);
       nlohmann::json json;
       json[kType] = kStruct;
       nlohmann::json fields_json = nlohmann::json::array();
@@ -293,7 +295,7 @@ nlohmann::json ToJson(const Type& type) {
       return json;
     }
     case TypeId::kList: {
-      const auto& list_type = static_cast<const ListType&>(type);
+      const auto& list_type = internal::checked_cast<const ListType&>(type);
       nlohmann::json json;
       json[kType] = kList;
 
@@ -304,7 +306,7 @@ nlohmann::json ToJson(const Type& type) {
       return json;
     }
     case TypeId::kMap: {
-      const auto& map_type = static_cast<const MapType&>(type);
+      const auto& map_type = internal::checked_cast<const MapType&>(type);
       nlohmann::json json;
       json[std::string(kType)] = kMap;
 
@@ -329,7 +331,7 @@ nlohmann::json ToJson(const Type& type) {
     case TypeId::kDouble:
       return "double";
     case TypeId::kDecimal: {
-      const auto& decimal_type = static_cast<const DecimalType&>(type);
+      const auto& decimal_type = internal::checked_cast<const DecimalType&>(type);
       return std::format("decimal({},{})", decimal_type.precision(),
                          decimal_type.scale());
     }
@@ -346,7 +348,7 @@ nlohmann::json ToJson(const Type& type) {
     case TypeId::kBinary:
       return "binary";
     case TypeId::kFixed: {
-      const auto& fixed_type = static_cast<const FixedType&>(type);
+      const auto& fixed_type = internal::checked_cast<const FixedType&>(type);
       return std::format("fixed[{}]", fixed_type.length());
     }
     case TypeId::kUuid:
@@ -356,7 +358,7 @@ nlohmann::json ToJson(const Type& type) {
 }
 
 nlohmann::json ToJson(const Schema& schema) {
-  nlohmann::json json = ToJson(static_cast<const Type&>(schema));
+  nlohmann::json json = ToJson(internal::checked_cast<const Type&>(schema));
   json[kSchemaId] = schema.schema_id();
   if (!schema.IdentifierFieldIds().empty()) {
     json[kIdentifierFieldIds] = schema.IdentifierFieldIds();
@@ -1266,86 +1268,103 @@ nlohmann::json ToJson(const TableUpdate& update) {
   nlohmann::json json;
   switch (update.kind()) {
     case TableUpdate::Kind::kAssignUUID: {
-      const auto& u = static_cast<const table::AssignUUID&>(update);
+      const auto& u = internal::checked_cast<const table::AssignUUID&>(update);
       json[kAction] = kActionAssignUUID;
       json[kUUID] = u.uuid();
       break;
     }
     case TableUpdate::Kind::kUpgradeFormatVersion: {
-      const auto& u = static_cast<const table::UpgradeFormatVersion&>(update);
+      const auto& u = internal::checked_cast<const table::UpgradeFormatVersion&>(update);
       json[kAction] = kActionUpgradeFormatVersion;
       json[kFormatVersion] = u.format_version();
       break;
     }
     case TableUpdate::Kind::kAddSchema: {
-      const auto& u = static_cast<const table::AddSchema&>(update);
+      const auto& u = internal::checked_cast<const table::AddSchema&>(update);
       json[kAction] = kActionAddSchema;
-      json[kSchema] = ToJson(*u.schema());
+      if (u.schema()) {
+        json[kSchema] = ToJson(*u.schema());
+      } else {
+        json[kSchema] = nlohmann::json::value_t::null;
+      }
       json[kLastColumnId] = u.last_column_id();
       break;
     }
     case TableUpdate::Kind::kSetCurrentSchema: {
-      const auto& u = static_cast<const table::SetCurrentSchema&>(update);
+      const auto& u = internal::checked_cast<const table::SetCurrentSchema&>(update);
       json[kAction] = kActionSetCurrentSchema;
       json[kSchemaId] = u.schema_id();
       break;
     }
     case TableUpdate::Kind::kAddPartitionSpec: {
-      const auto& u = static_cast<const table::AddPartitionSpec&>(update);
+      const auto& u = internal::checked_cast<const table::AddPartitionSpec&>(update);
       json[kAction] = kActionAddPartitionSpec;
-      json[kSpec] = ToJson(*u.spec());
+      if (u.spec()) {
+        json[kSpec] = ToJson(*u.spec());
+      } else {
+        json[kSpec] = nlohmann::json::value_t::null;
+      }
       break;
     }
     case TableUpdate::Kind::kSetDefaultPartitionSpec: {
-      const auto& u = static_cast<const table::SetDefaultPartitionSpec&>(update);
+      const auto& u =
+          internal::checked_cast<const table::SetDefaultPartitionSpec&>(update);
       json[kAction] = kActionSetDefaultPartitionSpec;
       json[kSpecId] = u.spec_id();
       break;
     }
     case TableUpdate::Kind::kRemovePartitionSpecs: {
-      const auto& u = static_cast<const table::RemovePartitionSpecs&>(update);
+      const auto& u = internal::checked_cast<const table::RemovePartitionSpecs&>(update);
       json[kAction] = kActionRemovePartitionSpecs;
       json[kSpecIds] = u.spec_ids();
       break;
     }
     case TableUpdate::Kind::kRemoveSchemas: {
-      const auto& u = static_cast<const table::RemoveSchemas&>(update);
+      const auto& u = internal::checked_cast<const table::RemoveSchemas&>(update);
       json[kAction] = kActionRemoveSchemas;
       json[kSchemaIds] = u.schema_ids();
       break;
     }
     case TableUpdate::Kind::kAddSortOrder: {
-      const auto& u = static_cast<const table::AddSortOrder&>(update);
+      const auto& u = internal::checked_cast<const table::AddSortOrder&>(update);
       json[kAction] = kActionAddSortOrder;
-      json[kSortOrder] = ToJson(*u.sort_order());
+      if (u.sort_order()) {
+        json[kSortOrder] = ToJson(*u.sort_order());
+      } else {
+        json[kSortOrder] = nlohmann::json::value_t::null;
+      }
       break;
     }
     case TableUpdate::Kind::kSetDefaultSortOrder: {
-      const auto& u = static_cast<const table::SetDefaultSortOrder&>(update);
+      const auto& u = internal::checked_cast<const table::SetDefaultSortOrder&>(update);
       json[kAction] = kActionSetDefaultSortOrder;
       json[kSortOrderId] = u.sort_order_id();
       break;
     }
     case TableUpdate::Kind::kAddSnapshot: {
-      const auto& u = static_cast<const table::AddSnapshot&>(update);
+      const auto& u = internal::checked_cast<const table::AddSnapshot&>(update);
       json[kAction] = kActionAddSnapshot;
-      json[kSnapshot] = ToJson(*u.snapshot());
+      if (u.snapshot()) {
+        json[kSnapshot] = ToJson(*u.snapshot());
+      } else {
+        json[kSnapshot] = nlohmann::json::value_t::null;
+      }
       break;
     }
     case TableUpdate::Kind::kRemoveSnapshots: {
-      const auto& u = static_cast<const table::RemoveSnapshots&>(update);
+      const auto& u = internal::checked_cast<const table::RemoveSnapshots&>(update);
       json[kAction] = kActionRemoveSnapshots;
       json[kSnapshotIds] = u.snapshot_ids();
       break;
     }
     case TableUpdate::Kind::kRemoveSnapshotRef: {
-      const auto& u = static_cast<const table::RemoveSnapshotRef&>(update);
+      const auto& u = internal::checked_cast<const table::RemoveSnapshotRef&>(update);
       json[kAction] = kActionRemoveSnapshotRef;
       json[kRefName] = u.ref_name();
       break;
     }
     case TableUpdate::Kind::kSetSnapshotRef: {
-      const auto& u = static_cast<const table::SetSnapshotRef&>(update);
+      const auto& u = internal::checked_cast<const table::SetSnapshotRef&>(update);
       json[kAction] = kActionSetSnapshotRef;
       json[kRefName] = u.ref_name();
       json[kSnapshotId] = u.snapshot_id();
@@ -1362,19 +1381,19 @@ nlohmann::json ToJson(const TableUpdate& update) {
       break;
     }
     case TableUpdate::Kind::kSetProperties: {
-      const auto& u = static_cast<const table::SetProperties&>(update);
+      const auto& u = internal::checked_cast<const table::SetProperties&>(update);
       json[kAction] = kActionSetProperties;
       json[kUpdates] = u.updated();
       break;
     }
     case TableUpdate::Kind::kRemoveProperties: {
-      const auto& u = static_cast<const table::RemoveProperties&>(update);
+      const auto& u = internal::checked_cast<const table::RemoveProperties&>(update);
       json[kAction] = kActionRemoveProperties;
       json[kRemovals] = std::vector<std::string>(u.removed().begin(), u.removed().end());
       break;
     }
     case TableUpdate::Kind::kSetLocation: {
-      const auto& u = static_cast<const table::SetLocation&>(update);
+      const auto& u = internal::checked_cast<const table::SetLocation&>(update);
       json[kAction] = kActionSetLocation;
       json[kLocation] = u.location();
       break;
@@ -1385,45 +1404,68 @@ nlohmann::json ToJson(const TableUpdate& update) {
 
 nlohmann::json ToJson(const TableRequirement& requirement) {
   nlohmann::json json;
-
-  if (dynamic_cast<const table::AssertDoesNotExist*>(&requirement)) {
-    json[kType] = kRequirementAssertDoesNotExist;
-  } else if (auto* r = dynamic_cast<const table::AssertUUID*>(&requirement)) {
-    json[kType] = kRequirementAssertUUID;
-    json[kUUID] = r->uuid();
-  } else if (auto* r = dynamic_cast<const table::AssertRefSnapshotID*>(&requirement)) {
-    json[kType] = kRequirementAssertRefSnapshotID;
-    json[kRefName] = r->ref_name();
-    if (r->snapshot_id().has_value()) {
-      json[kSnapshotId] = r->snapshot_id().value();
-    } else {
-      json[kSnapshotId] = nullptr;
+  switch (requirement.kind()) {
+    case TableRequirement::Kind::kAssertDoesNotExist:
+      json[kType] = kRequirementAssertDoesNotExist;
+      break;
+    case TableRequirement::Kind::kAssertUUID: {
+      const auto& r = internal::checked_cast<const table::AssertUUID&>(requirement);
+      json[kType] = kRequirementAssertUUID;
+      json[kUUID] = r.uuid();
+      break;
     }
-  } else if (auto* r =
-                 dynamic_cast<const table::AssertLastAssignedFieldId*>(&requirement)) {
-    json[kType] = kRequirementAssertLastAssignedFieldId;
-    json[kLastAssignedFieldId] = r->last_assigned_field_id();
-  } else if (auto* r = dynamic_cast<const table::AssertCurrentSchemaID*>(&requirement)) {
-    json[kType] = kRequirementAssertCurrentSchemaID;
-    json[kCurrentSchemaId] = r->schema_id();
-  } else if (auto* r = dynamic_cast<const table::AssertLastAssignedPartitionId*>(
-                 &requirement)) {
-    json[kType] = kRequirementAssertLastAssignedPartitionId;
-    json[kLastAssignedPartitionId] = r->last_assigned_partition_id();
-  } else if (auto* r = dynamic_cast<const table::AssertDefaultSpecID*>(&requirement)) {
-    json[kType] = kRequirementAssertDefaultSpecID;
-    json[kDefaultSpecId] = r->spec_id();
-  } else if (auto* r =
-                 dynamic_cast<const table::AssertDefaultSortOrderID*>(&requirement)) {
-    json[kType] = kRequirementAssertDefaultSortOrderID;
-    json[kDefaultSortOrderId] = r->sort_order_id();
+    case TableRequirement::Kind::kAssertRefSnapshotID: {
+      const auto& r =
+          internal::checked_cast<const table::AssertRefSnapshotID&>(requirement);
+      json[kType] = kRequirementAssertRefSnapshotID;
+      json[kRefName] = r.ref_name();
+      if (r.snapshot_id().has_value()) {
+        json[kSnapshotId] = r.snapshot_id().value();
+      } else {
+        json[kSnapshotId] = nlohmann::json::value_t::null;
+      }
+      break;
+    }
+    case TableRequirement::Kind::kAssertLastAssignedFieldId: {
+      const auto& r =
+          internal::checked_cast<const table::AssertLastAssignedFieldId&>(requirement);
+      json[kType] = kRequirementAssertLastAssignedFieldId;
+      json[kLastAssignedFieldId] = r.last_assigned_field_id();
+      break;
+    }
+    case TableRequirement::Kind::kAssertCurrentSchemaID: {
+      const auto& r =
+          internal::checked_cast<const table::AssertCurrentSchemaID&>(requirement);
+      json[kType] = kRequirementAssertCurrentSchemaID;
+      json[kCurrentSchemaId] = r.schema_id();
+      break;
+    }
+    case TableRequirement::Kind::kAssertLastAssignedPartitionId: {
+      const auto& r = internal::checked_cast<const table::AssertLastAssignedPartitionId&>(
+          requirement);
+      json[kType] = kRequirementAssertLastAssignedPartitionId;
+      json[kLastAssignedPartitionId] = r.last_assigned_partition_id();
+      break;
+    }
+    case TableRequirement::Kind::kAssertDefaultSpecID: {
+      const auto& r =
+          internal::checked_cast<const table::AssertDefaultSpecID&>(requirement);
+      json[kType] = kRequirementAssertDefaultSpecID;
+      json[kDefaultSpecId] = r.spec_id();
+      break;
+    }
+    case TableRequirement::Kind::kAssertDefaultSortOrderID: {
+      const auto& r =
+          internal::checked_cast<const table::AssertDefaultSortOrderID&>(requirement);
+      json[kType] = kRequirementAssertDefaultSortOrderID;
+      json[kDefaultSortOrderId] = r.sort_order_id();
+      break;
+    }
   }
-
   return json;
 }
 
-Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(
-    const nlohmann::json& json, const std::shared_ptr<Schema>& schema) {
+Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto action, GetJsonValue<std::string>(json, kAction));
 
   if (action == kActionAssignUUID) {
@@ -1448,19 +1490,11 @@ Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(
     return std::make_unique<table::SetCurrentSchema>(schema_id);
   }
   if (action == kActionAddPartitionSpec) {
-    if (!schema) {
-      return NotSupported(
-          "Cannot parse AddPartitionSpec without schema context. Use the overload "
-          "that takes a schema parameter.");
-    }
     ICEBERG_ASSIGN_OR_RAISE(auto spec_json, GetJsonValue<nlohmann::json>(json, kSpec));
     ICEBERG_ASSIGN_OR_RAISE(auto spec_id_opt,
                             GetJsonValueOptional<int32_t>(spec_json, kSpecId));
-    ICEBERG_ASSIGN_OR_RAISE(
-        auto spec,
-        PartitionSpecFromJson(schema, spec_json,
-                              spec_id_opt.value_or(PartitionSpec::kInitialSpecId)));
-    return std::make_unique<table::AddPartitionSpec>(std::move(spec));
+    // TODO(Feiyang Li): add fromJson for UnboundPartitionSpec and then use it here
+    return NotImplemented("FromJson of TableUpdate::AddPartitionSpec is not implemented");
   }
   if (action == kActionSetDefaultPartitionSpec) {
     ICEBERG_ASSIGN_OR_RAISE(auto spec_id, GetJsonValue<int32_t>(json, kSpecId));
@@ -1478,15 +1512,10 @@ Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(
     return std::make_unique<table::RemoveSchemas>(std::move(schema_ids));
   }
   if (action == kActionAddSortOrder) {
-    if (!schema) {
-      return NotSupported(
-          "Cannot parse AddSortOrder without schema context. Use the overload "
-          "that takes a schema parameter.");
-    }
     ICEBERG_ASSIGN_OR_RAISE(auto sort_order_json,
                             GetJsonValue<nlohmann::json>(json, kSortOrder));
-    ICEBERG_ASSIGN_OR_RAISE(auto sort_order, SortOrderFromJson(sort_order_json, schema));
-    return std::make_unique<table::AddSortOrder>(std::move(sort_order));
+    // TODO(Feiyang Li): add fromJson for UnboundSortOrder and then use it here
+    return NotImplemented("FromJson of TableUpdate::AddSortOrder is not implemented");
   }
   if (action == kActionSetDefaultSortOrder) {
     ICEBERG_ASSIGN_OR_RAISE(auto sort_order_id,
@@ -1532,7 +1561,9 @@ Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(
   if (action == kActionRemoveProperties) {
     ICEBERG_ASSIGN_OR_RAISE(auto removals_vec,
                             GetJsonValue<std::vector<std::string>>(json, kRemovals));
-    std::unordered_set<std::string> removals(removals_vec.begin(), removals_vec.end());
+    std::unordered_set<std::string> removals(
+        std::make_move_iterator(removals_vec.begin()),
+        std::make_move_iterator(removals_vec.end()));
     return std::make_unique<table::RemoveProperties>(std::move(removals));
   }
   if (action == kActionSetLocation) {
@@ -1541,10 +1572,6 @@ Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(
   }
 
   return JsonParseError("Unknown table update action: {}", action);
-}
-
-Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(const nlohmann::json& json) {
-  return TableUpdateFromJson(json, nullptr);
 }
 
 Result<std::unique_ptr<TableRequirement>> TableRequirementFromJson(

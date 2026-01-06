@@ -83,6 +83,22 @@ class ICEBERG_EXPORT TableUpdate {
   ///
   /// \param context The context containing base metadata and operation state
   virtual void GenerateRequirements(TableUpdateContext& context) const = 0;
+
+  /// \brief Check equality with another TableUpdate
+  ///
+  /// \param other The update to compare with
+  /// \return true if the updates are equal, false otherwise
+  virtual bool Equals(const TableUpdate& other) const = 0;
+
+  /// \brief Create a deep copy of this update
+  ///
+  /// \return A unique_ptr to a new TableUpdate that is a copy of this one
+  virtual std::unique_ptr<TableUpdate> Clone() const = 0;
+
+  /// \brief Compare two TableUpdate instances for equality
+  friend bool operator==(const TableUpdate& lhs, const TableUpdate& rhs) {
+    return lhs.Equals(rhs);
+  }
 };
 
 namespace table {
@@ -99,6 +115,10 @@ class ICEBERG_EXPORT AssignUUID : public TableUpdate {
   void GenerateRequirements(TableUpdateContext& context) const override;
 
   Kind kind() const override { return Kind::kAssignUUID; }
+
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
 
  private:
   std::string uuid_;
@@ -117,6 +137,10 @@ class ICEBERG_EXPORT UpgradeFormatVersion : public TableUpdate {
   void GenerateRequirements(TableUpdateContext& context) const override;
 
   Kind kind() const override { return Kind::kUpgradeFormatVersion; }
+
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
 
  private:
   int8_t format_version_;
@@ -138,6 +162,10 @@ class ICEBERG_EXPORT AddSchema : public TableUpdate {
 
   Kind kind() const override { return Kind::kAddSchema; }
 
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
+
  private:
   std::shared_ptr<Schema> schema_;
   int32_t last_column_id_;
@@ -155,6 +183,10 @@ class ICEBERG_EXPORT SetCurrentSchema : public TableUpdate {
   void GenerateRequirements(TableUpdateContext& context) const override;
 
   Kind kind() const override { return Kind::kSetCurrentSchema; }
+
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
 
  private:
   int32_t schema_id_;
@@ -174,6 +206,10 @@ class ICEBERG_EXPORT AddPartitionSpec : public TableUpdate {
 
   Kind kind() const override { return Kind::kAddPartitionSpec; }
 
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
+
  private:
   std::shared_ptr<PartitionSpec> spec_;
 };
@@ -190,6 +226,10 @@ class ICEBERG_EXPORT SetDefaultPartitionSpec : public TableUpdate {
   void GenerateRequirements(TableUpdateContext& context) const override;
 
   Kind kind() const override { return Kind::kSetDefaultPartitionSpec; }
+
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
 
  private:
   int32_t spec_id_;
@@ -209,6 +249,10 @@ class ICEBERG_EXPORT RemovePartitionSpecs : public TableUpdate {
 
   Kind kind() const override { return Kind::kRemovePartitionSpecs; }
 
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
+
  private:
   std::vector<int32_t> spec_ids_;
 };
@@ -226,6 +270,10 @@ class ICEBERG_EXPORT RemoveSchemas : public TableUpdate {
   void GenerateRequirements(TableUpdateContext& context) const override;
 
   Kind kind() const override { return Kind::kRemoveSchemas; }
+
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
 
  private:
   std::unordered_set<int32_t> schema_ids_;
@@ -245,6 +293,10 @@ class ICEBERG_EXPORT AddSortOrder : public TableUpdate {
 
   Kind kind() const override { return Kind::kAddSortOrder; }
 
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
+
  private:
   std::shared_ptr<SortOrder> sort_order_;
 };
@@ -261,6 +313,10 @@ class ICEBERG_EXPORT SetDefaultSortOrder : public TableUpdate {
   void GenerateRequirements(TableUpdateContext& context) const override;
 
   Kind kind() const override { return Kind::kSetDefaultSortOrder; }
+
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
 
  private:
   int32_t sort_order_id_;
@@ -280,6 +336,10 @@ class ICEBERG_EXPORT AddSnapshot : public TableUpdate {
 
   Kind kind() const override { return Kind::kAddSnapshot; }
 
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
+
  private:
   std::shared_ptr<Snapshot> snapshot_;
 };
@@ -298,6 +358,10 @@ class ICEBERG_EXPORT RemoveSnapshots : public TableUpdate {
 
   Kind kind() const override { return Kind::kRemoveSnapshots; }
 
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
+
  private:
   std::vector<int64_t> snapshot_ids_;
 };
@@ -314,6 +378,10 @@ class ICEBERG_EXPORT RemoveSnapshotRef : public TableUpdate {
   void GenerateRequirements(TableUpdateContext& context) const override;
 
   Kind kind() const override { return Kind::kRemoveSnapshotRef; }
+
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
 
  private:
   std::string ref_name_;
@@ -350,6 +418,10 @@ class ICEBERG_EXPORT SetSnapshotRef : public TableUpdate {
 
   Kind kind() const override { return Kind::kSetSnapshotRef; }
 
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
+
  private:
   std::string ref_name_;
   int64_t snapshot_id_;
@@ -373,6 +445,10 @@ class ICEBERG_EXPORT SetProperties : public TableUpdate {
 
   Kind kind() const override { return Kind::kSetProperties; }
 
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
+
  private:
   std::unordered_map<std::string, std::string> updated_;
 };
@@ -391,6 +467,10 @@ class ICEBERG_EXPORT RemoveProperties : public TableUpdate {
 
   Kind kind() const override { return Kind::kRemoveProperties; }
 
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
+
  private:
   std::unordered_set<std::string> removed_;
 };
@@ -407,6 +487,10 @@ class ICEBERG_EXPORT SetLocation : public TableUpdate {
   void GenerateRequirements(TableUpdateContext& context) const override;
 
   Kind kind() const override { return Kind::kSetLocation; }
+
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
 
  private:
   std::string location_;

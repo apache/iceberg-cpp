@@ -26,8 +26,6 @@
 #include "iceberg/result.h"
 #include "iceberg/statistics_file.h"
 #include "iceberg/table_metadata.h"
-#include "iceberg/table_requirement.h"
-#include "iceberg/table_update.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -79,43 +77,43 @@ ICEBERG_EXPORT Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
 
 /// \brief Convert an Iceberg Schema to JSON.
 ///
-/// \param[in] schema The Iceberg schema to convert.
+/// \param schema The Iceberg schema to convert.
 /// \return The JSON representation of the schema.
 ICEBERG_EXPORT nlohmann::json ToJson(const Schema& schema);
 
 /// \brief Convert an Iceberg Schema to JSON.
 ///
-/// \param[in] schema The Iceberg schema to convert.
+/// \param schema The Iceberg schema to convert.
 /// \return The JSON string of the schema.
 ICEBERG_EXPORT Result<std::string> ToJsonString(const Schema& schema);
 
 /// \brief Convert JSON to an Iceberg Schema.
 ///
-/// \param[in] json The JSON representation of the schema.
+/// \param json The JSON representation of the schema.
 /// \return The Iceberg schema or an error if the conversion fails.
 ICEBERG_EXPORT Result<std::unique_ptr<Schema>> SchemaFromJson(const nlohmann::json& json);
 
 /// \brief Convert an Iceberg Type to JSON.
 ///
-/// \param[in] type The Iceberg type to convert.
+/// \param type The Iceberg type to convert.
 /// \return The JSON representation of the type.
 ICEBERG_EXPORT nlohmann::json ToJson(const Type& type);
 
 /// \brief Convert JSON to an Iceberg Type.
 ///
-/// \param[in] json The JSON representation of the type.
+/// \param json The JSON representation of the type.
 /// \return The Iceberg type or an error if the conversion fails.
 ICEBERG_EXPORT Result<std::unique_ptr<Type>> TypeFromJson(const nlohmann::json& json);
 
 /// \brief Convert an Iceberg SchemaField to JSON.
 ///
-/// \param[in] field The Iceberg field to convert.
+/// \param field The Iceberg field to convert.
 /// \return The JSON representation of the field.
 ICEBERG_EXPORT nlohmann::json ToJson(const SchemaField& field);
 
 /// \brief Convert JSON to an Iceberg SchemaField.
 ///
-/// \param[in] json The JSON representation of the field.
+/// \param json The JSON representation of the field.
 /// \return The Iceberg field or an error if the conversion fails.
 ICEBERG_EXPORT Result<std::unique_ptr<SchemaField>> FieldFromJson(
     const nlohmann::json& json);
@@ -187,26 +185,26 @@ ICEBERG_EXPORT Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
 
 /// \brief Serializes a `SnapshotRef` object to JSON.
 ///
-/// \param[in] snapshot_ref The `SnapshotRef` object to be serialized.
+/// \param snapshot_ref The `SnapshotRef` object to be serialized.
 /// \return A JSON object representing the `SnapshotRef`.
 ICEBERG_EXPORT nlohmann::json ToJson(const SnapshotRef& snapshot_ref);
 
 /// \brief Deserializes a JSON object into a `SnapshotRef` object.
 ///
-/// \param[in] json The JSON object representing a `SnapshotRef`.
+/// \param json The JSON object representing a `SnapshotRef`.
 /// \return A `SnapshotRef` object or an error if the conversion fails.
 ICEBERG_EXPORT Result<std::unique_ptr<SnapshotRef>> SnapshotRefFromJson(
     const nlohmann::json& json);
 
 /// \brief Serializes a `Snapshot` object to JSON.
 ///
-/// \param[in] snapshot The `Snapshot` object to be serialized.
+/// \param snapshot The `Snapshot` object to be serialized.
 /// \return A JSON object representing the `snapshot`.
 ICEBERG_EXPORT nlohmann::json ToJson(const Snapshot& snapshot);
 
 /// \brief Deserializes a JSON object into a `Snapshot` object.
 ///
-/// \param[in] json The JSON representation of the snapshot.
+/// \param json The JSON representation of the snapshot.
 /// \return A `Snapshot` object or an error if the conversion fails.
 ICEBERG_EXPORT Result<std::unique_ptr<Snapshot>> SnapshotFromJson(
     const nlohmann::json& json);
@@ -297,106 +295,90 @@ ICEBERG_EXPORT Result<std::string> ToJsonString(const nlohmann::json& json);
 
 /// \brief Serializes a `MappedField` object to JSON.
 ///
-/// \param[in] field The `MappedField` object to be serialized.
+/// \param field The `MappedField` object to be serialized.
 /// \return A JSON object representing the `MappedField`.
 ICEBERG_EXPORT nlohmann::json ToJson(const MappedField& field);
 
 /// \brief Deserializes a JSON object into a `MappedField` object.
 ///
-/// \param[in] json The JSON object representing a `MappedField`.
+/// \param json The JSON object representing a `MappedField`.
 /// \return A `MappedField` object or an error if the conversion fails.
 ICEBERG_EXPORT Result<MappedField> MappedFieldFromJson(const nlohmann::json& json);
 
 /// \brief Serializes a `MappedFields` object to JSON.
 ///
-/// \param[in] mapped_fields The `MappedFields` object to be serialized.
+/// \param mapped_fields The `MappedFields` object to be serialized.
 /// \return A JSON object representing the `MappedFields`.
 ICEBERG_EXPORT nlohmann::json ToJson(const MappedFields& mapped_fields);
 
 /// \brief Deserializes a JSON object into a `MappedFields` object.
 ///
-/// \param[in] json The JSON object representing a `MappedFields`.
+/// \param json The JSON object representing a `MappedFields`.
 /// \return A `MappedFields` object or an error if the conversion fails.
 ICEBERG_EXPORT Result<std::unique_ptr<MappedFields>> MappedFieldsFromJson(
     const nlohmann::json& json);
 
 /// \brief Serializes a `NameMapping` object to JSON.
 ///
-/// \param[in] name_mapping The `NameMapping` object to be serialized.
+/// \param name_mapping The `NameMapping` object to be serialized.
 /// \return A JSON object representing the `NameMapping`.
 ICEBERG_EXPORT nlohmann::json ToJson(const NameMapping& name_mapping);
 
 /// \brief Deserializes a JSON object into a `NameMapping` object.
 ///
-/// \param[in] json The JSON object representing a `NameMapping`.
+/// \param json The JSON object representing a `NameMapping`.
 /// \return A `NameMapping` object or an error if the conversion fails.
 ICEBERG_EXPORT Result<std::unique_ptr<NameMapping>> NameMappingFromJson(
     const nlohmann::json& json);
 
 /// \brief Serializes a `TableIdentifier` object to JSON.
 ///
-/// \param[in] identifier The `TableIdentifier` object to be serialized.
+/// \param identifier The `TableIdentifier` object to be serialized.
 /// \return A JSON object representing the `TableIdentifier` in the form of key-value
 /// pairs.
 ICEBERG_EXPORT nlohmann::json ToJson(const TableIdentifier& identifier);
 
 /// \brief Deserializes a JSON object into a `TableIdentifier` object.
 ///
-/// \param[in] json The JSON object representing a `TableIdentifier`.
+/// \param json The JSON object representing a `TableIdentifier`.
 /// \return A `TableIdentifier` object or an error if the conversion fails.
 ICEBERG_EXPORT Result<TableIdentifier> TableIdentifierFromJson(
     const nlohmann::json& json);
 
 /// \brief Serializes a `Namespace` object to JSON.
 ///
-/// \param[in] ns The `Namespace` object to be serialized.
+/// \param ns The `Namespace` object to be serialized.
 /// \return A JSON array representing the namespace levels.
 ICEBERG_EXPORT nlohmann::json ToJson(const Namespace& ns);
 
 /// \brief Deserializes a JSON array into a `Namespace` object.
 ///
-/// \param[in] json The JSON array representing a `Namespace`.
+/// \param json The JSON array representing a `Namespace`.
 /// \return A `Namespace` object or an error if the conversion fails.
 ICEBERG_EXPORT Result<Namespace> NamespaceFromJson(const nlohmann::json& json);
 
 /// \brief Serializes a `TableUpdate` object to JSON.
 ///
-/// \param[in] update The `TableUpdate` object to be serialized.
+/// \param update The `TableUpdate` object to be serialized.
 /// \return A JSON object representing the `TableUpdate`.
 ICEBERG_EXPORT nlohmann::json ToJson(const TableUpdate& update);
 
 /// \brief Deserializes a JSON object into a `TableUpdate` object.
 ///
-/// This function parses the provided JSON and creates a `TableUpdate` object.
-/// For updates that require schema context (AddPartitionSpec, AddSortOrder),
-/// use the overload that takes a schema parameter.
-///
-/// \param[in] json The JSON object representing a `TableUpdate`.
+/// \param json The JSON object representing a `TableUpdate`.
 /// \return A `TableUpdate` object or an error if the conversion fails.
 ICEBERG_EXPORT Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(
     const nlohmann::json& json);
 
-/// \brief Deserializes a JSON object into a `TableUpdate` object with schema context.
-///
-/// This overload is required for updates like AddPartitionSpec and AddSortOrder
-/// that need a schema to properly validate field references.
-///
-/// \param[in] json The JSON object representing a `TableUpdate`.
-/// \param[in] schema The schema to use for validation (needed for AddPartitionSpec,
-///                   AddSortOrder).
-/// \return A `TableUpdate` object or an error if the conversion fails.
-ICEBERG_EXPORT Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(
-    const nlohmann::json& json, const std::shared_ptr<Schema>& schema);
-
 /// \brief Serializes a `TableRequirement` object to JSON.
 ///
-/// \param[in] requirement The `TableRequirement` object to be serialized.
+/// \param requirement The `TableRequirement` object to be serialized.
 /// \return A JSON object representing the `TableRequirement`.
 ICEBERG_EXPORT nlohmann::json ToJson(const TableRequirement& requirement);
 
 /// \brief Deserializes a JSON object into a `TableRequirement` object.
 ///
-/// \param[in] json The JSON object representing a `TableRequirement`.
+/// \param json The JSON object representing a `TableRequirement`.
 /// \return A `TableRequirement` object or an error if the conversion fails.
 ICEBERG_EXPORT Result<std::unique_ptr<TableRequirement>> TableRequirementFromJson(
     const nlohmann::json& json);

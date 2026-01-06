@@ -444,13 +444,9 @@ TEST_F(RestCatalogIntegrationTest, ListTables) {
   // List and varify tables
   list_result = catalog->ListTables(ns);
   ASSERT_THAT(list_result, IsOk());
-  EXPECT_EQ(list_result.value().size(), 2);
-  std::vector<std::string> table_names;
-  for (const auto& id : list_result.value()) {
-    table_names.push_back(id.name);
-  }
-  std::ranges::sort(table_names);
-  EXPECT_EQ(table_names, (std::vector<std::string>{"table1", "table2"}));
+  EXPECT_THAT(list_result.value(), testing::UnorderedElementsAre(
+                                       testing::Field(&TableIdentifier::name, "table1"),
+                                       testing::Field(&TableIdentifier::name, "table2")));
 }
 
 TEST_F(RestCatalogIntegrationTest, LoadTable) {

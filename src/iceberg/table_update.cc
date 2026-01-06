@@ -20,6 +20,8 @@
 #include "iceberg/table_update.h"
 
 #include "iceberg/exception.h"
+#include "iceberg/schema.h"
+#include "iceberg/sort_order.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_requirements.h"
 
@@ -39,6 +41,18 @@ void AssignUUID::GenerateRequirements(TableUpdateContext& context) const {
   // AssignUUID does not generate additional requirements.
 }
 
+bool AssignUUID::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kAssignUUID) {
+    return false;
+  }
+  const auto& other_assign = static_cast<const AssignUUID&>(other);
+  return uuid_ == other_assign.uuid_;
+}
+
+std::unique_ptr<TableUpdate> AssignUUID::Clone() const {
+  return std::make_unique<AssignUUID>(uuid_);
+}
+
 // UpgradeFormatVersion
 
 void UpgradeFormatVersion::ApplyTo(TableMetadataBuilder& builder) const {
@@ -47,6 +61,18 @@ void UpgradeFormatVersion::ApplyTo(TableMetadataBuilder& builder) const {
 
 void UpgradeFormatVersion::GenerateRequirements(TableUpdateContext& context) const {
   // UpgradeFormatVersion doesn't generate any requirements
+}
+
+bool UpgradeFormatVersion::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kUpgradeFormatVersion) {
+    return false;
+  }
+  const auto& other_upgrade = static_cast<const UpgradeFormatVersion&>(other);
+  return format_version_ == other_upgrade.format_version_;
+}
+
+std::unique_ptr<TableUpdate> UpgradeFormatVersion::Clone() const {
+  return std::make_unique<UpgradeFormatVersion>(format_version_);
 }
 
 // AddSchema
@@ -59,6 +85,24 @@ void AddSchema::GenerateRequirements(TableUpdateContext& context) const {
   context.RequireLastAssignedFieldIdUnchanged();
 }
 
+bool AddSchema::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kAddSchema) {
+    return false;
+  }
+  const auto& other_add = internal::checked_cast<const AddSchema&>(other);
+  if (!schema_ != !other_add.schema_) {
+    return false;
+  }
+  if (schema_ && !(*schema_ == *other_add.schema_)) {
+    return false;
+  }
+  return last_column_id_ == other_add.last_column_id_;
+}
+
+std::unique_ptr<TableUpdate> AddSchema::Clone() const {
+  return std::make_unique<AddSchema>(schema_, last_column_id_);
+}
+
 // SetCurrentSchema
 
 void SetCurrentSchema::ApplyTo(TableMetadataBuilder& builder) const {
@@ -67,6 +111,18 @@ void SetCurrentSchema::ApplyTo(TableMetadataBuilder& builder) const {
 
 void SetCurrentSchema::GenerateRequirements(TableUpdateContext& context) const {
   context.RequireCurrentSchemaIdUnchanged();
+}
+
+bool SetCurrentSchema::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kSetCurrentSchema) {
+    return false;
+  }
+  const auto& other_set = static_cast<const SetCurrentSchema&>(other);
+  return schema_id_ == other_set.schema_id_;
+}
+
+std::unique_ptr<TableUpdate> SetCurrentSchema::Clone() const {
+  return std::make_unique<SetCurrentSchema>(schema_id_);
 }
 
 // AddPartitionSpec
@@ -79,6 +135,24 @@ void AddPartitionSpec::GenerateRequirements(TableUpdateContext& context) const {
   context.RequireLastAssignedPartitionIdUnchanged();
 }
 
+bool AddPartitionSpec::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kAddPartitionSpec) {
+    return false;
+  }
+  const auto& other_add = internal::checked_cast<const AddPartitionSpec&>(other);
+  if (!spec_ != !other_add.spec_) {
+    return false;
+  }
+  if (spec_ && *spec_ != *other_add.spec_) {
+    return false;
+  }
+  return true;
+}
+
+std::unique_ptr<TableUpdate> AddPartitionSpec::Clone() const {
+  return std::make_unique<AddPartitionSpec>(spec_);
+}
+
 // SetDefaultPartitionSpec
 
 void SetDefaultPartitionSpec::ApplyTo(TableMetadataBuilder& builder) const {
@@ -87,6 +161,18 @@ void SetDefaultPartitionSpec::ApplyTo(TableMetadataBuilder& builder) const {
 
 void SetDefaultPartitionSpec::GenerateRequirements(TableUpdateContext& context) const {
   context.RequireDefaultSpecIdUnchanged();
+}
+
+bool SetDefaultPartitionSpec::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kSetDefaultPartitionSpec) {
+    return false;
+  }
+  const auto& other_set = static_cast<const SetDefaultPartitionSpec&>(other);
+  return spec_id_ == other_set.spec_id_;
+}
+
+std::unique_ptr<TableUpdate> SetDefaultPartitionSpec::Clone() const {
+  return std::make_unique<SetDefaultPartitionSpec>(spec_id_);
 }
 
 // RemovePartitionSpecs
@@ -100,6 +186,18 @@ void RemovePartitionSpecs::GenerateRequirements(TableUpdateContext& context) con
   context.RequireNoBranchesChanged();
 }
 
+bool RemovePartitionSpecs::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kRemovePartitionSpecs) {
+    return false;
+  }
+  const auto& other_remove = static_cast<const RemovePartitionSpecs&>(other);
+  return spec_ids_ == other_remove.spec_ids_;
+}
+
+std::unique_ptr<TableUpdate> RemovePartitionSpecs::Clone() const {
+  return std::make_unique<RemovePartitionSpecs>(spec_ids_);
+}
+
 // RemoveSchemas
 
 void RemoveSchemas::ApplyTo(TableMetadataBuilder& builder) const {
@@ -109,6 +207,18 @@ void RemoveSchemas::ApplyTo(TableMetadataBuilder& builder) const {
 void RemoveSchemas::GenerateRequirements(TableUpdateContext& context) const {
   context.RequireCurrentSchemaIdUnchanged();
   context.RequireNoBranchesChanged();
+}
+
+bool RemoveSchemas::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kRemoveSchemas) {
+    return false;
+  }
+  const auto& other_remove = static_cast<const RemoveSchemas&>(other);
+  return schema_ids_ == other_remove.schema_ids_;
+}
+
+std::unique_ptr<TableUpdate> RemoveSchemas::Clone() const {
+  return std::make_unique<RemoveSchemas>(schema_ids_);
 }
 
 // AddSortOrder
@@ -121,6 +231,24 @@ void AddSortOrder::GenerateRequirements(TableUpdateContext& context) const {
   // AddSortOrder doesn't generate any requirements
 }
 
+bool AddSortOrder::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kAddSortOrder) {
+    return false;
+  }
+  const auto& other_add = internal::checked_cast<const AddSortOrder&>(other);
+  if (!sort_order_ != !other_add.sort_order_) {
+    return false;
+  }
+  if (sort_order_ && !(*sort_order_ == *other_add.sort_order_)) {
+    return false;
+  }
+  return true;
+}
+
+std::unique_ptr<TableUpdate> AddSortOrder::Clone() const {
+  return std::make_unique<AddSortOrder>(sort_order_);
+}
+
 // SetDefaultSortOrder
 
 void SetDefaultSortOrder::ApplyTo(TableMetadataBuilder& builder) const {
@@ -129,6 +257,18 @@ void SetDefaultSortOrder::ApplyTo(TableMetadataBuilder& builder) const {
 
 void SetDefaultSortOrder::GenerateRequirements(TableUpdateContext& context) const {
   context.RequireDefaultSortOrderIdUnchanged();
+}
+
+bool SetDefaultSortOrder::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kSetDefaultSortOrder) {
+    return false;
+  }
+  const auto& other_set = static_cast<const SetDefaultSortOrder&>(other);
+  return sort_order_id_ == other_set.sort_order_id_;
+}
+
+std::unique_ptr<TableUpdate> SetDefaultSortOrder::Clone() const {
+  return std::make_unique<SetDefaultSortOrder>(sort_order_id_);
 }
 
 // AddSnapshot
@@ -141,12 +281,42 @@ void AddSnapshot::GenerateRequirements(TableUpdateContext& context) const {
   // AddSnapshot doesn't generate any requirements
 }
 
+bool AddSnapshot::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kAddSnapshot) {
+    return false;
+  }
+  const auto& other_add = internal::checked_cast<const AddSnapshot&>(other);
+  if (!snapshot_ != !other_add.snapshot_) {
+    return false;
+  }
+  if (snapshot_ && *snapshot_ != *other_add.snapshot_) {
+    return false;
+  }
+  return true;
+}
+
+std::unique_ptr<TableUpdate> AddSnapshot::Clone() const {
+  return std::make_unique<AddSnapshot>(snapshot_);
+}
+
 // RemoveSnapshots
 
 void RemoveSnapshots::ApplyTo(TableMetadataBuilder& builder) const {}
 
 void RemoveSnapshots::GenerateRequirements(TableUpdateContext& context) const {
   // RemoveSnapshots doesn't generate any requirements
+}
+
+bool RemoveSnapshots::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kRemoveSnapshots) {
+    return false;
+  }
+  const auto& other_remove = static_cast<const RemoveSnapshots&>(other);
+  return snapshot_ids_ == other_remove.snapshot_ids_;
+}
+
+std::unique_ptr<TableUpdate> RemoveSnapshots::Clone() const {
+  return std::make_unique<RemoveSnapshots>(snapshot_ids_);
 }
 
 // RemoveSnapshotRef
@@ -157,6 +327,18 @@ void RemoveSnapshotRef::ApplyTo(TableMetadataBuilder& builder) const {
 
 void RemoveSnapshotRef::GenerateRequirements(TableUpdateContext& context) const {
   // RemoveSnapshotRef doesn't generate any requirements
+}
+
+bool RemoveSnapshotRef::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kRemoveSnapshotRef) {
+    return false;
+  }
+  const auto& other_remove = static_cast<const RemoveSnapshotRef&>(other);
+  return ref_name_ == other_remove.ref_name_;
+}
+
+std::unique_ptr<TableUpdate> RemoveSnapshotRef::Clone() const {
+  return std::make_unique<RemoveSnapshotRef>(ref_name_);
 }
 
 // SetSnapshotRef
@@ -178,6 +360,24 @@ void SetSnapshotRef::GenerateRequirements(TableUpdateContext& context) const {
   }
 }
 
+bool SetSnapshotRef::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kSetSnapshotRef) {
+    return false;
+  }
+  const auto& other_set = static_cast<const SetSnapshotRef&>(other);
+  return ref_name_ == other_set.ref_name_ && snapshot_id_ == other_set.snapshot_id_ &&
+         type_ == other_set.type_ &&
+         min_snapshots_to_keep_ == other_set.min_snapshots_to_keep_ &&
+         max_snapshot_age_ms_ == other_set.max_snapshot_age_ms_ &&
+         max_ref_age_ms_ == other_set.max_ref_age_ms_;
+}
+
+std::unique_ptr<TableUpdate> SetSnapshotRef::Clone() const {
+  return std::make_unique<SetSnapshotRef>(ref_name_, snapshot_id_, type_,
+                                          min_snapshots_to_keep_, max_snapshot_age_ms_,
+                                          max_ref_age_ms_);
+}
+
 // SetProperties
 
 void SetProperties::ApplyTo(TableMetadataBuilder& builder) const {
@@ -186,6 +386,18 @@ void SetProperties::ApplyTo(TableMetadataBuilder& builder) const {
 
 void SetProperties::GenerateRequirements(TableUpdateContext& context) const {
   // SetProperties doesn't generate any requirements
+}
+
+bool SetProperties::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kSetProperties) {
+    return false;
+  }
+  const auto& other_set = static_cast<const SetProperties&>(other);
+  return updated_ == other_set.updated_;
+}
+
+std::unique_ptr<TableUpdate> SetProperties::Clone() const {
+  return std::make_unique<SetProperties>(updated_);
 }
 
 // RemoveProperties
@@ -198,6 +410,18 @@ void RemoveProperties::GenerateRequirements(TableUpdateContext& context) const {
   // RemoveProperties doesn't generate any requirements
 }
 
+bool RemoveProperties::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kRemoveProperties) {
+    return false;
+  }
+  const auto& other_remove = static_cast<const RemoveProperties&>(other);
+  return removed_ == other_remove.removed_;
+}
+
+std::unique_ptr<TableUpdate> RemoveProperties::Clone() const {
+  return std::make_unique<RemoveProperties>(removed_);
+}
+
 // SetLocation
 
 void SetLocation::ApplyTo(TableMetadataBuilder& builder) const {
@@ -206,6 +430,18 @@ void SetLocation::ApplyTo(TableMetadataBuilder& builder) const {
 
 void SetLocation::GenerateRequirements(TableUpdateContext& context) const {
   // SetLocation doesn't generate any requirements
+}
+
+bool SetLocation::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kSetLocation) {
+    return false;
+  }
+  const auto& other_set = static_cast<const SetLocation&>(other);
+  return location_ == other_set.location_;
+}
+
+std::unique_ptr<TableUpdate> SetLocation::Clone() const {
+  return std::make_unique<SetLocation>(location_);
 }
 
 }  // namespace iceberg::table

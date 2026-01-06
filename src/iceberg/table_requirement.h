@@ -32,6 +32,7 @@
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/checked_cast.h"
 
 namespace iceberg {
 
@@ -63,6 +64,22 @@ class ICEBERG_EXPORT TableRequirement {
   /// \param base The base table metadata to validate against (may be nullptr)
   /// \return Status indicating success or failure with error details
   virtual Status Validate(const TableMetadata* base) const = 0;
+
+  /// \brief Check equality with another TableRequirement
+  ///
+  /// \param other The requirement to compare with
+  /// \return true if the requirements are equal, false otherwise
+  virtual bool Equals(const TableRequirement& other) const = 0;
+
+  /// \brief Create a deep copy of this requirement
+  ///
+  /// \return A unique_ptr to a new TableRequirement that is a copy of this one
+  virtual std::unique_ptr<TableRequirement> Clone() const = 0;
+
+  /// \brief Compare two TableRequirement instances for equality
+  friend bool operator==(const TableRequirement& lhs, const TableRequirement& rhs) {
+    return lhs.Equals(rhs);
+  }
 };
 
 namespace table {
@@ -79,9 +96,12 @@ class ICEBERG_EXPORT AssertDoesNotExist : public TableRequirement {
 
   Status Validate(const TableMetadata* base) const override;
 
-  /// \brief Compare two AssertDoesNotExist for equality
-  friend bool operator==(const AssertDoesNotExist&, const AssertDoesNotExist&) {
-    return true;  // No fields to compare
+  bool Equals(const TableRequirement& other) const override {
+    return other.kind() == Kind::kAssertDoesNotExist;
+  }
+
+  std::unique_ptr<TableRequirement> Clone() const override {
+    return std::make_unique<AssertDoesNotExist>();
   }
 };
 
@@ -99,9 +119,16 @@ class ICEBERG_EXPORT AssertUUID : public TableRequirement {
 
   Status Validate(const TableMetadata* base) const override;
 
-  /// \brief Compare two AssertUUID for equality
-  friend bool operator==(const AssertUUID& lhs, const AssertUUID& rhs) {
-    return lhs.uuid_ == rhs.uuid_;
+  bool Equals(const TableRequirement& other) const override {
+    if (other.kind() != Kind::kAssertUUID) {
+      return false;
+    }
+    const auto& other_uuid = internal::checked_cast<const AssertUUID&>(other);
+    return uuid_ == other_uuid.uuid_;
+  }
+
+  std::unique_ptr<TableRequirement> Clone() const override {
+    return std::make_unique<AssertUUID>(uuid_);
   }
 
  private:
@@ -126,9 +153,16 @@ class ICEBERG_EXPORT AssertRefSnapshotID : public TableRequirement {
 
   Status Validate(const TableMetadata* base) const override;
 
-  /// \brief Compare two AssertRefSnapshotID for equality
-  friend bool operator==(const AssertRefSnapshotID& lhs, const AssertRefSnapshotID& rhs) {
-    return lhs.ref_name_ == rhs.ref_name_ && lhs.snapshot_id_ == rhs.snapshot_id_;
+  bool Equals(const TableRequirement& other) const override {
+    if (other.kind() != Kind::kAssertRefSnapshotID) {
+      return false;
+    }
+    const auto& other_ref = internal::checked_cast<const AssertRefSnapshotID&>(other);
+    return ref_name_ == other_ref.ref_name_ && snapshot_id_ == other_ref.snapshot_id_;
+  }
+
+  std::unique_ptr<TableRequirement> Clone() const override {
+    return std::make_unique<AssertRefSnapshotID>(ref_name_, snapshot_id_);
   }
 
  private:
@@ -151,10 +185,17 @@ class ICEBERG_EXPORT AssertLastAssignedFieldId : public TableRequirement {
 
   Status Validate(const TableMetadata* base) const override;
 
-  /// \brief Compare two AssertLastAssignedFieldId for equality
-  friend bool operator==(const AssertLastAssignedFieldId& lhs,
-                         const AssertLastAssignedFieldId& rhs) {
-    return lhs.last_assigned_field_id_ == rhs.last_assigned_field_id_;
+  bool Equals(const TableRequirement& other) const override {
+    if (other.kind() != Kind::kAssertLastAssignedFieldId) {
+      return false;
+    }
+    const auto& other_field =
+        internal::checked_cast<const AssertLastAssignedFieldId&>(other);
+    return last_assigned_field_id_ == other_field.last_assigned_field_id_;
+  }
+
+  std::unique_ptr<TableRequirement> Clone() const override {
+    return std::make_unique<AssertLastAssignedFieldId>(last_assigned_field_id_);
   }
 
  private:
@@ -175,10 +216,17 @@ class ICEBERG_EXPORT AssertCurrentSchemaID : public TableRequirement {
 
   Status Validate(const TableMetadata* base) const override;
 
-  /// \brief Compare two AssertCurrentSchemaID for equality
-  friend bool operator==(const AssertCurrentSchemaID& lhs,
-                         const AssertCurrentSchemaID& rhs) {
-    return lhs.schema_id_ == rhs.schema_id_;
+  bool Equals(const TableRequirement& other) const override {
+    if (other.kind() != Kind::kAssertCurrentSchemaID) {
+      return false;
+    }
+    const auto& other_schema =
+        internal::checked_cast<const AssertCurrentSchemaID&>(other);
+    return schema_id_ == other_schema.schema_id_;
+  }
+
+  std::unique_ptr<TableRequirement> Clone() const override {
+    return std::make_unique<AssertCurrentSchemaID>(schema_id_);
   }
 
  private:
@@ -200,10 +248,17 @@ class ICEBERG_EXPORT AssertLastAssignedPartitionId : public TableRequirement {
 
   Status Validate(const TableMetadata* base) const override;
 
-  /// \brief Compare two AssertLastAssignedPartitionId for equality
-  friend bool operator==(const AssertLastAssignedPartitionId& lhs,
-                         const AssertLastAssignedPartitionId& rhs) {
-    return lhs.last_assigned_partition_id_ == rhs.last_assigned_partition_id_;
+  bool Equals(const TableRequirement& other) const override {
+    if (other.kind() != Kind::kAssertLastAssignedPartitionId) {
+      return false;
+    }
+    const auto& other_partition =
+        internal::checked_cast<const AssertLastAssignedPartitionId&>(other);
+    return last_assigned_partition_id_ == other_partition.last_assigned_partition_id_;
+  }
+
+  std::unique_ptr<TableRequirement> Clone() const override {
+    return std::make_unique<AssertLastAssignedPartitionId>(last_assigned_partition_id_);
   }
 
  private:
@@ -224,9 +279,16 @@ class ICEBERG_EXPORT AssertDefaultSpecID : public TableRequirement {
 
   Status Validate(const TableMetadata* base) const override;
 
-  /// \brief Compare two AssertDefaultSpecID for equality
-  friend bool operator==(const AssertDefaultSpecID& lhs, const AssertDefaultSpecID& rhs) {
-    return lhs.spec_id_ == rhs.spec_id_;
+  bool Equals(const TableRequirement& other) const override {
+    if (other.kind() != Kind::kAssertDefaultSpecID) {
+      return false;
+    }
+    const auto& other_spec = internal::checked_cast<const AssertDefaultSpecID&>(other);
+    return spec_id_ == other_spec.spec_id_;
+  }
+
+  std::unique_ptr<TableRequirement> Clone() const override {
+    return std::make_unique<AssertDefaultSpecID>(spec_id_);
   }
 
  private:
@@ -248,10 +310,17 @@ class ICEBERG_EXPORT AssertDefaultSortOrderID : public TableRequirement {
 
   Status Validate(const TableMetadata* base) const override;
 
-  /// \brief Compare two AssertDefaultSortOrderID for equality
-  friend bool operator==(const AssertDefaultSortOrderID& lhs,
-                         const AssertDefaultSortOrderID& rhs) {
-    return lhs.sort_order_id_ == rhs.sort_order_id_;
+  bool Equals(const TableRequirement& other) const override {
+    if (other.kind() != Kind::kAssertDefaultSortOrderID) {
+      return false;
+    }
+    const auto& other_sort =
+        internal::checked_cast<const AssertDefaultSortOrderID&>(other);
+    return sort_order_id_ == other_sort.sort_order_id_;
+  }
+
+  std::unique_ptr<TableRequirement> Clone() const override {
+    return std::make_unique<AssertDefaultSortOrderID>(sort_order_id_);
   }
 
  private:

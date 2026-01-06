@@ -42,6 +42,8 @@
 #include "iceberg/schema.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table.h"
+#include "iceberg/table_requirement.h"
+#include "iceberg/table_update.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg::rest {
@@ -175,7 +177,7 @@ Result<std::vector<Namespace>> RestCatalog::ListNamespaces(const Namespace& ns) 
     if (list_response.next_page_token.empty()) {
       return result;
     }
-    next_token = list_response.next_page_token;
+    next_token = std::move(list_response.next_page_token);
   }
   return result;
 }
@@ -245,7 +247,7 @@ Status RestCatalog::UpdateNamespaceProperties(
 }
 
 Result<std::vector<TableIdentifier>> RestCatalog::ListTables(const Namespace& ns) const {
-  ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::CreateTable());
+  ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::ListTables());
 
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Tables(ns));
   std::vector<TableIdentifier> result;
@@ -265,7 +267,7 @@ Result<std::vector<TableIdentifier>> RestCatalog::ListTables(const Namespace& ns
     if (list_response.next_page_token.empty()) {
       return result;
     }
-    next_token = list_response.next_page_token;
+    next_token = std::move(list_response.next_page_token);
   }
   return result;
 }
@@ -304,18 +306,17 @@ Result<std::shared_ptr<Table>> RestCatalog::UpdateTable(
     const TableIdentifier& identifier,
     const std::vector<std::unique_ptr<TableRequirement>>& requirements,
     const std::vector<std::unique_ptr<TableUpdate>>& updates) {
-  ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::CreateTable());
+  ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::UpdateTable());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Table(identifier));
 
-  // Build request with non-owning shared_ptr (using no-op deleter)
   CommitTableRequest request{.identifier = identifier};
   request.requirements.reserve(requirements.size());
   for (const auto& req : requirements) {
-    request.requirements.emplace_back(req.get(), [](auto*) {});
+    request.requirements.push_back(req->Clone());
   }
   request.updates.reserve(updates.size());
   for (const auto& update : updates) {
-    request.updates.emplace_back(update.get(), [](auto*) {});
+    request.updates.push_back(update->Clone());
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto json_request, ToJsonString(ToJson(request)));
@@ -419,10 +420,9 @@ Result<std::shared_ptr<Table>> RestCatalog::RegisterTable(
 
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
-  auto non_const_catalog = std::const_pointer_cast<RestCatalog>(shared_from_this());
-  return Table::Make(identifier, load_result.metadata,
+  return Table::Make(identifier, std::move(load_result.metadata),
                      std::move(load_result.metadata_location), file_io_,
-                     non_const_catalog);
+                     shared_from_this());
 }
 
 }  // namespace iceberg::rest

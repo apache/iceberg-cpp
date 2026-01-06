@@ -29,8 +29,6 @@
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/table_identifier.h"
-#include "iceberg/table_requirement.h"
-#include "iceberg/table_update.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/util/macros.h"
 
@@ -61,11 +59,12 @@ struct ICEBERG_REST_EXPORT ErrorResponse {
   /// \brief Validates the ErrorResponse.
   Status Validate() const {
     if (message.empty() || type.empty()) {
-      return Invalid("Invalid error response: missing required fields");
+      return ValidationFailed("Invalid error response: missing required fields");
     }
 
     if (code < 400 || code > 600) {
-      return Invalid("Invalid error response: code {} is out of range [400, 600]", code);
+      return ValidationFailed(
+          "Invalid error response: code {} is out of range [400, 600]", code);
     }
 
     // stack is optional, no validation needed
@@ -95,7 +94,7 @@ struct ICEBERG_REST_EXPORT UpdateNamespacePropertiesRequest {
   Status Validate() const {
     for (const auto& key : removals) {
       if (updates.contains(key)) {
-        return Invalid("Duplicate key to update and remove: {}", key);
+        return ValidationFailed("Duplicate key to update and remove: {}", key);
       }
     }
     return {};
@@ -113,11 +112,11 @@ struct ICEBERG_REST_EXPORT RegisterTableRequest {
   /// \brief Validates the RegisterTableRequest.
   Status Validate() const {
     if (name.empty()) {
-      return Invalid("Missing table name");
+      return ValidationFailed("Missing table name");
     }
 
     if (metadata_location.empty()) {
-      return Invalid("Empty metadata location");
+      return ValidationFailed("Empty metadata location");
     }
 
     return {};
@@ -154,10 +153,10 @@ struct ICEBERG_REST_EXPORT CreateTableRequest {
   /// \brief Validates the CreateTableRequest.
   Status Validate() const {
     if (name.empty()) {
-      return Invalid("Missing table name");
+      return ValidationFailed("Missing table name");
     }
     if (!schema) {
-      return Invalid("Missing schema");
+      return ValidationFailed("Missing schema");
     }
     return {};
   }
@@ -178,7 +177,7 @@ struct ICEBERG_REST_EXPORT LoadTableResult {
   /// \brief Validates the LoadTableResult.
   Status Validate() const {
     if (!metadata) {
-      return Invalid("Invalid metadata: null");
+      return ValidationFailed("Invalid metadata: null");
     }
     return {};
   }
@@ -251,8 +250,8 @@ struct ICEBERG_REST_EXPORT ListTablesResponse {
 /// \brief Request to commit changes to a table.
 struct ICEBERG_REST_EXPORT CommitTableRequest {
   TableIdentifier identifier;
-  std::vector<std::shared_ptr<TableRequirement>> requirements;
-  std::vector<std::shared_ptr<TableUpdate>> updates;
+  std::vector<std::shared_ptr<TableRequirement>> requirements;  // required
+  std::vector<std::shared_ptr<TableUpdate>> updates;            // required
 
   /// \brief Validates the CommitTableRequest.
   Status Validate() const { return {}; }
@@ -262,14 +261,16 @@ struct ICEBERG_REST_EXPORT CommitTableRequest {
 
 /// \brief Response from committing changes to a table.
 struct ICEBERG_REST_EXPORT CommitTableResponse {
-  std::string metadata_location;
+  std::string metadata_location;            // required
   std::shared_ptr<TableMetadata> metadata;  // required
-  // TODO(Li Feiyang): Add std::shared_ptr<StorageCredential> storage_credential;
 
   /// \brief Validates the CommitTableResponse.
   Status Validate() const {
+    if (metadata_location.empty()) {
+      return ValidationFailed("Invalid metadata location: empty");
+    }
     if (!metadata) {
-      return Invalid("Invalid metadata: null");
+      return ValidationFailed("Invalid metadata: null");
     }
     return {};
   }
