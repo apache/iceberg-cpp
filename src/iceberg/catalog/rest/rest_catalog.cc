@@ -307,11 +307,11 @@ Result<std::shared_ptr<Table>> RestCatalog::CreateTable(
     const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<SortOrder>& order,
     const std::string& location,
     const std::unordered_map<std::string, std::string>& properties) {
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto result,
-      CreateTableInternal(identifier, schema, spec, order, location, properties, false));
-  return Table::Make(identifier, result.metadata, std::move(result.metadata_location),
-                     file_io_, shared_from_this());
+  ICEBERG_ASSIGN_OR_RAISE(auto result,
+                          CreateTableInternal(identifier, schema, spec, order, location,
+                                              properties, /*stage_create=*/false));
+  return Table::Make(identifier, std::move(result.metadata),
+                     std::move(result.metadata_location), file_io_, shared_from_this());
 }
 
 Result<std::shared_ptr<Table>> RestCatalog::UpdateTable(
@@ -349,14 +349,14 @@ Result<std::shared_ptr<Transaction>> RestCatalog::StageCreateTable(
     const std::shared_ptr<PartitionSpec>& spec, const std::shared_ptr<SortOrder>& order,
     const std::string& location,
     const std::unordered_map<std::string, std::string>& properties) {
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto result,
-      CreateTableInternal(identifier, schema, spec, order, location, properties, true));
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto staged_table,
-      StagedTable::Make(identifier, result.metadata, std::move(result.metadata_location),
-                        file_io_, shared_from_this()));
-  return Transaction::Make(staged_table, Transaction::Kind::kCreate,
+  ICEBERG_ASSIGN_OR_RAISE(auto result,
+                          CreateTableInternal(identifier, schema, spec, order, location,
+                                              properties, /*stage_create=*/true));
+  ICEBERG_ASSIGN_OR_RAISE(auto staged_table,
+                          StagedTable::Make(identifier, std::move(result.metadata),
+                                            std::move(result.metadata_location), file_io_,
+                                            shared_from_this()));
+  return Transaction::Make(std::move(staged_table), Transaction::Kind::kCreate,
                            /*auto_commit=*/false);
 }
 
