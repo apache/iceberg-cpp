@@ -177,7 +177,7 @@ class ICEBERG_EXPORT TableScanBuilder : public ErrorCollector {
   /// \brief Request data filtering to files but not to rows in those files.
   TableScanBuilder& IgnoreResiduals();
 
-  /// \brief Request this can to return at least the given number of rows.
+  /// \brief Request this scan to return at least the given number of rows.
   ///
   /// This is used as a hint and is entirely optional in order to not have to return more
   /// rows than necessary. This may return fewer rows if the scan does not contain that
