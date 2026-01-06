@@ -135,7 +135,7 @@ Status HandleFailureResponse(const cpr::Response& response,
 }  // namespace
 
 void HttpClient::PrepareSession(
-    const std::string& path, const HttpMethod& method,
+    const std::string& path, HttpMethod method,
     const std::unordered_map<std::string, std::string>& params,
     const std::unordered_map<std::string, std::string>& headers) {
   session_->SetUrl(cpr::Url{path});
