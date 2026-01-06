@@ -204,49 +204,27 @@ class ICEBERG_EXPORT TableScanBuilder : public ErrorCollector {
   /// travel is attempted on a tag
   TableScanBuilder& AsOfTime(int64_t timestamp_millis);
 
-  /// \brief Instructs this scan to look for changes starting from a particular snapshot
-  /// (inclusive).
+  /// \brief Instructs this scan to look for changes starting from a particular snapshot.
   ///
   /// If the start snapshot is not configured, it defaults to the oldest ancestor of the
   /// end snapshot (inclusive).
   ///
-  /// \param from_snapshot_id the start snapshot ID (inclusive)
+  /// \param from_snapshot_id the start snapshot ID
+  /// \param inclusive whether the start snapshot is inclusive, default is false
   /// \note InvalidArgument will be returned if the start snapshot is not an ancestor of
   /// the end snapshot
-  TableScanBuilder& FromSnapshotInclusive(int64_t from_snapshot_id);
+  TableScanBuilder& FromSnapshot(int64_t from_snapshot_id, bool inclusive = false);
 
-  /// \brief Instructs this scan to look for changes starting from a particular snapshot
-  /// (inclusive).
+  /// \brief Instructs this scan to look for changes starting from a particular snapshot.
   ///
   /// If the start snapshot is not configured, it defaults to the oldest ancestor of the
   /// end snapshot (inclusive).
   ///
-  /// \param ref the start ref name that points to a particular snapshot ID (inclusive)
+  /// \param ref the start ref name that points to a particular snapshot ID
+  /// \param inclusive whether the start snapshot is inclusive, default is false
   /// \note InvalidArgument will be returned if the start snapshot is not an ancestor of
   /// the end snapshot
-  TableScanBuilder& FromSnapshotInclusive(const std::string& ref);
-
-  /// \brief Instructs this scan to look for changes starting from a particular snapshot
-  /// (exclusive).
-  ///
-  /// If the start snapshot is not configured, it defaults to the oldest ancestor of the
-  /// end snapshot (inclusive).
-  ///
-  /// \param from_snapshot_id the start snapshot ID (exclusive)
-  /// \note InvalidArgument will be returned if the start snapshot is not an ancestor of
-  /// the end snapshot
-  TableScanBuilder& FromSnapshotExclusive(int64_t from_snapshot_id);
-
-  /// \brief Instructs this scan to look for changes starting from a particular snapshot
-  /// (exclusive).
-  ///
-  /// If the start snapshot is not configured, it defaults to the oldest ancestor of the
-  /// end snapshot (inclusive).
-  ///
-  /// \param ref the start ref name that points to a particular snapshot ID (exclusive)
-  /// \note InvalidArgument will be returned if the start snapshot is not an ancestor of
-  /// the end snapshot
-  TableScanBuilder& FromSnapshotExclusive(const std::string& ref);
+  TableScanBuilder& FromSnapshot(const std::string& ref, bool inclusive = false);
 
   /// \brief Instructs this scan to look for changes up to a particular snapshot
   /// (inclusive).

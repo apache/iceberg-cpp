@@ -156,21 +156,15 @@ Result<ArrowArrayStream> MakeArrowArrayStream(std::unique_ptr<Reader> reader) {
 namespace internal {
 
 Status TableScanContext::Validate() const {
-  if (!columns_to_keep_stats.empty() && !return_column_stats) {
-    return InvalidArgument(
-        "Cannot select columns to keep stats when column stats are not returned");
-  }
-  if (projected_schema != nullptr && !selected_columns.empty()) {
-    return InvalidArgument(
-        "Cannot set projection schema and selected columns at the same time");
-  }
-  if (snapshot_id.has_value() &&
-      (from_snapshot_id.has_value() || to_snapshot_id.has_value())) {
-    return InvalidArgument("Cannot mix snapshot scan and incremental scan");
-  }
-  if (min_rows_requested.has_value() && min_rows_requested.value() < 0) {
-    return InvalidArgument("Min rows requested cannot be negative");
-  }
+  ICEBERG_CHECK(columns_to_keep_stats.empty() || return_column_stats,
+                "Cannot select columns to keep stats when column stats are not returned");
+  ICEBERG_CHECK(projected_schema == nullptr || selected_columns.empty(),
+                "Cannot set projection schema and selected columns at the same time");
+  ICEBERG_CHECK(!snapshot_id.has_value() ||
+                    (!from_snapshot_id.has_value() && !to_snapshot_id.has_value()),
+                "Cannot mix snapshot scan and incremental scan");
+  ICEBERG_CHECK(!min_rows_requested.has_value() || min_rows_requested.value() >= 0,
+                "Min rows requested cannot be negative");
   return {};
 }
 
@@ -320,23 +314,13 @@ TableScanBuilder& TableScanBuilder::AsOfTime(int64_t timestamp_millis) {
   return UseSnapshot(snapshot_id);
 }
 
-TableScanBuilder& TableScanBuilder::FromSnapshotInclusive(
-    [[maybe_unused]] int64_t from_snapshot_id) {
+TableScanBuilder& TableScanBuilder::FromSnapshot(
+    [[maybe_unused]] int64_t from_snapshot_id, [[maybe_unused]] bool inclusive) {
   return AddError(NotImplemented("Incremental scan is not implemented"));
 }
 
-TableScanBuilder& TableScanBuilder::FromSnapshotInclusive(
-    [[maybe_unused]] const std::string& ref) {
-  return AddError(NotImplemented("Incremental scan is not implemented"));
-}
-
-TableScanBuilder& TableScanBuilder::FromSnapshotExclusive(
-    [[maybe_unused]] int64_t from_snapshot_id) {
-  return AddError(NotImplemented("Incremental scan is not implemented"));
-}
-
-TableScanBuilder& TableScanBuilder::FromSnapshotExclusive(
-    [[maybe_unused]] const std::string& ref) {
+TableScanBuilder& TableScanBuilder::FromSnapshot([[maybe_unused]] const std::string& ref,
+                                                 [[maybe_unused]] bool inclusive) {
   return AddError(NotImplemented("Incremental scan is not implemented"));
 }
 
