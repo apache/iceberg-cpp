@@ -464,8 +464,7 @@ Result<std::vector<std::shared_ptr<FileScanTask>>> DataTableScan::PlanFiles() co
       ManifestGroup::Make(io_, schema_, specs_by_id,
                           {data_manifests.begin(), data_manifests.end()},
                           {delete_manifests.begin(), delete_manifests.end()}));
-  (*manifest_group)
-      .CaseSensitive(context_.case_sensitive)
+  manifest_group->CaseSensitive(context_.case_sensitive)
       .Select(ScanColumns())
       .FilterData(filter())
       .IgnoreDeleted()
