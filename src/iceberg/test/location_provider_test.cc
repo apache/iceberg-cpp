@@ -50,11 +50,7 @@ std::vector<std::string> SplitString(const std::string& str, char delimiter) {
 // Test fixture for location provider tests
 class LocationProviderTest : public ::testing::Test {
  protected:
-  void SetUp() override {
-    // Setup a test table location and properties
-    table_location_ = "/test/table/location";
-    properties_ = TableProperties::FromMap({});
-  }
+  void SetUp() override { table_location_ = "/test/table/location"; }
 
   std::string table_location_;
   TableProperties properties_;
@@ -117,9 +113,7 @@ TEST_F(LocationProviderTest, ObjectStorageWithPartition) {
 
   std::vector<std::string> parts = SplitString(location, '/');
   ASSERT_GT(parts.size(), 2);
-  // TODO(zhuo.wang): url encoder is not supported yet
-  // EXPECT_EQ("data%231=val%231", parts[parts.size() - 2]);
-  EXPECT_EQ("data#1=val#1", parts[parts.size() - 2]);
+  EXPECT_EQ("data%231=%22val%231%22", parts[parts.size() - 2]);
 }
 
 TEST_F(LocationProviderTest, ObjectStorageExcludePartitionInPath) {
