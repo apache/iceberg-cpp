@@ -327,7 +327,7 @@ Result<std::shared_ptr<Table>> RestCatalog::UpdateTable(
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(response.body()));
   ICEBERG_ASSIGN_OR_RAISE(auto commit_response, CommitTableResponseFromJson(json));
 
-  return Table::Make(identifier, commit_response.metadata,
+  return Table::Make(identifier, std::move(commit_response.metadata),
                      std::move(commit_response.metadata_location), file_io_,
                      shared_from_this());
 }

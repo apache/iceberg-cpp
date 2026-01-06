@@ -56,7 +56,6 @@ set(ICEBERG_INSTALL_CMAKEDIR "${CMAKE_INSTALL_LIBDIR}/cmake")
 set(ICEBERG_INSTALL_DOCDIR "share/doc/iceberg")
 
 if(WIN32 AND NOT MINGW)
-  add_compile_options(/bigobj)
   set(MSVC_TOOLCHAIN TRUE)
 else()
   set(MSVC_TOOLCHAIN FALSE)

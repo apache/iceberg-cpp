@@ -157,6 +157,10 @@ function(add_iceberg_lib LIB_NAME)
                                                                 hidden
                                      VISIBILITY_INLINES_HIDDEN 1)
 
+    if(MSVC_TOOLCHAIN)
+      target_compile_options(${LIB_NAME}_shared PRIVATE /bigobj)
+    endif()
+
     install(TARGETS ${LIB_NAME}_shared
             EXPORT iceberg_targets
             ARCHIVE DESTINATION ${INSTALL_ARCHIVE_DIR}
@@ -218,6 +222,10 @@ function(add_iceberg_lib LIB_NAME)
     if(WIN32)
       string(TOUPPER ${LIB_NAME} VISIBILITY_NAME)
       target_compile_definitions(${LIB_NAME}_static PUBLIC ${VISIBILITY_NAME}_STATIC)
+    endif()
+
+    if(MSVC_TOOLCHAIN)
+      target_compile_options(${LIB_NAME}_static PRIVATE /bigobj)
     endif()
 
     install(TARGETS ${LIB_NAME}_static

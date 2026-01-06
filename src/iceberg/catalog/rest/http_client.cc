@@ -135,7 +135,8 @@ Status HandleFailureResponse(const cpr::Response& response,
 }  // namespace
 
 void HttpClient::PrepareSession(
-    const std::string& path, const std::unordered_map<std::string, std::string>& params,
+    const std::string& path, const HttpMethod& method,
+    const std::unordered_map<std::string, std::string>& params,
     const std::unordered_map<std::string, std::string>& headers) {
   session_->SetUrl(cpr::Url{path});
   session_->SetParameters(GetParameters(params));
@@ -144,6 +145,23 @@ void HttpClient::PrepareSession(
   // to 1 by POST requests, and this state is not reset by RemoveContent(), so we must
   // manually enforce HTTP GET to clear it.
   curl_easy_setopt(session_->GetCurlHolder()->handle, CURLOPT_HTTPGET, 1L);
+  switch (method) {
+    case HttpMethod::kGet:
+      session_->PrepareGet();
+      break;
+    case HttpMethod::kPost:
+      session_->PreparePost();
+      break;
+    case HttpMethod::kPut:
+      session_->PreparePut();
+      break;
+    case HttpMethod::kDelete:
+      session_->PrepareDelete();
+      break;
+    case HttpMethod::kHead:
+      session_->PrepareHead();
+      break;
+  }
   auto final_headers = MergeHeaders(default_headers_, headers);
   session_->SetHeader(final_headers);
 }
@@ -167,7 +185,7 @@ Result<HttpResponse> HttpClient::Get(
   cpr::Response response;
   {
     std::lock_guard guard(session_mutex_);
-    PrepareSession(path, params, headers);
+    PrepareSession(path, HttpMethod::kGet, params, headers);
     response = session_->Get();
   }
 
@@ -184,7 +202,7 @@ Result<HttpResponse> HttpClient::Post(
   cpr::Response response;
   {
     std::lock_guard guard(session_mutex_);
-    PrepareSession(path, /*params=*/{}, headers);
+    PrepareSession(path, HttpMethod::kPost, /*params=*/{}, headers);
     session_->SetBody(cpr::Body{body});
     response = session_->Post();
   }
@@ -209,7 +227,7 @@ Result<HttpResponse> HttpClient::PostForm(
     auto form_headers = headers;
     form_headers[kHeaderContentType] = kMimeTypeFormUrlEncoded;
 
-    PrepareSession(path, /*params=*/{}, form_headers);
+    PrepareSession(path, HttpMethod::kPost, /*params=*/{}, form_headers);
     std::vector<cpr::Pair> pair_list;
     pair_list.reserve(form_data.size());
     for (const auto& [key, val] : form_data) {
@@ -232,7 +250,7 @@ Result<HttpResponse> HttpClient::Head(
   cpr::Response response;
   {
     std::lock_guard guard(session_mutex_);
-    PrepareSession(path, /*params=*/{}, headers);
+    PrepareSession(path, HttpMethod::kHead, /*params=*/{}, headers);
     response = session_->Head();
   }
 
@@ -249,7 +267,7 @@ Result<HttpResponse> HttpClient::Delete(
   cpr::Response response;
   {
     std::lock_guard guard(session_mutex_);
-    PrepareSession(path, params, headers);
+    PrepareSession(path, HttpMethod::kDelete, params, headers);
     response = session_->Delete();
   }
 
