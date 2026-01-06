@@ -303,14 +303,11 @@ TableScanBuilder& TableScanBuilder::UseRef(const std::string& ref) {
                         "Cannot override ref, already set snapshot id={}",
                         context_.snapshot_id.value());
   auto iter = metadata_->refs.find(ref);
-  if (iter != metadata_->refs.end()) {
-    ICEBERG_BUILDER_CHECK(iter->second != nullptr, "Ref {} is null", ref);
-    int32_t snapshot_id = iter->second->snapshot_id;
-    ICEBERG_BUILDER_ASSIGN_OR_RETURN(std::ignore, metadata_->SnapshotById(snapshot_id));
-    context_.snapshot_id = snapshot_id;
-  } else {
-    return AddError(InvalidArgument("Cannot find ref {}", ref));
-  }
+  ICEBERG_BUILDER_CHECK(iter != metadata_->refs.end(), "Cannot find ref {}", ref);
+  ICEBERG_BUILDER_CHECK(iter->second != nullptr, "Ref {} is null", ref);
+  int32_t snapshot_id = iter->second->snapshot_id;
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(std::ignore, metadata_->SnapshotById(snapshot_id));
+  context_.snapshot_id = snapshot_id;
 
   return *this;
 }
