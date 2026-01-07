@@ -459,7 +459,7 @@ INSTANTIATE_TEST_SUITE_P(
                                                                 .hour = 11,
                                                                 .minute = 43,
                                                                 .second = 20})),
-                       .expected = Literal::Int(2021)},
+                       .expected = Literal::Int(2021 - 1970)},
         TransformParam{
             .str = "TimestampTz",
             // 2021-01-01T07:43:20+08:00, which is 2020-12-31T23:43:20Z
@@ -472,12 +472,12 @@ INSTANTIATE_TEST_SUITE_P(
                                                        .minute = 43,
                                                        .second = 20,
                                                        .tz_offset_minutes = 480})),
-            .expected = Literal::Int(2020)},
+            .expected = Literal::Int(2020 - 1970)},
         TransformParam{.str = "Date",
                        .source_type = iceberg::date(),
                        .source = Literal::Date(TemporalTestHelper::CreateDate(
                            {.year = 2052, .month = 2, .day = 20})),
-                       .expected = Literal::Int(2052)}),
+                       .expected = Literal::Int(2052 - 1970)}),
     [](const ::testing::TestParamInfo<TransformParam>& info) { return info.param.str; });
 
 class MonthTransformTest : public ::testing::TestWithParam<TransformParam> {};
@@ -2061,7 +2061,8 @@ TEST_F(TransformProjectStrictTest, YearStrictLessThan) {
           std::move(projected));
   EXPECT_EQ(unbound_projected->op(), Expression::Operation::kLt);
   EXPECT_EQ(unbound_projected->literals().size(), 1);
-  EXPECT_EQ(std::get<int32_t>(unbound_projected->literals().front().value()), 2021);
+  EXPECT_EQ(std::get<int32_t>(unbound_projected->literals().front().value()),
+            2021 - 1970);
 }
 
 TEST_F(TransformProjectStrictTest, YearStrictGreaterThanOrEqual) {
@@ -2085,7 +2086,8 @@ TEST_F(TransformProjectStrictTest, YearStrictGreaterThanOrEqual) {
           std::move(projected));
   EXPECT_EQ(unbound_projected->op(), Expression::Operation::kGt);
   EXPECT_EQ(unbound_projected->literals().size(), 1);
-  EXPECT_EQ(std::get<int32_t>(unbound_projected->literals().front().value()), 2020);
+  EXPECT_EQ(std::get<int32_t>(unbound_projected->literals().front().value()),
+            2020 - 1970);
 }
 
 TEST_F(TransformProjectStrictTest, YearStrictNotEqual) {
@@ -2109,7 +2111,8 @@ TEST_F(TransformProjectStrictTest, YearStrictNotEqual) {
           std::move(projected));
   EXPECT_EQ(unbound_projected->op(), Expression::Operation::kNotEq);
   EXPECT_EQ(unbound_projected->literals().size(), 1);
-  EXPECT_EQ(std::get<int32_t>(unbound_projected->literals().front().value()), 2021);
+  EXPECT_EQ(std::get<int32_t>(unbound_projected->literals().front().value()),
+            2021 - 1970);
 }
 
 TEST_F(TransformProjectStrictTest, MonthStrictLessThan) {
@@ -2218,7 +2221,8 @@ TEST_F(TransformProjectStrictTest, YearStrictUpperBound) {
           std::move(projected));
   EXPECT_EQ(unbound_projected->op(), Expression::Operation::kLt);
   EXPECT_EQ(unbound_projected->literals().size(), 1);
-  EXPECT_EQ(std::get<int32_t>(unbound_projected->literals().front().value()), 2018);
+  EXPECT_EQ(std::get<int32_t>(unbound_projected->literals().front().value()),
+            2018 - 1970);
 }
 
 TEST_F(TransformProjectStrictTest, VoidStrictReturnsNull) {

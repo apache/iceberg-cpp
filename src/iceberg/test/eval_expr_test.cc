@@ -161,7 +161,7 @@ TEST_F(BoundExpressionTest, YearTransform) {
   // Evaluate (2021)
   ICEBERG_UNWRAP_OR_FAIL(auto result, bound_transform->Evaluate(*struct_like));
   EXPECT_FALSE(result.IsNull());
-  EXPECT_EQ(std::get<int32_t>(result.value()), 2021);  // Year value
+  EXPECT_EQ(std::get<int32_t>(result.value()), 2021 - 1970);  // Year value
 }
 
 TEST_F(BoundExpressionTest, MonthTransform) {

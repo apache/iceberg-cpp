@@ -68,14 +68,14 @@ template <>
 Result<Literal> ExtractYearImpl<TypeId::kDate>(const Literal& literal) {
   auto value = std::get<int32_t>(literal.value());
   auto ymd = DateToYmd(value);
-  return Literal::Int(static_cast<int32_t>(ymd.year()));
+  return Literal::Int((ymd.year() - kEpochYmd.year()).count());
 }
 
 template <>
 Result<Literal> ExtractYearImpl<TypeId::kTimestamp>(const Literal& literal) {
   auto value = std::get<int64_t>(literal.value());
   auto ymd = TimestampToYmd(value);
-  return Literal::Int(static_cast<int32_t>(ymd.year()));
+  return Literal::Int((ymd.year() - kEpochYmd.year()).count());
 }
 
 template <>
