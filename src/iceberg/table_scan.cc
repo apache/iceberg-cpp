@@ -383,6 +383,9 @@ const std::shared_ptr<TableMetadata>& TableScan::metadata() const { return metad
 Result<std::shared_ptr<Snapshot>> TableScan::snapshot() const {
   auto snapshot_id = context_.snapshot_id ? context_.snapshot_id.value()
                                           : metadata_->current_snapshot_id;
+  if (snapshot_id == kInvalidSnapshotId) {
+    return std::shared_ptr<Snapshot>{nullptr};
+  }
   return metadata_->SnapshotById(snapshot_id);
 }
 
