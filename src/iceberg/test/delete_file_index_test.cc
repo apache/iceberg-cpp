@@ -167,8 +167,7 @@ class DeleteFileIndexTest : public testing::TestWithParam<int> {
 
     auto writer_result = ManifestWriter::MakeWriter(
         format_version, snapshot_id, manifest_path, file_io_, spec, schema_,
-        ManifestContent::kDeletes,
-        format_version >= 3 ? std::optional<int64_t>(std::nullopt) : std::nullopt);
+        ManifestContent::kDeletes, /*first_row_id=*/std::nullopt);
 
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());

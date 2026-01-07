@@ -110,8 +110,7 @@ class TestManifestListVersions : public ::testing::Test {
 
     auto writer_result = ManifestListWriter::MakeWriter(
         format_version, kSnapshotId, kParentSnapshotId, manifest_list_path, file_io_,
-        format_version >= 2 ? std::optional<int64_t>(kSeqNum) : std::nullopt,
-        format_version >= 3 ? std::optional<int64_t>(kSnapshotFirstRowId) : std::nullopt);
+        kSeqNum, kSnapshotFirstRowId);
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
 
@@ -192,8 +191,8 @@ TEST_F(TestManifestListVersions, TestV1WriteDeleteManifest) {
   const std::string manifest_list_path = CreateManifestListPath();
 
   ICEBERG_UNWRAP_OR_FAIL(auto writer,
-                         ManifestListWriter::MakeWriter(1, kSnapshotId, kSnapshotId - 1,
-                                                        manifest_list_path, file_io_));
+                         ManifestListWriter::MakeV1Writer(kSnapshotId, kSnapshotId - 1,
+                                                          manifest_list_path, file_io_));
   auto status = writer->Add(kDeleteManifest);
 
   EXPECT_THAT(status, IsError(ErrorKind::kInvalidManifestList));

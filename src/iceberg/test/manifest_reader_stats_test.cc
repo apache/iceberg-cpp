@@ -91,8 +91,7 @@ class TestManifestReaderStats : public testing::TestWithParam<int> {
 
     auto writer_result = ManifestWriter::MakeWriter(
         format_version, /*snapshot_id=*/1000L, manifest_path, file_io_, spec_, schema_,
-        ManifestContent::kData,
-        format_version >= 3 ? std::optional<int64_t>(0L) : std::nullopt);
+        ManifestContent::kData, /*first_row_id=*/0L);
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
 

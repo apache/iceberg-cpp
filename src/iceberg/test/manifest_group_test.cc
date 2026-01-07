@@ -135,10 +135,10 @@ class ManifestGroupTest : public testing::TestWithParam<int> {
                                  std::shared_ptr<PartitionSpec> spec) {
     const std::string manifest_path = MakeManifestPath();
 
-    auto writer_result = ManifestWriter::MakeWriter(
-        format_version, snapshot_id, manifest_path, file_io_, spec, schema_,
-        ManifestContent::kData,
-        /*first_row_id=*/format_version >= 3 ? std::optional<int64_t>(0L) : std::nullopt);
+    auto writer_result =
+        ManifestWriter::MakeWriter(format_version, snapshot_id, manifest_path, file_io_,
+                                   spec, schema_, ManifestContent::kData,
+                                   /*first_row_id=*/0L);
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
 
@@ -157,11 +157,10 @@ class ManifestGroupTest : public testing::TestWithParam<int> {
                                    std::shared_ptr<PartitionSpec> spec) {
     const std::string manifest_path = MakeManifestPath();
 
-    auto writer_result = ManifestWriter::MakeWriter(
-        format_version, snapshot_id, manifest_path, file_io_, spec, schema_,
-        ManifestContent::kDeletes,
-        /*first_row_id=*/format_version >= 3 ? std::optional<int64_t>(std::nullopt)
-                                             : std::nullopt);
+    auto writer_result =
+        ManifestWriter::MakeWriter(format_version, snapshot_id, manifest_path, file_io_,
+                                   spec, schema_, ManifestContent::kDeletes,
+                                   /*first_row_id=*/std::nullopt);
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
 
@@ -197,8 +196,7 @@ class ManifestGroupTest : public testing::TestWithParam<int> {
 
     auto writer_result = ManifestListWriter::MakeWriter(
         format_version, snapshot_id, kParentSnapshotId, manifest_list_path, file_io_,
-        format_version >= 2 ? std::optional<int64_t>(sequence_number) : std::nullopt,
-        format_version >= 3 ? std::optional<int64_t>(kSnapshotFirstRowId) : std::nullopt);
+        sequence_number, kSnapshotFirstRowId);
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
     EXPECT_THAT(writer->Add(manifest), IsOk());

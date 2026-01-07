@@ -109,10 +109,9 @@ class RollingManifestWriterTest : public ::testing::TestWithParam<int32_t> {
       int32_t format_version) {
     return [this, format_version]() -> Result<std::unique_ptr<ManifestWriter>> {
       const std::string manifest_path = CreateManifestPath();
-      return ManifestWriter::MakeWriter(
-          format_version, kSnapshotId, manifest_path, file_io_, spec_, schema_,
-          ManifestContent::kData,
-          format_version >= 3 ? std::optional<int64_t>(kFirstRowId) : std::nullopt);
+      return ManifestWriter::MakeWriter(format_version, kSnapshotId, manifest_path,
+                                        file_io_, spec_, schema_, ManifestContent::kData,
+                                        kFirstRowId);
     };
   }
 
@@ -120,10 +119,9 @@ class RollingManifestWriterTest : public ::testing::TestWithParam<int32_t> {
       int32_t format_version) {
     return [this, format_version]() -> Result<std::unique_ptr<ManifestWriter>> {
       const std::string manifest_path = CreateManifestPath();
-      return ManifestWriter::MakeWriter(
-          format_version, kSnapshotId, manifest_path, file_io_, spec_, schema_,
-          ManifestContent::kDeletes,
-          format_version >= 3 ? std::optional<int64_t>(kFirstRowId) : std::nullopt);
+      return ManifestWriter::MakeWriter(format_version, kSnapshotId, manifest_path,
+                                        file_io_, spec_, schema_,
+                                        ManifestContent::kDeletes, kFirstRowId);
     };
   }
 

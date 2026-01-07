@@ -82,10 +82,10 @@ class TestManifestReader : public testing::TestWithParam<int> {
                              const std::vector<ManifestEntry>& entries) {
     const std::string manifest_path = MakeManifestPath();
 
-    auto writer_result = ManifestWriter::MakeWriter(
-        format_version, snapshot_id, manifest_path, file_io_, spec_, schema_,
-        ManifestContent::kData,
-        format_version >= 3 ? std::optional<int64_t>(0L) : std::nullopt);
+    auto writer_result =
+        ManifestWriter::MakeWriter(format_version, snapshot_id, manifest_path, file_io_,
+                                   spec_, schema_, ManifestContent::kData,
+                                   /*first_row_id=*/0L);
 
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
@@ -138,10 +138,10 @@ class TestManifestReader : public testing::TestWithParam<int> {
                                    std::vector<ManifestEntry> entries) {
     const std::string manifest_path = MakeManifestPath();
 
-    auto writer_result = ManifestWriter::MakeWriter(
-        format_version, snapshot_id, manifest_path, file_io_, spec_, schema_,
-        ManifestContent::kDeletes,
-        format_version >= 3 ? std::optional<int64_t>(std::nullopt) : std::nullopt);
+    auto writer_result =
+        ManifestWriter::MakeWriter(format_version, snapshot_id, manifest_path, file_io_,
+                                   spec_, schema_, ManifestContent::kDeletes,
+                                   /*first_row_id=*/std::nullopt);
 
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());

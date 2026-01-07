@@ -163,8 +163,7 @@ class ManifestWriterVersionsTest : public ::testing::Test {
 
     auto writer_result = ManifestListWriter::MakeWriter(
         format_version, kSnapshotId, kParentSnapshotId, manifest_list_path, file_io_,
-        format_version >= 2 ? std::optional<int64_t>(kSequenceNumber) : std::nullopt,
-        format_version >= 3 ? std::optional<int64_t>(kFirstRowId) : std::nullopt);
+        kSequenceNumber, kFirstRowId);
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
 
@@ -199,10 +198,9 @@ class ManifestWriterVersionsTest : public ::testing::Test {
                              std::vector<std::shared_ptr<DataFile>> data_files) {
     const std::string manifest_path = CreateManifestPath();
 
-    auto writer_result = ManifestWriter::MakeWriter(
-        format_version, kSnapshotId, manifest_path, file_io_, spec_, schema_,
-        ManifestContent::kData,
-        format_version >= 3 ? std::optional<int64_t>(kFirstRowId) : std::nullopt);
+    auto writer_result =
+        ManifestWriter::MakeWriter(format_version, kSnapshotId, manifest_path, file_io_,
+                                   spec_, schema_, ManifestContent::kData, kFirstRowId);
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
 
@@ -235,8 +233,7 @@ class ManifestWriterVersionsTest : public ::testing::Test {
 
     auto writer_result = ManifestWriter::MakeWriter(
         format_version, kSnapshotId, manifest_path, file_io_, spec_, schema_,
-        ManifestContent::kDeletes,
-        format_version >= 3 ? std::optional<int64_t>(kFirstRowId) : std::nullopt);
+        ManifestContent::kDeletes, kFirstRowId);
 
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
@@ -256,10 +253,9 @@ class ManifestWriterVersionsTest : public ::testing::Test {
 
     const std::string manifest_path = CreateManifestPath();
 
-    auto writer_result = ManifestWriter::MakeWriter(
-        format_version, kSnapshotId, manifest_path, file_io_, spec_, schema_,
-        old_manifest.content,
-        format_version >= 3 ? std::optional<int64_t>(kFirstRowId) : std::nullopt);
+    auto writer_result =
+        ManifestWriter::MakeWriter(format_version, kSnapshotId, manifest_path, file_io_,
+                                   spec_, schema_, old_manifest.content, kFirstRowId);
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
 
@@ -426,8 +422,8 @@ TEST_F(ManifestWriterVersionsTest, TestV1Write) {
 TEST_F(ManifestWriterVersionsTest, TestV1WriteDelete) {
   const std::string manifest_path = CreateManifestPath();
   ICEBERG_UNWRAP_OR_FAIL(
-      auto writer, ManifestWriter::MakeWriter(1, kSnapshotId, manifest_path, file_io_,
-                                              spec_, schema_));
+      auto writer,
+      ManifestWriter::MakeV1Writer(kSnapshotId, manifest_path, file_io_, spec_, schema_));
 
   ManifestEntry entry;
   entry.snapshot_id = kSnapshotId;
