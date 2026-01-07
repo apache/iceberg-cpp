@@ -28,6 +28,7 @@
 
 #include "iceberg/json_internal.h"
 #include "iceberg/partition_field.h"
+#include "iceberg/row/partition_values.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/test/matchers.h"
@@ -422,6 +423,54 @@ TEST(PartitionSpecTest, ValidateRedundantPartitionsIdentityTransforms) {
 
     auto result = PartitionSpec::Make(schema, 1, {id_identity, name_identity}, false);
     EXPECT_THAT(result, IsOk());
+  }
+}
+
+TEST(PartitionSpecTest, PartitionPath) {
+  // Create a schema with different field types
+  auto id_field = SchemaField::MakeRequired(1, "id", int64());
+  auto name_field = SchemaField::MakeRequired(2, "name", string());
+  auto ts_field = SchemaField::MakeRequired(3, "ts", timestamp());
+  Schema schema({id_field, name_field, ts_field}, Schema::kInitialSchemaId);
+
+  // Create partition fields
+  PartitionField id_field_partition(1, 1000, "id_partition", Transform::Identity());
+  PartitionField name_field_partition(2, 1001, "name_partition", Transform::Identity());
+  PartitionField ts_field_partition(3, 1002, "ts_partition", Transform::Day());
+
+  // Create partition spec
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec,
+      PartitionSpec::Make(schema, 1,
+                          {id_field_partition, name_field_partition, ts_field_partition},
+                          false));
+
+  {
+    // Invalid partition values
+    PartitionValues part_data({Literal::Int(123)});
+    auto result = spec->PartitionPath(part_data);
+    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+    EXPECT_THAT(result, HasErrorMessage("Partition spec and data mismatch"));
+  }
+
+  {
+    // Normal partition values
+    PartitionValues part_data(
+        {Literal::Int(123), Literal::String("val2"), Literal::Date(19489)});
+    ICEBERG_UNWRAP_OR_FAIL(auto path, spec->PartitionPath(part_data));
+    std::string expected =
+        "id_partition=123/name_partition=%22val2%22/ts_partition=19489";
+    EXPECT_EQ(expected, path);
+  }
+
+  {
+    // Partition values with special characters
+    PartitionValues part_data(
+        {Literal::Int(123), Literal::String("val#2"), Literal::Date(19489)});
+    ICEBERG_UNWRAP_OR_FAIL(auto path, spec->PartitionPath(part_data));
+    std::string expected =
+        "id_partition=123/name_partition=%22val%232%22/ts_partition=19489";
+    EXPECT_EQ(expected, path);
   }
 }
 

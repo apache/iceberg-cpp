@@ -26,16 +26,19 @@
 #include <map>
 #include <memory>
 #include <ranges>
+#include <sstream>
 #include <unordered_map>
 #include <utility>
 
 #include "iceberg/result.h"
+#include "iceberg/row/partition_values.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/transform.h"
 #include "iceberg/util/formatter.h"  // IWYU pragma: keep
 #include "iceberg/util/macros.h"
 #include "iceberg/util/type_util.h"
+#include "iceberg/util/url_encoder.h"
 
 namespace iceberg {
 
@@ -96,6 +99,25 @@ Result<std::unique_ptr<StructType>> PartitionSpec::PartitionType(
   }
 
   return std::make_unique<StructType>(std::move(partition_fields));
+}
+
+Result<std::string> PartitionSpec::PartitionPath(const PartitionValues& data) const {
+  ICEBERG_PRECHECK(fields_.size() == data.num_fields(),
+                   "Partition spec and data mismatch, expected field num {}, got {}",
+                   fields_.size(), data.num_fields());
+  std::stringstream ss;
+  for (int32_t i = 0; i < fields_.size(); ++i) {
+    ICEBERG_ASSIGN_OR_RAISE(auto value, data.ValueAt(i));
+    if (i > 0) {
+      ss << "/";
+    }
+    // TODO(zhuo.wang): transform for partition value, will be fixed after transform util
+    // is ready
+    std::string partition_value = value.get().ToString();
+    ss << UrlEncoder::Encode(fields_[i].name()) << "="
+       << UrlEncoder::Encode(partition_value);
+  }
+  return ss.str();
 }
 
 bool PartitionSpec::CompatibleWith(const PartitionSpec& other) const {
