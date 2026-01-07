@@ -228,7 +228,7 @@ TEST_P(TypeTest, VisitTypePrintToString) {
 
 TEST_P(TypeTest, VisitTypeReturnNestedTypeId) {
   auto visitor = [&](auto&& type) -> Result<TypeId> {
-    using Type = std::decay_t<decltype(type)>;
+    using Type = std::remove_cvref_t<decltype(type)>;
     // Check if the type is a nested type
     if constexpr (std::is_base_of_v<NestedType, Type>) {
       return type.type_id();

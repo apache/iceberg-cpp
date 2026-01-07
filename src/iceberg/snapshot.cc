@@ -39,7 +39,7 @@ bool SnapshotRef::Tag::Equals(const SnapshotRef::Tag& other) const {
 SnapshotRefType SnapshotRef::type() const noexcept {
   return std::visit(
       [&](const auto& retention) -> SnapshotRefType {
-        using T = std::decay_t<decltype(retention)>;
+        using T = std::remove_cvref_t<decltype(retention)>;
         if constexpr (std::is_same_v<T, Branch>) {
           return SnapshotRefType::kBranch;
         } else {

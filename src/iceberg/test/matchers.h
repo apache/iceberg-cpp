@@ -140,7 +140,7 @@ class HasValueMatcher {
 template <typename MatcherT>
 auto HasValue(MatcherT&& matcher) {
   return ::testing::MakePolymorphicMatcher(
-      HasValueMatcher<std::decay_t<MatcherT>>(std::forward<MatcherT>(matcher)));
+      HasValueMatcher<std::remove_cvref_t<MatcherT>>(std::forward<MatcherT>(matcher)));
 }
 
 // Overload for the common case where we just want to check for presence of any value
@@ -200,15 +200,15 @@ class ResultMatcher {
 // Factory function for ResultMatcher for values
 template <typename MatcherT>
 auto ResultIs(MatcherT&& matcher) {
-  return ::testing::MakePolymorphicMatcher(
-      ResultMatcher<std::decay_t<MatcherT>>(true, std::forward<MatcherT>(matcher)));
+  return ::testing::MakePolymorphicMatcher(ResultMatcher<std::remove_cvref_t<MatcherT>>(
+      true, std::forward<MatcherT>(matcher)));
 }
 
 // Factory function for ResultMatcher for errors
 template <typename MatcherT>
 auto ErrorIs(MatcherT&& matcher) {
-  return ::testing::MakePolymorphicMatcher(
-      ResultMatcher<std::decay_t<MatcherT>>(false, std::forward<MatcherT>(matcher)));
+  return ::testing::MakePolymorphicMatcher(ResultMatcher<std::remove_cvref_t<MatcherT>>(
+      false, std::forward<MatcherT>(matcher)));
 }
 
 // Evaluate `rexpr` which should return a Result<T, Error>.

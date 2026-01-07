@@ -119,7 +119,7 @@ template <typename Container, typename Accessor, typename... Args>
   requires std::ranges::forward_range<Container>
 Status ParseIntegerField(const ArrowArrayView* array_view, Container& container,
                          Accessor accessor, Args&&... args) {
-  using T = unwrap_optional_t<std::decay_t<
+  using T = unwrap_optional_t<std::remove_cvref_t<
       std::invoke_result_t<Accessor&, std::ranges::range_reference_t<Container>>>>;
   return ParseField(
       [](const ArrowArrayView* view, int64_t row_idx) {
@@ -165,11 +165,11 @@ void ParseVectorField(Transfer transfer, const ArrowArrayView* view, int64_t len
 
 template <typename Container, typename Accessor>
   requires std::ranges::forward_range<Container> &&
-           std::ranges::range<std::decay_t<std::invoke_result_t<
+           std::ranges::range<std::remove_cvref_t<std::invoke_result_t<
                Accessor&, std::ranges::range_reference_t<Container>>>>
 void ParseIntegerVectorField(const ArrowArrayView* view, int64_t length,
                              Container& container, Accessor accessor) {
-  using T = unwrap_optional_t<std::ranges::range_value_t<std::decay_t<
+  using T = unwrap_optional_t<std::ranges::range_value_t<std::remove_cvref_t<
       std::invoke_result_t<Accessor&, std::ranges::range_reference_t<Container>>>>>;
   return ParseVectorField(
       [](const ArrowArrayView* v, int64_t offset) {

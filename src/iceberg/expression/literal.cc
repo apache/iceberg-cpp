@@ -583,7 +583,7 @@ Result<Literal> LiteralCaster::CastTo(const Literal& literal,
 std::size_t LiteralValueHash::operator()(const Literal::Value& value) const noexcept {
   return std::visit(
       [](const auto& v) -> std::size_t {
-        using T = std::decay_t<decltype(v)>;
+        using T = std::remove_cvref_t<decltype(v)>;
 
         constexpr size_t kHashPrime = 0x9e3779b9;
 
