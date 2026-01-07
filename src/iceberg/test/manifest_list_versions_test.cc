@@ -108,21 +108,10 @@ class TestManifestListVersions : public ::testing::Test {
     const std::string manifest_list_path = CreateManifestListPath();
     constexpr int64_t kParentSnapshotId = kSnapshotId - 1;
 
-    Result<std::unique_ptr<ManifestListWriter>> writer_result =
-        NotSupported("Format version: {}", format_version);
-
-    if (format_version == 1) {
-      writer_result = ManifestListWriter::MakeV1Writer(kSnapshotId, kParentSnapshotId,
-                                                       manifest_list_path, file_io_);
-    } else if (format_version == 2) {
-      writer_result = ManifestListWriter::MakeV2Writer(
-          kSnapshotId, kParentSnapshotId, kSeqNum, manifest_list_path, file_io_);
-    } else if (format_version == 3) {
-      writer_result = ManifestListWriter::MakeV3Writer(kSnapshotId, kParentSnapshotId,
-                                                       kSeqNum, kSnapshotFirstRowId,
-                                                       manifest_list_path, file_io_);
-    }
-
+    auto writer_result = ManifestListWriter::MakeWriter(
+        format_version, kSnapshotId, kParentSnapshotId, manifest_list_path, file_io_,
+        format_version >= 2 ? std::optional<int64_t>(kSeqNum) : std::nullopt,
+        format_version >= 3 ? std::optional<int64_t>(kSnapshotFirstRowId) : std::nullopt);
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
 
@@ -202,11 +191,9 @@ class TestManifestListVersions : public ::testing::Test {
 TEST_F(TestManifestListVersions, TestV1WriteDeleteManifest) {
   const std::string manifest_list_path = CreateManifestListPath();
 
-  auto writer_result = ManifestListWriter::MakeV1Writer(kSnapshotId, kSnapshotId - 1,
-                                                        manifest_list_path, file_io_);
-  EXPECT_THAT(writer_result, IsOk());
-
-  auto writer = std::move(writer_result.value());
+  ICEBERG_UNWRAP_OR_FAIL(auto writer,
+                         ManifestListWriter::MakeWriter(1, kSnapshotId, kSnapshotId - 1,
+                                                        manifest_list_path, file_io_));
   auto status = writer->Add(kDeleteManifest);
 
   EXPECT_THAT(status, IsError(ErrorKind::kInvalidManifestList));

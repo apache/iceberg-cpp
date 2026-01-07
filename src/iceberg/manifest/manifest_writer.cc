@@ -365,6 +365,32 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV3Writer(
       std::move(writer), std::move(adapter), manifest_location, first_row_id));
 }
 
+Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeWriter(
+    int8_t format_version, std::optional<int64_t> snapshot_id,
+    std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
+    std::shared_ptr<PartitionSpec> partition_spec, std::shared_ptr<Schema> current_schema,
+    std::optional<ManifestContent> content, std::optional<int64_t> first_row_id) {
+  switch (format_version) {
+    case 1:
+      return MakeV1Writer(snapshot_id, manifest_location, std::move(file_io),
+                          std::move(partition_spec), std::move(current_schema));
+    case 2:
+      ICEBERG_PRECHECK(content.has_value(),
+                       "ManifestContent is required for format version 2");
+      return MakeV2Writer(snapshot_id, manifest_location, std::move(file_io),
+                          std::move(partition_spec), std::move(current_schema),
+                          content.value());
+    case 3:
+      ICEBERG_PRECHECK(content.has_value(),
+                       "ManifestContent is required for format version 3");
+      return MakeV3Writer(snapshot_id, first_row_id, manifest_location,
+                          std::move(file_io), std::move(partition_spec),
+                          std::move(current_schema), content.value());
+    default:
+      return NotSupported("Format version {} is not supported", format_version);
+  }
+}
+
 ManifestListWriter::ManifestListWriter(std::unique_ptr<Writer> writer,
                                        std::unique_ptr<ManifestFileAdapter> adapter)
     : writer_(std::move(writer)), adapter_(std::move(adapter)) {}
@@ -450,6 +476,32 @@ Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV3Writer(
                      adapter->metadata(), "manifest_file"));
   return std::unique_ptr<ManifestListWriter>(
       new ManifestListWriter(std::move(writer), std::move(adapter)));
+}
+
+Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeWriter(
+    int8_t format_version, int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
+    std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io,
+    std::optional<int64_t> sequence_number, std::optional<int64_t> first_row_id) {
+  switch (format_version) {
+    case 1:
+      return MakeV1Writer(snapshot_id, parent_snapshot_id, manifest_list_location,
+                          std::move(file_io));
+    case 2:
+      ICEBERG_PRECHECK(sequence_number.has_value(),
+                       "Sequence number is required for format version 2");
+      return MakeV2Writer(snapshot_id, parent_snapshot_id, sequence_number.value(),
+                          manifest_list_location, std::move(file_io));
+    case 3:
+      ICEBERG_PRECHECK(sequence_number.has_value(),
+                       "Sequence number is required for format version 3");
+      ICEBERG_PRECHECK(first_row_id.has_value(),
+                       "First row ID is required for format version 3");
+      return MakeV3Writer(snapshot_id, parent_snapshot_id, sequence_number.value(),
+                          first_row_id.value(), manifest_list_location,
+                          std::move(file_io));
+    default:
+      return NotSupported("Format version {} is not supported", format_version);
+  }
 }
 
 }  // namespace iceberg

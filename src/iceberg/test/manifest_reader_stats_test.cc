@@ -89,26 +89,10 @@ class TestManifestReaderStats : public testing::TestWithParam<int> {
   ManifestFile WriteManifest(int format_version, std::unique_ptr<DataFile> data_file) {
     const std::string manifest_path = MakeManifestPath();
 
-    Result<std::unique_ptr<ManifestWriter>> writer_result =
-        NotSupported("Format version: {}", format_version);
-
-    switch (format_version) {
-      case 1:
-        writer_result = ManifestWriter::MakeV1Writer(/*snapshot_id=*/1000L, manifest_path,
-                                                     file_io_, spec_, schema_);
-        break;
-      case 2:
-        writer_result =
-            ManifestWriter::MakeV2Writer(/*snapshot_id=*/1000L, manifest_path, file_io_,
-                                         spec_, schema_, ManifestContent::kData);
-        break;
-      case 3:
-        writer_result = ManifestWriter::MakeV3Writer(
-            /*snapshot_id=*/1000L, /*sequence_number=*/0L, manifest_path, file_io_, spec_,
-            schema_, ManifestContent::kData);
-        break;
-    }
-
+    auto writer_result = ManifestWriter::MakeWriter(
+        format_version, /*snapshot_id=*/1000L, manifest_path, file_io_, spec_, schema_,
+        ManifestContent::kData,
+        format_version >= 3 ? std::optional<int64_t>(0L) : std::nullopt);
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
 

@@ -158,6 +158,26 @@ class ICEBERG_EXPORT ManifestWriter {
       std::shared_ptr<PartitionSpec> partition_spec,
       std::shared_ptr<Schema> current_schema, ManifestContent content);
 
+  /// \brief Factory function to create a writer for a manifest file based on format
+  /// version.
+  /// \param format_version The format version (1, 2, 3, etc.).
+  /// \param snapshot_id ID of the snapshot.
+  /// \param manifest_location Path to the manifest file.
+  /// \param file_io File IO implementation to use.
+  /// \param partition_spec Partition spec for the manifest.
+  /// \param current_schema Schema containing the source fields referenced by partition
+  /// spec.
+  /// \param content Content of the manifest (required for format_version >= 2).
+  /// \param first_row_id First row ID of the snapshot (required for format_version >= 3).
+  /// \return A Result containing the writer or an error.
+  static Result<std::unique_ptr<ManifestWriter>> MakeWriter(
+      int8_t format_version, std::optional<int64_t> snapshot_id,
+      std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
+      std::shared_ptr<PartitionSpec> partition_spec,
+      std::shared_ptr<Schema> current_schema,
+      std::optional<ManifestContent> content = std::nullopt,
+      std::optional<int64_t> first_row_id = std::nullopt);
+
  private:
   // Private constructor for internal use only, use the static Make*Writer methods
   // instead.
@@ -239,6 +259,24 @@ class ICEBERG_EXPORT ManifestListWriter {
       int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
       int64_t sequence_number, int64_t first_row_id,
       std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io);
+
+  /// \brief Factory function to create a writer for the manifest list based on format
+  /// version.
+  /// \param format_version The format version (1, 2, 3, etc.).
+  /// \param snapshot_id ID of the snapshot.
+  /// \param parent_snapshot_id ID of the parent snapshot.
+  /// \param manifest_list_location Path to the manifest list file.
+  /// \param file_io File IO implementation to use.
+  /// \param sequence_number Sequence number of the snapshot (required for format_version
+  /// >= 2).
+  /// \param first_row_id First row ID of the snapshot (required for format_version >= 3).
+  /// \return A Result containing the writer or an error.
+  static Result<std::unique_ptr<ManifestListWriter>> MakeWriter(
+      int8_t format_version, int64_t snapshot_id,
+      std::optional<int64_t> parent_snapshot_id, std::string_view manifest_list_location,
+      std::shared_ptr<FileIO> file_io,
+      std::optional<int64_t> sequence_number = std::nullopt,
+      std::optional<int64_t> first_row_id = std::nullopt);
 
  private:
   // Private constructor for internal use only, use the static Make*Writer methods

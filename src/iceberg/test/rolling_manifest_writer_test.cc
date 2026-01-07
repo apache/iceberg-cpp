@@ -109,22 +109,10 @@ class RollingManifestWriterTest : public ::testing::TestWithParam<int32_t> {
       int32_t format_version) {
     return [this, format_version]() -> Result<std::unique_ptr<ManifestWriter>> {
       const std::string manifest_path = CreateManifestPath();
-      Result<std::unique_ptr<ManifestWriter>> writer_result =
-          NotSupported("Format version: {}", format_version);
-
-      if (format_version == 1) {
-        writer_result = ManifestWriter::MakeV1Writer(kSnapshotId, manifest_path, file_io_,
-                                                     spec_, schema_);
-      } else if (format_version == 2) {
-        writer_result = ManifestWriter::MakeV2Writer(
-            kSnapshotId, manifest_path, file_io_, spec_, schema_, ManifestContent::kData);
-      } else if (format_version == 3) {
-        writer_result = ManifestWriter::MakeV3Writer(kSnapshotId, kFirstRowId,
-                                                     manifest_path, file_io_, spec_,
-                                                     schema_, ManifestContent::kData);
-      }
-
-      return writer_result;
+      return ManifestWriter::MakeWriter(
+          format_version, kSnapshotId, manifest_path, file_io_, spec_, schema_,
+          ManifestContent::kData,
+          format_version >= 3 ? std::optional<int64_t>(kFirstRowId) : std::nullopt);
     };
   }
 
@@ -132,20 +120,10 @@ class RollingManifestWriterTest : public ::testing::TestWithParam<int32_t> {
       int32_t format_version) {
     return [this, format_version]() -> Result<std::unique_ptr<ManifestWriter>> {
       const std::string manifest_path = CreateManifestPath();
-      Result<std::unique_ptr<ManifestWriter>> writer_result =
-          NotSupported("Format version: {}", format_version);
-
-      if (format_version == 2) {
-        writer_result =
-            ManifestWriter::MakeV2Writer(kSnapshotId, manifest_path, file_io_, spec_,
-                                         schema_, ManifestContent::kDeletes);
-      } else if (format_version == 3) {
-        writer_result = ManifestWriter::MakeV3Writer(kSnapshotId, kFirstRowId,
-                                                     manifest_path, file_io_, spec_,
-                                                     schema_, ManifestContent::kDeletes);
-      }
-
-      return writer_result;
+      return ManifestWriter::MakeWriter(
+          format_version, kSnapshotId, manifest_path, file_io_, spec_, schema_,
+          ManifestContent::kDeletes,
+          format_version >= 3 ? std::optional<int64_t>(kFirstRowId) : std::nullopt);
     };
   }
 
