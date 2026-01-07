@@ -20,8 +20,6 @@
 #include "iceberg/util/timepoint.h"
 
 #include <chrono>
-#include <iomanip>
-#include <sstream>
 
 namespace iceberg {
 
@@ -46,18 +44,35 @@ int64_t UnixNsFromTimePointNs(TimePointNs time_point_ns) {
 }
 
 std::string FormatTimePointMs(TimePointMs time_point_ms) {
-  auto unix_ms = UnixMsFromTimePointMs(time_point_ms);
-  auto time_t = std::chrono::system_clock::to_time_t(time_point_ms);
+  return std::format("{:%FT%T}", time_point_ms);
+}
 
-  // Format as ISO 8601-like string: YYYY-MM-DD HH:MM:SS
-  std::ostringstream oss;
-  oss << std::put_time(std::gmtime(&time_t), "%Y-%m-%d %H:%M:%S");
+std::string FormatUnixMicro(int64_t unix_micro) {
+  auto tp = std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>{
+      std::chrono::seconds(unix_micro / kMicrosPerSecond)};
 
-  // Add milliseconds
-  auto ms = unix_ms % 1000;
-  oss << "." << std::setfill('0') << std::setw(3) << ms << " UTC";
+  auto micros = unix_micro % kMicrosPerSecond;
+  if (micros == 0) {
+    return std::format("{:%FT%T}", tp);
+  } else if (micros % kMicrosPerMillis == 0) {
+    return std::format("{:%FT%T}.{:03d}", tp, micros / kMicrosPerMillis);
+  } else {
+    return std::format("{:%FT%T}.{:06d}", tp, micros);
+  }
+}
 
-  return oss.str();
+std::string FormatUnixMicroTz(int64_t unix_micro) {
+  auto tp = std::chrono::time_point<std::chrono::system_clock, std::chrono::seconds>{
+      std::chrono::seconds(unix_micro / kMicrosPerSecond)};
+
+  auto micros = unix_micro % kMicrosPerSecond;
+  if (micros == 0) {
+    return std::format("{:%FT%T}+00:00", tp);
+  } else if (micros % kMicrosPerMillis == 0) {
+    return std::format("{:%FT%T}.{:03d}+00:00", tp, micros / kMicrosPerMillis);
+  } else {
+    return std::format("{:%FT%T}.{:06d}+00:00", tp, micros);
+  }
 }
 
 }  // namespace iceberg
