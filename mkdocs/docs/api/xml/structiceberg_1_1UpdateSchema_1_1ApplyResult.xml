@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1UpdateSchema_1_1ApplyResult" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::UpdateSchema::ApplyResult</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1UpdateSchema_1_1ApplyResult_1a9a022fafab209790bcf4927b4676966e" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::UpdateSchema::ApplyResult::schema</definition>
+        <argsstring></argsstring>
+        <name>schema</name>
+        <qualifiedname>iceberg::UpdateSchema::ApplyResult::schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_schema.h" line="323" column="21" bodyfile="iceberg/update/update_schema.h" bodystart="323" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1UpdateSchema_1_1ApplyResult_1a789343c6bf62c38d1815456e48b7de8c" prot="public" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::UpdateSchema::ApplyResult::new_last_column_id</definition>
+        <argsstring></argsstring>
+        <name>new_last_column_id</name>
+        <qualifiedname>iceberg::UpdateSchema::ApplyResult::new_last_column_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/update_schema.h" line="324" column="13" bodyfile="iceberg/update/update_schema.h" bodystart="324" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="10">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="12">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="11">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="5">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::UpdateSchema::ApplyResult</label>
+        <link refid="structiceberg_1_1UpdateSchema_1_1ApplyResult"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>schema</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="2">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="14">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="13">
+        <label>std::string_view</label>
+        <childnode refid="14" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/update/update_schema.h" line="322" column="3" bodyfile="iceberg/update/update_schema.h" bodystart="322" bodyend="325"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1UpdateSchema_1_1ApplyResult_1a789343c6bf62c38d1815456e48b7de8c" prot="public" virt="non-virtual"><scope>iceberg::UpdateSchema::ApplyResult</scope><name>new_last_column_id</name></member>
+      <member refid="structiceberg_1_1UpdateSchema_1_1ApplyResult_1a9a022fafab209790bcf4927b4676966e" prot="public" virt="non-virtual"><scope>iceberg::UpdateSchema::ApplyResult</scope><name>schema</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

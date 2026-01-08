@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1JsonInvalidTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::rest::JsonInvalidTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::TestWithParam&lt; JsonInvalidParam&lt; Model &gt; &gt;</basecompoundref>
+    <templateparamlist>
+      <param>
+        <type>typename Model</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classiceberg_1_1rest_1_1JsonInvalidTest_1a6cf9ad7b7c587229585bfa1ef4162618" prot="private" static="no">
+        <type>::testing::TestWithParam&lt; <ref refid="structiceberg_1_1rest_1_1JsonInvalidParam" kindref="compound">JsonInvalidParam</ref>&lt; Model &gt; &gt;</type>
+        <definition>using iceberg::rest::JsonInvalidTest&lt; Model &gt;::Base =  ::testing::TestWithParam&lt;JsonInvalidParam&lt;Model&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>Base</name>
+        <qualifiedname>iceberg::rest::JsonInvalidTest::Base</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_internal_test.cc" line="122" column="3" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="122" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1JsonInvalidTest_1a94679fbce2b6072f1bc765f76f391b58" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::rest::JsonInvalidTest&lt; Model &gt;::TestInvalidJson</definition>
+        <argsstring>()</argsstring>
+        <name>TestInvalidJson</name>
+        <qualifiedname>iceberg::rest::JsonInvalidTest::TestInvalidJson</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_internal_test.cc" line="125" column="8" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="125" bodyend="132"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::rest::JsonInvalidTest&lt; Model &gt;</label>
+        <link refid="classiceberg_1_1rest_1_1JsonInvalidTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; JsonInvalidParam&lt; Model &gt; &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::JsonInvalidTest&lt; Model &gt;</label>
+        <link refid="classiceberg_1_1rest_1_1JsonInvalidTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; JsonInvalidParam&lt; Model &gt; &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/rest_json_internal_test.cc" line="121" column="1" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="121" bodyend="133"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1JsonInvalidTest_1a6cf9ad7b7c587229585bfa1ef4162618" prot="private" virt="non-virtual"><scope>iceberg::rest::JsonInvalidTest</scope><name>Base</name></member>
+      <member refid="classiceberg_1_1rest_1_1JsonInvalidTest_1a94679fbce2b6072f1bc765f76f391b58" prot="protected" virt="non-virtual"><scope>iceberg::rest::JsonInvalidTest</scope><name>TestInvalidJson</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

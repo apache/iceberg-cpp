@@ -1,0 +1,174 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1PositionPathVisitor" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::PositionPathVisitor</compoundname>
+    <includes refid="type__util_8h" local="no">type_util.h</includes>
+    <sectiondef kind="private-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1PositionPathVisitor_1ac6307de38fb8d01bb4f2d32b8dded7b7" prot="private" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::PositionPathVisitor::kUnassignedFieldId</definition>
+        <argsstring></argsstring>
+        <name>kUnassignedFieldId</name>
+        <qualifiedname>iceberg::PositionPathVisitor::kUnassignedFieldId</qualifiedname>
+        <initializer>= -1</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="94" column="28" bodyfile="iceberg/util/type_util.h" bodystart="94" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1PositionPathVisitor_1abedc52ef771e9343d847b719bbfd9f50" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::PositionPathVisitor::current_field_id_</definition>
+        <argsstring></argsstring>
+        <name>current_field_id_</name>
+        <qualifiedname>iceberg::PositionPathVisitor::current_field_id_</qualifiedname>
+        <initializer>= kUnassignedFieldId</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="95" column="11" bodyfile="iceberg/util/type_util.h" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1PositionPathVisitor_1ae7dd3c3db2e2b45d41ecd2ea1814d64f" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; size_t &gt;</type>
+        <definition>std::vector&lt;size_t&gt; iceberg::PositionPathVisitor::current_path_</definition>
+        <argsstring></argsstring>
+        <name>current_path_</name>
+        <qualifiedname>iceberg::PositionPathVisitor::current_path_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="96" column="15" bodyfile="iceberg/util/type_util.h" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1PositionPathVisitor_1a201e7e321c153f28b22da176a4f4877c" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; int32_t, std::vector&lt; size_t &gt; &gt;</type>
+        <definition>std::unordered_map&lt;int32_t, std::vector&lt;size_t&gt; &gt; iceberg::PositionPathVisitor::position_path_</definition>
+        <argsstring></argsstring>
+        <name>position_path_</name>
+        <qualifiedname>iceberg::PositionPathVisitor::position_path_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="97" column="22" bodyfile="iceberg/util/type_util.h" bodystart="97" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1PositionPathVisitor_1aa746f49ed1087a9f73ef3e1f79d19ee1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::PositionPathVisitor::Visit</definition>
+        <argsstring>(const PrimitiveType &amp;type)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::PositionPathVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="87" column="10" bodyfile="iceberg/util/type_util.cc" bodystart="156" bodyend="168"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionPathVisitor_1af7443849019e3e378709b575ee073cad" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::PositionPathVisitor::Visit</definition>
+        <argsstring>(const StructType &amp;type)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::PositionPathVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="88" column="10" bodyfile="iceberg/util/type_util.cc" bodystart="170" bodyend="179"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionPathVisitor_1a1e5f711084e5765a952de0d16fa7116f" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::PositionPathVisitor::Visit</definition>
+        <argsstring>(const ListType &amp;type)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::PositionPathVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1ListType" kindref="compound">ListType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="89" column="10" bodyfile="iceberg/util/type_util.cc" bodystart="182" bodyend="182"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionPathVisitor_1ab76e1f51ce832375d3fd28d9c04b8d21" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::PositionPathVisitor::Visit</definition>
+        <argsstring>(const MapType &amp;type)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::PositionPathVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1MapType" kindref="compound">MapType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="90" column="10" bodyfile="iceberg/util/type_util.cc" bodystart="184" bodyend="184"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PositionPathVisitor_1afbb877161d46f575915b670e9b92c4c4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unordered_map&lt; int32_t, std::vector&lt; size_t &gt; &gt;</type>
+        <definition>std::unordered_map&lt; int32_t, std::vector&lt; size_t &gt; &gt; iceberg::PositionPathVisitor::Finish</definition>
+        <argsstring>()</argsstring>
+        <name>Finish</name>
+        <qualifiedname>iceberg::PositionPathVisitor::Finish</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="91" column="22" bodyfile="iceberg/util/type_util.cc" bodystart="186" bodyend="188"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Visitor for building a map from field ID to position path. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/type_util.h" line="85" column="1" bodyfile="iceberg/util/type_util.h" bodystart="85" bodyend="98"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1PositionPathVisitor_1abedc52ef771e9343d847b719bbfd9f50" prot="private" virt="non-virtual"><scope>iceberg::PositionPathVisitor</scope><name>current_field_id_</name></member>
+      <member refid="classiceberg_1_1PositionPathVisitor_1ae7dd3c3db2e2b45d41ecd2ea1814d64f" prot="private" virt="non-virtual"><scope>iceberg::PositionPathVisitor</scope><name>current_path_</name></member>
+      <member refid="classiceberg_1_1PositionPathVisitor_1afbb877161d46f575915b670e9b92c4c4" prot="public" virt="non-virtual"><scope>iceberg::PositionPathVisitor</scope><name>Finish</name></member>
+      <member refid="classiceberg_1_1PositionPathVisitor_1ac6307de38fb8d01bb4f2d32b8dded7b7" prot="private" virt="non-virtual"><scope>iceberg::PositionPathVisitor</scope><name>kUnassignedFieldId</name></member>
+      <member refid="classiceberg_1_1PositionPathVisitor_1a201e7e321c153f28b22da176a4f4877c" prot="private" virt="non-virtual"><scope>iceberg::PositionPathVisitor</scope><name>position_path_</name></member>
+      <member refid="classiceberg_1_1PositionPathVisitor_1aa746f49ed1087a9f73ef3e1f79d19ee1" prot="public" virt="non-virtual"><scope>iceberg::PositionPathVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1PositionPathVisitor_1af7443849019e3e378709b575ee073cad" prot="public" virt="non-virtual"><scope>iceberg::PositionPathVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1PositionPathVisitor_1a1e5f711084e5765a952de0d16fa7116f" prot="public" virt="non-virtual"><scope>iceberg::PositionPathVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1PositionPathVisitor_1ab76e1f51ce832375d3fd28d9c04b8d21" prot="public" virt="non-virtual"><scope>iceberg::PositionPathVisitor</scope><name>Visit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

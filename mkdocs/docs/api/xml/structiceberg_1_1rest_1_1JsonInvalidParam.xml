@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1JsonInvalidParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::JsonInvalidParam</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename Model</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1JsonInvalidParam_1acf3efcd818b9726a358f32f3d2fc3fda" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::JsonInvalidParam&lt; Model &gt;::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>iceberg::rest::JsonInvalidParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_internal_test.cc" line="114" column="15" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="114" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1JsonInvalidParam_1a104c1cfc19ff17b516552e339a88f42b" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::JsonInvalidParam&lt; Model &gt;::invalid_json_str</definition>
+        <argsstring></argsstring>
+        <name>invalid_json_str</name>
+        <qualifiedname>iceberg::rest::JsonInvalidParam::invalid_json_str</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_internal_test.cc" line="115" column="15" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="115" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1JsonInvalidParam_1a2b02f33e3944e66ad71f9285ffa6202c" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::JsonInvalidParam&lt; Model &gt;::expected_error_message</definition>
+        <argsstring></argsstring>
+        <name>expected_error_message</name>
+        <qualifiedname>iceberg::rest::JsonInvalidParam::expected_error_message</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_internal_test.cc" line="116" column="15" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="116" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::JsonInvalidParam&lt; Model &gt;</label>
+        <link refid="structiceberg_1_1rest_1_1JsonInvalidParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expected_error_message</edgelabel>
+          <edgelabel>invalid_json_str</edgelabel>
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/rest_json_internal_test.cc" line="113" column="1" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="113" bodyend="117"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1JsonInvalidParam_1a2b02f33e3944e66ad71f9285ffa6202c" prot="public" virt="non-virtual"><scope>iceberg::rest::JsonInvalidParam</scope><name>expected_error_message</name></member>
+      <member refid="structiceberg_1_1rest_1_1JsonInvalidParam_1a104c1cfc19ff17b516552e339a88f42b" prot="public" virt="non-virtual"><scope>iceberg::rest::JsonInvalidParam</scope><name>invalid_json_str</name></member>
+      <member refid="structiceberg_1_1rest_1_1JsonInvalidParam_1acf3efcd818b9726a358f32f3d2fc3fda" prot="public" virt="non-virtual"><scope>iceberg::rest::JsonInvalidParam</scope><name>test_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,275 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ArrowArrayArrayLike_1_1Impl" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ArrowArrayArrayLike::Impl</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a9d6164e3d2c09a238c66cd9e83d6ba58" prot="private" static="no" mutable="no">
+        <type>ArrowArrayView</type>
+        <definition>ArrowArrayView iceberg::ArrowArrayArrayLike::Impl::array_view_</definition>
+        <argsstring></argsstring>
+        <name>array_view_</name>
+        <qualifiedname>iceberg::ArrowArrayArrayLike::Impl::array_view_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.cc" line="258" column="18" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="258" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a1ce4c30f094283332b3a8e53d8db61ca" prot="private" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1internal_1_1ArrowArrayViewGuard" kindref="compound">internal::ArrowArrayViewGuard</ref></type>
+        <definition>internal::ArrowArrayViewGuard iceberg::ArrowArrayArrayLike::Impl::array_view_guard_</definition>
+        <argsstring></argsstring>
+        <name>array_view_guard_</name>
+        <qualifiedname>iceberg::ArrowArrayArrayLike::Impl::array_view_guard_</qualifiedname>
+        <initializer>{&amp;array_view_}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.cc" line="259" column="33" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="259" bodyend="259"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a0a38f292ce722d06d83295a5fc84f6aa" prot="private" static="no" mutable="no">
+        <type>const <ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref> &amp;</type>
+        <definition>const ArrowSchema&amp; iceberg::ArrowArrayArrayLike::Impl::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::ArrowArrayArrayLike::Impl::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.cc" line="261" column="21" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="261" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a209fec8a991ac74054bd27232031721d" prot="private" static="no" mutable="no">
+        <type>std::reference_wrapper&lt; const <ref refid="structArrowArray" kindref="compound">ArrowArray</ref> &gt;</type>
+        <definition>std::reference_wrapper&lt;const ArrowArray&gt; iceberg::ArrowArrayArrayLike::Impl::array_</definition>
+        <argsstring></argsstring>
+        <name>array_</name>
+        <qualifiedname>iceberg::ArrowArrayArrayLike::Impl::array_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.cc" line="262" column="26" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="262" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a8b19886520136d0e8c5f57feae6b3830" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::ArrowArrayArrayLike::Impl::row_index_</definition>
+        <argsstring></argsstring>
+        <name>row_index_</name>
+        <qualifiedname>iceberg::ArrowArrayArrayLike::Impl::row_index_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.cc" line="263" column="11" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="263" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a766a32fee9b6bc78b3c02ddfcf4a6c06" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::ArrowArrayArrayLike::Impl::offset_</definition>
+        <argsstring></argsstring>
+        <name>offset_</name>
+        <qualifiedname>iceberg::ArrowArrayArrayLike::Impl::offset_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.cc" line="265" column="11" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="265" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a6faffa3fd15cdf8c87fa06032bb730d8" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::ArrowArrayArrayLike::Impl::length_</definition>
+        <argsstring></argsstring>
+        <name>length_</name>
+        <qualifiedname>iceberg::ArrowArrayArrayLike::Impl::length_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.cc" line="266" column="11" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="266" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a09e16502ace174c73810b905ad72a86d" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ArrowArrayArrayLike::Impl::Impl</definition>
+        <argsstring>(const ArrowSchema &amp;schema, const ArrowArray &amp;array, int64_t row_index)</argsstring>
+        <name>Impl</name>
+        <qualifiedname>iceberg::ArrowArrayArrayLike::Impl::Impl</qualifiedname>
+        <param>
+          <type>const <ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structArrowArray" kindref="compound">ArrowArray</ref> &amp;</type>
+          <declname>array</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>row_index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.cc" line="201" column="3" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="201" bodyend="202"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1aa688d69f46548dc06edbcc4d06c7a6e5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ArrowArrayArrayLike::Impl::~Impl</definition>
+        <argsstring>()=default</argsstring>
+        <name>~Impl</name>
+        <qualifiedname>iceberg::ArrowArrayArrayLike::Impl::~Impl</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.cc" line="204" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a75af02325f2582a41f0a7b6db73f9da1" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; <ref refid="struct__like_8h_1a3b5162f202989971e28bc310237964db" kindref="member">Scalar</ref> &gt;</type>
+        <definition>Result&lt; Scalar &gt; iceberg::ArrowArrayArrayLike::Impl::GetElement</definition>
+        <argsstring>(size_t pos) const</argsstring>
+        <name>GetElement</name>
+        <qualifiedname>iceberg::ArrowArrayArrayLike::Impl::GetElement</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>pos</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.cc" line="206" column="10" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="206" bodyend="218"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a3453a31ef98a19738b30296f6ef78b67" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>size_t</type>
+        <definition>size_t iceberg::ArrowArrayArrayLike::Impl::size</definition>
+        <argsstring>() const</argsstring>
+        <name>size</name>
+        <qualifiedname>iceberg::ArrowArrayArrayLike::Impl::size</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.cc" line="220" column="10" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="220" bodyend="220"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1ae71f42720900a16a2031c9472cb8ddf8" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ArrowArrayArrayLike::Impl::Reset</definition>
+        <argsstring>(const ArrowArray &amp;array, int64_t row_index)</argsstring>
+        <name>Reset</name>
+        <qualifiedname>iceberg::ArrowArrayArrayLike::Impl::Reset</qualifiedname>
+        <param>
+          <type>const <ref refid="structArrowArray" kindref="compound">ArrowArray</ref> &amp;</type>
+          <declname>array</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>row_index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.cc" line="222" column="10" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="222" bodyend="230"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1ad9582502dff64c94de0d53d59002ad13" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ArrowArrayArrayLike::Impl::Reset</definition>
+        <argsstring>(int64_t row_index)</argsstring>
+        <name>Reset</name>
+        <qualifiedname>iceberg::ArrowArrayArrayLike::Impl::Reset</qualifiedname>
+        <param>
+          <type>int64_t</type>
+          <declname>row_index</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.cc" line="232" column="10" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="232" bodyend="235"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a39588ed7efebd8bfe96e257ed8263fa3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ArrowArrayArrayLike::Impl::Init</definition>
+        <argsstring>()</argsstring>
+        <name>Init</name>
+        <qualifiedname>iceberg::ArrowArrayArrayLike::Impl::Init</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.cc" line="237" column="10" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="237" bodyend="244"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a721929d9014e644813a470c9e1a47a9e" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ArrowArrayArrayLike::Impl::UpdateOffsets</definition>
+        <argsstring>()</argsstring>
+        <name>UpdateOffsets</name>
+        <qualifiedname>iceberg::ArrowArrayArrayLike::Impl::UpdateOffsets</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/row/arrow_array_wrapper.cc" line="247" column="10" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="247" bodyend="256"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/row/arrow_array_wrapper.cc" line="199" column="1" bodyfile="iceberg/row/arrow_array_wrapper.cc" bodystart="199" bodyend="267"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a209fec8a991ac74054bd27232031721d" prot="private" virt="non-virtual"><scope>iceberg::ArrowArrayArrayLike::Impl</scope><name>array_</name></member>
+      <member refid="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a9d6164e3d2c09a238c66cd9e83d6ba58" prot="private" virt="non-virtual"><scope>iceberg::ArrowArrayArrayLike::Impl</scope><name>array_view_</name></member>
+      <member refid="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a1ce4c30f094283332b3a8e53d8db61ca" prot="private" virt="non-virtual"><scope>iceberg::ArrowArrayArrayLike::Impl</scope><name>array_view_guard_</name></member>
+      <member refid="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a75af02325f2582a41f0a7b6db73f9da1" prot="public" virt="non-virtual"><scope>iceberg::ArrowArrayArrayLike::Impl</scope><name>GetElement</name></member>
+      <member refid="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a09e16502ace174c73810b905ad72a86d" prot="public" virt="non-virtual"><scope>iceberg::ArrowArrayArrayLike::Impl</scope><name>Impl</name></member>
+      <member refid="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a39588ed7efebd8bfe96e257ed8263fa3" prot="public" virt="non-virtual"><scope>iceberg::ArrowArrayArrayLike::Impl</scope><name>Init</name></member>
+      <member refid="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a6faffa3fd15cdf8c87fa06032bb730d8" prot="private" virt="non-virtual"><scope>iceberg::ArrowArrayArrayLike::Impl</scope><name>length_</name></member>
+      <member refid="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a766a32fee9b6bc78b3c02ddfcf4a6c06" prot="private" virt="non-virtual"><scope>iceberg::ArrowArrayArrayLike::Impl</scope><name>offset_</name></member>
+      <member refid="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1ae71f42720900a16a2031c9472cb8ddf8" prot="public" virt="non-virtual"><scope>iceberg::ArrowArrayArrayLike::Impl</scope><name>Reset</name></member>
+      <member refid="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1ad9582502dff64c94de0d53d59002ad13" prot="public" virt="non-virtual"><scope>iceberg::ArrowArrayArrayLike::Impl</scope><name>Reset</name></member>
+      <member refid="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a8b19886520136d0e8c5f57feae6b3830" prot="private" virt="non-virtual"><scope>iceberg::ArrowArrayArrayLike::Impl</scope><name>row_index_</name></member>
+      <member refid="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a0a38f292ce722d06d83295a5fc84f6aa" prot="private" virt="non-virtual"><scope>iceberg::ArrowArrayArrayLike::Impl</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a3453a31ef98a19738b30296f6ef78b67" prot="public" virt="non-virtual"><scope>iceberg::ArrowArrayArrayLike::Impl</scope><name>size</name></member>
+      <member refid="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1a721929d9014e644813a470c9e1a47a9e" prot="private" virt="non-virtual"><scope>iceberg::ArrowArrayArrayLike::Impl</scope><name>UpdateOffsets</name></member>
+      <member refid="classiceberg_1_1ArrowArrayArrayLike_1_1Impl_1aa688d69f46548dc06edbcc4d06c7a6e5" prot="public" virt="non-virtual"><scope>iceberg::ArrowArrayArrayLike::Impl</scope><name>~Impl</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

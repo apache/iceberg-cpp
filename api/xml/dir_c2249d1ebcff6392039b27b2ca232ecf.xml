@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_c2249d1ebcff6392039b27b2ca232ecf" kind="dir">
+    <compoundname>iceberg/manifest</compoundname>
+    <innerfile refid="manifest__adapter_8cc">manifest_adapter.cc</innerfile>
+    <innerfile refid="manifest__adapter__internal_8h">manifest_adapter_internal.h</innerfile>
+    <innerfile refid="manifest__entry_8cc">manifest_entry.cc</innerfile>
+    <innerfile refid="manifest__entry_8h">manifest_entry.h</innerfile>
+    <innerfile refid="manifest__group_8cc">manifest_group.cc</innerfile>
+    <innerfile refid="manifest__group_8h">manifest_group.h</innerfile>
+    <innerfile refid="manifest__list_8cc">manifest_list.cc</innerfile>
+    <innerfile refid="manifest__list_8h">manifest_list.h</innerfile>
+    <innerfile refid="manifest__reader_8cc">manifest_reader.cc</innerfile>
+    <innerfile refid="manifest__reader_8h">manifest_reader.h</innerfile>
+    <innerfile refid="manifest__reader__internal_8h">manifest_reader_internal.h</innerfile>
+    <innerfile refid="manifest__writer_8cc">manifest_writer.cc</innerfile>
+    <innerfile refid="manifest__writer_8h">manifest_writer.h</innerfile>
+    <innerfile refid="rolling__manifest__writer_8cc">rolling_manifest_writer.cc</innerfile>
+    <innerfile refid="rolling__manifest__writer_8h">rolling_manifest_writer.h</innerfile>
+    <innerfile refid="v1__metadata_8cc">v1_metadata.cc</innerfile>
+    <innerfile refid="v1__metadata__internal_8h">v1_metadata_internal.h</innerfile>
+    <innerfile refid="v2__metadata_8cc">v2_metadata.cc</innerfile>
+    <innerfile refid="v2__metadata__internal_8h">v2_metadata_internal.h</innerfile>
+    <innerfile refid="v3__metadata_8cc">v3_metadata.cc</innerfile>
+    <innerfile refid="v3__metadata__internal_8h">v3_metadata_internal.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/manifest/"/>
+  </compounddef>
+</doxygen>

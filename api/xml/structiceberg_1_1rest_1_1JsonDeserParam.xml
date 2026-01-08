@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1JsonDeserParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::JsonDeserParam</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename Model</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1JsonDeserParam_1afa3777128a02cd364842a1bbe5b77e8e" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::JsonDeserParam&lt; Model &gt;::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>iceberg::rest::JsonDeserParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_internal_test.cc" line="143" column="15" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="143" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1JsonDeserParam_1a68621a3a617d9422f91bc96655e0c1c5" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::JsonDeserParam&lt; Model &gt;::json_str</definition>
+        <argsstring></argsstring>
+        <name>json_str</name>
+        <qualifiedname>iceberg::rest::JsonDeserParam::json_str</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_internal_test.cc" line="144" column="15" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="144" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1JsonDeserParam_1a3a6a877c179ead6096ff01a3df0c61bd" prot="public" static="no" mutable="no">
+        <type>Model</type>
+        <definition>Model iceberg::rest::JsonDeserParam&lt; Model &gt;::expected_model</definition>
+        <argsstring></argsstring>
+        <name>expected_model</name>
+        <qualifiedname>iceberg::rest::JsonDeserParam::expected_model</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_internal_test.cc" line="145" column="9" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="145" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::JsonDeserParam&lt; Model &gt;</label>
+        <link refid="structiceberg_1_1rest_1_1JsonDeserParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>json_str</edgelabel>
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/rest_json_internal_test.cc" line="142" column="1" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="142" bodyend="146"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1JsonDeserParam_1a3a6a877c179ead6096ff01a3df0c61bd" prot="public" virt="non-virtual"><scope>iceberg::rest::JsonDeserParam</scope><name>expected_model</name></member>
+      <member refid="structiceberg_1_1rest_1_1JsonDeserParam_1a68621a3a617d9422f91bc96655e0c1c5" prot="public" virt="non-virtual"><scope>iceberg::rest::JsonDeserParam</scope><name>json_str</name></member>
+      <member refid="structiceberg_1_1rest_1_1JsonDeserParam_1afa3777128a02cd364842a1bbe5b77e8e" prot="public" virt="non-virtual"><scope>iceberg::rest::JsonDeserParam</scope><name>test_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

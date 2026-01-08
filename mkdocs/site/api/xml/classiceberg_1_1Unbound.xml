@@ -1,0 +1,162 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Unbound" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::Unbound</compoundname>
+    <derivedcompoundref refid="classiceberg_1_1UnboundTerm" prot="public" virt="non-virtual">iceberg::UnboundTerm&lt; BoundReference &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1UnboundTerm" prot="public" virt="non-virtual">iceberg::UnboundTerm&lt; class BoundTransform &gt;</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1UnboundTerm" prot="public" virt="non-virtual">iceberg::UnboundTerm&lt; B &gt;</derivedcompoundref>
+    <includes refid="expression_8h" local="no">expression.h</includes>
+    <templateparamlist>
+      <param>
+        <type>typename B</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Unbound_1a3af63f1670bd36266714c7cf3296fc83" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; std::shared_ptr&lt; B &gt; &gt;</type>
+        <definition>virtual Result&lt; std::shared_ptr&lt; B &gt; &gt; iceberg::Unbound&lt; B &gt;::Bind</definition>
+        <argsstring>(const Schema &amp;schema, bool case_sensitive) const =0</argsstring>
+        <name>Bind</name>
+        <qualifiedname>iceberg::Unbound::Bind</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1UnboundAggregateImpl_1a4855375d718179c731529527844a88af">Bind</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1UnboundPredicateImpl_1a234cf2ed28904188e1976ad3813a8553">Bind</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1NamedReference_1a3f3f71369896b2014bfd23dc027d290c">Bind</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1UnboundTransform_1aa6559c7e9a4b4c46cf58730d467327b2">Bind</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1UnboundPredicate_1a59f8bba53fe0247d28327d23189f7dd1">Bind</reimplementedby>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+        </param>
+        <briefdescription>
+<para>Bind this expression to a concrete schema. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The schema to bind against </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>case_sensitive</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Whether field name matching should be case sensitive </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A bound expression or an error if binding fails </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="346" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Unbound_1a032a320b067d50a56cfe7e5e6ed986e9" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; B &gt; &gt;</type>
+        <definition>template Result&lt; std::shared_ptr&lt; BoundTransform &gt; &gt; iceberg::Unbound&lt; B &gt;::Bind</definition>
+        <argsstring>(const Schema &amp;schema) const</argsstring>
+        <name>Bind</name>
+        <qualifiedname>iceberg::Unbound::Bind</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+<para>Overloaded Bind method that uses case-sensitive matching by default. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="350" column="10" bodyfile="iceberg/expression/term.cc" bodystart="40" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Unbound_1aba4992824a9033d7fa4e1c75bb2ed854" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::shared_ptr&lt; class <ref refid="classiceberg_1_1NamedReference" kindref="compound">NamedReference</ref> &gt;</type>
+        <definition>virtual std::shared_ptr&lt; class NamedReference &gt; iceberg::Unbound&lt; B &gt;::reference</definition>
+        <argsstring>()=0</argsstring>
+        <name>reference</name>
+        <qualifiedname>iceberg::Unbound::reference</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1UnboundAggregateImpl_1a15f042b6cc58c144ad2042b922089a40">reference</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1UnboundPredicateImpl_1adf9d6125fc9e654129c760e9039c6f7a">reference</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1NamedReference_1aedb7bee2e1d2e6fe4c03cc2910e7ffab">reference</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1UnboundTransform_1adf473df852c9482a59530fd14c26a136">reference</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1UnboundPredicate_1afc28a47f14049b5e3a9cbe27f557633e">reference</reimplementedby>
+        <briefdescription>
+<para>Returns the underlying named reference for this unbound term. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/expression.h" line="353" column="27"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Interface for unbound expressions that need schema binding. </para>
+    </briefdescription>
+    <detaileddescription>
+<para><ref refid="classiceberg_1_1Unbound" kindref="compound">Unbound</ref> expressions contain string-based references that must be resolved against a concrete schema to produce bound expressions that can be evaluated.</para>
+<para><parameterlist kind="templateparam"><parameteritem>
+<parameternamelist>
+<parametername>B</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound type this term produces when binding is successful </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::UnboundTerm&lt; BoundReference &gt;</label>
+        <link refid="classiceberg_1_1UnboundTerm"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::UnboundTerm&lt; class BoundTransform &gt;</label>
+        <link refid="classiceberg_1_1UnboundTerm"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::NamedReference</label>
+        <link refid="classiceberg_1_1NamedReference"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::Unbound&lt; B &gt;</label>
+        <link refid="classiceberg_1_1Unbound"/>
+      </node>
+      <node id="6">
+        <label>iceberg::UnboundTerm&lt; B &gt;</label>
+        <link refid="classiceberg_1_1UnboundTerm"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::UnboundTransform</label>
+        <link refid="classiceberg_1_1UnboundTransform"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <location file="iceberg/expression/expression.h" line="339" column="1" bodyfile="iceberg/expression/expression.h" bodystart="339" bodyend="354"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Unbound_1a3af63f1670bd36266714c7cf3296fc83" prot="public" virt="pure-virtual"><scope>iceberg::Unbound</scope><name>Bind</name></member>
+      <member refid="classiceberg_1_1Unbound_1a032a320b067d50a56cfe7e5e6ed986e9" prot="public" virt="non-virtual"><scope>iceberg::Unbound</scope><name>Bind</name></member>
+      <member refid="classiceberg_1_1Unbound_1aba4992824a9033d7fa4e1c75bb2ed854" prot="public" virt="pure-virtual"><scope>iceberg::Unbound</scope><name>reference</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

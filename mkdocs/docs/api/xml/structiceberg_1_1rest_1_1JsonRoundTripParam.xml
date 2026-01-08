@@ -1,0 +1,83 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1JsonRoundTripParam" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::JsonRoundTripParam</compoundname>
+    <templateparamlist>
+      <param>
+        <type>typename Model</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1JsonRoundTripParam_1a53c07930c49d9b104fb3625052d25293" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::JsonRoundTripParam&lt; Model &gt;::test_name</definition>
+        <argsstring></argsstring>
+        <name>test_name</name>
+        <qualifiedname>iceberg::rest::JsonRoundTripParam::test_name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_internal_test.cc" line="79" column="15" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="79" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1JsonRoundTripParam_1a1d7eea2609e89e6d52ac918ecdd8120f" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::JsonRoundTripParam&lt; Model &gt;::expected_json_str</definition>
+        <argsstring></argsstring>
+        <name>expected_json_str</name>
+        <qualifiedname>iceberg::rest::JsonRoundTripParam::expected_json_str</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_internal_test.cc" line="80" column="15" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="80" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1JsonRoundTripParam_1ac2f96fef144b5a6ffb2c4ee90f1ba7ba" prot="public" static="no" mutable="no">
+        <type>Model</type>
+        <definition>Model iceberg::rest::JsonRoundTripParam&lt; Model &gt;::model</definition>
+        <argsstring></argsstring>
+        <name>model</name>
+        <qualifiedname>iceberg::rest::JsonRoundTripParam::model</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_internal_test.cc" line="81" column="9" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="81" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::JsonRoundTripParam&lt; Model &gt;</label>
+        <link refid="structiceberg_1_1rest_1_1JsonRoundTripParam"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>expected_json_str</edgelabel>
+          <edgelabel>test_name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/rest_json_internal_test.cc" line="78" column="1" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="78" bodyend="82"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1JsonRoundTripParam_1a1d7eea2609e89e6d52ac918ecdd8120f" prot="public" virt="non-virtual"><scope>iceberg::rest::JsonRoundTripParam</scope><name>expected_json_str</name></member>
+      <member refid="structiceberg_1_1rest_1_1JsonRoundTripParam_1ac2f96fef144b5a6ffb2c4ee90f1ba7ba" prot="public" virt="non-virtual"><scope>iceberg::rest::JsonRoundTripParam</scope><name>model</name></member>
+      <member refid="structiceberg_1_1rest_1_1JsonRoundTripParam_1a53c07930c49d9b104fb3625052d25293" prot="public" virt="non-virtual"><scope>iceberg::rest::JsonRoundTripParam</scope><name>test_name</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

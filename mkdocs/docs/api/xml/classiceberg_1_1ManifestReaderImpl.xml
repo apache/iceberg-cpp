@@ -1,0 +1,706 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ManifestReaderImpl" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ManifestReaderImpl</compoundname>
+    <basecompoundref refid="classiceberg_1_1ManifestReader" prot="public" virt="non-virtual">iceberg::ManifestReader</basecompoundref>
+    <includes refid="manifest__reader__internal_8h" local="no">manifest_reader_internal.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ManifestReaderImpl_1a38a10d725cf8b9832058e108b01d6a48" prot="private" static="no" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::ManifestReaderImpl::manifest_path_</definition>
+        <argsstring></argsstring>
+        <name>manifest_path_</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::manifest_path_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="102" column="21" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="102" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestReaderImpl_1a661d864aa302b8b538cbcc8f89c80763" prot="private" static="no" mutable="no">
+        <type>const std::optional&lt; int64_t &gt;</type>
+        <definition>const std::optional&lt;int64_t&gt; iceberg::ManifestReaderImpl::manifest_length_</definition>
+        <argsstring></argsstring>
+        <name>manifest_length_</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::manifest_length_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="103" column="23" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="103" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestReaderImpl_1a9068a7d5a12ceabd94f4fc6d3e30efc0" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;FileIO&gt; iceberg::ManifestReaderImpl::file_io_</definition>
+        <argsstring></argsstring>
+        <name>file_io_</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::file_io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="104" column="25" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="104" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestReaderImpl_1a66b5122e0bf9dad70aa82fb1a5e7b64e" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;Schema&gt; iceberg::ManifestReaderImpl::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="105" column="25" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="105" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestReaderImpl_1aa362fc12427203fd9555daec9bb08ecd" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>const std::shared_ptr&lt;PartitionSpec&gt; iceberg::ManifestReaderImpl::spec_</definition>
+        <argsstring></argsstring>
+        <name>spec_</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::spec_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="106" column="25" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="106" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestReaderImpl_1a8bf661ba9c0fea2f5284812df9c4ea89" prot="private" static="no" mutable="no">
+        <type>const std::unique_ptr&lt; <ref refid="classiceberg_1_1InheritableMetadata" kindref="compound">InheritableMetadata</ref> &gt;</type>
+        <definition>const std::unique_ptr&lt;InheritableMetadata&gt; iceberg::ManifestReaderImpl::inheritable_metadata_</definition>
+        <argsstring></argsstring>
+        <name>inheritable_metadata_</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::inheritable_metadata_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="107" column="25" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestReaderImpl_1a8bda265138539771ac11b31f6963aed1" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::ManifestReaderImpl::first_row_id_</definition>
+        <argsstring></argsstring>
+        <name>first_row_id_</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::first_row_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="108" column="17" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="108" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestReaderImpl_1a3eb8a261326d6519fb4c2f0da7b1de28" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::ManifestReaderImpl::columns_</definition>
+        <argsstring></argsstring>
+        <name>columns_</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::columns_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="111" column="15" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="111" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestReaderImpl_1aa69467f65142418ef318e934b7d57f96" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Expression&gt; iceberg::ManifestReaderImpl::part_filter_</definition>
+        <argsstring></argsstring>
+        <name>part_filter_</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::part_filter_</qualifiedname>
+        <initializer>{<ref refid="classiceberg_1_1True_1a613f11f21789dbb5bccfa79d7e55abea" kindref="member">True::Instance</ref>()}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="112" column="19" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="112" bodyend="112"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestReaderImpl_1ab13c5b9edfbff429ed82dc4f75ce80e8" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Expression&gt; iceberg::ManifestReaderImpl::row_filter_</definition>
+        <argsstring></argsstring>
+        <name>row_filter_</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::row_filter_</qualifiedname>
+        <initializer>{<ref refid="classiceberg_1_1True_1a613f11f21789dbb5bccfa79d7e55abea" kindref="member">True::Instance</ref>()}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="113" column="19" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="113" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestReaderImpl_1afdd0d366e581f65a4666277f51c94448" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSet" kindref="compound">PartitionSet</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionSet&gt; iceberg::ManifestReaderImpl::partition_set_</definition>
+        <argsstring></argsstring>
+        <name>partition_set_</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::partition_set_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="114" column="19" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="114" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestReaderImpl_1afb39f1d104321e6f4ef45f0e956210ad" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::ManifestReaderImpl::case_sensitive_</definition>
+        <argsstring></argsstring>
+        <name>case_sensitive_</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::case_sensitive_</qualifiedname>
+        <initializer>{true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="115" column="8" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="115" bodyend="115"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestReaderImpl_1affe60bb9716b41aa8c5480d9d57afa79" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::ManifestReaderImpl::drop_stats_</definition>
+        <argsstring></argsstring>
+        <name>drop_stats_</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::drop_stats_</qualifiedname>
+        <initializer>{false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="116" column="8" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="116" bodyend="116"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestReaderImpl_1ae195bdcde606002f7ba328f1a15964b3" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;Reader&gt; iceberg::ManifestReaderImpl::file_reader_</definition>
+        <argsstring></argsstring>
+        <name>file_reader_</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::file_reader_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="119" column="19" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="119" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestReaderImpl_1a4151d7bddff19c88b7ddbb2f61cba8f8" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::ManifestReaderImpl::file_schema_</definition>
+        <argsstring></argsstring>
+        <name>file_schema_</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::file_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="120" column="19" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="120" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestReaderImpl_1ac68e9ff613b7a011ae3cfc4d3c4548d6" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1Evaluator" kindref="compound">Evaluator</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;Evaluator&gt; iceberg::ManifestReaderImpl::evaluator_</definition>
+        <argsstring></argsstring>
+        <name>evaluator_</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::evaluator_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="121" column="19" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="121" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestReaderImpl_1a020ed9eb89bb850dad23b60b8438adc6" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1InclusiveMetricsEvaluator" kindref="compound">InclusiveMetricsEvaluator</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;InclusiveMetricsEvaluator&gt; iceberg::ManifestReaderImpl::metrics_evaluator_</definition>
+        <argsstring></argsstring>
+        <name>metrics_evaluator_</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::metrics_evaluator_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="122" column="19" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="122" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestReaderImpl_1a0e86d46558f4300be3b1b499b5b7a921" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestReaderImpl::ManifestReaderImpl</definition>
+        <argsstring>(std::string manifest_path, std::optional&lt; int64_t &gt; manifest_length, std::shared_ptr&lt; FileIO &gt; file_io, std::shared_ptr&lt; Schema &gt; schema, std::shared_ptr&lt; PartitionSpec &gt; spec, std::unique_ptr&lt; InheritableMetadata &gt; inheritable_metadata, std::optional&lt; int64_t &gt; first_row_id)</argsstring>
+        <name>ManifestReaderImpl</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::ManifestReaderImpl</qualifiedname>
+        <param>
+          <type>std::string</type>
+          <declname>manifest_path</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>manifest_length</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>file_io</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1InheritableMetadata" kindref="compound">InheritableMetadata</ref> &gt;</type>
+          <declname>inheritable_metadata</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>first_row_id</declname>
+        </param>
+        <briefdescription>
+<para>Construct a <ref refid="classiceberg_1_1ManifestReaderImpl" kindref="compound">ManifestReaderImpl</ref> for lazy initialization. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>manifest_path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Path to the manifest file. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>manifest_length</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Length of the manifest file (optional). </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>file_io</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>File IO implementation. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> schema. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>spec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Partition spec. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>inheritable_metadata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Metadata inherited from manifest. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>first_row_id</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>First row ID for V3 manifests. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="note"><para><ref refid="classiceberg_1_1ManifestReader_1a338f94acf754f75c6d264a11a8bcedc7" kindref="member">ManifestReader::Make()</ref> functions should guarantee non-null parameters. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="57" column="3" bodyfile="iceberg/manifest/manifest_reader.cc" bodystart="723" bodyend="735"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestReaderImpl_1aca92b650d42ccd16ebcd5be85f3ed629" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; ManifestEntry &gt; &gt; iceberg::ManifestReaderImpl::Entries</definition>
+        <argsstring>() override</argsstring>
+        <name>Entries</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::Entries</qualifiedname>
+        <reimplements refid="classiceberg_1_1ManifestReader_1a068079494a5e9143005e42f60cb39bcc">Entries</reimplements>
+        <briefdescription>
+<para>Read all manifest entries in the manifest file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>TODO(gangwu): provide a lazy-evaluated iterator interface for better performance. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="63" column="10" bodyfile="iceberg/manifest/manifest_reader.cc" bodystart="850" bodyend="852"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestReaderImpl_1aa3a828cfc598e77462f6b313873eaa62" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; ManifestEntry &gt; &gt; iceberg::ManifestReaderImpl::LiveEntries</definition>
+        <argsstring>() override</argsstring>
+        <name>LiveEntries</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::LiveEntries</qualifiedname>
+        <reimplements refid="classiceberg_1_1ManifestReader_1ad33ef890dc38eb5640903cd4ec7ed961">LiveEntries</reimplements>
+        <briefdescription>
+<para>Read only live (non-deleted) manifest entries. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="65" column="10" bodyfile="iceberg/manifest/manifest_reader.cc" bodystart="854" bodyend="856"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestReaderImpl_1a235aa959a55e2241712638bd78349b3f" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classiceberg_1_1ManifestReader" kindref="compound">ManifestReader</ref> &amp;</type>
+        <definition>ManifestReader &amp; iceberg::ManifestReaderImpl::Select</definition>
+        <argsstring>(const std::vector&lt; std::string &gt; &amp;columns) override</argsstring>
+        <name>Select</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::Select</qualifiedname>
+        <reimplements refid="classiceberg_1_1ManifestReader_1a77c8f0b9f3498979e486794ab03e93ca">Select</reimplements>
+        <param>
+          <type>const std::vector&lt; std::string &gt; &amp;</type>
+          <declname>columns</declname>
+        </param>
+        <briefdescription>
+<para>Select specific columns of data file to read from the manifest entries. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>Column names should match the names in <computeroutput><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref></computeroutput> schema. Unmatched names will be ignored. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="67" column="18" bodyfile="iceberg/manifest/manifest_reader.cc" bodystart="737" bodyend="740"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestReaderImpl_1a4422ae02cea8097b66b8012fda2ae633" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classiceberg_1_1ManifestReader" kindref="compound">ManifestReader</ref> &amp;</type>
+        <definition>ManifestReader &amp; iceberg::ManifestReaderImpl::FilterPartitions</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; expr) override</argsstring>
+        <name>FilterPartitions</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::FilterPartitions</qualifiedname>
+        <reimplements refid="classiceberg_1_1ManifestReader_1a8f8ef9b4119bd5337f810ea35b101bf5">FilterPartitions</reimplements>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>expr</declname>
+        </param>
+        <briefdescription>
+<para>Filter manifest entries by partition filter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>Unlike the Java implementation, this method does not combine new expressions with existing ones. Each call replaces the previous partition filter. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="69" column="18" bodyfile="iceberg/manifest/manifest_reader.cc" bodystart="742" bodyend="745"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestReaderImpl_1ae03b719e248611e96487bbffaeeaddf1" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classiceberg_1_1ManifestReader" kindref="compound">ManifestReader</ref> &amp;</type>
+        <definition>ManifestReader &amp; iceberg::ManifestReaderImpl::FilterPartitions</definition>
+        <argsstring>(std::shared_ptr&lt; PartitionSet &gt; partition_set) override</argsstring>
+        <name>FilterPartitions</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::FilterPartitions</qualifiedname>
+        <reimplements refid="classiceberg_1_1ManifestReader_1aaae76b985329c0bbd2b614515567cafa">FilterPartitions</reimplements>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSet" kindref="compound">PartitionSet</ref> &gt;</type>
+          <declname>partition_set</declname>
+        </param>
+        <briefdescription>
+<para>Filter manifest entries to a specific set of partitions. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="71" column="18" bodyfile="iceberg/manifest/manifest_reader.cc" bodystart="747" bodyend="751"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestReaderImpl_1ab374b3b551b2ac50dddf72f2c706a564" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classiceberg_1_1ManifestReader" kindref="compound">ManifestReader</ref> &amp;</type>
+        <definition>ManifestReader &amp; iceberg::ManifestReaderImpl::FilterRows</definition>
+        <argsstring>(std::shared_ptr&lt; Expression &gt; expr) override</argsstring>
+        <name>FilterRows</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::FilterRows</qualifiedname>
+        <reimplements refid="classiceberg_1_1ManifestReader_1a55a0f0a0348dc51ddb1cb29a5e0e91d1">FilterRows</reimplements>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref> &gt;</type>
+          <declname>expr</declname>
+        </param>
+        <briefdescription>
+<para>Filter manifest entries by row-level filter. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>Unlike the Java implementation, this method does not combine new expressions with existing ones. Each call replaces the previous row filter. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="73" column="18" bodyfile="iceberg/manifest/manifest_reader.cc" bodystart="753" bodyend="756"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestReaderImpl_1a6b1320ae6cf34ac21154e0eafaf2fff5" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classiceberg_1_1ManifestReader" kindref="compound">ManifestReader</ref> &amp;</type>
+        <definition>ManifestReader &amp; iceberg::ManifestReaderImpl::CaseSensitive</definition>
+        <argsstring>(bool case_sensitive) override</argsstring>
+        <name>CaseSensitive</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::CaseSensitive</qualifiedname>
+        <reimplements refid="classiceberg_1_1ManifestReader_1aab85a50e27e7d0809d4c5040ec1240c2">CaseSensitive</reimplements>
+        <param>
+          <type>bool</type>
+          <declname>case_sensitive</declname>
+        </param>
+        <briefdescription>
+<para>Set case sensitivity for column name matching. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="75" column="18" bodyfile="iceberg/manifest/manifest_reader.cc" bodystart="758" bodyend="761"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestReaderImpl_1aecd3c5647dea86b3c41deafd2b84c891" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type><ref refid="classiceberg_1_1ManifestReader" kindref="compound">ManifestReader</ref> &amp;</type>
+        <definition>ManifestReader &amp; iceberg::ManifestReaderImpl::TryDropStats</definition>
+        <argsstring>() override</argsstring>
+        <name>TryDropStats</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::TryDropStats</qualifiedname>
+        <reimplements refid="classiceberg_1_1ManifestReader_1ab21d9e39fb471ce55d424d8f142d790c">TryDropStats</reimplements>
+        <briefdescription>
+<para>Try to drop stats from returned <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> objects. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="77" column="18" bodyfile="iceberg/manifest/manifest_reader.cc" bodystart="763" bodyend="766"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestReaderImpl_1a218e8ab1a74eca627baa691d056d7809" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; ManifestEntry &gt; &gt; iceberg::ManifestReaderImpl::ReadEntries</definition>
+        <argsstring>(bool only_live)</argsstring>
+        <name>ReadEntries</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::ReadEntries</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>only_live</declname>
+        </param>
+        <briefdescription>
+<para>Read entries with optional live-only filtering. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="81" column="10" bodyfile="iceberg/manifest/manifest_reader.cc" bodystart="858" bodyend="949"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestReaderImpl_1a25c0bc8b7b24c5339d53c3d355efa0fa" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ManifestReaderImpl::OpenReader</definition>
+        <argsstring>(std::shared_ptr&lt; Schema &gt; projection)</argsstring>
+        <name>OpenReader</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::OpenReader</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>projection</declname>
+        </param>
+        <briefdescription>
+<para>Lazily open the underlying Avro reader with appropriate schema projection. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+<para>FIXME: this is not supported yet.</para>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="84" column="10" bodyfile="iceberg/manifest/manifest_reader.cc" bodystart="812" bodyend="848"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestReaderImpl_1a4c0c4af1038245dd7a63e847f5646e91" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::ManifestReaderImpl::HasPartitionFilter</definition>
+        <argsstring>() const</argsstring>
+        <name>HasPartitionFilter</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::HasPartitionFilter</qualifiedname>
+        <briefdescription>
+<para>Check if there&apos;s a non-trivial partition filter. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="87" column="8" bodyfile="iceberg/manifest/manifest_reader.cc" bodystart="768" bodyend="771"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestReaderImpl_1a355efd0985c0596aeb204e02f54c9146" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::ManifestReaderImpl::HasRowFilter</definition>
+        <argsstring>() const</argsstring>
+        <name>HasRowFilter</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::HasRowFilter</qualifiedname>
+        <briefdescription>
+<para>Check if there&apos;s a non-trivial row filter. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="90" column="8" bodyfile="iceberg/manifest/manifest_reader.cc" bodystart="773" bodyend="776"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestReaderImpl_1aa226b662cd1a689245b9bb2a86d90dab" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Evaluator" kindref="compound">Evaluator</ref> * &gt;</type>
+        <definition>Result&lt; Evaluator * &gt; iceberg::ManifestReaderImpl::GetEvaluator</definition>
+        <argsstring>()</argsstring>
+        <name>GetEvaluator</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::GetEvaluator</qualifiedname>
+        <briefdescription>
+<para>Get or create the partition evaluator. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="93" column="10" bodyfile="iceberg/manifest/manifest_reader.cc" bodystart="778" bodyend="792"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestReaderImpl_1afef680e3c4e17b85c4e989a1fdf382ae" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1InclusiveMetricsEvaluator" kindref="compound">InclusiveMetricsEvaluator</ref> * &gt;</type>
+        <definition>Result&lt; InclusiveMetricsEvaluator * &gt; iceberg::ManifestReaderImpl::GetMetricsEvaluator</definition>
+        <argsstring>()</argsstring>
+        <name>GetMetricsEvaluator</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::GetMetricsEvaluator</qualifiedname>
+        <briefdescription>
+<para>Get or create the metrics evaluator. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="96" column="10" bodyfile="iceberg/manifest/manifest_reader.cc" bodystart="794" bodyend="801"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestReaderImpl_1a8580f6436cdddc2e903a440ab4ec30fd" prot="private" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestReaderImpl::InPartitionSet</definition>
+        <argsstring>(const DataFile &amp;file) const</argsstring>
+        <name>InPartitionSet</name>
+        <qualifiedname>iceberg::ManifestReaderImpl::InPartitionSet</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Check if a partition is in the partition set. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_reader_internal.h" line="99" column="10" bodyfile="iceberg/manifest/manifest_reader.cc" bodystart="803" bodyend="810"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Read manifest entries from a manifest file. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This implementation supports lazy reader creation and filtering based on partition expressions, row expressions, and partition sets. Following the Java implementation pattern. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::ManifestReader</label>
+        <link refid="classiceberg_1_1ManifestReader"/>
+      </node>
+      <node id="1">
+        <label>iceberg::ManifestReaderImpl</label>
+        <link refid="classiceberg_1_1ManifestReaderImpl"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::ManifestReader</label>
+        <link refid="classiceberg_1_1ManifestReader"/>
+      </node>
+      <node id="1">
+        <label>iceberg::ManifestReaderImpl</label>
+        <link refid="classiceberg_1_1ManifestReaderImpl"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/manifest/manifest_reader_internal.h" line="45" column="1" bodyfile="iceberg/manifest/manifest_reader_internal.h" bodystart="45" bodyend="123"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1afb39f1d104321e6f4ef45f0e956210ad" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>case_sensitive_</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1a6b1320ae6cf34ac21154e0eafaf2fff5" prot="public" virt="virtual"><scope>iceberg::ManifestReaderImpl</scope><name>CaseSensitive</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1a3eb8a261326d6519fb4c2f0da7b1de28" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>columns_</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1affe60bb9716b41aa8c5480d9d57afa79" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>drop_stats_</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1aca92b650d42ccd16ebcd5be85f3ed629" prot="public" virt="virtual"><scope>iceberg::ManifestReaderImpl</scope><name>Entries</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1ac68e9ff613b7a011ae3cfc4d3c4548d6" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>evaluator_</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1a9068a7d5a12ceabd94f4fc6d3e30efc0" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>file_io_</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1ae195bdcde606002f7ba328f1a15964b3" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>file_reader_</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1a4151d7bddff19c88b7ddbb2f61cba8f8" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>file_schema_</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1a4422ae02cea8097b66b8012fda2ae633" prot="public" virt="virtual"><scope>iceberg::ManifestReaderImpl</scope><name>FilterPartitions</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1ae03b719e248611e96487bbffaeeaddf1" prot="public" virt="virtual"><scope>iceberg::ManifestReaderImpl</scope><name>FilterPartitions</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1ab374b3b551b2ac50dddf72f2c706a564" prot="public" virt="virtual"><scope>iceberg::ManifestReaderImpl</scope><name>FilterRows</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1a8bda265138539771ac11b31f6963aed1" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>first_row_id_</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1aa226b662cd1a689245b9bb2a86d90dab" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>GetEvaluator</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1afef680e3c4e17b85c4e989a1fdf382ae" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>GetMetricsEvaluator</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1a4c0c4af1038245dd7a63e847f5646e91" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>HasPartitionFilter</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1a355efd0985c0596aeb204e02f54c9146" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>HasRowFilter</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1a8bf661ba9c0fea2f5284812df9c4ea89" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>inheritable_metadata_</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1a8580f6436cdddc2e903a440ab4ec30fd" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>InPartitionSet</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1aa3a828cfc598e77462f6b313873eaa62" prot="public" virt="virtual"><scope>iceberg::ManifestReaderImpl</scope><name>LiveEntries</name></member>
+      <member refid="classiceberg_1_1ManifestReader_1a338f94acf754f75c6d264a11a8bcedc7" prot="public" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1ManifestReader_1aa8e3b135aabad500b9327b0fb838f8c7" prot="public" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1a661d864aa302b8b538cbcc8f89c80763" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>manifest_length_</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1a38a10d725cf8b9832058e108b01d6a48" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>manifest_path_</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1a0e86d46558f4300be3b1b499b5b7a921" prot="public" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>ManifestReaderImpl</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1a020ed9eb89bb850dad23b60b8438adc6" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>metrics_evaluator_</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1a25c0bc8b7b24c5339d53c3d355efa0fa" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>OpenReader</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1aa69467f65142418ef318e934b7d57f96" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>part_filter_</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1afdd0d366e581f65a4666277f51c94448" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>partition_set_</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1a218e8ab1a74eca627baa691d056d7809" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>ReadEntries</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1ab13c5b9edfbff429ed82dc4f75ce80e8" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>row_filter_</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1a66b5122e0bf9dad70aa82fb1a5e7b64e" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1a235aa959a55e2241712638bd78349b3f" prot="public" virt="virtual"><scope>iceberg::ManifestReaderImpl</scope><name>Select</name></member>
+      <member refid="classiceberg_1_1ManifestReader_1ae3e8a011f3bf271ce0eda2027b082cef" prot="public" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>ShouldDropStats</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1aa362fc12427203fd9555daec9bb08ecd" prot="private" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>spec_</name></member>
+      <member refid="classiceberg_1_1ManifestReaderImpl_1aecd3c5647dea86b3c41deafd2b84c891" prot="public" virt="virtual"><scope>iceberg::ManifestReaderImpl</scope><name>TryDropStats</name></member>
+      <member refid="classiceberg_1_1ManifestReader_1aa92da63e827b6dcc391744a9f0f55d72" prot="public" virt="non-virtual"><scope>iceberg::ManifestReaderImpl</scope><name>WithStatsColumns</name></member>
+      <member refid="classiceberg_1_1ManifestReader_1a02a075b50bf3481e7c4faec9b774c02c" prot="public" virt="virtual"><scope>iceberg::ManifestReaderImpl</scope><name>~ManifestReader</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,608 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="predicate_8h" kind="file" language="C++">
+    <compoundname>predicate.h</compoundname>
+    <includes local="no">unordered_set</includes>
+    <includes refid="expression_8h" local="yes">iceberg/expression/expression.h</includes>
+    <includes refid="literal_8h" local="yes">iceberg/expression/literal.h</includes>
+    <includes refid="term_8h" local="yes">iceberg/expression/term.h</includes>
+    <includes refid="iceberg__export_8h" local="yes">iceberg/iceberg_export.h</includes>
+    <includedby refid="expression__visitor_8h" local="yes">iceberg/expression/expression_visitor.h</includedby>
+    <includedby refid="expressions_8h" local="yes">iceberg/expression/expressions.h</includedby>
+    <includedby refid="predicate_8cc" local="yes">iceberg/expression/predicate.cc</includedby>
+    <includedby refid="projections_8cc" local="yes">iceberg/expression/projections.cc</includedby>
+    <includedby refid="residual__evaluator_8cc" local="yes">iceberg/expression/residual_evaluator.cc</includedby>
+    <includedby refid="predicate__test_8cc" local="yes">iceberg/test/predicate_test.cc</includedby>
+    <includedby refid="projections__test_8cc" local="yes">iceberg/test/projections_test.cc</includedby>
+    <includedby refid="residual__evaluator__test_8cc" local="yes">iceberg/test/residual_evaluator_test.cc</includedby>
+    <includedby refid="transform__test_8cc" local="yes">iceberg/test/transform_test.cc</includedby>
+    <includedby refid="transform_8cc" local="yes">iceberg/transform.cc</includedby>
+    <includedby refid="projection__util__internal_8h" local="yes">iceberg/util/projection_util_internal.h</includedby>
+    <incdepgraph>
+      <node id="14">
+        <label>iceberg/exception.h</label>
+        <link refid="exception_8h"/>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg/expression/expression.h</label>
+        <link refid="expression_8h"/>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>iceberg/expression/literal.h</label>
+        <link refid="literal_8h_source"/>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/expression/predicate.h</label>
+        <link refid="predicate_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>iceberg/expression/term.h</label>
+        <link refid="term_8h"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="7">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="26">
+        <label>iceberg/schema_field.h</label>
+        <link refid="schema__field_8h"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>iceberg/type.h</label>
+        <link refid="type_8h"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="28" relation="include">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="32">
+        <label>iceberg/util/decimal.h</label>
+        <link refid="decimal_8h"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg/util/formattable.h</label>
+        <link refid="formattable_8h"/>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="35">
+        <label>iceberg/util/int128.h</label>
+        <link refid="int128_8h"/>
+      </node>
+      <node id="28">
+        <label>iceberg/util/lazy.h</label>
+        <link refid="lazy_8h"/>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h_source"/>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>iceberg/util/uuid.h</label>
+        <link refid="uuid_8h"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>array</label>
+      </node>
+      <node id="13">
+        <label>cassert</label>
+      </node>
+      <node id="17">
+        <label>compare</label>
+      </node>
+      <node id="29">
+        <label>concepts</label>
+      </node>
+      <node id="22">
+        <label>cstdint</label>
+      </node>
+      <node id="8">
+        <label>expected</label>
+      </node>
+      <node id="9">
+        <label>format</label>
+      </node>
+      <node id="30">
+        <label>functional</label>
+      </node>
+      <node id="33">
+        <label>iosfwd</label>
+      </node>
+      <node id="4">
+        <label>memory</label>
+      </node>
+      <node id="31">
+        <label>mutex</label>
+      </node>
+      <node id="23">
+        <label>optional</label>
+      </node>
+      <node id="24">
+        <label>span</label>
+      </node>
+      <node id="15">
+        <label>stdexcept</label>
+      </node>
+      <node id="5">
+        <label>string</label>
+      </node>
+      <node id="27">
+        <label>string_view</label>
+      </node>
+      <node id="34">
+        <label>type_traits</label>
+      </node>
+      <node id="25">
+        <label>unordered_map</label>
+      </node>
+      <node id="2">
+        <label>unordered_set</label>
+      </node>
+      <node id="18">
+        <label>variant</label>
+      </node>
+      <node id="19">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="3">
+        <label>iceberg/expression/binder.h</label>
+        <link refid="binder_8h"/>
+      </node>
+      <node id="2">
+        <label>iceberg/expression/expression_visitor.h</label>
+        <link refid="expression__visitor_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg/expression/expressions.h</label>
+        <link refid="expressions_8h"/>
+      </node>
+      <node id="1">
+        <label>iceberg/expression/predicate.h</label>
+        <link refid="predicate_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg/expression/rewrite_not.h</label>
+        <link refid="rewrite__not_8h"/>
+      </node>
+      <node id="6">
+        <label>iceberg/util/projection_util_internal.h</label>
+        <link refid="projection__util__internal_8h_source"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classiceberg_1_1Predicate" prot="public">iceberg::Predicate</innerclass>
+    <innerclass refid="classiceberg_1_1UnboundPredicate" prot="public">iceberg::UnboundPredicate</innerclass>
+    <innerclass refid="classiceberg_1_1UnboundPredicateImpl" prot="public">iceberg::UnboundPredicateImpl</innerclass>
+    <innerclass refid="classiceberg_1_1BoundPredicate" prot="public">iceberg::BoundPredicate</innerclass>
+    <innerclass refid="classiceberg_1_1BoundUnaryPredicate" prot="public">iceberg::BoundUnaryPredicate</innerclass>
+    <innerclass refid="classiceberg_1_1BoundLiteralPredicate" prot="public">iceberg::BoundLiteralPredicate</innerclass>
+    <innerclass refid="classiceberg_1_1BoundSetPredicate" prot="public">iceberg::BoundSetPredicate</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Predicate interface for boolean expressions that test terms. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;unordered_set&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="expression_8h" kindref="compound">iceberg/expression/expression.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/expression/literal.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="term_8h" kindref="compound">iceberg/expression/term.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/iceberg_export.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg<sp/>{</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;TermType<sp/>T&gt;</highlight></codeline>
+<codeline lineno="38" refid="classiceberg_1_1Predicate" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1Predicate" kindref="compound">Predicate</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref><sp/>{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Predicate" kindref="compound">~Predicate</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"></highlight></codeline>
+<codeline lineno="42" refid="classiceberg_1_1Predicate_1a149508fc8ddf4cd5d4da0ae9f4c1c80f" refkind="member"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref><sp/><ref refid="classiceberg_1_1Predicate_1a149508fc8ddf4cd5d4da0ae9f4c1c80f" kindref="member">op</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>operation_;<sp/>}</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"></highlight></codeline>
+<codeline lineno="45" refid="classiceberg_1_1Predicate_1acee9f864ef011a76e45d98f0d9bf42af" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::shared_ptr&lt;T&gt;&amp;<sp/><ref refid="classiceberg_1_1Predicate_1acee9f864ef011a76e45d98f0d9bf42af" kindref="member">term</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>term_;<sp/>}</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Predicate" kindref="compound">Predicate</ref>(<ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref><sp/>op,<sp/>std::shared_ptr&lt;T&gt;<sp/>term);</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref><sp/>operation_;</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;T&gt;<sp/>term_;</highlight></codeline>
+<codeline lineno="56"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62" refid="classiceberg_1_1UnboundPredicate" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref>,</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Unbound" kindref="compound">Unbound</ref>&lt;Expression&gt;<sp/>{</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">~UnboundPredicate</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal"><sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"></highlight></codeline>
+<codeline lineno="68" refid="classiceberg_1_1UnboundPredicate_1afc28a47f14049b5e3a9cbe27f557633e" refkind="member"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;NamedReference&gt;<sp/><ref refid="classiceberg_1_1UnboundPredicate_1afc28a47f14049b5e3a9cbe27f557633e" kindref="member">reference</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="71" refid="classiceberg_1_1UnboundPredicate_1a59f8bba53fe0247d28327d23189f7dd1" refkind="member"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;Expression&gt;&gt;<sp/><ref refid="classiceberg_1_1UnboundPredicate_1a59f8bba53fe0247d28327d23189f7dd1" kindref="member">Bind</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref>&amp;<sp/>schema,</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>case_sensitive)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="75" refid="classiceberg_1_1UnboundPredicate_1a7c77c2d962a6965ca484a8b74cbf4b0d" refkind="member"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;Expression&gt;&gt;<sp/><ref refid="classiceberg_1_1UnboundPredicate_1a7c77c2d962a6965ca484a8b74cbf4b0d" kindref="member">Negate</ref>()<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_unbound_predicate()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"></highlight></codeline>
+<codeline lineno="87"><highlight class="keyword">template</highlight><highlight class="normal"><sp/>&lt;</highlight><highlight class="keyword">typename</highlight><highlight class="normal"><sp/>B&gt;</highlight></codeline>
+<codeline lineno="88" refid="classiceberg_1_1UnboundPredicateImpl" refkind="compound"><highlight class="normal"></highlight><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1UnboundPredicateImpl" kindref="compound">UnboundPredicateImpl</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref>,</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Predicate" kindref="compound">Predicate</ref>&lt;UnboundTerm&lt;B&gt;&gt;<sp/>{</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classiceberg_1_1Predicate" kindref="compound">BASE</ref><sp/>=<sp/><ref refid="classiceberg_1_1Predicate" kindref="compound">Predicate&lt;UnboundTerm&lt;B&gt;</ref>&gt;;</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"></highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;std::unique_ptr&lt;UnboundPredicateImpl&lt;B&gt;&gt;&gt;<sp/>Make(</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref><sp/>op,<sp/>std::shared_ptr&lt;<ref refid="classiceberg_1_1UnboundTerm" kindref="compound">UnboundTerm&lt;B&gt;</ref>&gt;<sp/>term);</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;std::unique_ptr&lt;UnboundPredicateImpl&lt;B&gt;&gt;&gt;<sp/>Make(</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref><sp/>op,<sp/>std::shared_ptr&lt;<ref refid="classiceberg_1_1UnboundTerm" kindref="compound">UnboundTerm&lt;B&gt;</ref>&gt;<sp/>term,<sp/><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref><sp/>value);</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;std::unique_ptr&lt;UnboundPredicateImpl&lt;B&gt;&gt;&gt;<sp/>Make(</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref><sp/>op,<sp/>std::shared_ptr&lt;<ref refid="classiceberg_1_1UnboundTerm" kindref="compound">UnboundTerm&lt;B&gt;</ref>&gt;<sp/>term,</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;Literal&gt;<sp/>values);</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1UnboundPredicateImpl" kindref="compound">~UnboundPredicateImpl</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight></codeline>
+<codeline lineno="122" refid="classiceberg_1_1UnboundPredicateImpl_1adf9d6125fc9e654129c760e9039c6f7a" refkind="member"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;NamedReference&gt;<sp/><ref refid="classiceberg_1_1UnboundPredicateImpl_1adf9d6125fc9e654129c760e9039c6f7a" kindref="member">reference</ref>()</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>BASE::term()-&gt;reference();</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/>std::string<sp/>ToString()<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;Expression&gt;&gt;<sp/>Bind(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref>&amp;<sp/>schema,</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>case_sensitive)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;Expression&gt;&gt;<sp/>Negate()<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal"><sp/><sp/>std::span&lt;const<sp/>Literal&gt;<sp/>literals()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>values_;<sp/>}</highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/>UnboundPredicateImpl(Expression::Operation<sp/>op,<sp/>std::shared_ptr&lt;UnboundTerm&lt;B&gt;&gt;<sp/>term);</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/>UnboundPredicateImpl(Expression::Operation<sp/>op,<sp/>std::shared_ptr&lt;UnboundTerm&lt;B&gt;&gt;<sp/>term,</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>Literal<sp/>value);</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"><sp/><sp/>UnboundPredicateImpl(Expression::Operation<sp/>op,<sp/>std::shared_ptr&lt;UnboundTerm&lt;B&gt;&gt;<sp/>term,</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::vector&lt;Literal&gt;<sp/>values);</highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;Expression&gt;&gt;<sp/>BindUnaryOperation(</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;B&gt;<sp/>bound_term)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;Expression&gt;&gt;<sp/>BindLiteralOperation(</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;B&gt;<sp/>bound_term)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;Expression&gt;&gt;<sp/>BindInOperation(</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;B&gt;<sp/>bound_term)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"></highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/>std::vector&lt;Literal&gt;<sp/>values_;</highlight></codeline>
+<codeline lineno="151"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight></codeline>
+<codeline lineno="154" refid="classiceberg_1_1BoundPredicate" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Predicate" kindref="compound">Predicate</ref>&lt;BoundTerm&gt;,<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref><sp/>{</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1BoundPredicate" kindref="compound">~BoundPredicate</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"></highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classiceberg_1_1Predicate" kindref="compound">Predicate</ref>&lt;<ref refid="classiceberg_1_1BoundTerm" kindref="compound">BoundTerm</ref>&gt;::op;</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="classiceberg_1_1Predicate" kindref="compound">Predicate</ref>&lt;<ref refid="classiceberg_1_1BoundTerm" kindref="compound">BoundTerm</ref>&gt;::term;</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"></highlight></codeline>
+<codeline lineno="162" refid="classiceberg_1_1BoundPredicate_1aa3c404fbe4dc5a3f194c675d03cf50b7" refkind="member"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;BoundReference&gt;<sp/><ref refid="classiceberg_1_1BoundPredicate_1aa3c404fbe4dc5a3f194c675d03cf50b7" kindref="member">reference</ref>()</highlight><highlight class="keyword"><sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>term_-&gt;reference();<sp/>}</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"></highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/>Result&lt;Literal&gt;<sp/>Evaluate(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1StructLike" kindref="compound">StructLike</ref>&amp;<sp/>data)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"></highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>is_bound_predicate()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">;<sp/>}</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight></codeline>
+<codeline lineno="172" refid="classiceberg_1_1BoundPredicate_1a77c567c25ebc867a38447a141ddc83d1" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Result&lt;bool&gt;<sp/><ref refid="classiceberg_1_1BoundPredicate_1a77c567c25ebc867a38447a141ddc83d1" kindref="member">Test</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref>&amp;<sp/>value)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"></highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>Kind<sp/>:<sp/>int8_t<sp/>{</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>A<sp/>unary<sp/>predicate<sp/>(tests<sp/>for<sp/>null,<sp/>not-null,<sp/>etc.).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/><sp/><sp/>kUnary<sp/>=<sp/>0,</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>A<sp/>literal<sp/>predicate<sp/>(compares<sp/>against<sp/>a<sp/>literal).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/><sp/><sp/>kLiteral,</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>A<sp/>set<sp/>predicate<sp/>(tests<sp/>membership<sp/>in<sp/>a<sp/>set).</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/>kSet,</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"></highlight></codeline>
+<codeline lineno="184" refid="classiceberg_1_1BoundPredicate_1a0c55acc20da1543acab053040834b2c3" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Kind<sp/><ref refid="classiceberg_1_1BoundPredicate_1a0c55acc20da1543acab053040834b2c3" kindref="member">kind</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"></highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/></highlight><highlight class="keyword">protected</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref>(<ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref><sp/>op,<sp/>std::shared_ptr&lt;BoundTerm&gt;<sp/>term);</highlight></codeline>
+<codeline lineno="188"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"></highlight></codeline>
+<codeline lineno="191" refid="classiceberg_1_1BoundUnaryPredicate" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1BoundUnaryPredicate" kindref="compound">BoundUnaryPredicate</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref><sp/>{</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;std::unique_ptr&lt;BoundUnaryPredicate&gt;&gt;<sp/>Make(</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref><sp/>op,<sp/>std::shared_ptr&lt;BoundTerm&gt;<sp/>term);</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"></highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1BoundUnaryPredicate" kindref="compound">~BoundUnaryPredicate</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"></highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/>Result&lt;bool&gt;<sp/>Test(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref>&amp;<sp/>value)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"></highlight></codeline>
+<codeline lineno="205" refid="classiceberg_1_1BoundUnaryPredicate_1a8c70db8cf8110480995edb4852a6edf8" refkind="member"><highlight class="normal"><sp/><sp/>Kind<sp/><ref refid="classiceberg_1_1BoundUnaryPredicate_1a8c70db8cf8110480995edb4852a6edf8" kindref="member">kind</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>Kind::kUnary;<sp/>}</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"></highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/>std::string<sp/>ToString()<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="208"><highlight class="normal"></highlight></codeline>
+<codeline lineno="209"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;Expression&gt;&gt;<sp/>Negate()<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"></highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>Equals(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"></highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1BoundUnaryPredicate" kindref="compound">BoundUnaryPredicate</ref>(<ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref><sp/>op,<sp/>std::shared_ptr&lt;BoundTerm&gt;<sp/>term);</highlight></codeline>
+<codeline lineno="215"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"></highlight></codeline>
+<codeline lineno="218" refid="classiceberg_1_1BoundLiteralPredicate" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1BoundLiteralPredicate" kindref="compound">BoundLiteralPredicate</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref><sp/>{</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;std::unique_ptr&lt;BoundLiteralPredicate&gt;&gt;<sp/>Make(</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref><sp/>op,<sp/>std::shared_ptr&lt;BoundTerm&gt;<sp/>term,<sp/><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref><sp/>literal);</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"></highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1BoundLiteralPredicate" kindref="compound">~BoundLiteralPredicate</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"></highlight></codeline>
+<codeline lineno="232" refid="classiceberg_1_1BoundLiteralPredicate_1a7cf15071d083afd590de0ac290083a78" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref>&amp;<sp/><ref refid="classiceberg_1_1BoundLiteralPredicate_1a7cf15071d083afd590de0ac290083a78" kindref="member">literal</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>literal_;<sp/>}</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"></highlight></codeline>
+<codeline lineno="234"><highlight class="normal"><sp/><sp/>Result&lt;bool&gt;<sp/>Test(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref>&amp;<sp/>value)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"></highlight></codeline>
+<codeline lineno="236" refid="classiceberg_1_1BoundLiteralPredicate_1a640e009720aa6f376f599533eaf1f415" refkind="member"><highlight class="normal"><sp/><sp/>Kind<sp/><ref refid="classiceberg_1_1BoundLiteralPredicate_1a640e009720aa6f376f599533eaf1f415" kindref="member">kind</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>Kind::kLiteral;<sp/>}</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"></highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/>std::string<sp/>ToString()<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"></highlight></codeline>
+<codeline lineno="240"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;Expression&gt;&gt;<sp/>Negate()<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"></highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>Equals(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"></highlight></codeline>
+<codeline lineno="244"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="245"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1BoundLiteralPredicate" kindref="compound">BoundLiteralPredicate</ref>(<ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref><sp/>op,<sp/>std::shared_ptr&lt;BoundTerm&gt;<sp/>term,</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref><sp/>literal);</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"></highlight></codeline>
+<codeline lineno="248"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref><sp/>literal_;</highlight></codeline>
+<codeline lineno="249"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="250"><highlight class="normal"></highlight></codeline>
+<codeline lineno="252" refid="classiceberg_1_1BoundSetPredicate" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1BoundSetPredicate" kindref="compound">BoundSetPredicate</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref><sp/>{</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">using<sp/></highlight><highlight class="normal">LiteralSet<sp/>=<sp/>std::unordered_set&lt;Literal,<sp/>LiteralHash&gt;;</highlight></codeline>
+<codeline lineno="255"><highlight class="normal"></highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;std::unique_ptr&lt;BoundSetPredicate&gt;&gt;<sp/>Make(</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref><sp/>op,<sp/>std::shared_ptr&lt;BoundTerm&gt;<sp/>term,</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>std::span&lt;const<sp/>Literal&gt;<sp/>literals);</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"></highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">static</highlight><highlight class="normal"><sp/>Result&lt;std::unique_ptr&lt;BoundSetPredicate&gt;&gt;<sp/>Make(<ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref><sp/>op,</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::shared_ptr&lt;BoundTerm&gt;<sp/>term,</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>LiteralSet<sp/>value_set);</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"></highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1BoundSetPredicate" kindref="compound">~BoundSetPredicate</ref>()<sp/></highlight><highlight class="keyword">override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"></highlight></codeline>
+<codeline lineno="279" refid="classiceberg_1_1BoundSetPredicate_1a49821789f2f23d14d8ccf18ea5c9eeb1" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>LiteralSet&amp;<sp/><ref refid="classiceberg_1_1BoundSetPredicate_1a49821789f2f23d14d8ccf18ea5c9eeb1" kindref="member">literal_set</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>value_set_;<sp/>}</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"></highlight></codeline>
+<codeline lineno="281"><highlight class="normal"><sp/><sp/>Result&lt;bool&gt;<sp/>Test(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref>&amp;<sp/>value)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="282"><highlight class="normal"></highlight></codeline>
+<codeline lineno="283" refid="classiceberg_1_1BoundSetPredicate_1a1771793f38e5bbcb6ca43e0051558da9" refkind="member"><highlight class="normal"><sp/><sp/>Kind<sp/><ref refid="classiceberg_1_1BoundSetPredicate_1a1771793f38e5bbcb6ca43e0051558da9" kindref="member">kind</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>Kind::kSet;<sp/>}</highlight></codeline>
+<codeline lineno="284"><highlight class="normal"></highlight></codeline>
+<codeline lineno="285"><highlight class="normal"><sp/><sp/>std::string<sp/>ToString()<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"></highlight></codeline>
+<codeline lineno="287"><highlight class="normal"><sp/><sp/>Result&lt;std::shared_ptr&lt;Expression&gt;&gt;<sp/>Negate()<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="288"><highlight class="normal"></highlight></codeline>
+<codeline lineno="289"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>Equals(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1Expression" kindref="compound">Expression</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="290"><highlight class="normal"></highlight></codeline>
+<codeline lineno="291"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1BoundSetPredicate" kindref="compound">BoundSetPredicate</ref>(<ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref><sp/>op,<sp/>std::shared_ptr&lt;BoundTerm&gt;<sp/>term,</highlight></codeline>
+<codeline lineno="293"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::span&lt;const<sp/>Literal&gt;<sp/>literals);</highlight></codeline>
+<codeline lineno="294"><highlight class="normal"></highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1BoundSetPredicate" kindref="compound">BoundSetPredicate</ref>(<ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref><sp/>op,<sp/>std::shared_ptr&lt;BoundTerm&gt;<sp/>term,</highlight></codeline>
+<codeline lineno="296"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>LiteralSet<sp/>value_set);</highlight></codeline>
+<codeline lineno="297"><highlight class="normal"></highlight></codeline>
+<codeline lineno="298"><highlight class="normal"><sp/><sp/>LiteralSet<sp/>value_set_;</highlight></codeline>
+<codeline lineno="299"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="300"><highlight class="normal"></highlight></codeline>
+<codeline lineno="301"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/expression/predicate.h"/>
+  </compounddef>
+</doxygen>

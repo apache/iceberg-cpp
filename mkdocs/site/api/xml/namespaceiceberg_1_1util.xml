@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1util" kind="namespace" language="C++">
+    <compoundname>iceberg::util</compoundname>
+    <innerclass refid="classiceberg_1_1util_1_1Formattable" prot="public">iceberg::util::Formattable</innerclass>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/formattable.h" line="31" column="1"/>
+  </compounddef>
+</doxygen>

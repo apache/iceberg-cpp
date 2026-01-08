@@ -1,0 +1,117 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1RegisterTableRequest" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::RegisterTableRequest</compoundname>
+    <includes refid="types_8h" local="no">types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1RegisterTableRequest_1ab887997ccbeac651aabdd0052e080cff" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::RegisterTableRequest::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::rest::RegisterTableRequest::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="108" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="108" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1RegisterTableRequest_1aeed4c51914201727c440b7e0cb13018a" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::RegisterTableRequest::metadata_location</definition>
+        <argsstring></argsstring>
+        <name>metadata_location</name>
+        <qualifiedname>iceberg::rest::RegisterTableRequest::metadata_location</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="109" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="109" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1RegisterTableRequest_1aa8d60795e9505971dfa9b00224d86852" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::rest::RegisterTableRequest::overwrite</definition>
+        <argsstring></argsstring>
+        <name>overwrite</name>
+        <qualifiedname>iceberg::rest::RegisterTableRequest::overwrite</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="110" column="8" bodyfile="iceberg/catalog/rest/types.h" bodystart="110" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1RegisterTableRequest_1aae57d36b2f4d27e86baa21fc330308af" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::RegisterTableRequest::Validate</definition>
+        <argsstring>() const</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::rest::RegisterTableRequest::Validate</qualifiedname>
+        <briefdescription>
+<para>Validates the <ref refid="structiceberg_1_1rest_1_1RegisterTableRequest" kindref="compound">RegisterTableRequest</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="113" column="10" bodyfile="iceberg/catalog/rest/types.h" bodystart="113" bodyend="123"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1RegisterTableRequest_1a9fb0febe03ff004416fea07039a0426e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::rest::RegisterTableRequest::operator==</definition>
+        <argsstring>(const RegisterTableRequest &amp;) const =default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::rest::RegisterTableRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1rest_1_1RegisterTableRequest" kindref="compound">RegisterTableRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="125" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Request to register a table. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::RegisterTableRequest</label>
+        <link refid="structiceberg_1_1rest_1_1RegisterTableRequest"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>metadata_location</edgelabel>
+          <edgelabel>name</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/types.h" line="107" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="107" bodyend="126"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1RegisterTableRequest_1aeed4c51914201727c440b7e0cb13018a" prot="public" virt="non-virtual"><scope>iceberg::rest::RegisterTableRequest</scope><name>metadata_location</name></member>
+      <member refid="structiceberg_1_1rest_1_1RegisterTableRequest_1ab887997ccbeac651aabdd0052e080cff" prot="public" virt="non-virtual"><scope>iceberg::rest::RegisterTableRequest</scope><name>name</name></member>
+      <member refid="structiceberg_1_1rest_1_1RegisterTableRequest_1a9fb0febe03ff004416fea07039a0426e" prot="public" virt="non-virtual"><scope>iceberg::rest::RegisterTableRequest</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1rest_1_1RegisterTableRequest_1aa8d60795e9505971dfa9b00224d86852" prot="public" virt="non-virtual"><scope>iceberg::rest::RegisterTableRequest</scope><name>overwrite</name></member>
+      <member refid="structiceberg_1_1rest_1_1RegisterTableRequest_1aae57d36b2f4d27e86baa21fc330308af" prot="public" virt="non-virtual"><scope>iceberg::rest::RegisterTableRequest</scope><name>Validate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

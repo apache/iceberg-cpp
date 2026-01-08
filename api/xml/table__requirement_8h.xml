@@ -1,0 +1,404 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="table__requirement_8h" kind="file" language="C++">
+    <compoundname>table_requirement.h</compoundname>
+    <includes local="no">optional</includes>
+    <includes local="no">string</includes>
+    <includes refid="iceberg__export_8h" local="yes">iceberg/iceberg_export.h</includes>
+    <includes refid="result_8h" local="yes">iceberg/result.h</includes>
+    <includes refid="type__fwd_8h" local="yes">iceberg/type_fwd.h</includes>
+    <includes refid="checked__cast_8h" local="yes">iceberg/util/checked_cast.h</includes>
+    <includedby refid="in__memory__catalog_8cc" local="yes">iceberg/catalog/memory/in_memory_catalog.cc</includedby>
+    <includedby refid="catalog_2rest_2json__internal_8cc" local="yes">iceberg/catalog/rest/json_internal.cc</includedby>
+    <includedby refid="rest__catalog_8cc" local="yes">iceberg/catalog/rest/rest_catalog.cc</includedby>
+    <includedby refid="types_8cc" local="yes">iceberg/catalog/rest/types.cc</includedby>
+    <includedby refid="json__internal_8cc" local="yes">iceberg/json_internal.cc</includedby>
+    <includedby refid="table__requirement_8cc" local="yes">iceberg/table_requirement.cc</includedby>
+    <includedby refid="table__requirements_8cc" local="yes">iceberg/table_requirements.cc</includedby>
+    <includedby refid="table__requirements_8h" local="yes">iceberg/table_requirements.h</includedby>
+    <includedby refid="in__memory__catalog__test_8cc" local="yes">iceberg/test/in_memory_catalog_test.cc</includedby>
+    <includedby refid="json__internal__test_8cc" local="yes">iceberg/test/json_internal_test.cc</includedby>
+    <includedby refid="rest__catalog__test_8cc" local="yes">iceberg/test/rest_catalog_test.cc</includedby>
+    <includedby refid="rest__json__internal__test_8cc" local="yes">iceberg/test/rest_json_internal_test.cc</includedby>
+    <includedby refid="table__requirement__test_8cc" local="yes">iceberg/test/table_requirement_test.cc</includedby>
+    <includedby refid="table__requirements__test_8cc" local="yes">iceberg/test/table_requirements_test.cc</includedby>
+    <includedby refid="table__update__test_8cc" local="yes">iceberg/test/table_update_test.cc</includedby>
+    <includedby refid="transaction_8cc" local="yes">iceberg/transaction.cc</includedby>
+    <incdepgraph>
+      <node id="4">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="5">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/table_requirement.h</label>
+        <link refid="table__requirement_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="9">
+        <label>iceberg/util/checked_cast.h</label>
+        <link refid="checked__cast_8h"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>expected</label>
+      </node>
+      <node id="7">
+        <label>format</label>
+      </node>
+      <node id="10">
+        <label>memory</label>
+      </node>
+      <node id="2">
+        <label>optional</label>
+      </node>
+      <node id="3">
+        <label>string</label>
+      </node>
+      <node id="11">
+        <label>type_traits</label>
+      </node>
+      <node id="12">
+        <label>utility</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="1">
+        <label>iceberg/table_requirement.h</label>
+        <link refid="table__requirement_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg/table_requirements.h</label>
+        <link refid="table__requirements_8h"/>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="classiceberg_1_1TableRequirement" prot="public">iceberg::TableRequirement</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AssertDoesNotExist" prot="public">iceberg::table::AssertDoesNotExist</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AssertUUID" prot="public">iceberg::table::AssertUUID</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AssertRefSnapshotID" prot="public">iceberg::table::AssertRefSnapshotID</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId" prot="public">iceberg::table::AssertLastAssignedFieldId</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AssertCurrentSchemaID" prot="public">iceberg::table::AssertCurrentSchemaID</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AssertLastAssignedPartitionId" prot="public">iceberg::table::AssertLastAssignedPartitionId</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AssertDefaultSpecID" prot="public">iceberg::table::AssertDefaultSpecID</innerclass>
+    <innerclass refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID" prot="public">iceberg::table::AssertDefaultSortOrderID</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1table">iceberg::table</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Update requirements for Iceberg table operations.</para>
+<para>Table requirements are conditions that must be satisfied before applying metadata updates to a table. They are used for optimistic concurrency control in table operations. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;optional&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/iceberg_export.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/result.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="type__fwd_8h" kindref="compound">iceberg/type_fwd.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="checked__cast_8h" kindref="compound">iceberg/util/checked_cast.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg<sp/>{</highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight></codeline>
+<codeline lineno="44" refid="classiceberg_1_1TableRequirement" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref><sp/>{</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="46"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">enum<sp/>class</highlight><highlight class="normal"><sp/>Kind<sp/>:<sp/>uint8_t<sp/>{</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/>kAssertDoesNotExist,</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/><sp/><sp/>kAssertUUID,</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/>kAssertRefSnapshotID,</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/>kAssertLastAssignedFieldId,</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/>kAssertCurrentSchemaID,</highlight></codeline>
+<codeline lineno="52"><highlight class="normal"><sp/><sp/><sp/><sp/>kAssertLastAssignedPartitionId,</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"><sp/><sp/><sp/><sp/>kAssertDefaultSpecID,</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/><sp/><sp/>kAssertDefaultSortOrderID,</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">~TableRequirement</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60" refid="classiceberg_1_1TableRequirement_1ae1792bd660df2370dffc5474b4e0a264" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Kind<sp/><ref refid="classiceberg_1_1TableRequirement_1ae1792bd660df2370dffc5474b4e0a264" kindref="member">kind</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="66" refid="classiceberg_1_1TableRequirement_1ae122a03307e1dc67692d8e98b389fb15" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>Status<sp/><ref refid="classiceberg_1_1TableRequirement_1ae122a03307e1dc67692d8e98b389fb15" kindref="member">Validate</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref>*<sp/>base)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"></highlight></codeline>
+<codeline lineno="72" refid="classiceberg_1_1TableRequirement_1a67955bc471d761a5a19c2e7ed6858e08" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement_1a67955bc471d761a5a19c2e7ed6858e08" kindref="member">Equals</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="77" refid="classiceberg_1_1TableRequirement_1a2bbf72ce6649e04a8dc1bc2f7bcff353" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">virtual</highlight><highlight class="normal"><sp/>std::unique_ptr&lt;TableRequirement&gt;<sp/><ref refid="classiceberg_1_1TableRequirement_1a2bbf72ce6649e04a8dc1bc2f7bcff353" kindref="member">Clone</ref>()<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/>0;</highlight></codeline>
+<codeline lineno="78"><highlight class="normal"></highlight></codeline>
+<codeline lineno="80" refid="classiceberg_1_1TableRequirement_1ac213585c11e319f539feff8bcea80b55" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">friend</highlight><highlight class="normal"><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement_1ac213585c11e319f539feff8bcea80b55" kindref="member">operator==</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref>&amp;<sp/>lhs,<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref>&amp;<sp/>rhs)<sp/>{</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>lhs.<ref refid="classiceberg_1_1TableRequirement_1a67955bc471d761a5a19c2e7ed6858e08" kindref="member">Equals</ref>(rhs);</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="83"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">table<sp/>{</highlight></codeline>
+<codeline lineno="86"><highlight class="normal"></highlight></codeline>
+<codeline lineno="91" refid="classiceberg_1_1table_1_1AssertDoesNotExist" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1table_1_1AssertDoesNotExist" kindref="compound">AssertDoesNotExist</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref><sp/>{</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1table_1_1AssertDoesNotExist" kindref="compound">AssertDoesNotExist</ref>()<sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="94"><highlight class="normal"></highlight></codeline>
+<codeline lineno="95" refid="classiceberg_1_1table_1_1AssertDoesNotExist_1a08089dd64501dff1b719d3f85ab9301f" refkind="member"><highlight class="normal"><sp/><sp/>Kind<sp/><ref refid="classiceberg_1_1table_1_1AssertDoesNotExist_1a08089dd64501dff1b719d3f85ab9301f" kindref="member">kind</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>Kind::kAssertDoesNotExist;<sp/>}</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"></highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/>Status<sp/>Validate(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref>*<sp/>base)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"></highlight></codeline>
+<codeline lineno="99" refid="classiceberg_1_1table_1_1AssertDoesNotExist_1aee5f9a9ed9194746461c8ba8e18dc8c1" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1table_1_1AssertDoesNotExist_1aee5f9a9ed9194746461c8ba8e18dc8c1" kindref="member">Equals</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref>&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>other.<ref refid="classiceberg_1_1TableRequirement_1ae1792bd660df2370dffc5474b4e0a264" kindref="member">kind</ref>()<sp/>==<sp/>Kind::kAssertDoesNotExist;</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103" refid="classiceberg_1_1table_1_1AssertDoesNotExist_1ae532d37abd08aee583179a0b541f15bb" refkind="member"><highlight class="normal"><sp/><sp/>std::unique_ptr&lt;TableRequirement&gt;<sp/><ref refid="classiceberg_1_1table_1_1AssertDoesNotExist_1ae532d37abd08aee583179a0b541f15bb" kindref="member">Clone</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::make_unique&lt;AssertDoesNotExist&gt;();</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="106"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight></codeline>
+<codeline lineno="112" refid="classiceberg_1_1table_1_1AssertUUID" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1table_1_1AssertUUID" kindref="compound">AssertUUID</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref><sp/>{</highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1table_1_1AssertUUID" kindref="compound">AssertUUID</ref>(std::string<sp/><ref refid="group__type-factories_1gafcf0f5e6522390678b91a9515b174bcf" kindref="member">uuid</ref>)<sp/>:<sp/>uuid_(std::move(<ref refid="group__type-factories_1gafcf0f5e6522390678b91a9515b174bcf" kindref="member">uuid</ref>))<sp/>{}</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/><ref refid="group__type-factories_1gafcf0f5e6522390678b91a9515b174bcf" kindref="member">uuid</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>uuid_;<sp/>}</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="118" refid="classiceberg_1_1table_1_1AssertUUID_1a71761cc1d765eee5f58610df23ad51cd" refkind="member"><highlight class="normal"><sp/><sp/>Kind<sp/><ref refid="classiceberg_1_1table_1_1AssertUUID_1a71761cc1d765eee5f58610df23ad51cd" kindref="member">kind</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>Kind::kAssertUUID;<sp/>}</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"></highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/>Status<sp/>Validate(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref>*<sp/>base)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight></codeline>
+<codeline lineno="122" refid="classiceberg_1_1table_1_1AssertUUID_1a11766552aaf57d52404300e5ec45892b" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1table_1_1AssertUUID_1a11766552aaf57d52404300e5ec45892b" kindref="member">Equals</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref>&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(other.<ref refid="classiceberg_1_1TableRequirement_1ae1792bd660df2370dffc5474b4e0a264" kindref="member">kind</ref>()<sp/>!=<sp/>Kind::kAssertUUID)<sp/>{</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="126"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>other_uuid<sp/>=<sp/>internal::checked_cast&lt;const<sp/>AssertUUID&amp;&gt;(other);</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>uuid_<sp/>==<sp/>other_uuid.uuid_;</highlight></codeline>
+<codeline lineno="128"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130" refid="classiceberg_1_1table_1_1AssertUUID_1ae88f244b6ba758d2466e4d2accd1405a" refkind="member"><highlight class="normal"><sp/><sp/>std::unique_ptr&lt;TableRequirement&gt;<sp/><ref refid="classiceberg_1_1table_1_1AssertUUID_1ae88f244b6ba758d2466e4d2accd1405a" kindref="member">Clone</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::make_unique&lt;AssertUUID&gt;(uuid_);</highlight></codeline>
+<codeline lineno="132"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="133"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/>std::string<sp/>uuid_;</highlight></codeline>
+<codeline lineno="136"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"></highlight></codeline>
+<codeline lineno="143" refid="classiceberg_1_1table_1_1AssertRefSnapshotID" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1table_1_1AssertRefSnapshotID" kindref="compound">AssertRefSnapshotID</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref><sp/>{</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><ref refid="classiceberg_1_1table_1_1AssertRefSnapshotID" kindref="compound">AssertRefSnapshotID</ref>(std::string<sp/>ref_name,<sp/>std::optional&lt;int64_t&gt;<sp/>snapshot_id)</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>ref_name_(std::move(ref_name)),<sp/>snapshot_id_(snapshot_id)<sp/>{}</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>ref_name()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ref_name_;<sp/>}</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"></highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::optional&lt;int64_t&gt;&amp;<sp/>snapshot_id()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>snapshot_id_;<sp/>}</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"></highlight></codeline>
+<codeline lineno="152" refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1ae82fe0cad009d912649472fe20339a26" refkind="member"><highlight class="normal"><sp/><sp/>Kind<sp/><ref refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1ae82fe0cad009d912649472fe20339a26" kindref="member">kind</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>Kind::kAssertRefSnapshotID;<sp/>}</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"></highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/>Status<sp/>Validate(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref>*<sp/>base)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"></highlight></codeline>
+<codeline lineno="156" refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1ad22739ba88ea05d467f1105fb9b9e55b" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1ad22739ba88ea05d467f1105fb9b9e55b" kindref="member">Equals</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref>&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(other.<ref refid="classiceberg_1_1TableRequirement_1ae1792bd660df2370dffc5474b4e0a264" kindref="member">kind</ref>()<sp/>!=<sp/>Kind::kAssertRefSnapshotID)<sp/>{</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>other_ref<sp/>=<sp/>internal::checked_cast&lt;const<sp/>AssertRefSnapshotID&amp;&gt;(other);</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ref_name_<sp/>==<sp/>other_ref.ref_name_<sp/>&amp;&amp;<sp/>snapshot_id_<sp/>==<sp/>other_ref.snapshot_id_;</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"></highlight></codeline>
+<codeline lineno="164" refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1a199301cef5b50cffde62d8df4dbc795e" refkind="member"><highlight class="normal"><sp/><sp/>std::unique_ptr&lt;TableRequirement&gt;<sp/><ref refid="classiceberg_1_1table_1_1AssertRefSnapshotID_1a199301cef5b50cffde62d8df4dbc795e" kindref="member">Clone</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::make_unique&lt;AssertRefSnapshotID&gt;(ref_name_,<sp/>snapshot_id_);</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"></highlight></codeline>
+<codeline lineno="168"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/>std::string<sp/>ref_name_;</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/>std::optional&lt;int64_t&gt;<sp/>snapshot_id_;</highlight></codeline>
+<codeline lineno="171"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"></highlight></codeline>
+<codeline lineno="177" refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId" kindref="compound">AssertLastAssignedFieldId</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref><sp/>{</highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId" kindref="compound">AssertLastAssignedFieldId</ref>(int32_t<sp/>last_assigned_field_id)</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>last_assigned_field_id_(last_assigned_field_id)<sp/>{}</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"></highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/>int32_t<sp/>last_assigned_field_id()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>last_assigned_field_id_;<sp/>}</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"></highlight></codeline>
+<codeline lineno="184" refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId_1ad04553595685868da40dfdf7f2f325a1" refkind="member"><highlight class="normal"><sp/><sp/>Kind<sp/><ref refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId_1ad04553595685868da40dfdf7f2f325a1" kindref="member">kind</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>Kind::kAssertLastAssignedFieldId;<sp/>}</highlight></codeline>
+<codeline lineno="185"><highlight class="normal"></highlight></codeline>
+<codeline lineno="186"><highlight class="normal"><sp/><sp/>Status<sp/>Validate(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref>*<sp/>base)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"></highlight></codeline>
+<codeline lineno="188" refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId_1ad580056e238db7c5629717e76d3d023b" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId_1ad580056e238db7c5629717e76d3d023b" kindref="member">Equals</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref>&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(other.<ref refid="classiceberg_1_1TableRequirement_1ae1792bd660df2370dffc5474b4e0a264" kindref="member">kind</ref>()<sp/>!=<sp/>Kind::kAssertLastAssignedFieldId)<sp/>{</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>other_field<sp/>=</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>internal::checked_cast&lt;const<sp/>AssertLastAssignedFieldId&amp;&gt;(other);</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>last_assigned_field_id_<sp/>==<sp/>other_field.last_assigned_field_id_;</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"></highlight></codeline>
+<codeline lineno="197" refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId_1a2a8991a4d543738c35bcc8a5428d8d13" refkind="member"><highlight class="normal"><sp/><sp/>std::unique_ptr&lt;TableRequirement&gt;<sp/><ref refid="classiceberg_1_1table_1_1AssertLastAssignedFieldId_1a2a8991a4d543738c35bcc8a5428d8d13" kindref="member">Clone</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::make_unique&lt;AssertLastAssignedFieldId&gt;(last_assigned_field_id_);</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"></highlight></codeline>
+<codeline lineno="201"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/>int32_t<sp/>last_assigned_field_id_;</highlight></codeline>
+<codeline lineno="203"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"></highlight></codeline>
+<codeline lineno="209" refid="classiceberg_1_1table_1_1AssertCurrentSchemaID" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1table_1_1AssertCurrentSchemaID" kindref="compound">AssertCurrentSchemaID</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref><sp/>{</highlight></codeline>
+<codeline lineno="210"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1table_1_1AssertCurrentSchemaID" kindref="compound">AssertCurrentSchemaID</ref>(int32_t<sp/>schema_id)<sp/>:<sp/>schema_id_(schema_id)<sp/>{}</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"></highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/>int32_t<sp/>schema_id()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>schema_id_;<sp/>}</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"></highlight></codeline>
+<codeline lineno="215" refid="classiceberg_1_1table_1_1AssertCurrentSchemaID_1ac6601384b7541ab4a85e638e27e773f8" refkind="member"><highlight class="normal"><sp/><sp/>Kind<sp/><ref refid="classiceberg_1_1table_1_1AssertCurrentSchemaID_1ac6601384b7541ab4a85e638e27e773f8" kindref="member">kind</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>Kind::kAssertCurrentSchemaID;<sp/>}</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"></highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/>Status<sp/>Validate(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref>*<sp/>base)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"></highlight></codeline>
+<codeline lineno="219" refid="classiceberg_1_1table_1_1AssertCurrentSchemaID_1a45888a72ad08f6467d1668ad7a201b73" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1table_1_1AssertCurrentSchemaID_1a45888a72ad08f6467d1668ad7a201b73" kindref="member">Equals</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref>&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(other.<ref refid="classiceberg_1_1TableRequirement_1ae1792bd660df2370dffc5474b4e0a264" kindref="member">kind</ref>()<sp/>!=<sp/>Kind::kAssertCurrentSchemaID)<sp/>{</highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>other_schema<sp/>=</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>internal::checked_cast&lt;const<sp/>AssertCurrentSchemaID&amp;&gt;(other);</highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>schema_id_<sp/>==<sp/>other_schema.schema_id_;</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"></highlight></codeline>
+<codeline lineno="228" refid="classiceberg_1_1table_1_1AssertCurrentSchemaID_1a56c489b00e42218bd00a7c91e5992119" refkind="member"><highlight class="normal"><sp/><sp/>std::unique_ptr&lt;TableRequirement&gt;<sp/><ref refid="classiceberg_1_1table_1_1AssertCurrentSchemaID_1a56c489b00e42218bd00a7c91e5992119" kindref="member">Clone</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::make_unique&lt;AssertCurrentSchemaID&gt;(schema_id_);</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="231"><highlight class="normal"></highlight></codeline>
+<codeline lineno="232"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"><sp/><sp/>int32_t<sp/>schema_id_;</highlight></codeline>
+<codeline lineno="234"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"></highlight></codeline>
+<codeline lineno="240" refid="classiceberg_1_1table_1_1AssertLastAssignedPartitionId" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1table_1_1AssertLastAssignedPartitionId" kindref="compound">AssertLastAssignedPartitionId</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref><sp/>{</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1table_1_1AssertLastAssignedPartitionId" kindref="compound">AssertLastAssignedPartitionId</ref>(int32_t<sp/>last_assigned_partition_id)</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>last_assigned_partition_id_(last_assigned_partition_id)<sp/>{}</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"></highlight></codeline>
+<codeline lineno="245"><highlight class="normal"><sp/><sp/>int32_t<sp/>last_assigned_partition_id()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>last_assigned_partition_id_;<sp/>}</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"></highlight></codeline>
+<codeline lineno="247" refid="classiceberg_1_1table_1_1AssertLastAssignedPartitionId_1a02cbc7be388d73a7b727fab48d6e3f91" refkind="member"><highlight class="normal"><sp/><sp/>Kind<sp/><ref refid="classiceberg_1_1table_1_1AssertLastAssignedPartitionId_1a02cbc7be388d73a7b727fab48d6e3f91" kindref="member">kind</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>Kind::kAssertLastAssignedPartitionId;<sp/>}</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"></highlight></codeline>
+<codeline lineno="249"><highlight class="normal"><sp/><sp/>Status<sp/>Validate(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref>*<sp/>base)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="250"><highlight class="normal"></highlight></codeline>
+<codeline lineno="251" refid="classiceberg_1_1table_1_1AssertLastAssignedPartitionId_1a656dabe37b2a092a8363e2823b4f3bba" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1table_1_1AssertLastAssignedPartitionId_1a656dabe37b2a092a8363e2823b4f3bba" kindref="member">Equals</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref>&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(other.<ref refid="classiceberg_1_1TableRequirement_1ae1792bd660df2370dffc5474b4e0a264" kindref="member">kind</ref>()<sp/>!=<sp/>Kind::kAssertLastAssignedPartitionId)<sp/>{</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="255"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>other_partition<sp/>=</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>internal::checked_cast&lt;const<sp/>AssertLastAssignedPartitionId&amp;&gt;(other);</highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>last_assigned_partition_id_<sp/>==<sp/>other_partition.last_assigned_partition_id_;</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"></highlight></codeline>
+<codeline lineno="260" refid="classiceberg_1_1table_1_1AssertLastAssignedPartitionId_1a8280f7ec79356ccbdc3e9bb02b5b5c3e" refkind="member"><highlight class="normal"><sp/><sp/>std::unique_ptr&lt;TableRequirement&gt;<sp/><ref refid="classiceberg_1_1table_1_1AssertLastAssignedPartitionId_1a8280f7ec79356ccbdc3e9bb02b5b5c3e" kindref="member">Clone</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::make_unique&lt;AssertLastAssignedPartitionId&gt;(last_assigned_partition_id_);</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"></highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/>int32_t<sp/>last_assigned_partition_id_;</highlight></codeline>
+<codeline lineno="266"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"></highlight></codeline>
+<codeline lineno="272" refid="classiceberg_1_1table_1_1AssertDefaultSpecID" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1table_1_1AssertDefaultSpecID" kindref="compound">AssertDefaultSpecID</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref><sp/>{</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1table_1_1AssertDefaultSpecID" kindref="compound">AssertDefaultSpecID</ref>(int32_t<sp/>spec_id)<sp/>:<sp/>spec_id_(spec_id)<sp/>{}</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"></highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/>int32_t<sp/>spec_id()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>spec_id_;<sp/>}</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"></highlight></codeline>
+<codeline lineno="278" refid="classiceberg_1_1table_1_1AssertDefaultSpecID_1a38c00a713f91c90a3945931083fe730b" refkind="member"><highlight class="normal"><sp/><sp/>Kind<sp/><ref refid="classiceberg_1_1table_1_1AssertDefaultSpecID_1a38c00a713f91c90a3945931083fe730b" kindref="member">kind</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>Kind::kAssertDefaultSpecID;<sp/>}</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"></highlight></codeline>
+<codeline lineno="280"><highlight class="normal"><sp/><sp/>Status<sp/>Validate(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref>*<sp/>base)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="281"><highlight class="normal"></highlight></codeline>
+<codeline lineno="282" refid="classiceberg_1_1table_1_1AssertDefaultSpecID_1a7a08fc9e7b895702df5528cc03377373" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1table_1_1AssertDefaultSpecID_1a7a08fc9e7b895702df5528cc03377373" kindref="member">Equals</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref>&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="283"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(other.<ref refid="classiceberg_1_1TableRequirement_1ae1792bd660df2370dffc5474b4e0a264" kindref="member">kind</ref>()<sp/>!=<sp/>Kind::kAssertDefaultSpecID)<sp/>{</highlight></codeline>
+<codeline lineno="284"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="285"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>other_spec<sp/>=<sp/>internal::checked_cast&lt;const<sp/>AssertDefaultSpecID&amp;&gt;(other);</highlight></codeline>
+<codeline lineno="287"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>spec_id_<sp/>==<sp/>other_spec.spec_id_;</highlight></codeline>
+<codeline lineno="288"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="289"><highlight class="normal"></highlight></codeline>
+<codeline lineno="290" refid="classiceberg_1_1table_1_1AssertDefaultSpecID_1aa07e5193d1f1c4f9e4c018e7f6796b64" refkind="member"><highlight class="normal"><sp/><sp/>std::unique_ptr&lt;TableRequirement&gt;<sp/><ref refid="classiceberg_1_1table_1_1AssertDefaultSpecID_1aa07e5193d1f1c4f9e4c018e7f6796b64" kindref="member">Clone</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="291"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::make_unique&lt;AssertDefaultSpecID&gt;(spec_id_);</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="293"><highlight class="normal"></highlight></codeline>
+<codeline lineno="294"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/>int32_t<sp/>spec_id_;</highlight></codeline>
+<codeline lineno="296"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="297"><highlight class="normal"></highlight></codeline>
+<codeline lineno="302" refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID" refkind="compound"><highlight class="keyword">class<sp/></highlight><highlight class="normal">ICEBERG_EXPORT<sp/><ref refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID" kindref="compound">AssertDefaultSortOrderID</ref><sp/>:<sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref><sp/>{</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"><sp/></highlight><highlight class="keyword">public</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="304"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">explicit</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID" kindref="compound">AssertDefaultSortOrderID</ref>(int32_t<sp/>sort_order_id)</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>:<sp/>sort_order_id_(sort_order_id)<sp/>{}</highlight></codeline>
+<codeline lineno="306"><highlight class="normal"></highlight></codeline>
+<codeline lineno="307"><highlight class="normal"><sp/><sp/>int32_t<sp/>sort_order_id()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>sort_order_id_;<sp/>}</highlight></codeline>
+<codeline lineno="308"><highlight class="normal"></highlight></codeline>
+<codeline lineno="309" refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1a2db247d9bd0eb82c952fee85a7df0f19" refkind="member"><highlight class="normal"><sp/><sp/>Kind<sp/><ref refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1a2db247d9bd0eb82c952fee85a7df0f19" kindref="member">kind</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>Kind::kAssertDefaultSortOrderID;<sp/>}</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"></highlight></codeline>
+<codeline lineno="311"><highlight class="normal"><sp/><sp/>Status<sp/>Validate(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref>*<sp/>base)<sp/></highlight><highlight class="keyword">const<sp/>override</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"></highlight></codeline>
+<codeline lineno="313" refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1af50939744fff79c6d03c993a5c813717" refkind="member"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1af50939744fff79c6d03c993a5c813717" kindref="member">Equals</ref>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="classiceberg_1_1TableRequirement" kindref="compound">TableRequirement</ref>&amp;<sp/>other)</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="314"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(other.<ref refid="classiceberg_1_1TableRequirement_1ae1792bd660df2370dffc5474b4e0a264" kindref="member">kind</ref>()<sp/>!=<sp/>Kind::kAssertDefaultSortOrderID)<sp/>{</highlight></codeline>
+<codeline lineno="315"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="316"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>other_sort<sp/>=</highlight></codeline>
+<codeline lineno="318"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>internal::checked_cast&lt;const<sp/>AssertDefaultSortOrderID&amp;&gt;(other);</highlight></codeline>
+<codeline lineno="319"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>sort_order_id_<sp/>==<sp/>other_sort.sort_order_id_;</highlight></codeline>
+<codeline lineno="320"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="321"><highlight class="normal"></highlight></codeline>
+<codeline lineno="322" refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1a24bb4e71aed99b7b30b4764e20499bda" refkind="member"><highlight class="normal"><sp/><sp/>std::unique_ptr&lt;TableRequirement&gt;<sp/><ref refid="classiceberg_1_1table_1_1AssertDefaultSortOrderID_1a24bb4e71aed99b7b30b4764e20499bda" kindref="member">Clone</ref>()</highlight><highlight class="keyword"><sp/>const<sp/>override<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="323"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>std::make_unique&lt;AssertDefaultSortOrderID&gt;(sort_order_id_);</highlight></codeline>
+<codeline lineno="324"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="325"><highlight class="normal"></highlight></codeline>
+<codeline lineno="326"><highlight class="normal"><sp/></highlight><highlight class="keyword">private</highlight><highlight class="normal">:</highlight></codeline>
+<codeline lineno="327"><highlight class="normal"><sp/><sp/>int32_t<sp/>sort_order_id_;</highlight></codeline>
+<codeline lineno="328"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="329"><highlight class="normal"></highlight></codeline>
+<codeline lineno="330"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>table</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="331"><highlight class="normal"></highlight></codeline>
+<codeline lineno="332"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/table_requirement.h"/>
+  </compounddef>
+</doxygen>

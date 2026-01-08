@@ -1,0 +1,95 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TemporalUtils" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TemporalUtils</compoundname>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1TemporalUtils_1a5fd14b5e476db025684d37351a8d821e" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::TemporalUtils::ExtractYear</definition>
+        <argsstring>(const Literal &amp;literal)</argsstring>
+        <name>ExtractYear</name>
+        <qualifiedname>iceberg::TemporalUtils::ExtractYear</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <briefdescription>
+<para>Extract a date or timestamp year, as years from 1970. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="31" column="17" bodyfile="iceberg/util/temporal_util.cc" bodystart="153" bodyend="170"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalUtils_1afa7ed8ec605daeb7487a739c1e602070" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::TemporalUtils::ExtractMonth</definition>
+        <argsstring>(const Literal &amp;literal)</argsstring>
+        <name>ExtractMonth</name>
+        <qualifiedname>iceberg::TemporalUtils::ExtractMonth</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <briefdescription>
+<para>Extract a date or timestamp month, as months from 1970-01-01. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="34" column="17" bodyfile="iceberg/util/temporal_util.cc" bodystart="176" bodyend="193"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalUtils_1aee0757d3540d0df7df8aa2f3e9a3121f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::TemporalUtils::ExtractDay</definition>
+        <argsstring>(const Literal &amp;literal)</argsstring>
+        <name>ExtractDay</name>
+        <qualifiedname>iceberg::TemporalUtils::ExtractDay</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <briefdescription>
+<para>Extract a date or timestamp day, as days from 1970-01-01. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="37" column="17" bodyfile="iceberg/util/temporal_util.cc" bodystart="199" bodyend="216"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TemporalUtils_1a96090fda58bef0c1f099961155763c1f" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::TemporalUtils::ExtractHour</definition>
+        <argsstring>(const Literal &amp;literal)</argsstring>
+        <name>ExtractHour</name>
+        <qualifiedname>iceberg::TemporalUtils::ExtractHour</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>literal</declname>
+        </param>
+        <briefdescription>
+<para>Extract a timestamp hour, as hours from 1970-01-01 00:00:00. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/temporal_util.h" line="40" column="17" bodyfile="iceberg/util/temporal_util.cc" bodystart="222" bodyend="238"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/temporal_util.h" line="28" column="1" bodyfile="iceberg/util/temporal_util.h" bodystart="28" bodyend="41"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TemporalUtils_1aee0757d3540d0df7df8aa2f3e9a3121f" prot="public" virt="non-virtual"><scope>iceberg::TemporalUtils</scope><name>ExtractDay</name></member>
+      <member refid="classiceberg_1_1TemporalUtils_1a96090fda58bef0c1f099961155763c1f" prot="public" virt="non-virtual"><scope>iceberg::TemporalUtils</scope><name>ExtractHour</name></member>
+      <member refid="classiceberg_1_1TemporalUtils_1afa7ed8ec605daeb7487a739c1e602070" prot="public" virt="non-virtual"><scope>iceberg::TemporalUtils</scope><name>ExtractMonth</name></member>
+      <member refid="classiceberg_1_1TemporalUtils_1a5fd14b5e476db025684d37351a8d821e" prot="public" virt="non-virtual"><scope>iceberg::TemporalUtils</scope><name>ExtractYear</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

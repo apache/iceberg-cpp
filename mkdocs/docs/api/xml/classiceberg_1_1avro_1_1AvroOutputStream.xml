@@ -1,0 +1,246 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1avro_1_1AvroOutputStream" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::avro::AvroOutputStream</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">avro::OutputStream</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroOutputStream_1a3cb2a9c767ebd250175f9072729c3019" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt;::arrow::io::OutputStream &gt;</type>
+        <definition>std::shared_ptr&lt;::arrow::io::OutputStream&gt; iceberg::avro::AvroOutputStream::output_stream_</definition>
+        <argsstring></argsstring>
+        <name>output_stream_</name>
+        <qualifiedname>iceberg::avro::AvroOutputStream::output_stream_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_stream_internal.h" line="93" column="19" bodyfile="iceberg/avro/avro_stream_internal.h" bodystart="93" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroOutputStream_1a58e599deedee2a3150ca60d4ab07d8fe" prot="private" static="no" mutable="no">
+        <type>const int64_t</type>
+        <definition>const int64_t iceberg::avro::AvroOutputStream::buffer_size_</definition>
+        <argsstring></argsstring>
+        <name>buffer_size_</name>
+        <qualifiedname>iceberg::avro::AvroOutputStream::buffer_size_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_stream_internal.h" line="94" column="17" bodyfile="iceberg/avro/avro_stream_internal.h" bodystart="94" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroOutputStream_1a144e99334855c056f79992979552d419" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; iceberg::avro::AvroOutputStream::buffer_</definition>
+        <argsstring></argsstring>
+        <name>buffer_</name>
+        <qualifiedname>iceberg::avro::AvroOutputStream::buffer_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_stream_internal.h" line="95" column="15" bodyfile="iceberg/avro/avro_stream_internal.h" bodystart="95" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroOutputStream_1ad45aaa08479782082c8f9af40a3a8813" prot="private" static="no" mutable="no">
+        <type>size_t</type>
+        <definition>size_t iceberg::avro::AvroOutputStream::buffer_pos_</definition>
+        <argsstring></argsstring>
+        <name>buffer_pos_</name>
+        <qualifiedname>iceberg::avro::AvroOutputStream::buffer_pos_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_stream_internal.h" line="96" column="10" bodyfile="iceberg/avro/avro_stream_internal.h" bodystart="96" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroOutputStream_1aa28b855070489ea08aa932bffb9dc1f9" prot="private" static="no" mutable="no">
+        <type>uint64_t</type>
+        <definition>uint64_t iceberg::avro::AvroOutputStream::flushed_bytes_</definition>
+        <argsstring></argsstring>
+        <name>flushed_bytes_</name>
+        <qualifiedname>iceberg::avro::AvroOutputStream::flushed_bytes_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_stream_internal.h" line="97" column="12" bodyfile="iceberg/avro/avro_stream_internal.h" bodystart="97" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroOutputStream_1a5fa00a4f59e921bc6563df3c374af7b5" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::AvroOutputStream::AvroOutputStream</definition>
+        <argsstring>(std::shared_ptr&lt;::arrow::io::OutputStream &gt; output_stream, int64_t buffer_size)</argsstring>
+        <name>AvroOutputStream</name>
+        <qualifiedname>iceberg::avro::AvroOutputStream::AvroOutputStream</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt;::arrow::io::OutputStream &gt;</type>
+          <declname>output_stream</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>buffer_size</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_stream_internal.h" line="67" column="12" bodyfile="iceberg/avro/avro_stream_internal.cc" bodystart="100" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroOutputStream_1a37cf351c094d961590afd87dd02392f4" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::AvroOutputStream::~AvroOutputStream</definition>
+        <argsstring>() override</argsstring>
+        <name>~AvroOutputStream</name>
+        <qualifiedname>iceberg::avro::AvroOutputStream::~AvroOutputStream</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_stream_internal.h" line="70" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroOutputStream_1a5c859a3a32354ff147f2ca800dba5b8c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::avro::AvroOutputStream::next</definition>
+        <argsstring>(uint8_t **data, size_t *len) override</argsstring>
+        <name>next</name>
+        <qualifiedname>iceberg::avro::AvroOutputStream::next</qualifiedname>
+        <param>
+          <type>uint8_t **</type>
+          <declname>data</declname>
+        </param>
+        <param>
+          <type>size_t *</type>
+          <declname>len</declname>
+        </param>
+        <briefdescription>
+<para>Returns a buffer that can be written into. On successful return, data has the pointer to the buffer and len has the number of bytes available at data. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_stream_internal.h" line="75" column="8" bodyfile="iceberg/avro/avro_stream_internal.cc" bodystart="108" bodyend="118"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroOutputStream_1a7177ab03a7fc28efe6a4c9ceef529ea1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::AvroOutputStream::backup</definition>
+        <argsstring>(size_t len) override</argsstring>
+        <name>backup</name>
+        <qualifiedname>iceberg::avro::AvroOutputStream::backup</qualifiedname>
+        <param>
+          <type>size_t</type>
+          <declname>len</declname>
+        </param>
+        <briefdescription>
+<para>&quot;Returns&quot; back to the stream some of the buffer obtained from in the last call to <ref refid="classiceberg_1_1avro_1_1AvroOutputStream_1a5c859a3a32354ff147f2ca800dba5b8c" kindref="member">next()</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_stream_internal.h" line="79" column="8" bodyfile="iceberg/avro/avro_stream_internal.cc" bodystart="120" bodyend="125"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroOutputStream_1a1472ab3fdbb4e4dfa169739a06a4671f" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>uint64_t</type>
+        <definition>uint64_t iceberg::avro::AvroOutputStream::byteCount</definition>
+        <argsstring>() const override</argsstring>
+        <name>byteCount</name>
+        <qualifiedname>iceberg::avro::AvroOutputStream::byteCount</qualifiedname>
+        <briefdescription>
+<para>Number of bytes written so far into this stream. The whole buffer returned by <ref refid="classiceberg_1_1avro_1_1AvroOutputStream_1a5c859a3a32354ff147f2ca800dba5b8c" kindref="member">next()</ref> is assumed to be written unless some of it was returned using <ref refid="classiceberg_1_1avro_1_1AvroOutputStream_1a7177ab03a7fc28efe6a4c9ceef529ea1" kindref="member">backup()</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_stream_internal.h" line="84" column="12" bodyfile="iceberg/avro/avro_stream_internal.cc" bodystart="127" bodyend="127"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroOutputStream_1ae32eb7849a11ea0de22f245ad44cd9c1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::avro::AvroOutputStream::flush</definition>
+        <argsstring>() override</argsstring>
+        <name>flush</name>
+        <qualifiedname>iceberg::avro::AvroOutputStream::flush</qualifiedname>
+        <briefdescription>
+<para>Flushes any data remaining in the buffer to the stream&apos;s underlying store, if any. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_stream_internal.h" line="88" column="8" bodyfile="iceberg/avro/avro_stream_internal.cc" bodystart="129" bodyend="138"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroOutputStream_1ae77df890e161ddf1e441d363ba94e705" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::shared_ptr&lt;::arrow::io::OutputStream &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt;::arrow::io::OutputStream &gt; &amp; iceberg::avro::AvroOutputStream::arrow_output_stream</definition>
+        <argsstring>() const</argsstring>
+        <name>arrow_output_stream</name>
+        <qualifiedname>iceberg::avro::AvroOutputStream::arrow_output_stream</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_stream_internal.h" line="90" column="25" bodyfile="iceberg/avro/avro_stream_internal.cc" bodystart="140" bodyend="143"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>avro::OutputStream</label>
+      </node>
+      <node id="1">
+        <label>iceberg::avro::AvroOutputStream</label>
+        <link refid="classiceberg_1_1avro_1_1AvroOutputStream"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>avro::OutputStream</label>
+      </node>
+      <node id="1">
+        <label>iceberg::avro::AvroOutputStream</label>
+        <link refid="classiceberg_1_1avro_1_1AvroOutputStream"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/avro/avro_stream_internal.h" line="65" column="1" bodyfile="iceberg/avro/avro_stream_internal.h" bodystart="65" bodyend="98"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1avro_1_1AvroOutputStream_1ae77df890e161ddf1e441d363ba94e705" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroOutputStream</scope><name>arrow_output_stream</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroOutputStream_1a5fa00a4f59e921bc6563df3c374af7b5" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroOutputStream</scope><name>AvroOutputStream</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroOutputStream_1a7177ab03a7fc28efe6a4c9ceef529ea1" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroOutputStream</scope><name>backup</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroOutputStream_1a144e99334855c056f79992979552d419" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroOutputStream</scope><name>buffer_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroOutputStream_1ad45aaa08479782082c8f9af40a3a8813" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroOutputStream</scope><name>buffer_pos_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroOutputStream_1a58e599deedee2a3150ca60d4ab07d8fe" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroOutputStream</scope><name>buffer_size_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroOutputStream_1a1472ab3fdbb4e4dfa169739a06a4671f" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroOutputStream</scope><name>byteCount</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroOutputStream_1ae32eb7849a11ea0de22f245ad44cd9c1" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroOutputStream</scope><name>flush</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroOutputStream_1aa28b855070489ea08aa932bffb9dc1f9" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroOutputStream</scope><name>flushed_bytes_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroOutputStream_1a5c859a3a32354ff147f2ca800dba5b8c" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroOutputStream</scope><name>next</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroOutputStream_1a3cb2a9c767ebd250175f9072729c3019" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroOutputStream</scope><name>output_stream_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroOutputStream_1a37cf351c094d961590afd87dd02392f4" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroOutputStream</scope><name>~AvroOutputStream</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

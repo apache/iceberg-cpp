@@ -1,0 +1,194 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ReaderProperties" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ReaderProperties</compoundname>
+    <basecompoundref refid="classiceberg_1_1ConfigBase" prot="public" virt="non-virtual">iceberg::ConfigBase&lt; ReaderProperties &gt;</basecompoundref>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1ReaderProperties_1ac4e7a9f76a87d7ea6e48eac8d4770d2b" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>const <ref refid="classiceberg_1_1ConfigBase" kindref="compound">ConfigBase</ref>&lt; <ref refid="classiceberg_1_1ReaderProperties" kindref="compound">ReaderProperties</ref> &gt;::Entry&lt; T &gt;</type>
+        <definition>using iceberg::ReaderProperties::Entry =  const ConfigBase&lt;ReaderProperties&gt;::Entry&lt;T&gt;</definition>
+        <argsstring></argsstring>
+        <name>Entry</name>
+        <qualifiedname>iceberg::ReaderProperties::Entry</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="74" column="3" bodyfile="iceberg/file_reader.h" bodystart="74" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ReaderProperties_1ac41dca455600b179913525bb79b2cd60" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::ReaderProperties::kBatchSize</definition>
+        <argsstring></argsstring>
+        <name>kBatchSize</name>
+        <qualifiedname>iceberg::ReaderProperties::kBatchSize</qualifiedname>
+        <initializer>{&quot;read.batch-size&quot;, 4096}</initializer>
+        <briefdescription>
+<para>The batch size to read. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="77" column="23" bodyfile="iceberg/file_reader.h" bodystart="77" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ReaderProperties_1acd2d67afddc7078a168e6fc54a07d4eb" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; bool &gt;</type>
+        <definition>Entry&lt;bool&gt; iceberg::ReaderProperties::kAvroSkipDatum</definition>
+        <argsstring></argsstring>
+        <name>kAvroSkipDatum</name>
+        <qualifiedname>iceberg::ReaderProperties::kAvroSkipDatum</qualifiedname>
+        <initializer>{&quot;read.avro.skip-datum&quot;, true}</initializer>
+        <briefdescription>
+<para>Skip GenericDatum in Avro reader for better performance. When true, decode directly from Avro to Arrow without GenericDatum intermediate. Default: true (skip GenericDatum for better performance). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="82" column="23" bodyfile="iceberg/file_reader.h" bodystart="82" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ReaderProperties_1a6bc67dd5a6ab5a6abf2e6b1b7d461dc3" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::ReaderProperties::kAvroBufferSize</definition>
+        <argsstring></argsstring>
+        <name>kAvroBufferSize</name>
+        <qualifiedname>iceberg::ReaderProperties::kAvroBufferSize</qualifiedname>
+        <initializer>{&quot;read.avro.buffer-size&quot;, 1024 * 1024}</initializer>
+        <briefdescription>
+<para>The buffer size used by Avro input stream. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="85" column="23" bodyfile="iceberg/file_reader.h" bodystart="85" bodyend="85"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ReaderProperties_1a4c74ab877cfb3fef17fffc1aea9f4493" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1ReaderProperties" kindref="compound">ReaderProperties</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; ReaderProperties &gt; iceberg::ReaderProperties::default_properties</definition>
+        <argsstring>()</argsstring>
+        <name>default_properties</name>
+        <qualifiedname>iceberg::ReaderProperties::default_properties</qualifiedname>
+        <briefdescription>
+<para>Create a default <ref refid="classiceberg_1_1ReaderProperties" kindref="compound">ReaderProperties</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="88" column="26" bodyfile="iceberg/file_reader.cc" bodystart="62" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ReaderProperties_1a8f6135c933f4855f8c17341dc8091d6a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1ReaderProperties" kindref="compound">ReaderProperties</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; ReaderProperties &gt; iceberg::ReaderProperties::FromMap</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)</argsstring>
+        <name>FromMap</name>
+        <qualifiedname>iceberg::ReaderProperties::FromMap</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1ReaderProperties" kindref="compound">ReaderProperties</ref> instance from a map of key-value pairs. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="91" column="26" bodyfile="iceberg/file_reader.cc" bodystart="66" bodyend="71"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1ReaderProperties_1a35d666af6a55a8cda68e3acbf093dbc9" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ReaderProperties::ReaderProperties</definition>
+        <argsstring>()=default</argsstring>
+        <name>ReaderProperties</name>
+        <qualifiedname>iceberg::ReaderProperties::ReaderProperties</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="95" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::ConfigBase&lt; ReaderProperties &gt;</label>
+        <link refid="classiceberg_1_1ConfigBase"/>
+      </node>
+      <node id="1">
+        <label>iceberg::ReaderProperties</label>
+        <link refid="classiceberg_1_1ReaderProperties"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::ConfigBase&lt; ReaderProperties &gt;</label>
+        <link refid="classiceberg_1_1ConfigBase"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>configs_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::ReaderProperties</label>
+        <link refid="classiceberg_1_1ReaderProperties"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/file_reader.h" line="71" column="1" bodyfile="iceberg/file_reader.h" bodystart="71" bodyend="96"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ConfigBase_1a464281576df4a683611d8319e578257c" prot="public" virt="non-virtual"><scope>iceberg::ReaderProperties</scope><name>configs</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a5988dbb52a6ce914c88ef10c66e5bba7" prot="protected" virt="non-virtual"><scope>iceberg::ReaderProperties</scope><name>configs_</name></member>
+      <member refid="classiceberg_1_1ReaderProperties_1a4c74ab877cfb3fef17fffc1aea9f4493" prot="public" virt="non-virtual"><scope>iceberg::ReaderProperties</scope><name>default_properties</name></member>
+      <member refid="classiceberg_1_1ReaderProperties_1ac4e7a9f76a87d7ea6e48eac8d4770d2b" prot="public" virt="non-virtual"><scope>iceberg::ReaderProperties</scope><name>Entry</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a78dc1c7d65af1e096a19fc77d2c9ed39" prot="public" virt="non-virtual"><scope>iceberg::ReaderProperties</scope><name>Extract</name></member>
+      <member refid="classiceberg_1_1ReaderProperties_1a8f6135c933f4855f8c17341dc8091d6a" prot="public" virt="non-virtual"><scope>iceberg::ReaderProperties</scope><name>FromMap</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a793c5c7e230dac7b87c16200f8263db6" prot="public" virt="non-virtual"><scope>iceberg::ReaderProperties</scope><name>Get</name></member>
+      <member refid="classiceberg_1_1ReaderProperties_1a6bc67dd5a6ab5a6abf2e6b1b7d461dc3" prot="public" virt="non-virtual"><scope>iceberg::ReaderProperties</scope><name>kAvroBufferSize</name></member>
+      <member refid="classiceberg_1_1ReaderProperties_1acd2d67afddc7078a168e6fc54a07d4eb" prot="public" virt="non-virtual"><scope>iceberg::ReaderProperties</scope><name>kAvroSkipDatum</name></member>
+      <member refid="classiceberg_1_1ReaderProperties_1ac41dca455600b179913525bb79b2cd60" prot="public" virt="non-virtual"><scope>iceberg::ReaderProperties</scope><name>kBatchSize</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a75f09e1cd2bb55b4df854298ed678313" prot="public" virt="non-virtual"><scope>iceberg::ReaderProperties</scope><name>mutable_configs</name></member>
+      <member refid="classiceberg_1_1ReaderProperties_1a35d666af6a55a8cda68e3acbf093dbc9" prot="private" virt="non-virtual"><scope>iceberg::ReaderProperties</scope><name>ReaderProperties</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a95b58a9275880fc2437210f42e8946f2" prot="public" virt="non-virtual"><scope>iceberg::ReaderProperties</scope><name>Reset</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a3c626ca9dd5adf5a1f2e72d3f751059c" prot="public" virt="non-virtual"><scope>iceberg::ReaderProperties</scope><name>Set</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a1fe814df79a9ed72e34fa9d7e6e8d443" prot="public" virt="non-virtual"><scope>iceberg::ReaderProperties</scope><name>Unset</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

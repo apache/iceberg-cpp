@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1ReaderFactoryRegistry" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::ReaderFactoryRegistry</compoundname>
+    <includes refid="file__reader_8h" local="no">file_reader.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1ReaderFactoryRegistry_1ace424a125cc78a10d05f23a69238720a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ReaderFactoryRegistry::ReaderFactoryRegistry</definition>
+        <argsstring>(FileFormatType format_type, ReaderFactory factory)</argsstring>
+        <name>ReaderFactoryRegistry</name>
+        <qualifiedname>iceberg::ReaderFactoryRegistry::ReaderFactoryRegistry</qualifiedname>
+        <param>
+          <type>FileFormatType</type>
+          <declname>format_type</declname>
+        </param>
+        <param>
+          <type><ref refid="file__reader_8h_1aadcea35e8b45a436a61aaf23684b939f" kindref="member">ReaderFactory</ref></type>
+          <declname>factory</declname>
+        </param>
+        <briefdescription>
+<para>Register a factory function for a specific file format. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="128" column="3" bodyfile="iceberg/file_reader.cc" bodystart="50" bodyend="53"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1ReaderFactoryRegistry_1a765ea0dfe663cd0c849ed406f9642653" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="file__reader_8h_1aadcea35e8b45a436a61aaf23684b939f" kindref="member">ReaderFactory</ref> &amp;</type>
+        <definition>ReaderFactory &amp; iceberg::ReaderFactoryRegistry::GetFactory</definition>
+        <argsstring>(FileFormatType format_type)</argsstring>
+        <name>GetFactory</name>
+        <qualifiedname>iceberg::ReaderFactoryRegistry::GetFactory</qualifiedname>
+        <param>
+          <type>FileFormatType</type>
+          <declname>format_type</declname>
+        </param>
+        <briefdescription>
+<para>Get the factory function for a specific file format. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="131" column="24" bodyfile="iceberg/file_reader.cc" bodystart="40" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1ReaderFactoryRegistry_1a04318c64c78edaedda61a63652c5f4b3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1Reader" kindref="compound">Reader</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; Reader &gt; &gt; iceberg::ReaderFactoryRegistry::Open</definition>
+        <argsstring>(FileFormatType format_type, const ReaderOptions &amp;options)</argsstring>
+        <name>Open</name>
+        <qualifiedname>iceberg::ReaderFactoryRegistry::Open</qualifiedname>
+        <param>
+          <type>FileFormatType</type>
+          <declname>format_type</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ReaderOptions" kindref="compound">ReaderOptions</ref> &amp;</type>
+          <declname>options</declname>
+        </param>
+        <briefdescription>
+<para>Open a reader for a specific file format. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_reader.h" line="134" column="17" bodyfile="iceberg/file_reader.cc" bodystart="55" bodyend="60"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Registry of reader factories for different file formats. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/file_reader.h" line="126" column="1" bodyfile="iceberg/file_reader.h" bodystart="126" bodyend="136"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1ReaderFactoryRegistry_1a765ea0dfe663cd0c849ed406f9642653" prot="public" virt="non-virtual"><scope>iceberg::ReaderFactoryRegistry</scope><name>GetFactory</name></member>
+      <member refid="structiceberg_1_1ReaderFactoryRegistry_1a04318c64c78edaedda61a63652c5f4b3" prot="public" virt="non-virtual"><scope>iceberg::ReaderFactoryRegistry</scope><name>Open</name></member>
+      <member refid="structiceberg_1_1ReaderFactoryRegistry_1ace424a125cc78a10d05f23a69238720a" prot="public" virt="non-virtual"><scope>iceberg::ReaderFactoryRegistry</scope><name>ReaderFactoryRegistry</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

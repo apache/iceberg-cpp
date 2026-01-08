@@ -1,0 +1,124 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1RenameTableRequest" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::RenameTableRequest</compoundname>
+    <includes refid="types_8h" local="no">types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1RenameTableRequest_1abe65ed1fd89eb93880b39216cfb2c2a7" prot="public" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref></type>
+        <definition>TableIdentifier iceberg::rest::RenameTableRequest::source</definition>
+        <argsstring></argsstring>
+        <name>source</name>
+        <qualifiedname>iceberg::rest::RenameTableRequest::source</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="130" column="19" bodyfile="iceberg/catalog/rest/types.h" bodystart="130" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1RenameTableRequest_1af2e6b1cec9292b3db48d63513e2d14ff" prot="public" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref></type>
+        <definition>TableIdentifier iceberg::rest::RenameTableRequest::destination</definition>
+        <argsstring></argsstring>
+        <name>destination</name>
+        <qualifiedname>iceberg::rest::RenameTableRequest::destination</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="131" column="19" bodyfile="iceberg/catalog/rest/types.h" bodystart="131" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1RenameTableRequest_1a315508d171c739604089d8c25b1ba88b" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::RenameTableRequest::Validate</definition>
+        <argsstring>() const</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::rest::RenameTableRequest::Validate</qualifiedname>
+        <briefdescription>
+<para>Validates the <ref refid="structiceberg_1_1rest_1_1RenameTableRequest" kindref="compound">RenameTableRequest</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="134" column="10" bodyfile="iceberg/catalog/rest/types.h" bodystart="134" bodyend="138"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1RenameTableRequest_1a8b5c09fc7cc50c43c545f93715312830" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::rest::RenameTableRequest::operator==</definition>
+        <argsstring>(const RenameTableRequest &amp;) const =default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::rest::RenameTableRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1rest_1_1RenameTableRequest" kindref="compound">RenameTableRequest</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="140" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Request to rename a table. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="3">
+        <label>iceberg::Namespace</label>
+        <link refid="structiceberg_1_1Namespace"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>levels</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::TableIdentifier</label>
+        <link refid="structiceberg_1_1TableIdentifier"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>ns</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>name</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::RenameTableRequest</label>
+        <link refid="structiceberg_1_1rest_1_1RenameTableRequest"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>destination</edgelabel>
+          <edgelabel>source</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::string</label>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/types.h" line="129" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="129" bodyend="141"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1RenameTableRequest_1af2e6b1cec9292b3db48d63513e2d14ff" prot="public" virt="non-virtual"><scope>iceberg::rest::RenameTableRequest</scope><name>destination</name></member>
+      <member refid="structiceberg_1_1rest_1_1RenameTableRequest_1a8b5c09fc7cc50c43c545f93715312830" prot="public" virt="non-virtual"><scope>iceberg::rest::RenameTableRequest</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1rest_1_1RenameTableRequest_1abe65ed1fd89eb93880b39216cfb2c2a7" prot="public" virt="non-virtual"><scope>iceberg::rest::RenameTableRequest</scope><name>source</name></member>
+      <member refid="structiceberg_1_1rest_1_1RenameTableRequest_1a315508d171c739604089d8c25b1ba88b" prot="public" virt="non-virtual"><scope>iceberg::rest::RenameTableRequest</scope><name>Validate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

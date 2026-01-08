@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1TableTraits_3_01StaticTable_01_4" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::TableTraits&lt; StaticTable &gt;</compoundname>
+    <templateparamlist>
+    </templateparamlist>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1TableTraits_3_01StaticTable_01_4_1acd05238c10a335145871dc6521c898bb" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr bool</type>
+        <definition>constexpr bool iceberg::TableTraits&lt; StaticTable &gt;::kRefreshSupported</definition>
+        <argsstring></argsstring>
+        <name>kRefreshSupported</name>
+        <qualifiedname>iceberg::TableTraits&lt; StaticTable &gt;::kRefreshSupported</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/table_test.cc" line="54" column="25" bodyfile="iceberg/test/table_test.cc" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1TableTraits_3_01StaticTable_01_4_1a5a8f2635e9c53ff79340d4179f1ef674" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr bool</type>
+        <definition>constexpr bool iceberg::TableTraits&lt; StaticTable &gt;::kTransactionSupported</definition>
+        <argsstring></argsstring>
+        <name>kTransactionSupported</name>
+        <qualifiedname>iceberg::TableTraits&lt; StaticTable &gt;::kTransactionSupported</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/table_test.cc" line="55" column="25" bodyfile="iceberg/test/table_test.cc" bodystart="55" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1TableTraits_3_01StaticTable_01_4_1a4f48a08c659db1a3a1732e6e3b7134d1" prot="public" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1StaticTable" kindref="compound">StaticTable</ref> &gt; &gt;</type>
+        <definition>static Result&lt; std::shared_ptr&lt; StaticTable &gt; &gt; iceberg::TableTraits&lt; StaticTable &gt;::Make</definition>
+        <argsstring>(const TableIdentifier &amp;ident, std::shared_ptr&lt; TableMetadata &gt; metadata, const std::string &amp;location, std::shared_ptr&lt; FileIO &gt; io, std::shared_ptr&lt; Catalog &gt;)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::TableTraits&lt; StaticTable &gt;::Make</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref> &amp;</type>
+          <declname>ident</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &gt;</type>
+          <declname>metadata</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>location</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+          <declname>io</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref> &gt;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/table_test.cc" line="57" column="17" bodyfile="iceberg/test/table_test.cc" bodystart="57" bodyend="61"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/test/table_test.cc" line="53" column="1" bodyfile="iceberg/test/table_test.cc" bodystart="53" bodyend="62"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1TableTraits_3_01StaticTable_01_4_1acd05238c10a335145871dc6521c898bb" prot="public" virt="non-virtual"><scope>iceberg::TableTraits&lt; StaticTable &gt;</scope><name>kRefreshSupported</name></member>
+      <member refid="structiceberg_1_1TableTraits_3_01StaticTable_01_4_1a5a8f2635e9c53ff79340d4179f1ef674" prot="public" virt="non-virtual"><scope>iceberg::TableTraits&lt; StaticTable &gt;</scope><name>kTransactionSupported</name></member>
+      <member refid="structiceberg_1_1TableTraits_3_01StaticTable_01_4_1a4f48a08c659db1a3a1732e6e3b7134d1" prot="public" virt="non-virtual"><scope>iceberg::TableTraits&lt; StaticTable &gt;</scope><name>Make</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

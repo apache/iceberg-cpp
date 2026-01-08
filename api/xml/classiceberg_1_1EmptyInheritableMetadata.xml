@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1EmptyInheritableMetadata" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::EmptyInheritableMetadata</compoundname>
+    <basecompoundref refid="classiceberg_1_1InheritableMetadata" prot="public" virt="non-virtual">iceberg::InheritableMetadata</basecompoundref>
+    <includes refid="inheritable__metadata_8h" local="no">inheritable_metadata.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1EmptyInheritableMetadata_1ac6b93e1cb14ec4d3b51957174d6910d8" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::EmptyInheritableMetadata::Apply</definition>
+        <argsstring>(ManifestEntry &amp;entry) override</argsstring>
+        <name>Apply</name>
+        <qualifiedname>iceberg::EmptyInheritableMetadata::Apply</qualifiedname>
+        <reimplements refid="classiceberg_1_1InheritableMetadata_1a8cce7bd6676ae4bd6b69eff701c6398f">Apply</reimplements>
+        <param>
+          <type><ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &amp;</type>
+          <declname>entry</declname>
+        </param>
+        <briefdescription>
+<para>Apply inheritable metadata to a manifest entry. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>entry</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The manifest entry to modify. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/inheritable_metadata.h" line="74" column="10" bodyfile="iceberg/inheritable_metadata.cc" bodystart="72" bodyend="78"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Empty implementation that applies no inheritance. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::EmptyInheritableMetadata</label>
+        <link refid="classiceberg_1_1EmptyInheritableMetadata"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::InheritableMetadata</label>
+        <link refid="classiceberg_1_1InheritableMetadata"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::EmptyInheritableMetadata</label>
+        <link refid="classiceberg_1_1EmptyInheritableMetadata"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::InheritableMetadata</label>
+        <link refid="classiceberg_1_1InheritableMetadata"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/inheritable_metadata.h" line="72" column="1" bodyfile="iceberg/inheritable_metadata.h" bodystart="72" bodyend="75"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1EmptyInheritableMetadata_1ac6b93e1cb14ec4d3b51957174d6910d8" prot="public" virt="virtual"><scope>iceberg::EmptyInheritableMetadata</scope><name>Apply</name></member>
+      <member refid="classiceberg_1_1InheritableMetadata_1a58d646f2fc88a6a679577d9f40519cc3" prot="public" virt="virtual"><scope>iceberg::EmptyInheritableMetadata</scope><name>~InheritableMetadata</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

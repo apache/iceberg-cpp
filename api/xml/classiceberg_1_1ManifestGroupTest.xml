@@ -1,0 +1,533 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ManifestGroupTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ManifestGroupTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::TestWithParam&lt; int &gt;</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroupTest_1a91c3d73306fcde0c96183951d253df16" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::ManifestGroupTest::file_io_</definition>
+        <argsstring></argsstring>
+        <name>file_io_</name>
+        <qualifiedname>iceberg::ManifestGroupTest::file_io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_group_test.cc" line="232" column="19" bodyfile="iceberg/test/manifest_group_test.cc" bodystart="232" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroupTest_1ad66e3d37f193b15216835c9b3dc40b9f" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::ManifestGroupTest::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::ManifestGroupTest::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_group_test.cc" line="233" column="19" bodyfile="iceberg/test/manifest_group_test.cc" bodystart="233" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroupTest_1a336ae964273e88582abd0119f2771a58" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionSpec&gt; iceberg::ManifestGroupTest::partitioned_spec_</definition>
+        <argsstring></argsstring>
+        <name>partitioned_spec_</name>
+        <qualifiedname>iceberg::ManifestGroupTest::partitioned_spec_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_group_test.cc" line="234" column="19" bodyfile="iceberg/test/manifest_group_test.cc" bodystart="234" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1ManifestGroupTest_1a8e54589d6d9bec8b77a3d5b1f3be57ae" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionSpec&gt; iceberg::ManifestGroupTest::unpartitioned_spec_</definition>
+        <argsstring></argsstring>
+        <name>unpartitioned_spec_</name>
+        <qualifiedname>iceberg::ManifestGroupTest::unpartitioned_spec_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_group_test.cc" line="235" column="19" bodyfile="iceberg/test/manifest_group_test.cc" bodystart="235" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroupTest_1a35bae1949b13fb341e210a7f6c79814e" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ManifestGroupTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::ManifestGroupTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_group_test.cc" line="50" column="8" bodyfile="iceberg/test/manifest_group_test.cc" bodystart="50" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroupTest_1a38e2798ae24cc9c8101894a30e3912a1" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::ManifestGroupTest::MakeManifestPath</definition>
+        <argsstring>()</argsstring>
+        <name>MakeManifestPath</name>
+        <qualifiedname>iceberg::ManifestGroupTest::MakeManifestPath</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_group_test.cc" line="71" column="15" bodyfile="iceberg/test/manifest_group_test.cc" bodystart="71" bodyend="75"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroupTest_1a61ee0de9316dea535fed1dba75b393c2" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; DataFile &gt; iceberg::ManifestGroupTest::MakeDataFile</definition>
+        <argsstring>(const std::string &amp;path, const PartitionValues &amp;partition, int32_t spec_id, int64_t record_count=1)</argsstring>
+        <name>MakeDataFile</name>
+        <qualifiedname>iceberg::ManifestGroupTest::MakeDataFile</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+          <declname>partition</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>spec_id</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>record_count</declname>
+          <defval>1</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_group_test.cc" line="77" column="19" bodyfile="iceberg/test/manifest_group_test.cc" bodystart="77" bodyend="89"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroupTest_1a63427f2df13d6ebd2e6625ae7341fbfa" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; DataFile &gt; iceberg::ManifestGroupTest::MakePositionDeleteFile</definition>
+        <argsstring>(const std::string &amp;path, const PartitionValues &amp;partition, int32_t spec_id, std::optional&lt; std::string &gt; referenced_file=std::nullopt)</argsstring>
+        <name>MakePositionDeleteFile</name>
+        <qualifiedname>iceberg::ManifestGroupTest::MakePositionDeleteFile</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+          <declname>partition</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>spec_id</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; std::string &gt;</type>
+          <declname>referenced_file</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_group_test.cc" line="91" column="19" bodyfile="iceberg/test/manifest_group_test.cc" bodystart="91" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroupTest_1a075fe95f96418d4b972c70d13c1891df" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; DataFile &gt; iceberg::ManifestGroupTest::MakeEqualityDeleteFile</definition>
+        <argsstring>(const std::string &amp;path, const PartitionValues &amp;partition, int32_t spec_id, std::vector&lt; int &gt; equality_ids={1})</argsstring>
+        <name>MakeEqualityDeleteFile</name>
+        <qualifiedname>iceberg::ManifestGroupTest::MakeEqualityDeleteFile</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref> &amp;</type>
+          <declname>partition</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>spec_id</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; int &gt;</type>
+          <declname>equality_ids</declname>
+          <defval>{1}</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_group_test.cc" line="106" column="19" bodyfile="iceberg/test/manifest_group_test.cc" bodystart="106" bodyend="120"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroupTest_1a5761e6f67bed070373529cf42c6d5c57" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref></type>
+        <definition>ManifestEntry iceberg::ManifestGroupTest::MakeEntry</definition>
+        <argsstring>(ManifestStatus status, int64_t snapshot_id, int64_t sequence_number, std::shared_ptr&lt; DataFile &gt; file)</argsstring>
+        <name>MakeEntry</name>
+        <qualifiedname>iceberg::ManifestGroupTest::MakeEntry</qualifiedname>
+        <param>
+          <type>ManifestStatus</type>
+          <declname>status</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>sequence_number</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_group_test.cc" line="122" column="17" bodyfile="iceberg/test/manifest_group_test.cc" bodystart="122" bodyend="131"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroupTest_1ad676f49de8eab4b39b4c146e275d6189" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref></type>
+        <definition>ManifestFile iceberg::ManifestGroupTest::WriteDataManifest</definition>
+        <argsstring>(int format_version, int64_t snapshot_id, std::vector&lt; ManifestEntry &gt; entries, std::shared_ptr&lt; PartitionSpec &gt; spec)</argsstring>
+        <name>WriteDataManifest</name>
+        <qualifiedname>iceberg::ManifestGroupTest::WriteDataManifest</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>format_version</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &gt;</type>
+          <declname>entries</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+          <declname>spec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_group_test.cc" line="133" column="16" bodyfile="iceberg/test/manifest_group_test.cc" bodystart="133" bodyend="153"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroupTest_1af1edbf63e39700c2beb360d6fc9c9c80" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref></type>
+        <definition>ManifestFile iceberg::ManifestGroupTest::WriteDeleteManifest</definition>
+        <argsstring>(int format_version, int64_t snapshot_id, std::vector&lt; ManifestEntry &gt; entries, std::shared_ptr&lt; PartitionSpec &gt; spec)</argsstring>
+        <name>WriteDeleteManifest</name>
+        <qualifiedname>iceberg::ManifestGroupTest::WriteDeleteManifest</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>format_version</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>std::vector&lt; <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &gt;</type>
+          <declname>entries</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+          <declname>spec</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_group_test.cc" line="155" column="16" bodyfile="iceberg/test/manifest_group_test.cc" bodystart="155" bodyend="175"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroupTest_1a7d26ff693eaf33da13ae1c1bb97ed159" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::unordered_map&lt; int32_t, std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &gt;</type>
+        <definition>std::unordered_map&lt; int32_t, std::shared_ptr&lt; PartitionSpec &gt; &gt; iceberg::ManifestGroupTest::GetSpecsById</definition>
+        <argsstring>()</argsstring>
+        <name>GetSpecsById</name>
+        <qualifiedname>iceberg::ManifestGroupTest::GetSpecsById</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_group_test.cc" line="177" column="22" bodyfile="iceberg/test/manifest_group_test.cc" bodystart="177" bodyend="180"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroupTest_1a9e78e1ec2a92b8e7894e24039ee45428" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::ManifestGroupTest::MakeManifestListPath</definition>
+        <argsstring>()</argsstring>
+        <name>MakeManifestListPath</name>
+        <qualifiedname>iceberg::ManifestGroupTest::MakeManifestListPath</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_group_test.cc" line="182" column="15" bodyfile="iceberg/test/manifest_group_test.cc" bodystart="182" bodyend="186"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroupTest_1ac71c0358255087c6be26e1869c10124c" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref></type>
+        <definition>ManifestFile iceberg::ManifestGroupTest::WriteAndReadManifestListEntry</definition>
+        <argsstring>(int format_version, int64_t snapshot_id, int64_t sequence_number, const ManifestFile &amp;manifest)</argsstring>
+        <name>WriteAndReadManifestListEntry</name>
+        <qualifiedname>iceberg::ManifestGroupTest::WriteAndReadManifestListEntry</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>format_version</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>int64_t</type>
+          <declname>sequence_number</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_group_test.cc" line="190" column="16" bodyfile="iceberg/test/manifest_group_test.cc" bodystart="190" bodyend="214"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroupTest_1afe096d993538159baecc376c1820854c" prot="protected" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>static std::vector&lt; std::string &gt; iceberg::ManifestGroupTest::GetPaths</definition>
+        <argsstring>(const std::vector&lt; std::shared_ptr&lt; FileScanTask &gt; &gt; &amp;tasks)</argsstring>
+        <name>GetPaths</name>
+        <qualifiedname>iceberg::ManifestGroupTest::GetPaths</qualifiedname>
+        <param>
+          <type>const std::vector&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1FileScanTask" kindref="compound">FileScanTask</ref> &gt; &gt; &amp;</type>
+          <declname>tasks</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_group_test.cc" line="216" column="22" bodyfile="iceberg/test/manifest_group_test.cc" bodystart="216" bodyend="222"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestGroupTest_1ac671d10ffe0ee9fc718bda3de81bc24d" prot="protected" static="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>static std::vector&lt; std::string &gt; iceberg::ManifestGroupTest::GetEntryPaths</definition>
+        <argsstring>(const std::vector&lt; ManifestEntry &gt; &amp;entries)</argsstring>
+        <name>GetEntryPaths</name>
+        <qualifiedname>iceberg::ManifestGroupTest::GetEntryPaths</qualifiedname>
+        <param>
+          <type>const std::vector&lt; <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &gt; &amp;</type>
+          <declname>entries</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_group_test.cc" line="224" column="22" bodyfile="iceberg/test/manifest_group_test.cc" bodystart="224" bodyend="230"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::ManifestGroupTest</label>
+        <link refid="classiceberg_1_1ManifestGroupTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; int &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="15">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="14">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="4">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="1">
+        <label>iceberg::ManifestGroupTest</label>
+        <link refid="classiceberg_1_1ManifestGroupTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>file_io_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>schema_</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>partitioned_spec_</edgelabel>
+          <edgelabel>unpartitioned_spec_</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="3">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="18">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="19" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="17">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="16">
+        <label>std::string_view</label>
+        <childnode refid="17" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; int &gt;</label>
+      </node>
+      <node id="11">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="12" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/manifest_group_test.cc" line="48" column="1" bodyfile="iceberg/test/manifest_group_test.cc" bodystart="48" bodyend="236"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ManifestGroupTest_1a91c3d73306fcde0c96183951d253df16" prot="protected" virt="non-virtual"><scope>iceberg::ManifestGroupTest</scope><name>file_io_</name></member>
+      <member refid="classiceberg_1_1ManifestGroupTest_1ac671d10ffe0ee9fc718bda3de81bc24d" prot="protected" virt="non-virtual"><scope>iceberg::ManifestGroupTest</scope><name>GetEntryPaths</name></member>
+      <member refid="classiceberg_1_1ManifestGroupTest_1afe096d993538159baecc376c1820854c" prot="protected" virt="non-virtual"><scope>iceberg::ManifestGroupTest</scope><name>GetPaths</name></member>
+      <member refid="classiceberg_1_1ManifestGroupTest_1a7d26ff693eaf33da13ae1c1bb97ed159" prot="protected" virt="non-virtual"><scope>iceberg::ManifestGroupTest</scope><name>GetSpecsById</name></member>
+      <member refid="classiceberg_1_1ManifestGroupTest_1a61ee0de9316dea535fed1dba75b393c2" prot="protected" virt="non-virtual"><scope>iceberg::ManifestGroupTest</scope><name>MakeDataFile</name></member>
+      <member refid="classiceberg_1_1ManifestGroupTest_1a5761e6f67bed070373529cf42c6d5c57" prot="protected" virt="non-virtual"><scope>iceberg::ManifestGroupTest</scope><name>MakeEntry</name></member>
+      <member refid="classiceberg_1_1ManifestGroupTest_1a075fe95f96418d4b972c70d13c1891df" prot="protected" virt="non-virtual"><scope>iceberg::ManifestGroupTest</scope><name>MakeEqualityDeleteFile</name></member>
+      <member refid="classiceberg_1_1ManifestGroupTest_1a9e78e1ec2a92b8e7894e24039ee45428" prot="protected" virt="non-virtual"><scope>iceberg::ManifestGroupTest</scope><name>MakeManifestListPath</name></member>
+      <member refid="classiceberg_1_1ManifestGroupTest_1a38e2798ae24cc9c8101894a30e3912a1" prot="protected" virt="non-virtual"><scope>iceberg::ManifestGroupTest</scope><name>MakeManifestPath</name></member>
+      <member refid="classiceberg_1_1ManifestGroupTest_1a63427f2df13d6ebd2e6625ae7341fbfa" prot="protected" virt="non-virtual"><scope>iceberg::ManifestGroupTest</scope><name>MakePositionDeleteFile</name></member>
+      <member refid="classiceberg_1_1ManifestGroupTest_1a336ae964273e88582abd0119f2771a58" prot="protected" virt="non-virtual"><scope>iceberg::ManifestGroupTest</scope><name>partitioned_spec_</name></member>
+      <member refid="classiceberg_1_1ManifestGroupTest_1ad66e3d37f193b15216835c9b3dc40b9f" prot="protected" virt="non-virtual"><scope>iceberg::ManifestGroupTest</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1ManifestGroupTest_1a35bae1949b13fb341e210a7f6c79814e" prot="protected" virt="non-virtual"><scope>iceberg::ManifestGroupTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1ManifestGroupTest_1a8e54589d6d9bec8b77a3d5b1f3be57ae" prot="protected" virt="non-virtual"><scope>iceberg::ManifestGroupTest</scope><name>unpartitioned_spec_</name></member>
+      <member refid="classiceberg_1_1ManifestGroupTest_1ac71c0358255087c6be26e1869c10124c" prot="protected" virt="non-virtual"><scope>iceberg::ManifestGroupTest</scope><name>WriteAndReadManifestListEntry</name></member>
+      <member refid="classiceberg_1_1ManifestGroupTest_1ad676f49de8eab4b39b4c146e275d6189" prot="protected" virt="non-virtual"><scope>iceberg::ManifestGroupTest</scope><name>WriteDataManifest</name></member>
+      <member refid="classiceberg_1_1ManifestGroupTest_1af1edbf63e39700c2beb360d6fc9c9c80" prot="protected" virt="non-virtual"><scope>iceberg::ManifestGroupTest</scope><name>WriteDeleteManifest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

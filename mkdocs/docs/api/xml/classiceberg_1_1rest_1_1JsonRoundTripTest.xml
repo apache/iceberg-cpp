@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1JsonRoundTripTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::rest::JsonRoundTripTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::TestWithParam&lt; JsonRoundTripParam&lt; Model &gt; &gt;</basecompoundref>
+    <templateparamlist>
+      <param>
+        <type>typename Model</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classiceberg_1_1rest_1_1JsonRoundTripTest_1af8ab41ff7a6fafaab86495df063f3397" prot="private" static="no">
+        <type>::testing::TestWithParam&lt; <ref refid="structiceberg_1_1rest_1_1JsonRoundTripParam" kindref="compound">JsonRoundTripParam</ref>&lt; Model &gt; &gt;</type>
+        <definition>using iceberg::rest::JsonRoundTripTest&lt; Model &gt;::Base =  ::testing::TestWithParam&lt;JsonRoundTripParam&lt;Model&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>Base</name>
+        <qualifiedname>iceberg::rest::JsonRoundTripTest::Base</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_internal_test.cc" line="87" column="3" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="87" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1JsonRoundTripTest_1a80b39a10574cc717eeaffd9f1dc25911" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::rest::JsonRoundTripTest&lt; Model &gt;::TestRoundTrip</definition>
+        <argsstring>()</argsstring>
+        <name>TestRoundTrip</name>
+        <qualifiedname>iceberg::rest::JsonRoundTripTest::TestRoundTrip</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_internal_test.cc" line="90" column="8" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="90" bodyend="103"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::rest::JsonRoundTripTest&lt; Model &gt;</label>
+        <link refid="classiceberg_1_1rest_1_1JsonRoundTripTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; JsonRoundTripParam&lt; Model &gt; &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::JsonRoundTripTest&lt; Model &gt;</label>
+        <link refid="classiceberg_1_1rest_1_1JsonRoundTripTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; JsonRoundTripParam&lt; Model &gt; &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/rest_json_internal_test.cc" line="86" column="1" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="86" bodyend="104"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1JsonRoundTripTest_1af8ab41ff7a6fafaab86495df063f3397" prot="private" virt="non-virtual"><scope>iceberg::rest::JsonRoundTripTest</scope><name>Base</name></member>
+      <member refid="classiceberg_1_1rest_1_1JsonRoundTripTest_1a80b39a10574cc717eeaffd9f1dc25911" prot="protected" virt="non-virtual"><scope>iceberg::rest::JsonRoundTripTest</scope><name>TestRoundTrip</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,76 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="avro__register_8h" kind="file" language="C++">
+    <compoundname>avro_register.h</compoundname>
+    <includes refid="iceberg__bundle__export_8h" local="yes">iceberg/iceberg_bundle_export.h</includes>
+    <includedby refid="avro__reader_8cc" local="yes">iceberg/avro/avro_reader.cc</includedby>
+    <includedby refid="avro__register_8cc" local="yes">iceberg/avro/avro_register.cc</includedby>
+    <includedby refid="avro__schema__util_8cc" local="yes">iceberg/avro/avro_schema_util.cc</includedby>
+    <includedby refid="avro__writer_8cc" local="yes">iceberg/avro/avro_writer.cc</includedby>
+    <includedby refid="avro__test_8cc" local="yes">iceberg/test/avro_test.cc</includedby>
+    <includedby refid="delete__file__index__test_8cc" local="yes">iceberg/test/delete_file_index_test.cc</includedby>
+    <includedby refid="manifest__group__test_8cc" local="yes">iceberg/test/manifest_group_test.cc</includedby>
+    <includedby refid="manifest__list__versions__test_8cc" local="yes">iceberg/test/manifest_list_versions_test.cc</includedby>
+    <includedby refid="manifest__reader__stats__test_8cc" local="yes">iceberg/test/manifest_reader_stats_test.cc</includedby>
+    <includedby refid="manifest__reader__test_8cc" local="yes">iceberg/test/manifest_reader_test.cc</includedby>
+    <includedby refid="manifest__writer__versions__test_8cc" local="yes">iceberg/test/manifest_writer_versions_test.cc</includedby>
+    <includedby refid="rolling__manifest__writer__test_8cc" local="yes">iceberg/test/rolling_manifest_writer_test.cc</includedby>
+    <incdepgraph>
+      <node id="1">
+        <label>iceberg/avro/avro_register.h</label>
+        <link refid="avro__register_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg/iceberg_bundle_export.h</label>
+        <link refid="iceberg__bundle__export_8h_source"/>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1avro">iceberg::avro</innernamespace>
+    <briefdescription>
+<para>Provide functions to register Avro implementations. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/iceberg_bundle_export.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg::avro<sp/>{</highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal">ICEBERG_BUNDLE_EXPORT<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>RegisterLogicalTypes();</highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal">ICEBERG_BUNDLE_EXPORT<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>RegisterReader();</highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal">ICEBERG_BUNDLE_EXPORT<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/><ref refid="avro__register_8h_1a42329324ebd0ec13e7a774e79ab03f1c" kindref="member">RegisterWriter</ref>();</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="39"><highlight class="normal">ICEBERG_BUNDLE_EXPORT<sp/></highlight><highlight class="keywordtype">void</highlight><highlight class="normal"><sp/>RegisterAll();</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg::avro</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/avro/avro_register.h"/>
+  </compounddef>
+</doxygen>

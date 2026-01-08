@@ -1,0 +1,478 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ManifestEntryAdapterV3" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ManifestEntryAdapterV3</compoundname>
+    <basecompoundref refid="classiceberg_1_1ManifestEntryAdapter" prot="public" virt="non-virtual">iceberg::ManifestEntryAdapter</basecompoundref>
+    <includes refid="v3__metadata__internal_8h" local="no">v3_metadata_internal.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ManifestEntryAdapterV3_1a5c7b67ec7bb545f1f90ff6b4c61a4a64" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::ManifestEntryAdapterV3::first_row_id_</definition>
+        <argsstring></argsstring>
+        <name>first_row_id_</name>
+        <qualifiedname>iceberg::ManifestEntryAdapterV3::first_row_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/v3_metadata_internal.h" line="56" column="17" bodyfile="iceberg/manifest/v3_metadata_internal.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestEntryAdapterV3_1a23fe3810caec0157b7c6adfe3f557c82" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestEntryAdapterV3::ManifestEntryAdapterV3</definition>
+        <argsstring>(std::optional&lt; int64_t &gt; snapshot_id, std::optional&lt; int64_t &gt; first_row_id, std::shared_ptr&lt; PartitionSpec &gt; partition_spec, std::shared_ptr&lt; Schema &gt; current_schema, ManifestContent content)</argsstring>
+        <name>ManifestEntryAdapterV3</name>
+        <qualifiedname>iceberg::ManifestEntryAdapterV3::ManifestEntryAdapterV3</qualifiedname>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>snapshot_id</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>first_row_id</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+          <declname>partition_spec</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+          <declname>current_schema</declname>
+        </param>
+        <param>
+          <type><ref refid="manifest__list_8h_1a06efcb6319f35c7b0af2f629a9e7ae05" kindref="member">ManifestContent</ref></type>
+          <declname>content</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/v3_metadata_internal.h" line="32" column="3" bodyfile="iceberg/manifest/v3_metadata.cc" bodystart="35" bodyend="41"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEntryAdapterV3_1a7b3be92cfd15a44d4679d484e40bf7f0" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ManifestEntryAdapterV3::Init</definition>
+        <argsstring>() override</argsstring>
+        <name>Init</name>
+        <qualifiedname>iceberg::ManifestEntryAdapterV3::Init</qualifiedname>
+        <reimplements refid="classiceberg_1_1ManifestAdapter_1aca828da0c3c8794dedaa37f22eee1ecb">Init</reimplements>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/v3_metadata_internal.h" line="37" column="10" bodyfile="iceberg/manifest/v3_metadata.cc" bodystart="87" bodyend="98"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEntryAdapterV3_1a722f1259f6cc05af06d814ea4352585d" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ManifestEntryAdapterV3::Append</definition>
+        <argsstring>(const ManifestEntry &amp;entry) override</argsstring>
+        <name>Append</name>
+        <qualifiedname>iceberg::ManifestEntryAdapterV3::Append</qualifiedname>
+        <reimplements refid="classiceberg_1_1ManifestEntryAdapter_1abb19bf9e022cdf9ebf2325c2fe6afa76">Append</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &amp;</type>
+          <declname>entry</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/v3_metadata_internal.h" line="38" column="10" bodyfile="iceberg/manifest/v3_metadata.cc" bodystart="100" bodyend="102"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestEntryAdapterV3_1abec58cc6987eee0769717f4d50be3dd9" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Schema &gt; iceberg::ManifestEntryAdapterV3::EntrySchema</definition>
+        <argsstring>(std::shared_ptr&lt; StructType &gt; partition_type)</argsstring>
+        <name>EntrySchema</name>
+        <qualifiedname>iceberg::ManifestEntryAdapterV3::EntrySchema</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> &gt;</type>
+          <declname>partition_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/v3_metadata_internal.h" line="40" column="26" bodyfile="iceberg/manifest/v3_metadata.cc" bodystart="43" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEntryAdapterV3_1ae924716539330260e2111305271092fd" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Schema &gt; iceberg::ManifestEntryAdapterV3::WrapFileSchema</definition>
+        <argsstring>(std::shared_ptr&lt; StructType &gt; file_schema)</argsstring>
+        <name>WrapFileSchema</name>
+        <qualifiedname>iceberg::ManifestEntryAdapterV3::WrapFileSchema</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> &gt;</type>
+          <declname>file_schema</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/v3_metadata_internal.h" line="41" column="26" bodyfile="iceberg/manifest/v3_metadata.cc" bodystart="48" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEntryAdapterV3_1a59db596046dde8d3bab434e13b5efaf7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; StructType &gt; iceberg::ManifestEntryAdapterV3::DataFileType</definition>
+        <argsstring>(std::shared_ptr&lt; StructType &gt; partition_type)</argsstring>
+        <name>DataFileType</name>
+        <qualifiedname>iceberg::ManifestEntryAdapterV3::DataFileType</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> &gt;</type>
+          <declname>partition_type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/v3_metadata_internal.h" line="42" column="26" bodyfile="iceberg/manifest/v3_metadata.cc" bodystart="60" bodyend="85"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestEntryAdapterV3_1a6bea9cc069125ed4c0da3c18fe0b2d4e" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::optional&lt; int64_t &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; int64_t &gt; &gt; iceberg::ManifestEntryAdapterV3::GetSequenceNumber</definition>
+        <argsstring>(const ManifestEntry &amp;entry) const override</argsstring>
+        <name>GetSequenceNumber</name>
+        <qualifiedname>iceberg::ManifestEntryAdapterV3::GetSequenceNumber</qualifiedname>
+        <reimplements refid="classiceberg_1_1ManifestEntryAdapter_1a6ff9f388064bc59c71862c812c827bda">GetSequenceNumber</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> &amp;</type>
+          <declname>entry</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/v3_metadata_internal.h" line="46" column="10" bodyfile="iceberg/manifest/v3_metadata.cc" bodystart="104" bodyend="126"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEntryAdapterV3_1a984af92d57c6cab79cd6a1685d365069" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::optional&lt; std::string &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; std::string &gt; &gt; iceberg::ManifestEntryAdapterV3::GetReferenceDataFile</definition>
+        <argsstring>(const DataFile &amp;file) const override</argsstring>
+        <name>GetReferenceDataFile</name>
+        <qualifiedname>iceberg::ManifestEntryAdapterV3::GetReferenceDataFile</qualifiedname>
+        <reimplements refid="classiceberg_1_1ManifestEntryAdapter_1a1e7ecc997f219405dc9bce2c62dbcfeb">GetReferenceDataFile</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/v3_metadata_internal.h" line="48" column="10" bodyfile="iceberg/manifest/v3_metadata.cc" bodystart="128" bodyend="134"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEntryAdapterV3_1a6b43b5f8d21f8676d3484b6bdeb0da4f" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::optional&lt; int64_t &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; int64_t &gt; &gt; iceberg::ManifestEntryAdapterV3::GetFirstRowId</definition>
+        <argsstring>(const DataFile &amp;file) const override</argsstring>
+        <name>GetFirstRowId</name>
+        <qualifiedname>iceberg::ManifestEntryAdapterV3::GetFirstRowId</qualifiedname>
+        <reimplements refid="classiceberg_1_1ManifestEntryAdapter_1a88f6568d94ae2699a7c80577c5375e21">GetFirstRowId</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/v3_metadata_internal.h" line="50" column="10" bodyfile="iceberg/manifest/v3_metadata.cc" bodystart="136" bodyend="145"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEntryAdapterV3_1a34b86b412bad9553f32aeea181f36eea" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::optional&lt; int64_t &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; int64_t &gt; &gt; iceberg::ManifestEntryAdapterV3::GetContentOffset</definition>
+        <argsstring>(const DataFile &amp;file) const override</argsstring>
+        <name>GetContentOffset</name>
+        <qualifiedname>iceberg::ManifestEntryAdapterV3::GetContentOffset</qualifiedname>
+        <reimplements refid="classiceberg_1_1ManifestEntryAdapter_1a5a5bf1abf211de91a3dfcf6d566c7c66">GetContentOffset</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/v3_metadata_internal.h" line="51" column="10" bodyfile="iceberg/manifest/v3_metadata.cc" bodystart="147" bodyend="153"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEntryAdapterV3_1af84e6a8886ae2cac82f58136c9ef3fbb" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::optional&lt; int64_t &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; int64_t &gt; &gt; iceberg::ManifestEntryAdapterV3::GetContentSizeInBytes</definition>
+        <argsstring>(const DataFile &amp;file) const override</argsstring>
+        <name>GetContentSizeInBytes</name>
+        <qualifiedname>iceberg::ManifestEntryAdapterV3::GetContentSizeInBytes</qualifiedname>
+        <reimplements refid="classiceberg_1_1ManifestEntryAdapter_1a7302838f7aa09603ecf187519e116348">GetContentSizeInBytes</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/v3_metadata_internal.h" line="52" column="10" bodyfile="iceberg/manifest/v3_metadata.cc" bodystart="155" bodyend="161"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Adapter to convert V3 <ref refid="structiceberg_1_1ManifestEntry" kindref="compound">ManifestEntry</ref> to <computeroutput><ref refid="structArrowArray" kindref="compound">ArrowArray</ref></computeroutput>. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>iceberg::ManifestAdapter</label>
+        <link refid="classiceberg_1_1ManifestAdapter"/>
+      </node>
+      <node id="2">
+        <label>iceberg::ManifestEntryAdapter</label>
+        <link refid="classiceberg_1_1ManifestEntryAdapter"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::ManifestEntryAdapterV3</label>
+        <link refid="classiceberg_1_1ManifestEntryAdapterV3"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="4">
+        <label>ArrowArray</label>
+        <link refid="structArrowArray"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>children</edgelabel>
+          <edgelabel>dictionary</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>ArrowSchema</label>
+        <link refid="structArrowSchema"/>
+        <childnode refid="5" relation="usage">
+          <edgelabel>children</edgelabel>
+          <edgelabel>dictionary</edgelabel>
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="21">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="20">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="3">
+        <label>iceberg::ManifestAdapter</label>
+        <link refid="classiceberg_1_1ManifestAdapter"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>array_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>schema_</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>metadata_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::ManifestEntryAdapter</label>
+        <link refid="classiceberg_1_1ManifestEntryAdapter"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>partition_spec_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>current_schema_</edgelabel>
+          <edgelabel>manifest_schema_</edgelabel>
+        </childnode>
+        <childnode refid="24" relation="usage">
+          <edgelabel>partition_type_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::ManifestEntryAdapterV3</label>
+        <link refid="classiceberg_1_1ManifestEntryAdapterV3"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="16" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="14" relation="public-inheritance">
+        </childnode>
+        <childnode refid="22" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="18">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="20" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="21" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="16">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="9">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="13" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="24">
+        <label>std::shared_ptr&lt; iceberg::StructType &gt;</label>
+        <childnode refid="14" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="23">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="7">
+        <label>std::string</label>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>std::string_view</label>
+        <childnode refid="23" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="17">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="18" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/manifest/v3_metadata_internal.h" line="30" column="1" bodyfile="iceberg/manifest/v3_metadata_internal.h" bodystart="30" bodyend="57"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ManifestEntryAdapterV3_1a722f1259f6cc05af06d814ea4352585d" prot="public" virt="virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>Append</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapter_1a77e035a3ff227f5e311d0b1e1b52ce26" prot="protected" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>AppendDataFile</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapter_1a29f855bfe88580ccd791057444961b36" prot="protected" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>AppendInternal</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapter_1a472de7ff8131401bf5f5acfbdb414e36" prot="protected" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>AppendPartitionValues</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1a741c3bd0bfaac122f12ac4426c46e71a" prot="protected" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>array_</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapter_1a29e6c287131ae3468e177573308e0cfc" prot="public" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>content</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapter_1a628cbc8c0087afb5195e90ecdf2af480" prot="protected" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>content_</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapter_1af645fd7415ce4ea37e53f60d31c9bf26" prot="protected" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>current_schema_</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapterV3_1a59db596046dde8d3bab434e13b5efaf7" prot="public" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>DataFileType</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapterV3_1abec58cc6987eee0769717f4d50be3dd9" prot="public" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>EntrySchema</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1ab8bac53cf5f1a157a2695b88cbd54615" prot="public" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>FinishAppending</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapterV3_1a5c7b67ec7bb545f1f90ff6b4c61a4a64" prot="private" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>first_row_id_</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapterV3_1a34b86b412bad9553f32aeea181f36eea" prot="protected" virt="virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>GetContentOffset</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapterV3_1af84e6a8886ae2cac82f58136c9ef3fbb" prot="protected" virt="virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>GetContentSizeInBytes</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapterV3_1a6b43b5f8d21f8676d3484b6bdeb0da4f" prot="protected" virt="virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>GetFirstRowId</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapterV3_1a984af92d57c6cab79cd6a1685d365069" prot="protected" virt="virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>GetReferenceDataFile</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapterV3_1a6bea9cc069125ed4c0da3c18fe0b2d4e" prot="protected" virt="virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>GetSequenceNumber</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapterV3_1a7b3be92cfd15a44d4679d484e40bf7f0" prot="public" virt="virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>Init</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapter_1ac076663c8a7ac5004a9ebd8554d81886" prot="protected" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>manifest_schema_</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1a7a634423c52ec977d319c0abb792a47b" prot="public" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>ManifestAdapter</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapter_1a8d56913f58b5a7e30cd46107fdd09682" prot="public" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>ManifestEntryAdapter</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapterV3_1a23fe3810caec0157b7c6adfe3f557c82" prot="public" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>ManifestEntryAdapterV3</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1abd45f47723b002e9da2bde8c44082792" prot="public" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>metadata</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1a0a883a6a875beefd761010bea778e86e" prot="protected" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>metadata_</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapter_1aa6895343b638f14e727294e1f736c7f6" prot="public" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>partition_spec</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapter_1a7f74034c16e5113849705e61d7fcbccd" prot="protected" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>partition_spec_</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapter_1a833623b9f72f2de5fa134b37b4cdb9ed" prot="public" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>partition_type</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapter_1a67f7004640cb92cd774945a413a1d43f" prot="protected" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>partition_type_</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapter_1ad983be82b66330bf954de44c8d678f9f" prot="public" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>schema</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1a8b5b4970fc9c43d5276d45b7d47f6694" prot="protected" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1ac6f6ef4ebd251f87cbe1c079d9397a37" prot="public" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>size</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1a8400d17002062bc728859ea96fde9cc2" prot="protected" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>size_</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapter_1a92b8895560e619f3febe733d788fb9a6" prot="public" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>snapshot_id</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapter_1ace1c2df74d65dd26f9135d17cf75b166" prot="protected" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>snapshot_id_</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1a43756b6c0895ee1431dcf04256e71d07" prot="public" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>StartAppending</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapterV3_1ae924716539330260e2111305271092fd" prot="public" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>WrapFileSchema</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1ad764b0832b5c98481d25ba5720ce9c38" prot="public" virt="virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>~ManifestAdapter</name></member>
+      <member refid="classiceberg_1_1ManifestEntryAdapter_1a915844c521d7ee930b4ee238b4b7ad9f" prot="public" virt="non-virtual"><scope>iceberg::ManifestEntryAdapterV3</scope><name>~ManifestEntryAdapter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

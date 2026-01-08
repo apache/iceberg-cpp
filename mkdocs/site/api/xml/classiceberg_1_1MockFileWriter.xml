@@ -1,0 +1,230 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1MockFileWriter" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::MockFileWriter</compoundname>
+    <basecompoundref refid="classiceberg_1_1FileWriter" prot="public" virt="non-virtual">iceberg::FileWriter</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1MockFileWriter_1a61f913e3f9fbc929d82aa43e923e27eb" prot="private" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::MockFileWriter::bytes_written_</definition>
+        <argsstring></argsstring>
+        <name>bytes_written_</name>
+        <qualifiedname>iceberg::MockFileWriter::bytes_written_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/data_writer_test.cc" line="82" column="11" bodyfile="iceberg/test/data_writer_test.cc" bodystart="82" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1MockFileWriter_1a95eb51c78f199a841dec6f2e562cc367" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::MockFileWriter::is_closed_</definition>
+        <argsstring></argsstring>
+        <name>is_closed_</name>
+        <qualifiedname>iceberg::MockFileWriter::is_closed_</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/data_writer_test.cc" line="83" column="8" bodyfile="iceberg/test/data_writer_test.cc" bodystart="83" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1MockFileWriter_1a62a01fdcc77293a9926c8e8a6a917d02" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::MockFileWriter::write_count_</definition>
+        <argsstring></argsstring>
+        <name>write_count_</name>
+        <qualifiedname>iceberg::MockFileWriter::write_count_</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/data_writer_test.cc" line="84" column="11" bodyfile="iceberg/test/data_writer_test.cc" bodystart="84" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1MockFileWriter_1a3988fc66ead4e71ee85c3ffb3486d1f0" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MockFileWriter::MockFileWriter</definition>
+        <argsstring>()=default</argsstring>
+        <name>MockFileWriter</name>
+        <qualifiedname>iceberg::MockFileWriter::MockFileWriter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/data_writer_test.cc" line="37" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockFileWriter_1afa725c2cca4f3ac6858526e284a9a34c" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::MockFileWriter::Write</definition>
+        <argsstring>(ArrowArray *data) override</argsstring>
+        <name>Write</name>
+        <qualifiedname>iceberg::MockFileWriter::Write</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileWriter_1ad27902863767dbda5a2d7fcf88eb0e28">Write</reimplements>
+        <param>
+          <type><ref refid="structArrowArray" kindref="compound">ArrowArray</ref> *</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+<para>Write a batch of records. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>data</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Arrow array containing the records to write. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Status indicating success or failure. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/data_writer_test.cc" line="39" column="10" bodyfile="iceberg/test/data_writer_test.cc" bodystart="39" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockFileWriter_1a49f062ad474ca91f3227c9c611019246" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::MockFileWriter::Length</definition>
+        <argsstring>() const override</argsstring>
+        <name>Length</name>
+        <qualifiedname>iceberg::MockFileWriter::Length</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileWriter_1ad32f2d3323e2fea39baa59a96eb50197">Length</reimplements>
+        <briefdescription>
+<para>Get the current number of bytes written. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>Result containing the number of bytes written or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/data_writer_test.cc" line="52" column="10" bodyfile="iceberg/test/data_writer_test.cc" bodystart="52" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockFileWriter_1addb09b4f7b1356c1b4175f373c689f5a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::MockFileWriter::Close</definition>
+        <argsstring>() override</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::MockFileWriter::Close</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileWriter_1a6d7f69f445e791c2c864913fc1188370">Close</reimplements>
+        <briefdescription>
+<para>Close the writer and finalize the file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>Status indicating success or failure. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/data_writer_test.cc" line="54" column="10" bodyfile="iceberg/test/data_writer_test.cc" bodystart="54" bodyend="60"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockFileWriter_1a61e456aae0a45042d1d9263dbb643681" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1FileWriter_1_1WriteResult" kindref="compound">WriteResult</ref> &gt;</type>
+        <definition>Result&lt; WriteResult &gt; iceberg::MockFileWriter::Metadata</definition>
+        <argsstring>() override</argsstring>
+        <name>Metadata</name>
+        <qualifiedname>iceberg::MockFileWriter::Metadata</qualifiedname>
+        <reimplements refid="classiceberg_1_1FileWriter_1a7206abe67a08dc3362379f810cf11b96">Metadata</reimplements>
+        <briefdescription>
+<para>Get file metadata for all files produced by this writer. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method should be called after <ref refid="classiceberg_1_1MockFileWriter_1addb09b4f7b1356c1b4175f373c689f5a" kindref="member">Close()</ref> to retrieve the metadata for all files written by this writer.</para>
+<para><simplesect kind="return"><para>Result containing the write result or an error. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/data_writer_test.cc" line="62" column="10" bodyfile="iceberg/test/data_writer_test.cc" bodystart="62" bodyend="76"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockFileWriter_1a5a4040aaad4b5d242793de2a66bbf5ab" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::MockFileWriter::is_closed</definition>
+        <argsstring>() const</argsstring>
+        <name>is_closed</name>
+        <qualifiedname>iceberg::MockFileWriter::is_closed</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/data_writer_test.cc" line="78" column="8" bodyfile="iceberg/test/data_writer_test.cc" bodystart="78" bodyend="78"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MockFileWriter_1a4cd598261d05d310601a794c8fa624ce" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::MockFileWriter::write_count</definition>
+        <argsstring>() const</argsstring>
+        <name>write_count</name>
+        <qualifiedname>iceberg::MockFileWriter::write_count</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/data_writer_test.cc" line="79" column="11" bodyfile="iceberg/test/data_writer_test.cc" bodystart="79" bodyend="79"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::FileWriter</label>
+        <link refid="classiceberg_1_1FileWriter"/>
+      </node>
+      <node id="1">
+        <label>iceberg::MockFileWriter</label>
+        <link refid="classiceberg_1_1MockFileWriter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::FileWriter</label>
+        <link refid="classiceberg_1_1FileWriter"/>
+      </node>
+      <node id="1">
+        <label>iceberg::MockFileWriter</label>
+        <link refid="classiceberg_1_1MockFileWriter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/data_writer_test.cc" line="35" column="1" bodyfile="iceberg/test/data_writer_test.cc" bodystart="35" bodyend="85"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1MockFileWriter_1a61f913e3f9fbc929d82aa43e923e27eb" prot="private" virt="non-virtual"><scope>iceberg::MockFileWriter</scope><name>bytes_written_</name></member>
+      <member refid="classiceberg_1_1MockFileWriter_1addb09b4f7b1356c1b4175f373c689f5a" prot="public" virt="virtual"><scope>iceberg::MockFileWriter</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1MockFileWriter_1a5a4040aaad4b5d242793de2a66bbf5ab" prot="public" virt="non-virtual"><scope>iceberg::MockFileWriter</scope><name>is_closed</name></member>
+      <member refid="classiceberg_1_1MockFileWriter_1a95eb51c78f199a841dec6f2e562cc367" prot="private" virt="non-virtual"><scope>iceberg::MockFileWriter</scope><name>is_closed_</name></member>
+      <member refid="classiceberg_1_1MockFileWriter_1a49f062ad474ca91f3227c9c611019246" prot="public" virt="virtual"><scope>iceberg::MockFileWriter</scope><name>Length</name></member>
+      <member refid="classiceberg_1_1MockFileWriter_1a61e456aae0a45042d1d9263dbb643681" prot="public" virt="virtual"><scope>iceberg::MockFileWriter</scope><name>Metadata</name></member>
+      <member refid="classiceberg_1_1MockFileWriter_1a3988fc66ead4e71ee85c3ffb3486d1f0" prot="public" virt="non-virtual"><scope>iceberg::MockFileWriter</scope><name>MockFileWriter</name></member>
+      <member refid="classiceberg_1_1MockFileWriter_1afa725c2cca4f3ac6858526e284a9a34c" prot="public" virt="virtual"><scope>iceberg::MockFileWriter</scope><name>Write</name></member>
+      <member refid="classiceberg_1_1MockFileWriter_1a4cd598261d05d310601a794c8fa624ce" prot="public" virt="non-virtual"><scope>iceberg::MockFileWriter</scope><name>write_count</name></member>
+      <member refid="classiceberg_1_1MockFileWriter_1a62a01fdcc77293a9926c8e8a6a917d02" prot="private" virt="non-virtual"><scope>iceberg::MockFileWriter</scope><name>write_count_</name></member>
+      <member refid="classiceberg_1_1FileWriter_1ac1131a6e8ec6e4541f49528ff7677bc5" prot="public" virt="virtual"><scope>iceberg::MockFileWriter</scope><name>~FileWriter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

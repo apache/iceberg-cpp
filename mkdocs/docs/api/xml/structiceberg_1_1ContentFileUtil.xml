@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1ContentFileUtil" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::ContentFileUtil</compoundname>
+    <includes refid="content__file__util_8h" local="no">content_file_util.h</includes>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1ContentFileUtil_1a96c7ab7e31d1c82a0faef93449617c14" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::ContentFileUtil::IsDV</definition>
+        <argsstring>(const DataFile &amp;file)</argsstring>
+        <name>IsDV</name>
+        <qualifiedname>iceberg::ContentFileUtil::IsDV</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Check if a delete file is a deletion vector (DV). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/content_file_util.h" line="41" column="15" bodyfile="iceberg/util/content_file_util.cc" bodystart="32" bodyend="34"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1ContentFileUtil_1a6c87f43181bfa61f8f194770882aed22" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::optional&lt; std::string &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; std::string &gt; &gt; iceberg::ContentFileUtil::ReferencedDataFile</definition>
+        <argsstring>(const DataFile &amp;file)</argsstring>
+        <name>ReferencedDataFile</name>
+        <qualifiedname>iceberg::ContentFileUtil::ReferencedDataFile</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Get the referenced data file path from a position delete file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/content_file_util.h" line="44" column="17" bodyfile="iceberg/util/content_file_util.cc" bodystart="36" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1ContentFileUtil_1a28109a03eabb343e6d1dba4e2a4f1e2c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ContentFileUtil::IsFileScoped</definition>
+        <argsstring>(const DataFile &amp;file)</argsstring>
+        <name>IsFileScoped</name>
+        <qualifiedname>iceberg::ContentFileUtil::IsFileScoped</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Check if a delete file is file-scoped. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/content_file_util.h" line="47" column="17" bodyfile="iceberg/util/content_file_util.cc" bodystart="70" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1ContentFileUtil_1ae938bdc14cdedd69511f1f250f954518" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::ContentFileUtil::ContainsSingleDV</definition>
+        <argsstring>(std::span&lt; const std::shared_ptr&lt; DataFile &gt; &gt; files)</argsstring>
+        <name>ContainsSingleDV</name>
+        <qualifiedname>iceberg::ContentFileUtil::ContainsSingleDV</qualifiedname>
+        <param>
+          <type>std::span&lt; const std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+          <declname>files</declname>
+        </param>
+        <briefdescription>
+<para>Check if a collection of delete files contains exactly one DV. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/content_file_util.h" line="50" column="15" bodyfile="iceberg/util/content_file_util.cc" bodystart="75" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1ContentFileUtil_1a6aca28f453348f60fa0fe6cb52985916" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::ContentFileUtil::DVDesc</definition>
+        <argsstring>(const DataFile &amp;file)</argsstring>
+        <name>DVDesc</name>
+        <qualifiedname>iceberg::ContentFileUtil::DVDesc</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+<para>Generate a description string for a deletion vector. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/content_file_util.h" line="53" column="22" bodyfile="iceberg/util/content_file_util.cc" bodystart="79" bodyend="84"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1ContentFileUtil_1a4bbe4864452d3f316f6a6f82502eceb5" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ContentFileUtil::DropAllStats</definition>
+        <argsstring>(DataFile &amp;data_file)</argsstring>
+        <name>DropAllStats</name>
+        <qualifiedname>iceberg::ContentFileUtil::DropAllStats</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>data_file</declname>
+        </param>
+        <briefdescription>
+<para>In-place drop stats. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/content_file_util.h" line="56" column="15" bodyfile="iceberg/util/content_file_util.cc" bodystart="86" bodyend="93"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1ContentFileUtil_1a9ac845700d7f8090c43f929d76c28811" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::ContentFileUtil::DropUnselectedStats</definition>
+        <argsstring>(DataFile &amp;data_file, const std::unordered_set&lt; int32_t &gt; &amp;selected_columns)</argsstring>
+        <name>DropUnselectedStats</name>
+        <qualifiedname>iceberg::ContentFileUtil::DropUnselectedStats</qualifiedname>
+        <param>
+          <type><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>data_file</declname>
+        </param>
+        <param>
+          <type>const std::unordered_set&lt; int32_t &gt; &amp;</type>
+          <declname>selected_columns</declname>
+        </param>
+        <briefdescription>
+<para>Preserve stats based on selected columns. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/content_file_util.h" line="59" column="15" bodyfile="iceberg/util/content_file_util.cc" bodystart="111" bodyend="121"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Utility functions for content files. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/content_file_util.h" line="39" column="1" bodyfile="iceberg/util/content_file_util.h" bodystart="39" bodyend="61"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1ContentFileUtil_1ae938bdc14cdedd69511f1f250f954518" prot="public" virt="non-virtual"><scope>iceberg::ContentFileUtil</scope><name>ContainsSingleDV</name></member>
+      <member refid="structiceberg_1_1ContentFileUtil_1a4bbe4864452d3f316f6a6f82502eceb5" prot="public" virt="non-virtual"><scope>iceberg::ContentFileUtil</scope><name>DropAllStats</name></member>
+      <member refid="structiceberg_1_1ContentFileUtil_1a9ac845700d7f8090c43f929d76c28811" prot="public" virt="non-virtual"><scope>iceberg::ContentFileUtil</scope><name>DropUnselectedStats</name></member>
+      <member refid="structiceberg_1_1ContentFileUtil_1a6aca28f453348f60fa0fe6cb52985916" prot="public" virt="non-virtual"><scope>iceberg::ContentFileUtil</scope><name>DVDesc</name></member>
+      <member refid="structiceberg_1_1ContentFileUtil_1a96c7ab7e31d1c82a0faef93449617c14" prot="public" virt="non-virtual"><scope>iceberg::ContentFileUtil</scope><name>IsDV</name></member>
+      <member refid="structiceberg_1_1ContentFileUtil_1a28109a03eabb343e6d1dba4e2a4f1e2c" prot="public" virt="non-virtual"><scope>iceberg::ContentFileUtil</scope><name>IsFileScoped</name></member>
+      <member refid="structiceberg_1_1ContentFileUtil_1a6c87f43181bfa61f8f194770882aed22" prot="public" virt="non-virtual"><scope>iceberg::ContentFileUtil</scope><name>ReferencedDataFile</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

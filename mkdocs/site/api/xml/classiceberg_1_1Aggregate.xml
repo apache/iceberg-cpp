@@ -1,0 +1,212 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Aggregate" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::Aggregate</compoundname>
+    <basecompoundref refid="classiceberg_1_1Expression" prot="public" virt="virtual">iceberg::Expression</basecompoundref>
+    <includes refid="aggregate_8h" local="no">aggregate.h</includes>
+    <templateparamlist>
+      <param>
+        <type>TermType</type>
+        <declname>T</declname>
+        <defname>T</defname>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1Aggregate_1a4dbbc648f79d02a088ede60b0158dfee" prot="protected" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+        <definition>Expression::Operation iceberg::Aggregate&lt; T &gt;::operation_</definition>
+        <argsstring></argsstring>
+        <name>operation_</name>
+        <qualifiedname>iceberg::Aggregate::operation_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="60" column="25" bodyfile="iceberg/expression/aggregate.h" bodystart="60" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1Aggregate_1a96a91318a214bade482691853f82ee03" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; T &gt;</type>
+        <definition>std::shared_ptr&lt;T&gt; iceberg::Aggregate&lt; T &gt;::term_</definition>
+        <argsstring></argsstring>
+        <name>term_</name>
+        <qualifiedname>iceberg::Aggregate::term_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="61" column="19" bodyfile="iceberg/expression/aggregate.h" bodystart="61" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Aggregate_1a1473f637e1355db39626813ed10831c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Aggregate&lt; T &gt;::~Aggregate</definition>
+        <argsstring>() override=default</argsstring>
+        <name>~Aggregate</name>
+        <qualifiedname>iceberg::Aggregate::~Aggregate</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="41" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Aggregate_1a04e2d2492b3a5580b85a6663f32fd251" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+        <definition>Expression::Operation iceberg::Aggregate&lt; T &gt;::op</definition>
+        <argsstring>() const override</argsstring>
+        <name>op</name>
+        <qualifiedname>iceberg::Aggregate::op</qualifiedname>
+        <reimplements refid="classiceberg_1_1Expression_1a5a16ee5d023305b50e4a2216b4047eff">op</reimplements>
+        <briefdescription>
+<para>Returns the operation for an expression node. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="43" column="25" bodyfile="iceberg/expression/aggregate.h" bodystart="43" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Aggregate_1a761fc9c146cc30271fa100b2906bf056" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::shared_ptr&lt; T &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; T &gt; &amp; iceberg::Aggregate&lt; T &gt;::term</definition>
+        <argsstring>() const</argsstring>
+        <name>term</name>
+        <qualifiedname>iceberg::Aggregate::term</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="45" column="25" bodyfile="iceberg/expression/aggregate.h" bodystart="45" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Aggregate_1afaed75e6a5da8ce6aedd320e687539a3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::Aggregate&lt; T &gt;::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::Aggregate::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <briefdescription>
+<para>Get a user-readable string representation. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="47" column="15" bodyfile="iceberg/expression/aggregate.cc" bodystart="272" bodyend="291"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1Aggregate_1a6faf5ff7b6ecd69dc6cd26ee84a3dd30" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Aggregate&lt; T &gt;::Aggregate</definition>
+        <argsstring>(Expression::Operation op, std::shared_ptr&lt; T &gt; term)</argsstring>
+        <name>Aggregate</name>
+        <qualifiedname>iceberg::Aggregate::Aggregate</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+          <declname>op</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; T &gt;</type>
+          <declname>term</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="50" column="3" bodyfile="iceberg/expression/aggregate.h" bodystart="50" bodyend="51"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-static-func">
+      <memberdef kind="function" id="classiceberg_1_1Aggregate_1a5af32b25e4103d34dfc370064e1a14a9" prot="protected" static="yes" constexpr="yes" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>constexpr bool</type>
+        <definition>static constexpr bool iceberg::Aggregate&lt; T &gt;::IsSupportedOp</definition>
+        <argsstring>(Expression::Operation op)</argsstring>
+        <name>IsSupportedOp</name>
+        <qualifiedname>iceberg::Aggregate::IsSupportedOp</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" kindref="member">Expression::Operation</ref></type>
+          <declname>op</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/aggregate.h" line="53" column="25" bodyfile="iceberg/expression/aggregate.h" bodystart="53" bodyend="58"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base aggregate holding an operation and a term. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::Aggregate&lt; T &gt;</label>
+        <link refid="classiceberg_1_1Aggregate"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::Aggregate&lt; T &gt;</label>
+        <link refid="classiceberg_1_1Aggregate"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::Expression</label>
+        <link refid="classiceberg_1_1Expression"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/expression/aggregate.h" line="39" column="1" bodyfile="iceberg/expression/aggregate.h" bodystart="39" bodyend="62"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Aggregate_1a6faf5ff7b6ecd69dc6cd26ee84a3dd30" prot="protected" virt="non-virtual"><scope>iceberg::Aggregate</scope><name>Aggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a5f62190ba4e74757afb0fba05acb1e6a" prot="public" virt="virtual"><scope>iceberg::Aggregate</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1Expression_1ab760f80ffc03ab40301be7d59c621a4a" prot="public" virt="virtual"><scope>iceberg::Aggregate</scope><name>is_bound_aggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a8807793506a834a71384dac034e6c62f" prot="public" virt="virtual"><scope>iceberg::Aggregate</scope><name>is_bound_predicate</name></member>
+      <member refid="classiceberg_1_1Expression_1a9d17c720a2f03ee4924b8c36f0420ff1" prot="public" virt="virtual"><scope>iceberg::Aggregate</scope><name>is_unbound_aggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a96e614d02433117161d21989f7ff1257" prot="public" virt="virtual"><scope>iceberg::Aggregate</scope><name>is_unbound_predicate</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a5af32b25e4103d34dfc370064e1a14a9" prot="protected" virt="non-virtual"><scope>iceberg::Aggregate</scope><name>IsSupportedOp</name></member>
+      <member refid="classiceberg_1_1Expression_1a7ce9433b8cc063b06ac6371d6d56815c" prot="public" virt="virtual"><scope>iceberg::Aggregate</scope><name>Negate</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a04e2d2492b3a5580b85a6663f32fd251" prot="public" virt="virtual"><scope>iceberg::Aggregate</scope><name>op</name></member>
+      <member refid="classiceberg_1_1Expression_1a433076bdc34ce0b6d359313c6c7b8a9c" prot="public" virt="non-virtual"><scope>iceberg::Aggregate</scope><name>Operation</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a4dbbc648f79d02a088ede60b0158dfee" prot="protected" virt="non-virtual"><scope>iceberg::Aggregate</scope><name>operation_</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a761fc9c146cc30271fa100b2906bf056" prot="public" virt="non-virtual"><scope>iceberg::Aggregate</scope><name>term</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a96a91318a214bade482691853f82ee03" prot="protected" virt="non-virtual"><scope>iceberg::Aggregate</scope><name>term_</name></member>
+      <member refid="classiceberg_1_1Aggregate_1afaed75e6a5da8ce6aedd320e687539a3" prot="public" virt="virtual"><scope>iceberg::Aggregate</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1Aggregate_1a1473f637e1355db39626813ed10831c6" prot="public" virt="non-virtual"><scope>iceberg::Aggregate</scope><name>~Aggregate</name></member>
+      <member refid="classiceberg_1_1Expression_1a7529a7fa43b6a6ff1cd09eac4359f1ca" prot="public" virt="virtual"><scope>iceberg::Aggregate</scope><name>~Expression</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::Aggregate</scope><name>~Formattable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

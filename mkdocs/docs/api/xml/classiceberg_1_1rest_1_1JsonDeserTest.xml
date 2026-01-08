@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1JsonDeserTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::rest::JsonDeserTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::TestWithParam&lt; JsonDeserParam&lt; Model &gt; &gt;</basecompoundref>
+    <templateparamlist>
+      <param>
+        <type>typename Model</type>
+      </param>
+    </templateparamlist>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classiceberg_1_1rest_1_1JsonDeserTest_1a261995aac9cc5cb1ecaba82c48cebd76" prot="private" static="no">
+        <type>::testing::TestWithParam&lt; <ref refid="structiceberg_1_1rest_1_1JsonDeserParam" kindref="compound">JsonDeserParam</ref>&lt; Model &gt; &gt;</type>
+        <definition>using iceberg::rest::JsonDeserTest&lt; Model &gt;::Base =  ::testing::TestWithParam&lt;JsonDeserParam&lt;Model&gt; &gt;</definition>
+        <argsstring></argsstring>
+        <name>Base</name>
+        <qualifiedname>iceberg::rest::JsonDeserTest::Base</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_internal_test.cc" line="151" column="3" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="151" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1JsonDeserTest_1ac385a97acfd50eac8093f625aace1503" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::rest::JsonDeserTest&lt; Model &gt;::TestDeserialize</definition>
+        <argsstring>()</argsstring>
+        <name>TestDeserialize</name>
+        <qualifiedname>iceberg::rest::JsonDeserTest::TestDeserialize</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/rest_json_internal_test.cc" line="154" column="8" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="154" bodyend="161"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::rest::JsonDeserTest&lt; Model &gt;</label>
+        <link refid="classiceberg_1_1rest_1_1JsonDeserTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; JsonDeserParam&lt; Model &gt; &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::JsonDeserTest&lt; Model &gt;</label>
+        <link refid="classiceberg_1_1rest_1_1JsonDeserTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; JsonDeserParam&lt; Model &gt; &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/rest_json_internal_test.cc" line="150" column="1" bodyfile="iceberg/test/rest_json_internal_test.cc" bodystart="150" bodyend="162"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1JsonDeserTest_1a261995aac9cc5cb1ecaba82c48cebd76" prot="private" virt="non-virtual"><scope>iceberg::rest::JsonDeserTest</scope><name>Base</name></member>
+      <member refid="classiceberg_1_1rest_1_1JsonDeserTest_1ac385a97acfd50eac8093f625aace1503" prot="protected" virt="non-virtual"><scope>iceberg::rest::JsonDeserTest</scope><name>TestDeserialize</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,1249 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1DataFile" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::DataFile</compoundname>
+    <includes refid="manifest__entry_8h" local="no">manifest_entry.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structiceberg_1_1DataFile_1a526cb5d9e7fc986cf3fc0190b0927857" prot="public" static="no" strong="yes">
+        <type></type>
+        <name>Content</name>
+        <qualifiedname>iceberg::DataFile::Content</qualifiedname>
+        <enumvalue id="structiceberg_1_1DataFile_1a526cb5d9e7fc986cf3fc0190b0927857a0ac87546e8b36fcb3034694d4d909ea3" prot="public">
+          <name>kData</name>
+          <initializer>= 0</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1DataFile_1a526cb5d9e7fc986cf3fc0190b0927857aeea21174622b2638b76dad3a9431e317" prot="public">
+          <name>kPositionDeletes</name>
+          <initializer>= 1</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1DataFile_1a526cb5d9e7fc986cf3fc0190b0927857ad44b8b818fb0e1e32de75aca13afcb08" prot="public">
+          <name>kEqualityDeletes</name>
+          <initializer>= 2</initializer>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+<para>Content of a data file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="65" column="3" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="65" bodyend="69"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a03ba5db838a4d23170cf5e305465a2f5" prot="public" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1DataFile_1a526cb5d9e7fc986cf3fc0190b0927857" kindref="member">Content</ref></type>
+        <definition>Content iceberg::DataFile::content</definition>
+        <argsstring></argsstring>
+        <name>content</name>
+        <qualifiedname>iceberg::DataFile::content</qualifiedname>
+        <initializer>= Content::kData</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 134 <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> of content stored by the data file: data, equality deletes, or position deletes (all v1 files are data files) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="74" column="11" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="74" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1af67f7ebac6579d80b4ac807e2cd665b8" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::DataFile::file_path</definition>
+        <argsstring></argsstring>
+        <name>file_path</name>
+        <qualifiedname>iceberg::DataFile::file_path</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 100 Full URI for the file with FS scheme </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="77" column="15" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="77" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a368bc28fe2db97e3ec6001ff810cb527" prot="public" static="no" mutable="no">
+        <type>FileFormatType</type>
+        <definition>FileFormatType iceberg::DataFile::file_format</definition>
+        <argsstring></argsstring>
+        <name>file_format</name>
+        <qualifiedname>iceberg::DataFile::file_format</qualifiedname>
+        <initializer>= FileFormatType::kParquet</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 101 File format type, avro, orc, parquet, or puffin </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="80" column="18" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="80" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a42b8804daaa21ad80279831a1fd9eaf1" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref></type>
+        <definition>PartitionValues iceberg::DataFile::partition</definition>
+        <argsstring></argsstring>
+        <name>partition</name>
+        <qualifiedname>iceberg::DataFile::partition</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 102 Partition data tuple, schema based on the partition spec output using partition field ids </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="84" column="19" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="84" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a45beea978f69e41e67719c532c935141" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::DataFile::record_count</definition>
+        <argsstring></argsstring>
+        <name>record_count</name>
+        <qualifiedname>iceberg::DataFile::record_count</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 103 Number of records in this file, or the cardinality of a deletion vector </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="87" column="11" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="87" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a3b73f63230f0fd255c787221eec1967a" prot="public" static="no" mutable="no">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::DataFile::file_size_in_bytes</definition>
+        <argsstring></argsstring>
+        <name>file_size_in_bytes</name>
+        <qualifiedname>iceberg::DataFile::file_size_in_bytes</qualifiedname>
+        <initializer>= 0</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 104 Total file size in bytes </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="90" column="11" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="90" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a68c1f9fa2c80dd7992f40739d6946900" prot="public" static="no" mutable="no">
+        <type>std::map&lt; int32_t, int64_t &gt;</type>
+        <definition>std::map&lt;int32_t, int64_t&gt; iceberg::DataFile::column_sizes</definition>
+        <argsstring></argsstring>
+        <name>column_sizes</name>
+        <qualifiedname>iceberg::DataFile::column_sizes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 108 Key field id: 117 Value field id: 118 Map from column id to the total size on disk of all regions that store the column. Does not include bytes necessary to read other columns, like footers. Leave null for row-oriented formats (Avro) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="97" column="12" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="97" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1af8b885543c36d433088a9aca00532083" prot="public" static="no" mutable="no">
+        <type>std::map&lt; int32_t, int64_t &gt;</type>
+        <definition>std::map&lt;int32_t, int64_t&gt; iceberg::DataFile::value_counts</definition>
+        <argsstring></argsstring>
+        <name>value_counts</name>
+        <qualifiedname>iceberg::DataFile::value_counts</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 109 Key field id: 119 Value field id: 120 Map from column id to number of values in the column (including null and NaN values) </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="102" column="12" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="102" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a7df12e8070320e57f426b4450d9d2ff6" prot="public" static="no" mutable="no">
+        <type>std::map&lt; int32_t, int64_t &gt;</type>
+        <definition>std::map&lt;int32_t, int64_t&gt; iceberg::DataFile::null_value_counts</definition>
+        <argsstring></argsstring>
+        <name>null_value_counts</name>
+        <qualifiedname>iceberg::DataFile::null_value_counts</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 110 Key field id: 121 Value field id: 122 Map from column id to number of null values in the column </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="107" column="12" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="107" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1aaecefeea56d351113ed3223173c81872" prot="public" static="no" mutable="no">
+        <type>std::map&lt; int32_t, int64_t &gt;</type>
+        <definition>std::map&lt;int32_t, int64_t&gt; iceberg::DataFile::nan_value_counts</definition>
+        <argsstring></argsstring>
+        <name>nan_value_counts</name>
+        <qualifiedname>iceberg::DataFile::nan_value_counts</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 137 Key field id: 138 Value field id: 139 Map from column id to number of NaN values in the column </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="112" column="12" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="112" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a080e58d5188f19f5b3d69ea9c284f449" prot="public" static="no" mutable="no">
+        <type>std::map&lt; int32_t, std::vector&lt; uint8_t &gt; &gt;</type>
+        <definition>std::map&lt;int32_t, std::vector&lt;uint8_t&gt; &gt; iceberg::DataFile::lower_bounds</definition>
+        <argsstring></argsstring>
+        <name>lower_bounds</name>
+        <qualifiedname>iceberg::DataFile::lower_bounds</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 125 Key field id: 126 Value field id: 127 Map from column id to lower bound in the column serialized as binary. Each value must be less than or equal to all non-null, non-NaN values in the column for the file. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="119" column="12" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="119" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1aaac83ddaeded403515f844c9e7b25be5" prot="public" static="no" mutable="no">
+        <type>std::map&lt; int32_t, std::vector&lt; uint8_t &gt; &gt;</type>
+        <definition>std::map&lt;int32_t, std::vector&lt;uint8_t&gt; &gt; iceberg::DataFile::upper_bounds</definition>
+        <argsstring></argsstring>
+        <name>upper_bounds</name>
+        <qualifiedname>iceberg::DataFile::upper_bounds</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 128 Key field id: 129 Value field id: 130 Map from column id to upper bound in the column serialized as binary. Each value must be greater than or equal to all non-null, non-NaN values in the column for the file. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="126" column="12" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="126" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a9d85eadb07348a091a84caa98fb84255" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; uint8_t &gt;</type>
+        <definition>std::vector&lt;uint8_t&gt; iceberg::DataFile::key_metadata</definition>
+        <argsstring></argsstring>
+        <name>key_metadata</name>
+        <qualifiedname>iceberg::DataFile::key_metadata</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 131 Implementation-specific key metadata for encryption </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="129" column="15" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="129" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1abc1093a971f7e5f06c0e227a78e8bef5" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int64_t &gt;</type>
+        <definition>std::vector&lt;int64_t&gt; iceberg::DataFile::split_offsets</definition>
+        <argsstring></argsstring>
+        <name>split_offsets</name>
+        <qualifiedname>iceberg::DataFile::split_offsets</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 132 Element Field id: 133 <ref refid="structiceberg_1_1Split" kindref="compound">Split</ref> offsets for the data file. For example, all row group offsets in a Parquet file. Must be sorted ascending. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="134" column="15" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="134" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a4d44d6ae245ac89a8a6fa3f39ec518ed" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int32_t &gt;</type>
+        <definition>std::vector&lt;int32_t&gt; iceberg::DataFile::equality_ids</definition>
+        <argsstring></argsstring>
+        <name>equality_ids</name>
+        <qualifiedname>iceberg::DataFile::equality_ids</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 135 Element Field id: 136 Field ids used to determine row equality in equality delete files. Required when content=2 and should be null otherwise. Fields with ids listed in this column must be present in the delete file. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="140" column="15" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="140" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1ad05003bae8454bfce2ed9d6e1fdb8c33" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int32_t &gt;</type>
+        <definition>std::optional&lt;int32_t&gt; iceberg::DataFile::sort_order_id</definition>
+        <argsstring></argsstring>
+        <name>sort_order_id</name>
+        <qualifiedname>iceberg::DataFile::sort_order_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 140 ID representing sort order for this file</para>
+<para>If sort order ID is missing or unknown, then the order is assumed to be unsorted. Only data files and equality delete files should be written with a non-null order id. Position deletes are required to be sorted by file and position, not a table order, and should set sort order id to null. Readers must ignore sort order id for position delete files. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="149" column="17" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="149" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a1c0a85917f6c013b2dbc6a86fc09f37a" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::DataFile::first_row_id</definition>
+        <argsstring></argsstring>
+        <name>first_row_id</name>
+        <qualifiedname>iceberg::DataFile::first_row_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 142 The _row_id for the first row in the data file.</para>
+<para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref>:<itemizedlist>
+<listitem><para><ulink url="https://github.com/apache/iceberg/blob/main/format/spec.md#first-row-id-inheritance">First Row ID Inheritance</ulink> </para>
+</listitem></itemizedlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="156" column="17" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="156" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a83d38ba4f28a89228d7b28a2b4923b74" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; std::string &gt;</type>
+        <definition>std::optional&lt;std::string&gt; iceberg::DataFile::referenced_data_file</definition>
+        <argsstring></argsstring>
+        <name>referenced_data_file</name>
+        <qualifiedname>iceberg::DataFile::referenced_data_file</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 143 Fully qualified location (URI with FS scheme) of a data file that all deletes reference.</para>
+<para>Position delete metadata can use referenced_data_file when all deletes tracked by the entry are in a single data file. Setting the referenced file is required for deletion vectors. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="164" column="17" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="164" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a07a53b1bc593468af67aa91b73637ebf" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::DataFile::content_offset</definition>
+        <argsstring></argsstring>
+        <name>content_offset</name>
+        <qualifiedname>iceberg::DataFile::content_offset</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 144 The offset in the file where the content starts.</para>
+<para>The content_offset and content_size_in_bytes fields are used to reference a specific blob for direct access to a deletion vector. For deletion vectors, these values are required and must exactly match the offset and length stored in the Puffin footer for the deletion vector blob. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="172" column="17" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="172" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a11f745bcb8786a401b2e58cdbae6c8c3" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::DataFile::content_size_in_bytes</definition>
+        <argsstring></argsstring>
+        <name>content_size_in_bytes</name>
+        <qualifiedname>iceberg::DataFile::content_size_in_bytes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+<para>Field id: 145 The length of a referenced content stored in the file; required if content_offset is present </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="176" column="17" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="176" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a83b5dbd37957fae5b359d23e276f4584" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int32_t &gt;</type>
+        <definition>std::optional&lt;int32_t&gt; iceberg::DataFile::partition_spec_id</definition>
+        <argsstring></argsstring>
+        <name>partition_spec_id</name>
+        <qualifiedname>iceberg::DataFile::partition_spec_id</qualifiedname>
+        <briefdescription>
+<para>Partition spec id for this data file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="note"><para>This field is for internal use only and will not be persisted to manifest entry. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="181" column="17" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="181" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a0f0b81e940182982fdc6e414b43f4653" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kContentFieldId</definition>
+        <argsstring></argsstring>
+        <name>kContentFieldId</name>
+        <qualifiedname>iceberg::DataFile::kContentFieldId</qualifiedname>
+        <initializer>= 134</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="183" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="183" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a4ed08359bbfacf5bfe48822688a80c01" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kContent</definition>
+        <argsstring></argsstring>
+        <name>kContent</name>
+        <qualifiedname>iceberg::DataFile::kContent</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(
+      kContentFieldId, &quot;content&quot;, <ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">int32</ref>(),
+      &quot;Contents of the file: 0=data, 1=position deletes, 2=equality deletes&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="184" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="184" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a920c4e0b78ce60c397e11d46aec4b659" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kFilePathFieldId</definition>
+        <argsstring></argsstring>
+        <name>kFilePathFieldId</name>
+        <qualifiedname>iceberg::DataFile::kFilePathFieldId</qualifiedname>
+        <initializer>= 100</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="188" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="188" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1acaea7b2cd3eea3ce51993cbfbbfcf8e6" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kFilePath</definition>
+        <argsstring></argsstring>
+        <name>kFilePath</name>
+        <qualifiedname>iceberg::DataFile::kFilePath</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(
+      kFilePathFieldId, &quot;file_path&quot;, <ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">string</ref>(), &quot;Location URI with FS scheme&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="189" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="189" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1aed20b47efd4c7c2e55612312c9a4c584" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kFileFormatFieldId</definition>
+        <argsstring></argsstring>
+        <name>kFileFormatFieldId</name>
+        <qualifiedname>iceberg::DataFile::kFileFormatFieldId</qualifiedname>
+        <initializer>= 101</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="192" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="192" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a09f04fa945396e5c8eb7ad53d23ce2ea" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kFileFormat</definition>
+        <argsstring></argsstring>
+        <name>kFileFormat</name>
+        <qualifiedname>iceberg::DataFile::kFileFormat</qualifiedname>
+        <initializer>=
+      <ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(kFileFormatFieldId, &quot;file_format&quot;, <ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">string</ref>(),
+                                &quot;File format name: avro, orc, or parquet&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="193" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="193" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a9ecb2a54f879095212f7092022a05680" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kPartitionFieldId</definition>
+        <argsstring></argsstring>
+        <name>kPartitionFieldId</name>
+        <qualifiedname>iceberg::DataFile::kPartitionFieldId</qualifiedname>
+        <initializer>= 102</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="197" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="197" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a66d45c74d15ec48db7ff7cb6e1b91b7c" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::DataFile::kPartitionField</definition>
+        <argsstring></argsstring>
+        <name>kPartitionField</name>
+        <qualifiedname>iceberg::DataFile::kPartitionField</qualifiedname>
+        <initializer>= &quot;partition&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="198" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="198" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a3426092fe871ddc3e8f26f0d18906c20" prot="public" static="yes" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::DataFile::kPartitionDoc</definition>
+        <argsstring></argsstring>
+        <name>kPartitionDoc</name>
+        <qualifiedname>iceberg::DataFile::kPartitionDoc</qualifiedname>
+        <initializer>=
+      &quot;Partition data tuple, schema based on the <ref refid="structiceberg_1_1DataFile_1a42b8804daaa21ad80279831a1fd9eaf1" kindref="member">partition</ref> spec&quot;</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="199" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="199" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a7ef65befa640f3ae67bc8931b25f7002" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kRecordCountFieldId</definition>
+        <argsstring></argsstring>
+        <name>kRecordCountFieldId</name>
+        <qualifiedname>iceberg::DataFile::kRecordCountFieldId</qualifiedname>
+        <initializer>= 103</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="202" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="202" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a72acf234507ce821efef330f08e49c85" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kRecordCount</definition>
+        <argsstring></argsstring>
+        <name>kRecordCount</name>
+        <qualifiedname>iceberg::DataFile::kRecordCount</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(
+      kRecordCountFieldId, &quot;record_count&quot;, <ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">int64</ref>(), &quot;Number of records in the file&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="203" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="203" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1ad8e0948bb3d1d5263fcea39a929ce3d8" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kFileSizeFieldId</definition>
+        <argsstring></argsstring>
+        <name>kFileSizeFieldId</name>
+        <qualifiedname>iceberg::DataFile::kFileSizeFieldId</qualifiedname>
+        <initializer>= 104</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="206" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="206" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1ad1ba63a2784ab314d0f2fddd9d0340bc" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kFileSize</definition>
+        <argsstring></argsstring>
+        <name>kFileSize</name>
+        <qualifiedname>iceberg::DataFile::kFileSize</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(
+      kFileSizeFieldId, &quot;file_size_in_bytes&quot;, <ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">int64</ref>(), &quot;Total file size in bytes&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="207" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="207" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a1caeec329bf1374d7aca29f50e7674f5" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kColumnSizesFieldId</definition>
+        <argsstring></argsstring>
+        <name>kColumnSizesFieldId</name>
+        <qualifiedname>iceberg::DataFile::kColumnSizesFieldId</qualifiedname>
+        <initializer>= 108</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="210" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="210" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1abe05b479714cd191e0c5a124c18449bf" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kColumnSizes</definition>
+        <argsstring></argsstring>
+        <name>kColumnSizes</name>
+        <qualifiedname>iceberg::DataFile::kColumnSizes</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(
+      kColumnSizesFieldId, &quot;column_sizes&quot;,
+      <ref refid="group__type-factories_1ga4d0b2254f39850e311ffed558e1bac7b" kindref="member">map</ref>(<ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(117, std::string(MapType::kKeyName), <ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">int32</ref>()),
+          <ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(118, std::string(MapType::kValueName), <ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">int64</ref>())),
+      &quot;Map of column id to total size on disk&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="211" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="211" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a4b6b69148cc0fe8698f35ccb12f3f48e" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kValueCountsFieldId</definition>
+        <argsstring></argsstring>
+        <name>kValueCountsFieldId</name>
+        <qualifiedname>iceberg::DataFile::kValueCountsFieldId</qualifiedname>
+        <initializer>= 109</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="217" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="217" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a0234a4e9a555a5489edbb7ef25d8122a" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kValueCounts</definition>
+        <argsstring></argsstring>
+        <name>kValueCounts</name>
+        <qualifiedname>iceberg::DataFile::kValueCounts</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(
+      kValueCountsFieldId, &quot;value_counts&quot;,
+      <ref refid="group__type-factories_1ga4d0b2254f39850e311ffed558e1bac7b" kindref="member">map</ref>(<ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(119, std::string(MapType::kKeyName), <ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">int32</ref>()),
+          <ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(120, std::string(MapType::kValueName), <ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">int64</ref>())),
+      &quot;Map of column id to total count, including null and NaN&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="218" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="218" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1acdec59743b2e62977c41dcc844909560" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kNullValueCountsFieldId</definition>
+        <argsstring></argsstring>
+        <name>kNullValueCountsFieldId</name>
+        <qualifiedname>iceberg::DataFile::kNullValueCountsFieldId</qualifiedname>
+        <initializer>= 110</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="224" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="224" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a1cc0459fc7cb49e0c2a8402ba25a6acf" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kNullValueCounts</definition>
+        <argsstring></argsstring>
+        <name>kNullValueCounts</name>
+        <qualifiedname>iceberg::DataFile::kNullValueCounts</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(
+      kNullValueCountsFieldId, &quot;null_value_counts&quot;,
+      <ref refid="group__type-factories_1ga4d0b2254f39850e311ffed558e1bac7b" kindref="member">map</ref>(<ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(121, std::string(MapType::kKeyName), <ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">int32</ref>()),
+          <ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(122, std::string(MapType::kValueName), <ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">int64</ref>())),
+      &quot;Map of column id to null value count&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="225" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="225" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a6b8f0d7d1b43a084ea1295f6e7bba6bb" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kNanValueCountsFieldId</definition>
+        <argsstring></argsstring>
+        <name>kNanValueCountsFieldId</name>
+        <qualifiedname>iceberg::DataFile::kNanValueCountsFieldId</qualifiedname>
+        <initializer>= 137</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="231" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="231" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a344afa148d3deed13dea93ff39b2af4a" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kNanValueCounts</definition>
+        <argsstring></argsstring>
+        <name>kNanValueCounts</name>
+        <qualifiedname>iceberg::DataFile::kNanValueCounts</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(
+      kNanValueCountsFieldId, &quot;nan_value_counts&quot;,
+      <ref refid="group__type-factories_1ga4d0b2254f39850e311ffed558e1bac7b" kindref="member">map</ref>(<ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(138, std::string(MapType::kKeyName), <ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">int32</ref>()),
+          <ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(139, std::string(MapType::kValueName), <ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">int64</ref>())),
+      &quot;Map of column id to number of NaN values in the column&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="232" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="232" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1abaa6efa6275dfaba7ab8dab2c38a7b55" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kLowerBoundsFieldId</definition>
+        <argsstring></argsstring>
+        <name>kLowerBoundsFieldId</name>
+        <qualifiedname>iceberg::DataFile::kLowerBoundsFieldId</qualifiedname>
+        <initializer>= 125</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="238" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="238" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a1b397d67b06740fe4867d179917c015a" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kLowerBounds</definition>
+        <argsstring></argsstring>
+        <name>kLowerBounds</name>
+        <qualifiedname>iceberg::DataFile::kLowerBounds</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(
+      kLowerBoundsFieldId, &quot;lower_bounds&quot;,
+      <ref refid="group__type-factories_1ga4d0b2254f39850e311ffed558e1bac7b" kindref="member">map</ref>(<ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(126, std::string(MapType::kKeyName), <ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">int32</ref>()),
+          <ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(127, std::string(MapType::kValueName), <ref refid="group__type-factories_1ga33cd0c2e979eebcccc89cdbcd3f6af99" kindref="member">binary</ref>())),
+      &quot;Map of column id to lower bound&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="239" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="239" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1af80ff9a626d09a1ddf04518c46cd66b3" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kUpperBoundsFieldId</definition>
+        <argsstring></argsstring>
+        <name>kUpperBoundsFieldId</name>
+        <qualifiedname>iceberg::DataFile::kUpperBoundsFieldId</qualifiedname>
+        <initializer>= 128</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="245" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="245" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1ad255b1fd3737a2e8f1ed87b9ba7abd9b" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kUpperBounds</definition>
+        <argsstring></argsstring>
+        <name>kUpperBounds</name>
+        <qualifiedname>iceberg::DataFile::kUpperBounds</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(
+      kUpperBoundsFieldId, &quot;upper_bounds&quot;,
+      <ref refid="group__type-factories_1ga4d0b2254f39850e311ffed558e1bac7b" kindref="member">map</ref>(<ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(129, std::string(MapType::kKeyName), <ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">int32</ref>()),
+          <ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(130, std::string(MapType::kValueName), <ref refid="group__type-factories_1ga33cd0c2e979eebcccc89cdbcd3f6af99" kindref="member">binary</ref>())),
+      &quot;Map of column id to upper bound&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="246" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="246" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a18a03285a24840f74cd86d377127e289" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kKeyMetadataFieldId</definition>
+        <argsstring></argsstring>
+        <name>kKeyMetadataFieldId</name>
+        <qualifiedname>iceberg::DataFile::kKeyMetadataFieldId</qualifiedname>
+        <initializer>= 131</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="252" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="252" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a8ed74fb02a421e933a9b08934c52ec18" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kKeyMetadata</definition>
+        <argsstring></argsstring>
+        <name>kKeyMetadata</name>
+        <qualifiedname>iceberg::DataFile::kKeyMetadata</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(
+      kKeyMetadataFieldId, &quot;key_metadata&quot;, <ref refid="group__type-factories_1ga33cd0c2e979eebcccc89cdbcd3f6af99" kindref="member">binary</ref>(), &quot;Encryption key metadata blob&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="253" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="253" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a9cf094b7da9aba8a2c808d3c8279f86b" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kSplitOffsetsFieldId</definition>
+        <argsstring></argsstring>
+        <name>kSplitOffsetsFieldId</name>
+        <qualifiedname>iceberg::DataFile::kSplitOffsetsFieldId</qualifiedname>
+        <initializer>= 132</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="256" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="256" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1ac461807aade94e953c5b091f54d03e57" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kSplitOffsets</definition>
+        <argsstring></argsstring>
+        <name>kSplitOffsets</name>
+        <qualifiedname>iceberg::DataFile::kSplitOffsets</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(
+      kSplitOffsetsFieldId, &quot;split_offsets&quot;,
+      <ref refid="group__type-factories_1ga63d320f2972eee8c041fd5c98ecc1070" kindref="member">list</ref>(<ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(133, std::string(ListType::kElementName), <ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">int64</ref>())),
+      &quot;Splittable offsets&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="257" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="257" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a49e9bd8fe15622af3c0657cc3be0e445" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kEqualityIdsFieldId</definition>
+        <argsstring></argsstring>
+        <name>kEqualityIdsFieldId</name>
+        <qualifiedname>iceberg::DataFile::kEqualityIdsFieldId</qualifiedname>
+        <initializer>= 135</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="262" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="262" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1ac90938e6386044e97137f67cc8784c3f" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kEqualityIds</definition>
+        <argsstring></argsstring>
+        <name>kEqualityIds</name>
+        <qualifiedname>iceberg::DataFile::kEqualityIds</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(
+      kEqualityIdsFieldId, &quot;equality_ids&quot;,
+      <ref refid="group__type-factories_1ga63d320f2972eee8c041fd5c98ecc1070" kindref="member">list</ref>(<ref refid="classiceberg_1_1SchemaField_1a4ad7baa4dedd37e2f699a2f32deef942" kindref="member">SchemaField::MakeRequired</ref>(136, std::string(ListType::kElementName), <ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">int32</ref>())),
+      &quot;Equality comparison field IDs&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="263" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="263" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a49ec162a9ef8be472720a92e33c8a809" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kSortOrderIdFieldId</definition>
+        <argsstring></argsstring>
+        <name>kSortOrderIdFieldId</name>
+        <qualifiedname>iceberg::DataFile::kSortOrderIdFieldId</qualifiedname>
+        <initializer>= 140</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="268" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="268" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a21fe0196badea397835c5ec27e942280" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kSortOrderId</definition>
+        <argsstring></argsstring>
+        <name>kSortOrderId</name>
+        <qualifiedname>iceberg::DataFile::kSortOrderId</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(
+      kSortOrderIdFieldId, &quot;sort_order_id&quot;, <ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">int32</ref>(), &quot;Sort order ID&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="269" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="269" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1ab07dc8f9fc91770adc654745949ab7d8" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kFirstRowIdFieldId</definition>
+        <argsstring></argsstring>
+        <name>kFirstRowIdFieldId</name>
+        <qualifiedname>iceberg::DataFile::kFirstRowIdFieldId</qualifiedname>
+        <initializer>= 142</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="272" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="272" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a6ef5790ebcdd5d27a9d30073dec68f34" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kFirstRowId</definition>
+        <argsstring></argsstring>
+        <name>kFirstRowId</name>
+        <qualifiedname>iceberg::DataFile::kFirstRowId</qualifiedname>
+        <initializer>=
+      <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(kFirstRowIdFieldId, &quot;first_row_id&quot;, <ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">int64</ref>(),
+                                &quot;Starting row ID to assign to new rows&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="273" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="273" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1aafa08e9ec67863b28b63edd58e2a4a20" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kReferencedDataFileFieldId</definition>
+        <argsstring></argsstring>
+        <name>kReferencedDataFileFieldId</name>
+        <qualifiedname>iceberg::DataFile::kReferencedDataFileFieldId</qualifiedname>
+        <initializer>= 143</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="277" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="277" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a462a6af5bb41281a3abbb07b1900bc8d" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kReferencedDataFile</definition>
+        <argsstring></argsstring>
+        <name>kReferencedDataFile</name>
+        <qualifiedname>iceberg::DataFile::kReferencedDataFile</qualifiedname>
+        <initializer>= <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(
+      kReferencedDataFileFieldId, &quot;referenced_data_file&quot;, <ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">string</ref>(),
+      &quot;Fully qualified location (URI with FS scheme) of a data file that all deletes &quot;
+      &quot;reference&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="278" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="278" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a7c631a11c4255b50a726ae54703ea27a" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kContentOffsetFieldId</definition>
+        <argsstring></argsstring>
+        <name>kContentOffsetFieldId</name>
+        <qualifiedname>iceberg::DataFile::kContentOffsetFieldId</qualifiedname>
+        <initializer>= 144</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="283" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="283" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a246c6b9f6f1a435b976f672df87e8cd4" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kContentOffset</definition>
+        <argsstring></argsstring>
+        <name>kContentOffset</name>
+        <qualifiedname>iceberg::DataFile::kContentOffset</qualifiedname>
+        <initializer>=
+      <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(kContentOffsetFieldId, &quot;content_offset&quot;, <ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">int64</ref>(),
+                                &quot;The offset in the file where the <ref refid="structiceberg_1_1DataFile_1a03ba5db838a4d23170cf5e305465a2f5" kindref="member">content</ref> starts&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="284" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="284" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1aab38fb4fc30a0172b72470631913a4d2" prot="public" static="yes" constexpr="yes" mutable="no">
+        <type>constexpr int32_t</type>
+        <definition>constexpr int32_t iceberg::DataFile::kContentSizeFieldId</definition>
+        <argsstring></argsstring>
+        <name>kContentSizeFieldId</name>
+        <qualifiedname>iceberg::DataFile::kContentSizeFieldId</qualifiedname>
+        <initializer>= 145</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="288" column="28" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="288" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1DataFile_1a58accdea9255997d72dc2b66360b3d51" prot="public" static="yes" mutable="no">
+        <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>const SchemaField iceberg::DataFile::kContentSize</definition>
+        <argsstring></argsstring>
+        <name>kContentSize</name>
+        <qualifiedname>iceberg::DataFile::kContentSize</qualifiedname>
+        <initializer>=
+      <ref refid="classiceberg_1_1SchemaField_1a0c8382f6e164b76f45e4b4c26028a872" kindref="member">SchemaField::MakeOptional</ref>(kContentSizeFieldId, &quot;content_size_in_bytes&quot;, <ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">int64</ref>(),
+                                &quot;The length of referenced <ref refid="structiceberg_1_1DataFile_1a03ba5db838a4d23170cf5e305465a2f5" kindref="member">content</ref> stored in the file&quot;)</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="289" column="35" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="289" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1DataFile_1a0293d3245136becc4a527f166ad70684" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::DataFile::operator==</definition>
+        <argsstring>(const DataFile &amp;other) const =default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::DataFile::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="293" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1DataFile_1a02073429cd4deb41aef06f2f13b547f6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; StructType &gt; iceberg::DataFile::Type</definition>
+        <argsstring>(std::shared_ptr&lt; StructType &gt; partition_type)</argsstring>
+        <name>Type</name>
+        <qualifiedname>iceberg::DataFile::Type</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> &gt;</type>
+          <declname>partition_type</declname>
+        </param>
+        <briefdescription>
+<para>Get the schema of the data file with the given partition type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_entry.h" line="296" column="26" bodyfile="iceberg/manifest/manifest_entry.cc" bodystart="38" bodyend="64"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para><ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> carries data file path, partition tuple, metrics, ... </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::DataFile</label>
+        <link refid="structiceberg_1_1DataFile"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>file_path</edgelabel>
+          <edgelabel>kPartitionDoc</edgelabel>
+          <edgelabel>kPartitionField</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>partition</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>column_sizes</edgelabel>
+          <edgelabel>nan_value_counts</edgelabel>
+          <edgelabel>null_value_counts</edgelabel>
+          <edgelabel>value_counts</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>lower_bounds</edgelabel>
+          <edgelabel>upper_bounds</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>key_metadata</edgelabel>
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>split_offsets</edgelabel>
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>equality_ids</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>kColumnSizes</edgelabel>
+          <edgelabel>kContent</edgelabel>
+          <edgelabel>kContentOffset</edgelabel>
+          <edgelabel>kContentSize</edgelabel>
+          <edgelabel>kEqualityIds</edgelabel>
+          <edgelabel>kFileFormat</edgelabel>
+          <edgelabel>kFilePath</edgelabel>
+          <edgelabel>kFileSize</edgelabel>
+          <edgelabel>kFirstRowId</edgelabel>
+          <edgelabel>kKeyMetadata</edgelabel>
+          <edgelabel>...</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::PartitionValues</label>
+        <link refid="classiceberg_1_1PartitionValues"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="12" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+      <node id="12">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="6">
+        <label>std::map&lt; int32_t, int64_t &gt;</label>
+      </node>
+      <node id="7">
+        <label>std::map&lt; int32_t, std::vector&lt; uint8_t &gt; &gt;</label>
+        <childnode refid="8" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="9">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+      <node id="8">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/manifest/manifest_entry.h" line="63" column="1" bodyfile="iceberg/manifest/manifest_entry.h" bodystart="63" bodyend="297"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1DataFile_1a68c1f9fa2c80dd7992f40739d6946900" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>column_sizes</name></member>
+      <member refid="structiceberg_1_1DataFile_1a03ba5db838a4d23170cf5e305465a2f5" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>content</name></member>
+      <member refid="structiceberg_1_1DataFile_1a526cb5d9e7fc986cf3fc0190b0927857" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>Content</name></member>
+      <member refid="structiceberg_1_1DataFile_1a07a53b1bc593468af67aa91b73637ebf" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>content_offset</name></member>
+      <member refid="structiceberg_1_1DataFile_1a11f745bcb8786a401b2e58cdbae6c8c3" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>content_size_in_bytes</name></member>
+      <member refid="structiceberg_1_1DataFile_1a4d44d6ae245ac89a8a6fa3f39ec518ed" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>equality_ids</name></member>
+      <member refid="structiceberg_1_1DataFile_1a368bc28fe2db97e3ec6001ff810cb527" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>file_format</name></member>
+      <member refid="structiceberg_1_1DataFile_1af67f7ebac6579d80b4ac807e2cd665b8" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>file_path</name></member>
+      <member refid="structiceberg_1_1DataFile_1a3b73f63230f0fd255c787221eec1967a" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>file_size_in_bytes</name></member>
+      <member refid="structiceberg_1_1DataFile_1a1c0a85917f6c013b2dbc6a86fc09f37a" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>first_row_id</name></member>
+      <member refid="structiceberg_1_1DataFile_1abe05b479714cd191e0c5a124c18449bf" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kColumnSizes</name></member>
+      <member refid="structiceberg_1_1DataFile_1a1caeec329bf1374d7aca29f50e7674f5" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kColumnSizesFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1a4ed08359bbfacf5bfe48822688a80c01" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kContent</name></member>
+      <member refid="structiceberg_1_1DataFile_1a0f0b81e940182982fdc6e414b43f4653" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kContentFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1a246c6b9f6f1a435b976f672df87e8cd4" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kContentOffset</name></member>
+      <member refid="structiceberg_1_1DataFile_1a7c631a11c4255b50a726ae54703ea27a" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kContentOffsetFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1a58accdea9255997d72dc2b66360b3d51" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kContentSize</name></member>
+      <member refid="structiceberg_1_1DataFile_1aab38fb4fc30a0172b72470631913a4d2" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kContentSizeFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1ac90938e6386044e97137f67cc8784c3f" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kEqualityIds</name></member>
+      <member refid="structiceberg_1_1DataFile_1a49e9bd8fe15622af3c0657cc3be0e445" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kEqualityIdsFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1a9d85eadb07348a091a84caa98fb84255" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>key_metadata</name></member>
+      <member refid="structiceberg_1_1DataFile_1a09f04fa945396e5c8eb7ad53d23ce2ea" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kFileFormat</name></member>
+      <member refid="structiceberg_1_1DataFile_1aed20b47efd4c7c2e55612312c9a4c584" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kFileFormatFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1acaea7b2cd3eea3ce51993cbfbbfcf8e6" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kFilePath</name></member>
+      <member refid="structiceberg_1_1DataFile_1a920c4e0b78ce60c397e11d46aec4b659" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kFilePathFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1ad1ba63a2784ab314d0f2fddd9d0340bc" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kFileSize</name></member>
+      <member refid="structiceberg_1_1DataFile_1ad8e0948bb3d1d5263fcea39a929ce3d8" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kFileSizeFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1a6ef5790ebcdd5d27a9d30073dec68f34" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kFirstRowId</name></member>
+      <member refid="structiceberg_1_1DataFile_1ab07dc8f9fc91770adc654745949ab7d8" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kFirstRowIdFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1a8ed74fb02a421e933a9b08934c52ec18" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kKeyMetadata</name></member>
+      <member refid="structiceberg_1_1DataFile_1a18a03285a24840f74cd86d377127e289" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kKeyMetadataFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1a1b397d67b06740fe4867d179917c015a" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kLowerBounds</name></member>
+      <member refid="structiceberg_1_1DataFile_1abaa6efa6275dfaba7ab8dab2c38a7b55" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kLowerBoundsFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1a344afa148d3deed13dea93ff39b2af4a" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kNanValueCounts</name></member>
+      <member refid="structiceberg_1_1DataFile_1a6b8f0d7d1b43a084ea1295f6e7bba6bb" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kNanValueCountsFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1a1cc0459fc7cb49e0c2a8402ba25a6acf" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kNullValueCounts</name></member>
+      <member refid="structiceberg_1_1DataFile_1acdec59743b2e62977c41dcc844909560" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kNullValueCountsFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1a3426092fe871ddc3e8f26f0d18906c20" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kPartitionDoc</name></member>
+      <member refid="structiceberg_1_1DataFile_1a66d45c74d15ec48db7ff7cb6e1b91b7c" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kPartitionField</name></member>
+      <member refid="structiceberg_1_1DataFile_1a9ecb2a54f879095212f7092022a05680" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kPartitionFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1a72acf234507ce821efef330f08e49c85" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kRecordCount</name></member>
+      <member refid="structiceberg_1_1DataFile_1a7ef65befa640f3ae67bc8931b25f7002" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kRecordCountFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1a462a6af5bb41281a3abbb07b1900bc8d" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kReferencedDataFile</name></member>
+      <member refid="structiceberg_1_1DataFile_1aafa08e9ec67863b28b63edd58e2a4a20" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kReferencedDataFileFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1a21fe0196badea397835c5ec27e942280" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kSortOrderId</name></member>
+      <member refid="structiceberg_1_1DataFile_1a49ec162a9ef8be472720a92e33c8a809" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kSortOrderIdFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1ac461807aade94e953c5b091f54d03e57" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kSplitOffsets</name></member>
+      <member refid="structiceberg_1_1DataFile_1a9cf094b7da9aba8a2c808d3c8279f86b" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kSplitOffsetsFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1ad255b1fd3737a2e8f1ed87b9ba7abd9b" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kUpperBounds</name></member>
+      <member refid="structiceberg_1_1DataFile_1af80ff9a626d09a1ddf04518c46cd66b3" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kUpperBoundsFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1a0234a4e9a555a5489edbb7ef25d8122a" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kValueCounts</name></member>
+      <member refid="structiceberg_1_1DataFile_1a4b6b69148cc0fe8698f35ccb12f3f48e" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>kValueCountsFieldId</name></member>
+      <member refid="structiceberg_1_1DataFile_1a080e58d5188f19f5b3d69ea9c284f449" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>lower_bounds</name></member>
+      <member refid="structiceberg_1_1DataFile_1aaecefeea56d351113ed3223173c81872" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>nan_value_counts</name></member>
+      <member refid="structiceberg_1_1DataFile_1a7df12e8070320e57f426b4450d9d2ff6" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>null_value_counts</name></member>
+      <member refid="structiceberg_1_1DataFile_1a0293d3245136becc4a527f166ad70684" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1DataFile_1a42b8804daaa21ad80279831a1fd9eaf1" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>partition</name></member>
+      <member refid="structiceberg_1_1DataFile_1a83b5dbd37957fae5b359d23e276f4584" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>partition_spec_id</name></member>
+      <member refid="structiceberg_1_1DataFile_1a45beea978f69e41e67719c532c935141" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>record_count</name></member>
+      <member refid="structiceberg_1_1DataFile_1a83d38ba4f28a89228d7b28a2b4923b74" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>referenced_data_file</name></member>
+      <member refid="structiceberg_1_1DataFile_1ad05003bae8454bfce2ed9d6e1fdb8c33" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>sort_order_id</name></member>
+      <member refid="structiceberg_1_1DataFile_1abc1093a971f7e5f06c0e227a78e8bef5" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>split_offsets</name></member>
+      <member refid="structiceberg_1_1DataFile_1a02073429cd4deb41aef06f2f13b547f6" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>Type</name></member>
+      <member refid="structiceberg_1_1DataFile_1aaac83ddaeded403515f844c9e7b25be5" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>upper_bounds</name></member>
+      <member refid="structiceberg_1_1DataFile_1af8b885543c36d433088a9aca00532083" prot="public" virt="non-virtual"><scope>iceberg::DataFile</scope><name>value_counts</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

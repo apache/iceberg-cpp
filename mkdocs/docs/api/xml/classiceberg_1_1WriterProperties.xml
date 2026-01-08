@@ -1,0 +1,212 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1WriterProperties" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::WriterProperties</compoundname>
+    <basecompoundref refid="classiceberg_1_1ConfigBase" prot="public" virt="non-virtual">iceberg::ConfigBase&lt; WriterProperties &gt;</basecompoundref>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="classiceberg_1_1WriterProperties_1a00f3e6e4a134197527bbb06c616b3ebe" prot="public" static="no">
+        <templateparamlist>
+          <param>
+            <type>typename T</type>
+          </param>
+        </templateparamlist>
+        <type>const <ref refid="classiceberg_1_1ConfigBase" kindref="compound">ConfigBase</ref>&lt; <ref refid="classiceberg_1_1WriterProperties" kindref="compound">WriterProperties</ref> &gt;::Entry&lt; T &gt;</type>
+        <definition>using iceberg::WriterProperties::Entry =  const ConfigBase&lt;WriterProperties&gt;::Entry&lt;T&gt;</definition>
+        <argsstring></argsstring>
+        <name>Entry</name>
+        <qualifiedname>iceberg::WriterProperties::Entry</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_writer.h" line="41" column="3" bodyfile="iceberg/file_writer.h" bodystart="41" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1WriterProperties_1a900e8c7df68c72a277f5bffe9fa57774" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; std::string &gt;</type>
+        <definition>Entry&lt;std::string&gt; iceberg::WriterProperties::kAvroSchemaName</definition>
+        <argsstring></argsstring>
+        <name>kAvroSchemaName</name>
+        <qualifiedname>iceberg::WriterProperties::kAvroSchemaName</qualifiedname>
+        <initializer>{&quot;write.avro.schema-name&quot;, &quot;&quot;}</initializer>
+        <briefdescription>
+<para>The name of the Avro root node schema to write. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_writer.h" line="44" column="23" bodyfile="iceberg/file_writer.h" bodystart="44" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1WriterProperties_1abaa574296d16477f53547d4ff6f5f8b3" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::WriterProperties::kAvroBufferSize</definition>
+        <argsstring></argsstring>
+        <name>kAvroBufferSize</name>
+        <qualifiedname>iceberg::WriterProperties::kAvroBufferSize</qualifiedname>
+        <initializer>{&quot;write.avro.buffer-size&quot;, 1024 * 1024}</initializer>
+        <briefdescription>
+<para>The buffer size used by Avro output stream. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_writer.h" line="47" column="23" bodyfile="iceberg/file_writer.h" bodystart="47" bodyend="47"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1WriterProperties_1ad0d51e747dee91694c6b83bc0dca212b" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; int64_t &gt;</type>
+        <definition>Entry&lt;int64_t&gt; iceberg::WriterProperties::kAvroSyncInterval</definition>
+        <argsstring></argsstring>
+        <name>kAvroSyncInterval</name>
+        <qualifiedname>iceberg::WriterProperties::kAvroSyncInterval</qualifiedname>
+        <initializer>{&quot;write.avro.sync-interval&quot;, 16 * 1024}</initializer>
+        <briefdescription>
+<para>The sync interval used by Avro writer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_writer.h" line="50" column="23" bodyfile="iceberg/file_writer.h" bodystart="50" bodyend="50"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1WriterProperties_1a60e3675ed3ceaaa8bcb47750f7a098ad" prot="public" static="yes" mutable="no">
+        <type>Entry&lt; bool &gt;</type>
+        <definition>Entry&lt;bool&gt; iceberg::WriterProperties::kAvroSkipDatum</definition>
+        <argsstring></argsstring>
+        <name>kAvroSkipDatum</name>
+        <qualifiedname>iceberg::WriterProperties::kAvroSkipDatum</qualifiedname>
+        <initializer>{&quot;write.avro.skip-datum&quot;, true}</initializer>
+        <briefdescription>
+<para>Whether to skip GenericDatum and use direct encoder for Avro writing. When true, uses direct encoder (faster). When false, uses GenericDatum. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_writer.h" line="54" column="23" bodyfile="iceberg/file_writer.h" bodystart="54" bodyend="54"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1WriterProperties_1a1ae66b95aef69e0ac1d0651e4ef7b841" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1WriterProperties" kindref="compound">WriterProperties</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; WriterProperties &gt; iceberg::WriterProperties::default_properties</definition>
+        <argsstring>()</argsstring>
+        <name>default_properties</name>
+        <qualifiedname>iceberg::WriterProperties::default_properties</qualifiedname>
+        <briefdescription>
+<para>TODO(gangwu): add more properties, like compression codec, compression level, etc. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Create a default <ref refid="classiceberg_1_1WriterProperties" kindref="compound">WriterProperties</ref> instance. </para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_writer.h" line="59" column="26" bodyfile="iceberg/file_writer.cc" bodystart="62" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1WriterProperties_1ac752c561b114e487e5e5326363f025da" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1WriterProperties" kindref="compound">WriterProperties</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; WriterProperties &gt; iceberg::WriterProperties::FromMap</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)</argsstring>
+        <name>FromMap</name>
+        <qualifiedname>iceberg::WriterProperties::FromMap</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>properties</declname>
+        </param>
+        <briefdescription>
+<para>Create a <ref refid="classiceberg_1_1WriterProperties" kindref="compound">WriterProperties</ref> instance from a map of key-value pairs. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_writer.h" line="62" column="26" bodyfile="iceberg/file_writer.cc" bodystart="66" bodyend="71"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1WriterProperties_1af6e576209a19852de42c26082b144c3f" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::WriterProperties::WriterProperties</definition>
+        <argsstring>()=default</argsstring>
+        <name>WriterProperties</name>
+        <qualifiedname>iceberg::WriterProperties::WriterProperties</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/file_writer.h" line="66" column="3"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::ConfigBase&lt; WriterProperties &gt;</label>
+        <link refid="classiceberg_1_1ConfigBase"/>
+      </node>
+      <node id="1">
+        <label>iceberg::WriterProperties</label>
+        <link refid="classiceberg_1_1WriterProperties"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::ConfigBase&lt; WriterProperties &gt;</label>
+        <link refid="classiceberg_1_1ConfigBase"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>configs_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::WriterProperties</label>
+        <link refid="classiceberg_1_1WriterProperties"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::string</label>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/file_writer.h" line="38" column="1" bodyfile="iceberg/file_writer.h" bodystart="38" bodyend="67"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ConfigBase_1a464281576df4a683611d8319e578257c" prot="public" virt="non-virtual"><scope>iceberg::WriterProperties</scope><name>configs</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a5988dbb52a6ce914c88ef10c66e5bba7" prot="protected" virt="non-virtual"><scope>iceberg::WriterProperties</scope><name>configs_</name></member>
+      <member refid="classiceberg_1_1WriterProperties_1a1ae66b95aef69e0ac1d0651e4ef7b841" prot="public" virt="non-virtual"><scope>iceberg::WriterProperties</scope><name>default_properties</name></member>
+      <member refid="classiceberg_1_1WriterProperties_1a00f3e6e4a134197527bbb06c616b3ebe" prot="public" virt="non-virtual"><scope>iceberg::WriterProperties</scope><name>Entry</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a78dc1c7d65af1e096a19fc77d2c9ed39" prot="public" virt="non-virtual"><scope>iceberg::WriterProperties</scope><name>Extract</name></member>
+      <member refid="classiceberg_1_1WriterProperties_1ac752c561b114e487e5e5326363f025da" prot="public" virt="non-virtual"><scope>iceberg::WriterProperties</scope><name>FromMap</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a793c5c7e230dac7b87c16200f8263db6" prot="public" virt="non-virtual"><scope>iceberg::WriterProperties</scope><name>Get</name></member>
+      <member refid="classiceberg_1_1WriterProperties_1abaa574296d16477f53547d4ff6f5f8b3" prot="public" virt="non-virtual"><scope>iceberg::WriterProperties</scope><name>kAvroBufferSize</name></member>
+      <member refid="classiceberg_1_1WriterProperties_1a900e8c7df68c72a277f5bffe9fa57774" prot="public" virt="non-virtual"><scope>iceberg::WriterProperties</scope><name>kAvroSchemaName</name></member>
+      <member refid="classiceberg_1_1WriterProperties_1a60e3675ed3ceaaa8bcb47750f7a098ad" prot="public" virt="non-virtual"><scope>iceberg::WriterProperties</scope><name>kAvroSkipDatum</name></member>
+      <member refid="classiceberg_1_1WriterProperties_1ad0d51e747dee91694c6b83bc0dca212b" prot="public" virt="non-virtual"><scope>iceberg::WriterProperties</scope><name>kAvroSyncInterval</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a75f09e1cd2bb55b4df854298ed678313" prot="public" virt="non-virtual"><scope>iceberg::WriterProperties</scope><name>mutable_configs</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a95b58a9275880fc2437210f42e8946f2" prot="public" virt="non-virtual"><scope>iceberg::WriterProperties</scope><name>Reset</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a3c626ca9dd5adf5a1f2e72d3f751059c" prot="public" virt="non-virtual"><scope>iceberg::WriterProperties</scope><name>Set</name></member>
+      <member refid="classiceberg_1_1ConfigBase_1a1fe814df79a9ed72e34fa9d7e6e8d443" prot="public" virt="non-virtual"><scope>iceberg::WriterProperties</scope><name>Unset</name></member>
+      <member refid="classiceberg_1_1WriterProperties_1af6e576209a19852de42c26082b144c3f" prot="private" virt="non-virtual"><scope>iceberg::WriterProperties</scope><name>WriterProperties</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

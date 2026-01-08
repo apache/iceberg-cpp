@@ -1,0 +1,284 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1internal" kind="namespace" language="C++">
+    <compoundname>iceberg::internal</compoundname>
+    <innerclass refid="classiceberg_1_1internal_1_1ArrowArrayBufferGuard" prot="public">iceberg::internal::ArrowArrayBufferGuard</innerclass>
+    <innerclass refid="classiceberg_1_1internal_1_1ArrowArrayGuard" prot="public">iceberg::internal::ArrowArrayGuard</innerclass>
+    <innerclass refid="classiceberg_1_1internal_1_1ArrowArrayViewGuard" prot="public">iceberg::internal::ArrowArrayViewGuard</innerclass>
+    <innerclass refid="classiceberg_1_1internal_1_1ArrowSchemaGuard" prot="public">iceberg::internal::ArrowSchemaGuard</innerclass>
+    <innerclass refid="structiceberg_1_1internal_1_1EqualityDeleteFile" prot="public">iceberg::internal::EqualityDeleteFile</innerclass>
+    <innerclass refid="classiceberg_1_1internal_1_1EqualityDeletes" prot="public">iceberg::internal::EqualityDeletes</innerclass>
+    <innerclass refid="classiceberg_1_1internal_1_1PositionDeletes" prot="public">iceberg::internal::PositionDeletes</innerclass>
+    <innerclass refid="structiceberg_1_1internal_1_1TableScanContext" prot="private">iceberg::internal::TableScanContext</innerclass>
+    <sectiondef kind="func">
+      <memberdef kind="function" id="delete__file__index_8cc_1a983aa0e77760b5650fa26b76e72c2e92" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>ICEBERG_EXPORT Result&lt; bool &gt; iceberg::internal::CanContainEqDeletesForFile</definition>
+        <argsstring>(const DataFile &amp;data_file, const EqualityDeleteFile &amp;delete_file)</argsstring>
+        <name>CanContainEqDeletesForFile</name>
+        <qualifiedname>iceberg::internal::CanContainEqDeletesForFile</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>data_file</declname>
+        </param>
+        <param>
+          <type>const <ref refid="structiceberg_1_1internal_1_1EqualityDeleteFile" kindref="compound">EqualityDeleteFile</ref> &amp;</type>
+          <declname>delete_file</declname>
+        </param>
+        <briefdescription>
+<para>Check if an equality delete file can contain deletes for a data file. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.cc" line="87" column="8" bodyfile="iceberg/delete_file_index.cc" bodystart="87" bodyend="165" declfile="iceberg/delete_file_index.h" declline="149" declcolumn="23"/>
+      </memberdef>
+      <memberdef kind="function" id="delete__file__index_8h_1a7718e6b9a15c9c1cac1f44a361db7e34" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::internal::RangesOverlap</definition>
+        <argsstring>(const Literal &amp;data_lower, const Literal &amp;data_upper, const Literal &amp;delete_lower, const Literal &amp;delete_upper)</argsstring>
+        <name>RangesOverlap</name>
+        <qualifiedname>iceberg::internal::RangesOverlap</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>data_lower</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>data_upper</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>delete_lower</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>delete_upper</declname>
+        </param>
+        <briefdescription>
+<para>Check if two ranges overlap. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="90" column="13" bodyfile="iceberg/delete_file_index.h" bodystart="90" bodyend="99"/>
+      </memberdef>
+      <memberdef kind="function" id="delete__file__index_8h_1a0a1da8b84863a723f8655247133984d5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::internal::AllNull</definition>
+        <argsstring>(const std::map&lt; int32_t, int64_t &gt; &amp;null_counts, const std::map&lt; int32_t, int64_t &gt; &amp;value_counts, int32_t field_id, bool is_required)</argsstring>
+        <name>AllNull</name>
+        <qualifiedname>iceberg::internal::AllNull</qualifiedname>
+        <param>
+          <type>const std::map&lt; int32_t, int64_t &gt; &amp;</type>
+          <declname>null_counts</declname>
+        </param>
+        <param>
+          <type>const std::map&lt; int32_t, int64_t &gt; &amp;</type>
+          <declname>value_counts</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>field_id</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_required</declname>
+        </param>
+        <briefdescription>
+<para>Check if a value count map indicates all values are null. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="102" column="13" bodyfile="iceberg/delete_file_index.h" bodystart="102" bodyend="116"/>
+      </memberdef>
+      <memberdef kind="function" id="delete__file__index_8h_1ae8ea1d0a83c7907f293cd8666b632551" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::internal::AllNonNull</definition>
+        <argsstring>(const std::map&lt; int32_t, int64_t &gt; &amp;null_counts, int32_t field_id, bool is_required)</argsstring>
+        <name>AllNonNull</name>
+        <qualifiedname>iceberg::internal::AllNonNull</qualifiedname>
+        <param>
+          <type>const std::map&lt; int32_t, int64_t &gt; &amp;</type>
+          <declname>null_counts</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>field_id</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_required</declname>
+        </param>
+        <briefdescription>
+<para>Check if all values are non-null. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="119" column="13" bodyfile="iceberg/delete_file_index.h" bodystart="119" bodyend="131"/>
+      </memberdef>
+      <memberdef kind="function" id="delete__file__index_8h_1ae5e7fd90489132c9584c38ce0eae207f" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::internal::ContainsNull</definition>
+        <argsstring>(const std::map&lt; int32_t, int64_t &gt; &amp;null_counts, int32_t field_id, bool is_required)</argsstring>
+        <name>ContainsNull</name>
+        <qualifiedname>iceberg::internal::ContainsNull</qualifiedname>
+        <param>
+          <type>const std::map&lt; int32_t, int64_t &gt; &amp;</type>
+          <declname>null_counts</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>field_id</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>is_required</declname>
+        </param>
+        <briefdescription>
+<para>Check if the column contains any null values. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/delete_file_index.h" line="134" column="13" bodyfile="iceberg/delete_file_index.h" bodystart="134" bodyend="146"/>
+      </memberdef>
+      <memberdef kind="function" id="checked__cast_8h_1a609a5e20bce1b6cdadaf3507c57f452b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename OutputType</type>
+          </param>
+          <param>
+            <type>typename InputType</type>
+          </param>
+        </templateparamlist>
+        <type>OutputType</type>
+        <definition>OutputType iceberg::internal::checked_cast</definition>
+        <argsstring>(InputType &amp;&amp;value)</argsstring>
+        <name>checked_cast</name>
+        <qualifiedname>iceberg::internal::checked_cast</qualifiedname>
+        <param>
+          <type>InputType &amp;&amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/checked_cast.h" line="34" column="19" bodyfile="iceberg/util/checked_cast.h" bodystart="34" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="function" id="checked__cast_8h_1aae3fa786333b3046bb388f7acb6ba17e" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>class U</type>
+          </param>
+        </templateparamlist>
+        <type>std::shared_ptr&lt; T &gt;</type>
+        <definition>std::shared_ptr&lt; T &gt; iceberg::internal::checked_pointer_cast</definition>
+        <argsstring>(std::shared_ptr&lt; U &gt; r) noexcept</argsstring>
+        <name>checked_pointer_cast</name>
+        <qualifiedname>iceberg::internal::checked_pointer_cast</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; U &gt;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/checked_cast.h" line="49" column="17" bodyfile="iceberg/util/checked_cast.h" bodystart="49" bodyend="55"/>
+      </memberdef>
+      <memberdef kind="function" id="checked__cast_8h_1a68ee8fe19b20782c8140151ede05598b" prot="public" static="no" const="no" explicit="no" inline="no" noexcept="yes" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>class T</type>
+          </param>
+          <param>
+            <type>class U</type>
+          </param>
+        </templateparamlist>
+        <type>std::unique_ptr&lt; T &gt;</type>
+        <definition>std::unique_ptr&lt; T &gt; iceberg::internal::checked_pointer_cast</definition>
+        <argsstring>(std::unique_ptr&lt; U &gt; r) noexcept</argsstring>
+        <name>checked_pointer_cast</name>
+        <qualifiedname>iceberg::internal::checked_pointer_cast</qualifiedname>
+        <param>
+          <type>std::unique_ptr&lt; U &gt;</type>
+          <declname>r</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/checked_cast.h" line="58" column="17" bodyfile="iceberg/util/checked_cast.h" bodystart="58" bodyend="64"/>
+      </memberdef>
+      <memberdef kind="function" id="config_8h_1a725ca91b7ee015cb95c3f5575133f295" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename U</type>
+          </param>
+        </templateparamlist>
+        <type>std::string</type>
+        <definition>std::string iceberg::internal::DefaultToString</definition>
+        <argsstring>(const U &amp;val)</argsstring>
+        <name>DefaultToString</name>
+        <qualifiedname>iceberg::internal::DefaultToString</qualifiedname>
+        <param>
+          <type>const U &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/config.h" line="32" column="13" bodyfile="iceberg/util/config.h" bodystart="32" bodyend="45"/>
+      </memberdef>
+      <memberdef kind="function" id="config_8h_1a3c336af2b3f606b07c50c22b2f85b63d" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <templateparamlist>
+          <param>
+            <type>typename U</type>
+          </param>
+        </templateparamlist>
+        <type>U</type>
+        <definition>U iceberg::internal::DefaultFromString</definition>
+        <argsstring>(const std::string &amp;val)</argsstring>
+        <name>DefaultFromString</name>
+        <qualifiedname>iceberg::internal::DefaultFromString</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>val</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/config.h" line="48" column="3" bodyfile="iceberg/util/config.h" bodystart="48" bodyend="61"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/arrow_c_data_guard_internal.cc" line="22" column="1"/>
+  </compounddef>
+</doxygen>
