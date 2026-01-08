@@ -736,4 +736,921 @@ TEST_F(UpdateSchemaTest, DeleteColumnCaseInsensitive) {
   EXPECT_FALSE(field_opt.has_value());
 }
 
+// Test renaming a column
+TEST_F(UpdateSchemaTest, RenameColumn) {
+  // First add a column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AddColumn("old_name", string(), "A column to rename");
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Rename the column
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->RenameColumn("old_name", "new_name");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the column was renamed
+  ICEBERG_UNWRAP_OR_FAIL(auto old_field_opt, result.schema->FindFieldByName("old_name"));
+  ICEBERG_UNWRAP_OR_FAIL(auto new_field_opt, result.schema->FindFieldByName("new_name"));
+
+  EXPECT_FALSE(old_field_opt.has_value());
+  ASSERT_TRUE(new_field_opt.has_value());
+  EXPECT_EQ(*new_field_opt->get().type(), *string());
+}
+
+// Test renaming nested column
+TEST_F(UpdateSchemaTest, RenameNestedColumn) {
+  // First add a struct with nested fields
+  auto struct_type = std::make_shared<StructType>(
+      std::vector<SchemaField>{SchemaField(100, "field1", int32(), true),
+                               SchemaField(101, "field2", string(), true)});
+
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AddColumn("struct_col", struct_type);
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Rename a nested field
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->RenameColumn("struct_col.field1", "renamed_field");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the nested field was renamed
+  ICEBERG_UNWRAP_OR_FAIL(auto struct_field_opt,
+                         result.schema->FindFieldByName("struct_col"));
+  ASSERT_TRUE(struct_field_opt.has_value());
+
+  const auto& struct_field = struct_field_opt->get();
+  const auto& nested_struct = static_cast<const StructType&>(*struct_field.type());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto field1_opt, nested_struct.GetFieldByName("field1"));
+  ICEBERG_UNWRAP_OR_FAIL(auto renamed_opt, nested_struct.GetFieldByName("renamed_field"));
+
+  EXPECT_FALSE(field1_opt.has_value());
+  ASSERT_TRUE(renamed_opt.has_value());
+  EXPECT_EQ(*renamed_opt->get().type(), *int32());
+}
+
+// Test renaming column with dots in new name
+TEST_F(UpdateSchemaTest, RenameColumnWithDotsInName) {
+  // First add a column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AddColumn("simple_name", string());
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Rename to a name with dots
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->RenameColumn("simple_name", "name.with.dots");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the column was renamed
+  ICEBERG_UNWRAP_OR_FAIL(auto new_field_opt,
+                         result.schema->FindFieldByName("name.with.dots"));
+  ASSERT_TRUE(new_field_opt.has_value());
+  EXPECT_EQ(*new_field_opt->get().type(), *string());
+}
+
+// Test rename missing column fails
+TEST_F(UpdateSchemaTest, RenameMissingColumnFails) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->RenameColumn("non_existent", "new_name");
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot rename missing column"));
+}
+
+// Test rename column that will be deleted fails
+TEST_F(UpdateSchemaTest, RenameDeletedColumnFails) {
+  // First add a column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AddColumn("col", string());
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Try to delete then rename
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->DeleteColumn("col").RenameColumn("col", "new_name");
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot rename a column that will be deleted"));
+}
+
+// Test case insensitive rename
+TEST_F(UpdateSchemaTest, RenameColumnCaseInsensitive) {
+  // First add a column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AddColumn("MyColumn", string(), "A column with mixed case");
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Rename using different case
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->CaseSensitive(false).RenameColumn("mycolumn", "NewName");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the column was renamed
+  ICEBERG_UNWRAP_OR_FAIL(auto old_field_opt,
+                         result.schema->FindFieldByName("MyColumn", false));
+  ICEBERG_UNWRAP_OR_FAIL(auto new_field_opt,
+                         result.schema->FindFieldByName("NewName", false));
+
+  EXPECT_FALSE(old_field_opt.has_value());
+  ASSERT_TRUE(new_field_opt.has_value());
+}
+
+// Test rename then delete with old name fails
+TEST_F(UpdateSchemaTest, RenameThenDeleteOldNameFails) {
+  // First add a column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AddColumn("old_name", string());
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Rename then try to delete using old name (should fail - old name no longer exists)
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->RenameColumn("old_name", "new_name").DeleteColumn("old_name");
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot delete a column that has updates"));
+}
+
+// Test rename then delete with new name fails
+TEST_F(UpdateSchemaTest, RenameThenDeleteNewNameFails) {
+  // First add a column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AddColumn("old_name", string());
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Rename then try to delete using new name (should fail - new name doesn't exist yet)
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->RenameColumn("old_name", "new_name").DeleteColumn("new_name");
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot delete missing column"));
+}
+
+// Test rename then add with old name
+TEST_F(UpdateSchemaTest, RenameThenAddWithOldName) {
+  // First add a column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AddColumn("old_name", int32());
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Rename then add a new column with the old name
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->RenameColumn("old_name", "new_name").AddColumn("old_name", string());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify both columns exist with correct types
+  ICEBERG_UNWRAP_OR_FAIL(auto old_field_opt, result.schema->FindFieldByName("old_name"));
+  ICEBERG_UNWRAP_OR_FAIL(auto new_field_opt, result.schema->FindFieldByName("new_name"));
+
+  ASSERT_TRUE(old_field_opt.has_value());
+  ASSERT_TRUE(new_field_opt.has_value());
+
+  // The renamed column should have int32 type
+  EXPECT_EQ(*new_field_opt->get().type(), *int32());
+  // The newly added column should have string type
+  EXPECT_EQ(*old_field_opt->get().type(), *string());
+}
+
+// Test add then rename the newly added column
+TEST_F(UpdateSchemaTest, AddThenRename) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("temp_name", string()).RenameColumn("temp_name", "final_name");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the column exists with the final name
+  ICEBERG_UNWRAP_OR_FAIL(auto temp_opt, result.schema->FindFieldByName("temp_name"));
+  ICEBERG_UNWRAP_OR_FAIL(auto final_opt, result.schema->FindFieldByName("final_name"));
+
+  EXPECT_FALSE(temp_opt.has_value());
+  ASSERT_TRUE(final_opt.has_value());
+  EXPECT_EQ(*final_opt->get().type(), *string());
+}
+
+// Test delete then add then rename
+TEST_F(UpdateSchemaTest, DeleteThenAddThenRename) {
+  // First add a column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AddColumn("col", int32());
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Delete, add with different type, then rename
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->DeleteColumn("col")
+      .AddColumn("col", string(), "New column with same name")
+      .RenameColumn("col", "renamed_col");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the column exists with the new name and type
+  ICEBERG_UNWRAP_OR_FAIL(auto col_opt, result.schema->FindFieldByName("col"));
+  ICEBERG_UNWRAP_OR_FAIL(auto renamed_opt, result.schema->FindFieldByName("renamed_col"));
+
+  EXPECT_FALSE(col_opt.has_value());
+  ASSERT_TRUE(renamed_opt.has_value());
+  EXPECT_EQ(*renamed_opt->get().type(), *string());
+}
+
+// Test making a column optional
+TEST_F(UpdateSchemaTest, MakeColumnOptional) {
+  // First add a required column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AllowIncompatibleChanges().AddRequiredColumn("id", int32());
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Make the column optional
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->MakeColumnOptional("id");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the column is now optional
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("id"));
+  ASSERT_TRUE(field_opt.has_value());
+  EXPECT_TRUE(field_opt->get().optional());
+}
+
+// Test requiring a column
+TEST_F(UpdateSchemaTest, RequireColumn) {
+  // First add an optional column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AddColumn("id", int32());
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Try to require it without allowIncompatibleChanges (should fail)
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->RequireColumn("id");
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot change column nullability"));
+  EXPECT_THAT(result, HasErrorMessage("optional -> required"));
+
+  // Now with allowIncompatibleChanges (should succeed)
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded2, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update2, reloaded2->NewUpdateSchema());
+  update2->AllowIncompatibleChanges().RequireColumn("id");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result2, update2->Apply());
+
+  // Verify the column is now required
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result2.schema->FindFieldByName("id"));
+  ASSERT_TRUE(field_opt.has_value());
+  EXPECT_FALSE(field_opt->get().optional());
+}
+
+// Test requiring an already required column (noop)
+TEST_F(UpdateSchemaTest, RequireColumnNoop) {
+  // First add a required column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AllowIncompatibleChanges().AddRequiredColumn("id", int32());
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Require it again (should be a noop, even without allowIncompatibleChanges)
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->RequireColumn("id");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the column is still required
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("id"));
+  ASSERT_TRUE(field_opt.has_value());
+  EXPECT_FALSE(field_opt->get().optional());
+}
+
+// Test making an already optional column optional (noop)
+TEST_F(UpdateSchemaTest, MakeColumnOptionalNoop) {
+  // Add an optional column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AddColumn("id", int32());
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Make it optional again (should be a noop)
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->MakeColumnOptional("id");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the column is still optional
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("id"));
+  ASSERT_TRUE(field_opt.has_value());
+  EXPECT_TRUE(field_opt->get().optional());
+}
+
+// Test case insensitive require column
+TEST_F(UpdateSchemaTest, RequireColumnCaseInsensitive) {
+  // First add an optional column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AddColumn("ID", int32());
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Require using different case
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->CaseSensitive(false).AllowIncompatibleChanges().RequireColumn("id");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the column is now required
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("ID", false));
+  ASSERT_TRUE(field_opt.has_value());
+  EXPECT_FALSE(field_opt->get().optional());
+}
+
+// Test make column optional on missing column fails
+TEST_F(UpdateSchemaTest, MakeColumnOptionalMissingFails) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->MakeColumnOptional("non_existent");
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot update missing column"));
+}
+
+// Test require column on missing column fails
+TEST_F(UpdateSchemaTest, RequireColumnMissingFails) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AllowIncompatibleChanges().RequireColumn("non_existent");
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot update missing column"));
+}
+
+// Test make column optional on deleted column fails
+TEST_F(UpdateSchemaTest, MakeColumnOptionalDeletedFails) {
+  // First add a column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AllowIncompatibleChanges().AddRequiredColumn("col", int32());
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Try to delete then make optional
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->DeleteColumn("col").MakeColumnOptional("col");
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot update a column that will be deleted"));
+}
+
+// Test require column on deleted column fails
+TEST_F(UpdateSchemaTest, RequireColumnDeletedFails) {
+  // First add a column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AddColumn("col", int32());
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Try to delete then require
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->DeleteColumn("col").AllowIncompatibleChanges().RequireColumn("col");
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot update a column that will be deleted"));
+}
+
+// Test update column doc (in same transaction as add)
+TEST_F(UpdateSchemaTest, UpdateColumnDoc) {
+  // Add a column and update its doc in the same transaction
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("col", int32(), "original doc");
+  update->UpdateColumnDoc("col", "updated doc");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the doc was updated
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("col"));
+  ASSERT_TRUE(field_opt.has_value());
+  EXPECT_EQ(field_opt->get().doc(), "updated doc");
+}
+
+// Test update column doc on missing column fails
+TEST_F(UpdateSchemaTest, UpdateColumnDocMissingFails) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->UpdateColumnDoc("non_existent", "some doc");
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot update missing column"));
+}
+
+// Test update column doc on deleted column fails
+TEST_F(UpdateSchemaTest, UpdateColumnDocDeletedFails) {
+  // First add a column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AddColumn("col", int32(), "original doc");
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Try to delete then update doc
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->DeleteColumn("col").UpdateColumnDoc("col", "new doc");
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot update a column that will be deleted"));
+}
+
+// Test update column doc noop (same doc)
+TEST_F(UpdateSchemaTest, UpdateColumnDocNoop) {
+  // First add a column with a doc
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AddColumn("col", int32(), "same doc");
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Update with the same doc (should be a noop)
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->UpdateColumnDoc("col", "same doc");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the doc is still the same
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("col"));
+  ASSERT_TRUE(field_opt.has_value());
+  EXPECT_EQ(field_opt->get().doc(), "same doc");
+}
+
+// Test update column doc with empty string
+TEST_F(UpdateSchemaTest, UpdateColumnDocEmptyString) {
+  // Add a column with a doc and clear it in same transaction
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("col", int32(), "original doc");
+  update->UpdateColumnDoc("col", "");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the doc was cleared
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("col"));
+  ASSERT_TRUE(field_opt.has_value());
+  EXPECT_EQ(field_opt->get().doc(), "");
+}
+
+// Test update column int to long
+TEST_F(UpdateSchemaTest, UpdateColumnIntToLong) {
+  // Add an int column and update to long in same transaction
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("id", int32(), "An integer ID");
+  update->UpdateColumn("id", int64());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the type was updated
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("id"));
+  ASSERT_TRUE(field_opt.has_value());
+  EXPECT_EQ(*field_opt->get().type(), *int64());
+  EXPECT_EQ(field_opt->get().doc(), "An integer ID");  // Doc preserved
+}
+
+// Test update column float to double
+TEST_F(UpdateSchemaTest, UpdateColumnFloatToDouble) {
+  // Add a float column and update to double in same transaction
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("value", float32(), "A float value");
+  update->UpdateColumn("value", float64());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the type was updated
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("value"));
+  ASSERT_TRUE(field_opt.has_value());
+  EXPECT_EQ(*field_opt->get().type(), *float64());
+}
+
+// Test update column with same type (noop)
+TEST_F(UpdateSchemaTest, UpdateColumnSameType) {
+  // Add a column and update with same type (should be a noop)
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("id", int32());
+  update->UpdateColumn("id", int32());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the type is still int32
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("id"));
+  ASSERT_TRUE(field_opt.has_value());
+  EXPECT_EQ(*field_opt->get().type(), *int32());
+}
+
+// Test update column on missing column fails
+TEST_F(UpdateSchemaTest, UpdateColumnMissingFails) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->UpdateColumn("non_existent", int64());
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot update missing column"));
+}
+
+// Test update column on deleted column fails
+TEST_F(UpdateSchemaTest, UpdateColumnDeletedFails) {
+  // First add a column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AddColumn("col", int32());
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Try to delete then update type
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->DeleteColumn("col").UpdateColumn("col", int64());
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot update a column that will be deleted"));
+}
+
+// Test update column with invalid promotion fails (long to int)
+TEST_F(UpdateSchemaTest, UpdateColumnInvalidPromotionFails) {
+  // Add a long column and try to downgrade to int (should fail)
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("id", int64());
+  update->UpdateColumn("id", int32());
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot change column type"));
+}
+
+// Test update column with invalid promotion fails (double to float)
+TEST_F(UpdateSchemaTest, UpdateColumnInvalidPromotionDoubleToFloatFails) {
+  // Add a double column and try to downgrade to float (should fail)
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("value", float64());
+  update->UpdateColumn("value", float32());
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot change column type"));
+}
+
+// Test update column with incompatible types fails (int to string)
+TEST_F(UpdateSchemaTest, UpdateColumnIncompatibleTypesFails) {
+  // Add an int column and try to change to string (should fail)
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("id", int32());
+  update->UpdateColumn("id", string());
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot change column type"));
+}
+
+// Test rename and update column type in same transaction
+TEST_F(UpdateSchemaTest, RenameAndUpdateColumnInSameTransaction) {
+  // Add a column, then both rename and update type in same transaction using old name
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("old_name", int32());
+  update->UpdateColumn("old_name", int64());
+  update->RenameColumn("old_name", "new_name");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the column has the new name and updated type
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("new_name"));
+  ASSERT_TRUE(field_opt.has_value());
+  EXPECT_EQ(*field_opt->get().type(), *int64());
+}
+
+// Test decimal precision widening
+TEST_F(UpdateSchemaTest, UpdateColumnDecimalPrecisionWidening) {
+  // Add a decimal column and widen the precision
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  auto decimal_10_2 = decimal(10, 2);
+  auto decimal_20_2 = decimal(20, 2);
+  update->AddColumn("price", decimal_10_2);
+  update->UpdateColumn("price", decimal_20_2);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the precision was widened
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("price"));
+  ASSERT_TRUE(field_opt.has_value());
+  EXPECT_EQ(*field_opt->get().type(), *decimal_20_2);
+}
+
+// Test decimal with different scale fails
+TEST_F(UpdateSchemaTest, UpdateColumnDecimalDifferentScaleFails) {
+  // Try to change decimal scale (should fail)
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  auto decimal_10_2 = decimal(10, 2);
+  auto decimal_10_3 = decimal(10, 3);
+  update->AddColumn("price", decimal_10_2);
+  update->UpdateColumn("price", decimal_10_3);
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot change column type"));
+}
+
+// Test decimal precision narrowing fails
+TEST_F(UpdateSchemaTest, UpdateColumnDecimalPrecisionNarrowingFails) {
+  // Try to narrow decimal precision (should fail)
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  auto decimal_20_2 = decimal(20, 2);
+  auto decimal_10_2 = decimal(10, 2);
+  update->AddColumn("price", decimal_20_2);
+  update->UpdateColumn("price", decimal_10_2);
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Cannot change column type"));
+}
+
+// Test update type preserves other metadata (doc, optional)
+TEST_F(UpdateSchemaTest, UpdateTypePreservesOtherMetadata) {
+  // Add a column with metadata
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AddColumn("value", int32(), "A counter value");
+
+  // Update type should preserve doc and optional
+  update->UpdateColumn("value", int64());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the type was updated but other metadata preserved
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("value"));
+  ASSERT_TRUE(field_opt.has_value());
+
+  const auto& field = field_opt->get();
+  EXPECT_EQ(*field.type(), *int64());         // Type updated
+  EXPECT_EQ(field.doc(), "A counter value");  // Doc preserved
+  EXPECT_TRUE(field.optional());              // Optional preserved
+}
+
+// Test update doc preserves other metadata (type, optional)
+TEST_F(UpdateSchemaTest, UpdateDocPreservesOtherMetadata) {
+  // Add a required column with a type
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->AllowIncompatibleChanges().AddRequiredColumn("id", int64(), "old doc");
+
+  // Update doc should preserve type and optional
+  update->UpdateColumnDoc("id", "new doc");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the doc was updated but other metadata preserved
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("id"));
+  ASSERT_TRUE(field_opt.has_value());
+
+  const auto& field = field_opt->get();
+  EXPECT_EQ(field.doc(), "new doc");   // Doc updated
+  EXPECT_EQ(*field.type(), *int64());  // Type preserved
+  EXPECT_FALSE(field.optional());      // Optional preserved (still required)
+}
+
+// Test rename-delete conflict
+TEST_F(UpdateSchemaTest, RenameDeleteConflict) {
+  // First add a column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AddColumn("col", int32());
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Try to rename then delete (delete should fail - column has been renamed)
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->RenameColumn("col", "new_name").DeleteColumn("col");
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  // Should fail because "col" no longer exists after rename
+  EXPECT_THAT(result, HasErrorMessage("Cannot delete a column that has updates"));
+}
+
+// Test delete-rename conflict
+TEST_F(UpdateSchemaTest, DeleteRenameConflict) {
+  // First add a column
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AddColumn("col", int32());
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Try to delete then rename (rename should fail - column has been deleted)
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+  update->DeleteColumn("col").RenameColumn("col", "new_name");
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  // Should fail because "col" has been deleted
+  EXPECT_THAT(result, HasErrorMessage("Cannot rename a column that will be deleted"));
+}
+
+// Test mixed changes - comprehensive test combining multiple operations
+TEST_F(UpdateSchemaTest, MixedChanges) {
+  // First, create a complex schema similar to Java's SCHEMA constant
+  // Build the "preferences" struct
+  auto preferences_struct = std::make_shared<StructType>(
+      std::vector<SchemaField>{SchemaField(8, "feature1", boolean(), false),
+                               SchemaField(9, "feature2", boolean(), true)});
+
+  // Build the "locations" map (address struct -> coordinate struct)
+  auto address_struct = std::make_shared<StructType>(std::vector<SchemaField>{
+      SchemaField(20, "address", string(), false),
+      SchemaField(21, "city", string(), false), SchemaField(22, "state", string(), false),
+      SchemaField(23, "zip", int32(), false)});
+
+  auto coordinate_struct = std::make_shared<StructType>(
+      std::vector<SchemaField>{SchemaField(12, "lat", float32(), false),
+                               SchemaField(13, "long", float32(), false)});
+
+  auto locations_map =
+      std::make_shared<MapType>(SchemaField(10, "key", address_struct, false),
+                                SchemaField(11, "value", coordinate_struct, false));
+
+  // Build the "points" list
+  auto point_struct = std::make_shared<StructType>(std::vector<SchemaField>{
+      SchemaField(15, "x", int64(), false), SchemaField(16, "y", int64(), false)});
+
+  auto points_list =
+      std::make_shared<ListType>(SchemaField(14, "element", point_struct, true));
+
+  // Build the "doubles" list
+  auto doubles_list =
+      std::make_shared<ListType>(SchemaField(17, "element", float64(), false));
+
+  // Build the "properties" map
+  auto properties_map = std::make_shared<MapType>(
+      SchemaField(18, "key", string(), true), SchemaField(19, "value", string(), true));
+
+  // Create the initial schema
+  ICEBERG_UNWRAP_OR_FAIL(auto setup_update, table_->NewUpdateSchema());
+  setup_update->AllowIncompatibleChanges()
+      .AddRequiredColumn("id", int32())
+      .AddRequiredColumn("data", string())
+      .AddColumn("preferences", preferences_struct, "struct of named boolean options")
+      .AddRequiredColumn("locations", locations_map, "map of address to coordinate")
+      .AddColumn("points", points_list, "2-D cartesian points")
+      .AddRequiredColumn("doubles", doubles_list)
+      .AddColumn("properties", properties_map, "string map of properties");
+  EXPECT_THAT(setup_update->Commit(), IsOk());
+
+  // Now perform the mixed changes in a single transaction
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto update, reloaded->NewUpdateSchema());
+
+  update->AddColumn("toplevel", decimal(9, 2))
+      .AddColumn("locations", "alt", float32())  // add to map value struct
+      .AddColumn("points", "z", int64())         // add to list element struct
+      .AddColumn("points", "t.t", int64(), "name with '.'")
+      .RenameColumn("data", "json")
+      .RenameColumn("preferences", "options")
+      .RenameColumn("preferences.feature2", "newfeature")  // rename inside renamed column
+      .RenameColumn("locations.lat", "latitude")
+      .RenameColumn("points.x", "X")
+      .RenameColumn("points.y", "y.y")  // field name with dots
+      .UpdateColumn("id", int64())
+      .UpdateColumnDoc("id", "unique id")
+      .UpdateColumn("locations.lat", float64())  // use original name before rename
+      .UpdateColumnDoc("locations.lat", "latitude")
+      .DeleteColumn("locations.long")
+      .DeleteColumn("properties")
+      .MakeColumnOptional("points.x")
+      .AllowIncompatibleChanges()
+      .RequireColumn("data")
+      .AddRequiredColumn("locations", "description", string(), "Location description");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify id: int -> long, with doc "unique id"
+  ICEBERG_UNWRAP_OR_FAIL(auto id_opt, result.schema->FindFieldByName("id"));
+  ASSERT_TRUE(id_opt.has_value());
+  EXPECT_EQ(*id_opt->get().type(), *int64());
+  EXPECT_EQ(id_opt->get().doc(), "unique id");
+  EXPECT_FALSE(id_opt->get().optional());  // was required
+
+  // Verify data was renamed to json and is now required
+  ICEBERG_UNWRAP_OR_FAIL(auto data_opt, result.schema->FindFieldByName("data"));
+  ICEBERG_UNWRAP_OR_FAIL(auto json_opt, result.schema->FindFieldByName("json"));
+  EXPECT_FALSE(data_opt.has_value());
+  ASSERT_TRUE(json_opt.has_value());
+  EXPECT_EQ(*json_opt->get().type(), *string());
+  EXPECT_FALSE(json_opt->get().optional());  // now required
+
+  // Verify preferences was renamed to options, feature2 renamed to newfeature
+  ICEBERG_UNWRAP_OR_FAIL(auto preferences_opt,
+                         result.schema->FindFieldByName("preferences"));
+  ICEBERG_UNWRAP_OR_FAIL(auto options_opt, result.schema->FindFieldByName("options"));
+  EXPECT_FALSE(preferences_opt.has_value());
+  ASSERT_TRUE(options_opt.has_value());
+  EXPECT_EQ(options_opt->get().doc(), "struct of named boolean options");
+
+  const auto& options_struct = static_cast<const StructType&>(*options_opt->get().type());
+  ICEBERG_UNWRAP_OR_FAIL(auto feature1_opt, options_struct.GetFieldByName("feature1"));
+  ICEBERG_UNWRAP_OR_FAIL(auto feature2_opt, options_struct.GetFieldByName("feature2"));
+  ICEBERG_UNWRAP_OR_FAIL(auto newfeature_opt,
+                         options_struct.GetFieldByName("newfeature"));
+  EXPECT_TRUE(feature1_opt.has_value());
+  EXPECT_FALSE(feature2_opt.has_value());
+  ASSERT_TRUE(newfeature_opt.has_value());
+  EXPECT_EQ(*newfeature_opt->get().type(), *boolean());
+
+  // Verify locations map changes
+  ICEBERG_UNWRAP_OR_FAIL(auto locations_opt, result.schema->FindFieldByName("locations"));
+  ASSERT_TRUE(locations_opt.has_value());
+  EXPECT_EQ(locations_opt->get().doc(), "map of address to coordinate");
+  EXPECT_FALSE(locations_opt->get().optional());  // was required
+
+  const auto& locations_map_type =
+      static_cast<const MapType&>(*locations_opt->get().type());
+  const auto& coord_struct =
+      static_cast<const StructType&>(*locations_map_type.value().type());
+
+  // lat renamed to latitude, type changed to double, doc added
+  ICEBERG_UNWRAP_OR_FAIL(auto lat_opt, coord_struct.GetFieldByName("lat"));
+  ICEBERG_UNWRAP_OR_FAIL(auto latitude_opt, coord_struct.GetFieldByName("latitude"));
+  EXPECT_FALSE(lat_opt.has_value());
+  ASSERT_TRUE(latitude_opt.has_value());
+  EXPECT_EQ(*latitude_opt->get().type(), *float64());
+  EXPECT_EQ(latitude_opt->get().doc(), "latitude");
+
+  // long was deleted
+  ICEBERG_UNWRAP_OR_FAIL(auto long_opt, coord_struct.GetFieldByName("long"));
+  EXPECT_FALSE(long_opt.has_value());
+
+  // alt was added
+  ICEBERG_UNWRAP_OR_FAIL(auto alt_opt, coord_struct.GetFieldByName("alt"));
+  ASSERT_TRUE(alt_opt.has_value());
+  EXPECT_EQ(*alt_opt->get().type(), *float32());
+
+  // description was added as required
+  ICEBERG_UNWRAP_OR_FAIL(auto description_opt,
+                         coord_struct.GetFieldByName("description"));
+  ASSERT_TRUE(description_opt.has_value());
+  EXPECT_EQ(*description_opt->get().type(), *string());
+  EXPECT_EQ(description_opt->get().doc(), "Location description");
+  EXPECT_FALSE(description_opt->get().optional());
+
+  // Verify points list changes
+  ICEBERG_UNWRAP_OR_FAIL(auto points_opt, result.schema->FindFieldByName("points"));
+  ASSERT_TRUE(points_opt.has_value());
+  EXPECT_EQ(points_opt->get().doc(), "2-D cartesian points");
+
+  const auto& points_list_type = static_cast<const ListType&>(*points_opt->get().type());
+  const auto& point_elem_struct =
+      static_cast<const StructType&>(*points_list_type.element().type());
+
+  // x renamed to X and made optional
+  ICEBERG_UNWRAP_OR_FAIL(auto x_opt, point_elem_struct.GetFieldByName("x"));
+  ICEBERG_UNWRAP_OR_FAIL(auto X_opt, point_elem_struct.GetFieldByName("X"));
+  EXPECT_FALSE(x_opt.has_value());
+  ASSERT_TRUE(X_opt.has_value());
+  EXPECT_EQ(*X_opt->get().type(), *int64());
+  EXPECT_TRUE(X_opt->get().optional());  // made optional
+
+  // y renamed to y.y
+  ICEBERG_UNWRAP_OR_FAIL(auto y_opt, point_elem_struct.GetFieldByName("y"));
+  ICEBERG_UNWRAP_OR_FAIL(auto yy_opt, point_elem_struct.GetFieldByName("y.y"));
+  EXPECT_FALSE(y_opt.has_value());
+  ASSERT_TRUE(yy_opt.has_value());
+  EXPECT_EQ(*yy_opt->get().type(), *int64());
+
+  // z was added
+  ICEBERG_UNWRAP_OR_FAIL(auto z_opt, point_elem_struct.GetFieldByName("z"));
+  ASSERT_TRUE(z_opt.has_value());
+  EXPECT_EQ(*z_opt->get().type(), *int64());
+
+  // t.t was added with doc
+  ICEBERG_UNWRAP_OR_FAIL(auto tt_opt, point_elem_struct.GetFieldByName("t.t"));
+  ASSERT_TRUE(tt_opt.has_value());
+  EXPECT_EQ(*tt_opt->get().type(), *int64());
+  EXPECT_EQ(tt_opt->get().doc(), "name with '.'");
+
+  // Verify doubles list unchanged
+  ICEBERG_UNWRAP_OR_FAIL(auto doubles_opt, result.schema->FindFieldByName("doubles"));
+  ASSERT_TRUE(doubles_opt.has_value());
+  EXPECT_EQ(doubles_opt->get().type()->type_id(), TypeId::kList);
+
+  // Verify properties was deleted
+  ICEBERG_UNWRAP_OR_FAIL(auto properties_opt,
+                         result.schema->FindFieldByName("properties"));
+  EXPECT_FALSE(properties_opt.has_value());
+
+  // Verify toplevel was added
+  ICEBERG_UNWRAP_OR_FAIL(auto toplevel_opt, result.schema->FindFieldByName("toplevel"));
+  ASSERT_TRUE(toplevel_opt.has_value());
+  EXPECT_EQ(*toplevel_opt->get().type(), *decimal(9, 2));
+  EXPECT_TRUE(toplevel_opt->get().optional());
+}
+
 }  // namespace iceberg
