@@ -47,11 +47,10 @@ Result<std::shared_ptr<UpdatePartitionSpec>> UpdatePartitionSpec::Make(
 
 UpdatePartitionSpec::UpdatePartitionSpec(std::shared_ptr<Transaction> transaction)
     : PendingUpdate(std::move(transaction)) {
-  const TableMetadata& base_metadata = transaction_->current();
-  format_version_ = base_metadata.format_version;
+  format_version_ = base().format_version;
 
   // Get the current/default partition spec
-  auto spec_result = base_metadata.PartitionSpec();
+  auto spec_result = base().PartitionSpec();
   if (!spec_result.has_value()) {
     AddError(spec_result.error());
     return;
@@ -59,15 +58,15 @@ UpdatePartitionSpec::UpdatePartitionSpec(std::shared_ptr<Transaction> transactio
   spec_ = std::move(spec_result.value());
 
   // Get the current schema
-  auto schema_result = base_metadata.Schema();
+  auto schema_result = base().Schema();
   if (!schema_result.has_value()) {
     AddError(schema_result.error());
     return;
   }
   schema_ = std::move(schema_result.value());
 
-  last_assigned_partition_id_ = std::max(base_metadata.last_partition_id,
-                                         PartitionSpec::kLegacyPartitionDataIdStart - 1);
+  last_assigned_partition_id_ =
+      std::max(base().last_partition_id, PartitionSpec::kLegacyPartitionDataIdStart - 1);
   name_to_field_ = IndexSpecByName(*spec_);
   transform_to_field_ = IndexSpecByTransform(*spec_);
 
@@ -433,18 +432,16 @@ UpdatePartitionSpec::IndexSpecByTransform(const PartitionSpec& spec) {
 }
 
 void UpdatePartitionSpec::BuildHistoricalFieldsIndex() {
-  const TableMetadata& base_metadata = transaction_->current();
-
   // Count total fields across all specs to reserve capacity
   size_t total_fields = 0;
-  for (const auto& partition_spec : base_metadata.partition_specs) {
+  for (const auto& partition_spec : base().partition_specs) {
     total_fields += partition_spec->fields().size();
   }
   historical_fields_.reserve(total_fields);
 
   // Index all fields from all historical partition specs
   // Later specs override earlier ones for the same (source_id, transform) key
-  for (const auto& partition_spec : base_metadata.partition_specs) {
+  for (const auto& partition_spec : base().partition_specs) {
     for (const auto& field : partition_spec->fields()) {
       TransformKey key{field.source_id(), field.transform()->ToString()};
       historical_fields_.emplace(key, field);

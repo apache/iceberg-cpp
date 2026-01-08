@@ -883,12 +883,12 @@ TEST(TableRequirementsTest, SetSnapshotRef) {
 
   // Multiple updates to same ref should deduplicate
   std::vector<std::unique_ptr<TableUpdate>> updates;
-  updates.push_back(std::make_unique<table::SetSnapshotRef>(kRefName, kSnapshotId,
-                                                            SnapshotRefType::kBranch));
-  updates.push_back(std::make_unique<table::SetSnapshotRef>(kRefName, kSnapshotId + 1,
-                                                            SnapshotRefType::kBranch));
-  updates.push_back(std::make_unique<table::SetSnapshotRef>(kRefName, kSnapshotId + 2,
-                                                            SnapshotRefType::kBranch));
+  ICEBERG_UNWRAP_OR_FAIL(auto ref1, SnapshotRef::MakeBranch(kSnapshotId));
+  updates.push_back(std::make_unique<table::SetSnapshotRef>(kRefName, *ref1));
+  ICEBERG_UNWRAP_OR_FAIL(auto ref2, SnapshotRef::MakeBranch(kSnapshotId + 1));
+  updates.push_back(std::make_unique<table::SetSnapshotRef>(kRefName, *ref2));
+  ICEBERG_UNWRAP_OR_FAIL(auto ref3, SnapshotRef::MakeBranch(kSnapshotId + 2));
+  updates.push_back(std::make_unique<table::SetSnapshotRef>(kRefName, *ref3));
 
   auto result = TableRequirements::ForUpdateTable(*metadata, updates);
   ASSERT_THAT(result, IsOk());

@@ -19,7 +19,6 @@
 
 #include "iceberg/update/update_sort_order.h"
 
-#include <cstdint>
 #include <memory>
 #include <vector>
 
@@ -52,7 +51,7 @@ UpdateSortOrder& UpdateSortOrder::AddSortField(const std::shared_ptr<Term>& term
   ICEBERG_BUILDER_CHECK(term != nullptr, "Term cannot be null");
   ICEBERG_BUILDER_CHECK(term->is_unbound(), "Term must be unbound");
 
-  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto schema, transaction_->current().Schema());
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto schema, base().Schema());
   if (term->kind() == Term::Kind::kReference) {
     // kReference is treated as identity transform
     auto named_ref = internal::checked_pointer_cast<NamedReference>(term);
@@ -99,7 +98,7 @@ Result<std::shared_ptr<SortOrder>> UpdateSortOrder::Apply() {
     // The actual sort order ID will be assigned by TableMetadataBuilder when
     // the AddSortOrder update is applied.
     ICEBERG_ASSIGN_OR_RAISE(order, SortOrder::Make(/*sort_id=*/-1, sort_fields_));
-    ICEBERG_ASSIGN_OR_RAISE(auto schema, transaction_->current().Schema());
+    ICEBERG_ASSIGN_OR_RAISE(auto schema, base().Schema());
     ICEBERG_RETURN_UNEXPECTED(order->Validate(*schema));
   }
   return order;

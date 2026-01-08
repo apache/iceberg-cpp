@@ -25,15 +25,18 @@
 #include "iceberg/schema.h"
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
+#include "iceberg/table_properties.h"
 #include "iceberg/table_requirement.h"
 #include "iceberg/table_requirements.h"
 #include "iceberg/table_update.h"
 #include "iceberg/update/pending_update.h"
+#include "iceberg/update/snapshot_update.h"
 #include "iceberg/update/update_partition_spec.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/update/update_schema.h"
 #include "iceberg/update/update_sort_order.h"
 #include "iceberg/util/checked_cast.h"
+#include "iceberg/util/location_util.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -68,6 +71,16 @@ Result<std::shared_ptr<Transaction>> Transaction::Make(std::shared_ptr<Table> ta
 const TableMetadata* Transaction::base() const { return metadata_builder_->base(); }
 
 const TableMetadata& Transaction::current() const { return metadata_builder_->current(); }
+
+std::string Transaction::MetadataFileLocation(std::string_view filename) const {
+  const auto metadata_location =
+      current().properties.Get(TableProperties::kWriteMetadataLocation);
+  if (metadata_location.empty()) {
+    return std::format("{}/{}", LocationUtil::StripTrailingSlash(metadata_location),
+                       filename);
+  }
+  return std::format("{}/metadata/{}", current().location, filename);
+}
 
 Status Transaction::AddUpdate(const std::shared_ptr<PendingUpdate>& update) {
   if (!last_update_committed_) {
@@ -113,6 +126,43 @@ Status Transaction::Apply(PendingUpdate& update) {
       metadata_builder_->SetCurrentSchema(std::move(result.schema),
                                           result.new_last_column_id);
     } break;
+    case PendingUpdate::Kind::kUpdateSnapshot: {
+      auto& update_snapshot = internal::checked_cast<SnapshotUpdate&>(update);
+      ICEBERG_ASSIGN_OR_RAISE(auto result, update_snapshot.Apply());
+
+      // Create a temp builder to check if this is an empty update
+      auto update = TableMetadataBuilder::BuildFrom(metadata_builder_->base());
+      if (metadata_builder_->current().OptionalSnapshotById(
+              result.snapshot->snapshot_id) != nullptr) {
+        // This is a rollback operation
+        update->SetBranchSnapshot(result.snapshot->snapshot_id, result.target_branch);
+      } else if (result.stage_only) {
+        update->AddSnapshot(result.snapshot);
+      } else {
+        // Normal commit - add snapshot first, then set as branch snapshot
+        update->AddSnapshot(result.snapshot);
+        update->SetBranchSnapshot(result.snapshot->snapshot_id, result.target_branch);
+      }
+
+      if (update->changes().empty()) {
+        // do not commit if the metadata has not changed. for example, this may happen
+        // when setting the current snapshot to an ID that is already current. note that
+        // this check uses identity.
+        return {};
+      }
+
+      // if the table UUID is missing, add it here. the UUID will be re-created each time
+      // this operation retries to ensure that if a concurrent operation assigns the UUID,
+      // this operation will not fail.
+      if (update->current().table_uuid.empty()) {
+        update->AssignUUID();
+      }
+
+      // Apply changes to the main builder
+      for (const auto& change : update->changes()) {
+        change->ApplyTo(*metadata_builder_);
+      }
+    } break;
     default:
       return NotSupported("Unsupported pending update: {}",
                           static_cast<int32_t>(update.kind()));
@@ -157,6 +207,12 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   // XXX: we should handle commit failure and retry here.
   ICEBERG_ASSIGN_OR_RAISE(auto updated_table, table_->catalog()->UpdateTable(
                                                   table_->name(), requirements, updates));
+
+  for (const auto& update : pending_updates_) {
+    if (auto update_ptr = update.lock()) {
+      ICEBERG_RETURN_UNEXPECTED(update_ptr->Finalize());
+    }
+  }
 
   // Mark as committed and update table reference
   committed_ = true;

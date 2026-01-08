@@ -28,6 +28,7 @@
 
 #include "iceberg/file_writer.h"
 #include "iceberg/iceberg_export.h"
+#include "iceberg/manifest/manifest_list.h"
 #include "iceberg/metrics.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
@@ -175,7 +176,7 @@ class ICEBERG_EXPORT ManifestWriter {
       std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
       std::shared_ptr<PartitionSpec> partition_spec,
       std::shared_ptr<Schema> current_schema,
-      std::optional<ManifestContent> content = std::nullopt,
+      ManifestContent content = ManifestContent::kData,
       std::optional<int64_t> first_row_id = std::nullopt);
 
  private:

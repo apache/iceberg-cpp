@@ -26,6 +26,7 @@
 #include "iceberg/util/macros.h"
 #include "iceberg/util/snapshot_util_internal.h"
 #include "iceberg/util/timepoint.h"
+#include "iceberg/util/uuid.h"
 
 namespace iceberg {
 
@@ -333,6 +334,30 @@ Result<std::shared_ptr<Snapshot>> SnapshotUtil::LatestSnapshot(
   }
 
   return metadata.SnapshotById(it->second->snapshot_id);
+}
+
+Result<std::shared_ptr<Snapshot>> SnapshotUtil::OptionalLatestSnapshot(
+    const TableMetadata& metadata, const std::string& branch) {
+  return LatestSnapshot(metadata, branch)
+      .or_else([](const auto& error) -> Result<std::shared_ptr<Snapshot>> {
+        if (error.kind == ErrorKind::kNotFound) {
+          return nullptr;
+        }
+        return std::unexpected<Error>(error);
+      });
+}
+
+int64_t SnapshotUtil::GenerateSnapshotId() {
+  auto uuid = Uuid::GenerateV7();
+  return (uuid.high_bits() ^ uuid.low_bits()) & std::numeric_limits<int64_t>::max();
+}
+
+int64_t SnapshotUtil::GenerateSnapshotId(const TableMetadata& metadata) {
+  auto snapshot_id = GenerateSnapshotId();
+  while (metadata.SnapshotById(snapshot_id).has_value()) {
+    snapshot_id = GenerateSnapshotId();
+  }
+  return snapshot_id;
 }
 
 }  // namespace iceberg

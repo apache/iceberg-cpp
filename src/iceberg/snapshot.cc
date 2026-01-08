@@ -23,6 +23,7 @@
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
@@ -49,6 +50,78 @@ SnapshotRefType SnapshotRef::type() const noexcept {
       retention);
 }
 
+Status SnapshotRef::MinSnapshotsToKeep(std::optional<int32_t> value) {
+  ICEBERG_PRECHECK(this->type() != SnapshotRefType::kTag,
+                   "Tags do not support setting minSnapshotsToKeep");
+  ICEBERG_PRECHECK(!value.has_value() || value.value() > 0,
+                   "Min snapshots to keep must be greater than 0");
+  std::get<Branch>(this->retention).min_snapshots_to_keep = value;
+  return {};
+}
+
+Status SnapshotRef::MaxSnapshotAgeMs(std::optional<int64_t> value) {
+  ICEBERG_PRECHECK(this->type() != SnapshotRefType::kTag,
+                   "Tags do not support setting maxSnapshotAgeMs");
+  ICEBERG_PRECHECK(!value.has_value() || value.value() > 0,
+                   "Max snapshot age must be greater than 0 ms");
+  std::get<Branch>(this->retention).max_snapshot_age_ms = value;
+  return {};
+}
+
+Status SnapshotRef::MaxRefAgeMs(std::optional<int64_t> value) {
+  ICEBERG_PRECHECK(!value.has_value() || value.value() > 0,
+                   "Max reference age must be greater than 0");
+  if (this->type() == SnapshotRefType::kBranch) {
+    std::get<Branch>(this->retention).max_ref_age_ms = value;
+  } else {
+    std::get<Tag>(this->retention).max_ref_age_ms = value;
+  }
+  return {};
+}
+
+Result<std::unique_ptr<SnapshotRef>> SnapshotRef::MakeBranch(
+    int64_t snapshot_id, std::optional<int32_t> min_snapshots_to_keep,
+    std::optional<int64_t> max_snapshot_age_ms, std::optional<int64_t> max_ref_age_ms) {
+  // Validate optional parameters
+  if (min_snapshots_to_keep.has_value() && min_snapshots_to_keep.value() <= 0) {
+    return InvalidArgument("Min snapshots to keep must be greater than 0");
+  }
+  if (max_snapshot_age_ms.has_value() && max_snapshot_age_ms.value() <= 0) {
+    return InvalidArgument("Max snapshot age must be greater than 0 ms");
+  }
+  if (max_ref_age_ms.has_value() && max_ref_age_ms.value() <= 0) {
+    return InvalidArgument("Max reference age must be greater than 0");
+  }
+
+  auto ref = std::make_unique<SnapshotRef>();
+  ref->snapshot_id = snapshot_id;
+  ref->retention = Branch{.min_snapshots_to_keep = min_snapshots_to_keep,
+                          .max_snapshot_age_ms = max_snapshot_age_ms,
+                          .max_ref_age_ms = max_ref_age_ms};
+  return ref;
+}
+
+Result<std::unique_ptr<SnapshotRef>> SnapshotRef::MakeTag(
+    int64_t snapshot_id, std::optional<int64_t> max_ref_age_ms) {
+  // Validate optional parameter
+  if (max_ref_age_ms.has_value() && max_ref_age_ms.value() <= 0) {
+    return InvalidArgument("Max reference age must be greater than 0");
+  }
+
+  auto ref = std::make_unique<SnapshotRef>();
+  ref->snapshot_id = snapshot_id;
+  ref->retention = Tag{.max_ref_age_ms = max_ref_age_ms};
+  return ref;
+}
+
+std::unique_ptr<SnapshotRef> SnapshotRef::Clone(
+    std::optional<int64_t> new_snapshot_id) const {
+  auto ref = std::make_unique<SnapshotRef>();
+  ref->snapshot_id = new_snapshot_id.value_or(snapshot_id);
+  ref->retention = retention;
+  return ref;
+}
+
 bool SnapshotRef::Equals(const SnapshotRef& other) const {
   if (this == &other) {
     return true;
@@ -73,6 +146,24 @@ std::optional<std::string_view> Snapshot::operation() const {
     return it->second;
   }
   return std::nullopt;
+}
+
+Result<std::optional<int64_t>> Snapshot::FirstRowId() const {
+  auto it = summary.find(SnapshotSummaryFields::kFirstRowId);
+  if (it == summary.end()) {
+    return std::nullopt;
+  }
+
+  return StringUtils::ParseInt<int64_t>(it->second);
+}
+
+Result<std::optional<int64_t>> Snapshot::AddedRows() const {
+  auto it = summary.find(SnapshotSummaryFields::kAddedRows);
+  if (it == summary.end()) {
+    return std::nullopt;
+  }
+
+  return StringUtils::ParseInt<int64_t>(it->second);
 }
 
 bool Snapshot::Equals(const Snapshot& other) const {

@@ -49,4 +49,7 @@ ICEBERG_EXPORT int64_t UnixNsFromTimePointNs(TimePointNs time_point_ns);
 /// \brief Returns a human-readable string representation of a TimePointMs
 ICEBERG_EXPORT std::string FormatTimePointMs(TimePointMs time_point_ms);
 
+/// \brief Returns a time point in milliseconds that represents the current system time
+ICEBERG_EXPORT TimePointMs CurrentTimePointMs();
+
 }  // namespace iceberg

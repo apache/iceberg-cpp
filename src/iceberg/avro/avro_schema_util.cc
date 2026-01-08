@@ -17,7 +17,6 @@
  * under the License.
  */
 
-#include <charconv>
 #include <format>
 #include <mutex>
 #include <sstream>
@@ -40,6 +39,7 @@
 #include "iceberg/schema_util_internal.h"
 #include "iceberg/util/formatter.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 #include "iceberg/util/visit_type.h"
 
 namespace iceberg::avro {
@@ -471,13 +471,7 @@ Result<int32_t> GetId(const ::avro::NodePtr& node, const std::string& attr_name,
     return InvalidSchema("Missing avro attribute: {}", attr_name);
   }
 
-  int32_t id;
-  const auto& id_value = id_str.value();
-  auto [_, ec] = std::from_chars(id_value.data(), id_value.data() + id_value.size(), id);
-  if (ec != std::errc()) {
-    return InvalidSchema("Invalid {}: {}", attr_name, id_value);
-  }
-  return id;
+  return StringUtils::ParseInt<int32_t>(id_str.value());
 }
 
 Result<int32_t> GetElementId(const ::avro::NodePtr& node) {

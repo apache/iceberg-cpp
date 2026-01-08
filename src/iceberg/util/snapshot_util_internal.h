@@ -20,6 +20,7 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -254,6 +255,27 @@ class ICEBERG_EXPORT SnapshotUtil {
   /// \return The latest snapshot for the given branch
   static Result<std::shared_ptr<Snapshot>> LatestSnapshot(const TableMetadata& metadata,
                                                           const std::string& branch);
+
+  /// \brief Fetch the snapshot at the head of the given branch in the given table.
+  ///
+  /// Like LatestSnapshot, but returns nullopt if the branch does not exist.
+  ///
+  /// \param metadata The table metadata
+  /// \param branch Branch name of the table metadata (empty string means main
+  /// branch)
+  /// \return The latest snapshot for the given branch, or nullopt if the branch does not
+  /// exist
+  static Result<std::shared_ptr<Snapshot>> OptionalLatestSnapshot(
+      const TableMetadata& metadata, const std::string& branch);
+
+  /// \brief Generate a new snapshot ID.
+  static int64_t GenerateSnapshotId();
+
+  /// \brief Generate a new snapshot ID for the given metadata.
+  ///
+  /// \param metadata The table metadata
+  /// \return A new snapshot ID
+  static int64_t GenerateSnapshotId(const TableMetadata& metadata);
 
  private:
   /// \brief Helper function to traverse ancestors of a snapshot.

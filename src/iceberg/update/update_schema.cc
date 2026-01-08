@@ -250,10 +250,8 @@ Result<std::shared_ptr<UpdateSchema>> UpdateSchema::Make(
 
 UpdateSchema::UpdateSchema(std::shared_ptr<Transaction> transaction)
     : PendingUpdate(std::move(transaction)) {
-  const TableMetadata& base_metadata = transaction_->current();
-
   // Get the current schema
-  auto schema_result = base_metadata.Schema();
+  auto schema_result = base().Schema();
   if (!schema_result.has_value()) {
     AddError(schema_result.error());
     return;
@@ -261,7 +259,7 @@ UpdateSchema::UpdateSchema(std::shared_ptr<Transaction> transaction)
   schema_ = std::move(schema_result.value());
 
   // Initialize last_column_id from base metadata
-  last_column_id_ = base_metadata.last_column_id;
+  last_column_id_ = base().last_column_id;
 
   // Initialize identifier field names from the current schema
   auto identifier_names_result = schema_->IdentifierFieldNames();

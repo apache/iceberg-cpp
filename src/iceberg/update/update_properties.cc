@@ -19,10 +19,8 @@
 
 #include "iceberg/update/update_properties.h"
 
-#include <charconv>
 #include <cstdint>
 #include <memory>
-#include <system_error>
 
 #include "iceberg/metrics_config.h"
 #include "iceberg/result.h"
@@ -31,6 +29,7 @@
 #include "iceberg/transaction.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
@@ -70,7 +69,7 @@ UpdateProperties& UpdateProperties::Remove(const std::string& key) {
 
 Result<UpdateProperties::ApplyResult> UpdateProperties::Apply() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
-  const auto& current_props = transaction_->current().properties.configs();
+  const auto& current_props = base().properties.configs();
   std::unordered_map<std::string, std::string> new_properties;
   std::vector<std::string> removals;
   for (const auto& [key, value] : current_props) {
@@ -85,15 +84,8 @@ Result<UpdateProperties::ApplyResult> UpdateProperties::Apply() {
 
   auto iter = new_properties.find(TableProperties::kFormatVersion.key());
   if (iter != new_properties.end()) {
-    int parsed_version = 0;
-    const auto& val = iter->second;
-    auto [ptr, ec] = std::from_chars(val.data(), val.data() + val.size(), parsed_version);
-
-    if (ec == std::errc::invalid_argument) {
-      return InvalidArgument("Invalid format version '{}': not a valid integer", val);
-    } else if (ec == std::errc::result_out_of_range) {
-      return InvalidArgument("Format version '{}' is out of range", val);
-    }
+    ICEBERG_ASSIGN_OR_RAISE(auto parsed_version,
+                            StringUtils::ParseInt<int32_t>(iter->second));
 
     if (parsed_version > TableMetadata::kSupportedTableFormatVersion) {
       return InvalidArgument(
@@ -105,7 +97,7 @@ Result<UpdateProperties::ApplyResult> UpdateProperties::Apply() {
     updates_.erase(TableProperties::kFormatVersion.key());
   }
 
-  if (auto schema = transaction_->current().Schema(); schema.has_value()) {
+  if (auto schema = base().Schema(); schema.has_value()) {
     ICEBERG_RETURN_UNEXPECTED(
         MetricsConfig::VerifyReferencedColumns(new_properties, *schema.value()));
   }
