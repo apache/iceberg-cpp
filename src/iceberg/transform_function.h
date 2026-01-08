@@ -100,7 +100,8 @@ class ICEBERG_EXPORT TruncateTransform : public TransformFunction {
   int32_t width_;
 };
 
-/// \brief Year transform that extracts the year component from timestamp inputs.
+/// \brief Year transform that extracts the number of years from timestamp inputs since
+/// the epoch.
 class ICEBERG_EXPORT YearTransform : public TransformFunction {
  public:
   /// \param source_type Must be a timestamp type.
@@ -119,7 +120,8 @@ class ICEBERG_EXPORT YearTransform : public TransformFunction {
       std::shared_ptr<Type> const& source_type);
 };
 
-/// \brief Month transform that extracts the month component from timestamp inputs.
+/// \brief Month transform that extracts the number of months from timestamp inputs since
+/// the epoch.
 class ICEBERG_EXPORT MonthTransform : public TransformFunction {
  public:
   /// \param source_type Must be a timestamp type.
@@ -138,7 +140,8 @@ class ICEBERG_EXPORT MonthTransform : public TransformFunction {
       std::shared_ptr<Type> const& source_type);
 };
 
-/// \brief Day transform that extracts the day of the month from timestamp inputs.
+/// \brief Day transform that extracts the number of days from timestamp inputs since the
+/// epoch.
 class ICEBERG_EXPORT DayTransform : public TransformFunction {
  public:
   /// \param source_type Must be a timestamp type.
@@ -161,7 +164,8 @@ class ICEBERG_EXPORT DayTransform : public TransformFunction {
       std::shared_ptr<Type> const& source_type);
 };
 
-/// \brief Hour transform that extracts the hour component from timestamp inputs.
+/// \brief Hour transform that extracts the number of hours from timestamp inputs since
+/// the epoch.
 class ICEBERG_EXPORT HourTransform : public TransformFunction {
  public:
   /// \param source_type Must be a timestamp type.
