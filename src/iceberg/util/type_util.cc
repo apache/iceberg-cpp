@@ -399,4 +399,45 @@ Result<std::shared_ptr<Schema>> AssignFreshIds(int32_t schema_id, const Schema& 
   return Schema::Make(std::move(fields), schema_id, identifier_field_names);
 }
 
+bool IsPromotionAllowed(const std::shared_ptr<Type>& from_type,
+                        const std::shared_ptr<Type>& to_type) {
+  if (!from_type || !to_type) {
+    return false;
+  }
+
+  // Same type is always allowed
+  if (*from_type == *to_type) {
+    return true;
+  }
+
+  // Both must be primitive types for promotion
+  if (!from_type->is_primitive() || !to_type->is_primitive()) {
+    return false;
+  }
+
+  TypeId from_id = from_type->type_id();
+  TypeId to_id = to_type->type_id();
+
+  // int -> long
+  if (from_id == TypeId::kInt && to_id == TypeId::kLong) {
+    return true;
+  }
+
+  // float -> double
+  if (from_id == TypeId::kFloat && to_id == TypeId::kDouble) {
+    return true;
+  }
+
+  // decimal(P,S) -> decimal(P',S) where P' > P
+  if (from_id == TypeId::kDecimal && to_id == TypeId::kDecimal) {
+    const auto& from_decimal = internal::checked_cast<const DecimalType&>(*from_type);
+    const auto& to_decimal = internal::checked_cast<const DecimalType&>(*to_type);
+    // Scale must be the same, precision can only increase
+    return from_decimal.scale() == to_decimal.scale() &&
+           from_decimal.precision() < to_decimal.precision();
+  }
+
+  return false;
+}
+
 }  // namespace iceberg

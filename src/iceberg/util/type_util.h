@@ -171,4 +171,17 @@ class AssignFreshIdVisitor {
 ICEBERG_EXPORT Result<std::shared_ptr<Schema>> AssignFreshIds(
     int32_t schema_id, const Schema& schema, std::function<int32_t()> next_id);
 
+/// \brief Check if type promotion from one type to another is allowed.
+///
+/// Type promotion rules:
+/// - int -> long
+/// - float -> double
+/// - decimal(P,S) -> decimal(P',S) where P' > P
+///
+/// \param from_type The original type
+/// \param to_type The target type
+/// \return true if promotion is allowed, false otherwise
+ICEBERG_EXPORT bool IsPromotionAllowed(const std::shared_ptr<Type>& from_type,
+                                       const std::shared_ptr<Type>& to_type);
+
 }  // namespace iceberg

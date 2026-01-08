@@ -215,8 +215,9 @@ class ApplyChangesVisitor {
       }
     }
 
-    // Note: Nested field additions are handled in VisitStruct, not here
-    // to avoid duplication
+    // Note: Child field additions are handled in VisitStruct, not here.
+    // The recursively processed type (field_type_result) already contains
+    // any child fields that were added.
 
     // 4. Build the result field
     if (update_it != updates_.end()) {
@@ -325,34 +326,179 @@ UpdateSchema& UpdateSchema::AddRequiredColumn(std::optional<std::string_view> pa
 
 UpdateSchema& UpdateSchema::UpdateColumn(std::string_view name,
                                          std::shared_ptr<PrimitiveType> new_type) {
-  // TODO(Guotao Yu): Implement UpdateColumn
-  AddError(NotImplemented("UpdateSchema::UpdateColumn not implemented"));
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field_opt, FindFieldForUpdate(name));
+
+  // If not found, check if there's a deleted field with this name
+  if (!field_opt.has_value()) {
+    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto original_field, FindField(name));
+    ICEBERG_BUILDER_CHECK(!original_field.has_value() ||
+                              !deletes_.contains(original_field->get().field_id()),
+                          "Cannot update a column that will be deleted: {}", name);
+    // No field found at all
+    return AddError(ErrorKind::kInvalidArgument, "Cannot update missing column: {}",
+                    name);
+  }
+
+  const auto& field = field_opt->get();
+
+  // If the type is already the same, this is a noop
+  if (*field.type() == *new_type) {
+    return *this;
+  }
+
+  int32_t field_id = field.field_id();
+
+  // Check if field is being deleted
+  // (This shouldn't happen given FindFieldForUpdate logic, but check for safety)
+  ICEBERG_BUILDER_CHECK(!deletes_.contains(field_id),
+                        "Cannot update a column that will be deleted: {}", field.name());
+
+  // Check if type promotion is allowed
+  ICEBERG_BUILDER_CHECK(IsPromotionAllowed(field.type(), new_type),
+                        "Cannot change column type: {}: {} -> {}", name,
+                        field.type()->ToString(), new_type->ToString());
+
+  // Create updated field with new type
+  updates_[field_id] = std::make_shared<SchemaField>(
+      field.field_id(), field.name(), new_type, field.optional(), field.doc());
+
   return *this;
 }
 
 UpdateSchema& UpdateSchema::UpdateColumnDoc(std::string_view name,
                                             std::string_view new_doc) {
-  // TODO(Guotao Yu): Implement UpdateColumnDoc
-  AddError(NotImplemented("UpdateSchema::UpdateColumnDoc not implemented"));
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field_opt, FindFieldForUpdate(name));
+
+  // If not found, check if there's a deleted field with this name
+  if (!field_opt.has_value()) {
+    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto original_field, FindField(name));
+    ICEBERG_BUILDER_CHECK(!original_field.has_value() ||
+                              !deletes_.contains(original_field->get().field_id()),
+                          "Cannot update a column that will be deleted: {}", name);
+    // No field found at all
+    return AddError(ErrorKind::kInvalidArgument, "Cannot update missing column: {}",
+                    name);
+  }
+
+  const auto& field = field_opt->get();
+
+  // If the doc is already the same, this is a noop
+  if (field.doc() == new_doc) {
+    return *this;
+  }
+
+  int32_t field_id = field.field_id();
+
+  // Check if field is being deleted
+  // (This shouldn't happen given FindFieldForUpdate logic, but check for safety)
+  ICEBERG_BUILDER_CHECK(!deletes_.contains(field_id),
+                        "Cannot update a column that will be deleted: {}", field.name());
+
+  // Create updated field with new doc
+  updates_[field_id] =
+      std::make_shared<SchemaField>(field.field_id(), field.name(), field.type(),
+                                    field.optional(), std::string(new_doc));
+
   return *this;
 }
 
 UpdateSchema& UpdateSchema::RenameColumn(std::string_view name,
                                          std::string_view new_name) {
-  // TODO(Guotao Yu): Implement RenameColumn
-  AddError(NotImplemented("UpdateSchema::RenameColumn not implemented"));
+  ICEBERG_BUILDER_CHECK(!new_name.empty(), "Cannot rename a column to null");
+
+  // Find the field for update (considers pending changes)
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field_opt, FindFieldForUpdate(name));
+
+  // If not found, check if there's a deleted field with this name
+  if (!field_opt.has_value()) {
+    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto original_field, FindField(name));
+    ICEBERG_BUILDER_CHECK(!original_field.has_value() ||
+                              !deletes_.contains(original_field->get().field_id()),
+                          "Cannot rename a column that will be deleted: {}", name);
+    // No field found at all
+    return AddError(ErrorKind::kInvalidArgument, "Cannot rename missing column: {}",
+                    name);
+  }
+
+  const auto& field = field_opt->get();
+  int32_t field_id = field.field_id();
+
+  // Check if the field we found is being deleted
+  // (This shouldn't happen given FindFieldForUpdate logic, but check for safety)
+  ICEBERG_BUILDER_CHECK(!deletes_.contains(field_id),
+                        "Cannot rename a column that will be deleted: {}", field.name());
+
+  // Merge with an update, if present
+  auto update_it = updates_.find(field_id);
+  const SchemaField& base_field =
+      update_it != updates_.end() ? *update_it->second : field;
+
+  // Create updated field with new name
+  updates_[field_id] = std::make_shared<SchemaField>(
+      base_field.field_id(), std::string(new_name), base_field.type(),
+      base_field.optional(), base_field.doc());
+
+  // Update identifier field names if this field is an identifier
+  auto it = std::ranges::find_if(identifier_field_names_,
+                                 [name](const std::string& s) { return s == name; });
+  if (it != identifier_field_names_.end()) {
+    *it = new_name;
+  }
+
   return *this;
 }
 
 UpdateSchema& UpdateSchema::MakeColumnOptional(std::string_view name) {
-  // TODO(Guotao Yu): Implement MakeColumnOptional
-  AddError(NotImplemented("UpdateSchema::MakeColumnOptional not implemented"));
-  return *this;
+  return UpdateColumnRequirementInternal(name, /*is_optional=*/true);
 }
 
 UpdateSchema& UpdateSchema::RequireColumn(std::string_view name) {
-  // TODO(Guotao Yu): Implement RequireColumn
-  AddError(NotImplemented("UpdateSchema::RequireColumn not implemented"));
+  return UpdateColumnRequirementInternal(name, /*is_optional=*/false);
+}
+
+UpdateSchema& UpdateSchema::UpdateColumnRequirementInternal(std::string_view name,
+                                                            bool is_optional) {
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field_opt, FindFieldForUpdate(name));
+
+  // If not found, check if there's a deleted field with this name
+  if (!field_opt.has_value()) {
+    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto original_field, FindField(name));
+    ICEBERG_BUILDER_CHECK(!original_field.has_value() ||
+                              !deletes_.contains(original_field->get().field_id()),
+                          "Cannot update a column that will be deleted: {}", name);
+    // No field found at all
+    return AddError(ErrorKind::kInvalidArgument, "Cannot update missing column: {}",
+                    name);
+  }
+
+  const auto& field = field_opt->get();
+
+  // If the change is a noop, allow it even if allowIncompatibleChanges is false
+  if ((!is_optional && !field.optional()) || (is_optional && field.optional())) {
+    return *this;
+  }
+
+  int32_t field_id = field.field_id();
+
+  // TODO(GuotaoYu): support added column with default value
+  // Check for incompatible change: making a column required
+  // This is only allowed if:
+  // 1. allowIncompatibleChanges is true, OR
+  // 2. The field is newly added with a default value (not yet supported in C++)
+  // For now, we only check allowIncompatibleChanges
+  ICEBERG_BUILDER_CHECK(is_optional || allow_incompatible_changes_,
+                        "Cannot change column nullability: {}: optional -> required",
+                        name);
+
+  // Check if field is being deleted
+  // (This shouldn't happen given FindFieldForUpdate logic, but check for safety)
+  ICEBERG_BUILDER_CHECK(!deletes_.contains(field_id),
+                        "Cannot update a column that will be deleted: {}", field.name());
+
+  // Create updated field with new optional flag using AsOptional/AsRequired
+  updates_[field_id] = std::make_shared<SchemaField>(is_optional ? field.AsOptional()
+                                                                 : field.AsRequired());
+
   return *this;
 }
 
@@ -507,12 +653,26 @@ UpdateSchema& UpdateSchema::AddColumnInternal(std::optional<std::string_view> pa
     ICEBERG_BUILDER_CHECK(!deletes_.contains(parent_id),
                           "Cannot add to a column that will be deleted: {}", *parent);
 
-    // Check field doesn't already exist (unless it's being deleted)
+    // Check field doesn't already exist in original schema (unless being deleted/renamed)
     std::string nested_name = std::format("{}.{}", *parent, name);
-    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto current_field, FindField(nested_name));
-    ICEBERG_BUILDER_CHECK(
-        !current_field.has_value() || deletes_.contains(current_field->get().field_id()),
-        "Cannot add column, name already exists: {}.{}", *parent, name);
+    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto original_field, FindField(nested_name));
+    if (original_field.has_value()) {
+      const auto& field = original_field->get();
+      int32_t field_id = field.field_id();
+
+      // Check if field has been deleted or renamed
+      bool is_deleted = deletes_.contains(field_id);
+      bool is_renamed = false;
+      auto update_it = updates_.find(field_id);
+      if (update_it != updates_.end()) {
+        is_renamed = update_it->second->name() != name;
+      }
+
+      ICEBERG_BUILDER_CHECK(is_deleted || is_renamed,
+                            "Cannot add column, name already exists: {}.{}", *parent,
+                            name);
+    }
+    // Note: Duplicate names among newly added fields will be caught by Schema::Make
 
     // Build full name using canonical name of parent
     ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto parent_name_opt,
@@ -523,10 +683,24 @@ UpdateSchema& UpdateSchema::AddColumnInternal(std::optional<std::string_view> pa
     full_name = std::format("{}.{}", *parent_name_opt, name);
   } else {
     // Top-level field
-    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto current_field, FindField(name));
-    ICEBERG_BUILDER_CHECK(
-        !current_field.has_value() || deletes_.contains(current_field->get().field_id()),
-        "Cannot add column, name already exists: {}", name);
+    // Check field doesn't already exist in original schema (unless being deleted/renamed)
+    ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto original_field, FindField(name));
+    if (original_field.has_value()) {
+      const auto& field = original_field->get();
+      int32_t field_id = field.field_id();
+
+      // Check if field has been deleted or renamed
+      bool is_deleted = deletes_.contains(field_id);
+      bool is_renamed = false;
+      auto update_it = updates_.find(field_id);
+      if (update_it != updates_.end()) {
+        is_renamed = update_it->second->name() != name;
+      }
+
+      ICEBERG_BUILDER_CHECK(is_deleted || is_renamed,
+                            "Cannot add column, name already exists: {}", name);
+    }
+    // Note: Duplicate names among newly added fields will be caught by Schema::Make
 
     full_name = std::string(name);
   }
@@ -568,6 +742,45 @@ int32_t UpdateSchema::AssignNewColumnId() { return ++last_column_id_; }
 Result<std::optional<std::reference_wrapper<const SchemaField>>> UpdateSchema::FindField(
     std::string_view name) const {
   return schema_->FindFieldByName(name, case_sensitive_);
+}
+
+Result<std::optional<std::reference_wrapper<const SchemaField>>>
+UpdateSchema::FindFieldForUpdate(std::string_view name) const {
+  // First, check the original schema
+  ICEBERG_ASSIGN_OR_RAISE(auto existing_field_opt, FindField(name));
+
+  if (existing_field_opt.has_value()) {
+    // Field exists in original schema
+    const auto& existing_field = existing_field_opt->get();
+    int32_t field_id = existing_field.field_id();
+
+    // If the field is being deleted, don't return it; check for newly added field instead
+    if (!deletes_.contains(field_id)) {
+      // Field is not being deleted, check for pending update
+      auto update_it = updates_.find(field_id);
+      if (update_it != updates_.end()) {
+        // Return the updated field
+        return std::optional<std::reference_wrapper<const SchemaField>>(
+            std::cref(*update_it->second));
+      }
+      // Return the original field
+      return existing_field_opt;
+    }
+  }
+
+  // Field not in original schema (or is being deleted), check if it's a newly added field
+  auto added_it = added_name_to_id_.find(std::string(name));
+  if (added_it != added_name_to_id_.end()) {
+    int32_t added_id = added_it->second;
+    auto update_it = updates_.find(added_id);
+    if (update_it != updates_.end()) {
+      return std::optional<std::reference_wrapper<const SchemaField>>(
+          std::cref(*update_it->second));
+    }
+  }
+
+  // Field not found anywhere
+  return std::nullopt;
 }
 
 }  // namespace iceberg
