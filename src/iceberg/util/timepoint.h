@@ -34,6 +34,10 @@ using TimePointMs =
 using TimePointNs =
     std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
 
+constexpr int64_t kMillisPerSecond = 1000;
+constexpr int64_t kMicrosPerMillis = 1000;
+constexpr int64_t kMicrosPerSecond = 1000000;
+
 /// \brief Returns a TimePointMs from a Unix timestamp in milliseconds
 ICEBERG_EXPORT Result<TimePointMs> TimePointMsFromUnixMs(int64_t unix_ms);
 
@@ -48,5 +52,25 @@ ICEBERG_EXPORT int64_t UnixNsFromTimePointNs(TimePointNs time_point_ns);
 
 /// \brief Returns a human-readable string representation of a TimePointMs
 ICEBERG_EXPORT std::string FormatTimePointMs(TimePointMs time_point_ms);
+
+/// \brief Returns a human-readable string representation of a Unix timestamp in
+/// microseconds
+///
+/// The output will be one of the following forms, according to the precision of the
+/// timestamp:
+///  - yyyy-MM-dd HH:mm:ss
+///  - yyyy-MM-dd HH:mm:ss.SSS
+///  - yyyy-MM-dd HH:mm:ss.SSSSSS
+ICEBERG_EXPORT std::string FormatUnixMicro(int64_t unix_micro);
+
+/// \brief Returns a human-readable string representation of a Unix timestamp in
+/// microseconds with time zone
+///
+/// The output will be one of the following forms, according to the precision of the
+/// timestamp:
+///  - yyyy-MM-dd HH:mm:ss+00:00
+///  - yyyy-MM-dd HH:mm:ss.SSS+00:00
+///  - yyyy-MM-dd HH:mm:ss.SSSSSS+00:00
+ICEBERG_EXPORT std::string FormatUnixMicroTz(int64_t unix_micro);
 
 }  // namespace iceberg
