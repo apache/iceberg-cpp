@@ -148,7 +148,7 @@ Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
   return output_array;
 }
 
-///  Templated implementation for projecting list arrays.
+/// \brief Templated implementation for projecting list arrays.
 /// Works with both ListArray/ListType (32-bit offsets) and
 /// LargeListArray/LargeListType (64-bit offsets).
 template <typename ArrowListArrayType, typename ArrowListType>

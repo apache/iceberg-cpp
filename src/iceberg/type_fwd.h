@@ -198,6 +198,7 @@ class UpdateLocation;
 class UpdatePartitionSpec;
 class UpdateProperties;
 class UpdateSchema;
+class UpdateSnapshotReference;
 class UpdateSortOrder;
 class UpdateStatistics;
 

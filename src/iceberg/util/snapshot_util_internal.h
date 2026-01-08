@@ -62,6 +62,17 @@ class ICEBERG_EXPORT SnapshotUtil {
   static Result<bool> IsAncestorOf(const Table& table, int64_t snapshot_id,
                                    int64_t ancestor_snapshot_id);
 
+  /// \brief Returns whether ancestor_snapshot_id is an ancestor of snapshot_id using the
+  /// given lookup function.
+  ///
+  /// \param snapshot_id The snapshot ID to check
+  /// \param ancestor_snapshot_id The ancestor snapshot ID to check for
+  /// \param lookup Function to lookup snapshots by ID
+  /// \return true if ancestor_snapshot_id is an ancestor of snapshot_id
+  static Result<bool> IsAncestorOf(
+      int64_t snapshot_id, int64_t ancestor_snapshot_id,
+      const std::function<Result<std::shared_ptr<Snapshot>>(int64_t)>& lookup);
+
   /// \brief Returns whether ancestor_snapshot_id is an ancestor of the table's current
   /// state.
   ///

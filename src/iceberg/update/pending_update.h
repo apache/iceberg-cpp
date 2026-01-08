@@ -49,6 +49,7 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
     kUpdateProperties,
     kUpdateSchema,
     kUpdateSnapshot,
+    kUpdateSnapshotReference,
     kUpdateSortOrder,
     kUpdateStatistics,
   };

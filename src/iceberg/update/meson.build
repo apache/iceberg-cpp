@@ -25,6 +25,7 @@ install_headers(
         'update_location.h',
         'update_partition_spec.h',
         'update_schema.h',
+        'update_snapshot_reference.h',
         'update_sort_order.h',
         'update_properties.h',
         'update_statistics.h',

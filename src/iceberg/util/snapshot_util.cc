@@ -62,6 +62,17 @@ Result<bool> SnapshotUtil::IsAncestorOf(const Table& table, int64_t snapshot_id,
   });
 }
 
+Result<bool> SnapshotUtil::IsAncestorOf(
+    int64_t snapshot_id, int64_t ancestor_snapshot_id,
+    const std::function<Result<std::shared_ptr<Snapshot>>(int64_t)>& lookup) {
+  ICEBERG_ASSIGN_OR_RAISE(auto snapshot, lookup(snapshot_id));
+  ICEBERG_CHECK(snapshot != nullptr, "Cannot find snapshot: {}", snapshot_id);
+  ICEBERG_ASSIGN_OR_RAISE(auto ancestors, AncestorsOf(snapshot, lookup));
+  return std::ranges::any_of(ancestors, [ancestor_snapshot_id](const auto& ancestor) {
+    return ancestor != nullptr && ancestor->snapshot_id == ancestor_snapshot_id;
+  });
+}
+
 Result<bool> SnapshotUtil::IsAncestorOf(const Table& table,
                                         int64_t ancestor_snapshot_id) {
   ICEBERG_ASSIGN_OR_RAISE(auto current, table.current_snapshot());
