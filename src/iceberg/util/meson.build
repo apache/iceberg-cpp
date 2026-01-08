@@ -36,6 +36,7 @@ install_headers(
         'string_util.h',
         'temporal_util.h',
         'timepoint.h',
+        'transform_util.h',
         'truncate_util.h',
         'type_util.h',
         'url_encoder.h',

@@ -111,6 +111,7 @@ add_iceberg_test(util_test
                  formatter_test.cc
                  location_util_test.cc
                  string_util_test.cc
+                 transform_util_test.cc
                  truncate_util_test.cc
                  url_encoder_test.cc
                  uuid_test.cc
