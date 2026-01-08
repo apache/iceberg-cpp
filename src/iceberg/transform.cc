@@ -31,6 +31,7 @@
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/projection_util_internal.h"
+#include "iceberg/util/transform_util.h"
 
 namespace iceberg {
 namespace {
@@ -364,6 +365,50 @@ Result<std::unique_ptr<UnboundPredicate>> Transform::ProjectStrict(
       return nullptr;
   }
   std::unreachable();
+}
+
+Result<std::string> Transform::ToHumanString(const Literal& value) {
+  if (value.IsNull()) {
+    return "null";
+  }
+
+  switch (transform_type_) {
+    case TransformType::kYear:
+      return TransformUtil::HumanYear(std::get<int32_t>(value.value()));
+    case TransformType::kMonth:
+      return TransformUtil::HumanMonth(std::get<int32_t>(value.value()));
+    case TransformType::kDay:
+      return TransformUtil::HumanDay(std::get<int32_t>(value.value()));
+    case TransformType::kHour:
+      return TransformUtil::HumanHour(std::get<int32_t>(value.value()));
+    default: {
+      switch (value.type()->type_id()) {
+        case TypeId::kDate:
+          return TransformUtil::HumanDay(std::get<int32_t>(value.value()));
+        case TypeId::kTime:
+          return TransformUtil::HumanTime(std::get<int64_t>(value.value()));
+        case TypeId::kTimestamp:
+          return TransformUtil::HumanTimestamp(std::get<int64_t>(value.value()));
+        case TypeId::kTimestampTz:
+          return TransformUtil::HumanTimestampWithZone(std::get<int64_t>(value.value()));
+        case TypeId::kFixed:
+        case TypeId::kBinary: {
+          const auto& binary_data = std::get<std::vector<uint8_t>>(value.value());
+          return TransformUtil::Base64Encode(
+              {reinterpret_cast<const char*>(binary_data.data()), binary_data.size()});
+        }
+        case TypeId::kDecimal: {
+          const auto& decimal_type = internal::checked_cast<DecimalType&>(*value.type());
+          const auto& decimal = std::get<::iceberg::Decimal>(value.value());
+          return decimal.ToString(decimal_type.scale());
+        }
+        case TypeId::kString:
+          return std::get<std::string>(value.value());
+        default:
+          return value.ToString();
+      }
+    }
+  }
 }
 
 bool TransformFunction::Equals(const TransformFunction& other) const {

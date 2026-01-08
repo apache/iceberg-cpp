@@ -68,6 +68,7 @@ add_iceberg_test(schema_test
                  schema_util_test.cc
                  sort_field_test.cc
                  sort_order_test.cc
+                 transform_human_string_test.cc
                  transform_test.cc
                  type_test.cc)
 

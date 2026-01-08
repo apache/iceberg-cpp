@@ -111,9 +111,8 @@ Result<std::string> PartitionSpec::PartitionPath(const PartitionValues& data) co
     if (i > 0) {
       ss << "/";
     }
-    // TODO(zhuo.wang): transform for partition value, will be fixed after transform util
-    // is ready
-    std::string partition_value = value.get().ToString();
+    ICEBERG_ASSIGN_OR_RAISE(auto partition_value,
+                            fields_[i].transform()->ToHumanString(value));
     ss << UrlEncoder::Encode(fields_[i].name()) << "="
        << UrlEncoder::Encode(partition_value);
   }

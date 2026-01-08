@@ -112,7 +112,7 @@ TEST_F(LocationProviderTest, ObjectStorageWithPartition) {
 
   std::vector<std::string> parts = SplitString(location, '/');
   ASSERT_GT(parts.size(), 2);
-  EXPECT_EQ("data%231=%22val%231%22", parts[parts.size() - 2]);
+  EXPECT_EQ("data%231=val%231", parts[parts.size() - 2]);
 }
 
 TEST_F(LocationProviderTest, ObjectStorageExcludePartitionInPath) {

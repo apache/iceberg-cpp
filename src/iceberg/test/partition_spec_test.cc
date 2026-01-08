@@ -458,8 +458,7 @@ TEST(PartitionSpecTest, PartitionPath) {
     PartitionValues part_data(
         {Literal::Int(123), Literal::String("val2"), Literal::Date(19489)});
     ICEBERG_UNWRAP_OR_FAIL(auto path, spec->PartitionPath(part_data));
-    std::string expected =
-        "id_partition=123/name_partition=%22val2%22/ts_partition=19489";
+    std::string expected = "id_partition=123/name_partition=val2/ts_partition=2023-05-12";
     EXPECT_EQ(expected, path);
   }
 
@@ -469,7 +468,7 @@ TEST(PartitionSpecTest, PartitionPath) {
         {Literal::Int(123), Literal::String("val#2"), Literal::Date(19489)});
     ICEBERG_UNWRAP_OR_FAIL(auto path, spec->PartitionPath(part_data));
     std::string expected =
-        "id_partition=123/name_partition=%22val%232%22/ts_partition=19489";
+        "id_partition=123/name_partition=val%232/ts_partition=2023-05-12";
     EXPECT_EQ(expected, path);
   }
 }
