@@ -37,7 +37,7 @@ class ICEBERG_EXPORT LocationProvider {
   ///
   /// \param filename a file name
   /// \return a fully-qualified location URI for a data file
-  virtual std::string NewDataLocation(const std::string& filename) = 0;
+  virtual std::string NewDataLocation(std::string_view filename) = 0;
 
   /// \brief Return a fully-qualified data file location for the given partition and
   /// filename.
@@ -49,7 +49,7 @@ class ICEBERG_EXPORT LocationProvider {
   /// \return a fully-qualified location URI for a data file
   virtual Result<std::string> NewDataLocation(const PartitionSpec& spec,
                                               const PartitionValues& partition_data,
-                                              const std::string& filename) = 0;
+                                              std::string_view filename) = 0;
 
   /// \brief Create a LocationProvider for the given table location and properties.
   ///

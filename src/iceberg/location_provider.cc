@@ -104,11 +104,11 @@ class DefaultLocationProvider : public LocationProvider {
   DefaultLocationProvider(std::string_view table_location,
                           const TableProperties& properties);
 
-  std::string NewDataLocation(const std::string& filename) override;
+  std::string NewDataLocation(std::string_view filename) override;
 
   Result<std::string> NewDataLocation(const PartitionSpec& spec,
                                       const PartitionValues& partition_data,
-                                      const std::string& filename) override;
+                                      std::string_view filename) override;
 
  private:
   std::string data_location_;
@@ -120,13 +120,13 @@ DefaultLocationProvider::DefaultLocationProvider(std::string_view table_location
     : data_location_(
           LocationUtil::StripTrailingSlash(DataLocation(properties, table_location))) {}
 
-std::string DefaultLocationProvider::NewDataLocation(const std::string& filename) {
+std::string DefaultLocationProvider::NewDataLocation(std::string_view filename) {
   return std::format("{}/{}", data_location_, filename);
 }
 
 Result<std::string> DefaultLocationProvider::NewDataLocation(
     const PartitionSpec& spec, const PartitionValues& partition_data,
-    const std::string& filename) {
+    std::string_view filename) {
   ICEBERG_ASSIGN_OR_RAISE(auto partition_path, spec.PartitionPath(partition_data));
   return std::format("{}/{}/{}", data_location_, partition_path, filename);
 }
@@ -137,11 +137,11 @@ class ObjectStoreLocationProvider : public LocationProvider {
   ObjectStoreLocationProvider(std::string_view table_location,
                               const TableProperties& properties);
 
-  std::string NewDataLocation(const std::string& filename) override;
+  std::string NewDataLocation(std::string_view filename) override;
 
   Result<std::string> NewDataLocation(const PartitionSpec& spec,
                                       const PartitionValues& partition_data,
-                                      const std::string& filename) override;
+                                      std::string_view filename) override;
 
  private:
   std::string storage_location_;
@@ -164,7 +164,7 @@ ObjectStoreLocationProvider::ObjectStoreLocationProvider(
   }
 }
 
-std::string ObjectStoreLocationProvider::NewDataLocation(const std::string& filename) {
+std::string ObjectStoreLocationProvider::NewDataLocation(std::string_view filename) {
   std::string hash = ComputeHash(filename);
 
   if (!context_.empty()) {
@@ -184,7 +184,7 @@ std::string ObjectStoreLocationProvider::NewDataLocation(const std::string& file
 
 Result<std::string> ObjectStoreLocationProvider::NewDataLocation(
     const PartitionSpec& spec, const PartitionValues& partition_data,
-    const std::string& filename) {
+    std::string_view filename) {
   if (include_partition_paths_) {
     ICEBERG_ASSIGN_OR_RAISE(auto partition_path, spec.PartitionPath(partition_data));
     return NewDataLocation(std::format("{}/{}", partition_path, filename));

@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <string>
+#include <string_view>
 
 #include "iceberg/iceberg_export.h"
 
