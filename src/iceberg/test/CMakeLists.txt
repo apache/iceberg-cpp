@@ -167,6 +167,7 @@ if(ICEBERG_BUILD_BUNDLE)
   add_iceberg_test(table_update_test
                    USE_BUNDLE
                    SOURCES
+                   expire_snapshots_test.cc
                    transaction_test.cc
                    update_partition_spec_test.cc
                    update_properties_test.cc

@@ -101,6 +101,7 @@ iceberg_sources = files(
     'transform.cc',
     'transform_function.cc',
     'type.cc',
+    'update/expire_snapshots.cc',
     'update/pending_update.cc',
     'update/update_partition_spec.cc',
     'update/update_properties.cc',

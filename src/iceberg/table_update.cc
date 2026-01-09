@@ -178,7 +178,7 @@ std::unique_ptr<TableUpdate> SetDefaultPartitionSpec::Clone() const {
 // RemovePartitionSpecs
 
 void RemovePartitionSpecs::ApplyTo(TableMetadataBuilder& builder) const {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  builder.RemovePartitionSpecs(spec_ids_);
 }
 
 void RemovePartitionSpecs::GenerateRequirements(TableUpdateContext& context) const {
@@ -301,7 +301,9 @@ std::unique_ptr<TableUpdate> AddSnapshot::Clone() const {
 
 // RemoveSnapshots
 
-void RemoveSnapshots::ApplyTo(TableMetadataBuilder& builder) const {}
+void RemoveSnapshots::ApplyTo(TableMetadataBuilder& builder) const {
+  builder.RemoveSnapshots(snapshot_ids_);
+}
 
 void RemoveSnapshots::GenerateRequirements(TableUpdateContext& context) const {
   // RemoveSnapshots doesn't generate any requirements
@@ -322,7 +324,7 @@ std::unique_ptr<TableUpdate> RemoveSnapshots::Clone() const {
 // RemoveSnapshotRef
 
 void RemoveSnapshotRef::ApplyTo(TableMetadataBuilder& builder) const {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  builder.RemoveRef(ref_name_);
 }
 
 void RemoveSnapshotRef::GenerateRequirements(TableUpdateContext& context) const {

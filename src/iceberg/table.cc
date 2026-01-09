@@ -30,6 +30,7 @@
 #include "iceberg/table_properties.h"
 #include "iceberg/table_scan.h"
 #include "iceberg/transaction.h"
+#include "iceberg/update/expire_snapshots.h"
 #include "iceberg/update/update_partition_spec.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/update/update_schema.h"
@@ -177,6 +178,13 @@ Result<std::shared_ptr<UpdateSchema>> Table::NewUpdateSchema() {
       auto transaction, Transaction::Make(shared_from_this(), Transaction::Kind::kUpdate,
                                           /*auto_commit=*/true));
   return transaction->NewUpdateSchema();
+}
+
+Result<std::shared_ptr<ExpireSnapshots>> Table::NewExpireSnapshots() {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto transaction, Transaction::Make(shared_from_this(), Transaction::Kind::kUpdate,
+                                          /*auto_commit=*/true));
+  return transaction->NewExpireSnapshots();
 }
 
 Result<std::shared_ptr<StagedTable>> StagedTable::Make(
