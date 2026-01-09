@@ -22,6 +22,9 @@
 /// \file iceberg/expression/binder.h
 /// Bind an expression to a schema.
 
+#include <functional>
+#include <unordered_set>
+
 #include "iceberg/expression/expression_visitor.h"
 
 namespace iceberg {
@@ -73,6 +76,31 @@ class ICEBERG_EXPORT IsBoundVisitor : public ExpressionVisitor<bool> {
   Result<bool> Aggregate(const std::shared_ptr<UnboundAggregate>& aggregate) override;
 };
 
-// TODO(gangwu): add the Java parity `ReferenceVisitor`
+using FieldIdsSetRef = std::reference_wrapper<std::unordered_set<int32_t>>;
+
+/// \brief Visitor to collect referenced field IDs from an expression.
+class ICEBERG_EXPORT ReferenceVisitor : public ExpressionVisitor<FieldIdsSetRef> {
+ public:
+  static Result<std::unordered_set<int32_t>> GetReferencedFieldIds(
+      const std::shared_ptr<Expression>& expr);
+
+  Result<FieldIdsSetRef> AlwaysTrue() override;
+  Result<FieldIdsSetRef> AlwaysFalse() override;
+  Result<FieldIdsSetRef> Not(const FieldIdsSetRef& child_result) override;
+  Result<FieldIdsSetRef> And(const FieldIdsSetRef& left_result,
+                             const FieldIdsSetRef& right_result) override;
+  Result<FieldIdsSetRef> Or(const FieldIdsSetRef& left_result,
+                            const FieldIdsSetRef& right_result) override;
+  Result<FieldIdsSetRef> Predicate(const std::shared_ptr<BoundPredicate>& pred) override;
+  Result<FieldIdsSetRef> Predicate(
+      const std::shared_ptr<UnboundPredicate>& pred) override;
+  Result<FieldIdsSetRef> Aggregate(
+      const std::shared_ptr<BoundAggregate>& aggregate) override;
+  Result<FieldIdsSetRef> Aggregate(
+      const std::shared_ptr<UnboundAggregate>& aggregate) override;
+
+ private:
+  std::unordered_set<int32_t> referenced_field_ids_;
+};
 
 }  // namespace iceberg
