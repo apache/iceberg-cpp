@@ -62,7 +62,7 @@ std::string TransformUtil::HumanTime(int64_t micros_from_midnight) {
   } else if (micros % kMicrosPerMillis == 0) {
     return std::format("{:%T}.{:03d}", hms, micros / kMicrosPerMillis);
   } else {
-    return std::format("{:%T}.{:06}", hms, micros);
+    return std::format("{:%T}.{:06d}", hms, micros);
   }
 }
 

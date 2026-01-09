@@ -27,8 +27,8 @@ TEST(TransformUtilTest, HumanYear) {
   EXPECT_EQ("1970", TransformUtil::HumanYear(0));
   EXPECT_EQ("1971", TransformUtil::HumanYear(1));
   EXPECT_EQ("1969", TransformUtil::HumanYear(-1));
+  EXPECT_EQ("0999", TransformUtil::HumanYear(999 - 1970));
   EXPECT_EQ("2026", TransformUtil::HumanYear(56));
-  EXPECT_EQ("1900", TransformUtil::HumanYear(-70));
 }
 
 TEST(TransformUtilTest, HumanMonth) {
@@ -38,6 +38,8 @@ TEST(TransformUtilTest, HumanMonth) {
   EXPECT_EQ("1970-02", TransformUtil::HumanMonth(1));
   // -1 is December 1969
   EXPECT_EQ("1969-12", TransformUtil::HumanMonth(-1));
+  // 0999-12
+  EXPECT_EQ("0999-12", TransformUtil::HumanMonth(-11641));
   // 12 is January 1971
   EXPECT_EQ("1971-01", TransformUtil::HumanMonth(12));
   // 672 is December 2026-01
@@ -51,6 +53,8 @@ TEST(TransformUtilTest, HumanDay) {
   EXPECT_EQ("1970-01-02", TransformUtil::HumanDay(1));
   // -1 is 1969-12-31
   EXPECT_EQ("1969-12-31", TransformUtil::HumanDay(-1));
+  // 0999-12-31
+  EXPECT_EQ("0999-12-31", TransformUtil::HumanDay(-354286));
   // 365 is 1971-01-01 (non-leap year)
   EXPECT_EQ("1971-01-01", TransformUtil::HumanDay(365));
   // 20454 is 2026-01-01
@@ -64,6 +68,8 @@ TEST(TransformUtilTest, HumanHour) {
   EXPECT_EQ("1970-01-01-01", TransformUtil::HumanHour(1));
   // -1 is previous day's last hour
   EXPECT_EQ("1969-12-31-23", TransformUtil::HumanHour(-1));
+  // 999-12-31 at 23:00
+  EXPECT_EQ("0999-12-31-23", TransformUtil::HumanHour(-8502841));
   // 24 is next day at 00:00
   EXPECT_EQ("1970-01-02-00", TransformUtil::HumanHour(24));
   // 490896 is 2026-01-01 at 00:00
@@ -94,6 +100,8 @@ TEST(TransformUtilTest, HumanTimestamp) {
   EXPECT_EQ("1970-01-01T00:00:01", TransformUtil::HumanTimestamp(1000000));
   // 1 second before epoch
   EXPECT_EQ("1969-12-31T23:59:59", TransformUtil::HumanTimestamp(-1000000));
+  // 0999-12-31T23:59:59
+  EXPECT_EQ("0999-12-31T23:59:59", TransformUtil::HumanTimestamp(-30610224001000000L));
   // precistion with 500 milliseconds
   EXPECT_EQ("2026-01-01T00:00:01.500", TransformUtil::HumanTimestamp(1767225601500000L));
   // precision with 1 millisecond
@@ -110,6 +118,9 @@ TEST(TransformUtilTest, HumanTimestampWithZone) {
   EXPECT_EQ("1970-01-01T00:00:01+00:00", TransformUtil::HumanTimestampWithZone(1000000));
   // 1 second before epoch
   EXPECT_EQ("1969-12-31T23:59:59+00:00", TransformUtil::HumanTimestampWithZone(-1000000));
+  // 0999-12-31T23:59:59
+  EXPECT_EQ("0999-12-31T23:59:59+00:00",
+            TransformUtil::HumanTimestampWithZone(-30610224001000000L));
   // precistion with 500 milliseconds
   EXPECT_EQ("2026-01-01T00:00:01.500+00:00",
             TransformUtil::HumanTimestampWithZone(1767225601500000L));

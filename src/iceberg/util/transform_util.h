@@ -77,9 +77,9 @@ class ICEBERG_EXPORT TransformUtil {
   ///
   /// The output will be one of the following forms, according to the precision of the
   /// timestamp:
-  ///  - yyyy-MM-dd HH:mm:ss
-  ///  - yyyy-MM-dd HH:mm:ss.SSS
-  ///  - yyyy-MM-dd HH:mm:ss.SSSSSS
+  ///  - yyyy-MM-ddTHH:mm:ss
+  ///  - yyyy-MM-ddTHH:mm:ss.SSS
+  ///  - yyyy-MM-ddTHH:mm:ss.SSSSSS
   ///
   /// \param timestamp_micros the timestamp in microseconds.
   /// \return a string representation of this timestamp.
@@ -90,9 +90,9 @@ class ICEBERG_EXPORT TransformUtil {
   ///
   /// The output will be one of the following forms, according to the precision of the
   /// timestamp:
-  ///  - yyyy-MM-dd HH:mm:ss+00:00
-  ///  - yyyy-MM-dd HH:mm:ss.SSS+00:00
-  ///  - yyyy-MM-dd HH:mm:ss.SSSSSS+00:00
+  ///  - yyyy-MM-ddTHH:mm:ss+00:00
+  ///  - yyyy-MM-ddTHH:mm:ss.SSS+00:00
+  ///  - yyyy-MM-ddTHH:mm:ss.SSSSSS+00:00
   ///
   /// \param timestamp_micros the timestamp in microseconds.
   /// \return a string representation of this timestamp.
