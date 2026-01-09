@@ -24,17 +24,18 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 #include <unordered_set>
+#include <variant>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
-#include "iceberg/util/formattable.h"
 
 namespace iceberg {
 
-class ICEBERG_EXPORT MetricsMode : public util::Formattable {
+struct ICEBERG_EXPORT MetricsMode {
  public:
   enum class Kind : uint8_t {
     kNone,
@@ -43,66 +44,24 @@ class ICEBERG_EXPORT MetricsMode : public util::Formattable {
     kFull,
   };
 
-  static Result<std::shared_ptr<MetricsMode>> FromString(const std::string& mode);
+  static Result<std::shared_ptr<MetricsMode>> FromString(std::string_view mode);
 
   static const std::shared_ptr<MetricsMode>& None();
   static const std::shared_ptr<MetricsMode>& Counts();
-  static const std::shared_ptr<MetricsMode>& Truncate();
   static const std::shared_ptr<MetricsMode>& Full();
 
-  /// \brief Return the kind of this metrics mode.
-  virtual Kind kind() const = 0;
-
-  std::string ToString() const override = 0;
-};
-
-class ICEBERG_EXPORT NoneMetricsMode : public MetricsMode {
- public:
-  constexpr Kind kind() const override { return Kind::kNone; }
-
-  std::string ToString() const override;
-};
-
-class ICEBERG_EXPORT CountsMetricsMode : public MetricsMode {
- public:
-  constexpr Kind kind() const override { return Kind::kCounts; }
-
-  std::string ToString() const override;
-};
-
-class ICEBERG_EXPORT TruncateMetricsMode : public MetricsMode {
- public:
-  explicit TruncateMetricsMode(int32_t length) : length_(length) {}
-
-  constexpr Kind kind() const override { return Kind::kTruncate; }
-
-  std::string ToString() const override;
-
-  static Result<std::shared_ptr<MetricsMode>> Make(int32_t length);
-
- private:
-  const int32_t length_;
-};
-
-class ICEBERG_EXPORT FullMetricsMode : public MetricsMode {
- public:
-  constexpr Kind kind() const override { return Kind::kFull; }
-
-  std::string ToString() const override;
+  Kind kind;
+  std::variant<std::monostate, int32_t> length;
 };
 
 /// \brief Configuration utilities for table metrics
 class ICEBERG_EXPORT MetricsConfig {
  public:
-  MetricsConfig(
-      std::unordered_map<std::string, std::shared_ptr<MetricsMode>> column_modes,
-      std::shared_ptr<MetricsMode> default_mode);
-
   /// \brief Get the default metrics config.
   static const std::shared_ptr<MetricsConfig>& Default();
 
   /// \brief Creates a metrics config from a table.
-  static Result<std::shared_ptr<MetricsConfig>> Make(std::shared_ptr<Table> table);
+  static Result<std::shared_ptr<MetricsConfig>> Make(const Table& table);
 
   /// \brief Get `limit` num of primitive field ids from schema
   static Result<std::unordered_set<int32_t>> LimitFieldIds(const Schema& schema,
@@ -121,6 +80,10 @@ class ICEBERG_EXPORT MetricsConfig {
   std::shared_ptr<MetricsMode> ColumnMode(const std::string& column_name) const;
 
  private:
+  MetricsConfig(
+      std::unordered_map<std::string, std::shared_ptr<MetricsMode>> column_modes,
+      std::shared_ptr<MetricsMode> default_mode);
+
   /// \brief Generate a MetricsConfig for all columns based on overrides, schema, and sort
   /// order.
   ///
