@@ -44,6 +44,13 @@ class ICEBERG_EXPORT StringUtils {
         lhs, rhs, [](char lc, char rc) { return std::tolower(lc) == std::tolower(rc); });
   }
 
+  static bool StartsWithIgnoreCase(std::string_view str, std::string_view prefix) {
+    if (str.size() < prefix.size()) {
+      return false;
+    }
+    return EqualsIgnoreCase(str.substr(0, prefix.size()), prefix);
+  }
+
   /// \brief Count the number of code points in a UTF-8 string.
   static size_t CodePointCount(std::string_view str) {
     size_t count = 0;

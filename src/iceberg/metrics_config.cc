@@ -30,6 +30,7 @@
 #include "iceberg/table_properties.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/type_util.h"
+#include "iceberg/util/visit_type.h"
 
 namespace iceberg {
 
@@ -41,12 +42,12 @@ constexpr std::string_view kFullName = "full";
 constexpr std::string_view kTruncatePrefix = "truncate(";
 constexpr int32_t kDefaultTruncateLength = 16;
 const std::shared_ptr<MetricsMode> kDefaultMetricsMode =
-    std::make_shared<TruncateMetricsMode>(kDefaultTruncateLength);
+    std::make_shared<MetricsMode>(MetricsMode::Kind::kTruncate, kDefaultTruncateLength);
 
 std::shared_ptr<MetricsMode> SortedColumnDefaultMode(
     std::shared_ptr<MetricsMode> default_mode) {
-  if (default_mode->kind() == MetricsMode::Kind::kNone ||
-      default_mode->kind() == MetricsMode::Kind::kCounts) {
+  if (default_mode->kind == MetricsMode::Kind::kNone ||
+      default_mode->kind == MetricsMode::Kind::kCounts) {
     return kDefaultMetricsMode;
   } else {
     return std::move(default_mode);
@@ -74,26 +75,21 @@ Result<std::shared_ptr<MetricsMode>> ParseMode(const std::string& mode,
 }  // namespace
 
 const std::shared_ptr<MetricsMode>& MetricsMode::None() {
-  static const std::shared_ptr<MetricsMode> none = std::make_shared<NoneMetricsMode>();
+  static const auto none = std::make_shared<MetricsMode>(Kind::kNone);
   return none;
 }
 
 const std::shared_ptr<MetricsMode>& MetricsMode::Counts() {
-  static const std::shared_ptr<MetricsMode> counts =
-      std::make_shared<CountsMetricsMode>();
+  static const auto counts = std::make_shared<MetricsMode>(Kind::kCounts);
   return counts;
 }
 
 const std::shared_ptr<MetricsMode>& MetricsMode::Full() {
-  static const std::shared_ptr<MetricsMode> full = std::make_shared<FullMetricsMode>();
+  static const auto full = std::make_shared<MetricsMode>(Kind::kFull);
   return full;
 }
 
-const std::shared_ptr<MetricsMode>& MetricsMode::Truncate() {
-  return kDefaultMetricsMode;
-}
-
-Result<std::shared_ptr<MetricsMode>> MetricsMode::FromString(const std::string& mode) {
+Result<std::shared_ptr<MetricsMode>> MetricsMode::FromString(std::string_view mode) {
   if (StringUtils::EqualsIgnoreCase(mode, kNoneName)) {
     return MetricsMode::None();
   } else if (StringUtils::EqualsIgnoreCase(mode, kCountsName)) {
@@ -102,7 +98,7 @@ Result<std::shared_ptr<MetricsMode>> MetricsMode::FromString(const std::string& 
     return MetricsMode::Full();
   }
 
-  if (mode.starts_with(kTruncatePrefix) && mode.ends_with(")")) {
+  if (StringUtils::StartsWithIgnoreCase(mode, kTruncatePrefix) && mode.ends_with(")")) {
     int32_t length;
     auto [ptr, ec] = std::from_chars(mode.data() + 9 /* "truncate(" length */,
                                      mode.data() + mode.size() - 1, length);
@@ -112,21 +108,10 @@ Result<std::shared_ptr<MetricsMode>> MetricsMode::FromString(const std::string& 
     if (length == kDefaultTruncateLength) {
       return kDefaultMetricsMode;
     }
-    return TruncateMetricsMode::Make(length);
+    ICEBERG_PRECHECK(length > 0, "Truncate length should be positive.");
+    return std::make_shared<MetricsMode>(Kind::kTruncate, length);
   }
   return InvalidArgument("Invalid metrics mode: {}", mode);
-}
-
-std::string NoneMetricsMode::ToString() const { return std::string(kNoneName); }
-std::string CountsMetricsMode::ToString() const { return std::string(kCountsName); }
-std::string FullMetricsMode::ToString() const { return std::string(kFullName); }
-std::string TruncateMetricsMode::ToString() const {
-  return std::format("truncate({})", length_);
-}
-
-Result<std::shared_ptr<MetricsMode>> TruncateMetricsMode::Make(int32_t length) {
-  ICEBERG_PRECHECK(length > 0, "Truncate length should be positive.");
-  return std::make_shared<TruncateMetricsMode>(length);
 }
 
 MetricsConfig::MetricsConfig(
@@ -135,19 +120,17 @@ MetricsConfig::MetricsConfig(
     : column_modes_(std::move(column_modes)), default_mode_(std::move(default_mode)) {}
 
 const std::shared_ptr<MetricsConfig>& MetricsConfig::Default() {
-  static const auto default_config = std::make_shared<MetricsConfig>(
-      std::unordered_map<std::string, std::shared_ptr<MetricsMode>>{},
-      kDefaultMetricsMode);
+  static const std::shared_ptr<MetricsConfig> default_config(
+      new MetricsConfig({}, kDefaultMetricsMode));
   return default_config;
 }
 
-Result<std::shared_ptr<MetricsConfig>> MetricsConfig::Make(std::shared_ptr<Table> table) {
-  ICEBERG_PRECHECK(table != nullptr, "table cannot be null");
-  ICEBERG_ASSIGN_OR_RAISE(auto schema, table->schema());
+Result<std::shared_ptr<MetricsConfig>> MetricsConfig::Make(const Table& table) {
+  ICEBERG_ASSIGN_OR_RAISE(auto schema, table.schema());
 
-  auto sort_order = table->sort_order();
+  auto sort_order = table.sort_order();
   return MakeInternal(
-      table->properties(), *schema,
+      table.properties(), *schema,
       sort_order.has_value() ? *sort_order.value() : *SortOrder::Unsorted());
 }
 
@@ -197,8 +180,8 @@ Result<std::shared_ptr<MetricsConfig>> MetricsConfig::MakeInternal(
     }
   }
 
-  return std::make_shared<MetricsConfig>(std::move(column_modes),
-                                         std::move(default_mode));
+  return std::shared_ptr<MetricsConfig>(
+      new MetricsConfig(std::move(column_modes), std::move(default_mode)));
 }
 
 Result<std::unordered_set<int32_t>> MetricsConfig::LimitFieldIds(const Schema& schema,
@@ -207,18 +190,14 @@ Result<std::unordered_set<int32_t>> MetricsConfig::LimitFieldIds(const Schema& s
    public:
     explicit Visitor(int32_t limit) : limit_(limit) {}
 
-    Status Visit(const std::shared_ptr<Type>& type) {
-      if (type->is_nested()) {
-        return Visit(internal::checked_cast<const NestedType&>(*type));
-      }
-      return {};
-    }
+    Status Visit(const Type& type) { return VisitNestedType(type, this); }
 
-    Status Visit(const NestedType& type) {
+    Status VisitNested(const NestedType& type) {
       for (auto& field : type.fields()) {
         if (!ShouldContinue()) {
           break;
         }
+        // TODO(zhuo.wang) or is_variant
         if (field.type()->is_primitive()) {
           ids_.insert(field.field_id());
         }
@@ -226,11 +205,13 @@ Result<std::unordered_set<int32_t>> MetricsConfig::LimitFieldIds(const Schema& s
 
       for (auto& field : type.fields()) {
         if (ShouldContinue()) {
-          ICEBERG_RETURN_UNEXPECTED(Visit(field.type()));
+          ICEBERG_RETURN_UNEXPECTED(Visit(*field.type()));
         }
       }
       return {};
     }
+
+    Status VisitNonNested(const Type& type) { return {}; }
 
     std::unordered_set<int32_t> Finish() { return ids_; }
 
@@ -243,8 +224,7 @@ Result<std::unordered_set<int32_t>> MetricsConfig::LimitFieldIds(const Schema& s
   };
 
   Visitor visitor(limit);
-  ICEBERG_RETURN_UNEXPECTED(
-      visitor.Visit(internal::checked_cast<const NestedType&>(schema)));
+  ICEBERG_RETURN_UNEXPECTED(visitor.Visit(internal::checked_cast<const Type&>(schema)));
   return visitor.Finish();
 }
 
@@ -257,12 +237,10 @@ Status MetricsConfig::VerifyReferencedColumns(
     auto field_name =
         std::string_view(key).substr(TableProperties::kMetricModeColumnConfPrefix.size());
     ICEBERG_ASSIGN_OR_RAISE(auto field, schema.FindFieldByName(field_name));
-    if (!field.has_value()) {
-      return ValidationFailed(
-          "Invalid metrics config, could not find column {} from table prop {} in "
-          "schema {}",
-          field_name, key, schema.ToString());
-    }
+    ICEBERG_CHECK(field.has_value(),
+                  "Invalid metrics config, could not find column {} from table prop {} "
+                  "in schema {}",
+                  field_name, key, schema.ToString());
   }
   return {};
 }

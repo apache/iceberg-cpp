@@ -127,8 +127,9 @@ class GetProjectedIdsVisitor {
  public:
   explicit GetProjectedIdsVisitor(bool include_struct_ids = false);
 
-  Status Visit(const std::shared_ptr<Type>& type);
-  Status Visit(const NestedType& type);
+  Status Visit(const Type& type);
+  Status VisitNested(const NestedType& type);
+  Status VisitNonNested(const Type& type);
   std::unordered_set<int32_t> Finish() const;
 
  private:

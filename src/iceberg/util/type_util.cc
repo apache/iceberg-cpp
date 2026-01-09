@@ -274,18 +274,16 @@ Result<std::shared_ptr<Type>> PruneColumnVisitor::Visit(
 GetProjectedIdsVisitor::GetProjectedIdsVisitor(bool include_struct_ids)
     : include_struct_ids_(include_struct_ids) {}
 
-Status GetProjectedIdsVisitor::Visit(const std::shared_ptr<Type>& type) {
-  if (type->is_nested()) {
-    return Visit(internal::checked_cast<const NestedType&>(*type));
-  }
-  return {};
+Status GetProjectedIdsVisitor::Visit(const Type& type) {
+  return VisitNestedType(type, this);
 }
 
-Status GetProjectedIdsVisitor::Visit(const NestedType& type) {
+Status GetProjectedIdsVisitor::VisitNested(const NestedType& type) {
   for (auto& field : type.fields()) {
-    ICEBERG_RETURN_UNEXPECTED(Visit(field.type()));
+    ICEBERG_RETURN_UNEXPECTED(Visit(*field.type()));
   }
   for (auto& field : type.fields()) {
+    // TODO(zhuo.wang) or is_variant
     if ((include_struct_ids_ && field.type()->type_id() == TypeId::kStruct) ||
         field.type()->is_primitive()) {
       ids_.insert(field.field_id());
@@ -293,6 +291,8 @@ Status GetProjectedIdsVisitor::Visit(const NestedType& type) {
   }
   return {};
 }
+
+Status GetProjectedIdsVisitor::VisitNonNested(const Type& type) { return {}; }
 
 std::unordered_set<int32_t> GetProjectedIdsVisitor::Finish() const { return ids_; }
 

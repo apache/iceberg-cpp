@@ -158,8 +158,18 @@ inline auto VisitTypeCategory(const Type& type, VISITOR* visitor, ARGS&&... args
   switch (type.type_id()) {
     ICEBERG_TYPE_SWITCH_WITH_PRIMITIVE_DEFAULT(SCHEMA_VISIT_ACTION)
   }
+}
 
 #undef SCHEMA_VISIT_ACTION
+
+template <typename VISITOR, typename... ARGS>
+inline auto VisitNestedType(const Type& type, VISITOR* visitor, ARGS&&... args) {
+  if (type.is_nested()) {
+    return visitor->VisitNested(internal::checked_cast<const NestedType&>(type),
+                                std::forward<ARGS>(args)...);
+  } else {
+    return visitor->VisitNonNested(type, std::forward<ARGS>(args)...);
+  }
 }
 
 }  // namespace iceberg

@@ -40,27 +40,15 @@
 namespace iceberg {
 
 TEST(MetricsConfigTest, MetricsMode) {
-  EXPECT_EQ(MetricsMode::Kind::kNone, MetricsMode::None()->kind());
-  EXPECT_EQ(MetricsMode::Kind::kCounts, MetricsMode::Counts()->kind());
-  EXPECT_EQ(MetricsMode::Kind::kFull, MetricsMode::Full()->kind());
-  EXPECT_EQ(MetricsMode::Kind::kTruncate, MetricsMode::Truncate()->kind());
+  EXPECT_EQ(MetricsMode::Kind::kNone, MetricsMode::None()->kind);
+  EXPECT_EQ(MetricsMode::Kind::kCounts, MetricsMode::Counts()->kind);
+  EXPECT_EQ(MetricsMode::Kind::kFull, MetricsMode::Full()->kind);
 
-  EXPECT_EQ("none", MetricsMode::None()->ToString());
-  EXPECT_EQ("counts", MetricsMode::Counts()->ToString());
-  EXPECT_EQ("full", MetricsMode::Full()->ToString());
-  EXPECT_EQ("truncate(16)", MetricsMode::Truncate()->ToString());
-
-  EXPECT_EQ(MetricsMode::Kind::kNone, MetricsMode::FromString("none").value()->kind());
-  EXPECT_EQ(MetricsMode::Kind::kCounts,
-            MetricsMode::FromString("counts").value()->kind());
-  EXPECT_EQ(MetricsMode::Kind::kFull, MetricsMode::FromString("full").value()->kind());
+  EXPECT_EQ(MetricsMode::Kind::kNone, MetricsMode::FromString("none").value()->kind);
+  EXPECT_EQ(MetricsMode::Kind::kCounts, MetricsMode::FromString("counts").value()->kind);
+  EXPECT_EQ(MetricsMode::Kind::kFull, MetricsMode::FromString("full").value()->kind);
   EXPECT_EQ(MetricsMode::Kind::kTruncate,
-            MetricsMode::FromString("truncate(32)").value()->kind());
-
-  EXPECT_EQ("none", MetricsMode::FromString("none").value()->ToString());
-  EXPECT_EQ("counts", MetricsMode::FromString("counts").value()->ToString());
-  EXPECT_EQ("full", MetricsMode::FromString("full").value()->ToString());
-  EXPECT_EQ("truncate(32)", MetricsMode::FromString("truncate(32)").value()->ToString());
+            MetricsMode::FromString("truncate(32)").value()->kind);
 
   auto result = MetricsMode::FromString("truncate(abc)");
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
@@ -76,13 +64,6 @@ TEST(MetricsConfigTest, MetricsMode) {
 }
 
 TEST(MetricsConfigTest, ForTable) {
-  {
-    // table is nullptr
-    auto result = MetricsConfig::Make(nullptr);
-    EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
-    EXPECT_THAT(result, HasErrorMessage("table cannot be null"));
-  }
-
   auto io = std::make_shared<MockFileIO>();
   auto catalog = std::make_shared<MockCatalog>();
   auto schema = std::make_shared<Schema>(
@@ -99,18 +80,17 @@ TEST(MetricsConfigTest, ForTable) {
     ICEBERG_UNWRAP_OR_FAIL(
         auto table, Table::Make(ident, metadata, "s3://bucket/meta.json", io, catalog));
 
-    ICEBERG_UNWRAP_OR_FAIL(auto config, MetricsConfig::Make(table));
+    ICEBERG_UNWRAP_OR_FAIL(auto config, MetricsConfig::Make(*table));
     auto mode = config->ColumnMode("id");
-    EXPECT_EQ(MetricsMode::Kind::kTruncate, mode->kind());
-    EXPECT_EQ("truncate(16)", mode->ToString());
+    EXPECT_EQ(MetricsMode::Kind::kTruncate, mode->kind);
+    EXPECT_EQ(16, std::get<int32_t>(mode->length));
 
     mode = config->ColumnMode("name");
-    EXPECT_EQ(MetricsMode::Kind::kTruncate, mode->kind());
-    EXPECT_EQ("truncate(16)", mode->ToString());
-
+    EXPECT_EQ(MetricsMode::Kind::kTruncate, mode->kind);
+    EXPECT_EQ(16, std::get<int32_t>(mode->length));
     mode = config->ColumnMode("addr");
-    EXPECT_EQ(MetricsMode::Kind::kTruncate, mode->kind());
-    EXPECT_EQ("truncate(16)", mode->ToString());
+    EXPECT_EQ(MetricsMode::Kind::kTruncate, mode->kind);
+    EXPECT_EQ(16, std::get<int32_t>(mode->length));
   }
 
   {
@@ -124,18 +104,15 @@ TEST(MetricsConfigTest, ForTable) {
     ICEBERG_UNWRAP_OR_FAIL(
         auto table, Table::Make(ident, metadata, "s3://bucket/meta.json", io, catalog));
 
-    ICEBERG_UNWRAP_OR_FAIL(auto config, MetricsConfig::Make(table));
+    ICEBERG_UNWRAP_OR_FAIL(auto config, MetricsConfig::Make(*table));
     auto mode = config->ColumnMode("id");
-    EXPECT_EQ(MetricsMode::Kind::kFull, mode->kind());
-    EXPECT_EQ("full", mode->ToString());
+    EXPECT_EQ(MetricsMode::Kind::kFull, mode->kind);
 
     mode = config->ColumnMode("name");
-    EXPECT_EQ(MetricsMode::Kind::kFull, mode->kind());
-    EXPECT_EQ("full", mode->ToString());
+    EXPECT_EQ(MetricsMode::Kind::kFull, mode->kind);
 
     mode = config->ColumnMode("addr");
-    EXPECT_EQ(MetricsMode::Kind::kFull, mode->kind());
-    EXPECT_EQ("full", mode->ToString());
+    EXPECT_EQ(MetricsMode::Kind::kFull, mode->kind);
   }
 
   {
@@ -164,18 +141,16 @@ TEST(MetricsConfigTest, ForTable) {
     ICEBERG_UNWRAP_OR_FAIL(
         auto table, Table::Make(ident, metadata, "s3://bucket/meta.json", io, catalog));
 
-    ICEBERG_UNWRAP_OR_FAIL(auto config, MetricsConfig::Make(table));
+    ICEBERG_UNWRAP_OR_FAIL(auto config, MetricsConfig::Make(*table));
     auto mode = config->ColumnMode("id");
-    EXPECT_EQ(MetricsMode::Kind::kTruncate, mode->kind());
-    EXPECT_EQ("truncate(16)", mode->ToString());
+    EXPECT_EQ(MetricsMode::Kind::kTruncate, mode->kind);
+    EXPECT_EQ(16, std::get<int32_t>(mode->length));
 
     mode = config->ColumnMode("name");
-    EXPECT_EQ(MetricsMode::Kind::kFull, mode->kind());
-    EXPECT_EQ("full", mode->ToString());
+    EXPECT_EQ(MetricsMode::Kind::kFull, mode->kind);
 
     mode = config->ColumnMode("addr");
-    EXPECT_EQ(MetricsMode::Kind::kNone, mode->kind());
-    EXPECT_EQ("none", mode->ToString());
+    EXPECT_EQ(MetricsMode::Kind::kNone, mode->kind);
   }
 }
 
