@@ -19,7 +19,7 @@
 
 #pragma once
 
-#include <string>
+#include <string_view>
 
 #include "iceberg/iceberg_export.h"
 
@@ -27,16 +27,15 @@ namespace iceberg {
 
 class ICEBERG_EXPORT LocationUtil {
  public:
-  static std::string StripTrailingSlash(const std::string& path) {
+  static std::string_view StripTrailingSlash(std::string_view path) {
     if (path.empty()) {
       return "";
     }
 
-    std::string_view result = path;
-    while (result.ends_with("/") && !result.ends_with("://")) {
-      result.remove_suffix(1);
+    while (path.ends_with("/") && !path.ends_with("://")) {
+      path.remove_suffix(1);
     }
-    return std::string(result);
+    return path;
   }
 };
 

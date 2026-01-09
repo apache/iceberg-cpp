@@ -19,9 +19,11 @@
 
 #pragma once
 
+#include <memory>
 #include <string>
 
 #include "iceberg/iceberg_export.h"
+#include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
@@ -35,7 +37,7 @@ class ICEBERG_EXPORT LocationProvider {
   ///
   /// \param filename a file name
   /// \return a fully-qualified location URI for a data file
-  virtual std::string NewDataLocation(const std::string& filename) = 0;
+  virtual std::string NewDataLocation(std::string_view filename) = 0;
 
   /// \brief Return a fully-qualified data file location for the given partition and
   /// filename.
@@ -45,12 +47,17 @@ class ICEBERG_EXPORT LocationProvider {
   /// given spec
   /// \param filename a file name
   /// \return a fully-qualified location URI for a data file
+  virtual Result<std::string> NewDataLocation(const PartitionSpec& spec,
+                                              const PartitionValues& partition_data,
+                                              std::string_view filename) = 0;
+
+  /// \brief Create a LocationProvider for the given table location and properties.
   ///
-  /// TODO(wgtmac): StructLike is not well thought yet, we may wrap an ArrowArray
-  /// with single row in StructLike.
-  virtual std::string NewDataLocation(const PartitionSpec& spec,
-                                      const StructLike& partition_data,
-                                      const std::string& filename) = 0;
+  /// \param input_location the table location
+  /// \param properties the table properties
+  /// \return a LocationProvider instance
+  static Result<std::unique_ptr<LocationProvider>> Make(
+      const std::string& input_location, const TableProperties& properties);
 };
 
 }  // namespace iceberg
