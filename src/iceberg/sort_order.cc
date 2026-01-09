@@ -132,4 +132,18 @@ Result<std::unique_ptr<SortOrder>> SortOrder::Make(int32_t sort_id,
   return std::unique_ptr<SortOrder>(new SortOrder(sort_id, std::move(fields)));
 }
 
+std::unordered_set<std::string_view> SortOrder::OrderPreservingSortedColumns(
+    const Schema& schema, const SortOrder& order) {
+  return order.fields() | std::views::filter([&schema](const SortField& field) {
+           return field.transform()->PreservesOrder();
+         }) |
+         std::views::transform([&schema](const SortField& field) {
+           return schema.FindColumnNameById(field.source_id())
+               .value_or(std::nullopt)
+               .value_or("");
+         }) |
+         std::views::filter([](std::string_view name) { return !name.empty(); }) |
+         std::ranges::to<std::unordered_set<std::string_view>>();
+}
+
 }  // namespace iceberg

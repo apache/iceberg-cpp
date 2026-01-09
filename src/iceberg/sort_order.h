@@ -22,6 +22,7 @@
 #include <cstdint>
 #include <memory>
 #include <span>
+#include <unordered_set>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
@@ -90,6 +91,9 @@ class ICEBERG_EXPORT SortOrder : public util::Formattable {
   /// \note This method does not check whether the sort fields are valid for any schema.
   static Result<std::unique_ptr<SortOrder>> Make(int32_t sort_id,
                                                  std::vector<SortField> fields);
+
+  static std::unordered_set<std::string_view> OrderPreservingSortedColumns(
+      const Schema& schema, const SortOrder& order);
 
  private:
   /// \brief Constructs a SortOrder instance.
