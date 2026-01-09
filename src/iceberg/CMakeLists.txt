@@ -95,6 +95,7 @@ set(ICEBERG_SOURCES
     util/snapshot_util.cc
     util/temporal_util.cc
     util/timepoint.cc
+    util/transform_util.cc
     util/truncate_util.cc
     util/type_util.cc
     util/url_encoder.cc
