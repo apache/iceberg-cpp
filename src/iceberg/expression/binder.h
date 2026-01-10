@@ -22,6 +22,8 @@
 /// \file iceberg/expression/binder.h
 /// Bind an expression to a schema.
 
+#include <optional>
+
 #include "iceberg/expression/expression_visitor.h"
 
 namespace iceberg {
@@ -58,19 +60,25 @@ class ICEBERG_EXPORT Binder : public ExpressionVisitor<std::shared_ptr<Expressio
   const bool case_sensitive_;
 };
 
-class ICEBERG_EXPORT IsBoundVisitor : public ExpressionVisitor<bool> {
+class ICEBERG_EXPORT IsBoundVisitor : public ExpressionVisitor<std::optional<bool>> {
  public:
   static Result<bool> IsBound(const std::shared_ptr<Expression>& expr);
 
-  Result<bool> AlwaysTrue() override;
-  Result<bool> AlwaysFalse() override;
-  Result<bool> Not(bool child_result) override;
-  Result<bool> And(bool left_result, bool right_result) override;
-  Result<bool> Or(bool left_result, bool right_result) override;
-  Result<bool> Predicate(const std::shared_ptr<BoundPredicate>& pred) override;
-  Result<bool> Predicate(const std::shared_ptr<UnboundPredicate>& pred) override;
-  Result<bool> Aggregate(const std::shared_ptr<BoundAggregate>& aggregate) override;
-  Result<bool> Aggregate(const std::shared_ptr<UnboundAggregate>& aggregate) override;
+  Result<std::optional<bool>> AlwaysTrue() override;
+  Result<std::optional<bool>> AlwaysFalse() override;
+  Result<std::optional<bool>> Not(const std::optional<bool>& child_result) override;
+  Result<std::optional<bool>> And(const std::optional<bool>& left_result,
+                                  const std::optional<bool>& right_result) override;
+  Result<std::optional<bool>> Or(const std::optional<bool>& left_result,
+                                 const std::optional<bool>& right_result) override;
+  Result<std::optional<bool>> Predicate(
+      const std::shared_ptr<BoundPredicate>& pred) override;
+  Result<std::optional<bool>> Predicate(
+      const std::shared_ptr<UnboundPredicate>& pred) override;
+  Result<std::optional<bool>> Aggregate(
+      const std::shared_ptr<BoundAggregate>& aggregate) override;
+  Result<std::optional<bool>> Aggregate(
+      const std::shared_ptr<UnboundAggregate>& aggregate) override;
 };
 
 // TODO(gangwu): add the Java parity `ReferenceVisitor`
