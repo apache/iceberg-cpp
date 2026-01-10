@@ -20,6 +20,7 @@
 #include "iceberg/catalog/rest/auth/auth_managers.h"
 
 #include <algorithm>
+#include <cctype>
 
 #include "iceberg/catalog/rest/auth/auth_properties.h"
 
@@ -30,29 +31,30 @@ namespace {
 /// \brief Convert a string to lowercase for case-insensitive comparison.
 std::string ToLower(std::string_view str) {
   std::string result(str);
-  std::transform(result.begin(), result.end(), result.begin(),
-                 [](unsigned char c) { return std::tolower(c); });
+  std::ranges::transform(result, result.begin(),
+                         [](unsigned char c) { return std::tolower(c); });
   return result;
 }
 
 /// \brief Infer the authentication type from properties.
 ///
 /// If no explicit auth type is set, this function tries to infer it from
-/// other properties. For example, if "credential" or "token" is present,
-/// it implies OAuth2 authentication.
+/// other properties. If "credential" or "token" is present, it implies
+/// OAuth2 authentication. Otherwise, defaults to no authentication.
+///
+/// This behavior is consistent with Java Iceberg's AuthManagers.
 std::string InferAuthType(
     const std::unordered_map<std::string, std::string>& properties) {
-  // Check for explicit auth type
+  // Check for explicit auth type first
   auto it = properties.find(std::string(AuthProperties::kAuthType));
   if (it != properties.end() && !it->second.empty()) {
     return ToLower(it->second);
   }
 
-  // Infer from OAuth2 properties
+  // Infer from OAuth2 properties (credential or token)
   bool has_credential =
       properties.contains(std::string(AuthProperties::kOAuth2Credential));
   bool has_token = properties.contains(std::string(AuthProperties::kOAuth2Token));
-
   if (has_credential || has_token) {
     return std::string(AuthProperties::kAuthTypeOAuth2);
   }
