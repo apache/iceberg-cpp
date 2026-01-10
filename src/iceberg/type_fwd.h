@@ -182,6 +182,7 @@ class TableProperties;
 /// \brief Table update.
 class TableMetadataBuilder;
 class TableUpdate;
+class SnapshotManager;
 class TableRequirement;
 class TableUpdateContext;
 class Transaction;
