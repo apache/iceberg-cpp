@@ -72,6 +72,10 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// changes.
   Result<std::shared_ptr<UpdateSchema>> NewUpdateSchema();
 
+  /// \brief Create a new UpdateSnapshotReference to update snapshot references (branches
+  /// and tags) and commit the changes.
+  Result<std::shared_ptr<UpdateSnapshotReference>> NewUpdateSnapshotReference();
+
  private:
   Transaction(std::shared_ptr<Table> table, Kind kind, bool auto_commit,
               std::unique_ptr<TableMetadataBuilder> metadata_builder);

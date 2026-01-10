@@ -47,9 +47,19 @@ Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::AncestorsOf(
 
 Result<bool> SnapshotUtil::IsAncestorOf(const Table& table, int64_t snapshot_id,
                                         int64_t ancestor_snapshot_id) {
-  ICEBERG_ASSIGN_OR_RAISE(auto ancestors, AncestorsOf(table, snapshot_id));
-  return std::ranges::any_of(ancestors, [ancestor_snapshot_id](const auto& snapshot) {
-    return snapshot != nullptr && snapshot->snapshot_id == ancestor_snapshot_id;
+  return table.SnapshotById(snapshot_id)
+      .and_then([snapshot_id, ancestor_snapshot_id, &table](const auto& snapshot) {
+        return IsAncestorOf(snapshot_id, ancestor_snapshot_id,
+                            [&table](int64_t id) { return table.SnapshotById(id); });
+      });
+}
+
+Result<bool> SnapshotUtil::IsAncestorOf(
+    int64_t snapshot_id, int64_t ancestor_snapshot_id,
+    const std::function<Result<std::shared_ptr<Snapshot>>(int64_t)>& lookup) {
+  ICEBERG_ASSIGN_OR_RAISE(auto ancestors, AncestorsOf(snapshot_id, lookup));
+  return std::ranges::any_of(ancestors, [ancestor_snapshot_id](const auto& ancestor) {
+    return ancestor != nullptr && ancestor->snapshot_id == ancestor_snapshot_id;
   });
 }
 
@@ -178,6 +188,14 @@ Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::AncestorsBetween(
 Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::AncestorsOf(
     const Table& table, const std::shared_ptr<Snapshot>& snapshot) {
   return AncestorsOf(snapshot, [&table](int64_t id) { return table.SnapshotById(id); });
+}
+
+Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::AncestorsOf(
+    int64_t snapshot_id,
+    const std::function<Result<std::shared_ptr<Snapshot>>(int64_t)>& lookup) {
+  ICEBERG_ASSIGN_OR_RAISE(auto snapshot, lookup(snapshot_id));
+  ICEBERG_CHECK(snapshot != nullptr, "Snapshot is null for id {}", snapshot_id);
+  return AncestorsOf(snapshot, lookup);
 }
 
 Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::AncestorsOf(

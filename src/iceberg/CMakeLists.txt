@@ -66,6 +66,7 @@ set(ICEBERG_SOURCES
     schema_util.cc
     snapshot.cc
     sort_field.cc
+    update/snapshot_manager.cc
     sort_order.cc
     statistics_file.cc
     table.cc
@@ -85,6 +86,7 @@ set(ICEBERG_SOURCES
     update/update_properties.cc
     update/update_schema.cc
     update/update_sort_order.cc
+    update/update_snapshot_reference.cc
     util/bucket_util.cc
     util/content_file_util.cc
     util/conversions.cc

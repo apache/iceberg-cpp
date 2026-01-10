@@ -182,6 +182,7 @@ class TableProperties;
 /// \brief Table update.
 class TableMetadataBuilder;
 class TableUpdate;
+class SnapshotManager;
 class TableRequirement;
 class TableUpdateContext;
 class Transaction;
@@ -192,6 +193,7 @@ class UpdatePartitionSpec;
 class UpdateProperties;
 class UpdateSchema;
 class UpdateSortOrder;
+class UpdateSnapshotReference;
 
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.
