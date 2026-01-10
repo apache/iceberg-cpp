@@ -76,6 +76,18 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
     return self;
   }
 
+  /// \brief Perform operations on a particular branch
+  ///
+  /// \param branch Which is name of SnapshotRef of type branch
+  /// \return Reference to this for method chaining
+  auto& ToBranch(this auto& self, const std::string& branch) {
+    auto status = self.SetTargetBranch(branch);
+    if (!status.has_value()) {
+      return self.AddError(status.error());
+    }
+    return self;
+  }
+
   /// \brief Set a summary property.
   ///
   /// \param property The property name

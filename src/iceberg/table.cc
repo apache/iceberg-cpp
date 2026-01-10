@@ -32,6 +32,7 @@
 #include "iceberg/table_scan.h"
 #include "iceberg/transaction.h"
 #include "iceberg/update/expire_snapshots.h"
+#include "iceberg/update/snapshot_manager.h"
 #include "iceberg/update/update_partition_spec.h"
 #include "iceberg/update/update_partition_statistics.h"
 #include "iceberg/update/update_properties.h"
@@ -220,6 +221,10 @@ Result<std::shared_ptr<UpdatePartitionStatistics>> Table::NewUpdatePartitionStat
       auto transaction, Transaction::Make(shared_from_this(), Transaction::Kind::kUpdate,
                                           /*auto_commit=*/true));
   return transaction->NewUpdatePartitionStatistics();
+}
+
+Result<std::shared_ptr<SnapshotManager>> Table::NewSnapshotManager() {
+  return SnapshotManager::Make(name().ToString(), shared_from_this());
 }
 
 Result<std::shared_ptr<StagedTable>> StagedTable::Make(
