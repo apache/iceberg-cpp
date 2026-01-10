@@ -192,6 +192,7 @@ class UpdatePartitionSpec;
 class UpdateProperties;
 class UpdateSchema;
 class UpdateSortOrder;
+class UpdateSnapshotReference;
 
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.

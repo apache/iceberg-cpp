@@ -32,6 +32,7 @@
 #include "iceberg/update/update_partition_spec.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/update/update_schema.h"
+#include "iceberg/update/update_snapshot_reference.h"
 #include "iceberg/update/update_sort_order.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
@@ -113,6 +114,24 @@ Status Transaction::Apply(PendingUpdate& update) {
       metadata_builder_->SetCurrentSchema(std::move(result.schema),
                                           result.new_last_column_id);
     } break;
+    case PendingUpdate::Kind::kUpdateSnapshotReference: {
+      auto& update_ref = internal::checked_cast<UpdateSnapshotReference&>(update);
+      ICEBERG_ASSIGN_OR_RAISE(auto updated_refs, update_ref.Apply());
+      const auto& current_refs = current().refs;
+      // Identify references which have been removed
+      for (const auto& [name, ref] : current_refs) {
+        if (updated_refs.find(name) == updated_refs.end()) {
+          metadata_builder_->RemoveRef(name);
+        }
+      }
+      // Identify references which have been created or updated.
+      for (const auto& [name, ref] : updated_refs) {
+        auto current_it = current_refs.find(name);
+        if (current_it == current_refs.end() || *current_it->second != *ref) {
+          metadata_builder_->SetRef(name, ref);
+        }
+      }
+    } break;
     default:
       return NotSupported("Unsupported pending update: {}",
                           static_cast<int32_t>(update.kind()));
@@ -191,6 +210,14 @@ Result<std::shared_ptr<UpdateSchema>> Transaction::NewUpdateSchema() {
                           UpdateSchema::Make(shared_from_this()));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_schema));
   return update_schema;
+}
+
+Result<std::shared_ptr<UpdateSnapshotReference>>
+Transaction::NewUpdateSnapshotReference() {
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<UpdateSnapshotReference> update_ref,
+                          UpdateSnapshotReference::Make(shared_from_this()));
+  ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_ref));
+  return update_ref;
 }
 
 }  // namespace iceberg
