@@ -73,9 +73,10 @@ We follow modern C++ best practices:
 - **C++23 Standard**: Use C++23 features where appropriate
 - **Naming Conventions**:
   - Classes: `PascalCase` (e.g., `TableScanBuilder`)
-  - Functions: `snake_case` (e.g., `find_field_by_name`)
+  - Functions/Methods: `PascalCase` (e.g., `CreateNamespace`, `ExtractYear`)
+  - Trivial getters: `snake_case` (e.g., `name()`, `type_id()`, `is_primitive()`)
   - Variables: `snake_case` (e.g., `file_io`)
-  - Constants: `UPPER_SNAKE_CASE` (e.g., `MAX_RETRIES`)
+  - Constants: `k` prefix with `PascalCase` (e.g., `kHeaderContentType`, `kMaxPrecision`)
 - **Memory Management**: Prefer smart pointers (`std::unique_ptr`, `std::shared_ptr`)
 - **Error Handling**: Use `Result<T>` types for error propagation
 - **Documentation**: Use Doxygen-style comments for public APIs
