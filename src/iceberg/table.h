@@ -116,6 +116,9 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// \brief Returns the catalog that this table belongs to
   const std::shared_ptr<Catalog>& catalog() const;
 
+  /// \brief Return a LocationProvider for this table
+  Result<std::unique_ptr<LocationProvider>> location_provider() const;
+
   /// \brief Refresh the current table metadata
   virtual Status Refresh();
 

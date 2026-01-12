@@ -22,6 +22,7 @@
 #include <memory>
 
 #include "iceberg/catalog.h"
+#include "iceberg/location_provider.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
@@ -139,6 +140,10 @@ const std::shared_ptr<FileIO>& Table::io() const { return io_; }
 const std::shared_ptr<TableMetadata>& Table::metadata() const { return metadata_; }
 
 const std::shared_ptr<Catalog>& Table::catalog() const { return catalog_; }
+
+Result<std::unique_ptr<LocationProvider>> Table::location_provider() const {
+  return LocationProvider::Make(metadata_->location, metadata_->properties);
+}
 
 Result<std::unique_ptr<TableScanBuilder>> Table::NewScan() const {
   return TableScanBuilder::Make(metadata_, io_);
