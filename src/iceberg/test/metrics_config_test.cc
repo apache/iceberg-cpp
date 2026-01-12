@@ -19,9 +19,6 @@
 
 #include "iceberg/metrics_config.h"
 
-#include <memory>
-#include <unordered_map>
-
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -40,15 +37,15 @@
 namespace iceberg {
 
 TEST(MetricsConfigTest, MetricsMode) {
-  EXPECT_EQ(MetricsMode::Kind::kNone, MetricsMode::None()->kind);
-  EXPECT_EQ(MetricsMode::Kind::kCounts, MetricsMode::Counts()->kind);
-  EXPECT_EQ(MetricsMode::Kind::kFull, MetricsMode::Full()->kind);
+  EXPECT_EQ(MetricsMode::Kind::kNone, MetricsMode::None().kind);
+  EXPECT_EQ(MetricsMode::Kind::kCounts, MetricsMode::Counts().kind);
+  EXPECT_EQ(MetricsMode::Kind::kFull, MetricsMode::Full().kind);
 
-  EXPECT_EQ(MetricsMode::Kind::kNone, MetricsMode::FromString("none").value()->kind);
-  EXPECT_EQ(MetricsMode::Kind::kCounts, MetricsMode::FromString("counts").value()->kind);
-  EXPECT_EQ(MetricsMode::Kind::kFull, MetricsMode::FromString("full").value()->kind);
+  EXPECT_EQ(MetricsMode::Kind::kNone, MetricsMode::FromString("none").value().kind);
+  EXPECT_EQ(MetricsMode::Kind::kCounts, MetricsMode::FromString("counts").value().kind);
+  EXPECT_EQ(MetricsMode::Kind::kFull, MetricsMode::FromString("full").value().kind);
   EXPECT_EQ(MetricsMode::Kind::kTruncate,
-            MetricsMode::FromString("truncate(32)").value()->kind);
+            MetricsMode::FromString("truncate(32)").value().kind);
 
   auto result = MetricsMode::FromString("truncate(abc)");
   EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
@@ -82,15 +79,15 @@ TEST(MetricsConfigTest, ForTable) {
 
     ICEBERG_UNWRAP_OR_FAIL(auto config, MetricsConfig::Make(*table));
     auto mode = config->ColumnMode("id");
-    EXPECT_EQ(MetricsMode::Kind::kTruncate, mode->kind);
-    EXPECT_EQ(16, std::get<int32_t>(mode->length));
+    EXPECT_EQ(MetricsMode::Kind::kTruncate, mode.kind);
+    EXPECT_EQ(16, std::get<int32_t>(mode.length));
 
     mode = config->ColumnMode("name");
-    EXPECT_EQ(MetricsMode::Kind::kTruncate, mode->kind);
-    EXPECT_EQ(16, std::get<int32_t>(mode->length));
+    EXPECT_EQ(MetricsMode::Kind::kTruncate, mode.kind);
+    EXPECT_EQ(16, std::get<int32_t>(mode.length));
     mode = config->ColumnMode("addr");
-    EXPECT_EQ(MetricsMode::Kind::kTruncate, mode->kind);
-    EXPECT_EQ(16, std::get<int32_t>(mode->length));
+    EXPECT_EQ(MetricsMode::Kind::kTruncate, mode.kind);
+    EXPECT_EQ(16, std::get<int32_t>(mode.length));
   }
 
   {
@@ -106,29 +103,28 @@ TEST(MetricsConfigTest, ForTable) {
 
     ICEBERG_UNWRAP_OR_FAIL(auto config, MetricsConfig::Make(*table));
     auto mode = config->ColumnMode("id");
-    EXPECT_EQ(MetricsMode::Kind::kFull, mode->kind);
+    EXPECT_EQ(MetricsMode::Kind::kFull, mode.kind);
 
     mode = config->ColumnMode("name");
-    EXPECT_EQ(MetricsMode::Kind::kFull, mode->kind);
+    EXPECT_EQ(MetricsMode::Kind::kFull, mode.kind);
 
     mode = config->ColumnMode("addr");
-    EXPECT_EQ(MetricsMode::Kind::kFull, mode->kind);
+    EXPECT_EQ(MetricsMode::Kind::kFull, mode.kind);
   }
 
   {
     // Custom metrics mode by set column's metrics mode
     ICEBERG_UNWRAP_OR_FAIL(
         std::shared_ptr<SortOrder> sort_order,
-        SortOrder::Make(*schema, 1,
+        SortOrder::Make(*schema, /*sort_id=*/1,
                         std::vector<SortField>(
-                            {SortField(1, Transform::Identity(),
+                            {SortField(/*source_id=*/1, Transform::Identity(),
                                        SortDirection::kAscending, NullOrder::kLast)})));
 
     auto metadata = std::make_shared<TableMetadata>(TableMetadata{
         .format_version = 2,
         .schemas = {schema},
         .current_schema_id = 1,
-
         .properties = TableProperties::FromMap(
             {{TableProperties::kDefaultWriteMetricsMode.key(), "none"},
              {TableProperties::kMetricsMaxInferredColumnDefaults.key(), "2"},
@@ -143,14 +139,14 @@ TEST(MetricsConfigTest, ForTable) {
 
     ICEBERG_UNWRAP_OR_FAIL(auto config, MetricsConfig::Make(*table));
     auto mode = config->ColumnMode("id");
-    EXPECT_EQ(MetricsMode::Kind::kTruncate, mode->kind);
-    EXPECT_EQ(16, std::get<int32_t>(mode->length));
+    EXPECT_EQ(MetricsMode::Kind::kTruncate, mode.kind);
+    EXPECT_EQ(16, std::get<int32_t>(mode.length));
 
     mode = config->ColumnMode("name");
-    EXPECT_EQ(MetricsMode::Kind::kFull, mode->kind);
+    EXPECT_EQ(MetricsMode::Kind::kFull, mode.kind);
 
     mode = config->ColumnMode("addr");
-    EXPECT_EQ(MetricsMode::Kind::kNone, mode->kind);
+    EXPECT_EQ(MetricsMode::Kind::kNone, mode.kind);
   }
 }
 
@@ -158,28 +154,27 @@ TEST(MetricsConfigTest, LimitFieldIds) {
   {
     // Nested struct type
     // Create nested struct type for level1_struct_a
-    auto level2_struct_a_type = std::make_shared<StructType>(std::vector<SchemaField>{
-        SchemaField(31, "level3_primitive_s", std::make_shared<StringType>(), true)});
+    auto level2_struct_a_type = struct_(std::vector<SchemaField>{
+        SchemaField::MakeRequired(31, "level3_primitive_s", string())});
 
-    auto level1_struct_a_type = std::make_shared<StructType>(std::vector<SchemaField>{
-        SchemaField(21, "level2_primitive_i", std::make_shared<IntType>(), false),
-        SchemaField(22, "level2_struct_a", level2_struct_a_type, false),
-        SchemaField(23, "level2_primitive_b", std::make_shared<BooleanType>(), true)});
+    auto level1_struct_a_type = struct_(std::vector<SchemaField>{
+        SchemaField::MakeOptional(21, "level2_primitive_i", int32()),
+        SchemaField::MakeOptional(22, "level2_struct_a", level2_struct_a_type),
+        SchemaField::MakeRequired(23, "level2_primitive_b", boolean())});
 
     // Create nested struct type for level1_struct_b
-    auto level2_struct_b_type = std::make_shared<StructType>(std::vector<SchemaField>{
-        SchemaField(32, "level3_primitive_s", std::make_shared<StringType>(), true)});
+    auto level2_struct_b_type = struct_(std::vector<SchemaField>{
+        SchemaField::MakeRequired(32, "level3_primitive_s", string())});
 
-    auto level1_struct_b_type = std::make_shared<StructType>(std::vector<SchemaField>{
-        SchemaField(24, "level2_primitive_i", std::make_shared<IntType>(), false),
-        SchemaField(25, "level2_struct_b", level2_struct_b_type, false)});
-
+    auto level1_struct_b_type = struct_(std::vector<SchemaField>{
+        SchemaField::MakeRequired(24, "level2_primitive_i", int32()),
+        SchemaField::MakeRequired(25, "level2_struct_b", level2_struct_b_type)});
     // Create the main schema
     Schema schema(
         std::vector<SchemaField>{
-            SchemaField(11, "level1_struct_a", level1_struct_a_type, false),
-            SchemaField(12, "level1_struct_b", level1_struct_b_type, false),
-            SchemaField(13, "level1_primitive_i", std::make_shared<IntType>(), false)},
+            SchemaField::MakeRequired(11, "level1_struct_a", level1_struct_a_type),
+            SchemaField::MakeRequired(12, "level1_struct_b", level1_struct_b_type),
+            SchemaField::MakeRequired(13, "level1_primitive_i", int32())},
         100);
 
     auto result1 = MetricsConfig::LimitFieldIds(schema, 1);
@@ -214,15 +209,12 @@ TEST(MetricsConfigTest, LimitFieldIds) {
 
   {
     // Nested map
-    auto map_type = std::make_shared<MapType>(
-        SchemaField(2, "key", std::make_shared<IntType>(), false),
-        SchemaField(3, "value", std::make_shared<IntType>(), false));
+    auto map_type = map(SchemaField::MakeRequired(2, "key", int32()),
+                        SchemaField::MakeRequired(3, "value", int32()));
 
-    Schema schema(
-        std::vector<SchemaField>{
-            SchemaField(1, "map", map_type, false),
-            SchemaField(4, "top", std::make_shared<IntType>(), false)},
-        100);
+    Schema schema(std::vector<SchemaField>{SchemaField::MakeRequired(1, "map", map_type),
+                                           SchemaField::MakeRequired(4, "top", int32())},
+                  100);
 
     auto result1 = MetricsConfig::LimitFieldIds(schema, 1);
     EXPECT_EQ(result1, (std::unordered_set<int32_t>{4}));
@@ -239,15 +231,13 @@ TEST(MetricsConfigTest, LimitFieldIds) {
 
   {
     // Nested list of maps
-    auto map_type = std::make_shared<MapType>(
-        SchemaField(3, "key", std::make_shared<IntType>(), false),
-        SchemaField(4, "value", std::make_shared<IntType>(), false));
-    auto list_type = std::make_shared<ListType>(2, map_type, false);
+    auto map_type = map(SchemaField::MakeRequired(3, "key", int32()),
+                        SchemaField::MakeRequired(4, "value", int32()));
+    auto list_type = list(SchemaField::MakeRequired(2, "element", map_type));
 
     Schema schema(
-        std::vector<SchemaField>{
-            SchemaField(1, "array_of_maps", list_type, false),
-            SchemaField(5, "top", std::make_shared<IntType>(), false)},
+        std::vector<SchemaField>{SchemaField::MakeRequired(1, "array_of_maps", list_type),
+                                 SchemaField::MakeRequired(5, "top", int32())},
         100);
 
     auto result1 = MetricsConfig::LimitFieldIds(schema, 1);
@@ -265,9 +255,9 @@ TEST(MetricsConfigTest, LimitFieldIds) {
 }
 
 TEST(MetricsConfigTest, ValidateColumnReferences) {
-  SchemaField field1(1, "col1", std::make_shared<LongType>(), false);
-  SchemaField field2(2, "col2", std::make_shared<StringType>(), true);
-  SchemaField field3(3, "col3", std::make_shared<DoubleType>(), false);
+  SchemaField field1 = SchemaField::MakeRequired(1, "col1", int64());
+  SchemaField field2 = SchemaField::MakeOptional(2, "col2", string());
+  SchemaField field3 = SchemaField::MakeRequired(3, "col3", float64());
   Schema schema(std::vector<SchemaField>{field1, field2, field3}, 100);
 
   {

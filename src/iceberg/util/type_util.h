@@ -122,14 +122,14 @@ class PruneColumnVisitor {
   const bool select_full_types_;
 };
 
-/// \brief Visitor for get field IDs which could be used for projection.
+/// \brief Visitor for getting projected field IDs.
 class GetProjectedIdsVisitor {
  public:
   explicit GetProjectedIdsVisitor(bool include_struct_ids = false);
 
   Status Visit(const Type& type);
   Status VisitNested(const NestedType& type);
-  Status VisitNonNested(const Type& type);
+  Status VisitPrimitive(const PrimitiveType& type);
   std::unordered_set<int32_t> Finish() const;
 
  private:

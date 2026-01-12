@@ -275,7 +275,11 @@ GetProjectedIdsVisitor::GetProjectedIdsVisitor(bool include_struct_ids)
     : include_struct_ids_(include_struct_ids) {}
 
 Status GetProjectedIdsVisitor::Visit(const Type& type) {
-  return VisitNestedType(type, this);
+  if (type.is_nested()) {
+    return VisitNested(internal::checked_cast<const NestedType&>(type));
+  } else {
+    return VisitPrimitive(internal::checked_cast<const PrimitiveType&>(type));
+  }
 }
 
 Status GetProjectedIdsVisitor::VisitNested(const NestedType& type) {
@@ -292,7 +296,7 @@ Status GetProjectedIdsVisitor::VisitNested(const NestedType& type) {
   return {};
 }
 
-Status GetProjectedIdsVisitor::VisitNonNested(const Type& type) { return {}; }
+Status GetProjectedIdsVisitor::VisitPrimitive(const PrimitiveType& type) { return {}; }
 
 std::unordered_set<int32_t> GetProjectedIdsVisitor::Finish() const { return ids_; }
 

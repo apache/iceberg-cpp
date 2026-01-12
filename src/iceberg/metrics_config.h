@@ -32,6 +32,7 @@
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg {
 
@@ -44,17 +45,16 @@ struct ICEBERG_EXPORT MetricsMode {
     kFull,
   };
 
-  static Result<std::shared_ptr<MetricsMode>> FromString(std::string_view mode);
-
-  static const std::shared_ptr<MetricsMode>& None();
-  static const std::shared_ptr<MetricsMode>& Counts();
-  static const std::shared_ptr<MetricsMode>& Full();
+  static Result<MetricsMode> FromString(std::string_view mode);
+  static MetricsMode None();
+  static MetricsMode Counts();
+  static MetricsMode Full();
 
   Kind kind;
   std::variant<std::monostate, int32_t> length;
 };
 
-/// \brief Configuration utilities for table metrics
+/// \brief Configuration for collecting column metrics for an Iceberg table.
 class ICEBERG_EXPORT MetricsConfig {
  public:
   /// \brief Get the default metrics config.
@@ -77,12 +77,13 @@ class ICEBERG_EXPORT MetricsConfig {
   /// \brief Get the metrics mode for a specific column
   /// \param column_name The full name of the column
   /// \return The metrics mode for the column
-  std::shared_ptr<MetricsMode> ColumnMode(const std::string& column_name) const;
+  MetricsMode ColumnMode(std::string_view column_name) const;
 
  private:
-  MetricsConfig(
-      std::unordered_map<std::string, std::shared_ptr<MetricsMode>> column_modes,
-      std::shared_ptr<MetricsMode> default_mode);
+  using ColumnModeMap =
+      std::unordered_map<std::string, MetricsMode, StringHash, StringEqual>;
+
+  MetricsConfig(ColumnModeMap column_modes, MetricsMode default_mode);
 
   /// \brief Generate a MetricsConfig for all columns based on overrides, schema, and sort
   /// order.
@@ -96,9 +97,8 @@ class ICEBERG_EXPORT MetricsConfig {
                                                              const Schema& schema,
                                                              const SortOrder& order);
 
- private:
-  std::unordered_map<std::string, std::shared_ptr<MetricsMode>> column_modes_;
-  std::shared_ptr<MetricsMode> default_mode_;
+  ColumnModeMap column_modes_;
+  MetricsMode default_mode_;
 };
 
 }  // namespace iceberg
