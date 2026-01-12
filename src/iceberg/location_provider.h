@@ -21,6 +21,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
@@ -28,36 +29,35 @@
 
 namespace iceberg {
 
-/// \brief Interface for providing data file locations to write tasks.
+/// \brief Interface for providing data file locations.
 class ICEBERG_EXPORT LocationProvider {
  public:
   virtual ~LocationProvider() = default;
 
   /// \brief Return a fully-qualified data file location for the given filename.
   ///
-  /// \param filename a file name
+  /// \param filename file name to get location
   /// \return a fully-qualified location URI for a data file
   virtual std::string NewDataLocation(std::string_view filename) = 0;
 
   /// \brief Return a fully-qualified data file location for the given partition and
   /// filename.
   ///
-  /// \param spec a partition spec
-  /// \param partition_data a tuple of partition data for data in the file, matching the
-  /// given spec
-  /// \param filename a file name
+  /// \param spec partition spec
+  /// \param partition a tuple of partition values matching the given spec
+  /// \param filename file name
   /// \return a fully-qualified location URI for a data file
   virtual Result<std::string> NewDataLocation(const PartitionSpec& spec,
-                                              const PartitionValues& partition_data,
+                                              const PartitionValues& partition,
                                               std::string_view filename) = 0;
 
   /// \brief Create a LocationProvider for the given table location and properties.
   ///
-  /// \param input_location the table location
-  /// \param properties the table properties
+  /// \param location table location
+  /// \param properties table properties
   /// \return a LocationProvider instance
   static Result<std::unique_ptr<LocationProvider>> Make(
-      const std::string& input_location, const TableProperties& properties);
+      std::string_view location, const TableProperties& properties);
 };
 
 }  // namespace iceberg

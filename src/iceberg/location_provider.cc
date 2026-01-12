@@ -28,26 +28,25 @@ namespace iceberg {
 
 namespace {
 
-constexpr uint8_t kEntropyDirMask = 0x0f;
-constexpr uint8_t kRestDirMask = 0xff;
+constexpr uint8_t kEntropyDirMask = 0x0F;
+constexpr uint8_t kRestDirMask = 0xFF;
 constexpr int32_t kHashBits = 20;
 constexpr int32_t kEntropyDirLength = 4;
 constexpr int32_t kEntropyDirDepth = 3;
 
-std::string DataLocation(const TableProperties& properties,
-                         std::string_view table_location) {
+std::string DataLocation(const TableProperties& properties, std::string_view location) {
   auto data_location = properties.Get(TableProperties::kWriteDataLocation);
   if (data_location.empty()) {
-    data_location = std::format("{}/data", table_location);
+    data_location = std::format("{}/data", location);
   }
   return data_location;
 }
 
-std::string PathContext(std::string_view table_location) {
-  std::string_view path = LocationUtil::StripTrailingSlash(table_location);
+std::string PathContext(std::string_view location) {
+  std::string_view path = LocationUtil::StripTrailingSlash(location);
 
   size_t last_slash = path.find_last_of('/');
-  if (last_slash != std::string::npos && last_slash < path.length() - 1) {
+  if (last_slash != std::string_view::npos && last_slash < path.length() - 1) {
     std::string_view data_path = path.substr(last_slash + 1);
     std::string_view parent_path(path.data(), last_slash);
     size_t parent_last_slash = parent_path.find_last_of('/');
@@ -60,7 +59,7 @@ std::string PathContext(std::string_view table_location) {
     }
   }
 
-  return std::string(table_location);
+  return std::string(location);
 }
 
 /// \brief Divides hash into directories for optimized orphan removal operation using
@@ -97,17 +96,15 @@ std::string ComputeHash(std::string_view file_name) {
 
 }  // namespace
 
-/// \brief DefaultLocationProvider privides default location provider for local file
-/// system.
+// Default location provider for local file system.
 class DefaultLocationProvider : public LocationProvider {
  public:
-  DefaultLocationProvider(std::string_view table_location,
-                          const TableProperties& properties);
+  DefaultLocationProvider(std::string_view location, const TableProperties& properties);
 
   std::string NewDataLocation(std::string_view filename) override;
 
   Result<std::string> NewDataLocation(const PartitionSpec& spec,
-                                      const PartitionValues& partition_data,
+                                      const PartitionValues& partition,
                                       std::string_view filename) override;
 
  private:
@@ -115,32 +112,32 @@ class DefaultLocationProvider : public LocationProvider {
 };
 
 // Implementation of DefaultLocationProvider
-DefaultLocationProvider::DefaultLocationProvider(std::string_view table_location,
+DefaultLocationProvider::DefaultLocationProvider(std::string_view location,
                                                  const TableProperties& properties)
     : data_location_(
-          LocationUtil::StripTrailingSlash(DataLocation(properties, table_location))) {}
+          LocationUtil::StripTrailingSlash(DataLocation(properties, location))) {}
 
 std::string DefaultLocationProvider::NewDataLocation(std::string_view filename) {
   return std::format("{}/{}", data_location_, filename);
 }
 
 Result<std::string> DefaultLocationProvider::NewDataLocation(
-    const PartitionSpec& spec, const PartitionValues& partition_data,
+    const PartitionSpec& spec, const PartitionValues& partition,
     std::string_view filename) {
-  ICEBERG_ASSIGN_OR_RAISE(auto partition_path, spec.PartitionPath(partition_data));
+  ICEBERG_ASSIGN_OR_RAISE(auto partition_path, spec.PartitionPath(partition));
   return std::format("{}/{}/{}", data_location_, partition_path, filename);
 }
 
-/// \brief ObjectStoreLocationProvider provides location provider for object stores.
+// Location provider for object stores.
 class ObjectStoreLocationProvider : public LocationProvider {
  public:
-  ObjectStoreLocationProvider(std::string_view table_location,
+  ObjectStoreLocationProvider(std::string_view location,
                               const TableProperties& properties);
 
   std::string NewDataLocation(std::string_view filename) override;
 
   Result<std::string> NewDataLocation(const PartitionSpec& spec,
-                                      const PartitionValues& partition_data,
+                                      const PartitionValues& partition,
                                       std::string_view filename) override;
 
  private:
@@ -151,16 +148,16 @@ class ObjectStoreLocationProvider : public LocationProvider {
 
 // Implementation of ObjectStoreLocationProvider
 ObjectStoreLocationProvider::ObjectStoreLocationProvider(
-    std::string_view table_location, const TableProperties& properties)
+    std::string_view location, const TableProperties& properties)
     : include_partition_paths_(
           properties.Get(TableProperties::kWriteObjectStorePartitionedPaths)) {
   storage_location_ =
-      LocationUtil::StripTrailingSlash(DataLocation(properties, table_location));
+      LocationUtil::StripTrailingSlash(DataLocation(properties, location));
 
   // If the storage location is within the table prefix, don't add table and database name
   // context
-  if (!storage_location_.starts_with(table_location)) {
-    context_ = PathContext(table_location);
+  if (!storage_location_.starts_with(location)) {
+    context_ = PathContext(location);
   }
 }
 
@@ -183,10 +180,10 @@ std::string ObjectStoreLocationProvider::NewDataLocation(std::string_view filena
 }
 
 Result<std::string> ObjectStoreLocationProvider::NewDataLocation(
-    const PartitionSpec& spec, const PartitionValues& partition_data,
+    const PartitionSpec& spec, const PartitionValues& partition,
     std::string_view filename) {
   if (include_partition_paths_) {
-    ICEBERG_ASSIGN_OR_RAISE(auto partition_path, spec.PartitionPath(partition_data));
+    ICEBERG_ASSIGN_OR_RAISE(auto partition_path, spec.PartitionPath(partition));
     return NewDataLocation(std::format("{}/{}", partition_path, filename));
   } else {
     return NewDataLocation(filename);
@@ -194,10 +191,10 @@ Result<std::string> ObjectStoreLocationProvider::NewDataLocation(
 }
 
 Result<std::unique_ptr<LocationProvider>> LocationProvider::Make(
-    const std::string& input_location, const TableProperties& properties) {
-  std::string_view location = LocationUtil::StripTrailingSlash(input_location);
+    std::string_view location, const TableProperties& properties) {
+  location = LocationUtil::StripTrailingSlash(location);
 
-  // TODO(xxx): Support dynamic constructor according to kWriteLocationProviderImpl
+  // TODO(xxx): create location provider specified by "write.location-provider.impl"
 
   if (properties.Get(TableProperties::kObjectStoreEnabled)) {
     return std::make_unique<ObjectStoreLocationProvider>(location, properties);

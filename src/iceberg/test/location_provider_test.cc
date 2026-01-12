@@ -19,8 +19,6 @@
 
 #include "iceberg/location_provider.h"
 
-#include <string>
-
 #include <gtest/gtest.h>
 
 #include "iceberg/location_provider.h"
@@ -33,6 +31,7 @@
 namespace iceberg {
 
 namespace {
+
 // Helper function to split a string by delimiter
 std::vector<std::string> SplitString(const std::string& str, char delimiter) {
   std::vector<std::string> result;
@@ -45,9 +44,9 @@ std::vector<std::string> SplitString(const std::string& str, char delimiter) {
 
   return result;
 }
+
 }  // namespace
 
-// Test fixture for location provider tests
 class LocationProviderTest : public ::testing::Test {
  protected:
   void SetUp() override { table_location_ = "/test/table/location"; }
