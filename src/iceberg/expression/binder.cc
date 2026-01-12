@@ -19,6 +19,7 @@
 
 #include "iceberg/expression/binder.h"
 
+#include "iceberg/result.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -151,7 +152,7 @@ Result<FieldIdsSetRef> ReferenceVisitor::Predicate(
 
 Result<FieldIdsSetRef> ReferenceVisitor::Predicate(
     [[maybe_unused]] const std::shared_ptr<UnboundPredicate>& pred) {
-  return referenced_field_ids_;
+  return InvalidExpression("Cannot get referenced field IDs from unbound predicate");
 }
 
 Result<FieldIdsSetRef> ReferenceVisitor::Aggregate(
@@ -162,7 +163,7 @@ Result<FieldIdsSetRef> ReferenceVisitor::Aggregate(
 
 Result<FieldIdsSetRef> ReferenceVisitor::Aggregate(
     [[maybe_unused]] const std::shared_ptr<UnboundAggregate>& aggregate) {
-  return referenced_field_ids_;
+  return InvalidExpression("Cannot get referenced field IDs from unbound aggregate");
 }
 
 }  // namespace iceberg

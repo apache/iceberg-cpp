@@ -22,6 +22,7 @@
 #include "iceberg/expression/binder.h"
 #include "iceberg/expression/expressions.h"
 #include "iceberg/expression/rewrite_not.h"
+#include "iceberg/result.h"
 #include "iceberg/schema.h"
 #include "iceberg/test/matchers.h"
 #include "iceberg/type.h"
@@ -521,11 +522,11 @@ TEST_F(ReferenceVisitorTest, Constants) {
 }
 
 TEST_F(ReferenceVisitorTest, UnboundPredicate) {
-  // Unbound predicates should have no referenced field IDs (not yet bound to schema)
   auto unbound_pred = Expressions::Equal("name", Literal::String("Alice"));
-  ICEBERG_UNWRAP_OR_FAIL(auto refs,
-                         ReferenceVisitor::GetReferencedFieldIds(unbound_pred));
-  EXPECT_TRUE(refs.empty());
+  auto result = ReferenceVisitor::GetReferencedFieldIds(unbound_pred);
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidExpression));
+  EXPECT_THAT(result,
+              HasErrorMessage("Cannot get referenced field IDs from unbound predicate"));
 }
 
 TEST_F(ReferenceVisitorTest, BoundPredicate) {
@@ -672,18 +673,15 @@ TEST_F(ReferenceVisitorTest, SetPredicates) {
 }
 
 TEST_F(ReferenceVisitorTest, MixedBoundAndUnbound) {
-  // Expression with both bound and unbound predicates
   auto bound_pred = Expressions::Equal("name", Literal::String("Alice"));
   ICEBERG_UNWRAP_OR_FAIL(auto pred1, Bind(bound_pred));
-
   auto unbound_pred = Expressions::GreaterThan("age", Literal::Int(25));
-
   auto mixed_and = Expressions::And(pred1, unbound_pred);
-  ICEBERG_UNWRAP_OR_FAIL(auto refs, ReferenceVisitor::GetReferencedFieldIds(mixed_and));
 
-  // Should only return field IDs from bound predicates
-  EXPECT_EQ(refs.size(), 1);
-  EXPECT_EQ(refs.count(2), 1);  // name field only
+  auto result = ReferenceVisitor::GetReferencedFieldIds(mixed_and);
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidExpression));
+  EXPECT_THAT(result,
+              HasErrorMessage("Cannot get referenced field IDs from unbound predicate"));
 }
 
 TEST_F(ReferenceVisitorTest, AllFields) {
