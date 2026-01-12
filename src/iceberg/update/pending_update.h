@@ -23,7 +23,7 @@
 /// API for table changes using builder pattern
 
 #include <memory>
-#include <vector>
+#include <optional>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
@@ -45,8 +45,8 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
     kUpdatePartitionSpec,
     kUpdateProperties,
     kUpdateSchema,
-    kUpdateSortOrder,
     kUpdateSnapshot,
+    kUpdateSortOrder,
   };
 
   /// \brief Return the kind of this pending update.
@@ -62,11 +62,12 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
 
   /// \brief Finalize the pending update.
   ///
-  /// This method is called after the update is committed successfully.
+  /// This method is called after the update is committed.
   /// Implementations should override this method to clean up any resources.
   ///
+  /// \param commit_error An optional error indicating whether the commit was successful
   /// \return Status indicating success or failure
-  virtual Status Finalize();
+  virtual Status Finalize(std::optional<Error> commit_error);
 
   // Non-copyable, movable
   PendingUpdate(const PendingUpdate&) = delete;

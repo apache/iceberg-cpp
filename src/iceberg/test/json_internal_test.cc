@@ -269,7 +269,7 @@ TEST(JsonInternalTest, SnapshotFromJsonSummaryWithNoOperation) {
   auto result = SnapshotFromJson(snapshot_json);
   ASSERT_TRUE(result.has_value());
 
-  ASSERT_EQ(result.value()->operation(), DataOperation::kOverwrite);
+  ASSERT_EQ(result.value()->Operation(), DataOperation::kOverwrite);
 }
 
 TEST(JsonInternalTest, NameMapping) {

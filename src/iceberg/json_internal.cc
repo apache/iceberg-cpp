@@ -399,7 +399,7 @@ nlohmann::json ToJson(const Snapshot& snapshot) {
   json[kTimestampMs] = UnixMsFromTimePointMs(snapshot.timestamp_ms);
   json[kManifestList] = snapshot.manifest_list;
   // If there is an operation, write the summary map
-  if (snapshot.operation().has_value()) {
+  if (snapshot.Operation().has_value()) {
     json[kSummary] = snapshot.summary;
   }
   SetOptionalField(json, kSchemaId, snapshot.schema_id);

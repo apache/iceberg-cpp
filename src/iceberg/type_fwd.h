@@ -188,11 +188,11 @@ class Transaction;
 
 /// \brief Update family.
 class PendingUpdate;
+class SnapshotUpdate;
 class UpdatePartitionSpec;
 class UpdateProperties;
 class UpdateSchema;
 class UpdateSortOrder;
-class SnapshotUpdate;
 
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.

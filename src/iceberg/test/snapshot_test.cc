@@ -96,7 +96,7 @@ TEST_F(SnapshotTest, ConstructionAndFieldAccess) {
   EXPECT_EQ(snapshot.sequence_number, 1);
   EXPECT_EQ(snapshot.timestamp_ms.time_since_epoch().count(), 1615569200000);
   EXPECT_EQ(snapshot.manifest_list, "s3://example/manifest_list.avro");
-  EXPECT_EQ(snapshot.operation().value(), DataOperation::kAppend);
+  EXPECT_EQ(snapshot.Operation(), std::make_optional(DataOperation::kAppend));
   EXPECT_EQ(snapshot.summary.at(std::string(SnapshotSummaryFields::kAddedDataFiles)),
             "101");
   EXPECT_EQ(snapshot.summary.at(std::string(SnapshotSummaryFields::kOperation)),

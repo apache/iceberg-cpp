@@ -30,7 +30,9 @@ PendingUpdate::~PendingUpdate() = default;
 
 Status PendingUpdate::Commit() { return transaction_->Apply(*this); }
 
-Status PendingUpdate::Finalize() { return {}; }
+Status PendingUpdate::Finalize([[maybe_unused]] std::optional<Error> commit_error) {
+  return {};
+}
 
 const TableMetadata& PendingUpdate::base() const { return transaction_->current(); }
 

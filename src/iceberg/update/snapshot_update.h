@@ -19,7 +19,6 @@
 
 #pragma once
 
-#include <atomic>
 #include <functional>
 #include <memory>
 #include <optional>
@@ -32,8 +31,6 @@
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/result.h"
 #include "iceberg/snapshot.h"
-#include "iceberg/table_metadata.h"
-#include "iceberg/transaction.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/update/pending_update.h"
 
@@ -52,7 +49,7 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
     bool stage_only = false;
   };
 
-  ~SnapshotUpdate() override = default;
+  ~SnapshotUpdate() override;
 
   /// \brief Set a callback to delete files instead of the table's default.
   ///
@@ -61,12 +58,11 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \note Cannot be called more than once
   auto& DeleteWith(this auto& self,
                    std::function<Status(const std::string&)> delete_func) {
-    if (self.delete_func_set_) [[unlikely]] {
+    if (self.delete_func_) {
       return self.AddError(ErrorKind::kInvalidArgument,
                            "Cannot set delete callback more than once");
     }
     self.delete_func_ = std::move(delete_func);
-    self.delete_func_set_ = true;
     return self;
   }
 
@@ -88,7 +84,7 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   Result<ApplyResult> Apply();
 
   /// \brief Finalize the snapshot update, cleaning up any uncommitted files.
-  Status Finalize() override;
+  Status Finalize(std::optional<Error> commit_error) override;
 
  protected:
   explicit SnapshotUpdate(std::shared_ptr<Transaction> transaction);
@@ -97,10 +93,12 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   ///
   /// \param data_files The data files to write
   /// \param spec The partition spec to use
+  /// \param data_sequence_number Optional data sequence number for the files
   /// \return A vector of manifest files
   Result<std::vector<ManifestFile>> WriteDataManifests(
-      const std::vector<DataFile>& data_files,
-      const std::shared_ptr<PartitionSpec>& spec);
+      const std::vector<std::shared_ptr<DataFile>>& data_files,
+      const std::shared_ptr<PartitionSpec>& spec,
+      std::optional<int64_t> data_sequence_number = std::nullopt);
 
   /// \brief Write delete manifests for the given delete files
   ///
@@ -108,12 +106,11 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \param spec The partition spec to use
   /// \return A vector of manifest files
   Result<std::vector<ManifestFile>> WriteDeleteManifests(
-      const std::vector<DataFile>& delete_files,
+      const std::vector<std::shared_ptr<DataFile>>& delete_files,
       const std::shared_ptr<PartitionSpec>& spec);
 
   Status SetTargetBranch(const std::string& branch);
   const std::string& target_branch() const { return target_branch_; }
-
   bool can_inherit_snapshot_id() const { return can_inherit_snapshot_id_; }
   const std::string& commit_uuid() const { return commit_uuid_; }
   int32_t manifest_count() const { return manifest_count_; }
@@ -167,6 +164,7 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \return True if cleanup should happen after commit
   virtual bool CleanupAfterCommit() const { return true; }
 
+  /// \brief Get or generate the snapshot ID for the new snapshot.
   int64_t SnapshotId();
 
  private:
@@ -177,35 +175,22 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \brief Clean up all uncommitted files
   void CleanAll();
 
-  /// \brief Delete a file using the configured delete function
   Status DeleteFile(const std::string& path);
-
-  /// \brief Get the path for a manifest list file
   std::string ManifestListPath();
-
-  /// \brief Get the path for a manifest file
   std::string ManifestPath();
 
-  std::shared_ptr<PartitionSpec> spec_;
-  std::shared_ptr<Schema> schema_;
-
-  // For format version > 1, inheritance is enabled by default
-  bool can_inherit_snapshot_id_{true};
-  std::string commit_uuid_;
+ private:
+  const bool can_inherit_snapshot_id_{true};
+  const std::string commit_uuid_;
   int32_t manifest_count_{0};
   int32_t attempt_{0};
   std::vector<std::string> manifest_lists_;
-  int64_t target_manifest_size_bytes_;
-  std::optional<int64_t> snapshot_id_{std::nullopt};
+  const int64_t target_manifest_size_bytes_;
+  std::optional<int64_t> snapshot_id_;
   bool stage_only_{false};
   std::function<Status(const std::string&)> delete_func_;
-  bool delete_func_set_{false};
   std::string target_branch_{SnapshotRef::kMainBranch};
-
   std::shared_ptr<Snapshot> staged_snapshot_;
-
-  // Cache for enriched ManifestFile instances to avoid regenerating them on retries
-  std::unordered_map<std::string, ManifestFile> enriched_manifest_cache_;
 };
 
 }  // namespace iceberg

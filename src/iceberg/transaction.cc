@@ -20,6 +20,7 @@
 #include "iceberg/transaction.h"
 
 #include <memory>
+#include <optional>
 
 #include "iceberg/catalog.h"
 #include "iceberg/schema.h"
@@ -127,40 +128,39 @@ Status Transaction::Apply(PendingUpdate& update) {
                                           result.new_last_column_id);
     } break;
     case PendingUpdate::Kind::kUpdateSnapshot: {
+      const auto& base = metadata_builder_->current();
+
       auto& update_snapshot = internal::checked_cast<SnapshotUpdate&>(update);
       ICEBERG_ASSIGN_OR_RAISE(auto result, update_snapshot.Apply());
 
       // Create a temp builder to check if this is an empty update
-      auto update = TableMetadataBuilder::BuildFrom(metadata_builder_->base());
-      if (metadata_builder_->current().OptionalSnapshotById(
-              result.snapshot->snapshot_id) != nullptr) {
+      auto temp_update = TableMetadataBuilder::BuildFrom(&base);
+      if (base.SnapshotById(result.snapshot->snapshot_id).has_value()) {
         // This is a rollback operation
-        update->SetBranchSnapshot(result.snapshot->snapshot_id, result.target_branch);
+        temp_update->SetBranchSnapshot(result.snapshot->snapshot_id,
+                                       result.target_branch);
       } else if (result.stage_only) {
-        update->AddSnapshot(result.snapshot);
+        temp_update->AddSnapshot(result.snapshot);
       } else {
-        // Normal commit - add snapshot first, then set as branch snapshot
-        update->AddSnapshot(result.snapshot);
-        update->SetBranchSnapshot(result.snapshot->snapshot_id, result.target_branch);
+        temp_update->SetBranchSnapshot(std::move(result.snapshot), result.target_branch);
       }
 
-      if (update->changes().empty()) {
-        // do not commit if the metadata has not changed. for example, this may happen
+      if (temp_update->changes().empty()) {
+        // Do not commit if the metadata has not changed. for example, this may happen
         // when setting the current snapshot to an ID that is already current. note that
         // this check uses identity.
         return {};
       }
 
-      // if the table UUID is missing, add it here. the UUID will be re-created each time
-      // this operation retries to ensure that if a concurrent operation assigns the UUID,
-      // this operation will not fail.
-      if (update->current().table_uuid.empty()) {
-        update->AssignUUID();
+      for (const auto& change : temp_update->changes()) {
+        change->ApplyTo(*metadata_builder_);
       }
 
-      // Apply changes to the main builder
-      for (const auto& change : update->changes()) {
-        change->ApplyTo(*metadata_builder_);
+      // If the table UUID is missing, add it here. the UUID will be re-created each time
+      // this operation retries to ensure that if a concurrent operation assigns the UUID,
+      // this operation will not fail.
+      if (base.table_uuid.empty()) {
+        metadata_builder_->AssignUUID();
       }
     } break;
     default:
@@ -205,18 +205,22 @@ Result<std::shared_ptr<Table>> Transaction::Commit() {
   }
 
   // XXX: we should handle commit failure and retry here.
-  ICEBERG_ASSIGN_OR_RAISE(auto updated_table, table_->catalog()->UpdateTable(
-                                                  table_->name(), requirements, updates));
+  auto commit_result =
+      table_->catalog()->UpdateTable(table_->name(), requirements, updates);
 
   for (const auto& update : pending_updates_) {
     if (auto update_ptr = update.lock()) {
-      ICEBERG_RETURN_UNEXPECTED(update_ptr->Finalize());
+      std::ignore = update_ptr->Finalize(commit_result.has_value()
+                                             ? std::nullopt
+                                             : std::make_optional(commit_result.error()));
     }
   }
 
+  ICEBERG_RETURN_UNEXPECTED(commit_result);
+
   // Mark as committed and update table reference
   committed_ = true;
-  table_ = std::move(updated_table);
+  table_ = std::move(commit_result.value());
 
   return table_;
 }

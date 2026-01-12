@@ -24,6 +24,7 @@
 #include <ranges>
 #include <string>
 #include <string_view>
+#include <typeinfo>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
@@ -73,8 +74,8 @@ class ICEBERG_EXPORT StringUtils {
       return InvalidArgument("Failed to parse integer from string '{}': invalid argument",
                              str);
     } else if (ec == std::errc::result_out_of_range) [[unlikely]] {
-      return InvalidArgument(
-          "Failed to parse integer from string '{}': value out of range", str);
+      return InvalidArgument("Failed to parse {} from string '{}': value out of range",
+                             typeid(T).name(), str);
     }
     return value;
   }

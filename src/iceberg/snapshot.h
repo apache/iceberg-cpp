@@ -113,21 +113,6 @@ struct ICEBERG_EXPORT SnapshotRef {
 
   SnapshotRefType type() const noexcept;
 
-  /// \brief Set the minimum number of snapshots to keep (branch only)
-  /// \param value The minimum number of snapshots to keep, or nullopt for default
-  /// \return Status indicating success or failure
-  Status MinSnapshotsToKeep(std::optional<int32_t> value);
-
-  /// \brief Set the maximum snapshot age in milliseconds (branch only)
-  /// \param value The maximum snapshot age in milliseconds, or nullopt for default
-  /// \return Status indicating success or failure
-  Status MaxSnapshotAgeMs(std::optional<int64_t> value);
-
-  /// \brief Set the maximum reference age in milliseconds
-  /// \param value The maximum reference age in milliseconds, or nullopt for default
-  /// \return Status indicating success or failure
-  Status MaxRefAgeMs(std::optional<int64_t> value);
-
   /// \brief Create a branch reference
   ///
   /// \param snapshot_id The snapshot ID for the branch
@@ -158,6 +143,9 @@ struct ICEBERG_EXPORT SnapshotRef {
   std::unique_ptr<SnapshotRef> Clone(
       std::optional<int64_t> new_snapshot_id = std::nullopt) const;
 
+  /// \brief Validate the SnapshotRef
+  Status Validate() const;
+
   /// \brief Compare two snapshot refs for equality
   friend bool operator==(const SnapshotRef& lhs, const SnapshotRef& rhs) {
     return lhs.Equals(rhs);
@@ -169,13 +157,11 @@ struct ICEBERG_EXPORT SnapshotRef {
 };
 
 /// \brief Optional Snapshot Summary Fields
-struct SnapshotSummaryFields {
+struct ICEBERG_EXPORT SnapshotSummaryFields {
   /// \brief The operation field key
   inline static const std::string kOperation = "operation";
-
   /// \brief The first row id field key
   inline static const std::string kFirstRowId = "first-row-id";
-
   /// \brief The added rows field key
   inline static const std::string kAddedRows = "added-rows";
 
@@ -296,12 +282,21 @@ struct ICEBERG_EXPORT Snapshot {
   /// ID of the table's current schema when the snapshot was created.
   std::optional<int32_t> schema_id;
 
+  /// \brief Create a new Snapshot instance with validation on the inputs.
+  static Result<std::unique_ptr<Snapshot>> Make(
+      int64_t sequence_number, int64_t snapshot_id,
+      std::optional<int64_t> parent_snapshot_id, TimePointMs timestamp_ms,
+      std::string operation, std::unordered_map<std::string, std::string> summary,
+      std::optional<int32_t> schema_id, std::string manifest_list,
+      std::optional<int64_t> first_row_id = std::nullopt,
+      std::optional<int64_t> added_rows = std::nullopt);
+
   /// \brief Return the name of the DataOperations data operation that produced this
   /// snapshot.
   ///
   /// \return the operation that produced this snapshot, or nullopt if the operation is
   /// unknown.
-  std::optional<std::string_view> operation() const;
+  std::optional<std::string_view> Operation() const;
 
   /// \brief The row-id of the first newly added row in this snapshot.
   ///
