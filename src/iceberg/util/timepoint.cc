@@ -25,7 +25,7 @@
 
 namespace iceberg {
 
-Result<TimePointMs> TimePointMsFromUnixMs(int64_t unix_ms) {
+TimePointMs TimePointMsFromUnixMs(int64_t unix_ms) {
   return TimePointMs{std::chrono::milliseconds(unix_ms)};
 }
 
@@ -35,7 +35,7 @@ int64_t UnixMsFromTimePointMs(TimePointMs time_point_ms) {
       .count();
 }
 
-Result<TimePointNs> TimePointNsFromUnixNs(int64_t unix_ns) {
+TimePointNs TimePointNsFromUnixNs(int64_t unix_ns) {
   return TimePointNs{std::chrono::nanoseconds(unix_ns)};
 }
 

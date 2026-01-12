@@ -307,8 +307,7 @@ TableScanBuilder& TableScanBuilder::UseRef(const std::string& ref) {
 }
 
 TableScanBuilder& TableScanBuilder::AsOfTime(int64_t timestamp_millis) {
-  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto time_point_ms,
-                                   TimePointMsFromUnixMs(timestamp_millis));
+  auto time_point_ms = TimePointMsFromUnixMs(timestamp_millis);
   ICEBERG_BUILDER_ASSIGN_OR_RETURN(
       auto snapshot_id, SnapshotUtil::SnapshotIdAsOfTime(*metadata_, time_point_ms));
   return UseSnapshot(snapshot_id);

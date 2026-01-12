@@ -211,7 +211,7 @@ TEST(JsonInternalTest, Snapshot) {
   Snapshot snapshot{.snapshot_id = 1234567890,
                     .parent_snapshot_id = 9876543210,
                     .sequence_number = 99,
-                    .timestamp_ms = TimePointMsFromUnixMs(1234567890123).value(),
+                    .timestamp_ms = TimePointMsFromUnixMs(1234567890123),
                     .manifest_list = "/path/to/manifest_list",
                     .summary = summary,
                     .schema_id = 42};
@@ -403,7 +403,7 @@ TEST(JsonInternalTest, TableUpdateAddSnapshot) {
       Snapshot{.snapshot_id = 123456789,
                .parent_snapshot_id = 987654321,
                .sequence_number = 5,
-               .timestamp_ms = TimePointMsFromUnixMs(1234567890000).value(),
+               .timestamp_ms = TimePointMsFromUnixMs(1234567890000),
                .manifest_list = "/path/to/manifest-list.avro",
                .summary = {{SnapshotSummaryFields::kOperation, DataOperation::kAppend}},
                .schema_id = 1});

@@ -645,9 +645,8 @@ Result<std::unique_ptr<Snapshot>> SnapshotFromJson(const nlohmann::json& json) {
   ICEBERG_ASSIGN_OR_RAISE(auto snapshot_id, GetJsonValue<int64_t>(json, kSnapshotId));
   ICEBERG_ASSIGN_OR_RAISE(auto sequence_number,
                           GetJsonValueOptional<int64_t>(json, kSequenceNumber));
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto timestamp_ms,
-      GetJsonValue<int64_t>(json, kTimestampMs).and_then(TimePointMsFromUnixMs));
+  ICEBERG_ASSIGN_OR_RAISE(auto unix_ms, GetJsonValue<int64_t>(json, kTimestampMs));
+  auto timestamp_ms = TimePointMsFromUnixMs(unix_ms);
   ICEBERG_ASSIGN_OR_RAISE(auto manifest_list,
                           GetJsonValue<std::string>(json, kManifestList));
 
@@ -781,9 +780,8 @@ nlohmann::json ToJson(const SnapshotLogEntry& snapshot_log_entry) {
 
 Result<SnapshotLogEntry> SnapshotLogEntryFromJson(const nlohmann::json& json) {
   SnapshotLogEntry snapshot_log_entry;
-  ICEBERG_ASSIGN_OR_RAISE(
-      snapshot_log_entry.timestamp_ms,
-      GetJsonValue<int64_t>(json, kTimestampMs).and_then(TimePointMsFromUnixMs));
+  ICEBERG_ASSIGN_OR_RAISE(auto unix_ms, GetJsonValue<int64_t>(json, kTimestampMs));
+  snapshot_log_entry.timestamp_ms = TimePointMsFromUnixMs(unix_ms);
   ICEBERG_ASSIGN_OR_RAISE(snapshot_log_entry.snapshot_id,
                           GetJsonValue<int64_t>(json, kSnapshotId));
   return snapshot_log_entry;
@@ -798,9 +796,8 @@ nlohmann::json ToJson(const MetadataLogEntry& metadata_log_entry) {
 
 Result<MetadataLogEntry> MetadataLogEntryFromJson(const nlohmann::json& json) {
   MetadataLogEntry metadata_log_entry;
-  ICEBERG_ASSIGN_OR_RAISE(
-      metadata_log_entry.timestamp_ms,
-      GetJsonValue<int64_t>(json, kTimestampMs).and_then(TimePointMsFromUnixMs));
+  ICEBERG_ASSIGN_OR_RAISE(auto unix_ms, GetJsonValue<int64_t>(json, kTimestampMs));
+  metadata_log_entry.timestamp_ms = TimePointMsFromUnixMs(unix_ms);
   ICEBERG_ASSIGN_OR_RAISE(metadata_log_entry.metadata_file,
                           GetJsonValue<std::string>(json, kMetadataFile));
   return metadata_log_entry;
