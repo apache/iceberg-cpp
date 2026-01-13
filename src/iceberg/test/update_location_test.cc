@@ -1,0 +1,148 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
+ *
+ *   http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+#include "iceberg/update/update_location.h"
+
+#include <memory>
+#include <string>
+
+#include <arrow/filesystem/mockfs.h>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
+#include "iceberg/arrow/arrow_fs_file_io_internal.h"
+#include "iceberg/result.h"
+#include "iceberg/test/matchers.h"
+#include "iceberg/test/update_test_base.h"
+
+namespace iceberg {
+
+class UpdateLocationTest : public UpdateTestBase {};
+
+TEST_F(UpdateLocationTest, SetLocationSuccess) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateLocation());
+  const std::string new_location = "/warehouse/new_location";
+  update->SetLocation(new_location);
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  EXPECT_EQ(result, new_location);
+}
+
+TEST_F(UpdateLocationTest, SetLocationMultipleTimes) {
+  // Test that setting location multiple times uses the last value
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateLocation());
+  update->SetLocation("/warehouse/first_location")
+      .SetLocation("/warehouse/second_location")
+      .SetLocation("/warehouse/final_location");
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+  EXPECT_EQ(result, "/warehouse/final_location");
+}
+
+TEST_F(UpdateLocationTest, SetEmptyLocation) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateLocation());
+  update->SetLocation("");
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kValidationFailed));
+  EXPECT_THAT(result, HasErrorMessage("Location cannot be empty"));
+}
+
+TEST_F(UpdateLocationTest, ApplyWithoutSettingLocation) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateLocation());
+
+  auto result = update->Apply();
+  EXPECT_THAT(result, IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(result, HasErrorMessage("Location must be set before applying"));
+}
+
+TEST_F(UpdateLocationTest, CommitSuccess) {
+  // Test empty commit (should fail since location is not set)
+  ICEBERG_UNWRAP_OR_FAIL(auto empty_update, table_->NewUpdateLocation());
+  auto empty_commit_result = empty_update->Commit();
+  EXPECT_THAT(empty_commit_result, IsError(ErrorKind::kInvalidArgument));
+
+  // Test commit with location change
+  // For MockFS, we need to create the metadata directory at the new location
+  const std::string new_location = "/warehouse/new_table_location";
+  auto arrow_fs = std::dynamic_pointer_cast<::arrow::fs::internal::MockFileSystem>(
+      static_cast<arrow::ArrowFileSystemFileIO&>(*file_io_).fs());
+  ASSERT_TRUE(arrow_fs != nullptr);
+  ASSERT_TRUE(arrow_fs->CreateDir(new_location + "/metadata").ok());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateLocation());
+  update->SetLocation(new_location);
+  EXPECT_THAT(update->Commit(), IsOk());
+
+  // Verify the location was committed
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  EXPECT_EQ(reloaded->location(), new_location);
+}
+
+TEST_F(UpdateLocationTest, CommitWithRelativePath) {
+  // Test that relative paths work
+  const std::string relative_location = "warehouse/relative_location";
+
+  // Create metadata directory for the new location
+  auto arrow_fs = std::dynamic_pointer_cast<::arrow::fs::internal::MockFileSystem>(
+      static_cast<arrow::ArrowFileSystemFileIO&>(*file_io_).fs());
+  ASSERT_TRUE(arrow_fs != nullptr);
+  ASSERT_TRUE(arrow_fs->CreateDir(relative_location + "/metadata").ok());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateLocation());
+  update->SetLocation(relative_location);
+
+  EXPECT_THAT(update->Commit(), IsOk());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
+  EXPECT_EQ(reloaded->location(), relative_location);
+}
+
+TEST_F(UpdateLocationTest, MultipleUpdatesSequentially) {
+  // Get arrow_fs for creating directories
+  auto arrow_fs = std::dynamic_pointer_cast<::arrow::fs::internal::MockFileSystem>(
+      static_cast<arrow::ArrowFileSystemFileIO&>(*file_io_).fs());
+  ASSERT_TRUE(arrow_fs != nullptr);
+
+  // First update
+  const std::string first_location = "/warehouse/first";
+  ASSERT_TRUE(arrow_fs->CreateDir(first_location + "/metadata").ok());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto update1, table_->NewUpdateLocation());
+  update1->SetLocation(first_location);
+  EXPECT_THAT(update1->Commit(), IsOk());
+
+  // Reload and verify
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded1, catalog_->LoadTable(table_ident_));
+  EXPECT_EQ(reloaded1->location(), first_location);
+
+  // Second update
+  const std::string second_location = "/warehouse/second";
+  ASSERT_TRUE(arrow_fs->CreateDir(second_location + "/metadata").ok());
+
+  ICEBERG_UNWRAP_OR_FAIL(auto update2, reloaded1->NewUpdateLocation());
+  update2->SetLocation(second_location);
+  EXPECT_THAT(update2->Commit(), IsOk());
+
+  // Reload and verify
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded2, catalog_->LoadTable(table_ident_));
+  EXPECT_EQ(reloaded2->location(), second_location);
+}
+
+}  // namespace iceberg

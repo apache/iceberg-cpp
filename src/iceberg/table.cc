@@ -192,6 +192,13 @@ Result<std::shared_ptr<ExpireSnapshots>> Table::NewExpireSnapshots() {
   return transaction->NewExpireSnapshots();
 }
 
+Result<std::shared_ptr<UpdateLocation>> Table::NewUpdateLocation() {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto transaction, Transaction::Make(shared_from_this(), Transaction::Kind::kUpdate,
+                                          /*auto_commit=*/true));
+  return transaction->NewUpdateLocation();
+}
+
 Result<std::shared_ptr<StagedTable>> StagedTable::Make(
     TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
     std::string metadata_location, std::shared_ptr<FileIO> io,

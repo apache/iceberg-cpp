@@ -29,6 +29,7 @@
 #include "iceberg/snapshot.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/type_fwd.h"
+#include "iceberg/update/update_location.h"
 #include "iceberg/util/timepoint.h"
 
 namespace iceberg {
@@ -150,6 +151,10 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// \brief Create a new ExpireSnapshots to remove expired snapshots and commit the
   /// changes.
   virtual Result<std::shared_ptr<ExpireSnapshots>> NewExpireSnapshots();
+  
+  /// \brief Create a new UpdateLocation to update the table location and commit the
+  /// changes.
+  virtual Result<std::shared_ptr<UpdateLocation>> NewUpdateLocation();
 
  protected:
   Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,

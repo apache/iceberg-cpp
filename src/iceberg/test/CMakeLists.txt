@@ -175,7 +175,8 @@ if(ICEBERG_BUILD_BUNDLE)
                    update_partition_spec_test.cc
                    update_properties_test.cc
                    update_schema_test.cc
-                   update_sort_order_test.cc)
+                   update_sort_order_test.cc
+                   update_location_test.cc)
 
   add_iceberg_test(data_writer_test USE_BUNDLE SOURCES data_writer_test.cc)
 

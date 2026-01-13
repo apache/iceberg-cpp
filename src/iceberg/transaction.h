@@ -81,6 +81,10 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// \brief Create a new ExpireSnapshots to remove expired snapshots and commit the
   /// changes.
   Result<std::shared_ptr<ExpireSnapshots>> NewExpireSnapshots();
+  
+  /// \brief Create a new UpdateLocation to update the table location and commit the
+  /// changes.
+  Result<std::shared_ptr<UpdateLocation>> NewUpdateLocation();
 
  private:
   Transaction(std::shared_ptr<Table> table, Kind kind, bool auto_commit,

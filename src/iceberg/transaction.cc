@@ -33,6 +33,7 @@
 #include "iceberg/update/expire_snapshots.h"
 #include "iceberg/update/pending_update.h"
 #include "iceberg/update/snapshot_update.h"
+#include "iceberg/update/update_location.h"
 #include "iceberg/update/update_partition_spec.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/update/update_schema.h"
@@ -183,6 +184,11 @@ Status Transaction::Apply(PendingUpdate& update) {
         metadata_builder_->RemoveSchemas(std::move(result.schema_ids_to_remove));
       }
     } break;
+    case PendingUpdate::Kind::kUpdateLocation: {
+      auto& update_location = internal::checked_cast<UpdateLocation&>(update);
+      ICEBERG_ASSIGN_OR_RAISE(auto location, update_location.Apply());
+      metadata_builder_->SetLocation(location);
+    } break;
     default:
       return NotSupported("Unsupported pending update: {}",
                           static_cast<int32_t>(update.kind()));
@@ -278,6 +284,13 @@ Result<std::shared_ptr<ExpireSnapshots>> Transaction::NewExpireSnapshots() {
                           ExpireSnapshots::Make(shared_from_this()));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(expire_snapshots));
   return expire_snapshots;
+}
+
+Result<std::shared_ptr<UpdateLocation>> Transaction::NewUpdateLocation() {
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<UpdateLocation> update_location,
+                          UpdateLocation::Make(shared_from_this()));
+  ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_location));
+  return update_location;
 }
 
 }  // namespace iceberg
