@@ -167,6 +167,12 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \brief Get or generate the snapshot ID for the new snapshot.
   int64_t SnapshotId();
 
+  /// \brief Delete a file at the given path.
+  ///
+  /// \param path The path of the file to delete
+  /// \return A status indicating the result of the deletion
+  Status DeleteFile(const std::string& path);
+
  private:
   /// \brief Returns the snapshot summary from the implementation and updates totals.
   Result<std::unordered_map<std::string, std::string>> ComputeSummary(
@@ -175,7 +181,6 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \brief Clean up all uncommitted files
   void CleanAll();
 
-  Status DeleteFile(const std::string& path);
   std::string ManifestListPath();
   std::string ManifestPath();
 

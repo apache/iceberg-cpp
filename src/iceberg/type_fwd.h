@@ -187,7 +187,9 @@ class TableUpdateContext;
 class Transaction;
 
 /// \brief Update family.
+class AppendFiles;
 class ExpireSnapshots;
+class FastAppend;
 class PendingUpdate;
 class SnapshotUpdate;
 class UpdateLocation;
@@ -200,7 +202,6 @@ class UpdateSortOrder;
 /// TODO: Forward declarations below are not added yet.
 /// ----------------------------------------------------------------------------
 
-class AppendFiles;
 class EncryptedKey;
 
 }  // namespace iceberg

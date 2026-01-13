@@ -23,7 +23,6 @@
 #include <optional>
 
 #include "iceberg/catalog.h"
-#include "iceberg/schema.h"
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
@@ -31,6 +30,7 @@
 #include "iceberg/table_requirements.h"
 #include "iceberg/table_update.h"
 #include "iceberg/update/expire_snapshots.h"
+#include "iceberg/update/fast_append.h"
 #include "iceberg/update/pending_update.h"
 #include "iceberg/update/snapshot_update.h"
 #include "iceberg/update/update_location.h"
@@ -291,6 +291,13 @@ Result<std::shared_ptr<UpdateLocation>> Transaction::NewUpdateLocation() {
                           UpdateLocation::Make(shared_from_this()));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_location));
   return update_location;
+}
+
+Result<std::shared_ptr<FastAppend>> Transaction::NewFastAppend() {
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<FastAppend> fast_append,
+                          FastAppend::Make(table_->name().name, shared_from_this()));
+  ICEBERG_RETURN_UNEXPECTED(AddUpdate(fast_append));
+  return fast_append;
 }
 
 }  // namespace iceberg

@@ -85,6 +85,7 @@ set(ICEBERG_SOURCES
     transform_function.cc
     type.cc
     update/expire_snapshots.cc
+    update/fast_append.cc
     update/pending_update.cc
     update/snapshot_update.cc
     update/update_location.cc
