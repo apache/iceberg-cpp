@@ -23,7 +23,7 @@
 /// API for table changes using builder pattern
 
 #include <memory>
-#include <vector>
+#include <optional>
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
@@ -45,6 +45,7 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
     kUpdatePartitionSpec,
     kUpdateProperties,
     kUpdateSchema,
+    kUpdateSnapshot,
     kUpdateSortOrder,
   };
 
@@ -59,6 +60,15 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
   ///         - CommitStateUnknown: unknown status, no cleanup should be done.
   virtual Status Commit();
 
+  /// \brief Finalize the pending update.
+  ///
+  /// This method is called after the update is committed.
+  /// Implementations should override this method to clean up any resources.
+  ///
+  /// \param commit_error An optional error indicating whether the commit was successful
+  /// \return Status indicating success or failure
+  virtual Status Finalize(std::optional<Error> commit_error);
+
   // Non-copyable, movable
   PendingUpdate(const PendingUpdate&) = delete;
   PendingUpdate& operator=(const PendingUpdate&) = delete;
@@ -69,6 +79,8 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
 
  protected:
   explicit PendingUpdate(std::shared_ptr<Transaction> transaction);
+
+  const TableMetadata& base() const;
 
   std::shared_ptr<Transaction> transaction_;
 };

@@ -25,7 +25,7 @@
 
 namespace iceberg {
 
-Result<TimePointMs> TimePointMsFromUnixMs(int64_t unix_ms) {
+TimePointMs TimePointMsFromUnixMs(int64_t unix_ms) {
   return TimePointMs{std::chrono::milliseconds(unix_ms)};
 }
 
@@ -35,7 +35,7 @@ int64_t UnixMsFromTimePointMs(TimePointMs time_point_ms) {
       .count();
 }
 
-Result<TimePointNs> TimePointNsFromUnixNs(int64_t unix_ns) {
+TimePointNs TimePointNsFromUnixNs(int64_t unix_ns) {
   return TimePointNs{std::chrono::nanoseconds(unix_ns)};
 }
 
@@ -58,6 +58,13 @@ std::string FormatTimePointMs(TimePointMs time_point_ms) {
   oss << "." << std::setfill('0') << std::setw(3) << ms << " UTC";
 
   return oss.str();
+}
+
+TimePointMs CurrentTimePointMs() {
+  auto now = std::chrono::system_clock::now();
+  auto duration_since_epoch = now.time_since_epoch();
+  return TimePointMs{
+      std::chrono::duration_cast<std::chrono::milliseconds>(duration_since_epoch)};
 }
 
 }  // namespace iceberg

@@ -20,6 +20,7 @@
 #pragma once
 
 #include <functional>
+#include <memory>
 #include <optional>
 #include <string>
 #include <vector>
@@ -229,13 +230,13 @@ class ICEBERG_EXPORT SnapshotUtil {
 
   /// \brief Fetch the snapshot at the head of the given branch in the given table.
   ///
-  /// This method calls Table::current_snapshot() instead of using branch API for the main
+  /// This method calls TableMetadata::Snapshot() instead of using branch API for the main
   /// branch so that existing code still goes through the old code path to ensure
   /// backwards compatibility.
   ///
   /// \param table The table
   /// \param branch Branch name of the table (empty string means main branch)
-  /// \return The latest snapshot for the given branch
+  /// \return The latest snapshot for the given branch, or NotFoundError.
   static Result<std::shared_ptr<Snapshot>> LatestSnapshot(const Table& table,
                                                           const std::string& branch);
 
@@ -251,9 +252,30 @@ class ICEBERG_EXPORT SnapshotUtil {
   /// \param metadata The table metadata
   /// \param branch Branch name of the table metadata (empty string means main
   /// branch)
-  /// \return The latest snapshot for the given branch
+  /// \return The latest snapshot for the given branch, or NotFoundError.
   static Result<std::shared_ptr<Snapshot>> LatestSnapshot(const TableMetadata& metadata,
                                                           const std::string& branch);
+
+  /// \brief Fetch the snapshot at the head of the given branch in the given table.
+  ///
+  /// Like LatestSnapshot above except that nullptr is returned if snapshot does not
+  /// exist.
+  ///
+  /// \param metadata The table metadata
+  /// \param branch Branch name of the table metadata (empty string means main
+  /// branch)
+  /// \return The latest snapshot for the given branch, or nullptr if not found.
+  static Result<std::shared_ptr<Snapshot>> OptionalLatestSnapshot(
+      const TableMetadata& metadata, const std::string& branch);
+
+  /// \brief Generate a new snapshot ID.
+  static int64_t GenerateSnapshotId();
+
+  /// \brief Generate a new snapshot ID for the given metadata.
+  ///
+  /// \param metadata The table metadata
+  /// \return A new snapshot ID
+  static int64_t GenerateSnapshotId(const TableMetadata& metadata);
 
  private:
   /// \brief Helper function to traverse ancestors of a snapshot.

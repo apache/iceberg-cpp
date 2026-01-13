@@ -401,6 +401,19 @@ class ICEBERG_EXPORT SetSnapshotRef : public TableUpdate {
         max_snapshot_age_ms_(max_snapshot_age_ms),
         max_ref_age_ms_(max_ref_age_ms) {}
 
+  SetSnapshotRef(std::string ref_name, const SnapshotRef& ref)
+      : ref_name_(std::move(ref_name)), snapshot_id_(ref.snapshot_id), type_(ref.type()) {
+    if (type_ == SnapshotRefType::kBranch) {
+      const auto& branch = std::get<SnapshotRef::Branch>(ref.retention);
+      min_snapshots_to_keep_ = branch.min_snapshots_to_keep;
+      max_snapshot_age_ms_ = branch.max_snapshot_age_ms;
+      max_ref_age_ms_ = branch.max_ref_age_ms;
+    } else {
+      const auto& tag = std::get<SnapshotRef::Tag>(ref.retention);
+      max_ref_age_ms_ = tag.max_ref_age_ms;
+    }
+  }
+
   const std::string& ref_name() const { return ref_name_; }
   int64_t snapshot_id() const { return snapshot_id_; }
   SnapshotRefType type() const { return type_; }

@@ -188,6 +188,7 @@ class Transaction;
 
 /// \brief Update family.
 class PendingUpdate;
+class SnapshotUpdate;
 class UpdatePartitionSpec;
 class UpdateProperties;
 class UpdateSchema;

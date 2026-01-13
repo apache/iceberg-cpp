@@ -22,7 +22,6 @@
 #include <chrono>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/result.h"
 
 namespace iceberg {
 
@@ -35,18 +34,21 @@ using TimePointNs =
     std::chrono::time_point<std::chrono::system_clock, std::chrono::nanoseconds>;
 
 /// \brief Returns a TimePointMs from a Unix timestamp in milliseconds
-ICEBERG_EXPORT Result<TimePointMs> TimePointMsFromUnixMs(int64_t unix_ms);
+ICEBERG_EXPORT TimePointMs TimePointMsFromUnixMs(int64_t unix_ms);
 
 /// \brief Returns a Unix timestamp in milliseconds from a TimePointMs
 ICEBERG_EXPORT int64_t UnixMsFromTimePointMs(TimePointMs time_point_ms);
 
 /// \brief Returns a TimePointNs from a Unix timestamp in nanoseconds
-ICEBERG_EXPORT Result<TimePointNs> TimePointNsFromUnixNs(int64_t unix_ns);
+ICEBERG_EXPORT TimePointNs TimePointNsFromUnixNs(int64_t unix_ns);
 
 /// \brief Returns a Unix timestamp in nanoseconds from a TimePointNs
 ICEBERG_EXPORT int64_t UnixNsFromTimePointNs(TimePointNs time_point_ns);
 
 /// \brief Returns a human-readable string representation of a TimePointMs
 ICEBERG_EXPORT std::string FormatTimePointMs(TimePointMs time_point_ms);
+
+/// \brief Returns a time point in milliseconds that represents the current system time
+ICEBERG_EXPORT TimePointMs CurrentTimePointMs();
 
 }  // namespace iceberg

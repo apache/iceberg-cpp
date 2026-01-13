@@ -74,7 +74,7 @@ class MetadataIOTest : public TempFileTestBase {
                          .snapshots = {std::make_shared<Snapshot>(Snapshot{
                              .snapshot_id = 3051729675574597004,
                              .sequence_number = 0,
-                             .timestamp_ms = TimePointMsFromUnixMs(1515100955770).value(),
+                             .timestamp_ms = TimePointMsFromUnixMs(1515100955770),
                              .manifest_list = "s3://a/b/1.avro",
                              .summary = {{"operation", "append"}},
                          })},

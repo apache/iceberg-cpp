@@ -25,7 +25,6 @@
 #include <string>
 #include <string_view>
 #include <unordered_map>
-#include <utility>
 #include <variant>
 
 #include "iceberg/iceberg_export.h"
@@ -114,6 +113,39 @@ struct ICEBERG_EXPORT SnapshotRef {
 
   SnapshotRefType type() const noexcept;
 
+  /// \brief Create a branch reference
+  ///
+  /// \param snapshot_id The snapshot ID for the branch
+  /// \param min_snapshots_to_keep Optional minimum number of snapshots to keep
+  /// \param max_snapshot_age_ms Optional maximum snapshot age in milliseconds
+  /// \param max_ref_age_ms Optional maximum reference age in milliseconds
+  /// \return A Result containing a unique_ptr to the SnapshotRef, or an error if
+  /// validation failed
+  static Result<std::unique_ptr<SnapshotRef>> MakeBranch(
+      int64_t snapshot_id, std::optional<int32_t> min_snapshots_to_keep = std::nullopt,
+      std::optional<int64_t> max_snapshot_age_ms = std::nullopt,
+      std::optional<int64_t> max_ref_age_ms = std::nullopt);
+
+  /// \brief Create a tag reference
+  ///
+  /// \param snapshot_id The snapshot ID for the tag
+  /// \param max_ref_age_ms Optional maximum reference age in milliseconds
+  /// \return A Result containing a unique_ptr to the SnapshotRef, or an error if
+  /// validation failed
+  static Result<std::unique_ptr<SnapshotRef>> MakeTag(
+      int64_t snapshot_id, std::optional<int64_t> max_ref_age_ms = std::nullopt);
+
+  /// \brief Clone this SnapshotRef with an optional new snapshot ID
+  ///
+  /// \param new_snapshot_id Optional new snapshot ID. If not provided, uses the current
+  /// snapshot_id
+  /// \return A unique_ptr to the cloned SnapshotRef
+  std::unique_ptr<SnapshotRef> Clone(
+      std::optional<int64_t> new_snapshot_id = std::nullopt) const;
+
+  /// \brief Validate the SnapshotRef
+  Status Validate() const;
+
   /// \brief Compare two snapshot refs for equality
   friend bool operator==(const SnapshotRef& lhs, const SnapshotRef& rhs) {
     return lhs.Equals(rhs);
@@ -125,9 +157,13 @@ struct ICEBERG_EXPORT SnapshotRef {
 };
 
 /// \brief Optional Snapshot Summary Fields
-struct SnapshotSummaryFields {
+struct ICEBERG_EXPORT SnapshotSummaryFields {
   /// \brief The operation field key
   inline static const std::string kOperation = "operation";
+  /// \brief The first row id field key
+  inline static const std::string kFirstRowId = "first-row-id";
+  /// \brief The added rows field key
+  inline static const std::string kAddedRows = "added-rows";
 
   /// Metrics, see https://iceberg.apache.org/spec/#metrics
 
@@ -246,12 +282,44 @@ struct ICEBERG_EXPORT Snapshot {
   /// ID of the table's current schema when the snapshot was created.
   std::optional<int32_t> schema_id;
 
+  /// \brief Create a new Snapshot instance with validation on the inputs.
+  static Result<std::unique_ptr<Snapshot>> Make(
+      int64_t sequence_number, int64_t snapshot_id,
+      std::optional<int64_t> parent_snapshot_id, TimePointMs timestamp_ms,
+      std::string operation, std::unordered_map<std::string, std::string> summary,
+      std::optional<int32_t> schema_id, std::string manifest_list,
+      std::optional<int64_t> first_row_id = std::nullopt,
+      std::optional<int64_t> added_rows = std::nullopt);
+
   /// \brief Return the name of the DataOperations data operation that produced this
   /// snapshot.
   ///
   /// \return the operation that produced this snapshot, or nullopt if the operation is
   /// unknown.
-  std::optional<std::string_view> operation() const;
+  std::optional<std::string_view> Operation() const;
+
+  /// \brief The row-id of the first newly added row in this snapshot.
+  ///
+  /// All rows added in this snapshot will have a row-id assigned to them greater than
+  /// this value. All rows with a row-id less than this value were created in a snapshot
+  /// that was added to the table (but not necessarily committed to this branch) in the
+  /// past.
+  ///
+  /// \return the first row-id to be used in this snapshot or nullopt when row lineage
+  /// is not supported
+  Result<std::optional<int64_t>> FirstRowId() const;
+
+  /// \brief The upper bound of number of rows with assigned row IDs in this snapshot.
+  ///
+  /// It can be used safely to increment the table's `next-row-id` during a commit. It
+  /// can be more than the number of rows added in this snapshot and include some
+  /// existing rows.
+  ///
+  /// This field is optional but is required when the table version supports row lineage.
+  ///
+  /// \return the upper bound of number of rows with assigned row IDs in this snapshot
+  /// or nullopt if the value was not stored.
+  Result<std::optional<int64_t>> AddedRows() const;
 
   /// \brief Compare two snapshots for equality.
   friend bool operator==(const Snapshot& lhs, const Snapshot& rhs) {

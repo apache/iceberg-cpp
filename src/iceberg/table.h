@@ -80,7 +80,7 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
       const std::unordered_map<int32_t, std::shared_ptr<SortOrder>>>>
   sort_orders() const;
 
-  /// \brief Returns a map of string properties for this table
+  /// \brief Returns the properties of this table
   const TableProperties& properties() const;
 
   /// \brief Returns the table's metadata file location

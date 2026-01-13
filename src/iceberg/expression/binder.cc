@@ -19,6 +19,9 @@
 
 #include "iceberg/expression/binder.h"
 
+#include "iceberg/result.h"
+#include "iceberg/util/macros.h"
+
 namespace iceberg {
 
 Binder::Binder(const Schema& schema, bool case_sensitive)
@@ -54,30 +57,30 @@ Result<std::shared_ptr<Expression>> Binder::Or(
 
 Result<std::shared_ptr<Expression>> Binder::Predicate(
     const std::shared_ptr<UnboundPredicate>& pred) {
-  ICEBERG_DCHECK(pred != nullptr, "Predicate cannot be null");
+  ICEBERG_PRECHECK(pred != nullptr, "Predicate cannot be null");
   return pred->Bind(schema_, case_sensitive_);
 }
 
 Result<std::shared_ptr<Expression>> Binder::Predicate(
     const std::shared_ptr<BoundPredicate>& pred) {
-  ICEBERG_DCHECK(pred != nullptr, "Predicate cannot be null");
+  ICEBERG_PRECHECK(pred != nullptr, "Predicate cannot be null");
   return InvalidExpression("Found already bound predicate: {}", pred->ToString());
 }
 
 Result<std::shared_ptr<Expression>> Binder::Aggregate(
     const std::shared_ptr<BoundAggregate>& aggregate) {
-  ICEBERG_DCHECK(aggregate != nullptr, "Aggregate cannot be null");
+  ICEBERG_PRECHECK(aggregate != nullptr, "Aggregate cannot be null");
   return InvalidExpression("Found already bound aggregate: {}", aggregate->ToString());
 }
 
 Result<std::shared_ptr<Expression>> Binder::Aggregate(
     const std::shared_ptr<UnboundAggregate>& aggregate) {
-  ICEBERG_DCHECK(aggregate != nullptr, "Aggregate cannot be null");
+  ICEBERG_PRECHECK(aggregate != nullptr, "Aggregate cannot be null");
   return aggregate->Bind(schema_, case_sensitive_);
 }
 
 Result<bool> IsBoundVisitor::IsBound(const std::shared_ptr<Expression>& expr) {
-  ICEBERG_DCHECK(expr != nullptr, "Expression cannot be null");
+  ICEBERG_PRECHECK(expr != nullptr, "Expression cannot be null");
   IsBoundVisitor visitor;
   return Visit<bool, IsBoundVisitor>(expr, visitor);
 }
@@ -111,6 +114,56 @@ Result<bool> IsBoundVisitor::Aggregate(const std::shared_ptr<BoundAggregate>& ag
 Result<bool> IsBoundVisitor::Aggregate(
     const std::shared_ptr<UnboundAggregate>& aggregate) {
   return false;
+}
+
+Result<std::unordered_set<int32_t>> ReferenceVisitor::GetReferencedFieldIds(
+    const std::shared_ptr<Expression>& expr) {
+  ICEBERG_PRECHECK(expr != nullptr, "Expression cannot be null");
+  ReferenceVisitor visitor;
+  return Visit<FieldIdsSetRef, ReferenceVisitor>(expr, visitor);
+}
+
+Result<FieldIdsSetRef> ReferenceVisitor::AlwaysTrue() { return referenced_field_ids_; }
+
+Result<FieldIdsSetRef> ReferenceVisitor::AlwaysFalse() { return referenced_field_ids_; }
+
+Result<FieldIdsSetRef> ReferenceVisitor::Not(
+    [[maybe_unused]] const FieldIdsSetRef& child_result) {
+  return referenced_field_ids_;
+}
+
+Result<FieldIdsSetRef> ReferenceVisitor::And(
+    [[maybe_unused]] const FieldIdsSetRef& left_result,
+    [[maybe_unused]] const FieldIdsSetRef& right_result) {
+  return referenced_field_ids_;
+}
+
+Result<FieldIdsSetRef> ReferenceVisitor::Or(
+    [[maybe_unused]] const FieldIdsSetRef& left_result,
+    [[maybe_unused]] const FieldIdsSetRef& right_result) {
+  return referenced_field_ids_;
+}
+
+Result<FieldIdsSetRef> ReferenceVisitor::Predicate(
+    const std::shared_ptr<BoundPredicate>& pred) {
+  referenced_field_ids_.insert(pred->reference()->field_id());
+  return referenced_field_ids_;
+}
+
+Result<FieldIdsSetRef> ReferenceVisitor::Predicate(
+    [[maybe_unused]] const std::shared_ptr<UnboundPredicate>& pred) {
+  return InvalidExpression("Cannot get referenced field IDs from unbound predicate");
+}
+
+Result<FieldIdsSetRef> ReferenceVisitor::Aggregate(
+    const std::shared_ptr<BoundAggregate>& aggregate) {
+  referenced_field_ids_.insert(aggregate->reference()->field_id());
+  return referenced_field_ids_;
+}
+
+Result<FieldIdsSetRef> ReferenceVisitor::Aggregate(
+    [[maybe_unused]] const std::shared_ptr<UnboundAggregate>& aggregate) {
+  return InvalidExpression("Cannot get referenced field IDs from unbound aggregate");
 }
 
 }  // namespace iceberg

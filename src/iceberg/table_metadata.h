@@ -134,17 +134,32 @@ struct ICEBERG_EXPORT TableMetadata {
       int format_version = kDefaultTableFormatVersion);
 
   /// \brief Get the current schema, return NotFoundError if not found
+  /// \note The returned schema is guaranteed to be not null
   Result<std::shared_ptr<iceberg::Schema>> Schema() const;
   /// \brief Get the current schema by ID, return NotFoundError if not found
+  /// \note The returned schema is guaranteed to be not null
   Result<std::shared_ptr<iceberg::Schema>> SchemaById(int32_t schema_id) const;
   /// \brief Get the current partition spec, return NotFoundError if not found
+  /// \note The returned partition spec is guaranteed to be not null
   Result<std::shared_ptr<iceberg::PartitionSpec>> PartitionSpec() const;
+  /// \brief Get the current partition spec by ID, return NotFoundError if not found
+  /// \note The returned partition spec is guaranteed to be not null
+  Result<std::shared_ptr<iceberg::PartitionSpec>> PartitionSpecById(
+      int32_t spec_id) const;
   /// \brief Get the current sort order, return NotFoundError if not found
+  /// \note The returned sort order is guaranteed to be not null
   Result<std::shared_ptr<iceberg::SortOrder>> SortOrder() const;
+  /// \brief Get the current sort order by ID, return NotFoundError if not found
+  /// \note The returned sort order is guaranteed to be not null
+  Result<std::shared_ptr<iceberg::SortOrder>> SortOrderById(int32_t sort_order_id) const;
   /// \brief Get the current snapshot, return NotFoundError if not found
+  /// \note The returned snapshot is guaranteed to be not null
   Result<std::shared_ptr<iceberg::Snapshot>> Snapshot() const;
-  /// \brief Get the snapshot of this table with the given id
+  /// \brief Get the snapshot by ID, return NotFoundError if not found
+  /// \note The returned snapshot is guaranteed to be not null
   Result<std::shared_ptr<iceberg::Snapshot>> SnapshotById(int64_t snapshot_id) const;
+  /// \brief Get the next sequence number
+  int64_t NextSequenceNumber() const;
 
   ICEBERG_EXPORT friend bool operator==(const TableMetadata& lhs,
                                         const TableMetadata& rhs);
@@ -336,6 +351,14 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   /// \param branch The name of the branch
   /// \return Reference to this builder for method chaining
   TableMetadataBuilder& SetBranchSnapshot(int64_t snapshot_id, const std::string& branch);
+
+  /// \brief Set a branch to point to a specific snapshot
+  ///
+  /// \param snapshot The snapshot the branch should reference
+  /// \param branch The name of the branch
+  /// \return Reference to this builder for method chaining
+  TableMetadataBuilder& SetBranchSnapshot(std::shared_ptr<Snapshot> snapshot,
+                                          const std::string& branch);
 
   /// \brief Set a snapshot reference
   ///
