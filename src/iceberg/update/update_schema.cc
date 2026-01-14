@@ -37,6 +37,7 @@
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/error_collector.h"
 #include "iceberg/util/macros.h"
+#include "iceberg/util/string_util.h"
 #include "iceberg/util/type_util.h"
 #include "iceberg/util/visit_type.h"
 
@@ -716,7 +717,7 @@ UpdateSchema& UpdateSchema::AddColumnInternal(std::optional<std::string_view> pa
   int32_t new_id = AssignNewColumnId();
 
   // Update tracking for moves
-  added_name_to_id_[full_name] = new_id;
+  added_name_to_id_[CaseSensitivityAwareName(full_name)] = new_id;
   if (parent_id != kTableRootId) {
     id_to_parent_[new_id] = parent_id;
   }
@@ -769,7 +770,7 @@ UpdateSchema::FindFieldForUpdate(std::string_view name) const {
   }
 
   // Field not in original schema (or is being deleted), check if it's a newly added field
-  auto added_it = added_name_to_id_.find(std::string(name));
+  auto added_it = added_name_to_id_.find(CaseSensitivityAwareName(name));
   if (added_it != added_name_to_id_.end()) {
     int32_t added_id = added_it->second;
     auto update_it = updates_.find(added_id);
@@ -781,6 +782,14 @@ UpdateSchema::FindFieldForUpdate(std::string_view name) const {
 
   // Field not found anywhere
   return std::nullopt;
+}
+
+std::string UpdateSchema::CaseSensitivityAwareName(std::string_view name) const {
+  if (case_sensitive_) {
+    return std::string(name);
+  }
+  // Convert to lowercase for case-insensitive comparison
+  return StringUtils::ToLower(name);
 }
 
 }  // namespace iceberg

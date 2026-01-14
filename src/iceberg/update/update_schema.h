@@ -371,6 +371,15 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   Result<std::optional<std::reference_wrapper<const SchemaField>>> FindFieldForUpdate(
       std::string_view name) const;
 
+  /// \brief Normalize a field name based on case sensitivity setting.
+  ///
+  /// If case_sensitive_ is true, returns the name as-is.
+  /// If case_sensitive_ is false, returns the lowercase version of the name.
+  ///
+  /// \param name The field name to normalize.
+  /// \return The normalized field name.
+  std::string CaseSensitivityAwareName(std::string_view name) const;
+
   // Internal state
   std::shared_ptr<Schema> schema_;
   int32_t last_column_id_;

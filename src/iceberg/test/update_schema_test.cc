@@ -1456,6 +1456,85 @@ TEST_F(UpdateSchemaTest, DeleteRenameConflict) {
   EXPECT_THAT(result, HasErrorMessage("Cannot rename a column that will be deleted"));
 }
 
+// Test case insensitive add then update
+TEST_F(UpdateSchemaTest, CaseInsensitiveAddThenUpdate) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->CaseSensitive(false)
+      .AddColumn("Foo", int32(), "A column with uppercase name")
+      .UpdateColumn("foo", int64());  // Update using lowercase
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the column was added and updated
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("Foo", false));
+  ASSERT_TRUE(field_opt.has_value());
+  EXPECT_EQ(*field_opt->get().type(), *int64());  // Type should be updated to int64
+}
+
+// Test case insensitive add then rename
+TEST_F(UpdateSchemaTest, CaseInsensitiveAddThenRename) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->CaseSensitive(false)
+      .AddColumn("Foo", string(), "A column with uppercase name")
+      .RenameColumn("foo", "Bar");  // Rename using lowercase
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the column was renamed
+  ICEBERG_UNWRAP_OR_FAIL(auto foo_opt, result.schema->FindFieldByName("Foo", false));
+  ICEBERG_UNWRAP_OR_FAIL(auto bar_opt, result.schema->FindFieldByName("Bar", false));
+  EXPECT_FALSE(foo_opt.has_value());
+  ASSERT_TRUE(bar_opt.has_value());
+  EXPECT_EQ(*bar_opt->get().type(), *string());
+}
+
+// Test case insensitive add then update doc
+TEST_F(UpdateSchemaTest, CaseInsensitiveAddThenUpdateDoc) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->CaseSensitive(false)
+      .AddColumn("Foo", int32(), "original doc")
+      .UpdateColumnDoc("foo", "updated doc");  // Update doc using lowercase
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the doc was updated
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("Foo", false));
+  ASSERT_TRUE(field_opt.has_value());
+  EXPECT_EQ(field_opt->get().doc(), "updated doc");
+}
+
+// Test case insensitive add then make optional
+TEST_F(UpdateSchemaTest, CaseInsensitiveAddThenMakeOptional) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->CaseSensitive(false)
+      .AllowIncompatibleChanges()
+      .AddRequiredColumn("Foo", int32(), "required column")
+      .MakeColumnOptional("foo");  // Make optional using lowercase
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the column is now optional
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("Foo", false));
+  ASSERT_TRUE(field_opt.has_value());
+  EXPECT_TRUE(field_opt->get().optional());
+}
+
+// Test case insensitive add then require
+TEST_F(UpdateSchemaTest, CaseInsensitiveAddThenRequire) {
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateSchema());
+  update->CaseSensitive(false)
+      .AllowIncompatibleChanges()
+      .AddColumn("Foo", int32(), "optional column")
+      .RequireColumn("foo");  // Require using lowercase
+
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
+
+  // Verify the column is now required
+  ICEBERG_UNWRAP_OR_FAIL(auto field_opt, result.schema->FindFieldByName("Foo", false));
+  ASSERT_TRUE(field_opt.has_value());
+  EXPECT_FALSE(field_opt->get().optional());
+}
+
 // Test mixed changes - comprehensive test combining multiple operations
 TEST_F(UpdateSchemaTest, MixedChanges) {
   // First, create a complex schema similar to Java's SCHEMA constant
