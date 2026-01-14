@@ -561,8 +561,8 @@ TEST(ProjectRecordBatchTest, LargeListOfIntegers) {
   ASSERT_EQ(projected_record_batch->column(0)->type()->id(), ::arrow::Type::LARGE_LIST);
 
   // Verify the values
-  auto projected_array =
-      std::static_pointer_cast<::arrow::LargeListArray>(projected_record_batch->column(0));
+  auto projected_array = std::static_pointer_cast<::arrow::LargeListArray>(
+      projected_record_batch->column(0));
   ASSERT_EQ(projected_array->length(), 2);
 
   // First list: [1, 2, 3]
@@ -652,8 +652,8 @@ TEST(ProjectRecordBatchTest, LargeListOfStructs) {
   ASSERT_EQ(projected_record_batch->num_columns(), 1);
   ASSERT_EQ(projected_record_batch->column(0)->type()->id(), ::arrow::Type::LARGE_LIST);
 
-  auto projected_array =
-      std::static_pointer_cast<::arrow::LargeListArray>(projected_record_batch->column(0));
+  auto projected_array = std::static_pointer_cast<::arrow::LargeListArray>(
+      projected_record_batch->column(0));
   ASSERT_EQ(projected_array->length(), 2);
 
   // Verify first list has 1 element
