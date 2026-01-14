@@ -25,6 +25,7 @@
 
 #include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
+#include "iceberg/result.h"
 #include "iceberg/table_identifier.h"
 
 /// \file iceberg/catalog/rest/auth/auth_manager.h
@@ -58,12 +59,12 @@ class ICEBERG_REST_EXPORT AuthManager {
   /// The provided HTTP client is a short-lived client; it should only be used
   /// to fetch initial credentials if required, and must be discarded after that.
   ///
-  /// This method cannot return null. By default, it returns the catalog session.
+  /// By default, it returns the catalog session.
   ///
   /// \param init_client A short-lived HTTP client for initialization.
   /// \param properties Configuration properties.
-  /// \return A session for initialization, or the catalog session by default.
-  virtual std::shared_ptr<AuthSession> InitSession(
+  /// \return A session for initialization, or an error if session creation fails.
+  virtual Result<std::shared_ptr<AuthSession>> InitSession(
       HttpClient* init_client,
       const std::unordered_map<std::string, std::string>& properties);
 
@@ -78,15 +79,14 @@ class ICEBERG_REST_EXPORT AuthManager {
   /// (e.g., for renewing or refreshing credentials). It is not necessary to
   /// close it when Close() is called.
   ///
-  /// This method cannot return null.
-  ///
   /// It is not required to cache the returned session internally, as the catalog
   /// will keep it alive for the lifetime of the catalog.
   ///
   /// \param shared_client A long-lived, shared HTTP client.
   /// \param properties Configuration properties (merged with server config).
-  /// \return A session for catalog operations.
-  virtual std::shared_ptr<AuthSession> CatalogSession(
+  /// \return A session for catalog operations, or an error if session creation fails
+  ///         (e.g., missing required credentials, network failure during token fetch).
+  virtual Result<std::shared_ptr<AuthSession>> CatalogSession(
       HttpClient* shared_client,
       const std::unordered_map<std::string, std::string>& properties) = 0;
 
@@ -96,7 +96,7 @@ class ICEBERG_REST_EXPORT AuthManager {
   /// this method should return a new AuthSession instance. Otherwise, it should
   /// return the parent session.
   ///
-  /// This method cannot return null. By default, it returns the parent session.
+  /// By default, it returns the parent session.
   ///
   /// Implementors should cache table sessions internally, as the catalog will not
   /// cache them. Also, the owning catalog never closes table sessions; implementations
@@ -105,8 +105,8 @@ class ICEBERG_REST_EXPORT AuthManager {
   /// \param table The table identifier.
   /// \param properties Properties returned by the table/view endpoint.
   /// \param parent The parent session (typically the catalog session).
-  /// \return A session for the table, or the parent session by default.
-  virtual std::shared_ptr<AuthSession> TableSession(
+  /// \return A session for the table, or an error if session creation fails.
+  virtual Result<std::shared_ptr<AuthSession>> TableSession(
       const TableIdentifier& table,
       const std::unordered_map<std::string, std::string>& properties,
       std::shared_ptr<AuthSession> parent);
