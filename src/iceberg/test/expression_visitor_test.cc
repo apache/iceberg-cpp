@@ -296,14 +296,14 @@ TEST_F(BinderTest, ErrorNestedUnboundField) {
 class IsBoundVisitorTest : public ExpressionVisitorTest {};
 
 TEST_F(IsBoundVisitorTest, Constants) {
-  // True and False are always considered bound
+  // True and False should error out
   auto true_expr = Expressions::AlwaysTrue();
-  ICEBERG_UNWRAP_OR_FAIL(auto is_bound_true, IsBoundVisitor::IsBound(true_expr));
-  EXPECT_TRUE(is_bound_true);
+  auto result_true = IsBoundVisitor::IsBound(true_expr);
+  EXPECT_THAT(result_true, IsError(ErrorKind::kInvalidExpression));
 
   auto false_expr = Expressions::AlwaysFalse();
-  ICEBERG_UNWRAP_OR_FAIL(auto is_bound_false, IsBoundVisitor::IsBound(false_expr));
-  EXPECT_TRUE(is_bound_false);
+  auto result_false = IsBoundVisitor::IsBound(false_expr);
+  EXPECT_THAT(result_false, IsError(ErrorKind::kInvalidExpression));
 }
 
 TEST_F(IsBoundVisitorTest, UnboundPredicate) {
@@ -333,14 +333,14 @@ TEST_F(IsBoundVisitorTest, AndWithBoundChildren) {
 }
 
 TEST_F(IsBoundVisitorTest, AndWithUnboundChild) {
-  // AND with mixed bound/unbound children should error
+  // AND with any unbound child should return false
   auto bound_pred = Expressions::Equal("name", Literal::String("Alice"));
   ICEBERG_UNWRAP_OR_FAIL(auto pred1, Bind(bound_pred));
   auto pred2 = Expressions::Equal("age", Literal::Int(25));  // unbound
   auto mixed_and = Expressions::And(pred1, pred2);
 
-  auto result = IsBoundVisitor::IsBound(mixed_and);
-  EXPECT_THAT(result, HasErrorMessage("Found partially bound expression"));
+  ICEBERG_UNWRAP_OR_FAIL(auto is_bound, IsBoundVisitor::IsBound(mixed_and));
+  EXPECT_FALSE(is_bound);
 }
 
 TEST_F(IsBoundVisitorTest, OrWithBoundChildren) {
@@ -355,14 +355,14 @@ TEST_F(IsBoundVisitorTest, OrWithBoundChildren) {
 }
 
 TEST_F(IsBoundVisitorTest, OrWithUnboundChild) {
-  // OR with mixed bound/unbound children should error
+  // OR with any unbound child should return false
   auto pred1 = Expressions::IsNull("name");  // unbound
   auto bound_pred2 = Expressions::Equal("age", Literal::Int(25));
   ICEBERG_UNWRAP_OR_FAIL(auto pred2, Bind(bound_pred2));
   auto mixed_or = Expressions::Or(pred1, pred2);
 
-  auto result = IsBoundVisitor::IsBound(mixed_or);
-  EXPECT_THAT(result, HasErrorMessage("Found partially bound expression"));
+  ICEBERG_UNWRAP_OR_FAIL(auto is_bound, IsBoundVisitor::IsBound(mixed_or));
+  EXPECT_FALSE(is_bound);
 }
 
 TEST_F(IsBoundVisitorTest, NotWithBoundChild) {
@@ -396,15 +396,15 @@ TEST_F(IsBoundVisitorTest, ComplexExpression) {
   ICEBERG_UNWRAP_OR_FAIL(auto is_bound, IsBoundVisitor::IsBound(bound_complex));
   EXPECT_TRUE(is_bound);
 
-  // Complex expression: mixed bound/unbound children should error
+  // Complex expression: one unbound should return false
   auto unbound_pred = Expressions::Equal("name", Literal::String("Alice"));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_pred2, Bind(pred2));
   ICEBERG_UNWRAP_OR_FAIL(auto bound_pred3, Bind(pred3));
   auto mixed_and = Expressions::And(unbound_pred, bound_pred2);
   auto mixed_complex = Expressions::Or(mixed_and, bound_pred3);
 
-  auto result_mixed = IsBoundVisitor::IsBound(mixed_complex);
-  EXPECT_THAT(result_mixed, HasErrorMessage("Found partially bound expression"));
+  ICEBERG_UNWRAP_OR_FAIL(auto is_bound_mixed, IsBoundVisitor::IsBound(mixed_complex));
+  EXPECT_FALSE(is_bound_mixed);
 }
 
 class RewriteNotTest : public ExpressionVisitorTest {};

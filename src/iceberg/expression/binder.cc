@@ -85,20 +85,22 @@ Result<bool> IsBoundVisitor::IsBound(const std::shared_ptr<Expression>& expr) {
   return Visit<bool, IsBoundVisitor>(expr, visitor);
 }
 
-Result<bool> IsBoundVisitor::AlwaysTrue() { return true; }
+Result<bool> IsBoundVisitor::AlwaysTrue() {
+  return InvalidExpression("IsBoundVisitor does not support AlwaysTrue expression");
+}
 
-Result<bool> IsBoundVisitor::AlwaysFalse() { return true; }
+Result<bool> IsBoundVisitor::AlwaysFalse() {
+  return InvalidExpression("IsBoundVisitor does not support AlwaysFalse expression");
+}
 
 Result<bool> IsBoundVisitor::Not(bool child_result) { return child_result; }
 
 Result<bool> IsBoundVisitor::And(bool left_result, bool right_result) {
-  ICEBERG_PRECHECK(left_result == right_result, "Found partially bound expression");
-  return left_result;
+  return left_result && right_result;
 }
 
 Result<bool> IsBoundVisitor::Or(bool left_result, bool right_result) {
-  ICEBERG_PRECHECK(left_result == right_result, "Found partially bound expression");
-  return left_result;
+  return left_result && right_result;
 }
 
 Result<bool> IsBoundVisitor::Predicate(const std::shared_ptr<BoundPredicate>& pred) {
