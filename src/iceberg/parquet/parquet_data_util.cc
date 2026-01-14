@@ -148,10 +148,13 @@ Result<std::shared_ptr<::arrow::Array>> ProjectStructArray(
   return output_array;
 }
 
-/// FIXME: Support ::arrow::LargeListArray.
-Result<std::shared_ptr<::arrow::Array>> ProjectListArray(
-    const std::shared_ptr<::arrow::ListArray>& list_array,
-    const std::shared_ptr<::arrow::ListType>& output_list_type, const ListType& list_type,
+///  Templated implementation for projecting list arrays.
+/// Works with both ListArray/ListType (32-bit offsets) and
+/// LargeListArray/LargeListType (64-bit offsets).
+template <typename ArrowListArrayType, typename ArrowListType>
+Result<std::shared_ptr<::arrow::Array>> ProjectListArrayImpl(
+    const std::shared_ptr<ArrowListArrayType>& list_array,
+    const std::shared_ptr<ArrowListType>& output_list_type, const ListType& list_type,
     std::span<const FieldProjection> projections,
     const arrow::MetadataColumnContext& metadata_context, ::arrow::MemoryPool* pool) {
   if (projections.size() != 1) {
@@ -176,10 +179,28 @@ Result<std::shared_ptr<::arrow::Array>> ProjectListArray(
         ProjectPrimitiveArray(list_array->values(), output_element_type, pool));
   }
 
-  return std::make_shared<::arrow::ListArray>(
+  return std::make_shared<ArrowListArrayType>(
       output_list_type, list_array->length(), list_array->value_offsets(),
       std::move(projected_values), list_array->null_bitmap(), list_array->null_count(),
       list_array->offset());
+}
+
+Result<std::shared_ptr<::arrow::Array>> ProjectListArray(
+    const std::shared_ptr<::arrow::ListArray>& list_array,
+    const std::shared_ptr<::arrow::ListType>& output_list_type, const ListType& list_type,
+    std::span<const FieldProjection> projections,
+    const arrow::MetadataColumnContext& metadata_context, ::arrow::MemoryPool* pool) {
+  return ProjectListArrayImpl(list_array, output_list_type, list_type, projections,
+                              metadata_context, pool);
+}
+
+Result<std::shared_ptr<::arrow::Array>> ProjectLargeListArray(
+    const std::shared_ptr<::arrow::LargeListArray>& list_array,
+    const std::shared_ptr<::arrow::LargeListType>& output_list_type,
+    const ListType& list_type, std::span<const FieldProjection> projections,
+    const arrow::MetadataColumnContext& metadata_context, ::arrow::MemoryPool* pool) {
+  return ProjectListArrayImpl(list_array, output_list_type, list_type, projections,
+                              metadata_context, pool);
 }
 
 Result<std::shared_ptr<::arrow::Array>> ProjectMapArray(
@@ -249,17 +270,26 @@ Result<std::shared_ptr<::arrow::Array>> ProjectNestedArray(
                                 projections, metadata_context, pool);
     }
     case TypeId::kList: {
-      if (output_arrow_type->id() != ::arrow::Type::LIST) {
-        return InvalidSchema("Expected list type, got: {}",
-                             output_arrow_type->ToString());
+      const auto& list_type = internal::checked_cast<const ListType&>(nested_type);
+
+      if (output_arrow_type->id() == ::arrow::Type::LIST) {
+        auto list_array = internal::checked_pointer_cast<::arrow::ListArray>(array);
+        auto output_list_type =
+            internal::checked_pointer_cast<::arrow::ListType>(output_arrow_type);
+        return ProjectListArray(list_array, output_list_type, list_type, projections,
+                                metadata_context, pool);
       }
 
-      auto list_array = internal::checked_pointer_cast<::arrow::ListArray>(array);
-      auto output_list_type =
-          internal::checked_pointer_cast<::arrow::ListType>(output_arrow_type);
-      const auto& list_type = internal::checked_cast<const ListType&>(nested_type);
-      return ProjectListArray(list_array, output_list_type, list_type, projections,
-                              metadata_context, pool);
+      if (output_arrow_type->id() == ::arrow::Type::LARGE_LIST) {
+        auto list_array = internal::checked_pointer_cast<::arrow::LargeListArray>(array);
+        auto output_list_type =
+            internal::checked_pointer_cast<::arrow::LargeListType>(output_arrow_type);
+        return ProjectLargeListArray(list_array, output_list_type, list_type, projections,
+                                     metadata_context, pool);
+      }
+
+      return InvalidSchema("Expected list or large_list type, got: {}",
+                           output_arrow_type->ToString());
     }
     case TypeId::kMap: {
       if (output_arrow_type->id() != ::arrow::Type::MAP) {
