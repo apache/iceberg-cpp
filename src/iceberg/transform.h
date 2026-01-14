@@ -194,10 +194,10 @@ class ICEBERG_EXPORT Transform : public util::Formattable {
   Result<std::unique_ptr<UnboundPredicate>> ProjectStrict(
       std::string_view name, const std::shared_ptr<BoundPredicate>& predicate);
 
-  /// \brief Returns a human-readable String representation of a transformed value.
+  /// \brief Returns a human-readable string representation of a transformed value.
   ///
   /// \param value The literal value to be transformed.
-  /// \return A human-readable String representation of the value
+  /// \return A human-readable string representation of the value
   Result<std::string> ToHumanString(const Literal& value);
 
   /// \brief Returns a string representation of this transform (e.g., "bucket[16]").

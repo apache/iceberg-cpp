@@ -130,6 +130,36 @@ class TimestampHumanStringTest : public ::testing::TestWithParam<HumanStringTest
       Transform::Year(), Transform::Month(), Transform::Day(), Transform::Hour()};
 };
 
+TEST_F(TimestampHumanStringTest, InvalidType) {
+  ICEBERG_UNWRAP_OR_FAIL(auto above_max,
+                         Literal::Long(std::numeric_limits<int64_t>::max())
+                             .CastTo(std::make_shared<IntType>()));
+  ICEBERG_UNWRAP_OR_FAIL(auto below_min,
+                         Literal::Long(std::numeric_limits<int64_t>::min())
+                             .CastTo(std::make_shared<IntType>()));
+
+  auto unmatch_type_literal = Literal::Long(std::numeric_limits<int64_t>::max());
+
+  for (const auto& transform : transforms_) {
+    auto result = transform->ToHumanString(above_max);
+    EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+    EXPECT_THAT(result,
+                HasErrorMessage("Cannot transfrom human string for value: aboveMax"));
+
+    result = transform->ToHumanString(below_min);
+    EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+    EXPECT_THAT(result,
+                HasErrorMessage("Cannot transfrom human string for value: belowMin"));
+
+    result = transform->ToHumanString(unmatch_type_literal);
+    EXPECT_THAT(result, IsError(ErrorKind::kNotSupported));
+    EXPECT_THAT(result, HasErrorMessage(std::format(
+                            "Transfrom human {} from type {} is not supported",
+                            TransformTypeToString(transform->transform_type()),
+                            unmatch_type_literal.type()->ToString())));
+  }
+}
+
 TEST_P(TimestampHumanStringTest, ToHumanString) {
   const auto& param = GetParam();
   for (uint32_t i = 0; i < transforms_.size(); i++) {

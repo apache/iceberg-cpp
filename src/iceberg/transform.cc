@@ -372,16 +372,44 @@ Result<std::string> Transform::ToHumanString(const Literal& value) {
     return "null";
   }
 
+  if (value.IsAboveMax() || value.IsBelowMin()) [[unlikely]] {
+    return NotSupported("Cannot transfrom human string for value: {}", value.ToString());
+  }
+
   switch (transform_type_) {
-    case TransformType::kYear:
+    case TransformType::kYear: {
+      if (!std::holds_alternative<int32_t>(value.value())) [[unlikely]] {
+        return NotSupported("Transfrom human year from type {} is not supported",
+                            value.type()->ToString());
+      }
       return TransformUtil::HumanYear(std::get<int32_t>(value.value()));
-    case TransformType::kMonth:
+    }
+    case TransformType::kMonth: {
+      if (!std::holds_alternative<int32_t>(value.value())) [[unlikely]] {
+        return NotSupported("Transfrom human month from type {} is not supported",
+                            value.type()->ToString());
+      }
       return TransformUtil::HumanMonth(std::get<int32_t>(value.value()));
-    case TransformType::kDay:
+    }
+    case TransformType::kDay: {
+      if (!std::holds_alternative<int32_t>(value.value())) [[unlikely]] {
+        return NotSupported("Transfrom human day from type {} is not supported",
+                            value.type()->ToString());
+      }
       return TransformUtil::HumanDay(std::get<int32_t>(value.value()));
-    case TransformType::kHour:
+    }
+    case TransformType::kHour: {
+      if (!std::holds_alternative<int32_t>(value.value())) [[unlikely]] {
+        return NotSupported("Transfrom human hour from type {} is not supported",
+                            value.type()->ToString());
+      }
       return TransformUtil::HumanHour(std::get<int32_t>(value.value()));
-    default: {
+    }
+    case TransformType::kIdentity:
+    case TransformType::kBucket:
+    case TransformType::kTruncate:
+    case TransformType::kUnknown:
+    case TransformType::kVoid: {
       switch (value.type()->type_id()) {
         case TypeId::kDate:
           return TransformUtil::HumanDay(std::get<int32_t>(value.value()));
@@ -409,6 +437,7 @@ Result<std::string> Transform::ToHumanString(const Literal& value) {
       }
     }
   }
+  std::unreachable();
 }
 
 bool TransformFunction::Equals(const TransformFunction& other) const {
