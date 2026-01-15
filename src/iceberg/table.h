@@ -151,7 +151,7 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// \brief Create a new ExpireSnapshots to remove expired snapshots and commit the
   /// changes.
   virtual Result<std::shared_ptr<ExpireSnapshots>> NewExpireSnapshots();
-  
+
   /// \brief Create a new UpdateLocation to update the table location and commit the
   /// changes.
   virtual Result<std::shared_ptr<UpdateLocation>> NewUpdateLocation();
