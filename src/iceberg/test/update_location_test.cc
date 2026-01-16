@@ -107,29 +107,29 @@ TEST_F(UpdateLocationTest, MultipleUpdatesSequentially) {
   const std::string first_location = "/warehouse/first";
   ASSERT_TRUE(arrow_fs->CreateDir(first_location + "/metadata").ok());
 
-  ICEBERG_UNWRAP_OR_FAIL(auto update1, table_->NewUpdateLocation());
-  update1->SetLocation(first_location);
-  ICEBERG_UNWRAP_OR_FAIL(auto result1, update1->Apply());
-  EXPECT_EQ(result1, first_location);
-  EXPECT_THAT(update1->Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateLocation());
+  update->SetLocation(first_location);
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update1->Apply());
+  EXPECT_EQ(result, first_location);
+  EXPECT_THAT(update->Commit(), IsOk());
 
   // Reload and verify
-  ICEBERG_UNWRAP_OR_FAIL(auto reloaded1, catalog_->LoadTable(table_ident_));
-  EXPECT_EQ(reloaded1->location(), first_location);
+  ICEBERG_UNWRAP_OR_FAIL(reloaded, catalog_->LoadTable(table_ident_));
+  EXPECT_EQ(reloaded->location(), first_location);
 
   // Second update
   const std::string second_location = "/warehouse/second";
   ASSERT_TRUE(arrow_fs->CreateDir(second_location + "/metadata").ok());
 
-  ICEBERG_UNWRAP_OR_FAIL(auto update2, reloaded1->NewUpdateLocation());
-  update2->SetLocation(second_location);
-  ICEBERG_UNWRAP_OR_FAIL(auto result2, update2->Apply());
-  EXPECT_EQ(result2, second_location);
-  EXPECT_THAT(update2->Commit(), IsOk());
+  ICEBERG_UNWRAP_OR_FAIL(update, reloaded->NewUpdateLocation());
+  update->SetLocation(second_location);
+  ICEBERG_UNWRAP_OR_FAIL(result, update->Apply());
+  EXPECT_EQ(result, second_location);
+  EXPECT_THAT(update->Commit(), IsOk());
 
   // Reload and verify
-  ICEBERG_UNWRAP_OR_FAIL(auto reloaded2, catalog_->LoadTable(table_ident_));
-  EXPECT_EQ(reloaded2->location(), second_location);
+  ICEBERG_UNWRAP_OR_FAIL(reloaded, catalog_->LoadTable(table_ident_));
+  EXPECT_EQ(reloaded->location(), second_location);
 }
 
 }  // namespace iceberg
