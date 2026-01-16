@@ -226,6 +226,10 @@ struct ICEBERG_EXPORT SnapshotSummaryFields {
   inline static const std::string kDeletedDuplicatedFiles = "deleted-duplicate-files";
   /// \brief Number of partitions with files added or removed in the snapshot
   inline static const std::string kChangedPartitionCountProp = "changed-partition-count";
+  /// \brief Partition summaries prefix
+  inline static const std::string kChangedPartitionPrefix = "partitions.";
+  /// \brief Whether partition summaries are included
+  inline static const std::string kPartitionSummaryProp = "partition-summaries-included";
 
   /// Other Fields, see https://iceberg.apache.org/spec/#other-fields
 
@@ -239,6 +243,114 @@ struct ICEBERG_EXPORT SnapshotSummaryFields {
   inline static const std::string kEngineName = "engine-name";
   /// \brief Version of the engine that created the snapshot
   inline static const std::string kEngineVersion = "engine-version";
+};
+
+/// \brief Helper class for building snapshot summaries.
+///
+/// This class provides methods to track changes to data and delete files,
+/// and produces a map of summary properties for snapshot metadata.
+class ICEBERG_EXPORT SnapshotSummaryBuilder {
+ private:
+  /// \brief Metrics tracking for added and removed files
+  class UpdateMetrics {
+   public:
+    void Clear();
+    void AddTo(std::unordered_map<std::string, std::string>& builder) const;
+    void AddedFile(const DataFile& file);
+    void RemovedFile(const DataFile& file);
+    void AddedManifest(const ManifestFile& manifest);
+    void Merge(const UpdateMetrics& other);
+
+   private:
+    int64_t added_size_{0};
+    int64_t removed_size_{0};
+    int32_t added_files_{0};
+    int32_t removed_files_{0};
+    int32_t added_eq_delete_files_{0};
+    int32_t removed_eq_delete_files_{0};
+    int32_t added_pos_delete_files_{0};
+    int32_t removed_pos_delete_files_{0};
+    int32_t added_dvs_{0};
+    int32_t removed_dvs_{0};
+    int32_t added_delete_files_{0};
+    int32_t removed_delete_files_{0};
+    int64_t added_records_{0};
+    int64_t deleted_records_{0};
+    int64_t added_pos_deletes_{0};
+    int64_t removed_pos_deletes_{0};
+    int64_t added_eq_deletes_{0};
+    int64_t removed_eq_deletes_{0};
+    bool trust_size_and_delete_counts_{true};
+  };
+
+ public:
+  SnapshotSummaryBuilder() = default;
+
+  /// \brief Clear all tracked metrics and properties
+  void Clear();
+
+  /// \brief Set the maximum number of changed partitions before partition summaries will
+  /// be excluded.
+  ///
+  /// If the number of changed partitions is over this max, summaries will not be
+  /// included. If the number of changed partitions is <= this limit, then partition-level
+  /// summaries will be included in the summary if they are available, and
+  /// "partition-summaries-included" will be set to "true".
+  ///
+  /// \param max Maximum number of changed partitions
+  void SetPartitionSummaryLimit(int32_t max);
+
+  /// \brief Increment the count of duplicate files deleted by a specific amount
+  ///
+  /// \param increment Amount to increment by. Defaults to 1.
+  void IncrementDuplicateDeletes(int32_t increment = 1);
+
+  /// \brief Track a data file being added to the snapshot
+  ///
+  /// \param spec The partition spec
+  /// \param file The data file being added
+  /// \return Status indicating success or error
+  Status AddedFile(const PartitionSpec& spec, const DataFile& file);
+
+  /// \brief Track a data file being deleted from the snapshot
+  ///
+  /// \param spec The partition spec
+  /// \param file The data file being deleted
+  /// \return Status indicating success or error
+  Status DeletedFile(const PartitionSpec& spec, const DataFile& file);
+
+  /// \brief Track a manifest being added
+  ///
+  /// \param manifest The manifest file being added
+  void AddedManifest(const ManifestFile& manifest);
+
+  /// \brief Set a custom summary property
+  ///
+  /// \param property Property name
+  /// \param value Property value
+  void Set(const std::string& property, const std::string& value);
+
+  /// \brief Merge another builder's metrics into this one
+  ///
+  /// \param other The builder to merge from
+  void Merge(const SnapshotSummaryBuilder& other);
+
+  /// \brief Build the final summary map
+  ///
+  /// \return Map of summary properties
+  std::unordered_map<std::string, std::string> Build() const;
+
+ private:
+  Status UpdatePartitions(const PartitionSpec& spec, const DataFile& file,
+                          bool is_addition);
+  std::string PartitionSummary(const UpdateMetrics& metrics) const;
+
+  std::unordered_map<std::string, std::string> properties_;
+  std::unordered_map<std::string, UpdateMetrics> partition_metrics_;
+  UpdateMetrics metrics_;
+  int32_t max_changed_partitions_for_summaries_{0};
+  int64_t deleted_duplicate_files_{0};
+  bool trust_partition_metrics_{true};
 };
 
 /// \brief Data operation that produce snapshots.

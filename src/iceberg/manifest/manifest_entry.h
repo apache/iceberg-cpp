@@ -30,7 +30,6 @@
 
 #include "iceberg/file_format.h"
 #include "iceberg/iceberg_export.h"
-#include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/row/partition_values.h"
 #include "iceberg/schema_field.h"
@@ -294,6 +293,11 @@ struct ICEBERG_EXPORT DataFile {
 
   /// \brief Get the schema of the data file with the given partition type.
   static std::shared_ptr<StructType> Type(std::shared_ptr<StructType> partition_type);
+
+  /// \brief Check if this data file is a deletion vector.
+  bool IsDeletionVector() const {
+    return content == Content::kPositionDeletes && file_format == FileFormatType::kPuffin;
+  }
 };
 
 /// \brief A manifest is an immutable Avro file that lists data files or delete files,
