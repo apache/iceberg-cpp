@@ -84,11 +84,11 @@ set(ICEBERG_SOURCES
     update/expire_snapshots.cc
     update/pending_update.cc
     update/snapshot_update.cc
+    update/update_location.cc
     update/update_partition_spec.cc
     update/update_properties.cc
     update/update_schema.cc
     update/update_sort_order.cc
-    update/update_location.cc
     util/bucket_util.cc
     util/content_file_util.cc
     util/conversions.cc

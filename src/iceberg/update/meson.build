@@ -17,13 +17,14 @@
 
 install_headers(
     [
+        'expire_snapshots.h',
         'pending_update.h',
         'snapshot_update.h',
+        'update_location.h',
         'update_partition_spec.h',
         'update_schema.h',
         'update_sort_order.h',
         'update_properties.h',
-        'update_location.h',
     ],
     subdir: 'iceberg/update',
 )

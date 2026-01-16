@@ -190,11 +190,11 @@ class Transaction;
 class ExpireSnapshots;
 class PendingUpdate;
 class SnapshotUpdate;
+class UpdateLocation;
 class UpdatePartitionSpec;
 class UpdateProperties;
 class UpdateSchema;
 class UpdateSortOrder;
-class UpdateLocation;
 
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.
