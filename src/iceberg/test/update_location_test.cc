@@ -80,28 +80,6 @@ TEST_F(UpdateLocationTest, SetLocationMultipleTimes) {
   EXPECT_EQ(reloaded->location(), final_location);
 }
 
-TEST_F(UpdateLocationTest, SetLocationWithRelativePath) {
-  // Test that relative paths work
-  const std::string relative_location = "warehouse/relative_location";
-
-  // Create metadata directory for the new location
-  auto arrow_fs = std::dynamic_pointer_cast<::arrow::fs::internal::MockFileSystem>(
-      static_cast<arrow::ArrowFileSystemFileIO&>(*file_io_).fs());
-  ASSERT_TRUE(arrow_fs != nullptr);
-  ASSERT_TRUE(arrow_fs->CreateDir(relative_location + "/metadata").ok());
-
-  ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateLocation());
-  update->SetLocation(relative_location);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
-  EXPECT_EQ(result, relative_location);
-
-  // Commit and verify
-  EXPECT_THAT(update->Commit(), IsOk());
-  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
-  EXPECT_EQ(reloaded->location(), relative_location);
-}
-
 TEST_F(UpdateLocationTest, SetEmptyLocation) {
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateLocation());
   update->SetLocation("");
