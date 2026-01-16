@@ -23,18 +23,11 @@
 #include <cctype>
 
 #include "iceberg/catalog/rest/auth/auth_properties.h"
+#include "iceberg/util/string_util.h"
 
 namespace iceberg::rest::auth {
 
 namespace {
-
-/// \brief Convert a string to lowercase for case-insensitive comparison.
-std::string ToLower(std::string_view str) {
-  std::string result(str);
-  std::ranges::transform(result, result.begin(),
-                         [](unsigned char c) { return std::tolower(c); });
-  return result;
-}
 
 /// \brief Infer the authentication type from properties.
 ///
@@ -48,7 +41,7 @@ std::string InferAuthType(
   // Check for explicit auth type first
   auto it = properties.find(std::string(AuthProperties::kAuthType));
   if (it != properties.end() && !it->second.empty()) {
-    return ToLower(it->second);
+    return StringUtils::ToLower(it->second);
   }
 
   // Infer from OAuth2 properties (credential or token)
@@ -63,19 +56,20 @@ std::string InferAuthType(
   return std::string(AuthProperties::kAuthTypeNone);
 }
 
-}  // namespace
-
-std::unordered_map<std::string, AuthManagerFactory>& AuthManagers::GetRegistry() {
-  static std::unordered_map<std::string, AuthManagerFactory> registry;
+/// \brief Get the global registry of auth manager factories.
+AuthManagerRegistry& GetRegistry() {
+  static AuthManagerRegistry registry;
   return registry;
 }
 
-void AuthManagers::Register(const std::string& auth_type, AuthManagerFactory factory) {
-  GetRegistry()[ToLower(auth_type)] = std::move(factory);
+}  // namespace
+
+void AuthManagers::Register(std::string_view auth_type, AuthManagerFactory factory) {
+  GetRegistry()[StringUtils::ToLower(std::string(auth_type))] = std::move(factory);
 }
 
 Result<std::unique_ptr<AuthManager>> AuthManagers::Load(
-    const std::string& name,
+    std::string_view name,
     const std::unordered_map<std::string, std::string>& properties) {
   std::string auth_type = InferAuthType(properties);
 

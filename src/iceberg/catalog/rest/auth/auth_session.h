@@ -24,6 +24,7 @@
 #include <unordered_map>
 
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
+#include "iceberg/result.h"
 
 /// \file iceberg/catalog/rest/auth/auth_session.h
 /// \brief Authentication session interface for REST catalog.
@@ -36,7 +37,6 @@ namespace iceberg::rest::auth {
 /// to be released when the session is no longer needed (e.g., token refresh threads).
 /// Implementations should override Close() to release any such resources.
 ///
-/// This interface is modeled after Java Iceberg's AuthSession interface.
 class ICEBERG_REST_EXPORT AuthSession {
  public:
   virtual ~AuthSession() = default;
@@ -46,8 +46,17 @@ class ICEBERG_REST_EXPORT AuthSession {
   /// This method adds authentication information (e.g., Authorization header)
   /// to the provided headers map. The implementation should be idempotent.
   ///
-  /// \param headers The headers map to add authentication information to.
-  virtual void Authenticate(std::unordered_map<std::string, std::string>& headers) = 0;
+  /// \param[in,out] headers The headers map to add authentication information to.
+  /// \return Status indicating success or failure of authentication.
+  ///         - Success: Returns Status::OK
+  ///         - Failure: Returns one of the following errors:
+  ///           - AuthenticationFailed: General authentication failure (invalid
+  ///           credentials, etc.)
+  ///           - TokenExpired: Authentication token has expired and needs refresh
+  ///           - NotAuthorized: Not authenticated (401)
+  ///           - IOError: Network or connection errors when reaching auth server
+  ///           - RestError: HTTP errors from authentication service
+  virtual Status Authenticate(std::unordered_map<std::string, std::string>& headers) = 0;
 
   /// \brief Close the session and release any resources.
   ///
@@ -59,14 +68,6 @@ class ICEBERG_REST_EXPORT AuthSession {
   /// after the session is no longer needed, but rather when the session is evicted
   /// from the cache or the cache itself is closed.
   virtual void Close() {}
-
-  /// \brief Get a shared pointer to an empty session that does nothing.
-  ///
-  /// The empty session is a singleton that simply returns the request unchanged.
-  /// It is useful as a default or placeholder session.
-  ///
-  /// \return A shared pointer to the empty session singleton.
-  static std::shared_ptr<AuthSession> Empty();
 };
 
 /// \brief A default authentication session that adds static headers to requests.
@@ -83,19 +84,9 @@ class ICEBERG_REST_EXPORT DefaultAuthSession : public AuthSession {
 
   ~DefaultAuthSession() override = default;
 
-  /// \brief Add the configured headers to the request.
-  ///
-  /// Headers are added only if they don't already exist in the request
-  /// (i.e., request headers take precedence).
-  ///
-  /// \param headers The headers map to add authentication information to.
-  void Authenticate(std::unordered_map<std::string, std::string>& headers) override;
+  Status Authenticate(std::unordered_map<std::string, std::string>& headers) override;
 
-  /// \brief Create a DefaultAuthSession with the given headers.
-  ///
-  /// \param headers The headers to add to each request.
-  /// \return A shared pointer to the new session.
-  static std::shared_ptr<DefaultAuthSession> Of(
+  static std::unique_ptr<DefaultAuthSession> Make(
       std::unordered_map<std::string, std::string> headers);
 
  private:

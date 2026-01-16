@@ -23,43 +23,21 @@
 
 namespace iceberg::rest::auth {
 
-namespace {
-
-/// \brief An empty session implementation that does nothing.
-class EmptyAuthSession : public AuthSession {
- public:
-  void Authenticate(
-      [[maybe_unused]] std::unordered_map<std::string, std::string>& headers) override {
-    // No-op: empty session does not add any authentication
-  }
-
-  void Close() override {
-    // No resources to release
-  }
-};
-
-}  // namespace
-
-std::shared_ptr<AuthSession> AuthSession::Empty() {
-  // Use a static local variable for thread-safe singleton initialization
-  static auto empty_session = std::make_shared<EmptyAuthSession>();
-  return empty_session;
-}
-
 DefaultAuthSession::DefaultAuthSession(
     std::unordered_map<std::string, std::string> headers)
     : headers_(std::move(headers)) {}
 
-void DefaultAuthSession::Authenticate(
+Status DefaultAuthSession::Authenticate(
     std::unordered_map<std::string, std::string>& headers) {
   for (const auto& [key, value] : headers_) {
     headers.try_emplace(key, value);
   }
+  return {};
 }
 
-std::shared_ptr<DefaultAuthSession> DefaultAuthSession::Of(
+std::unique_ptr<DefaultAuthSession> DefaultAuthSession::Make(
     std::unordered_map<std::string, std::string> headers) {
-  return std::make_shared<DefaultAuthSession>(std::move(headers));
+  return std::make_unique<DefaultAuthSession>(std::move(headers));
 }
 
 }  // namespace iceberg::rest::auth

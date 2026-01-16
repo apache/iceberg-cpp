@@ -27,12 +27,10 @@ set(ICEBERG_REST_SOURCES
     resource_paths.cc
     rest_catalog.cc
     rest_util.cc
-    types.cc)
-
-# Add auth sources with proper path prefix
-foreach(AUTH_SOURCE ${ICEBERG_REST_AUTH_SOURCES})
-  list(APPEND ICEBERG_REST_SOURCES "auth/${AUTH_SOURCE}")
-endforeach()
+    types.cc
+    auth/auth_manager.cc
+    auth/auth_managers.cc
+    auth/auth_session.cc)
 
 set(ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS)

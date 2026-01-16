@@ -15,9 +15,4 @@
 # specific language governing permissions and limitations
 # under the License.
 
-set(ICEBERG_REST_AUTH_SOURCES auth_session.cc auth_manager.cc auth_managers.cc)
-
-# Expose sources to parent scope for inclusion in iceberg_rest library
-set(ICEBERG_REST_AUTH_SOURCES
-    ${ICEBERG_REST_AUTH_SOURCES}
-    PARENT_SCOPE)
+iceberg_install_all_headers(iceberg/catalog/rest/auth)

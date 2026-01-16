@@ -22,67 +22,49 @@
 #include <functional>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <unordered_map>
 
 #include "iceberg/catalog/rest/auth/auth_manager.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/result.h"
+#include "iceberg/util/string_util.h"
 
 /// \file iceberg/catalog/rest/auth/auth_managers.h
 /// \brief Factory for creating authentication managers.
 
 namespace iceberg::rest::auth {
 
-/// \brief Factory function type for creating AuthManager instances.
+/// \brief Function that builds an AuthManager for a given catalog.
 ///
-/// \param name The name of the manager (used for logging).
-/// \param properties Configuration properties.
-/// \return A unique pointer to the created AuthManager.
+/// \param name Catalog name passed to the manager.
+/// \param properties Consolidated catalog configuration.
+/// \return Newly created manager instance.
 using AuthManagerFactory = std::function<std::unique_ptr<AuthManager>(
-    const std::string& name,
+    std::string_view name,
     const std::unordered_map<std::string, std::string>& properties)>;
 
-/// \brief Factory class for loading authentication managers.
-///
-/// This class provides a registry-based approach to create AuthManager instances
-/// based on the configured authentication type. It supports built-in types
-/// (none, basic, oauth2) and allows registration of custom types.
-///
-/// This class is modeled after Java Iceberg's AuthManagers class.
+/// \brief Registry type for AuthManager factories with heterogeneous lookup support.
+using AuthManagerRegistry =
+    std::unordered_map<std::string, AuthManagerFactory, StringHash, StringEqual>;
+
+/// \brief Registry-backed factory for AuthManager implementations.
 class ICEBERG_REST_EXPORT AuthManagers {
  public:
-  /// \brief Load an authentication manager based on configuration.
+  /// \brief Load a manager by consulting the "rest.auth.type" configuration.
   ///
-  /// This method reads the "rest.auth.type" property to determine which
-  /// AuthManager implementation to create. Supported types include:
-  /// - "none": NoopAuthManager (no authentication)
-  /// - "basic": BasicAuthManager (HTTP Basic authentication)
-  /// - "oauth2": OAuth2AuthManager (OAuth2 authentication)
-  /// - "sigv4": SigV4AuthManager (AWS Signature V4)
-  ///
-  /// If no auth type is specified, the method will infer the type based on
-  /// other properties (e.g., presence of "credential" or "token" implies oauth2).
-  /// If no auth-related properties are found, it defaults to "none".
-  ///
-  /// \param name A name for the manager (used for logging).
-  /// \param properties Configuration properties.
-  /// \return A unique pointer to the created AuthManager, or an error.
+  /// \param name Catalog name passed to the manager.
+  /// \param properties Catalog properties used to determine auth type.
+  /// \return Manager instance or an error if no factory matches.
   static Result<std::unique_ptr<AuthManager>> Load(
-      const std::string& name,
+      std::string_view name,
       const std::unordered_map<std::string, std::string>& properties);
 
-  /// \brief Register a custom authentication manager factory.
+  /// \brief Register or override the factory for a given auth type.
   ///
-  /// This allows users to extend the supported authentication types by
-  /// registering their own AuthManager implementations.
-  ///
-  /// \param auth_type The authentication type name (e.g., "custom").
-  /// \param factory The factory function to create the AuthManager.
-  static void Register(const std::string& auth_type, AuthManagerFactory factory);
-
- private:
-  /// \brief Get the global registry of auth manager factories.
-  static std::unordered_map<std::string, AuthManagerFactory>& GetRegistry();
+  /// \param auth_type Case-insensitive type identifier (e.g., "basic").
+  /// \param factory Factory function that produces the manager.
+  static void Register(std::string_view auth_type, AuthManagerFactory factory);
 };
 
 }  // namespace iceberg::rest::auth

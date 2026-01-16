@@ -30,6 +30,7 @@ namespace iceberg {
 /// \brief Error types for iceberg.
 enum class ErrorKind {
   kAlreadyExists,
+  kAuthenticationFailed,
   kBadRequest,
   kCommitFailed,
   kCommitStateUnknown,
@@ -56,6 +57,7 @@ enum class ErrorKind {
   kNotSupported,
   kRestError,
   kServiceUnavailable,
+  kTokenExpired,
   kUnknownError,
   kValidationFailed,
 };
@@ -91,6 +93,7 @@ using Status = Result<void>;
   }
 
 DEFINE_ERROR_FUNCTION(AlreadyExists)
+DEFINE_ERROR_FUNCTION(AuthenticationFailed)
 DEFINE_ERROR_FUNCTION(BadRequest)
 DEFINE_ERROR_FUNCTION(CommitFailed)
 DEFINE_ERROR_FUNCTION(CommitStateUnknown)
@@ -117,6 +120,7 @@ DEFINE_ERROR_FUNCTION(NotImplemented)
 DEFINE_ERROR_FUNCTION(NotSupported)
 DEFINE_ERROR_FUNCTION(RestError)
 DEFINE_ERROR_FUNCTION(ServiceUnavailable)
+DEFINE_ERROR_FUNCTION(TokenExpired)
 DEFINE_ERROR_FUNCTION(UnknownError)
 DEFINE_ERROR_FUNCTION(ValidationFailed)
 
