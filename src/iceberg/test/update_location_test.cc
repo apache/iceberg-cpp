@@ -109,12 +109,12 @@ TEST_F(UpdateLocationTest, MultipleUpdatesSequentially) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto update, table_->NewUpdateLocation());
   update->SetLocation(first_location);
-  ICEBERG_UNWRAP_OR_FAIL(auto result, update1->Apply());
+  ICEBERG_UNWRAP_OR_FAIL(auto result, update->Apply());
   EXPECT_EQ(result, first_location);
   EXPECT_THAT(update->Commit(), IsOk());
 
   // Reload and verify
-  ICEBERG_UNWRAP_OR_FAIL(reloaded, catalog_->LoadTable(table_ident_));
+  ICEBERG_UNWRAP_OR_FAIL(auto reloaded, catalog_->LoadTable(table_ident_));
   EXPECT_EQ(reloaded->location(), first_location);
 
   // Second update
