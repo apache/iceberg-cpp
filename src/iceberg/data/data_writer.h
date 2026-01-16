@@ -26,6 +26,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_map>
 
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/data/writer.h"
@@ -38,11 +39,6 @@
 namespace iceberg {
 
 /// \brief Options for creating a DataWriter.
-///
-/// \note The following features from Java DataWriter are not yet supported:
-/// - Encryption key metadata (uses FileIO instead of EncryptedOutputFile)
-/// - Metrics collection and reporting
-/// - Split offsets tracking
 struct ICEBERG_EXPORT DataWriterOptions {
   std::string path;
   std::shared_ptr<Schema> schema;
@@ -51,13 +47,10 @@ struct ICEBERG_EXPORT DataWriterOptions {
   FileFormatType format = FileFormatType::kParquet;
   std::shared_ptr<FileIO> io;
   std::optional<int32_t> sort_order_id;
-  std::shared_ptr<class WriterProperties> properties;
+  std::unordered_map<std::string, std::string> properties;
 };
 
 /// \brief Writer for Iceberg data files.
-///
-/// \warning Thread Safety: Writer instances are NOT thread-safe. Each writer should only
-/// be used by a single thread. Do not call Write(), Close(), or Metadata() concurrently.
 class ICEBERG_EXPORT DataWriter : public FileWriter {
  public:
   ~DataWriter() override;
@@ -68,11 +61,8 @@ class ICEBERG_EXPORT DataWriter : public FileWriter {
   Result<WriteResult> Metadata() override;
 
  private:
-  friend class FileWriterFactory;
-  friend std::unique_ptr<DataWriter> MakeDataWriterInternal(const DataWriterOptions&);
   class Impl;
   std::unique_ptr<Impl> impl_;
-  explicit DataWriter(std::unique_ptr<Impl> impl);
 };
 
 }  // namespace iceberg

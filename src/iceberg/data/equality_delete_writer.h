@@ -25,8 +25,9 @@
 #include <cstdint>
 #include <memory>
 #include <optional>
+#include <span>
 #include <string>
-#include <vector>
+#include <unordered_map>
 
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/data/writer.h"
@@ -39,11 +40,6 @@
 namespace iceberg {
 
 /// \brief Options for creating an EqualityDeleteWriter.
-///
-/// \note The following features from Java EqualityDeleteWriter are not yet supported:
-/// - Encryption key metadata
-/// - Metrics collection and reporting
-/// - Split offsets tracking
 struct ICEBERG_EXPORT EqualityDeleteWriterOptions {
   std::string path;
   std::shared_ptr<Schema> schema;
@@ -53,13 +49,10 @@ struct ICEBERG_EXPORT EqualityDeleteWriterOptions {
   std::shared_ptr<FileIO> io;
   std::vector<int32_t> equality_field_ids;
   std::optional<int32_t> sort_order_id;
-  std::shared_ptr<class WriterProperties> properties;
+  std::unordered_map<std::string, std::string> properties;
 };
 
 /// \brief Writer for Iceberg equality delete files.
-///
-/// \warning Thread Safety: Writer instances are NOT thread-safe. Each writer should only
-/// be used by a single thread. Do not call Write(), Close(), or Metadata() concurrently.
 class ICEBERG_EXPORT EqualityDeleteWriter : public FileWriter {
  public:
   ~EqualityDeleteWriter() override;
@@ -69,15 +62,11 @@ class ICEBERG_EXPORT EqualityDeleteWriter : public FileWriter {
   Status Close() override;
   Result<WriteResult> Metadata() override;
 
-  const std::vector<int32_t>& equality_field_ids() const;
+  std::span<const int32_t> equality_field_ids() const;
 
  private:
-  friend class FileWriterFactory;
-  friend std::unique_ptr<EqualityDeleteWriter> MakeEqualityDeleteWriterInternal(
-      const EqualityDeleteWriterOptions&);
   class Impl;
   std::unique_ptr<Impl> impl_;
-  explicit EqualityDeleteWriter(std::unique_ptr<Impl> impl);
 };
 
 }  // namespace iceberg

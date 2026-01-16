@@ -26,6 +26,7 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <unordered_map>
 
 #include "iceberg/arrow_c_data.h"
 #include "iceberg/data/writer.h"
@@ -38,12 +39,6 @@
 namespace iceberg {
 
 /// \brief Options for creating a PositionDeleteWriter.
-///
-/// \note The following features from Java PositionDeleteWriter are not yet supported:
-/// - Encryption key metadata
-/// - Referenced data files tracking (CharSequenceSet referencedDataFiles)
-/// - Metrics stripping for multi-file deletes
-/// - Split offsets tracking
 struct ICEBERG_EXPORT PositionDeleteWriterOptions {
   std::string path;
   std::shared_ptr<Schema> schema;
@@ -52,13 +47,10 @@ struct ICEBERG_EXPORT PositionDeleteWriterOptions {
   FileFormatType format = FileFormatType::kParquet;
   std::shared_ptr<FileIO> io;
   std::shared_ptr<Schema> row_schema;  // Optional row data schema
-  std::shared_ptr<class WriterProperties> properties;
+  std::unordered_map<std::string, std::string> properties;
 };
 
 /// \brief Writer for Iceberg position delete files.
-///
-/// \warning Thread Safety: Writer instances are NOT thread-safe. Each writer should only
-/// be used by a single thread. Do not call Write(), Close(), or Metadata() concurrently.
 class ICEBERG_EXPORT PositionDeleteWriter : public FileWriter {
  public:
   ~PositionDeleteWriter() override;
@@ -70,12 +62,8 @@ class ICEBERG_EXPORT PositionDeleteWriter : public FileWriter {
   Result<WriteResult> Metadata() override;
 
  private:
-  friend class FileWriterFactory;
-  friend std::unique_ptr<PositionDeleteWriter> MakePositionDeleteWriterInternal(
-      const PositionDeleteWriterOptions&);
   class Impl;
   std::unique_ptr<Impl> impl_;
-  explicit PositionDeleteWriter(std::unique_ptr<Impl> impl);
 };
 
 }  // namespace iceberg

@@ -22,7 +22,6 @@ set(ICEBERG_SOURCES
     catalog/memory/in_memory_catalog.cc
     data/data_writer.cc
     data/equality_delete_writer.cc
-    data/file_writer_factory.cc
     data/position_delete_writer.cc
     data/writer.cc
     delete_file_index.cc
