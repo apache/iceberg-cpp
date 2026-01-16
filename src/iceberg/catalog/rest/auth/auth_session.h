@@ -64,10 +64,8 @@ class ICEBERG_REST_EXPORT AuthSession {
   /// sessions (e.g., OAuth2 with token refresh), this should stop any background
   /// threads and release resources.
   ///
-  /// Note: Since sessions may be cached, this method may not be called immediately
-  /// after the session is no longer needed, but rather when the session is evicted
-  /// from the cache or the cache itself is closed.
-  virtual void Close() {}
+  /// \return Status indicating success or failure of closing the session.
+  virtual Status Close() { return {}; }
 };
 
 /// \brief A default authentication session that adds static headers to requests.

@@ -34,11 +34,22 @@
 namespace iceberg::rest::auth {
 
 /// \brief Produces authentication sessions for catalog and table requests.
+///
+/// AuthManager is responsible for creating authentication sessions at different scopes:
+/// - InitSession: Short-lived session for catalog initialization (optional)
+/// - CatalogSession: Long-lived session for catalog-level operations (required)
+/// - TableSession: Optional table-specific session or reuse of catalog session
+///
+/// Implementations are registered via AuthManagers::Register() and loaded by auth type.
 class ICEBERG_REST_EXPORT AuthManager {
  public:
   virtual ~AuthManager() = default;
 
   /// \brief Create a short-lived session used to contact the configuration endpoint.
+  ///
+  /// This session is used only during catalog initialization to fetch server
+  /// configuration and perform initial authentication. It is typically discarded after
+  /// initialization.
   ///
   /// \param init_client HTTP client used for initialization requests.
   /// \param properties Client configuration supplied by the catalog.
@@ -48,6 +59,10 @@ class ICEBERG_REST_EXPORT AuthManager {
       const std::unordered_map<std::string, std::string>& properties);
 
   /// \brief Create the long-lived catalog session that acts as the parent session.
+  ///
+  /// This session is used for all catalog-level operations (list namespaces, list tables,
+  /// etc.) and serves as the parent session for table-specific operations. It is owned
+  /// by the catalog and reused throughout the catalog's lifetime.
   ///
   /// \param shared_client HTTP client owned by the catalog and reused for auth calls.
   /// \param properties Catalog properties (client config + server defaults).
@@ -64,8 +79,8 @@ class ICEBERG_REST_EXPORT AuthManager {
   ///
   /// \param table Target table identifier.
   /// \param properties Table-specific auth properties returned by the server.
-  /// \param parent Catalog session to read information from.
-  /// \return A new session for the table, nullptr to reuse parent, or an error.
+  /// \param parent Catalog session to inherit from or extract information from.
+  /// \return A new session for the table, nullptr to reuse parent session, or an error.
   virtual Result<std::unique_ptr<AuthSession>> TableSession(
       const TableIdentifier& table,
       const std::unordered_map<std::string, std::string>& properties,

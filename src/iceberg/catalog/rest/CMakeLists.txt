@@ -15,7 +15,6 @@
 # specific language governing permissions and limitations
 # under the License.
 
-# Include auth subdirectory
 add_subdirectory(auth)
 
 set(ICEBERG_REST_SOURCES
