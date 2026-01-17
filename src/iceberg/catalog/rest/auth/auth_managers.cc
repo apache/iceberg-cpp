@@ -33,13 +33,7 @@ namespace {
 using AuthManagerRegistry =
     std::unordered_map<std::string, AuthManagerFactory, StringHash, StringEqual>;
 
-/// \brief Infer the authentication type from properties.
-///
-/// If no explicit auth type is set, this function tries to infer it from
-/// other properties. If "credential" or "token" is present, it implies
-/// OAuth2 authentication. Otherwise, defaults to no authentication.
-///
-/// This behavior is consistent with Java Iceberg's AuthManagers.
+// Infer the authentication type from properties.
 std::string InferAuthType(
     const std::unordered_map<std::string, std::string>& properties) {
   auto it = properties.find(AuthProperties::kAuthType);
@@ -54,11 +48,10 @@ std::string InferAuthType(
     return AuthProperties::kAuthTypeOAuth2;
   }
 
-  // Default to no authentication
   return AuthProperties::kAuthTypeNone;
 }
 
-/// \brief Get the global registry of auth manager factories.
+// Get the global registry of auth manager factories.
 AuthManagerRegistry& GetRegistry() {
   static AuthManagerRegistry registry;
   return registry;

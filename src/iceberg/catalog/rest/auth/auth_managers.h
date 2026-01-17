@@ -57,6 +57,9 @@ class ICEBERG_REST_EXPORT AuthManagers {
 
   /// \brief Register or override the factory for a given auth type.
   ///
+  /// This method is not thread-safe. All registrations should be done during
+  /// application startup before any concurrent access to Load().
+  ///
   /// \param auth_type Case-insensitive type identifier (e.g., "basic").
   /// \param factory Factory function that produces the manager.
   static void Register(std::string_view auth_type, AuthManagerFactory factory);

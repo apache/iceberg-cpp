@@ -76,7 +76,7 @@ class ICEBERG_REST_EXPORT AuthManager {
   /// session is needed, or an error if session creation fails.
   virtual Result<std::shared_ptr<AuthSession>> ContextualSession(
       const std::unordered_map<std::string, std::string>& context,
-      const std::shared_ptr<AuthSession>& parent);
+      std::shared_ptr<AuthSession> parent);
 
   /// \brief Create or reuse a session scoped to a single table/view.
   ///
@@ -91,7 +91,7 @@ class ICEBERG_REST_EXPORT AuthManager {
   virtual Result<std::shared_ptr<AuthSession>> TableSession(
       const TableIdentifier& table,
       const std::unordered_map<std::string, std::string>& properties,
-      const std::shared_ptr<AuthSession>& parent);
+      std::shared_ptr<AuthSession> parent);
 
   /// \brief Release resources held by the manager.
   ///

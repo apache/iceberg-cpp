@@ -60,7 +60,7 @@ class ICEBERG_REST_EXPORT AuthSession {
   /// \return Status indicating success or failure of closing the session.
   virtual Status Close() { return {}; }
 
-  /// \brief Create a session with static headers.
+  /// \brief Create a default session with static headers.
   ///
   /// This factory method creates a session that adds a fixed set of headers to each
   /// request. It is suitable for authentication methods that use static credentials,
@@ -68,7 +68,7 @@ class ICEBERG_REST_EXPORT AuthSession {
   ///
   /// \param headers The headers to add to each request for authentication.
   /// \return A new session that adds the given headers to requests.
-  static std::shared_ptr<AuthSession> Make(
+  static std::shared_ptr<AuthSession> MakeDefault(
       std::unordered_map<std::string, std::string> headers);
 };
 

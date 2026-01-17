@@ -32,7 +32,7 @@ Result<std::shared_ptr<AuthSession>> AuthManager::InitSession(
 
 Result<std::shared_ptr<AuthSession>> AuthManager::ContextualSession(
     [[maybe_unused]] const std::unordered_map<std::string, std::string>& context,
-    const std::shared_ptr<AuthSession>& parent) {
+    std::shared_ptr<AuthSession> parent) {
   // By default, return the parent session as-is
   return parent;
 }
@@ -40,7 +40,7 @@ Result<std::shared_ptr<AuthSession>> AuthManager::ContextualSession(
 Result<std::shared_ptr<AuthSession>> AuthManager::TableSession(
     [[maybe_unused]] const TableIdentifier& table,
     [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties,
-    const std::shared_ptr<AuthSession>& parent) {
+    std::shared_ptr<AuthSession> parent) {
   // By default, return the parent session as-is
   return parent;
 }

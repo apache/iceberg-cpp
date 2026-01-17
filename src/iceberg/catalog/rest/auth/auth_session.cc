@@ -44,7 +44,7 @@ class DefaultAuthSession : public AuthSession {
 
 }  // namespace
 
-std::shared_ptr<AuthSession> AuthSession::Make(
+std::shared_ptr<AuthSession> AuthSession::MakeDefault(
     std::unordered_map<std::string, std::string> headers) {
   return std::make_shared<DefaultAuthSession>(std::move(headers));
 }
