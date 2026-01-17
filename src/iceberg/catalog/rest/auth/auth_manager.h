@@ -68,8 +68,7 @@ class ICEBERG_REST_EXPORT AuthManager {
   /// \brief Create or reuse a session for a specific context.
   ///
   /// This method is used by SessionCatalog to create sessions for different contexts
-  /// (e.g., different users or tenants). Each REST endpoint call should use the
-  /// appropriate contextual session before sending the HTTP request.
+  /// (e.g., different users or tenants).
   ///
   /// \param context Context properties (e.g., user credentials, tenant info).
   /// \param parent Catalog session to inherit from or return as-is.

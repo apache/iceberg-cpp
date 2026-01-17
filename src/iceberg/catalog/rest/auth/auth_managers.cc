@@ -78,7 +78,7 @@ Result<std::unique_ptr<AuthManager>> AuthManagers::Load(
   auto& registry = GetRegistry();
   auto it = registry.find(auth_type);
   if (it == registry.end()) {
-    // TODO: Fallback to default auth manager implementations
+    // TODO(Li Shuxu): Fallback to default auth manager implementations
     return NotImplemented("Authentication type '{}' is not supported", auth_type);
   }
 
