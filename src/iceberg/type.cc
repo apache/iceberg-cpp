@@ -156,7 +156,7 @@ TypeId ListType::type_id() const { return kTypeId; }
 const SchemaField& ListType::element() const { return element_; }
 
 std::string ListType::ToString() const {
-  return std::format("list<{}>", element_.type()->ToString());
+  return std::vformat("list<{}>", std::make_format_args(element_));
 }
 
 std::span<const SchemaField> ListType::fields() const { return {&element_, 1}; }
@@ -213,7 +213,7 @@ const SchemaField& MapType::value() const { return fields_[1]; }
 TypeId MapType::type_id() const { return kTypeId; }
 
 std::string MapType::ToString() const {
-  return std::format("map<{}, {}>", key().type()->ToString(), value().type()->ToString());
+  return std::vformat("map<{}: {}>", std::make_format_args(key(), value()));
 }
 
 std::span<const SchemaField> MapType::fields() const { return fields_; }

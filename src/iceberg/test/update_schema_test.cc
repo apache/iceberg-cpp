@@ -1478,7 +1478,8 @@ TEST_F(UpdateSchemaTest, TestMultipleMoves) {
   EXPECT_EQ(fields[0].name(), "z");
   EXPECT_EQ(fields[1].name(), "y");
 
-  int w_pos = -1, x_pos = -1;
+  int w_pos = -1;
+  int x_pos = -1;
   for (size_t i = 0; i < fields.size(); ++i) {
     if (fields[i].name() == "w") w_pos = i;
     if (fields[i].name() == "x") x_pos = i;
@@ -1507,7 +1508,8 @@ TEST_F(UpdateSchemaTest, TestMoveTopLevelColumnBeforeFirst) {
   ASSERT_TRUE(result.schema != nullptr);
 
   const auto& fields = result.schema->fields();
-  int y_pos = -1, x_pos = -1;
+  int y_pos = -1;
+  int x_pos = -1;
   for (size_t i = 0; i < fields.size(); ++i) {
     if (fields[i].name() == "y") y_pos = i;
     if (fields[i].name() == "x") x_pos = i;
@@ -1541,7 +1543,8 @@ TEST_F(UpdateSchemaTest, TestMoveTopLevelColumnAfter) {
   ASSERT_TRUE(result.schema != nullptr);
 
   const auto& fields = result.schema->fields();
-  int w_pos = -1, x_pos = -1;
+  int w_pos = -1;
+  int x_pos = -1;
   for (size_t i = 0; i < fields.size(); ++i) {
     if (fields[i].name() == "w") w_pos = i;
     if (fields[i].name() == "x") x_pos = i;

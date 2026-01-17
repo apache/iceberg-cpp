@@ -752,8 +752,7 @@ UpdateSchema& UpdateSchema::MoveInternal(std::string_view name, const Move& move
 
     const auto& parent_field = parent_field_result.value()->get();
     ICEBERG_BUILDER_CHECK(parent_field.type()->type_id() == TypeId::kStruct,
-                          "Cannot move fields in non-struct type: {}",
-                          parent_field.type()->ToString());
+                          "Cannot move fields in non-struct type");
 
     if (move.type == Move::MoveType::kBefore || move.type == Move::MoveType::kAfter) {
       auto ref_parent_it = id_to_parent_.find(move.reference_field_id);
