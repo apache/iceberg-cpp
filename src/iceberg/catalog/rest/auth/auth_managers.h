@@ -28,32 +28,27 @@
 #include "iceberg/catalog/rest/auth/auth_manager.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/result.h"
-#include "iceberg/util/string_util.h"
 
 /// \file iceberg/catalog/rest/auth/auth_managers.h
 /// \brief Factory for creating authentication managers.
 
 namespace iceberg::rest::auth {
 
-/// \brief Function that builds an AuthManager for a given catalog.
+/// \brief Function that creates an AuthManager from its name.
 ///
-/// \param name Catalog name passed to the manager.
-/// \param properties Consolidated catalog configuration.
-/// \return Newly created manager instance.
-using AuthManagerFactory = std::function<std::unique_ptr<AuthManager>(
+/// \param name Name of the auth manager.
+/// \param properties Properties required by the auth manager.
+/// \return Newly created manager instance or an error if creation fails.
+using AuthManagerFactory = std::function<Result<std::unique_ptr<AuthManager>>(
     std::string_view name,
     const std::unordered_map<std::string, std::string>& properties)>;
-
-/// \brief Registry type for AuthManager factories with heterogeneous lookup support.
-using AuthManagerRegistry =
-    std::unordered_map<std::string, AuthManagerFactory, StringHash, StringEqual>;
 
 /// \brief Registry-backed factory for AuthManager implementations.
 class ICEBERG_REST_EXPORT AuthManagers {
  public:
   /// \brief Load a manager by consulting the "rest.auth.type" configuration.
   ///
-  /// \param name Catalog name passed to the manager.
+  /// \param name Name of the auth manager.
   /// \param properties Catalog properties used to determine auth type.
   /// \return Manager instance or an error if no factory matches.
   static Result<std::unique_ptr<AuthManager>> Load(

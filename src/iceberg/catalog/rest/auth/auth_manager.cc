@@ -23,19 +23,26 @@
 
 namespace iceberg::rest::auth {
 
-Result<std::unique_ptr<AuthSession>> AuthManager::InitSession(
+Result<std::shared_ptr<AuthSession>> AuthManager::InitSession(
     HttpClient& init_client,
     const std::unordered_map<std::string, std::string>& properties) {
   // By default, use the catalog session for initialization
   return CatalogSession(init_client, properties);
 }
 
-Result<std::unique_ptr<AuthSession>> AuthManager::TableSession(
+Result<std::shared_ptr<AuthSession>> AuthManager::ContextualSession(
+    [[maybe_unused]] const std::unordered_map<std::string, std::string>& context,
+    const std::shared_ptr<AuthSession>& parent) {
+  // By default, return the parent session as-is
+  return parent;
+}
+
+Result<std::shared_ptr<AuthSession>> AuthManager::TableSession(
     [[maybe_unused]] const TableIdentifier& table,
     [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties,
-    [[maybe_unused]] const AuthSession& parent) {
-  // By default, return nullptr to indicate the parent session should be reused.
-  return nullptr;
+    const std::shared_ptr<AuthSession>& parent) {
+  // By default, return the parent session as-is
+  return parent;
 }
 
 }  // namespace iceberg::rest::auth

@@ -32,11 +32,6 @@
 namespace iceberg::rest::auth {
 
 /// \brief An authentication session that can authenticate outgoing HTTP requests.
-///
-/// Authentication sessions are typically immutable, but may hold resources that need
-/// to be released when the session is no longer needed (e.g., token refresh threads).
-/// Implementations should override Close() to release any such resources.
-///
 class ICEBERG_REST_EXPORT AuthSession {
  public:
   virtual ~AuthSession() = default;
@@ -47,15 +42,13 @@ class ICEBERG_REST_EXPORT AuthSession {
   /// to the provided headers map. The implementation should be idempotent.
   ///
   /// \param[in,out] headers The headers map to add authentication information to.
-  /// \return Status indicating success or failure of authentication.
-  ///         - Success: Returns Status::OK
-  ///         - Failure: Returns one of the following errors:
-  ///           - AuthenticationFailed: General authentication failure (invalid
-  ///           credentials, etc.)
-  ///           - TokenExpired: Authentication token has expired and needs refresh
-  ///           - NotAuthorized: Not authenticated (401)
-  ///           - IOError: Network or connection errors when reaching auth server
-  ///           - RestError: HTTP errors from authentication service
+  /// \return Status indicating success or one of the following errors:
+  ///         - AuthenticationFailed: General authentication failure (invalid credentials,
+  ///         etc.)
+  ///         - TokenExpired: Authentication token has expired and needs refresh
+  ///         - NotAuthorized: Not authenticated (401)
+  ///         - IOError: Network or connection errors when reaching auth server
+  ///         - RestError: HTTP errors from authentication service
   virtual Status Authenticate(std::unordered_map<std::string, std::string>& headers) = 0;
 
   /// \brief Close the session and release any resources.
@@ -66,29 +59,17 @@ class ICEBERG_REST_EXPORT AuthSession {
   ///
   /// \return Status indicating success or failure of closing the session.
   virtual Status Close() { return {}; }
-};
 
-/// \brief A default authentication session that adds static headers to requests.
-///
-/// This implementation authenticates requests by adding a fixed set of headers.
-/// It is suitable for authentication methods that use static credentials,
-/// such as Basic auth or static bearer tokens.
-class ICEBERG_REST_EXPORT DefaultAuthSession : public AuthSession {
- public:
-  /// \brief Construct a DefaultAuthSession with the given headers.
+  /// \brief Create a session with static headers.
+  ///
+  /// This factory method creates a session that adds a fixed set of headers to each
+  /// request. It is suitable for authentication methods that use static credentials,
+  /// such as Basic auth or static bearer tokens.
   ///
   /// \param headers The headers to add to each request for authentication.
-  explicit DefaultAuthSession(std::unordered_map<std::string, std::string> headers);
-
-  ~DefaultAuthSession() override = default;
-
-  Status Authenticate(std::unordered_map<std::string, std::string>& headers) override;
-
-  static std::unique_ptr<DefaultAuthSession> Make(
+  /// \return A new session that adds the given headers to requests.
+  static std::shared_ptr<AuthSession> Make(
       std::unordered_map<std::string, std::string> headers);
-
- private:
-  std::unordered_map<std::string, std::string> headers_;
 };
 
 }  // namespace iceberg::rest::auth

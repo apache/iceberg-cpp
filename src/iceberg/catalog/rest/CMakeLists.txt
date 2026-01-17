@@ -18,6 +18,9 @@
 add_subdirectory(auth)
 
 set(ICEBERG_REST_SOURCES
+    auth/auth_manager.cc
+    auth/auth_managers.cc
+    auth/auth_session.cc
     catalog_properties.cc
     endpoint.cc
     error_handlers.cc
@@ -26,10 +29,7 @@ set(ICEBERG_REST_SOURCES
     resource_paths.cc
     rest_catalog.cc
     rest_util.cc
-    types.cc
-    auth/auth_manager.cc
-    auth/auth_managers.cc
-    auth/auth_session.cc)
+    types.cc)
 
 set(ICEBERG_REST_STATIC_BUILD_INTERFACE_LIBS)
 set(ICEBERG_REST_SHARED_BUILD_INTERFACE_LIBS)

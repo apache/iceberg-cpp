@@ -29,6 +29,10 @@ namespace iceberg::rest::auth {
 
 namespace {
 
+/// \brief Registry type for AuthManager factories with heterogeneous lookup support.
+using AuthManagerRegistry =
+    std::unordered_map<std::string, AuthManagerFactory, StringHash, StringEqual>;
+
 /// \brief Infer the authentication type from properties.
 ///
 /// If no explicit auth type is set, this function tries to infer it from
@@ -38,22 +42,20 @@ namespace {
 /// This behavior is consistent with Java Iceberg's AuthManagers.
 std::string InferAuthType(
     const std::unordered_map<std::string, std::string>& properties) {
-  // Check for explicit auth type first
-  auto it = properties.find(std::string(AuthProperties::kAuthType));
+  auto it = properties.find(AuthProperties::kAuthType);
   if (it != properties.end() && !it->second.empty()) {
     return StringUtils::ToLower(it->second);
   }
 
   // Infer from OAuth2 properties (credential or token)
-  bool has_credential =
-      properties.contains(std::string(AuthProperties::kOAuth2Credential));
-  bool has_token = properties.contains(std::string(AuthProperties::kOAuth2Token));
+  bool has_credential = properties.contains(AuthProperties::kOAuth2Credential);
+  bool has_token = properties.contains(AuthProperties::kOAuth2Token);
   if (has_credential || has_token) {
-    return std::string(AuthProperties::kAuthTypeOAuth2);
+    return AuthProperties::kAuthTypeOAuth2;
   }
 
   // Default to no authentication
-  return std::string(AuthProperties::kAuthTypeNone);
+  return AuthProperties::kAuthTypeNone;
 }
 
 /// \brief Get the global registry of auth manager factories.
@@ -65,7 +67,7 @@ AuthManagerRegistry& GetRegistry() {
 }  // namespace
 
 void AuthManagers::Register(std::string_view auth_type, AuthManagerFactory factory) {
-  GetRegistry()[StringUtils::ToLower(std::string(auth_type))] = std::move(factory);
+  GetRegistry()[StringUtils::ToLower(auth_type)] = std::move(factory);
 }
 
 Result<std::unique_ptr<AuthManager>> AuthManagers::Load(
@@ -76,6 +78,7 @@ Result<std::unique_ptr<AuthManager>> AuthManagers::Load(
   auto& registry = GetRegistry();
   auto it = registry.find(auth_type);
   if (it == registry.end()) {
+    // TODO: Fallback to default auth manager implementations
     return NotImplemented("Authentication type '{}' is not supported", auth_type);
   }
 

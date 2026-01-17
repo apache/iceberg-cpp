@@ -39,6 +39,5 @@ namespace iceberg::rest::auth {
 
 class AuthManager;
 class AuthSession;
-class DefaultAuthSession;
 
 }  // namespace iceberg::rest::auth

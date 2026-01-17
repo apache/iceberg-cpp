@@ -23,21 +23,30 @@
 
 namespace iceberg::rest::auth {
 
-DefaultAuthSession::DefaultAuthSession(
-    std::unordered_map<std::string, std::string> headers)
-    : headers_(std::move(headers)) {}
+namespace {
 
-Status DefaultAuthSession::Authenticate(
-    std::unordered_map<std::string, std::string>& headers) {
-  for (const auto& [key, value] : headers_) {
-    headers.try_emplace(key, value);
+/// \brief Default implementation that adds static headers to requests.
+class DefaultAuthSession : public AuthSession {
+ public:
+  explicit DefaultAuthSession(std::unordered_map<std::string, std::string> headers)
+      : headers_(std::move(headers)) {}
+
+  Status Authenticate(std::unordered_map<std::string, std::string>& headers) override {
+    for (const auto& [key, value] : headers_) {
+      headers.try_emplace(key, value);
+    }
+    return {};
   }
-  return {};
-}
 
-std::unique_ptr<DefaultAuthSession> DefaultAuthSession::Make(
+ private:
+  std::unordered_map<std::string, std::string> headers_;
+};
+
+}  // namespace
+
+std::shared_ptr<AuthSession> AuthSession::Make(
     std::unordered_map<std::string, std::string> headers) {
-  return std::make_unique<DefaultAuthSession>(std::move(headers));
+  return std::make_shared<DefaultAuthSession>(std::move(headers));
 }
 
 }  // namespace iceberg::rest::auth
