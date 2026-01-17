@@ -317,6 +317,21 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \return Reference to this for method chaining.
   UpdateSchema& CaseSensitive(bool case_sensitive);
 
+  /// \brief Represents a column move operation within a struct (internal use only).
+  struct Move {
+    enum class MoveType { kFirst, kBefore, kAfter };
+
+    int32_t field_id;
+    int32_t reference_field_id;  // Only used for kBefore and kAfter
+    MoveType type;
+
+    static Move First(int32_t field_id);
+
+    static Move Before(int32_t field_id, int32_t reference_field_id);
+
+    static Move After(int32_t field_id, int32_t reference_field_id);
+  };
+
   Kind kind() const final { return Kind::kUpdateSchema; }
 
   struct ApplyResult {
@@ -380,6 +395,12 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   /// \return The normalized field name.
   std::string CaseSensitivityAwareName(std::string_view name) const;
 
+  /// \brief Find a field ID for move operations.
+  std::optional<int32_t> FindFieldIdForMove(std::string_view name) const;
+
+  /// \brief Internal implementation for recording a move operation.
+  UpdateSchema& MoveInternal(std::string_view name, const Move& move);
+
   // Internal state
   std::shared_ptr<Schema> schema_;
   int32_t last_column_id_;
@@ -398,6 +419,8 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   std::unordered_map<int32_t, std::vector<int32_t>> parent_to_added_ids_;
   // full name -> field ID for added fields
   std::unordered_map<std::string, int32_t> added_name_to_id_;
+  // parent ID -> move operations
+  std::unordered_map<int32_t, std::vector<Move>> moves_;
 };
 
 }  // namespace iceberg
