@@ -310,17 +310,22 @@ UpdateSchema::UpdateSchema(std::shared_ptr<Transaction> transaction)
 UpdateSchema::~UpdateSchema() = default;
 
 UpdateSchema::Move UpdateSchema::Move::First(int32_t field_id) {
-  return Move{field_id, kTableRootId, MoveType::kFirst};
+  return Move{
+      .field_id = field_id, .reference_field_id = kTableRootId, .type = MoveType::kFirst};
 }
 
 UpdateSchema::Move UpdateSchema::Move::Before(int32_t field_id,
                                               int32_t reference_field_id) {
-  return Move{field_id, reference_field_id, MoveType::kBefore};
+  return Move{.field_id = field_id,
+              .reference_field_id = reference_field_id,
+              .type = MoveType::kBefore};
 }
 
 UpdateSchema::Move UpdateSchema::Move::After(int32_t field_id,
                                              int32_t reference_field_id) {
-  return Move{field_id, reference_field_id, MoveType::kAfter};
+  return Move{.field_id = field_id,
+              .reference_field_id = reference_field_id,
+              .type = MoveType::kAfter};
 }
 
 UpdateSchema& UpdateSchema::AllowIncompatibleChanges() {
