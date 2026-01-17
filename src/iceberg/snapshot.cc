@@ -508,8 +508,9 @@ std::unordered_map<std::string, std::string> SnapshotSummaryBuilder::Build() con
         SnapshotSummaryFields::kChangedPartitionCountProp, partition_metrics_.size());
 
   // Add partition summaries if enabled
-  if (trust_partition_metrics_ && static_cast<int32_t>(partition_metrics_.size()) <=
-                                      max_changed_partitions_for_summaries_) {
+  if (trust_partition_metrics_ && max_changed_partitions_for_summaries_ >= 0 &&
+      partition_metrics_.size() <=
+          static_cast<size_t>(max_changed_partitions_for_summaries_)) {
     SetIf(!partition_metrics_.empty(), builder,
           SnapshotSummaryFields::kPartitionSummaryProp, "true");
     for (const auto& [key, metrics] : partition_metrics_) {
