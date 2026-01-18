@@ -105,7 +105,7 @@ class ApplyChangesVisitor {
     auto moves_it = moves_.find(parent_id);
     if (moves_it != moves_.end() && !moves_it->second.empty()) {
       has_changes = true;
-      new_fields = MoveFields(new_fields, moves_it->second);
+      new_fields = MoveFields(std::move(new_fields), moves_it->second);
     }
 
     if (!has_changes) {
@@ -217,8 +217,7 @@ class ApplyChangesVisitor {
 
   /// \brief Helper function to apply move operations to a list of fields
   static std::vector<SchemaField> MoveFields(
-      const std::vector<SchemaField>& fields,
-      const std::vector<UpdateSchema::Move>& moves);
+      std::vector<SchemaField>&& fields, const std::vector<UpdateSchema::Move>& moves);
 
   const std::unordered_set<int32_t>& deletes_;
   const std::unordered_map<int32_t, std::shared_ptr<SchemaField>>& updates_;
@@ -227,9 +226,8 @@ class ApplyChangesVisitor {
 };
 
 std::vector<SchemaField> ApplyChangesVisitor::MoveFields(
-    const std::vector<SchemaField>& fields,
-    const std::vector<UpdateSchema::Move>& moves) {
-  std::vector<SchemaField> reordered = fields;
+    std::vector<SchemaField>&& fields, const std::vector<UpdateSchema::Move>& moves) {
+  std::vector<SchemaField> reordered = std::move(fields);
 
   for (const auto& move : moves) {
     auto it = std::ranges::find_if(reordered, [&move](const SchemaField& field) {
@@ -748,7 +746,6 @@ UpdateSchema& UpdateSchema::MoveInternal(std::string_view name, const Move& move
   auto parent_it = id_to_parent_.find(move.field_id);
 
   if (parent_it != id_to_parent_.end()) {
-    // Field has a parent (nested field)
     int32_t parent_id = parent_it->second;
     auto parent_field_result = schema_->FindFieldById(parent_id);
 
