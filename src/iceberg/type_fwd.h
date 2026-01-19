@@ -120,6 +120,7 @@ struct SnapshotLogEntry;
 struct SnapshotRef;
 struct StatisticsFile;
 struct TableMetadata;
+class SnapshotSummaryBuilder;
 
 /// \brief Expression.
 class BoundPredicate;
@@ -187,7 +188,6 @@ class TableUpdateContext;
 class Transaction;
 
 /// \brief Update family.
-class AppendFiles;
 class ExpireSnapshots;
 class FastAppend;
 class PendingUpdate;

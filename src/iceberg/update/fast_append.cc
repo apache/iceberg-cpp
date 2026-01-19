@@ -19,15 +19,13 @@
 
 #include "iceberg/update/fast_append.h"
 
-#include <format>
 #include <iterator>
 #include <ranges>
 #include <vector>
 
 #include "iceberg/constants.h"
 #include "iceberg/manifest/manifest_entry.h"
-#include "iceberg/manifest/manifest_reader.h"
-#include "iceberg/manifest/manifest_writer.h"
+#include "iceberg/manifest/manifest_util_internal.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
@@ -40,6 +38,9 @@ namespace iceberg {
 
 Result<std::unique_ptr<FastAppend>> FastAppend::Make(
     std::string table_name, std::shared_ptr<Transaction> transaction) {
+  ICEBERG_PRECHECK(!table_name.empty(), "Table name cannot be empty");
+  ICEBERG_PRECHECK(transaction != nullptr,
+                   "Cannot create FastAppend without a transaction");
   return std::unique_ptr<FastAppend>(
       new FastAppend(std::move(table_name), std::move(transaction)));
 }
@@ -72,16 +73,16 @@ FastAppend& FastAppend::AppendManifest(const ManifestFile& manifest) {
                         "Cannot append manifest with deleted files");
   ICEBERG_BUILDER_CHECK(manifest.added_snapshot_id == kInvalidSnapshotId,
                         "Snapshot id must be assigned during commit");
-  ICEBERG_BUILDER_CHECK(manifest.sequence_number == TableMetadata::kInvalidSequenceNumber,
+  ICEBERG_BUILDER_CHECK(manifest.sequence_number == kInvalidSequenceNumber,
                         "Sequence number must be assigned during commit");
 
-  if (can_inherit_snapshot_id() && (manifest.added_snapshot_id == kInvalidSnapshotId)) {
+  if (can_inherit_snapshot_id() && manifest.added_snapshot_id == kInvalidSnapshotId) {
     summary_.AddedManifest(manifest);
     append_manifests_.push_back(manifest);
   } else {
     // The manifest must be rewritten with this update's snapshot ID
     ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto copied_manifest, CopyManifest(manifest));
-    rewritten_append_manifests_.push_back(copied_manifest);
+    rewritten_append_manifests_.push_back(std::move(copied_manifest));
   }
 
   return *this;
@@ -104,33 +105,32 @@ Result<std::vector<ManifestFile>> FastAppend::Apply(
   std::vector<ManifestFile> manifests;
 
   ICEBERG_ASSIGN_OR_RAISE(auto new_written_manifests, WriteNewManifests());
+  manifests.reserve(new_written_manifests.size() + append_manifests_.size() +
+                    rewritten_append_manifests_.size());
   if (!new_written_manifests.empty()) {
-    manifests.insert(manifests.end(), new_written_manifests.begin(),
-                     new_written_manifests.end());
+    manifests.insert(manifests.end(),
+                     std::make_move_iterator(new_written_manifests.begin()),
+                     std::make_move_iterator(new_written_manifests.end()));
   }
 
   // Transform append manifests and rewritten append manifests with snapshot ID
   int64_t snapshot_id = SnapshotId();
-  for (const auto& manifest : append_manifests_) {
-    ManifestFile updated = manifest;
-    updated.added_snapshot_id = snapshot_id;
-    manifests.push_back(updated);
+  for (auto& manifest : append_manifests_) {
+    manifest.added_snapshot_id = snapshot_id;
   }
-
-  for (const auto& manifest : rewritten_append_manifests_) {
-    ManifestFile updated = manifest;
-    updated.added_snapshot_id = snapshot_id;
-    manifests.push_back(updated);
+  for (auto& manifest : rewritten_append_manifests_) {
+    manifest.added_snapshot_id = snapshot_id;
   }
+  manifests.insert(manifests.end(), append_manifests_.begin(), append_manifests_.end());
+  manifests.insert(manifests.end(), rewritten_append_manifests_.begin(),
+                   rewritten_append_manifests_.end());
 
   // Add all manifests from the snapshot
   if (snapshot != nullptr) {
     // Use SnapshotCache to get manifests, similar to snapshot_update.cc
     auto cached_snapshot = SnapshotCache(snapshot.get());
-    ICEBERG_ASSIGN_OR_RAISE(auto snapshot_manifests_span,
+    ICEBERG_ASSIGN_OR_RAISE(auto snapshot_manifests,
                             cached_snapshot.Manifests(transaction_->table()->io()));
-    std::vector<ManifestFile> snapshot_manifests(snapshot_manifests_span.begin(),
-                                                 snapshot_manifests_span.end());
     manifests.insert(manifests.end(), snapshot_manifests.begin(),
                      snapshot_manifests.end());
   }
@@ -148,19 +148,19 @@ void FastAppend::CleanUncommitted(const std::unordered_set<std::string>& committ
   // Clean up new manifests that were written but not committed
   if (!new_manifests_.empty()) {
     for (const auto& manifest : new_manifests_) {
-      if (committed.find(manifest.manifest_path) == committed.end()) {
+      if (!committed.contains(manifest.manifest_path)) {
         std::ignore = DeleteFile(manifest.manifest_path);
       }
     }
     new_manifests_.clear();
   }
 
-  // Clean up only rewritten_append_manifests as they are always owned by the table
-  // Don't clean up append_manifests as they are added to the manifest list and are
+  // Clean up only rewritten append manifests as they are always owned by the table
+  // Don't clean up append manifests as they are added to the manifest list and are
   // not compacted
   if (!rewritten_append_manifests_.empty()) {
     for (const auto& manifest : rewritten_append_manifests_) {
-      if (committed.find(manifest.manifest_path) == committed.end()) {
+      if (!committed.contains(manifest.manifest_path)) {
         std::ignore = DeleteFile(manifest.manifest_path);
       }
     }
@@ -169,10 +169,10 @@ void FastAppend::CleanUncommitted(const std::unordered_set<std::string>& committ
 
 bool FastAppend::CleanupAfterCommit() const {
   // Cleanup after committing is disabled for FastAppend unless there are
-  // rewritten_append_manifests because:
+  // rewritten_append_manifests_ because:
   // 1.) Appended manifests are never rewritten
-  // 2.) Manifests which are written out as part of appendFile are already cleaned
-  //     up between commit attempts in writeNewManifests
+  // 2.) Manifests which are written out as part of AppendFile are already cleaned
+  //     up between commit attempts in WriteNewManifests
   return !rewritten_append_manifests_.empty();
 }
 
@@ -186,44 +186,21 @@ Result<ManifestFile> FastAppend::CopyManifest(const ManifestFile& manifest) {
   ICEBERG_ASSIGN_OR_RAISE(auto spec,
                           current.PartitionSpecById(manifest.partition_spec_id));
 
-  // Read the manifest entries
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto reader,
-      ManifestReader::Make(manifest, transaction_->table()->io(), schema, spec));
-  ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
-
-  // Create a new manifest writer
   // Generate a unique manifest path using the transaction's metadata location
-  std::string filename = std::format("copy-m{}.avro", copy_manifest_count_++);
-  std::string new_manifest_path = transaction_->MetadataFileLocation(filename);
+  std::string new_manifest_path = ManifestPath();
   int64_t snapshot_id = SnapshotId();
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto writer, ManifestWriter::MakeWriter(
-                       current.format_version, snapshot_id, new_manifest_path,
-                       transaction_->table()->io(), spec, schema, ManifestContent::kData,
-                       /*first_row_id=*/current.next_row_id));
 
-  // Write all entries as added entries with the new snapshot ID
-  for (auto& entry : entries) {
-    ICEBERG_PRECHECK(entry.status == ManifestStatus::kAdded,
-                     "Manifest to copy must only contain added entries");
-    entry.snapshot_id = snapshot_id;
-    ICEBERG_RETURN_UNEXPECTED(writer->WriteAddedEntry(entry));
-  }
-
-  ICEBERG_RETURN_UNEXPECTED(writer->Close());
-  ICEBERG_ASSIGN_OR_RAISE(auto new_manifest, writer->ToManifestFile());
-
-  summary_.AddedManifest(new_manifest);
-
-  return new_manifest;
+  // Copy the manifest with the new snapshot ID.
+  return CopyAppendManifest(manifest, transaction_->table()->io(), schema, spec,
+                            snapshot_id, new_manifest_path, current.format_version,
+                            &summary_);
 }
 
 Result<std::vector<ManifestFile>> FastAppend::WriteNewManifests() {
   // If there are new files and manifests were already written, clean them up
   if (has_new_files_ && !new_manifests_.empty()) {
     for (const auto& manifest : new_manifests_) {
-      ICEBERG_RETURN_UNEXPECTED(DeleteFile(manifest.manifest_path));
+      std::ignore = DeleteFile(manifest.manifest_path);
     }
     new_manifests_.clear();
   }
@@ -236,8 +213,9 @@ Result<std::vector<ManifestFile>> FastAppend::WriteNewManifests() {
       files.reserve(data_files.size());
       std::ranges::copy(data_files, std::back_inserter(files));
       ICEBERG_ASSIGN_OR_RAISE(auto written_manifests, WriteDataManifests(files, spec));
-      new_manifests_.insert(new_manifests_.end(), written_manifests.begin(),
-                            written_manifests.end());
+      new_manifests_.insert(new_manifests_.end(),
+                            std::make_move_iterator(written_manifests.begin()),
+                            std::make_move_iterator(written_manifests.end()));
     }
     has_new_files_ = false;
   }

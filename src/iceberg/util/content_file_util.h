@@ -22,6 +22,7 @@
 /// \file iceberg/util/content_file_util.h
 /// Utility functions for content files (data files and delete files).
 
+#include <functional>
 #include <memory>
 #include <optional>
 #include <span>
@@ -34,6 +35,34 @@
 #include "iceberg/type_fwd.h"
 
 namespace iceberg {
+
+/// \brief Hash functor for std::shared_ptr<DataFile> based on file path.
+struct ICEBERG_EXPORT DataFilePtrHash {
+  size_t operator()(const std::shared_ptr<DataFile>& file) const {
+    if (!file) {
+      return 0;
+    }
+    return std::hash<std::string>{}(file->file_path);
+  }
+};
+
+/// \brief Equality functor for std::shared_ptr<DataFile> based on file path.
+struct ICEBERG_EXPORT DataFilePtrEqual {
+  bool operator()(const std::shared_ptr<DataFile>& left,
+                  const std::shared_ptr<DataFile>& right) const {
+    if (left == right) {
+      return true;
+    }
+    if (!left || !right) {
+      return false;
+    }
+    return left->file_path == right->file_path;
+  }
+};
+
+/// \brief A set of DataFile pointers, deduplicated by file path.
+using DataFileSet =
+    std::unordered_set<std::shared_ptr<DataFile>, DataFilePtrHash, DataFilePtrEqual>;
 
 /// \brief Utility functions for content files.
 struct ICEBERG_EXPORT ContentFileUtil {

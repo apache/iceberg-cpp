@@ -21,11 +21,9 @@
 
 /// \file iceberg/update/fast_append.h
 
-#include <functional>
 #include <memory>
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
@@ -34,8 +32,8 @@
 #include "iceberg/result.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/type_fwd.h"
-#include "iceberg/update/append_files.h"
 #include "iceberg/update/snapshot_update.h"
+#include "iceberg/util/content_file_util.h"
 
 namespace iceberg {
 
@@ -44,7 +42,7 @@ namespace iceberg {
 /// FastAppend is optimized for appending new data files to a table, it creates new
 /// manifest files for the added data without compacting or rewriting existing manifests,
 /// making it faster for write-heavy workloads.
-class ICEBERG_EXPORT FastAppend : public SnapshotUpdate, public AppendFiles {
+class ICEBERG_EXPORT FastAppend : public SnapshotUpdate {
  public:
   /// \brief Create a new FastAppend instance.
   ///
@@ -58,7 +56,7 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate, public AppendFiles {
   ///
   /// \param file The data file to append
   /// \return Reference to this for method chaining
-  FastAppend& AppendFile(std::shared_ptr<DataFile> file) override;
+  FastAppend& AppendFile(std::shared_ptr<DataFile> file);
 
   /// \brief Append a manifest file to this update.
   ///
@@ -69,7 +67,7 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate, public AppendFiles {
   ///
   /// \param manifest The manifest file to append
   /// \return Reference to this for method chaining
-  FastAppend& AppendManifest(const ManifestFile& manifest) override;
+  FastAppend& AppendManifest(const ManifestFile& manifest);
 
   /// \brief Set the target branch for this update.
   ///
@@ -83,8 +81,6 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate, public AppendFiles {
   /// \param value The property value
   /// \return Reference to this for method chaining
   FastAppend& Set(const std::string& property, const std::string& value);
-
-  Kind kind() const override { return Kind::kUpdateSnapshot; }
 
   std::string operation() override;
 
@@ -113,38 +109,13 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate, public AppendFiles {
   Result<std::vector<ManifestFile>> WriteNewManifests();
 
  private:
-  struct DataFilePtrHash {
-    size_t operator()(const std::shared_ptr<DataFile>& file) const {
-      if (!file) {
-        return 0;
-      }
-      return std::hash<std::string>{}(file->file_path);
-    }
-  };
-
-  struct DataFilePtrEqual {
-    bool operator()(const std::shared_ptr<DataFile>& left,
-                    const std::shared_ptr<DataFile>& right) const {
-      if (left == right) {
-        return true;
-      }
-      if (!left || !right) {
-        return false;
-      }
-      return left->file_path == right->file_path;
-    }
-  };
-
   std::string table_name_;
   SnapshotSummaryBuilder summary_;
-  std::unordered_map<int32_t, std::unordered_set<std::shared_ptr<DataFile>,
-                                                 DataFilePtrHash, DataFilePtrEqual>>
-      new_data_files_by_spec_;
+  std::unordered_map<int32_t, DataFileSet> new_data_files_by_spec_;
   std::vector<ManifestFile> append_manifests_;
   std::vector<ManifestFile> rewritten_append_manifests_;
   std::vector<ManifestFile> new_manifests_;
   bool has_new_files_{false};
-  int32_t copy_manifest_count_{0};
 };
 
 }  // namespace iceberg

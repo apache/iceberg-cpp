@@ -51,6 +51,8 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
 
   ~SnapshotUpdate() override;
 
+  Kind kind() const override { return Kind::kUpdateSnapshot; }
+
   /// \brief Set a callback to delete files instead of the table's default.
   ///
   /// \param delete_func A function used to delete file locations
@@ -95,6 +97,8 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \param spec The partition spec to use
   /// \param data_sequence_number Optional data sequence number for the files
   /// \return A vector of manifest files
+  /// TODO(xxx): Change signature to accept iterator begin/end instead of vector to avoid
+  /// intermediate vector allocations (e.g., from DataFileSet)
   Result<std::vector<ManifestFile>> WriteDataManifests(
       const std::vector<std::shared_ptr<DataFile>>& data_files,
       const std::shared_ptr<PartitionSpec>& spec,
@@ -173,6 +177,8 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   /// \return A status indicating the result of the deletion
   Status DeleteFile(const std::string& path);
 
+  std::string ManifestPath();
+
  private:
   /// \brief Returns the snapshot summary from the implementation and updates totals.
   Result<std::unordered_map<std::string, std::string>> ComputeSummary(
@@ -182,7 +188,6 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   void CleanAll();
 
   std::string ManifestListPath();
-  std::string ManifestPath();
 
  private:
   const bool can_inherit_snapshot_id_{true};
