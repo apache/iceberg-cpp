@@ -24,7 +24,6 @@
 
 #include <cstdint>
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "iceberg/iceberg_export.h"

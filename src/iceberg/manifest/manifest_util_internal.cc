@@ -60,7 +60,7 @@ Result<ManifestFile> CopyAppendManifest(
     ICEBERG_RETURN_UNEXPECTED(inheritable_metadata->Apply(entry));
 
     if (summary_builder != nullptr && entry.data_file != nullptr) {
-      summary_builder->AddedFile(*spec, *entry.data_file);
+      ICEBERG_RETURN_UNEXPECTED(summary_builder->AddedFile(*spec, *entry.data_file));
     }
 
     ICEBERG_RETURN_UNEXPECTED(writer->WriteAddedEntry(entry));
