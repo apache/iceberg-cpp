@@ -396,7 +396,7 @@ class ICEBERG_EXPORT UpdateSchema : public PendingUpdate {
   std::string CaseSensitivityAwareName(std::string_view name) const;
 
   /// \brief Find a field ID for move operations.
-  std::optional<int32_t> FindFieldIdForMove(std::string_view name) const;
+  Result<int32_t> FindFieldIdForMove(std::string_view name) const;
 
   /// \brief Internal implementation for recording a move operation.
   UpdateSchema& MoveInternal(std::string_view name, const Move& move);

@@ -45,6 +45,17 @@ namespace iceberg {
   ICEBERG_BUILDER_ASSIGN_OR_RETURN_IMPL(             \
       ICEBERG_ASSIGN_OR_RAISE_NAME(result_, __COUNTER__), lhs, rexpr)
 
+#define ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR_IMPL(result_name, lhs, rexpr, ...) \
+  auto&& result_name = (rexpr);                                                        \
+  if (!result_name) [[unlikely]] {                                                     \
+    return AddError(ErrorKind::kInvalidArgument, __VA_ARGS__);                         \
+  }                                                                                    \
+  lhs = std::move(result_name.value());
+
+#define ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR(lhs, rexpr, ...) \
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR_IMPL(                  \
+      ICEBERG_ASSIGN_OR_RAISE_NAME(result_, __COUNTER__), lhs, rexpr, __VA_ARGS__)
+
 #define ICEBERG_BUILDER_CHECK(expr, ...)                         \
   do {                                                           \
     if (!(expr)) [[unlikely]] {                                  \

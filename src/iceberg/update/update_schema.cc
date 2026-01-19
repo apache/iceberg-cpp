@@ -243,7 +243,7 @@ std::vector<SchemaField> ApplyChangesVisitor::MoveFields(
 
     switch (move.type) {
       case UpdateSchema::Move::MoveType::kFirst:
-        reordered.insert(reordered.begin(), to_move);
+        reordered.insert(reordered.begin(), std::move(to_move));
         break;
 
       case UpdateSchema::Move::MoveType::kBefore: {
@@ -252,7 +252,7 @@ std::vector<SchemaField> ApplyChangesVisitor::MoveFields(
               return field.field_id() == move.reference_field_id;
             });
         if (before_it != reordered.end()) {
-          reordered.insert(before_it, to_move);
+          reordered.insert(before_it, std::move(to_move));
         }
         break;
       }
@@ -263,7 +263,7 @@ std::vector<SchemaField> ApplyChangesVisitor::MoveFields(
               return field.field_id() == move.reference_field_id;
             });
         if (after_it != reordered.end()) {
-          reordered.insert(after_it + 1, to_move);
+          reordered.insert(after_it + 1, std::move(to_move));
         }
         break;
       }
@@ -503,38 +503,33 @@ UpdateSchema& UpdateSchema::DeleteColumn(std::string_view name) {
 }
 
 UpdateSchema& UpdateSchema::MoveFirst(std::string_view name) {
-  auto field_id = FindFieldIdForMove(name);
-  ICEBERG_BUILDER_CHECK(field_id.has_value(), "Cannot move missing column: {}", name);
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field_id, FindFieldIdForMove(name));
 
-  return MoveInternal(name, Move::First(*field_id));
+  return MoveInternal(name, Move::First(field_id));
 }
 
 UpdateSchema& UpdateSchema::MoveBefore(std::string_view name,
                                        std::string_view before_name) {
-  auto field_id = FindFieldIdForMove(name);
-  ICEBERG_BUILDER_CHECK(field_id.has_value(), "Cannot move missing column: {}", name);
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field_id, FindFieldIdForMove(name));
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR(
+      auto before_id, FindFieldIdForMove(before_name),
+      "Cannot move {} before missing column: {}", name, before_name);
 
-  auto before_id = FindFieldIdForMove(before_name);
-  ICEBERG_BUILDER_CHECK(before_id.has_value(), "Cannot move {} before missing column: {}",
-                        name, before_name);
+  ICEBERG_BUILDER_CHECK(field_id != before_id, "Cannot move {} before itself", name);
 
-  ICEBERG_BUILDER_CHECK(*field_id != *before_id, "Cannot move {} before itself", name);
-
-  return MoveInternal(name, Move::Before(*field_id, *before_id));
+  return MoveInternal(name, Move::Before(field_id, before_id));
 }
 
 UpdateSchema& UpdateSchema::MoveAfter(std::string_view name,
                                       std::string_view after_name) {
-  auto field_id = FindFieldIdForMove(name);
-  ICEBERG_BUILDER_CHECK(field_id.has_value(), "Cannot move missing column: {}", name);
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN(auto field_id, FindFieldIdForMove(name));
+  ICEBERG_BUILDER_ASSIGN_OR_RETURN_WITH_ERROR(
+      auto after_id, FindFieldIdForMove(after_name),
+      "Cannot move {} after missing column: {}", name, after_name);
 
-  auto after_id = FindFieldIdForMove(after_name);
-  ICEBERG_BUILDER_CHECK(after_id.has_value(), "Cannot move {} after missing column: {}",
-                        name, after_name);
+  ICEBERG_BUILDER_CHECK(field_id != after_id, "Cannot move {} after itself", name);
 
-  ICEBERG_BUILDER_CHECK(*field_id != *after_id, "Cannot move {} after itself", name);
-
-  return MoveInternal(name, Move::After(*field_id, *after_id));
+  return MoveInternal(name, Move::After(field_id, after_id));
 }
 
 UpdateSchema& UpdateSchema::UnionByNameWith(std::shared_ptr<Schema> new_schema) {
@@ -726,20 +721,18 @@ std::string UpdateSchema::CaseSensitivityAwareName(std::string_view name) const 
   return StringUtils::ToLower(name);
 }
 
-std::optional<int32_t> UpdateSchema::FindFieldIdForMove(std::string_view name) const {
-  // First check if it's a newly added field
+Result<int32_t> UpdateSchema::FindFieldIdForMove(std::string_view name) const {
   auto added_it = added_name_to_id_.find(CaseSensitivityAwareName(name));
   if (added_it != added_name_to_id_.end()) {
     return added_it->second;
   }
 
-  // Then check existing schema fields
-  auto field_result = FindField(name);
-  if (field_result.has_value() && field_result.value().has_value()) {
-    return field_result.value()->get().field_id();
+  ICEBERG_ASSIGN_OR_RAISE(auto field, FindField(name));
+  if (field.has_value()) {
+    return field->get().field_id();
   }
 
-  return std::nullopt;
+  return InvalidArgument("Cannot move missing column: {}", name);
 }
 
 UpdateSchema& UpdateSchema::MoveInternal(std::string_view name, const Move& move) {
