@@ -189,10 +189,7 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
 
   std::string ManifestPath();
   std::string ManifestListPath();
-
- protected:
-  /// \brief Builder for tracking snapshot summary properties and metrics.
-  SnapshotSummaryBuilder summary_;
+  SnapshotSummaryBuilder& summary_builder() { return summary_; }
 
  private:
   /// \brief Returns the snapshot summary from the implementation and updates totals.
@@ -201,6 +198,9 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
 
   /// \brief Clean up all uncommitted files
   void CleanAll();
+
+ protected:
+  SnapshotSummaryBuilder summary_;
 
  private:
   const bool can_inherit_snapshot_id_{true};

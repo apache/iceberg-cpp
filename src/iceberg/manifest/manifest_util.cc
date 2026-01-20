@@ -42,15 +42,17 @@ Result<ManifestFile> CopyAppendManifest(
   ICEBERG_ASSIGN_OR_RAISE(auto inheritable_metadata,
                           InheritableMetadataFactory::ForCopy(snapshot_id));
   ICEBERG_ASSIGN_OR_RAISE(
-      auto reader, ManifestReader::Make(manifest, file_io, schema, spec,
-                                        std::move(inheritable_metadata), std::nullopt));
+      auto reader,
+      ManifestReader::Make(manifest.manifest_path, manifest.manifest_length, file_io,
+                           schema, spec, std::move(inheritable_metadata),
+                           /*first_row_id=*/std::nullopt));
   ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
 
   // do not produce row IDs for the copy
   ICEBERG_ASSIGN_OR_RAISE(
       auto writer, ManifestWriter::MakeWriter(
                        format_version, snapshot_id, output_path, file_io, spec, schema,
-                       ManifestContent::kData, /*first_row_id*/ std::nullopt));
+                       ManifestContent::kData, /*first_row_id=*/std::nullopt));
 
   for (auto& entry : entries) {
     ICEBERG_CHECK(entry.status == ManifestStatus::kAdded,

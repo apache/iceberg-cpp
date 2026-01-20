@@ -39,7 +39,7 @@ namespace iceberg {
 /// from the manifest file. This interface provides a way to apply such inheritance rules.
 class ICEBERG_EXPORT InheritableMetadata {
  public:
-  virtual ~InheritableMetadata() = default;
+  virtual ~InheritableMetadata();
 
   /// \brief Apply inheritable metadata to a manifest entry.
   /// \param entry The manifest entry to modify.
@@ -61,6 +61,8 @@ class ICEBERG_EXPORT BaseInheritableMetadata : public InheritableMetadata {
 
   Status Apply(ManifestEntry& entry) override;
 
+  ~BaseInheritableMetadata() override;
+
  private:
   int32_t spec_id_;
   int64_t snapshot_id_;
@@ -72,6 +74,8 @@ class ICEBERG_EXPORT BaseInheritableMetadata : public InheritableMetadata {
 class ICEBERG_EXPORT EmptyInheritableMetadata : public InheritableMetadata {
  public:
   Status Apply(ManifestEntry& entry) override;
+
+  ~EmptyInheritableMetadata() override;
 };
 
 /// \brief Metadata inheritance for copying manifests before commit.
@@ -82,6 +86,8 @@ class ICEBERG_EXPORT CopyInheritableMetadata : public InheritableMetadata {
   explicit CopyInheritableMetadata(int64_t snapshot_id);
 
   Status Apply(ManifestEntry& entry) override;
+
+  ~CopyInheritableMetadata() override;
 
  private:
   int64_t snapshot_id_;

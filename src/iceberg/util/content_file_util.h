@@ -22,8 +22,6 @@
 /// \file iceberg/util/content_file_util.h
 /// Utility functions for content files (data files and delete files).
 
-#include <algorithm>
-#include <functional>
 #include <memory>
 #include <optional>
 #include <span>
