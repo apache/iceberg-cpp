@@ -75,13 +75,6 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate {
   /// \return Reference to this for method chaining
   FastAppend& ToBranch(const std::string& branch);
 
-  /// \brief Set a summary property.
-  ///
-  /// \param property The property name
-  /// \param value The property value
-  /// \return Reference to this for method chaining
-  FastAppend& Set(const std::string& property, const std::string& value);
-
   std::string operation() override;
 
   Result<std::vector<ManifestFile>> Apply(
@@ -110,7 +103,6 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate {
 
  private:
   std::string table_name_;
-  SnapshotSummaryBuilder summary_;
   std::unordered_map<int32_t, DataFileSet> new_data_files_by_spec_;
   std::vector<ManifestFile> append_manifests_;
   std::vector<ManifestFile> rewritten_append_manifests_;

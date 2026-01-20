@@ -93,11 +93,6 @@ FastAppend& FastAppend::ToBranch(const std::string& branch) {
   return *this;
 }
 
-FastAppend& FastAppend::Set(const std::string& property, const std::string& value) {
-  summary_.Set(property, value);
-  return *this;
-}
-
 std::string FastAppend::operation() { return DataOperation::kAppend; }
 
 Result<std::vector<ManifestFile>> FastAppend::Apply(

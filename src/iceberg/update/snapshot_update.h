@@ -76,6 +76,16 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
     return self;
   }
 
+  /// \brief Set a summary property.
+  ///
+  /// \param property The property name
+  /// \param value The property value
+  /// \return Reference to this for method chaining
+  auto& Set(this auto& self, const std::string& property, const std::string& value) {
+    self.summary_.Set(property, value);
+    return self;
+  }
+
   /// \brief Apply the update's changes to create a new snapshot.
   ///
   /// This method validates the changes, applies them to the metadata,
@@ -178,6 +188,10 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   Status DeleteFile(const std::string& path);
 
   std::string ManifestPath();
+
+ protected:
+  /// \brief Builder for tracking snapshot summary properties and metrics.
+  SnapshotSummaryBuilder summary_;
 
  private:
   /// \brief Returns the snapshot summary from the implementation and updates totals.
