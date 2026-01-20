@@ -22,7 +22,9 @@
 /// \file iceberg/manifest/manifest_reader.h
 /// Data reader interface for manifest files.
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
