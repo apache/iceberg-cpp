@@ -33,7 +33,6 @@
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
-#include "iceberg/schema_internal.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/statistics_file.h"
@@ -269,6 +268,18 @@ Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
     sort_fields.push_back(std::move(*sort_field));
   }
   return SortOrder::Make(*current_schema, order_id, std::move(sort_fields));
+}
+
+Result<std::unique_ptr<SortOrder>> SortOrderFromJson(const nlohmann::json& json) {
+  ICEBERG_ASSIGN_OR_RAISE(auto order_id, GetJsonValue<int32_t>(json, kOrderId));
+  ICEBERG_ASSIGN_OR_RAISE(auto fields, GetJsonValue<nlohmann::json>(json, kFields));
+
+  std::vector<SortField> sort_fields;
+  for (const auto& field_json : fields) {
+    ICEBERG_ASSIGN_OR_RAISE(auto sort_field, SortFieldFromJson(field_json));
+    sort_fields.push_back(std::move(*sort_field));
+  }
+  return SortOrder::Make(order_id, std::move(sort_fields));
 }
 
 nlohmann::json ToJson(const SchemaField& field) {
@@ -613,6 +624,19 @@ Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
                                   /*allow_missing_fields=*/true));
   }
   return spec;
+}
+
+Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(const nlohmann::json& json) {
+  ICEBERG_ASSIGN_OR_RAISE(auto spec_id, GetJsonValue<int32_t>(json, kSpecId));
+  ICEBERG_ASSIGN_OR_RAISE(auto fields, GetJsonValue<nlohmann::json>(json, kFields));
+
+  std::vector<PartitionField> partition_fields;
+  for (const auto& field_json : fields) {
+    ICEBERG_ASSIGN_OR_RAISE(auto partition_field, PartitionFieldFromJson(field_json));
+    partition_fields.push_back(std::move(*partition_field));
+  }
+
+  return PartitionSpec::Make(spec_id, std::move(partition_fields));
 }
 
 Result<std::unique_ptr<SnapshotRef>> SnapshotRefFromJson(const nlohmann::json& json) {
@@ -1492,10 +1516,8 @@ Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(const nlohmann::json& j
   }
   if (action == kActionAddPartitionSpec) {
     ICEBERG_ASSIGN_OR_RAISE(auto spec_json, GetJsonValue<nlohmann::json>(json, kSpec));
-    ICEBERG_ASSIGN_OR_RAISE(auto spec_id_opt,
-                            GetJsonValueOptional<int32_t>(spec_json, kSpecId));
-    // TODO(Feiyang Li): add fromJson for UnboundPartitionSpec and then use it here
-    return NotImplemented("FromJson of TableUpdate::AddPartitionSpec is not implemented");
+    ICEBERG_ASSIGN_OR_RAISE(auto spec, PartitionSpecFromJson(spec_json));
+    return std::make_unique<table::AddPartitionSpec>(std::move(spec));
   }
   if (action == kActionSetDefaultPartitionSpec) {
     ICEBERG_ASSIGN_OR_RAISE(auto spec_id, GetJsonValue<int32_t>(json, kSpecId));
@@ -1515,8 +1537,8 @@ Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(const nlohmann::json& j
   if (action == kActionAddSortOrder) {
     ICEBERG_ASSIGN_OR_RAISE(auto sort_order_json,
                             GetJsonValue<nlohmann::json>(json, kSortOrder));
-    // TODO(Feiyang Li): add fromJson for UnboundSortOrder and then use it here
-    return NotImplemented("FromJson of TableUpdate::AddSortOrder is not implemented");
+    ICEBERG_ASSIGN_OR_RAISE(auto sort_order, SortOrderFromJson(sort_order_json));
+    return std::make_unique<table::AddSortOrder>(std::move(sort_order));
   }
   if (action == kActionSetDefaultSortOrder) {
     ICEBERG_ASSIGN_OR_RAISE(auto sort_order_id,

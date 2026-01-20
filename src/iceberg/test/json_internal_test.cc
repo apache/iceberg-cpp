@@ -175,6 +175,29 @@ TEST(JsonInternalTest, PartitionSpec) {
   EXPECT_EQ(*spec, *parsed_spec_result.value());
 }
 
+TEST(JsonInternalTest, SortOrderFromJsonUnbound) {
+  auto identity_transform = Transform::Identity();
+  SortField st1(5, identity_transform, SortDirection::kAscending, NullOrder::kFirst);
+  SortField st2(7, identity_transform, SortDirection::kDescending, NullOrder::kLast);
+  ICEBERG_UNWRAP_OR_FAIL(auto sort_order, SortOrder::Make(100, {st1, st2}));
+
+  auto json = ToJson(*sort_order);
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, SortOrderFromJson(json));
+  EXPECT_EQ(*sort_order, *parsed);
+}
+
+TEST(JsonInternalTest, PartitionSpecFromJsonUnbound) {
+  auto identity_transform = Transform::Identity();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec,
+      PartitionSpec::Make(1, {PartitionField(3, 101, "region", identity_transform),
+                              PartitionField(5, 102, "ts", identity_transform)}));
+
+  auto json = ToJson(*spec);
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, PartitionSpecFromJson(json));
+  EXPECT_EQ(*spec, *parsed);
+}
+
 TEST(JsonInternalTest, SnapshotRefBranch) {
   SnapshotRef ref(1234567890, SnapshotRef::Branch{.min_snapshots_to_keep = 10,
                                                   .max_snapshot_age_ms = 123456789,
@@ -349,6 +372,23 @@ TEST(JsonInternalTest, TableUpdateSetCurrentSchema) {
             update);
 }
 
+TEST(JsonInternalTest, TableUpdateAddPartitionSpec) {
+  auto identity_transform = Transform::Identity();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec,
+      PartitionSpec::Make(1, {PartitionField(3, 101, "region", identity_transform)}));
+  table::AddPartitionSpec update(std::move(spec));
+
+  auto json = ToJson(update);
+  EXPECT_EQ(json["action"], "add-spec");
+  EXPECT_TRUE(json.contains("spec"));
+
+  auto parsed = TableUpdateFromJson(json);
+  ASSERT_THAT(parsed, IsOk());
+  auto* actual = internal::checked_cast<table::AddPartitionSpec*>(parsed.value().get());
+  EXPECT_EQ(*actual->spec(), *update.spec());
+}
+
 TEST(JsonInternalTest, TableUpdateSetDefaultPartitionSpec) {
   table::SetDefaultPartitionSpec update(2);
   nlohmann::json expected = R"({"action":"set-default-spec","spec-id":2})"_json;
@@ -384,6 +424,22 @@ TEST(JsonInternalTest, TableUpdateRemoveSchemas) {
   auto parsed = TableUpdateFromJson(json);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(*internal::checked_cast<table::RemoveSchemas*>(parsed.value().get()), update);
+}
+
+TEST(JsonInternalTest, TableUpdateAddSortOrder) {
+  auto identity_transform = Transform::Identity();
+  SortField st(5, identity_transform, SortDirection::kAscending, NullOrder::kFirst);
+  ICEBERG_UNWRAP_OR_FAIL(auto sort_order, SortOrder::Make(1, {st}));
+  table::AddSortOrder update(std::move(sort_order));
+
+  auto json = ToJson(update);
+  EXPECT_EQ(json["action"], "add-sort-order");
+  EXPECT_TRUE(json.contains("sort-order"));
+
+  auto parsed = TableUpdateFromJson(json);
+  ASSERT_THAT(parsed, IsOk());
+  auto* actual = internal::checked_cast<table::AddSortOrder*>(parsed.value().get());
+  EXPECT_EQ(*actual->sort_order(), *update.sort_order());
 }
 
 TEST(JsonInternalTest, TableUpdateSetDefaultSortOrder) {
