@@ -226,6 +226,14 @@ struct ICEBERG_EXPORT SnapshotSummaryFields {
   inline static const std::string kDeletedDuplicatedFiles = "deleted-duplicate-files";
   /// \brief Number of partitions with files added or removed in the snapshot
   inline static const std::string kChangedPartitionCountProp = "changed-partition-count";
+  /// \brief Number of manifest files created in the snapshot
+  inline static const std::string kManifestsCreated = "manifests-created";
+  /// \brief Number of manifest files kept in the snapshot
+  inline static const std::string kManifestsKept = "manifests-kept";
+  /// \brief Number of manifest files replaced in the snapshot
+  inline static const std::string kManifestsReplaced = "manifests-replaced";
+  /// \brief Number of manifest entries processed in the snapshot
+  inline static const std::string kEntriesProcessed = "entries-processed";
   /// \brief Partition summaries prefix
   inline static const std::string kChangedPartitionPrefix = "partitions.";
   /// \brief Whether partition summaries are included
