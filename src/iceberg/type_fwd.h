@@ -199,6 +199,7 @@ class UpdatePartitionSpec;
 class UpdateProperties;
 class UpdateSchema;
 class UpdateSortOrder;
+class UpdateStatistics;
 
 /// ----------------------------------------------------------------------------
 /// TODO: Forward declarations below are not added yet.

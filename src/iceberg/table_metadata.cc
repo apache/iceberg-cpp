@@ -45,6 +45,7 @@
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_order.h"
+#include "iceberg/statistics_file.h"
 #include "iceberg/table_properties.h"
 #include "iceberg/table_update.h"
 #include "iceberg/util/checked_cast.h"
@@ -620,6 +621,8 @@ class TableMetadataBuilder::Impl {
   Status RemoveRef(const std::string& name);
   Status RemoveSnapshots(const std::vector<int64_t>& snapshot_ids);
   Status RemovePartitionSpecs(const std::vector<int32_t>& spec_ids);
+  Status SetStatistics(std::shared_ptr<StatisticsFile> statistics_file);
+  Status RemoveStatistics(int64_t snapshot_id);
 
   Result<std::unique_ptr<TableMetadata>> Build();
 
@@ -1173,6 +1176,38 @@ Status TableMetadataBuilder::Impl::SetRef(const std::string& name,
   return {};
 }
 
+Status TableMetadataBuilder::Impl::SetStatistics(
+    std::shared_ptr<StatisticsFile> statistics_file) {
+  ICEBERG_PRECHECK(statistics_file != nullptr, "Cannot set null statistics file");
+
+  // Find and replace existing statistics for the same snapshot_id, or add new one
+  auto it = std::ranges::find_if(
+      metadata_.statistics,
+      [snapshot_id = statistics_file->snapshot_id](const auto& stat) {
+        return stat && stat->snapshot_id == snapshot_id;
+      });
+
+  if (it != metadata_.statistics.end()) {
+    *it = statistics_file;
+  } else {
+    metadata_.statistics.push_back(statistics_file);
+  }
+
+  changes_.push_back(std::make_unique<table::SetStatistics>(std::move(statistics_file)));
+  return {};
+}
+
+Status TableMetadataBuilder::Impl::RemoveStatistics(int64_t snapshot_id) {
+  auto removed_count =
+      std::erase_if(metadata_.statistics, [snapshot_id](const auto& stat) {
+        return stat && stat->snapshot_id == snapshot_id;
+      });
+  if (removed_count != 0) {
+    changes_.push_back(std::make_unique<table::RemoveStatistics>(snapshot_id));
+  }
+  return {};
+}
+
 std::unordered_set<int64_t> TableMetadataBuilder::Impl::IntermediateSnapshotIdSet(
     int64_t current_snapshot_id) const {
   std::unordered_set<int64_t> added_snapshot_ids;
@@ -1589,12 +1624,14 @@ TableMetadataBuilder& TableMetadataBuilder::SuppressHistoricalSnapshots() {
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetStatistics(
-    const std::shared_ptr<StatisticsFile>& statistics_file) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+    std::shared_ptr<StatisticsFile> statistics_file) {
+  ICEBERG_BUILDER_RETURN_IF_ERROR(impl_->SetStatistics(std::move(statistics_file)));
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemoveStatistics(int64_t snapshot_id) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  ICEBERG_BUILDER_RETURN_IF_ERROR(impl_->RemoveStatistics(snapshot_id));
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetPartitionStatistics(

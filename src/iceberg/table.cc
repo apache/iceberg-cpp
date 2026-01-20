@@ -35,6 +35,7 @@
 #include "iceberg/update/update_partition_spec.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/update/update_schema.h"
+#include "iceberg/update/update_statistics.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -204,6 +205,13 @@ Result<std::shared_ptr<FastAppend>> Table::NewFastAppend() {
       auto transaction, Transaction::Make(shared_from_this(), Transaction::Kind::kUpdate,
                                           /*auto_commit=*/true));
   return transaction->NewFastAppend();
+}
+
+Result<std::shared_ptr<UpdateStatistics>> Table::NewUpdateStatistics() {
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto transaction, Transaction::Make(shared_from_this(), Transaction::Kind::kUpdate,
+                                          /*auto_commit=*/true));
+  return transaction->NewUpdateStatistics();
 }
 
 Result<std::shared_ptr<StagedTable>> StagedTable::Make(

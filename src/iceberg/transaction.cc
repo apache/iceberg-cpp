@@ -25,6 +25,7 @@
 #include "iceberg/catalog.h"
 #include "iceberg/schema.h"
 #include "iceberg/snapshot.h"
+#include "iceberg/statistics_file.h"
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
@@ -41,6 +42,7 @@
 #include "iceberg/update/update_properties.h"
 #include "iceberg/update/update_schema.h"
 #include "iceberg/update/update_sort_order.h"
+#include "iceberg/update/update_statistics.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/location_util.h"
 #include "iceberg/util/macros.h"
@@ -314,6 +316,13 @@ Result<std::shared_ptr<FastAppend>> Transaction::NewFastAppend() {
                           FastAppend::Make(table_->name().name, shared_from_this()));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(fast_append));
   return fast_append;
+}
+
+Result<std::shared_ptr<UpdateStatistics>> Transaction::NewUpdateStatistics() {
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<UpdateStatistics> update_statistics,
+                          UpdateStatistics::Make(shared_from_this()));
+  ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_statistics));
+  return update_statistics;
 }
 
 }  // namespace iceberg

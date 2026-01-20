@@ -22,8 +22,10 @@
 #include "iceberg/exception.h"
 #include "iceberg/schema.h"
 #include "iceberg/sort_order.h"
+#include "iceberg/statistics_file.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_requirements.h"
+#include "iceberg/util/checked_cast.h"
 
 namespace iceberg {
 TableUpdate::~TableUpdate() = default;
@@ -45,7 +47,7 @@ bool AssignUUID::Equals(const TableUpdate& other) const {
   if (other.kind() != Kind::kAssignUUID) {
     return false;
   }
-  const auto& other_assign = static_cast<const AssignUUID&>(other);
+  const auto& other_assign = internal::checked_cast<const AssignUUID&>(other);
   return uuid_ == other_assign.uuid_;
 }
 
@@ -67,7 +69,7 @@ bool UpgradeFormatVersion::Equals(const TableUpdate& other) const {
   if (other.kind() != Kind::kUpgradeFormatVersion) {
     return false;
   }
-  const auto& other_upgrade = static_cast<const UpgradeFormatVersion&>(other);
+  const auto& other_upgrade = internal::checked_cast<const UpgradeFormatVersion&>(other);
   return format_version_ == other_upgrade.format_version_;
 }
 
@@ -117,7 +119,7 @@ bool SetCurrentSchema::Equals(const TableUpdate& other) const {
   if (other.kind() != Kind::kSetCurrentSchema) {
     return false;
   }
-  const auto& other_set = static_cast<const SetCurrentSchema&>(other);
+  const auto& other_set = internal::checked_cast<const SetCurrentSchema&>(other);
   return schema_id_ == other_set.schema_id_;
 }
 
@@ -167,7 +169,7 @@ bool SetDefaultPartitionSpec::Equals(const TableUpdate& other) const {
   if (other.kind() != Kind::kSetDefaultPartitionSpec) {
     return false;
   }
-  const auto& other_set = static_cast<const SetDefaultPartitionSpec&>(other);
+  const auto& other_set = internal::checked_cast<const SetDefaultPartitionSpec&>(other);
   return spec_id_ == other_set.spec_id_;
 }
 
@@ -190,7 +192,7 @@ bool RemovePartitionSpecs::Equals(const TableUpdate& other) const {
   if (other.kind() != Kind::kRemovePartitionSpecs) {
     return false;
   }
-  const auto& other_remove = static_cast<const RemovePartitionSpecs&>(other);
+  const auto& other_remove = internal::checked_cast<const RemovePartitionSpecs&>(other);
   return spec_ids_ == other_remove.spec_ids_;
 }
 
@@ -213,7 +215,7 @@ bool RemoveSchemas::Equals(const TableUpdate& other) const {
   if (other.kind() != Kind::kRemoveSchemas) {
     return false;
   }
-  const auto& other_remove = static_cast<const RemoveSchemas&>(other);
+  const auto& other_remove = internal::checked_cast<const RemoveSchemas&>(other);
   return schema_ids_ == other_remove.schema_ids_;
 }
 
@@ -263,7 +265,7 @@ bool SetDefaultSortOrder::Equals(const TableUpdate& other) const {
   if (other.kind() != Kind::kSetDefaultSortOrder) {
     return false;
   }
-  const auto& other_set = static_cast<const SetDefaultSortOrder&>(other);
+  const auto& other_set = internal::checked_cast<const SetDefaultSortOrder&>(other);
   return sort_order_id_ == other_set.sort_order_id_;
 }
 
@@ -313,7 +315,7 @@ bool RemoveSnapshots::Equals(const TableUpdate& other) const {
   if (other.kind() != Kind::kRemoveSnapshots) {
     return false;
   }
-  const auto& other_remove = static_cast<const RemoveSnapshots&>(other);
+  const auto& other_remove = internal::checked_cast<const RemoveSnapshots&>(other);
   return snapshot_ids_ == other_remove.snapshot_ids_;
 }
 
@@ -335,7 +337,7 @@ bool RemoveSnapshotRef::Equals(const TableUpdate& other) const {
   if (other.kind() != Kind::kRemoveSnapshotRef) {
     return false;
   }
-  const auto& other_remove = static_cast<const RemoveSnapshotRef&>(other);
+  const auto& other_remove = internal::checked_cast<const RemoveSnapshotRef&>(other);
   return ref_name_ == other_remove.ref_name_;
 }
 
@@ -366,7 +368,7 @@ bool SetSnapshotRef::Equals(const TableUpdate& other) const {
   if (other.kind() != Kind::kSetSnapshotRef) {
     return false;
   }
-  const auto& other_set = static_cast<const SetSnapshotRef&>(other);
+  const auto& other_set = internal::checked_cast<const SetSnapshotRef&>(other);
   return ref_name_ == other_set.ref_name_ && snapshot_id_ == other_set.snapshot_id_ &&
          type_ == other_set.type_ &&
          min_snapshots_to_keep_ == other_set.min_snapshots_to_keep_ &&
@@ -394,7 +396,7 @@ bool SetProperties::Equals(const TableUpdate& other) const {
   if (other.kind() != Kind::kSetProperties) {
     return false;
   }
-  const auto& other_set = static_cast<const SetProperties&>(other);
+  const auto& other_set = internal::checked_cast<const SetProperties&>(other);
   return updated_ == other_set.updated_;
 }
 
@@ -416,7 +418,7 @@ bool RemoveProperties::Equals(const TableUpdate& other) const {
   if (other.kind() != Kind::kRemoveProperties) {
     return false;
   }
-  const auto& other_remove = static_cast<const RemoveProperties&>(other);
+  const auto& other_remove = internal::checked_cast<const RemoveProperties&>(other);
   return removed_ == other_remove.removed_;
 }
 
@@ -438,12 +440,64 @@ bool SetLocation::Equals(const TableUpdate& other) const {
   if (other.kind() != Kind::kSetLocation) {
     return false;
   }
-  const auto& other_set = static_cast<const SetLocation&>(other);
+  const auto& other_set = internal::checked_cast<const SetLocation&>(other);
   return location_ == other_set.location_;
 }
 
 std::unique_ptr<TableUpdate> SetLocation::Clone() const {
   return std::make_unique<SetLocation>(location_);
+}
+
+// SetStatistics
+
+int64_t SetStatistics::snapshot_id() const { return statistics_file_->snapshot_id; }
+
+void SetStatistics::ApplyTo(TableMetadataBuilder& builder) const {
+  builder.SetStatistics(statistics_file_);
+}
+
+void SetStatistics::GenerateRequirements(TableUpdateContext& context) const {
+  // SetStatistics doesn't generate any requirements
+}
+
+bool SetStatistics::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kSetStatistics) {
+    return false;
+  }
+  const auto& other_set = internal::checked_cast<const SetStatistics&>(other);
+  if (!statistics_file_ != !other_set.statistics_file_) {
+    return false;
+  }
+  if (statistics_file_ && !(*statistics_file_ == *other_set.statistics_file_)) {
+    return false;
+  }
+  return true;
+}
+
+std::unique_ptr<TableUpdate> SetStatistics::Clone() const {
+  return std::make_unique<SetStatistics>(statistics_file_);
+}
+
+// RemoveStatistics
+
+void RemoveStatistics::ApplyTo(TableMetadataBuilder& builder) const {
+  builder.RemoveStatistics(snapshot_id_);
+}
+
+void RemoveStatistics::GenerateRequirements(TableUpdateContext& context) const {
+  // RemoveStatistics doesn't generate any requirements
+}
+
+bool RemoveStatistics::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kRemoveStatistics) {
+    return false;
+  }
+  const auto& other_remove = internal::checked_cast<const RemoveStatistics&>(other);
+  return snapshot_id_ == other_remove.snapshot_id_;
+}
+
+std::unique_ptr<TableUpdate> RemoveStatistics::Clone() const {
+  return std::make_unique<RemoveStatistics>(snapshot_id_);
 }
 
 }  // namespace iceberg::table

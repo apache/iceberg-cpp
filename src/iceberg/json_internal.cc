@@ -191,6 +191,8 @@ constexpr std::string_view kActionSetSnapshotRef = "set-snapshot-ref";
 constexpr std::string_view kActionSetProperties = "set-properties";
 constexpr std::string_view kActionRemoveProperties = "remove-properties";
 constexpr std::string_view kActionSetLocation = "set-location";
+constexpr std::string_view kActionSetStatistics = "set-statistics";
+constexpr std::string_view kActionRemoveStatistics = "remove-statistics";
 
 // TableUpdate field constants
 constexpr std::string_view kUUID = "uuid";
@@ -1399,6 +1401,22 @@ nlohmann::json ToJson(const TableUpdate& update) {
       json[kLocation] = u.location();
       break;
     }
+    case TableUpdate::Kind::kSetStatistics: {
+      const auto& u = internal::checked_cast<const table::SetStatistics&>(update);
+      json[kAction] = kActionSetStatistics;
+      if (u.statistics_file()) {
+        json[kStatistics] = ToJson(*u.statistics_file());
+      } else {
+        json[kStatistics] = nlohmann::json::value_t::null;
+      }
+      break;
+    }
+    case TableUpdate::Kind::kRemoveStatistics: {
+      const auto& u = internal::checked_cast<const table::RemoveStatistics&>(update);
+      json[kAction] = kActionRemoveStatistics;
+      json[kSnapshotId] = u.snapshot_id();
+      break;
+    }
   }
   return json;
 }
@@ -1578,6 +1596,17 @@ Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(const nlohmann::json& j
   if (action == kActionSetLocation) {
     ICEBERG_ASSIGN_OR_RAISE(auto location, GetJsonValue<std::string>(json, kLocation));
     return std::make_unique<table::SetLocation>(std::move(location));
+  }
+  if (action == kActionSetStatistics) {
+    ICEBERG_ASSIGN_OR_RAISE(auto statistics_json,
+                            GetJsonValue<nlohmann::json>(json, kStatistics));
+    ICEBERG_ASSIGN_OR_RAISE(auto statistics_file,
+                            StatisticsFileFromJson(statistics_json));
+    return std::make_unique<table::SetStatistics>(std::move(statistics_file));
+  }
+  if (action == kActionRemoveStatistics) {
+    ICEBERG_ASSIGN_OR_RAISE(auto snapshot_id, GetJsonValue<int64_t>(json, kSnapshotId));
+    return std::make_unique<table::RemoveStatistics>(snapshot_id);
   }
 
   return JsonParseError("Unknown table update action: {}", action);

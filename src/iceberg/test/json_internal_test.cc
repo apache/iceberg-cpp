@@ -31,6 +31,7 @@
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_field.h"
 #include "iceberg/sort_order.h"
+#include "iceberg/statistics_file.h"
 #include "iceberg/table_requirement.h"
 #include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
@@ -506,6 +507,54 @@ TEST(JsonInternalTest, TableUpdateSetLocation) {
   auto parsed = TableUpdateFromJson(expected);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(*internal::checked_cast<table::SetLocation*>(parsed.value().get()), update);
+}
+
+TEST(JsonInternalTest, TableUpdateSetStatistics) {
+  auto stats_file = std::make_shared<StatisticsFile>();
+  stats_file->snapshot_id = 123456789;
+  stats_file->path = "s3://bucket/warehouse/table/metadata/stats-123456789.puffin";
+  stats_file->file_size_in_bytes = 1024;
+  stats_file->file_footer_size_in_bytes = 128;
+  stats_file->blob_metadata = {BlobMetadata{.type = "ndv",
+                                            .source_snapshot_id = 123456789,
+                                            .source_snapshot_sequence_number = 1,
+                                            .fields = {1, 2},
+                                            .properties = {{"prop1", "value1"}}}};
+
+  table::SetStatistics update(stats_file);
+  nlohmann::json expected = R"({
+    "action": "set-statistics",
+    "statistics": {
+      "snapshot-id": 123456789,
+      "statistics-path": "s3://bucket/warehouse/table/metadata/stats-123456789.puffin",
+      "file-size-in-bytes": 1024,
+      "file-footer-size-in-bytes": 128,
+      "blob-metadata": [{
+        "type": "ndv",
+        "snapshot-id": 123456789,
+        "sequence-number": 1,
+        "fields": [1, 2],
+        "properties": {"prop1": "value1"}
+      }]
+    }
+  })"_json;
+
+  EXPECT_EQ(ToJson(update), expected);
+  auto parsed = TableUpdateFromJson(expected);
+  ASSERT_THAT(parsed, IsOk());
+  EXPECT_EQ(*internal::checked_cast<table::SetStatistics*>(parsed.value().get()), update);
+}
+
+TEST(JsonInternalTest, TableUpdateRemoveStatistics) {
+  table::RemoveStatistics update(123456789);
+  nlohmann::json expected =
+      R"({"action":"remove-statistics","snapshot-id":123456789})"_json;
+
+  EXPECT_EQ(ToJson(update), expected);
+  auto parsed = TableUpdateFromJson(expected);
+  ASSERT_THAT(parsed, IsOk());
+  EXPECT_EQ(*internal::checked_cast<table::RemoveStatistics*>(parsed.value().get()),
+            update);
 }
 
 TEST(JsonInternalTest, TableUpdateUnknownAction) {
