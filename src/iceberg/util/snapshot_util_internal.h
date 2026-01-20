@@ -70,6 +70,15 @@ class ICEBERG_EXPORT SnapshotUtil {
   /// \return true if ancestor_snapshot_id is an ancestor of the current snapshot
   static Result<bool> IsAncestorOf(const Table& table, int64_t ancestor_snapshot_id);
 
+  /// \brief Returns whether ancestor_snapshot_id is an ancestor of the metadata's current
+  /// state.
+  ///
+  /// \param metadata The table metadata to check
+  /// \param ancestor_snapshot_id The ancestor snapshot ID to check for
+  /// \return true if ancestor_snapshot_id is an ancestor of the current snapshot
+  static Result<bool> IsAncestorOf(const TableMetadata& metadata,
+                                   int64_t ancestor_snapshot_id);
+
   /// \brief Returns whether some ancestor of snapshot_id has parentId matches
   /// ancestor_parent_snapshot_id.
   ///
@@ -87,6 +96,14 @@ class ICEBERG_EXPORT SnapshotUtil {
   /// \return A vector from the table's current snapshot to its last known ancestor
   static Result<std::vector<std::shared_ptr<Snapshot>>> CurrentAncestors(
       const Table& table);
+
+  /// \brief Returns a vector that traverses the metadata's snapshots from the current to
+  /// the last known ancestor.
+  ///
+  /// \param metadata The table metadata
+  /// \return A vector from the metadata's current snapshot to its last known ancestor
+  static Result<std::vector<std::shared_ptr<Snapshot>>> CurrentAncestors(
+      const TableMetadata& metadata);
 
   /// \brief Returns the snapshot IDs for the ancestors of the current table state.
   ///

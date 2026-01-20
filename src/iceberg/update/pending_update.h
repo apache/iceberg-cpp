@@ -43,6 +43,7 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
  public:
   enum class Kind : uint8_t {
     kExpireSnapshots,
+    kSetSnapshot,
     kUpdateLocation,
     kUpdatePartitionSpec,
     kUpdateProperties,

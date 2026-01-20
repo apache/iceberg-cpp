@@ -189,6 +189,7 @@ class Transaction;
 /// \brief Update family.
 class ExpireSnapshots;
 class PendingUpdate;
+class SetSnapshot;
 class SnapshotUpdate;
 class UpdateLocation;
 class UpdatePartitionSpec;

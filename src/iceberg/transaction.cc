@@ -24,6 +24,7 @@
 
 #include "iceberg/catalog.h"
 #include "iceberg/schema.h"
+#include "iceberg/snapshot.h"
 #include "iceberg/table.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_properties.h"
@@ -32,6 +33,7 @@
 #include "iceberg/table_update.h"
 #include "iceberg/update/expire_snapshots.h"
 #include "iceberg/update/pending_update.h"
+#include "iceberg/update/set_snapshot.h"
 #include "iceberg/update/snapshot_update.h"
 #include "iceberg/update/update_location.h"
 #include "iceberg/update/update_partition_spec.h"
@@ -96,6 +98,45 @@ Status Transaction::AddUpdate(const std::shared_ptr<PendingUpdate>& update) {
 
 Status Transaction::Apply(PendingUpdate& update) {
   switch (update.kind()) {
+    case PendingUpdate::Kind::kExpireSnapshots: {
+      auto& expire_snapshots = internal::checked_cast<ExpireSnapshots&>(update);
+      ICEBERG_ASSIGN_OR_RAISE(auto result, expire_snapshots.Apply());
+      if (!result.snapshot_ids_to_remove.empty()) {
+        metadata_builder_->RemoveSnapshots(std::move(result.snapshot_ids_to_remove));
+      }
+      if (!result.refs_to_remove.empty()) {
+        for (const auto& ref_name : result.refs_to_remove) {
+          metadata_builder_->RemoveRef(ref_name);
+        }
+      }
+      if (!result.partition_spec_ids_to_remove.empty()) {
+        metadata_builder_->RemovePartitionSpecs(
+            std::move(result.partition_spec_ids_to_remove));
+      }
+      if (!result.schema_ids_to_remove.empty()) {
+        metadata_builder_->RemoveSchemas(std::move(result.schema_ids_to_remove));
+      }
+    } break;
+    case PendingUpdate::Kind::kSetSnapshot: {
+      auto& set_snapshot = internal::checked_cast<SetSnapshot&>(update);
+      ICEBERG_ASSIGN_OR_RAISE(auto snapshot_id, set_snapshot.Apply());
+      metadata_builder_->SetBranchSnapshot(snapshot_id,
+                                           std::string(SnapshotRef::kMainBranch));
+    } break;
+    case PendingUpdate::Kind::kUpdateLocation: {
+      auto& update_location = internal::checked_cast<UpdateLocation&>(update);
+      ICEBERG_ASSIGN_OR_RAISE(auto location, update_location.Apply());
+      metadata_builder_->SetLocation(location);
+    } break;
+    case PendingUpdate::Kind::kUpdatePartitionSpec: {
+      auto& update_partition_spec = internal::checked_cast<UpdatePartitionSpec&>(update);
+      ICEBERG_ASSIGN_OR_RAISE(auto result, update_partition_spec.Apply());
+      if (result.set_as_default) {
+        metadata_builder_->SetDefaultPartitionSpec(std::move(result.spec));
+      } else {
+        metadata_builder_->AddPartitionSpec(std::move(result.spec));
+      }
+    } break;
     case PendingUpdate::Kind::kUpdateProperties: {
       auto& update_properties = internal::checked_cast<UpdateProperties&>(update);
       ICEBERG_ASSIGN_OR_RAISE(auto result, update_properties.Apply());
@@ -109,25 +150,16 @@ Status Transaction::Apply(PendingUpdate& update) {
         metadata_builder_->UpgradeFormatVersion(result.format_version.value());
       }
     } break;
-    case PendingUpdate::Kind::kUpdateSortOrder: {
-      auto& update_sort_order = internal::checked_cast<UpdateSortOrder&>(update);
-      ICEBERG_ASSIGN_OR_RAISE(auto sort_order, update_sort_order.Apply());
-      metadata_builder_->SetDefaultSortOrder(std::move(sort_order));
-    } break;
-    case PendingUpdate::Kind::kUpdatePartitionSpec: {
-      auto& update_partition_spec = internal::checked_cast<UpdatePartitionSpec&>(update);
-      ICEBERG_ASSIGN_OR_RAISE(auto result, update_partition_spec.Apply());
-      if (result.set_as_default) {
-        metadata_builder_->SetDefaultPartitionSpec(std::move(result.spec));
-      } else {
-        metadata_builder_->AddPartitionSpec(std::move(result.spec));
-      }
-    } break;
     case PendingUpdate::Kind::kUpdateSchema: {
       auto& update_schema = internal::checked_cast<UpdateSchema&>(update);
       ICEBERG_ASSIGN_OR_RAISE(auto result, update_schema.Apply());
       metadata_builder_->SetCurrentSchema(std::move(result.schema),
                                           result.new_last_column_id);
+    } break;
+    case PendingUpdate::Kind::kUpdateSortOrder: {
+      auto& update_sort_order = internal::checked_cast<UpdateSortOrder&>(update);
+      ICEBERG_ASSIGN_OR_RAISE(auto sort_order, update_sort_order.Apply());
+      metadata_builder_->SetDefaultSortOrder(std::move(sort_order));
     } break;
     case PendingUpdate::Kind::kUpdateSnapshot: {
       const auto& base = metadata_builder_->current();
@@ -164,30 +196,6 @@ Status Transaction::Apply(PendingUpdate& update) {
       if (base.table_uuid.empty()) {
         metadata_builder_->AssignUUID();
       }
-    } break;
-    case PendingUpdate::Kind::kExpireSnapshots: {
-      auto& expire_snapshots = internal::checked_cast<ExpireSnapshots&>(update);
-      ICEBERG_ASSIGN_OR_RAISE(auto result, expire_snapshots.Apply());
-      if (!result.snapshot_ids_to_remove.empty()) {
-        metadata_builder_->RemoveSnapshots(std::move(result.snapshot_ids_to_remove));
-      }
-      if (!result.refs_to_remove.empty()) {
-        for (const auto& ref_name : result.refs_to_remove) {
-          metadata_builder_->RemoveRef(ref_name);
-        }
-      }
-      if (!result.partition_spec_ids_to_remove.empty()) {
-        metadata_builder_->RemovePartitionSpecs(
-            std::move(result.partition_spec_ids_to_remove));
-      }
-      if (!result.schema_ids_to_remove.empty()) {
-        metadata_builder_->RemoveSchemas(std::move(result.schema_ids_to_remove));
-      }
-    } break;
-    case PendingUpdate::Kind::kUpdateLocation: {
-      auto& update_location = internal::checked_cast<UpdateLocation&>(update);
-      ICEBERG_ASSIGN_OR_RAISE(auto location, update_location.Apply());
-      metadata_builder_->SetLocation(location);
     } break;
     default:
       return NotSupported("Unsupported pending update: {}",
@@ -291,6 +299,13 @@ Result<std::shared_ptr<UpdateLocation>> Transaction::NewUpdateLocation() {
                           UpdateLocation::Make(shared_from_this()));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_location));
   return update_location;
+}
+
+Result<std::shared_ptr<SetSnapshot>> Transaction::NewSetSnapshot() {
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<SetSnapshot> set_snapshot,
+                          SetSnapshot::Make(shared_from_this()));
+  ICEBERG_RETURN_UNEXPECTED(AddUpdate(set_snapshot));
+  return set_snapshot;
 }
 
 }  // namespace iceberg

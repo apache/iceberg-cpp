@@ -69,6 +69,22 @@ Result<bool> SnapshotUtil::IsAncestorOf(const Table& table,
   return IsAncestorOf(table, current->snapshot_id, ancestor_snapshot_id);
 }
 
+Result<bool> SnapshotUtil::IsAncestorOf(const TableMetadata& metadata,
+                                        int64_t ancestor_snapshot_id) {
+  ICEBERG_ASSIGN_OR_RAISE(auto current, metadata.Snapshot());
+  ICEBERG_CHECK(current != nullptr, "Current snapshot is null");
+
+  // Create a lookup function that uses the metadata
+  auto lookup = [&metadata](int64_t id) -> Result<std::shared_ptr<Snapshot>> {
+    return metadata.SnapshotById(id);
+  };
+
+  ICEBERG_ASSIGN_OR_RAISE(auto ancestors, AncestorsOf(current->snapshot_id, lookup));
+  return std::ranges::any_of(ancestors, [ancestor_snapshot_id](const auto& snapshot) {
+    return snapshot != nullptr && snapshot->snapshot_id == ancestor_snapshot_id;
+  });
+}
+
 Result<bool> SnapshotUtil::IsParentAncestorOf(const Table& table, int64_t snapshot_id,
                                               int64_t ancestor_parent_snapshot_id) {
   ICEBERG_ASSIGN_OR_RAISE(auto ancestors, AncestorsOf(table, snapshot_id));
@@ -81,9 +97,20 @@ Result<bool> SnapshotUtil::IsParentAncestorOf(const Table& table, int64_t snapsh
 
 Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::CurrentAncestors(
     const Table& table) {
-  auto current_result = table.current_snapshot();
-  ICEBERG_ACTION_FOR_NOT_FOUND(current_result, return {});
-  return AncestorsOf(table, current_result.value());
+  ICEBERG_ASSIGN_OR_RAISE(auto current, table.current_snapshot());
+  return AncestorsOf(table, current);
+}
+
+Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::CurrentAncestors(
+    const TableMetadata& metadata) {
+  ICEBERG_ASSIGN_OR_RAISE(auto current, metadata.Snapshot());
+
+  // Create a lookup function that uses the metadata
+  auto lookup = [&metadata](int64_t id) -> Result<std::shared_ptr<Snapshot>> {
+    return metadata.SnapshotById(id);
+  };
+
+  return AncestorsOf(current, lookup);
 }
 
 Result<std::vector<int64_t>> SnapshotUtil::CurrentAncestorIds(const Table& table) {

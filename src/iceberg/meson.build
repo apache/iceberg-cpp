@@ -104,6 +104,7 @@ iceberg_sources = files(
     'type.cc',
     'update/expire_snapshots.cc',
     'update/pending_update.cc',
+    'update/set_snapshot.cc',
     'update/snapshot_update.cc',
     'update/update_location.cc',
     'update/update_partition_spec.cc',
