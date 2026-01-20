@@ -26,7 +26,6 @@
 #include "iceberg/iceberg_export.h"
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
-#include "iceberg/update/set_snapshot.h"
 
 namespace iceberg {
 
@@ -86,7 +85,7 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// \brief Create a new UpdateLocation to update the table location and commit the
   /// changes.
   Result<std::shared_ptr<UpdateLocation>> NewUpdateLocation();
-  
+
   /// \brief Create a new SetSnapshot to set the current snapshot or rollback to a
   /// previous snapshot and commit the changes.
   Result<std::shared_ptr<SetSnapshot>> NewSetSnapshot();

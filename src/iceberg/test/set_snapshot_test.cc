@@ -19,8 +19,6 @@
 
 #include "iceberg/update/set_snapshot.h"
 
-#include <memory>
-
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
@@ -32,7 +30,6 @@
 
 namespace iceberg {
 
-// Test fixture for SetSnapshot tests
 class SetSnapshotTest : public UpdateTestBase {
  protected:
   // Snapshot IDs from TableMetadataV2Valid.json

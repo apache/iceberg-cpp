@@ -104,8 +104,6 @@ Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::CurrentAncestors(
 Result<std::vector<std::shared_ptr<Snapshot>>> SnapshotUtil::CurrentAncestors(
     const TableMetadata& metadata) {
   ICEBERG_ASSIGN_OR_RAISE(auto current, metadata.Snapshot());
-
-  // Create a lookup function that uses the metadata
   auto lookup = [&metadata](int64_t id) -> Result<std::shared_ptr<Snapshot>> {
     return metadata.SnapshotById(id);
   };
