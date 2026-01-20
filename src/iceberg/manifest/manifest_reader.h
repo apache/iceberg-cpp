@@ -100,6 +100,22 @@ class ICEBERG_EXPORT ManifestReader {
       std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
       std::shared_ptr<Schema> schema, std::shared_ptr<PartitionSpec> spec);
 
+  /// \brief Creates a reader for a manifest file with explicit inheritable metadata.
+  /// \param manifest A ManifestFile object containing metadata about the manifest.
+  /// \param file_io File IO implementation to use.
+  /// \param schema Schema used to bind the partition type.
+  /// \param spec Partition spec used for this manifest file.
+  /// \param inheritable_metadata Inheritable metadata to use (instead of extracting from
+  /// manifest).
+  /// \param first_row_id First row ID to use (nullopt to clear first_row_id from
+  /// entries).
+  /// \return A Result containing the reader or an error.
+  static Result<std::unique_ptr<ManifestReader>> Make(
+      const ManifestFile& manifest, std::shared_ptr<FileIO> file_io,
+      std::shared_ptr<Schema> schema, std::shared_ptr<PartitionSpec> spec,
+      std::unique_ptr<InheritableMetadata> inheritable_metadata,
+      std::optional<int64_t> first_row_id);
+
   /// \brief Add stats columns to the column list if needed.
   static std::vector<std::string> WithStatsColumns(
       const std::vector<std::string>& columns);

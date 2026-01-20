@@ -188,6 +188,7 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
   Status DeleteFile(const std::string& path);
 
   std::string ManifestPath();
+  std::string ManifestListPath();
 
  protected:
   /// \brief Builder for tracking snapshot summary properties and metrics.
@@ -200,8 +201,6 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
 
   /// \brief Clean up all uncommitted files
   void CleanAll();
-
-  std::string ManifestListPath();
 
  private:
   const bool can_inherit_snapshot_id_{true};

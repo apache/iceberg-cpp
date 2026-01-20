@@ -48,8 +48,8 @@ namespace iceberg {
 /// \param summary_builder Optional summary builder to update with file metrics
 /// \return The copied manifest file, or an error
 ICEBERG_EXPORT Result<ManifestFile> CopyAppendManifest(
-    const ManifestFile& manifest, std::shared_ptr<FileIO> file_io,
-    std::shared_ptr<Schema> schema, std::shared_ptr<PartitionSpec> spec,
+    const ManifestFile& manifest, const std::shared_ptr<FileIO>& file_io,
+    const std::shared_ptr<Schema>& schema, const std::shared_ptr<PartitionSpec>& spec,
     int64_t snapshot_id, const std::string& output_path, int8_t format_version,
     SnapshotSummaryBuilder* summary_builder = nullptr);
 

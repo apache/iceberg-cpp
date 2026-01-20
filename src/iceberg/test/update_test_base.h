@@ -41,6 +41,12 @@ namespace iceberg {
 class UpdateTestBase : public ::testing::Test {
  protected:
   void SetUp() override {
+    InitializeFileIO();
+    RegisterTableFromResource("TableMetadataV2Valid.json");
+  }
+
+  /// \brief Initialize file IO and create necessary directories.
+  void InitializeFileIO() {
     file_io_ = arrow::ArrowFileSystemFileIO::MakeMockFileIO();
     catalog_ =
         InMemoryCatalog::Make("test_catalog", file_io_, "/warehouse/", /*properties=*/{});
@@ -50,12 +56,19 @@ class UpdateTestBase : public ::testing::Test {
         static_cast<arrow::ArrowFileSystemFileIO&>(*file_io_).fs());
     ASSERT_TRUE(arrow_fs != nullptr);
     ASSERT_TRUE(arrow_fs->CreateDir(table_location_ + "/metadata").ok());
+  }
+
+  /// \brief Register a table from a metadata resource file.
+  ///
+  /// \param resource_name The name of the metadata resource file
+  void RegisterTableFromResource(const std::string& resource_name) {
+    // Drop existing table if it exists
+    std::ignore = catalog_->DropTable(table_ident_, /*purge=*/false);
 
     // Write table metadata to the table location.
     auto metadata_location = std::format("{}/metadata/00001-{}.metadata.json",
                                          table_location_, Uuid::GenerateV7().ToString());
-    ICEBERG_UNWRAP_OR_FAIL(auto metadata,
-                           ReadTableMetadataFromResource("TableMetadataV2Valid.json"));
+    ICEBERG_UNWRAP_OR_FAIL(auto metadata, ReadTableMetadataFromResource(resource_name));
     metadata->location = table_location_;
     ASSERT_THAT(TableMetadataUtil::Write(*file_io_, metadata_location, *metadata),
                 IsOk());

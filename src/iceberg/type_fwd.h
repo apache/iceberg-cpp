@@ -120,6 +120,7 @@ struct SnapshotLogEntry;
 struct SnapshotRef;
 struct StatisticsFile;
 struct TableMetadata;
+class InheritableMetadata;
 class SnapshotSummaryBuilder;
 
 /// \brief Expression.

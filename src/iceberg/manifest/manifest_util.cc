@@ -17,14 +17,13 @@
  * under the License.
  */
 
-#include "iceberg/manifest/manifest_util_internal.h"
-
 #include <memory>
 #include <optional>
 
 #include "iceberg/inheritable_metadata.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_reader.h"
+#include "iceberg/manifest/manifest_util_internal.h"
 #include "iceberg/manifest/manifest_writer.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
@@ -34,31 +33,28 @@
 namespace iceberg {
 
 Result<ManifestFile> CopyAppendManifest(
-    const ManifestFile& manifest, std::shared_ptr<FileIO> file_io,
-    std::shared_ptr<Schema> schema, std::shared_ptr<PartitionSpec> spec,
+    const ManifestFile& manifest, const std::shared_ptr<FileIO>& file_io,
+    const std::shared_ptr<Schema>& schema, const std::shared_ptr<PartitionSpec>& spec,
     int64_t snapshot_id, const std::string& output_path, int8_t format_version,
     SnapshotSummaryBuilder* summary_builder) {
-  ICEBERG_ASSIGN_OR_RAISE(auto reader,
-                          ManifestReader::Make(manifest, file_io, schema, spec));
-  ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
-
   // use metadata that will add the current snapshot's ID for the rewrite
+  // read first_row_id as null because this copies the incoming manifest before commit
   ICEBERG_ASSIGN_OR_RAISE(auto inheritable_metadata,
                           InheritableMetadataFactory::ForCopy(snapshot_id));
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto reader, ManifestReader::Make(manifest, file_io, schema, spec,
+                                        std::move(inheritable_metadata), std::nullopt));
+  ICEBERG_ASSIGN_OR_RAISE(auto entries, reader->Entries());
 
   // do not produce row IDs for the copy
   ICEBERG_ASSIGN_OR_RAISE(
-      auto writer,
-      ManifestWriter::MakeWriter(format_version, snapshot_id, output_path, file_io, spec,
-                                 schema, ManifestContent::kData));
+      auto writer, ManifestWriter::MakeWriter(
+                       format_version, snapshot_id, output_path, file_io, spec, schema,
+                       ManifestContent::kData, /*first_row_id*/ std::nullopt));
 
-  // Write all entries as added entries with the new snapshot ID
   for (auto& entry : entries) {
-    ICEBERG_PRECHECK(entry.status == ManifestStatus::kAdded,
-                     "Manifest to copy must only contain added entries");
-
-    ICEBERG_RETURN_UNEXPECTED(inheritable_metadata->Apply(entry));
-
+    ICEBERG_CHECK(entry.status == ManifestStatus::kAdded,
+                  "Manifest to copy must only contain added entries");
     if (summary_builder != nullptr && entry.data_file != nullptr) {
       ICEBERG_RETURN_UNEXPECTED(summary_builder->AddedFile(*spec, *entry.data_file));
     }
@@ -67,9 +63,7 @@ Result<ManifestFile> CopyAppendManifest(
   }
 
   ICEBERG_RETURN_UNEXPECTED(writer->Close());
-  ICEBERG_ASSIGN_OR_RAISE(auto new_manifest, writer->ToManifestFile());
-
-  return new_manifest;
+  return writer->ToManifestFile();
 }
 
 }  // namespace iceberg

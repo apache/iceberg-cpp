@@ -67,7 +67,7 @@ iceberg_sources = files(
     'manifest/manifest_group.cc',
     'manifest/manifest_list.cc',
     'manifest/manifest_reader.cc',
-    'manifest/manifest_util_internal.cc',
+    'manifest/manifest_util.cc',
     'manifest/manifest_writer.cc',
     'manifest/rolling_manifest_writer.cc',
     'manifest/v1_metadata.cc',

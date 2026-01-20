@@ -27,17 +27,14 @@
 #include <vector>
 
 #include "iceberg/iceberg_export.h"
-#include "iceberg/manifest/manifest_entry.h"
-#include "iceberg/manifest/manifest_list.h"
 #include "iceberg/result.h"
-#include "iceberg/snapshot.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/update/snapshot_update.h"
 #include "iceberg/util/content_file_util.h"
 
 namespace iceberg {
 
-/// \brief Append implementation that adds new manifest files for writes.
+/// \brief Appending new files in a table.
 ///
 /// FastAppend is optimized for appending new data files to a table, it creates new
 /// manifest files for the added data without compacting or rewriting existing manifests,
@@ -56,7 +53,7 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate {
   ///
   /// \param file The data file to append
   /// \return Reference to this for method chaining
-  FastAppend& AppendFile(std::shared_ptr<DataFile> file);
+  FastAppend& AppendFile(const std::shared_ptr<DataFile>& file);
 
   /// \brief Append a manifest file to this update.
   ///
@@ -68,12 +65,6 @@ class ICEBERG_EXPORT FastAppend : public SnapshotUpdate {
   /// \param manifest The manifest file to append
   /// \return Reference to this for method chaining
   FastAppend& AppendManifest(const ManifestFile& manifest);
-
-  /// \brief Set the target branch for this update.
-  ///
-  /// \param branch The branch name
-  /// \return Reference to this for method chaining
-  FastAppend& ToBranch(const std::string& branch);
 
   std::string operation() override;
 

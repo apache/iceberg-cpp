@@ -40,27 +40,19 @@ class FastAppendTest : public UpdateTestBase {
   static void SetUpTestSuite() { avro::RegisterAll(); }
 
   void SetUp() override {
-    UpdateTestBase::SetUp();
-
-    ASSERT_THAT(catalog_->DropTable(table_ident_, /*purge=*/false), IsOk());
-
-    auto metadata_location = std::format("{}/metadata/00001-{}.metadata.json",
-                                         table_location_, Uuid::GenerateV7().ToString());
-    ICEBERG_UNWRAP_OR_FAIL(
-        auto metadata, ReadTableMetadataFromResource("TableMetadataV2ValidMinimal.json"));
-    metadata->location = table_location_;
-    ASSERT_THAT(TableMetadataUtil::Write(*file_io_, metadata_location, *metadata),
-                IsOk());
-    ICEBERG_UNWRAP_OR_FAIL(table_,
-                           catalog_->RegisterTable(table_ident_, metadata_location));
+    InitializeFileIO();
+    // Use minimal metadata for FastAppend tests
+    RegisterTableFromResource("TableMetadataV2ValidMinimal.json");
 
     // Get partition spec and schema from the base table
     ICEBERG_UNWRAP_OR_FAIL(spec_, table_->spec());
     ICEBERG_UNWRAP_OR_FAIL(schema_, table_->schema());
 
     // Create test data files
-    file_a_ = CreateDataFile("/data/file_a.parquet", 100, 1024);
-    file_b_ = CreateDataFile("/data/file_b.parquet", 200, 2048);
+    file_a_ =
+        CreateDataFile("/data/file_a.parquet", /*size=*/100, /*partition_value=*/1024);
+    file_b_ =
+        CreateDataFile("/data/file_b.parquet", /*size=*/200, /*partition_value=*/2048);
   }
 
   std::shared_ptr<DataFile> CreateDataFile(const std::string& path, int64_t record_count,

@@ -48,7 +48,7 @@ Result<std::unique_ptr<FastAppend>> FastAppend::Make(
 FastAppend::FastAppend(std::string table_name, std::shared_ptr<Transaction> transaction)
     : SnapshotUpdate(std::move(transaction)), table_name_(std::move(table_name)) {}
 
-FastAppend& FastAppend::AppendFile(std::shared_ptr<DataFile> file) {
+FastAppend& FastAppend::AppendFile(const std::shared_ptr<DataFile>& file) {
   ICEBERG_BUILDER_CHECK(file != nullptr, "Invalid data file: null");
   ICEBERG_BUILDER_CHECK(file->partition_spec_id.has_value(),
                         "Data file must have partition spec ID");
@@ -88,11 +88,6 @@ FastAppend& FastAppend::AppendManifest(const ManifestFile& manifest) {
   return *this;
 }
 
-FastAppend& FastAppend::ToBranch(const std::string& branch) {
-  ICEBERG_BUILDER_RETURN_IF_ERROR(SetTargetBranch(branch));
-  return *this;
-}
-
 std::string FastAppend::operation() { return DataOperation::kAppend; }
 
 Result<std::vector<ManifestFile>> FastAppend::Apply(
@@ -122,7 +117,6 @@ Result<std::vector<ManifestFile>> FastAppend::Apply(
 
   // Add all manifests from the snapshot
   if (snapshot != nullptr) {
-    // Use SnapshotCache to get manifests, similar to snapshot_update.cc
     auto cached_snapshot = SnapshotCache(snapshot.get());
     ICEBERG_ASSIGN_OR_RAISE(auto snapshot_manifests,
                             cached_snapshot.Manifests(transaction_->table()->io()));
