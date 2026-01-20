@@ -90,6 +90,9 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// previous snapshot and commit the changes.
   Result<std::shared_ptr<SetSnapshot>> NewSetSnapshot();
 
+  /// \brief Create a new FastAppend to append data files and commit the changes.
+  Result<std::shared_ptr<FastAppend>> NewFastAppend();
+
  private:
   Transaction(std::shared_ptr<Table> table, Kind kind, bool auto_commit,
               std::unique_ptr<TableMetadataBuilder> metadata_builder);

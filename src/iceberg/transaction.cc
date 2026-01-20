@@ -32,6 +32,7 @@
 #include "iceberg/table_requirements.h"
 #include "iceberg/table_update.h"
 #include "iceberg/update/expire_snapshots.h"
+#include "iceberg/update/fast_append.h"
 #include "iceberg/update/pending_update.h"
 #include "iceberg/update/set_snapshot.h"
 #include "iceberg/update/snapshot_update.h"
@@ -306,6 +307,13 @@ Result<std::shared_ptr<SetSnapshot>> Transaction::NewSetSnapshot() {
                           SetSnapshot::Make(shared_from_this()));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(set_snapshot));
   return set_snapshot;
+}
+
+Result<std::shared_ptr<FastAppend>> Transaction::NewFastAppend() {
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<FastAppend> fast_append,
+                          FastAppend::Make(table_->name().name, shared_from_this()));
+  ICEBERG_RETURN_UNEXPECTED(AddUpdate(fast_append));
+  return fast_append;
 }
 
 }  // namespace iceberg

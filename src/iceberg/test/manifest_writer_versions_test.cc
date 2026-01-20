@@ -27,6 +27,7 @@
 
 #include "iceberg/arrow/arrow_file_io.h"
 #include "iceberg/avro/avro_register.h"
+#include "iceberg/constants.h"
 #include "iceberg/file_format.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
@@ -411,12 +412,11 @@ class ManifestWriterVersionsTest : public ::testing::Test {
 
 TEST_F(ManifestWriterVersionsTest, TestV1Write) {
   auto manifest = WriteManifest(/*format_version=*/1, {data_file_});
-  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber,
-                TableMetadata::kInvalidSequenceNumber);
+  CheckManifest(manifest, kInvalidSequenceNumber, kInvalidSequenceNumber);
   auto entries = ReadManifest(manifest);
   ASSERT_EQ(entries.size(), 1);
-  CheckEntry(entries[0], TableMetadata::kInvalidSequenceNumber,
-             TableMetadata::kInvalidSequenceNumber, DataFile::Content::kData);
+  CheckEntry(entries[0], kInvalidSequenceNumber, kInvalidSequenceNumber,
+             DataFile::Content::kData);
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV1WriteDelete) {
@@ -449,13 +449,12 @@ TEST_F(ManifestWriterVersionsTest, TestV1WriteWithInheritance) {
 
 TEST_F(ManifestWriterVersionsTest, TestV2Write) {
   auto manifest = WriteManifest(/*format_version=*/2, {data_file_});
-  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber,
-                TableMetadata::kInvalidSequenceNumber);
+  CheckManifest(manifest, kInvalidSequenceNumber, kInvalidSequenceNumber);
   auto entries = ReadManifest(manifest);
   ASSERT_EQ(entries.size(), 1);
   ASSERT_EQ(manifest.content, ManifestContent::kData);
-  CheckEntry(entries[0], TableMetadata::kInvalidSequenceNumber,
-             TableMetadata::kInvalidSequenceNumber, DataFile::Content::kData);
+  CheckEntry(entries[0], kInvalidSequenceNumber, kInvalidSequenceNumber,
+             DataFile::Content::kData);
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV2WriteWithInheritance) {
@@ -470,8 +469,7 @@ TEST_F(ManifestWriterVersionsTest, TestV2WriteWithInheritance) {
 
 TEST_F(ManifestWriterVersionsTest, TestV2PlusWriteDeleteV2) {
   auto manifest = WriteDeleteManifest(/*format_version=*/2, delete_file_);
-  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber,
-                TableMetadata::kInvalidSequenceNumber);
+  CheckManifest(manifest, kInvalidSequenceNumber, kInvalidSequenceNumber);
   auto entries = ReadManifest(manifest);
   ASSERT_EQ(entries.size(), 1);
   ASSERT_EQ(manifest.content, ManifestContent::kDeletes);
@@ -507,7 +505,7 @@ TEST_F(ManifestWriterVersionsTest, TestV2ManifestRewriteWithInheritance) {
 
   // rewrite the manifest file using a v2 manifest
   auto rewritten_manifest = RewriteManifest(manifests[0], 2);
-  CheckRewrittenManifest(rewritten_manifest, TableMetadata::kInvalidSequenceNumber,
+  CheckRewrittenManifest(rewritten_manifest, kInvalidSequenceNumber,
                          TableMetadata::kInitialSequenceNumber);
 
   // add the v2 manifest to a v2 manifest list, with a sequence number
@@ -525,14 +523,12 @@ TEST_F(ManifestWriterVersionsTest, TestV2ManifestRewriteWithInheritance) {
 
 TEST_F(ManifestWriterVersionsTest, TestV3Write) {
   auto manifest = WriteManifest(/*format_version=*/3, {data_file_});
-  CheckManifest(manifest, TableMetadata::kInvalidSequenceNumber,
-                TableMetadata::kInvalidSequenceNumber);
+  CheckManifest(manifest, kInvalidSequenceNumber, kInvalidSequenceNumber);
   auto entries = ReadManifest(manifest);
   ASSERT_EQ(entries.size(), 1);
   ASSERT_EQ(manifest.content, ManifestContent::kData);
-  CheckEntry(entries[0], TableMetadata::kInvalidSequenceNumber,
-             TableMetadata::kInvalidSequenceNumber, DataFile::Content::kData,
-             ManifestStatus::kAdded, kFirstRowId);
+  CheckEntry(entries[0], kInvalidSequenceNumber, kInvalidSequenceNumber,
+             DataFile::Content::kData, ManifestStatus::kAdded, kFirstRowId);
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV3WriteWithInheritance) {
@@ -598,7 +594,7 @@ TEST_F(ManifestWriterVersionsTest, TestV3ManifestRewriteWithInheritance) {
 
   // rewrite the manifest file using a v3 manifest
   auto rewritten_manifest = RewriteManifest(manifests[0], 3);
-  CheckRewrittenManifest(rewritten_manifest, TableMetadata::kInvalidSequenceNumber,
+  CheckRewrittenManifest(rewritten_manifest, kInvalidSequenceNumber,
                          TableMetadata::kInitialSequenceNumber);
 
   // add the v3 manifest to a v3 manifest list, with a sequence number

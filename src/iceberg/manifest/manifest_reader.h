@@ -22,7 +22,9 @@
 /// \file iceberg/manifest/manifest_reader.h
 /// Data reader interface for manifest files.
 
+#include <cstdint>
 #include <memory>
+#include <optional>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -92,13 +94,19 @@ class ICEBERG_EXPORT ManifestReader {
 
   /// \brief Creates a reader for a manifest file.
   /// \param manifest_location Path to the manifest file.
+  /// \param manifest_length Length of the manifest file.
   /// \param file_io File IO implementation to use.
   /// \param schema Schema used to bind the partition type.
   /// \param spec Partition spec used for this manifest file.
+  /// \param inheritable_metadata Inheritable metadata.
+  /// \param first_row_id First row ID to use for the manifest entries.
   /// \return A Result containing the reader or an error.
   static Result<std::unique_ptr<ManifestReader>> Make(
-      std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
-      std::shared_ptr<Schema> schema, std::shared_ptr<PartitionSpec> spec);
+      std::string_view manifest_location, std::optional<int64_t> manifest_length,
+      std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> schema,
+      std::shared_ptr<PartitionSpec> spec,
+      std::unique_ptr<InheritableMetadata> inheritable_metadata,
+      std::optional<int64_t> first_row_id = std::nullopt);
 
   /// \brief Add stats columns to the column list if needed.
   static std::vector<std::string> WithStatsColumns(

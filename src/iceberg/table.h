@@ -156,6 +156,9 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// changes.
   virtual Result<std::shared_ptr<UpdateLocation>> NewUpdateLocation();
 
+  /// \brief Create a new FastAppend to append data files and commit the changes.
+  virtual Result<std::shared_ptr<FastAppend>> NewFastAppend();
+
  protected:
   Table(TableIdentifier identifier, std::shared_ptr<TableMetadata> metadata,
         std::string metadata_location, std::shared_ptr<FileIO> io,

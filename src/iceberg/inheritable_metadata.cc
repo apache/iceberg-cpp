@@ -21,13 +21,15 @@
 
 #include <utility>
 
-#include <iceberg/result.h>
-
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
-#include "iceberg/snapshot.h"
 
 namespace iceberg {
+
+InheritableMetadata::~InheritableMetadata() = default;
+BaseInheritableMetadata::~BaseInheritableMetadata() = default;
+CopyInheritableMetadata::~CopyInheritableMetadata() = default;
+EmptyInheritableMetadata::~EmptyInheritableMetadata() = default;
 
 BaseInheritableMetadata::BaseInheritableMetadata(int32_t spec_id, int64_t snapshot_id,
                                                  int64_t sequence_number,

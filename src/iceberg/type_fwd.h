@@ -120,6 +120,8 @@ struct SnapshotLogEntry;
 struct SnapshotRef;
 struct StatisticsFile;
 struct TableMetadata;
+class InheritableMetadata;
+class SnapshotSummaryBuilder;
 
 /// \brief Expression.
 class BoundPredicate;
@@ -188,6 +190,7 @@ class Transaction;
 
 /// \brief Update family.
 class ExpireSnapshots;
+class FastAppend;
 class PendingUpdate;
 class SetSnapshot;
 class SnapshotUpdate;
@@ -201,7 +204,6 @@ class UpdateSortOrder;
 /// TODO: Forward declarations below are not added yet.
 /// ----------------------------------------------------------------------------
 
-class AppendFiles;
 class EncryptedKey;
 
 }  // namespace iceberg

@@ -32,6 +32,7 @@
 #include "iceberg/expression/expression.h"
 #include "iceberg/expression/projections.h"
 #include "iceberg/file_format.h"
+#include "iceberg/inheritable_metadata.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader_internal.h"
@@ -998,18 +999,22 @@ Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
 }
 
 Result<std::unique_ptr<ManifestReader>> ManifestReader::Make(
-    std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
-    std::shared_ptr<Schema> schema, std::shared_ptr<PartitionSpec> spec) {
-  if (file_io == nullptr || schema == nullptr || spec == nullptr) {
-    return InvalidArgument(
-        "FileIO, Schema, and PartitionSpec cannot be null to create ManifestReader");
+    std::string_view manifest_location, std::optional<int64_t> manifest_length,
+    std::shared_ptr<FileIO> file_io, std::shared_ptr<Schema> schema,
+    std::shared_ptr<PartitionSpec> spec,
+    std::unique_ptr<InheritableMetadata> inheritable_metadata,
+    std::optional<int64_t> first_row_id) {
+  ICEBERG_PRECHECK(file_io != nullptr, "FileIO cannot be null to read manifest");
+  ICEBERG_PRECHECK(schema != nullptr, "Schema cannot be null to read manifest");
+  ICEBERG_PRECHECK(spec != nullptr, "PartitionSpec cannot be null to read manifest");
+
+  if (inheritable_metadata == nullptr) {
+    ICEBERG_ASSIGN_OR_RAISE(inheritable_metadata, InheritableMetadataFactory::Empty());
   }
 
-  // No metadata to inherit in this case.
-  ICEBERG_ASSIGN_OR_RAISE(auto inheritable_metadata, InheritableMetadataFactory::Empty());
   return std::make_unique<ManifestReaderImpl>(
-      std::string(manifest_location), std::nullopt, std::move(file_io), std::move(schema),
-      std::move(spec), std::move(inheritable_metadata), std::nullopt);
+      std::string(manifest_location), manifest_length, std::move(file_io),
+      std::move(schema), std::move(spec), std::move(inheritable_metadata), first_row_id);
 }
 
 Result<std::unique_ptr<ManifestListReader>> ManifestListReader::Make(

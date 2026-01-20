@@ -49,6 +49,7 @@ set(ICEBERG_SOURCES
     manifest/manifest_group.cc
     manifest/manifest_list.cc
     manifest/manifest_reader.cc
+    manifest/manifest_util.cc
     manifest/manifest_writer.cc
     manifest/rolling_manifest_writer.cc
     manifest/v1_metadata.cc
@@ -85,6 +86,7 @@ set(ICEBERG_SOURCES
     transform_function.cc
     type.cc
     update/expire_snapshots.cc
+    update/fast_append.cc
     update/pending_update.cc
     update/set_snapshot.cc
     update/snapshot_update.cc
