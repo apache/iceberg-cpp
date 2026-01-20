@@ -20,7 +20,6 @@
 #include "iceberg/update/fast_append.h"
 
 #include <iterator>
-#include <ranges>
 #include <vector>
 
 #include "iceberg/constants.h"
@@ -198,10 +197,9 @@ Result<std::vector<ManifestFile>> FastAppend::WriteNewManifests() {
   if (new_manifests_.empty() && !new_data_files_by_spec_.empty()) {
     for (const auto& [spec_id, data_files] : new_data_files_by_spec_) {
       ICEBERG_ASSIGN_OR_RAISE(auto spec, Spec(spec_id));
-      std::vector<std::shared_ptr<DataFile>> files;
-      files.reserve(data_files.size());
-      std::ranges::copy(data_files, std::back_inserter(files));
-      ICEBERG_ASSIGN_OR_RAISE(auto written_manifests, WriteDataManifests(files, spec));
+      ICEBERG_ASSIGN_OR_RAISE(
+          auto written_manifests,
+          WriteDataManifests(data_files.begin(), data_files.end(), spec));
       new_manifests_.insert(new_manifests_.end(),
                             std::make_move_iterator(written_manifests.begin()),
                             std::make_move_iterator(written_manifests.end()));

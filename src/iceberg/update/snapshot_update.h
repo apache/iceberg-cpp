@@ -29,8 +29,12 @@
 
 #include "iceberg/iceberg_export.h"
 #include "iceberg/manifest/manifest_list.h"
+#include "iceberg/manifest/manifest_writer.h"
+#include "iceberg/manifest/rolling_manifest_writer.h"
 #include "iceberg/result.h"
 #include "iceberg/snapshot.h"
+#include "iceberg/table.h"
+#include "iceberg/transaction.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/update/pending_update.h"
 
@@ -103,25 +107,75 @@ class ICEBERG_EXPORT SnapshotUpdate : public PendingUpdate {
 
   /// \brief Write data manifests for the given data files
   ///
-  /// \param data_files The data files to write
+  /// \tparam Iterator Iterator type that dereferences to std::shared_ptr<DataFile>
+  /// \param begin Iterator to the beginning of the data files range
+  /// \param end Iterator to the end of the data files range
   /// \param spec The partition spec to use
   /// \param data_sequence_number Optional data sequence number for the files
   /// \return A vector of manifest files
-  /// TODO(xxx): Change signature to accept iterator begin/end instead of vector to avoid
-  /// intermediate vector allocations (e.g., from DataFileSet)
+  // TODO(xxx): write manifests in parallel
+  template <typename Iterator>
   Result<std::vector<ManifestFile>> WriteDataManifests(
-      const std::vector<std::shared_ptr<DataFile>>& data_files,
-      const std::shared_ptr<PartitionSpec>& spec,
-      std::optional<int64_t> data_sequence_number = std::nullopt);
+      Iterator begin, Iterator end, const std::shared_ptr<PartitionSpec>& spec,
+      std::optional<int64_t> data_sequence_number = std::nullopt) {
+    if (begin == end) {
+      return std::vector<ManifestFile>{};
+    }
+
+    ICEBERG_ASSIGN_OR_RAISE(auto current_schema, base().Schema());
+    RollingManifestWriter rolling_writer(
+        [this, spec, schema = std::move(current_schema),
+         snapshot_id = SnapshotId()]() -> Result<std::unique_ptr<ManifestWriter>> {
+          return ManifestWriter::MakeWriter(base().format_version, snapshot_id,
+                                            ManifestPath(), transaction_->table()->io(),
+                                            std::move(spec), std::move(schema),
+                                            ManifestContent::kData,
+                                            /*first_row_id=*/base().next_row_id);
+        },
+        target_manifest_size_bytes_);
+
+    for (auto it = begin; it != end; ++it) {
+      ICEBERG_RETURN_UNEXPECTED(
+          rolling_writer.WriteAddedEntry(*it, data_sequence_number));
+    }
+    ICEBERG_RETURN_UNEXPECTED(rolling_writer.Close());
+    return rolling_writer.ToManifestFiles();
+  }
 
   /// \brief Write delete manifests for the given delete files
   ///
-  /// \param delete_files The delete files to write
+  /// \tparam Iterator Iterator type that dereferences to std::shared_ptr<DataFile>
+  /// \param begin Iterator to the beginning of the delete files range
+  /// \param end Iterator to the end of the delete files range
   /// \param spec The partition spec to use
   /// \return A vector of manifest files
+  // TODO(xxx): write manifests in parallel
+  template <typename Iterator>
   Result<std::vector<ManifestFile>> WriteDeleteManifests(
-      const std::vector<std::shared_ptr<DataFile>>& delete_files,
-      const std::shared_ptr<PartitionSpec>& spec);
+      Iterator begin, Iterator end, const std::shared_ptr<PartitionSpec>& spec) {
+    if (begin == end) {
+      return std::vector<ManifestFile>{};
+    }
+
+    ICEBERG_ASSIGN_OR_RAISE(auto current_schema, base().Schema());
+    RollingManifestWriter rolling_writer(
+        [this, spec, schema = std::move(current_schema),
+         snapshot_id = SnapshotId()]() -> Result<std::unique_ptr<ManifestWriter>> {
+          return ManifestWriter::MakeWriter(base().format_version, snapshot_id,
+                                            ManifestPath(), transaction_->table()->io(),
+                                            std::move(spec), std::move(schema),
+                                            ManifestContent::kDeletes);
+        },
+        target_manifest_size_bytes_);
+
+    for (auto it = begin; it != end; ++it) {
+      /// FIXME: Java impl wrap it with `PendingDeleteFile` and deals with
+      /// (*it)->data_sequenece_number
+      ICEBERG_RETURN_UNEXPECTED(rolling_writer.WriteAddedEntry(*it));
+    }
+    ICEBERG_RETURN_UNEXPECTED(rolling_writer.Close());
+    return rolling_writer.ToManifestFiles();
+  }
 
   Status SetTargetBranch(const std::string& branch);
   const std::string& target_branch() const { return target_branch_; }

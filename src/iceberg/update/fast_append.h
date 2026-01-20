@@ -30,7 +30,7 @@
 #include "iceberg/result.h"
 #include "iceberg/type_fwd.h"
 #include "iceberg/update/snapshot_update.h"
-#include "iceberg/util/content_file_util.h"
+#include "iceberg/util/data_file_set.h"
 
 namespace iceberg {
 

@@ -109,6 +109,7 @@ add_iceberg_test(util_test
                  SOURCES
                  bucket_util_test.cc
                  config_test.cc
+                 data_file_set_test.cc
                  decimal_test.cc
                  endian_test.cc
                  formatter_test.cc

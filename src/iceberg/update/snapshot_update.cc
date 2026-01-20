@@ -27,12 +27,7 @@
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/manifest_reader.h"
-#include "iceberg/manifest/manifest_writer.h"
-#include "iceberg/manifest/rolling_manifest_writer.h"
 #include "iceberg/partition_summary_internal.h"
-#include "iceberg/snapshot.h"
-#include "iceberg/table.h"
-#include "iceberg/transaction.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/snapshot_util_internal.h"
 #include "iceberg/util/string_util.h"
@@ -163,62 +158,6 @@ SnapshotUpdate::SnapshotUpdate(std::shared_ptr<Transaction> transaction)
       commit_uuid_(Uuid::GenerateV7().ToString()),
       target_manifest_size_bytes_(
           base().properties.Get(TableProperties::kManifestTargetSizeBytes)) {}
-
-// TODO(xxx): write manifests in parallel
-Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDataManifests(
-    const std::vector<std::shared_ptr<DataFile>>& data_files,
-    const std::shared_ptr<PartitionSpec>& spec,
-    std::optional<int64_t> data_sequence_number) {
-  if (data_files.empty()) {
-    return std::vector<ManifestFile>{};
-  }
-
-  ICEBERG_ASSIGN_OR_RAISE(auto current_schema, base().Schema());
-  RollingManifestWriter rolling_writer(
-      [this, spec, schema = std::move(current_schema),
-       snapshot_id = SnapshotId()]() -> Result<std::unique_ptr<ManifestWriter>> {
-        return ManifestWriter::MakeWriter(base().format_version, snapshot_id,
-                                          ManifestPath(), transaction_->table()->io(),
-                                          std::move(spec), std::move(schema),
-                                          ManifestContent::kData,
-                                          /*first_row_id=*/base().next_row_id);
-      },
-      target_manifest_size_bytes_);
-
-  for (const auto& file : data_files) {
-    ICEBERG_RETURN_UNEXPECTED(rolling_writer.WriteAddedEntry(file, data_sequence_number));
-  }
-  ICEBERG_RETURN_UNEXPECTED(rolling_writer.Close());
-  return rolling_writer.ToManifestFiles();
-}
-
-// TODO(xxx): write manifests in parallel
-Result<std::vector<ManifestFile>> SnapshotUpdate::WriteDeleteManifests(
-    const std::vector<std::shared_ptr<DataFile>>& delete_files,
-    const std::shared_ptr<PartitionSpec>& spec) {
-  if (delete_files.empty()) {
-    return std::vector<ManifestFile>{};
-  }
-
-  ICEBERG_ASSIGN_OR_RAISE(auto current_schema, base().Schema());
-  RollingManifestWriter rolling_writer(
-      [this, spec, schema = std::move(current_schema),
-       snapshot_id = SnapshotId()]() -> Result<std::unique_ptr<ManifestWriter>> {
-        return ManifestWriter::MakeWriter(base().format_version, snapshot_id,
-                                          ManifestPath(), transaction_->table()->io(),
-                                          std::move(spec), std::move(schema),
-                                          ManifestContent::kDeletes);
-      },
-      target_manifest_size_bytes_);
-
-  for (const auto& file : delete_files) {
-    /// FIXME: Java impl wrap it with `PendingDeleteFile` and deals with
-    /// file->data_sequenece_number
-    ICEBERG_RETURN_UNEXPECTED(rolling_writer.WriteAddedEntry(file));
-  }
-  ICEBERG_RETURN_UNEXPECTED(rolling_writer.Close());
-  return rolling_writer.ToManifestFiles();
-}
 
 int64_t SnapshotUpdate::SnapshotId() {
   if (!snapshot_id_.has_value()) {
