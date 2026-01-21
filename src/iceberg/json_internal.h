@@ -77,9 +77,6 @@ ICEBERG_EXPORT Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
 
 /// \brief Deserializes a JSON object into an unbound `SortOrder` object.
 ///
-/// This function parses the provided JSON and creates a `SortOrder` object without
-/// binding it to a schema. It does not validate the sort fields against any schema.
-///
 /// \param json The JSON object representing a `SortOrder`.
 /// \return An `expected` value containing either a `SortOrder` object or an error. If the
 /// JSON is malformed or missing expected fields, an error will be returned.
@@ -195,9 +192,6 @@ ICEBERG_EXPORT Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
     int32_t default_spec_id);
 
 /// \brief Deserializes a JSON object into an unbound `PartitionSpec` object.
-///
-/// This function parses the provided JSON and creates a `PartitionSpec` object without
-/// binding it to a schema. It does not validate the partition fields against any schema.
 ///
 /// \param json The JSON object representing a `PartitionSpec`.
 /// \return An `expected` value containing either a `PartitionSpec` object or an error. If

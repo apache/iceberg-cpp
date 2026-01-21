@@ -175,7 +175,7 @@ TEST(JsonInternalTest, PartitionSpec) {
   EXPECT_EQ(*spec, *parsed_spec_result.value());
 }
 
-TEST(JsonInternalTest, SortOrderFromJsonUnbound) {
+TEST(JsonInternalTest, SortOrderFromJson) {
   auto identity_transform = Transform::Identity();
   SortField st1(5, identity_transform, SortDirection::kAscending, NullOrder::kFirst);
   SortField st2(7, identity_transform, SortDirection::kDescending, NullOrder::kLast);
@@ -186,7 +186,7 @@ TEST(JsonInternalTest, SortOrderFromJsonUnbound) {
   EXPECT_EQ(*sort_order, *parsed);
 }
 
-TEST(JsonInternalTest, PartitionSpecFromJsonUnbound) {
+TEST(JsonInternalTest, PartitionSpecFromJson) {
   auto identity_transform = Transform::Identity();
   ICEBERG_UNWRAP_OR_FAIL(
       auto spec,
