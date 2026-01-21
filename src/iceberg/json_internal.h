@@ -75,7 +75,7 @@ ICEBERG_EXPORT nlohmann::json ToJson(const SortOrder& sort_order);
 ICEBERG_EXPORT Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
     const nlohmann::json& json, const std::shared_ptr<Schema>& current_schema);
 
-/// \brief Deserializes a JSON object into an unbound `SortOrder` object.
+/// \brief Deserializes a JSON object into a `SortOrder` object.
 ///
 /// \param json The JSON object representing a `SortOrder`.
 /// \return An `expected` value containing either a `SortOrder` object or an error. If the
