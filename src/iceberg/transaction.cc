@@ -200,6 +200,16 @@ Status Transaction::Apply(PendingUpdate& update) {
         metadata_builder_->AssignUUID();
       }
     } break;
+    case PendingUpdate::Kind::kUpdateStatistics: {
+      auto& update_statistics = internal::checked_cast<UpdateStatistics&>(update);
+      ICEBERG_ASSIGN_OR_RAISE(auto result, update_statistics.Apply());
+      for (auto&& [_, stat_file] : result.to_set) {
+        metadata_builder_->SetStatistics(std::move(stat_file));
+      }
+      for (const auto& snapshot_id : result.to_remove) {
+        metadata_builder_->RemoveStatistics(snapshot_id);
+      }
+    } break;
     default:
       return NotSupported("Unsupported pending update: {}",
                           static_cast<int32_t>(update.kind()));
