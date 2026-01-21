@@ -113,15 +113,43 @@ TEST_F(DataFileSetTest, AsSpan) {
   DataFileSet set;
   EXPECT_TRUE(set.as_span().empty());
 
+  // Single element
+  auto file0 = CreateDataFile("/path/to/file0.parquet");
+  set.insert(file0);
+  {
+    auto span = set.as_span();
+    EXPECT_EQ(span.size(), 1);
+    EXPECT_EQ(span[0]->file_path, "/path/to/file0.parquet");
+    EXPECT_EQ(span[0], file0);  // Same pointer, span is a view
+  }
+
+  // Multiple elements
   auto file1 = CreateDataFile("/path/to/file1.parquet");
   auto file2 = CreateDataFile("/path/to/file2.parquet");
   set.insert(file1);
   set.insert(file2);
 
   auto span = set.as_span();
-  EXPECT_EQ(span.size(), 2);
-  EXPECT_EQ(span[0]->file_path, "/path/to/file1.parquet");
-  EXPECT_EQ(span[1]->file_path, "/path/to/file2.parquet");
+  EXPECT_EQ(span.size(), 3);
+  EXPECT_EQ(span[0]->file_path, "/path/to/file0.parquet");
+  EXPECT_EQ(span[1]->file_path, "/path/to/file1.parquet");
+  EXPECT_EQ(span[2]->file_path, "/path/to/file2.parquet");
+
+  // Span matches set iteration order and identity
+  size_t i = 0;
+  for (const auto& file : set) {
+    EXPECT_EQ(span[i], file) << "Span element " << i << " should match set iterator";
+    ++i;
+  }
+  EXPECT_EQ(i, span.size());
+
+  // Span works with range-for
+  i = 0;
+  for (const auto& file : span) {
+    EXPECT_EQ(file->file_path, span[i]->file_path);
+    ++i;
+  }
+  EXPECT_EQ(i, 3);
 
   set.clear();
   EXPECT_TRUE(set.as_span().empty());

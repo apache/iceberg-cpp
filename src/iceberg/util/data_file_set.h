@@ -81,9 +81,7 @@ class ICEBERG_EXPORT DataFileSet {
   const_iterator cend() const { return elements_.cend(); }
 
   /// \brief Get a non-owning view of the data files in insertion order.
-  std::span<const value_type> as_span() const {
-    return std::span<const value_type>(elements_.data(), elements_.size());
-  }
+  std::span<const value_type> as_span() const { return elements_; }
 
  private:
   std::pair<iterator, bool> InsertImpl(value_type file) {
