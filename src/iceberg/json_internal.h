@@ -191,7 +191,7 @@ ICEBERG_EXPORT Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
     const std::shared_ptr<Schema>& schema, const nlohmann::json& json,
     int32_t default_spec_id);
 
-/// \brief Deserializes a JSON object into an unbound `PartitionSpec` object.
+/// \brief Deserializes a JSON object into a `PartitionSpec` object.
 ///
 /// \param json The JSON object representing a `PartitionSpec`.
 /// \return An `expected` value containing either a `PartitionSpec` object or an error. If
