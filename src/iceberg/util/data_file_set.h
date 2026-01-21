@@ -25,6 +25,7 @@
 
 #include <iterator>
 #include <memory>
+#include <span>
 #include <string_view>
 #include <unordered_map>
 #include <vector>
@@ -78,6 +79,11 @@ class ICEBERG_EXPORT DataFileSet {
   iterator end() { return elements_.end(); }
   const_iterator end() const { return elements_.end(); }
   const_iterator cend() const { return elements_.cend(); }
+
+  /// \brief Get a non-owning view of the data files in insertion order.
+  std::span<const value_type> as_span() const {
+    return std::span<const value_type>(elements_.data(), elements_.size());
+  }
 
  private:
   std::pair<iterator, bool> InsertImpl(value_type file) {

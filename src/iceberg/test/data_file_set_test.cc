@@ -45,6 +45,7 @@ TEST_F(DataFileSetTest, EmptySet) {
   EXPECT_TRUE(set.empty());
   EXPECT_EQ(set.size(), 0);
   EXPECT_EQ(set.begin(), set.end());
+  EXPECT_TRUE(set.as_span().empty());
 }
 
 TEST_F(DataFileSetTest, InsertSingleFile) {
@@ -106,6 +107,24 @@ TEST_F(DataFileSetTest, InsertionOrderPreserved) {
   EXPECT_EQ(paths[0], "/path/to/file1.parquet");
   EXPECT_EQ(paths[1], "/path/to/file2.parquet");
   EXPECT_EQ(paths[2], "/path/to/file3.parquet");
+}
+
+TEST_F(DataFileSetTest, AsSpan) {
+  DataFileSet set;
+  EXPECT_TRUE(set.as_span().empty());
+
+  auto file1 = CreateDataFile("/path/to/file1.parquet");
+  auto file2 = CreateDataFile("/path/to/file2.parquet");
+  set.insert(file1);
+  set.insert(file2);
+
+  auto span = set.as_span();
+  EXPECT_EQ(span.size(), 2);
+  EXPECT_EQ(span[0]->file_path, "/path/to/file1.parquet");
+  EXPECT_EQ(span[1]->file_path, "/path/to/file2.parquet");
+
+  set.clear();
+  EXPECT_TRUE(set.as_span().empty());
 }
 
 TEST_F(DataFileSetTest, InsertDuplicatePreservesOrder) {

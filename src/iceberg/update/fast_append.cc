@@ -197,9 +197,8 @@ Result<std::vector<ManifestFile>> FastAppend::WriteNewManifests() {
   if (new_manifests_.empty() && !new_data_files_by_spec_.empty()) {
     for (const auto& [spec_id, data_files] : new_data_files_by_spec_) {
       ICEBERG_ASSIGN_OR_RAISE(auto spec, Spec(spec_id));
-      ICEBERG_ASSIGN_OR_RAISE(
-          auto written_manifests,
-          WriteDataManifests(data_files.begin(), data_files.end(), spec));
+      ICEBERG_ASSIGN_OR_RAISE(auto written_manifests,
+                              WriteDataManifests(data_files.as_span(), spec));
       new_manifests_.insert(new_manifests_.end(),
                             std::make_move_iterator(written_manifests.begin()),
                             std::make_move_iterator(written_manifests.end()));

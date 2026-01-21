@@ -22,6 +22,7 @@ install_headers(
         'config.h',
         'content_file_util.h',
         'conversions.h',
+        'data_file_set.h',
         'decimal.h',
         'endian.h',
         'error_collector.h',
