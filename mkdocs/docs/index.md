@@ -34,7 +34,7 @@ The Iceberg C++ Project is hosted on GitHub at [https://github.com/apache/iceber
 #### Prerequisites
 
 - CMake 3.25 or higher
-- C++23 compliant compiler (GCC 11+, Clang 14+, MSVC 2022+)
+- C++23 compliant compiler (GCC 14+, Clang 16+, MSVC 2022+)
 - Git
 
 #### Building from Source
