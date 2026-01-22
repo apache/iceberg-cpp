@@ -41,8 +41,7 @@ Result<std::shared_ptr<UpdateSnapshotReference>> UpdateSnapshotReference::Make(
 }
 
 UpdateSnapshotReference::UpdateSnapshotReference(std::shared_ptr<Transaction> transaction)
-    : PendingUpdate(std::move(transaction)),
-      updated_refs_(base().refs.begin(), base().refs.end()) {}
+    : PendingUpdate(std::move(transaction)), updated_refs_(base().refs) {}
 
 UpdateSnapshotReference::~UpdateSnapshotReference() = default;
 
@@ -107,20 +106,18 @@ UpdateSnapshotReference& UpdateSnapshotReference::ReplaceBranch(const std::strin
   ICEBERG_BUILDER_CHECK(it != updated_refs_.end(), "Branch does not exist: {}", name);
   ICEBERG_BUILDER_CHECK(it->second->type() == SnapshotRefType::kBranch,
                         "Ref '{}' is a tag not a branch", name);
-  // Clone the ref before modifying to avoid affecting base metadata
-  auto cloned = it->second->Clone(snapshot_id);
-  it->second = std::shared_ptr<SnapshotRef>(cloned.release());
+  it->second = it->second->Clone(snapshot_id);
   return *this;
 }
 
 UpdateSnapshotReference& UpdateSnapshotReference::ReplaceBranch(const std::string& from,
                                                                 const std::string& to) {
-  return ReplaceBranchInternal(from, to, false);
+  return ReplaceBranchInternal(from, to, /*fast_forward=*/false);
 }
 
 UpdateSnapshotReference& UpdateSnapshotReference::FastForward(const std::string& from,
                                                               const std::string& to) {
-  return ReplaceBranchInternal(from, to, true);
+  return ReplaceBranchInternal(from, to, /*fast_forward=*/true);
 }
 
 UpdateSnapshotReference& UpdateSnapshotReference::ReplaceBranchInternal(
@@ -157,9 +154,7 @@ UpdateSnapshotReference& UpdateSnapshotReference::ReplaceBranchInternal(
                           "Cannot fast-forward: {} is not an ancestor of {}", from, to);
   }
 
-  // Clone the ref before modifying to avoid affecting base metadata
-  auto cloned = from_it->second->Clone(to_it->second->snapshot_id);
-  from_it->second = std::shared_ptr<SnapshotRef>(cloned.release());
+  from_it->second = from_it->second->Clone(to_it->second->snapshot_id);
   return *this;
 }
 
@@ -170,9 +165,7 @@ UpdateSnapshotReference& UpdateSnapshotReference::ReplaceTag(const std::string& 
   ICEBERG_BUILDER_CHECK(it != updated_refs_.end(), "Tag does not exist: {}", name);
   ICEBERG_BUILDER_CHECK(it->second->type() == SnapshotRefType::kTag,
                         "Ref '{}' is a branch not a tag", name);
-  // Clone the ref before modifying to avoid affecting base metadata
-  auto cloned = it->second->Clone(snapshot_id);
-  it->second = std::shared_ptr<SnapshotRef>(cloned.release());
+  it->second = it->second->Clone(snapshot_id);
   return *this;
 }
 
@@ -183,14 +176,12 @@ UpdateSnapshotReference& UpdateSnapshotReference::SetMinSnapshotsToKeep(
   ICEBERG_BUILDER_CHECK(it != updated_refs_.end(), "Branch does not exist: {}", name);
   ICEBERG_BUILDER_CHECK(it->second->type() == SnapshotRefType::kBranch,
                         "Ref '{}' is a tag not a branch", name);
-  // Clone the ref before modifying to avoid affecting base metadata
-  auto cloned = it->second->Clone();
-  std::get<SnapshotRef::Branch>(cloned->retention).min_snapshots_to_keep =
+  it->second = it->second->Clone();
+  std::get<SnapshotRef::Branch>(it->second->retention).min_snapshots_to_keep =
       min_snapshots_to_keep;
-  ICEBERG_BUILDER_CHECK(cloned->Validate(),
+  ICEBERG_BUILDER_CHECK(it->second->Validate(),
                         "Invalid min_snapshots_to_keep {} for branch '{}'",
                         min_snapshots_to_keep, name);
-  it->second = std::shared_ptr<SnapshotRef>(cloned.release());
   return *this;
 }
 
@@ -201,14 +192,12 @@ UpdateSnapshotReference& UpdateSnapshotReference::SetMaxSnapshotAgeMs(
   ICEBERG_BUILDER_CHECK(it != updated_refs_.end(), "Branch does not exist: {}", name);
   ICEBERG_BUILDER_CHECK(it->second->type() == SnapshotRefType::kBranch,
                         "Ref '{}' is a tag not a branch", name);
-  // Clone the ref before modifying to avoid affecting base metadata
-  auto cloned = it->second->Clone();
-  std::get<SnapshotRef::Branch>(cloned->retention).max_snapshot_age_ms =
+  it->second = it->second->Clone();
+  std::get<SnapshotRef::Branch>(it->second->retention).max_snapshot_age_ms =
       max_snapshot_age_ms;
-  ICEBERG_BUILDER_CHECK(cloned->Validate(),
+  ICEBERG_BUILDER_CHECK(it->second->Validate(),
                         "Invalid max_snapshot_age_ms {} for branch '{}'",
                         max_snapshot_age_ms, name);
-  it->second = std::shared_ptr<SnapshotRef>(cloned.release());
   return *this;
 }
 
@@ -217,16 +206,14 @@ UpdateSnapshotReference& UpdateSnapshotReference::SetMaxRefAgeMs(const std::stri
   ICEBERG_BUILDER_CHECK(!name.empty(), "Reference name cannot be empty");
   auto it = updated_refs_.find(name);
   ICEBERG_BUILDER_CHECK(it != updated_refs_.end(), "Ref does not exist: {}", name);
-  // Clone the ref before modifying to avoid affecting base metadata
-  auto cloned = it->second->Clone();
-  if (cloned->type() == SnapshotRefType::kBranch) {
-    std::get<SnapshotRef::Branch>(cloned->retention).max_ref_age_ms = max_ref_age_ms;
+  it->second = it->second->Clone();
+  if (it->second->type() == SnapshotRefType::kBranch) {
+    std::get<SnapshotRef::Branch>(it->second->retention).max_ref_age_ms = max_ref_age_ms;
   } else {
-    std::get<SnapshotRef::Tag>(cloned->retention).max_ref_age_ms = max_ref_age_ms;
+    std::get<SnapshotRef::Tag>(it->second->retention).max_ref_age_ms = max_ref_age_ms;
   }
-  ICEBERG_BUILDER_CHECK(cloned->Validate(), "Invalid max_ref_age_ms {} for ref '{}'",
+  ICEBERG_BUILDER_CHECK(it->second->Validate(), "Invalid max_ref_age_ms {} for ref '{}'",
                         max_ref_age_ms, name);
-  it->second = std::shared_ptr<SnapshotRef>(cloned.release());
   return *this;
 }
 
@@ -238,15 +225,15 @@ Result<UpdateSnapshotReference::ApplyResult> UpdateSnapshotReference::Apply() {
 
   // Identify references which have been removed
   for (const auto& [name, ref] : current_refs) {
-    if (updated_refs_.find(name) == updated_refs_.end()) {
+    if (!updated_refs_.contains(name)) {
       result.to_remove.push_back(name);
     }
   }
 
   // Identify references which have been created or updated
   for (const auto& [name, ref] : updated_refs_) {
-    auto current_it = current_refs.find(name);
-    if (current_it == current_refs.end() || *current_it->second != *ref) {
+    if (auto iter = current_refs.find(name);
+        iter == current_refs.end() || *iter->second != *ref) {
       result.to_set.emplace_back(name, ref);
     }
   }
