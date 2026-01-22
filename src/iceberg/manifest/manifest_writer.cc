@@ -256,9 +256,9 @@ Result<std::unique_ptr<Writer>> OpenFileWriter(
     std::string_view location, std::shared_ptr<Schema> schema,
     std::shared_ptr<FileIO> file_io,
     std::unordered_map<std::string, std::string> metadata, std::string_view schema_name) {
-  auto writer_properties = WriterProperties::default_properties();
+  WriterProperties writer_properties;
   if (!schema_name.empty()) {
-    writer_properties->Set(WriterProperties::kAvroSchemaName, std::string(schema_name));
+    writer_properties.Set(WriterProperties::kAvroSchemaName, std::string(schema_name));
   }
   ICEBERG_ASSIGN_OR_RAISE(auto writer, WriterFactoryRegistry::Open(
                                            FileFormatType::kAvro,

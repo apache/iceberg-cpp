@@ -52,12 +52,41 @@ Result<std::unique_ptr<AvroOutputStream>> CreateOutputStream(const WriterOptions
   return std::make_unique<AvroOutputStream>(output, buffer_size);
 }
 
+Result<::avro::Codec> ParseCodec(const WriterProperties& properties) {
+  const auto& codec_name = properties.Get(WriterProperties::kAvroCompression);
+  ::avro::Codec codec;
+  if (codec_name == "uncompressed") {
+    codec = ::avro::NULL_CODEC;
+  } else if (codec_name == "gzip") {
+    codec = ::avro::DEFLATE_CODEC;
+  } else if (codec_name == "snappy") {
+    codec = ::avro::SNAPPY_CODEC;
+  } else if (codec_name == "zstd") {
+    codec = ::avro::ZSTD_CODEC;
+  } else {
+    return InvalidArgument("Unsupported Avro codec: {}", codec_name);
+  }
+  ICEBERG_PRECHECK(::avro::isCodecAvailable(codec),
+                   "Avro codec {} is not available in the current build", codec_name);
+  return codec;
+}
+
+Result<std::optional<int32_t>> ParseCodecLevel(const WriterProperties& properties) {
+  auto level_str = properties.Get(WriterProperties::kAvroCompressionLevel);
+  if (level_str.empty()) {
+    return std::nullopt;
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto level, StringUtils::ParseInt<int32_t>(level_str));
+  return level;
+}
+
 // Abstract base class for Avro write backends.
 class AvroWriteBackend {
  public:
   virtual ~AvroWriteBackend() = default;
   virtual Status Init(std::unique_ptr<AvroOutputStream> output_stream,
                       const ::avro::ValidSchema& avro_schema, int64_t sync_interval,
+                      ::avro::Codec codec, std::optional<int32_t> compression_level,
                       const std::map<std::string, std::vector<uint8_t>>& metadata) = 0;
   virtual Status WriteRow(const Schema& write_schema, const ::arrow::Array& array,
                           int64_t row_index) = 0;
@@ -70,10 +99,11 @@ class DirectEncoderBackend : public AvroWriteBackend {
  public:
   Status Init(std::unique_ptr<AvroOutputStream> output_stream,
               const ::avro::ValidSchema& avro_schema, int64_t sync_interval,
+              ::avro::Codec codec, std::optional<int32_t> compression_level,
               const std::map<std::string, std::vector<uint8_t>>& metadata) override {
-    writer_ = std::make_unique<::avro::DataFileWriterBase>(std::move(output_stream),
-                                                           avro_schema, sync_interval,
-                                                           ::avro::NULL_CODEC, metadata);
+    writer_ = std::make_unique<::avro::DataFileWriterBase>(
+        std::move(output_stream), avro_schema, sync_interval, codec, metadata,
+        compression_level);
     avro_root_node_ = avro_schema.root();
     return {};
   }
@@ -111,10 +141,11 @@ class GenericDatumBackend : public AvroWriteBackend {
  public:
   Status Init(std::unique_ptr<AvroOutputStream> output_stream,
               const ::avro::ValidSchema& avro_schema, int64_t sync_interval,
+              ::avro::Codec codec, std::optional<int32_t> compression_level,
               const std::map<std::string, std::vector<uint8_t>>& metadata) override {
     writer_ = std::make_unique<::avro::DataFileWriter<::avro::GenericDatum>>(
-        std::move(output_stream), avro_schema, sync_interval, ::avro::NULL_CODEC,
-        metadata);
+        std::move(output_stream), avro_schema, sync_interval, codec, metadata,
+        compression_level);
     datum_ = std::make_unique<::avro::GenericDatum>(avro_schema);
     return {};
   }
@@ -158,7 +189,7 @@ class AvroWriter::Impl {
     ::avro::NodePtr root;
     ICEBERG_RETURN_UNEXPECTED(ToAvroNodeVisitor{}.Visit(*write_schema_, &root));
     if (const auto& schema_name =
-            options.properties->Get(WriterProperties::kAvroSchemaName);
+            options.properties.Get(WriterProperties::kAvroSchemaName);
         !schema_name.empty()) {
       root->setName(::avro::Name(schema_name));
     }
@@ -169,7 +200,7 @@ class AvroWriter::Impl {
     ICEBERG_ASSIGN_OR_RAISE(
         auto output_stream,
         CreateOutputStream(options,
-                           options.properties->Get(WriterProperties::kAvroBufferSize)));
+                           options.properties.Get(WriterProperties::kAvroBufferSize)));
     arrow_output_stream_ = output_stream->arrow_output_stream();
 
     std::map<std::string, std::vector<uint8_t>> metadata;
@@ -181,15 +212,19 @@ class AvroWriter::Impl {
     }
 
     // Create the appropriate backend based on configuration
-    if (options.properties->Get(WriterProperties::kAvroSkipDatum)) {
+    if (options.properties.Get(WriterProperties::kAvroSkipDatum)) {
       backend_ = std::make_unique<DirectEncoderBackend>();
     } else {
       backend_ = std::make_unique<GenericDatumBackend>();
     }
 
-    ICEBERG_RETURN_UNEXPECTED(backend_->Init(
-        std::move(output_stream), *avro_schema_,
-        options.properties->Get(WriterProperties::kAvroSyncInterval), metadata));
+    ICEBERG_ASSIGN_OR_RAISE(auto codec, ParseCodec(options.properties));
+    ICEBERG_ASSIGN_OR_RAISE(auto compression_level, ParseCodecLevel(options.properties));
+
+    ICEBERG_RETURN_UNEXPECTED(
+        backend_->Init(std::move(output_stream), *avro_schema_,
+                       options.properties.Get(WriterProperties::kAvroSyncInterval), codec,
+                       compression_level, metadata));
 
     ICEBERG_RETURN_UNEXPECTED(ToArrowSchema(*write_schema_, &arrow_schema_));
     return {};

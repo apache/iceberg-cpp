@@ -1119,8 +1119,6 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
   if (json.contains(kProperties)) {
     ICEBERG_ASSIGN_OR_RAISE(auto properties, FromJsonMap(json, kProperties));
     table_metadata->properties = TableProperties::FromMap(std::move(properties));
-  } else {
-    table_metadata->properties = TableProperties::default_properties();
   }
 
   // This field is optional, but internally we set this to -1 when not set

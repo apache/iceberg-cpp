@@ -83,7 +83,6 @@ std::shared_ptr<TableMetadata> CreateTableMetadataWithSnapshots(
   metadata->default_sort_order_id = SortOrder::kInitialSortOrderId;
   metadata->sort_orders.push_back(SortOrder::Unsorted());
   metadata->next_row_id = TableMetadata::kInitialRowId;
-  metadata->properties = TableProperties::default_properties();
 
   // Create snapshots: base -> main1 -> main2
   auto base_snapshot = CreateSnapshot(base_snapshot_id, std::nullopt, 1, base_timestamp);

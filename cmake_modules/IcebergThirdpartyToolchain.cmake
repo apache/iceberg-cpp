@@ -191,24 +191,16 @@ function(resolve_avro_dependency)
                              NAMES
                              avro-cpp
                              CONFIG)
-  elseif(DEFINED ENV{ICEBERG_AVRO_GIT_URL})
-    # Support custom git URL for mirrors
-    fetchcontent_declare(avro-cpp
-                         ${FC_DECLARE_COMMON_OPTIONS}
-                         GIT_REPOSITORY $ENV{ICEBERG_AVRO_GIT_URL}
-                         GIT_TAG e6c308780e876b4c11a470b9900995947f7b0fb5
-                         SOURCE_SUBDIR
-                         lang/c++
-                         FIND_PACKAGE_ARGS
-                         NAMES
-                         avro-cpp
-                         CONFIG)
   else()
-    # Default to GitHub - uses unreleased version
+    if(DEFINED ENV{ICEBERG_AVRO_GIT_URL})
+      set(AVRO_GIT_REPOSITORY "$ENV{ICEBERG_AVRO_GIT_URL}")
+    else()
+      set(AVRO_GIT_REPOSITORY "https://github.com/apache/avro.git")
+    endif()
     fetchcontent_declare(avro-cpp
                          ${FC_DECLARE_COMMON_OPTIONS}
-                         GIT_REPOSITORY https://github.com/apache/avro.git
-                         GIT_TAG e6c308780e876b4c11a470b9900995947f7b0fb5
+                         GIT_REPOSITORY ${AVRO_GIT_REPOSITORY}
+                         GIT_TAG 11fb55500bed9fbe9af53b85112cd13887f0ce80
                          SOURCE_SUBDIR
                          lang/c++
                          FIND_PACKAGE_ARGS

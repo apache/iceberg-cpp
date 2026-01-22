@@ -59,14 +59,10 @@ Result<std::unique_ptr<Writer>> WriterFactoryRegistry::Open(
   return writer;
 }
 
-std::unique_ptr<WriterProperties> WriterProperties::default_properties() {
-  return std::unique_ptr<WriterProperties>(new WriterProperties());
-}
-
-std::unique_ptr<WriterProperties> WriterProperties::FromMap(
+WriterProperties WriterProperties::FromMap(
     const std::unordered_map<std::string, std::string>& properties) {
-  auto writer_properties = std::unique_ptr<WriterProperties>(new WriterProperties());
-  writer_properties->configs_ = properties;
+  WriterProperties writer_properties;
+  writer_properties.configs_ = properties;
   return writer_properties;
 }
 

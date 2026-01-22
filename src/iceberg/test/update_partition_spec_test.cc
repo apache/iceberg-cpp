@@ -134,7 +134,6 @@ class UpdatePartitionSpecTest : public ::testing::TestWithParam<int8_t> {
     metadata->default_sort_order_id = SortOrder::kUnsortedOrderId;
     metadata->sort_orders.push_back(SortOrder::Unsorted());
     metadata->next_row_id = TableMetadata::kInitialRowId;
-    metadata->properties = TableProperties::default_properties();
     metadata->partition_specs.push_back(std::move(spec));
     return metadata;
   }
