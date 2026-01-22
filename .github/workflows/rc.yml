@@ -89,11 +89,16 @@ jobs:
         with:
           name: archive
 
-      - name: Set Ubuntu Compilers
-        if: ${{ startsWith(matrix.runs-on, 'ubuntu') }}
+      - name: Set compilers on Ubuntu
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
         run: |
           echo "CC=${{ matrix.CC }}" >> $GITHUB_ENV
           echo "CXX=${{ matrix.CXX }}" >> $GITHUB_ENV
+
+      - name: Install dependencies on Ubuntu
+        if: ${{ startsWith(matrix.os, 'ubuntu') }}
+        shell: bash
+        run: sudo apt-get update && sudo apt-get install -y libcurl4-openssl-dev
 
       - name: Verify
         run: |
