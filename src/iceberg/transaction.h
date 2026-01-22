@@ -110,6 +110,18 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// \brief Apply the pending changes to current table.
   Status Apply(PendingUpdate& updates);
 
+  // Helper methods for applying different types of updates
+  Status ApplyExpireSnapshots(ExpireSnapshots& update);
+  Status ApplySetSnapshot(SetSnapshot& update);
+  Status ApplyUpdateLocation(UpdateLocation& update);
+  Status ApplyUpdatePartitionSpec(UpdatePartitionSpec& update);
+  Status ApplyUpdateProperties(UpdateProperties& update);
+  Status ApplyUpdateSchema(UpdateSchema& update);
+  Status ApplyUpdateSnapshot(SnapshotUpdate& update);
+  Status ApplyUpdateSnapshotReference(UpdateSnapshotReference& update);
+  Status ApplyUpdateSortOrder(UpdateSortOrder& update);
+  Status ApplyUpdateStatistics(UpdateStatistics& update);
+
  private:
   friend class PendingUpdate;
 
