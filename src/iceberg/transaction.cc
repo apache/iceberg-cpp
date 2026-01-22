@@ -160,7 +160,6 @@ Status Transaction::Apply(PendingUpdate& update) {
       metadata_builder_->SetCurrentSchema(std::move(result.schema),
                                           result.new_last_column_id);
     } break;
-
     case PendingUpdate::Kind::kUpdateSnapshot: {
       const auto& base = metadata_builder_->current();
 
@@ -199,20 +198,12 @@ Status Transaction::Apply(PendingUpdate& update) {
     } break;
     case PendingUpdate::Kind::kUpdateSnapshotReference: {
       auto& update_ref = internal::checked_cast<UpdateSnapshotReference&>(update);
-      ICEBERG_ASSIGN_OR_RAISE(auto updated_refs, update_ref.Apply());
-      const auto& current_refs = current().refs;
-      // Identify references which have been removed
-      for (const auto& [name, ref] : current_refs) {
-        if (updated_refs.find(name) == updated_refs.end()) {
-          metadata_builder_->RemoveRef(name);
-        }
+      ICEBERG_ASSIGN_OR_RAISE(auto result, update_ref.Apply());
+      for (const auto& name : result.to_remove) {
+        metadata_builder_->RemoveRef(name);
       }
-      // Identify references which have been created or updated
-      for (const auto& [name, ref] : updated_refs) {
-        auto current_it = current_refs.find(name);
-        if (current_it == current_refs.end() || *current_it->second != *ref) {
-          metadata_builder_->SetRef(name, ref);
-        }
+      for (auto&& [name, ref] : result.to_set) {
+        metadata_builder_->SetRef(std::move(name), std::move(ref));
       }
     } break;
     case PendingUpdate::Kind::kUpdateSortOrder: {
@@ -230,7 +221,6 @@ Status Transaction::Apply(PendingUpdate& update) {
         metadata_builder_->RemoveStatistics(snapshot_id);
       }
     } break;
-
     default:
       return NotSupported("Unsupported pending update: {}",
                           static_cast<int32_t>(update.kind()));

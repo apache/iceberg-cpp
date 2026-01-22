@@ -35,9 +35,8 @@ namespace iceberg {
 
 /// \brief Updates snapshot references.
 ///
-/// TODO(xxx): Add SetSnapshotOperation operations such as setCurrentSnapshot,
-/// rollBackTime, rollbackTo to this class so that we can support those operations for
-/// refs.
+/// TODO(xxx): Add SetSnapshot operations such as SetCurrentSnapshot, RollBackTime,
+/// RollbackTo to this class so that we can support those operations for refs.
 class ICEBERG_EXPORT UpdateSnapshotReference : public PendingUpdate {
  public:
   static Result<std::shared_ptr<UpdateSnapshotReference>> Make(
@@ -136,8 +135,15 @@ class ICEBERG_EXPORT UpdateSnapshotReference : public PendingUpdate {
 
   Kind kind() const final { return Kind::kUpdateSnapshotReference; }
 
-  /// \brief Apply the pending changes and return the updated references.
-  Result<std::unordered_map<std::string, std::shared_ptr<SnapshotRef>>> Apply();
+  struct ApplyResult {
+    /// References to set or update (name, ref pairs)
+    std::vector<std::pair<std::string, std::shared_ptr<SnapshotRef>>> to_set;
+    /// Reference names to remove
+    std::vector<std::string> to_remove;
+  };
+
+  /// \brief Apply the pending changes and return the updated and removed references.
+  Result<ApplyResult> Apply();
 
  private:
   explicit UpdateSnapshotReference(std::shared_ptr<Transaction> transaction);

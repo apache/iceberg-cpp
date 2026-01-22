@@ -24,11 +24,9 @@
 #include <string>
 #include <unordered_map>
 
-#include "iceberg/result.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/transaction.h"
-#include "iceberg/util/error_collector.h"
 #include "iceberg/util/macros.h"
 #include "iceberg/util/snapshot_util_internal.h"
 
@@ -43,12 +41,8 @@ Result<std::shared_ptr<UpdateSnapshotReference>> UpdateSnapshotReference::Make(
 }
 
 UpdateSnapshotReference::UpdateSnapshotReference(std::shared_ptr<Transaction> transaction)
-    : PendingUpdate(std::move(transaction)) {
-  // Initialize updated_refs_ with current refs from base metadata
-  for (const auto& [name, ref] : base().refs) {
-    updated_refs_[name] = ref;
-  }
-}
+    : PendingUpdate(std::move(transaction)),
+      updated_refs_(base().refs.begin(), base().refs.end()) {}
 
 UpdateSnapshotReference::~UpdateSnapshotReference() = default;
 
@@ -113,7 +107,9 @@ UpdateSnapshotReference& UpdateSnapshotReference::ReplaceBranch(const std::strin
   ICEBERG_BUILDER_CHECK(it != updated_refs_.end(), "Branch does not exist: {}", name);
   ICEBERG_BUILDER_CHECK(it->second->type() == SnapshotRefType::kBranch,
                         "Ref '{}' is a tag not a branch", name);
-  it->second->snapshot_id = snapshot_id;
+  // Clone the ref before modifying to avoid affecting base metadata
+  auto cloned = it->second->Clone(snapshot_id);
+  it->second = std::shared_ptr<SnapshotRef>(cloned.release());
   return *this;
 }
 
@@ -161,7 +157,9 @@ UpdateSnapshotReference& UpdateSnapshotReference::ReplaceBranchInternal(
                           "Cannot fast-forward: {} is not an ancestor of {}", from, to);
   }
 
-  from_it->second->snapshot_id = to_it->second->snapshot_id;
+  // Clone the ref before modifying to avoid affecting base metadata
+  auto cloned = from_it->second->Clone(to_it->second->snapshot_id);
+  from_it->second = std::shared_ptr<SnapshotRef>(cloned.release());
   return *this;
 }
 
@@ -172,7 +170,9 @@ UpdateSnapshotReference& UpdateSnapshotReference::ReplaceTag(const std::string& 
   ICEBERG_BUILDER_CHECK(it != updated_refs_.end(), "Tag does not exist: {}", name);
   ICEBERG_BUILDER_CHECK(it->second->type() == SnapshotRefType::kTag,
                         "Ref '{}' is a branch not a tag", name);
-  it->second->snapshot_id = snapshot_id;
+  // Clone the ref before modifying to avoid affecting base metadata
+  auto cloned = it->second->Clone(snapshot_id);
+  it->second = std::shared_ptr<SnapshotRef>(cloned.release());
   return *this;
 }
 
@@ -183,11 +183,14 @@ UpdateSnapshotReference& UpdateSnapshotReference::SetMinSnapshotsToKeep(
   ICEBERG_BUILDER_CHECK(it != updated_refs_.end(), "Branch does not exist: {}", name);
   ICEBERG_BUILDER_CHECK(it->second->type() == SnapshotRefType::kBranch,
                         "Ref '{}' is a tag not a branch", name);
-  std::get<SnapshotRef::Branch>(it->second->retention).min_snapshots_to_keep =
+  // Clone the ref before modifying to avoid affecting base metadata
+  auto cloned = it->second->Clone();
+  std::get<SnapshotRef::Branch>(cloned->retention).min_snapshots_to_keep =
       min_snapshots_to_keep;
-  ICEBERG_BUILDER_CHECK(it->second->Validate(),
+  ICEBERG_BUILDER_CHECK(cloned->Validate(),
                         "Invalid min_snapshots_to_keep {} for branch '{}'",
                         min_snapshots_to_keep, name);
+  it->second = std::shared_ptr<SnapshotRef>(cloned.release());
   return *this;
 }
 
@@ -198,11 +201,14 @@ UpdateSnapshotReference& UpdateSnapshotReference::SetMaxSnapshotAgeMs(
   ICEBERG_BUILDER_CHECK(it != updated_refs_.end(), "Branch does not exist: {}", name);
   ICEBERG_BUILDER_CHECK(it->second->type() == SnapshotRefType::kBranch,
                         "Ref '{}' is a tag not a branch", name);
-  std::get<SnapshotRef::Branch>(it->second->retention).max_snapshot_age_ms =
+  // Clone the ref before modifying to avoid affecting base metadata
+  auto cloned = it->second->Clone();
+  std::get<SnapshotRef::Branch>(cloned->retention).max_snapshot_age_ms =
       max_snapshot_age_ms;
-  ICEBERG_BUILDER_CHECK(it->second->Validate(),
+  ICEBERG_BUILDER_CHECK(cloned->Validate(),
                         "Invalid max_snapshot_age_ms {} for branch '{}'",
                         max_snapshot_age_ms, name);
+  it->second = std::shared_ptr<SnapshotRef>(cloned.release());
   return *this;
 }
 
@@ -211,20 +217,41 @@ UpdateSnapshotReference& UpdateSnapshotReference::SetMaxRefAgeMs(const std::stri
   ICEBERG_BUILDER_CHECK(!name.empty(), "Reference name cannot be empty");
   auto it = updated_refs_.find(name);
   ICEBERG_BUILDER_CHECK(it != updated_refs_.end(), "Ref does not exist: {}", name);
-  if (it->second->type() == SnapshotRefType::kBranch) {
-    std::get<SnapshotRef::Branch>(it->second->retention).max_ref_age_ms = max_ref_age_ms;
+  // Clone the ref before modifying to avoid affecting base metadata
+  auto cloned = it->second->Clone();
+  if (cloned->type() == SnapshotRefType::kBranch) {
+    std::get<SnapshotRef::Branch>(cloned->retention).max_ref_age_ms = max_ref_age_ms;
   } else {
-    std::get<SnapshotRef::Tag>(it->second->retention).max_ref_age_ms = max_ref_age_ms;
+    std::get<SnapshotRef::Tag>(cloned->retention).max_ref_age_ms = max_ref_age_ms;
   }
-  ICEBERG_BUILDER_CHECK(it->second->Validate(), "Invalid max_ref_age_ms {} for ref '{}'",
+  ICEBERG_BUILDER_CHECK(cloned->Validate(), "Invalid max_ref_age_ms {} for ref '{}'",
                         max_ref_age_ms, name);
+  it->second = std::shared_ptr<SnapshotRef>(cloned.release());
   return *this;
 }
 
-Result<std::unordered_map<std::string, std::shared_ptr<SnapshotRef>>>
-UpdateSnapshotReference::Apply() {
+Result<UpdateSnapshotReference::ApplyResult> UpdateSnapshotReference::Apply() {
   ICEBERG_RETURN_UNEXPECTED(CheckErrors());
-  return updated_refs_;
+
+  ApplyResult result;
+  const auto& current_refs = base().refs;
+
+  // Identify references which have been removed
+  for (const auto& [name, ref] : current_refs) {
+    if (updated_refs_.find(name) == updated_refs_.end()) {
+      result.to_remove.push_back(name);
+    }
+  }
+
+  // Identify references which have been created or updated
+  for (const auto& [name, ref] : updated_refs_) {
+    auto current_it = current_refs.find(name);
+    if (current_it == current_refs.end() || *current_it->second != *ref) {
+      result.to_set.emplace_back(name, ref);
+    }
+  }
+
+  return result;
 }
 
 }  // namespace iceberg
