@@ -21,11 +21,9 @@
 
 #include <cstdint>
 #include <memory>
-#include <mutex>
 #include <string>
 #include <unordered_map>
 
-#include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/type_fwd.h"
 #include "iceberg/result.h"
@@ -34,7 +32,7 @@
 /// \brief Http client for Iceberg REST API.
 
 namespace cpr {
-class Session;
+class ConnectionPool;
 }  // namespace cpr
 
 namespace iceberg::rest {
@@ -110,16 +108,8 @@ class ICEBERG_REST_EXPORT HttpClient {
                               const ErrorHandler& error_handler);
 
  private:
-  void PrepareSession(const std::string& path, HttpMethod method,
-                      const std::unordered_map<std::string, std::string>& params,
-                      const std::unordered_map<std::string, std::string>& headers);
-
   std::unordered_map<std::string, std::string> default_headers_;
-
-  // TODO(Li Feiyang): use connection pool to support external multi-threaded concurrent
-  // calls
-  std::unique_ptr<cpr::Session> session_;
-  mutable std::mutex session_mutex_;
+  std::unique_ptr<cpr::ConnectionPool> connection_pool_;
 };
 
 }  // namespace iceberg::rest
