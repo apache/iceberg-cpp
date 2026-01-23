@@ -26,7 +26,7 @@ The project can be built and developed using the existing Docker-based environme
 ### Local prerequisites
 
 - Git
-- CMake and a C++17-compatible compiler
+- CMake and a C++23-compatible compiler
 - Python (for pre-commit)
 - Docker (recommended for a consistent dev environment)
 
