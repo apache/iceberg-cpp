@@ -33,7 +33,6 @@
 
 namespace iceberg {
 
-
 Result<std::shared_ptr<Expression>> ExpressionFromJson(const nlohmann::json& json) {
   // Handle boolean literals
   if (json.is_boolean()) {
@@ -55,10 +54,10 @@ nlohmann::json ToJson(const Expression& expr) {
   }
 }
 
-#define ICEBERG_DEFINE_FROM_JSON(Model)                       \
-  template <>                                                 \
+#define ICEBERG_DEFINE_FROM_JSON(Model)                                        \
+  template <>                                                                  \
   Result<std::shared_ptr<Model>> FromJson<Model>(const nlohmann::json& json) { \
-    return Model##FromJson(json);                             \
+    return Model##FromJson(json);                                              \
   }
 
 ICEBERG_DEFINE_FROM_JSON(Expression)

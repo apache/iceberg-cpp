@@ -17,8 +17,6 @@
  * under the License.
  */
 
-#include "iceberg/expression/json_internal.h"
-
 #include <memory>
 #include <vector>
 
@@ -28,6 +26,7 @@
 
 #include "iceberg/expression/expression.h"
 #include "iceberg/expression/expressions.h"
+#include "iceberg/expression/json_internal.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/expression/predicate.h"
 #include "iceberg/expression/term.h"
