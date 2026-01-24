@@ -49,6 +49,7 @@ iceberg_sources = files(
     'expression/expression.cc',
     'expression/expressions.cc',
     'expression/inclusive_metrics_evaluator.cc',
+    'expression/json_serde.cc',
     'expression/literal.cc',
     'expression/manifest_evaluator.cc',
     'expression/predicate.cc',

@@ -61,6 +61,7 @@ iceberg_tests = {
     'expression_test': {
         'sources': files(
             'aggregate_test.cc',
+            'expression_json_test.cc',
             'expression_test.cc',
             'expression_visitor_test.cc',
             'inclusive_metrics_evaluator_test.cc',
