@@ -33,13 +33,14 @@ namespace iceberg {
 template <typename Model>
 Result<Model> FromJson(const nlohmann::json& json);
 
-#define ICEBERG_DECLARE_JSON_SERDE(Model)                                     \
-  Result<std::shared_ptr<Model>> Model##FromJson(const nlohmann::json& json); \
-                                                                              \
-  template <typename Model>                                                   \
-  Result<std::shared_ptr<Model>> FromJson(const nlohmann::json& json);        \
-                                                                              \
-  nlohmann::json ToJson(const Model& model);
+#define ICEBERG_DECLARE_JSON_SERDE(Model)                                             \
+  ICEBERG_EXPORT Result<std::shared_ptr<Model>> Model##FromJson(                      \
+      const nlohmann::json& json);                                                    \
+                                                                                      \
+  template <typename Model>                                                           \
+  ICEBERG_EXPORT Result<std::shared_ptr<Model>> FromJson(const nlohmann::json& json); \
+                                                                                      \
+  ICEBERG_EXPORT nlohmann::json ToJson(const Model& model);
 
 /// \note Don't forget to add `ICEBERG_DEFINE_FROM_JSON` to the end of
 /// `json_internal.cc` to define the `FromJson` function for the model.

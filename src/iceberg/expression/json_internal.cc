@@ -34,12 +34,12 @@
 namespace iceberg {
 
 Result<std::shared_ptr<Expression>> ExpressionFromJson(const nlohmann::json& json) {
-  // Handle boolean literals
+  // Handle boolean
   if (json.is_boolean()) {
     return json.get<bool>() ? std::static_pointer_cast<Expression>(True::Instance())
                             : std::static_pointer_cast<Expression>(False::Instance());
   }
-  return JsonParseError("Only boolean literals are currently supported");
+  return JsonParseError("Only boolean are currently supported");
 }
 
 nlohmann::json ToJson(const Expression& expr) {
