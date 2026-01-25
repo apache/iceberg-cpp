@@ -65,9 +65,14 @@ TEST_F(ExpressionJsonTest, FalseExpression) {
   EXPECT_EQ(result.value()->op(), Expression::Operation::kFalse);
 }
 
-TEST_F(ExpressionJsonTest, OpToString) {
+TEST_F(ExpressionJsonTest, OperationTypeTests) {
   EXPECT_EQ(OperationTypeFromString("true"), Expression::Operation::kTrue);
   EXPECT_EQ("true", ToStringOperationType(Expression::Operation::kTrue));
+  EXPECT_TRUE(IsSetOperation(Expression::Operation::kIn));
+  EXPECT_FALSE(IsSetOperation(Expression::Operation::kTrue));
+
+  EXPECT_TRUE(IsUnaryOperation(Expression::Operation::kIsNull));
+  EXPECT_FALSE(IsUnaryOperation(Expression::Operation::kTrue));
 }
 
 }  // namespace iceberg
