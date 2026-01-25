@@ -54,6 +54,30 @@ constexpr std::string_view kTypeIsNan = "is-nan";
 constexpr std::string_view kTypeNotNan = "not-nan";
 }  // namespace
 
+/// Check if an operation is a unary predicate (no values)
+bool IsUnaryOperation(Expression::Operation op) {
+  switch (op) {
+    case Expression::Operation::kIsNull:
+    case Expression::Operation::kNotNull:
+    case Expression::Operation::kIsNan:
+    case Expression::Operation::kNotNan:
+      return true;
+    default:
+      return false;
+  }
+}
+
+/// Check if an operation is a set predicate (multiple values)
+bool IsSetOperation(Expression::Operation op) {
+  switch (op) {
+    case Expression::Operation::kIn:
+    case Expression::Operation::kNotIn:
+      return true;
+    default:
+      return false;
+  }
+}
+
 /// \brief Converts a JSON type string to an Expression::Operation.
 ///
 /// \param type_str The JSON type string

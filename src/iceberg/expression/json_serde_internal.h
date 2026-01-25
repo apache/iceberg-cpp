@@ -61,4 +61,10 @@ ICEBERG_EXPORT Result<Expression::Operation> OperationTypeFromString(
 /// \return The operation type string (e.g., "eq", "lt-eq", "is-null")
 ICEBERG_EXPORT std::string_view ToStringOperationType(Expression::Operation op);
 
+/// Check if an operation is a unary predicate (no values)
+ICEBERG_EXPORT bool IsUnaryOperation(Expression::Operation op);
+
+/// Check if an operation is a set predicate (multiple values)
+ICEBERG_EXPORT bool IsSetOperation(Expression::Operation op);
+
 }  // namespace iceberg
