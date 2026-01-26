@@ -449,7 +449,7 @@ function(resolve_cpr_dependency)
   if(DEFINED ENV{ICEBERG_CPR_URL})
     set(CPR_URL "$ENV{ICEBERG_CPR_URL}")
   else()
-    set(CPR_URL "https://github.com/libcpr/cpr/archive/refs/tags/1.12.0.tar.gz")
+    set(CPR_URL "https://github.com/libcpr/cpr/archive/refs/tags/1.14.1.tar.gz")
   endif()
 
   fetchcontent_declare(cpr
