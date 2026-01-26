@@ -142,8 +142,10 @@ class TableScanTest : public testing::TestWithParam<int> {
 
   std::shared_ptr<DataFile> MakeDataFile(const std::string& path,
                                          const PartitionValues& partition,
-                                         int32_t spec_id, int64_t record_count = 1) {
-    return std::make_shared<DataFile>(DataFile{
+                                         int32_t spec_id, int64_t record_count = 1,
+                                         std::optional<int32_t> lower_id = std::nullopt,
+                                         std::optional<int32_t> upper_id = std::nullopt) {
+    auto file = std::make_shared<DataFile>(DataFile{
         .file_path = path,
         .file_format = FileFormatType::kParquet,
         .partition = partition,
@@ -152,6 +154,14 @@ class TableScanTest : public testing::TestWithParam<int> {
         .sort_order_id = 0,
         .partition_spec_id = spec_id,
     });
+    // Set lower/upper bounds for field_id=1 ("id" column) if provided
+    if (lower_id.has_value()) {
+      file->lower_bounds[1] = Literal::Int(lower_id.value()).Serialize().value();
+    }
+    if (upper_id.has_value()) {
+      file->upper_bounds[1] = Literal::Int(upper_id.value()).Serialize().value();
+    }
+    return file;
   }
 
   ManifestEntry MakeEntry(ManifestStatus status, int64_t snapshot_id,
@@ -486,37 +496,35 @@ TEST_P(TableScanTest, PlanFilesWithMultipleManifests) {
 TEST_P(TableScanTest, PlanFilesWithFilter) {
   int version = GetParam();
 
-  // Test that filters are properly passed to the ManifestGroup
-  auto filter = Expressions::Equal("id", Literal::Int(42));
+  constexpr int64_t kSnapshotId = 1000L;
   const auto part_value = PartitionValues({Literal::Int(0)});
 
-  // Create data manifest with files
+  // Create two data files with non-overlapping id ranges:
+  // - data1.parquet: id range [1, 50]
+  // - data2.parquet: id range [51, 100]
   std::vector<ManifestEntry> data_entries{
-      MakeEntry(ManifestStatus::kAdded, /*snapshot_id=*/1000L, /*sequence_number=*/1,
+      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
                 MakeDataFile("/path/to/data1.parquet", part_value,
-                             partitioned_spec_->spec_id())),
-      MakeEntry(ManifestStatus::kAdded, /*snapshot_id=*/1000L, /*sequence_number=*/1,
+                             partitioned_spec_->spec_id(), /*record_count=*/1,
+                             /*lower_id=*/1, /*upper_id=*/50)),
+      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
                 MakeDataFile("/path/to/data2.parquet", part_value,
-                             partitioned_spec_->spec_id()))};
-  auto data_manifest = WriteDataManifest(version, /*snapshot_id=*/1000L,
-                                         std::move(data_entries), partitioned_spec_);
+                             partitioned_spec_->spec_id(), /*record_count=*/1,
+                             /*lower_id=*/51, /*upper_id=*/100))};
+  auto data_manifest =
+      WriteDataManifest(version, kSnapshotId, std::move(data_entries), partitioned_spec_);
+  std::string manifest_list_path =
+      WriteManifestList(version, kSnapshotId, /*sequence_number=*/1, {data_manifest});
 
-  // Write manifest list
-  std::string manifest_list_path = WriteManifestList(
-      version, /*snapshot_id=*/1000L, /*sequence_number=*/1, {data_manifest});
-
-  // Create a snapshot that references this manifest list
   auto timestamp_ms = TimePointMsFromUnixMs(1609459200000L);
-  auto snapshot_with_manifest =
-      std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1000L,
-                                          .parent_snapshot_id = std::nullopt,
-                                          .sequence_number = 1L,
-                                          .timestamp_ms = timestamp_ms,
-                                          .manifest_list = manifest_list_path,
-                                          .summary = {},
-                                          .schema_id = schema_->schema_id()});
+  auto snapshot = std::make_shared<Snapshot>(Snapshot{.snapshot_id = kSnapshotId,
+                                                      .parent_snapshot_id = std::nullopt,
+                                                      .sequence_number = 1L,
+                                                      .timestamp_ms = timestamp_ms,
+                                                      .manifest_list = manifest_list_path,
+                                                      .schema_id = schema_->schema_id()});
 
-  auto metadata_with_manifest = std::make_shared<TableMetadata>(TableMetadata{
+  auto metadata = std::make_shared<TableMetadata>(TableMetadata{
       .format_version = 2,
       .table_uuid = "test-table-uuid",
       .location = "/tmp/table",
@@ -528,25 +536,54 @@ TEST_P(TableScanTest, PlanFilesWithFilter) {
       .partition_specs = {partitioned_spec_, unpartitioned_spec_},
       .default_spec_id = partitioned_spec_->spec_id(),
       .last_partition_id = 1000,
-      .current_snapshot_id = 1000L,
-      .snapshots = {snapshot_with_manifest},
+      .current_snapshot_id = kSnapshotId,
+      .snapshots = {snapshot},
       .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
-                                        .snapshot_id = 1000L}},
+                                        .snapshot_id = kSnapshotId}},
       .default_sort_order_id = 0,
-      .refs = {
-          {"main", std::make_shared<SnapshotRef>(SnapshotRef{
-                       .snapshot_id = 1000L, .retention = SnapshotRef::Branch{}})}}});
+      .refs = {{"main",
+                std::make_shared<SnapshotRef>(SnapshotRef{
+                    .snapshot_id = kSnapshotId, .retention = SnapshotRef::Branch{}})}}});
 
-  ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         TableScanBuilder::Make(metadata_with_manifest, file_io_));
-  builder->Filter(filter);
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  EXPECT_EQ(scan->filter(), filter);
+  // Test 1: Filter matches only data1.parquet (id=25 is in range [1, 50])
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(metadata, file_io_));
+    builder->Filter(Expressions::Equal("id", Literal::Int(25)));
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+    ASSERT_EQ(tasks.size(), 1);
+    EXPECT_EQ(tasks[0]->data_file()->file_path, "/path/to/data1.parquet");
+  }
 
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  ASSERT_EQ(tasks.size(), 2);
-  EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
-                                                             "/path/to/data2.parquet"));
+  // Test 2: Filter matches only data2.parquet (id=75 is in range [51, 100])
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(metadata, file_io_));
+    builder->Filter(Expressions::Equal("id", Literal::Int(75)));
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+    ASSERT_EQ(tasks.size(), 1);
+    EXPECT_EQ(tasks[0]->data_file()->file_path, "/path/to/data2.parquet");
+  }
+
+  // Test 3: Filter matches both files (id > 0 covers both ranges)
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(metadata, file_io_));
+    builder->Filter(Expressions::GreaterThan("id", Literal::Int(0)));
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+    ASSERT_EQ(tasks.size(), 2);
+    EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
+                                                               "/path/to/data2.parquet"));
+  }
+
+  // Test 4: Filter matches no files (id=200 is outside both ranges)
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(metadata, file_io_));
+    builder->Filter(Expressions::Equal("id", Literal::Int(200)));
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
+    EXPECT_TRUE(tasks.empty());
+  }
 }
 
 TEST_P(TableScanTest, PlanFilesWithDeleteFiles) {
