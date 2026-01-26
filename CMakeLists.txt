@@ -24,10 +24,12 @@ endif()
 list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake_modules")
 
 project(Iceberg
-        VERSION 0.2.0
+        VERSION 0.3.0
         DESCRIPTION "Iceberg C++ Project"
         LANGUAGES CXX)
 
+set(ICEBERG_VERSION_SUFFIX "-SNAPSHOT")
+set(ICEBERG_VERSION_STRING "${PROJECT_VERSION}${ICEBERG_VERSION_SUFFIX}")
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/src/iceberg/version.h.in"
                "${CMAKE_BINARY_DIR}/src/iceberg/version.h")
 

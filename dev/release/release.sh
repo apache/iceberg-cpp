@@ -101,7 +101,9 @@ echo ""
 echo "---------------------------------------------------------"
 cat <<MAIL
 To: dev@iceberg.apache.org
-Cc: announce@apache.org
+CC: announce@apache.org
+Subject: [ANNOUNCE] Apache Iceberg C++ ${version} released
+
 Hello everyone,
 
 I'm pleased to announce the release of Apache Iceberg C++ ${version}!
@@ -111,20 +113,13 @@ Iceberg delivers high query performance for tables with tens of
 petabytes of data, along with atomic commits, concurrent writes, and
 SQL-compatible table evolution.
 
-This release contains <COMMIT_COUNT> commits from <CONTRIBUTOR_COUNT> unique contributors.
-Among the changes in this release are the following highlights:
+This release can be downloaded from [1].
 
-- <FEATURE_1>
-- <FEATURE_2>
-- ...
-- <FEATURE_N>
+Release notes are available at [2].
 
-This release is hosted at: https://dist.apache.org/repos/dist/release/iceberg/apache-iceberg-cpp-${version}
+Thanks to everyone for contributing!
 
-For release details and downloads, please visit: https://github.com/apache/iceberg-cpp/releases/tag/apache-iceberg-cpp-${version}
-
-Thanks to everyone for all your contributions!
-
-<AUTHOR>
+[1] https://dist.apache.org/repos/dist/release/iceberg/apache-iceberg-cpp-${version}
+[2] https://github.com/apache/iceberg-cpp/releases/tag/v${version}
 MAIL
 echo "---------------------------------------------------------"
