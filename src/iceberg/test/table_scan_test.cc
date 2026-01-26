@@ -70,39 +70,33 @@ class TableScanTest : public testing::TestWithParam<int> {
   void MakeTableMetadata() {
     constexpr int64_t kSnapshotId = 1000L;
     constexpr int64_t kSequenceNumber = 1L;
-    constexpr int64_t kTimestampMs = 1609459200000L;  // 2021-01-01 00:00:00 UTC
+    const TimePointMs kTimestampMs =
+        TimePointMsFromUnixMs(1609459200000L);  // 2021-01-01 00:00:00 UTC
 
-    // Create a snapshot
-    ICEBERG_UNWRAP_OR_FAIL(auto timestamp_ms, TimePointMsFromUnixMs(kTimestampMs));
-    auto snapshot = std::make_shared<Snapshot>(Snapshot{
-        .snapshot_id = kSnapshotId,
-        .parent_snapshot_id = std::nullopt,
-        .sequence_number = kSequenceNumber,
-        .timestamp_ms = timestamp_ms,
-        .manifest_list =
-            "/tmp/metadata/snap-1000-1-manifest-list.avro",  // Use filesystem path
-        .summary = {},
-        .schema_id = schema_->schema_id()});
+    auto snapshot = std::make_shared<Snapshot>(
+        Snapshot{.snapshot_id = kSnapshotId,
+                 .parent_snapshot_id = std::nullopt,
+                 .sequence_number = kSequenceNumber,
+                 .timestamp_ms = kTimestampMs,
+                 .manifest_list = "/tmp/metadata/snap-1000-1-manifest-list.avro",
+                 .schema_id = schema_->schema_id()});
 
     table_metadata_ = std::make_shared<TableMetadata>(
         TableMetadata{.format_version = 2,
                       .table_uuid = "test-table-uuid",
-                      .location = "/tmp/table",  // Use filesystem path
+                      .location = "/tmp/table",
                       .last_sequence_number = kSequenceNumber,
-                      .last_updated_ms = timestamp_ms,
+                      .last_updated_ms = kTimestampMs,
                       .last_column_id = 2,
                       .schemas = {schema_},
                       .current_schema_id = schema_->schema_id(),
                       .partition_specs = {partitioned_spec_, unpartitioned_spec_},
                       .default_spec_id = partitioned_spec_->spec_id(),
                       .last_partition_id = 1000,
-                      .properties = {},
                       .current_snapshot_id = kSnapshotId,
                       .snapshots = {snapshot},
-                      .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
+                      .snapshot_log = {SnapshotLogEntry{.timestamp_ms = kTimestampMs,
                                                         .snapshot_id = kSnapshotId}},
-                      .metadata_log = {},
-                      .sort_orders = {},
                       .default_sort_order_id = 0,
                       .refs = {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
                                             .snapshot_id = kSnapshotId,
@@ -175,21 +169,10 @@ class TableScanTest : public testing::TestWithParam<int> {
                                  std::vector<ManifestEntry> entries,
                                  std::shared_ptr<PartitionSpec> spec) {
     const std::string manifest_path = MakeManifestPath();
-
-    Result<std::unique_ptr<ManifestWriter>> writer_result =
-        NotSupported("Format version: {}", format_version);
-
-    if (format_version == 1) {
-      writer_result = ManifestWriter::MakeV1Writer(snapshot_id, manifest_path, file_io_,
-                                                   spec, schema_);
-    } else if (format_version == 2) {
-      writer_result = ManifestWriter::MakeV2Writer(snapshot_id, manifest_path, file_io_,
-                                                   spec, schema_, ManifestContent::kData);
-    } else if (format_version == 3) {
-      writer_result =
-          ManifestWriter::MakeV3Writer(snapshot_id, /*first_row_id=*/0L, manifest_path,
-                                       file_io_, spec, schema_, ManifestContent::kData);
-    }
+    auto writer_result = ManifestWriter::MakeWriter(
+        format_version, snapshot_id, manifest_path, file_io_, spec, schema_,
+        ManifestContent::kData,
+        /*first_row_id=*/format_version >= 3 ? std::optional<int64_t>(0L) : std::nullopt);
 
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
@@ -208,18 +191,9 @@ class TableScanTest : public testing::TestWithParam<int> {
                                    std::vector<ManifestEntry> entries,
                                    std::shared_ptr<PartitionSpec> spec) {
     const std::string manifest_path = MakeManifestPath();
-
-    Result<std::unique_ptr<ManifestWriter>> writer_result =
-        NotSupported("Format version: {}", format_version);
-
-    if (format_version == 2) {
-      writer_result = ManifestWriter::MakeV2Writer(
-          snapshot_id, manifest_path, file_io_, spec, schema_, ManifestContent::kDeletes);
-    } else if (format_version == 3) {
-      writer_result = ManifestWriter::MakeV3Writer(
-          snapshot_id, /*first_row_id=*/std::nullopt, manifest_path, file_io_, spec,
-          schema_, ManifestContent::kDeletes);
-    }
+    auto writer_result =
+        ManifestWriter::MakeWriter(format_version, snapshot_id, manifest_path, file_io_,
+                                   spec, schema_, ManifestContent::kDeletes);
 
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
@@ -240,67 +214,17 @@ class TableScanTest : public testing::TestWithParam<int> {
                        std::chrono::system_clock::now().time_since_epoch().count());
   }
 
-  // Write a ManifestFile to a manifest list and read it back. This is useful for v1
-  // to populate all missing fields like sequence_number.
-  ManifestFile WriteAndReadManifestListEntry(int format_version, int64_t snapshot_id,
-                                             int64_t sequence_number,
-                                             const ManifestFile& manifest) {
-    const std::string manifest_list_path = MakeManifestListPath();
-    constexpr int64_t kParentSnapshotId = 0L;
-    constexpr int64_t kSnapshotFirstRowId = 0L;
-
-    Result<std::unique_ptr<ManifestListWriter>> writer_result =
-        NotSupported("Format version: {}", format_version);
-
-    if (format_version == 1) {
-      writer_result = ManifestListWriter::MakeV1Writer(snapshot_id, kParentSnapshotId,
-                                                       manifest_list_path, file_io_);
-    } else if (format_version == 2) {
-      writer_result = ManifestListWriter::MakeV2Writer(
-          snapshot_id, kParentSnapshotId, sequence_number, manifest_list_path, file_io_);
-    } else if (format_version == 3) {
-      writer_result = ManifestListWriter::MakeV3Writer(
-          snapshot_id, kParentSnapshotId, sequence_number, kSnapshotFirstRowId,
-          manifest_list_path, file_io_);
-    }
-
-    EXPECT_THAT(writer_result, IsOk());
-    auto writer = std::move(writer_result.value());
-    EXPECT_THAT(writer->Add(manifest), IsOk());
-    EXPECT_THAT(writer->Close(), IsOk());
-
-    auto reader_result = ManifestListReader::Make(manifest_list_path, file_io_);
-    EXPECT_THAT(reader_result, IsOk());
-    auto reader = std::move(reader_result.value());
-    auto files_result = reader->Files();
-    EXPECT_THAT(files_result, IsOk());
-
-    auto manifests = files_result.value();
-    EXPECT_EQ(manifests.size(), 1);
-    return manifests[0];
-  }
-
   std::string WriteManifestList(int format_version, int64_t snapshot_id,
                                 int64_t sequence_number,
                                 const std::vector<ManifestFile>& manifests) {
     const std::string manifest_list_path = MakeManifestListPath();
     constexpr int64_t kParentSnapshotId = 0L;
-    constexpr int64_t kSnapshotFirstRowId = 0L;
 
-    Result<std::unique_ptr<ManifestListWriter>> writer_result =
-        NotSupported("Format version: {}", format_version);
-
-    if (format_version == 1) {
-      writer_result = ManifestListWriter::MakeV1Writer(snapshot_id, kParentSnapshotId,
-                                                       manifest_list_path, file_io_);
-    } else if (format_version == 2) {
-      writer_result = ManifestListWriter::MakeV2Writer(
-          snapshot_id, kParentSnapshotId, sequence_number, manifest_list_path, file_io_);
-    } else if (format_version == 3) {
-      writer_result = ManifestListWriter::MakeV3Writer(
-          snapshot_id, kParentSnapshotId, sequence_number, kSnapshotFirstRowId,
-          manifest_list_path, file_io_);
-    }
+    auto writer_result = ManifestListWriter::MakeWriter(
+        format_version, snapshot_id, kParentSnapshotId, manifest_list_path, file_io_,
+        /*sequence_number=*/format_version >= 2 ? std::optional(sequence_number)
+                                                : std::nullopt,
+        /*first_row_id=*/format_version >= 3 ? std::optional<int64_t>(0L) : std::nullopt);
 
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
@@ -330,146 +254,92 @@ class TableScanTest : public testing::TestWithParam<int> {
   std::shared_ptr<TableMetadata> table_metadata_;
 };
 
-TEST_P(TableScanTest, BuildBasicTableScan) {
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(table_metadata_, file_io_));
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-
-  EXPECT_NE(scan, nullptr);
-  EXPECT_EQ(scan->metadata(), table_metadata_);
-  EXPECT_EQ(scan->io(), file_io_);
-  EXPECT_TRUE(scan->is_case_sensitive());
-}
-
 TEST_P(TableScanTest, TableScanBuilderOptions) {
+  // Test basic scan creation and default values
   ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(table_metadata_, file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto basic_scan, builder->Build());
+  EXPECT_NE(basic_scan, nullptr);
+  EXPECT_EQ(basic_scan->metadata(), table_metadata_);
+  EXPECT_EQ(basic_scan->io(), file_io_);
+  EXPECT_TRUE(basic_scan->is_case_sensitive());
 
-  builder->Option("key1", "value1").Option("key2", "value2").CaseSensitive(false);
+  // Test all builder options with method chaining
+  auto projected_schema = std::make_shared<Schema>(
+      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())});
+  auto filter = Expressions::Equal("id", Literal::Int(42));
+  constexpr int64_t kMinRows = 1000;
+  constexpr int64_t kSnapshotId = 1000L;
+  const std::string branch_name = "test-branch";
 
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto builder2,
+                         TableScanBuilder::Make(table_metadata_, file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder2->Option("key1", "value1")
+                                        .Option("key2", "value2")
+                                        .CaseSensitive(false)
+                                        .Project(projected_schema)
+                                        .Filter(filter)
+                                        .IncludeColumnStats({"id", "data"})
+                                        .IgnoreResiduals()
+                                        .MinRowsRequested(kMinRows)
+                                        .UseSnapshot(kSnapshotId)
+                                        .UseBranch(branch_name)
+                                        .Build());
+
+  // Verify all options were set correctly
+  ICEBERG_UNWRAP_OR_FAIL(auto schema, scan->schema());
+  EXPECT_EQ(schema, projected_schema);
+  EXPECT_EQ(scan->filter(), filter);
   EXPECT_FALSE(scan->is_case_sensitive());
 
   const auto& context = scan->context();
   EXPECT_EQ(context.options.at("key1"), "value1");
   EXPECT_EQ(context.options.at("key2"), "value2");
-}
-
-TEST_P(TableScanTest, TableScanBuilderProjection) {
-  auto projected_schema = std::make_shared<Schema>(
-      std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())});
-
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(table_metadata_, file_io_));
-  builder->Project(projected_schema);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  ICEBERG_UNWRAP_OR_FAIL(auto schema, scan->schema());
-  EXPECT_EQ(schema, projected_schema);
-}
-
-TEST_P(TableScanTest, TableScanBuilderFilter) {
-  auto filter = Expressions::Equal("id", Literal::Int(42));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(table_metadata_, file_io_));
-  builder->Filter(filter);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  EXPECT_EQ(scan->filter(), filter);
-}
-
-TEST_P(TableScanTest, TableScanBuilderIncludeColumnStats) {
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(table_metadata_, file_io_));
-  builder->IncludeColumnStats();
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  const auto& context = scan->context();
-  EXPECT_TRUE(context.return_column_stats);
-}
-
-TEST_P(TableScanTest, TableScanBuilderIncludeColumnStatsForSpecificColumns) {
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(table_metadata_, file_io_));
-  builder->IncludeColumnStats({"id", "data"});
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  const auto& context = scan->context();
   EXPECT_TRUE(context.return_column_stats);
   EXPECT_EQ(context.columns_to_keep_stats.size(), 2);
   EXPECT_TRUE(context.columns_to_keep_stats.contains(1));  // id field
   EXPECT_TRUE(context.columns_to_keep_stats.contains(2));  // data field
-}
-
-TEST_P(TableScanTest, TableScanBuilderIgnoreResiduals) {
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(table_metadata_, file_io_));
-  builder->IgnoreResiduals();
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  const auto& context = scan->context();
   EXPECT_TRUE(context.ignore_residuals);
-}
-
-TEST_P(TableScanTest, TableScanBuilderMinRowsRequested) {
-  constexpr int64_t kMinRows = 1000;
-
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(table_metadata_, file_io_));
-  builder->MinRowsRequested(kMinRows);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  const auto& context = scan->context();
   EXPECT_TRUE(context.min_rows_requested.has_value());
   EXPECT_EQ(context.min_rows_requested.value(), kMinRows);
-}
-
-TEST_P(TableScanTest, TableScanBuilderUseSnapshot) {
-  constexpr int64_t kSnapshotId = 1000L;
-
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(table_metadata_, file_io_));
-  builder->UseSnapshot(kSnapshotId);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  const auto& context = scan->context();
   EXPECT_TRUE(context.snapshot_id.has_value());
   EXPECT_EQ(context.snapshot_id.value(), kSnapshotId);
-}
+  EXPECT_EQ(context.branch, branch_name);
 
-TEST_P(TableScanTest, TableScanBuilderUseRef) {
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(table_metadata_, file_io_));
-  builder->UseRef("main");
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, scan->snapshot());
+  // Test UseRef separately
+  ICEBERG_UNWRAP_OR_FAIL(auto builder3,
+                         TableScanBuilder::Make(table_metadata_, file_io_));
+  builder3->UseRef("main");
+  ICEBERG_UNWRAP_OR_FAIL(auto ref_scan, builder3->Build());
+  ICEBERG_UNWRAP_OR_FAIL(auto snapshot, ref_scan->snapshot());
   EXPECT_EQ(snapshot->snapshot_id, 1000L);
 }
 
-TEST_P(TableScanTest, TableScanBuilderUseBranch) {
-  const std::string branch_name = "test-branch";
-
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(table_metadata_, file_io_));
-  builder->UseBranch(branch_name);
-
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-  const auto& context = scan->context();
-  EXPECT_EQ(context.branch, branch_name);
-}
-
 TEST_P(TableScanTest, TableScanBuilderValidationErrors) {
+  // Test negative min rows
   ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(table_metadata_, file_io_));
   builder->MinRowsRequested(-1);
   EXPECT_THAT(builder->Build(), IsError(ErrorKind::kValidationFailed));
-}
 
-TEST_P(TableScanTest, TableScanBuilderInvalidSnapshot) {
-  constexpr int64_t kInvalidSnapshotId = 9999L;
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(table_metadata_, file_io_));
-  builder->UseSnapshot(kInvalidSnapshotId);
-  EXPECT_THAT(builder->Build(), IsError(ErrorKind::kValidationFailed));
-}
+  // Test invalid snapshot ID
+  ICEBERG_UNWRAP_OR_FAIL(auto builder2,
+                         TableScanBuilder::Make(table_metadata_, file_io_));
+  builder2->UseSnapshot(9999L);
+  EXPECT_THAT(builder2->Build(), IsError(ErrorKind::kValidationFailed));
 
-TEST_P(TableScanTest, TableScanBuilderInvalidRef) {
-  ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(table_metadata_, file_io_));
-  builder->UseRef("non-existent-ref");
-  EXPECT_THAT(builder->Build(), IsError(ErrorKind::kValidationFailed));
+  // Test invalid ref
+  ICEBERG_UNWRAP_OR_FAIL(auto builder3,
+                         TableScanBuilder::Make(table_metadata_, file_io_));
+  builder3->UseRef("non-existent-ref");
+  EXPECT_THAT(builder3->Build(), IsError(ErrorKind::kValidationFailed));
+
+  // Test null inputs
+  EXPECT_THAT(TableScanBuilder::Make(nullptr, file_io_),
+              IsError(ErrorKind::kInvalidArgument));
+  EXPECT_THAT(TableScanBuilder::Make(table_metadata_, nullptr),
+              IsError(ErrorKind::kInvalidArgument));
 }
 
 TEST_P(TableScanTest, DataTableScanPlanFilesEmpty) {
-  // Create table metadata with no snapshots
   auto empty_metadata = std::make_shared<TableMetadata>(
       TableMetadata{.format_version = 2,
                     .schemas = {schema_},
@@ -482,31 +352,16 @@ TEST_P(TableScanTest, DataTableScanPlanFilesEmpty) {
 
   ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(empty_metadata, file_io_));
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   EXPECT_TRUE(tasks.empty());
 }
 
-TEST_P(TableScanTest, NullInputValidation) {
-  // Test null metadata
-  EXPECT_THAT(TableScanBuilder::Make(nullptr, file_io_),
-              IsError(ErrorKind::kInvalidArgument));
-
-  // Test null FileIO
-  EXPECT_THAT(TableScanBuilder::Make(table_metadata_, nullptr),
-              IsError(ErrorKind::kInvalidArgument));
-}
-
 TEST_P(TableScanTest, PlanFilesWithDataManifests) {
   int version = GetParam();
-  if (version < 2) {
-    GTEST_SKIP() << "Delete files only supported in V2+";
-  }
 
   constexpr int64_t kSnapshotId = 1000L;
   const auto part_value = PartitionValues({Literal::Int(0)});
 
-  // Create data manifest with files
   std::vector<ManifestEntry> data_entries{
       MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
                 MakeDataFile("/path/to/data1.parquet", part_value,
@@ -516,13 +371,11 @@ TEST_P(TableScanTest, PlanFilesWithDataManifests) {
                              partitioned_spec_->spec_id(), /*record_count=*/200))};
   auto data_manifest =
       WriteDataManifest(version, kSnapshotId, std::move(data_entries), partitioned_spec_);
-
-  // Write manifest list and get the path
   std::string manifest_list_path =
       WriteManifestList(version, kSnapshotId, /*sequence_number=*/1, {data_manifest});
 
   // Create a snapshot that references this manifest list
-  ICEBERG_UNWRAP_OR_FAIL(auto timestamp_ms, TimePointMsFromUnixMs(1609459200000L));
+  auto timestamp_ms = TimePointMsFromUnixMs(1609459200000L);
   auto snapshot_with_manifest =
       std::make_shared<Snapshot>(Snapshot{.snapshot_id = kSnapshotId,
                                           .parent_snapshot_id = std::nullopt,
@@ -532,35 +385,31 @@ TEST_P(TableScanTest, PlanFilesWithDataManifests) {
                                           .summary = {},
                                           .schema_id = schema_->schema_id()});
 
-  auto metadata_with_manifest = std::make_shared<TableMetadata>(TableMetadata{
-      .format_version = 2,
-      .table_uuid = "test-table-uuid",
-      .location = "/tmp/table",  // Use filesystem path
-      .last_sequence_number = 1L,
-      .last_updated_ms = timestamp_ms,
-      .last_column_id = 2,
-      .schemas = {schema_},
-      .current_schema_id = schema_->schema_id(),
-      .partition_specs = {partitioned_spec_, unpartitioned_spec_},
-      .default_spec_id = partitioned_spec_->spec_id(),
-      .last_partition_id = 1000,
-      .properties = {},
-      .current_snapshot_id = kSnapshotId,
-      .snapshots = {snapshot_with_manifest},
-      .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
-                                        .snapshot_id = kSnapshotId}},
-      .metadata_log = {},
-      .sort_orders = {},
-      .default_sort_order_id = 0,
-      .refs = {{"main",
-                std::make_shared<SnapshotRef>(SnapshotRef{
-                    .snapshot_id = kSnapshotId, .retention = SnapshotRef::Branch{}})}}});
+  auto metadata_with_manifest = std::make_shared<TableMetadata>(
+      TableMetadata{.format_version = 2,
+                    .table_uuid = "test-table-uuid",
+                    .location = "/tmp/table",
+                    .last_sequence_number = 1L,
+                    .last_updated_ms = timestamp_ms,
+                    .last_column_id = 2,
+                    .schemas = {schema_},
+                    .current_schema_id = schema_->schema_id(),
+                    .partition_specs = {partitioned_spec_, unpartitioned_spec_},
+                    .default_spec_id = partitioned_spec_->spec_id(),
+                    .last_partition_id = 1000,
+                    .current_snapshot_id = kSnapshotId,
+                    .snapshots = {snapshot_with_manifest},
+                    .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
+                                                      .snapshot_id = kSnapshotId}},
+                    .default_sort_order_id = 0,
+                    .refs = {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
+                                          .snapshot_id = kSnapshotId,
+                                          .retention = SnapshotRef::Branch{},
+                                      })}}});
 
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
                          TableScanBuilder::Make(metadata_with_manifest, file_io_));
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-
-  // Now PlanFiles should successfully read the manifest list and return tasks
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   ASSERT_EQ(tasks.size(), 2);
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
@@ -593,7 +442,7 @@ TEST_P(TableScanTest, PlanFilesWithMultipleManifests) {
                         {data_manifest_1, data_manifest_2});
 
   // Create a snapshot that references this manifest list
-  ICEBERG_UNWRAP_OR_FAIL(auto timestamp_ms, TimePointMsFromUnixMs(1609459200000L));
+  auto timestamp_ms = TimePointMsFromUnixMs(1609459200000L);
   auto snapshot_with_manifests =
       std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1000L,
                                           .parent_snapshot_id = std::nullopt,
@@ -603,36 +452,31 @@ TEST_P(TableScanTest, PlanFilesWithMultipleManifests) {
                                           .summary = {},
                                           .schema_id = schema_->schema_id()});
 
-  auto metadata_with_manifests = std::make_shared<TableMetadata>(TableMetadata{
-      .format_version = 2,
-      .table_uuid = "test-table-uuid",
-      .location = "/tmp/table",
-      .last_sequence_number = 1L,
-      .last_updated_ms = timestamp_ms,
-      .last_column_id = 2,
-      .schemas = {schema_},
-      .current_schema_id = schema_->schema_id(),
-      .partition_specs = {partitioned_spec_, unpartitioned_spec_},
-      .default_spec_id = partitioned_spec_->spec_id(),
-      .last_partition_id = 1000,
-      .properties = {},
-      .current_snapshot_id = 1000L,
-      .snapshots = {snapshot_with_manifests},
-      .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
-                                        .snapshot_id = 1000L}},
-      .metadata_log = {},
-      .sort_orders = {},
-      .default_sort_order_id = 0,
-      .refs = {
-          {"main", std::make_shared<SnapshotRef>(SnapshotRef{
-                       .snapshot_id = 1000L, .retention = SnapshotRef::Branch{}})}}});
+  auto metadata_with_manifests = std::make_shared<TableMetadata>(
+      TableMetadata{.format_version = 2,
+                    .table_uuid = "test-table-uuid",
+                    .location = "/tmp/table",
+                    .last_sequence_number = 1L,
+                    .last_updated_ms = timestamp_ms,
+                    .last_column_id = 2,
+                    .schemas = {schema_},
+                    .current_schema_id = schema_->schema_id(),
+                    .partition_specs = {partitioned_spec_, unpartitioned_spec_},
+                    .default_spec_id = partitioned_spec_->spec_id(),
+                    .last_partition_id = 1000,
+                    .current_snapshot_id = 1000L,
+                    .snapshots = {snapshot_with_manifests},
+                    .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
+                                                      .snapshot_id = 1000L}},
+                    .default_sort_order_id = 0,
+                    .refs = {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
+                                          .snapshot_id = 1000L,
+                                          .retention = SnapshotRef::Branch{},
+                                      })}}});
 
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
                          TableScanBuilder::Make(metadata_with_manifests, file_io_));
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-
-  // Now PlanFiles should successfully read the manifest list and return tasks from both
-  // manifests
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   ASSERT_EQ(tasks.size(), 2);
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
@@ -662,7 +506,7 @@ TEST_P(TableScanTest, PlanFilesWithFilter) {
       version, /*snapshot_id=*/1000L, /*sequence_number=*/1, {data_manifest});
 
   // Create a snapshot that references this manifest list
-  ICEBERG_UNWRAP_OR_FAIL(auto timestamp_ms, TimePointMsFromUnixMs(1609459200000L));
+  auto timestamp_ms = TimePointMsFromUnixMs(1609459200000L);
   auto snapshot_with_manifest =
       std::make_shared<Snapshot>(Snapshot{.snapshot_id = 1000L,
                                           .parent_snapshot_id = std::nullopt,
@@ -684,13 +528,10 @@ TEST_P(TableScanTest, PlanFilesWithFilter) {
       .partition_specs = {partitioned_spec_, unpartitioned_spec_},
       .default_spec_id = partitioned_spec_->spec_id(),
       .last_partition_id = 1000,
-      .properties = {},
       .current_snapshot_id = 1000L,
       .snapshots = {snapshot_with_manifest},
       .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
                                         .snapshot_id = 1000L}},
-      .metadata_log = {},
-      .sort_orders = {},
       .default_sort_order_id = 0,
       .refs = {
           {"main", std::make_shared<SnapshotRef>(SnapshotRef{
@@ -700,311 +541,8 @@ TEST_P(TableScanTest, PlanFilesWithFilter) {
                          TableScanBuilder::Make(metadata_with_manifest, file_io_));
   builder->Filter(filter);
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-
-  // Verify the filter is set correctly
   EXPECT_EQ(scan->filter(), filter);
 
-  // Now PlanFiles should successfully read the manifest list and return tasks
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  ASSERT_EQ(tasks.size(), 2);
-  EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
-                                                             "/path/to/data2.parquet"));
-}
-
-TEST_P(TableScanTest, PlanFilesWithColumnStats) {
-  int version = GetParam();
-
-  constexpr int64_t kSnapshotId = 1000L;
-  const auto part_value = PartitionValues({Literal::Int(0)});
-
-  // Create data manifest with files
-  std::vector<ManifestEntry> data_entries{
-      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
-                MakeDataFile("/path/to/data1.parquet", part_value,
-                             partitioned_spec_->spec_id(), /*record_count=*/100)),
-      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
-                MakeDataFile("/path/to/data2.parquet", part_value,
-                             partitioned_spec_->spec_id(), /*record_count=*/200))};
-  auto data_manifest =
-      WriteDataManifest(version, kSnapshotId, std::move(data_entries), partitioned_spec_);
-
-  // Write manifest list
-  std::string manifest_list_path =
-      WriteManifestList(version, kSnapshotId, /*sequence_number=*/1, {data_manifest});
-
-  // Create a snapshot that references this manifest list
-  ICEBERG_UNWRAP_OR_FAIL(auto timestamp_ms, TimePointMsFromUnixMs(1609459200000L));
-  auto snapshot_with_manifest =
-      std::make_shared<Snapshot>(Snapshot{.snapshot_id = kSnapshotId,
-                                          .parent_snapshot_id = std::nullopt,
-                                          .sequence_number = 1L,
-                                          .timestamp_ms = timestamp_ms,
-                                          .manifest_list = manifest_list_path,
-                                          .summary = {},
-                                          .schema_id = schema_->schema_id()});
-
-  auto metadata_with_manifest = std::make_shared<TableMetadata>(TableMetadata{
-      .format_version = 2,
-      .table_uuid = "test-table-uuid",
-      .location = "/tmp/table",
-      .last_sequence_number = 1L,
-      .last_updated_ms = timestamp_ms,
-      .last_column_id = 2,
-      .schemas = {schema_},
-      .current_schema_id = schema_->schema_id(),
-      .partition_specs = {partitioned_spec_, unpartitioned_spec_},
-      .default_spec_id = partitioned_spec_->spec_id(),
-      .last_partition_id = 1000,
-      .properties = {},
-      .current_snapshot_id = kSnapshotId,
-      .snapshots = {snapshot_with_manifest},
-      .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
-                                        .snapshot_id = kSnapshotId}},
-      .metadata_log = {},
-      .sort_orders = {},
-      .default_sort_order_id = 0,
-      .refs = {{"main",
-                std::make_shared<SnapshotRef>(SnapshotRef{
-                    .snapshot_id = kSnapshotId, .retention = SnapshotRef::Branch{}})}}});
-
-  ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         TableScanBuilder::Make(metadata_with_manifest, file_io_));
-  builder->IncludeColumnStats({"id", "data"});
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-
-  // Verify column stats configuration
-  const auto& context = scan->context();
-  EXPECT_TRUE(context.return_column_stats);
-  EXPECT_EQ(context.columns_to_keep_stats.size(), 2);
-
-  // Now PlanFiles should successfully read the manifest list and return tasks
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  ASSERT_EQ(tasks.size(), 2);
-  EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
-                                                             "/path/to/data2.parquet"));
-}
-
-TEST_P(TableScanTest, PlanFilesWithIgnoreResiduals) {
-  int version = GetParam();
-
-  constexpr int64_t kSnapshotId = 1000L;
-  const auto part_value = PartitionValues({Literal::Int(0)});
-
-  // Create data manifest with files
-  std::vector<ManifestEntry> data_entries{
-      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
-                MakeDataFile("/path/to/data1.parquet", part_value,
-                             partitioned_spec_->spec_id(), /*record_count=*/100)),
-      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
-                MakeDataFile("/path/to/data2.parquet", part_value,
-                             partitioned_spec_->spec_id(), /*record_count=*/200))};
-  auto data_manifest =
-      WriteDataManifest(version, kSnapshotId, std::move(data_entries), partitioned_spec_);
-
-  // Write manifest list
-  std::string manifest_list_path =
-      WriteManifestList(version, kSnapshotId, /*sequence_number=*/1, {data_manifest});
-
-  // Create a snapshot that references this manifest list
-  ICEBERG_UNWRAP_OR_FAIL(auto timestamp_ms, TimePointMsFromUnixMs(1609459200000L));
-  auto snapshot_with_manifest =
-      std::make_shared<Snapshot>(Snapshot{.snapshot_id = kSnapshotId,
-                                          .parent_snapshot_id = std::nullopt,
-                                          .sequence_number = 1L,
-                                          .timestamp_ms = timestamp_ms,
-                                          .manifest_list = manifest_list_path,
-                                          .summary = {},
-                                          .schema_id = schema_->schema_id()});
-
-  auto metadata_with_manifest = std::make_shared<TableMetadata>(TableMetadata{
-      .format_version = 2,
-      .table_uuid = "test-table-uuid",
-      .location = "/tmp/table",
-      .last_sequence_number = 1L,
-      .last_updated_ms = timestamp_ms,
-      .last_column_id = 2,
-      .schemas = {schema_},
-      .current_schema_id = schema_->schema_id(),
-      .partition_specs = {partitioned_spec_, unpartitioned_spec_},
-      .default_spec_id = partitioned_spec_->spec_id(),
-      .last_partition_id = 1000,
-      .properties = {},
-      .current_snapshot_id = kSnapshotId,
-      .snapshots = {snapshot_with_manifest},
-      .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
-                                        .snapshot_id = kSnapshotId}},
-      .metadata_log = {},
-      .sort_orders = {},
-      .default_sort_order_id = 0,
-      .refs = {{"main",
-                std::make_shared<SnapshotRef>(SnapshotRef{
-                    .snapshot_id = kSnapshotId, .retention = SnapshotRef::Branch{}})}}});
-
-  ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         TableScanBuilder::Make(metadata_with_manifest, file_io_));
-  builder->IgnoreResiduals();
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-
-  // Verify ignore residuals configuration
-  const auto& context = scan->context();
-  EXPECT_TRUE(context.ignore_residuals);
-
-  // Now PlanFiles should successfully read the manifest list and return tasks
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  ASSERT_EQ(tasks.size(), 2);
-  EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
-                                                             "/path/to/data2.parquet"));
-}
-
-TEST_P(TableScanTest, PlanFilesWithCaseSensitivity) {
-  int version = GetParam();
-
-  constexpr int64_t kSnapshotId = 1000L;
-  const auto part_value = PartitionValues({Literal::Int(0)});
-
-  // Create data manifest with files
-  std::vector<ManifestEntry> data_entries{
-      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
-                MakeDataFile("/path/to/data1.parquet", part_value,
-                             partitioned_spec_->spec_id(), /*record_count=*/100)),
-      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
-                MakeDataFile("/path/to/data2.parquet", part_value,
-                             partitioned_spec_->spec_id(), /*record_count=*/200))};
-  auto data_manifest =
-      WriteDataManifest(version, kSnapshotId, std::move(data_entries), partitioned_spec_);
-
-  // Write manifest list
-  std::string manifest_list_path =
-      WriteManifestList(version, kSnapshotId, /*sequence_number=*/1, {data_manifest});
-
-  // Create a snapshot that references this manifest list
-  ICEBERG_UNWRAP_OR_FAIL(auto timestamp_ms, TimePointMsFromUnixMs(1609459200000L));
-  auto snapshot_with_manifest =
-      std::make_shared<Snapshot>(Snapshot{.snapshot_id = kSnapshotId,
-                                          .parent_snapshot_id = std::nullopt,
-                                          .sequence_number = 1L,
-                                          .timestamp_ms = timestamp_ms,
-                                          .manifest_list = manifest_list_path,
-                                          .summary = {},
-                                          .schema_id = schema_->schema_id()});
-
-  auto metadata_with_manifest = std::make_shared<TableMetadata>(TableMetadata{
-      .format_version = 2,
-      .table_uuid = "test-table-uuid",
-      .location = "/tmp/table",
-      .last_sequence_number = 1L,
-      .last_updated_ms = timestamp_ms,
-      .last_column_id = 2,
-      .schemas = {schema_},
-      .current_schema_id = schema_->schema_id(),
-      .partition_specs = {partitioned_spec_, unpartitioned_spec_},
-      .default_spec_id = partitioned_spec_->spec_id(),
-      .last_partition_id = 1000,
-      .properties = {},
-      .current_snapshot_id = kSnapshotId,
-      .snapshots = {snapshot_with_manifest},
-      .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
-                                        .snapshot_id = kSnapshotId}},
-      .metadata_log = {},
-      .sort_orders = {},
-      .default_sort_order_id = 0,
-      .refs = {{"main",
-                std::make_shared<SnapshotRef>(SnapshotRef{
-                    .snapshot_id = kSnapshotId, .retention = SnapshotRef::Branch{}})}}});
-
-  ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         TableScanBuilder::Make(metadata_with_manifest, file_io_));
-  builder->CaseSensitive(false);
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-
-  // Verify case sensitivity configuration
-  EXPECT_FALSE(scan->is_case_sensitive());
-
-  // Now PlanFiles should successfully read the manifest list and return tasks
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  ASSERT_EQ(tasks.size(), 2);
-  EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
-                                                             "/path/to/data2.parquet"));
-}
-
-TEST_P(TableScanTest, PlanFilesBuilderChaining) {
-  int version = GetParam();
-
-  constexpr int64_t kSnapshotId = 1000L;
-  const auto part_value = PartitionValues({Literal::Int(0)});
-
-  // Create data manifest with files
-  std::vector<ManifestEntry> data_entries{
-      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
-                MakeDataFile("/path/to/data1.parquet", part_value,
-                             partitioned_spec_->spec_id(), /*record_count=*/100)),
-      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
-                MakeDataFile("/path/to/data2.parquet", part_value,
-                             partitioned_spec_->spec_id(), /*record_count=*/200))};
-  auto data_manifest =
-      WriteDataManifest(version, kSnapshotId, std::move(data_entries), partitioned_spec_);
-
-  // Write manifest list
-  std::string manifest_list_path =
-      WriteManifestList(version, kSnapshotId, /*sequence_number=*/1, {data_manifest});
-
-  // Create a snapshot that references this manifest list
-  ICEBERG_UNWRAP_OR_FAIL(auto timestamp_ms, TimePointMsFromUnixMs(1609459200000L));
-  auto snapshot_with_manifest =
-      std::make_shared<Snapshot>(Snapshot{.snapshot_id = kSnapshotId,
-                                          .parent_snapshot_id = std::nullopt,
-                                          .sequence_number = 1L,
-                                          .timestamp_ms = timestamp_ms,
-                                          .manifest_list = manifest_list_path,
-                                          .summary = {},
-                                          .schema_id = schema_->schema_id()});
-
-  auto metadata_with_manifest = std::make_shared<TableMetadata>(TableMetadata{
-      .format_version = 2,
-      .table_uuid = "test-table-uuid",
-      .location = "/tmp/table",
-      .last_sequence_number = 1L,
-      .last_updated_ms = timestamp_ms,
-      .last_column_id = 2,
-      .schemas = {schema_},
-      .current_schema_id = schema_->schema_id(),
-      .partition_specs = {partitioned_spec_, unpartitioned_spec_},
-      .default_spec_id = partitioned_spec_->spec_id(),
-      .last_partition_id = 1000,
-      .properties = {},
-      .current_snapshot_id = kSnapshotId,
-      .snapshots = {snapshot_with_manifest},
-      .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
-                                        .snapshot_id = kSnapshotId}},
-      .metadata_log = {},
-      .sort_orders = {},
-      .default_sort_order_id = 0,
-      .refs = {{"main",
-                std::make_shared<SnapshotRef>(SnapshotRef{
-                    .snapshot_id = kSnapshotId, .retention = SnapshotRef::Branch{}})}}});
-
-  // Test that all builder options work together in PlanFiles
-  auto filter = Expressions::Equal("id", Literal::Int(42));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         TableScanBuilder::Make(metadata_with_manifest, file_io_));
-
-  // Chain multiple builder methods that affect PlanFiles
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Filter(filter)
-                                        .CaseSensitive(false)
-                                        .IncludeColumnStats()
-                                        .IgnoreResiduals()
-                                        .Build());
-
-  // Verify all settings were applied
-  EXPECT_EQ(scan->filter(), filter);
-  EXPECT_FALSE(scan->is_case_sensitive());
-
-  const auto& context = scan->context();
-  EXPECT_TRUE(context.return_column_stats);
-  EXPECT_TRUE(context.ignore_residuals);
-
-  // Now PlanFiles should successfully read the manifest list and return tasks
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   ASSERT_EQ(tasks.size(), 2);
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
@@ -1042,13 +580,11 @@ TEST_P(TableScanTest, PlanFilesWithDeleteFiles) {
                                        partitioned_spec_->spec_id(), {1}))};
   auto delete_manifest = WriteDeleteManifest(
       version, kSnapshotId, std::move(delete_entries), partitioned_spec_);
-
-  // Write manifest list with both data and delete manifests
   std::string manifest_list_path = WriteManifestList(
       version, kSnapshotId, /*sequence_number=*/2, {data_manifest, delete_manifest});
 
   // Create a snapshot that references this manifest list
-  ICEBERG_UNWRAP_OR_FAIL(auto timestamp_ms, TimePointMsFromUnixMs(1609459200000L));
+  auto timestamp_ms = TimePointMsFromUnixMs(1609459200000L);
   auto snapshot_with_manifests =
       std::make_shared<Snapshot>(Snapshot{.snapshot_id = kSnapshotId,
                                           .parent_snapshot_id = std::nullopt,
@@ -1058,36 +594,31 @@ TEST_P(TableScanTest, PlanFilesWithDeleteFiles) {
                                           .summary = {},
                                           .schema_id = schema_->schema_id()});
 
-  auto metadata_with_manifests = std::make_shared<TableMetadata>(TableMetadata{
-      .format_version = 2,
-      .table_uuid = "test-table-uuid",
-      .location = "/tmp/table",
-      .last_sequence_number = 2L,
-      .last_updated_ms = timestamp_ms,
-      .last_column_id = 2,
-      .schemas = {schema_},
-      .current_schema_id = schema_->schema_id(),
-      .partition_specs = {partitioned_spec_, unpartitioned_spec_},
-      .default_spec_id = partitioned_spec_->spec_id(),
-      .last_partition_id = 1000,
-      .properties = {},
-      .current_snapshot_id = kSnapshotId,
-      .snapshots = {snapshot_with_manifests},
-      .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
-                                        .snapshot_id = kSnapshotId}},
-      .metadata_log = {},
-      .sort_orders = {},
-      .default_sort_order_id = 0,
-      .refs = {{"main",
-                std::make_shared<SnapshotRef>(SnapshotRef{
-                    .snapshot_id = kSnapshotId, .retention = SnapshotRef::Branch{}})}}});
+  auto metadata_with_manifests = std::make_shared<TableMetadata>(
+      TableMetadata{.format_version = 2,
+                    .table_uuid = "test-table-uuid",
+                    .location = "/tmp/table",
+                    .last_sequence_number = 2L,
+                    .last_updated_ms = timestamp_ms,
+                    .last_column_id = 2,
+                    .schemas = {schema_},
+                    .current_schema_id = schema_->schema_id(),
+                    .partition_specs = {partitioned_spec_, unpartitioned_spec_},
+                    .default_spec_id = partitioned_spec_->spec_id(),
+                    .last_partition_id = 1000,
+                    .current_snapshot_id = kSnapshotId,
+                    .snapshots = {snapshot_with_manifests},
+                    .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
+                                                      .snapshot_id = kSnapshotId}},
+                    .default_sort_order_id = 0,
+                    .refs = {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
+                                          .snapshot_id = kSnapshotId,
+                                          .retention = SnapshotRef::Branch{},
+                                      })}}});
 
   ICEBERG_UNWRAP_OR_FAIL(auto builder,
                          TableScanBuilder::Make(metadata_with_manifests, file_io_));
   ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-
-  // Now PlanFiles should successfully read the manifest list and return tasks with delete
-  // files
   ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
   ASSERT_EQ(tasks.size(), 2);
   EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/data1.parquet",
@@ -1096,86 +627,6 @@ TEST_P(TableScanTest, PlanFilesWithDeleteFiles) {
   for (const auto& task : tasks) {
     EXPECT_GT(task->delete_files().size(), 0);
   }
-}
-
-TEST_P(TableScanTest, PlanFilesWithPartitionFilter) {
-  int version = GetParam();
-
-  constexpr int64_t kSnapshotId = 1000L;
-  // Create two files with different partition values (bucket 0 and bucket 1)
-  const auto partition_bucket_0 = PartitionValues({Literal::Int(0)});
-  const auto partition_bucket_1 = PartitionValues({Literal::Int(1)});
-
-  // Create data manifest with two entries in different partitions
-  std::vector<ManifestEntry> data_entries{
-      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
-                MakeDataFile("/path/to/bucket0.parquet", partition_bucket_0,
-                             partitioned_spec_->spec_id(), /*record_count=*/100)),
-      MakeEntry(ManifestStatus::kAdded, kSnapshotId, /*sequence_number=*/1,
-                MakeDataFile("/path/to/bucket1.parquet", partition_bucket_1,
-                             partitioned_spec_->spec_id(), /*record_count=*/200))};
-  auto data_manifest =
-      WriteDataManifest(version, kSnapshotId, std::move(data_entries), partitioned_spec_);
-
-  // Write manifest list
-  std::string manifest_list_path =
-      WriteManifestList(version, kSnapshotId, /*sequence_number=*/1, {data_manifest});
-
-  // Create a snapshot that references this manifest list
-  ICEBERG_UNWRAP_OR_FAIL(auto timestamp_ms, TimePointMsFromUnixMs(1609459200000L));
-  auto snapshot_with_manifest =
-      std::make_shared<Snapshot>(Snapshot{.snapshot_id = kSnapshotId,
-                                          .parent_snapshot_id = std::nullopt,
-                                          .sequence_number = 1L,
-                                          .timestamp_ms = timestamp_ms,
-                                          .manifest_list = manifest_list_path,
-                                          .summary = {},
-                                          .schema_id = schema_->schema_id()});
-
-  auto metadata_with_manifest = std::make_shared<TableMetadata>(TableMetadata{
-      .format_version = 2,
-      .table_uuid = "test-table-uuid",
-      .location = "/tmp/table",
-      .last_sequence_number = 1L,
-      .last_updated_ms = timestamp_ms,
-      .last_column_id = 2,
-      .schemas = {schema_},
-      .current_schema_id = schema_->schema_id(),
-      .partition_specs = {partitioned_spec_, unpartitioned_spec_},
-      .default_spec_id = partitioned_spec_->spec_id(),
-      .last_partition_id = 1000,
-      .properties = {},
-      .current_snapshot_id = kSnapshotId,
-      .snapshots = {snapshot_with_manifest},
-      .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
-                                        .snapshot_id = kSnapshotId}},
-      .metadata_log = {},
-      .sort_orders = {},
-      .default_sort_order_id = 0,
-      .refs = {{"main",
-                std::make_shared<SnapshotRef>(SnapshotRef{
-                    .snapshot_id = kSnapshotId, .retention = SnapshotRef::Branch{}})}}});
-
-  // Test that partition filters are properly passed to the ManifestGroup
-  // Use a simple filter that won't filter out files (since we don't have actual data
-  // values)
-  auto partition_filter = Expressions::Equal("id", Literal::Int(42));
-
-  ICEBERG_UNWRAP_OR_FAIL(auto builder,
-                         TableScanBuilder::Make(metadata_with_manifest, file_io_));
-  builder->Filter(partition_filter);
-  ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
-
-  // Verify the filter is set correctly
-  EXPECT_EQ(scan->filter(), partition_filter);
-
-  // Now PlanFiles should successfully read the manifest list and return tasks
-  // The filter is applied but since we don't have actual data values, all files pass
-  // through
-  ICEBERG_UNWRAP_OR_FAIL(auto tasks, scan->PlanFiles());
-  ASSERT_EQ(tasks.size(), 2);
-  EXPECT_THAT(GetPaths(tasks), testing::UnorderedElementsAre("/path/to/bucket0.parquet",
-                                                             "/path/to/bucket1.parquet"));
 }
 
 INSTANTIATE_TEST_SUITE_P(TableScanVersions, TableScanTest, testing::Values(1, 2, 3));
