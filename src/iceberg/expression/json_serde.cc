@@ -17,8 +17,6 @@
  * under the License.
  */
 
-#include "iceberg/expression/json_internal.h"
-
 #include <format>
 #include <string>
 #include <utility>
@@ -27,6 +25,7 @@
 #include <nlohmann/json.hpp>
 
 #include "iceberg/expression/expressions.h"
+#include "iceberg/expression/json_serde_internal.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/util/json_util_internal.h"
 #include "iceberg/util/macros.h"

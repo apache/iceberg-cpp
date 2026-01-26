@@ -26,7 +26,7 @@
 
 #include "iceberg/expression/expression.h"
 #include "iceberg/expression/expressions.h"
-#include "iceberg/expression/json_internal.h"
+#include "iceberg/expression/json_serde_internal.h"
 #include "iceberg/expression/literal.h"
 #include "iceberg/expression/predicate.h"
 #include "iceberg/expression/term.h"
@@ -34,19 +34,7 @@
 
 namespace iceberg {
 
-class ExpressionJsonTest : public ::testing::Test {
- protected:
-  // Helper to test round-trip serialization
-  // Uses string comparison since expressions may have different internal identity
-  // but the same semantic meaning (i.e., ToString() output matches)
-  void TestRoundTrip(const Expression& expr) {
-    auto json = ToJson(expr);
-    auto result = ExpressionFromJson(json);
-    ASSERT_THAT(result, IsOk()) << "Failed to parse JSON: " << json.dump();
-    EXPECT_EQ(expr.ToString(), result.value()->ToString())
-        << "Round-trip failed.\nJSON: " << json.dump();
-  }
-};
+class ExpressionJsonTest : public ::testing::Test {};
 
 // Test boolean constant expressions
 TEST_F(ExpressionJsonTest, TrueExpression) {
