@@ -86,6 +86,10 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   /// changes.
   Result<std::shared_ptr<UpdateStatistics>> NewUpdateStatistics();
 
+  /// \brief Create a new UpdatePartitionStatistics to update partition statistics and
+  /// commit the changes.
+  Result<std::shared_ptr<UpdatePartitionStatistics>> NewUpdatePartitionStatistics();
+
   /// \brief Create a new UpdateLocation to update the table location and commit the
   /// changes.
   Result<std::shared_ptr<UpdateLocation>> NewUpdateLocation();
@@ -115,6 +119,7 @@ class ICEBERG_EXPORT Transaction : public std::enable_shared_from_this<Transacti
   Status ApplySetSnapshot(SetSnapshot& update);
   Status ApplyUpdateLocation(UpdateLocation& update);
   Status ApplyUpdatePartitionSpec(UpdatePartitionSpec& update);
+  Status ApplyUpdatePartitionStatistics(UpdatePartitionStatistics& update);
   Status ApplyUpdateProperties(UpdateProperties& update);
   Status ApplyUpdateSchema(UpdateSchema& update);
   Status ApplyUpdateSnapshot(SnapshotUpdate& update);

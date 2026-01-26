@@ -623,6 +623,9 @@ class TableMetadataBuilder::Impl {
   Status RemovePartitionSpecs(const std::vector<int32_t>& spec_ids);
   Status SetStatistics(std::shared_ptr<StatisticsFile> statistics_file);
   Status RemoveStatistics(int64_t snapshot_id);
+  Status SetPartitionStatistics(
+      std::shared_ptr<PartitionStatisticsFile> partition_statistics_file);
+  Status RemovePartitionStatistics(int64_t snapshot_id);
 
   Result<std::unique_ptr<TableMetadata>> Build();
 
@@ -1208,6 +1211,41 @@ Status TableMetadataBuilder::Impl::RemoveStatistics(int64_t snapshot_id) {
   return {};
 }
 
+Status TableMetadataBuilder::Impl::SetPartitionStatistics(
+    std::shared_ptr<PartitionStatisticsFile> partition_statistics_file) {
+  ICEBERG_PRECHECK(partition_statistics_file != nullptr,
+                   "Cannot set null partition statistics file");
+
+  // Find and replace existing partition statistics for the same snapshot_id, or add new
+  // one
+  auto it = std::ranges::find_if(
+      metadata_.partition_statistics,
+      [snapshot_id = partition_statistics_file->snapshot_id](const auto& stat) {
+        return stat && stat->snapshot_id == snapshot_id;
+      });
+
+  if (it != metadata_.partition_statistics.end()) {
+    *it = partition_statistics_file;
+  } else {
+    metadata_.partition_statistics.push_back(partition_statistics_file);
+  }
+
+  changes_.push_back(std::make_unique<table::SetPartitionStatistics>(
+      std::move(partition_statistics_file)));
+  return {};
+}
+
+Status TableMetadataBuilder::Impl::RemovePartitionStatistics(int64_t snapshot_id) {
+  auto removed_count =
+      std::erase_if(metadata_.partition_statistics, [snapshot_id](const auto& stat) {
+        return stat && stat->snapshot_id == snapshot_id;
+      });
+  if (removed_count != 0) {
+    changes_.push_back(std::make_unique<table::RemovePartitionStatistics>(snapshot_id));
+  }
+  return {};
+}
+
 std::unordered_set<int64_t> TableMetadataBuilder::Impl::IntermediateSnapshotIdSet(
     int64_t current_snapshot_id) const {
   std::unordered_set<int64_t> added_snapshot_ids;
@@ -1636,12 +1674,15 @@ TableMetadataBuilder& TableMetadataBuilder::RemoveStatistics(int64_t snapshot_id
 
 TableMetadataBuilder& TableMetadataBuilder::SetPartitionStatistics(
     const std::shared_ptr<PartitionStatisticsFile>& partition_statistics_file) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  ICEBERG_BUILDER_RETURN_IF_ERROR(
+      impl_->SetPartitionStatistics(partition_statistics_file));
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::RemovePartitionStatistics(
     int64_t snapshot_id) {
-  throw IcebergError(std::format("{} not implemented", __FUNCTION__));
+  ICEBERG_BUILDER_RETURN_IF_ERROR(impl_->RemovePartitionStatistics(snapshot_id));
+  return *this;
 }
 
 TableMetadataBuilder& TableMetadataBuilder::SetProperties(

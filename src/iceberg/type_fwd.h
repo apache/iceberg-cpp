@@ -196,6 +196,7 @@ class SetSnapshot;
 class SnapshotUpdate;
 class UpdateLocation;
 class UpdatePartitionSpec;
+class UpdatePartitionStatistics;
 class UpdateProperties;
 class UpdateSchema;
 class UpdateSnapshotReference;

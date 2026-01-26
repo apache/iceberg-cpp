@@ -613,6 +613,43 @@ TEST(JsonInternalTest, TableUpdateRemoveStatistics) {
             update);
 }
 
+TEST(JsonInternalTest, TableUpdateSetPartitionStatistics) {
+  auto partition_stats_file = std::make_shared<PartitionStatisticsFile>();
+  partition_stats_file->snapshot_id = 123456789;
+  partition_stats_file->path =
+      "s3://bucket/warehouse/table/metadata/partition-stats-123456789.parquet";
+  partition_stats_file->file_size_in_bytes = 2048;
+
+  table::SetPartitionStatistics update(partition_stats_file);
+  nlohmann::json expected = R"({
+    "action": "set-partition-statistics",
+    "partition-statistics": {
+      "snapshot-id": 123456789,
+      "statistics-path": "s3://bucket/warehouse/table/metadata/partition-stats-123456789.parquet",
+      "file-size-in-bytes": 2048
+    }
+  })"_json;
+
+  EXPECT_EQ(ToJson(update), expected);
+  auto parsed = TableUpdateFromJson(expected);
+  ASSERT_THAT(parsed, IsOk());
+  EXPECT_EQ(*internal::checked_cast<table::SetPartitionStatistics*>(parsed.value().get()),
+            update);
+}
+
+TEST(JsonInternalTest, TableUpdateRemovePartitionStatistics) {
+  table::RemovePartitionStatistics update(123456789);
+  nlohmann::json expected =
+      R"({"action":"remove-partition-statistics","snapshot-id":123456789})"_json;
+
+  EXPECT_EQ(ToJson(update), expected);
+  auto parsed = TableUpdateFromJson(expected);
+  ASSERT_THAT(parsed, IsOk());
+  EXPECT_EQ(
+      *internal::checked_cast<table::RemovePartitionStatistics*>(parsed.value().get()),
+      update);
+}
+
 TEST(JsonInternalTest, TableUpdateUnknownAction) {
   nlohmann::json json = R"({"action":"unknown-action"})"_json;
   auto result = TableUpdateFromJson(json);

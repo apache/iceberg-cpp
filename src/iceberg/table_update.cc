@@ -500,4 +500,60 @@ std::unique_ptr<TableUpdate> RemoveStatistics::Clone() const {
   return std::make_unique<RemoveStatistics>(snapshot_id_);
 }
 
+// SetPartitionStatistics
+
+int64_t SetPartitionStatistics::snapshot_id() const {
+  return partition_statistics_file_->snapshot_id;
+}
+
+void SetPartitionStatistics::ApplyTo(TableMetadataBuilder& builder) const {
+  builder.SetPartitionStatistics(partition_statistics_file_);
+}
+
+void SetPartitionStatistics::GenerateRequirements(TableUpdateContext& context) const {
+  // SetPartitionStatistics doesn't generate any requirements
+}
+
+bool SetPartitionStatistics::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kSetPartitionStatistics) {
+    return false;
+  }
+  const auto& other_set = internal::checked_cast<const SetPartitionStatistics&>(other);
+  if (!partition_statistics_file_ != !other_set.partition_statistics_file_) {
+    return false;
+  }
+  if (partition_statistics_file_ &&
+      !(*partition_statistics_file_ == *other_set.partition_statistics_file_)) {
+    return false;
+  }
+  return true;
+}
+
+std::unique_ptr<TableUpdate> SetPartitionStatistics::Clone() const {
+  return std::make_unique<SetPartitionStatistics>(partition_statistics_file_);
+}
+
+// RemovePartitionStatistics
+
+void RemovePartitionStatistics::ApplyTo(TableMetadataBuilder& builder) const {
+  builder.RemovePartitionStatistics(snapshot_id_);
+}
+
+void RemovePartitionStatistics::GenerateRequirements(TableUpdateContext& context) const {
+  // RemovePartitionStatistics doesn't generate any requirements
+}
+
+bool RemovePartitionStatistics::Equals(const TableUpdate& other) const {
+  if (other.kind() != Kind::kRemovePartitionStatistics) {
+    return false;
+  }
+  const auto& other_remove =
+      internal::checked_cast<const RemovePartitionStatistics&>(other);
+  return snapshot_id_ == other_remove.snapshot_id_;
+}
+
+std::unique_ptr<TableUpdate> RemovePartitionStatistics::Clone() const {
+  return std::make_unique<RemovePartitionStatistics>(snapshot_id_);
+}
+
 }  // namespace iceberg::table

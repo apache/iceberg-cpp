@@ -192,6 +192,9 @@ constexpr std::string_view kActionRemoveProperties = "remove-properties";
 constexpr std::string_view kActionSetLocation = "set-location";
 constexpr std::string_view kActionSetStatistics = "set-statistics";
 constexpr std::string_view kActionRemoveStatistics = "remove-statistics";
+constexpr std::string_view kActionSetPartitionStatistics = "set-partition-statistics";
+constexpr std::string_view kActionRemovePartitionStatistics =
+    "remove-partition-statistics";
 
 // TableUpdate field constants
 constexpr std::string_view kUUID = "uuid";
@@ -1439,6 +1442,24 @@ nlohmann::json ToJson(const TableUpdate& update) {
       json[kSnapshotId] = u.snapshot_id();
       break;
     }
+    case TableUpdate::Kind::kSetPartitionStatistics: {
+      const auto& u =
+          internal::checked_cast<const table::SetPartitionStatistics&>(update);
+      json[kAction] = kActionSetPartitionStatistics;
+      if (u.partition_statistics_file()) {
+        json[kPartitionStatistics] = ToJson(*u.partition_statistics_file());
+      } else {
+        json[kPartitionStatistics] = nlohmann::json::value_t::null;
+      }
+      break;
+    }
+    case TableUpdate::Kind::kRemovePartitionStatistics: {
+      const auto& u =
+          internal::checked_cast<const table::RemovePartitionStatistics&>(update);
+      json[kAction] = kActionRemovePartitionStatistics;
+      json[kSnapshotId] = u.snapshot_id();
+      break;
+    }
   }
   return json;
 }
@@ -1627,6 +1648,18 @@ Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(const nlohmann::json& j
   if (action == kActionRemoveStatistics) {
     ICEBERG_ASSIGN_OR_RAISE(auto snapshot_id, GetJsonValue<int64_t>(json, kSnapshotId));
     return std::make_unique<table::RemoveStatistics>(snapshot_id);
+  }
+  if (action == kActionSetPartitionStatistics) {
+    ICEBERG_ASSIGN_OR_RAISE(auto partition_statistics_json,
+                            GetJsonValue<nlohmann::json>(json, kPartitionStatistics));
+    ICEBERG_ASSIGN_OR_RAISE(auto partition_statistics_file,
+                            PartitionStatisticsFileFromJson(partition_statistics_json));
+    return std::make_unique<table::SetPartitionStatistics>(
+        std::move(partition_statistics_file));
+  }
+  if (action == kActionRemovePartitionStatistics) {
+    ICEBERG_ASSIGN_OR_RAISE(auto snapshot_id, GetJsonValue<int64_t>(json, kSnapshotId));
+    return std::make_unique<table::RemovePartitionStatistics>(snapshot_id);
   }
 
   return JsonParseError("Unknown table update action: {}", action);

@@ -39,6 +39,7 @@
 #include "iceberg/update/snapshot_update.h"
 #include "iceberg/update/update_location.h"
 #include "iceberg/update/update_partition_spec.h"
+#include "iceberg/update/update_partition_statistics.h"
 #include "iceberg/update/update_properties.h"
 #include "iceberg/update/update_schema.h"
 #include "iceberg/update/update_snapshot_reference.h"
@@ -141,6 +142,10 @@ Status Transaction::Apply(PendingUpdate& update) {
     case PendingUpdate::Kind::kUpdateStatistics:
       ICEBERG_RETURN_UNEXPECTED(
           ApplyUpdateStatistics(internal::checked_cast<UpdateStatistics&>(update)));
+      break;
+    case PendingUpdate::Kind::kUpdatePartitionStatistics:
+      ICEBERG_RETURN_UNEXPECTED(ApplyUpdatePartitionStatistics(
+          internal::checked_cast<UpdatePartitionStatistics&>(update)));
       break;
     default:
       return NotSupported("Unsupported pending update: {}",
@@ -284,6 +289,17 @@ Status Transaction::ApplyUpdateStatistics(UpdateStatistics& update) {
   return {};
 }
 
+Status Transaction::ApplyUpdatePartitionStatistics(UpdatePartitionStatistics& update) {
+  ICEBERG_ASSIGN_OR_RAISE(auto result, update.Apply());
+  for (auto&& [_, partition_stat_file] : result.to_set) {
+    metadata_builder_->SetPartitionStatistics(std::move(partition_stat_file));
+  }
+  for (const auto& snapshot_id : result.to_remove) {
+    metadata_builder_->RemovePartitionStatistics(snapshot_id);
+  }
+  return {};
+}
+
 Result<std::shared_ptr<Table>> Transaction::Commit() {
   if (committed_) {
     return Invalid("Transaction already committed");
@@ -393,6 +409,15 @@ Result<std::shared_ptr<UpdateStatistics>> Transaction::NewUpdateStatistics() {
                           UpdateStatistics::Make(shared_from_this()));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_statistics));
   return update_statistics;
+}
+
+Result<std::shared_ptr<UpdatePartitionStatistics>>
+Transaction::NewUpdatePartitionStatistics() {
+  ICEBERG_ASSIGN_OR_RAISE(
+      std::shared_ptr<UpdatePartitionStatistics> update_partition_statistics,
+      UpdatePartitionStatistics::Make(shared_from_this()));
+  ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_partition_statistics));
+  return update_partition_statistics;
 }
 
 Result<std::shared_ptr<UpdateSnapshotReference>>

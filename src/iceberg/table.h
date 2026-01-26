@@ -156,6 +156,11 @@ class ICEBERG_EXPORT Table : public std::enable_shared_from_this<Table> {
   /// changes.
   virtual Result<std::shared_ptr<UpdateStatistics>> NewUpdateStatistics();
 
+  /// \brief Create a new UpdatePartitionStatistics to update partition statistics and
+  /// commit the changes.
+  virtual Result<std::shared_ptr<UpdatePartitionStatistics>>
+  NewUpdatePartitionStatistics();
+
   /// \brief Create a new UpdateLocation to update the table location and commit the
   /// changes.
   virtual Result<std::shared_ptr<UpdateLocation>> NewUpdateLocation();

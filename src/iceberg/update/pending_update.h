@@ -46,6 +46,7 @@ class ICEBERG_EXPORT PendingUpdate : public ErrorCollector {
     kSetSnapshot,
     kUpdateLocation,
     kUpdatePartitionSpec,
+    kUpdatePartitionStatistics,
     kUpdateProperties,
     kUpdateSchema,
     kUpdateSnapshot,
