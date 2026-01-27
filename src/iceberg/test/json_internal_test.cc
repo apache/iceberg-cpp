@@ -31,6 +31,7 @@
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_field.h"
 #include "iceberg/sort_order.h"
+#include "iceberg/statistics_file.h"
 #include "iceberg/table_requirement.h"
 #include "iceberg/table_update.h"
 #include "iceberg/test/matchers.h"
@@ -173,6 +174,29 @@ TEST(JsonInternalTest, PartitionSpec) {
   auto parsed_spec_result = PartitionSpecFromJson(schema, json, 1);
   ASSERT_TRUE(parsed_spec_result.has_value()) << parsed_spec_result.error().message;
   EXPECT_EQ(*spec, *parsed_spec_result.value());
+}
+
+TEST(JsonInternalTest, SortOrderFromJson) {
+  auto identity_transform = Transform::Identity();
+  SortField st1(5, identity_transform, SortDirection::kAscending, NullOrder::kFirst);
+  SortField st2(7, identity_transform, SortDirection::kDescending, NullOrder::kLast);
+  ICEBERG_UNWRAP_OR_FAIL(auto sort_order, SortOrder::Make(100, {st1, st2}));
+
+  auto json = ToJson(*sort_order);
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, SortOrderFromJson(json));
+  EXPECT_EQ(*sort_order, *parsed);
+}
+
+TEST(JsonInternalTest, PartitionSpecFromJson) {
+  auto identity_transform = Transform::Identity();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec,
+      PartitionSpec::Make(1, {PartitionField(3, 101, "region", identity_transform),
+                              PartitionField(5, 102, "ts", identity_transform)}));
+
+  auto json = ToJson(*spec);
+  ICEBERG_UNWRAP_OR_FAIL(auto parsed, PartitionSpecFromJson(json));
+  EXPECT_EQ(*spec, *parsed);
 }
 
 TEST(JsonInternalTest, SnapshotRefBranch) {
@@ -349,6 +373,23 @@ TEST(JsonInternalTest, TableUpdateSetCurrentSchema) {
             update);
 }
 
+TEST(JsonInternalTest, TableUpdateAddPartitionSpec) {
+  auto identity_transform = Transform::Identity();
+  ICEBERG_UNWRAP_OR_FAIL(
+      auto spec,
+      PartitionSpec::Make(1, {PartitionField(3, 101, "region", identity_transform)}));
+  table::AddPartitionSpec update(std::move(spec));
+
+  auto json = ToJson(update);
+  EXPECT_EQ(json["action"], "add-spec");
+  EXPECT_TRUE(json.contains("spec"));
+
+  auto parsed = TableUpdateFromJson(json);
+  ASSERT_THAT(parsed, IsOk());
+  auto* actual = internal::checked_cast<table::AddPartitionSpec*>(parsed.value().get());
+  EXPECT_EQ(*actual->spec(), *update.spec());
+}
+
 TEST(JsonInternalTest, TableUpdateSetDefaultPartitionSpec) {
   table::SetDefaultPartitionSpec update(2);
   nlohmann::json expected = R"({"action":"set-default-spec","spec-id":2})"_json;
@@ -384,6 +425,22 @@ TEST(JsonInternalTest, TableUpdateRemoveSchemas) {
   auto parsed = TableUpdateFromJson(json);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(*internal::checked_cast<table::RemoveSchemas*>(parsed.value().get()), update);
+}
+
+TEST(JsonInternalTest, TableUpdateAddSortOrder) {
+  auto identity_transform = Transform::Identity();
+  SortField st(5, identity_transform, SortDirection::kAscending, NullOrder::kFirst);
+  ICEBERG_UNWRAP_OR_FAIL(auto sort_order, SortOrder::Make(1, {st}));
+  table::AddSortOrder update(std::move(sort_order));
+
+  auto json = ToJson(update);
+  EXPECT_EQ(json["action"], "add-sort-order");
+  EXPECT_TRUE(json.contains("sort-order"));
+
+  auto parsed = TableUpdateFromJson(json);
+  ASSERT_THAT(parsed, IsOk());
+  auto* actual = internal::checked_cast<table::AddSortOrder*>(parsed.value().get());
+  EXPECT_EQ(*actual->sort_order(), *update.sort_order());
 }
 
 TEST(JsonInternalTest, TableUpdateSetDefaultSortOrder) {
@@ -506,6 +563,91 @@ TEST(JsonInternalTest, TableUpdateSetLocation) {
   auto parsed = TableUpdateFromJson(expected);
   ASSERT_THAT(parsed, IsOk());
   EXPECT_EQ(*internal::checked_cast<table::SetLocation*>(parsed.value().get()), update);
+}
+
+TEST(JsonInternalTest, TableUpdateSetStatistics) {
+  auto stats_file = std::make_shared<StatisticsFile>();
+  stats_file->snapshot_id = 123456789;
+  stats_file->path = "s3://bucket/warehouse/table/metadata/stats-123456789.puffin";
+  stats_file->file_size_in_bytes = 1024;
+  stats_file->file_footer_size_in_bytes = 128;
+  stats_file->blob_metadata = {BlobMetadata{.type = "ndv",
+                                            .source_snapshot_id = 123456789,
+                                            .source_snapshot_sequence_number = 1,
+                                            .fields = {1, 2},
+                                            .properties = {{"prop1", "value1"}}}};
+
+  table::SetStatistics update(stats_file);
+  nlohmann::json expected = R"({
+    "action": "set-statistics",
+    "statistics": {
+      "snapshot-id": 123456789,
+      "statistics-path": "s3://bucket/warehouse/table/metadata/stats-123456789.puffin",
+      "file-size-in-bytes": 1024,
+      "file-footer-size-in-bytes": 128,
+      "blob-metadata": [{
+        "type": "ndv",
+        "snapshot-id": 123456789,
+        "sequence-number": 1,
+        "fields": [1, 2],
+        "properties": {"prop1": "value1"}
+      }]
+    }
+  })"_json;
+
+  EXPECT_EQ(ToJson(update), expected);
+  auto parsed = TableUpdateFromJson(expected);
+  ASSERT_THAT(parsed, IsOk());
+  EXPECT_EQ(*internal::checked_cast<table::SetStatistics*>(parsed.value().get()), update);
+}
+
+TEST(JsonInternalTest, TableUpdateRemoveStatistics) {
+  table::RemoveStatistics update(123456789);
+  nlohmann::json expected =
+      R"({"action":"remove-statistics","snapshot-id":123456789})"_json;
+
+  EXPECT_EQ(ToJson(update), expected);
+  auto parsed = TableUpdateFromJson(expected);
+  ASSERT_THAT(parsed, IsOk());
+  EXPECT_EQ(*internal::checked_cast<table::RemoveStatistics*>(parsed.value().get()),
+            update);
+}
+
+TEST(JsonInternalTest, TableUpdateSetPartitionStatistics) {
+  auto partition_stats_file = std::make_shared<PartitionStatisticsFile>();
+  partition_stats_file->snapshot_id = 123456789;
+  partition_stats_file->path =
+      "s3://bucket/warehouse/table/metadata/partition-stats-123456789.parquet";
+  partition_stats_file->file_size_in_bytes = 2048;
+
+  table::SetPartitionStatistics update(partition_stats_file);
+  nlohmann::json expected = R"({
+    "action": "set-partition-statistics",
+    "partition-statistics": {
+      "snapshot-id": 123456789,
+      "statistics-path": "s3://bucket/warehouse/table/metadata/partition-stats-123456789.parquet",
+      "file-size-in-bytes": 2048
+    }
+  })"_json;
+
+  EXPECT_EQ(ToJson(update), expected);
+  auto parsed = TableUpdateFromJson(expected);
+  ASSERT_THAT(parsed, IsOk());
+  EXPECT_EQ(*internal::checked_cast<table::SetPartitionStatistics*>(parsed.value().get()),
+            update);
+}
+
+TEST(JsonInternalTest, TableUpdateRemovePartitionStatistics) {
+  table::RemovePartitionStatistics update(123456789);
+  nlohmann::json expected =
+      R"({"action":"remove-partition-statistics","snapshot-id":123456789})"_json;
+
+  EXPECT_EQ(ToJson(update), expected);
+  auto parsed = TableUpdateFromJson(expected);
+  ASSERT_THAT(parsed, IsOk());
+  EXPECT_EQ(
+      *internal::checked_cast<table::RemovePartitionStatistics*>(parsed.value().get()),
+      update);
 }
 
 TEST(JsonInternalTest, TableUpdateUnknownAction) {

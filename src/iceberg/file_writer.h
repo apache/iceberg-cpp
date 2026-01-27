@@ -42,28 +42,28 @@ class WriterProperties : public ConfigBase<WriterProperties> {
 
   /// \brief The name of the Avro root node schema to write.
   inline static Entry<std::string> kAvroSchemaName{"write.avro.schema-name", ""};
-
   /// \brief The buffer size used by Avro output stream.
   inline static Entry<int64_t> kAvroBufferSize{"write.avro.buffer-size", 1024 * 1024};
-
   /// \brief The sync interval used by Avro writer.
   inline static Entry<int64_t> kAvroSyncInterval{"write.avro.sync-interval", 16 * 1024};
-
   /// \brief Whether to skip GenericDatum and use direct encoder for Avro writing.
   /// When true, uses direct encoder (faster). When false, uses GenericDatum.
   inline static Entry<bool> kAvroSkipDatum{"write.avro.skip-datum", true};
+  inline static Entry<std::string> kAvroCompression{"write.avro.compression-codec",
+                                                    "gzip"};
+  inline static Entry<std::string> kAvroCompressionLevel{"write.avro.compression-level",
+                                                         ""};
 
-  /// TODO(gangwu): add more properties, like compression codec, compression level, etc.
+  inline static Entry<std::string> kParquetCompression{"write.parquet.compression-codec",
+                                                       "zstd"};
+  inline static Entry<std::string> kParquetCompressionLevel{
+      "write.parquet.compression-level", ""};
 
-  /// \brief Create a default WriterProperties instance.
-  static std::unique_ptr<WriterProperties> default_properties();
+  /// TODO(gangwu): add table properties with write.avro|parquet|orc.*
 
   /// \brief Create a WriterProperties instance from a map of key-value pairs.
-  static std::unique_ptr<WriterProperties> FromMap(
+  static WriterProperties FromMap(
       const std::unordered_map<std::string, std::string>& properties);
-
- private:
-  WriterProperties() = default;
 };
 
 /// \brief Options for creating a writer.
@@ -79,7 +79,7 @@ struct ICEBERG_EXPORT WriterOptions {
   /// \brief Metadata to write to the file.
   std::unordered_map<std::string, std::string> metadata;
   /// \brief Format-specific or implementation-specific properties.
-  std::shared_ptr<WriterProperties> properties = WriterProperties::default_properties();
+  WriterProperties properties;
 };
 
 /// \brief Base writer class to write data from different file formats.

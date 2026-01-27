@@ -24,9 +24,9 @@
 #include "iceberg/exception.h"
 #include "iceberg/result.h"
 
-#define ICEBERG_RETURN_UNEXPECTED(result)                       \
-  if (auto&& result_name = result; !result_name) [[unlikely]] { \
-    return std::unexpected<Error>(result_name.error());         \
+#define ICEBERG_RETURN_UNEXPECTED(expr)                       \
+  if (auto&& result_name = expr; !result_name) [[unlikely]] { \
+    return std::unexpected<Error>(result_name.error());       \
   }
 
 #define ICEBERG_ASSIGN_OR_RAISE_IMPL(result_name, lhs, rexpr) \
@@ -68,9 +68,9 @@
     throw iceberg::IcebergError(error.message);               \
   }
 
-#define ICEBERG_THROW_NOT_OK(result)                            \
-  if (auto&& result_name = result; !result_name) [[unlikely]] { \
-    ERROR_TO_EXCEPTION(result_name.error());                    \
+#define ICEBERG_THROW_NOT_OK(expr)                            \
+  if (auto&& result_name = expr; !result_name) [[unlikely]] { \
+    ERROR_TO_EXCEPTION(result_name.error());                  \
   }
 
 #define ICEBERG_ASSIGN_OR_THROW_IMPL(result_name, lhs, rexpr) \

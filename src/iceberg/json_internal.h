@@ -75,6 +75,14 @@ ICEBERG_EXPORT nlohmann::json ToJson(const SortOrder& sort_order);
 ICEBERG_EXPORT Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
     const nlohmann::json& json, const std::shared_ptr<Schema>& current_schema);
 
+/// \brief Deserializes a JSON object into a `SortOrder` object.
+///
+/// \param json The JSON object representing a `SortOrder`.
+/// \return An `expected` value containing either a `SortOrder` object or an error. If the
+/// JSON is malformed or missing expected fields, an error will be returned.
+ICEBERG_EXPORT Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
+    const nlohmann::json& json);
+
 /// \brief Convert an Iceberg Schema to JSON.
 ///
 /// \param schema The Iceberg schema to convert.
@@ -182,6 +190,14 @@ ICEBERG_EXPORT Result<std::string> ToJsonString(const PartitionSpec& partition_s
 ICEBERG_EXPORT Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
     const std::shared_ptr<Schema>& schema, const nlohmann::json& json,
     int32_t default_spec_id);
+
+/// \brief Deserializes a JSON object into a `PartitionSpec` object.
+///
+/// \param json The JSON object representing a `PartitionSpec`.
+/// \return An `expected` value containing either a `PartitionSpec` object or an error. If
+/// the JSON is malformed or missing expected fields, an error will be returned.
+ICEBERG_EXPORT Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
+    const nlohmann::json& json);
 
 /// \brief Serializes a `SnapshotRef` object to JSON.
 ///

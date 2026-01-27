@@ -291,11 +291,6 @@ class ICEBERG_EXPORT TableProperties : public ConfigBase<TableProperties> {
   /// \brief Get the set of commit table property keys.
   static const std::unordered_set<std::string>& commit_properties();
 
-  /// \brief Create a default TableProperties instance.
-  ///
-  /// \return A unique pointer to a TableProperties instance with default values
-  static TableProperties default_properties();
-
   /// \brief Create a TableProperties instance from a map of key-value pairs.
   ///
   /// \param properties The map containing property key-value pairs

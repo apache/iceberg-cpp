@@ -38,8 +38,6 @@ const std::unordered_set<std::string>& TableProperties::commit_properties() {
   return kCommitProperties;
 }
 
-TableProperties TableProperties::default_properties() { return {}; }
-
 TableProperties TableProperties::FromMap(
     std::unordered_map<std::string, std::string> properties) {
   TableProperties table_properties;

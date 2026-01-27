@@ -398,8 +398,7 @@ class ICEBERG_EXPORT TableMetadataBuilder : public ErrorCollector {
   ///
   /// \param statistics_file The statistics file to set
   /// \return Reference to this builder for method chaining
-  TableMetadataBuilder& SetStatistics(
-      const std::shared_ptr<StatisticsFile>& statistics_file);
+  TableMetadataBuilder& SetStatistics(std::shared_ptr<StatisticsFile> statistics_file);
 
   /// \brief Remove table statistics by snapshot ID
   ///

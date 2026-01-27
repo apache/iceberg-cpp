@@ -222,7 +222,7 @@ This product includes code from Apache Arrow.
   * cmake_modules/IcebergBuildUtils.cmake.
   * cmake_modules/IcebergThirdpartyToolchain.cmake.
 
-Copyright: 2016-2025 The Apache Software Foundation.
+Copyright: 2016-2026 The Apache Software Foundation.
 Home page: https://arrow.apache.org/
 License: https://www.apache.org/licenses/LICENSE-2.0
 

@@ -59,6 +59,10 @@ class ICEBERG_EXPORT TableUpdate {
     kSetProperties,
     kRemoveProperties,
     kSetLocation,
+    kSetStatistics,
+    kRemoveStatistics,
+    kSetPartitionStatistics,
+    kRemovePartitionStatistics,
   };
 
   virtual ~TableUpdate();
@@ -507,6 +511,101 @@ class ICEBERG_EXPORT SetLocation : public TableUpdate {
 
  private:
   std::string location_;
+};
+
+/// \brief Represents setting statistics for a snapshot
+class ICEBERG_EXPORT SetStatistics : public TableUpdate {
+ public:
+  explicit SetStatistics(std::shared_ptr<StatisticsFile> statistics_file)
+      : statistics_file_(std::move(statistics_file)) {}
+
+  int64_t snapshot_id() const;
+
+  const std::shared_ptr<StatisticsFile>& statistics_file() const {
+    return statistics_file_;
+  }
+
+  void ApplyTo(TableMetadataBuilder& builder) const override;
+
+  void GenerateRequirements(TableUpdateContext& context) const override;
+
+  Kind kind() const override { return Kind::kSetStatistics; }
+
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
+
+ private:
+  std::shared_ptr<StatisticsFile> statistics_file_;
+};
+
+/// \brief Represents removing statistics for a snapshot
+class ICEBERG_EXPORT RemoveStatistics : public TableUpdate {
+ public:
+  explicit RemoveStatistics(int64_t snapshot_id) : snapshot_id_(snapshot_id) {}
+
+  int64_t snapshot_id() const { return snapshot_id_; }
+
+  void ApplyTo(TableMetadataBuilder& builder) const override;
+
+  void GenerateRequirements(TableUpdateContext& context) const override;
+
+  Kind kind() const override { return Kind::kRemoveStatistics; }
+
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
+
+ private:
+  int64_t snapshot_id_;
+};
+
+/// \brief Represents setting partition statistics for a snapshot
+class ICEBERG_EXPORT SetPartitionStatistics : public TableUpdate {
+ public:
+  explicit SetPartitionStatistics(
+      std::shared_ptr<PartitionStatisticsFile> partition_statistics_file)
+      : partition_statistics_file_(std::move(partition_statistics_file)) {}
+
+  int64_t snapshot_id() const;
+
+  const std::shared_ptr<PartitionStatisticsFile>& partition_statistics_file() const {
+    return partition_statistics_file_;
+  }
+
+  void ApplyTo(TableMetadataBuilder& builder) const override;
+
+  void GenerateRequirements(TableUpdateContext& context) const override;
+
+  Kind kind() const override { return Kind::kSetPartitionStatistics; }
+
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
+
+ private:
+  std::shared_ptr<PartitionStatisticsFile> partition_statistics_file_;
+};
+
+/// \brief Represents removing partition statistics for a snapshot
+class ICEBERG_EXPORT RemovePartitionStatistics : public TableUpdate {
+ public:
+  explicit RemovePartitionStatistics(int64_t snapshot_id) : snapshot_id_(snapshot_id) {}
+
+  int64_t snapshot_id() const { return snapshot_id_; }
+
+  void ApplyTo(TableMetadataBuilder& builder) const override;
+
+  void GenerateRequirements(TableUpdateContext& context) const override;
+
+  Kind kind() const override { return Kind::kRemovePartitionStatistics; }
+
+  bool Equals(const TableUpdate& other) const override;
+
+  std::unique_ptr<TableUpdate> Clone() const override;
+
+ private:
+  int64_t snapshot_id_;
 };
 
 }  // namespace table

@@ -124,7 +124,7 @@ class ParquetReader::Impl {
     ::parquet::ReaderProperties reader_properties(pool_);
     ::parquet::ArrowReaderProperties arrow_reader_properties;
     arrow_reader_properties.set_batch_size(
-        options.properties->Get(ReaderProperties::kBatchSize));
+        options.properties.Get(ReaderProperties::kBatchSize));
     arrow_reader_properties.set_arrow_extensions_enabled(true);
 
     // Open the Parquet file reader

@@ -94,9 +94,16 @@ void DoRoundtrip(std::shared_ptr<::arrow::Array> data, std::shared_ptr<Schema> s
 
   std::unordered_map<std::string, std::string> metadata = {{"k1", "v1"}, {"k2", "v2"}};
 
+  WriterProperties writer_properties;
+  writer_properties.Set(WriterProperties::kParquetCompression,
+                        std::string("uncompressed"));
+
   auto writer_data = WriterFactoryRegistry::Open(
-      FileFormatType::kParquet,
-      {.path = basePath, .schema = schema, .io = file_io, .metadata = metadata});
+      FileFormatType::kParquet, {.path = basePath,
+                                 .schema = schema,
+                                 .io = file_io,
+                                 .metadata = metadata,
+                                 .properties = std::move(writer_properties)});
   ASSERT_THAT(writer_data, IsOk())
       << "Failed to create writer: " << writer_data.error().message;
   auto writer = std::move(writer_data.value());
@@ -139,8 +146,14 @@ class ParquetReaderTest : public ::testing::Test {
                                            R"([[1, "Foo"],[2, "Bar"],[3, "Baz"]])")
             .ValueOrDie();
 
-    ASSERT_TRUE(WriteArray(
-        array, {.path = temp_parquet_file_, .schema = schema, .io = file_io_}));
+    WriterProperties writer_properties;
+    writer_properties.Set(WriterProperties::kParquetCompression,
+                          std::string("uncompressed"));
+
+    ASSERT_TRUE(WriteArray(array, {.path = temp_parquet_file_,
+                                   .schema = schema,
+                                   .io = file_io_,
+                                   .properties = std::move(writer_properties)}));
   }
 
   void CreateSplitParquetFile() {
@@ -244,8 +257,8 @@ TEST_F(ParquetReaderTest, ReadWithBatchSize) {
   auto schema = std::make_shared<Schema>(
       std::vector<SchemaField>{SchemaField::MakeRequired(1, "id", int32())});
 
-  auto reader_properties = ReaderProperties::default_properties();
-  reader_properties->Set(ReaderProperties::kBatchSize, int64_t{2});
+  ReaderProperties reader_properties;
+  reader_properties.Set(ReaderProperties::kBatchSize, int64_t{2});
 
   auto reader_result = ReaderFactoryRegistry::Open(
       FileFormatType::kParquet, {.path = temp_parquet_file_,
@@ -289,9 +302,8 @@ TEST_F(ParquetReaderTest, ReadSplit) {
       R"([[1, 0], [2, 1], [3, 2]])", R"([[1, 0], [2, 1]])", R"([[3, 2]])", "", "",
   };
 
-  std::shared_ptr<ReaderProperties> reader_properties =
-      ReaderProperties::default_properties();
-  reader_properties->Set(ReaderProperties::kBatchSize, int64_t{100});
+  ReaderProperties reader_properties;
+  reader_properties.Set(ReaderProperties::kBatchSize, int64_t{100});
 
   for (size_t i = 0; i < splits.size(); ++i) {
     auto reader_result = ReaderFactoryRegistry::Open(FileFormatType::kParquet,
@@ -345,8 +357,8 @@ TEST_F(ParquetReaderTest, ReadRowPositionWithBatchSize) {
       MetadataColumns::kRowPosition,
   });
 
-  auto reader_properties = ReaderProperties::default_properties();
-  reader_properties->Set(ReaderProperties::kBatchSize, int64_t{2});
+  ReaderProperties reader_properties;
+  reader_properties.Set(ReaderProperties::kBatchSize, int64_t{2});
 
   ICEBERG_UNWRAP_OR_FAIL(auto reader, ReaderFactoryRegistry::Open(
                                           FileFormatType::kParquet,

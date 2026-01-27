@@ -167,7 +167,11 @@ if(ICEBERG_BUILD_BUNDLE)
                    parquet_schema_test.cc
                    parquet_test.cc)
 
-  add_iceberg_test(scan_test USE_BUNDLE SOURCES file_scan_task_test.cc)
+  add_iceberg_test(scan_test
+                   USE_BUNDLE
+                   SOURCES
+                   file_scan_task_test.cc
+                   table_scan_test.cc)
 
   add_iceberg_test(table_update_test
                    USE_BUNDLE
@@ -178,9 +182,11 @@ if(ICEBERG_BUILD_BUNDLE)
                    transaction_test.cc
                    update_location_test.cc
                    update_partition_spec_test.cc
+                   update_partition_statistics_test.cc
                    update_properties_test.cc
                    update_schema_test.cc
-                   update_sort_order_test.cc)
+                   update_sort_order_test.cc
+                   update_statistics_test.cc)
 
   add_iceberg_test(data_writer_test USE_BUNDLE SOURCES data_writer_test.cc)
 

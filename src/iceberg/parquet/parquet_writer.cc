@@ -46,13 +46,48 @@ Result<std::shared_ptr<::arrow::io::OutputStream>> OpenOutputStream(
   return output;
 }
 
+Result<::arrow::Compression::type> ParseCompression(const WriterProperties& properties) {
+  const auto& compression_name = properties.Get(WriterProperties::kParquetCompression);
+  if (compression_name == "uncompressed") {
+    return ::arrow::Compression::UNCOMPRESSED;
+  } else if (compression_name == "snappy") {
+    return ::arrow::Compression::SNAPPY;
+  } else if (compression_name == "gzip") {
+    return ::arrow::Compression::GZIP;
+  } else if (compression_name == "brotli") {
+    return ::arrow::Compression::BROTLI;
+  } else if (compression_name == "lz4") {
+    return ::arrow::Compression::LZ4;
+  } else if (compression_name == "zstd") {
+    return ::arrow::Compression::ZSTD;
+  } else {
+    return InvalidArgument("Unsupported Parquet compression codec: ", compression_name);
+  }
+}
+
+Result<std::optional<int32_t>> ParseCodecLevel(const WriterProperties& properties) {
+  auto level_str = properties.Get(WriterProperties::kParquetCompressionLevel);
+  if (level_str.empty()) {
+    return std::nullopt;
+  }
+  ICEBERG_ASSIGN_OR_RAISE(auto level, StringUtils::ParseInt<int32_t>(level_str));
+  return level;
+}
+
 }  // namespace
 
 class ParquetWriter::Impl {
  public:
   Status Open(const WriterOptions& options) {
-    auto writer_properties =
-        ::parquet::WriterProperties::Builder().memory_pool(pool_)->build();
+    ICEBERG_ASSIGN_OR_RAISE(auto compression, ParseCompression(options.properties));
+    ICEBERG_ASSIGN_OR_RAISE(auto compression_level, ParseCodecLevel(options.properties));
+
+    auto properties_builder = ::parquet::WriterProperties::Builder();
+    properties_builder.compression(compression);
+    if (compression_level.has_value()) {
+      properties_builder.compression_level(compression_level.value());
+    }
+    auto writer_properties = properties_builder.memory_pool(pool_)->build();
     auto arrow_writer_properties = ::parquet::default_arrow_writer_properties();
 
     ArrowSchema c_schema;

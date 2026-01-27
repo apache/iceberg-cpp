@@ -75,24 +75,16 @@ class ReaderProperties : public ConfigBase<ReaderProperties> {
 
   /// \brief The batch size to read.
   inline static Entry<int64_t> kBatchSize{"read.batch-size", 4096};
-
   /// \brief Skip GenericDatum in Avro reader for better performance.
   /// When true, decode directly from Avro to Arrow without GenericDatum intermediate.
   /// Default: true (skip GenericDatum for better performance).
   inline static Entry<bool> kAvroSkipDatum{"read.avro.skip-datum", true};
-
   /// \brief The buffer size used by Avro input stream.
   inline static Entry<int64_t> kAvroBufferSize{"read.avro.buffer-size", 1024 * 1024};
 
-  /// \brief Create a default ReaderProperties instance.
-  static std::unique_ptr<ReaderProperties> default_properties();
-
   /// \brief Create a ReaderProperties instance from a map of key-value pairs.
-  static std::unique_ptr<ReaderProperties> FromMap(
+  static ReaderProperties FromMap(
       const std::unordered_map<std::string, std::string>& properties);
-
- private:
-  ReaderProperties() = default;
 };
 
 /// \brief Options for creating a reader.
@@ -116,7 +108,7 @@ struct ICEBERG_EXPORT ReaderOptions {
   /// that may have different field names than the current schema.
   std::shared_ptr<class NameMapping> name_mapping;
   /// \brief Format-specific or implementation-specific properties.
-  std::shared_ptr<ReaderProperties> properties = ReaderProperties::default_properties();
+  ReaderProperties properties;
 };
 
 /// \brief Factory function to create a reader of a specific file format.

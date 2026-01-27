@@ -33,7 +33,6 @@
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
-#include "iceberg/schema_internal.h"
 #include "iceberg/snapshot.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/statistics_file.h"
@@ -191,6 +190,11 @@ constexpr std::string_view kActionSetSnapshotRef = "set-snapshot-ref";
 constexpr std::string_view kActionSetProperties = "set-properties";
 constexpr std::string_view kActionRemoveProperties = "remove-properties";
 constexpr std::string_view kActionSetLocation = "set-location";
+constexpr std::string_view kActionSetStatistics = "set-statistics";
+constexpr std::string_view kActionRemoveStatistics = "remove-statistics";
+constexpr std::string_view kActionSetPartitionStatistics = "set-partition-statistics";
+constexpr std::string_view kActionRemovePartitionStatistics =
+    "remove-partition-statistics";
 
 // TableUpdate field constants
 constexpr std::string_view kUUID = "uuid";
@@ -269,6 +273,18 @@ Result<std::unique_ptr<SortOrder>> SortOrderFromJson(
     sort_fields.push_back(std::move(*sort_field));
   }
   return SortOrder::Make(*current_schema, order_id, std::move(sort_fields));
+}
+
+Result<std::unique_ptr<SortOrder>> SortOrderFromJson(const nlohmann::json& json) {
+  ICEBERG_ASSIGN_OR_RAISE(auto order_id, GetJsonValue<int32_t>(json, kOrderId));
+  ICEBERG_ASSIGN_OR_RAISE(auto fields, GetJsonValue<nlohmann::json>(json, kFields));
+
+  std::vector<SortField> sort_fields;
+  for (const auto& field_json : fields) {
+    ICEBERG_ASSIGN_OR_RAISE(auto sort_field, SortFieldFromJson(field_json));
+    sort_fields.push_back(std::move(*sort_field));
+  }
+  return SortOrder::Make(order_id, std::move(sort_fields));
 }
 
 nlohmann::json ToJson(const SchemaField& field) {
@@ -613,6 +629,19 @@ Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(
                                   /*allow_missing_fields=*/true));
   }
   return spec;
+}
+
+Result<std::unique_ptr<PartitionSpec>> PartitionSpecFromJson(const nlohmann::json& json) {
+  ICEBERG_ASSIGN_OR_RAISE(auto spec_id, GetJsonValue<int32_t>(json, kSpecId));
+  ICEBERG_ASSIGN_OR_RAISE(auto fields, GetJsonValue<nlohmann::json>(json, kFields));
+
+  std::vector<PartitionField> partition_fields;
+  for (const auto& field_json : fields) {
+    ICEBERG_ASSIGN_OR_RAISE(auto partition_field, PartitionFieldFromJson(field_json));
+    partition_fields.push_back(std::move(*partition_field));
+  }
+
+  return PartitionSpec::Make(spec_id, std::move(partition_fields));
 }
 
 Result<std::unique_ptr<SnapshotRef>> SnapshotRefFromJson(const nlohmann::json& json) {
@@ -1093,8 +1122,6 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
   if (json.contains(kProperties)) {
     ICEBERG_ASSIGN_OR_RAISE(auto properties, FromJsonMap(json, kProperties));
     table_metadata->properties = TableProperties::FromMap(std::move(properties));
-  } else {
-    table_metadata->properties = TableProperties::default_properties();
   }
 
   // This field is optional, but internally we set this to -1 when not set
@@ -1399,6 +1426,40 @@ nlohmann::json ToJson(const TableUpdate& update) {
       json[kLocation] = u.location();
       break;
     }
+    case TableUpdate::Kind::kSetStatistics: {
+      const auto& u = internal::checked_cast<const table::SetStatistics&>(update);
+      json[kAction] = kActionSetStatistics;
+      if (u.statistics_file()) {
+        json[kStatistics] = ToJson(*u.statistics_file());
+      } else {
+        json[kStatistics] = nlohmann::json::value_t::null;
+      }
+      break;
+    }
+    case TableUpdate::Kind::kRemoveStatistics: {
+      const auto& u = internal::checked_cast<const table::RemoveStatistics&>(update);
+      json[kAction] = kActionRemoveStatistics;
+      json[kSnapshotId] = u.snapshot_id();
+      break;
+    }
+    case TableUpdate::Kind::kSetPartitionStatistics: {
+      const auto& u =
+          internal::checked_cast<const table::SetPartitionStatistics&>(update);
+      json[kAction] = kActionSetPartitionStatistics;
+      if (u.partition_statistics_file()) {
+        json[kPartitionStatistics] = ToJson(*u.partition_statistics_file());
+      } else {
+        json[kPartitionStatistics] = nlohmann::json::value_t::null;
+      }
+      break;
+    }
+    case TableUpdate::Kind::kRemovePartitionStatistics: {
+      const auto& u =
+          internal::checked_cast<const table::RemovePartitionStatistics&>(update);
+      json[kAction] = kActionRemovePartitionStatistics;
+      json[kSnapshotId] = u.snapshot_id();
+      break;
+    }
   }
   return json;
 }
@@ -1492,10 +1553,8 @@ Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(const nlohmann::json& j
   }
   if (action == kActionAddPartitionSpec) {
     ICEBERG_ASSIGN_OR_RAISE(auto spec_json, GetJsonValue<nlohmann::json>(json, kSpec));
-    ICEBERG_ASSIGN_OR_RAISE(auto spec_id_opt,
-                            GetJsonValueOptional<int32_t>(spec_json, kSpecId));
-    // TODO(Feiyang Li): add fromJson for UnboundPartitionSpec and then use it here
-    return NotImplemented("FromJson of TableUpdate::AddPartitionSpec is not implemented");
+    ICEBERG_ASSIGN_OR_RAISE(auto spec, PartitionSpecFromJson(spec_json));
+    return std::make_unique<table::AddPartitionSpec>(std::move(spec));
   }
   if (action == kActionSetDefaultPartitionSpec) {
     ICEBERG_ASSIGN_OR_RAISE(auto spec_id, GetJsonValue<int32_t>(json, kSpecId));
@@ -1515,8 +1574,8 @@ Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(const nlohmann::json& j
   if (action == kActionAddSortOrder) {
     ICEBERG_ASSIGN_OR_RAISE(auto sort_order_json,
                             GetJsonValue<nlohmann::json>(json, kSortOrder));
-    // TODO(Feiyang Li): add fromJson for UnboundSortOrder and then use it here
-    return NotImplemented("FromJson of TableUpdate::AddSortOrder is not implemented");
+    ICEBERG_ASSIGN_OR_RAISE(auto sort_order, SortOrderFromJson(sort_order_json));
+    return std::make_unique<table::AddSortOrder>(std::move(sort_order));
   }
   if (action == kActionSetDefaultSortOrder) {
     ICEBERG_ASSIGN_OR_RAISE(auto sort_order_id,
@@ -1578,6 +1637,29 @@ Result<std::unique_ptr<TableUpdate>> TableUpdateFromJson(const nlohmann::json& j
   if (action == kActionSetLocation) {
     ICEBERG_ASSIGN_OR_RAISE(auto location, GetJsonValue<std::string>(json, kLocation));
     return std::make_unique<table::SetLocation>(std::move(location));
+  }
+  if (action == kActionSetStatistics) {
+    ICEBERG_ASSIGN_OR_RAISE(auto statistics_json,
+                            GetJsonValue<nlohmann::json>(json, kStatistics));
+    ICEBERG_ASSIGN_OR_RAISE(auto statistics_file,
+                            StatisticsFileFromJson(statistics_json));
+    return std::make_unique<table::SetStatistics>(std::move(statistics_file));
+  }
+  if (action == kActionRemoveStatistics) {
+    ICEBERG_ASSIGN_OR_RAISE(auto snapshot_id, GetJsonValue<int64_t>(json, kSnapshotId));
+    return std::make_unique<table::RemoveStatistics>(snapshot_id);
+  }
+  if (action == kActionSetPartitionStatistics) {
+    ICEBERG_ASSIGN_OR_RAISE(auto partition_statistics_json,
+                            GetJsonValue<nlohmann::json>(json, kPartitionStatistics));
+    ICEBERG_ASSIGN_OR_RAISE(auto partition_statistics_file,
+                            PartitionStatisticsFileFromJson(partition_statistics_json));
+    return std::make_unique<table::SetPartitionStatistics>(
+        std::move(partition_statistics_file));
+  }
+  if (action == kActionRemovePartitionStatistics) {
+    ICEBERG_ASSIGN_OR_RAISE(auto snapshot_id, GetJsonValue<int64_t>(json, kSnapshotId));
+    return std::make_unique<table::RemovePartitionStatistics>(snapshot_id);
   }
 
   return JsonParseError("Unknown table update action: {}", action);

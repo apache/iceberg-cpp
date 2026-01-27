@@ -59,14 +59,10 @@ Result<std::unique_ptr<Reader>> ReaderFactoryRegistry::Open(
   return reader;
 }
 
-std::unique_ptr<ReaderProperties> ReaderProperties::default_properties() {
-  return std::unique_ptr<ReaderProperties>(new ReaderProperties());
-}
-
-std::unique_ptr<ReaderProperties> ReaderProperties::FromMap(
+ReaderProperties ReaderProperties::FromMap(
     const std::unordered_map<std::string, std::string>& properties) {
-  auto reader_properties = std::unique_ptr<ReaderProperties>(new ReaderProperties());
-  reader_properties->configs_ = properties;
+  ReaderProperties reader_properties;
+  reader_properties.configs_ = properties;
   return reader_properties;
 }
 

@@ -275,7 +275,7 @@ class ICEBERG_EXPORT TableScan {
   /// \brief Returns the table metadata being scanned.
   const std::shared_ptr<TableMetadata>& metadata() const;
 
-  /// \brief Returns the snapshot to scan.
+  /// \brief Returns the snapshot to scan. If there is no snapshot, returns nullptr.
   Result<std::shared_ptr<Snapshot>> snapshot() const;
 
   /// \brief Returns the projected schema for the scan.

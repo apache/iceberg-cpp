@@ -226,17 +226,17 @@ class AvroReader::Impl {
       return InvalidArgument("Projected schema is required by Avro reader");
     }
 
-    batch_size_ = options.properties->Get(ReaderProperties::kBatchSize);
+    batch_size_ = options.properties.Get(ReaderProperties::kBatchSize);
     read_schema_ = options.projection;
 
     // Open the input stream and adapt to the avro interface.
     ICEBERG_ASSIGN_OR_RAISE(
         auto input_stream,
         CreateInputStream(options,
-                          options.properties->Get(ReaderProperties::kAvroBufferSize)));
+                          options.properties.Get(ReaderProperties::kAvroBufferSize)));
 
     // Create the appropriate backend based on configuration
-    if (options.properties->Get(ReaderProperties::kAvroSkipDatum)) {
+    if (options.properties.Get(ReaderProperties::kAvroSkipDatum)) {
       backend_ = std::make_unique<DirectDecoderBackend>();
     } else {
       backend_ = std::make_unique<GenericDatumBackend>();
