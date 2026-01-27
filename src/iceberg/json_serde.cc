@@ -17,8 +17,6 @@
  * under the License.
  */
 
-#include "iceberg/json_internal.h"
-
 #include <algorithm>
 #include <cstdint>
 #include <format>
@@ -28,6 +26,7 @@
 
 #include <nlohmann/json.hpp>
 
+#include "iceberg/json_serde_internal.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"
@@ -1397,15 +1396,9 @@ nlohmann::json ToJson(const TableUpdate& update) {
       json[kRefName] = u.ref_name();
       json[kSnapshotId] = u.snapshot_id();
       json[kType] = ToString(u.type());
-      if (u.min_snapshots_to_keep().has_value()) {
-        json[kMinSnapshotsToKeep] = u.min_snapshots_to_keep().value();
-      }
-      if (u.max_snapshot_age_ms().has_value()) {
-        json[kMaxSnapshotAgeMs] = u.max_snapshot_age_ms().value();
-      }
-      if (u.max_ref_age_ms().has_value()) {
-        json[kMaxRefAgeMs] = u.max_ref_age_ms().value();
-      }
+      SetOptionalField(json, kMinSnapshotsToKeep, u.min_snapshots_to_keep());
+      SetOptionalField(json, kMaxSnapshotAgeMs, u.max_snapshot_age_ms());
+      SetOptionalField(json, kMaxRefAgeMs, u.max_ref_age_ms());
       break;
     }
     case TableUpdate::Kind::kSetProperties: {

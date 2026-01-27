@@ -23,7 +23,7 @@ iceberg_rest_sources = files(
     'endpoint.cc',
     'error_handlers.cc',
     'http_client.cc',
-    'json_internal.cc',
+    'json_serde.cc',
     'resource_paths.cc',
     'rest_catalog.cc',
     'rest_util.cc',

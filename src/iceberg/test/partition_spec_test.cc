@@ -26,7 +26,7 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-#include "iceberg/json_internal.h"
+#include "iceberg/json_serde_internal.h"
 #include "iceberg/partition_field.h"
 #include "iceberg/row/partition_values.h"
 #include "iceberg/schema.h"

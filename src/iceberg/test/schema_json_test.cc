@@ -24,7 +24,7 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-#include "iceberg/json_internal.h"
+#include "iceberg/json_serde_internal.h"
 #include "iceberg/schema.h"
 #include "iceberg/schema_field.h"
 #include "iceberg/test/matchers.h"

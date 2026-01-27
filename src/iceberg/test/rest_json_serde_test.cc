@@ -23,7 +23,7 @@
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
-#include "iceberg/catalog/rest/json_internal.h"
+#include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"

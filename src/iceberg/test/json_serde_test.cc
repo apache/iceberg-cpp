@@ -17,14 +17,13 @@
  * under the License.
  */
 
-#include "iceberg/json_internal.h"
-
 #include <memory>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 #include <nlohmann/json.hpp>
 
+#include "iceberg/json_serde_internal.h"
 #include "iceberg/name_mapping.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/schema.h"

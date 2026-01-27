@@ -25,7 +25,7 @@
 #include "iceberg/catalog/rest/types.h"
 #include "iceberg/result.h"
 
-/// \file iceberg/catalog/rest/json_internal.h
+/// \file iceberg/catalog/rest/json_serde_internal.h
 /// JSON serialization and deserialization for Iceberg REST Catalog API types.
 
 namespace iceberg::rest {

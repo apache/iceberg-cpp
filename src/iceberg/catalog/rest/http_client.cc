@@ -24,9 +24,9 @@
 
 #include "iceberg/catalog/rest/constant.h"
 #include "iceberg/catalog/rest/error_handlers.h"
-#include "iceberg/catalog/rest/json_internal.h"
+#include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/rest_util.h"
-#include "iceberg/json_internal.h"
+#include "iceberg/json_serde_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/util/macros.h"
 

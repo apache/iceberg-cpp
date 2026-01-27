@@ -37,7 +37,7 @@
 #include "iceberg/constants.h"
 #include "iceberg/exception.h"
 #include "iceberg/file_io.h"
-#include "iceberg/json_internal.h"
+#include "iceberg/json_serde_internal.h"
 #include "iceberg/metrics_config.h"
 #include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"

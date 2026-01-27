@@ -18,7 +18,7 @@
  */
 
 #include "iceberg/constants.h"
-#include "iceberg/json_internal.h"
+#include "iceberg/json_serde_internal.h"
 #include "iceberg/manifest/manifest_entry.h"
 #include "iceberg/manifest/manifest_list.h"
 #include "iceberg/manifest/v2_metadata_internal.h"

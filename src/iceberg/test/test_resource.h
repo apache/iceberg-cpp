@@ -27,7 +27,7 @@
 
 #include <nlohmann/json.hpp>
 
-#include "iceberg/json_internal.h"
+#include "iceberg/json_serde_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/test/test_config.h"

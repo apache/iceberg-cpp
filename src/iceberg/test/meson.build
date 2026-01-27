@@ -75,7 +75,7 @@ iceberg_tests = {
     },
     'json_serde_test': {
         'sources': files(
-            'json_internal_test.cc',
+            'json_serde_test.cc',
             'metadata_serde_test.cc',
             'schema_json_test.cc',
         ),
@@ -103,7 +103,7 @@ iceberg_tests = {
 if get_option('rest').enabled()
     iceberg_tests += {
         'rest_catalog_test': {
-            'sources': files('rest_json_internal_test.cc', 'rest_util_test.cc'),
+            'sources': files('rest_json_serde_test.cc', 'rest_util_test.cc'),
             'dependencies': [iceberg_rest_dep],
         },
     }

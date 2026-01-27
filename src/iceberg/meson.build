@@ -60,7 +60,7 @@ iceberg_sources = files(
     'file_reader.cc',
     'file_writer.cc',
     'inheritable_metadata.cc',
-    'json_internal.cc',
+    'json_serde.cc',
     'location_provider.cc',
     'manifest/manifest_adapter.cc',
     'manifest/manifest_entry.cc',

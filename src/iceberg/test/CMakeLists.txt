@@ -101,7 +101,7 @@ add_iceberg_test(expression_test
 
 add_iceberg_test(json_serde_test
                  SOURCES
-                 json_internal_test.cc
+                 json_serde_test.cc
                  metadata_serde_test.cc
                  schema_json_test.cc)
 
@@ -216,7 +216,7 @@ if(ICEBERG_BUILD_REST)
   add_rest_iceberg_test(rest_catalog_test
                         SOURCES
                         endpoint_test.cc
-                        rest_json_internal_test.cc
+                        rest_json_serde_test.cc
                         rest_util_test.cc)
 
   if(ICEBERG_BUILD_REST_INTEGRATION_TESTS)

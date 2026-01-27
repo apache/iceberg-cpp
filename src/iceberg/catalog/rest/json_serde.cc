@@ -17,8 +17,6 @@
  * under the License.
  */
 
-#include "iceberg/catalog/rest/json_internal.h"
-
 #include <memory>
 #include <string>
 #include <utility>
@@ -26,8 +24,9 @@
 
 #include <nlohmann/json.hpp>
 
+#include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/catalog/rest/types.h"
-#include "iceberg/json_internal.h"
+#include "iceberg/json_serde_internal.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/table_identifier.h"

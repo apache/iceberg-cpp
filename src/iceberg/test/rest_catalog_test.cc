@@ -39,7 +39,7 @@
 #include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/error_handlers.h"
 #include "iceberg/catalog/rest/http_client.h"
-#include "iceberg/catalog/rest/json_internal.h"
+#include "iceberg/catalog/rest/json_serde_internal.h"
 #include "iceberg/partition_spec.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
