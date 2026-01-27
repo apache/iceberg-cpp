@@ -19,13 +19,14 @@
 
 #include "iceberg/table_update.h"
 
-#include "iceberg/exception.h"
 #include "iceberg/schema.h"
+#include "iceberg/snapshot.h"
 #include "iceberg/sort_order.h"
 #include "iceberg/statistics_file.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/table_requirements.h"
 #include "iceberg/util/checked_cast.h"
+#include "iceberg/util/macros.h"
 
 namespace iceberg {
 TableUpdate::~TableUpdate() = default;
@@ -348,7 +349,15 @@ std::unique_ptr<TableUpdate> RemoveSnapshotRef::Clone() const {
 // SetSnapshotRef
 
 void SetSnapshotRef::ApplyTo(TableMetadataBuilder& builder) const {
-  builder.SetBranchSnapshot(snapshot_id_, ref_name_);
+  std::shared_ptr<SnapshotRef> ref;
+  if (type_ == SnapshotRefType::kBranch) {
+    ICEBERG_ASSIGN_OR_THROW(
+        ref, SnapshotRef::MakeBranch(snapshot_id_, min_snapshots_to_keep_,
+                                     max_snapshot_age_ms_, max_ref_age_ms_));
+  } else {
+    ICEBERG_ASSIGN_OR_THROW(ref, SnapshotRef::MakeTag(snapshot_id_, max_ref_age_ms_));
+  }
+  builder.SetRef(ref_name_, std::move(ref));
 }
 
 void SetSnapshotRef::GenerateRequirements(TableUpdateContext& context) const {

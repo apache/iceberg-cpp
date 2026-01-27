@@ -37,6 +37,7 @@
 #include "iceberg/test/matchers.h"
 #include "iceberg/transform.h"
 #include "iceberg/type.h"
+#include "iceberg/util/timepoint.h"
 
 namespace iceberg {
 
@@ -366,6 +367,77 @@ TEST(TableUpdateTest, SetDefaultSortOrderApplyUpdate) {
 
   // Verify the default sort order was changed
   EXPECT_EQ(metadata->default_sort_order_id, 1);
+}
+
+// Test SetSnapshotRef ApplyTo for both branch and tag
+TEST(TableUpdateTest, SetSnapshotRefApplyUpdate) {
+  // Test branch ref
+  {
+    auto base = CreateBaseMetadata();
+    auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+    // Add a snapshot that the ref will point to
+    auto snapshot = std::make_shared<Snapshot>(
+        Snapshot{.snapshot_id = 123456789,
+                 .sequence_number = 1,
+                 .timestamp_ms = TimePointMsFromUnixMs(1000000),
+                 .manifest_list = "s3://bucket/manifest-list.avro"});
+    builder->AddSnapshot(snapshot);
+
+    // Apply SetSnapshotRef update for a branch
+    table::SetSnapshotRef branch_update("my-branch", 123456789, SnapshotRefType::kBranch,
+                                        5, 86400000, 604800000);
+    branch_update.ApplyTo(*builder);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+
+    // Verify the branch ref was added
+    ASSERT_EQ(metadata->refs.size(), 1);
+    auto it = metadata->refs.find("my-branch");
+    ASSERT_NE(it, metadata->refs.end());
+
+    const auto& ref = it->second;
+    EXPECT_EQ(ref->snapshot_id, 123456789);
+    EXPECT_EQ(ref->type(), SnapshotRefType::kBranch);
+
+    const auto& branch = std::get<SnapshotRef::Branch>(ref->retention);
+    EXPECT_EQ(branch.min_snapshots_to_keep.value(), 5);
+    EXPECT_EQ(branch.max_snapshot_age_ms.value(), 86400000);
+    EXPECT_EQ(branch.max_ref_age_ms.value(), 604800000);
+  }
+
+  // Test tag ref
+  {
+    auto base = CreateBaseMetadata();
+    auto builder = TableMetadataBuilder::BuildFrom(base.get());
+
+    // Add a snapshot that the ref will point to
+    auto snapshot = std::make_shared<Snapshot>(
+        Snapshot{.snapshot_id = 987654321,
+                 .sequence_number = 1,
+                 .timestamp_ms = TimePointMsFromUnixMs(2000000),
+                 .manifest_list = "s3://bucket/manifest-list.avro"});
+    builder->AddSnapshot(snapshot);
+
+    // Apply SetSnapshotRef update for a tag
+    table::SetSnapshotRef tag_update("release-1.0", 987654321, SnapshotRefType::kTag,
+                                     std::nullopt, std::nullopt, 259200000);
+    tag_update.ApplyTo(*builder);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto metadata, builder->Build());
+
+    // Verify the tag ref was added
+    ASSERT_EQ(metadata->refs.size(), 1);
+    auto it = metadata->refs.find("release-1.0");
+    ASSERT_NE(it, metadata->refs.end());
+
+    const auto& ref = it->second;
+    EXPECT_EQ(ref->snapshot_id, 987654321);
+    EXPECT_EQ(ref->type(), SnapshotRefType::kTag);
+
+    const auto& tag = std::get<SnapshotRef::Tag>(ref->retention);
+    EXPECT_EQ(tag.max_ref_age_ms.value(), 259200000);
+  }
 }
 
 }  // namespace iceberg
