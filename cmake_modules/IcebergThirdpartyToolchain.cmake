@@ -151,7 +151,9 @@ function(resolve_arrow_dependency)
     endif()
   else()
     set(ARROW_VENDORED FALSE)
-    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Arrow)
+    find_package(Arrow CONFIG REQUIRED)
+    find_package(Parquet CONFIG REQUIRED)
+    list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Arrow Parquet)
   endif()
 
   set(ICEBERG_SYSTEM_DEPENDENCIES
