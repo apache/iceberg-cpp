@@ -82,8 +82,8 @@ endmacro()
 function(resolve_arrow_dependency)
   prepare_fetchcontent()
 
-  set(ARROW_BUILD_SHARED OFF)
-  set(ARROW_BUILD_STATIC ON)
+  set(ARROW_BUILD_SHARED ${ICEBERG_BUILD_SHARED})
+  set(ARROW_BUILD_STATIC ${ICEBERG_BUILD_STATIC})
   # Work around undefined symbol: arrow::ipc::ReadSchema(arrow::io::InputStream*, arrow::ipc::DictionaryMemo*)
   set(ARROW_IPC ON)
   set(ARROW_FILESYSTEM ON)
@@ -112,43 +112,74 @@ function(resolve_arrow_dependency)
   fetchcontent_makeavailable(VendoredArrow)
 
   if(vendoredarrow_SOURCE_DIR)
-    if(NOT TARGET Arrow::arrow_static)
-      add_library(Arrow::arrow_static INTERFACE IMPORTED)
-      target_link_libraries(Arrow::arrow_static INTERFACE arrow_static)
-      target_include_directories(Arrow::arrow_static
-                                 INTERFACE ${vendoredarrow_BINARY_DIR}/src
-                                           ${vendoredarrow_SOURCE_DIR}/cpp/src)
+    if(ARROW_BUILD_STATIC)
+      if(NOT TARGET Arrow::arrow_static)
+        add_library(Arrow::arrow_static INTERFACE IMPORTED)
+        target_link_libraries(Arrow::arrow_static INTERFACE arrow_static)
+        target_include_directories(Arrow::arrow_static
+                                   INTERFACE ${vendoredarrow_BINARY_DIR}/src
+                                             ${vendoredarrow_SOURCE_DIR}/cpp/src)
+      endif()
+
+      if(NOT TARGET Parquet::parquet_static)
+        add_library(Parquet::parquet_static INTERFACE IMPORTED)
+        target_link_libraries(Parquet::parquet_static INTERFACE parquet_static)
+        target_include_directories(Parquet::parquet_static
+                                   INTERFACE ${vendoredarrow_BINARY_DIR}/src
+                                             ${vendoredarrow_SOURCE_DIR}/cpp/src)
+      endif()
+
+      set_target_properties(arrow_static PROPERTIES OUTPUT_NAME
+                                                    "iceberg_vendored_arrow_static")
+      set_target_properties(parquet_static PROPERTIES OUTPUT_NAME
+                                                      "iceberg_vendored_parquet_static")
+      install(TARGETS arrow_static parquet_static
+              EXPORT iceberg_targets
+              RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
+              ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
+              LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+
+      if(TARGET arrow_bundled_dependencies)
+        message(STATUS "arrow_bundled_dependencies found")
+        # arrow_bundled_dependencies is only INSTALL_INTERFACE and will not be built by default.
+        # We need to add it as a dependency to arrow_static so that it will be built.
+        add_dependencies(arrow_static arrow_bundled_dependencies)
+        # We cannot install an IMPORTED target, so we need to install the library manually.
+        get_target_property(arrow_bundled_dependencies_location
+                            arrow_bundled_dependencies IMPORTED_LOCATION)
+        install(FILES ${arrow_bundled_dependencies_location}
+                DESTINATION ${ICEBERG_INSTALL_LIBDIR})
+      endif()
     endif()
 
-    if(NOT TARGET Parquet::parquet_static)
-      add_library(Parquet::parquet_static INTERFACE IMPORTED)
-      target_link_libraries(Parquet::parquet_static INTERFACE parquet_static)
-      target_include_directories(Parquet::parquet_static
-                                 INTERFACE ${vendoredarrow_BINARY_DIR}/src
-                                           ${vendoredarrow_SOURCE_DIR}/cpp/src)
+    if(ARROW_BUILD_SHARED)
+      if(NOT TARGET Arrow::arrow_shared)
+        add_library(Arrow::arrow_shared INTERFACE IMPORTED)
+        target_link_libraries(Arrow::arrow_shared INTERFACE arrow_shared)
+        target_include_directories(Arrow::arrow_shared
+                                   INTERFACE ${vendoredarrow_BINARY_DIR}/src
+                                             ${vendoredarrow_SOURCE_DIR}/cpp/src)
+      endif()
+
+      if(NOT TARGET Parquet::parquet_shared)
+        add_library(Parquet::parquet_shared INTERFACE IMPORTED)
+        target_link_libraries(Parquet::parquet_shared INTERFACE parquet_shared)
+        target_include_directories(Parquet::parquet_shared
+                                   INTERFACE ${vendoredarrow_BINARY_DIR}/src
+                                             ${vendoredarrow_SOURCE_DIR}/cpp/src)
+      endif()
+
+      set_target_properties(arrow_shared PROPERTIES OUTPUT_NAME "iceberg_vendored_arrow")
+      set_target_properties(parquet_shared PROPERTIES OUTPUT_NAME
+                                                      "iceberg_vendored_parquet")
+      install(TARGETS arrow_shared parquet_shared
+              EXPORT iceberg_targets
+              RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
+              ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
+              LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
     endif()
 
     set(ARROW_VENDORED TRUE)
-    set_target_properties(arrow_static PROPERTIES OUTPUT_NAME "iceberg_vendored_arrow")
-    set_target_properties(parquet_static PROPERTIES OUTPUT_NAME
-                                                    "iceberg_vendored_parquet")
-    install(TARGETS arrow_static parquet_static
-            EXPORT iceberg_targets
-            RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
-            ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
-            LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
-
-    if(TARGET arrow_bundled_dependencies)
-      message(STATUS "arrow_bundled_dependencies found")
-      # arrow_bundled_dependencies is only INSTALL_INTERFACE and will not be built by default.
-      # We need to add it as a dependency to arrow_static so that it will be built.
-      add_dependencies(arrow_static arrow_bundled_dependencies)
-      # We cannot install an IMPORTED target, so we need to install the library manually.
-      get_target_property(arrow_bundled_dependencies_location arrow_bundled_dependencies
-                          IMPORTED_LOCATION)
-      install(FILES ${arrow_bundled_dependencies_location}
-              DESTINATION ${ICEBERG_INSTALL_LIBDIR})
-    endif()
   else()
     set(ARROW_VENDORED FALSE)
     find_package(Arrow CONFIG REQUIRED)
@@ -169,6 +200,8 @@ endfunction()
 
 function(resolve_avro_dependency)
   prepare_fetchcontent()
+  set(BUILD_SHARED_LIBS ${ICEBERG_BUILD_SHARED})
+  set(BUILD_STATIC_LIBS ${ICEBERG_BUILD_STATIC})
 
   set(AVRO_USE_BOOST
       OFF
@@ -214,28 +247,50 @@ function(resolve_avro_dependency)
   fetchcontent_makeavailable(avro-cpp)
 
   if(avro-cpp_SOURCE_DIR)
-    if(NOT TARGET avro-cpp::avrocpp_static)
-      add_library(avro-cpp::avrocpp_static INTERFACE IMPORTED)
-      target_link_libraries(avro-cpp::avrocpp_static INTERFACE avrocpp_s)
-      target_include_directories(avro-cpp::avrocpp_static
-                                 INTERFACE ${avro-cpp_BINARY_DIR}
-                                           ${avro-cpp_SOURCE_DIR}/lang/c++)
+    if(BUILD_STATIC_LIBS)
+      if(NOT TARGET avro-cpp::avrocpp_static)
+        add_library(avro-cpp::avrocpp_static INTERFACE IMPORTED)
+        target_link_libraries(avro-cpp::avrocpp_static INTERFACE avrocpp_s)
+        target_include_directories(avro-cpp::avrocpp_static
+                                   INTERFACE ${avro-cpp_BINARY_DIR}
+                                             ${avro-cpp_SOURCE_DIR}/lang/c++)
+      endif()
+
+      set_target_properties(avrocpp_s PROPERTIES OUTPUT_NAME
+                                                 "iceberg_vendored_avrocpp_static")
+      set_target_properties(avrocpp_s PROPERTIES POSITION_INDEPENDENT_CODE ON)
+      install(TARGETS avrocpp_s
+              EXPORT iceberg_targets
+              RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
+              ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
+              LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
+
+      # TODO: add vendored ZLIB and Snappy support
+      find_package(Snappy CONFIG)
+      if(Snappy_FOUND)
+        list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Snappy)
+      endif()
+    endif()
+
+    if(BUILD_SHARED_LIBS)
+      if(NOT TARGET avro-cpp::avrocpp_shared)
+        add_library(avro-cpp::avrocpp_shared INTERFACE IMPORTED)
+        target_link_libraries(avro-cpp::avrocpp_shared INTERFACE avrocpp)
+        target_include_directories(avro-cpp::avrocpp_shared
+                                   INTERFACE ${avro-cpp_BINARY_DIR}
+                                             ${avro-cpp_SOURCE_DIR}/lang/c++)
+      endif()
+
+      set_target_properties(avrocpp PROPERTIES OUTPUT_NAME "iceberg_vendored_avrocpp")
+      set_target_properties(avrocpp PROPERTIES POSITION_INDEPENDENT_CODE ON)
+      install(TARGETS avrocpp
+              EXPORT iceberg_targets
+              RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
+              ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
+              LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
     endif()
 
     set(AVRO_VENDORED TRUE)
-    set_target_properties(avrocpp_s PROPERTIES OUTPUT_NAME "iceberg_vendored_avrocpp")
-    set_target_properties(avrocpp_s PROPERTIES POSITION_INDEPENDENT_CODE ON)
-    install(TARGETS avrocpp_s
-            EXPORT iceberg_targets
-            RUNTIME DESTINATION "${ICEBERG_INSTALL_BINDIR}"
-            ARCHIVE DESTINATION "${ICEBERG_INSTALL_LIBDIR}"
-            LIBRARY DESTINATION "${ICEBERG_INSTALL_LIBDIR}")
-
-    # TODO: add vendored ZLIB and Snappy support
-    find_package(Snappy CONFIG)
-    if(Snappy_FOUND)
-      list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Snappy)
-    endif()
   else()
     set(AVRO_VENDORED FALSE)
     list(APPEND ICEBERG_SYSTEM_DEPENDENCIES Avro)
