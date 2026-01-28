@@ -1,0 +1,597 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="types_8h" kind="file" language="C++">
+    <compoundname>types.h</compoundname>
+    <includes local="no">memory</includes>
+    <includes local="no">string</includes>
+    <includes local="no">unordered_map</includes>
+    <includes local="no">vector</includes>
+    <includes refid="endpoint_8h" local="yes">iceberg/catalog/rest/endpoint.h</includes>
+    <includes refid="iceberg__rest__export_8h" local="yes">iceberg/catalog/rest/iceberg_rest_export.h</includes>
+    <includes refid="result_8h" local="yes">iceberg/result.h</includes>
+    <includes refid="schema_8h" local="yes">iceberg/schema.h</includes>
+    <includes refid="table__identifier_8h" local="yes">iceberg/table_identifier.h</includes>
+    <includes refid="type__fwd_8h" local="yes">iceberg/type_fwd.h</includes>
+    <includes refid="macros_8h" local="yes">iceberg/util/macros.h</includes>
+    <includedby refid="error__handlers_8cc" local="yes">iceberg/catalog/rest/error_handlers.cc</includedby>
+    <includedby refid="catalog_2rest_2json__serde_8cc" local="yes">iceberg/catalog/rest/json_serde.cc</includedby>
+    <includedby refid="catalog_2rest_2json__serde__internal_8h" local="yes">iceberg/catalog/rest/json_serde_internal.h</includedby>
+    <includedby refid="rest__catalog_8cc" local="yes">iceberg/catalog/rest/rest_catalog.cc</includedby>
+    <includedby refid="types_8cc" local="yes">iceberg/catalog/rest/types.cc</includedby>
+    <includedby refid="rest__json__serde__test_8cc" local="yes">iceberg/test/rest_json_serde_test.cc</includedby>
+    <incdepgraph>
+      <node id="6">
+        <label>iceberg/catalog/rest/endpoint.h</label>
+        <link refid="endpoint_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg/catalog/rest/iceberg_rest_export.h</label>
+        <link refid="iceberg__rest__export_8h_source"/>
+      </node>
+      <node id="1">
+        <label>iceberg/catalog/rest/types.h</label>
+        <link refid="types_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="29">
+        <label>iceberg/exception.h</label>
+        <link refid="exception_8h"/>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="9">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg/schema.h</label>
+        <link refid="schema_8h"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>iceberg/schema_field.h</label>
+        <link refid="schema__field_8h"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>iceberg/table_identifier.h</label>
+        <link refid="table__identifier_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>iceberg/type.h</label>
+        <link refid="type_8h"/>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="19">
+        <label>iceberg/util/formattable.h</label>
+        <link refid="formattable_8h"/>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="37">
+        <label>iceberg/util/formatter.h</label>
+        <link refid="formatter_8h"/>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="23">
+        <label>iceberg/util/lazy.h</label>
+        <link refid="lazy_8h"/>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="27">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h_source"/>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="31">
+        <label>iceberg/util/string_util.h</label>
+        <link refid="string__util_8h_source"/>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+      </node>
+      <node id="32">
+        <label>algorithm</label>
+      </node>
+      <node id="21">
+        <label>array</label>
+      </node>
+      <node id="28">
+        <label>cassert</label>
+      </node>
+      <node id="33">
+        <label>charconv</label>
+      </node>
+      <node id="24">
+        <label>concepts</label>
+      </node>
+      <node id="14">
+        <label>cstdint</label>
+      </node>
+      <node id="10">
+        <label>expected</label>
+      </node>
+      <node id="11">
+        <label>format</label>
+      </node>
+      <node id="25">
+        <label>functional</label>
+      </node>
+      <node id="2">
+        <label>memory</label>
+      </node>
+      <node id="26">
+        <label>mutex</label>
+      </node>
+      <node id="15">
+        <label>optional</label>
+      </node>
+      <node id="34">
+        <label>ranges</label>
+      </node>
+      <node id="22">
+        <label>span</label>
+      </node>
+      <node id="30">
+        <label>stdexcept</label>
+      </node>
+      <node id="3">
+        <label>string</label>
+      </node>
+      <node id="7">
+        <label>string_view</label>
+      </node>
+      <node id="35">
+        <label>typeinfo</label>
+      </node>
+      <node id="4">
+        <label>unordered_map</label>
+      </node>
+      <node id="16">
+        <label>unordered_set</label>
+      </node>
+      <node id="5">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <invincdepgraph>
+      <node id="2">
+        <label>iceberg/catalog/rest/json_serde_internal.h</label>
+        <link refid="catalog_2rest_2json__serde__internal_8h"/>
+      </node>
+      <node id="1">
+        <label>iceberg/catalog/rest/types.h</label>
+        <link refid="types_8h"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+      </node>
+    </invincdepgraph>
+    <innerclass refid="structiceberg_1_1rest_1_1CatalogConfig" prot="public">iceberg::rest::CatalogConfig</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1ErrorResponse" prot="public">iceberg::rest::ErrorResponse</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1CreateNamespaceRequest" prot="public">iceberg::rest::CreateNamespaceRequest</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest" prot="public">iceberg::rest::UpdateNamespacePropertiesRequest</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1RegisterTableRequest" prot="public">iceberg::rest::RegisterTableRequest</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1RenameTableRequest" prot="public">iceberg::rest::RenameTableRequest</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1CreateTableRequest" prot="public">iceberg::rest::CreateTableRequest</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1LoadTableResult" prot="public">iceberg::rest::LoadTableResult</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1ListNamespacesResponse" prot="public">iceberg::rest::ListNamespacesResponse</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1CreateNamespaceResponse" prot="public">iceberg::rest::CreateNamespaceResponse</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1GetNamespaceResponse" prot="public">iceberg::rest::GetNamespaceResponse</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesResponse" prot="public">iceberg::rest::UpdateNamespacePropertiesResponse</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1ListTablesResponse" prot="public">iceberg::rest::ListTablesResponse</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1CommitTableRequest" prot="public">iceberg::rest::CommitTableRequest</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1CommitTableResponse" prot="public">iceberg::rest::CommitTableResponse</innerclass>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1rest">iceberg::rest</innernamespace>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+<para>Request and response types for Iceberg REST Catalog API. </para>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#pragma<sp/>once</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;memory&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;string&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;unordered_map&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;vector&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="endpoint_8h" kindref="compound">iceberg/catalog/rest/endpoint.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/catalog/rest/iceberg_rest_export.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/result.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="schema_8h" kindref="compound">iceberg/schema.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="table__identifier_8h" kindref="compound">iceberg/table_identifier.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="type__fwd_8h" kindref="compound">iceberg/type_fwd.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/util/macros.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg::rest<sp/>{</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"></highlight></codeline>
+<codeline lineno="41" refid="structiceberg_1_1rest_1_1CatalogConfig" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1CatalogConfig" kindref="compound">CatalogConfig</ref><sp/>{</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>defaults;<sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>overrides;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="44"><highlight class="normal"><sp/><sp/>std::vector&lt;Endpoint&gt;<sp/>endpoints;</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="47" refid="structiceberg_1_1rest_1_1CatalogConfig_1add488d66f0c7f244f4090eb34940839f" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="structiceberg_1_1rest_1_1CatalogConfig_1add488d66f0c7f244f4090eb34940839f" kindref="member">Validate</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{};<sp/>}</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"></highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1CatalogConfig" kindref="compound">CatalogConfig</ref>&amp;)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="50"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"></highlight></codeline>
+<codeline lineno="53" refid="structiceberg_1_1rest_1_1ErrorResponse" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref><sp/>{</highlight></codeline>
+<codeline lineno="54"><highlight class="normal"><sp/><sp/>uint32_t<sp/>code;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/>std::string<sp/>type;<sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/>std::string<sp/>message;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/>std::vector&lt;std::string&gt;<sp/>stack;</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"></highlight></codeline>
+<codeline lineno="60" refid="structiceberg_1_1rest_1_1ErrorResponse_1afb27ab1561d34979534c2d2357138ea8" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="structiceberg_1_1rest_1_1ErrorResponse_1afb27ab1561d34979534c2d2357138ea8" kindref="member">Validate</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(message.empty()<sp/>||<sp/>type.empty())<sp/>{</highlight></codeline>
+<codeline lineno="62"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ValidationFailed(</highlight><highlight class="stringliteral">&quot;Invalid<sp/>error<sp/>response:<sp/>missing<sp/>required<sp/>fields&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"></highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(code<sp/>&lt;<sp/>400<sp/>||<sp/>code<sp/>&gt;<sp/>600)<sp/>{</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ValidationFailed(</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;Invalid<sp/>error<sp/>response:<sp/>code<sp/>{}<sp/>is<sp/>out<sp/>of<sp/>range<sp/>[400,<sp/>600]&quot;</highlight><highlight class="normal">,<sp/>code);</highlight></codeline>
+<codeline lineno="68"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>stack<sp/>is<sp/>optional,<sp/>no<sp/>validation<sp/>needed</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{};</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"></highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref>&amp;)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="75"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="76"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78" refid="structiceberg_1_1rest_1_1CreateNamespaceRequest" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1CreateNamespaceRequest" kindref="compound">CreateNamespaceRequest</ref><sp/>{</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref><sp/>namespace_;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties;</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"></highlight></codeline>
+<codeline lineno="83" refid="structiceberg_1_1rest_1_1CreateNamespaceRequest_1aebd90403d9515d19623e597485291f6c" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="structiceberg_1_1rest_1_1CreateNamespaceRequest_1aebd90403d9515d19623e597485291f6c" kindref="member">Validate</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{};<sp/>}</highlight></codeline>
+<codeline lineno="84"><highlight class="normal"></highlight></codeline>
+<codeline lineno="85"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1CreateNamespaceRequest" kindref="compound">CreateNamespaceRequest</ref>&amp;)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="86"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"></highlight></codeline>
+<codeline lineno="89" refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest" kindref="compound">UpdateNamespacePropertiesRequest</ref><sp/>{</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/>std::vector&lt;std::string&gt;<sp/>removals;</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>updates;</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"></highlight></codeline>
+<codeline lineno="94" refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest_1a4afc187a43e3fddb56d616c157770d94" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest_1a4afc187a43e3fddb56d616c157770d94" kindref="member">Validate</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>key<sp/>:<sp/>removals)<sp/>{</highlight></codeline>
+<codeline lineno="96"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(updates.contains(key))<sp/>{</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ValidationFailed(</highlight><highlight class="stringliteral">&quot;Duplicate<sp/>key<sp/>to<sp/>update<sp/>and<sp/>remove:<sp/>{}&quot;</highlight><highlight class="normal">,<sp/>key);</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{};</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"></highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesRequest" kindref="compound">UpdateNamespacePropertiesRequest</ref>&amp;)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="104"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="105"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107" refid="structiceberg_1_1rest_1_1RegisterTableRequest" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1RegisterTableRequest" kindref="compound">RegisterTableRequest</ref><sp/>{</highlight></codeline>
+<codeline lineno="108"><highlight class="normal"><sp/><sp/>std::string<sp/>name;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/>std::string<sp/>metadata_location;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>overwrite<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"></highlight></codeline>
+<codeline lineno="113" refid="structiceberg_1_1rest_1_1RegisterTableRequest_1aae57d36b2f4d27e86baa21fc330308af" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="structiceberg_1_1rest_1_1RegisterTableRequest_1aae57d36b2f4d27e86baa21fc330308af" kindref="member">Validate</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(name.empty())<sp/>{</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ValidationFailed(</highlight><highlight class="stringliteral">&quot;Missing<sp/>table<sp/>name&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"></highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(metadata_location.empty())<sp/>{</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ValidationFailed(</highlight><highlight class="stringliteral">&quot;Empty<sp/>metadata<sp/>location&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"></highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{};</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="124"><highlight class="normal"></highlight></codeline>
+<codeline lineno="125"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1RegisterTableRequest" kindref="compound">RegisterTableRequest</ref>&amp;)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="126"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="127"><highlight class="normal"></highlight></codeline>
+<codeline lineno="129" refid="structiceberg_1_1rest_1_1RenameTableRequest" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1RenameTableRequest" kindref="compound">RenameTableRequest</ref><sp/>{</highlight></codeline>
+<codeline lineno="130"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref><sp/>source;<sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="131"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref><sp/>destination;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight></codeline>
+<codeline lineno="134" refid="structiceberg_1_1rest_1_1RenameTableRequest_1a315508d171c739604089d8c25b1ba88b" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="structiceberg_1_1rest_1_1RenameTableRequest_1a315508d171c739604089d8c25b1ba88b" kindref="member">Validate</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="135"><highlight class="normal"><sp/><sp/><sp/><sp/>ICEBERG_RETURN_UNEXPECTED(source.Validate());</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/><sp/><sp/>ICEBERG_RETURN_UNEXPECTED(destination.<ref refid="structiceberg_1_1TableIdentifier_1a7058707d153ce4eb4d6c1c4a5bd838b6" kindref="member">Validate</ref>());</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{};</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="139"><highlight class="normal"></highlight></codeline>
+<codeline lineno="140"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1RenameTableRequest" kindref="compound">RenameTableRequest</ref>&amp;)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="141"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="142"><highlight class="normal"></highlight></codeline>
+<codeline lineno="144" refid="structiceberg_1_1rest_1_1CreateTableRequest" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1CreateTableRequest" kindref="compound">CreateTableRequest</ref><sp/>{</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/>std::string<sp/>name;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/>std::string<sp/>location;</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;Schema&gt;<sp/>schema;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;PartitionSpec&gt;<sp/>partition_spec;</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;SortOrder&gt;<sp/>write_order;</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>stage_create<sp/>=<sp/></highlight><highlight class="keyword">false</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties;</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"></highlight></codeline>
+<codeline lineno="154" refid="structiceberg_1_1rest_1_1CreateTableRequest_1a212eb6489951376ba038195d7c5fb1cd" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="structiceberg_1_1rest_1_1CreateTableRequest_1a212eb6489951376ba038195d7c5fb1cd" kindref="member">Validate</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(name.empty())<sp/>{</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ValidationFailed(</highlight><highlight class="stringliteral">&quot;Missing<sp/>table<sp/>name&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="158"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!schema)<sp/>{</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ValidationFailed(</highlight><highlight class="stringliteral">&quot;Missing<sp/>schema&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="160"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="161"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{};</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"></highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1CreateTableRequest" kindref="compound">CreateTableRequest</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="165"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"></highlight></codeline>
+<codeline lineno="168" refid="types_8h_1aa5da261c3599ae3870c211c7d9938f00" refkind="member"><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="types_8h_1aa5da261c3599ae3870c211c7d9938f00" kindref="member">PageToken</ref><sp/>=<sp/>std::string;</highlight></codeline>
+<codeline lineno="169"><highlight class="normal"></highlight></codeline>
+<codeline lineno="171" refid="structiceberg_1_1rest_1_1LoadTableResult" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1LoadTableResult" kindref="compound">LoadTableResult</ref><sp/>{</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/>std::string<sp/>metadata_location;</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;TableMetadata&gt;<sp/>metadata;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>config;</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>TODO(Li<sp/>Feiyang):<sp/>Add<sp/>std::shared_ptr&lt;StorageCredential&gt;<sp/>storage_credential;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="176"><highlight class="normal"></highlight></codeline>
+<codeline lineno="178" refid="structiceberg_1_1rest_1_1LoadTableResult_1a3032980e3314cfd6f72fbbede84245f2" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="structiceberg_1_1rest_1_1LoadTableResult_1a3032980e3314cfd6f72fbbede84245f2" kindref="member">Validate</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!metadata)<sp/>{</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ValidationFailed(</highlight><highlight class="stringliteral">&quot;Invalid<sp/>metadata:<sp/>null&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{};</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="184"><highlight class="normal"></highlight></codeline>
+<codeline lineno="185"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1LoadTableResult" kindref="compound">LoadTableResult</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="186"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="187"><highlight class="normal"></highlight></codeline>
+<codeline lineno="189" refid="types_8h_1a6287a1bfacdfde9e8bab8fc4a2e79187" refkind="member"><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structiceberg_1_1rest_1_1LoadTableResult" kindref="compound">CreateTableResponse</ref><sp/>=<sp/><ref refid="structiceberg_1_1rest_1_1LoadTableResult" kindref="compound">LoadTableResult</ref>;</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"></highlight></codeline>
+<codeline lineno="192" refid="types_8h_1a18702d5684bd287584952a0206a7fb51" refkind="member"><highlight class="keyword">using<sp/></highlight><highlight class="normal"><ref refid="structiceberg_1_1rest_1_1LoadTableResult" kindref="compound">LoadTableResponse</ref><sp/>=<sp/><ref refid="structiceberg_1_1rest_1_1LoadTableResult" kindref="compound">LoadTableResult</ref>;</highlight></codeline>
+<codeline lineno="193"><highlight class="normal"></highlight></codeline>
+<codeline lineno="195" refid="structiceberg_1_1rest_1_1ListNamespacesResponse" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1ListNamespacesResponse" kindref="compound">ListNamespacesResponse</ref><sp/>{</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><ref refid="types_8h_1aa5da261c3599ae3870c211c7d9938f00" kindref="member">PageToken</ref><sp/>next_page_token;</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"><sp/><sp/>std::vector&lt;Namespace&gt;<sp/>namespaces;</highlight></codeline>
+<codeline lineno="198"><highlight class="normal"></highlight></codeline>
+<codeline lineno="200" refid="structiceberg_1_1rest_1_1ListNamespacesResponse_1abc6c00e31a5eb8d60b87428987ad0244" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="structiceberg_1_1rest_1_1ListNamespacesResponse_1abc6c00e31a5eb8d60b87428987ad0244" kindref="member">Validate</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{};<sp/>}</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1ListNamespacesResponse" kindref="compound">ListNamespacesResponse</ref>&amp;)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="203"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"></highlight></codeline>
+<codeline lineno="206" refid="structiceberg_1_1rest_1_1CreateNamespaceResponse" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1CreateNamespaceResponse" kindref="compound">CreateNamespaceResponse</ref><sp/>{</highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref><sp/>namespace_;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="208"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties;</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"></highlight></codeline>
+<codeline lineno="211" refid="structiceberg_1_1rest_1_1CreateNamespaceResponse_1aa6fd8d2eed235cf3a0224c898c327c83" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="structiceberg_1_1rest_1_1CreateNamespaceResponse_1aa6fd8d2eed235cf3a0224c898c327c83" kindref="member">Validate</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{};<sp/>}</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"></highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1CreateNamespaceResponse" kindref="compound">CreateNamespaceResponse</ref>&amp;)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="214"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"></highlight></codeline>
+<codeline lineno="217" refid="structiceberg_1_1rest_1_1GetNamespaceResponse" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1GetNamespaceResponse" kindref="compound">GetNamespaceResponse</ref><sp/>{</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1Namespace" kindref="compound">Namespace</ref><sp/>namespace_;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/>std::unordered_map&lt;std::string,<sp/>std::string&gt;<sp/>properties;</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"></highlight></codeline>
+<codeline lineno="222" refid="structiceberg_1_1rest_1_1GetNamespaceResponse_1a56c360d82a88df7f5981d3382e47027a" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="structiceberg_1_1rest_1_1GetNamespaceResponse_1a56c360d82a88df7f5981d3382e47027a" kindref="member">Validate</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{};<sp/>}</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"></highlight></codeline>
+<codeline lineno="224"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1GetNamespaceResponse" kindref="compound">GetNamespaceResponse</ref>&amp;)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="225"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"></highlight></codeline>
+<codeline lineno="228" refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesResponse" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesResponse" kindref="compound">UpdateNamespacePropertiesResponse</ref><sp/>{</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/>std::vector&lt;std::string&gt;<sp/>updated;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="230"><highlight class="normal"><sp/><sp/>std::vector&lt;std::string&gt;<sp/>removed;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/>std::vector&lt;std::string&gt;<sp/>missing;</highlight></codeline>
+<codeline lineno="232"><highlight class="normal"></highlight></codeline>
+<codeline lineno="234" refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesResponse_1a2694574ef681535f6062184b38f92322" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesResponse_1a2694574ef681535f6062184b38f92322" kindref="member">Validate</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{};<sp/>}</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"></highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1UpdateNamespacePropertiesResponse" kindref="compound">UpdateNamespacePropertiesResponse</ref>&amp;)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="237"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"></highlight></codeline>
+<codeline lineno="240" refid="structiceberg_1_1rest_1_1ListTablesResponse" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1ListTablesResponse" kindref="compound">ListTablesResponse</ref><sp/>{</highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/><ref refid="types_8h_1aa5da261c3599ae3870c211c7d9938f00" kindref="member">PageToken</ref><sp/>next_page_token;</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/>std::vector&lt;TableIdentifier&gt;<sp/>identifiers;</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"></highlight></codeline>
+<codeline lineno="245" refid="structiceberg_1_1rest_1_1ListTablesResponse_1a0d46520413090320e691b69d78226dae" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="structiceberg_1_1rest_1_1ListTablesResponse_1a0d46520413090320e691b69d78226dae" kindref="member">Validate</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{};<sp/>}</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"></highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1ListTablesResponse" kindref="compound">ListTablesResponse</ref>&amp;)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>=<sp/></highlight><highlight class="keywordflow">default</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="248"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="249"><highlight class="normal"></highlight></codeline>
+<codeline lineno="251" refid="structiceberg_1_1rest_1_1CommitTableRequest" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1CommitTableRequest" kindref="compound">CommitTableRequest</ref><sp/>{</highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/><ref refid="structiceberg_1_1TableIdentifier" kindref="compound">TableIdentifier</ref><sp/>identifier;</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"><sp/><sp/>std::vector&lt;std::shared_ptr&lt;TableRequirement&gt;&gt;<sp/>requirements;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/>std::vector&lt;std::shared_ptr&lt;TableUpdate&gt;&gt;<sp/>updates;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="255"><highlight class="normal"></highlight></codeline>
+<codeline lineno="257" refid="structiceberg_1_1rest_1_1CommitTableRequest_1a737b9b2627d1745f2e91159aaf23656c" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="structiceberg_1_1rest_1_1CommitTableRequest_1a737b9b2627d1745f2e91159aaf23656c" kindref="member">Validate</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{<sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{};<sp/>}</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"></highlight></codeline>
+<codeline lineno="259"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1CommitTableRequest" kindref="compound">CommitTableRequest</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="260"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"></highlight></codeline>
+<codeline lineno="263" refid="structiceberg_1_1rest_1_1CommitTableResponse" refkind="compound"><highlight class="keyword">struct<sp/></highlight><highlight class="normal">ICEBERG_REST_EXPORT<sp/><ref refid="structiceberg_1_1rest_1_1CommitTableResponse" kindref="compound">CommitTableResponse</ref><sp/>{</highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/>std::string<sp/>metadata_location;<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/>std::shared_ptr&lt;TableMetadata&gt;<sp/>metadata;<sp/><sp/></highlight><highlight class="comment">//<sp/>required</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="266"><highlight class="normal"></highlight></codeline>
+<codeline lineno="268" refid="structiceberg_1_1rest_1_1CommitTableResponse_1a560ebe64e86ca61420be81a1e45ee0d0" refkind="member"><highlight class="normal"><sp/><sp/>Status<sp/><ref refid="structiceberg_1_1rest_1_1CommitTableResponse_1a560ebe64e86ca61420be81a1e45ee0d0" kindref="member">Validate</ref>()</highlight><highlight class="keyword"><sp/>const<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(metadata_location.empty())<sp/>{</highlight></codeline>
+<codeline lineno="270"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ValidationFailed(</highlight><highlight class="stringliteral">&quot;Invalid<sp/>metadata<sp/>location:<sp/>empty&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="272"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!metadata)<sp/>{</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>ValidationFailed(</highlight><highlight class="stringliteral">&quot;Invalid<sp/>metadata:<sp/>null&quot;</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/>}</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>{};</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="277"><highlight class="normal"></highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>operator==(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/><ref refid="structiceberg_1_1rest_1_1CommitTableResponse" kindref="compound">CommitTableResponse</ref>&amp;<sp/>other)<sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="279"><highlight class="normal">};</highlight></codeline>
+<codeline lineno="280"><highlight class="normal"></highlight></codeline>
+<codeline lineno="281"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg::rest</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/catalog/rest/types.h"/>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,196 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1PruneColumnVisitor" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::PruneColumnVisitor</compoundname>
+    <includes refid="type__util_8h" local="no">type_util.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1PruneColumnVisitor_1a75f5a593a96f9c68a9d61d76f0c0dbfa" prot="private" static="no" mutable="no">
+        <type>const std::unordered_set&lt; int32_t &gt; &amp;</type>
+        <definition>const std::unordered_set&lt;int32_t&gt;&amp; iceberg::PruneColumnVisitor::selected_ids_</definition>
+        <argsstring></argsstring>
+        <name>selected_ids_</name>
+        <qualifiedname>iceberg::PruneColumnVisitor::selected_ids_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="121" column="28" bodyfile="iceberg/util/type_util.h" bodystart="121" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1PruneColumnVisitor_1ad94910349484bc9d0a2d440c52fb7250" prot="private" static="no" mutable="no">
+        <type>const bool</type>
+        <definition>const bool iceberg::PruneColumnVisitor::select_full_types_</definition>
+        <argsstring></argsstring>
+        <name>select_full_types_</name>
+        <qualifiedname>iceberg::PruneColumnVisitor::select_full_types_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="122" column="14" bodyfile="iceberg/util/type_util.h" bodystart="122" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1PruneColumnVisitor_1aeefbab0c3da9f844fcbbbe1d23c65503" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PruneColumnVisitor::PruneColumnVisitor</definition>
+        <argsstring>(const std::unordered_set&lt; int32_t &gt; &amp;selected_ids, bool select_full_types)</argsstring>
+        <name>PruneColumnVisitor</name>
+        <qualifiedname>iceberg::PruneColumnVisitor::PruneColumnVisitor</qualifiedname>
+        <param>
+          <type>const std::unordered_set&lt; int32_t &gt; &amp;</type>
+          <declname>selected_ids</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>select_full_types</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="110" column="3" bodyfile="iceberg/util/type_util.cc" bodystart="190" bodyend="192"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PruneColumnVisitor_1aba4fef7999ac37c9c17d322449541b78" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Type &gt; &gt; iceberg::PruneColumnVisitor::Visit</definition>
+        <argsstring>(const std::shared_ptr&lt; Type &gt; &amp;type) const</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::PruneColumnVisitor::Visit</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; &amp;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="113" column="10" bodyfile="iceberg/util/type_util.cc" bodystart="194" bodyend="206"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PruneColumnVisitor_1a33c6c34335b73ef0b0048c53c0fa3a1e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Type &gt; &gt; iceberg::PruneColumnVisitor::Visit</definition>
+        <argsstring>(const SchemaField &amp;field) const</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::PruneColumnVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> &amp;</type>
+          <declname>field</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="114" column="10" bodyfile="iceberg/util/type_util.cc" bodystart="208" bodyend="214"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PruneColumnVisitor_1ac243596780728b89f7e84ebda4557afe" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Type &gt; &gt; iceberg::PruneColumnVisitor::Visit</definition>
+        <argsstring>(const std::shared_ptr&lt; StructType &gt; &amp;type) const</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::PruneColumnVisitor::Visit</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1StructType" kindref="compound">StructType</ref> &gt; &amp;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="116" column="10" bodyfile="iceberg/util/type_util.cc" bodystart="222" bodyend="240"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PruneColumnVisitor_1a4b5fbdb8fefb68d5bf65c4c61d0120f5" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Type &gt; &gt; iceberg::PruneColumnVisitor::Visit</definition>
+        <argsstring>(const std::shared_ptr&lt; ListType &gt; &amp;type) const</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::PruneColumnVisitor::Visit</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1ListType" kindref="compound">ListType</ref> &gt; &amp;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="117" column="10" bodyfile="iceberg/util/type_util.cc" bodystart="242" bodyend="252"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PruneColumnVisitor_1a2e1faf2b3f7f819c815b283a67a1367e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; Type &gt; &gt; iceberg::PruneColumnVisitor::Visit</definition>
+        <argsstring>(const std::shared_ptr&lt; MapType &gt; &amp;type) const</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::PruneColumnVisitor::Visit</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1MapType" kindref="compound">MapType</ref> &gt; &amp;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="118" column="10" bodyfile="iceberg/util/type_util.cc" bodystart="254" bodyend="272"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1PruneColumnVisitor_1a86d5ba0c8bcf46f2bdd02c457193a5a3" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref></type>
+        <definition>SchemaField iceberg::PruneColumnVisitor::MakeField</definition>
+        <argsstring>(const SchemaField &amp;field, std::shared_ptr&lt; Type &gt; type)</argsstring>
+        <name>MakeField</name>
+        <qualifiedname>iceberg::PruneColumnVisitor::MakeField</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1SchemaField" kindref="compound">SchemaField</ref> &amp;</type>
+          <declname>field</declname>
+        </param>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="115" column="22" bodyfile="iceberg/util/type_util.cc" bodystart="216" bodyend="220"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Visitor for pruning columns based on selected field IDs. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This visitor traverses a schema and creates a projected version containing only the specified fields. When <computeroutput>select_full_types</computeroutput> is true, a field with all its sub-fields are selected if its field-id has been selected; otherwise, only leaf fields of selected field-ids are selected.</para>
+<para><simplesect kind="note"><para>It returns an error when projection is not successful. </para>
+</simplesect>
+</para>
+    </detaileddescription>
+    <location file="iceberg/util/type_util.h" line="108" column="1" bodyfile="iceberg/util/type_util.h" bodystart="108" bodyend="123"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1PruneColumnVisitor_1a86d5ba0c8bcf46f2bdd02c457193a5a3" prot="public" virt="non-virtual"><scope>iceberg::PruneColumnVisitor</scope><name>MakeField</name></member>
+      <member refid="classiceberg_1_1PruneColumnVisitor_1aeefbab0c3da9f844fcbbbe1d23c65503" prot="public" virt="non-virtual"><scope>iceberg::PruneColumnVisitor</scope><name>PruneColumnVisitor</name></member>
+      <member refid="classiceberg_1_1PruneColumnVisitor_1ad94910349484bc9d0a2d440c52fb7250" prot="private" virt="non-virtual"><scope>iceberg::PruneColumnVisitor</scope><name>select_full_types_</name></member>
+      <member refid="classiceberg_1_1PruneColumnVisitor_1a75f5a593a96f9c68a9d61d76f0c0dbfa" prot="private" virt="non-virtual"><scope>iceberg::PruneColumnVisitor</scope><name>selected_ids_</name></member>
+      <member refid="classiceberg_1_1PruneColumnVisitor_1aba4fef7999ac37c9c17d322449541b78" prot="public" virt="non-virtual"><scope>iceberg::PruneColumnVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1PruneColumnVisitor_1a33c6c34335b73ef0b0048c53c0fa3a1e" prot="public" virt="non-virtual"><scope>iceberg::PruneColumnVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1PruneColumnVisitor_1ac243596780728b89f7e84ebda4557afe" prot="public" virt="non-virtual"><scope>iceberg::PruneColumnVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1PruneColumnVisitor_1a4b5fbdb8fefb68d5bf65c4c61d0120f5" prot="public" virt="non-virtual"><scope>iceberg::PruneColumnVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1PruneColumnVisitor_1a2e1faf2b3f7f819c815b283a67a1367e" prot="public" virt="non-virtual"><scope>iceberg::PruneColumnVisitor</scope><name>Visit</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

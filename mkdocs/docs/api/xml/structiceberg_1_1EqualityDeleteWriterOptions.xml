@@ -1,0 +1,311 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1EqualityDeleteWriterOptions" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::EqualityDeleteWriterOptions</compoundname>
+    <includes refid="equality__delete__writer_8h" local="no">equality_delete_writer.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1EqualityDeleteWriterOptions_1ad6dd85b4cfbf605876286a443fad225d" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::EqualityDeleteWriterOptions::path</definition>
+        <argsstring></argsstring>
+        <name>path</name>
+        <qualifiedname>iceberg::EqualityDeleteWriterOptions::path</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/equality_delete_writer.h" line="44" column="15" bodyfile="iceberg/data/equality_delete_writer.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1EqualityDeleteWriterOptions_1a8ed07ffdf59362c0fd6b17c1f8b00527" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::EqualityDeleteWriterOptions::schema</definition>
+        <argsstring></argsstring>
+        <name>schema</name>
+        <qualifiedname>iceberg::EqualityDeleteWriterOptions::schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/equality_delete_writer.h" line="45" column="19" bodyfile="iceberg/data/equality_delete_writer.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1EqualityDeleteWriterOptions_1aa7979c431fd0e0c7077832c73b50f8c7" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionSpec&gt; iceberg::EqualityDeleteWriterOptions::spec</definition>
+        <argsstring></argsstring>
+        <name>spec</name>
+        <qualifiedname>iceberg::EqualityDeleteWriterOptions::spec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/equality_delete_writer.h" line="46" column="19" bodyfile="iceberg/data/equality_delete_writer.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1EqualityDeleteWriterOptions_1aaaec2f0546be0c2ae96523060cf0c42f" prot="public" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1PartitionValues" kindref="compound">PartitionValues</ref></type>
+        <definition>PartitionValues iceberg::EqualityDeleteWriterOptions::partition</definition>
+        <argsstring></argsstring>
+        <name>partition</name>
+        <qualifiedname>iceberg::EqualityDeleteWriterOptions::partition</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/equality_delete_writer.h" line="47" column="19" bodyfile="iceberg/data/equality_delete_writer.h" bodystart="47" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1EqualityDeleteWriterOptions_1af92a1deebc793e7a65abcf42fa0511c6" prot="public" static="no" mutable="no">
+        <type>FileFormatType</type>
+        <definition>FileFormatType iceberg::EqualityDeleteWriterOptions::format</definition>
+        <argsstring></argsstring>
+        <name>format</name>
+        <qualifiedname>iceberg::EqualityDeleteWriterOptions::format</qualifiedname>
+        <initializer>= FileFormatType::kParquet</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/equality_delete_writer.h" line="48" column="18" bodyfile="iceberg/data/equality_delete_writer.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1EqualityDeleteWriterOptions_1a173fadc4905a2280f674d397ac64f28f" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::EqualityDeleteWriterOptions::io</definition>
+        <argsstring></argsstring>
+        <name>io</name>
+        <qualifiedname>iceberg::EqualityDeleteWriterOptions::io</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/equality_delete_writer.h" line="49" column="19" bodyfile="iceberg/data/equality_delete_writer.h" bodystart="49" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1EqualityDeleteWriterOptions_1a57f306a418e379971b4b67babee40b38" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int32_t &gt;</type>
+        <definition>std::vector&lt;int32_t&gt; iceberg::EqualityDeleteWriterOptions::equality_field_ids</definition>
+        <argsstring></argsstring>
+        <name>equality_field_ids</name>
+        <qualifiedname>iceberg::EqualityDeleteWriterOptions::equality_field_ids</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/equality_delete_writer.h" line="50" column="15" bodyfile="iceberg/data/equality_delete_writer.h" bodystart="50" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1EqualityDeleteWriterOptions_1aab5c260b124c78cd7f1320510ede6866" prot="public" static="no" mutable="no">
+        <type>std::optional&lt; int32_t &gt;</type>
+        <definition>std::optional&lt;int32_t&gt; iceberg::EqualityDeleteWriterOptions::sort_order_id</definition>
+        <argsstring></argsstring>
+        <name>sort_order_id</name>
+        <qualifiedname>iceberg::EqualityDeleteWriterOptions::sort_order_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/equality_delete_writer.h" line="51" column="17" bodyfile="iceberg/data/equality_delete_writer.h" bodystart="51" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1EqualityDeleteWriterOptions_1a8e4c85add6174134619bc2cedc2e019a" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::EqualityDeleteWriterOptions::properties</definition>
+        <argsstring></argsstring>
+        <name>properties</name>
+        <qualifiedname>iceberg::EqualityDeleteWriterOptions::properties</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/data/equality_delete_writer.h" line="52" column="22" bodyfile="iceberg/data/equality_delete_writer.h" bodystart="52" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Options for creating an <ref refid="classiceberg_1_1EqualityDeleteWriter" kindref="compound">EqualityDeleteWriter</ref>. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="12">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="14">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="1">
+        <label>iceberg::EqualityDeleteWriterOptions</label>
+        <link refid="structiceberg_1_1EqualityDeleteWriterOptions"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>path</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>schema</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>spec</edgelabel>
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>partition</edgelabel>
+        </childnode>
+        <childnode refid="21" relation="usage">
+          <edgelabel>io</edgelabel>
+        </childnode>
+        <childnode refid="23" relation="usage">
+          <edgelabel>equality_field_ids</edgelabel>
+        </childnode>
+        <childnode refid="24" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="7">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg::PartitionValues</label>
+        <link refid="classiceberg_1_1PartitionValues"/>
+        <childnode refid="20" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>iceberg::StructLike</label>
+        <link refid="classiceberg_1_1StructLike"/>
+      </node>
+      <node id="6">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="21">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="22" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="17">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="18" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="16">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>std::string_view</label>
+        <childnode refid="16" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="24">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="11" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="23">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/data/equality_delete_writer.h" line="43" column="1" bodyfile="iceberg/data/equality_delete_writer.h" bodystart="43" bodyend="53"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1EqualityDeleteWriterOptions_1a57f306a418e379971b4b67babee40b38" prot="public" virt="non-virtual"><scope>iceberg::EqualityDeleteWriterOptions</scope><name>equality_field_ids</name></member>
+      <member refid="structiceberg_1_1EqualityDeleteWriterOptions_1af92a1deebc793e7a65abcf42fa0511c6" prot="public" virt="non-virtual"><scope>iceberg::EqualityDeleteWriterOptions</scope><name>format</name></member>
+      <member refid="structiceberg_1_1EqualityDeleteWriterOptions_1a173fadc4905a2280f674d397ac64f28f" prot="public" virt="non-virtual"><scope>iceberg::EqualityDeleteWriterOptions</scope><name>io</name></member>
+      <member refid="structiceberg_1_1EqualityDeleteWriterOptions_1aaaec2f0546be0c2ae96523060cf0c42f" prot="public" virt="non-virtual"><scope>iceberg::EqualityDeleteWriterOptions</scope><name>partition</name></member>
+      <member refid="structiceberg_1_1EqualityDeleteWriterOptions_1ad6dd85b4cfbf605876286a443fad225d" prot="public" virt="non-virtual"><scope>iceberg::EqualityDeleteWriterOptions</scope><name>path</name></member>
+      <member refid="structiceberg_1_1EqualityDeleteWriterOptions_1a8e4c85add6174134619bc2cedc2e019a" prot="public" virt="non-virtual"><scope>iceberg::EqualityDeleteWriterOptions</scope><name>properties</name></member>
+      <member refid="structiceberg_1_1EqualityDeleteWriterOptions_1a8ed07ffdf59362c0fd6b17c1f8b00527" prot="public" virt="non-virtual"><scope>iceberg::EqualityDeleteWriterOptions</scope><name>schema</name></member>
+      <member refid="structiceberg_1_1EqualityDeleteWriterOptions_1aab5c260b124c78cd7f1320510ede6866" prot="public" virt="non-virtual"><scope>iceberg::EqualityDeleteWriterOptions</scope><name>sort_order_id</name></member>
+      <member refid="structiceberg_1_1EqualityDeleteWriterOptions_1aa7979c431fd0e0c7077832c73b50f8c7" prot="public" virt="non-virtual"><scope>iceberg::EqualityDeleteWriterOptions</scope><name>spec</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

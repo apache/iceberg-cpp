@@ -1,0 +1,37 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="dir_7c4d2c18b625e3dc315ec9d8fd8e35c1" kind="dir">
+    <compoundname>iceberg/update</compoundname>
+    <innerfile refid="expire__snapshots_8cc">expire_snapshots.cc</innerfile>
+    <innerfile refid="expire__snapshots_8h">expire_snapshots.h</innerfile>
+    <innerfile refid="fast__append_8cc">fast_append.cc</innerfile>
+    <innerfile refid="fast__append_8h">fast_append.h</innerfile>
+    <innerfile refid="pending__update_8cc">pending_update.cc</innerfile>
+    <innerfile refid="pending__update_8h">pending_update.h</innerfile>
+    <innerfile refid="set__snapshot_8cc">set_snapshot.cc</innerfile>
+    <innerfile refid="set__snapshot_8h">set_snapshot.h</innerfile>
+    <innerfile refid="snapshot__update_8cc">snapshot_update.cc</innerfile>
+    <innerfile refid="snapshot__update_8h">snapshot_update.h</innerfile>
+    <innerfile refid="update__location_8cc">update_location.cc</innerfile>
+    <innerfile refid="update__location_8h">update_location.h</innerfile>
+    <innerfile refid="update__partition__spec_8cc">update_partition_spec.cc</innerfile>
+    <innerfile refid="update__partition__spec_8h">update_partition_spec.h</innerfile>
+    <innerfile refid="update__partition__statistics_8cc">update_partition_statistics.cc</innerfile>
+    <innerfile refid="update__partition__statistics_8h">update_partition_statistics.h</innerfile>
+    <innerfile refid="update__properties_8cc">update_properties.cc</innerfile>
+    <innerfile refid="update__properties_8h">update_properties.h</innerfile>
+    <innerfile refid="update__schema_8cc">update_schema.cc</innerfile>
+    <innerfile refid="update__schema_8h">update_schema.h</innerfile>
+    <innerfile refid="update__snapshot__reference_8cc">update_snapshot_reference.cc</innerfile>
+    <innerfile refid="update__snapshot__reference_8h">update_snapshot_reference.h</innerfile>
+    <innerfile refid="update__sort__order_8cc">update_sort_order.cc</innerfile>
+    <innerfile refid="update__sort__order_8h">update_sort_order.h</innerfile>
+    <innerfile refid="update__statistics_8cc">update_statistics.cc</innerfile>
+    <innerfile refid="update__statistics_8h">update_statistics.h</innerfile>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/update/"/>
+  </compounddef>
+</doxygen>

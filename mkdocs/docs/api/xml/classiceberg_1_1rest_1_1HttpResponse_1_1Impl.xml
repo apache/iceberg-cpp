@@ -1,0 +1,111 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1HttpResponse_1_1Impl" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::rest::HttpResponse::Impl</compoundname>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1HttpResponse_1_1Impl_1aa79aefb06cff1bd9a099a345c880282f" prot="private" static="no" mutable="no">
+        <type>cpr::Response</type>
+        <definition>cpr::Response iceberg::rest::HttpResponse::Impl::response_</definition>
+        <argsstring></argsstring>
+        <name>response_</name>
+        <qualifiedname>iceberg::rest::HttpResponse::Impl::response_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.cc" line="49" column="17" bodyfile="iceberg/catalog/rest/http_client.cc" bodystart="49" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpResponse_1_1Impl_1a37f1e1e8dd9f772ea548a243045b84ec" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::HttpResponse::Impl::Impl</definition>
+        <argsstring>(cpr::Response &amp;&amp;response)</argsstring>
+        <name>Impl</name>
+        <qualifiedname>iceberg::rest::HttpResponse::Impl::Impl</qualifiedname>
+        <param>
+          <type>cpr::Response &amp;&amp;</type>
+          <declname>response</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.cc" line="37" column="12" bodyfile="iceberg/catalog/rest/http_client.cc" bodystart="37" bodyend="37"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpResponse_1_1Impl_1a42704eb5231bc5a514c2cc1fe5e550d2" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::HttpResponse::Impl::~Impl</definition>
+        <argsstring>()=default</argsstring>
+        <name>~Impl</name>
+        <qualifiedname>iceberg::rest::HttpResponse::Impl::~Impl</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.cc" line="38" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpResponse_1_1Impl_1a314073d3eb8c72a8e2b96ef9f413ee9c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::rest::HttpResponse::Impl::status_code</definition>
+        <argsstring>() const</argsstring>
+        <name>status_code</name>
+        <qualifiedname>iceberg::rest::HttpResponse::Impl::status_code</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.cc" line="40" column="11" bodyfile="iceberg/catalog/rest/http_client.cc" bodystart="40" bodyend="40"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpResponse_1_1Impl_1a121628fb836ea5d68c553a6363b30af0" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::HttpResponse::Impl::body</definition>
+        <argsstring>() const</argsstring>
+        <name>body</name>
+        <qualifiedname>iceberg::rest::HttpResponse::Impl::body</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.cc" line="42" column="15" bodyfile="iceberg/catalog/rest/http_client.cc" bodystart="42" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpResponse_1_1Impl_1a503d6a40b66f80f4733e8bc96a9f540a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt; std::string, std::string &gt; iceberg::rest::HttpResponse::Impl::headers</definition>
+        <argsstring>() const</argsstring>
+        <name>headers</name>
+        <qualifiedname>iceberg::rest::HttpResponse::Impl::headers</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.cc" line="44" column="22" bodyfile="iceberg/catalog/rest/http_client.cc" bodystart="44" bodyend="46"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/http_client.cc" line="35" column="1" bodyfile="iceberg/catalog/rest/http_client.cc" bodystart="35" bodyend="50"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1HttpResponse_1_1Impl_1a121628fb836ea5d68c553a6363b30af0" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpResponse::Impl</scope><name>body</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpResponse_1_1Impl_1a503d6a40b66f80f4733e8bc96a9f540a" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpResponse::Impl</scope><name>headers</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpResponse_1_1Impl_1a37f1e1e8dd9f772ea548a243045b84ec" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpResponse::Impl</scope><name>Impl</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpResponse_1_1Impl_1aa79aefb06cff1bd9a099a345c880282f" prot="private" virt="non-virtual"><scope>iceberg::rest::HttpResponse::Impl</scope><name>response_</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpResponse_1_1Impl_1a314073d3eb8c72a8e2b96ef9f413ee9c" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpResponse::Impl</scope><name>status_code</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpResponse_1_1Impl_1a42704eb5231bc5a514c2cc1fe5e550d2" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpResponse::Impl</scope><name>~Impl</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

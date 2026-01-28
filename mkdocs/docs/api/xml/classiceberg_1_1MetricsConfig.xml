@@ -1,0 +1,287 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1MetricsConfig" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::MetricsConfig</compoundname>
+    <includes refid="metrics__config_8h" local="no">metrics_config.h</includes>
+    <sectiondef kind="private-type">
+      <memberdef kind="typedef" id="classiceberg_1_1MetricsConfig_1a478505e5ee47038266a9cae62d5731e7" prot="private" static="no">
+        <type>std::unordered_map&lt; std::string, <ref refid="structiceberg_1_1MetricsMode" kindref="compound">MetricsMode</ref>, <ref refid="structiceberg_1_1StringHash" kindref="compound">StringHash</ref>, <ref refid="structiceberg_1_1StringEqual" kindref="compound">StringEqual</ref> &gt;</type>
+        <definition>using iceberg::MetricsConfig::ColumnModeMap =  std::unordered_map&lt;std::string, MetricsMode, StringHash, StringEqual&gt;</definition>
+        <argsstring></argsstring>
+        <name>ColumnModeMap</name>
+        <qualifiedname>iceberg::MetricsConfig::ColumnModeMap</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics_config.h" line="83" column="3" bodyfile="iceberg/metrics_config.h" bodystart="84" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1MetricsConfig_1a114c8e89905a56eb776c1ff64ace9370" prot="private" static="no" mutable="no">
+        <type>ColumnModeMap</type>
+        <definition>ColumnModeMap iceberg::MetricsConfig::column_modes_</definition>
+        <argsstring></argsstring>
+        <name>column_modes_</name>
+        <qualifiedname>iceberg::MetricsConfig::column_modes_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics_config.h" line="100" column="17" bodyfile="iceberg/metrics_config.h" bodystart="100" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1MetricsConfig_1a0f2e3a38380483a403c58577e5dceb0f" prot="private" static="no" mutable="no">
+        <type><ref refid="structiceberg_1_1MetricsMode" kindref="compound">MetricsMode</ref></type>
+        <definition>MetricsMode iceberg::MetricsConfig::default_mode_</definition>
+        <argsstring></argsstring>
+        <name>default_mode_</name>
+        <qualifiedname>iceberg::MetricsConfig::default_mode_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics_config.h" line="101" column="15" bodyfile="iceberg/metrics_config.h" bodystart="101" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1MetricsConfig_1a88c50b04209242aaed6441025d9f462c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1MetricsConfig" kindref="compound">MetricsConfig</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; MetricsConfig &gt; &amp; iceberg::MetricsConfig::Default</definition>
+        <argsstring>()</argsstring>
+        <name>Default</name>
+        <qualifiedname>iceberg::MetricsConfig::Default</qualifiedname>
+        <briefdescription>
+<para>Get the default metrics config. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics_config.h" line="61" column="32" bodyfile="iceberg/metrics_config.cc" bodystart="105" bodyend="109"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetricsConfig_1a653bc98b5da8bf8598da6c28acb02614" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1MetricsConfig" kindref="compound">MetricsConfig</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; MetricsConfig &gt; &gt; iceberg::MetricsConfig::Make</definition>
+        <argsstring>(const Table &amp;table)</argsstring>
+        <name>Make</name>
+        <qualifiedname>iceberg::MetricsConfig::Make</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Table" kindref="compound">Table</ref> &amp;</type>
+          <declname>table</declname>
+        </param>
+        <briefdescription>
+<para>Creates a metrics config from a table. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics_config.h" line="64" column="17" bodyfile="iceberg/metrics_config.cc" bodystart="111" bodyend="116"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetricsConfig_1adc1457efff0493d71f213588c0945c71" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unordered_set&lt; int32_t &gt; &gt;</type>
+        <definition>Result&lt; std::unordered_set&lt; int32_t &gt; &gt; iceberg::MetricsConfig::LimitFieldIds</definition>
+        <argsstring>(const Schema &amp;schema, int32_t limit)</argsstring>
+        <name>LimitFieldIds</name>
+        <qualifiedname>iceberg::MetricsConfig::LimitFieldIds</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>limit</declname>
+        </param>
+        <briefdescription>
+<para>Get <computeroutput>limit</computeroutput> num of primitive field ids from schema. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics_config.h" line="67" column="17" bodyfile="iceberg/metrics_config.cc" bodystart="167" bodyend="215"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1MetricsConfig_1a67ce9ae32b86c984e05eeeb35080d8f6" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::MetricsConfig::VerifyReferencedColumns</definition>
+        <argsstring>(const std::unordered_map&lt; std::string, std::string &gt; &amp;updates, const Schema &amp;schema)</argsstring>
+        <name>VerifyReferencedColumns</name>
+        <qualifiedname>iceberg::MetricsConfig::VerifyReferencedColumns</qualifiedname>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>updates</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <briefdescription>
+<para>Verify that all referenced columns are valid. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>updates</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The updates to verify </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The schema to verify against </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>OK if all referenced columns are valid </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics_config.h" line="74" column="17" bodyfile="iceberg/metrics_config.cc" bodystart="217" bodyend="232"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1MetricsConfig_1a57e3b1a810e758d681531b890ce593f3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1MetricsMode" kindref="compound">MetricsMode</ref></type>
+        <definition>MetricsMode iceberg::MetricsConfig::ColumnMode</definition>
+        <argsstring>(std::string_view column_name) const</argsstring>
+        <name>ColumnMode</name>
+        <qualifiedname>iceberg::MetricsConfig::ColumnMode</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>column_name</declname>
+        </param>
+        <briefdescription>
+<para>Get the metrics mode for a specific column. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>column_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The full name of the column </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>The metrics mode for the column </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics_config.h" line="80" column="15" bodyfile="iceberg/metrics_config.cc" bodystart="234" bodyend="239"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1MetricsConfig_1a539ab4f36b9a5088f5da9c0bde271d4e" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::MetricsConfig::MetricsConfig</definition>
+        <argsstring>(ColumnModeMap column_modes, MetricsMode default_mode)</argsstring>
+        <name>MetricsConfig</name>
+        <qualifiedname>iceberg::MetricsConfig::MetricsConfig</qualifiedname>
+        <param>
+          <type>ColumnModeMap</type>
+          <declname>column_modes</declname>
+        </param>
+        <param>
+          <type><ref refid="structiceberg_1_1MetricsMode" kindref="compound">MetricsMode</ref></type>
+          <declname>default_mode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics_config.h" line="86" column="3" bodyfile="iceberg/metrics_config.cc" bodystart="102" bodyend="103"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-static-func">
+      <memberdef kind="function" id="classiceberg_1_1MetricsConfig_1aad40a669e4c069c97afffa96733a62db" prot="private" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1MetricsConfig" kindref="compound">MetricsConfig</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; MetricsConfig &gt; &gt; iceberg::MetricsConfig::MakeInternal</definition>
+        <argsstring>(const TableProperties &amp;props, const Schema &amp;schema, const SortOrder &amp;order)</argsstring>
+        <name>MakeInternal</name>
+        <qualifiedname>iceberg::MetricsConfig::MakeInternal</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1TableProperties" kindref="compound">TableProperties</ref> &amp;</type>
+          <declname>props</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &amp;</type>
+          <declname>schema</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1SortOrder" kindref="compound">SortOrder</ref> &amp;</type>
+          <declname>order</declname>
+        </param>
+        <briefdescription>
+<para>Generate a <ref refid="classiceberg_1_1MetricsConfig" kindref="compound">MetricsConfig</ref> for all columns based on overrides, schema, and sort order. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>props</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>will be read for metrics overrides (write.metadata.metrics.column.*) and default(write.metadata.metrics.default) </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>schema</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>table schema </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>order</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>sort order columns, will be promoted to truncate(16) </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>metrics configuration </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics_config.h" line="96" column="17" bodyfile="iceberg/metrics_config.cc" bodystart="118" bodyend="165"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Configuration for collecting column metrics for an Iceberg table. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/metrics_config.h" line="58" column="1" bodyfile="iceberg/metrics_config.h" bodystart="58" bodyend="102"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1MetricsConfig_1a114c8e89905a56eb776c1ff64ace9370" prot="private" virt="non-virtual"><scope>iceberg::MetricsConfig</scope><name>column_modes_</name></member>
+      <member refid="classiceberg_1_1MetricsConfig_1a57e3b1a810e758d681531b890ce593f3" prot="public" virt="non-virtual"><scope>iceberg::MetricsConfig</scope><name>ColumnMode</name></member>
+      <member refid="classiceberg_1_1MetricsConfig_1a478505e5ee47038266a9cae62d5731e7" prot="private" virt="non-virtual"><scope>iceberg::MetricsConfig</scope><name>ColumnModeMap</name></member>
+      <member refid="classiceberg_1_1MetricsConfig_1a88c50b04209242aaed6441025d9f462c" prot="public" virt="non-virtual"><scope>iceberg::MetricsConfig</scope><name>Default</name></member>
+      <member refid="classiceberg_1_1MetricsConfig_1a0f2e3a38380483a403c58577e5dceb0f" prot="private" virt="non-virtual"><scope>iceberg::MetricsConfig</scope><name>default_mode_</name></member>
+      <member refid="classiceberg_1_1MetricsConfig_1adc1457efff0493d71f213588c0945c71" prot="public" virt="non-virtual"><scope>iceberg::MetricsConfig</scope><name>LimitFieldIds</name></member>
+      <member refid="classiceberg_1_1MetricsConfig_1a653bc98b5da8bf8598da6c28acb02614" prot="public" virt="non-virtual"><scope>iceberg::MetricsConfig</scope><name>Make</name></member>
+      <member refid="classiceberg_1_1MetricsConfig_1aad40a669e4c069c97afffa96733a62db" prot="private" virt="non-virtual"><scope>iceberg::MetricsConfig</scope><name>MakeInternal</name></member>
+      <member refid="classiceberg_1_1MetricsConfig_1a539ab4f36b9a5088f5da9c0bde271d4e" prot="private" virt="non-virtual"><scope>iceberg::MetricsConfig</scope><name>MetricsConfig</name></member>
+      <member refid="classiceberg_1_1MetricsConfig_1a67ce9ae32b86c984e05eeeb35080d8f6" prot="public" virt="non-virtual"><scope>iceberg::MetricsConfig</scope><name>VerifyReferencedColumns</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

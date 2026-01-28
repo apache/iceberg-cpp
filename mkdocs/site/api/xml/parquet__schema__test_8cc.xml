@@ -1,0 +1,1119 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="parquet__schema__test_8cc" kind="file" language="C++">
+    <compoundname>parquet_schema_test.cc</compoundname>
+    <includes local="no">arrow/type.h</includes>
+    <includes local="no">parquet/arrow/reader.h</includes>
+    <includes local="no">parquet/arrow/schema.h</includes>
+    <includes local="no">parquet/schema.h</includes>
+    <includes local="no">parquet/types.h</includes>
+    <includes refid="metadata__columns_8h" local="yes">iceberg/metadata_columns.h</includes>
+    <includes refid="parquet__schema__util__internal_8h" local="yes">iceberg/parquet/parquet_schema_util_internal.h</includes>
+    <includes refid="schema_8h" local="yes">iceberg/schema.h</includes>
+    <includes refid="matchers_8h" local="yes">iceberg/test/matchers.h</includes>
+    <includes refid="type_8h" local="yes">iceberg/type.h</includes>
+    <incdepgraph>
+      <node id="33">
+        <label>iceberg/exception.h</label>
+        <link refid="exception_8h"/>
+        <childnode refid="34" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="45">
+        <label>iceberg/expression/literal.h</label>
+        <link refid="literal_8h_source"/>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="47" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+        <childnode refid="51" relation="include">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg/iceberg_export.h</label>
+        <link refid="iceberg__export_8h_source"/>
+      </node>
+      <node id="7">
+        <label>iceberg/metadata_columns.h</label>
+        <link refid="metadata__columns_8h"/>
+        <childnode refid="8" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="10" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="35">
+        <label>iceberg/parquet/parquet_schema_util_internal.h</label>
+        <link refid="parquet__schema__util__internal_8h_source"/>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="43" relation="include">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg/result.h</label>
+        <link refid="result_8h_source"/>
+        <childnode refid="14" relation="include">
+        </childnode>
+        <childnode refid="15" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="36">
+        <label>iceberg/schema.h</label>
+        <link refid="schema_8h"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="37" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+        <childnode refid="38" relation="include">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>iceberg/schema_field.h</label>
+        <link refid="schema__field_8h"/>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="43">
+        <label>iceberg/schema_util.h</label>
+        <link refid="schema__util_8h_source"/>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="44" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="45" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="19" relation="include">
+        </childnode>
+      </node>
+      <node id="52">
+        <label>iceberg/test/matchers.h</label>
+        <link refid="matchers_8h_source"/>
+        <childnode refid="53" relation="include">
+        </childnode>
+        <childnode refid="54" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg/test/parquet_schema_test.cc</label>
+        <link refid="parquet__schema__test_8cc"/>
+        <childnode refid="2" relation="include">
+        </childnode>
+        <childnode refid="3" relation="include">
+        </childnode>
+        <childnode refid="4" relation="include">
+        </childnode>
+        <childnode refid="5" relation="include">
+        </childnode>
+        <childnode refid="6" relation="include">
+        </childnode>
+        <childnode refid="7" relation="include">
+        </childnode>
+        <childnode refid="35" relation="include">
+        </childnode>
+        <childnode refid="36" relation="include">
+        </childnode>
+        <childnode refid="52" relation="include">
+        </childnode>
+        <childnode refid="21" relation="include">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>iceberg/type.h</label>
+        <link refid="type_8h"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="9" relation="include">
+        </childnode>
+        <childnode refid="23" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="25" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="17" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="27" relation="include">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>iceberg/type_fwd.h</label>
+        <link refid="type__fwd_8h"/>
+      </node>
+      <node id="47">
+        <label>iceberg/util/decimal.h</label>
+        <link refid="decimal_8h"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="46" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="48" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="49" relation="include">
+        </childnode>
+        <childnode refid="26" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+        <childnode refid="50" relation="include">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>iceberg/util/formattable.h</label>
+        <link refid="formattable_8h"/>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+      </node>
+      <node id="50">
+        <label>iceberg/util/int128.h</label>
+        <link refid="int128_8h"/>
+      </node>
+      <node id="27">
+        <label>iceberg/util/lazy.h</label>
+        <link refid="lazy_8h"/>
+        <childnode refid="28" relation="include">
+        </childnode>
+        <childnode refid="29" relation="include">
+        </childnode>
+        <childnode refid="30" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="31" relation="include">
+        </childnode>
+      </node>
+      <node id="31">
+        <label>iceberg/util/macros.h</label>
+        <link refid="macros_8h_source"/>
+        <childnode refid="32" relation="include">
+        </childnode>
+        <childnode refid="33" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="38">
+        <label>iceberg/util/string_util.h</label>
+        <link refid="string__util_8h_source"/>
+        <childnode refid="39" relation="include">
+        </childnode>
+        <childnode refid="40" relation="include">
+        </childnode>
+        <childnode refid="41" relation="include">
+        </childnode>
+        <childnode refid="16" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="42" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+      </node>
+      <node id="51">
+        <label>iceberg/util/uuid.h</label>
+        <link refid="uuid_8h"/>
+        <childnode refid="22" relation="include">
+        </childnode>
+        <childnode refid="18" relation="include">
+        </childnode>
+        <childnode refid="24" relation="include">
+        </childnode>
+        <childnode refid="11" relation="include">
+        </childnode>
+        <childnode refid="12" relation="include">
+        </childnode>
+        <childnode refid="13" relation="include">
+        </childnode>
+        <childnode refid="20" relation="include">
+        </childnode>
+      </node>
+      <node id="39">
+        <label>algorithm</label>
+      </node>
+      <node id="22">
+        <label>array</label>
+      </node>
+      <node id="2">
+        <label>arrow/type.h</label>
+      </node>
+      <node id="32">
+        <label>cassert</label>
+      </node>
+      <node id="40">
+        <label>charconv</label>
+      </node>
+      <node id="46">
+        <label>compare</label>
+      </node>
+      <node id="28">
+        <label>concepts</label>
+      </node>
+      <node id="18">
+        <label>cstdint</label>
+      </node>
+      <node id="14">
+        <label>expected</label>
+      </node>
+      <node id="15">
+        <label>format</label>
+      </node>
+      <node id="29">
+        <label>functional</label>
+      </node>
+      <node id="53">
+        <label>gmock/gmock.h</label>
+      </node>
+      <node id="54">
+        <label>gtest/gtest.h</label>
+      </node>
+      <node id="48">
+        <label>iosfwd</label>
+      </node>
+      <node id="8">
+        <label>limits</label>
+      </node>
+      <node id="9">
+        <label>memory</label>
+      </node>
+      <node id="30">
+        <label>mutex</label>
+      </node>
+      <node id="23">
+        <label>optional</label>
+      </node>
+      <node id="3">
+        <label>parquet/arrow/reader.h</label>
+      </node>
+      <node id="4">
+        <label>parquet/arrow/schema.h</label>
+      </node>
+      <node id="5">
+        <label>parquet/schema.h</label>
+      </node>
+      <node id="6">
+        <label>parquet/types.h</label>
+      </node>
+      <node id="41">
+        <label>ranges</label>
+      </node>
+      <node id="10">
+        <label>set</label>
+      </node>
+      <node id="24">
+        <label>span</label>
+      </node>
+      <node id="34">
+        <label>stdexcept</label>
+      </node>
+      <node id="16">
+        <label>string</label>
+      </node>
+      <node id="11">
+        <label>string_view</label>
+      </node>
+      <node id="49">
+        <label>type_traits</label>
+      </node>
+      <node id="42">
+        <label>typeinfo</label>
+      </node>
+      <node id="25">
+        <label>unordered_map</label>
+      </node>
+      <node id="37">
+        <label>unordered_set</label>
+      </node>
+      <node id="44">
+        <label>variant</label>
+      </node>
+      <node id="26">
+        <label>vector</label>
+      </node>
+    </incdepgraph>
+    <innernamespace refid="namespaceiceberg">iceberg</innernamespace>
+    <innernamespace refid="namespaceiceberg_1_1parquet">iceberg::parquet</innernamespace>
+    <sectiondef kind="define">
+      <memberdef kind="define" id="parquet__schema__test_8cc_1a4ae0ba0002bd6cf3c4258837274f7aa7" prot="public" static="no">
+        <name>ASSERT_PROJECTED_FIELD</name>
+        <param><defname>field_projection</defname></param>
+        <param><defname>index</defname></param>
+        <initializer>  ASSERT_EQ(field_projection.kind, FieldProjection::Kind::kProjected); \
+  ASSERT_EQ(std::get&lt;1&gt;(field_projection.from), index);</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="126" column="9" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="126" bodyend="128"/>
+      </memberdef>
+      <memberdef kind="define" id="parquet__schema__test_8cc_1a10f473c851bf3c50b309fe30b477799a" prot="public" static="no">
+        <name>ASSERT_PROJECTED_NULL_FIELD</name>
+        <param><defname>field_projection</defname></param>
+        <initializer>  ASSERT_EQ(field_projection.kind, FieldProjection::Kind::kNull);</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/parquet_schema_test.cc" line="130" column="9" bodyfile="iceberg/test/parquet_schema_test.cc" bodystart="130" bodyend="131"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <programlisting>
+<codeline lineno="1"><highlight class="comment">/*</highlight></codeline>
+<codeline lineno="2"><highlight class="comment"><sp/>*<sp/>Licensed<sp/>to<sp/>the<sp/>Apache<sp/>Software<sp/>Foundation<sp/>(ASF)<sp/>under<sp/>one</highlight></codeline>
+<codeline lineno="3"><highlight class="comment"><sp/>*<sp/>or<sp/>more<sp/>contributor<sp/>license<sp/>agreements.<sp/><sp/>See<sp/>the<sp/>NOTICE<sp/>file</highlight></codeline>
+<codeline lineno="4"><highlight class="comment"><sp/>*<sp/>distributed<sp/>with<sp/>this<sp/>work<sp/>for<sp/>additional<sp/>information</highlight></codeline>
+<codeline lineno="5"><highlight class="comment"><sp/>*<sp/>regarding<sp/>copyright<sp/>ownership.<sp/><sp/>The<sp/>ASF<sp/>licenses<sp/>this<sp/>file</highlight></codeline>
+<codeline lineno="6"><highlight class="comment"><sp/>*<sp/>to<sp/>you<sp/>under<sp/>the<sp/>Apache<sp/>License,<sp/>Version<sp/>2.0<sp/>(the</highlight></codeline>
+<codeline lineno="7"><highlight class="comment"><sp/>*<sp/>&quot;License&quot;);<sp/>you<sp/>may<sp/>not<sp/>use<sp/>this<sp/>file<sp/>except<sp/>in<sp/>compliance</highlight></codeline>
+<codeline lineno="8"><highlight class="comment"><sp/>*<sp/>with<sp/>the<sp/>License.<sp/><sp/>You<sp/>may<sp/>obtain<sp/>a<sp/>copy<sp/>of<sp/>the<sp/>License<sp/>at</highlight></codeline>
+<codeline lineno="9"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="10"><highlight class="comment"><sp/>*<sp/><sp/><sp/>http://www.apache.org/licenses/LICENSE-2.0</highlight></codeline>
+<codeline lineno="11"><highlight class="comment"><sp/>*</highlight></codeline>
+<codeline lineno="12"><highlight class="comment"><sp/>*<sp/>Unless<sp/>required<sp/>by<sp/>applicable<sp/>law<sp/>or<sp/>agreed<sp/>to<sp/>in<sp/>writing,</highlight></codeline>
+<codeline lineno="13"><highlight class="comment"><sp/>*<sp/>software<sp/>distributed<sp/>under<sp/>the<sp/>License<sp/>is<sp/>distributed<sp/>on<sp/>an</highlight></codeline>
+<codeline lineno="14"><highlight class="comment"><sp/>*<sp/>&quot;AS<sp/>IS&quot;<sp/>BASIS,<sp/>WITHOUT<sp/>WARRANTIES<sp/>OR<sp/>CONDITIONS<sp/>OF<sp/>ANY</highlight></codeline>
+<codeline lineno="15"><highlight class="comment"><sp/>*<sp/>KIND,<sp/>either<sp/>express<sp/>or<sp/>implied.<sp/><sp/>See<sp/>the<sp/>License<sp/>for<sp/>the</highlight></codeline>
+<codeline lineno="16"><highlight class="comment"><sp/>*<sp/>specific<sp/>language<sp/>governing<sp/>permissions<sp/>and<sp/>limitations</highlight></codeline>
+<codeline lineno="17"><highlight class="comment"><sp/>*<sp/>under<sp/>the<sp/>License.</highlight></codeline>
+<codeline lineno="18"><highlight class="comment"><sp/>*/</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="19"><highlight class="normal"></highlight></codeline>
+<codeline lineno="20"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;arrow/type.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="21"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;parquet/arrow/reader.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="22"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;parquet/arrow/schema.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="23"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;parquet/schema.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="24"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&lt;parquet/types.h&gt;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="25"><highlight class="normal"></highlight></codeline>
+<codeline lineno="26"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="metadata__columns_8h" kindref="compound">iceberg/metadata_columns.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="27"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/parquet/parquet_schema_util_internal.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="28"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="schema_8h" kindref="compound">iceberg/schema.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="29"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;iceberg/test/matchers.h&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="30"><highlight class="normal"></highlight><highlight class="preprocessor">#include<sp/>&quot;<ref refid="type_8h" kindref="compound">iceberg/type.h</ref>&quot;</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="31"><highlight class="normal"></highlight></codeline>
+<codeline lineno="32"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">iceberg::parquet<sp/>{</highlight></codeline>
+<codeline lineno="33"><highlight class="normal"></highlight></codeline>
+<codeline lineno="34"><highlight class="normal"></highlight><highlight class="keyword">namespace<sp/></highlight><highlight class="normal">{</highlight></codeline>
+<codeline lineno="35"><highlight class="normal"></highlight></codeline>
+<codeline lineno="36"><highlight class="normal"></highlight><highlight class="keyword">constexpr</highlight><highlight class="normal"><sp/>std::string_view<sp/>kParquetFieldIdKey<sp/>=<sp/></highlight><highlight class="stringliteral">&quot;PARQUET:field_id&quot;</highlight><highlight class="normal">;</highlight></codeline>
+<codeline lineno="37"><highlight class="normal"></highlight></codeline>
+<codeline lineno="38"><highlight class="normal">::parquet::schema::NodePtr<sp/>MakeInt32Node(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>field_id<sp/>=<sp/>-1,</highlight></codeline>
+<codeline lineno="39"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>optional<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="40"><highlight class="normal"><sp/><sp/>return<sp/>::parquet::schema::PrimitiveNode::Make(</highlight></codeline>
+<codeline lineno="41"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>name,<sp/>optional<sp/>?<sp/>::parquet::Repetition::OPTIONAL<sp/>:<sp/>::parquet::Repetition::REQUIRED,</highlight></codeline>
+<codeline lineno="42"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>::parquet::LogicalType::None(),<sp/>::parquet::Type::INT32,<sp/></highlight><highlight class="comment">/*primitive_length=*/</highlight><highlight class="normal">-1,</highlight></codeline>
+<codeline lineno="43"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>field_id);</highlight></codeline>
+<codeline lineno="44"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="45"><highlight class="normal"></highlight></codeline>
+<codeline lineno="46"><highlight class="normal">::parquet::schema::NodePtr<sp/>MakeInt64Node(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>field_id<sp/>=<sp/>-1,</highlight></codeline>
+<codeline lineno="47"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>optional<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="48"><highlight class="normal"><sp/><sp/>return<sp/>::parquet::schema::PrimitiveNode::Make(</highlight></codeline>
+<codeline lineno="49"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>name,<sp/>optional<sp/>?<sp/>::parquet::Repetition::OPTIONAL<sp/>:<sp/>::parquet::Repetition::REQUIRED,</highlight></codeline>
+<codeline lineno="50"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>::parquet::LogicalType::None(),<sp/>::parquet::Type::INT64,<sp/></highlight><highlight class="comment">/*primitive_length=*/</highlight><highlight class="normal">-1,</highlight></codeline>
+<codeline lineno="51"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>field_id);</highlight></codeline>
+<codeline lineno="52"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="53"><highlight class="normal"></highlight></codeline>
+<codeline lineno="54"><highlight class="normal">::parquet::schema::NodePtr<sp/>MakeStringNode(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>field_id<sp/>=<sp/>-1,</highlight></codeline>
+<codeline lineno="55"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>optional<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="56"><highlight class="normal"><sp/><sp/>return<sp/>::parquet::schema::PrimitiveNode::Make(</highlight></codeline>
+<codeline lineno="57"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>name,<sp/>optional<sp/>?<sp/>::parquet::Repetition::OPTIONAL<sp/>:<sp/>::parquet::Repetition::REQUIRED,</highlight></codeline>
+<codeline lineno="58"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>::parquet::LogicalType::String(),<sp/>::parquet::Type::BYTE_ARRAY,</highlight></codeline>
+<codeline lineno="59"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*primitive_length=*/</highlight><highlight class="normal">-1,<sp/>field_id);</highlight></codeline>
+<codeline lineno="60"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="61"><highlight class="normal"></highlight></codeline>
+<codeline lineno="62"><highlight class="normal">::parquet::schema::NodePtr<sp/>MakeDoubleNode(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>field_id<sp/>=<sp/>-1,</highlight></codeline>
+<codeline lineno="63"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>optional<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="64"><highlight class="normal"><sp/><sp/>return<sp/>::parquet::schema::PrimitiveNode::Make(</highlight></codeline>
+<codeline lineno="65"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>name,<sp/>optional<sp/>?<sp/>::parquet::Repetition::OPTIONAL<sp/>:<sp/>::parquet::Repetition::REQUIRED,</highlight></codeline>
+<codeline lineno="66"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>::parquet::LogicalType::None(),<sp/>::parquet::Type::DOUBLE,<sp/></highlight><highlight class="comment">/*primitive_length=*/</highlight><highlight class="normal">-1,</highlight></codeline>
+<codeline lineno="67"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>field_id);</highlight></codeline>
+<codeline lineno="68"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="69"><highlight class="normal"></highlight></codeline>
+<codeline lineno="70"><highlight class="normal">::parquet::schema::NodePtr<sp/>MakeFloatNode(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,<sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>field_id<sp/>=<sp/>-1,</highlight></codeline>
+<codeline lineno="71"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>optional<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="72"><highlight class="normal"><sp/><sp/>return<sp/>::parquet::schema::PrimitiveNode::Make(</highlight></codeline>
+<codeline lineno="73"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>name,<sp/>optional<sp/>?<sp/>::parquet::Repetition::OPTIONAL<sp/>:<sp/>::parquet::Repetition::REQUIRED,</highlight></codeline>
+<codeline lineno="74"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>::parquet::LogicalType::None(),<sp/>::parquet::Type::FLOAT,<sp/></highlight><highlight class="comment">/*primitive_length=*/</highlight><highlight class="normal">-1,</highlight></codeline>
+<codeline lineno="75"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>field_id);</highlight></codeline>
+<codeline lineno="76"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="77"><highlight class="normal"></highlight></codeline>
+<codeline lineno="78"><highlight class="normal">::parquet::schema::NodePtr<sp/>MakeGroupNode(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,</highlight></codeline>
+<codeline lineno="79"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>::parquet::schema::NodeVector&amp;<sp/>fields,</highlight></codeline>
+<codeline lineno="80"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>field_id<sp/>=<sp/>-1,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>optional<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="81"><highlight class="normal"><sp/><sp/>return<sp/>::parquet::schema::GroupNode::Make(</highlight></codeline>
+<codeline lineno="82"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>name,<sp/>optional<sp/>?<sp/>::parquet::Repetition::OPTIONAL<sp/>:<sp/>::parquet::Repetition::REQUIRED,</highlight></codeline>
+<codeline lineno="83"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>fields,<sp/></highlight><highlight class="comment">/*logical_type=*/</highlight><highlight class="normal">nullptr,<sp/>field_id);</highlight></codeline>
+<codeline lineno="84"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="85"><highlight class="normal"></highlight></codeline>
+<codeline lineno="86"><highlight class="normal">::parquet::schema::NodePtr<sp/>MakeListNode(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,</highlight></codeline>
+<codeline lineno="87"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>::parquet::schema::NodePtr&amp;<sp/>element_node,</highlight></codeline>
+<codeline lineno="88"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>field_id<sp/>=<sp/>-1,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>optional<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="89"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>list_group<sp/>=<sp/>::parquet::schema::GroupNode::Make(</highlight></codeline>
+<codeline lineno="90"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;element&quot;</highlight><highlight class="normal">,<sp/>::parquet::Repetition::REPEATED,<sp/>{element_node});</highlight></codeline>
+<codeline lineno="91"><highlight class="normal"><sp/><sp/>return<sp/>::parquet::schema::GroupNode::Make(</highlight></codeline>
+<codeline lineno="92"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>name,<sp/>optional<sp/>?<sp/>::parquet::Repetition::OPTIONAL<sp/>:<sp/>::parquet::Repetition::REQUIRED,</highlight></codeline>
+<codeline lineno="93"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{list_group},<sp/>::parquet::LogicalType::List(),<sp/>field_id);</highlight></codeline>
+<codeline lineno="94"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="95"><highlight class="normal"></highlight></codeline>
+<codeline lineno="96"><highlight class="normal">::parquet::schema::NodePtr<sp/>MakeMapNode(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/>std::string&amp;<sp/>name,</highlight></codeline>
+<codeline lineno="97"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>::parquet::schema::NodePtr&amp;<sp/>key_node,</highlight></codeline>
+<codeline lineno="98"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>const<sp/>::parquet::schema::NodePtr&amp;<sp/>value_node,</highlight></codeline>
+<codeline lineno="99"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="keywordtype">int</highlight><highlight class="normal"><sp/>field_id<sp/>=<sp/>-1,<sp/></highlight><highlight class="keywordtype">bool</highlight><highlight class="normal"><sp/>optional<sp/>=<sp/></highlight><highlight class="keyword">true</highlight><highlight class="normal">)<sp/>{</highlight></codeline>
+<codeline lineno="100"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>key_value_group<sp/>=<sp/>::parquet::schema::GroupNode::Make(</highlight></codeline>
+<codeline lineno="101"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;key_value&quot;</highlight><highlight class="normal">,<sp/>::parquet::Repetition::REPEATED,<sp/>{key_node,<sp/>value_node});</highlight></codeline>
+<codeline lineno="102"><highlight class="normal"><sp/><sp/>return<sp/>::parquet::schema::GroupNode::Make(</highlight></codeline>
+<codeline lineno="103"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>name,<sp/>optional<sp/>?<sp/>::parquet::Repetition::OPTIONAL<sp/>:<sp/>::parquet::Repetition::REQUIRED,</highlight></codeline>
+<codeline lineno="104"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{key_value_group},<sp/>::parquet::LogicalType::Map(),<sp/>field_id);</highlight></codeline>
+<codeline lineno="105"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="106"><highlight class="normal"></highlight></codeline>
+<codeline lineno="107"><highlight class="normal"></highlight><highlight class="comment">//<sp/>Helper<sp/>to<sp/>create<sp/>SchemaManifest<sp/>from<sp/>Parquet<sp/>schema</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="108"><highlight class="normal">::parquet::arrow::SchemaManifest<sp/>MakeSchemaManifest(</highlight></codeline>
+<codeline lineno="109"><highlight class="normal"><sp/><sp/><sp/><sp/>const<sp/>::parquet::schema::NodePtr&amp;<sp/>parquet_schema)<sp/>{</highlight></codeline>
+<codeline lineno="110"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parquet_schema_descriptor<sp/>=<sp/>std::make_shared&lt;::parquet::SchemaDescriptor&gt;();</highlight></codeline>
+<codeline lineno="111"><highlight class="normal"><sp/><sp/>parquet_schema_descriptor-&gt;Init(parquet_schema);</highlight></codeline>
+<codeline lineno="112"><highlight class="normal"></highlight></codeline>
+<codeline lineno="113"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>properties<sp/>=<sp/>::parquet::default_arrow_reader_properties();</highlight></codeline>
+<codeline lineno="114"><highlight class="normal"><sp/><sp/>properties.set_arrow_extensions_enabled(</highlight><highlight class="keyword">true</highlight><highlight class="normal">);</highlight></codeline>
+<codeline lineno="115"><highlight class="normal"></highlight></codeline>
+<codeline lineno="116"><highlight class="normal"><sp/><sp/>::parquet::arrow::SchemaManifest<sp/>manifest;</highlight></codeline>
+<codeline lineno="117"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>status<sp/>=<sp/>::parquet::arrow::SchemaManifest::Make(parquet_schema_descriptor.get(),</highlight></codeline>
+<codeline lineno="118"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*key_value_metadata=*/</highlight><highlight class="keyword">nullptr</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="119"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>properties,<sp/>&amp;manifest);</highlight></codeline>
+<codeline lineno="120"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">if</highlight><highlight class="normal"><sp/>(!status.ok())<sp/>{</highlight></codeline>
+<codeline lineno="121"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keywordflow">throw</highlight><highlight class="normal"><sp/>std::runtime_error(</highlight><highlight class="stringliteral">&quot;Failed<sp/>to<sp/>create<sp/>SchemaManifest:<sp/>&quot;</highlight><highlight class="normal"><sp/>+<sp/>status.ToString());</highlight></codeline>
+<codeline lineno="122"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="123"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">return</highlight><highlight class="normal"><sp/>manifest;</highlight></codeline>
+<codeline lineno="124"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="125"><highlight class="normal"></highlight></codeline>
+<codeline lineno="126"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ASSERT_PROJECTED_FIELD(field_projection,<sp/>index)<sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>\</highlight></codeline>
+<codeline lineno="127"><highlight class="preprocessor"><sp/><sp/>ASSERT_EQ(field_projection.kind,<sp/>FieldProjection::Kind::kProjected);<sp/>\</highlight></codeline>
+<codeline lineno="128"><highlight class="preprocessor"><sp/><sp/>ASSERT_EQ(std::get&lt;1&gt;(field_projection.from),<sp/>index);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="129"><highlight class="normal"></highlight></codeline>
+<codeline lineno="130"><highlight class="normal"></highlight><highlight class="preprocessor">#define<sp/>ASSERT_PROJECTED_NULL_FIELD(field_projection)<sp/>\</highlight></codeline>
+<codeline lineno="131"><highlight class="preprocessor"><sp/><sp/>ASSERT_EQ(field_projection.kind,<sp/>FieldProjection::Kind::kNull);</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="132"><highlight class="normal"></highlight></codeline>
+<codeline lineno="133"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="134"><highlight class="normal"></highlight></codeline>
+<codeline lineno="135"><highlight class="normal">TEST(HasFieldIdsTest,<sp/>PrimitiveNode)<sp/>{</highlight></codeline>
+<codeline lineno="136"><highlight class="normal"><sp/><sp/>EXPECT_FALSE(HasFieldIds(MakeInt32Node(</highlight><highlight class="stringliteral">&quot;test_field&quot;</highlight><highlight class="normal">)));</highlight></codeline>
+<codeline lineno="137"><highlight class="normal"><sp/><sp/>EXPECT_TRUE(HasFieldIds(MakeInt32Node(</highlight><highlight class="stringliteral">&quot;test_field&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1)));</highlight></codeline>
+<codeline lineno="138"><highlight class="normal"><sp/><sp/>EXPECT_FALSE(HasFieldIds(MakeInt32Node(</highlight><highlight class="stringliteral">&quot;test_field&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">-1)));</highlight></codeline>
+<codeline lineno="139"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="140"><highlight class="normal"></highlight></codeline>
+<codeline lineno="141"><highlight class="normal"></highlight><highlight class="comment">//<sp/>NOLINTBEGIN(clang-analyzer-cplusplus.NewDeleteLeaks)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="142"><highlight class="normal">TEST(HasFieldIdsTest,<sp/>GroupNode)<sp/>{</highlight></codeline>
+<codeline lineno="143"><highlight class="normal"><sp/><sp/>EXPECT_FALSE(</highlight></codeline>
+<codeline lineno="144"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>HasFieldIds(MakeGroupNode(</highlight><highlight class="stringliteral">&quot;group_without_field_id&quot;</highlight><highlight class="normal">,<sp/>{</highlight></codeline>
+<codeline lineno="145"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeInt32Node(</highlight><highlight class="stringliteral">&quot;c1&quot;</highlight><highlight class="normal">),</highlight></codeline>
+<codeline lineno="146"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeInt32Node(</highlight><highlight class="stringliteral">&quot;c2&quot;</highlight><highlight class="normal">),</highlight></codeline>
+<codeline lineno="147"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>})));</highlight></codeline>
+<codeline lineno="148"><highlight class="normal"><sp/><sp/>EXPECT_TRUE(HasFieldIds(</highlight></codeline>
+<codeline lineno="149"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>MakeGroupNode(</highlight><highlight class="stringliteral">&quot;group_with_full_field_id&quot;</highlight><highlight class="normal">,<sp/>{</highlight></codeline>
+<codeline lineno="150"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeInt32Node(</highlight><highlight class="stringliteral">&quot;c1&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1),</highlight></codeline>
+<codeline lineno="151"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeInt32Node(</highlight><highlight class="stringliteral">&quot;c2&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">2),</highlight></codeline>
+<codeline lineno="152"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>})));</highlight></codeline>
+<codeline lineno="153"><highlight class="normal"><sp/><sp/>EXPECT_TRUE(HasFieldIds(MakeGroupNode(</highlight><highlight class="stringliteral">&quot;group_with_partial_field_id&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="154"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="155"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeInt32Node(</highlight><highlight class="stringliteral">&quot;c1&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1),</highlight></codeline>
+<codeline lineno="156"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeInt32Node(</highlight><highlight class="stringliteral">&quot;c2&quot;</highlight><highlight class="normal">),</highlight></codeline>
+<codeline lineno="157"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>})));</highlight></codeline>
+<codeline lineno="158"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="159"><highlight class="normal"></highlight><highlight class="comment">//<sp/>NOLINTEND(clang-analyzer-cplusplus.NewDeleteLeaks)</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="160"><highlight class="normal"></highlight></codeline>
+<codeline lineno="161"><highlight class="normal">TEST(ParquetSchemaProjectionTest,<sp/>ProjectIdenticalSchemas)<sp/>{</highlight></codeline>
+<codeline lineno="162"><highlight class="normal"><sp/><sp/>Schema<sp/>expected_schema({</highlight></codeline>
+<codeline lineno="163"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1,<sp/></highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>()),</highlight></codeline>
+<codeline lineno="164"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">2,<sp/></highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">iceberg::string</ref>()),</highlight></codeline>
+<codeline lineno="165"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">3,<sp/></highlight><highlight class="stringliteral">&quot;age&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">iceberg::int32</ref>()),</highlight></codeline>
+<codeline lineno="166"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">4,<sp/></highlight><highlight class="stringliteral">&quot;data&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga8457285a5fea3eda5b3f4289bce62ecb" kindref="member">iceberg::float64</ref>()),</highlight></codeline>
+<codeline lineno="167"><highlight class="normal"><sp/><sp/>});</highlight></codeline>
+<codeline lineno="168"><highlight class="normal"></highlight></codeline>
+<codeline lineno="169"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parquet_schema<sp/>=<sp/>MakeGroupNode(</highlight></codeline>
+<codeline lineno="170"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;iceberg_schema&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="171"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{MakeInt64Node(</highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1),<sp/>MakeStringNode(</highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">2),</highlight></codeline>
+<codeline lineno="172"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeInt32Node(</highlight><highlight class="stringliteral">&quot;age&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">3),<sp/>MakeDoubleNode(</highlight><highlight class="stringliteral">&quot;data&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">4)});</highlight></codeline>
+<codeline lineno="173"><highlight class="normal"></highlight></codeline>
+<codeline lineno="174"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>schema_manifest<sp/>=<sp/>MakeSchemaManifest(parquet_schema);</highlight></codeline>
+<codeline lineno="175"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>projection_result<sp/>=<sp/>Project(expected_schema,<sp/>schema_manifest);</highlight></codeline>
+<codeline lineno="176"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="177"><highlight class="normal"></highlight></codeline>
+<codeline lineno="178"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>projection<sp/>=<sp/>*projection_result;</highlight></codeline>
+<codeline lineno="179"><highlight class="normal"><sp/><sp/>ASSERT_EQ(projection.fields.size(),<sp/>4);</highlight></codeline>
+<codeline lineno="180"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keywordtype">size_t</highlight><highlight class="normal"><sp/>i<sp/>=<sp/>0;<sp/>i<sp/>&lt;<sp/>projection.fields.size();<sp/>++i)<sp/>{</highlight></codeline>
+<codeline lineno="181"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[i],<sp/>i);</highlight></codeline>
+<codeline lineno="182"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="183"><highlight class="normal"></highlight></codeline>
+<codeline lineno="184"><highlight class="normal"><sp/><sp/>ASSERT_EQ(SelectedColumnIndices(projection),<sp/>std::vector&lt;int32_t&gt;({0,<sp/>1,<sp/>2,<sp/>3}));</highlight></codeline>
+<codeline lineno="185"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="186"><highlight class="normal"></highlight></codeline>
+<codeline lineno="187"><highlight class="normal">TEST(ParquetSchemaProjectionTest,<sp/>ProjectSubsetSchema)<sp/>{</highlight></codeline>
+<codeline lineno="188"><highlight class="normal"><sp/><sp/>Schema<sp/>expected_schema({</highlight></codeline>
+<codeline lineno="189"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1,<sp/></highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>()),</highlight></codeline>
+<codeline lineno="190"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">3,<sp/></highlight><highlight class="stringliteral">&quot;age&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">iceberg::int32</ref>()),</highlight></codeline>
+<codeline lineno="191"><highlight class="normal"><sp/><sp/>});</highlight></codeline>
+<codeline lineno="192"><highlight class="normal"></highlight></codeline>
+<codeline lineno="193"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parquet_schema<sp/>=<sp/>MakeGroupNode(</highlight></codeline>
+<codeline lineno="194"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;iceberg_schema&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="195"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{MakeInt64Node(</highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1),<sp/>MakeStringNode(</highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">2),</highlight></codeline>
+<codeline lineno="196"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeInt32Node(</highlight><highlight class="stringliteral">&quot;age&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">3),<sp/>MakeDoubleNode(</highlight><highlight class="stringliteral">&quot;data&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">4)});</highlight></codeline>
+<codeline lineno="197"><highlight class="normal"></highlight></codeline>
+<codeline lineno="198"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>schema_manifest<sp/>=<sp/>MakeSchemaManifest(parquet_schema);</highlight></codeline>
+<codeline lineno="199"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>projection_result<sp/>=<sp/>Project(expected_schema,<sp/>schema_manifest);</highlight></codeline>
+<codeline lineno="200"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="201"><highlight class="normal"></highlight></codeline>
+<codeline lineno="202"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>projection<sp/>=<sp/>*projection_result;</highlight></codeline>
+<codeline lineno="203"><highlight class="normal"><sp/><sp/>ASSERT_EQ(projection.fields.size(),<sp/>2);</highlight></codeline>
+<codeline lineno="204"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[0],<sp/>0);</highlight></codeline>
+<codeline lineno="205"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[1],<sp/>1);</highlight></codeline>
+<codeline lineno="206"><highlight class="normal"></highlight></codeline>
+<codeline lineno="207"><highlight class="normal"><sp/><sp/>ASSERT_EQ(SelectedColumnIndices(projection),<sp/>std::vector&lt;int32_t&gt;({0,<sp/>2}));</highlight></codeline>
+<codeline lineno="208"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="209"><highlight class="normal"></highlight></codeline>
+<codeline lineno="210"><highlight class="normal">TEST(ParquetSchemaProjectionTest,<sp/>ProjectMissingOptionalField)<sp/>{</highlight></codeline>
+<codeline lineno="211"><highlight class="normal"><sp/><sp/>Schema<sp/>expected_schema({</highlight></codeline>
+<codeline lineno="212"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1,<sp/></highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>()),</highlight></codeline>
+<codeline lineno="213"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">2,<sp/></highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">iceberg::string</ref>()),</highlight></codeline>
+<codeline lineno="214"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">10,<sp/></highlight><highlight class="stringliteral">&quot;extra&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">iceberg::string</ref>()),</highlight></codeline>
+<codeline lineno="215"><highlight class="normal"><sp/><sp/>});</highlight></codeline>
+<codeline lineno="216"><highlight class="normal"></highlight></codeline>
+<codeline lineno="217"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parquet_schema<sp/>=<sp/>MakeGroupNode(</highlight></codeline>
+<codeline lineno="218"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;iceberg_schema&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="219"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{MakeInt64Node(</highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1),<sp/>MakeStringNode(</highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">2)});</highlight></codeline>
+<codeline lineno="220"><highlight class="normal"></highlight></codeline>
+<codeline lineno="221"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>schema_manifest<sp/>=<sp/>MakeSchemaManifest(parquet_schema);</highlight></codeline>
+<codeline lineno="222"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>projection_result<sp/>=<sp/>Project(expected_schema,<sp/>schema_manifest);</highlight></codeline>
+<codeline lineno="223"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="224"><highlight class="normal"></highlight></codeline>
+<codeline lineno="225"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>projection<sp/>=<sp/>*projection_result;</highlight></codeline>
+<codeline lineno="226"><highlight class="normal"><sp/><sp/>ASSERT_EQ(projection.fields.size(),<sp/>3);</highlight></codeline>
+<codeline lineno="227"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[0],<sp/>0);</highlight></codeline>
+<codeline lineno="228"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[1],<sp/>1);</highlight></codeline>
+<codeline lineno="229"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_NULL_FIELD(projection.fields[2]);</highlight></codeline>
+<codeline lineno="230"><highlight class="normal"></highlight></codeline>
+<codeline lineno="231"><highlight class="normal"><sp/><sp/>ASSERT_EQ(SelectedColumnIndices(projection),<sp/>std::vector&lt;int32_t&gt;({0,<sp/>1}));</highlight></codeline>
+<codeline lineno="232"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="233"><highlight class="normal"></highlight></codeline>
+<codeline lineno="234"><highlight class="normal">TEST(ParquetSchemaProjectionTest,<sp/>ProjectMissingRequiredField)<sp/>{</highlight></codeline>
+<codeline lineno="235"><highlight class="normal"><sp/><sp/>Schema<sp/>expected_schema({</highlight></codeline>
+<codeline lineno="236"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1,<sp/></highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>()),</highlight></codeline>
+<codeline lineno="237"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">2,<sp/></highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">iceberg::string</ref>()),</highlight></codeline>
+<codeline lineno="238"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">10,<sp/></highlight><highlight class="stringliteral">&quot;extra&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">iceberg::string</ref>()),</highlight></codeline>
+<codeline lineno="239"><highlight class="normal"><sp/><sp/>});</highlight></codeline>
+<codeline lineno="240"><highlight class="normal"></highlight></codeline>
+<codeline lineno="241"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parquet_schema<sp/>=<sp/>MakeGroupNode(</highlight></codeline>
+<codeline lineno="242"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;iceberg_schema&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="243"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{MakeInt64Node(</highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1),<sp/>MakeStringNode(</highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">2)});</highlight></codeline>
+<codeline lineno="244"><highlight class="normal"></highlight></codeline>
+<codeline lineno="245"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>schema_manifest<sp/>=<sp/>MakeSchemaManifest(parquet_schema);</highlight></codeline>
+<codeline lineno="246"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>projection_result<sp/>=<sp/>Project(expected_schema,<sp/>schema_manifest);</highlight></codeline>
+<codeline lineno="247"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>IsError(ErrorKind::kInvalidSchema));</highlight></codeline>
+<codeline lineno="248"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;Missing<sp/>required<sp/>field&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="249"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="250"><highlight class="normal"></highlight></codeline>
+<codeline lineno="251"><highlight class="normal">TEST(ParquetSchemaProjectionTest,<sp/>ProjectMetadataColumn)<sp/>{</highlight></codeline>
+<codeline lineno="252"><highlight class="normal"><sp/><sp/>Schema<sp/>expected_schema({</highlight></codeline>
+<codeline lineno="253"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1,<sp/></highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>()),</highlight></codeline>
+<codeline lineno="254"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>MetadataColumns::kFilePath,</highlight></codeline>
+<codeline lineno="255"><highlight class="normal"><sp/><sp/>});</highlight></codeline>
+<codeline lineno="256"><highlight class="normal"></highlight></codeline>
+<codeline lineno="257"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parquet_schema<sp/>=</highlight></codeline>
+<codeline lineno="258"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>MakeGroupNode(</highlight><highlight class="stringliteral">&quot;iceberg_schema&quot;</highlight><highlight class="normal">,<sp/>{MakeInt64Node(</highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1)});</highlight></codeline>
+<codeline lineno="259"><highlight class="normal"></highlight></codeline>
+<codeline lineno="260"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>schema_manifest<sp/>=<sp/>MakeSchemaManifest(parquet_schema);</highlight></codeline>
+<codeline lineno="261"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>projection_result<sp/>=<sp/>Project(expected_schema,<sp/>schema_manifest);</highlight></codeline>
+<codeline lineno="262"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="263"><highlight class="normal"></highlight></codeline>
+<codeline lineno="264"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>projection<sp/>=<sp/>*projection_result;</highlight></codeline>
+<codeline lineno="265"><highlight class="normal"><sp/><sp/>ASSERT_EQ(projection.fields.size(),<sp/>2);</highlight></codeline>
+<codeline lineno="266"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[0],<sp/>0);</highlight></codeline>
+<codeline lineno="267"><highlight class="normal"><sp/><sp/>ASSERT_EQ(projection.fields[1].kind,<sp/>FieldProjection::Kind::kMetadata);</highlight></codeline>
+<codeline lineno="268"><highlight class="normal"></highlight></codeline>
+<codeline lineno="269"><highlight class="normal"><sp/><sp/>ASSERT_EQ(SelectedColumnIndices(projection),<sp/>std::vector&lt;int32_t&gt;({0}));</highlight></codeline>
+<codeline lineno="270"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="271"><highlight class="normal"></highlight></codeline>
+<codeline lineno="272"><highlight class="normal">TEST(ParquetSchemaProjectionTest,<sp/>ProjectSchemaEvolutionIntToLong)<sp/>{</highlight></codeline>
+<codeline lineno="273"><highlight class="normal"><sp/><sp/>Schema<sp/>expected_schema({</highlight></codeline>
+<codeline lineno="274"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1,<sp/></highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>()),</highlight></codeline>
+<codeline lineno="275"><highlight class="normal"><sp/><sp/>});</highlight></codeline>
+<codeline lineno="276"><highlight class="normal"></highlight></codeline>
+<codeline lineno="277"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parquet_schema<sp/>=</highlight></codeline>
+<codeline lineno="278"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>MakeGroupNode(</highlight><highlight class="stringliteral">&quot;iceberg_schema&quot;</highlight><highlight class="normal">,<sp/>{MakeInt32Node(</highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1)});</highlight></codeline>
+<codeline lineno="279"><highlight class="normal"></highlight></codeline>
+<codeline lineno="280"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>schema_manifest<sp/>=<sp/>MakeSchemaManifest(parquet_schema);</highlight></codeline>
+<codeline lineno="281"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>projection_result<sp/>=<sp/>Project(expected_schema,<sp/>schema_manifest);</highlight></codeline>
+<codeline lineno="282"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="283"><highlight class="normal"></highlight></codeline>
+<codeline lineno="284"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>projection<sp/>=<sp/>*projection_result;</highlight></codeline>
+<codeline lineno="285"><highlight class="normal"><sp/><sp/>ASSERT_EQ(projection.fields.size(),<sp/>1);</highlight></codeline>
+<codeline lineno="286"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[0],<sp/>0);</highlight></codeline>
+<codeline lineno="287"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="288"><highlight class="normal"></highlight></codeline>
+<codeline lineno="289"><highlight class="normal">TEST(ParquetSchemaProjectionTest,<sp/>ProjectSchemaEvolutionFloatToDouble)<sp/>{</highlight></codeline>
+<codeline lineno="290"><highlight class="normal"><sp/><sp/>Schema<sp/>expected_schema({</highlight></codeline>
+<codeline lineno="291"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1,<sp/></highlight><highlight class="stringliteral">&quot;value&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga8457285a5fea3eda5b3f4289bce62ecb" kindref="member">iceberg::float64</ref>()),</highlight></codeline>
+<codeline lineno="292"><highlight class="normal"><sp/><sp/>});</highlight></codeline>
+<codeline lineno="293"><highlight class="normal"></highlight></codeline>
+<codeline lineno="294"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parquet_schema<sp/>=</highlight></codeline>
+<codeline lineno="295"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>MakeGroupNode(</highlight><highlight class="stringliteral">&quot;iceberg_schema&quot;</highlight><highlight class="normal">,<sp/>{MakeFloatNode(</highlight><highlight class="stringliteral">&quot;value&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1)});</highlight></codeline>
+<codeline lineno="296"><highlight class="normal"></highlight></codeline>
+<codeline lineno="297"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>schema_manifest<sp/>=<sp/>MakeSchemaManifest(parquet_schema);</highlight></codeline>
+<codeline lineno="298"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>projection_result<sp/>=<sp/>Project(expected_schema,<sp/>schema_manifest);</highlight></codeline>
+<codeline lineno="299"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="300"><highlight class="normal"></highlight></codeline>
+<codeline lineno="301"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>projection<sp/>=<sp/>*projection_result;</highlight></codeline>
+<codeline lineno="302"><highlight class="normal"><sp/><sp/>ASSERT_EQ(projection.fields.size(),<sp/>1);</highlight></codeline>
+<codeline lineno="303"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[0],<sp/>0);</highlight></codeline>
+<codeline lineno="304"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="305"><highlight class="normal"></highlight></codeline>
+<codeline lineno="306"><highlight class="normal">TEST(ParquetSchemaProjectionTest,<sp/>ProjectSchemaEvolutionIncompatibleTypes)<sp/>{</highlight></codeline>
+<codeline lineno="307"><highlight class="normal"><sp/><sp/>Schema<sp/>expected_schema({</highlight></codeline>
+<codeline lineno="308"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1,<sp/></highlight><highlight class="stringliteral">&quot;value&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">iceberg::int32</ref>()),</highlight></codeline>
+<codeline lineno="309"><highlight class="normal"><sp/><sp/>});</highlight></codeline>
+<codeline lineno="310"><highlight class="normal"></highlight></codeline>
+<codeline lineno="311"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parquet_schema<sp/>=</highlight></codeline>
+<codeline lineno="312"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>MakeGroupNode(</highlight><highlight class="stringliteral">&quot;iceberg_schema&quot;</highlight><highlight class="normal">,<sp/>{MakeStringNode(</highlight><highlight class="stringliteral">&quot;value&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1)});</highlight></codeline>
+<codeline lineno="313"><highlight class="normal"></highlight></codeline>
+<codeline lineno="314"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>schema_manifest<sp/>=<sp/>MakeSchemaManifest(parquet_schema);</highlight></codeline>
+<codeline lineno="315"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>projection_result<sp/>=<sp/>Project(expected_schema,<sp/>schema_manifest);</highlight></codeline>
+<codeline lineno="316"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>IsError(ErrorKind::kInvalidSchema));</highlight></codeline>
+<codeline lineno="317"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;Cannot<sp/>read<sp/>Iceberg<sp/>type&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="318"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="319"><highlight class="normal"></highlight></codeline>
+<codeline lineno="320"><highlight class="normal">TEST(ParquetSchemaProjectionTest,<sp/>ProjectNestedStructures)<sp/>{</highlight></codeline>
+<codeline lineno="321"><highlight class="normal"><sp/><sp/>Schema<sp/>expected_schema({</highlight></codeline>
+<codeline lineno="322"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1,<sp/></highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>()),</highlight></codeline>
+<codeline lineno="323"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(</highlight></codeline>
+<codeline lineno="324"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">3,<sp/></highlight><highlight class="stringliteral">&quot;address&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="325"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::make_shared&lt;StructType&gt;(std::vector&lt;SchemaField&gt;{</highlight></codeline>
+<codeline lineno="326"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">101,<sp/></highlight><highlight class="stringliteral">&quot;street&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">iceberg::string</ref>()),</highlight></codeline>
+<codeline lineno="327"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">102,<sp/></highlight><highlight class="stringliteral">&quot;city&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">iceberg::string</ref>()),</highlight></codeline>
+<codeline lineno="328"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>})),</highlight></codeline>
+<codeline lineno="329"><highlight class="normal"><sp/><sp/>});</highlight></codeline>
+<codeline lineno="330"><highlight class="normal"></highlight></codeline>
+<codeline lineno="331"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parquet_schema<sp/>=<sp/>MakeGroupNode(</highlight></codeline>
+<codeline lineno="332"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;iceberg_schema&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="333"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="334"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeInt64Node(</highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1),</highlight></codeline>
+<codeline lineno="335"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeListNode(</highlight><highlight class="stringliteral">&quot;address&quot;</highlight><highlight class="normal">,<sp/>MakeStringNode(</highlight><highlight class="stringliteral">&quot;street&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">100),</highlight></codeline>
+<codeline lineno="336"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">2),</highlight></codeline>
+<codeline lineno="337"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeGroupNode(</highlight><highlight class="stringliteral">&quot;address&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="338"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{MakeStringNode(</highlight><highlight class="stringliteral">&quot;street&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">101),</highlight></codeline>
+<codeline lineno="339"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeStringNode(</highlight><highlight class="stringliteral">&quot;city&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">102)},</highlight></codeline>
+<codeline lineno="340"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">3),</highlight></codeline>
+<codeline lineno="341"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="342"><highlight class="normal"></highlight></codeline>
+<codeline lineno="343"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>schema_manifest<sp/>=<sp/>MakeSchemaManifest(parquet_schema);</highlight></codeline>
+<codeline lineno="344"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>projection_result<sp/>=<sp/>Project(expected_schema,<sp/>schema_manifest);</highlight></codeline>
+<codeline lineno="345"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="346"><highlight class="normal"></highlight></codeline>
+<codeline lineno="347"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>projection<sp/>=<sp/>*projection_result;</highlight></codeline>
+<codeline lineno="348"><highlight class="normal"><sp/><sp/>ASSERT_EQ(projection.fields.size(),<sp/>2);</highlight></codeline>
+<codeline lineno="349"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[0],<sp/>0);</highlight></codeline>
+<codeline lineno="350"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[1],<sp/>1);</highlight></codeline>
+<codeline lineno="351"><highlight class="normal"></highlight></codeline>
+<codeline lineno="352"><highlight class="normal"><sp/><sp/>ASSERT_EQ(projection.fields[1].children.size(),<sp/>2);</highlight></codeline>
+<codeline lineno="353"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[1].children[0],<sp/>0);</highlight></codeline>
+<codeline lineno="354"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[1].children[1],<sp/>1);</highlight></codeline>
+<codeline lineno="355"><highlight class="normal"></highlight></codeline>
+<codeline lineno="356"><highlight class="normal"><sp/><sp/>ASSERT_EQ(SelectedColumnIndices(projection),<sp/>std::vector&lt;int32_t&gt;({0,<sp/>2,<sp/>3}));</highlight></codeline>
+<codeline lineno="357"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="358"><highlight class="normal"></highlight></codeline>
+<codeline lineno="359"><highlight class="normal">TEST(ParquetSchemaProjectionTest,<sp/>ProjectListType)<sp/>{</highlight></codeline>
+<codeline lineno="360"><highlight class="normal"><sp/><sp/>Schema<sp/>expected_schema({</highlight></codeline>
+<codeline lineno="361"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1,<sp/></highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>()),</highlight></codeline>
+<codeline lineno="362"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(</highlight></codeline>
+<codeline lineno="363"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">2,<sp/></highlight><highlight class="stringliteral">&quot;numbers&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="364"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::make_shared&lt;ListType&gt;(SchemaField::MakeOptional(</highlight></codeline>
+<codeline lineno="365"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">101,<sp/></highlight><highlight class="stringliteral">&quot;element&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">iceberg::int32</ref>()))),</highlight></codeline>
+<codeline lineno="366"><highlight class="normal"><sp/><sp/>});</highlight></codeline>
+<codeline lineno="367"><highlight class="normal"></highlight></codeline>
+<codeline lineno="368"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parquet_schema<sp/>=<sp/>MakeGroupNode(</highlight></codeline>
+<codeline lineno="369"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;iceberg_schema&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="370"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="371"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeInt64Node(</highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1),</highlight></codeline>
+<codeline lineno="372"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeListNode(</highlight><highlight class="stringliteral">&quot;numbers&quot;</highlight><highlight class="normal">,<sp/>MakeInt32Node(</highlight><highlight class="stringliteral">&quot;element&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">101),</highlight></codeline>
+<codeline lineno="373"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">2),</highlight></codeline>
+<codeline lineno="374"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="375"><highlight class="normal"></highlight></codeline>
+<codeline lineno="376"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>schema_manifest<sp/>=<sp/>MakeSchemaManifest(parquet_schema);</highlight></codeline>
+<codeline lineno="377"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>projection_result<sp/>=<sp/>Project(expected_schema,<sp/>schema_manifest);</highlight></codeline>
+<codeline lineno="378"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="379"><highlight class="normal"></highlight></codeline>
+<codeline lineno="380"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>projection<sp/>=<sp/>*projection_result;</highlight></codeline>
+<codeline lineno="381"><highlight class="normal"><sp/><sp/>ASSERT_EQ(projection.fields.size(),<sp/>2);</highlight></codeline>
+<codeline lineno="382"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[0],<sp/>0);</highlight></codeline>
+<codeline lineno="383"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[1],<sp/>1);</highlight></codeline>
+<codeline lineno="384"><highlight class="normal"></highlight></codeline>
+<codeline lineno="385"><highlight class="normal"><sp/><sp/>ASSERT_EQ(projection.fields[1].children.size(),<sp/>1);</highlight></codeline>
+<codeline lineno="386"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[1].children[0],<sp/>0);</highlight></codeline>
+<codeline lineno="387"><highlight class="normal"></highlight></codeline>
+<codeline lineno="388"><highlight class="normal"><sp/><sp/>ASSERT_EQ(SelectedColumnIndices(projection),<sp/>std::vector&lt;int32_t&gt;({0,<sp/>1}));</highlight></codeline>
+<codeline lineno="389"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="390"><highlight class="normal"></highlight></codeline>
+<codeline lineno="391"><highlight class="normal">TEST(ParquetSchemaProjectionTest,<sp/>ProjectMapType)<sp/>{</highlight></codeline>
+<codeline lineno="392"><highlight class="normal"><sp/><sp/>Schema<sp/>expected_schema({</highlight></codeline>
+<codeline lineno="393"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(</highlight></codeline>
+<codeline lineno="394"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1,<sp/></highlight><highlight class="stringliteral">&quot;counts&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="395"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::make_shared&lt;MapType&gt;(</highlight></codeline>
+<codeline lineno="396"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">101,<sp/></highlight><highlight class="stringliteral">&quot;key&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">iceberg::string</ref>()),</highlight></codeline>
+<codeline lineno="397"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">102,<sp/></highlight><highlight class="stringliteral">&quot;value&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">iceberg::int32</ref>()))),</highlight></codeline>
+<codeline lineno="398"><highlight class="normal"><sp/><sp/>});</highlight></codeline>
+<codeline lineno="399"><highlight class="normal"></highlight></codeline>
+<codeline lineno="400"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parquet_schema<sp/>=<sp/>MakeGroupNode(</highlight></codeline>
+<codeline lineno="401"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;iceberg_schema&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="402"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="403"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeMapNode(</highlight><highlight class="stringliteral">&quot;counts&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="404"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeStringNode(</highlight><highlight class="stringliteral">&quot;key&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">101,<sp/></highlight><highlight class="comment">/*optional=*/</highlight><highlight class="keyword">false</highlight><highlight class="normal">),</highlight></codeline>
+<codeline lineno="405"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeInt32Node(</highlight><highlight class="stringliteral">&quot;value&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">102),<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1),</highlight></codeline>
+<codeline lineno="406"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="407"><highlight class="normal"></highlight></codeline>
+<codeline lineno="408"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>schema_manifest<sp/>=<sp/>MakeSchemaManifest(parquet_schema);</highlight></codeline>
+<codeline lineno="409"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>projection_result<sp/>=<sp/>Project(expected_schema,<sp/>schema_manifest);</highlight></codeline>
+<codeline lineno="410"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="411"><highlight class="normal"></highlight></codeline>
+<codeline lineno="412"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>projection<sp/>=<sp/>*projection_result;</highlight></codeline>
+<codeline lineno="413"><highlight class="normal"><sp/><sp/>ASSERT_EQ(projection.fields.size(),<sp/>1);</highlight></codeline>
+<codeline lineno="414"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[0],<sp/>0);</highlight></codeline>
+<codeline lineno="415"><highlight class="normal"></highlight></codeline>
+<codeline lineno="416"><highlight class="normal"><sp/><sp/>ASSERT_EQ(projection.fields[0].children.size(),<sp/>2);</highlight></codeline>
+<codeline lineno="417"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[0].children[0],<sp/>0);</highlight></codeline>
+<codeline lineno="418"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[0].children[1],<sp/>1);</highlight></codeline>
+<codeline lineno="419"><highlight class="normal"></highlight></codeline>
+<codeline lineno="420"><highlight class="normal"><sp/><sp/>ASSERT_EQ(SelectedColumnIndices(projection),<sp/>std::vector&lt;int32_t&gt;({0,<sp/>1}));</highlight></codeline>
+<codeline lineno="421"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="422"><highlight class="normal"></highlight></codeline>
+<codeline lineno="423"><highlight class="normal">TEST(ParquetSchemaProjectionTest,<sp/>ProjectListOfStruct)<sp/>{</highlight></codeline>
+<codeline lineno="424"><highlight class="normal"><sp/><sp/>Schema<sp/>expected_schema({</highlight></codeline>
+<codeline lineno="425"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(</highlight></codeline>
+<codeline lineno="426"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1,<sp/></highlight><highlight class="stringliteral">&quot;items&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="427"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::make_shared&lt;ListType&gt;(SchemaField::MakeOptional(</highlight></codeline>
+<codeline lineno="428"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">101,<sp/></highlight><highlight class="stringliteral">&quot;element&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="429"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>std::make_shared&lt;StructType&gt;(std::vector&lt;SchemaField&gt;{</highlight></codeline>
+<codeline lineno="430"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">104,<sp/></highlight><highlight class="stringliteral">&quot;z&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">iceberg::int32</ref>()),</highlight></codeline>
+<codeline lineno="431"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">102,<sp/></highlight><highlight class="stringliteral">&quot;x&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">iceberg::int32</ref>()),</highlight></codeline>
+<codeline lineno="432"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>})))),</highlight></codeline>
+<codeline lineno="433"><highlight class="normal"><sp/><sp/>});</highlight></codeline>
+<codeline lineno="434"><highlight class="normal"></highlight></codeline>
+<codeline lineno="435"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parquet_schema<sp/>=</highlight></codeline>
+<codeline lineno="436"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>MakeGroupNode(</highlight><highlight class="stringliteral">&quot;iceberg_schema&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="437"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{</highlight></codeline>
+<codeline lineno="438"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeListNode(</highlight><highlight class="stringliteral">&quot;items&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="439"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeGroupNode(</highlight><highlight class="stringliteral">&quot;element&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="440"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{MakeInt32Node(</highlight><highlight class="stringliteral">&quot;x&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">102),</highlight></codeline>
+<codeline lineno="441"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeInt32Node(</highlight><highlight class="stringliteral">&quot;y&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">103),</highlight></codeline>
+<codeline lineno="442"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeInt32Node(</highlight><highlight class="stringliteral">&quot;z&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">104),</highlight></codeline>
+<codeline lineno="443"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeInt32Node(</highlight><highlight class="stringliteral">&quot;m&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">105)},</highlight></codeline>
+<codeline lineno="444"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">101),</highlight></codeline>
+<codeline lineno="445"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1),</highlight></codeline>
+<codeline lineno="446"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="447"><highlight class="normal"></highlight></codeline>
+<codeline lineno="448"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>schema_manifest<sp/>=<sp/>MakeSchemaManifest(parquet_schema);</highlight></codeline>
+<codeline lineno="449"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>projection_result<sp/>=<sp/>Project(expected_schema,<sp/>schema_manifest);</highlight></codeline>
+<codeline lineno="450"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="451"><highlight class="normal"></highlight></codeline>
+<codeline lineno="452"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>projection<sp/>=<sp/>*projection_result;</highlight></codeline>
+<codeline lineno="453"><highlight class="normal"><sp/><sp/>ASSERT_EQ(projection.fields.size(),<sp/>1);</highlight></codeline>
+<codeline lineno="454"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[0],<sp/>0);</highlight></codeline>
+<codeline lineno="455"><highlight class="normal"></highlight></codeline>
+<codeline lineno="456"><highlight class="normal"><sp/><sp/></highlight><highlight class="comment">//<sp/>Verify<sp/>list<sp/>element<sp/>struct<sp/>is<sp/>properly<sp/>projected</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="457"><highlight class="normal"><sp/><sp/>ASSERT_EQ(projection.fields[0].children.size(),<sp/>1);</highlight></codeline>
+<codeline lineno="458"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>element_proj<sp/>=<sp/>projection.fields[0].children[0];</highlight></codeline>
+<codeline lineno="459"><highlight class="normal"><sp/><sp/>ASSERT_EQ(element_proj.children.size(),<sp/>2);</highlight></codeline>
+<codeline lineno="460"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(element_proj.children[0],<sp/>1);</highlight></codeline>
+<codeline lineno="461"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(element_proj.children[1],<sp/>0);</highlight></codeline>
+<codeline lineno="462"><highlight class="normal"></highlight></codeline>
+<codeline lineno="463"><highlight class="normal"><sp/><sp/>ASSERT_EQ(SelectedColumnIndices(projection),<sp/>std::vector&lt;int32_t&gt;({0,<sp/>2}));</highlight></codeline>
+<codeline lineno="464"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="465"><highlight class="normal"></highlight></codeline>
+<codeline lineno="466"><highlight class="normal">TEST(ParquetSchemaProjectionTest,<sp/>ProjectDecimalType)<sp/>{</highlight></codeline>
+<codeline lineno="467"><highlight class="normal"><sp/><sp/>Schema<sp/>expected_schema({</highlight></codeline>
+<codeline lineno="468"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1,<sp/></highlight><highlight class="stringliteral">&quot;value&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gaf9e64fe9d9556ef90130264f95b4d9f2" kindref="member">iceberg::decimal</ref>(18,<sp/>2)),</highlight></codeline>
+<codeline lineno="469"><highlight class="normal"><sp/><sp/>});</highlight></codeline>
+<codeline lineno="470"><highlight class="normal"></highlight></codeline>
+<codeline lineno="471"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>decimal_node<sp/>=<sp/>::parquet::schema::PrimitiveNode::Make(</highlight></codeline>
+<codeline lineno="472"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;value&quot;</highlight><highlight class="normal">,<sp/>::parquet::Repetition::REQUIRED,<sp/>::parquet::LogicalType::Decimal(9,<sp/>2),</highlight></codeline>
+<codeline lineno="473"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>::parquet::Type::FIXED_LEN_BYTE_ARRAY,<sp/></highlight><highlight class="comment">/*primitive_length=*/</highlight><highlight class="normal">4,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1);</highlight></codeline>
+<codeline lineno="474"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parquet_schema<sp/>=<sp/>MakeGroupNode(</highlight><highlight class="stringliteral">&quot;iceberg_schema&quot;</highlight><highlight class="normal">,<sp/>{decimal_node});</highlight></codeline>
+<codeline lineno="475"><highlight class="normal"></highlight></codeline>
+<codeline lineno="476"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>schema_manifest<sp/>=<sp/>MakeSchemaManifest(parquet_schema);</highlight></codeline>
+<codeline lineno="477"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>projection_result<sp/>=<sp/>Project(expected_schema,<sp/>schema_manifest);</highlight></codeline>
+<codeline lineno="478"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="479"><highlight class="normal"></highlight></codeline>
+<codeline lineno="480"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>projection<sp/>=<sp/>*projection_result;</highlight></codeline>
+<codeline lineno="481"><highlight class="normal"><sp/><sp/>ASSERT_EQ(projection.fields.size(),<sp/>1);</highlight></codeline>
+<codeline lineno="482"><highlight class="normal"><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[0],<sp/>0);</highlight></codeline>
+<codeline lineno="483"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="484"><highlight class="normal"></highlight></codeline>
+<codeline lineno="485"><highlight class="normal">TEST(ParquetSchemaProjectionTest,<sp/>ProjectDecimalIncompatible)<sp/>{</highlight></codeline>
+<codeline lineno="486"><highlight class="normal"><sp/><sp/>Schema<sp/>expected_schema({</highlight></codeline>
+<codeline lineno="487"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1,<sp/></highlight><highlight class="stringliteral">&quot;value&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gaf9e64fe9d9556ef90130264f95b4d9f2" kindref="member">iceberg::decimal</ref>(18,<sp/>3)),</highlight></codeline>
+<codeline lineno="488"><highlight class="normal"><sp/><sp/>});</highlight></codeline>
+<codeline lineno="489"><highlight class="normal"></highlight></codeline>
+<codeline lineno="490"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>decimal_node<sp/>=<sp/>::parquet::schema::PrimitiveNode::Make(</highlight></codeline>
+<codeline lineno="491"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;value&quot;</highlight><highlight class="normal">,<sp/>::parquet::Repetition::REQUIRED,<sp/>::parquet::LogicalType::Decimal(9,<sp/>2),</highlight></codeline>
+<codeline lineno="492"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>::parquet::Type::FIXED_LEN_BYTE_ARRAY,<sp/></highlight><highlight class="comment">/*primitive_length=*/</highlight><highlight class="normal">4,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1);</highlight></codeline>
+<codeline lineno="493"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parquet_schema<sp/>=<sp/>MakeGroupNode(</highlight><highlight class="stringliteral">&quot;iceberg_schema&quot;</highlight><highlight class="normal">,<sp/>{decimal_node});</highlight></codeline>
+<codeline lineno="494"><highlight class="normal"></highlight></codeline>
+<codeline lineno="495"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>schema_manifest<sp/>=<sp/>MakeSchemaManifest(parquet_schema);</highlight></codeline>
+<codeline lineno="496"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>projection_result<sp/>=<sp/>Project(expected_schema,<sp/>schema_manifest);</highlight></codeline>
+<codeline lineno="497"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>IsError(ErrorKind::kInvalidSchema));</highlight></codeline>
+<codeline lineno="498"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;Cannot<sp/>read&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="499"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="500"><highlight class="normal"></highlight></codeline>
+<codeline lineno="501"><highlight class="normal">TEST(ParquetSchemaProjectionTest,<sp/>ProjectDuplicateFieldIds)<sp/>{</highlight></codeline>
+<codeline lineno="502"><highlight class="normal"><sp/><sp/>Schema<sp/>expected_schema({</highlight></codeline>
+<codeline lineno="503"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1,<sp/></highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">iceberg::int64</ref>()),</highlight></codeline>
+<codeline lineno="504"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>SchemaField::MakeOptional(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">2,<sp/></highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">,<sp/><ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">iceberg::string</ref>()),</highlight></codeline>
+<codeline lineno="505"><highlight class="normal"><sp/><sp/>});</highlight></codeline>
+<codeline lineno="506"><highlight class="normal"></highlight></codeline>
+<codeline lineno="507"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parquet_schema<sp/>=<sp/>MakeGroupNode(</highlight></codeline>
+<codeline lineno="508"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;iceberg_schema&quot;</highlight><highlight class="normal">,<sp/>{</highlight></codeline>
+<codeline lineno="509"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeInt64Node(</highlight><highlight class="stringliteral">&quot;id&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1),</highlight></codeline>
+<codeline lineno="510"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>MakeStringNode(</highlight><highlight class="stringliteral">&quot;name&quot;</highlight><highlight class="normal">,<sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1)<sp/><sp/></highlight><highlight class="comment">//<sp/>Duplicate<sp/>field<sp/>ID</highlight><highlight class="normal"></highlight></codeline>
+<codeline lineno="511"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>});</highlight></codeline>
+<codeline lineno="512"><highlight class="normal"></highlight></codeline>
+<codeline lineno="513"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>schema_manifest<sp/>=<sp/>MakeSchemaManifest(parquet_schema);</highlight></codeline>
+<codeline lineno="514"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>projection_result<sp/>=<sp/>Project(expected_schema,<sp/>schema_manifest);</highlight></codeline>
+<codeline lineno="515"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>IsError(ErrorKind::kInvalidSchema));</highlight></codeline>
+<codeline lineno="516"><highlight class="normal"><sp/><sp/>ASSERT_THAT(projection_result,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;Duplicate<sp/>field<sp/>id&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="517"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="518"><highlight class="normal"></highlight></codeline>
+<codeline lineno="519"><highlight class="normal">TEST(ParquetSchemaProjectionTest,<sp/>ProjectPrimitiveType)<sp/>{</highlight></codeline>
+<codeline lineno="520"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">TestCase<sp/>{</highlight></codeline>
+<codeline lineno="521"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;Type&gt;<sp/>iceberg_type;</highlight></codeline>
+<codeline lineno="522"><highlight class="normal"><sp/><sp/><sp/><sp/>::parquet::Type::type<sp/>parquet_type;</highlight></codeline>
+<codeline lineno="523"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>::parquet::LogicalType&gt;<sp/>parquet_logical_type;</highlight></codeline>
+<codeline lineno="524"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>primitive_length<sp/>=<sp/>-1;</highlight></codeline>
+<codeline lineno="525"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="526"><highlight class="normal"></highlight></codeline>
+<codeline lineno="527"><highlight class="normal"><sp/><sp/>std::vector&lt;TestCase&gt;<sp/>test_cases<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="528"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1ga8457285a5fea3eda5b3f4289bce62ecb" kindref="member">float64</ref>(),<sp/>.parquet_type<sp/>=<sp/>::parquet::Type::DOUBLE},</highlight></codeline>
+<codeline lineno="529"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1gab54ddf6ad9419b772fbde66891733212" kindref="member">float32</ref>(),<sp/>.parquet_type<sp/>=<sp/>::parquet::Type::FLOAT},</highlight></codeline>
+<codeline lineno="530"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1gafca6afb41a025fd4a7eed7809d4b653f" kindref="member">int64</ref>(),<sp/>.parquet_type<sp/>=<sp/>::parquet::Type::INT64},</highlight></codeline>
+<codeline lineno="531"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">int32</ref>(),<sp/>.parquet_type<sp/>=<sp/>::parquet::Type::INT32},</highlight></codeline>
+<codeline lineno="532"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1ga877a22ff733d9ca08b85258b8decbcdb" kindref="member">string</ref>(),</highlight></codeline>
+<codeline lineno="533"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_type<sp/>=<sp/>::parquet::Type::BYTE_ARRAY,</highlight></codeline>
+<codeline lineno="534"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_logical_type<sp/>=<sp/>::parquet::LogicalType::String()},</highlight></codeline>
+<codeline lineno="535"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1ga33cd0c2e979eebcccc89cdbcd3f6af99" kindref="member">binary</ref>(),<sp/>.parquet_type<sp/>=<sp/>::parquet::Type::BYTE_ARRAY},</highlight></codeline>
+<codeline lineno="536"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1gafb5f5aec1d1d6218809ee512e2f87e83" kindref="member">boolean</ref>(),<sp/>.parquet_type<sp/>=<sp/>::parquet::Type::BOOLEAN},</highlight></codeline>
+<codeline lineno="537"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1ga377ecf647b08303fd9f87c31b1519dbf" kindref="member">date</ref>(),</highlight></codeline>
+<codeline lineno="538"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_type<sp/>=<sp/>::parquet::Type::INT32,</highlight></codeline>
+<codeline lineno="539"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_logical_type<sp/>=<sp/>::parquet::LogicalType::Date()},</highlight></codeline>
+<codeline lineno="540"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{</highlight></codeline>
+<codeline lineno="541"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1ga7048c118c821d9aba4c08f3f23262b0f" kindref="member">time</ref>(),</highlight></codeline>
+<codeline lineno="542"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_type<sp/>=<sp/>::parquet::Type::INT64,</highlight></codeline>
+<codeline lineno="543"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_logical_type<sp/>=<sp/>::parquet::LogicalType::Time(</highlight></codeline>
+<codeline lineno="544"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*is_adjusted_to_utc=*/</highlight><highlight class="keyword">true</highlight><highlight class="normal">,<sp/>::parquet::LogicalType::TimeUnit::MICROS)},</highlight></codeline>
+<codeline lineno="545"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{</highlight></codeline>
+<codeline lineno="546"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1ga98107734ef37f6f3b36b9fa3a6e30fe9" kindref="member">timestamp</ref>(),</highlight></codeline>
+<codeline lineno="547"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_type<sp/>=<sp/>::parquet::Type::INT64,</highlight></codeline>
+<codeline lineno="548"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_logical_type<sp/>=<sp/>::parquet::LogicalType::Timestamp(</highlight></codeline>
+<codeline lineno="549"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*is_adjusted_to_utc=*/</highlight><highlight class="keyword">false</highlight><highlight class="normal">,<sp/>::parquet::LogicalType::TimeUnit::MICROS)},</highlight></codeline>
+<codeline lineno="550"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{</highlight></codeline>
+<codeline lineno="551"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1ga6533501016e29cf4e348da8a2a20635d" kindref="member">timestamp_tz</ref>(),</highlight></codeline>
+<codeline lineno="552"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_type<sp/>=<sp/>::parquet::Type::INT64,</highlight></codeline>
+<codeline lineno="553"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_logical_type<sp/>=<sp/>::parquet::LogicalType::Timestamp(</highlight></codeline>
+<codeline lineno="554"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*is_adjusted_to_utc=*/</highlight><highlight class="keyword">true</highlight><highlight class="normal">,<sp/>::parquet::LogicalType::TimeUnit::MICROS)},</highlight></codeline>
+<codeline lineno="555"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1gaf9e64fe9d9556ef90130264f95b4d9f2" kindref="member">decimal</ref>(4,<sp/>2),</highlight></codeline>
+<codeline lineno="556"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_type<sp/>=<sp/>::parquet::Type::INT32,</highlight></codeline>
+<codeline lineno="557"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_logical_type<sp/>=<sp/>::parquet::LogicalType::Decimal(4,<sp/>2)},</highlight></codeline>
+<codeline lineno="558"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1gaf9e64fe9d9556ef90130264f95b4d9f2" kindref="member">decimal</ref>(38,<sp/>18),</highlight></codeline>
+<codeline lineno="559"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_type<sp/>=<sp/>::parquet::Type::FIXED_LEN_BYTE_ARRAY,</highlight></codeline>
+<codeline lineno="560"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_logical_type<sp/>=<sp/>::parquet::LogicalType::Decimal(38,<sp/>18),</highlight></codeline>
+<codeline lineno="561"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.primitive_length<sp/>=<sp/>16},</highlight></codeline>
+<codeline lineno="562"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1gafcf0f5e6522390678b91a9515b174bcf" kindref="member">uuid</ref>(),</highlight></codeline>
+<codeline lineno="563"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_type<sp/>=<sp/>::parquet::Type::FIXED_LEN_BYTE_ARRAY,</highlight></codeline>
+<codeline lineno="564"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_logical_type<sp/>=<sp/>::parquet::LogicalType::UUID(),</highlight></codeline>
+<codeline lineno="565"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.primitive_length<sp/>=<sp/>16},</highlight></codeline>
+<codeline lineno="566"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1gab0c125df895ca2e1f90a05c9b0704cf5" kindref="member">fixed</ref>(8),</highlight></codeline>
+<codeline lineno="567"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_type<sp/>=<sp/>::parquet::Type::FIXED_LEN_BYTE_ARRAY,</highlight></codeline>
+<codeline lineno="568"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.primitive_length<sp/>=<sp/>8}};</highlight></codeline>
+<codeline lineno="569"><highlight class="normal"></highlight></codeline>
+<codeline lineno="570"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>test_case<sp/>:<sp/>test_cases)<sp/>{</highlight></codeline>
+<codeline lineno="571"><highlight class="normal"><sp/><sp/><sp/><sp/>Schema<sp/>expected_schema({SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1,<sp/></highlight><highlight class="stringliteral">&quot;test_field&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="572"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>test_case.iceberg_type)});</highlight></codeline>
+<codeline lineno="573"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parquet_schema<sp/>=<sp/>MakeGroupNode(</highlight></codeline>
+<codeline lineno="574"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;iceberg_schema&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="575"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{::parquet::schema::PrimitiveNode::Make(</highlight></codeline>
+<codeline lineno="576"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;test_field&quot;</highlight><highlight class="normal">,<sp/>::parquet::Repetition::REQUIRED,<sp/>test_case.parquet_logical_type,</highlight></codeline>
+<codeline lineno="577"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>test_case.parquet_type,<sp/>test_case.primitive_length,</highlight></codeline>
+<codeline lineno="578"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1)});</highlight></codeline>
+<codeline lineno="579"><highlight class="normal"></highlight></codeline>
+<codeline lineno="580"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>schema_manifest<sp/>=<sp/>MakeSchemaManifest(parquet_schema);</highlight></codeline>
+<codeline lineno="581"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>projection_result<sp/>=<sp/>Project(expected_schema,<sp/>schema_manifest);</highlight></codeline>
+<codeline lineno="582"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_THAT(projection_result,<sp/>IsOk());</highlight></codeline>
+<codeline lineno="583"><highlight class="normal"></highlight></codeline>
+<codeline lineno="584"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>projection<sp/>=<sp/>*projection_result;</highlight></codeline>
+<codeline lineno="585"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_EQ(projection.fields.size(),<sp/>1);</highlight></codeline>
+<codeline lineno="586"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_PROJECTED_FIELD(projection.fields[0],<sp/>0);</highlight></codeline>
+<codeline lineno="587"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="588"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="589"><highlight class="normal"></highlight></codeline>
+<codeline lineno="590"><highlight class="normal">TEST(ParquetSchemaProjectionTest,<sp/>UnsuportedProjection)<sp/>{</highlight></codeline>
+<codeline lineno="591"><highlight class="normal"><sp/><sp/></highlight><highlight class="keyword">struct<sp/></highlight><highlight class="normal">TestCase<sp/>{</highlight></codeline>
+<codeline lineno="592"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;Type&gt;<sp/>iceberg_type;</highlight></codeline>
+<codeline lineno="593"><highlight class="normal"><sp/><sp/><sp/><sp/>::parquet::Type::type<sp/>parquet_type;</highlight></codeline>
+<codeline lineno="594"><highlight class="normal"><sp/><sp/><sp/><sp/>std::shared_ptr&lt;const<sp/>::parquet::LogicalType&gt;<sp/>parquet_logical_type;</highlight></codeline>
+<codeline lineno="595"><highlight class="normal"><sp/><sp/><sp/><sp/>int32_t<sp/>primitive_length<sp/>=<sp/>-1;</highlight></codeline>
+<codeline lineno="596"><highlight class="normal"><sp/><sp/>};</highlight></codeline>
+<codeline lineno="597"><highlight class="normal"></highlight></codeline>
+<codeline lineno="598"><highlight class="normal"><sp/><sp/>std::vector&lt;TestCase&gt;<sp/>test_cases<sp/>=<sp/>{</highlight></codeline>
+<codeline lineno="599"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1gab54ddf6ad9419b772fbde66891733212" kindref="member">float32</ref>(),<sp/>.parquet_type<sp/>=<sp/>::parquet::Type::DOUBLE},</highlight></codeline>
+<codeline lineno="600"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1ga91f0688c58d168d755610a2b5a1a222e" kindref="member">int32</ref>(),<sp/>.parquet_type<sp/>=<sp/>::parquet::Type::INT64},</highlight></codeline>
+<codeline lineno="601"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1ga377ecf647b08303fd9f87c31b1519dbf" kindref="member">date</ref>(),<sp/>.parquet_type<sp/>=<sp/>::parquet::Type::INT32},</highlight></codeline>
+<codeline lineno="602"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1ga7048c118c821d9aba4c08f3f23262b0f" kindref="member">time</ref>(),</highlight></codeline>
+<codeline lineno="603"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_type<sp/>=<sp/>::parquet::Type::INT64,</highlight></codeline>
+<codeline lineno="604"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_logical_type<sp/>=<sp/>::parquet::LogicalType::Time(</highlight></codeline>
+<codeline lineno="605"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*is_adjusted_to_utc=*/</highlight><highlight class="keyword">true</highlight><highlight class="normal">,<sp/>::parquet::LogicalType::TimeUnit::NANOS)},</highlight></codeline>
+<codeline lineno="606"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{</highlight></codeline>
+<codeline lineno="607"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1ga98107734ef37f6f3b36b9fa3a6e30fe9" kindref="member">timestamp</ref>(),</highlight></codeline>
+<codeline lineno="608"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_type<sp/>=<sp/>::parquet::Type::INT64,</highlight></codeline>
+<codeline lineno="609"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_logical_type<sp/>=<sp/>::parquet::LogicalType::Timestamp(</highlight></codeline>
+<codeline lineno="610"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*is_adjusted_to_utc=*/</highlight><highlight class="keyword">false</highlight><highlight class="normal">,<sp/>::parquet::LogicalType::TimeUnit::NANOS)},</highlight></codeline>
+<codeline lineno="611"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1ga6533501016e29cf4e348da8a2a20635d" kindref="member">timestamp_tz</ref>(),</highlight></codeline>
+<codeline lineno="612"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_type<sp/>=<sp/>::parquet::Type::INT64,</highlight></codeline>
+<codeline lineno="613"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_logical_type<sp/>=<sp/>::parquet::LogicalType::Timestamp(</highlight></codeline>
+<codeline lineno="614"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*is_adjusted_to_utc=*/</highlight><highlight class="keyword">true</highlight><highlight class="normal">,<sp/>::parquet::LogicalType::TimeUnit::NANOS)},</highlight></codeline>
+<codeline lineno="615"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1gaf9e64fe9d9556ef90130264f95b4d9f2" kindref="member">decimal</ref>(4,<sp/>2),</highlight></codeline>
+<codeline lineno="616"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_type<sp/>=<sp/>::parquet::Type::INT32,</highlight></codeline>
+<codeline lineno="617"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_logical_type<sp/>=<sp/>::parquet::LogicalType::Decimal(4,<sp/>1)},</highlight></codeline>
+<codeline lineno="618"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/>TestCase{.iceberg_type<sp/>=<sp/><ref refid="group__type-factories_1gab0c125df895ca2e1f90a05c9b0704cf5" kindref="member">fixed</ref>(8),</highlight></codeline>
+<codeline lineno="619"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.parquet_type<sp/>=<sp/>::parquet::Type::FIXED_LEN_BYTE_ARRAY,</highlight></codeline>
+<codeline lineno="620"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>.primitive_length<sp/>=<sp/>4}};</highlight></codeline>
+<codeline lineno="621"><highlight class="normal"></highlight></codeline>
+<codeline lineno="622"><highlight class="normal"><sp/><sp/></highlight><highlight class="keywordflow">for</highlight><highlight class="normal"><sp/>(</highlight><highlight class="keyword">const</highlight><highlight class="normal"><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal">&amp;<sp/>test_case<sp/>:<sp/>test_cases)<sp/>{</highlight></codeline>
+<codeline lineno="623"><highlight class="normal"><sp/><sp/><sp/><sp/>Schema<sp/>expected_schema({SchemaField::MakeRequired(</highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1,<sp/></highlight><highlight class="stringliteral">&quot;test_field&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="624"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>test_case.iceberg_type)});</highlight></codeline>
+<codeline lineno="625"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>parquet_schema<sp/>=<sp/>MakeGroupNode(</highlight></codeline>
+<codeline lineno="626"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;iceberg_schema&quot;</highlight><highlight class="normal">,</highlight></codeline>
+<codeline lineno="627"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>{::parquet::schema::PrimitiveNode::Make(</highlight></codeline>
+<codeline lineno="628"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="stringliteral">&quot;test_field&quot;</highlight><highlight class="normal">,<sp/>::parquet::Repetition::REQUIRED,<sp/>test_case.parquet_logical_type,</highlight></codeline>
+<codeline lineno="629"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/>test_case.parquet_type,<sp/>test_case.primitive_length,</highlight></codeline>
+<codeline lineno="630"><highlight class="normal"><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/></highlight><highlight class="comment">/*field_id=*/</highlight><highlight class="normal">1)});</highlight></codeline>
+<codeline lineno="631"><highlight class="normal"></highlight></codeline>
+<codeline lineno="632"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>schema_manifest<sp/>=<sp/>MakeSchemaManifest(parquet_schema);</highlight></codeline>
+<codeline lineno="633"><highlight class="normal"><sp/><sp/><sp/><sp/></highlight><highlight class="keyword">auto</highlight><highlight class="normal"><sp/>projection_result<sp/>=<sp/>Project(expected_schema,<sp/>schema_manifest);</highlight></codeline>
+<codeline lineno="634"><highlight class="normal"><sp/><sp/><sp/><sp/>ASSERT_THAT(projection_result,<sp/>HasErrorMessage(</highlight><highlight class="stringliteral">&quot;Cannot<sp/>read&quot;</highlight><highlight class="normal">));</highlight></codeline>
+<codeline lineno="635"><highlight class="normal"><sp/><sp/>}</highlight></codeline>
+<codeline lineno="636"><highlight class="normal">}</highlight></codeline>
+<codeline lineno="637"><highlight class="normal"></highlight></codeline>
+<codeline lineno="638"><highlight class="normal">}<sp/><sp/></highlight><highlight class="comment">//<sp/>namespace<sp/>iceberg::parquet</highlight><highlight class="normal"></highlight></codeline>
+    </programlisting>
+    <location file="iceberg/test/parquet_schema_test.cc"/>
+  </compounddef>
+</doxygen>

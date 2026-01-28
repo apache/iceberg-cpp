@@ -1,0 +1,141 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1GetProjectedIdsVisitor" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::GetProjectedIdsVisitor</compoundname>
+    <includes refid="type__util_8h" local="no">type_util.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1GetProjectedIdsVisitor_1a4694e7e58d1c629820144b4783f1abba" prot="private" static="no" mutable="no">
+        <type>const bool</type>
+        <definition>const bool iceberg::GetProjectedIdsVisitor::include_struct_ids_</definition>
+        <argsstring></argsstring>
+        <name>include_struct_ids_</name>
+        <qualifiedname>iceberg::GetProjectedIdsVisitor::include_struct_ids_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="136" column="14" bodyfile="iceberg/util/type_util.h" bodystart="136" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1GetProjectedIdsVisitor_1abc707a55f8e15884fcce43222ff71e5a" prot="private" static="no" mutable="no">
+        <type>std::unordered_set&lt; int32_t &gt;</type>
+        <definition>std::unordered_set&lt;int32_t&gt; iceberg::GetProjectedIdsVisitor::ids_</definition>
+        <argsstring></argsstring>
+        <name>ids_</name>
+        <qualifiedname>iceberg::GetProjectedIdsVisitor::ids_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="137" column="22" bodyfile="iceberg/util/type_util.h" bodystart="137" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1GetProjectedIdsVisitor_1a221b310a7191c50a5aadd171aeb2128b" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::GetProjectedIdsVisitor::GetProjectedIdsVisitor</definition>
+        <argsstring>(bool include_struct_ids=false)</argsstring>
+        <name>GetProjectedIdsVisitor</name>
+        <qualifiedname>iceberg::GetProjectedIdsVisitor::GetProjectedIdsVisitor</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>include_struct_ids</declname>
+          <defval>false</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="128" column="12" bodyfile="iceberg/util/type_util.cc" bodystart="274" bodyend="275"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GetProjectedIdsVisitor_1ab999bea76eae4b1f30bebf74d40ad531" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::GetProjectedIdsVisitor::Visit</definition>
+        <argsstring>(const Type &amp;type)</argsstring>
+        <name>Visit</name>
+        <qualifiedname>iceberg::GetProjectedIdsVisitor::Visit</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="130" column="10" bodyfile="iceberg/util/type_util.cc" bodystart="277" bodyend="283"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GetProjectedIdsVisitor_1a59fe4ce7df6e014622935d00938e5117" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::GetProjectedIdsVisitor::VisitNested</definition>
+        <argsstring>(const NestedType &amp;type)</argsstring>
+        <name>VisitNested</name>
+        <qualifiedname>iceberg::GetProjectedIdsVisitor::VisitNested</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1NestedType" kindref="compound">NestedType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="131" column="10" bodyfile="iceberg/util/type_util.cc" bodystart="285" bodyend="297"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GetProjectedIdsVisitor_1a20dfdedc3cfc8f20db4ea2cbaae989f5" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::GetProjectedIdsVisitor::VisitPrimitive</definition>
+        <argsstring>(const PrimitiveType &amp;type)</argsstring>
+        <name>VisitPrimitive</name>
+        <qualifiedname>iceberg::GetProjectedIdsVisitor::VisitPrimitive</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1PrimitiveType" kindref="compound">PrimitiveType</ref> &amp;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="132" column="10" bodyfile="iceberg/util/type_util.cc" bodystart="299" bodyend="299"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1GetProjectedIdsVisitor_1a4001a433612f5bc82fad28db5d114b56" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::unordered_set&lt; int32_t &gt;</type>
+        <definition>std::unordered_set&lt; int32_t &gt; iceberg::GetProjectedIdsVisitor::Finish</definition>
+        <argsstring>() const</argsstring>
+        <name>Finish</name>
+        <qualifiedname>iceberg::GetProjectedIdsVisitor::Finish</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/type_util.h" line="133" column="22" bodyfile="iceberg/util/type_util.cc" bodystart="301" bodyend="301"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Visitor for getting projected field IDs. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/util/type_util.h" line="126" column="1" bodyfile="iceberg/util/type_util.h" bodystart="126" bodyend="138"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1GetProjectedIdsVisitor_1a4001a433612f5bc82fad28db5d114b56" prot="public" virt="non-virtual"><scope>iceberg::GetProjectedIdsVisitor</scope><name>Finish</name></member>
+      <member refid="classiceberg_1_1GetProjectedIdsVisitor_1a221b310a7191c50a5aadd171aeb2128b" prot="public" virt="non-virtual"><scope>iceberg::GetProjectedIdsVisitor</scope><name>GetProjectedIdsVisitor</name></member>
+      <member refid="classiceberg_1_1GetProjectedIdsVisitor_1abc707a55f8e15884fcce43222ff71e5a" prot="private" virt="non-virtual"><scope>iceberg::GetProjectedIdsVisitor</scope><name>ids_</name></member>
+      <member refid="classiceberg_1_1GetProjectedIdsVisitor_1a4694e7e58d1c629820144b4783f1abba" prot="private" virt="non-virtual"><scope>iceberg::GetProjectedIdsVisitor</scope><name>include_struct_ids_</name></member>
+      <member refid="classiceberg_1_1GetProjectedIdsVisitor_1ab999bea76eae4b1f30bebf74d40ad531" prot="public" virt="non-virtual"><scope>iceberg::GetProjectedIdsVisitor</scope><name>Visit</name></member>
+      <member refid="classiceberg_1_1GetProjectedIdsVisitor_1a59fe4ce7df6e014622935d00938e5117" prot="public" virt="non-virtual"><scope>iceberg::GetProjectedIdsVisitor</scope><name>VisitNested</name></member>
+      <member refid="classiceberg_1_1GetProjectedIdsVisitor_1a20dfdedc3cfc8f20db4ea2cbaae989f5" prot="public" virt="non-virtual"><scope>iceberg::GetProjectedIdsVisitor</scope><name>VisitPrimitive</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

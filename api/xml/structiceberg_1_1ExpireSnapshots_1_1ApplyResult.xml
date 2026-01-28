@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1ExpireSnapshots_1_1ApplyResult" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::ExpireSnapshots::ApplyResult</compoundname>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1ExpireSnapshots_1_1ApplyResult_1a5cf1346e098a1e686d3c65a6cf95eef7" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::ExpireSnapshots::ApplyResult::refs_to_remove</definition>
+        <argsstring></argsstring>
+        <name>refs_to_remove</name>
+        <qualifiedname>iceberg::ExpireSnapshots::ApplyResult::refs_to_remove</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="72" column="17" bodyfile="iceberg/update/expire_snapshots.h" bodystart="72" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ExpireSnapshots_1_1ApplyResult_1a8a48f3e8bcf1486af5329aa1ce858457" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int64_t &gt;</type>
+        <definition>std::vector&lt;int64_t&gt; iceberg::ExpireSnapshots::ApplyResult::snapshot_ids_to_remove</definition>
+        <argsstring></argsstring>
+        <name>snapshot_ids_to_remove</name>
+        <qualifiedname>iceberg::ExpireSnapshots::ApplyResult::snapshot_ids_to_remove</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="73" column="17" bodyfile="iceberg/update/expire_snapshots.h" bodystart="73" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ExpireSnapshots_1_1ApplyResult_1a6cbd4ca7aea7671cb080cd0cc49c2535" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; int32_t &gt;</type>
+        <definition>std::vector&lt;int32_t&gt; iceberg::ExpireSnapshots::ApplyResult::partition_spec_ids_to_remove</definition>
+        <argsstring></argsstring>
+        <name>partition_spec_ids_to_remove</name>
+        <qualifiedname>iceberg::ExpireSnapshots::ApplyResult::partition_spec_ids_to_remove</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="74" column="17" bodyfile="iceberg/update/expire_snapshots.h" bodystart="74" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1ExpireSnapshots_1_1ApplyResult_1a7dcbbe013c6b81caffb69ec29e28e8db" prot="public" static="no" mutable="no">
+        <type>std::unordered_set&lt; int32_t &gt;</type>
+        <definition>std::unordered_set&lt;int32_t&gt; iceberg::ExpireSnapshots::ApplyResult::schema_ids_to_remove</definition>
+        <argsstring></argsstring>
+        <name>schema_ids_to_remove</name>
+        <qualifiedname>iceberg::ExpireSnapshots::ApplyResult::schema_ids_to_remove</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/expire_snapshots.h" line="75" column="24" bodyfile="iceberg/update/expire_snapshots.h" bodystart="75" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::ExpireSnapshots::ApplyResult</label>
+        <link refid="structiceberg_1_1ExpireSnapshots_1_1ApplyResult"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>refs_to_remove</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>snapshot_ids_to_remove</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>partition_spec_ids_to_remove</edgelabel>
+        </childnode>
+        <childnode refid="7" relation="usage">
+          <edgelabel>schema_ids_to_remove</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="3">
+        <label>std::string</label>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::unordered_set&lt; int32_t &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::vector&lt; int32_t &gt;</label>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; int64_t &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="3" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/update/expire_snapshots.h" line="71" column="3" bodyfile="iceberg/update/expire_snapshots.h" bodystart="71" bodyend="76"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1ExpireSnapshots_1_1ApplyResult_1a6cbd4ca7aea7671cb080cd0cc49c2535" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots::ApplyResult</scope><name>partition_spec_ids_to_remove</name></member>
+      <member refid="structiceberg_1_1ExpireSnapshots_1_1ApplyResult_1a5cf1346e098a1e686d3c65a6cf95eef7" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots::ApplyResult</scope><name>refs_to_remove</name></member>
+      <member refid="structiceberg_1_1ExpireSnapshots_1_1ApplyResult_1a7dcbbe013c6b81caffb69ec29e28e8db" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots::ApplyResult</scope><name>schema_ids_to_remove</name></member>
+      <member refid="structiceberg_1_1ExpireSnapshots_1_1ApplyResult_1a8a48f3e8bcf1486af5329aa1ce858457" prot="public" virt="non-virtual"><scope>iceberg::ExpireSnapshots::ApplyResult</scope><name>snapshot_ids_to_remove</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

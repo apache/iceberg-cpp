@@ -1,0 +1,817 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ManifestEvalVisitor" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::ManifestEvalVisitor</compoundname>
+    <basecompoundref refid="classiceberg_1_1BoundVisitor" prot="public" virt="non-virtual">iceberg::BoundVisitor&lt; bool &gt;</basecompoundref>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ManifestEvalVisitor_1a09f20a0ab2d69f0d9629b23c5bd94eca" prot="private" static="no" mutable="no">
+        <type>const std::vector&lt; <ref refid="structiceberg_1_1PartitionFieldSummary" kindref="compound">PartitionFieldSummary</ref> &gt; &amp;</type>
+        <definition>const std::vector&lt;PartitionFieldSummary&gt;&amp; iceberg::ManifestEvalVisitor::stats_</definition>
+        <argsstring></argsstring>
+        <name>stats_</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::stats_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="347" column="21" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="347" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1aa47b29184ca4c964ea4dc762ae1d1680" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestEvalVisitor::ManifestEvalVisitor</definition>
+        <argsstring>(const ManifestFile &amp;manifest)</argsstring>
+        <name>ManifestEvalVisitor</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::ManifestEvalVisitor</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>manifest</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="41" column="12" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="41" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1aecc6b3fd9c9e3c07b2d29e7e34c12b05" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::AlwaysTrue</definition>
+        <argsstring>() override</argsstring>
+        <name>AlwaysTrue</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::AlwaysTrue</qualifiedname>
+        <reimplements refid="classiceberg_1_1ExpressionVisitor_1aed1c555ca56ff0aaa898d31aa52f7287">AlwaysTrue</reimplements>
+        <briefdescription>
+<para>Visit a <ref refid="classiceberg_1_1True" kindref="compound">True</ref> expression (always evaluates to true). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="44" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="44" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1a6a891fbe55ee59d73b943b700b48c8ef" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::AlwaysFalse</definition>
+        <argsstring>() override</argsstring>
+        <name>AlwaysFalse</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::AlwaysFalse</qualifiedname>
+        <reimplements refid="classiceberg_1_1ExpressionVisitor_1aa6abb6e1020467e2ab3a2e17563990be">AlwaysFalse</reimplements>
+        <briefdescription>
+<para>Visit a <ref refid="classiceberg_1_1False" kindref="compound">False</ref> expression (always evaluates to false). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="46" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="46" bodyend="46"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1a28878d5e94d4fb46ed1711ba4157248e" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::Not</definition>
+        <argsstring>(bool child_result) override</argsstring>
+        <name>Not</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::Not</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>child_result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="48" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="48" bodyend="48"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1a776944ed2e6ab0a5564cdb1f6c264f37" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::And</definition>
+        <argsstring>(bool left_result, bool right_result) override</argsstring>
+        <name>And</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::And</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>left_result</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>right_result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="50" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="50" bodyend="52"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1a8438dc0ac882b8087e3d64924c847246" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::Or</definition>
+        <argsstring>(bool left_result, bool right_result) override</argsstring>
+        <name>Or</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::Or</qualifiedname>
+        <param>
+          <type>bool</type>
+          <declname>left_result</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>right_result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="54" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="54" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1a4a6bbdd6cad633f8b059a647825ace07" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::IsNull</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr) override</argsstring>
+        <name>IsNull</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::IsNull</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundVisitor_1a147dc2c9bef077b86ffbf82b933716b7">IsNull</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <briefdescription>
+<para>Visit an IS_NULL bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="58" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="58" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1a749c23ff1691c2962d8de9c34c4c8aa3" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::NotNull</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr) override</argsstring>
+        <name>NotNull</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::NotNull</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundVisitor_1a896da482841ec11cc70d7d8382147913">NotNull</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <briefdescription>
+<para>Visit a NOT_NULL bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="70" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="70" bodyend="78"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1adc5aee10f8d00449d7ce7e6836c7d873" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::IsNaN</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr) override</argsstring>
+        <name>IsNaN</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::IsNaN</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundVisitor_1aeaafcbf51500c8dbbbec948f30d9a8b8">IsNaN</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <briefdescription>
+<para>Visit an IS_NAN bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="80" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="80" bodyend="91"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1ae5726b2ff440473023d39491d9bf7ac1" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::NotNaN</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr) override</argsstring>
+        <name>NotNaN</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::NotNaN</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundVisitor_1aeac3873dd7f39239b63176b08c22c97c">NotNaN</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <briefdescription>
+<para>Visit a NOT_NAN bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="93" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="93" bodyend="105"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1a5a1e64dff377993628e5f9b1bb8c9a32" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::Lt</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const Literal &amp;lit) override</argsstring>
+        <name>Lt</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::Lt</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundVisitor_1a07eb597069fc4907677ea59bc9e7f8fa">Lt</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>lit</declname>
+        </param>
+        <briefdescription>
+<para>Visit a less-than bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The literal value to compare against </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="107" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="107" bodyend="120"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1a2f38bd2d6b90144837152dffb29715a0" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::LtEq</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const Literal &amp;lit) override</argsstring>
+        <name>LtEq</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::LtEq</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundVisitor_1a3d1cc2b13541dcf37cf19cffc2cba55e">LtEq</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>lit</declname>
+        </param>
+        <briefdescription>
+<para>Visit a less-than-or-equal bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The literal value to compare against </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="122" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="122" bodyend="135"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1ac1e94c405eb1b47dcdd28c03e19952f4" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::Gt</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const Literal &amp;lit) override</argsstring>
+        <name>Gt</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::Gt</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundVisitor_1a0722a7fb3652d01b85d09e2a6595ac67">Gt</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>lit</declname>
+        </param>
+        <briefdescription>
+<para>Visit a greater-than bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The literal value to compare against </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="137" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="137" bodyend="150"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1ac30068eb34bd6b391b45bf8cc9335a2a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::GtEq</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const Literal &amp;lit) override</argsstring>
+        <name>GtEq</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::GtEq</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundVisitor_1a887464c3e7230573dc77ab07c4d52f2e">GtEq</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>lit</declname>
+        </param>
+        <briefdescription>
+<para>Visit a greater-than-or-equal bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The literal value to compare against </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="152" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="152" bodyend="166"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1a06eaa4f298f1c9fc3fe4cf69b97d5436" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::Eq</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const Literal &amp;lit) override</argsstring>
+        <name>Eq</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::Eq</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundVisitor_1ab8b110291e99d2e743c9a70637d2800c">Eq</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>lit</declname>
+        </param>
+        <briefdescription>
+<para>Visit an equality bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The literal value to compare against </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="168" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="168" bodyend="188"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1aa0b3e274e05d817ff83ebde0b9fd6d2b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::NotEq</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const Literal &amp;lit) override</argsstring>
+        <name>NotEq</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::NotEq</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundVisitor_1a962cb7ca85f1f3def77affe42048e176">NotEq</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>lit</declname>
+        </param>
+        <briefdescription>
+<para>Visit a not-equal bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The literal value to compare against </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="190" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="190" bodyend="194"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1a4ffd94f2d0f34c93d2363f6512f610d5" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::In</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const BoundSetPredicate::LiteralSet &amp;literal_set) override</argsstring>
+        <name>In</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::In</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundVisitor_1a4ad6c0161e30c914d43aeafd2c31ed2d">In</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const BoundSetPredicate::LiteralSet &amp;</type>
+          <declname>literal_set</declname>
+        </param>
+        <briefdescription>
+<para>Visit an IN set bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>literal_set</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The set of literal values to test membership </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="196" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="196" bodyend="223"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1a9f868628328a139254da2f9188bf51a7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::NotIn</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const BoundSetPredicate::LiteralSet &amp;literal_set) override</argsstring>
+        <name>NotIn</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::NotIn</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundVisitor_1a82f60a5b3f27b69262beafd4e91ddaf0">NotIn</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const BoundSetPredicate::LiteralSet &amp;</type>
+          <declname>literal_set</declname>
+        </param>
+        <briefdescription>
+<para>Visit a NOT_IN set bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>literal_set</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The set of literal values to test membership </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="225" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="225" bodyend="231"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1ab9c72d8dcde81f8ad70cc74f0b8b40fc" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::StartsWith</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const Literal &amp;lit) override</argsstring>
+        <name>StartsWith</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::StartsWith</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundVisitor_1af8d118683a69b4d27a6769da12114d38">StartsWith</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>lit</declname>
+        </param>
+        <briefdescription>
+<para>Visit a starts-with bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The literal value to check for prefix match </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="233" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="233" bodyend="262"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1ae28cea2d55b64a48f046597736b7f98a" prot="public" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Result&lt; bool &gt;</type>
+        <definition>Result&lt; bool &gt; iceberg::ManifestEvalVisitor::NotStartsWith</definition>
+        <argsstring>(const std::shared_ptr&lt; Bound &gt; &amp;expr, const Literal &amp;lit) override</argsstring>
+        <name>NotStartsWith</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::NotStartsWith</qualifiedname>
+        <reimplements refid="classiceberg_1_1BoundVisitor_1a3b98b13ef68f001de28a99896a13620e">NotStartsWith</reimplements>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Bound" kindref="compound">Bound</ref> &gt; &amp;</type>
+          <declname>expr</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>lit</declname>
+        </param>
+        <briefdescription>
+<para>Visit a not-starts-with bound expression. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>expr</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The bound expression being tested </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>lit</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The literal value to check for prefix match </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="264" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="264" bodyend="303"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1ab32b20a69e36efb5e093475f1d44a1fe" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; size_t &gt;</type>
+        <definition>Result&lt; size_t &gt; iceberg::ManifestEvalVisitor::GetPosition</definition>
+        <argsstring>(const BoundReference &amp;ref) const</argsstring>
+        <name>GetPosition</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::GetPosition</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1BoundReference" kindref="compound">BoundReference</ref> &amp;</type>
+          <declname>ref</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="306" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="306" bodyend="322"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1a34c814037b3f4dc300d400e529185ca3" prot="private" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::ManifestEvalVisitor::AllValuesAreNull</definition>
+        <argsstring>(const PartitionFieldSummary &amp;summary, TypeId typeId)</argsstring>
+        <name>AllValuesAreNull</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::AllValuesAreNull</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1PartitionFieldSummary" kindref="compound">PartitionFieldSummary</ref> &amp;</type>
+          <declname>summary</declname>
+        </param>
+        <param>
+          <type><ref refid="type__fwd_8h_1afd7801064886b233ca23eadf5ba2c1b8" kindref="member">TypeId</ref></type>
+          <declname>typeId</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="324" column="8" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="324" bodyend="335"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestEvalVisitor_1af998735754643b1e8c3e46790d0ba375" prot="private" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>Result&lt; Literal &gt; iceberg::ManifestEvalVisitor::DeserializeBoundLiteral</definition>
+        <argsstring>(const std::vector&lt; uint8_t &gt; &amp;bound, const std::shared_ptr&lt; Type &gt; &amp;type) const</argsstring>
+        <name>DeserializeBoundLiteral</name>
+        <qualifiedname>iceberg::ManifestEvalVisitor::DeserializeBoundLiteral</qualifiedname>
+        <param>
+          <type>const std::vector&lt; uint8_t &gt; &amp;</type>
+          <declname>bound</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; &amp;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/expression/manifest_evaluator.cc" line="337" column="10" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="337" bodyend="344"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::BoundVisitor&lt; bool &gt;</label>
+        <link refid="classiceberg_1_1BoundVisitor"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::ExpressionVisitor&lt; R &gt;</label>
+        <link refid="classiceberg_1_1ExpressionVisitor"/>
+      </node>
+      <node id="1">
+        <label>iceberg::ManifestEvalVisitor</label>
+        <link refid="classiceberg_1_1ManifestEvalVisitor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::BoundVisitor&lt; bool &gt;</label>
+        <link refid="classiceberg_1_1BoundVisitor"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::ExpressionVisitor&lt; R &gt;</label>
+        <link refid="classiceberg_1_1ExpressionVisitor"/>
+      </node>
+      <node id="1">
+        <label>iceberg::ManifestEvalVisitor</label>
+        <link refid="classiceberg_1_1ManifestEvalVisitor"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/expression/manifest_evaluator.cc" line="39" column="1" bodyfile="iceberg/expression/manifest_evaluator.cc" bodystart="39" bodyend="348"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a4a7c83473af339c9c64cef5e9f3947ee" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>Aggregate</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a699e13e4420928256b3fb08a87674a9f" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>Aggregate</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1a34c814037b3f4dc300d400e529185ca3" prot="private" virt="non-virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>AllValuesAreNull</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1a6a891fbe55ee59d73b943b700b48c8ef" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>AlwaysFalse</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1aecc6b3fd9c9e3c07b2d29e7e34c12b05" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>AlwaysTrue</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1a776944ed2e6ab0a5564cdb1f6c264f37" prot="public" virt="non-virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>And</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a134636ef9aac1bbf8ade254e1c1c24d6" prot="public" virt="pure-virtual" ambiguityscope="BoundVisitor&lt; bool &gt;::"><scope>iceberg::ManifestEvalVisitor</scope><name>And</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1af998735754643b1e8c3e46790d0ba375" prot="private" virt="non-virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>DeserializeBoundLiteral</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1a06eaa4f298f1c9fc3fe4cf69b97d5436" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>Eq</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1ab32b20a69e36efb5e093475f1d44a1fe" prot="private" virt="non-virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>GetPosition</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1ac1e94c405eb1b47dcdd28c03e19952f4" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>Gt</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1ac30068eb34bd6b391b45bf8cc9335a2a" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>GtEq</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1a4ffd94f2d0f34c93d2363f6512f610d5" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>In</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1adc5aee10f8d00449d7ce7e6836c7d873" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>IsNaN</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1a4a6bbdd6cad633f8b059a647825ace07" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>IsNull</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1a5a1e64dff377993628e5f9b1bb8c9a32" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>Lt</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1a2f38bd2d6b90144837152dffb29715a0" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>LtEq</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1aa47b29184ca4c964ea4dc762ae1d1680" prot="public" virt="non-virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>ManifestEvalVisitor</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1a28878d5e94d4fb46ed1711ba4157248e" prot="public" virt="non-virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>Not</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a3785b1824deecc35b76c64ae6bb57f23" prot="public" virt="pure-virtual" ambiguityscope="BoundVisitor&lt; bool &gt;::"><scope>iceberg::ManifestEvalVisitor</scope><name>Not</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1aa0b3e274e05d817ff83ebde0b9fd6d2b" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>NotEq</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1a9f868628328a139254da2f9188bf51a7" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>NotIn</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1ae5726b2ff440473023d39491d9bf7ac1" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>NotNaN</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1a749c23ff1691c2962d8de9c34c4c8aa3" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>NotNull</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1ae28cea2d55b64a48f046597736b7f98a" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>NotStartsWith</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1a8438dc0ac882b8087e3d64924c847246" prot="public" virt="non-virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>Or</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1aa21a66f372f1b32f94d8be2bb5643440" prot="public" virt="pure-virtual" ambiguityscope="BoundVisitor&lt; bool &gt;::"><scope>iceberg::ManifestEvalVisitor</scope><name>Or</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1ab39f8eaf365886cadbbd210584915f59" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>Predicate</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1a28ebad2dc79a712dce34ed30e3614004" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>Predicate</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1ab9c72d8dcde81f8ad70cc74f0b8b40fc" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>StartsWith</name></member>
+      <member refid="classiceberg_1_1ManifestEvalVisitor_1a09f20a0ab2d69f0d9629b23c5bd94eca" prot="private" virt="non-virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>stats_</name></member>
+      <member refid="classiceberg_1_1BoundVisitor_1aaa4c792a68c052ce7d9d8ebe15c9b894" prot="public" virt="non-virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>~BoundVisitor</name></member>
+      <member refid="classiceberg_1_1ExpressionVisitor_1a94e8c3eb4910ab2e221163c19fda6492" prot="public" virt="virtual"><scope>iceberg::ManifestEvalVisitor</scope><name>~ExpressionVisitor</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,243 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1EvaluatorTest" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::EvaluatorTest</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::Test</basecompoundref>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1EvaluatorTest_1af33fce702d6e9676880b0f10364c7034" prot="protected" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;Schema&gt; iceberg::EvaluatorTest::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::EvaluatorTest::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/evaluator_test.cc" line="128" column="19" bodyfile="iceberg/test/evaluator_test.cc" bodystart="128" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1EvaluatorTest_1a70d8e1d8e11e169e08be83fa563eddf1" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt;::arrow::DataType &gt;</type>
+        <definition>std::shared_ptr&lt;::arrow::DataType&gt; iceberg::EvaluatorTest::arrow_data_type_</definition>
+        <argsstring></argsstring>
+        <name>arrow_data_type_</name>
+        <qualifiedname>iceberg::EvaluatorTest::arrow_data_type_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/evaluator_test.cc" line="129" column="19" bodyfile="iceberg/test/evaluator_test.cc" bodystart="129" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1EvaluatorTest_1af841a7304fa484410284de702e0f6bf8" prot="protected" static="no" mutable="no">
+        <type><ref refid="structArrowSchema" kindref="compound">ArrowSchema</ref></type>
+        <definition>ArrowSchema iceberg::EvaluatorTest::arrow_c_schema_</definition>
+        <argsstring></argsstring>
+        <name>arrow_c_schema_</name>
+        <qualifiedname>iceberg::EvaluatorTest::arrow_c_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/evaluator_test.cc" line="130" column="15" bodyfile="iceberg/test/evaluator_test.cc" bodystart="130" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1EvaluatorTest_1a90afa5386cbf134862da343ee08a54dd" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::EvaluatorTest::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::EvaluatorTest::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/evaluator_test.cc" line="49" column="8" bodyfile="iceberg/test/evaluator_test.cc" bodystart="49" bodyend="103"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1EvaluatorTest_1a9c75a71ef71c2d0f9bbd15019abf373a" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::EvaluatorTest::TearDown</definition>
+        <argsstring>() override</argsstring>
+        <name>TearDown</name>
+        <qualifiedname>iceberg::EvaluatorTest::TearDown</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/evaluator_test.cc" line="105" column="8" bodyfile="iceberg/test/evaluator_test.cc" bodystart="105" bodyend="109"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1EvaluatorTest_1a19858140a0c92fa60c5b12cf4b116004" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::EvaluatorTest::TestData</definition>
+        <argsstring>(const std::string &amp;json_data, Evaluator &amp;evaluator, bool expected_result)</argsstring>
+        <name>TestData</name>
+        <qualifiedname>iceberg::EvaluatorTest::TestData</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>json_data</declname>
+        </param>
+        <param>
+          <type><ref refid="classiceberg_1_1Evaluator" kindref="compound">Evaluator</ref> &amp;</type>
+          <declname>evaluator</declname>
+        </param>
+        <param>
+          <type>bool</type>
+          <declname>expected_result</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/evaluator_test.cc" line="111" column="8" bodyfile="iceberg/test/evaluator_test.cc" bodystart="111" bodyend="126"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::EvaluatorTest</label>
+        <link refid="classiceberg_1_1EvaluatorTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="17">
+        <label>ArrowSchema</label>
+        <link refid="structArrowSchema"/>
+        <childnode refid="17" relation="usage">
+          <edgelabel>children</edgelabel>
+          <edgelabel>dictionary</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="12">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="1">
+        <label>iceberg::EvaluatorTest</label>
+        <link refid="classiceberg_1_1EvaluatorTest"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>schema_</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>arrow_data_type_</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>arrow_c_schema_</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="5" relation="public-inheritance">
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="9" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="16">
+        <label>std::shared_ptr&lt;::arrow::DataType &gt;</label>
+      </node>
+      <node id="15">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="14">
+        <label>std::string_view</label>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::Test</label>
+      </node>
+      <node id="3">
+        <label>std::unique_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="4" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="10" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/evaluator_test.cc" line="47" column="1" bodyfile="iceberg/test/evaluator_test.cc" bodystart="47" bodyend="131"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1EvaluatorTest_1af841a7304fa484410284de702e0f6bf8" prot="protected" virt="non-virtual"><scope>iceberg::EvaluatorTest</scope><name>arrow_c_schema_</name></member>
+      <member refid="classiceberg_1_1EvaluatorTest_1a70d8e1d8e11e169e08be83fa563eddf1" prot="protected" virt="non-virtual"><scope>iceberg::EvaluatorTest</scope><name>arrow_data_type_</name></member>
+      <member refid="classiceberg_1_1EvaluatorTest_1af33fce702d6e9676880b0f10364c7034" prot="protected" virt="non-virtual"><scope>iceberg::EvaluatorTest</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1EvaluatorTest_1a90afa5386cbf134862da343ee08a54dd" prot="protected" virt="non-virtual"><scope>iceberg::EvaluatorTest</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1EvaluatorTest_1a9c75a71ef71c2d0f9bbd15019abf373a" prot="protected" virt="non-virtual"><scope>iceberg::EvaluatorTest</scope><name>TearDown</name></member>
+      <member refid="classiceberg_1_1EvaluatorTest_1a19858140a0c92fa60c5b12cf4b116004" prot="protected" virt="non-virtual"><scope>iceberg::EvaluatorTest</scope><name>TestData</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

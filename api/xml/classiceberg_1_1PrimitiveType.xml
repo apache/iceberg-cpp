@@ -1,0 +1,196 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1PrimitiveType" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::PrimitiveType</compoundname>
+    <basecompoundref refid="classiceberg_1_1Type" prot="public" virt="non-virtual">iceberg::Type</basecompoundref>
+    <derivedcompoundref refid="classiceberg_1_1BinaryType" prot="public" virt="non-virtual">iceberg::BinaryType</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1BooleanType" prot="public" virt="non-virtual">iceberg::BooleanType</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1DateType" prot="public" virt="non-virtual">iceberg::DateType</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1DecimalType" prot="public" virt="non-virtual">iceberg::DecimalType</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1DoubleType" prot="public" virt="non-virtual">iceberg::DoubleType</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1FixedType" prot="public" virt="non-virtual">iceberg::FixedType</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1FloatType" prot="public" virt="non-virtual">iceberg::FloatType</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1IntType" prot="public" virt="non-virtual">iceberg::IntType</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1LongType" prot="public" virt="non-virtual">iceberg::LongType</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1StringType" prot="public" virt="non-virtual">iceberg::StringType</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1TimeType" prot="public" virt="non-virtual">iceberg::TimeType</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1TimestampBase" prot="public" virt="non-virtual">iceberg::TimestampBase</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1UuidType" prot="public" virt="non-virtual">iceberg::UuidType</derivedcompoundref>
+    <includes refid="type_8h" local="no">type.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1PrimitiveType_1a1cc061d5de221d54396f571681bf090a" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::PrimitiveType::is_primitive</definition>
+        <argsstring>() const override</argsstring>
+        <name>is_primitive</name>
+        <qualifiedname>iceberg::PrimitiveType::is_primitive</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a5bef201091ac984f54b8f8ff933b3f78">is_primitive</reimplements>
+        <briefdescription>
+<para>Is this a primitive type (may not have child fields)? </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="68" column="8" bodyfile="iceberg/type.h" bodystart="68" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PrimitiveType_1ae8b76f12af1e8e9861b2a9fbab776f7c" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::PrimitiveType::is_nested</definition>
+        <argsstring>() const override</argsstring>
+        <name>is_nested</name>
+        <qualifiedname>iceberg::PrimitiveType::is_nested</qualifiedname>
+        <reimplements refid="classiceberg_1_1Type_1a7f9a1f227a8c993a7f2531fdc179ef27">is_nested</reimplements>
+        <briefdescription>
+<para>Is this a nested type (may have child fields)? </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="69" column="8" bodyfile="iceberg/type.h" bodystart="69" bodyend="69"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A data type that does not have child fields. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="4">
+        <label>iceberg::BinaryType</label>
+        <link refid="classiceberg_1_1BinaryType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::BooleanType</label>
+        <link refid="classiceberg_1_1BooleanType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::DateType</label>
+        <link refid="classiceberg_1_1DateType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="7">
+        <label>iceberg::DecimalType</label>
+        <link refid="classiceberg_1_1DecimalType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::DoubleType</label>
+        <link refid="classiceberg_1_1DoubleType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::FixedType</label>
+        <link refid="classiceberg_1_1FixedType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::FloatType</label>
+        <link refid="classiceberg_1_1FloatType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::IntType</label>
+        <link refid="classiceberg_1_1IntType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg::LongType</label>
+        <link refid="classiceberg_1_1LongType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg::StringType</label>
+        <link refid="classiceberg_1_1StringType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="14">
+        <label>iceberg::TimeType</label>
+        <link refid="classiceberg_1_1TimeType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg::TimestampBase</label>
+        <link refid="classiceberg_1_1TimestampBase"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="16">
+        <label>iceberg::TimestampType</label>
+        <link refid="classiceberg_1_1TimestampType"/>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="17">
+        <label>iceberg::TimestampTzType</label>
+        <link refid="classiceberg_1_1TimestampTzType"/>
+        <childnode refid="15" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>iceberg::UuidType</label>
+        <link refid="classiceberg_1_1UuidType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/type.h" line="66" column="1" bodyfile="iceberg/type.h" bodystart="66" bodyend="70"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Type_1a9eb55b3cb339747a0b8081c5c5d73103" prot="protected" virt="pure-virtual"><scope>iceberg::PrimitiveType</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1PrimitiveType_1ae8b76f12af1e8e9861b2a9fbab776f7c" prot="public" virt="virtual"><scope>iceberg::PrimitiveType</scope><name>is_nested</name></member>
+      <member refid="classiceberg_1_1PrimitiveType_1a1cc061d5de221d54396f571681bf090a" prot="public" virt="virtual"><scope>iceberg::PrimitiveType</scope><name>is_primitive</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386" prot="public" virt="pure-virtual"><scope>iceberg::PrimitiveType</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1Type_1a492b2d8720b13673ad0955bd5fe3bf27" prot="public" virt="pure-virtual"><scope>iceberg::PrimitiveType</scope><name>type_id</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::PrimitiveType</scope><name>~Formattable</name></member>
+      <member refid="classiceberg_1_1Type_1a62b9070ee3fd1c5f8949a5785a414c6c" prot="public" virt="non-virtual"><scope>iceberg::PrimitiveType</scope><name>~Type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

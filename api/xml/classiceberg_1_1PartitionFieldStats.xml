@@ -1,0 +1,167 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1PartitionFieldStats" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::PartitionFieldStats</compoundname>
+    <includes refid="partition__summary__internal_8h" local="no">partition_summary_internal.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1PartitionFieldStats_1a5fce3d3c61ffe441f0d87f78829a27c6" prot="private" static="no" mutable="no">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt;Type&gt;&amp; iceberg::PartitionFieldStats::type_</definition>
+        <argsstring></argsstring>
+        <name>type_</name>
+        <qualifiedname>iceberg::PartitionFieldStats::type_</qualifiedname>
+        <initializer>{nullptr}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/partition_summary_internal.h" line="42" column="25" bodyfile="iceberg/partition_summary_internal.h" bodystart="42" bodyend="42"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1PartitionFieldStats_1aa08aafb72042eee6476eb0988294ab0d" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::PartitionFieldStats::contains_null_</definition>
+        <argsstring></argsstring>
+        <name>contains_null_</name>
+        <qualifiedname>iceberg::PartitionFieldStats::contains_null_</qualifiedname>
+        <initializer>{false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/partition_summary_internal.h" line="43" column="8" bodyfile="iceberg/partition_summary_internal.h" bodystart="43" bodyend="43"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1PartitionFieldStats_1adddadabbf10af832f60c127a7e8741ec" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::PartitionFieldStats::contains_nan_</definition>
+        <argsstring></argsstring>
+        <name>contains_nan_</name>
+        <qualifiedname>iceberg::PartitionFieldStats::contains_nan_</qualifiedname>
+        <initializer>{false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/partition_summary_internal.h" line="44" column="8" bodyfile="iceberg/partition_summary_internal.h" bodystart="44" bodyend="44"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1PartitionFieldStats_1aa3bc279e359b8f4cf9d865d69f5ef4e0" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>std::optional&lt;Literal&gt; iceberg::PartitionFieldStats::lower_bound_</definition>
+        <argsstring></argsstring>
+        <name>lower_bound_</name>
+        <qualifiedname>iceberg::PartitionFieldStats::lower_bound_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/partition_summary_internal.h" line="45" column="17" bodyfile="iceberg/partition_summary_internal.h" bodystart="45" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1PartitionFieldStats_1a04e26be3ee73b2c1347225ff5b540bcb" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &gt;</type>
+        <definition>std::optional&lt;Literal&gt; iceberg::PartitionFieldStats::upper_bound_</definition>
+        <argsstring></argsstring>
+        <name>upper_bound_</name>
+        <qualifiedname>iceberg::PartitionFieldStats::upper_bound_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/partition_summary_internal.h" line="46" column="17" bodyfile="iceberg/partition_summary_internal.h" bodystart="46" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1PartitionFieldStats_1aef02443ef6f85aef7f41a81a54422d44" prot="public" static="no" const="no" explicit="yes" inline="yes" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::PartitionFieldStats::PartitionFieldStats</definition>
+        <argsstring>(const std::shared_ptr&lt; Type &gt; &amp;type)</argsstring>
+        <name>PartitionFieldStats</name>
+        <qualifiedname>iceberg::PartitionFieldStats::PartitionFieldStats</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; &amp;</type>
+          <declname>type</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/partition_summary_internal.h" line="31" column="12" bodyfile="iceberg/partition_summary_internal.h" bodystart="31" bodyend="31"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionFieldStats_1a712c1cce3daacf5cd508732d94412ca1" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::PartitionFieldStats::Update</definition>
+        <argsstring>(const Literal &amp;value)</argsstring>
+        <name>Update</name>
+        <qualifiedname>iceberg::PartitionFieldStats::Update</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Update the partition field stats with a new partition field value. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/partition_summary_internal.h" line="34" column="10" bodyfile="iceberg/partition_summary.cc" bodystart="33" bodyend="56"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionFieldStats_1a4ac1e000e4f5ba9dc8b201b1da02be5d" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1PartitionFieldSummary" kindref="compound">PartitionFieldSummary</ref> &gt;</type>
+        <definition>Result&lt; PartitionFieldSummary &gt; iceberg::PartitionFieldStats::Finish</definition>
+        <argsstring>() const</argsstring>
+        <name>Finish</name>
+        <qualifiedname>iceberg::PartitionFieldStats::Finish</qualifiedname>
+        <briefdescription>
+<para>Finish the partition field stats and produce the partition field summary. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/partition_summary_internal.h" line="37" column="10" bodyfile="iceberg/partition_summary.cc" bodystart="58" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1PartitionFieldStats_1a9b8506e28b1db91226f3def2422091eb" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; Type &gt; &amp; iceberg::PartitionFieldStats::type</definition>
+        <argsstring>() const</argsstring>
+        <name>type</name>
+        <qualifiedname>iceberg::PartitionFieldStats::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/partition_summary_internal.h" line="39" column="25" bodyfile="iceberg/partition_summary_internal.h" bodystart="39" bodyend="39"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Statistics for a partition field. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/partition_summary_internal.h" line="29" column="1" bodyfile="iceberg/partition_summary_internal.h" bodystart="29" bodyend="47"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1PartitionFieldStats_1adddadabbf10af832f60c127a7e8741ec" prot="private" virt="non-virtual"><scope>iceberg::PartitionFieldStats</scope><name>contains_nan_</name></member>
+      <member refid="classiceberg_1_1PartitionFieldStats_1aa08aafb72042eee6476eb0988294ab0d" prot="private" virt="non-virtual"><scope>iceberg::PartitionFieldStats</scope><name>contains_null_</name></member>
+      <member refid="classiceberg_1_1PartitionFieldStats_1a4ac1e000e4f5ba9dc8b201b1da02be5d" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldStats</scope><name>Finish</name></member>
+      <member refid="classiceberg_1_1PartitionFieldStats_1aa3bc279e359b8f4cf9d865d69f5ef4e0" prot="private" virt="non-virtual"><scope>iceberg::PartitionFieldStats</scope><name>lower_bound_</name></member>
+      <member refid="classiceberg_1_1PartitionFieldStats_1aef02443ef6f85aef7f41a81a54422d44" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldStats</scope><name>PartitionFieldStats</name></member>
+      <member refid="classiceberg_1_1PartitionFieldStats_1a9b8506e28b1db91226f3def2422091eb" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldStats</scope><name>type</name></member>
+      <member refid="classiceberg_1_1PartitionFieldStats_1a5fce3d3c61ffe441f0d87f78829a27c6" prot="private" virt="non-virtual"><scope>iceberg::PartitionFieldStats</scope><name>type_</name></member>
+      <member refid="classiceberg_1_1PartitionFieldStats_1a712c1cce3daacf5cd508732d94412ca1" prot="public" virt="non-virtual"><scope>iceberg::PartitionFieldStats</scope><name>Update</name></member>
+      <member refid="classiceberg_1_1PartitionFieldStats_1a04e26be3ee73b2c1347225ff5b540bcb" prot="private" virt="non-virtual"><scope>iceberg::PartitionFieldStats</scope><name>upper_bound_</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

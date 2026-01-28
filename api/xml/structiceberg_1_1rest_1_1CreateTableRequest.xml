@@ -1,0 +1,302 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1CreateTableRequest" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::CreateTableRequest</compoundname>
+    <includes refid="types_8h" local="no">types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1CreateTableRequest_1a6ab0b604c9fef3aeca43442e6a41c30f" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::CreateTableRequest::name</definition>
+        <argsstring></argsstring>
+        <name>name</name>
+        <qualifiedname>iceberg::rest::CreateTableRequest::name</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="145" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="145" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1CreateTableRequest_1a2c93bdddbb93fe9169c16763b9a90c5d" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::CreateTableRequest::location</definition>
+        <argsstring></argsstring>
+        <name>location</name>
+        <qualifiedname>iceberg::rest::CreateTableRequest::location</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="146" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="146" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1CreateTableRequest_1ac491c7ae3c4d1d2c1de346c55ff7129e" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::rest::CreateTableRequest::schema</definition>
+        <argsstring></argsstring>
+        <name>schema</name>
+        <qualifiedname>iceberg::rest::CreateTableRequest::schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="147" column="19" bodyfile="iceberg/catalog/rest/types.h" bodystart="147" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1CreateTableRequest_1ab029096a6552c81bc5aa5d67ac316059" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionSpec&gt; iceberg::rest::CreateTableRequest::partition_spec</definition>
+        <argsstring></argsstring>
+        <name>partition_spec</name>
+        <qualifiedname>iceberg::rest::CreateTableRequest::partition_spec</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="148" column="19" bodyfile="iceberg/catalog/rest/types.h" bodystart="148" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1CreateTableRequest_1a5fad86d20c6fe3b0a14c6ea1ba8c23ad" prot="public" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1SortOrder" kindref="compound">SortOrder</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;SortOrder&gt; iceberg::rest::CreateTableRequest::write_order</definition>
+        <argsstring></argsstring>
+        <name>write_order</name>
+        <qualifiedname>iceberg::rest::CreateTableRequest::write_order</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="149" column="19" bodyfile="iceberg/catalog/rest/types.h" bodystart="149" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1CreateTableRequest_1ac72f3d127f66acdf600006c33237f704" prot="public" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::rest::CreateTableRequest::stage_create</definition>
+        <argsstring></argsstring>
+        <name>stage_create</name>
+        <qualifiedname>iceberg::rest::CreateTableRequest::stage_create</qualifiedname>
+        <initializer>= false</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="150" column="8" bodyfile="iceberg/catalog/rest/types.h" bodystart="150" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1CreateTableRequest_1a955b032b33a8b1043cec6a9dca067681" prot="public" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::rest::CreateTableRequest::properties</definition>
+        <argsstring></argsstring>
+        <name>properties</name>
+        <qualifiedname>iceberg::rest::CreateTableRequest::properties</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="151" column="22" bodyfile="iceberg/catalog/rest/types.h" bodystart="151" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1CreateTableRequest_1a212eb6489951376ba038195d7c5fb1cd" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::CreateTableRequest::Validate</definition>
+        <argsstring>() const</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::rest::CreateTableRequest::Validate</qualifiedname>
+        <briefdescription>
+<para>Validates the <ref refid="structiceberg_1_1rest_1_1CreateTableRequest" kindref="compound">CreateTableRequest</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="154" column="10" bodyfile="iceberg/catalog/rest/types.h" bodystart="154" bodyend="162"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1CreateTableRequest_1a243e32b59e7d22a3d46d2b535fc3a70e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::rest::CreateTableRequest::operator==</definition>
+        <argsstring>(const CreateTableRequest &amp;other) const</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::rest::CreateTableRequest::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1rest_1_1CreateTableRequest" kindref="compound">CreateTableRequest</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="164" column="8" bodyfile="iceberg/catalog/rest/types.cc" bodystart="31" bodyend="58"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Request to create a table. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="12">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="14">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="13">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="7">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="8" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="18">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="6" relation="public-inheritance">
+        </childnode>
+        <childnode refid="15" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="20">
+        <label>iceberg::SortOrder</label>
+        <link refid="classiceberg_1_1SortOrder"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+        <childnode refid="10" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="12" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="13" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="9" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::rest::CreateTableRequest</label>
+        <link refid="structiceberg_1_1rest_1_1CreateTableRequest"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>location</edgelabel>
+          <edgelabel>name</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>schema</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>partition_spec</edgelabel>
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>write_order</edgelabel>
+        </childnode>
+        <childnode refid="21" relation="usage">
+          <edgelabel>properties</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="17">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="18" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="19">
+        <label>std::shared_ptr&lt; iceberg::SortOrder &gt;</label>
+        <childnode refid="20" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="16">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="15">
+        <label>std::string_view</label>
+        <childnode refid="16" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="21">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="10">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="11" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/types.h" line="144" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="144" bodyend="165"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1CreateTableRequest_1a2c93bdddbb93fe9169c16763b9a90c5d" prot="public" virt="non-virtual"><scope>iceberg::rest::CreateTableRequest</scope><name>location</name></member>
+      <member refid="structiceberg_1_1rest_1_1CreateTableRequest_1a6ab0b604c9fef3aeca43442e6a41c30f" prot="public" virt="non-virtual"><scope>iceberg::rest::CreateTableRequest</scope><name>name</name></member>
+      <member refid="structiceberg_1_1rest_1_1CreateTableRequest_1a243e32b59e7d22a3d46d2b535fc3a70e" prot="public" virt="non-virtual"><scope>iceberg::rest::CreateTableRequest</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1rest_1_1CreateTableRequest_1ab029096a6552c81bc5aa5d67ac316059" prot="public" virt="non-virtual"><scope>iceberg::rest::CreateTableRequest</scope><name>partition_spec</name></member>
+      <member refid="structiceberg_1_1rest_1_1CreateTableRequest_1a955b032b33a8b1043cec6a9dca067681" prot="public" virt="non-virtual"><scope>iceberg::rest::CreateTableRequest</scope><name>properties</name></member>
+      <member refid="structiceberg_1_1rest_1_1CreateTableRequest_1ac491c7ae3c4d1d2c1de346c55ff7129e" prot="public" virt="non-virtual"><scope>iceberg::rest::CreateTableRequest</scope><name>schema</name></member>
+      <member refid="structiceberg_1_1rest_1_1CreateTableRequest_1ac72f3d127f66acdf600006c33237f704" prot="public" virt="non-virtual"><scope>iceberg::rest::CreateTableRequest</scope><name>stage_create</name></member>
+      <member refid="structiceberg_1_1rest_1_1CreateTableRequest_1a212eb6489951376ba038195d7c5fb1cd" prot="public" virt="non-virtual"><scope>iceberg::rest::CreateTableRequest</scope><name>Validate</name></member>
+      <member refid="structiceberg_1_1rest_1_1CreateTableRequest_1a5fad86d20c6fe3b0a14c6ea1ba8c23ad" prot="public" virt="non-virtual"><scope>iceberg::rest::CreateTableRequest</scope><name>write_order</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

@@ -1,0 +1,140 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1rest_1_1ErrorResponse" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::rest::ErrorResponse</compoundname>
+    <includes refid="types_8h" local="no">types.h</includes>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1ErrorResponse_1aa5a199e4c9c0c8e06988fe70ac8c3a1d" prot="public" static="no" mutable="no">
+        <type>uint32_t</type>
+        <definition>uint32_t iceberg::rest::ErrorResponse::code</definition>
+        <argsstring></argsstring>
+        <name>code</name>
+        <qualifiedname>iceberg::rest::ErrorResponse::code</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="54" column="12" bodyfile="iceberg/catalog/rest/types.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1ErrorResponse_1ac0da1315c0b60434d4e36a4500bb16b2" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::ErrorResponse::type</definition>
+        <argsstring></argsstring>
+        <name>type</name>
+        <qualifiedname>iceberg::rest::ErrorResponse::type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="55" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="55" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1ErrorResponse_1a0e97d9dec6d13692b02ce84c371aa7cb" prot="public" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::rest::ErrorResponse::message</definition>
+        <argsstring></argsstring>
+        <name>message</name>
+        <qualifiedname>iceberg::rest::ErrorResponse::message</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="56" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="56" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1rest_1_1ErrorResponse_1a53c226a88e8d51cf597bbfe4a2b4e9ef" prot="public" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::rest::ErrorResponse::stack</definition>
+        <argsstring></argsstring>
+        <name>stack</name>
+        <qualifiedname>iceberg::rest::ErrorResponse::stack</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="57" column="15" bodyfile="iceberg/catalog/rest/types.h" bodystart="57" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1ErrorResponse_1afb27ab1561d34979534c2d2357138ea8" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::rest::ErrorResponse::Validate</definition>
+        <argsstring>() const</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::rest::ErrorResponse::Validate</qualifiedname>
+        <briefdescription>
+<para>Validates the <ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="60" column="10" bodyfile="iceberg/catalog/rest/types.h" bodystart="60" bodyend="72"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1rest_1_1ErrorResponse_1afde890ed827aa5e7a20386b3c02fa216" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::rest::ErrorResponse::operator==</definition>
+        <argsstring>(const ErrorResponse &amp;) const =default</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::rest::ErrorResponse::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1rest_1_1ErrorResponse" kindref="compound">ErrorResponse</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/types.h" line="74" column="8"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>JSON error payload returned in a response with further details on the error. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::rest::ErrorResponse</label>
+        <link refid="structiceberg_1_1rest_1_1ErrorResponse"/>
+        <childnode refid="2" relation="usage">
+          <edgelabel>message</edgelabel>
+          <edgelabel>type</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>stack</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="2">
+        <label>std::string</label>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; std::string &gt;</label>
+        <childnode refid="2" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/catalog/rest/types.h" line="53" column="1" bodyfile="iceberg/catalog/rest/types.h" bodystart="53" bodyend="75"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1rest_1_1ErrorResponse_1aa5a199e4c9c0c8e06988fe70ac8c3a1d" prot="public" virt="non-virtual"><scope>iceberg::rest::ErrorResponse</scope><name>code</name></member>
+      <member refid="structiceberg_1_1rest_1_1ErrorResponse_1a0e97d9dec6d13692b02ce84c371aa7cb" prot="public" virt="non-virtual"><scope>iceberg::rest::ErrorResponse</scope><name>message</name></member>
+      <member refid="structiceberg_1_1rest_1_1ErrorResponse_1afde890ed827aa5e7a20386b3c02fa216" prot="public" virt="non-virtual"><scope>iceberg::rest::ErrorResponse</scope><name>operator==</name></member>
+      <member refid="structiceberg_1_1rest_1_1ErrorResponse_1a53c226a88e8d51cf597bbfe4a2b4e9ef" prot="public" virt="non-virtual"><scope>iceberg::rest::ErrorResponse</scope><name>stack</name></member>
+      <member refid="structiceberg_1_1rest_1_1ErrorResponse_1ac0da1315c0b60434d4e36a4500bb16b2" prot="public" virt="non-virtual"><scope>iceberg::rest::ErrorResponse</scope><name>type</name></member>
+      <member refid="structiceberg_1_1rest_1_1ErrorResponse_1afb27ab1561d34979534c2d2357138ea8" prot="public" virt="non-virtual"><scope>iceberg::rest::ErrorResponse</scope><name>Validate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

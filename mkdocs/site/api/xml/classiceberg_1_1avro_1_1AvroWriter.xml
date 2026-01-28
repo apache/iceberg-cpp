@@ -1,0 +1,209 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1avro_1_1AvroWriter" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::avro::AvroWriter</compoundname>
+    <basecompoundref refid="classiceberg_1_1Writer" prot="public" virt="non-virtual">iceberg::Writer</basecompoundref>
+    <includes refid="avro__writer_8h" local="no">avro_writer.h</includes>
+    <innerclass refid="classiceberg_1_1avro_1_1AvroWriter_1_1Impl" prot="public">iceberg::avro::AvroWriter::Impl</innerclass>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1avro_1_1AvroWriter_1ac085cc6f83697d1de84486e0944f1704" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; <ref refid="classiceberg_1_1avro_1_1AvroWriter_1_1Impl" kindref="compound">Impl</ref> &gt;</type>
+        <definition>std::unique_ptr&lt;Impl&gt; iceberg::avro::AvroWriter::impl_</definition>
+        <argsstring></argsstring>
+        <name>impl_</name>
+        <qualifiedname>iceberg::avro::AvroWriter::impl_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_writer.h" line="48" column="19" bodyfile="iceberg/avro/avro_writer.h" bodystart="48" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroWriter_1a41848d62e10dea96f9885ebc84199c50" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::AvroWriter::AvroWriter</definition>
+        <argsstring>()=default</argsstring>
+        <name>AvroWriter</name>
+        <qualifiedname>iceberg::avro::AvroWriter::AvroWriter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_writer.h" line="30" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroWriter_1a52592c641756feb88fdb81985a992f1a" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::avro::AvroWriter::~AvroWriter</definition>
+        <argsstring>() override</argsstring>
+        <name>~AvroWriter</name>
+        <qualifiedname>iceberg::avro::AvroWriter::~AvroWriter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_writer.h" line="32" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroWriter_1a6f1f8a09bac758ba7602e13f572f3d62" prot="public" static="no" const="no" explicit="no" inline="no" final="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::AvroWriter::Open</definition>
+        <argsstring>(const WriterOptions &amp;options) final</argsstring>
+        <name>Open</name>
+        <qualifiedname>iceberg::avro::AvroWriter::Open</qualifiedname>
+        <reimplements refid="classiceberg_1_1Writer_1a3088b433357b7589be2aa294fa311346">Open</reimplements>
+        <param>
+          <type>const <ref refid="structiceberg_1_1WriterOptions" kindref="compound">WriterOptions</ref> &amp;</type>
+          <declname>options</declname>
+        </param>
+        <briefdescription>
+<para>Open the writer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_writer.h" line="34" column="10" bodyfile="iceberg/avro/avro_writer.cc" bodystart="283" bodyend="286"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroWriter_1a2dd42fd539830a897aae840cf0e2a8b5" prot="public" static="no" const="no" explicit="no" inline="no" final="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::AvroWriter::Close</definition>
+        <argsstring>() final</argsstring>
+        <name>Close</name>
+        <qualifiedname>iceberg::avro::AvroWriter::Close</qualifiedname>
+        <reimplements refid="classiceberg_1_1Writer_1ad919074c1cb99c517b3e7e09214cd43c">Close</reimplements>
+        <briefdescription>
+<para>Close the writer. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_writer.h" line="36" column="10" bodyfile="iceberg/avro/avro_writer.cc" bodystart="288" bodyend="293"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroWriter_1a60e9eb49bcb01e2e7823f529c7f42025" prot="public" static="no" const="no" explicit="no" inline="no" final="yes" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::avro::AvroWriter::Write</definition>
+        <argsstring>(ArrowArray *data) final</argsstring>
+        <name>Write</name>
+        <qualifiedname>iceberg::avro::AvroWriter::Write</qualifiedname>
+        <reimplements refid="classiceberg_1_1Writer_1ab9fd192deac4e2a73bbd5c8e8ee71529">Write</reimplements>
+        <param>
+          <type><ref refid="structArrowArray" kindref="compound">ArrowArray</ref> *</type>
+          <declname>data</declname>
+        </param>
+        <briefdescription>
+<para>Write arrow data to the file. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>Status of write results. </para>
+</simplesect>
+<simplesect kind="note"><para>Ownership of the data is transferred to the writer. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_writer.h" line="38" column="10" bodyfile="iceberg/avro/avro_writer.cc" bodystart="281" bodyend="281"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroWriter_1af3713ff59007cca54e37800f89eefa9f" prot="public" static="no" const="no" explicit="no" inline="no" final="yes" virt="virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1Metrics" kindref="compound">Metrics</ref> &gt;</type>
+        <definition>Result&lt; Metrics &gt; iceberg::avro::AvroWriter::metrics</definition>
+        <argsstring>() final</argsstring>
+        <name>metrics</name>
+        <qualifiedname>iceberg::avro::AvroWriter::metrics</qualifiedname>
+        <reimplements refid="classiceberg_1_1Writer_1a36090c8c8e11cd6d5746b3c57e90983d">metrics</reimplements>
+        <briefdescription>
+<para>Get the file statistics. Only valid after the file is closed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_writer.h" line="40" column="10" bodyfile="iceberg/avro/avro_writer.cc" bodystart="295" bodyend="301"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroWriter_1ac05ec6d94cbc4f51f8032a5ccae8ec8b" prot="public" static="no" const="no" explicit="no" inline="no" final="yes" virt="virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::avro::AvroWriter::length</definition>
+        <argsstring>() final</argsstring>
+        <name>length</name>
+        <qualifiedname>iceberg::avro::AvroWriter::length</qualifiedname>
+        <reimplements refid="classiceberg_1_1Writer_1a5de3531e7c60570692a4a2b0d8449a81">length</reimplements>
+        <briefdescription>
+<para>Get the file length. This can be called while the writer is still open or after the file is closed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_writer.h" line="42" column="10" bodyfile="iceberg/avro/avro_writer.cc" bodystart="303" bodyend="303"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1avro_1_1AvroWriter_1a6cea029f237cc8d1f8dd9361e3546042" prot="public" static="no" const="no" explicit="no" inline="no" final="yes" virt="virtual">
+        <type>std::vector&lt; int64_t &gt;</type>
+        <definition>std::vector&lt; int64_t &gt; iceberg::avro::AvroWriter::split_offsets</definition>
+        <argsstring>() final</argsstring>
+        <name>split_offsets</name>
+        <qualifiedname>iceberg::avro::AvroWriter::split_offsets</qualifiedname>
+        <reimplements refid="classiceberg_1_1Writer_1a9630828a5052ec475c653ed492f70124">split_offsets</reimplements>
+        <briefdescription>
+<para>Returns a list of recommended split locations, if applicable, empty otherwise. When available, this information is used for planning scan tasks whose boundaries are determined by these offsets. The returned list must be sorted in ascending order. Only valid after the file is closed. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/avro/avro_writer.h" line="44" column="15" bodyfile="iceberg/avro/avro_writer.cc" bodystart="305" bodyend="305"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A writer for serializing <ref refid="structArrowArray" kindref="compound">ArrowArray</ref> to Avro files. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::Writer</label>
+        <link refid="classiceberg_1_1Writer"/>
+      </node>
+      <node id="1">
+        <label>iceberg::avro::AvroWriter</label>
+        <link refid="classiceberg_1_1avro_1_1AvroWriter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::Writer</label>
+        <link refid="classiceberg_1_1Writer"/>
+      </node>
+      <node id="1">
+        <label>iceberg::avro::AvroWriter</label>
+        <link refid="classiceberg_1_1avro_1_1AvroWriter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/avro/avro_writer.h" line="28" column="1" bodyfile="iceberg/avro/avro_writer.h" bodystart="28" bodyend="49"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1avro_1_1AvroWriter_1a41848d62e10dea96f9885ebc84199c50" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroWriter</scope><name>AvroWriter</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroWriter_1a2dd42fd539830a897aae840cf0e2a8b5" prot="public" virt="virtual"><scope>iceberg::avro::AvroWriter</scope><name>Close</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroWriter_1ac085cc6f83697d1de84486e0944f1704" prot="private" virt="non-virtual"><scope>iceberg::avro::AvroWriter</scope><name>impl_</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroWriter_1ac05ec6d94cbc4f51f8032a5ccae8ec8b" prot="public" virt="virtual"><scope>iceberg::avro::AvroWriter</scope><name>length</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroWriter_1af3713ff59007cca54e37800f89eefa9f" prot="public" virt="virtual"><scope>iceberg::avro::AvroWriter</scope><name>metrics</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroWriter_1a6f1f8a09bac758ba7602e13f572f3d62" prot="public" virt="virtual"><scope>iceberg::avro::AvroWriter</scope><name>Open</name></member>
+      <member refid="classiceberg_1_1Writer_1ab4749448ef3a9f01d946294d44f23578" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroWriter</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroWriter_1a6cea029f237cc8d1f8dd9361e3546042" prot="public" virt="virtual"><scope>iceberg::avro::AvroWriter</scope><name>split_offsets</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroWriter_1a60e9eb49bcb01e2e7823f529c7f42025" prot="public" virt="virtual"><scope>iceberg::avro::AvroWriter</scope><name>Write</name></member>
+      <member refid="classiceberg_1_1Writer_1a46dfddc942469f2081cbab385d72ea6b" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroWriter</scope><name>Writer</name></member>
+      <member refid="classiceberg_1_1Writer_1a949903764bf9e3d38f00edb297a7103e" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroWriter</scope><name>Writer</name></member>
+      <member refid="classiceberg_1_1avro_1_1AvroWriter_1a52592c641756feb88fdb81985a992f1a" prot="public" virt="non-virtual"><scope>iceberg::avro::AvroWriter</scope><name>~AvroWriter</name></member>
+      <member refid="classiceberg_1_1Writer_1a3316c3e547ae9ce5333f27f5c0aa269b" prot="public" virt="virtual"><scope>iceberg::avro::AvroWriter</scope><name>~Writer</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

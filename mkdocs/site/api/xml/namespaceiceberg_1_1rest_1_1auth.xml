@@ -1,0 +1,52 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="namespaceiceberg_1_1rest_1_1auth" kind="namespace" language="C++">
+    <compoundname>iceberg::rest::auth</compoundname>
+    <innerclass refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" prot="public">iceberg::rest::auth::AuthManager</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1auth_1_1AuthManagers" prot="public">iceberg::rest::auth::AuthManagers</innerclass>
+    <innerclass refid="structiceberg_1_1rest_1_1auth_1_1AuthProperties" prot="public">iceberg::rest::auth::AuthProperties</innerclass>
+    <innerclass refid="classiceberg_1_1rest_1_1auth_1_1AuthSession" prot="public">iceberg::rest::auth::AuthSession</innerclass>
+    <sectiondef kind="typedef">
+      <memberdef kind="typedef" id="auth__managers_8h_1a8dcfa3f158cf6eb8345037e08fef0ef4" prot="public" static="no">
+        <type>std::function&lt; Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" kindref="compound">AuthManager</ref> &gt; &gt;(std::string_view name, const std::unordered_map&lt; std::string, std::string &gt; &amp;properties)&gt;</type>
+        <definition>using iceberg::rest::auth::AuthManagerFactory = typedef std::function&lt;Result&lt;std::unique_ptr&lt;AuthManager&gt; &gt;( std::string_view name, const std::unordered_map&lt;std::string, std::string&gt;&amp; properties)&gt;</definition>
+        <argsstring></argsstring>
+        <name>AuthManagerFactory</name>
+        <qualifiedname>iceberg::rest::auth::AuthManagerFactory</qualifiedname>
+        <briefdescription>
+<para>Function that creates an <ref refid="classiceberg_1_1rest_1_1auth_1_1AuthManager" kindref="compound">AuthManager</ref> from its name. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Name of the auth manager. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>properties</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Properties required by the auth manager. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>Newly created manager instance or an error if creation fails. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/auth/auth_managers.h" line="42" column="1" bodyfile="iceberg/catalog/rest/auth/auth_managers.h" bodystart="44" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/auth/auth_manager.cc" line="24" column="1"/>
+  </compounddef>
+</doxygen>

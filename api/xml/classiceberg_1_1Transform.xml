@@ -1,0 +1,690 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1Transform" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::Transform</compoundname>
+    <basecompoundref refid="classiceberg_1_1util_1_1Formattable" prot="public" virt="non-virtual">iceberg::util::Formattable</basecompoundref>
+    <includes refid="transform_8h" local="no">transform.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1Transform_1a4443b4d05f633e16429fa2342717f373" prot="private" static="no" mutable="no">
+        <type><ref refid="transform_8h_1a78b299cfdfb0b9631ca6fc520bd1b131" kindref="member">TransformType</ref></type>
+        <definition>TransformType iceberg::Transform::transform_type_</definition>
+        <argsstring></argsstring>
+        <name>transform_type_</name>
+        <qualifiedname>iceberg::Transform::transform_type_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="233" column="17" bodyfile="iceberg/transform.h" bodystart="233" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1Transform_1a5ea38af8699a331f61be4fed10159724" prot="private" static="no" mutable="no">
+        <type>std::variant&lt; std::monostate, int32_t &gt;</type>
+        <definition>std::variant&lt;std::monostate, int32_t&gt; iceberg::Transform::param_</definition>
+        <argsstring></argsstring>
+        <name>param_</name>
+        <qualifiedname>iceberg::Transform::param_</qualifiedname>
+        <briefdescription>
+<para>Optional parameter (e.g., num_buckets, width) </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="235" column="16" bodyfile="iceberg/transform.h" bodystart="235" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="classiceberg_1_1Transform_1ac4af9a6b608050712db9b11906e6f198" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Transform &gt; iceberg::Transform::Identity</definition>
+        <argsstring>()</argsstring>
+        <name>Identity</name>
+        <qualifiedname>iceberg::Transform::Identity</qualifiedname>
+        <briefdescription>
+<para>Returns a shared singleton instance of the Identity transform. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This transform leaves values unchanged and is commonly used for direct partitioning. <simplesect kind="return"><para>A shared pointer to the Identity transform. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="96" column="26" bodyfile="iceberg/transform.cc" bodystart="49" bodyend="53"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1ac8370cf16ba3c26216f314dbdac5259a" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Transform &gt; iceberg::Transform::Bucket</definition>
+        <argsstring>(int32_t num_buckets)</argsstring>
+        <name>Bucket</name>
+        <qualifiedname>iceberg::Transform::Bucket</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>num_buckets</declname>
+        </param>
+        <briefdescription>
+<para>Creates a shared instance of the Bucket transform. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Buckets values using a hash modulo operation. Commonly used for distributing data. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>num_buckets</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The number of buckets. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A shared pointer to the Bucket transform. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="103" column="26" bodyfile="iceberg/transform.cc" bodystart="80" bodyend="82"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1a5322807a616aecc18389f959e9d51373" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Transform &gt; iceberg::Transform::Truncate</definition>
+        <argsstring>(int32_t width)</argsstring>
+        <name>Truncate</name>
+        <qualifiedname>iceberg::Transform::Truncate</qualifiedname>
+        <param>
+          <type>int32_t</type>
+          <declname>width</declname>
+        </param>
+        <briefdescription>
+<para>Creates a shared instance of the Truncate transform. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Truncates values to a fixed width (e.g., for strings or binary data). <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>width</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The width to truncate to. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A shared pointer to the Truncate transform. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="110" column="26" bodyfile="iceberg/transform.cc" bodystart="84" bodyend="86"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1a203252162bb4d5a1e89b18cbf9ba2278" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Transform &gt; iceberg::Transform::Year</definition>
+        <argsstring>()</argsstring>
+        <name>Year</name>
+        <qualifiedname>iceberg::Transform::Year</qualifiedname>
+        <briefdescription>
+<para>Creates a shared singleton instance of the Year transform. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Extracts the number of years from a date or timestamp since the epoch. <simplesect kind="return"><para>A shared pointer to the Year transform. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="116" column="26" bodyfile="iceberg/transform.cc" bodystart="55" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1a95c96711e4ed3b6c1a505cd751fbdfc7" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Transform &gt; iceberg::Transform::Month</definition>
+        <argsstring>()</argsstring>
+        <name>Month</name>
+        <qualifiedname>iceberg::Transform::Month</qualifiedname>
+        <briefdescription>
+<para>Creates a shared singleton instance of the Month transform. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Extracts the number of months from a date or timestamp since the epoch. <simplesect kind="return"><para>A shared pointer to the Month transform. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="122" column="26" bodyfile="iceberg/transform.cc" bodystart="60" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1abeb248059ada6671e05717a38b50497c" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Transform &gt; iceberg::Transform::Day</definition>
+        <argsstring>()</argsstring>
+        <name>Day</name>
+        <qualifiedname>iceberg::Transform::Day</qualifiedname>
+        <briefdescription>
+<para>Creates a shared singleton instance of the Day transform. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Extracts the number of days from a date or timestamp since the epoch. <simplesect kind="return"><para>A shared pointer to the Day transform. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="128" column="26" bodyfile="iceberg/transform.cc" bodystart="65" bodyend="68"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1aab85234514c19efe355af652a80862f8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Transform &gt; iceberg::Transform::Hour</definition>
+        <argsstring>()</argsstring>
+        <name>Hour</name>
+        <qualifiedname>iceberg::Transform::Hour</qualifiedname>
+        <briefdescription>
+<para>Creates a shared singleton instance of the Hour transform. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Extracts the number of hours from a timestamp since the epoch. <simplesect kind="return"><para>A shared pointer to the Hour transform. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="134" column="26" bodyfile="iceberg/transform.cc" bodystart="70" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1ae6c5257d00a7fcba4ee3803d4020d412" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &gt;</type>
+        <definition>std::shared_ptr&lt; Transform &gt; iceberg::Transform::Void</definition>
+        <argsstring>()</argsstring>
+        <name>Void</name>
+        <qualifiedname>iceberg::Transform::Void</qualifiedname>
+        <briefdescription>
+<para>Creates a shared singleton instance of the Void transform. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Ignores values and always returns null. Useful for testing or special cases. <simplesect kind="return"><para>A shared pointer to the Void transform. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="140" column="26" bodyfile="iceberg/transform.cc" bodystart="75" bodyend="78"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1Transform_1afbed008e01be5d67004e7aaa24fb75f2" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="transform_8h_1a78b299cfdfb0b9631ca6fc520bd1b131" kindref="member">TransformType</ref></type>
+        <definition>TransformType iceberg::Transform::transform_type</definition>
+        <argsstring>() const</argsstring>
+        <name>transform_type</name>
+        <qualifiedname>iceberg::Transform::transform_type</qualifiedname>
+        <briefdescription>
+<para>Returns the transform type. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="143" column="17" bodyfile="iceberg/transform.cc" bodystart="93" bodyend="93"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1a4028210e3c0b3d5bfaed8bb07ef4dae6" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::shared_ptr&lt; <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::shared_ptr&lt; TransformFunction &gt; &gt; iceberg::Transform::Bind</definition>
+        <argsstring>(const std::shared_ptr&lt; Type &gt; &amp;source_type) const</argsstring>
+        <name>Bind</name>
+        <qualifiedname>iceberg::Transform::Bind</qualifiedname>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &gt; &amp;</type>
+          <declname>source_type</declname>
+        </param>
+        <briefdescription>
+<para>Binds this transform to a source type, returning a typed <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This creates a concrete transform implementation based on the transform type and parameter. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The source column type to bind to. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref> instance wrapped in <computeroutput>expected</computeroutput>, or an error on failure. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="151" column="10" bodyfile="iceberg/transform.cc" bodystart="95" bodyend="133"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1a51284bd3b85cd5951be730b2c887708e" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::Transform::CanTransform</definition>
+        <argsstring>(const Type &amp;source_type) const</argsstring>
+        <name>CanTransform</name>
+        <qualifiedname>iceberg::Transform::CanTransform</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref> &amp;</type>
+          <declname>source_type</declname>
+        </param>
+        <briefdescription>
+<para>Checks whether this function can be applied to the given <ref refid="classiceberg_1_1Type" kindref="compound">Type</ref>. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The source type to check. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if this transform can be applied to the type, false otherwise </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="157" column="8" bodyfile="iceberg/transform.cc" bodystart="135" bodyend="202"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1afb27bac92bade0469d6f5ed436ac28d0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::Transform::PreservesOrder</definition>
+        <argsstring>() const</argsstring>
+        <name>PreservesOrder</name>
+        <qualifiedname>iceberg::Transform::PreservesOrder</qualifiedname>
+        <briefdescription>
+<para>Whether the transform preserves the order of values (is monotonic). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="160" column="8" bodyfile="iceberg/transform.cc" bodystart="204" bodyend="219"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1ab8dd9a9699f039f5bb4c0133687ec1a0" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::Transform::SatisfiesOrderOf</definition>
+        <argsstring>(const Transform &amp;other) const</argsstring>
+        <name>SatisfiesOrderOf</name>
+        <qualifiedname>iceberg::Transform::SatisfiesOrderOf</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Whether ordering by this transform&apos;s result satisfies the ordering of another transform&apos;s result. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>For example, sorting by day(ts) will produce an ordering that is also by month(ts) or year(ts). However, sorting by day(ts) will not satisfy the order of hour(ts) or identity(ts). <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>other</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The other transform to compare with. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>true if ordering by this transform is equivalent to ordering by the other transform. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="171" column="8" bodyfile="iceberg/transform.cc" bodystart="221" bodyend="248"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1ac0a1ac335d0816a473bd3e811fce9b25" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::Transform::Project</definition>
+        <argsstring>(std::string_view name, const std::shared_ptr&lt; BoundPredicate &gt; &amp;predicate)</argsstring>
+        <name>Project</name>
+        <qualifiedname>iceberg::Transform::Project</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref> &gt; &amp;</type>
+          <declname>predicate</declname>
+        </param>
+        <briefdescription>
+<para>Transforms a <ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref> to an inclusive predicate on the partition values produced by the transform. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This inclusive transform guarantees that if predicate-&gt;Test(value) is true, then Projected(transform(value)) is true. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the partition column. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>predicate</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The predicate to project. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing either a unique pointer to the projected predicate, nullptr if the projection cannot be performed, or an <ref refid="structiceberg_1_1Error" kindref="compound">Error</ref> if the projection fails. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="182" column="10" bodyfile="iceberg/transform.cc" bodystart="250" bodyend="308"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1a2779a1a98eadc543af8ff3ecb128215e" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unique_ptr&lt; <ref refid="classiceberg_1_1UnboundPredicate" kindref="compound">UnboundPredicate</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::unique_ptr&lt; UnboundPredicate &gt; &gt; iceberg::Transform::ProjectStrict</definition>
+        <argsstring>(std::string_view name, const std::shared_ptr&lt; BoundPredicate &gt; &amp;predicate)</argsstring>
+        <name>ProjectStrict</name>
+        <qualifiedname>iceberg::Transform::ProjectStrict</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>name</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref> &gt; &amp;</type>
+          <declname>predicate</declname>
+        </param>
+        <briefdescription>
+<para>Transforms a <ref refid="classiceberg_1_1BoundPredicate" kindref="compound">BoundPredicate</ref> to a strict predicate on the partition values produced by the transform. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This strict transform guarantees that if Projected(transform(value)) is true, then predicate-&gt;Test(value) is also true. <parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the partition column. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>predicate</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The predicate to project. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A Result containing either a unique pointer to the projected predicate, nullptr if the projection cannot be performed, or an <ref refid="structiceberg_1_1Error" kindref="compound">Error</ref> if the projection fails. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="194" column="10" bodyfile="iceberg/transform.cc" bodystart="310" bodyend="368"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1afd2e4a6210b3f51f8ea8b44c84428988" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::Transform::ToHumanString</definition>
+        <argsstring>(const Literal &amp;value)</argsstring>
+        <name>ToHumanString</name>
+        <qualifiedname>iceberg::Transform::ToHumanString</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Literal" kindref="compound">Literal</ref> &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Returns a human-readable string representation of a transformed value. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The literal value to be transformed. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A human-readable string representation of the value </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="201" column="10" bodyfile="iceberg/transform.cc" bodystart="370" bodyend="441"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1af5c8b537969e36e0c2f35a5baf3f6d10" prot="public" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::Transform::ToString</definition>
+        <argsstring>() const override</argsstring>
+        <name>ToString</name>
+        <qualifiedname>iceberg::Transform::ToString</qualifiedname>
+        <reimplements refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386">ToString</reimplements>
+        <briefdescription>
+<para>Returns a string representation of this transform (e.g., &quot;bucket[16]&quot;). </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="204" column="15" bodyfile="iceberg/transform.cc" bodystart="447" bodyend="463"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1a59dba809ed7b418964c77f46301633eb" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::Transform::DedupName</definition>
+        <argsstring>() const</argsstring>
+        <name>DedupName</name>
+        <qualifiedname>iceberg::Transform::DedupName</qualifiedname>
+        <briefdescription>
+<para>Return the unique transform name to check if similar transforms for the same source field are added multiple times in partition spec builder. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="208" column="15" bodyfile="iceberg/transform.cc" bodystart="465" bodyend="465"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1a33f12e4ac4082a9fa0c159c8fd84fa52" prot="public" static="no" const="yes" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::string &gt;</type>
+        <definition>Result&lt; std::string &gt; iceberg::Transform::GeneratePartitionName</definition>
+        <argsstring>(std::string_view source_name) const</argsstring>
+        <name>GeneratePartitionName</name>
+        <qualifiedname>iceberg::Transform::GeneratePartitionName</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>source_name</declname>
+        </param>
+        <briefdescription>
+<para>Generates a partition name for the transform. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>source_name</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The name of the source column. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A string representation of the partition name. </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="213" column="10" bodyfile="iceberg/transform.cc" bodystart="467" bodyend="486"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="friend">
+      <memberdef kind="friend" id="classiceberg_1_1Transform_1a5ca5534f6d0509012ab3f8e05c752c69" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool operator==</definition>
+        <argsstring>(const Transform &amp;lhs, const Transform &amp;rhs)</argsstring>
+        <name>operator==</name>
+        <qualifiedname>iceberg::Transform::operator==</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &amp;</type>
+          <declname>lhs</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &amp;</type>
+          <declname>rhs</declname>
+        </param>
+        <briefdescription>
+<para>Equality comparison. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="216" column="15" bodyfile="iceberg/transform.h" bodystart="216" bodyend="218"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1Transform_1ad7fff2a9cee83a2ce0b9c41f97dd53e6" prot="private" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Transform::Transform</definition>
+        <argsstring>(TransformType transform_type)</argsstring>
+        <name>Transform</name>
+        <qualifiedname>iceberg::Transform::Transform</qualifiedname>
+        <param>
+          <type><ref refid="transform_8h_1a78b299cfdfb0b9631ca6fc520bd1b131" kindref="member">TransformType</ref></type>
+          <declname>transform_type</declname>
+        </param>
+        <briefdescription>
+<para>Constructs a <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> of the specified type (for non-parametric types). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>transform_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The transform type (e.g., identity, year, day). </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="223" column="12" bodyfile="iceberg/transform.cc" bodystart="88" bodyend="88"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1aec6d13c754c530a80e0c972951d85394" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::Transform::Transform</definition>
+        <argsstring>(TransformType transform_type, int32_t param)</argsstring>
+        <name>Transform</name>
+        <qualifiedname>iceberg::Transform::Transform</qualifiedname>
+        <param>
+          <type><ref refid="transform_8h_1a78b299cfdfb0b9631ca6fc520bd1b131" kindref="member">TransformType</ref></type>
+          <declname>transform_type</declname>
+        </param>
+        <param>
+          <type>int32_t</type>
+          <declname>param</declname>
+        </param>
+        <briefdescription>
+<para>Constructs a parameterized <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> (e.g., bucket(16), truncate(4)). </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>transform_type</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The transform type. </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>param</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The integer parameter associated with the transform. </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="228" column="3" bodyfile="iceberg/transform.cc" bodystart="90" bodyend="91"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1Transform_1ad1bb9b13337cfe19b89064dfe4ba357d" prot="private" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>bool</type>
+        <definition>bool iceberg::Transform::Equals</definition>
+        <argsstring>(const Transform &amp;other) const</argsstring>
+        <name>Equals</name>
+        <qualifiedname>iceberg::Transform::Equals</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> &amp;</type>
+          <declname>other</declname>
+        </param>
+        <briefdescription>
+<para>Checks equality with another <ref refid="classiceberg_1_1Transform" kindref="compound">Transform</ref> instance. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/transform.h" line="231" column="17" bodyfile="iceberg/transform.cc" bodystart="498" bodyend="500"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Represents a transform used in partitioning or sorting in Iceberg. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class supports binding to a source type and instantiating the corresponding <ref refid="classiceberg_1_1TransformFunction" kindref="compound">TransformFunction</ref>, as well as serialization-friendly introspection. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::Transform</label>
+        <link refid="classiceberg_1_1Transform"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="1">
+        <label>iceberg::Transform</label>
+        <link refid="classiceberg_1_1Transform"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/transform.h" line="90" column="1" bodyfile="iceberg/transform.h" bodystart="90" bodyend="236"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Transform_1a4028210e3c0b3d5bfaed8bb07ef4dae6" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>Bind</name></member>
+      <member refid="classiceberg_1_1Transform_1ac8370cf16ba3c26216f314dbdac5259a" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>Bucket</name></member>
+      <member refid="classiceberg_1_1Transform_1a51284bd3b85cd5951be730b2c887708e" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>CanTransform</name></member>
+      <member refid="classiceberg_1_1Transform_1abeb248059ada6671e05717a38b50497c" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>Day</name></member>
+      <member refid="classiceberg_1_1Transform_1a59dba809ed7b418964c77f46301633eb" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>DedupName</name></member>
+      <member refid="classiceberg_1_1Transform_1ad1bb9b13337cfe19b89064dfe4ba357d" prot="private" virt="virtual"><scope>iceberg::Transform</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1Transform_1a33f12e4ac4082a9fa0c159c8fd84fa52" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>GeneratePartitionName</name></member>
+      <member refid="classiceberg_1_1Transform_1aab85234514c19efe355af652a80862f8" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>Hour</name></member>
+      <member refid="classiceberg_1_1Transform_1ac4af9a6b608050712db9b11906e6f198" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>Identity</name></member>
+      <member refid="classiceberg_1_1Transform_1a95c96711e4ed3b6c1a505cd751fbdfc7" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>Month</name></member>
+      <member refid="classiceberg_1_1Transform_1a5ca5534f6d0509012ab3f8e05c752c69" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>operator==</name></member>
+      <member refid="classiceberg_1_1Transform_1a5ea38af8699a331f61be4fed10159724" prot="private" virt="non-virtual"><scope>iceberg::Transform</scope><name>param_</name></member>
+      <member refid="classiceberg_1_1Transform_1afb27bac92bade0469d6f5ed436ac28d0" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>PreservesOrder</name></member>
+      <member refid="classiceberg_1_1Transform_1ac0a1ac335d0816a473bd3e811fce9b25" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>Project</name></member>
+      <member refid="classiceberg_1_1Transform_1a2779a1a98eadc543af8ff3ecb128215e" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>ProjectStrict</name></member>
+      <member refid="classiceberg_1_1Transform_1ab8dd9a9699f039f5bb4c0133687ec1a0" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>SatisfiesOrderOf</name></member>
+      <member refid="classiceberg_1_1Transform_1afd2e4a6210b3f51f8ea8b44c84428988" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>ToHumanString</name></member>
+      <member refid="classiceberg_1_1Transform_1af5c8b537969e36e0c2f35a5baf3f6d10" prot="public" virt="virtual"><scope>iceberg::Transform</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1Transform_1ad7fff2a9cee83a2ce0b9c41f97dd53e6" prot="private" virt="non-virtual"><scope>iceberg::Transform</scope><name>Transform</name></member>
+      <member refid="classiceberg_1_1Transform_1aec6d13c754c530a80e0c972951d85394" prot="private" virt="non-virtual"><scope>iceberg::Transform</scope><name>Transform</name></member>
+      <member refid="classiceberg_1_1Transform_1afbed008e01be5d67004e7aaa24fb75f2" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>transform_type</name></member>
+      <member refid="classiceberg_1_1Transform_1a4443b4d05f633e16429fa2342717f373" prot="private" virt="non-virtual"><scope>iceberg::Transform</scope><name>transform_type_</name></member>
+      <member refid="classiceberg_1_1Transform_1a5322807a616aecc18389f959e9d51373" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>Truncate</name></member>
+      <member refid="classiceberg_1_1Transform_1ae6c5257d00a7fcba4ee3803d4020d412" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>Void</name></member>
+      <member refid="classiceberg_1_1Transform_1a203252162bb4d5a1e89b18cbf9ba2278" prot="public" virt="non-virtual"><scope>iceberg::Transform</scope><name>Year</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::Transform</scope><name>~Formattable</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

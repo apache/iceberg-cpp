@@ -1,0 +1,312 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1rest_1_1HttpClient" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::rest::HttpClient</compoundname>
+    <includes refid="http__client_8h" local="no">http_client.h</includes>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1HttpClient_1a6d169a6e88c4d67998751870203cfbde" prot="private" static="no" mutable="no">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>std::unordered_map&lt;std::string, std::string&gt; iceberg::rest::HttpClient::default_headers_</definition>
+        <argsstring></argsstring>
+        <name>default_headers_</name>
+        <qualifiedname>iceberg::rest::HttpClient::default_headers_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="111" column="22" bodyfile="iceberg/catalog/rest/http_client.h" bodystart="111" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1rest_1_1HttpClient_1a3221795338892a669ac1d47153e0a794" prot="private" static="no" mutable="no">
+        <type>std::unique_ptr&lt; cpr::ConnectionPool &gt;</type>
+        <definition>std::unique_ptr&lt;cpr::ConnectionPool&gt; iceberg::rest::HttpClient::connection_pool_</definition>
+        <argsstring></argsstring>
+        <name>connection_pool_</name>
+        <qualifiedname>iceberg::rest::HttpClient::connection_pool_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="112" column="19" bodyfile="iceberg/catalog/rest/http_client.h" bodystart="112" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpClient_1a1979033678f339a8a8e04791e9d9c7b4" prot="public" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::HttpClient::HttpClient</definition>
+        <argsstring>(std::unordered_map&lt; std::string, std::string &gt; default_headers={})</argsstring>
+        <name>HttpClient</name>
+        <qualifiedname>iceberg::rest::HttpClient::HttpClient</qualifiedname>
+        <param>
+          <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+          <declname>default_headers</declname>
+          <defval>{}</defval>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="73" column="12" bodyfile="iceberg/catalog/rest/http_client.cc" bodystart="137" bodyend="145"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpClient_1a8a33d6dd7d3001d0285f067069bf2075" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::HttpClient::~HttpClient</definition>
+        <argsstring>()</argsstring>
+        <name>~HttpClient</name>
+        <qualifiedname>iceberg::rest::HttpClient::~HttpClient</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="74" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpClient_1ae7e16fc73ce787908f521453e5e28d35" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::HttpClient::HttpClient</definition>
+        <argsstring>(const HttpClient &amp;)=delete</argsstring>
+        <name>HttpClient</name>
+        <qualifiedname>iceberg::rest::HttpClient::HttpClient</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="76" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpClient_1adf252eee67e50d36add44f631b6c80c7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref> &amp;</type>
+        <definition>HttpClient &amp; iceberg::rest::HttpClient::operator=</definition>
+        <argsstring>(const HttpClient &amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::rest::HttpClient::operator=</qualifiedname>
+        <param>
+          <type>const <ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref> &amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="77" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpClient_1a499d897a1d21d03f1b96701eb26140c6" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::rest::HttpClient::HttpClient</definition>
+        <argsstring>(HttpClient &amp;&amp;)=delete</argsstring>
+        <name>HttpClient</name>
+        <qualifiedname>iceberg::rest::HttpClient::HttpClient</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="78" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpClient_1aca85d0ded0a0c012cbd405081b262392" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref> &amp;</type>
+        <definition>HttpClient &amp; iceberg::rest::HttpClient::operator=</definition>
+        <argsstring>(HttpClient &amp;&amp;)=delete</argsstring>
+        <name>operator=</name>
+        <qualifiedname>iceberg::rest::HttpClient::operator=</qualifiedname>
+        <param>
+          <type><ref refid="classiceberg_1_1rest_1_1HttpClient" kindref="compound">HttpClient</ref> &amp;&amp;</type>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="79" column="14"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpClient_1a15dde23363325c1a5804665cfa12377c" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1rest_1_1HttpResponse" kindref="compound">HttpResponse</ref> &gt;</type>
+        <definition>Result&lt; HttpResponse &gt; iceberg::rest::HttpClient::Get</definition>
+        <argsstring>(const std::string &amp;path, const std::unordered_map&lt; std::string, std::string &gt; &amp;params, const std::unordered_map&lt; std::string, std::string &gt; &amp;headers, const ErrorHandler &amp;error_handler)</argsstring>
+        <name>Get</name>
+        <qualifiedname>iceberg::rest::HttpClient::Get</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>params</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>headers</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1rest_1_1ErrorHandler" kindref="compound">ErrorHandler</ref> &amp;</type>
+          <declname>error_handler</declname>
+        </param>
+        <briefdescription>
+<para>Sends a GET request. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="82" column="10" bodyfile="iceberg/catalog/rest/http_client.cc" bodystart="149" bodyend="161"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpClient_1a64d894339830d580a474d3289b287c1b" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1rest_1_1HttpResponse" kindref="compound">HttpResponse</ref> &gt;</type>
+        <definition>Result&lt; HttpResponse &gt; iceberg::rest::HttpClient::Post</definition>
+        <argsstring>(const std::string &amp;path, const std::string &amp;body, const std::unordered_map&lt; std::string, std::string &gt; &amp;headers, const ErrorHandler &amp;error_handler)</argsstring>
+        <name>Post</name>
+        <qualifiedname>iceberg::rest::HttpClient::Post</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>body</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>headers</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1rest_1_1ErrorHandler" kindref="compound">ErrorHandler</ref> &amp;</type>
+          <declname>error_handler</declname>
+        </param>
+        <briefdescription>
+<para>Sends a POST request. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="88" column="10" bodyfile="iceberg/catalog/rest/http_client.cc" bodystart="163" bodyend="175"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpClient_1aac1bae54358aa0dca4216c037918e2ee" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1rest_1_1HttpResponse" kindref="compound">HttpResponse</ref> &gt;</type>
+        <definition>Result&lt; HttpResponse &gt; iceberg::rest::HttpClient::PostForm</definition>
+        <argsstring>(const std::string &amp;path, const std::unordered_map&lt; std::string, std::string &gt; &amp;form_data, const std::unordered_map&lt; std::string, std::string &gt; &amp;headers, const ErrorHandler &amp;error_handler)</argsstring>
+        <name>PostForm</name>
+        <qualifiedname>iceberg::rest::HttpClient::PostForm</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>form_data</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>headers</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1rest_1_1ErrorHandler" kindref="compound">ErrorHandler</ref> &amp;</type>
+          <declname>error_handler</declname>
+        </param>
+        <briefdescription>
+<para>Sends a POST request with form data. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="93" column="10" bodyfile="iceberg/catalog/rest/http_client.cc" bodystart="177" bodyend="197"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpClient_1aaa72d427f9de5f63502c4f0db024faff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1rest_1_1HttpResponse" kindref="compound">HttpResponse</ref> &gt;</type>
+        <definition>Result&lt; HttpResponse &gt; iceberg::rest::HttpClient::Head</definition>
+        <argsstring>(const std::string &amp;path, const std::unordered_map&lt; std::string, std::string &gt; &amp;headers, const ErrorHandler &amp;error_handler)</argsstring>
+        <name>Head</name>
+        <qualifiedname>iceberg::rest::HttpClient::Head</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>headers</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1rest_1_1ErrorHandler" kindref="compound">ErrorHandler</ref> &amp;</type>
+          <declname>error_handler</declname>
+        </param>
+        <briefdescription>
+<para>Sends a HEAD request. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="100" column="10" bodyfile="iceberg/catalog/rest/http_client.cc" bodystart="199" bodyend="209"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1rest_1_1HttpClient_1a698e393c4ef2b7d39c3a8f534bd31619" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="classiceberg_1_1rest_1_1HttpResponse" kindref="compound">HttpResponse</ref> &gt;</type>
+        <definition>Result&lt; HttpResponse &gt; iceberg::rest::HttpClient::Delete</definition>
+        <argsstring>(const std::string &amp;path, const std::unordered_map&lt; std::string, std::string &gt; &amp;params, const std::unordered_map&lt; std::string, std::string &gt; &amp;headers, const ErrorHandler &amp;error_handler)</argsstring>
+        <name>Delete</name>
+        <qualifiedname>iceberg::rest::HttpClient::Delete</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>params</declname>
+        </param>
+        <param>
+          <type>const std::unordered_map&lt; std::string, std::string &gt; &amp;</type>
+          <declname>headers</declname>
+        </param>
+        <param>
+          <type>const <ref refid="classiceberg_1_1rest_1_1ErrorHandler" kindref="compound">ErrorHandler</ref> &amp;</type>
+          <declname>error_handler</declname>
+        </param>
+        <briefdescription>
+<para>Sends a DELETE request. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/catalog/rest/http_client.h" line="105" column="10" bodyfile="iceberg/catalog/rest/http_client.cc" bodystart="211" bodyend="223"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>HTTP client for making requests to Iceberg REST <ref refid="classiceberg_1_1Catalog" kindref="compound">Catalog</ref> API. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/catalog/rest/http_client.h" line="71" column="1" bodyfile="iceberg/catalog/rest/http_client.h" bodystart="71" bodyend="113"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1rest_1_1HttpClient_1a3221795338892a669ac1d47153e0a794" prot="private" virt="non-virtual"><scope>iceberg::rest::HttpClient</scope><name>connection_pool_</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpClient_1a6d169a6e88c4d67998751870203cfbde" prot="private" virt="non-virtual"><scope>iceberg::rest::HttpClient</scope><name>default_headers_</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpClient_1a698e393c4ef2b7d39c3a8f534bd31619" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpClient</scope><name>Delete</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpClient_1a15dde23363325c1a5804665cfa12377c" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpClient</scope><name>Get</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpClient_1aaa72d427f9de5f63502c4f0db024faff" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpClient</scope><name>Head</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpClient_1a1979033678f339a8a8e04791e9d9c7b4" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpClient</scope><name>HttpClient</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpClient_1ae7e16fc73ce787908f521453e5e28d35" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpClient</scope><name>HttpClient</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpClient_1a499d897a1d21d03f1b96701eb26140c6" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpClient</scope><name>HttpClient</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpClient_1adf252eee67e50d36add44f631b6c80c7" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpClient</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpClient_1aca85d0ded0a0c012cbd405081b262392" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpClient</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpClient_1a64d894339830d580a474d3289b287c1b" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpClient</scope><name>Post</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpClient_1aac1bae54358aa0dca4216c037918e2ee" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpClient</scope><name>PostForm</name></member>
+      <member refid="classiceberg_1_1rest_1_1HttpClient_1a8a33d6dd7d3001d0285f067069bf2075" prot="public" virt="non-virtual"><scope>iceberg::rest::HttpClient</scope><name>~HttpClient</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

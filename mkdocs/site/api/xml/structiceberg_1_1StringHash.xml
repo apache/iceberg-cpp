@@ -1,0 +1,107 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1StringHash" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::StringHash</compoundname>
+    <includes refid="string__util_8h" local="no">string_util.h</includes>
+    <sectiondef kind="public-type">
+      <memberdef kind="typedef" id="structiceberg_1_1StringHash_1a7ba17cb05652221e8bc30bd7b44c3b90" prot="public" static="no">
+        <type>std::hash&lt; std::string_view &gt;</type>
+        <definition>using iceberg::StringHash::hash_type =  std::hash&lt;std::string_view&gt;</definition>
+        <argsstring></argsstring>
+        <name>hash_type</name>
+        <qualifiedname>iceberg::StringHash::hash_type</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/string_util.h" line="89" column="3" bodyfile="iceberg/util/string_util.h" bodystart="89" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="typedef" id="structiceberg_1_1StringHash_1a4815fc3b5c6203e63270b9fb227b24d3" prot="public" static="no">
+        <type>void</type>
+        <definition>using iceberg::StringHash::is_transparent =  void</definition>
+        <argsstring></argsstring>
+        <name>is_transparent</name>
+        <qualifiedname>iceberg::StringHash::is_transparent</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/string_util.h" line="90" column="3" bodyfile="iceberg/util/string_util.h" bodystart="90" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="structiceberg_1_1StringHash_1a782b4d320efebd2c30ad979b7b718a9e" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::size_t</type>
+        <definition>std::size_t iceberg::StringHash::operator()</definition>
+        <argsstring>(std::string_view str) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::StringHash::operator()</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/string_util.h" line="92" column="15" bodyfile="iceberg/util/string_util.h" bodystart="92" bodyend="92"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1StringHash_1a9023576229733db0e7b03a0038ef4ef7" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::size_t</type>
+        <definition>std::size_t iceberg::StringHash::operator()</definition>
+        <argsstring>(const char *str) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::StringHash::operator()</qualifiedname>
+        <param>
+          <type>const char *</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/string_util.h" line="93" column="15" bodyfile="iceberg/util/string_util.h" bodystart="93" bodyend="93"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1StringHash_1a2e1067706156dd81ccf892a6d8bbe275" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::size_t</type>
+        <definition>std::size_t iceberg::StringHash::operator()</definition>
+        <argsstring>(const std::string &amp;str) const</argsstring>
+        <name>operator()</name>
+        <qualifiedname>iceberg::StringHash::operator()</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>str</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/util/string_util.h" line="94" column="15" bodyfile="iceberg/util/string_util.h" bodystart="94" bodyend="94"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Transparent hash function that supports std::string_view as lookup key. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>Enables std::unordered_map to directly accept std::string_view lookup keys without creating temporary std::string objects, using C++20&apos;s transparent lookup. </para>
+    </detaileddescription>
+    <location file="iceberg/util/string_util.h" line="88" column="1" bodyfile="iceberg/util/string_util.h" bodystart="88" bodyend="95"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1StringHash_1a7ba17cb05652221e8bc30bd7b44c3b90" prot="public" virt="non-virtual"><scope>iceberg::StringHash</scope><name>hash_type</name></member>
+      <member refid="structiceberg_1_1StringHash_1a4815fc3b5c6203e63270b9fb227b24d3" prot="public" virt="non-virtual"><scope>iceberg::StringHash</scope><name>is_transparent</name></member>
+      <member refid="structiceberg_1_1StringHash_1a782b4d320efebd2c30ad979b7b718a9e" prot="public" virt="non-virtual"><scope>iceberg::StringHash</scope><name>operator()</name></member>
+      <member refid="structiceberg_1_1StringHash_1a9023576229733db0e7b03a0038ef4ef7" prot="public" virt="non-virtual"><scope>iceberg::StringHash</scope><name>operator()</name></member>
+      <member refid="structiceberg_1_1StringHash_1a2e1067706156dd81ccf892a6d8bbe275" prot="public" virt="non-virtual"><scope>iceberg::StringHash</scope><name>operator()</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

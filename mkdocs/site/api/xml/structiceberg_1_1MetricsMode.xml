@@ -1,0 +1,154 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="structiceberg_1_1MetricsMode" kind="struct" language="C++" prot="public">
+    <compoundname>iceberg::MetricsMode</compoundname>
+    <sectiondef kind="public-type">
+      <memberdef kind="enum" id="structiceberg_1_1MetricsMode_1a87cf48358fc51845c8e72469e0c657f7" prot="public" static="no" strong="yes">
+        <type>uint8_t</type>
+        <name>Kind</name>
+        <qualifiedname>iceberg::MetricsMode::Kind</qualifiedname>
+        <enumvalue id="structiceberg_1_1MetricsMode_1a87cf48358fc51845c8e72469e0c657f7a35c3ace1970663a16e5c65baa5941b13" prot="public">
+          <name>kNone</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1MetricsMode_1a87cf48358fc51845c8e72469e0c657f7af4f78ad8806a856c86a24671970d4840" prot="public">
+          <name>kCounts</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1MetricsMode_1a87cf48358fc51845c8e72469e0c657f7a6393f5467404a20b7754c5032eb69bfd" prot="public">
+          <name>kTruncate</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <enumvalue id="structiceberg_1_1MetricsMode_1a87cf48358fc51845c8e72469e0c657f7aa60924e124da4d51bd4dc74c8f85b158" prot="public">
+          <name>kFull</name>
+          <briefdescription>
+          </briefdescription>
+          <detaileddescription>
+          </detaileddescription>
+        </enumvalue>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics_config.h" line="41" column="3" bodyfile="iceberg/metrics_config.h" bodystart="41" bodyend="46"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-attrib">
+      <memberdef kind="variable" id="structiceberg_1_1MetricsMode_1a931579c2504d89b4233e07626fa90102" prot="public" static="no" mutable="no">
+        <type>Kind</type>
+        <definition>Kind iceberg::MetricsMode::kind</definition>
+        <argsstring></argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::MetricsMode::kind</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics_config.h" line="53" column="8" bodyfile="iceberg/metrics_config.h" bodystart="53" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="structiceberg_1_1MetricsMode_1a64705e6dc632cddeb759148513dedfa3" prot="public" static="no" mutable="no">
+        <type>std::variant&lt; std::monostate, int32_t &gt;</type>
+        <definition>std::variant&lt;std::monostate, int32_t&gt; iceberg::MetricsMode::length</definition>
+        <argsstring></argsstring>
+        <name>length</name>
+        <qualifiedname>iceberg::MetricsMode::length</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics_config.h" line="54" column="16" bodyfile="iceberg/metrics_config.h" bodystart="54" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-static-func">
+      <memberdef kind="function" id="structiceberg_1_1MetricsMode_1a81cfadcada3604274cacf71b62980ac8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1MetricsMode" kindref="compound">MetricsMode</ref> &gt;</type>
+        <definition>Result&lt; MetricsMode &gt; iceberg::MetricsMode::FromString</definition>
+        <argsstring>(std::string_view mode)</argsstring>
+        <name>FromString</name>
+        <qualifiedname>iceberg::MetricsMode::FromString</qualifiedname>
+        <param>
+          <type>std::string_view</type>
+          <declname>mode</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics_config.h" line="48" column="17" bodyfile="iceberg/metrics_config.cc" bodystart="77" bodyend="100"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1MetricsMode_1ad1a910bed06400f073be5b9c627f06cf" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1MetricsMode" kindref="compound">MetricsMode</ref></type>
+        <definition>MetricsMode iceberg::MetricsMode::None</definition>
+        <argsstring>()</argsstring>
+        <name>None</name>
+        <qualifiedname>iceberg::MetricsMode::None</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics_config.h" line="49" column="22" bodyfile="iceberg/metrics_config.cc" bodystart="71" bodyend="71"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1MetricsMode_1a15c7b6ef57ce8387cd16729414557535" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1MetricsMode" kindref="compound">MetricsMode</ref></type>
+        <definition>MetricsMode iceberg::MetricsMode::Counts</definition>
+        <argsstring>()</argsstring>
+        <name>Counts</name>
+        <qualifiedname>iceberg::MetricsMode::Counts</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics_config.h" line="50" column="22" bodyfile="iceberg/metrics_config.cc" bodystart="73" bodyend="73"/>
+      </memberdef>
+      <memberdef kind="function" id="structiceberg_1_1MetricsMode_1acd7b316c76982703d51cc358fa843ce8" prot="public" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1MetricsMode" kindref="compound">MetricsMode</ref></type>
+        <definition>MetricsMode iceberg::MetricsMode::Full</definition>
+        <argsstring>()</argsstring>
+        <name>Full</name>
+        <qualifiedname>iceberg::MetricsMode::Full</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/metrics_config.h" line="51" column="22" bodyfile="iceberg/metrics_config.cc" bodystart="75" bodyend="75"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/metrics_config.h" line="39" column="1" bodyfile="iceberg/metrics_config.h" bodystart="39" bodyend="55"/>
+    <listofallmembers>
+      <member refid="structiceberg_1_1MetricsMode_1a15c7b6ef57ce8387cd16729414557535" prot="public" virt="non-virtual"><scope>iceberg::MetricsMode</scope><name>Counts</name></member>
+      <member refid="structiceberg_1_1MetricsMode_1a81cfadcada3604274cacf71b62980ac8" prot="public" virt="non-virtual"><scope>iceberg::MetricsMode</scope><name>FromString</name></member>
+      <member refid="structiceberg_1_1MetricsMode_1acd7b316c76982703d51cc358fa843ce8" prot="public" virt="non-virtual"><scope>iceberg::MetricsMode</scope><name>Full</name></member>
+      <member refid="structiceberg_1_1MetricsMode_1a87cf48358fc51845c8e72469e0c657f7" prot="public" virt="non-virtual"><scope>iceberg::MetricsMode</scope><name>Kind</name></member>
+      <member refid="structiceberg_1_1MetricsMode_1a931579c2504d89b4233e07626fa90102" prot="public" virt="non-virtual"><scope>iceberg::MetricsMode</scope><name>kind</name></member>
+      <member refid="structiceberg_1_1MetricsMode_1a64705e6dc632cddeb759148513dedfa3" prot="public" virt="non-virtual"><scope>iceberg::MetricsMode</scope><name>length</name></member>
+      <member refid="structiceberg_1_1MetricsMode_1ad1a910bed06400f073be5b9c627f06cf" prot="public" virt="non-virtual"><scope>iceberg::MetricsMode</scope><name>None</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

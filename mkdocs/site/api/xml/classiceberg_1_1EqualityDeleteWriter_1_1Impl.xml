@@ -1,0 +1,13 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1EqualityDeleteWriter_1_1Impl" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::EqualityDeleteWriter::Impl</compoundname>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <location file="iceberg/data/equality_delete_writer.cc" line="24" column="1" bodyfile="iceberg/data/equality_delete_writer.cc" bodystart="24" bodyend="26"/>
+    <listofallmembers>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

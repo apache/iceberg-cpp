@@ -1,0 +1,19 @@
+var searchData=
+[
+  ['schema_0',['schema',['../structiceberg_1_1WriterOptions.html#a6977a4706f0c09def323640aa11f1ac4',1,'iceberg::WriterOptions']]],
+  ['schema_5fid_1',['schema_id',['../structiceberg_1_1Snapshot.html#a70e026926993c72c71ae9bc75298d5e1',1,'iceberg::Snapshot']]],
+  ['schemas_2',['schemas',['../structiceberg_1_1TableMetadata.html#ab39be8853bddb48ad1e68dcfd6709e1e',1,'iceberg::TableMetadata']]],
+  ['sequence_5fnumber_3',['sequence_number',['../structiceberg_1_1ManifestEntry.html#a357b286d5d9a3fa93dcb2cab58c1ddf5',1,'iceberg::ManifestEntry::sequence_number'],['../structiceberg_1_1ManifestFile.html#afd9b32da248108a0e1b8015b99ab9260',1,'iceberg::ManifestFile::sequence_number'],['../structiceberg_1_1Snapshot.html#a6f9b97d42b48be0d05dd4befd2602256',1,'iceberg::Snapshot::sequence_number']]],
+  ['snapshot_5fid_4',['snapshot_id',['../structiceberg_1_1SnapshotLogEntry.html#addc045c812dc9b7aa4c4ab2aabaa2cb9',1,'iceberg::SnapshotLogEntry::snapshot_id'],['../structiceberg_1_1PartitionStatisticsFile.html#aae2a7f546dbbbfc5ab27b06f887de129',1,'iceberg::PartitionStatisticsFile::snapshot_id'],['../structiceberg_1_1StatisticsFile.html#a9aa6dd74b3c76db5333572b28f9efb1c',1,'iceberg::StatisticsFile::snapshot_id'],['../structiceberg_1_1Snapshot.html#a128c409cc977968fbb9d9e893ba7d0c6',1,'iceberg::Snapshot::snapshot_id'],['../structiceberg_1_1SnapshotRef.html#a63ac8ff0babbe68126fb52e54e7e1adb',1,'iceberg::SnapshotRef::snapshot_id'],['../structiceberg_1_1ManifestEntry.html#a111546aa262e2f12866313c3d7f13a8c',1,'iceberg::ManifestEntry::snapshot_id']]],
+  ['snapshot_5flog_5',['snapshot_log',['../structiceberg_1_1TableMetadata.html#aad9b131ae9842167a287008ac7f12d9e',1,'iceberg::TableMetadata']]],
+  ['snapshots_6',['snapshots',['../structiceberg_1_1TableMetadata.html#a4e7cb6b428cab513f11b440abcd86251',1,'iceberg::TableMetadata']]],
+  ['sort_5forder_5fid_7',['sort_order_id',['../structiceberg_1_1DataFile.html#ad05003bae8454bfce2ed9d6e1fdb8c33',1,'iceberg::DataFile']]],
+  ['sort_5forders_8',['sort_orders',['../structiceberg_1_1TableMetadata.html#a5907ebb5587e93ab2ec3b0053def1cc4',1,'iceberg::TableMetadata']]],
+  ['source_5fsnapshot_5fid_9',['source_snapshot_id',['../structiceberg_1_1BlobMetadata.html#a65ffbc7cd817be822e60fffbb7217bc2',1,'iceberg::BlobMetadata']]],
+  ['source_5fsnapshot_5fsequence_5fnumber_10',['source_snapshot_sequence_number',['../structiceberg_1_1BlobMetadata.html#a677f24776580eecfc54caceaa59e6d7f',1,'iceberg::BlobMetadata']]],
+  ['split_11',['split',['../structiceberg_1_1ReaderOptions.html#ad23066ad0bd76b9bddf201e5b9bbeb0e',1,'iceberg::ReaderOptions']]],
+  ['split_5foffsets_12',['split_offsets',['../structiceberg_1_1DataFile.html#abc1093a971f7e5f06c0e227a78e8bef5',1,'iceberg::DataFile']]],
+  ['statistics_13',['statistics',['../structiceberg_1_1TableMetadata.html#ab71ba7cc74ad20d823f3aff32e6566a9',1,'iceberg::TableMetadata']]],
+  ['status_14',['status',['../structiceberg_1_1ManifestEntry.html#adcaea3bfa81ceb698fadd1f04b4b7b81',1,'iceberg::ManifestEntry']]],
+  ['summary_15',['summary',['../structiceberg_1_1Snapshot.html#afb3b362767783fd344a459451796b2e8',1,'iceberg::Snapshot']]]
+];

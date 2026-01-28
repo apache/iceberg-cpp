@@ -1,0 +1,1050 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1SnapshotUpdate" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::SnapshotUpdate</compoundname>
+    <basecompoundref refid="classiceberg_1_1PendingUpdate" prot="public" virt="non-virtual">iceberg::PendingUpdate</basecompoundref>
+    <derivedcompoundref refid="classiceberg_1_1FastAppend" prot="public" virt="non-virtual">iceberg::FastAppend</derivedcompoundref>
+    <includes refid="snapshot__update_8h" local="no">snapshot_update.h</includes>
+    <innerclass refid="structiceberg_1_1SnapshotUpdate_1_1ApplyResult" prot="public">iceberg::SnapshotUpdate::ApplyResult</innerclass>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotUpdate_1a169ac960678daaef3ef8cc793f47d1a3" prot="protected" static="no" mutable="no">
+        <type><ref refid="classiceberg_1_1SnapshotSummaryBuilder" kindref="compound">SnapshotSummaryBuilder</ref></type>
+        <definition>SnapshotSummaryBuilder iceberg::SnapshotUpdate::summary_</definition>
+        <argsstring></argsstring>
+        <name>summary_</name>
+        <qualifiedname>iceberg::SnapshotUpdate::summary_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="201" column="26" bodyfile="iceberg/update/snapshot_update.h" bodystart="201" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotUpdate_1ad7f5ce9920cd355cc3cbf210dc8f4ae3" prot="private" static="no" mutable="no">
+        <type>const bool</type>
+        <definition>const bool iceberg::SnapshotUpdate::can_inherit_snapshot_id_</definition>
+        <argsstring></argsstring>
+        <name>can_inherit_snapshot_id_</name>
+        <qualifiedname>iceberg::SnapshotUpdate::can_inherit_snapshot_id_</qualifiedname>
+        <initializer>{true}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="204" column="14" bodyfile="iceberg/update/snapshot_update.h" bodystart="204" bodyend="204"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotUpdate_1a2d16357b0e3b377179026af5c4323b27" prot="private" static="no" mutable="no">
+        <type>const std::string</type>
+        <definition>const std::string iceberg::SnapshotUpdate::commit_uuid_</definition>
+        <argsstring></argsstring>
+        <name>commit_uuid_</name>
+        <qualifiedname>iceberg::SnapshotUpdate::commit_uuid_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="205" column="21" bodyfile="iceberg/update/snapshot_update.h" bodystart="205" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotUpdate_1a8ed15f71b53d177bcef84cf965275d27" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SnapshotUpdate::manifest_count_</definition>
+        <argsstring></argsstring>
+        <name>manifest_count_</name>
+        <qualifiedname>iceberg::SnapshotUpdate::manifest_count_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="206" column="11" bodyfile="iceberg/update/snapshot_update.h" bodystart="206" bodyend="206"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotUpdate_1a13e0ab16832239792321ec36c5f4754c" prot="private" static="no" mutable="no">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SnapshotUpdate::attempt_</definition>
+        <argsstring></argsstring>
+        <name>attempt_</name>
+        <qualifiedname>iceberg::SnapshotUpdate::attempt_</qualifiedname>
+        <initializer>{0}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="207" column="11" bodyfile="iceberg/update/snapshot_update.h" bodystart="207" bodyend="207"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotUpdate_1a3cd524ab9f8ad7988a6886500104fc2a" prot="private" static="no" mutable="no">
+        <type>std::vector&lt; std::string &gt;</type>
+        <definition>std::vector&lt;std::string&gt; iceberg::SnapshotUpdate::manifest_lists_</definition>
+        <argsstring></argsstring>
+        <name>manifest_lists_</name>
+        <qualifiedname>iceberg::SnapshotUpdate::manifest_lists_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="208" column="15" bodyfile="iceberg/update/snapshot_update.h" bodystart="208" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotUpdate_1a6dcb1aa93745e47da91e086868eeb101" prot="private" static="no" mutable="no">
+        <type>const int64_t</type>
+        <definition>const int64_t iceberg::SnapshotUpdate::target_manifest_size_bytes_</definition>
+        <argsstring></argsstring>
+        <name>target_manifest_size_bytes_</name>
+        <qualifiedname>iceberg::SnapshotUpdate::target_manifest_size_bytes_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="209" column="17" bodyfile="iceberg/update/snapshot_update.h" bodystart="209" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotUpdate_1ad84ce7277e68d4017f3af163e3aebfcd" prot="private" static="no" mutable="no">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>std::optional&lt;int64_t&gt; iceberg::SnapshotUpdate::snapshot_id_</definition>
+        <argsstring></argsstring>
+        <name>snapshot_id_</name>
+        <qualifiedname>iceberg::SnapshotUpdate::snapshot_id_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="210" column="17" bodyfile="iceberg/update/snapshot_update.h" bodystart="210" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotUpdate_1aaa744a04503cd41b80e5ccc5c9841475" prot="private" static="no" mutable="no">
+        <type>bool</type>
+        <definition>bool iceberg::SnapshotUpdate::stage_only_</definition>
+        <argsstring></argsstring>
+        <name>stage_only_</name>
+        <qualifiedname>iceberg::SnapshotUpdate::stage_only_</qualifiedname>
+        <initializer>{false}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="211" column="8" bodyfile="iceberg/update/snapshot_update.h" bodystart="211" bodyend="211"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotUpdate_1aaef5e0eb4b9fd3361adfa0bebd59b4fc" prot="private" static="no" mutable="no">
+        <type>std::function&lt; Status(const std::string &amp;)&gt;</type>
+        <definition>std::function&lt;Status(const std::string&amp;)&gt; iceberg::SnapshotUpdate::delete_func_</definition>
+        <argsstring></argsstring>
+        <name>delete_func_</name>
+        <qualifiedname>iceberg::SnapshotUpdate::delete_func_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="212" column="17" bodyfile="iceberg/update/snapshot_update.h" bodystart="212" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotUpdate_1a5f3867799f73a3111e858e0888b6054f" prot="private" static="no" mutable="no">
+        <type>std::string</type>
+        <definition>std::string iceberg::SnapshotUpdate::target_branch_</definition>
+        <argsstring></argsstring>
+        <name>target_branch_</name>
+        <qualifiedname>iceberg::SnapshotUpdate::target_branch_</qualifiedname>
+        <initializer>{SnapshotRef::kMainBranch}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="213" column="15" bodyfile="iceberg/update/snapshot_update.h" bodystart="213" bodyend="213"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1SnapshotUpdate_1a0583d784c589e614b080b2e926911c57" prot="private" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Snapshot&gt; iceberg::SnapshotUpdate::staged_snapshot_</definition>
+        <argsstring></argsstring>
+        <name>staged_snapshot_</name>
+        <qualifiedname>iceberg::SnapshotUpdate::staged_snapshot_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="214" column="19" bodyfile="iceberg/update/snapshot_update.h" bodystart="214" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1a1473c50bc74b2c0e596c677dfecf95ff" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::SnapshotUpdate::~SnapshotUpdate</definition>
+        <argsstring>() override</argsstring>
+        <name>~SnapshotUpdate</name>
+        <qualifiedname>iceberg::SnapshotUpdate::~SnapshotUpdate</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="52" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1ae194773e0ce37df3780121314322f440" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>Kind</type>
+        <definition>Kind iceberg::SnapshotUpdate::kind</definition>
+        <argsstring>() const override</argsstring>
+        <name>kind</name>
+        <qualifiedname>iceberg::SnapshotUpdate::kind</qualifiedname>
+        <reimplements refid="classiceberg_1_1PendingUpdate_1a33fba65ffa4a85fd7c5b9984cb892812">kind</reimplements>
+        <briefdescription>
+<para>Return the kind of this pending update. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="54" column="8" bodyfile="iceberg/update/snapshot_update.h" bodystart="54" bodyend="54"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1af5a84c539ec3c559260b3c6b868943c7" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>auto &amp;</type>
+        <definition>auto &amp; iceberg::SnapshotUpdate::DeleteWith</definition>
+        <argsstring>(this auto &amp;self, std::function&lt; Status(const std::string &amp;)&gt; delete_func)</argsstring>
+        <name>DeleteWith</name>
+        <qualifiedname>iceberg::SnapshotUpdate::DeleteWith</qualifiedname>
+        <param>
+          <type>this auto &amp;</type>
+          <declname>self</declname>
+        </param>
+        <param>
+          <type>std::function&lt; Status(const std::string &amp;)&gt;</type>
+          <declname>delete_func</declname>
+        </param>
+        <briefdescription>
+<para>Set a callback to delete files instead of the table&apos;s default. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>delete_func</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A function used to delete file locations </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this for method chaining </para>
+</simplesect>
+<simplesect kind="note"><para>Cannot be called more than once </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="61" column="8" bodyfile="iceberg/update/snapshot_update.h" bodystart="61" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1a43f427fe952631fffdd3c19e0c5ef434" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>auto &amp;</type>
+        <definition>auto &amp; iceberg::SnapshotUpdate::StageOnly</definition>
+        <argsstring>(this auto &amp;self)</argsstring>
+        <name>StageOnly</name>
+        <qualifiedname>iceberg::SnapshotUpdate::StageOnly</qualifiedname>
+        <param>
+          <type>this auto &amp;</type>
+          <declname>self</declname>
+        </param>
+        <briefdescription>
+<para>Stage a snapshot in table metadata, but not update the current snapshot id. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="74" column="8" bodyfile="iceberg/update/snapshot_update.h" bodystart="74" bodyend="77"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1ae19b638ceb6b7e57e4096ec943db223b" prot="public" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>auto &amp;</type>
+        <definition>auto &amp; iceberg::SnapshotUpdate::Set</definition>
+        <argsstring>(this auto &amp;self, const std::string &amp;property, const std::string &amp;value)</argsstring>
+        <name>Set</name>
+        <qualifiedname>iceberg::SnapshotUpdate::Set</qualifiedname>
+        <param>
+          <type>this auto &amp;</type>
+          <declname>self</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>property</declname>
+        </param>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>value</declname>
+        </param>
+        <briefdescription>
+<para>Set a summary property. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>property</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The property name </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>value</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The property value </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para><ref refid="classiceberg_1_1Reference" kindref="compound">Reference</ref> to this for method chaining </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="84" column="8" bodyfile="iceberg/update/snapshot_update.h" bodystart="84" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1a102a35b2c7bab9b1b08f178d1f9bebd7" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; <ref refid="structiceberg_1_1SnapshotUpdate_1_1ApplyResult" kindref="compound">ApplyResult</ref> &gt;</type>
+        <definition>Result&lt; SnapshotUpdate::ApplyResult &gt; iceberg::SnapshotUpdate::Apply</definition>
+        <argsstring>()</argsstring>
+        <name>Apply</name>
+        <qualifiedname>iceberg::SnapshotUpdate::Apply</qualifiedname>
+        <briefdescription>
+<para>Apply the update&apos;s changes to create a new snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>This method validates the changes, applies them to the metadata, and creates a new snapshot without committing it. The snapshot is stored internally and can be accessed after <ref refid="classiceberg_1_1SnapshotUpdate_1a102a35b2c7bab9b1b08f178d1f9bebd7" kindref="member">Apply()</ref> succeeds.</para>
+<para><simplesect kind="return"><para>A result containing the new snapshot, or an error </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="96" column="10" bodyfile="iceberg/update/snapshot_update.cc" bodystart="229" bodyend="301"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1ab8f14ca85eb071b445d235c0ccbbaa10" prot="public" static="no" const="no" explicit="no" inline="no" virt="virtual">
+        <type>Status</type>
+        <definition>Status iceberg::SnapshotUpdate::Finalize</definition>
+        <argsstring>(std::optional&lt; Error &gt; commit_error) override</argsstring>
+        <name>Finalize</name>
+        <qualifiedname>iceberg::SnapshotUpdate::Finalize</qualifiedname>
+        <reimplements refid="classiceberg_1_1PendingUpdate_1a22441dbf2867204cb175300075e50db9">Finalize</reimplements>
+        <param>
+          <type>std::optional&lt; <ref refid="structiceberg_1_1Error" kindref="compound">Error</ref> &gt;</type>
+          <declname>commit_error</declname>
+        </param>
+        <briefdescription>
+<para>Finalize the snapshot update, cleaning up any uncommitted files. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="99" column="10" bodyfile="iceberg/update/snapshot_update.cc" bodystart="303" bodyend="332"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1aab9fdceaf807e81a498d7570737d4635" prot="protected" static="no" const="no" explicit="yes" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::SnapshotUpdate::SnapshotUpdate</definition>
+        <argsstring>(std::shared_ptr&lt; Transaction &gt; transaction)</argsstring>
+        <name>SnapshotUpdate</name>
+        <qualifiedname>iceberg::SnapshotUpdate::SnapshotUpdate</qualifiedname>
+        <param>
+          <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Transaction" kindref="compound">Transaction</ref> &gt;</type>
+          <declname>transaction</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="102" column="12" bodyfile="iceberg/update/snapshot_update.cc" bodystart="157" bodyend="164"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1ad839a5b6b8cd54ceb3d013ddadae9fc5" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; ManifestFile &gt; &gt; iceberg::SnapshotUpdate::WriteDataManifests</definition>
+        <argsstring>(std::span&lt; const std::shared_ptr&lt; DataFile &gt; &gt; files, const std::shared_ptr&lt; PartitionSpec &gt; &amp;spec, std::optional&lt; int64_t &gt; data_sequence_number=std::nullopt)</argsstring>
+        <name>WriteDataManifests</name>
+        <qualifiedname>iceberg::SnapshotUpdate::WriteDataManifests</qualifiedname>
+        <param>
+          <type>std::span&lt; const std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+          <declname>files</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <param>
+          <type>std::optional&lt; int64_t &gt;</type>
+          <declname>data_sequence_number</declname>
+          <defval>std::nullopt</defval>
+        </param>
+        <briefdescription>
+<para>Write data manifests for the given data files. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>files</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Data files to write </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>spec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition spec to use </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>data_sequence_number</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Optional data sequence number for the files </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A vector of manifest files </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="110" column="10" bodyfile="iceberg/update/snapshot_update.cc" bodystart="167" bodyend="192"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1aef931023c233994b7567d1f8d9cc41ac" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &gt;</type>
+        <definition>Result&lt; std::vector&lt; ManifestFile &gt; &gt; iceberg::SnapshotUpdate::WriteDeleteManifests</definition>
+        <argsstring>(std::span&lt; const std::shared_ptr&lt; DataFile &gt; &gt; files, const std::shared_ptr&lt; PartitionSpec &gt; &amp;spec)</argsstring>
+        <name>WriteDeleteManifests</name>
+        <qualifiedname>iceberg::SnapshotUpdate::WriteDeleteManifests</qualifiedname>
+        <param>
+          <type>std::span&lt; const std::shared_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt; &gt;</type>
+          <declname>files</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt; &amp;</type>
+          <declname>spec</declname>
+        </param>
+        <briefdescription>
+<para>Write delete manifests for the given delete files. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>files</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Delete files to write </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>spec</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The partition spec to use </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A vector of manifest files </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="120" column="10" bodyfile="iceberg/update/snapshot_update.cc" bodystart="195" bodyend="220"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1aa4fa512c432e46fc2ed7b3f5e7ae9472" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::SnapshotUpdate::SetTargetBranch</definition>
+        <argsstring>(const std::string &amp;branch)</argsstring>
+        <name>SetTargetBranch</name>
+        <qualifiedname>iceberg::SnapshotUpdate::SetTargetBranch</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>branch</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="124" column="10" bodyfile="iceberg/update/snapshot_update.cc" bodystart="334" bodyend="346"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1ac1d1956ed16f817a44c0f3f081eb4c5c" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::string &amp;</type>
+        <definition>const std::string &amp; iceberg::SnapshotUpdate::target_branch</definition>
+        <argsstring>() const</argsstring>
+        <name>target_branch</name>
+        <qualifiedname>iceberg::SnapshotUpdate::target_branch</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="125" column="21" bodyfile="iceberg/update/snapshot_update.h" bodystart="125" bodyend="125"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1a0f15ea5399c070c05a401df3427cf4ba" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>bool</type>
+        <definition>bool iceberg::SnapshotUpdate::can_inherit_snapshot_id</definition>
+        <argsstring>() const</argsstring>
+        <name>can_inherit_snapshot_id</name>
+        <qualifiedname>iceberg::SnapshotUpdate::can_inherit_snapshot_id</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="126" column="8" bodyfile="iceberg/update/snapshot_update.h" bodystart="126" bodyend="126"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1a32d03afeb074db14119b5e1f1efcf279" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::string &amp;</type>
+        <definition>const std::string &amp; iceberg::SnapshotUpdate::commit_uuid</definition>
+        <argsstring>() const</argsstring>
+        <name>commit_uuid</name>
+        <qualifiedname>iceberg::SnapshotUpdate::commit_uuid</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="127" column="21" bodyfile="iceberg/update/snapshot_update.h" bodystart="127" bodyend="127"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1a89c7e7a09d3c094859f22b3e50a26ae6" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SnapshotUpdate::manifest_count</definition>
+        <argsstring>() const</argsstring>
+        <name>manifest_count</name>
+        <qualifiedname>iceberg::SnapshotUpdate::manifest_count</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="128" column="11" bodyfile="iceberg/update/snapshot_update.h" bodystart="128" bodyend="128"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1a7d049f4c752864f55d75ece4b6119a48" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int32_t</type>
+        <definition>int32_t iceberg::SnapshotUpdate::attempt</definition>
+        <argsstring>() const</argsstring>
+        <name>attempt</name>
+        <qualifiedname>iceberg::SnapshotUpdate::attempt</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="129" column="11" bodyfile="iceberg/update/snapshot_update.h" bodystart="129" bodyend="129"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1abe2bd4f83fb5d90e70bfff6d1f28a40b" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::SnapshotUpdate::target_manifest_size_bytes</definition>
+        <argsstring>() const</argsstring>
+        <name>target_manifest_size_bytes</name>
+        <qualifiedname>iceberg::SnapshotUpdate::target_manifest_size_bytes</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="130" column="11" bodyfile="iceberg/update/snapshot_update.h" bodystart="130" bodyend="130"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1a582e2766881ada1c8d07aa0c738449e6" prot="protected" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>void</type>
+        <definition>virtual void iceberg::SnapshotUpdate::CleanUncommitted</definition>
+        <argsstring>(const std::unordered_set&lt; std::string &gt; &amp;committed)=0</argsstring>
+        <name>CleanUncommitted</name>
+        <qualifiedname>iceberg::SnapshotUpdate::CleanUncommitted</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1FastAppend_1affc364f0cc816c7a91e2be173759ce2a">CleanUncommitted</reimplementedby>
+        <param>
+          <type>const std::unordered_set&lt; std::string &gt; &amp;</type>
+          <declname>committed</declname>
+        </param>
+        <briefdescription>
+<para>Clean up any uncommitted manifests that were created. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Manifests may not be committed if Apply is called multiple times because a commit conflict has occurred. Implementations may keep around manifests because the same changes will be made by both Apply calls. This method instructs the implementation to clean up those manifests and passes the paths of the manifests that were actually committed.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>committed</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>A set of manifest paths that were actually committed </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="142" column="16"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1a7e5cb52a426032eebf3b602b5674c5e0" prot="protected" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::string</type>
+        <definition>virtual std::string iceberg::SnapshotUpdate::operation</definition>
+        <argsstring>()=0</argsstring>
+        <name>operation</name>
+        <qualifiedname>iceberg::SnapshotUpdate::operation</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1FastAppend_1af48f453a28ecdbab15e2248fd087f6ef">operation</reimplementedby>
+        <briefdescription>
+<para>A string that describes the action that produced the new snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A string operation name </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="147" column="23"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1aa2d22d7708df6b17bfa53e40abb32f86" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::SnapshotUpdate::Validate</definition>
+        <argsstring>(const TableMetadata &amp;current_metadata, const std::shared_ptr&lt; Snapshot &gt; &amp;snapshot)</argsstring>
+        <name>Validate</name>
+        <qualifiedname>iceberg::SnapshotUpdate::Validate</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>current_metadata</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &amp;</type>
+          <declname>snapshot</declname>
+        </param>
+        <briefdescription>
+<para>Validate the current metadata. </para>
+        </briefdescription>
+        <detaileddescription>
+<para>Child operations can override this to add custom validation.</para>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>current_metadata</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Current table metadata to validate </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>snapshot</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>Ending snapshot on the lineage which is being validated </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="155" column="18" bodyfile="iceberg/update/snapshot_update.h" bodystart="155" bodyend="158"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1a0d1e461184dd3aa553269ef736202ced" prot="protected" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Result&lt; std::vector&lt; <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &gt; &gt;</type>
+        <definition>virtual Result&lt; std::vector&lt; ManifestFile &gt; &gt; iceberg::SnapshotUpdate::Apply</definition>
+        <argsstring>(const TableMetadata &amp;metadata_to_update, const std::shared_ptr&lt; Snapshot &gt; &amp;snapshot)=0</argsstring>
+        <name>Apply</name>
+        <qualifiedname>iceberg::SnapshotUpdate::Apply</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1FastAppend_1a691e82a1c468881b3774a5e4abc12e58">Apply</reimplementedby>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>metadata_to_update</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> &gt; &amp;</type>
+          <declname>snapshot</declname>
+        </param>
+        <briefdescription>
+<para>Apply the update&apos;s changes to the given metadata and snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>metadata_to_update</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The base table metadata to apply changes to </para>
+</parameterdescription>
+</parameteritem>
+<parameteritem>
+<parameternamelist>
+<parametername>snapshot</parametername>
+</parameternamelist>
+<parameterdescription>
+<para><ref refid="structiceberg_1_1Snapshot" kindref="compound">Snapshot</ref> to apply the changes to </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A vector of manifest files for the new snapshot </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="165" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1a193bc595ce86911870731a8eebf5950e" prot="protected" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>std::unordered_map&lt; std::string, std::string &gt;</type>
+        <definition>virtual std::unordered_map&lt; std::string, std::string &gt; iceberg::SnapshotUpdate::Summary</definition>
+        <argsstring>()=0</argsstring>
+        <name>Summary</name>
+        <qualifiedname>iceberg::SnapshotUpdate::Summary</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1FastAppend_1a3178b3edb1295fc08504fbd7df5f2b13">Summary</reimplementedby>
+        <briefdescription>
+<para>Get the summary map for this operation. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para>A map of summary properties </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="172" column="30"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1aeb89f2ceb3a0fb2abfba3faa6a32e5ac" prot="protected" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>bool</type>
+        <definition>virtual bool iceberg::SnapshotUpdate::CleanupAfterCommit</definition>
+        <argsstring>() const</argsstring>
+        <name>CleanupAfterCommit</name>
+        <qualifiedname>iceberg::SnapshotUpdate::CleanupAfterCommit</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1FastAppend_1a2b64487db1d9c6a252787504dbb9cb87">CleanupAfterCommit</reimplementedby>
+        <briefdescription>
+<para>Check if cleanup should happen after commit. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><simplesect kind="return"><para><ref refid="classiceberg_1_1True" kindref="compound">True</ref> if cleanup should happen after commit </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="177" column="16" bodyfile="iceberg/update/snapshot_update.h" bodystart="177" bodyend="177"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1aae99085da77d04a9314e8c4773cfb731" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int64_t</type>
+        <definition>int64_t iceberg::SnapshotUpdate::SnapshotId</definition>
+        <argsstring>()</argsstring>
+        <name>SnapshotId</name>
+        <qualifiedname>iceberg::SnapshotUpdate::SnapshotId</qualifiedname>
+        <briefdescription>
+<para>Get or generate the snapshot ID for the new snapshot. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="180" column="11" bodyfile="iceberg/update/snapshot_update.cc" bodystart="222" bodyend="227"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1af9fc2b6a382fb3c9c9f8e30056d1f7de" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::SnapshotUpdate::DeleteFile</definition>
+        <argsstring>(const std::string &amp;path)</argsstring>
+        <name>DeleteFile</name>
+        <qualifiedname>iceberg::SnapshotUpdate::DeleteFile</qualifiedname>
+        <param>
+          <type>const std::string &amp;</type>
+          <declname>path</declname>
+        </param>
+        <briefdescription>
+<para>Delete a file at the given path. </para>
+        </briefdescription>
+        <detaileddescription>
+<para><parameterlist kind="param"><parameteritem>
+<parameternamelist>
+<parametername>path</parametername>
+</parameternamelist>
+<parameterdescription>
+<para>The path of the file to delete </para>
+</parameterdescription>
+</parameteritem>
+</parameterlist>
+<simplesect kind="return"><para>A status indicating the result of the deletion </para>
+</simplesect>
+</para>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="186" column="10" bodyfile="iceberg/update/snapshot_update.cc" bodystart="406" bodyend="415"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1af474cf9191b5a05ea99ed8d9c01bbda0" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::SnapshotUpdate::ManifestPath</definition>
+        <argsstring>()</argsstring>
+        <name>ManifestPath</name>
+        <qualifiedname>iceberg::SnapshotUpdate::ManifestPath</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="188" column="15" bodyfile="iceberg/update/snapshot_update.cc" bodystart="426" bodyend="431"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1a0478c16b077f60262329f50bb606746e" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::SnapshotUpdate::ManifestListPath</definition>
+        <argsstring>()</argsstring>
+        <name>ManifestListPath</name>
+        <qualifiedname>iceberg::SnapshotUpdate::ManifestListPath</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="189" column="15" bodyfile="iceberg/update/snapshot_update.cc" bodystart="417" bodyend="424"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1a89096f41f8602f1d05f6bddc06c9d8e6" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="classiceberg_1_1SnapshotSummaryBuilder" kindref="compound">SnapshotSummaryBuilder</ref> &amp;</type>
+        <definition>SnapshotSummaryBuilder &amp; iceberg::SnapshotUpdate::summary_builder</definition>
+        <argsstring>()</argsstring>
+        <name>summary_builder</name>
+        <qualifiedname>iceberg::SnapshotUpdate::summary_builder</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="190" column="26" bodyfile="iceberg/update/snapshot_update.h" bodystart="190" bodyend="190"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="private-func">
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1a5ebe2caa426c43baab07cbd91987587f" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Result&lt; std::unordered_map&lt; std::string, std::string &gt; &gt;</type>
+        <definition>Result&lt; std::unordered_map&lt; std::string, std::string &gt; &gt; iceberg::SnapshotUpdate::ComputeSummary</definition>
+        <argsstring>(const TableMetadata &amp;previous)</argsstring>
+        <name>ComputeSummary</name>
+        <qualifiedname>iceberg::SnapshotUpdate::ComputeSummary</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1TableMetadata" kindref="compound">TableMetadata</ref> &amp;</type>
+          <declname>previous</declname>
+        </param>
+        <briefdescription>
+<para>Returns the snapshot summary from the implementation and updates totals. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="194" column="10" bodyfile="iceberg/update/snapshot_update.cc" bodystart="348" bodyend="396"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1SnapshotUpdate_1a0b26da7dc05dce8d81a2860dd6b5a71c" prot="private" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::SnapshotUpdate::CleanAll</definition>
+        <argsstring>()</argsstring>
+        <name>CleanAll</name>
+        <qualifiedname>iceberg::SnapshotUpdate::CleanAll</qualifiedname>
+        <briefdescription>
+<para>Clean up all uncommitted files. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/update/snapshot_update.h" line="198" column="8" bodyfile="iceberg/update/snapshot_update.cc" bodystart="398" bodyend="404"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Base class for operations that produce snapshots. </para>
+    </briefdescription>
+    <detaileddescription>
+<para>This class provides common functionality for creating new snapshots, including manifest list writing and cleanup. </para>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="3">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+      </node>
+      <node id="4">
+        <label>iceberg::FastAppend</label>
+        <link refid="classiceberg_1_1FastAppend"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::SnapshotUpdate</label>
+        <link refid="classiceberg_1_1SnapshotUpdate"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="5">
+        <label>iceberg::Error</label>
+        <link refid="structiceberg_1_1Error"/>
+        <childnode refid="6" relation="usage">
+          <edgelabel>message</edgelabel>
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::ErrorCollector</label>
+        <link refid="classiceberg_1_1ErrorCollector"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>errors_</edgelabel>
+        </childnode>
+      </node>
+      <node id="2">
+        <label>iceberg::PendingUpdate</label>
+        <link refid="classiceberg_1_1PendingUpdate"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>transaction_</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::SnapshotSummaryBuilder</label>
+        <link refid="classiceberg_1_1SnapshotSummaryBuilder"/>
+      </node>
+      <node id="1">
+        <label>iceberg::SnapshotUpdate</label>
+        <link refid="classiceberg_1_1SnapshotUpdate"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="11" relation="usage">
+          <edgelabel>summary_</edgelabel>
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::Transaction</label>
+        <link refid="classiceberg_1_1Transaction"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::shared_ptr&lt; iceberg::Transaction &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="10">
+        <label>std::enable_shared_from_this&lt; Transaction &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::string</label>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>std::vector&lt; iceberg::Error &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/update/snapshot_update.h" line="43" column="1" bodyfile="iceberg/update/snapshot_update.h" bodystart="43" bodyend="215"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ErrorCollector_1a3a20345150b136c918ffe8947a7d75e1" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5e555954de121d0908dcf4648da446e3" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a5749264a2234092a5246056a1c72ee51" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>AddError</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a102a35b2c7bab9b1b08f178d1f9bebd7" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>Apply</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a0d1e461184dd3aa553269ef736202ced" prot="protected" virt="pure-virtual"><scope>iceberg::SnapshotUpdate</scope><name>Apply</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a7d049f4c752864f55d75ece4b6119a48" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>attempt</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a13e0ab16832239792321ec36c5f4754c" prot="private" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>attempt_</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a93721051561748b1a29e75b7d4cbbd86" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>base</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a0f15ea5399c070c05a401df3427cf4ba" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>can_inherit_snapshot_id</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ad7f5ce9920cd355cc3cbf210dc8f4ae3" prot="private" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>can_inherit_snapshot_id_</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a16cbe7b6d423a372c9e68d970ff2c3ea" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>CheckErrors</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a0b26da7dc05dce8d81a2860dd6b5a71c" prot="private" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>CleanAll</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a582e2766881ada1c8d07aa0c738449e6" prot="protected" virt="pure-virtual"><scope>iceberg::SnapshotUpdate</scope><name>CleanUncommitted</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aeb89f2ceb3a0fb2abfba3faa6a32e5ac" prot="protected" virt="virtual"><scope>iceberg::SnapshotUpdate</scope><name>CleanupAfterCommit</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a274df2b90b0c22156a4c339aa30a4401" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>ClearErrors</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a4a5df6d83b7a4a3c4dac19a77945be71" prot="public" virt="virtual"><scope>iceberg::SnapshotUpdate</scope><name>Commit</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a32d03afeb074db14119b5e1f1efcf279" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>commit_uuid</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a2d16357b0e3b377179026af5c4323b27" prot="private" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>commit_uuid_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a5ebe2caa426c43baab07cbd91987587f" prot="private" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>ComputeSummary</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aaef5e0eb4b9fd3361adfa0bebd59b4fc" prot="private" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>delete_func_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1af9fc2b6a382fb3c9c9f8e30056d1f7de" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>DeleteFile</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1af5a84c539ec3c559260b3c6b868943c7" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>DeleteWith</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1afae10739a78bbffc2609a63e52821195" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>error_count</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a690c840a35a03af0f94eea092ca65aaa" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a827c296a8527f87f76d7f9321e7ee68f" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ab3fa546cd2748fe418db9c0933542755" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>ErrorCollector</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a101fb70f2ad50a6023de932dc2eca96c" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>errors</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a354d1e7287bb45926a4b563f80d0c623" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>errors_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ab8f14ca85eb071b445d235c0ccbbaa10" prot="public" virt="virtual"><scope>iceberg::SnapshotUpdate</scope><name>Finalize</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a8813b3fe2a3cc112e6db19c87b8422ae" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>has_errors</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a5bac3f32c6a0790ba222399fed5c1944" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>Kind</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ae194773e0ce37df3780121314322f440" prot="public" virt="virtual"><scope>iceberg::SnapshotUpdate</scope><name>kind</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a89c7e7a09d3c094859f22b3e50a26ae6" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>manifest_count</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a8ed15f71b53d177bcef84cf965275d27" prot="private" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>manifest_count_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a3cd524ab9f8ad7988a6886500104fc2a" prot="private" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>manifest_lists_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a0478c16b077f60262329f50bb606746e" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>ManifestListPath</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1af474cf9191b5a05ea99ed8d9c01bbda0" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>ManifestPath</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a7e5cb52a426032eebf3b602b5674c5e0" prot="protected" virt="pure-virtual"><scope>iceberg::SnapshotUpdate</scope><name>operation</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a3314053bba6a86931feb39c1487e2c8b" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a9e71d56c145591059c7e2f6ee0305295" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1a22311658715152d8e6e27834240ce446" prot="public" virt="non-virtual" ambiguityscope="iceberg::ErrorCollector::"><scope>iceberg::SnapshotUpdate</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1aaba366560be481bfa9538735f3a38e3e" prot="public" virt="non-virtual" ambiguityscope="iceberg::ErrorCollector::"><scope>iceberg::SnapshotUpdate</scope><name>operator=</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ac5c3549e22869ad7f6abd417ffcabbe2" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1a18521611dee09ce7f85477f38d85e75d" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ab758ff7780442894f3fb0a80d0db064f" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>PendingUpdate</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ae19b638ceb6b7e57e4096ec943db223b" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>Set</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aa4fa512c432e46fc2ed7b3f5e7ae9472" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>SetTargetBranch</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ad84ce7277e68d4017f3af163e3aebfcd" prot="private" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>snapshot_id_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aae99085da77d04a9314e8c4773cfb731" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>SnapshotId</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aab9fdceaf807e81a498d7570737d4635" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>SnapshotUpdate</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aaa744a04503cd41b80e5ccc5c9841475" prot="private" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>stage_only_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a0583d784c589e614b080b2e926911c57" prot="private" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>staged_snapshot_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a43f427fe952631fffdd3c19e0c5ef434" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>StageOnly</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a193bc595ce86911870731a8eebf5950e" prot="protected" virt="pure-virtual"><scope>iceberg::SnapshotUpdate</scope><name>Summary</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a169ac960678daaef3ef8cc793f47d1a3" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>summary_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a89096f41f8602f1d05f6bddc06c9d8e6" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>summary_builder</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ac1d1956ed16f817a44c0f3f081eb4c5c" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>target_branch</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a5f3867799f73a3111e858e0888b6054f" prot="private" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>target_branch_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1abe2bd4f83fb5d90e70bfff6d1f28a40b" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>target_manifest_size_bytes</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a6dcb1aa93745e47da91e086868eeb101" prot="private" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>target_manifest_size_bytes_</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ac57921ff326abc60b8d9558aa7046d10" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>transaction_</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aa2d22d7708df6b17bfa53e40abb32f86" prot="protected" virt="virtual"><scope>iceberg::SnapshotUpdate</scope><name>Validate</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1ad839a5b6b8cd54ceb3d013ddadae9fc5" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>WriteDataManifests</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1aef931023c233994b7567d1f8d9cc41ac" prot="protected" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>WriteDeleteManifests</name></member>
+      <member refid="classiceberg_1_1ErrorCollector_1ae84ca7242062cb3e3b86ce4cb81b368d" prot="public" virt="virtual"><scope>iceberg::SnapshotUpdate</scope><name>~ErrorCollector</name></member>
+      <member refid="classiceberg_1_1PendingUpdate_1ace0dfef0058a64109f51e2638429a9f2" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>~PendingUpdate</name></member>
+      <member refid="classiceberg_1_1SnapshotUpdate_1a1473c50bc74b2c0e596c677dfecf95ff" prot="public" virt="non-virtual"><scope>iceberg::SnapshotUpdate</scope><name>~SnapshotUpdate</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

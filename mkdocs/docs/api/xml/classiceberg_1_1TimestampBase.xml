@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TimestampBase" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::TimestampBase</compoundname>
+    <basecompoundref refid="classiceberg_1_1PrimitiveType" prot="public" virt="non-virtual">iceberg::PrimitiveType</basecompoundref>
+    <derivedcompoundref refid="classiceberg_1_1TimestampType" prot="public" virt="non-virtual">iceberg::TimestampType</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1TimestampTzType" prot="public" virt="non-virtual">iceberg::TimestampTzType</derivedcompoundref>
+    <includes refid="type_8h" local="no">type.h</includes>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1TimestampBase_1ab062d6f49e7f378a81d20601d41e0994" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type>bool</type>
+        <definition>virtual bool iceberg::TimestampBase::is_zoned</definition>
+        <argsstring>() const =0</argsstring>
+        <name>is_zoned</name>
+        <qualifiedname>iceberg::TimestampBase::is_zoned</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1TimestampType_1a9b56a903dc4a8f2db5d78bc6ee441251">is_zoned</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1TimestampTzType_1a01bdada6f348e63943ffcabe274344ce">is_zoned</reimplementedby>
+        <briefdescription>
+<para>Is this type zoned or naive? </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="356" column="17"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TimestampBase_1ac7c5676ebebea0df936a4ada5b7294c3" prot="public" static="no" const="yes" explicit="no" inline="no" virt="pure-virtual">
+        <type><ref refid="type__fwd_8h_1a4082287dfe7a2b960a8c638d5f0cf39a" kindref="member">TimeUnit</ref></type>
+        <definition>virtual TimeUnit iceberg::TimestampBase::time_unit</definition>
+        <argsstring>() const =0</argsstring>
+        <name>time_unit</name>
+        <qualifiedname>iceberg::TimestampBase::time_unit</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1TimestampType_1a9eba8144a531fa80f8179691eeb1042d">time_unit</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1TimestampTzType_1a66d115a7b1202ae86aad115be2f1c945">time_unit</reimplementedby>
+        <briefdescription>
+<para>The time resolution. </para>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/type.h" line="358" column="21"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>A base class for any timestamp time (irrespective of unit or timezone). </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::TimestampBase</label>
+        <link refid="classiceberg_1_1TimestampBase"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::TimestampType</label>
+        <link refid="classiceberg_1_1TimestampType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="6">
+        <label>iceberg::TimestampTzType</label>
+        <link refid="classiceberg_1_1TimestampTzType"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="2">
+        <label>iceberg::PrimitiveType</label>
+        <link refid="classiceberg_1_1PrimitiveType"/>
+        <childnode refid="3" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::TimestampBase</label>
+        <link refid="classiceberg_1_1TimestampBase"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="4" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/type.h" line="353" column="1" bodyfile="iceberg/type.h" bodystart="353" bodyend="359"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1Type_1a9eb55b3cb339747a0b8081c5c5d73103" prot="protected" virt="pure-virtual"><scope>iceberg::TimestampBase</scope><name>Equals</name></member>
+      <member refid="classiceberg_1_1PrimitiveType_1ae8b76f12af1e8e9861b2a9fbab776f7c" prot="public" virt="virtual"><scope>iceberg::TimestampBase</scope><name>is_nested</name></member>
+      <member refid="classiceberg_1_1PrimitiveType_1a1cc061d5de221d54396f571681bf090a" prot="public" virt="virtual"><scope>iceberg::TimestampBase</scope><name>is_primitive</name></member>
+      <member refid="classiceberg_1_1TimestampBase_1ab062d6f49e7f378a81d20601d41e0994" prot="public" virt="pure-virtual"><scope>iceberg::TimestampBase</scope><name>is_zoned</name></member>
+      <member refid="classiceberg_1_1TimestampBase_1ac7c5676ebebea0df936a4ada5b7294c3" prot="public" virt="pure-virtual"><scope>iceberg::TimestampBase</scope><name>time_unit</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1a79618aca5b3bf63610d9c87ac5ae0386" prot="public" virt="pure-virtual"><scope>iceberg::TimestampBase</scope><name>ToString</name></member>
+      <member refid="classiceberg_1_1Type_1a492b2d8720b13673ad0955bd5fe3bf27" prot="public" virt="pure-virtual"><scope>iceberg::TimestampBase</scope><name>type_id</name></member>
+      <member refid="classiceberg_1_1util_1_1Formattable_1acfe29264450018bab0ceab0828cf46f9" prot="public" virt="virtual"><scope>iceberg::TimestampBase</scope><name>~Formattable</name></member>
+      <member refid="classiceberg_1_1Type_1a62b9070ee3fd1c5f8949a5785a414c6c" prot="public" virt="non-virtual"><scope>iceberg::TimestampBase</scope><name>~Type</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

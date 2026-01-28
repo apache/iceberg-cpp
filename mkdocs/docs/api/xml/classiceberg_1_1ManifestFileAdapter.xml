@@ -1,0 +1,410 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1ManifestFileAdapter" kind="class" language="C++" prot="public" abstract="yes">
+    <compoundname>iceberg::ManifestFileAdapter</compoundname>
+    <basecompoundref refid="classiceberg_1_1ManifestAdapter" prot="public" virt="non-virtual">iceberg::ManifestAdapter</basecompoundref>
+    <derivedcompoundref refid="classiceberg_1_1ManifestFileAdapterV1" prot="public" virt="non-virtual">iceberg::ManifestFileAdapterV1</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1ManifestFileAdapterV2" prot="public" virt="non-virtual">iceberg::ManifestFileAdapterV2</derivedcompoundref>
+    <derivedcompoundref refid="classiceberg_1_1ManifestFileAdapterV3" prot="public" virt="non-virtual">iceberg::ManifestFileAdapterV3</derivedcompoundref>
+    <includes refid="manifest__adapter__internal_8h" local="no">manifest_adapter_internal.h</includes>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1ManifestFileAdapter_1a15b5f15e7952183995ef0a6ab65fd533" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::ManifestFileAdapter::manifest_list_schema_</definition>
+        <argsstring></argsstring>
+        <name>manifest_list_schema_</name>
+        <qualifiedname>iceberg::ManifestFileAdapter::manifest_list_schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_adapter_internal.h" line="132" column="19" bodyfile="iceberg/manifest/manifest_adapter_internal.h" bodystart="132" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="public-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestFileAdapter_1a2d55822a2417181ee2e77487ad6b92cc" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestFileAdapter::ManifestFileAdapter</definition>
+        <argsstring>()=default</argsstring>
+        <name>ManifestFileAdapter</name>
+        <qualifiedname>iceberg::ManifestFileAdapter::ManifestFileAdapter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_adapter_internal.h" line="112" column="3"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestFileAdapter_1abcdd13ce7c7d176967e6ddbf14810b50" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type></type>
+        <definition>iceberg::ManifestFileAdapter::~ManifestFileAdapter</definition>
+        <argsstring>() override</argsstring>
+        <name>~ManifestFileAdapter</name>
+        <qualifiedname>iceberg::ManifestFileAdapter::~ManifestFileAdapter</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_adapter_internal.h" line="113" column="3" bodyfile="iceberg/manifest/manifest_adapter.cc" bodystart="447" bodyend="454"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestFileAdapter_1a9c4b124156e807542044d0a32ed1f2db" prot="public" static="no" const="no" explicit="no" inline="no" virt="pure-virtual">
+        <type>Status</type>
+        <definition>virtual Status iceberg::ManifestFileAdapter::Append</definition>
+        <argsstring>(const ManifestFile &amp;file)=0</argsstring>
+        <name>Append</name>
+        <qualifiedname>iceberg::ManifestFileAdapter::Append</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1ManifestFileAdapterV1_1a838e675bca305bc1671439fa2e892bb0">Append</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestFileAdapterV2_1a5f391bdf1e64caaf473cfbb76d826e54">Append</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestFileAdapterV3_1a5381e67b7a7058b94f30b559b22f2fdb">Append</reimplementedby>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_adapter_internal.h" line="115" column="18"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestFileAdapter_1a20d80d90a8fae3e56f08fa9585c8d024" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="non-virtual">
+        <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt; &amp;</type>
+        <definition>const std::shared_ptr&lt; Schema &gt; &amp; iceberg::ManifestFileAdapter::schema</definition>
+        <argsstring>() const</argsstring>
+        <name>schema</name>
+        <qualifiedname>iceberg::ManifestFileAdapter::schema</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_adapter_internal.h" line="117" column="25" bodyfile="iceberg/manifest/manifest_adapter_internal.h" bodystart="117" bodyend="117"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestFileAdapter_1a09f8a631f7a95069b7dc6f8f523a8706" prot="public" static="no" const="yes" explicit="no" inline="yes" virt="virtual">
+        <type>std::optional&lt; int64_t &gt;</type>
+        <definition>virtual std::optional&lt; int64_t &gt; iceberg::ManifestFileAdapter::next_row_id</definition>
+        <argsstring>() const</argsstring>
+        <name>next_row_id</name>
+        <qualifiedname>iceberg::ManifestFileAdapter::next_row_id</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1ManifestFileAdapterV3_1ad676b2cadd4b5d0673923746e58f6521">next_row_id</reimplementedby>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_adapter_internal.h" line="119" column="25" bodyfile="iceberg/manifest/manifest_adapter_internal.h" bodystart="119" bodyend="119"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestFileAdapter_1ab41eb9bffefa6680b724b12cffb9e296" prot="protected" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ManifestFileAdapter::AppendInternal</definition>
+        <argsstring>(const ManifestFile &amp;file)</argsstring>
+        <name>AppendInternal</name>
+        <qualifiedname>iceberg::ManifestFileAdapter::AppendInternal</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_adapter_internal.h" line="122" column="10" bodyfile="iceberg/manifest/manifest_adapter.cc" bodystart="533" bodyend="646"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestFileAdapter_1acb76892c3e376ed945fe47e7f3ab264e" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::ManifestFileAdapter::GetSequenceNumber</definition>
+        <argsstring>(const ManifestFile &amp;file) const</argsstring>
+        <name>GetSequenceNumber</name>
+        <qualifiedname>iceberg::ManifestFileAdapter::GetSequenceNumber</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1ManifestFileAdapterV2_1adef06a4f0f88dc74cb836d6692353336">GetSequenceNumber</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestFileAdapterV3_1a52215714c10f3ecbda44623df742a859">GetSequenceNumber</reimplementedby>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_adapter_internal.h" line="127" column="18" bodyfile="iceberg/manifest/manifest_adapter.cc" bodystart="519" bodyend="521"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestFileAdapter_1ab654d9c6fa84e2b8279b84decbd142cf" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; int64_t &gt;</type>
+        <definition>Result&lt; int64_t &gt; iceberg::ManifestFileAdapter::GetMinSequenceNumber</definition>
+        <argsstring>(const ManifestFile &amp;file) const</argsstring>
+        <name>GetMinSequenceNumber</name>
+        <qualifiedname>iceberg::ManifestFileAdapter::GetMinSequenceNumber</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1ManifestFileAdapterV2_1a748918b3f8be0de5a5a36b51a9c6ce79">GetMinSequenceNumber</reimplementedby>
+        <reimplementedby refid="classiceberg_1_1ManifestFileAdapterV3_1a8bad2e25133fc7ffcbf6eefb25a871ee">GetMinSequenceNumber</reimplementedby>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_adapter_internal.h" line="128" column="18" bodyfile="iceberg/manifest/manifest_adapter.cc" bodystart="523" bodyend="526"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1ManifestFileAdapter_1ae8e7c54ada96aaa60ada58d96629bac0" prot="protected" static="no" const="yes" explicit="no" inline="no" virt="virtual">
+        <type>Result&lt; std::optional&lt; int64_t &gt; &gt;</type>
+        <definition>Result&lt; std::optional&lt; int64_t &gt; &gt; iceberg::ManifestFileAdapter::GetFirstRowId</definition>
+        <argsstring>(const ManifestFile &amp;file) const</argsstring>
+        <name>GetFirstRowId</name>
+        <qualifiedname>iceberg::ManifestFileAdapter::GetFirstRowId</qualifiedname>
+        <reimplementedby refid="classiceberg_1_1ManifestFileAdapterV3_1a62b24956abb98441de5d46495dec4a1c">GetFirstRowId</reimplementedby>
+        <param>
+          <type>const <ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_adapter_internal.h" line="129" column="18" bodyfile="iceberg/manifest/manifest_adapter.cc" bodystart="528" bodyend="531"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-static-func">
+      <memberdef kind="function" id="classiceberg_1_1ManifestFileAdapter_1a4b306535642f6391af5754306212a431" prot="protected" static="yes" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>Status</type>
+        <definition>Status iceberg::ManifestFileAdapter::AppendPartitionSummary</definition>
+        <argsstring>(ArrowArray *array, const std::shared_ptr&lt; ListType &gt; &amp;summary_type, const std::vector&lt; PartitionFieldSummary &gt; &amp;summaries)</argsstring>
+        <name>AppendPartitionSummary</name>
+        <qualifiedname>iceberg::ManifestFileAdapter::AppendPartitionSummary</qualifiedname>
+        <param>
+          <type><ref refid="structArrowArray" kindref="compound">ArrowArray</ref> *</type>
+          <declname>array</declname>
+        </param>
+        <param>
+          <type>const std::shared_ptr&lt; <ref refid="classiceberg_1_1ListType" kindref="compound">ListType</ref> &gt; &amp;</type>
+          <declname>summary_type</declname>
+        </param>
+        <param>
+          <type>const std::vector&lt; <ref refid="structiceberg_1_1PartitionFieldSummary" kindref="compound">PartitionFieldSummary</ref> &gt; &amp;</type>
+          <declname>summaries</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/manifest/manifest_adapter_internal.h" line="123" column="17" bodyfile="iceberg/manifest/manifest_adapter.cc" bodystart="456" bodyend="517"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+<para>Adapter for appending a list of <computeroutput><ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref></computeroutput>s to an <computeroutput><ref refid="structArrowArray" kindref="compound">ArrowArray</ref></computeroutput>. Implemented by different versions with version-specific schemas. </para>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="2">
+        <label>iceberg::ManifestAdapter</label>
+        <link refid="classiceberg_1_1ManifestAdapter"/>
+      </node>
+      <node id="1">
+        <label>iceberg::ManifestFileAdapter</label>
+        <link refid="classiceberg_1_1ManifestFileAdapter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="3">
+        <label>iceberg::ManifestFileAdapterV1</label>
+        <link refid="classiceberg_1_1ManifestFileAdapterV1"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="4">
+        <label>iceberg::ManifestFileAdapterV2</label>
+        <link refid="classiceberg_1_1ManifestFileAdapterV2"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>iceberg::ManifestFileAdapterV3</label>
+        <link refid="classiceberg_1_1ManifestFileAdapterV3"/>
+        <childnode refid="1" relation="public-inheritance">
+        </childnode>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="3">
+        <label>ArrowArray</label>
+        <link refid="structArrowArray"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>children</edgelabel>
+          <edgelabel>dictionary</edgelabel>
+        </childnode>
+      </node>
+      <node id="4">
+        <label>ArrowSchema</label>
+        <link refid="structArrowSchema"/>
+        <childnode refid="4" relation="usage">
+          <edgelabel>children</edgelabel>
+          <edgelabel>dictionary</edgelabel>
+        </childnode>
+      </node>
+      <node id="16">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="18">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="17">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="2">
+        <label>iceberg::ManifestAdapter</label>
+        <link refid="classiceberg_1_1ManifestAdapter"/>
+        <childnode refid="3" relation="usage">
+          <edgelabel>array_</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>schema_</edgelabel>
+        </childnode>
+        <childnode refid="5" relation="usage">
+          <edgelabel>metadata_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::ManifestFileAdapter</label>
+        <link refid="classiceberg_1_1ManifestFileAdapter"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>manifest_list_schema_</edgelabel>
+        </childnode>
+      </node>
+      <node id="11">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="12" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="8">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="7">
+        <label>std::basic_string&lt; Char &gt;</label>
+      </node>
+      <node id="20">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="6">
+        <label>std::string</label>
+        <childnode refid="7" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="19">
+        <label>std::string_view</label>
+        <childnode refid="20" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::unordered_map&lt; std::string, std::string &gt;</label>
+        <childnode refid="6" relation="usage">
+          <edgelabel>elements</edgelabel>
+          <edgelabel>keys</edgelabel>
+        </childnode>
+      </node>
+      <node id="14">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="15" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/manifest/manifest_adapter_internal.h" line="110" column="1" bodyfile="iceberg/manifest/manifest_adapter_internal.h" bodystart="110" bodyend="133"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1ManifestFileAdapter_1a9c4b124156e807542044d0a32ed1f2db" prot="public" virt="pure-virtual"><scope>iceberg::ManifestFileAdapter</scope><name>Append</name></member>
+      <member refid="classiceberg_1_1ManifestFileAdapter_1ab41eb9bffefa6680b724b12cffb9e296" prot="protected" virt="non-virtual"><scope>iceberg::ManifestFileAdapter</scope><name>AppendInternal</name></member>
+      <member refid="classiceberg_1_1ManifestFileAdapter_1a4b306535642f6391af5754306212a431" prot="protected" virt="non-virtual"><scope>iceberg::ManifestFileAdapter</scope><name>AppendPartitionSummary</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1a741c3bd0bfaac122f12ac4426c46e71a" prot="protected" virt="non-virtual"><scope>iceberg::ManifestFileAdapter</scope><name>array_</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1ab8bac53cf5f1a157a2695b88cbd54615" prot="public" virt="non-virtual"><scope>iceberg::ManifestFileAdapter</scope><name>FinishAppending</name></member>
+      <member refid="classiceberg_1_1ManifestFileAdapter_1ae8e7c54ada96aaa60ada58d96629bac0" prot="protected" virt="virtual"><scope>iceberg::ManifestFileAdapter</scope><name>GetFirstRowId</name></member>
+      <member refid="classiceberg_1_1ManifestFileAdapter_1ab654d9c6fa84e2b8279b84decbd142cf" prot="protected" virt="virtual"><scope>iceberg::ManifestFileAdapter</scope><name>GetMinSequenceNumber</name></member>
+      <member refid="classiceberg_1_1ManifestFileAdapter_1acb76892c3e376ed945fe47e7f3ab264e" prot="protected" virt="virtual"><scope>iceberg::ManifestFileAdapter</scope><name>GetSequenceNumber</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1aca828da0c3c8794dedaa37f22eee1ecb" prot="public" virt="pure-virtual"><scope>iceberg::ManifestFileAdapter</scope><name>Init</name></member>
+      <member refid="classiceberg_1_1ManifestFileAdapter_1a15b5f15e7952183995ef0a6ab65fd533" prot="protected" virt="non-virtual"><scope>iceberg::ManifestFileAdapter</scope><name>manifest_list_schema_</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1a7a634423c52ec977d319c0abb792a47b" prot="public" virt="non-virtual"><scope>iceberg::ManifestFileAdapter</scope><name>ManifestAdapter</name></member>
+      <member refid="classiceberg_1_1ManifestFileAdapter_1a2d55822a2417181ee2e77487ad6b92cc" prot="public" virt="non-virtual"><scope>iceberg::ManifestFileAdapter</scope><name>ManifestFileAdapter</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1abd45f47723b002e9da2bde8c44082792" prot="public" virt="non-virtual"><scope>iceberg::ManifestFileAdapter</scope><name>metadata</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1a0a883a6a875beefd761010bea778e86e" prot="protected" virt="non-virtual"><scope>iceberg::ManifestFileAdapter</scope><name>metadata_</name></member>
+      <member refid="classiceberg_1_1ManifestFileAdapter_1a09f8a631f7a95069b7dc6f8f523a8706" prot="public" virt="virtual"><scope>iceberg::ManifestFileAdapter</scope><name>next_row_id</name></member>
+      <member refid="classiceberg_1_1ManifestFileAdapter_1a20d80d90a8fae3e56f08fa9585c8d024" prot="public" virt="non-virtual"><scope>iceberg::ManifestFileAdapter</scope><name>schema</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1a8b5b4970fc9c43d5276d45b7d47f6694" prot="protected" virt="non-virtual"><scope>iceberg::ManifestFileAdapter</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1ac6f6ef4ebd251f87cbe1c079d9397a37" prot="public" virt="non-virtual"><scope>iceberg::ManifestFileAdapter</scope><name>size</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1a8400d17002062bc728859ea96fde9cc2" prot="protected" virt="non-virtual"><scope>iceberg::ManifestFileAdapter</scope><name>size_</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1a43756b6c0895ee1431dcf04256e71d07" prot="public" virt="non-virtual"><scope>iceberg::ManifestFileAdapter</scope><name>StartAppending</name></member>
+      <member refid="classiceberg_1_1ManifestAdapter_1ad764b0832b5c98481d25ba5720ce9c38" prot="public" virt="virtual"><scope>iceberg::ManifestFileAdapter</scope><name>~ManifestAdapter</name></member>
+      <member refid="classiceberg_1_1ManifestFileAdapter_1abcdd13ce7c7d176967e6ddbf14810b50" prot="public" virt="non-virtual"><scope>iceberg::ManifestFileAdapter</scope><name>~ManifestFileAdapter</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>

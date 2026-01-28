@@ -1,0 +1,408 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.9.8" xml:lang="en-US">
+  <compounddef id="classiceberg_1_1TestManifestReaderStats" kind="class" language="C++" prot="public">
+    <compoundname>iceberg::TestManifestReaderStats</compoundname>
+    <basecompoundref prot="public" virt="non-virtual">testing::TestWithParam&lt; int &gt;</basecompoundref>
+    <sectiondef kind="protected-static-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1TestManifestReaderStats_1a4f0a8216a6071ed2827f5d6c13d67b46" prot="protected" static="yes" mutable="no">
+        <type>const std::map&lt; int32_t, int64_t &gt;</type>
+        <definition>const std::map&lt;int32_t, int64_t&gt; iceberg::TestManifestReaderStats::kValueCounts</definition>
+        <argsstring></argsstring>
+        <name>kValueCounts</name>
+        <qualifiedname>iceberg::TestManifestReaderStats::kValueCounts</qualifiedname>
+        <initializer>= {{3, 3L}}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_reader_stats_test.cc" line="65" column="32" bodyfile="iceberg/test/manifest_reader_stats_test.cc" bodystart="65" bodyend="65"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TestManifestReaderStats_1a6d2b7718160d2b4ca9d068fd95781f75" prot="protected" static="yes" mutable="no">
+        <type>const std::map&lt; int32_t, int64_t &gt;</type>
+        <definition>const std::map&lt;int32_t, int64_t&gt; iceberg::TestManifestReaderStats::kNullValueCounts</definition>
+        <argsstring></argsstring>
+        <name>kNullValueCounts</name>
+        <qualifiedname>iceberg::TestManifestReaderStats::kNullValueCounts</qualifiedname>
+        <initializer>= {{3, 0L}}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_reader_stats_test.cc" line="66" column="32" bodyfile="iceberg/test/manifest_reader_stats_test.cc" bodystart="66" bodyend="66"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TestManifestReaderStats_1aeb16a346ba3031ba783dd4226d250dc1" prot="protected" static="yes" mutable="no">
+        <type>const std::map&lt; int32_t, int64_t &gt;</type>
+        <definition>const std::map&lt;int32_t, int64_t&gt; iceberg::TestManifestReaderStats::kNanValueCounts</definition>
+        <argsstring></argsstring>
+        <name>kNanValueCounts</name>
+        <qualifiedname>iceberg::TestManifestReaderStats::kNanValueCounts</qualifiedname>
+        <initializer>= {{3, 1L}}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_reader_stats_test.cc" line="67" column="32" bodyfile="iceberg/test/manifest_reader_stats_test.cc" bodystart="67" bodyend="67"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TestManifestReaderStats_1a75b4dc14c40514b10cff5efd1dc2a190" prot="protected" static="yes" mutable="no">
+        <type>const std::map&lt; int32_t, std::vector&lt; uint8_t &gt; &gt;</type>
+        <definition>const std::map&lt;int32_t, std::vector&lt;uint8_t&gt; &gt; iceberg::TestManifestReaderStats::kLowerBounds</definition>
+        <argsstring></argsstring>
+        <name>kLowerBounds</name>
+        <qualifiedname>iceberg::TestManifestReaderStats::kLowerBounds</qualifiedname>
+        <initializer>= {
+      {3, Literal::Int(2).Serialize().value()}}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_reader_stats_test.cc" line="68" column="32" bodyfile="iceberg/test/manifest_reader_stats_test.cc" bodystart="68" bodyend="69"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TestManifestReaderStats_1a4b4d6c2a1a0ef6ed89eba4412dcb75cb" prot="protected" static="yes" mutable="no">
+        <type>const std::map&lt; int32_t, std::vector&lt; uint8_t &gt; &gt;</type>
+        <definition>const std::map&lt;int32_t, std::vector&lt;uint8_t&gt; &gt; iceberg::TestManifestReaderStats::kUpperBounds</definition>
+        <argsstring></argsstring>
+        <name>kUpperBounds</name>
+        <qualifiedname>iceberg::TestManifestReaderStats::kUpperBounds</qualifiedname>
+        <initializer>= {
+      {3, Literal::Int(4).Serialize().value()}}</initializer>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_reader_stats_test.cc" line="70" column="32" bodyfile="iceberg/test/manifest_reader_stats_test.cc" bodystart="70" bodyend="71"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-attrib">
+      <memberdef kind="variable" id="classiceberg_1_1TestManifestReaderStats_1a659ed5a857c7fc3b67bdd4d49f8aa0ff" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1FileIO" kindref="compound">FileIO</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;FileIO&gt; iceberg::TestManifestReaderStats::file_io_</definition>
+        <argsstring></argsstring>
+        <name>file_io_</name>
+        <qualifiedname>iceberg::TestManifestReaderStats::file_io_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_reader_stats_test.cc" line="124" column="19" bodyfile="iceberg/test/manifest_reader_stats_test.cc" bodystart="124" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TestManifestReaderStats_1aafe3865d8a522568821ae2266ab9208a" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1Schema" kindref="compound">Schema</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;Schema&gt; iceberg::TestManifestReaderStats::schema_</definition>
+        <argsstring></argsstring>
+        <name>schema_</name>
+        <qualifiedname>iceberg::TestManifestReaderStats::schema_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_reader_stats_test.cc" line="125" column="19" bodyfile="iceberg/test/manifest_reader_stats_test.cc" bodystart="125" bodyend="-1"/>
+      </memberdef>
+      <memberdef kind="variable" id="classiceberg_1_1TestManifestReaderStats_1a4bb5a398cb40b2afaa0d8f5e21edf603" prot="protected" static="no" mutable="no">
+        <type>std::shared_ptr&lt; <ref refid="classiceberg_1_1PartitionSpec" kindref="compound">PartitionSpec</ref> &gt;</type>
+        <definition>std::shared_ptr&lt;PartitionSpec&gt; iceberg::TestManifestReaderStats::spec_</definition>
+        <argsstring></argsstring>
+        <name>spec_</name>
+        <qualifiedname>iceberg::TestManifestReaderStats::spec_</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_reader_stats_test.cc" line="126" column="19" bodyfile="iceberg/test/manifest_reader_stats_test.cc" bodystart="126" bodyend="-1"/>
+      </memberdef>
+    </sectiondef>
+    <sectiondef kind="protected-func">
+      <memberdef kind="function" id="classiceberg_1_1TestManifestReaderStats_1a26cf691dfc7b0ec5006457f75f687840" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::TestManifestReaderStats::SetUp</definition>
+        <argsstring>() override</argsstring>
+        <name>SetUp</name>
+        <qualifiedname>iceberg::TestManifestReaderStats::SetUp</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_reader_stats_test.cc" line="45" column="8" bodyfile="iceberg/test/manifest_reader_stats_test.cc" bodystart="45" bodyend="58"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TestManifestReaderStats_1a6fa3604d15f6c0821b426f6f41816a7f" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::string</type>
+        <definition>std::string iceberg::TestManifestReaderStats::MakeManifestPath</definition>
+        <argsstring>()</argsstring>
+        <name>MakeManifestPath</name>
+        <qualifiedname>iceberg::TestManifestReaderStats::MakeManifestPath</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_reader_stats_test.cc" line="60" column="15" bodyfile="iceberg/test/manifest_reader_stats_test.cc" bodystart="60" bodyend="63"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TestManifestReaderStats_1ae5801f871cf5123f5513c8dccfd20587" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>std::unique_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+        <definition>std::unique_ptr&lt; DataFile &gt; iceberg::TestManifestReaderStats::MakeDataFileWithStats</definition>
+        <argsstring>()</argsstring>
+        <name>MakeDataFileWithStats</name>
+        <qualifiedname>iceberg::TestManifestReaderStats::MakeDataFileWithStats</qualifiedname>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_reader_stats_test.cc" line="73" column="19" bodyfile="iceberg/test/manifest_reader_stats_test.cc" bodystart="73" bodyend="87"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TestManifestReaderStats_1a7ff0c5695d8b8ed53e1673ab214cb405" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type><ref refid="structiceberg_1_1ManifestFile" kindref="compound">ManifestFile</ref></type>
+        <definition>ManifestFile iceberg::TestManifestReaderStats::WriteManifest</definition>
+        <argsstring>(int format_version, std::unique_ptr&lt; DataFile &gt; data_file)</argsstring>
+        <name>WriteManifest</name>
+        <qualifiedname>iceberg::TestManifestReaderStats::WriteManifest</qualifiedname>
+        <param>
+          <type>int</type>
+          <declname>format_version</declname>
+        </param>
+        <param>
+          <type>std::unique_ptr&lt; <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &gt;</type>
+          <declname>data_file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_reader_stats_test.cc" line="89" column="16" bodyfile="iceberg/test/manifest_reader_stats_test.cc" bodystart="89" bodyend="104"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TestManifestReaderStats_1a1448aaeab2f5e094e8b4d7cefefcf819" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::TestManifestReaderStats::AssertFullStats</definition>
+        <argsstring>(const DataFile &amp;file)</argsstring>
+        <name>AssertFullStats</name>
+        <qualifiedname>iceberg::TestManifestReaderStats::AssertFullStats</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_reader_stats_test.cc" line="106" column="8" bodyfile="iceberg/test/manifest_reader_stats_test.cc" bodystart="106" bodyend="113"/>
+      </memberdef>
+      <memberdef kind="function" id="classiceberg_1_1TestManifestReaderStats_1a7b5bf8ed57c6049d0d614c925b67eee3" prot="protected" static="no" const="no" explicit="no" inline="yes" virt="non-virtual">
+        <type>void</type>
+        <definition>void iceberg::TestManifestReaderStats::AssertStatsDropped</definition>
+        <argsstring>(const DataFile &amp;file)</argsstring>
+        <name>AssertStatsDropped</name>
+        <qualifiedname>iceberg::TestManifestReaderStats::AssertStatsDropped</qualifiedname>
+        <param>
+          <type>const <ref refid="structiceberg_1_1DataFile" kindref="compound">DataFile</ref> &amp;</type>
+          <declname>file</declname>
+        </param>
+        <briefdescription>
+        </briefdescription>
+        <detaileddescription>
+        </detaileddescription>
+        <inbodydescription>
+        </inbodydescription>
+        <location file="iceberg/test/manifest_reader_stats_test.cc" line="115" column="8" bodyfile="iceberg/test/manifest_reader_stats_test.cc" bodystart="115" bodyend="122"/>
+      </memberdef>
+    </sectiondef>
+    <briefdescription>
+    </briefdescription>
+    <detaileddescription>
+    </detaileddescription>
+    <inheritancegraph>
+      <node id="1">
+        <label>iceberg::TestManifestReaderStats</label>
+        <link refid="classiceberg_1_1TestManifestReaderStats"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; int &gt;</label>
+      </node>
+    </inheritancegraph>
+    <collaborationgraph>
+      <node id="16">
+        <label>iceberg::Lazy&lt; InitFieldById &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="18">
+        <label>iceberg::Lazy&lt; InitFieldByLowerCaseName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="17">
+        <label>iceberg::Lazy&lt; InitFieldByName &gt;</label>
+        <link refid="classiceberg_1_1Lazy"/>
+      </node>
+      <node id="7">
+        <label>iceberg::FileIO</label>
+        <link refid="classiceberg_1_1FileIO"/>
+      </node>
+      <node id="11">
+        <label>iceberg::NestedType</label>
+        <link refid="classiceberg_1_1NestedType"/>
+        <childnode refid="12" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="22">
+        <label>iceberg::PartitionSpec</label>
+        <link refid="classiceberg_1_1PartitionSpec"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="9">
+        <label>iceberg::Schema</label>
+        <link refid="classiceberg_1_1Schema"/>
+        <childnode refid="10" relation="public-inheritance">
+        </childnode>
+        <childnode refid="19" relation="usage">
+          <edgelabel>kAllColumns</edgelabel>
+        </childnode>
+      </node>
+      <node id="15">
+        <label>iceberg::SchemaField</label>
+        <link refid="classiceberg_1_1SchemaField"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="10">
+        <label>iceberg::StructType</label>
+        <link refid="classiceberg_1_1StructType"/>
+        <childnode refid="11" relation="public-inheritance">
+        </childnode>
+        <childnode refid="14" relation="usage">
+          <edgelabel>fields_</edgelabel>
+        </childnode>
+        <childnode refid="16" relation="usage">
+          <edgelabel>field_by_id_</edgelabel>
+        </childnode>
+        <childnode refid="17" relation="usage">
+          <edgelabel>field_by_name_</edgelabel>
+        </childnode>
+        <childnode refid="18" relation="usage">
+          <edgelabel>field_by_lowercase_name_</edgelabel>
+        </childnode>
+      </node>
+      <node id="1">
+        <label>iceberg::TestManifestReaderStats</label>
+        <link refid="classiceberg_1_1TestManifestReaderStats"/>
+        <childnode refid="2" relation="public-inheritance">
+        </childnode>
+        <childnode refid="3" relation="usage">
+          <edgelabel>kNanValueCounts</edgelabel>
+          <edgelabel>kNullValueCounts</edgelabel>
+          <edgelabel>kValueCounts</edgelabel>
+        </childnode>
+        <childnode refid="4" relation="usage">
+          <edgelabel>kLowerBounds</edgelabel>
+          <edgelabel>kUpperBounds</edgelabel>
+        </childnode>
+        <childnode refid="6" relation="usage">
+          <edgelabel>file_io_</edgelabel>
+        </childnode>
+        <childnode refid="8" relation="usage">
+          <edgelabel>schema_</edgelabel>
+        </childnode>
+        <childnode refid="21" relation="usage">
+          <edgelabel>spec_</edgelabel>
+        </childnode>
+      </node>
+      <node id="12">
+        <label>iceberg::Type</label>
+        <link refid="classiceberg_1_1Type"/>
+        <childnode refid="13" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="13">
+        <label>iceberg::util::Formattable</label>
+        <link refid="classiceberg_1_1util_1_1Formattable"/>
+      </node>
+      <node id="3">
+        <label>std::map&lt; int32_t, int64_t &gt;</label>
+      </node>
+      <node id="4">
+        <label>std::map&lt; int32_t, std::vector&lt; uint8_t &gt; &gt;</label>
+        <childnode refid="5" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="6">
+        <label>std::shared_ptr&lt; iceberg::FileIO &gt;</label>
+        <childnode refid="7" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="21">
+        <label>std::shared_ptr&lt; iceberg::PartitionSpec &gt;</label>
+        <childnode refid="22" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="8">
+        <label>std::shared_ptr&lt; iceberg::Schema &gt;</label>
+        <childnode refid="9" relation="usage">
+          <edgelabel>ptr</edgelabel>
+        </childnode>
+      </node>
+      <node id="20">
+        <label>std::basic_string_view&lt; Char &gt;</label>
+      </node>
+      <node id="19">
+        <label>std::string_view</label>
+        <childnode refid="20" relation="public-inheritance">
+        </childnode>
+      </node>
+      <node id="2">
+        <label>testing::TestWithParam&lt; int &gt;</label>
+      </node>
+      <node id="14">
+        <label>std::vector&lt; iceberg::SchemaField &gt;</label>
+        <childnode refid="15" relation="usage">
+          <edgelabel>elements</edgelabel>
+        </childnode>
+      </node>
+      <node id="5">
+        <label>std::vector&lt; uint8_t &gt;</label>
+      </node>
+    </collaborationgraph>
+    <location file="iceberg/test/manifest_reader_stats_test.cc" line="43" column="1" bodyfile="iceberg/test/manifest_reader_stats_test.cc" bodystart="43" bodyend="127"/>
+    <listofallmembers>
+      <member refid="classiceberg_1_1TestManifestReaderStats_1a1448aaeab2f5e094e8b4d7cefefcf819" prot="protected" virt="non-virtual"><scope>iceberg::TestManifestReaderStats</scope><name>AssertFullStats</name></member>
+      <member refid="classiceberg_1_1TestManifestReaderStats_1a7b5bf8ed57c6049d0d614c925b67eee3" prot="protected" virt="non-virtual"><scope>iceberg::TestManifestReaderStats</scope><name>AssertStatsDropped</name></member>
+      <member refid="classiceberg_1_1TestManifestReaderStats_1a659ed5a857c7fc3b67bdd4d49f8aa0ff" prot="protected" virt="non-virtual"><scope>iceberg::TestManifestReaderStats</scope><name>file_io_</name></member>
+      <member refid="classiceberg_1_1TestManifestReaderStats_1a75b4dc14c40514b10cff5efd1dc2a190" prot="protected" virt="non-virtual"><scope>iceberg::TestManifestReaderStats</scope><name>kLowerBounds</name></member>
+      <member refid="classiceberg_1_1TestManifestReaderStats_1aeb16a346ba3031ba783dd4226d250dc1" prot="protected" virt="non-virtual"><scope>iceberg::TestManifestReaderStats</scope><name>kNanValueCounts</name></member>
+      <member refid="classiceberg_1_1TestManifestReaderStats_1a6d2b7718160d2b4ca9d068fd95781f75" prot="protected" virt="non-virtual"><scope>iceberg::TestManifestReaderStats</scope><name>kNullValueCounts</name></member>
+      <member refid="classiceberg_1_1TestManifestReaderStats_1a4b4d6c2a1a0ef6ed89eba4412dcb75cb" prot="protected" virt="non-virtual"><scope>iceberg::TestManifestReaderStats</scope><name>kUpperBounds</name></member>
+      <member refid="classiceberg_1_1TestManifestReaderStats_1a4f0a8216a6071ed2827f5d6c13d67b46" prot="protected" virt="non-virtual"><scope>iceberg::TestManifestReaderStats</scope><name>kValueCounts</name></member>
+      <member refid="classiceberg_1_1TestManifestReaderStats_1ae5801f871cf5123f5513c8dccfd20587" prot="protected" virt="non-virtual"><scope>iceberg::TestManifestReaderStats</scope><name>MakeDataFileWithStats</name></member>
+      <member refid="classiceberg_1_1TestManifestReaderStats_1a6fa3604d15f6c0821b426f6f41816a7f" prot="protected" virt="non-virtual"><scope>iceberg::TestManifestReaderStats</scope><name>MakeManifestPath</name></member>
+      <member refid="classiceberg_1_1TestManifestReaderStats_1aafe3865d8a522568821ae2266ab9208a" prot="protected" virt="non-virtual"><scope>iceberg::TestManifestReaderStats</scope><name>schema_</name></member>
+      <member refid="classiceberg_1_1TestManifestReaderStats_1a26cf691dfc7b0ec5006457f75f687840" prot="protected" virt="non-virtual"><scope>iceberg::TestManifestReaderStats</scope><name>SetUp</name></member>
+      <member refid="classiceberg_1_1TestManifestReaderStats_1a4bb5a398cb40b2afaa0d8f5e21edf603" prot="protected" virt="non-virtual"><scope>iceberg::TestManifestReaderStats</scope><name>spec_</name></member>
+      <member refid="classiceberg_1_1TestManifestReaderStats_1a7ff0c5695d8b8ed53e1673ab214cb405" prot="protected" virt="non-virtual"><scope>iceberg::TestManifestReaderStats</scope><name>WriteManifest</name></member>
+    </listofallmembers>
+  </compounddef>
+</doxygen>
