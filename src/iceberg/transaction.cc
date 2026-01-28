@@ -36,6 +36,7 @@
 #include "iceberg/update/fast_append.h"
 #include "iceberg/update/pending_update.h"
 #include "iceberg/update/set_snapshot.h"
+#include "iceberg/update/snapshot_manager.h"
 #include "iceberg/update/snapshot_update.h"
 #include "iceberg/update/update_location.h"
 #include "iceberg/update/update_partition_spec.h"
@@ -426,6 +427,13 @@ Transaction::NewUpdateSnapshotReference() {
                           UpdateSnapshotReference::Make(shared_from_this()));
   ICEBERG_RETURN_UNEXPECTED(AddUpdate(update_ref));
   return update_ref;
+}
+
+Result<std::shared_ptr<SnapshotManager>> Transaction::NewSnapshotManager() {
+  ICEBERG_ASSIGN_OR_RAISE(std::shared_ptr<SnapshotManager> snapshot_manager,
+                          SnapshotManager::Make(shared_from_this()));
+  ICEBERG_RETURN_UNEXPECTED(AddUpdate(snapshot_manager));
+  return snapshot_manager;
 }
 
 }  // namespace iceberg

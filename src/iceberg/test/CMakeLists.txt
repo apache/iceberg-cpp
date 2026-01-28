@@ -179,6 +179,7 @@ if(ICEBERG_BUILD_BUNDLE)
                    expire_snapshots_test.cc
                    fast_append_test.cc
                    set_snapshot_test.cc
+                   snapshot_manager_test.cc
                    transaction_test.cc
                    update_location_test.cc
                    update_partition_spec_test.cc

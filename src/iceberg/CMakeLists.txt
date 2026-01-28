@@ -89,6 +89,7 @@ set(ICEBERG_SOURCES
     update/fast_append.cc
     update/pending_update.cc
     update/set_snapshot.cc
+    update/snapshot_manager.cc
     update/snapshot_update.cc
     update/update_location.cc
     update/update_partition_spec.cc
