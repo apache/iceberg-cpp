@@ -19,6 +19,8 @@
 
 #include "iceberg/catalog/rest/catalog_properties.h"
 
+#include <algorithm>
+#include <string>
 #include <string_view>
 
 namespace iceberg::rest {
@@ -45,6 +47,18 @@ Result<std::string_view> RestCatalogProperties::Uri() const {
     return InvalidArgument("Rest catalog configuration property 'uri' is required.");
   }
   return it->second;
+}
+
+Result<SnapshotMode> RestCatalogProperties::SnapshotLoadingMode() const {
+  std::string upper = StringUtils::ToUpper(Get(kSnapshotLoadingMode));
+  if (upper == "ALL") {
+    return SnapshotMode::kAll;
+  } else if (upper == "REFS") {
+    return SnapshotMode::kRefs;
+  } else {
+    return InvalidArgument("Invalid snapshot loading mode: '{}'.",
+                           Get(kSnapshotLoadingMode));
+  }
 }
 
 }  // namespace iceberg::rest

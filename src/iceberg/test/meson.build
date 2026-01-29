@@ -120,7 +120,7 @@ if get_option('rest').enabled()
             iceberg_tests += {
                 'rest_integration_test': {
                     'sources': files(
-                        'rest_catalog_test.cc',
+                        'rest_catalog_integration_test.cc',
                         'util/cmd_util.cc',
                         'util/docker_compose_util.cc',
                     ),

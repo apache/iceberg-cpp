@@ -19,8 +19,11 @@
 
 #include "iceberg/catalog/rest/rest_util.h"
 
+#include <string>
+
 #include <gtest/gtest.h>
 
+#include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/table_identifier.h"
 #include "iceberg/test/matchers.h"
@@ -152,6 +155,52 @@ TEST(RestUtilTest, MergeConfigs) {
   auto merged_empty = MergeConfigs({}, {{"key", "value"}}, {});
   EXPECT_EQ(merged_empty.size(), 1);
   EXPECT_EQ(merged_empty["key"], "value");
+}
+
+struct SnapshotModeValidCase {
+  std::string input;
+  SnapshotMode expected;
+};
+
+class SnapshotLoadingModeValidTest
+    : public ::testing::TestWithParam<SnapshotModeValidCase> {};
+
+TEST_P(SnapshotLoadingModeValidTest, ParsesCorrectly) {
+  auto config = RestCatalogProperties::default_properties();
+  config.Set(RestCatalogProperties::kSnapshotLoadingMode, GetParam().input);
+  auto result = config.SnapshotLoadingMode();
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result.value(), GetParam().expected);
+}
+
+INSTANTIATE_TEST_SUITE_P(RestCatalogProperties, SnapshotLoadingModeValidTest,
+                         ::testing::Values(
+                             // Exact uppercase
+                             SnapshotModeValidCase{"ALL", SnapshotMode::kAll},
+                             SnapshotModeValidCase{"REFS", SnapshotMode::kRefs},
+                             // Lowercase (Java parity: toUpperCase before parsing)
+                             SnapshotModeValidCase{"all", SnapshotMode::kAll},
+                             SnapshotModeValidCase{"refs", SnapshotMode::kRefs},
+                             // Mixed case
+                             SnapshotModeValidCase{"All", SnapshotMode::kAll},
+                             SnapshotModeValidCase{"Refs", SnapshotMode::kRefs}));
+
+class SnapshotLoadingModeInvalidTest : public ::testing::TestWithParam<std::string> {};
+
+TEST_P(SnapshotLoadingModeInvalidTest, ReturnsError) {
+  auto config = RestCatalogProperties::default_properties();
+  config.Set(RestCatalogProperties::kSnapshotLoadingMode, GetParam());
+  EXPECT_THAT(config.SnapshotLoadingMode(), IsError(ErrorKind::kInvalidArgument));
+}
+
+INSTANTIATE_TEST_SUITE_P(RestCatalogProperties, SnapshotLoadingModeInvalidTest,
+                         ::testing::Values("INVALID", "none", ""));
+
+TEST(RestCatalogPropertiesTest, SnapshotLoadingModeDefaultIsAll) {
+  auto config = RestCatalogProperties::default_properties();
+  auto result = config.SnapshotLoadingMode();
+  ASSERT_THAT(result, IsOk());
+  EXPECT_EQ(result.value(), SnapshotMode::kAll);
 }
 
 }  // namespace iceberg::rest

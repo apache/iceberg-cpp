@@ -225,7 +225,7 @@ if(ICEBERG_BUILD_REST)
   if(ICEBERG_BUILD_REST_INTEGRATION_TESTS)
     add_rest_iceberg_test(rest_catalog_integration_test
                           SOURCES
-                          rest_catalog_test.cc
+                          rest_catalog_integration_test.cc
                           util/cmd_util.cc
                           util/docker_compose_util.cc)
   endif()

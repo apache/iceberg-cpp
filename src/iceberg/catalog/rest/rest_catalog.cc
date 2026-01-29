@@ -161,13 +161,17 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
       paths, ResourcePaths::Make(std::string(TrimTrailingSlash(final_uri)),
                                  final_config.Get(RestCatalogProperties::kPrefix)));
 
+  // Get snapshot loading mode
+  ICEBERG_ASSIGN_OR_RAISE(auto snapshot_mode, final_config.SnapshotLoadingMode());
+
   auto client = std::make_unique<HttpClient>(final_config.ExtractHeaders());
   ICEBERG_ASSIGN_OR_RAISE(auto catalog_session,
                           auth_manager->CatalogSession(*client, final_config.configs()));
 
-  return std::shared_ptr<RestCatalog>(new RestCatalog(
-      std::move(final_config), std::move(file_io), std::move(client), std::move(paths),
-      std::move(endpoints), std::move(auth_manager), std::move(catalog_session)));
+  return std::shared_ptr<RestCatalog>(
+      new RestCatalog(std::move(final_config), std::move(file_io), std::move(client),
+                      std::move(paths), std::move(endpoints), std::move(auth_manager),
+                      std::move(catalog_session), snapshot_mode));
 }
 
 RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> file_io,
@@ -175,7 +179,8 @@ RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> f
                          std::unique_ptr<ResourcePaths> paths,
                          std::unordered_set<Endpoint> endpoints,
                          std::unique_ptr<auth::AuthManager> auth_manager,
-                         std::shared_ptr<auth::AuthSession> catalog_session)
+                         std::shared_ptr<auth::AuthSession> catalog_session,
+                         SnapshotMode snapshot_mode)
     : config_(std::move(config)),
       file_io_(std::move(file_io)),
       client_(std::move(client)),
@@ -183,7 +188,8 @@ RestCatalog::RestCatalog(RestCatalogProperties config, std::shared_ptr<FileIO> f
       name_(config_.Get(RestCatalogProperties::kName)),
       supported_endpoints_(std::move(endpoints)),
       auth_manager_(std::move(auth_manager)),
-      catalog_session_(std::move(catalog_session)) {
+      catalog_session_(std::move(catalog_session)),
+      snapshot_mode_(snapshot_mode) {
   ICEBERG_DCHECK(catalog_session_ != nullptr, "catalog_session must not be null");
 }
 
@@ -442,9 +448,17 @@ Result<std::string> RestCatalog::LoadTableInternal(
     const TableIdentifier& identifier) const {
   ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::LoadTable());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Table(identifier));
+
+  std::unordered_map<std::string, std::string> params;
+  if (snapshot_mode_ == SnapshotMode::kRefs) {
+    params["snapshots"] = "refs";
+  } else {
+    params["snapshots"] = "all";
+  }
+
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
-      client_->Get(path, /*params=*/{}, /*headers=*/{}, *TableErrorHandler::Instance(),
+      client_->Get(path, params, /*headers=*/{}, *TableErrorHandler::Instance(),
                    *catalog_session_));
   return response.body();
 }
@@ -453,7 +467,6 @@ Result<std::shared_ptr<Table>> RestCatalog::LoadTable(const TableIdentifier& ide
   ICEBERG_ASSIGN_OR_RAISE(const auto body, LoadTableInternal(identifier));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(body));
   ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
-
   return Table::Make(identifier, std::move(load_result.metadata),
                      std::move(load_result.metadata_location), file_io_,
                      shared_from_this());
