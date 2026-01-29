@@ -77,7 +77,6 @@ class NoopAuthManager : public AuthManager {
 AuthManagerRegistry& GetRegistry() {
   static AuthManagerRegistry registry = [] {
     AuthManagerRegistry r;
-    // Register built-in "none" auth manager
     r[AuthProperties::kAuthTypeNone] =
         []([[maybe_unused]] std::string_view name,
            [[maybe_unused]] const std::unordered_map<std::string, std::string>& props)

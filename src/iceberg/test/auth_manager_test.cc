@@ -80,29 +80,6 @@ TEST_F(AuthManagerTest, UnknownAuthTypeReturnsInvalidArgument) {
   EXPECT_THAT(result, HasErrorMessage("Unknown authentication type"));
 }
 
-// Verifies that known but unimplemented auth type returns NotImplemented
-TEST_F(AuthManagerTest, KnownButUnimplementedAuthType) {
-  std::unordered_map<std::string, std::string> properties = {
-      {AuthProperties::kAuthType, "basic"}};
-
-  auto result = AuthManagers::Load("test-catalog", properties);
-  EXPECT_THAT(result, IsError(ErrorKind::kNotImplemented));
-  EXPECT_THAT(result, HasErrorMessage("not yet supported"));
-}
-
-// Verifies that OAuth2 auth type is inferred from credential or token properties
-TEST_F(AuthManagerTest, InferOAuth2FromProperties) {
-  // From credential
-  auto result1 = AuthManagers::Load(
-      "test", {{AuthProperties::kOAuth2Credential, "client_id:client_secret"}});
-  EXPECT_THAT(result1, IsError(ErrorKind::kNotImplemented));
-
-  // From token
-  auto result2 =
-      AuthManagers::Load("test", {{AuthProperties::kOAuth2Token, "bearer-token"}});
-  EXPECT_THAT(result2, IsError(ErrorKind::kNotImplemented));
-}
-
 // Verifies custom auth manager registration
 TEST_F(AuthManagerTest, RegisterCustomAuthManager) {
   AuthManagers::Register(

@@ -139,7 +139,6 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
   ICEBERG_ASSIGN_OR_RAISE(auto server_config,
                           FetchServerConfig(*paths, config, init_session));
 
-  // Merge client config with server defaults and overrides
   std::unique_ptr<RestCatalogProperties> final_config = RestCatalogProperties::FromMap(
       MergeConfigs(server_config.defaults, config.configs(), server_config.overrides));
 
