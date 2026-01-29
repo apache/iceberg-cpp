@@ -210,15 +210,15 @@ const static std::array<TypeTestCase, 4> kNestedTypes = {{
 
 }  // namespace
 
-class TypeTest : public ::testing::TestWithParam<TypeTestCase> {};
+class VisitTypeTest : public ::testing::TestWithParam<TypeTestCase> {};
 
-INSTANTIATE_TEST_SUITE_P(Primitive, TypeTest, ::testing::ValuesIn(kPrimitiveTypes),
+INSTANTIATE_TEST_SUITE_P(Primitive, VisitTypeTest, ::testing::ValuesIn(kPrimitiveTypes),
                          TypeTestCaseToString);
 
-INSTANTIATE_TEST_SUITE_P(Nested, TypeTest, ::testing::ValuesIn(kNestedTypes),
+INSTANTIATE_TEST_SUITE_P(Nested, VisitTypeTest, ::testing::ValuesIn(kNestedTypes),
                          TypeTestCaseToString);
 
-TEST_P(TypeTest, VisitTypePrintToString) {
+TEST_P(VisitTypeTest, VisitTypePrintToString) {
   TypeNameVisitor visitor;
   std::ostringstream oss;
   const auto& test_case = GetParam();
@@ -226,7 +226,7 @@ TEST_P(TypeTest, VisitTypePrintToString) {
   ASSERT_EQ(oss.str(), test_case.repr);
 }
 
-TEST_P(TypeTest, VisitTypeReturnNestedTypeId) {
+TEST_P(VisitTypeTest, VisitTypeReturnNestedTypeId) {
   auto visitor = [&](auto&& type) -> Result<TypeId> {
     using Type = std::remove_cvref_t<decltype(type)>;
     // Check if the type is a nested type
