@@ -68,7 +68,7 @@ std::unordered_set<Endpoint> GetDefaultEndpoints() {
   };
 }
 
-/// \brief Fetch server config and merge it with client config
+/// \brief Fetch server configuration from the REST catalog server.
 Result<CatalogConfig> FetchServerConfig(
     const ResourcePaths& paths, const RestCatalogProperties& current_config,
     const std::shared_ptr<auth::AuthSession>& session) {
