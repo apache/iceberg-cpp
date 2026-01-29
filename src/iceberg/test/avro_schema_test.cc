@@ -24,6 +24,7 @@
 #include <avro/Types.hh>
 #include <gtest/gtest.h>
 
+#include "iceberg/avro/avro_register.h"
 #include "iceberg/avro/avro_schema_util_internal.h"
 #include "iceberg/metadata_columns.h"
 #include "iceberg/name_mapping.h"
@@ -605,6 +606,7 @@ TEST(HasIdVisitorTest, ComplexNestedSchema) {
 }
 
 TEST(HasIdVisitorTest, ArrayBackedMapWithIds) {
+  ::iceberg::avro::RegisterLogicalTypes();
   const std::string schema_json = R"({
     "type": "array",
     "items": {
@@ -1022,6 +1024,8 @@ TEST(AvroSchemaProjectionTest, ProjectMapType) {
 }
 
 TEST(AvroSchemaProjectionTest, ProjectMapTypeWithNonStringKey) {
+  ::iceberg::avro::RegisterLogicalTypes();
+
   // Create iceberg schema with an int->string map
   Schema expected_schema({
       SchemaField::MakeOptional(
