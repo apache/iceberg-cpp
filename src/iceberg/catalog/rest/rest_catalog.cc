@@ -139,21 +139,26 @@ Result<std::shared_ptr<RestCatalog>> RestCatalog::Make(
       paths, ResourcePaths::Make(std::string(TrimTrailingSlash(final_uri)),
                                  final_config->Get(RestCatalogProperties::kPrefix)));
 
+  // Get snapshot loading mode
+  ICEBERG_ASSIGN_OR_RAISE(auto snapshot_mode, final_config->SnapshotLoadingMode());
+
   return std::shared_ptr<RestCatalog>(
       new RestCatalog(std::move(final_config), std::move(file_io), std::move(paths),
-                      std::move(endpoints)));
+                      std::move(endpoints), snapshot_mode));
 }
 
 RestCatalog::RestCatalog(std::unique_ptr<RestCatalogProperties> config,
                          std::shared_ptr<FileIO> file_io,
                          std::unique_ptr<ResourcePaths> paths,
-                         std::unordered_set<Endpoint> endpoints)
+                         std::unordered_set<Endpoint> endpoints,
+                         SnapshotMode snapshot_mode)
     : config_(std::move(config)),
       file_io_(std::move(file_io)),
       client_(std::make_unique<HttpClient>(config_->ExtractHeaders())),
       paths_(std::move(paths)),
       name_(config_->Get(RestCatalogProperties::kName)),
-      supported_endpoints_(std::move(endpoints)) {}
+      supported_endpoints_(std::move(endpoints)),
+      snapshot_mode_(snapshot_mode) {}
 
 std::string_view RestCatalog::name() const { return name_; }
 
@@ -376,8 +381,8 @@ Status RestCatalog::DropTable(const TableIdentifier& identifier, bool purge) {
 
 Result<bool> RestCatalog::TableExists(const TableIdentifier& identifier) const {
   if (!supported_endpoints_.contains(Endpoint::TableExists())) {
-    // Fall back to call LoadTable
-    return CaptureNoSuchTable(LoadTableInternal(identifier));
+    // Fall back to call LoadTable with ALL mode (just checking existence)
+    return CaptureNoSuchTable(LoadTableInternal(identifier, SnapshotMode::ALL));
   }
 
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Table(identifier));
@@ -398,21 +403,31 @@ Status RestCatalog::RenameTable(const TableIdentifier& from, const TableIdentifi
   return {};
 }
 
-Result<std::string> RestCatalog::LoadTableInternal(
-    const TableIdentifier& identifier) const {
+Result<std::string> RestCatalog::LoadTableInternal(const TableIdentifier& identifier,
+                                                   SnapshotMode mode) const {
   ICEBERG_ENDPOINT_CHECK(supported_endpoints_, Endpoint::LoadTable());
   ICEBERG_ASSIGN_OR_RAISE(auto path, paths_->Table(identifier));
+
+  std::unordered_map<std::string, std::string> params;
+  if (mode == SnapshotMode::REFS) {
+    params["snapshots"] = "refs";
+  }
+
   ICEBERG_ASSIGN_OR_RAISE(
       const auto response,
-      client_->Get(path, /*params=*/{}, /*headers=*/{}, *TableErrorHandler::Instance()));
+      client_->Get(path, params, /*headers=*/{}, *TableErrorHandler::Instance()));
   return response.body();
 }
 
 Result<std::shared_ptr<Table>> RestCatalog::LoadTable(const TableIdentifier& identifier) {
-  ICEBERG_ASSIGN_OR_RAISE(const auto body, LoadTableInternal(identifier));
+  ICEBERG_ASSIGN_OR_RAISE(const auto body, LoadTableInternal(identifier, snapshot_mode_));
   ICEBERG_ASSIGN_OR_RAISE(auto json, FromJsonString(body));
   ICEBERG_ASSIGN_OR_RAISE(auto load_result, LoadTableResultFromJson(json));
 
+  // In REFS mode, the server filters snapshots in the response to reduce payload size.
+  // Unlike the Java implementation, we do not perform implicit lazy-loading of full
+  // snapshots. We store only the returned (filtered) snapshots. Users requiring full
+  // snapshot history must explicitly call LoadTable again with SnapshotMode::ALL.
   return Table::Make(identifier, std::move(load_result.metadata),
                      std::move(load_result.metadata_location), file_io_,
                      shared_from_this());
