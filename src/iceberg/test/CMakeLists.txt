@@ -216,6 +216,7 @@ if(ICEBERG_BUILD_REST)
 
   add_rest_iceberg_test(rest_catalog_test
                         SOURCES
+                        auth_manager_test.cc
                         endpoint_test.cc
                         rest_json_serde_test.cc
                         rest_util_test.cc)

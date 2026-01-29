@@ -19,7 +19,10 @@
 
 #include "iceberg/catalog/rest/auth/auth_managers.h"
 
+#include <unordered_set>
+
 #include "iceberg/catalog/rest/auth/auth_properties.h"
+#include "iceberg/catalog/rest/auth/auth_session.h"
 #include "iceberg/util/string_util.h"
 
 namespace iceberg::rest::auth {
@@ -29,6 +32,17 @@ namespace {
 /// \brief Registry type for AuthManager factories with heterogeneous lookup support.
 using AuthManagerRegistry =
     std::unordered_map<std::string, AuthManagerFactory, StringHash, StringEqual>;
+
+/// \brief Known authentication types that are defined in the Iceberg spec.
+const std::unordered_set<std::string, StringHash, StringEqual>& KnownAuthTypes() {
+  static const std::unordered_set<std::string, StringHash, StringEqual> types = {
+      AuthProperties::kAuthTypeNone,
+      AuthProperties::kAuthTypeBasic,
+      AuthProperties::kAuthTypeOAuth2,
+      AuthProperties::kAuthTypeSigV4,
+  };
+  return types;
+}
 
 // Infer the authentication type from properties.
 std::string InferAuthType(
@@ -48,9 +62,30 @@ std::string InferAuthType(
   return AuthProperties::kAuthTypeNone;
 }
 
+/// \brief Authentication manager that performs no authentication.
+class NoopAuthManager : public AuthManager {
+ public:
+  Result<std::shared_ptr<AuthSession>> CatalogSession(
+      [[maybe_unused]] HttpClient& shared_client,
+      [[maybe_unused]] const std::unordered_map<std::string, std::string>& properties)
+      override {
+    return AuthSession::MakeDefault({});
+  }
+};
+
 // Get the global registry of auth manager factories.
 AuthManagerRegistry& GetRegistry() {
-  static AuthManagerRegistry registry;
+  static AuthManagerRegistry registry = [] {
+    AuthManagerRegistry r;
+    // Register built-in "none" auth manager
+    r[AuthProperties::kAuthTypeNone] =
+        []([[maybe_unused]] std::string_view name,
+           [[maybe_unused]] const std::unordered_map<std::string, std::string>& props)
+        -> Result<std::unique_ptr<AuthManager>> {
+      return std::make_unique<NoopAuthManager>();
+    };
+    return r;
+  }();
   return registry;
 }
 
@@ -68,8 +103,10 @@ Result<std::unique_ptr<AuthManager>> AuthManagers::Load(
   auto& registry = GetRegistry();
   auto it = registry.find(auth_type);
   if (it == registry.end()) {
-    // TODO(Li Shuxu): Fallback to default auth manager implementations
-    return NotImplemented("Authentication type '{}' is not supported", auth_type);
+    if (KnownAuthTypes().contains(auth_type)) {
+      return NotImplemented("Authentication type '{}' is not yet supported", auth_type);
+    }
+    return InvalidArgument("Unknown authentication type: '{}'", auth_type);
   }
 
   return it->second(name, properties);
