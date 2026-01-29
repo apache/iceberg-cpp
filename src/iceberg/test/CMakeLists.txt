@@ -88,6 +88,7 @@ add_iceberg_test(table_test
 add_iceberg_test(expression_test
                  SOURCES
                  aggregate_test.cc
+                 expression_json_test.cc
                  expression_test.cc
                  expression_visitor_test.cc
                  inclusive_metrics_evaluator_test.cc
