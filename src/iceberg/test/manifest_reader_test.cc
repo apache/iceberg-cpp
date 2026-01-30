@@ -42,7 +42,7 @@
 
 namespace iceberg {
 
-class TestManifestReader : public testing::TestWithParam<int> {
+class TestManifestReader : public testing::TestWithParam<int8_t> {
  protected:
   void SetUp() override {
     avro::RegisterAll();
@@ -78,7 +78,7 @@ class TestManifestReader : public testing::TestWithParam<int> {
     });
   }
 
-  ManifestFile WriteManifest(int format_version, std::optional<int64_t> snapshot_id,
+  ManifestFile WriteManifest(int8_t format_version, std::optional<int64_t> snapshot_id,
                              const std::vector<ManifestEntry>& entries) {
     const std::string manifest_path = MakeManifestPath();
 
@@ -134,7 +134,7 @@ class TestManifestReader : public testing::TestWithParam<int> {
     });
   }
 
-  ManifestFile WriteDeleteManifest(int format_version, int64_t snapshot_id,
+  ManifestFile WriteDeleteManifest(int8_t format_version, int64_t snapshot_id,
                                    std::vector<ManifestEntry> entries) {
     const std::string manifest_path = MakeManifestPath();
 
@@ -162,7 +162,7 @@ class TestManifestReader : public testing::TestWithParam<int> {
 };
 
 TEST_P(TestManifestReader, TestManifestReaderWithEmptyInheritableMetadata) {
-  int version = GetParam();
+  auto version = GetParam();
   auto file_a =
       MakeDataFile("/path/to/data-a.parquet", PartitionValues({Literal::Int(0)}));
 
@@ -191,7 +191,7 @@ TEST_P(TestManifestReader, TestManifestReaderWithEmptyInheritableMetadata) {
 }
 
 TEST_P(TestManifestReader, TestReaderWithFilterWithoutSelect) {
-  int version = GetParam();
+  auto version = GetParam();
   auto file_a =
       MakeDataFile("/path/to/data-a.parquet", PartitionValues({Literal::Int(0)}));
   auto file_b =
@@ -225,7 +225,7 @@ TEST_P(TestManifestReader, TestReaderWithFilterWithoutSelect) {
 }
 
 TEST_P(TestManifestReader, TestManifestReaderWithPartitionMetadata) {
-  int version = GetParam();
+  auto version = GetParam();
   auto file_a =
       MakeDataFile("/path/to/data-a.parquet", PartitionValues({Literal::Int(0)}));
   auto entry =
@@ -254,8 +254,8 @@ TEST_P(TestManifestReader, TestManifestReaderWithPartitionMetadata) {
 }
 
 TEST_P(TestManifestReader, TestDeleteFilesWithReferences) {
-  int version = GetParam();
-  if (version < 2) {
+  auto version = GetParam();
+  if (version < kFormatVersion2) {
     GTEST_SKIP() << "Delete files only supported in V2+";
   }
 
@@ -293,8 +293,8 @@ TEST_P(TestManifestReader, TestDeleteFilesWithReferences) {
 }
 
 TEST_P(TestManifestReader, TestDVs) {
-  int version = GetParam();
-  if (version < 3) {
+  auto version = GetParam();
+  if (version < kFormatVersion3) {
     GTEST_SKIP() << "DVs only supported in V3+";
   }
 
@@ -337,7 +337,7 @@ TEST_P(TestManifestReader, TestDVs) {
 }
 
 TEST_P(TestManifestReader, TestInvalidUsage) {
-  int version = GetParam();
+  auto version = GetParam();
   auto file_a =
       MakeDataFile("/path/to/data-a.parquet", PartitionValues({Literal::Int(0)}));
   auto entry =
@@ -354,7 +354,7 @@ TEST_P(TestManifestReader, TestInvalidUsage) {
 }
 
 TEST_P(TestManifestReader, TestDropStats) {
-  int version = GetParam();
+  auto version = GetParam();
 
   // Create a data file with full metrics
   auto file_with_stats = std::make_unique<DataFile>(DataFile{
@@ -419,6 +419,7 @@ TEST(ManifestReaderStaticTest, TestShouldDropStats) {
 }
 
 INSTANTIATE_TEST_SUITE_P(ManifestReaderVersions, TestManifestReader,
-                         testing::Values(1, 2, 3));
+                         testing::Values(kFormatVersion1, kFormatVersion2,
+                                         kFormatVersion3));
 
 }  // namespace iceberg

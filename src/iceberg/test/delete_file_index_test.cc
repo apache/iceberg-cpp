@@ -44,7 +44,7 @@
 
 namespace iceberg {
 
-class DeleteFileIndexTest : public testing::TestWithParam<int> {
+class DeleteFileIndexTest : public testing::TestWithParam<int8_t> {
  protected:
   void SetUp() override {
     avro::RegisterAll();
@@ -160,7 +160,7 @@ class DeleteFileIndexTest : public testing::TestWithParam<int> {
     };
   }
 
-  ManifestFile WriteDeleteManifest(int format_version, int64_t snapshot_id,
+  ManifestFile WriteDeleteManifest(int8_t format_version, int64_t snapshot_id,
                                    std::vector<ManifestEntry> entries,
                                    std::shared_ptr<PartitionSpec> spec) {
     const std::string manifest_path = MakeManifestPath();
@@ -230,7 +230,7 @@ TEST_P(DeleteFileIndexTest, TestEmptyIndex) {
 }
 
 TEST_P(DeleteFileIndexTest, TestMinSequenceNumberFilteringForFiles) {
-  int version = GetParam();
+  auto version = GetParam();
 
   auto eq_delete_1 = MakeEqualityDeleteFile("/path/to/eq-delete-1.parquet",
                                             PartitionValues(std::vector<Literal>{}),
@@ -261,7 +261,7 @@ TEST_P(DeleteFileIndexTest, TestMinSequenceNumberFilteringForFiles) {
 }
 
 TEST_P(DeleteFileIndexTest, TestUnpartitionedDeletes) {
-  int version = GetParam();
+  auto version = GetParam();
 
   auto eq_delete_1 = MakeEqualityDeleteFile("/path/to/eq-delete-1.parquet",
                                             PartitionValues(std::vector<Literal>{}),
@@ -359,7 +359,7 @@ TEST_P(DeleteFileIndexTest, TestUnpartitionedDeletes) {
 }
 
 TEST_P(DeleteFileIndexTest, TestPartitionedDeleteIndex) {
-  int version = GetParam();
+  auto version = GetParam();
 
   auto partition_a = PartitionValues({Literal::Int(0)});
   auto eq_delete_1 = MakeEqualityDeleteFile("/path/to/eq-delete-1.parquet", partition_a,
@@ -462,7 +462,7 @@ TEST_P(DeleteFileIndexTest, TestPartitionedDeleteIndex) {
 }
 
 TEST_P(DeleteFileIndexTest, TestPartitionedTableWithPartitionPosDeletes) {
-  int version = GetParam();
+  auto version = GetParam();
 
   auto partition_a = PartitionValues({Literal::Int(0)});
   auto pos_delete = MakePositionDeleteFile("/path/to/pos-delete.parquet", partition_a,
@@ -487,7 +487,7 @@ TEST_P(DeleteFileIndexTest, TestPartitionedTableWithPartitionPosDeletes) {
 }
 
 TEST_P(DeleteFileIndexTest, TestPartitionedTableWithPartitionEqDeletes) {
-  int version = GetParam();
+  auto version = GetParam();
 
   auto partition_a = PartitionValues({Literal::Int(0)});
   auto eq_delete = MakeEqualityDeleteFile("/path/to/eq-delete.parquet", partition_a,
@@ -512,7 +512,7 @@ TEST_P(DeleteFileIndexTest, TestPartitionedTableWithPartitionEqDeletes) {
 }
 
 TEST_P(DeleteFileIndexTest, TestPartitionedTableWithUnrelatedPartitionDeletes) {
-  int version = GetParam();
+  auto version = GetParam();
 
   // Create deletes for partition A
   auto partition_a = PartitionValues({Literal::Int(0)});
@@ -538,8 +538,8 @@ TEST_P(DeleteFileIndexTest, TestPartitionedTableWithUnrelatedPartitionDeletes) {
 }
 
 TEST_P(DeleteFileIndexTest, TestPartitionedTableWithOlderPartitionDeletes) {
-  int version = GetParam();
-  if (version >= 3) {
+  auto version = GetParam();
+  if (version >= kFormatVersion3) {
     GTEST_SKIP() << "DVs are not filtered using sequence numbers in V3+";
   }
 
@@ -568,8 +568,8 @@ TEST_P(DeleteFileIndexTest, TestPartitionedTableWithOlderPartitionDeletes) {
 }
 
 TEST_P(DeleteFileIndexTest, TestPartitionedTableScanWithGlobalDeletes) {
-  int version = GetParam();
-  if (version >= 3) {
+  auto version = GetParam();
+  if (version >= kFormatVersion3) {
     GTEST_SKIP() << "Different behavior for position deletes in V3";
   }
 
@@ -599,8 +599,8 @@ TEST_P(DeleteFileIndexTest, TestPartitionedTableScanWithGlobalDeletes) {
 }
 
 TEST_P(DeleteFileIndexTest, TestPartitionedTableScanWithGlobalAndPartitionDeletes) {
-  int version = GetParam();
-  if (version >= 3) {
+  auto version = GetParam();
+  if (version >= kFormatVersion3) {
     GTEST_SKIP() << "Different behavior for position deletes in V3";
   }
 
@@ -644,7 +644,7 @@ TEST_P(DeleteFileIndexTest, TestPartitionedTableScanWithGlobalAndPartitionDelete
 }
 
 TEST_P(DeleteFileIndexTest, TestPartitionedTableSequenceNumbers) {
-  int version = GetParam();
+  auto version = GetParam();
 
   auto partition_a = PartitionValues({Literal::Int(0)});
   auto eq_delete = MakeEqualityDeleteFile("/path/to/eq-delete.parquet", partition_a,
@@ -672,8 +672,8 @@ TEST_P(DeleteFileIndexTest, TestPartitionedTableSequenceNumbers) {
 }
 
 TEST_P(DeleteFileIndexTest, TestUnpartitionedTableSequenceNumbers) {
-  int version = GetParam();
-  if (version >= 3) {
+  auto version = GetParam();
+  if (version >= kFormatVersion3) {
     GTEST_SKIP() << "Different behavior in V3";
   }
 
@@ -841,8 +841,8 @@ TEST_P(DeleteFileIndexTest, TestEqualityDeletesGroup) {
 }
 
 TEST_P(DeleteFileIndexTest, TestMixDeleteFilesAndDVs) {
-  int version = GetParam();
-  if (version < 3) {
+  auto version = GetParam();
+  if (version < kFormatVersion3) {
     GTEST_SKIP() << "DVs only supported in V3+";
   }
 
@@ -897,8 +897,8 @@ TEST_P(DeleteFileIndexTest, TestMixDeleteFilesAndDVs) {
 }
 
 TEST_P(DeleteFileIndexTest, TestMultipleDVs) {
-  int version = GetParam();
-  if (version < 3) {
+  auto version = GetParam();
+  if (version < kFormatVersion3) {
     GTEST_SKIP() << "DVs only supported in V3+";
   }
 
@@ -923,8 +923,8 @@ TEST_P(DeleteFileIndexTest, TestMultipleDVs) {
 }
 
 TEST_P(DeleteFileIndexTest, TestInvalidDVSequenceNumber) {
-  int version = GetParam();
-  if (version < 3) {
+  auto version = GetParam();
+  if (version < kFormatVersion3) {
     GTEST_SKIP() << "DVs only supported in V3+";
   }
 
@@ -949,7 +949,7 @@ TEST_P(DeleteFileIndexTest, TestInvalidDVSequenceNumber) {
 }
 
 TEST_P(DeleteFileIndexTest, TestReferencedDeleteFiles) {
-  int version = GetParam();
+  auto version = GetParam();
 
   auto partition_a = PartitionValues({Literal::Int(0)});
   auto eq_delete = MakeEqualityDeleteFile("/path/to/eq-delete.parquet", partition_a,
@@ -987,7 +987,7 @@ TEST_P(DeleteFileIndexTest, TestReferencedDeleteFiles) {
 }
 
 TEST_P(DeleteFileIndexTest, TestExistingDeleteFiles) {
-  int version = GetParam();
+  auto version = GetParam();
 
   auto partition_a = PartitionValues({Literal::Int(0)});
   auto eq_delete = MakeEqualityDeleteFile("/path/to/eq-delete.parquet", partition_a,
@@ -1020,7 +1020,7 @@ TEST_P(DeleteFileIndexTest, TestExistingDeleteFiles) {
 }
 
 TEST_P(DeleteFileIndexTest, TestDeletedStatusExcluded) {
-  int version = GetParam();
+  auto version = GetParam();
 
   auto partition_a = PartitionValues({Literal::Int(0)});
   auto eq_delete_added = MakeEqualityDeleteFile(
@@ -1059,7 +1059,7 @@ TEST_P(DeleteFileIndexTest, TestDeletedStatusExcluded) {
 }
 
 TEST_P(DeleteFileIndexTest, TestPositionDeleteDiscardMetrics) {
-  int version = GetParam();
+  auto version = GetParam();
 
   auto partition_a = PartitionValues({Literal::Int(0)});
 
@@ -1119,7 +1119,7 @@ TEST_P(DeleteFileIndexTest, TestPositionDeleteDiscardMetrics) {
 }
 
 TEST_P(DeleteFileIndexTest, TestEqualityDeleteDiscardMetrics) {
-  int version = GetParam();
+  auto version = GetParam();
 
   auto partition_a = PartitionValues({Literal::Int(0)});
 
@@ -1177,6 +1177,6 @@ TEST_P(DeleteFileIndexTest, TestEqualityDeleteDiscardMetrics) {
 }
 
 INSTANTIATE_TEST_SUITE_P(DeleteFileIndexVersions, DeleteFileIndexTest,
-                         testing::Values(2, 3));
+                         testing::Values(kFormatVersion2, kFormatVersion3));
 
 }  // namespace iceberg

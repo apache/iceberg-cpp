@@ -45,7 +45,7 @@
 
 namespace iceberg {
 
-class ManifestGroupTest : public testing::TestWithParam<int> {
+class ManifestGroupTest : public testing::TestWithParam<int8_t> {
  protected:
   void SetUp() override {
     avro::RegisterAll();
@@ -130,7 +130,7 @@ class ManifestGroupTest : public testing::TestWithParam<int> {
     };
   }
 
-  ManifestFile WriteDataManifest(int format_version, int64_t snapshot_id,
+  ManifestFile WriteDataManifest(int8_t format_version, int64_t snapshot_id,
                                  std::vector<ManifestEntry> entries,
                                  std::shared_ptr<PartitionSpec> spec) {
     const std::string manifest_path = MakeManifestPath();
@@ -152,7 +152,7 @@ class ManifestGroupTest : public testing::TestWithParam<int> {
     return std::move(manifest_result.value());
   }
 
-  ManifestFile WriteDeleteManifest(int format_version, int64_t snapshot_id,
+  ManifestFile WriteDeleteManifest(int8_t format_version, int64_t snapshot_id,
                                    std::vector<ManifestEntry> entries,
                                    std::shared_ptr<PartitionSpec> spec) {
     const std::string manifest_path = MakeManifestPath();
@@ -187,7 +187,7 @@ class ManifestGroupTest : public testing::TestWithParam<int> {
 
   // Write a ManifestFile to a manifest list and read it back. This is useful for v1
   // to populate all missing fields like sequence_number.
-  ManifestFile WriteAndReadManifestListEntry(int format_version, int64_t snapshot_id,
+  ManifestFile WriteAndReadManifestListEntry(int8_t format_version, int64_t snapshot_id,
                                              int64_t sequence_number,
                                              const ManifestFile& manifest) {
     const std::string manifest_list_path = MakeManifestListPath();
@@ -236,8 +236,8 @@ class ManifestGroupTest : public testing::TestWithParam<int> {
 };
 
 TEST_P(ManifestGroupTest, CreateAndGetEntries) {
-  int version = GetParam();
-  if (version < 2) {
+  auto version = GetParam();
+  if (version < kFormatVersion2) {
     GTEST_SKIP() << "Delete files only supported in V2+";
   }
 
@@ -291,7 +291,7 @@ TEST_P(ManifestGroupTest, CreateAndGetEntries) {
 }
 
 TEST_P(ManifestGroupTest, IgnoreDeleted) {
-  int version = GetParam();
+  auto version = GetParam();
 
   constexpr int64_t kSnapshotId = 1000L;
   constexpr int64_t kSequenceNumber = 1L;
@@ -329,7 +329,7 @@ TEST_P(ManifestGroupTest, IgnoreDeleted) {
 }
 
 TEST_P(ManifestGroupTest, IgnoreExisting) {
-  int version = GetParam();
+  auto version = GetParam();
 
   constexpr int64_t kSnapshotId = 1000L;
   constexpr int64_t kSequenceNumber = 1L;
@@ -367,7 +367,7 @@ TEST_P(ManifestGroupTest, IgnoreExisting) {
 }
 
 TEST_P(ManifestGroupTest, CustomManifestEntriesFilter) {
-  int version = GetParam();
+  auto version = GetParam();
 
   constexpr int64_t kSnapshotId = 1000L;
   const auto part_value = PartitionValues({Literal::Int(0)});
@@ -418,7 +418,7 @@ TEST_P(ManifestGroupTest, EmptyManifestGroup) {
 }
 
 TEST_P(ManifestGroupTest, MultipleDataManifests) {
-  int version = GetParam();
+  auto version = GetParam();
 
   const auto partition_a = PartitionValues({Literal::Int(0)});
   const auto partition_b = PartitionValues({Literal::Int(1)});
@@ -451,7 +451,7 @@ TEST_P(ManifestGroupTest, MultipleDataManifests) {
 }
 
 TEST_P(ManifestGroupTest, PartitionFilter) {
-  int version = GetParam();
+  auto version = GetParam();
 
   // Create two files with different partition values (bucket 0 and bucket 1)
   const auto partition_bucket_0 = PartitionValues({Literal::Int(0)});
@@ -485,6 +485,7 @@ TEST_P(ManifestGroupTest, PartitionFilter) {
 }
 
 INSTANTIATE_TEST_SUITE_P(ManifestGroupVersions, ManifestGroupTest,
-                         testing::Values(1, 2, 3));
+                         testing::Values(kFormatVersion1, kFormatVersion2,
+                                         kFormatVersion3));
 
 }  // namespace iceberg

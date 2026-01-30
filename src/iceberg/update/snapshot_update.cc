@@ -157,7 +157,7 @@ SnapshotUpdate::~SnapshotUpdate() = default;
 SnapshotUpdate::SnapshotUpdate(std::shared_ptr<Transaction> transaction)
     : PendingUpdate(std::move(transaction)),
       can_inherit_snapshot_id_(
-          base().format_version > 1 ||
+          base().format_version > kFormatVersion1 ||
           base().properties.Get(TableProperties::kSnapshotIdInheritanceEnabled)),
       commit_uuid_(Uuid::GenerateV7().ToString()),
       target_manifest_size_bytes_(
@@ -261,7 +261,7 @@ Result<SnapshotUpdate::ApplyResult> SnapshotUpdate::Apply() {
 
   std::optional<int64_t> next_row_id;
   std::optional<int64_t> assigned_rows;
-  if (base().format_version >= 3) {
+  if (base().format_version >= kFormatVersion3) {
     ICEBERG_CHECK(writer->next_row_id().has_value(),
                   "row id is required by format version >= 3");
     next_row_id = base().next_row_id;

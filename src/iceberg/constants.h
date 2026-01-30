@@ -30,6 +30,11 @@
 
 namespace iceberg {
 
+/// \brief Iceberg table format versions
+constexpr int8_t kFormatVersion1 = 1;
+constexpr int8_t kFormatVersion2 = 2;
+constexpr int8_t kFormatVersion3 = 3;
+
 constexpr std::string_view kParquetFieldIdKey = "PARQUET:field_id";
 constexpr int64_t kInvalidSnapshotId = -1;
 constexpr int64_t kInvalidSequenceNumber = -1;

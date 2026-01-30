@@ -30,7 +30,6 @@
 #include "iceberg/partition_summary_internal.h"
 #include "iceberg/result.h"
 #include "iceberg/schema.h"
-#include "iceberg/snapshot.h"
 #include "iceberg/table_metadata.h"
 #include "iceberg/util/macros.h"
 
@@ -272,118 +271,51 @@ Result<std::unique_ptr<Writer>> OpenFileWriter(
   return writer;
 }
 
-Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV1Writer(
-    std::optional<int64_t> snapshot_id, std::string_view manifest_location,
-    std::shared_ptr<FileIO> file_io, std::shared_ptr<PartitionSpec> partition_spec,
-    std::shared_ptr<Schema> current_schema) {
-  if (manifest_location.empty()) {
-    return InvalidArgument("Manifest location cannot be empty");
-  }
-  if (!file_io) {
-    return InvalidArgument("FileIO cannot be null");
-  }
-  if (!partition_spec) {
-    return InvalidArgument("PartitionSpec cannot be null");
-  }
-  if (!current_schema) {
-    return InvalidArgument("Current schema cannot be null");
-  }
-
-  auto adapter = std::make_unique<ManifestEntryAdapterV1>(
-      snapshot_id, std::move(partition_spec), std::move(current_schema));
-  ICEBERG_RETURN_UNEXPECTED(adapter->Init());
-  ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
-
-  auto schema = adapter->schema();
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto writer,
-      OpenFileWriter(manifest_location, std::move(schema), std::move(file_io),
-                     adapter->metadata(), "manifest_entry"));
-  return std::unique_ptr<ManifestWriter>(new ManifestWriter(
-      std::move(writer), std::move(adapter), manifest_location, std::nullopt));
-}
-
-Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV2Writer(
-    std::optional<int64_t> snapshot_id, std::string_view manifest_location,
-    std::shared_ptr<FileIO> file_io, std::shared_ptr<PartitionSpec> partition_spec,
-    std::shared_ptr<Schema> current_schema, ManifestContent content) {
-  if (manifest_location.empty()) {
-    return InvalidArgument("Manifest location cannot be empty");
-  }
-  if (!file_io) {
-    return InvalidArgument("FileIO cannot be null");
-  }
-  if (!partition_spec) {
-    return InvalidArgument("PartitionSpec cannot be null");
-  }
-  if (!current_schema) {
-    return InvalidArgument("Current schema cannot be null");
-  }
-  auto adapter = std::make_unique<ManifestEntryAdapterV2>(
-      snapshot_id, std::move(partition_spec), std::move(current_schema), content);
-  ICEBERG_RETURN_UNEXPECTED(adapter->Init());
-  ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
-
-  auto schema = adapter->schema();
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto writer,
-      OpenFileWriter(manifest_location, std::move(schema), std::move(file_io),
-                     adapter->metadata(), "manifest_entry"));
-  return std::unique_ptr<ManifestWriter>(new ManifestWriter(
-      std::move(writer), std::move(adapter), manifest_location, std::nullopt));
-}
-
-Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeV3Writer(
-    std::optional<int64_t> snapshot_id, std::optional<int64_t> first_row_id,
-    std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
-    std::shared_ptr<PartitionSpec> partition_spec, std::shared_ptr<Schema> current_schema,
-    ManifestContent content) {
-  if (manifest_location.empty()) {
-    return InvalidArgument("Manifest location cannot be empty");
-  }
-  if (!file_io) {
-    return InvalidArgument("FileIO cannot be null");
-  }
-  if (!partition_spec) {
-    return InvalidArgument("PartitionSpec cannot be null");
-  }
-  if (!current_schema) {
-    return InvalidArgument("Current schema cannot be null");
-  }
-  auto adapter = std::make_unique<ManifestEntryAdapterV3>(
-      snapshot_id, first_row_id, std::move(partition_spec), std::move(current_schema),
-      content);
-  ICEBERG_RETURN_UNEXPECTED(adapter->Init());
-  ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
-
-  auto schema = adapter->schema();
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto writer,
-      OpenFileWriter(manifest_location, std::move(schema), std::move(file_io),
-                     adapter->metadata(), "manifest_entry"));
-  return std::unique_ptr<ManifestWriter>(new ManifestWriter(
-      std::move(writer), std::move(adapter), manifest_location, first_row_id));
-}
-
 Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeWriter(
     int8_t format_version, std::optional<int64_t> snapshot_id,
     std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
     std::shared_ptr<PartitionSpec> partition_spec, std::shared_ptr<Schema> current_schema,
     ManifestContent content, std::optional<int64_t> first_row_id) {
+  ICEBERG_PRECHECK(!manifest_location.empty(), "Manifest location cannot be empty");
+  ICEBERG_PRECHECK(file_io, "FileIO cannot be null");
+  ICEBERG_PRECHECK(partition_spec, "PartitionSpec cannot be null");
+  ICEBERG_PRECHECK(current_schema, "Current schema cannot be null");
+
+  std::unique_ptr<ManifestEntryAdapter> adapter;
+  std::optional<int64_t> writer_first_row_id = std::nullopt;
+
   switch (format_version) {
-    case 1:
-      return MakeV1Writer(snapshot_id, manifest_location, std::move(file_io),
-                          std::move(partition_spec), std::move(current_schema));
-    case 2:
-      return MakeV2Writer(snapshot_id, manifest_location, std::move(file_io),
-                          std::move(partition_spec), std::move(current_schema), content);
-    case 3:
-      return MakeV3Writer(snapshot_id, first_row_id, manifest_location,
-                          std::move(file_io), std::move(partition_spec),
-                          std::move(current_schema), content);
+    case kFormatVersion1: {
+      adapter = std::make_unique<ManifestEntryAdapterV1>(
+          snapshot_id, std::move(partition_spec), std::move(current_schema));
+      break;
+    }
+    case kFormatVersion2: {
+      adapter = std::make_unique<ManifestEntryAdapterV2>(
+          snapshot_id, std::move(partition_spec), std::move(current_schema), content);
+      break;
+    }
+    case kFormatVersion3: {
+      adapter = std::make_unique<ManifestEntryAdapterV3>(
+          snapshot_id, first_row_id, std::move(partition_spec), std::move(current_schema),
+          content);
+      writer_first_row_id = first_row_id;
+      break;
+    }
     default:
       return NotSupported("Format version {} is not supported", format_version);
   }
+
+  ICEBERG_RETURN_UNEXPECTED(adapter->Init());
+  ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
+
+  auto schema = adapter->schema();
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto writer,
+      OpenFileWriter(manifest_location, std::move(schema), std::move(file_io),
+                     adapter->metadata(), "manifest_entry"));
+  return std::unique_ptr<ManifestWriter>(new ManifestWriter(
+      std::move(writer), std::move(adapter), manifest_location, writer_first_row_id));
 }
 
 ManifestListWriter::ManifestListWriter(std::unique_ptr<Writer> writer,
@@ -420,83 +352,47 @@ std::optional<int64_t> ManifestListWriter::next_row_id() const {
   return adapter_->next_row_id();
 }
 
-Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV1Writer(
-    int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
-    std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io) {
-  auto adapter = std::make_unique<ManifestFileAdapterV1>(snapshot_id, parent_snapshot_id);
-  ICEBERG_RETURN_UNEXPECTED(adapter->Init());
-  ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
-
-  auto schema = adapter->schema();
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto writer,
-      OpenFileWriter(manifest_list_location, std::move(schema), std::move(file_io),
-                     adapter->metadata(), "manifest_file"));
-  return std::unique_ptr<ManifestListWriter>(
-      new ManifestListWriter(std::move(writer), std::move(adapter)));
-}
-
-Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV2Writer(
-    int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
-    int64_t sequence_number, std::string_view manifest_list_location,
-    std::shared_ptr<FileIO> file_io) {
-  auto adapter = std::make_unique<ManifestFileAdapterV2>(snapshot_id, parent_snapshot_id,
-                                                         sequence_number);
-  ICEBERG_RETURN_UNEXPECTED(adapter->Init());
-  ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
-
-  auto schema = adapter->schema();
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto writer,
-      OpenFileWriter(manifest_list_location, std::move(schema), std::move(file_io),
-                     adapter->metadata(), "manifest_file"));
-
-  return std::unique_ptr<ManifestListWriter>(
-      new ManifestListWriter(std::move(writer), std::move(adapter)));
-}
-
-Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeV3Writer(
-    int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
-    int64_t sequence_number, int64_t first_row_id,
-    std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io) {
-  auto adapter = std::make_unique<ManifestFileAdapterV3>(snapshot_id, parent_snapshot_id,
-                                                         sequence_number, first_row_id);
-  ICEBERG_RETURN_UNEXPECTED(adapter->Init());
-  ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
-
-  auto schema = adapter->schema();
-  ICEBERG_ASSIGN_OR_RAISE(
-      auto writer,
-      OpenFileWriter(manifest_list_location, std::move(schema), std::move(file_io),
-                     adapter->metadata(), "manifest_file"));
-  return std::unique_ptr<ManifestListWriter>(
-      new ManifestListWriter(std::move(writer), std::move(adapter)));
-}
-
 Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeWriter(
     int8_t format_version, int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
     std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io,
     std::optional<int64_t> sequence_number, std::optional<int64_t> first_row_id) {
+  std::unique_ptr<ManifestFileAdapter> adapter;
+
   switch (format_version) {
-    case 1:
-      return MakeV1Writer(snapshot_id, parent_snapshot_id, manifest_list_location,
-                          std::move(file_io));
-    case 2:
+    case kFormatVersion1: {
+      adapter = std::make_unique<ManifestFileAdapterV1>(snapshot_id, parent_snapshot_id);
+      break;
+    }
+    case kFormatVersion2: {
       ICEBERG_PRECHECK(sequence_number.has_value(),
                        "Sequence number is required for format version 2");
-      return MakeV2Writer(snapshot_id, parent_snapshot_id, sequence_number.value(),
-                          manifest_list_location, std::move(file_io));
-    case 3:
+      adapter = std::make_unique<ManifestFileAdapterV2>(snapshot_id, parent_snapshot_id,
+                                                        sequence_number.value());
+      break;
+    }
+    case kFormatVersion3: {
       ICEBERG_PRECHECK(sequence_number.has_value(),
                        "Sequence number is required for format version 3");
       ICEBERG_PRECHECK(first_row_id.has_value(),
                        "First row ID is required for format version 3");
-      return MakeV3Writer(snapshot_id, parent_snapshot_id, sequence_number.value(),
-                          first_row_id.value(), manifest_list_location,
-                          std::move(file_io));
+      adapter = std::make_unique<ManifestFileAdapterV3>(
+          snapshot_id, parent_snapshot_id, sequence_number.value(), first_row_id.value());
+      break;
+    }
     default:
       return NotSupported("Format version {} is not supported", format_version);
   }
+
+  ICEBERG_RETURN_UNEXPECTED(adapter->Init());
+  ICEBERG_RETURN_UNEXPECTED(adapter->StartAppending());
+
+  auto schema = adapter->schema();
+  ICEBERG_ASSIGN_OR_RAISE(
+      auto writer,
+      OpenFileWriter(manifest_list_location, std::move(schema), std::move(file_io),
+                     adapter->metadata(), "manifest_file"));
+  return std::unique_ptr<ManifestListWriter>(
+      new ManifestListWriter(std::move(writer), std::move(adapter)));
 }
 
 }  // namespace iceberg

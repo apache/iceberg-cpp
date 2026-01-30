@@ -25,6 +25,7 @@
 #include <string_view>
 #include <utility>
 
+#include "iceberg/constants.h"
 #include "iceberg/expression/term.h"
 #include "iceberg/partition_field.h"
 #include "iceberg/partition_spec.h"
@@ -32,7 +33,6 @@
 #include "iceberg/table_metadata.h"
 #include "iceberg/transaction.h"
 #include "iceberg/transform.h"
-#include "iceberg/util/checked_cast.h"
 #include "iceberg/util/macros.h"
 
 namespace iceberg {
@@ -81,7 +81,7 @@ UpdatePartitionSpec::UpdatePartitionSpec(std::shared_ptr<Transaction> transactio
   }
 
   // Build index of historical partition fields for efficient recycling (V2+)
-  if (format_version_ >= 2) {
+  if (format_version_ >= kFormatVersion2) {
     BuildHistoricalFieldsIndex();
   }
 }
@@ -326,7 +326,7 @@ Result<UpdatePartitionSpec::ApplyResult> UpdatePartitionSpec::Apply() {
       } else {
         new_fields.push_back(field);
       }
-    } else if (format_version_ < 2) {
+    } else if (format_version_ < kFormatVersion2) {
       // field IDs were not required for v1 and were assigned sequentially in each
       // partition spec starting at 1,000.
       // To maintain consistent field ids across partition specs in v1 tables, any
@@ -358,7 +358,7 @@ int32_t UpdatePartitionSpec::AssignFieldId() { return ++last_assigned_partition_
 PartitionField UpdatePartitionSpec::RecycleOrCreatePartitionField(
     int32_t source_id, std::shared_ptr<Transform> transform, std::string_view name) {
   // In V2+, use pre-built index for O(1) lookup instead of O(n*m) iteration
-  if (format_version_ >= 2 && !historical_fields_.empty()) {
+  if (format_version_ >= kFormatVersion2 && !historical_fields_.empty()) {
     auto it = historical_fields_.find(TransformKey{source_id, transform->ToString()});
     if (it != historical_fields_.end()) {
       const auto& field = it->second;

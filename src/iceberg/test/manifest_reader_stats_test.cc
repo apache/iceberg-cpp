@@ -40,7 +40,7 @@
 
 namespace iceberg {
 
-class TestManifestReaderStats : public testing::TestWithParam<int> {
+class TestManifestReaderStats : public testing::TestWithParam<int8_t> {
  protected:
   void SetUp() override {
     avro::RegisterAll();
@@ -86,7 +86,7 @@ class TestManifestReaderStats : public testing::TestWithParam<int> {
     });
   }
 
-  ManifestFile WriteManifest(int format_version, std::unique_ptr<DataFile> data_file) {
+  ManifestFile WriteManifest(int8_t format_version, std::unique_ptr<DataFile> data_file) {
     const std::string manifest_path = MakeManifestPath();
 
     auto writer_result = ManifestWriter::MakeWriter(
@@ -127,7 +127,7 @@ class TestManifestReaderStats : public testing::TestWithParam<int> {
 };
 
 TEST_P(TestManifestReaderStats, TestReadIncludesFullStats) {
-  int version = GetParam();
+  auto version = GetParam();
   auto manifest = WriteManifest(version, MakeDataFileWithStats());
 
   auto reader_result = ManifestReader::Make(manifest, file_io_, schema_, spec_);
@@ -142,7 +142,7 @@ TEST_P(TestManifestReaderStats, TestReadIncludesFullStats) {
 }
 
 TEST_P(TestManifestReaderStats, TestReadEntriesWithFilterIncludesFullStats) {
-  int version = GetParam();
+  auto version = GetParam();
   auto manifest = WriteManifest(version, MakeDataFileWithStats());
 
   auto reader_result = ManifestReader::Make(manifest, file_io_, schema_, spec_);
@@ -159,7 +159,7 @@ TEST_P(TestManifestReaderStats, TestReadEntriesWithFilterIncludesFullStats) {
 }
 
 TEST_P(TestManifestReaderStats, TestReadEntriesWithFilterAndSelectIncludesFullStats) {
-  int version = GetParam();
+  auto version = GetParam();
   auto manifest = WriteManifest(version, MakeDataFileWithStats());
 
   auto reader_result = ManifestReader::Make(manifest, file_io_, schema_, spec_);
@@ -177,7 +177,7 @@ TEST_P(TestManifestReaderStats, TestReadEntriesWithFilterAndSelectIncludesFullSt
 }
 
 TEST_P(TestManifestReaderStats, TestReadEntriesWithSelectNotProjectStats) {
-  int version = GetParam();
+  auto version = GetParam();
   auto manifest = WriteManifest(version, MakeDataFileWithStats());
 
   auto reader_result = ManifestReader::Make(manifest, file_io_, schema_, spec_);
@@ -194,7 +194,7 @@ TEST_P(TestManifestReaderStats, TestReadEntriesWithSelectNotProjectStats) {
 }
 
 TEST_P(TestManifestReaderStats, TestReadEntriesWithSelectCertainStatNotProjectStats) {
-  int version = GetParam();
+  auto version = GetParam();
   auto manifest = WriteManifest(version, MakeDataFileWithStats());
 
   auto reader_result = ManifestReader::Make(manifest, file_io_, schema_, spec_);
@@ -217,6 +217,7 @@ TEST_P(TestManifestReaderStats, TestReadEntriesWithSelectCertainStatNotProjectSt
 }
 
 INSTANTIATE_TEST_SUITE_P(ManifestReaderStatsVersions, TestManifestReaderStats,
-                         testing::Values(1, 2, 3));
+                         testing::Values(kFormatVersion1, kFormatVersion2,
+                                         kFormatVersion3));
 
 }  // namespace iceberg

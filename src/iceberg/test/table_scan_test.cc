@@ -47,7 +47,7 @@
 
 namespace iceberg {
 
-class TableScanTest : public testing::TestWithParam<int> {
+class TableScanTest : public testing::TestWithParam<int8_t> {
  protected:
   void SetUp() override {
     avro::RegisterAll();
@@ -175,14 +175,15 @@ class TableScanTest : public testing::TestWithParam<int> {
     };
   }
 
-  ManifestFile WriteDataManifest(int format_version, int64_t snapshot_id,
+  ManifestFile WriteDataManifest(int8_t format_version, int64_t snapshot_id,
                                  std::vector<ManifestEntry> entries,
                                  std::shared_ptr<PartitionSpec> spec) {
     const std::string manifest_path = MakeManifestPath();
     auto writer_result = ManifestWriter::MakeWriter(
         format_version, snapshot_id, manifest_path, file_io_, spec, schema_,
         ManifestContent::kData,
-        /*first_row_id=*/format_version >= 3 ? std::optional<int64_t>(0L) : std::nullopt);
+        /*first_row_id=*/format_version >= kFormatVersion3 ? std::optional<int64_t>(0L)
+                                                           : std::nullopt);
 
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
@@ -197,7 +198,7 @@ class TableScanTest : public testing::TestWithParam<int> {
     return std::move(manifest_result.value());
   }
 
-  ManifestFile WriteDeleteManifest(int format_version, int64_t snapshot_id,
+  ManifestFile WriteDeleteManifest(int8_t format_version, int64_t snapshot_id,
                                    std::vector<ManifestEntry> entries,
                                    std::shared_ptr<PartitionSpec> spec) {
     const std::string manifest_path = MakeManifestPath();
@@ -224,7 +225,7 @@ class TableScanTest : public testing::TestWithParam<int> {
                        std::chrono::system_clock::now().time_since_epoch().count());
   }
 
-  std::string WriteManifestList(int format_version, int64_t snapshot_id,
+  std::string WriteManifestList(int8_t format_version, int64_t snapshot_id,
                                 int64_t sequence_number,
                                 const std::vector<ManifestFile>& manifests) {
     const std::string manifest_list_path = MakeManifestListPath();
@@ -232,9 +233,11 @@ class TableScanTest : public testing::TestWithParam<int> {
 
     auto writer_result = ManifestListWriter::MakeWriter(
         format_version, snapshot_id, kParentSnapshotId, manifest_list_path, file_io_,
-        /*sequence_number=*/format_version >= 2 ? std::optional(sequence_number)
-                                                : std::nullopt,
-        /*first_row_id=*/format_version >= 3 ? std::optional<int64_t>(0L) : std::nullopt);
+        /*sequence_number=*/format_version >= kFormatVersion2
+            ? std::optional(sequence_number)
+            : std::nullopt,
+        /*first_row_id=*/format_version >= kFormatVersion3 ? std::optional<int64_t>(0L)
+                                                           : std::nullopt);
 
     EXPECT_THAT(writer_result, IsOk());
     auto writer = std::move(writer_result.value());
@@ -367,7 +370,7 @@ TEST_P(TableScanTest, DataTableScanPlanFilesEmpty) {
 }
 
 TEST_P(TableScanTest, PlanFilesWithDataManifests) {
-  int version = GetParam();
+  auto version = GetParam();
 
   constexpr int64_t kSnapshotId = 1000L;
   const auto part_value = PartitionValues({Literal::Int(0)});
@@ -427,7 +430,7 @@ TEST_P(TableScanTest, PlanFilesWithDataManifests) {
 }
 
 TEST_P(TableScanTest, PlanFilesWithMultipleManifests) {
-  int version = GetParam();
+  auto version = GetParam();
 
   const auto partition_a = PartitionValues({Literal::Int(0)});
   const auto partition_b = PartitionValues({Literal::Int(1)});
@@ -494,7 +497,7 @@ TEST_P(TableScanTest, PlanFilesWithMultipleManifests) {
 }
 
 TEST_P(TableScanTest, PlanFilesWithFilter) {
-  int version = GetParam();
+  auto version = GetParam();
 
   constexpr int64_t kSnapshotId = 1000L;
   const auto part_value = PartitionValues({Literal::Int(0)});
@@ -587,8 +590,8 @@ TEST_P(TableScanTest, PlanFilesWithFilter) {
 }
 
 TEST_P(TableScanTest, PlanFilesWithDeleteFiles) {
-  int version = GetParam();
-  if (version < 2) {
+  auto version = GetParam();
+  if (version < kFormatVersion2) {
     GTEST_SKIP() << "Delete files only supported in V2+";
   }
 
@@ -666,6 +669,8 @@ TEST_P(TableScanTest, PlanFilesWithDeleteFiles) {
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(TableScanVersions, TableScanTest, testing::Values(1, 2, 3));
+INSTANTIATE_TEST_SUITE_P(TableScanVersions, TableScanTest,
+                         testing::Values(kFormatVersion1, kFormatVersion2,
+                                         kFormatVersion3));
 
 }  // namespace iceberg

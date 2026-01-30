@@ -117,48 +117,6 @@ class ICEBERG_EXPORT ManifestWriter {
   /// \note Only valid after the file is closed.
   Result<ManifestFile> ToManifestFile() const;
 
-  /// \brief Creates a writer for a manifest file.
-  /// \param snapshot_id ID of the snapshot.
-  /// \param manifest_location Path to the manifest file.
-  /// \param file_io File IO implementation to use.
-  /// \param partition_spec Partition spec for the manifest.
-  /// \param current_schema Current table schema.
-  /// \return A Result containing the writer or an error.
-  static Result<std::unique_ptr<ManifestWriter>> MakeV1Writer(
-      std::optional<int64_t> snapshot_id, std::string_view manifest_location,
-      std::shared_ptr<FileIO> file_io, std::shared_ptr<PartitionSpec> partition_spec,
-      std::shared_ptr<Schema> current_schema);
-
-  /// \brief Creates a writer for a manifest file.
-  /// \param snapshot_id ID of the snapshot.
-  /// \param manifest_location Path to the manifest file.
-  /// \param file_io File IO implementation to use.
-  /// \param partition_spec Partition spec for the manifest.
-  /// \param current_schema Schema containing the source fields referenced by partition
-  /// spec.
-  /// \param content Content of the manifest.
-  /// \return A Result containing the writer or an error.
-  static Result<std::unique_ptr<ManifestWriter>> MakeV2Writer(
-      std::optional<int64_t> snapshot_id, std::string_view manifest_location,
-      std::shared_ptr<FileIO> file_io, std::shared_ptr<PartitionSpec> partition_spec,
-      std::shared_ptr<Schema> current_schema, ManifestContent content);
-
-  /// \brief Creates a writer for a manifest file.
-  /// \param snapshot_id ID of the snapshot.
-  /// \param first_row_id First row ID of the snapshot.
-  /// \param manifest_location Path to the manifest file.
-  /// \param file_io File IO implementation to use.
-  /// \param partition_spec Partition spec for the manifest.
-  /// \param current_schema Schema containing the source fields referenced by partition
-  /// spec.
-  /// \param content Content of the manifest.
-  /// \return A Result containing the writer or an error.
-  static Result<std::unique_ptr<ManifestWriter>> MakeV3Writer(
-      std::optional<int64_t> snapshot_id, std::optional<int64_t> first_row_id,
-      std::string_view manifest_location, std::shared_ptr<FileIO> file_io,
-      std::shared_ptr<PartitionSpec> partition_spec,
-      std::shared_ptr<Schema> current_schema, ManifestContent content);
-
   /// \brief Factory function to create a writer for a manifest file based on format
   /// version.
   /// \param format_version The format version (1, 2, 3, etc.).
@@ -225,41 +183,6 @@ class ICEBERG_EXPORT ManifestListWriter {
 
   /// \brief Get the next row id to assign.
   std::optional<int64_t> next_row_id() const;
-
-  /// \brief Creates a writer for the v1 manifest list.
-  /// \param snapshot_id ID of the snapshot.
-  /// \param parent_snapshot_id ID of the parent snapshot.
-  /// \param manifest_list_location Path to the manifest list file.
-  /// \param file_io File IO implementation to use.
-  /// \return A Result containing the writer or an error.
-  static Result<std::unique_ptr<ManifestListWriter>> MakeV1Writer(
-      int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
-      std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io);
-
-  /// \brief Creates a writer for the manifest list.
-  /// \param snapshot_id ID of the snapshot.
-  /// \param parent_snapshot_id ID of the parent snapshot.
-  /// \param sequence_number Sequence number of the snapshot.
-  /// \param manifest_list_location Path to the manifest list file.
-  /// \param file_io File IO implementation to use.
-  /// \return A Result containing the writer or an error.
-  static Result<std::unique_ptr<ManifestListWriter>> MakeV2Writer(
-      int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
-      int64_t sequence_number, std::string_view manifest_list_location,
-      std::shared_ptr<FileIO> file_io);
-
-  /// \brief Creates a writer for the manifest list.
-  /// \param snapshot_id ID of the snapshot.
-  /// \param parent_snapshot_id ID of the parent snapshot.
-  /// \param sequence_number Sequence number of the snapshot.
-  /// \param first_row_id First row ID of the snapshot.
-  /// \param manifest_list_location Path to the manifest list file.
-  /// \param file_io File IO implementation to use.
-  /// \return A Result containing the writer or an error.
-  static Result<std::unique_ptr<ManifestListWriter>> MakeV3Writer(
-      int64_t snapshot_id, std::optional<int64_t> parent_snapshot_id,
-      int64_t sequence_number, int64_t first_row_id,
-      std::string_view manifest_list_location, std::shared_ptr<FileIO> file_io);
 
   /// \brief Factory function to create a writer for the manifest list based on format
   /// version.
