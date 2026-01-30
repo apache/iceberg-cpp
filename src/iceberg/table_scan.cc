@@ -20,7 +20,9 @@
 #include "iceberg/table_scan.h"
 
 #include <cstring>
+#include <iterator>
 
+#include "iceberg/expression/binder.h"
 #include "iceberg/expression/expression.h"
 #include "iceberg/file_reader.h"
 #include "iceberg/manifest/manifest_entry.h"
@@ -32,6 +34,7 @@
 #include "iceberg/util/macros.h"
 #include "iceberg/util/snapshot_util_internal.h"
 #include "iceberg/util/timepoint.h"
+#include "iceberg/util/type_util.h"
 
 namespace iceberg {
 
@@ -414,11 +417,32 @@ TableScan::ResolveProjectedSchema() const {
   }
 
   if (!context_.selected_columns.empty()) {
-    /// TODO(gangwu): port Java BaseScan.lazyColumnProjection to collect field ids
-    /// from selected column names and bound references in the filter, and then create
-    /// projected schema based on the collected field ids.
-    return NotImplemented(
-        "Selecting columns by name to create projected schema is not yet implemented");
+    std::unordered_set<int32_t> required_field_ids;
+
+    // Include columns referenced by filter
+    if (context_.filter != nullptr) {
+      ICEBERG_ASSIGN_OR_RAISE(auto is_bound, IsBoundVisitor::IsBound(context_.filter));
+      if (is_bound) {
+        ICEBERG_ASSIGN_OR_RAISE(required_field_ids,
+                                ReferenceVisitor::GetReferencedFieldIds(context_.filter));
+      } else {
+        ICEBERG_ASSIGN_OR_RAISE(auto filter, Binder::Bind(*schema_, context_.filter,
+                                                          context_.case_sensitive));
+        ICEBERG_ASSIGN_OR_RAISE(required_field_ids,
+                                ReferenceVisitor::GetReferencedFieldIds(filter));
+      }
+    }
+
+    // Include columns selected by option
+    ICEBERG_ASSIGN_OR_RAISE(auto selected, schema_->Select(context_.selected_columns,
+                                                           context_.case_sensitive));
+    ICEBERG_ASSIGN_OR_RAISE(
+        auto selected_field_ids,
+        GetProjectedIdsVisitor::GetProjectedIds(*selected, /*include_struct_ids=*/true));
+    required_field_ids.insert(std::make_move_iterator(selected_field_ids.begin()),
+                              std::make_move_iterator(selected_field_ids.end()));
+
+    ICEBERG_ASSIGN_OR_RAISE(projected_schema_, schema_->Project(required_field_ids));
   } else if (context_.projected_schema != nullptr) {
     projected_schema_ = context_.projected_schema;
   } else {

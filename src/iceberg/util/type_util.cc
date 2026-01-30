@@ -25,6 +25,7 @@
 #include "iceberg/schema.h"
 #include "iceberg/util/checked_cast.h"
 #include "iceberg/util/formatter_internal.h"
+#include "iceberg/util/macros.h"
 #include "iceberg/util/string_util.h"
 #include "iceberg/util/visit_type.h"
 
@@ -299,6 +300,13 @@ Status GetProjectedIdsVisitor::VisitNested(const NestedType& type) {
 Status GetProjectedIdsVisitor::VisitPrimitive(const PrimitiveType& type) { return {}; }
 
 std::unordered_set<int32_t> GetProjectedIdsVisitor::Finish() const { return ids_; }
+
+Result<std::unordered_set<int32_t>> GetProjectedIdsVisitor::GetProjectedIds(
+    const Type& type, bool include_struct_ids) {
+  GetProjectedIdsVisitor visitor(include_struct_ids);
+  ICEBERG_RETURN_UNEXPECTED(visitor.Visit(type));
+  return visitor.Finish();
+}
 
 std::unordered_map<int32_t, int32_t> IndexParents(const StructType& root_struct) {
   std::unordered_map<int32_t, int32_t> id_to_parent;
