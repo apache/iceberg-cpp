@@ -295,10 +295,13 @@ Status InMemoryNamespace::RegisterTable(const TableIdentifier& table_ident,
                                         const std::string& metadata_location) {
   const auto ns = GetNamespace(this, table_ident.ns);
   ICEBERG_RETURN_UNEXPECTED(ns);
-  if (ns.value()->table_metadata_locations_.contains(table_ident.name)) {
+  const auto inserted =
+      ns.value()
+          ->table_metadata_locations_.try_emplace(table_ident.name, metadata_location)
+          .second;
+  if (!inserted) {
     return AlreadyExists("{} already exists", table_ident.name);
   }
-  ns.value()->table_metadata_locations_[table_ident.name] = metadata_location;
   return {};
 }
 
