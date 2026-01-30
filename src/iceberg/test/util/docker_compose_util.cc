@@ -26,6 +26,8 @@
 #include <format>
 #include <print>
 
+#include <sys/stat.h>
+
 #include "iceberg/test/util/cmd_util.h"
 
 namespace iceberg {
@@ -47,6 +49,7 @@ DockerCompose::DockerCompose(std::string project_name,
       docker_compose_dir_(std::move(docker_compose_dir)),
       test_data_dir_(GenerateTestDataDir()) {
   std::filesystem::create_directories(test_data_dir_);
+  chmod(test_data_dir_.c_str(), 0777);
 }
 
 DockerCompose::~DockerCompose() { Down(); }
