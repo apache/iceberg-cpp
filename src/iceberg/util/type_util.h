@@ -132,6 +132,9 @@ class GetProjectedIdsVisitor {
   Status VisitPrimitive(const PrimitiveType& type);
   std::unordered_set<int32_t> Finish() const;
 
+  static Result<std::unordered_set<int32_t>> GetProjectedIds(
+      const Type& type, bool include_struct_ids = false);
+
  private:
   const bool include_struct_ids_;
   std::unordered_set<int32_t> ids_;

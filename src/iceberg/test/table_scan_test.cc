@@ -666,6 +666,109 @@ TEST_P(TableScanTest, PlanFilesWithDeleteFiles) {
   }
 }
 
+TEST_P(TableScanTest, SchemaWithSelectedColumnsAndFilter) {
+  auto schema = std::make_shared<Schema>(std::vector<SchemaField>{
+      SchemaField::MakeRequired(/*field_id=*/1, "id", int32()),
+      SchemaField::MakeRequired(/*field_id=*/2, "data", string()),
+      SchemaField::MakeRequired(/*field_id=*/3, "value", int64())});
+  auto timestamp_ms = TimePointMsFromUnixMs(1609459200000L);
+  auto metadata = std::make_shared<TableMetadata>(TableMetadata{
+      .format_version = 2,
+      .table_uuid = "test-table-uuid",
+      .location = "/tmp/table",
+      .last_sequence_number = 1L,
+      .last_updated_ms = timestamp_ms,
+      .last_column_id = 3,
+      .schemas = {schema},
+      .current_schema_id = schema->schema_id(),
+      .partition_specs = {unpartitioned_spec_},
+      .default_spec_id = unpartitioned_spec_->spec_id(),
+      .last_partition_id = 1000,
+      .current_snapshot_id = 1000L,
+      .snapshots = {std::make_shared<Snapshot>(Snapshot{
+          .snapshot_id = 1000L,
+          .parent_snapshot_id = std::nullopt,
+          .sequence_number = 1L,
+          .timestamp_ms = timestamp_ms,
+          .manifest_list = "/tmp/metadata/snap-1000-1-manifest-list.avro",
+          .schema_id = schema->schema_id(),
+      })},
+      .snapshot_log = {SnapshotLogEntry{.timestamp_ms = timestamp_ms,
+                                        .snapshot_id = 1000L}},
+      .default_sort_order_id = 0,
+      .refs = {{"main", std::make_shared<SnapshotRef>(SnapshotRef{
+                            .snapshot_id = 1000L,
+                            .retention = SnapshotRef::Branch{},
+                        })}},
+  });
+
+  // Select "data" column, filter on "id" column
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(metadata, file_io_));
+    builder->Select({"data"}).Filter(Expressions::Equal("id", Literal::Int(42)));
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto projected_schema, scan->schema());
+
+    ASSERT_EQ(projected_schema->fields().size(), 2);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto id_field, projected_schema->FindFieldByName("id"));
+    EXPECT_TRUE(id_field.has_value());
+    EXPECT_EQ(id_field->get().field_id(), 1);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto data_field, projected_schema->FindFieldByName("data"));
+    EXPECT_TRUE(data_field.has_value());
+    EXPECT_EQ(data_field->get().field_id(), 2);
+  }
+
+  // Select "id" and "value", filter on "data"
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(metadata, file_io_));
+    builder->Select({"id", "value"})
+        .Filter(Expressions::Equal("data", Literal::String("test")));
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto projected_schema, scan->schema());
+
+    ASSERT_EQ(projected_schema->fields().size(), 3);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto id_field, projected_schema->FindFieldByName("id"));
+    EXPECT_TRUE(id_field.has_value());
+
+    ICEBERG_UNWRAP_OR_FAIL(auto data_field, projected_schema->FindFieldByName("data"));
+    EXPECT_TRUE(data_field.has_value());
+
+    ICEBERG_UNWRAP_OR_FAIL(auto value_field, projected_schema->FindFieldByName("value"));
+    EXPECT_TRUE(value_field.has_value());
+  }
+
+  // Select "id", filter on "id" - should only have "id" once
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(metadata, file_io_));
+    builder->Select({"id"}).Filter(Expressions::Equal("id", Literal::Int(42)));
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto projected_schema, scan->schema());
+
+    ASSERT_EQ(projected_schema->fields().size(), 1);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto id_field, projected_schema->FindFieldByName("id"));
+    EXPECT_TRUE(id_field.has_value());
+    EXPECT_EQ(id_field->get().field_id(), 1);
+  }
+
+  // Select columns without filter
+  {
+    ICEBERG_UNWRAP_OR_FAIL(auto builder, TableScanBuilder::Make(metadata, file_io_));
+    builder->Select({"data"});
+    ICEBERG_UNWRAP_OR_FAIL(auto scan, builder->Build());
+    ICEBERG_UNWRAP_OR_FAIL(auto projected_schema, scan->schema());
+
+    ASSERT_EQ(projected_schema->fields().size(), 1);
+
+    ICEBERG_UNWRAP_OR_FAIL(auto data_field, projected_schema->FindFieldByName("data"));
+    EXPECT_TRUE(data_field.has_value());
+    EXPECT_EQ(data_field->get().field_id(), 2);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(TableScanVersions, TableScanTest, testing::Values(1, 2, 3));
 
 }  // namespace iceberg
