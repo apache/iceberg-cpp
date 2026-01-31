@@ -190,9 +190,9 @@ class TestManifestListVersions : public ::testing::Test {
 TEST_F(TestManifestListVersions, TestV1WriteDeleteManifest) {
   const std::string manifest_list_path = CreateManifestListPath();
 
-  ICEBERG_UNWRAP_OR_FAIL(auto writer,
-                         ManifestListWriter::MakeWriter(1, kSnapshotId, kSnapshotId - 1,
-                                                        manifest_list_path, file_io_));
+  ICEBERG_UNWRAP_OR_FAIL(auto writer, ManifestListWriter::MakeWriter(
+                                          /*format_version=*/1, kSnapshotId,
+                                          kSnapshotId - 1, manifest_list_path, file_io_));
   auto status = writer->Add(kDeleteManifest);
 
   EXPECT_THAT(status, IsError(ErrorKind::kInvalidManifestList));
@@ -200,7 +200,7 @@ TEST_F(TestManifestListVersions, TestV1WriteDeleteManifest) {
 }
 
 TEST_F(TestManifestListVersions, TestV1Write) {
-  auto manifest = WriteAndReadManifestList(1);
+  auto manifest = WriteAndReadManifestList(/*format_version=*/1);
 
   // V3 fields are not written and are defaulted
   EXPECT_FALSE(manifest.first_row_id.has_value());
@@ -224,7 +224,7 @@ TEST_F(TestManifestListVersions, TestV1Write) {
 }
 
 TEST_F(TestManifestListVersions, TestV2Write) {
-  auto manifest = WriteAndReadManifestList(2);
+  auto manifest = WriteAndReadManifestList(/*format_version=*/2);
 
   // V3 fields are not written and are defaulted
   EXPECT_FALSE(manifest.first_row_id.has_value());
@@ -246,7 +246,7 @@ TEST_F(TestManifestListVersions, TestV2Write) {
 }
 
 TEST_F(TestManifestListVersions, TestV3Write) {
-  auto manifest = WriteAndReadManifestList(3);
+  auto manifest = WriteAndReadManifestList(/*format_version=*/3);
 
   // All V3 fields should be read correctly
   EXPECT_EQ(manifest.manifest_path, kPath);
@@ -272,7 +272,7 @@ TEST_F(TestManifestListVersions, TestV3WriteFirstRowIdAssignment) {
 
   constexpr int64_t kExpectedNextRowId = kSnapshotFirstRowId + kAddedRows + kExistingRows;
   auto manifest_list_path =
-      WriteManifestList(3, kExpectedNextRowId, {missing_first_row_id});
+      WriteManifestList(/*format_version=*/3, kExpectedNextRowId, {missing_first_row_id});
 
   auto manifest = ReadManifestList(manifest_list_path);
   EXPECT_EQ(manifest.manifest_path, kPath);
@@ -299,7 +299,8 @@ TEST_F(TestManifestListVersions, TestV3WriteMixedRowIdAssignment) {
       kSnapshotFirstRowId + 2 * (kAddedRows + kExistingRows);
 
   auto manifest_list_path = WriteManifestList(
-      3, kExpectedNextRowId, {missing_first_row_id, kTestManifest, missing_first_row_id});
+      /*format_version=*/3, kExpectedNextRowId,
+      {missing_first_row_id, kTestManifest, missing_first_row_id});
 
   auto manifests = ReadAllManifests(manifest_list_path);
   EXPECT_EQ(manifests.size(), 3);
@@ -329,7 +330,7 @@ TEST_F(TestManifestListVersions, TestV3WriteMixedRowIdAssignment) {
 
 TEST_F(TestManifestListVersions, TestV1ForwardCompatibility) {
   std::string manifest_list_path =
-      WriteManifestList(1, kSnapshotFirstRowId, {kTestManifest});
+      WriteManifestList(/*format_version=*/1, kSnapshotFirstRowId, {kTestManifest});
   std::string expected_array_json = R"([
     ["s3://bucket/table/m1.avro", 1024, 1, 987134631982734, 2, 343, 1, [], 5292, 857273, 22910, null]
   ])";
@@ -341,7 +342,7 @@ TEST_F(TestManifestListVersions, TestV2ForwardCompatibility) {
   // V2 manifest list files can be read by V1 readers, but the sequence numbers and
   // content will be ignored.
   std::string manifest_list_path =
-      WriteManifestList(2, kSnapshotFirstRowId, {kTestManifest});
+      WriteManifestList(/*format_version=*/2, kSnapshotFirstRowId, {kTestManifest});
   std::string expected_array_json = R"([
     ["s3://bucket/table/m1.avro", 1024, 1, 987134631982734, 2, 343, 1, [], 5292, 857273, 22910, null]
   ])";
