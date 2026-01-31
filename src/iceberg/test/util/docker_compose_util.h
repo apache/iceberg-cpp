@@ -46,6 +46,10 @@ class DockerCompose {
   /// \brief Get the docker project name.
   const std::string& project_name() const { return project_name_; }
 
+  /// \brief Get the test data directory path.
+  /// This directory is mounted into the container and is unique per test run.
+  const std::filesystem::path& test_data_dir() const { return test_data_dir_; }
+
   /// \brief Executes 'docker-compose up' to start services.
   /// \note May throw an exception if the services fail to start.
   void Up();
@@ -57,6 +61,7 @@ class DockerCompose {
  private:
   std::string project_name_;
   std::filesystem::path docker_compose_dir_;
+  std::filesystem::path test_data_dir_;
 
   /// \brief Build a docker compose Command with proper environment.
   /// \param args Additional command line arguments.

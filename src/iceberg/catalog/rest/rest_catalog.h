@@ -24,6 +24,7 @@
 #include <unordered_set>
 
 #include "iceberg/catalog.h"
+#include "iceberg/catalog/rest/catalog_properties.h"
 #include "iceberg/catalog/rest/endpoint.h"
 #include "iceberg/catalog/rest/iceberg_rest_export.h"
 #include "iceberg/catalog/rest/type_fwd.h"
@@ -106,9 +107,10 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
  private:
   RestCatalog(std::unique_ptr<RestCatalogProperties> config,
               std::shared_ptr<FileIO> file_io, std::unique_ptr<ResourcePaths> paths,
-              std::unordered_set<Endpoint> endpoints);
+              std::unordered_set<Endpoint> endpoints, SnapshotMode snapshot_mode);
 
-  Result<std::string> LoadTableInternal(const TableIdentifier& identifier) const;
+  Result<std::string> LoadTableInternal(const TableIdentifier& identifier,
+                                        SnapshotMode mode) const;
 
   Result<LoadTableResult> CreateTableInternal(
       const TableIdentifier& identifier, const std::shared_ptr<Schema>& schema,
@@ -122,6 +124,7 @@ class ICEBERG_REST_EXPORT RestCatalog : public Catalog,
   std::unique_ptr<ResourcePaths> paths_;
   std::string name_;
   std::unordered_set<Endpoint> supported_endpoints_;
+  SnapshotMode snapshot_mode_;
 };
 
 }  // namespace iceberg::rest

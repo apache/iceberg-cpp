@@ -48,4 +48,17 @@ Result<std::string_view> RestCatalogProperties::Uri() const {
   return it->second;
 }
 
+Result<SnapshotMode> RestCatalogProperties::SnapshotLoadingMode() const {
+  auto mode_str = Get(kSnapshotLoadingMode);
+
+  if (mode_str == "ALL") {
+    return SnapshotMode::ALL;
+  } else if (mode_str == "REFS") {
+    return SnapshotMode::REFS;
+  } else {
+    return InvalidArgument(
+        "Invalid snapshot loading mode: '{}'. Expected 'ALL' or 'REFS'.", mode_str);
+  }
+}
+
 }  // namespace iceberg::rest

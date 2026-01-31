@@ -21,8 +21,9 @@
 
 #include <unistd.h>
 
-#include <algorithm>
 #include <chrono>
+#include <filesystem>
+#include <fstream>
 #include <memory>
 #include <print>
 #include <string>
@@ -685,6 +686,144 @@ TEST_F(RestCatalogIntegrationTest, StageCreateTable) {
   EXPECT_EQ(committed_table->name(), table_id);
   auto& props = committed_table->metadata()->properties.configs();
   EXPECT_EQ(props.at("key1"), "value1");
+}
+
+TEST_F(RestCatalogIntegrationTest, LoadTableWithSnapshotLoadingMode) {
+  auto catalog_result = CreateCatalog();
+  ASSERT_THAT(catalog_result, IsOk());
+  auto& catalog = catalog_result.value();
+
+  Namespace ns{.levels = {"test_snapshot_mode"}};
+  auto status = catalog->CreateNamespace(ns, {});
+  ASSERT_THAT(status, IsOk());
+
+  auto schema = CreateDefaultSchema();
+  auto partition_spec = PartitionSpec::Unpartitioned();
+  auto sort_order = SortOrder::Unsorted();
+
+  TableIdentifier table_id{.ns = ns, .name = "snapshot_mode_table"};
+  std::unordered_map<std::string, std::string> table_properties;
+  auto table_result = catalog->CreateTable(table_id, schema, partition_spec, sort_order,
+                                           "", table_properties);
+  ASSERT_THAT(table_result, IsOk());
+  auto& table = table_result.value();
+
+  std::string original_metadata_location(table->metadata_file_location());
+  status = catalog->DropTable(table_id, /*purge=*/false);
+  ASSERT_THAT(status, IsOk());
+
+  // Create a fake metadata JSON with 2 snapshots:
+  // - Snapshot 1: not referenced by any branch/tag (will be filtered in REFS mode)
+  // - Snapshot 2: referenced by main branch (will be loaded in both modes)
+  auto& test_data_dir = docker_compose_->test_data_dir();
+  auto metadata_filename = std::format("00000-{}.metadata.json", getpid());
+  auto metadata_path = test_data_dir / metadata_filename;
+  auto container_metadata_path = std::format("/tmp/{}", metadata_filename);
+  std::string fake_metadata_json = std::format(R"({{
+  "format-version": 2,
+  "table-uuid": "12345678-1234-5678-1234-123456789abc",
+  "location": "file:/tmp/iceberg_warehouse/{}",
+  "last-sequence-number": 2,
+  "last-updated-ms": 1602638573590,
+  "last-column-id": 2,
+  "current-schema-id": 0,
+  "schemas": [{{"type": "struct", "schema-id": 0, "fields": [
+    {{"id": 1, "name": "id", "required": true, "type": "int"}},
+    {{"id": 2, "name": "data", "required": false, "type": "string"}}
+  ]}}],
+  "default-spec-id": 0,
+  "partition-specs": [{{"spec-id": 0, "fields": []}}],
+  "last-partition-id": 1000,
+  "default-sort-order-id": 0,
+  "sort-orders": [{{"order-id": 0, "fields": []}}],
+  "properties": {{}},
+  "current-snapshot-id": 2,
+  "snapshots": [
+    {{
+      "snapshot-id": 1,
+      "timestamp-ms": 1515100955770,
+      "sequence-number": 1,
+      "summary": {{"operation": "append"}},
+      "manifest-list": "file:/tmp/iceberg_warehouse/{}/metadata/snap-1.avro"
+    }},
+    {{
+      "snapshot-id": 2,
+      "parent-snapshot-id": 1,
+      "timestamp-ms": 1525100955770,
+      "sequence-number": 2,
+      "summary": {{"operation": "append"}},
+      "manifest-list": "file:/tmp/iceberg_warehouse/{}/metadata/snap-2.avro"
+    }}
+  ],
+  "snapshot-log": [
+    {{"snapshot-id": 1, "timestamp-ms": 1515100955770}},
+    {{"snapshot-id": 2, "timestamp-ms": 1525100955770}}
+  ],
+  "metadata-log": [],
+  "refs": {{
+    "main": {{
+      "snapshot-id": 2,
+      "type": "branch"
+    }}
+  }}
+}})",
+                                               ns.levels[0], ns.levels[0], ns.levels[0]);
+
+  // Write metadata file and register the table
+  std::ofstream metadata_file(metadata_path.string());
+  metadata_file << fake_metadata_json;
+  metadata_file.close();
+  auto register_metadata_location = std::format("file:{}", container_metadata_path);
+  auto register_result = catalog->RegisterTable(table_id, register_metadata_location);
+  ASSERT_THAT(register_result, IsOk());
+
+  // Test with ALL mode (default)
+  auto config_all = RestCatalogProperties::default_properties();
+  config_all
+      ->Set(RestCatalogProperties::kUri,
+            std::format("{}:{}", kLocalhostUri, kRestCatalogPort))
+      .Set(RestCatalogProperties::kName, std::string(kCatalogName))
+      .Set(RestCatalogProperties::kWarehouse, std::string(kWarehouseName))
+      .Set(RestCatalogProperties::kSnapshotLoadingMode, std::string("ALL"));
+  auto catalog_all_result =
+      RestCatalog::Make(*config_all, std::make_shared<test::StdFileIO>());
+  ASSERT_THAT(catalog_all_result, IsOk());
+  auto& catalog_all = catalog_all_result.value();
+
+  // Load table with ALL mode and verify both snapshots are loaded
+  auto table_all_result = catalog_all->LoadTable(table_id);
+  ASSERT_THAT(table_all_result, IsOk());
+  auto& table_all = table_all_result.value();
+  EXPECT_EQ(table_all->metadata()->snapshots.size(), 2);
+
+  // Test with REFS mode
+  auto config_refs = RestCatalogProperties::default_properties();
+  config_refs
+      ->Set(RestCatalogProperties::kUri,
+            std::format("{}:{}", kLocalhostUri, kRestCatalogPort))
+      .Set(RestCatalogProperties::kName, std::string(kCatalogName))
+      .Set(RestCatalogProperties::kWarehouse, std::string(kWarehouseName))
+      .Set(RestCatalogProperties::kSnapshotLoadingMode, std::string("REFS"));
+  auto catalog_refs_result =
+      RestCatalog::Make(*config_refs, std::make_shared<test::StdFileIO>());
+  ASSERT_THAT(catalog_refs_result, IsOk());
+  auto& catalog_refs = catalog_refs_result.value();
+
+  // Load table with REFS mode and verify only referenced snapshot is loaded
+  auto table_refs_result = catalog_refs->LoadTable(table_id);
+  ASSERT_THAT(table_refs_result, IsOk());
+  auto& table_refs = table_refs_result.value();
+  EXPECT_EQ(table_refs->metadata()->snapshots.size(), 1);
+  EXPECT_EQ(table_refs->metadata()->snapshots[0]->snapshot_id, 2);
+
+  // Verify refs are preserved in both modes
+  EXPECT_EQ(table_all->metadata()->refs.size(), 1);
+  EXPECT_EQ(table_refs->metadata()->refs.size(), 1);
+  EXPECT_TRUE(table_all->metadata()->refs.contains("main"));
+  EXPECT_TRUE(table_refs->metadata()->refs.contains("main"));
+
+  // Clean up metadata file
+  std::filesystem::remove(metadata_path);
 }
 
 }  // namespace iceberg::rest
