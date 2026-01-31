@@ -411,7 +411,7 @@ class ManifestWriterVersionsTest : public ::testing::Test {
 };
 
 TEST_F(ManifestWriterVersionsTest, TestV1Write) {
-  auto manifest = WriteManifest(kFormatVersion1, {data_file_});
+  auto manifest = WriteManifest(1, {data_file_});
   CheckManifest(manifest, kInvalidSequenceNumber, kInvalidSequenceNumber);
   auto entries = ReadManifest(manifest);
   ASSERT_EQ(entries.size(), 1);
@@ -422,8 +422,8 @@ TEST_F(ManifestWriterVersionsTest, TestV1Write) {
 TEST_F(ManifestWriterVersionsTest, TestV1WriteDelete) {
   const std::string manifest_path = CreateManifestPath();
   ICEBERG_UNWRAP_OR_FAIL(
-      auto writer, ManifestWriter::MakeWriter(kFormatVersion1, kSnapshotId, manifest_path,
-                                              file_io_, spec_, schema_));
+      auto writer, ManifestWriter::MakeWriter(1, kSnapshotId, manifest_path, file_io_,
+                                              spec_, schema_));
 
   ManifestEntry entry;
   entry.snapshot_id = kSnapshotId;
@@ -436,8 +436,7 @@ TEST_F(ManifestWriterVersionsTest, TestV1WriteDelete) {
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV1WriteWithInheritance) {
-  auto manifests = WriteAndReadManifests({WriteManifest(kFormatVersion1, {data_file_})},
-                                         kFormatVersion1);
+  auto manifests = WriteAndReadManifests({WriteManifest(1, {data_file_})}, 1);
   ASSERT_EQ(manifests.size(), 1);
   CheckManifest(manifests[0], TableMetadata::kInitialSequenceNumber,
                 TableMetadata::kInitialSequenceNumber);
@@ -448,7 +447,7 @@ TEST_F(ManifestWriterVersionsTest, TestV1WriteWithInheritance) {
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV2Write) {
-  auto manifest = WriteManifest(kFormatVersion2, {data_file_});
+  auto manifest = WriteManifest(2, {data_file_});
   CheckManifest(manifest, kInvalidSequenceNumber, kInvalidSequenceNumber);
   auto entries = ReadManifest(manifest);
   ASSERT_EQ(entries.size(), 1);
@@ -458,8 +457,7 @@ TEST_F(ManifestWriterVersionsTest, TestV2Write) {
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV2WriteWithInheritance) {
-  auto manifests = WriteAndReadManifests({WriteManifest(kFormatVersion2, {data_file_})},
-                                         kFormatVersion2);
+  auto manifests = WriteAndReadManifests({WriteManifest(2, {data_file_})}, 2);
   CheckManifest(manifests[0], kSequenceNumber, kSequenceNumber);
   auto entries = ReadManifest(manifests[0]);
   ASSERT_EQ(entries.size(), 1);
@@ -468,7 +466,7 @@ TEST_F(ManifestWriterVersionsTest, TestV2WriteWithInheritance) {
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV2PlusWriteDeleteV2) {
-  auto manifest = WriteDeleteManifest(kFormatVersion2, delete_file_);
+  auto manifest = WriteDeleteManifest(2, delete_file_);
   CheckManifest(manifest, kInvalidSequenceNumber, kInvalidSequenceNumber);
   auto entries = ReadManifest(manifest);
   ASSERT_EQ(entries.size(), 1);
@@ -479,13 +477,12 @@ TEST_F(ManifestWriterVersionsTest, TestV2PlusWriteDeleteV2) {
 
 TEST_F(ManifestWriterVersionsTest, TestV2ManifestListRewriteWithInheritance) {
   // write with v1
-  auto manifests = WriteAndReadManifests({WriteManifest(kFormatVersion1, {data_file_})},
-                                         kFormatVersion1);
+  auto manifests = WriteAndReadManifests({WriteManifest(1, {data_file_})}, 1);
   CheckManifest(manifests[0], TableMetadata::kInitialSequenceNumber,
                 TableMetadata::kInitialSequenceNumber);
 
   // rewrite existing metadata with v2 manifest list
-  auto manifests2 = WriteAndReadManifests(manifests, kFormatVersion2);
+  auto manifests2 = WriteAndReadManifests(manifests, 2);
   // the ManifestFile did not change and should still have its original sequence number, 0
   CheckManifest(manifests2[0], TableMetadata::kInitialSequenceNumber,
                 TableMetadata::kInitialSequenceNumber);
@@ -498,18 +495,17 @@ TEST_F(ManifestWriterVersionsTest, TestV2ManifestListRewriteWithInheritance) {
 
 TEST_F(ManifestWriterVersionsTest, TestV2ManifestRewriteWithInheritance) {
   // write with v1
-  auto manifests = WriteAndReadManifests({WriteManifest(kFormatVersion1, {data_file_})},
-                                         kFormatVersion1);
+  auto manifests = WriteAndReadManifests({WriteManifest(1, {data_file_})}, 1);
   CheckManifest(manifests[0], TableMetadata::kInitialSequenceNumber,
                 TableMetadata::kInitialSequenceNumber);
 
   // rewrite the manifest file using a v2 manifest
-  auto rewritten_manifest = RewriteManifest(manifests[0], kFormatVersion2);
+  auto rewritten_manifest = RewriteManifest(manifests[0], 2);
   CheckRewrittenManifest(rewritten_manifest, kInvalidSequenceNumber,
                          TableMetadata::kInitialSequenceNumber);
 
   // add the v2 manifest to a v2 manifest list, with a sequence number
-  auto manifests2 = WriteAndReadManifests({rewritten_manifest}, kFormatVersion2);
+  auto manifests2 = WriteAndReadManifests({rewritten_manifest}, 2);
   // the ManifestFile is new so it has a sequence number, but the min sequence number 0 is
   // from the entry
   CheckRewrittenManifest(manifests2[0], kSequenceNumber,
@@ -522,7 +518,7 @@ TEST_F(ManifestWriterVersionsTest, TestV2ManifestRewriteWithInheritance) {
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV3Write) {
-  auto manifest = WriteManifest(kFormatVersion3, {data_file_});
+  auto manifest = WriteManifest(3, {data_file_});
   CheckManifest(manifest, kInvalidSequenceNumber, kInvalidSequenceNumber);
   auto entries = ReadManifest(manifest);
   ASSERT_EQ(entries.size(), 1);
@@ -532,9 +528,8 @@ TEST_F(ManifestWriterVersionsTest, TestV3Write) {
 }
 
 TEST_F(ManifestWriterVersionsTest, TestV3WriteWithInheritance) {
-  auto manifests = WriteAndReadManifests(
-      {WriteManifest(kFormatVersion3, {data_file_without_first_row_id_})},
-      kFormatVersion3);
+  auto manifests =
+      WriteAndReadManifests({WriteManifest(3, {data_file_without_first_row_id_})}, 3);
   CheckManifest(manifests[0], kSequenceNumber, kSequenceNumber);
   ASSERT_EQ(manifests[0].content, ManifestContent::kData);
 
@@ -549,7 +544,7 @@ TEST_F(ManifestWriterVersionsTest, TestV3WriteWithInheritance) {
 
 TEST_F(ManifestWriterVersionsTest, TestV3WriteFirstRowIdAssignment) {
   auto manifests = WriteAndReadManifests(
-      {WriteManifest(kFormatVersion3,
+      {WriteManifest(3,
                      {data_file_without_first_row_id_, data_file_without_first_row_id_})},
       3);
   ASSERT_EQ(manifests[0].content, ManifestContent::kData);
@@ -568,13 +563,12 @@ TEST_F(ManifestWriterVersionsTest, TestV3WriteFirstRowIdAssignment) {
 
 TEST_F(ManifestWriterVersionsTest, TestV3ManifestListRewriteWithInheritance) {
   // write with v1
-  auto manifests = WriteAndReadManifests({WriteManifest(kFormatVersion1, {data_file_})},
-                                         kFormatVersion1);
+  auto manifests = WriteAndReadManifests({WriteManifest(1, {data_file_})}, 1);
   CheckManifest(manifests[0], TableMetadata::kInitialSequenceNumber,
                 TableMetadata::kInitialSequenceNumber);
 
   // rewrite existing metadata with a manifest list
-  auto manifests3 = WriteAndReadManifests(manifests, kFormatVersion3);
+  auto manifests3 = WriteAndReadManifests(manifests, 3);
   // the ManifestFile did not change and should still have its original sequence number, 0
   CheckManifest(manifests3[0], TableMetadata::kInitialSequenceNumber,
                 TableMetadata::kInitialSequenceNumber);
@@ -588,18 +582,17 @@ TEST_F(ManifestWriterVersionsTest, TestV3ManifestListRewriteWithInheritance) {
 
 TEST_F(ManifestWriterVersionsTest, TestV3ManifestRewriteWithInheritance) {
   // write with v1
-  auto manifests = WriteAndReadManifests({WriteManifest(kFormatVersion1, {data_file_})},
-                                         kFormatVersion1);
+  auto manifests = WriteAndReadManifests({WriteManifest(1, {data_file_})}, 1);
   CheckManifest(manifests[0], TableMetadata::kInitialSequenceNumber,
                 TableMetadata::kInitialSequenceNumber);
 
   // rewrite the manifest file using a v3 manifest
-  auto rewritten_manifest = RewriteManifest(manifests[0], kFormatVersion3);
+  auto rewritten_manifest = RewriteManifest(manifests[0], 3);
   CheckRewrittenManifest(rewritten_manifest, kInvalidSequenceNumber,
                          TableMetadata::kInitialSequenceNumber);
 
   // add the v3 manifest to a v3 manifest list, with a sequence number
-  auto manifests3 = WriteAndReadManifests({rewritten_manifest}, kFormatVersion3);
+  auto manifests3 = WriteAndReadManifests({rewritten_manifest}, 3);
   // the ManifestFile is new so it has a sequence number, but the min sequence number 0 is
   // from the entry
   CheckRewrittenManifest(manifests3[0], kSequenceNumber,

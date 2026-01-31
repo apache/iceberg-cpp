@@ -237,7 +237,7 @@ class ManifestGroupTest : public testing::TestWithParam<int8_t> {
 
 TEST_P(ManifestGroupTest, CreateAndGetEntries) {
   auto version = GetParam();
-  if (version < kFormatVersion2) {
+  if (version < 2) {
     GTEST_SKIP() << "Delete files only supported in V2+";
   }
 
@@ -485,7 +485,6 @@ TEST_P(ManifestGroupTest, PartitionFilter) {
 }
 
 INSTANTIATE_TEST_SUITE_P(ManifestGroupVersions, ManifestGroupTest,
-                         testing::Values(kFormatVersion1, kFormatVersion2,
-                                         kFormatVersion3));
+                         testing::Values(1, 2, 3));
 
 }  // namespace iceberg

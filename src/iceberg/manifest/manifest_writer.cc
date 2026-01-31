@@ -285,17 +285,17 @@ Result<std::unique_ptr<ManifestWriter>> ManifestWriter::MakeWriter(
   std::optional<int64_t> writer_first_row_id = std::nullopt;
 
   switch (format_version) {
-    case kFormatVersion1: {
+    case 1: {
       adapter = std::make_unique<ManifestEntryAdapterV1>(
           snapshot_id, std::move(partition_spec), std::move(current_schema));
       break;
     }
-    case kFormatVersion2: {
+    case 2: {
       adapter = std::make_unique<ManifestEntryAdapterV2>(
           snapshot_id, std::move(partition_spec), std::move(current_schema), content);
       break;
     }
-    case kFormatVersion3: {
+    case 3: {
       adapter = std::make_unique<ManifestEntryAdapterV3>(
           snapshot_id, first_row_id, std::move(partition_spec), std::move(current_schema),
           content);
@@ -359,18 +359,18 @@ Result<std::unique_ptr<ManifestListWriter>> ManifestListWriter::MakeWriter(
   std::unique_ptr<ManifestFileAdapter> adapter;
 
   switch (format_version) {
-    case kFormatVersion1: {
+    case 1: {
       adapter = std::make_unique<ManifestFileAdapterV1>(snapshot_id, parent_snapshot_id);
       break;
     }
-    case kFormatVersion2: {
+    case 2: {
       ICEBERG_PRECHECK(sequence_number.has_value(),
                        "Sequence number is required for format version 2");
       adapter = std::make_unique<ManifestFileAdapterV2>(snapshot_id, parent_snapshot_id,
                                                         sequence_number.value());
       break;
     }
-    case kFormatVersion3: {
+    case 3: {
       ICEBERG_PRECHECK(sequence_number.has_value(),
                        "Sequence number is required for format version 3");
       ICEBERG_PRECHECK(first_row_id.has_value(),

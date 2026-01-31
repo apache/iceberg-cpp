@@ -539,7 +539,7 @@ TEST_P(DeleteFileIndexTest, TestPartitionedTableWithUnrelatedPartitionDeletes) {
 
 TEST_P(DeleteFileIndexTest, TestPartitionedTableWithOlderPartitionDeletes) {
   auto version = GetParam();
-  if (version >= kFormatVersion3) {
+  if (version >= 3) {
     GTEST_SKIP() << "DVs are not filtered using sequence numbers in V3+";
   }
 
@@ -569,7 +569,7 @@ TEST_P(DeleteFileIndexTest, TestPartitionedTableWithOlderPartitionDeletes) {
 
 TEST_P(DeleteFileIndexTest, TestPartitionedTableScanWithGlobalDeletes) {
   auto version = GetParam();
-  if (version >= kFormatVersion3) {
+  if (version >= 3) {
     GTEST_SKIP() << "Different behavior for position deletes in V3";
   }
 
@@ -600,7 +600,7 @@ TEST_P(DeleteFileIndexTest, TestPartitionedTableScanWithGlobalDeletes) {
 
 TEST_P(DeleteFileIndexTest, TestPartitionedTableScanWithGlobalAndPartitionDeletes) {
   auto version = GetParam();
-  if (version >= kFormatVersion3) {
+  if (version >= 3) {
     GTEST_SKIP() << "Different behavior for position deletes in V3";
   }
 
@@ -673,7 +673,7 @@ TEST_P(DeleteFileIndexTest, TestPartitionedTableSequenceNumbers) {
 
 TEST_P(DeleteFileIndexTest, TestUnpartitionedTableSequenceNumbers) {
   auto version = GetParam();
-  if (version >= kFormatVersion3) {
+  if (version >= 3) {
     GTEST_SKIP() << "Different behavior in V3";
   }
 
@@ -842,7 +842,7 @@ TEST_P(DeleteFileIndexTest, TestEqualityDeletesGroup) {
 
 TEST_P(DeleteFileIndexTest, TestMixDeleteFilesAndDVs) {
   auto version = GetParam();
-  if (version < kFormatVersion3) {
+  if (version < 3) {
     GTEST_SKIP() << "DVs only supported in V3+";
   }
 
@@ -898,7 +898,7 @@ TEST_P(DeleteFileIndexTest, TestMixDeleteFilesAndDVs) {
 
 TEST_P(DeleteFileIndexTest, TestMultipleDVs) {
   auto version = GetParam();
-  if (version < kFormatVersion3) {
+  if (version < 3) {
     GTEST_SKIP() << "DVs only supported in V3+";
   }
 
@@ -924,7 +924,7 @@ TEST_P(DeleteFileIndexTest, TestMultipleDVs) {
 
 TEST_P(DeleteFileIndexTest, TestInvalidDVSequenceNumber) {
   auto version = GetParam();
-  if (version < kFormatVersion3) {
+  if (version < 3) {
     GTEST_SKIP() << "DVs only supported in V3+";
   }
 
@@ -1177,6 +1177,6 @@ TEST_P(DeleteFileIndexTest, TestEqualityDeleteDiscardMetrics) {
 }
 
 INSTANTIATE_TEST_SUITE_P(DeleteFileIndexVersions, DeleteFileIndexTest,
-                         testing::Values(kFormatVersion2, kFormatVersion3));
+                         testing::Values(2, 3));
 
 }  // namespace iceberg

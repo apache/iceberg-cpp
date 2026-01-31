@@ -217,7 +217,6 @@ TEST_P(TestManifestReaderStats, TestReadEntriesWithSelectCertainStatNotProjectSt
 }
 
 INSTANTIATE_TEST_SUITE_P(ManifestReaderStatsVersions, TestManifestReaderStats,
-                         testing::Values(kFormatVersion1, kFormatVersion2,
-                                         kFormatVersion3));
+                         testing::Values(1, 2, 3));
 
 }  // namespace iceberg

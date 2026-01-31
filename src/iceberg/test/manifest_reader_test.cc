@@ -255,7 +255,7 @@ TEST_P(TestManifestReader, TestManifestReaderWithPartitionMetadata) {
 
 TEST_P(TestManifestReader, TestDeleteFilesWithReferences) {
   auto version = GetParam();
-  if (version < kFormatVersion2) {
+  if (version < 2) {
     GTEST_SKIP() << "Delete files only supported in V2+";
   }
 
@@ -294,7 +294,7 @@ TEST_P(TestManifestReader, TestDeleteFilesWithReferences) {
 
 TEST_P(TestManifestReader, TestDVs) {
   auto version = GetParam();
-  if (version < kFormatVersion3) {
+  if (version < 3) {
     GTEST_SKIP() << "DVs only supported in V3+";
   }
 
@@ -419,7 +419,6 @@ TEST(ManifestReaderStaticTest, TestShouldDropStats) {
 }
 
 INSTANTIATE_TEST_SUITE_P(ManifestReaderVersions, TestManifestReader,
-                         testing::Values(kFormatVersion1, kFormatVersion2,
-                                         kFormatVersion3));
+                         testing::Values(1, 2, 3));
 
 }  // namespace iceberg

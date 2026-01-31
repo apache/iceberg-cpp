@@ -838,7 +838,7 @@ nlohmann::json ToJson(const TableMetadata& table_metadata) {
   json[kFormatVersion] = table_metadata.format_version;
   json[kTableUuid] = table_metadata.table_uuid;
   json[kLocation] = table_metadata.location;
-  if (table_metadata.format_version > kFormatVersion1) {
+  if (table_metadata.format_version > 1) {
     json[kLastSequenceNumber] = table_metadata.last_sequence_number;
   }
   json[kLastUpdatedMs] = UnixMsFromTimePointMs(table_metadata.last_updated_ms);
@@ -847,7 +847,7 @@ nlohmann::json ToJson(const TableMetadata& table_metadata) {
   // for older readers, continue writing the current schema as "schema".
   // this is only needed for v1 because support for schemas and current-schema-id
   // is required in v2 and later.
-  if (table_metadata.format_version == kFormatVersion1) {
+  if (table_metadata.format_version == 1) {
     for (const auto& schema : table_metadata.schemas) {
       if (schema->schema_id() == table_metadata.current_schema_id) {
         json[kSchema] = ToJson(*schema);
@@ -861,7 +861,7 @@ nlohmann::json ToJson(const TableMetadata& table_metadata) {
   json[kSchemas] = ToJsonList(table_metadata.schemas);
 
   // for older readers, continue writing the default spec as "partition-spec"
-  if (table_metadata.format_version == kFormatVersion1) {
+  if (table_metadata.format_version == 1) {
     for (const auto& partition_spec : table_metadata.partition_specs) {
       if (partition_spec->spec_id() == table_metadata.default_spec_id) {
         json[kPartitionSpec] = ToJson(*partition_spec);
@@ -890,7 +890,7 @@ nlohmann::json ToJson(const TableMetadata& table_metadata) {
     json[kCurrentSnapshotId] = nlohmann::json::value_t::null;
   }
 
-  if (table_metadata.format_version >= kFormatVersion3) {
+  if (table_metadata.format_version >= 3) {
     json[kNextRowId] = table_metadata.next_row_id;
   }
 
@@ -945,7 +945,7 @@ Result<std::shared_ptr<Schema>> ParseSchemas(
                             current_schema_id, SafeDumpJson(schema_array));
     }
   } else {
-    if (format_version != kFormatVersion1) {
+    if (format_version != 1) {
       return JsonParseError("{} must exist in format v{}", kSchemas, format_version);
     }
     ICEBERG_ASSIGN_OR_RAISE(auto schema_json,
@@ -983,7 +983,7 @@ Status ParsePartitionSpecs(const nlohmann::json& json, int8_t format_version,
       partition_specs.push_back(std::move(spec));
     }
   } else {
-    if (format_version != kFormatVersion1) {
+    if (format_version != 1) {
       return JsonParseError("{} must exist in format v{}", kPartitionSpecs,
                             format_version);
     }
@@ -999,9 +999,8 @@ Status ParsePartitionSpecs(const nlohmann::json& json, int8_t format_version,
     std::vector<PartitionField> fields;
     for (const auto& entry_json : partition_spec_json) {
       ICEBERG_ASSIGN_OR_RAISE(
-          auto field,
-          PartitionFieldFromJson(
-              entry_json, /*allow_field_id_missing=*/format_version == kFormatVersion1));
+          auto field, PartitionFieldFromJson(
+                          entry_json, /*allow_field_id_missing=*/format_version == 1));
       int32_t field_id = field->field_id();
       if (field_id == SchemaField::kInvalidFieldId) {
         // If the field ID is not set, we need to assign a new one
@@ -1045,7 +1044,7 @@ Status ParseSortOrders(const nlohmann::json& json, int8_t format_version,
       sort_orders.push_back(std::move(sort_order));
     }
   } else {
-    if (format_version > kFormatVersion1) {
+    if (format_version > 1) {
       return JsonParseError("{} must exist in format v{}", kSortOrders, format_version);
     }
     auto sort_order = SortOrder::Unsorted();
@@ -1067,7 +1066,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
 
   ICEBERG_ASSIGN_OR_RAISE(table_metadata->format_version,
                           GetJsonValue<int8_t>(json, kFormatVersion));
-  if (table_metadata->format_version < kFormatVersion1 ||
+  if (table_metadata->format_version < 1 ||
       table_metadata->format_version > TableMetadata::kSupportedTableFormatVersion) {
     return JsonParseError("Cannot read unsupported version: {}",
                           table_metadata->format_version);
@@ -1078,7 +1077,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
   ICEBERG_ASSIGN_OR_RAISE(table_metadata->location,
                           GetJsonValue<std::string>(json, kLocation));
 
-  if (table_metadata->format_version > kFormatVersion1) {
+  if (table_metadata->format_version > 1) {
     ICEBERG_ASSIGN_OR_RAISE(table_metadata->last_sequence_number,
                             GetJsonValue<int64_t>(json, kLastSequenceNumber));
   } else {
@@ -1100,7 +1099,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
     ICEBERG_ASSIGN_OR_RAISE(table_metadata->last_partition_id,
                             GetJsonValue<int32_t>(json, kLastPartitionId));
   } else {
-    if (table_metadata->format_version > kFormatVersion1) {
+    if (table_metadata->format_version > 1) {
       return JsonParseError("{} must exist in format v{}", kLastPartitionId,
                             table_metadata->format_version);
     }
@@ -1130,7 +1129,7 @@ Result<std::unique_ptr<TableMetadata>> TableMetadataFromJson(const nlohmann::jso
       table_metadata->current_snapshot_id,
       GetJsonValueOrDefault<int64_t>(json, kCurrentSnapshotId, kInvalidSnapshotId));
 
-  if (table_metadata->format_version >= kFormatVersion3) {
+  if (table_metadata->format_version >= 3) {
     ICEBERG_ASSIGN_OR_RAISE(table_metadata->next_row_id,
                             GetJsonValue<int64_t>(json, kNextRowId));
   } else {

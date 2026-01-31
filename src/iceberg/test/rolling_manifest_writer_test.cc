@@ -171,7 +171,7 @@ TEST_P(RollingManifestWriterTest, TestRollingManifestWriterNoRecords) {
 
 TEST_P(RollingManifestWriterTest, TestRollingDeleteManifestWriterNoRecords) {
   auto format_version = GetParam();
-  if (format_version < kFormatVersion2) {
+  if (format_version < 2) {
     GTEST_SKIP() << "Delete manifests only supported in V2+";
   }
   RollingManifestWriter writer(NewRollingWriteDeleteManifestFactory(format_version),
@@ -240,7 +240,7 @@ TEST_P(RollingManifestWriterTest, TestRollingManifestWriterSplitFiles) {
 
 TEST_P(RollingManifestWriterTest, TestRollingDeleteManifestWriterSplitFiles) {
   auto format_version = GetParam();
-  if (format_version < kFormatVersion2) {
+  if (format_version < 2) {
     GTEST_SKIP() << "Delete manifests only supported in V2+";
   }
   RollingManifestWriter writer(NewRollingWriteDeleteManifestFactory(format_version),
@@ -293,7 +293,6 @@ TEST_P(RollingManifestWriterTest, TestRollingDeleteManifestWriterSplitFiles) {
 }
 
 INSTANTIATE_TEST_SUITE_P(TestRollingManifestWriter, RollingManifestWriterTest,
-                         ::testing::Values(kFormatVersion1, kFormatVersion2,
-                                           kFormatVersion3));
+                         ::testing::Values(1, 2, 3));
 
 }  // namespace iceberg

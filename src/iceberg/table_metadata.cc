@@ -293,8 +293,7 @@ Result<std::shared_ptr<Snapshot>> TableMetadata::SnapshotById(int64_t snapshot_i
 }
 
 int64_t TableMetadata::NextSequenceNumber() const {
-  return format_version > kFormatVersion1 ? last_sequence_number + 1
-                                          : kInitialSequenceNumber;
+  return format_version > 1 ? last_sequence_number + 1 : kInitialSequenceNumber;
 }
 
 namespace {
@@ -857,10 +856,9 @@ Result<int32_t> TableMetadataBuilder::Impl::AddPartitionSpec(const PartitionSpec
   // Get current schema and validate the partition spec against it
   ICEBERG_ASSIGN_OR_RAISE(auto schema, metadata_.Schema());
   ICEBERG_RETURN_UNEXPECTED(spec.Validate(*schema, /*allow_missing_fields=*/false));
-  ICEBERG_CHECK(metadata_.format_version > kFormatVersion1 ||
-                    PartitionSpec::HasSequentialFieldIds(spec),
-                "Spec does not use sequential IDs that are required in v1: {}",
-                spec.ToString());
+  ICEBERG_CHECK(
+      metadata_.format_version > 1 || PartitionSpec::HasSequentialFieldIds(spec),
+      "Spec does not use sequential IDs that are required in v1: {}", spec.ToString());
 
   ICEBERG_ASSIGN_OR_RAISE(
       std::shared_ptr<PartitionSpec> new_spec,
@@ -1062,7 +1060,7 @@ Status TableMetadataBuilder::Impl::AddSnapshot(std::shared_ptr<Snapshot> snapsho
   ICEBERG_CHECK(!snapshots_by_id_.contains(snapshot->snapshot_id),
                 "Snapshot already exists for id: {}", snapshot->snapshot_id);
   ICEBERG_CHECK(
-      metadata_.format_version == kFormatVersion1 ||
+      metadata_.format_version == 1 ||
           snapshot->sequence_number > metadata_.last_sequence_number ||
           !snapshot->parent_snapshot_id.has_value(),
       "Cannot add snapshot with sequence number {} older than last sequence number {}",
@@ -1129,7 +1127,7 @@ Status TableMetadataBuilder::Impl::SetBranchSnapshotInternal(const Snapshot& sna
   }
 
   ICEBERG_CHECK(
-      metadata_.format_version == kFormatVersion1 ||
+      metadata_.format_version == 1 ||
           snapshot.sequence_number <= metadata_.last_sequence_number,
       "Last sequence number {} is less than existing snapshot sequence number {}",
       metadata_.last_sequence_number, snapshot.sequence_number);
